@@ -15,7 +15,7 @@ import {I18nContext} from '../../../src/render3/view/i18n/context';
 import {serializeI18nMessageForGetMsg} from '../../../src/render3/view/i18n/get_msg_utils';
 import {serializeIcuNode} from '../../../src/render3/view/i18n/icu_serializer';
 import {serializeI18nMessageForLocalize} from '../../../src/render3/view/i18n/localize_utils';
-import {I18nMeta, parseI18nMeta, serializeI18nMeta} from '../../../src/render3/view/i18n/meta';
+import {I18nMeta, parseI18nMeta, serializeI18nMetaBlock, serializeI18nPlaceholderBlock} from '../../../src/render3/view/i18n/meta';
 import {formatI18nPlaceholderName} from '../../../src/render3/view/i18n/util';
 
 import {parseR3 as parse} from './util';
@@ -200,23 +200,27 @@ describe('Utils', () => {
   });
 
   describe('metadata serialization', () => {
-    const metadataCases: [string, I18nMeta][] = [
-      ['', meta()],
-      ['desc', meta('', '', 'desc')],
-      ['desc@@id', meta('id', '', 'desc')],
-      ['meaning|desc', meta('', 'meaning', 'desc')],
-      ['meaning|desc@@id', meta('id', 'meaning', 'desc')],
-      ['@@id', meta('id', '', '')],
-    ];
-
     it('parseI18nMeta()', () => {
-      metadataCases.forEach(
-          ([input, output]) => { expect(parseI18nMeta(input)).toEqual(output, input); });
+      expect(parseI18nMeta('')).toEqual(meta());
+      expect(parseI18nMeta('desc')).toEqual(meta('', '', 'desc'));
+      expect(parseI18nMeta('desc@@id')).toEqual(meta('id', '', 'desc'));
+      expect(parseI18nMeta('meaning|desc')).toEqual(meta('', 'meaning', 'desc'));
+      expect(parseI18nMeta('meaning|desc@@id')).toEqual(meta('id', 'meaning', 'desc'));
+      expect(parseI18nMeta('@@id')).toEqual(meta('id', '', ''));
     });
 
-    it('serializeI18nMeta()', () => {
-      metadataCases.forEach(
-          ([output, input]) => { expect(serializeI18nMeta(input)).toEqual(output, input); });
+    it('serializeI18nMetaBlock()', () => {
+      expect(serializeI18nMetaBlock(meta())).toEqual('');
+      expect(serializeI18nMetaBlock(meta('', '', 'desc'))).toEqual(':desc:');
+      expect(serializeI18nMetaBlock(meta('id', '', 'desc'))).toEqual(':desc@@id:');
+      expect(serializeI18nMetaBlock(meta('', 'meaning', 'desc'))).toEqual(':meaning|desc:');
+      expect(serializeI18nMetaBlock(meta('id', 'meaning', 'desc'))).toEqual(':meaning|desc@@id:');
+      expect(serializeI18nMetaBlock(meta('id', '', ''))).toEqual(':@@id:');
+    });
+
+    it('serializeI18nPlaceholderBlock()', () => {
+      expect(serializeI18nPlaceholderBlock('')).toEqual('');
+      expect(serializeI18nPlaceholderBlock('abc')).toEqual(':abc:');
     });
 
     function meta(id?: string, meaning?: string, description?: string): I18nMeta {

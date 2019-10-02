@@ -8,6 +8,7 @@
 
 
 import {ParseSourceSpan} from '../parse_util';
+import {I18nMeta} from '../render3/view/i18n/meta';
 import {error} from '../util';
 
 //// Types
@@ -482,8 +483,9 @@ export class LiteralExpr extends Expression {
 
 export class LocalizedString extends Expression {
   constructor(
-      public messageParts: string[], public placeHolderNames: string[],
-      public expressions: Expression[], sourceSpan?: ParseSourceSpan|null) {
+      readonly metaBlock: I18nMeta, readonly messageParts: string[],
+      readonly placeHolderNames: string[], readonly expressions: Expression[],
+      sourceSpan?: ParseSourceSpan|null) {
     super(STRING_TYPE, sourceSpan);
   }
 
@@ -1098,7 +1100,7 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
   visitLocalizedString(ast: LocalizedString, context: any): any {
     return this.transformExpr(
         new LocalizedString(
-            ast.messageParts, ast.placeHolderNames,
+            ast.metaBlock, ast.messageParts, ast.placeHolderNames,
             this.visitAllExpressions(ast.expressions, context), ast.sourceSpan),
         context);
   }
@@ -1584,9 +1586,9 @@ export function literal(
 }
 
 export function localizedString(
-    messageParts: string[], placeholderNames: string[], expressions: Expression[],
-    sourceSpan?: ParseSourceSpan | null): LocalizedString {
-  return new LocalizedString(messageParts, placeholderNames, expressions, sourceSpan);
+    metaBlock: I18nMeta, messageParts: string[], placeholderNames: string[],
+    expressions: Expression[], sourceSpan?: ParseSourceSpan | null): LocalizedString {
+  return new LocalizedString(metaBlock, messageParts, placeholderNames, expressions, sourceSpan);
 }
 
 export function isNull(exp: Expression): boolean {

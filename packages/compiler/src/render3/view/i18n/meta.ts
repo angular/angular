@@ -184,7 +184,7 @@ export function parseI18nMeta(meta?: string): I18nMeta {
  *
  * @param meta The metadata to serialize
  */
-export function serializeI18nMeta(meta: I18nMeta): string {
+export function serializeI18nMetaBlock(meta: I18nMeta): string {
   let metaBlock = meta.description || '';
   if (meta.meaning) {
     metaBlock = `${meta.meaning}|${metaBlock}`;
@@ -192,7 +192,22 @@ export function serializeI18nMeta(meta: I18nMeta): string {
   if (meta.id) {
     metaBlock = `${metaBlock}@@${meta.id}`;
   }
-  return metaBlock;
+  return metaBlock !== '' ? `:${metaBlock}:` : '';
+}
+
+/**
+ * Convert a placeholder into marked block for rendering.
+ *
+ * We want our tagged literals to include placeholder name information to aid runtime translation.
+ *
+ * The expressions are marked with placeholder names by postfixing the expression with
+ * `:placeHolderName:`. To achieve this, we actually "prefix" the message part that follows the
+ * expression.
+ *
+ * @param placeholderName The placeholder name to serialize
+ */
+export function serializeI18nPlaceholderBlock(placeholderName: string): string {
+  return placeholderName !== '' ? `:${placeholderName}:` : '';
 }
 
 // Converts i18n meta information for a message (id, description, meaning)
