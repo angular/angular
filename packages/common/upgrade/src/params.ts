@@ -198,7 +198,8 @@ export class AngularJSUrlCodec implements UrlCodec {
   // https://github.com/angular/angular.js/blob/864c7f0/src/ng/urlUtils.js#L60
   parse(url: string, base?: string) {
     try {
-      const parsed = new URL(url, base);
+      // Safari 12 throws an error when the URL constructor is called with an undefined base.
+      const parsed = !base ? new URL(url) : new URL(url, base);
       return {
         href: parsed.href,
         protocol: parsed.protocol ? parsed.protocol.replace(/:$/, '') : '',
