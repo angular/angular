@@ -174,7 +174,8 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       return null;
     }
 
-    return {node: importedFile, viaModule: importInfo.from};
+    const viaModule = !importInfo.from.startsWith('.') ? importInfo.from : null;
+    return {node: importedFile, viaModule};
   }
 
   private resolveModuleName(moduleName: string, containingFile: ts.SourceFile): ts.SourceFile

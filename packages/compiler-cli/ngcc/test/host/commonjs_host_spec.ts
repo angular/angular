@@ -1653,6 +1653,59 @@ exports.ExternalModule = ExternalModule;
           expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
           expect(actualDeclaration !.viaModule).toBe('@angular/core');
         });
+
+        it('should return viaModule: null for relative imports', () => {
+          loadTestFiles([
+            {
+              name: _('/index.js'),
+              contents: `
+              const a = require('./a');
+              var b = a.b;
+            `,
+            },
+            {
+              name: _('/a.js'),
+              contents: `
+              exports.b = 1;
+              `
+            }
+          ]);
+
+          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
+          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const variableNode =
+              getDeclaration(program, _('/index.js'), 'b', isNamedVariableDeclaration);
+          const identifier = variableNode.name as ts.Identifier;
+
+          const importOfIdent = host.getDeclarationOfIdentifier(identifier !) !;
+          expect(importOfIdent.node).not.toBeNull();
+          expect(importOfIdent.viaModule).toBeNull();
+        });
+
+        it('should return a viaModule for absolute imports', () => {
+          loadTestFiles([
+            {
+              name: _('/index.js'),
+              contents: `
+              var a = require('lib');
+              var b = a.x;
+            `,
+            },
+            {
+              name: _('/node_modules/lib/index.d.ts'),
+              contents: 'export declare const x: number;',
+            },
+          ]);
+
+          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
+          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const variableNode =
+              getDeclaration(program, _('/index.js'), 'b', isNamedVariableDeclaration);
+          const identifier = (variableNode.initializer !as ts.PropertyAccessExpression).name;
+
+          const importOfIdent = host.getDeclarationOfIdentifier(identifier !) !;
+          expect(importOfIdent.viaModule).toBe('lib');
+        });
       });
 
       describe('getExportsOfModule()', () => {
@@ -1668,9 +1721,9 @@ exports.ExternalModule = ExternalModule;
                      .map(entry => [entry[0], entry[1].node !.getText(), entry[1].viaModule]))
               .toEqual([
                 ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, '@angular/core'],
-                ['a', `a = 'a'`, './a_module'],
+                ['a', `a = 'a'`, null],
                 ['b', `b = a_module.a`, null],
-                ['c', `a = 'a'`, './a_module'],
+                ['c', `a = 'a'`, null],
                 ['d', `b = a_module.a`, null],
                 ['e', `e = 'e'`, null],
                 ['DirectiveX', `Directive: FnWithArg<(clazz: any) => any>`, '@angular/core'],
