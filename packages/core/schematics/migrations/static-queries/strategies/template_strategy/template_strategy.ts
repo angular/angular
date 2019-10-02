@@ -11,7 +11,6 @@ import {Diagnostic, createProgram, readConfiguration} from '@angular/compiler-cl
 import {resolve} from 'path';
 import * as ts from 'typescript';
 
-import {hasPropertyNameText} from '../../../../utils/typescript/property_name';
 import {ClassMetadataMap} from '../../angular/ng_query_visitor';
 import {NgQueryDefinition, QueryTiming, QueryType} from '../../angular/query-definition';
 import {TimingResult, TimingStrategy} from '../timing-strategy';
@@ -34,6 +33,13 @@ export class QueryTemplateStrategy implements TimingStrategy {
    */
   setup() {
     const {rootNames, options} = readConfiguration(this.projectPath);
+
+    // https://github.com/angular/angular/commit/ec4381dd401f03bded652665b047b6b90f2b425f made Ivy
+    // the default. This breaks the assumption that "createProgram" from compiler-cli returns the
+    // NGC program. In order to ensure that the migration runs properly, we set "enableIvy" to
+    // false.
+    options.enableIvy = false;
+
     const aotProgram = createProgram({rootNames, options, host: this.host});
 
     // The "AngularCompilerProgram" does not expose the "AotCompiler" instance, nor does it
