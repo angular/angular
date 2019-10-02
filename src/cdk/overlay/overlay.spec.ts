@@ -419,6 +419,14 @@ describe('Overlay', () => {
     expect(() => overlayRef.addPanelClass('custom-class-two')).not.toThrowError();
   });
 
+  it('should not throw when trying to add or remove and empty string class', () => {
+    const overlayRef = overlay.create();
+    overlayRef.attach(componentPortal);
+
+    expect(() => overlayRef.addPanelClass('')).not.toThrow();
+    expect(() => overlayRef.removePanelClass('')).not.toThrow();
+  });
+
   describe('positioning', () => {
     let config: OverlayConfig;
 
