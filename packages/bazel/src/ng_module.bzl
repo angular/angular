@@ -372,7 +372,8 @@ def ngc_compile_action(
         node_opts,
         locale = None,
         i18n_args = [],
-        dts_bundles_out = None):
+        dts_bundles_out = None,
+        compile_mode = "prodmode"):
     """Helper function to create the ngc action.
 
     This is exposed for google3 to wire up i18n replay rules, and is not intended
@@ -397,13 +398,13 @@ def ngc_compile_action(
     is_legacy_ngc = _is_legacy_ngc(ctx)
 
     mnemonic = "AngularTemplateCompile"
-    progress_message = "Compiling Angular templates (%s) %s" % (_compiler_name(ctx), label)
+    progress_message = "Compiling Angular templates (%s - %s) %s" % (_compiler_name(ctx), compile_mode, label)
 
     if locale:
         mnemonic = "AngularI18NMerging"
         supports_workers = "0"
-        progress_message = ("Recompiling Angular templates (ngc) %s for locale %s" %
-                            (label, locale))
+        progress_message = ("Recompiling Angular templates (ngc - %s) %s for locale %s" %
+                            (compile_mode, label, locale))
     else:
         supports_workers = str(int(ctx.attr._supports_workers))
 
@@ -463,7 +464,7 @@ def ngc_compile_action(
             dts_entry_points.append(_R3_SYMBOLS_DTS_FILE)
 
         ctx.actions.run(
-            progress_message = "Bundling DTS %s" % str(ctx.label),
+            progress_message = "Bundling DTS (%s) %s" % (compile_mode, str(ctx.label)),
             mnemonic = "APIExtractor",
             executable = ctx.executable.api_extractor,
             inputs = filter_inputs,
@@ -495,7 +496,15 @@ def _filter_ts_inputs(all_inputs):
         if f.path.endswith(".js") or f.path.endswith(".ts") or f.path.endswith(".json")
     ]
 
-def _compile_action(ctx, inputs, outputs, dts_bundles_out, messages_out, tsconfig_file, node_opts):
+def _compile_action(
+        ctx,
+        inputs,
+        outputs,
+        dts_bundles_out,
+        messages_out,
+        tsconfig_file,
+        node_opts,
+        compile_mode):
     # Give the Angular compiler all the user-listed assets
     file_inputs = list(ctx.files.assets)
 
@@ -533,16 +542,16 @@ def _compile_action(ctx, inputs, outputs, dts_bundles_out, messages_out, tsconfi
         ],
     )
 
-    return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, messages_out, tsconfig_file, node_opts, None, [], dts_bundles_out)
+    return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, messages_out, tsconfig_file, node_opts, None, [], dts_bundles_out, compile_mode)
 
 def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
-    return _compile_action(ctx, inputs, outputs + outs.closure_js, None, outs.i18n_messages, tsconfig_file, node_opts)
+    return _compile_action(ctx, inputs, outputs + outs.closure_js, None, outs.i18n_messages, tsconfig_file, node_opts, "prodmode")
 
 def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
     compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries + outs.metadata
-    _compile_action(ctx, inputs, compile_action_outputs, outs.dts_bundles, None, tsconfig_file, node_opts)
+    _compile_action(ctx, inputs, compile_action_outputs, outs.dts_bundles, None, tsconfig_file, node_opts, "devmode")
 
 def _ts_expected_outs(ctx, label, srcs_files = []):
     # rules_typescript expects a function with two or more arguments, but our
