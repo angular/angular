@@ -99,9 +99,17 @@ export class EsmRenderingFormatter implements RenderingFormatter {
         } else {
           nodesToRemove.forEach(node => {
             // remove any trailing comma
-            const end = (output.slice(node.getEnd(), node.getEnd() + 1) === ',') ?
-                node.getEnd() + 1 :
-                node.getEnd();
+            const nextSibling = getNextSiblingInArray(node, items);
+            let end: number;
+
+            if (nextSibling !== null &&
+                output.slice(nextSibling.getFullStart() - 1, nextSibling.getFullStart()) === ',') {
+              end = nextSibling.getFullStart() - 1 + nextSibling.getLeadingTriviaWidth();
+            } else if (output.slice(node.getEnd(), node.getEnd() + 1) === ',') {
+              end = node.getEnd() + 1;
+            } else {
+              end = node.getEnd();
+            }
             output.remove(node.getFullStart(), end);
           });
         }
@@ -213,4 +221,9 @@ function generateImportString(
     importManager: ImportManager, importPath: string | null, importName: string) {
   const importAs = importPath ? importManager.generateNamedImport(importPath, importName) : null;
   return importAs ? `${importAs.moduleImport}.${importAs.symbol}` : `${importName}`;
+}
+
+function getNextSiblingInArray<T extends ts.Node>(node: T, array: ts.NodeArray<T>): T|null {
+  const index = array.indexOf(node);
+  return index !== -1 && array.length > index + 1 ? array[index + 1] : null;
 }
