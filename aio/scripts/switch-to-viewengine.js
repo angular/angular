@@ -7,7 +7,7 @@ const {join, resolve} = require('path');
 
 // Constants
 const ROOT_DIR = resolve(__dirname, '..');
-const NG_JSON = join(ROOT_DIR, 'angular.json');
+const TS_CONFIG_PATH = join(ROOT_DIR, 'tsconfig.json');
 const NG_COMPILER_OPTS = {
   angularCompilerOptions: {
     enableIvy: false,
@@ -19,21 +19,17 @@ _main(process.argv.slice(2));
 
 // Functions - Definitions
 function _main() {
-  // Detect path to `tsconfig.app.json`.
-  const ngConfig = parse(readFileSync(NG_JSON, 'utf8'));
-  const tsConfigPath = join(ROOT_DIR, ngConfig.projects.site.architect.build.options.tsConfig);
-
   // Enable ViewIngine/Disable Ivy in TS config.
-  console.log(`\nModifying \`${tsConfigPath}\`...`);
-  const oldTsConfigStr = readFileSync(tsConfigPath, 'utf8');
+  console.log(`\nModifying \`${TS_CONFIG_PATH}\`...`);
+  const oldTsConfigStr = readFileSync(TS_CONFIG_PATH, 'utf8');
   const oldTsConfigObj = parse(oldTsConfigStr);
   const newTsConfigObj = extend(true, oldTsConfigObj, NG_COMPILER_OPTS);
   const newTsConfigStr = `${JSON.stringify(newTsConfigObj, null, 2)}\n`;
   console.log(`\nNew config: ${newTsConfigStr}`);
-  writeFileSync(tsConfigPath, newTsConfigStr);
+  writeFileSync(TS_CONFIG_PATH, newTsConfigStr);
 
   // Done.
   console.log('\nReady to build with ViewEngine!');
   console.log('(To switch back to Ivy (with packages from npm), undo the changes in ' +
-              `\`${tsConfigPath}\` and run \`yarn aio-use-npm && yarn example-use-npm\`.)`);
+              `\`${TS_CONFIG_PATH}\` and run \`yarn aio-use-npm && yarn example-use-npm\`.)`);
 }
