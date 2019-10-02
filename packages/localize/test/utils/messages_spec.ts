@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {parseMessage, parseMetadata, splitBlock} from '../../src/utils/messages';
+import {findEndOfBlock, parseMessage, parseMetadata, splitBlock} from '../../src/utils/messages';
 import {makeTemplateObject} from '../../src/utils/translations';
 
 describe('messages utils', () => {
@@ -85,14 +85,43 @@ describe('messages utils', () => {
       expect(splitBlock('::abc def', '::abc def')).toEqual({text: 'abc def', block: ''});
     });
 
+    it('should error on an unterminated block', () => {
+      expect(() => splitBlock(':abc def', ':abc def'))
+          .toThrowError('Unterminated $localize metadata block in ":abc def".');
+    });
+
     it('should handle escaped block markers', () => {
       expect(splitBlock(':part of the message:abc def', '\\:part of the message:abc def')).toEqual({
         text: ':part of the message:abc def'
       });
+      expect(splitBlock(
+                 ':block with escaped : in it:abc def', ':block with escaped \\: in it:abc def'))
+          .toEqual({text: 'abc def', block: 'block with escaped : in it'});
     });
 
     it('should handle the empty raw part', () => {
       expect(splitBlock(':block info:abc def', '')).toEqual({text: 'abc def', block: 'block info'});
+    });
+  });
+
+  describe('findEndOfBlock()', () => {
+    it('should throw error if there is no end of block marker', () => {
+      expect(() => findEndOfBlock(':some text', ':some text'))
+          .toThrowError('Unterminated $localize metadata block in ":some text".');
+      expect(() => findEndOfBlock(':escaped colon:', ':escaped colon\\:'))
+          .toThrowError('Unterminated $localize metadata block in ":escaped colon\\:".');
+    });
+
+    it('should return index of the end of block marker', () => {
+      expect(findEndOfBlock(':block:', ':block:')).toEqual(6);
+      expect(findEndOfBlock(':block::', ':block::')).toEqual(6);
+      expect(findEndOfBlock(':block:some text', ':block:some text')).toEqual(6);
+      expect(findEndOfBlock(':block:some text:more text', ':block:some text:more text')).toEqual(6);
+      expect(findEndOfBlock('::::', ':\\:\\::')).toEqual(3);
+      expect(findEndOfBlock(':block::', ':block\\::')).toEqual(7);
+      expect(findEndOfBlock(':block:more:some text', ':block\\:more:some text')).toEqual(11);
+      expect(findEndOfBlock(':block:more:and-more:some text', ':block\\:more\\:and-more:some text'))
+          .toEqual(20);
     });
   });
 

@@ -29,6 +29,11 @@ describe('$localize tag', () => {
       expect($localize `\:abc:def`).toEqual(':abc:def');
     });
 
+    it('should strip metadata block containing escaped block markers', () => {
+      expect($localize.translate).toBeUndefined();
+      expect($localize `:abc\:def:content`).toEqual('content');
+    });
+
     it('should strip placeholder names from message parts', () => {
       expect($localize.translate).toBeUndefined();
       expect($localize `abc${1 + 2 + 3}:ph1:def${4 + 5 + 6}:ph2:`).toEqual('abc6def15');
