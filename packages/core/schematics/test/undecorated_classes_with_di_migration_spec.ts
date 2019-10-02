@@ -1308,7 +1308,6 @@ describe('Undecorated classes with DI migration', () => {
         generateCodeForLibraries: false,
         allowEmptyCodegenFiles: true,
         enableSummariesForJit: true,
-        enableIvy: false,
       }
     }));
 
