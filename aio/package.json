@@ -173,5 +173,10 @@
     "watchr": "^3.0.1",
     "xregexp": "^4.0.0",
     "yargs": "^7.0.2"
+  },
+  "resolutions": {
+    "//terser-workaround": "Work-around for https://github.com/terser/terser/issues/470.",
+    "//terser-workaround": "Remove once terser@4.3.5 is released (with a fix).",
+    "@angular-devkit/build-angular/**/terser": "4.3.2"
   }
 }
