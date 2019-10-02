@@ -29,7 +29,6 @@ describe('template variable assignment migration', () => {
       compilerOptions: {
         lib: ['es2015'],
       },
-      angularCompilerOptions: {enableIvy: false}
     }));
     writeFile('/angular.json', JSON.stringify({
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
