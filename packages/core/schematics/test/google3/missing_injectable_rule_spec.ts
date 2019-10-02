@@ -21,10 +21,7 @@ describe('Google3 missing injectable tslint rule', () => {
     tmpDir = join(process.env['TEST_TMPDIR'] !, 'google3-test');
     shx.mkdir('-p', tmpDir);
 
-    writeFile(
-        'tsconfig.json',
-        JSON.stringify(
-            {compilerOptions: {module: 'es2015'}, angularCompilerOptions: {enableIvy: false}}));
+    writeFile('tsconfig.json', JSON.stringify({compilerOptions: {module: 'es2015'}}));
   });
 
   afterEach(() => shx.rm('-r', tmpDir));

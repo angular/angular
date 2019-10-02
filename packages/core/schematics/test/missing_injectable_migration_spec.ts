@@ -30,7 +30,6 @@ describe('Missing injectable migration', () => {
         experimentalDecorators: true,
         lib: ['es2015'],
       },
-      angularCompilerOptions: {enableIvy: false}
     }));
     writeFile('/angular.json', JSON.stringify({
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
