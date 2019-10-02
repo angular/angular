@@ -31,7 +31,6 @@ describe('static-queries migration with template strategy', () => {
         experimentalDecorators: true,
         lib: ['es2015'],
       },
-      angularCompilerOptions: {enableIvy: false}
     }));
     writeFile('/angular.json', JSON.stringify({
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
@@ -682,7 +681,6 @@ describe('static-queries migration with template strategy', () => {
         angularCompilerOptions: {
           flatModuleId: 'flat-module',
           flatModuleOutFile: 'flat-module-bundle.js',
-          enableIvy: false,
         },
         files: ['index.ts']
       }));
