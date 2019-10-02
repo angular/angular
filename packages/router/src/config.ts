@@ -42,12 +42,12 @@ export type UrlMatchResult = {
 /**
  * A function for matching a route against URLs. Implement a custom URL matcher
  * for `Route.matcher` when a combination of `path` and `pathMatch`
- * is not expressive enough.
+ * is not expressive enough. Cannot be used together with `path` and `pathMatch`.
  *
  * @param segments An array of URL segments.
  * @param group A segment group.
  * @param route The route to match against.
- * @returns The match-result,
+ * @returns The match-result.
  *
  * @usageNotes
  *
@@ -386,9 +386,11 @@ export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParam
  */
 export interface Route {
   /**
-   * The path to match against, a URL string that uses router matching notation.
+   * The path to match against. Cannot be used together with a custom `matcher` function.
+   * A URL string that uses router matching notation.
    * Can be a wild card (`**`) that matches any URL (see Usage Notes below).
    * Default is "/" (the root path).
+   *
    */
   path?: string;
   /**
@@ -408,8 +410,7 @@ export interface Route {
    */
   pathMatch?: string;
   /**
-   * A URL-matching function to use as a custom strategy for path matching.
-   * If present, supersedes `path` and `pathMatch`.
+   * A custom URL-matching function. Cannot be used together with `path`.
    */
   matcher?: UrlMatcher;
   /**
