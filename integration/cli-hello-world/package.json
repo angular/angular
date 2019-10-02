@@ -3,14 +3,15 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "ng build --prod --progress=false",
-    "e2e": "ng e2e --webdriver-update=false",
+    "build": "ng build --prod",
+    "e2e": "ng e2e",
     "lint": "ng lint",
     "ng": "ng",
-    "postinstall": "webdriver-manager update --gecko=false --standalone=false $CI_CHROMEDRIVER_VERSION_ARG",
+    "postinstall": "yarn update-webdriver && ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points",
+    "update-webdriver": "webdriver-manager update --gecko=false --standalone=false $CI_CHROMEDRIVER_VERSION_ARG",
     "start": "ng serve",
     "pretest": "ng version",
-    "test": "ng test --progress=false --watch=false && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production"
+    "test": "ng test && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production"
   },
   "private": true,
   "dependencies": {
@@ -28,7 +29,7 @@
     "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.900.0-next.11",
+    "@angular-devkit/build-angular": "0.900.0-next.12",
     "@angular/cli": "file:../../node_modules/@angular/cli",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
