@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {BLOCK_MARKER} from './constants';
-import {MessageId, TargetMessage, parseMessage} from './messages';
+import {MessageId, ParsedMessage, TargetMessage, parseMessage} from './messages';
+
 
 /**
  * A translation message that has been processed to extract the message parts and placeholders.
@@ -49,13 +50,12 @@ export function translate(
           return message.substitutions[placeholder];
         } else {
           throw new Error(
-              `No placeholder found with name ${placeholder} in message "${message.messageId}" ("${message.messageString}").`);
+              `No placeholder found with name ${placeholder} in message ${describeMessage(message)}.`);
         }
       })
     ];
   } else {
-    throw new Error(
-        `No translation found for "${message.messageId}" ("${message.messageString}").`);
+    throw new Error(`No translation found for ${describeMessage(message)}.`);
   }
 }
 
@@ -89,4 +89,10 @@ export function parseTranslation(message: TargetMessage): ParsedTranslation {
 export function makeTemplateObject(cooked: string[], raw: string[]): TemplateStringsArray {
   Object.defineProperty(cooked, 'raw', {value: raw});
   return cooked as any;
+}
+
+
+function describeMessage(message: ParsedMessage): string {
+  const meaningString = message.meaning && ` - "${message.meaning}"`;
+  return `"${message.messageId}" ("${message.messageString}"${meaningString})`;
 }
