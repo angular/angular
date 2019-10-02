@@ -1,3 +1,70 @@
+<a name="9.0.0-next.9"></a>
+# [9.0.0-next.9](https://github.com/angular/angular/compare/9.0.0-next.8...9.0.0-next.9) (2019-10-02)
+
+
+### Bug Fixes
+
+* **ivy:** ensure class/style values are debuggable through `DebugElement` ([#32842](https://github.com/angular/angular/issues/32842)) ([c32b2ae](https://github.com/angular/angular/commit/c32b2ae))
+* **ivy:** ensure TestBed restores fields to the most original value ([#32823](https://github.com/angular/angular/issues/32823)) ([c8be987](https://github.com/angular/angular/commit/c8be987))
+* **ivy:** include `ngProjectAs` into attributes array ([#32784](https://github.com/angular/angular/issues/32784)) ([966c2a3](https://github.com/angular/angular/commit/966c2a3))
+* **ivy:** Only restore registered modules if user compiles modules with TestBed ([#32944](https://github.com/angular/angular/issues/32944)) ([63256b5](https://github.com/angular/angular/commit/63256b5))
+* **ivy:** R3TestBed should clean up registered modules after each test ([#32872](https://github.com/angular/angular/issues/32872)) ([475e36a](https://github.com/angular/angular/commit/475e36a))
+* **ivy:** refresh child components before executing ViewQuery function ([#32922](https://github.com/angular/angular/issues/32922)) ([72f3747](https://github.com/angular/angular/commit/72f3747))
+* **language-service:** add closing quote in invalid test template ([#32785](https://github.com/angular/angular/issues/32785)) ([01e4d44](https://github.com/angular/angular/commit/01e4d44))
+* **language-service:** Turn on strict mode for test project ([#32783](https://github.com/angular/angular/issues/32783)) ([28358b6](https://github.com/angular/angular/commit/28358b6))
+* **ngcc:** ensure private exports are added for `ModuleWithProviders` ([#32902](https://github.com/angular/angular/issues/32902)) ([002a97d](https://github.com/angular/angular/commit/002a97d))
+* **ngcc:** handle presence of both `ctorParameters` and `__decorate` ([#32901](https://github.com/angular/angular/issues/32901)) ([747f0cf](https://github.com/angular/angular/commit/747f0cf))
+* **ngcc:** make the build-marker error more clear ([#32712](https://github.com/angular/angular/issues/32712)) ([0ea4875](https://github.com/angular/angular/commit/0ea4875)), closes [/github.com/angular/angular/issues/31354#issuecomment-532080537](https://github.com//github.com/angular/angular/issues/31354/issues/issuecomment-532080537)
+* **upgrade:** fix AngularJsUrlCodec to support Safari ([#32959](https://github.com/angular/angular/issues/32959)) ([39e8ceb](https://github.com/angular/angular/commit/39e8ceb))
+
+
+### Features
+
+* update rxjs peerDependencies minimum requirment to 6.5.3 ([#32812](https://github.com/angular/angular/issues/32812)) ([66658c4](https://github.com/angular/angular/commit/66658c4))
+* **ivy:** support ng-add in localize package ([#32791](https://github.com/angular/angular/issues/32791)) ([e41cbfb](https://github.com/angular/angular/commit/e41cbfb))
+* **language-service:** allow retreiving synchronized analyzed NgModules ([#32779](https://github.com/angular/angular/issues/32779)) ([98feee7](https://github.com/angular/angular/commit/98feee7))
+* **service-worker:** remove deprecated `versionedFiles` option ([#32862](https://github.com/angular/angular/issues/32862)) ([5d5c94d](https://github.com/angular/angular/commit/5d5c94d))
+
+
+### Performance Improvements
+
+* **ivy:** avoid repeat global state accesses in i18n instructions ([#32916](https://github.com/angular/angular/issues/32916)) ([ffc34b3](https://github.com/angular/angular/commit/ffc34b3))
+
+
+### BREAKING CHANGES
+
+* **service-worker:** Remove deprecated option `versionedFiles` from service worker asset group configuration in `ngsw-config.json`
+
+Before
+```json
+"assetGroups": [
+  {
+    "name": "test",
+    "resources": {
+      "versionedFiles": [
+        "/**/*.txt"
+      ]
+    }
+  }
+]
+```
+
+After
+```json
+"assetGroups": [
+  {
+    "name": "test",
+    "resources": {
+      "files": [
+        "/**/*.txt"
+      ]
+    }
+  }
+]
+```
+
+
+
 <a name="8.2.9"></a>
 ## [8.2.9](https://github.com/angular/angular/compare/8.2.8...8.2.9) (2019-10-02)
 
