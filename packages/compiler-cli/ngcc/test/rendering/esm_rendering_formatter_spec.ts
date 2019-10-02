@@ -288,6 +288,28 @@ A.decorators = [
                  .toContain(`{ type: Directive, args: [{ selector: '[c]' }] }`);
            });
 
+        it('should handle a decorator with a trailing comment', () => {
+          const text = `
+import {Directive} from '@angular/core';
+export class A {}
+A.decorators = [
+  { type: Directive, args: [{ selector: '[a]' }] },
+  { type: OtherA }
+];
+          `;
+          const file = {name: _('/node_modules/test-package/index.js'), contents: text};
+          const {decorationAnalyses, sourceFile, renderer} = setup([file]);
+          const output = new MagicString(text);
+          const compiledClass =
+              decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
+          const decorator = compiledClass.decorators ![0];
+          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+          renderer.removeDecorators(output, decoratorsToRemove);
+          // The decorator should have been removed correctly.
+          expect(output.toString()).toContain('A.decorators = [ { type: OtherA }');
+        });
+
 
         it('should delete the decorator (and its container if there are no other decorators left) that was matched in the analysis',
            () => {
