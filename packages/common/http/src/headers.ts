@@ -179,7 +179,7 @@ export class HttpHeaders {
   }
 
   /**
-   * Conditionally sets a header value for a given name. If flag is true and If the header name
+   * Conditionally sets a header value for a given name. If flag is true and if the header name
    * already exists,
    * its value is replaced with the given value.
    *
