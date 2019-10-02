@@ -83,6 +83,8 @@ describe('utils', () => {
     it('should throw an error if there is no matching translation', () => {
       expect(() => doTranslate({}, parts `abc`))
           .toThrowError('No translation found for "2674653928643152084" ("abc").');
+      expect(() => doTranslate({}, parts `:meaning|:abc`))
+          .toThrowError('No translation found for "1071947593002928768" ("abc" - "meaning").');
     });
 
     it('should throw an error if the translation contains placeholders that are not in the message',
