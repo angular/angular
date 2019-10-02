@@ -80,6 +80,18 @@ describe('utils', () => {
   });
 
   describe('translate', () => {
+    it('should throw an error if there is no matching translation', () => {
+      expect(() => doTranslate({}, parts `abc`))
+          .toThrowError('No translation found for "2674653928643152084" ("abc").');
+    });
+
+    it('should throw an error if the translation contains placeholders that are not in the message',
+       () => {
+         expect(() => doTranslate({'abc': 'a{$PH}bc'}, parts `abc`))
+             .toThrowError(
+                 'No placeholder found with name PH in message "2674653928643152084" ("abc").');
+       });
+
     it('(with identity translations) should render template literals as-is', () => {
       const translations = {
         'abc': 'abc',
