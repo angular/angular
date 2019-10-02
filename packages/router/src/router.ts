@@ -379,7 +379,7 @@ export class Router {
 
   /**
    * Determines when the router updates the browser URL.
-   * By default (`"deferred"`), udates the browser URL after navigation has finished.
+   * By default (`"deferred"`), updates the browser URL after navigation has finished.
    * Set to `'eager'` to update the browser URL at the beginning of navigation.
    * You can choose to update early so that, if navigation fails,
    * you can show an error message with the URL that failed.
