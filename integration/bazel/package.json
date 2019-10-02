@@ -28,7 +28,7 @@
     "@bazel/typescript": "0.38.3",
     "@types/jasmine": "2.8.8",
     "http-server": "^0.11.1",
-    "typescript": "3.6.4"
+    "typescript": "3.7.0-beta"
   },
   "scripts": {
     "test": "bazel build ... --noshow_progress && bazel test ...",

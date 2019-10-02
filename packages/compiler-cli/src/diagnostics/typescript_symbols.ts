@@ -195,8 +195,9 @@ class TypeScriptSymbolQuery implements SymbolQuery {
         const type = this.checker.getTypeAtLocation(parameter.type !);
         if (type.symbol !.name == 'TemplateRef' && isReferenceType(type)) {
           const typeReference = type as ts.TypeReference;
-          if (typeReference.typeArguments && typeReference.typeArguments.length === 1) {
-            return typeReference.typeArguments[0].symbol;
+          const typeArguments = this.checker.getTypeArguments(typeReference);
+          if (typeArguments.length === 1) {
+            return typeArguments[0].symbol;
           }
         }
       }

@@ -116,7 +116,7 @@
     "tsickle": "0.37.0",
     "tslib": "^1.10.0",
     "tslint": "5.7.0",
-    "typescript": "~3.6.4",
+    "typescript": "3.7.0-beta",
     "xhr2": "0.1.4",
     "yargs": "13.1.0",
     "zone.js": "^0.10.2"

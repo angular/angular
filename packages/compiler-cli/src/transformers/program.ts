@@ -71,14 +71,14 @@ const defaultEmitCallback: TsEmitCallback =
  * Minimum supported TypeScript version
  * ∀ supported typescript version v, v >= MIN_TS_VERSION
  */
-const MIN_TS_VERSION = '3.6.4';
+const MIN_TS_VERSION = '3.7.0-beta';
 
 /**
  * Supremum of supported TypeScript versions
  * ∀ supported typescript version v, v < MAX_TS_VERSION
  * MAX_TS_VERSION is not considered as a supported TypeScript version
  */
-const MAX_TS_VERSION = '3.7.0';
+const MAX_TS_VERSION = '3.8.0';
 
 class AngularCompilerProgram implements Program {
   private rootNames: string[];

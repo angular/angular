@@ -1282,7 +1282,7 @@ function saveNameToExportMap(
         exportsMap[def.exportAs[i]] = index;
       }
     }
-    if ((def as ComponentDef<any>).template) exportsMap[''] = index;
+    exportsMap[''] = index;
   }
 }
 

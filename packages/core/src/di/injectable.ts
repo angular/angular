@@ -9,7 +9,7 @@
 import {Type} from '../interface/type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
 
-import {InjectableType, getInjectableDef, ɵɵInjectableDef, ɵɵdefineInjectable} from './interface/defs';
+import {getInjectableDef, ɵɵInjectableDef, ɵɵdefineInjectable} from './interface/defs';
 import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider} from './interface/provider';
 import {compileInjectable as render3CompileInjectable} from './jit/injectable';
 import {convertInjectableProviderToFactory} from './util';
