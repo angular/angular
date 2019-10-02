@@ -57,10 +57,9 @@ for testDir in ${TEST_DIRS}; do
     yarn install --cache-folder ../$cache
     yarn test || exit 1
 
-    # Track payload size for cli-hello-world, cli-hello-world-ivy-minimal, cli-hello-world-ivy-compat and
-    # hello_world__closure
-    if $CI && ([[ $testDir == cli-hello-world ]] || [[ $testDir == cli-hello-world-ivy-minimal ]] || [[ $testDir == cli-hello-world-ivy-compat ]] || [[ $testDir == hello_world__closure ]]); then
-      if ([[ $testDir == cli-hello-world ]] || [[ $testDir == cli-hello-world-ivy-minimal ]] || [[ $testDir == cli-hello-world-ivy-compat ]]); then
+    # Track payload size for cli-hello-world* tests, plus hello_world__closure
+    if $CI && ([[ $testDir =~ cli-hello-world ]] || [[ $testDir == hello_world__closure ]]); then
+      if ([[ $testDir =~ cli-hello-world ]]); then
         yarn build
       fi
 

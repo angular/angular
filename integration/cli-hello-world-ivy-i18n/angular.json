@@ -16,7 +16,6 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "progress": false,
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -29,7 +28,8 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "progress": false
           },
           "configurations": {
             "view-engine": {
@@ -113,7 +113,9 @@
             "assets": [
               "src/favicon.ico",
               "src/assets"
-            ]
+            ],
+            "progress": false,
+            "watch": false
           }
         },
         "lint": {
@@ -140,7 +142,7 @@
           "options": {
             "protractorConfig": "e2e/runtime/protractor.conf.js",
             "devServerTarget": "cli-hello-world-ivy-compat:serve",
-            "webdriverUpdate": true
+            "webdriverUpdate": false
           },
           "configurations": {
             "production": {

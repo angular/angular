@@ -35,7 +35,8 @@
                 "input": "src/styles.css"
               }
             ],
-            "scripts": []
+            "scripts": [],
+            "progress": false
           },
           "configurations": {
             "dev": {
@@ -116,7 +117,9 @@
                 "input": "/src",
                 "output": "/"
               }
-            ]
+            ],
+            "progress": false,
+            "watch": false
           }
         },
         "lint": {
@@ -143,7 +146,8 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "cli-hello-world:serve"
+            "devServerTarget": "cli-hello-world:serve",
+            "webdriverUpdate": false
           },
           "configurations": {
             "production": {

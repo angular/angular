@@ -14,7 +14,7 @@
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/router": "file:../../dist/packages-dist/router",
     "reflect-metadata": "0.1.12",
-    "rxjs": "6.5.3",
+    "rxjs": "file:../../node_modules/rxjs",
     "tslib": "file:../../node_modules/tslib",
     "zone.js": "0.10.2"
   },
