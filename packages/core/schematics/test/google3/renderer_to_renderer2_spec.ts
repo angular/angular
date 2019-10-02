@@ -35,7 +35,6 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
           '@angular/core': ['angular.d.ts'],
         }
       },
-      angularCompilerOptions: {enableIvy: false}
     }));
   });
 
