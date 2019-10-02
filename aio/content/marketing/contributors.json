@@ -824,5 +824,12 @@
     "website": "http://martina-kraus.io",
     "bio": "Martina is a software engineer and an Angular enthusiast. As a trainer, mentor and speaker she loves sharing knowledge about Web Technologies and Angular. She is Organizer of ngGirls and the local Angular Meetup",
     "groups": ["GDE"]
+  },
+  "ayazhafiz": {
+    "name": "Ayaz Hafiz",
+    "groups": ["Collaborators"],
+    "picture": "hafiz.jpg",
+    "website": "https://github.com/ayazhafiz",
+    "bio": "Ayaz is an undergraduate student with interests in free software."
   }
 }
