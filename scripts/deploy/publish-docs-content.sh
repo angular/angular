@@ -84,6 +84,11 @@ echo "Removed everything from the docs-content repository. Copying package outpu
 # Copy the package output to the docs-content repository.
 cp -R ${examplesPackagePath}/* ${docsContentPath}
 
+# Update permissions for the copied "npm_package". Bazel makes these files readonly
+# in the "bazel-out", but for publishing, they should be writable. Also it's necessary
+# in order to be able to update the "package.json" version
+chmod -R u+w ${docsContentPath}
+
 echo "Successfully copied package output into the docs-content repository."
 
 if [[ $(git ls-remote origin "refs/tags/${buildTagName}") ]]; then
