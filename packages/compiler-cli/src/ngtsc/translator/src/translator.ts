@@ -8,6 +8,7 @@
 
 import {ArrayType, AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinType, BuiltinTypeName, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, Type, TypeVisitor, TypeofExpr, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
 import {LocalizedString} from '@angular/compiler/src/output/output_ast';
+import {serializeI18nMetaBlock, serializeI18nPlaceholderBlock} from '@angular/compiler/src/render3/view/i18n/meta';
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder, ImportRewriter, NOOP_DEFAULT_IMPORT_RECORDER, NoopImportRewriter} from '../../imports';
@@ -528,16 +529,18 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
  */
 function visitLocalizedString(ast: LocalizedString, context: Context, visitor: ExpressionVisitor) {
   let template: ts.TemplateLiteral;
+  const headPart = `${serializeI18nMetaBlock(ast.metaBlock)}${ast.messageParts[0]}`;
   if (ast.messageParts.length === 1) {
-    template = ts.createNoSubstitutionTemplateLiteral(ast.messageParts[0]);
+    template = ts.createNoSubstitutionTemplateLiteral(headPart);
   } else {
-    const head = ts.createTemplateHead(ast.messageParts[0]);
+    const head = ts.createTemplateHead(headPart);
     const spans: ts.TemplateSpan[] = [];
     for (let i = 1; i < ast.messageParts.length; i++) {
       const resolvedExpression = ast.expressions[i - 1].visitExpression(visitor, context);
       spans.push(ts.createTemplateSpan(
-          resolvedExpression, ts.createTemplateMiddle(prefixWithPlaceholderMarker(
-                                  ast.messageParts[i], ast.placeHolderNames[i - 1]))));
+          resolvedExpression,
+          ts.createTemplateMiddle(
+              serializeI18nPlaceholderBlock(ast.placeHolderNames[i - 1]) + ast.messageParts[i])));
     }
     if (spans.length > 0) {
       // The last span is supposed to have a tail rather than a middle
@@ -546,19 +549,4 @@ function visitLocalizedString(ast: LocalizedString, context: Context, visitor: E
     template = ts.createTemplateExpression(head, spans);
   }
   return ts.createTaggedTemplate(ts.createIdentifier('$localize'), template);
-}
-
-/**
- * We want our tagged literals to include placeholder name information to aid runtime translation.
- *
- * The expressions are marked with placeholder names by postfixing the expression with
- * `:placeHolderName:`. To achieve this, we actually "prefix" the message part that follows the
- * expression.
- *
- * @param messagePart the message part that follows the current expression.
- * @param placeHolderName the name of the placeholder for the current expression.
- * @returns the prefixed message part.
- */
-function prefixWithPlaceholderMarker(messagePart: string, placeHolderName: string) {
-  return `:${placeHolderName}:${messagePart}`;
 }
