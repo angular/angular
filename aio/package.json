@@ -84,17 +84,17 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^9.0.0-next.6",
+    "@angular/animations": "^9.0.0-next.9",
     "@angular/cdk": "8.0.0",
-    "@angular/common": "^9.0.0-next.6",
-    "@angular/core": "^9.0.0-next.6",
-    "@angular/elements": "^9.0.0-next.6",
-    "@angular/forms": "^9.0.0-next.6",
+    "@angular/common": "^9.0.0-next.9",
+    "@angular/core": "^9.0.0-next.9",
+    "@angular/elements": "^9.0.0-next.9",
+    "@angular/forms": "^9.0.0-next.9",
     "@angular/material": "8.0.0",
-    "@angular/platform-browser": "^9.0.0-next.6",
-    "@angular/platform-browser-dynamic": "^9.0.0-next.6",
-    "@angular/router": "^9.0.0-next.6",
-    "@angular/service-worker": "^9.0.0-next.6",
+    "@angular/platform-browser": "^9.0.0-next.9",
+    "@angular/platform-browser-dynamic": "^9.0.0-next.9",
+    "@angular/router": "^9.0.0-next.9",
+    "@angular/service-worker": "^9.0.0-next.9",
     "@types/lunr": "^2.3.2",
     "@webcomponents/custom-elements": "^1.2.0",
     "rxjs": "^6.5.3",
@@ -103,9 +103,9 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.900.0-next.6",
     "@angular/cli": "9.0.0-next.6",
-    "@angular/compiler": "^9.0.0-next.6",
-    "@angular/compiler-cli": "^9.0.0-next.6",
-    "@angular/language-service": "^9.0.0-next.6",
+    "@angular/compiler": "^9.0.0-next.9",
+    "@angular/compiler-cli": "^9.0.0-next.9",
+    "@angular/language-service": "^9.0.0-next.9",
     "@types/jasmine": "^2.5.52",
     "@types/jasminewd2": "^2.0.4",
     "@types/node": "~6.0.60",
@@ -175,7 +175,6 @@
     "yargs": "^7.0.2"
   },
   "resolutions": {
-    "//terser-workaround": "Work-around for https://github.com/terser/terser/issues/470.",
     "//terser-workaround": "Remove once terser@4.3.5 is released (with a fix).",
     "@angular-devkit/build-angular/**/terser": "4.3.2"
   }
