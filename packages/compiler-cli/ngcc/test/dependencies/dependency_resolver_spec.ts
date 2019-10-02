@@ -43,33 +43,46 @@ runInEachFileSystem(() => {
       let third: EntryPoint;
       let fourth: EntryPoint;
       let fifth: EntryPoint;
+      let sixthIgnoreMissing: EntryPoint;
       let dependencies: DepMap;
 
       beforeEach(() => {
         first = {
           path: _('/first'),
           packageJson: {esm5: './index.js'},
-          compiledByAngular: true
+          compiledByAngular: true,
+          ignoreMissingDependencies: false,
         } as EntryPoint;
         second = {
           path: _('/second'),
           packageJson: {esm2015: './sub/index.js'},
-          compiledByAngular: true
+          compiledByAngular: true,
+          ignoreMissingDependencies: false,
         } as EntryPoint;
         third = {
           path: _('/third'),
           packageJson: {fesm5: './index.js'},
-          compiledByAngular: true
+          compiledByAngular: true,
+          ignoreMissingDependencies: false,
         } as EntryPoint;
         fourth = {
           path: _('/fourth'),
           packageJson: {fesm2015: './sub2/index.js'},
-          compiledByAngular: true
+          compiledByAngular: true,
+          ignoreMissingDependencies: false,
         } as EntryPoint;
         fifth = {
           path: _('/fifth'),
           packageJson: {module: './index.js'},
-          compiledByAngular: true
+          compiledByAngular: true,
+          ignoreMissingDependencies: false,
+        } as EntryPoint;
+
+        sixthIgnoreMissing = {
+          path: _('/sixth'),
+          packageJson: {module: './index.js'},
+          compiledByAngular: true,
+          ignoreMissingDependencies: true,
         } as EntryPoint;
 
         dependencies = {
@@ -127,6 +140,30 @@ runInEachFileSystem(() => {
           {entryPoint: second, missingDependencies: ['/missing']},
           {entryPoint: first, missingDependencies: [second.path]},
         ]);
+      });
+
+      it('should cope with entry points that will depend upon an invalid entry-point, when told to ignore missing dependencies',
+         () => {
+           spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
+             [_('/first/index.js')]: {resolved: [sixthIgnoreMissing.path], missing: []},
+             [_('/sixth/index.js')]: {resolved: [], missing: ['/missing']},
+           }));
+           // Note that we will process `first` after `second`, which has the missing dependency.
+           const result = resolver.sortEntryPointsByDependency([sixthIgnoreMissing, first]);
+           expect(result.entryPoints).toEqual([sixthIgnoreMissing, first]);
+           expect(result.invalidEntryPoints).toEqual([]);
+         });
+
+      it('should not transitively ignore missing dependencies', () => {
+        spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
+          [_('/first/index.js')]: {resolved: [], missing: ['/missing']},
+          [_('/second/sub/index.js')]: {resolved: [first.path], missing: []},
+          [_('/sixth/index.js')]: {resolved: [second.path], missing: []},
+        }));
+        const result = resolver.sortEntryPointsByDependency([first, second, sixthIgnoreMissing]);
+        // sixth has no missing dependencies, but it has _invalid_ dependencies, so it's not
+        // compiled.
+        expect(result.entryPoints).toEqual([]);
       });
 
       it('should cope with entry points having multiple indirect missing dependencies', () => {

@@ -148,7 +148,7 @@ export class DependencyResolver {
 
       const missingDependencies = Array.from(missing).filter(dep => !builtinNodeJsModules.has(dep));
 
-      if (missingDependencies.length > 0) {
+      if (missingDependencies.length > 0 && !entryPoint.ignoreMissingDependencies) {
         // This entry point has dependencies that are missing
         // so remove it from the graph.
         removeNodes(entryPoint, missingDependencies);
