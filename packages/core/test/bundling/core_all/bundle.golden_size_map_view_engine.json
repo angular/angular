@@ -1,13 +1,13 @@
 {
-  "unmapped": 21315,
+  "unmapped": 21331,
   "files": {
-    "size": 271480,
+    "size": 274151,
     "@angular/": {
-      "size": 238485,
+      "size": 241140,
       "core/": {
-        "size": 238485,
+        "size": 241140,
         "src/": {
-          "size": 238471,
+          "size": 241126,
           "application_init.ts": 539,
           "application_module.ts": 531,
           "application_ref.ts": 6867,
@@ -120,9 +120,9 @@
             "api.ts": 472
           },
           "render3/": {
-            "size": 95489,
+            "size": 98145,
             "bindings.ts": 308,
-            "component.ts": 1249,
+            "component.ts": 1254,
             "component_ref.ts": 2311,
             "context_discovery.ts": 2098,
             "definition.ts": 2565,
@@ -131,17 +131,17 @@
             "empty.ts": 16,
             "errors.ts": 472,
             "features/": {
-              "size": 2590,
-              "inherit_definition_feature.ts": 1906,
+              "size": 2573,
+              "inherit_definition_feature.ts": 1889,
               "ng_onchanges_feature.ts": 571,
               "providers_feature.ts": 113
             },
             "fields.ts": 187,
             "hooks.ts": 1748,
-            "i18n.ts": 8977,
+            "i18n.ts": 8980,
             "instructions/": {
-              "size": 22007,
-              "advance.ts": 219,
+              "size": 24631,
+              "advance.ts": 231,
               "alloc_host_vars.ts": 290,
               "attribute.ts": 78,
               "attribute_interpolation.ts": 1003,
@@ -149,20 +149,22 @@
               "class_map_interpolation.ts": 675,
               "container.ts": 945,
               "di.ts": 130,
-              "element.ts": 895,
+              "element.ts": 877,
               "element_container.ts": 451,
               "embedded_view.ts": 655,
               "get_current_view.ts": 26,
-              "host_property.ts": 161,
+              "host_property.ts": 165,
               "interpolation.ts": 1194,
               "listener.ts": 1431,
+              "lview_debug.ts": 685,
               "next_context.ts": 44,
               "projection.ts": 517,
-              "property.ts": 76,
-              "property_interpolation.ts": 954,
-              "shared.ts": 10184,
+              "property.ts": 78,
+              "property_interpolation.ts": 1008,
+              "shared.ts": 10199,
               "storage.ts": 136,
               "style_prop_interpolation.ts": 837,
+              "styling.ts": 1870,
               "text.ts": 116,
               "text_interpolation.ts": 928
             },
@@ -177,9 +179,9 @@
               "view.ts": 110
             },
             "jit/": {
-              "size": 10630,
+              "size": 10595,
               "directive.ts": 3998,
-              "environment.ts": 3399,
+              "environment.ts": 3364,
               "module.ts": 2764,
               "pipe.ts": 469
             },
@@ -191,24 +193,23 @@
             "pipe.ts": 1034,
             "pure_function.ts": 1274,
             "query.ts": 5226,
-            "state.ts": 1312,
+            "state.ts": 1311,
             "styling/": {
-              "size": 8202,
-              "bindings.ts": 2430,
-              "instructions.ts": 1821,
-              "map_based_bindings.ts": 1505,
-              "state.ts": 296,
-              "styling_debug.ts": 630,
-              "util.ts": 1520
+              "size": 5655,
+              "bindings.ts": 3235,
+              "map_based_bindings.ts": 941,
+              "state.ts": 403,
+              "styling_debug.ts": 1076
             },
             "tokens.ts": 10,
             "util/": {
-              "size": 3937,
+              "size": 6561,
               "attrs_utils.ts": 374,
-              "discovery_utils.ts": 1763,
-              "global_utils.ts": 308,
+              "discovery_utils.ts": 1984,
+              "global_utils.ts": 330,
               "injector_utils.ts": 150,
               "misc_utils.ts": 575,
+              "styling_utils.ts": 2381,
               "view_traversal_utils.ts": 228,
               "view_utils.ts": 539
             },
@@ -217,8 +218,8 @@
             "view_ref.ts": 2063
           },
           "sanitization/": {
-            "size": 10194,
-            "bypass.ts": 1242,
+            "size": 10193,
+            "bypass.ts": 1241,
             "html_sanitizer.ts": 4491,
             "inert_body.ts": 2066,
             "sanitization.ts": 1065,
