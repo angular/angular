@@ -4,16 +4,11 @@
     "outDir": "./out-tsc/app",
     "types": []
   },
+  "files": [
+    "src/main.ts",
+    "src/polyfills.ts"
+  ],
   "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "src/test.ts",
-    "src/testing/**/*",
-    "src/**/*.spec.ts",
-    "src/**/*.worker.ts"
-  ],
-  "angularCompilerOptions": {
-    "disableTypeScriptVersionCheck": true
-  }
+    "src/**/*.d.ts"
+  ]
 }
