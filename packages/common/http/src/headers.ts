@@ -147,6 +147,24 @@ export class HttpHeaders {
   append(name: string, value: string|string[]): HttpHeaders {
     return this.clone({name, value, op: 'a'});
   }
+
+  /**
+   * Conditionally appends a new header value to the existing set of
+   * header values.
+   *
+   * @param flag Boolean flag to perform append header operation.
+   * @param name The header name for which to append the values.
+   * @param value The value to set or overide for a given name.
+   *
+   * @returns A clone of the HTTP header object with the value appended.
+   */
+  appendIf(flag: boolean, name: string, value: string|string[]): HttpHeaders {
+    if (!flag) {
+      return this;
+    }
+    return this.append(name, value);
+  }
+
   /**
    * Sets a header value for a given name. If the header name already exists,
    * its value is replaced with the given value.
@@ -159,6 +177,25 @@ export class HttpHeaders {
   set(name: string, value: string|string[]): HttpHeaders {
     return this.clone({name, value, op: 's'});
   }
+
+  /**
+   * Conditionally sets a header value for a given name. If flag is true and If the header name
+   * already exists,
+   * its value is replaced with the given value.
+   *
+   * @param flag Boolean flag to perform append header operation.
+   * @param name The header name.
+   * @param value The value to set or overide for a given name.
+   *
+   * @returns A clone of the HTTP header object with the newly set header value.
+   */
+  setIf(flag: boolean, name: string, value: string|string[]): HttpHeaders {
+    if (!flag) {
+      return this;
+    }
+    return this.set(name, value);
+  }
+
   /**
    * Deletes all header values for a given name.
    *

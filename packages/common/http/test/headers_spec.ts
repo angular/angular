@@ -69,6 +69,29 @@ import {HttpHeaders} from '@angular/common/http/src/headers';
       });
     });
 
+    describe('.setIf()', () => {
+      it('should clear all values and re-set for the provided key; if first condition true', () => {
+        const headers = new HttpHeaders({'foo': 'bar'});
+        expect(headers.get('foo')).toEqual('bar');
+
+        const second = headers.setIf(true, 'foo', 'baz');
+        expect(second.get('foo')).toEqual('baz');
+
+        const third = headers.setIf(true, 'fOO', 'bat');
+        expect(third.get('foo')).toEqual('bat');
+
+        const fourth = headers.setIf(false, 'foo', 'caz');
+        expect(fourth.get('foo')).toEqual('bar');
+      });
+
+      it('should preserve the case of the first call', () => {
+        const headers = new HttpHeaders();
+        const second = headers.setIf(true, 'fOo', 'baz');
+        const third = second.setIf(true, 'foo', 'bat');
+        expect(third.keys()).toEqual(['fOo']);
+      });
+    });
+
     describe('.get()', () => {
       it('should be case insensitive', () => {
         const headers = new HttpHeaders({'foo': 'baz'});
@@ -123,6 +146,24 @@ import {HttpHeaders} from '@angular/common/http/src/headers';
         const headers = new HttpHeaders();
         const second = headers.append('FOO', 'bar');
         const third = second.append('foo', 'baz');
+        expect(third.keys()).toEqual(['FOO']);
+      });
+    });
+
+    describe('.appendIf()', () => {
+      it('should append a value to the list if first condition true', () => {
+        const headers = new HttpHeaders();
+        const second = headers.appendIf(true, 'foo', 'bar');
+        const third = second.appendIf(false, 'foo', 'caz');
+        const fourth = third.appendIf(true, 'foo', 'baz');
+        expect(fourth.get('foo')).toEqual('bar');
+        expect(fourth.getAll('foo')).toEqual(['bar', 'baz']);
+      });
+
+      it('should preserve the case of the first call', () => {
+        const headers = new HttpHeaders();
+        const second = headers.appendIf(true, 'FOO', 'bar');
+        const third = second.appendIf(true, 'foo', 'baz');
         expect(third.keys()).toEqual(['FOO']);
       });
     });
