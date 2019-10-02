@@ -86,6 +86,17 @@ import 'zone.js/dist/zone'; // Included with Angular CLI.
  */
 import '@angular/localize/init';
 
+// Note that `computeMsgId` is a private API at this stage. It will probably be exported directly
+// from `@angular/localize` at some point.
+import {computeMsgId} from '@angular/compiler';
+import {loadTranslations} from '@angular/localize';
+
+// Load some runtime translations!
+loadTranslations({
+  [computeMsgId(' Hello {$INTERPOLATION}! ')]: 'Bonjour {$INTERPOLATION}!',
+  [computeMsgId('Welcome to the i18n app.')]: 'Bienvenue sur l\'application i18n.',
+});
+
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */

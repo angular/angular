@@ -1,10 +1,8 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
-})
+@Component(
+    {selector: 'app-root', templateUrl: './app.component.html', styleUrls: ['./app.component.css']})
 export class AppComponent {
-  title = $localize `cli-hello-world-ivy-compat`;
+  title = `cli-hello-world-ivy-compat`;
+  message = $localize `Welcome to the i18n app.`;
 }
