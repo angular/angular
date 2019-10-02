@@ -7,22 +7,17 @@
  */
 
 import {CommonModule, DOCUMENT} from '@angular/common';
+import {computeMsgId} from '@angular/compiler';
 import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, NO_ERRORS_SCHEMA, NgModule, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {Input} from '@angular/core/src/metadata';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed, TestComponentRenderer} from '@angular/core/testing';
-import {loadTranslations} from '@angular/localize';
+import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By, DomSanitizer} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('ViewContainerRef', () => {
-
-  const TRANSLATIONS: any = {
-    '6587679027921703718': 'o',
-    '1059980791999999199': 'F{$START_TAG_DIV}{$CLOSE_TAG_DIV}o',
-    '8808498902423973223': '{$START_TAG_DIV}{$CLOSE_TAG_DIV}{$START_TAG_BEFORE}{$CLOSE_TAG_BEFORE}'
-  };
 
   /**
    * Gets the inner HTML of the given element with all HTML comments and Angular internal
@@ -34,7 +29,6 @@ describe('ViewContainerRef', () => {
   }
 
   beforeEach(() => {
-    loadTranslations(TRANSLATIONS);
     TestBed.configureTestingModule({
       declarations: [
         StructDir, ViewContainerRefComp, ViewContainerRefApp, DestroyCasesComp, ConstructorDir,
@@ -42,6 +36,8 @@ describe('ViewContainerRef', () => {
       ]
     });
   });
+
+  afterEach(() => clearTranslations());
 
   describe('create', () => {
 
@@ -349,6 +345,12 @@ describe('ViewContainerRef', () => {
 
     onlyInIvy('Ivy i18n logic')
         .it('when ViewContainerRef is on an element inside a ng-container with i18n', () => {
+          loadTranslations({
+            [computeMsgId('Bar')]: 'o',
+            [computeMsgId(
+                '{$START_TAG_BEFORE}{$CLOSE_TAG_BEFORE}{$START_TAG_DIV}{$START_TAG_INSIDE}{$CLOSE_TAG_INSIDE}{$CLOSE_TAG_DIV}{$START_TAG_AFTER}{$CLOSE_TAG_AFTER}')]:
+                'F{$START_TAG_DIV}{$CLOSE_TAG_DIV}o',
+          });
           executeTest(`
       <ng-template #foo>
         <span i18n>Bar</span>
@@ -368,11 +370,17 @@ describe('ViewContainerRef', () => {
         });
 
     onlyInIvy('Ivy i18n logic')
-        .it('when ViewContainerRef is on an element, and i18n is on the parent ViewContainerRef',
-            () => {
-              executeTest(`
+        .it('when ViewContainerRef is on an element, and i18n is on the parent ViewContainerRef', () => {
+          loadTranslations({
+            [computeMsgId(
+                '{$START_TAG_BEFORE}{$CLOSE_TAG_BEFORE}{$START_TAG_DIV}{$START_TAG_IN}{$CLOSE_TAG_IN}{$CLOSE_TAG_DIV}{$START_TAG_AFTER}{$CLOSE_TAG_AFTER}')]:
+                '{$START_TAG_DIV}{$CLOSE_TAG_DIV}{$START_TAG_BEFORE}oo{$CLOSE_TAG_BEFORE}',
+            [computeMsgId('{VAR_SELECT, select, other {|{INTERPOLATION}|}}')]:
+                '{VAR_SELECT, select, other {|{INTERPOLATION}|}}',
+          });
+          executeTest(`
       <ng-template #foo>
-        <span>Foo</span>
+        <span>F</span>
       </ng-template>
 
       <ng-template structDir i18n>
@@ -382,7 +390,7 @@ describe('ViewContainerRef', () => {
         </div>
         <after></after>
       </ng-template>`);
-            });
+        });
   });
 
   describe('length', () => {

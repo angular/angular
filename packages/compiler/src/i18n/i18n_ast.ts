@@ -10,6 +10,7 @@ import {ParseSourceSpan} from '../parse_util';
 
 export class Message {
   sources: MessageSpan[];
+  id: string = this.customId;
 
   /**
    * @param nodes message AST
@@ -22,7 +23,7 @@ export class Message {
   constructor(
       public nodes: Node[], public placeholders: {[phName: string]: string},
       public placeholderToMessage: {[phName: string]: Message}, public meaning: string,
-      public description: string, public id: string) {
+      public description: string, public customId: string) {
     if (nodes.length) {
       this.sources = [{
         filePath: nodes[0].sourceSpan.start.file.url,
