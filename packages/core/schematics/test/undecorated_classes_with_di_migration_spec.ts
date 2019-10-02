@@ -1458,5 +1458,27 @@ describe('Undecorated classes with DI migration', () => {
       expect(errorOutput.length).toBe(1);
       expect(errorOutput[0]).toMatch(/error TS1005: 'from' expected/);
     });
+
+    it('should not throw if resources could not be read', async() => {
+      writeFile('/index.ts', `
+        import {Component, NgModule} from '@angular/core';
+        
+        @Component({
+          templateUrl: './my-template.pug',
+          styleUrls: ["./test.scss", "./some-special-file.custom"],
+        })
+        export class TestComp {}
+       
+        @NgModule({declarations: [TestComp]})
+        export class MyModule {}
+      `);
+
+      writeFile('/test.scss', `@import '~theme.scss';`);
+
+      await runMigration();
+
+      expect(warnOutput.length).toBe(0);
+      expect(errorOutput.length).toBe(0);
+    });
   });
 });
