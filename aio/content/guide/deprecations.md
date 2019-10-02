@@ -29,6 +29,7 @@ v5 - v8
 v6 - v9
 v7 - v10
 v8 - v11
+v9 - v12
 -->
 
 
@@ -51,6 +52,7 @@ v8 - v11
 | `@angular/core` | [`defineInjectable`](#core) | v11 |
 | `@angular/router` | [`loadChildren` string syntax](#loadChildren) | v11 |
 | `@angular/router` | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
+| `@angular/core/testing` | [`TestBed.get`](#testing) | v12 |
 
 
 
@@ -82,6 +84,14 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | [`wtfStartTimeRange`](api/core/wtfStartTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
 | [`wtfEndTimeRange`](api/core/wtfEndTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
 | [`wtfLeave`](api/core/wtfLeave) | none | v8 | See [Web Tracing Framework](#wtf) |
+
+
+{@a testing}
+### @angular/core/testing
+
+| API | Replacement | Deprecation announced | Notes |
+| --- | ----------- | --------------------- | ----- |
+| [`TestBed.get`](api/core/testing/TestBed#get) | [`TestBed.inject`](api/core/testing/TestBed#inject) | v9 | Same behavior, but type safe. |
 
 
 {@a forms}
