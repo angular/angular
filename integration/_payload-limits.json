@@ -29,9 +29,12 @@
   "cli-hello-world-ivy-i18n": {
     "master": {
       "uncompressed": {
-        "runtime": 1485,
-        "main": 128254,
-        "polyfills": 42102
+        "runtime-es2015": 1485,
+        "runtime-es5": 1485,
+        "main-es2015": 128258,
+        "main-es5": 150321,
+        "polyfills-es2015": 42102,
+        "polyfills-es5": 136343
       }
     }
   },
