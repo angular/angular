@@ -38,6 +38,20 @@
       }
     }
   },
+  "cli-hello-world-lazy": {
+    "master": {
+      "uncompressed": {
+        "runtime-es2015": 2289,
+        "runtime-es5": 2286,
+        "main-es2015": 262844,
+        "main-es5": 309747,
+        "polyfills-es2015": 36808,
+        "polyfills-es5": 127499,
+        "5-es2015": 751,
+        "5-es5": 1234
+      }
+    }
+  },
   "hello_world__closure": {
     "master": {
       "uncompressed": {
