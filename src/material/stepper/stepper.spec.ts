@@ -731,6 +731,27 @@ describe('MatStepper', () => {
       expect(steps[2].completed).toBe(true,
           'Expected third step to be considered complete when doing a run after a reset.');
     });
+
+    it('should be able to skip past the current step if a custom `completed` value is set', () => {
+      expect(testComponent.oneGroup.get('oneCtrl')!.value).toBe('');
+      expect(testComponent.oneGroup.get('oneCtrl')!.valid).toBe(false);
+      expect(testComponent.oneGroup.valid).toBe(false);
+      expect(stepperComponent.selectedIndex).toBe(0);
+
+      const nextButtonNativeEl = fixture.debugElement
+          .queryAll(By.directive(MatStepperNext))[0].nativeElement;
+      nextButtonNativeEl.click();
+      fixture.detectChanges();
+
+      expect(stepperComponent.selectedIndex).toBe(0);
+
+      stepperComponent.steps.first.completed = true;
+      nextButtonNativeEl.click();
+      fixture.detectChanges();
+
+      expect(testComponent.oneGroup.valid).toBe(false);
+      expect(stepperComponent.selectedIndex).toBe(1);
+    });
   });
 
   describe('linear stepper with a pre-defined selectedIndex', () => {

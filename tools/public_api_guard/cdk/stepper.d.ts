@@ -1,4 +1,5 @@
 export declare class CdkStep implements OnChanges {
+    _completedOverride: boolean | null;
     _displayDefaultIndicatorType: boolean;
     _showError: boolean;
     ariaLabel: string;
