@@ -816,5 +816,12 @@
     "website": "https://medium.com/@a.yurich.zuev",
     "bio": "Alexey is a web development addict who likes diving deep into the source code and sharing his knowledge through visualization. Creator of ng-run.com",
     "groups": ["GDE"]
+  },
+  "ayazhafiz": {
+    "name": "Ayaz Hafiz",
+    "groups": ["Collaborators"],
+    "picture": "hafiz.jpg",
+    "website": "https://github.com/ayazhafiz",
+    "bio": "Ayaz is an undergraduate student with interests in free software."
   }
 }
