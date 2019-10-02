@@ -179,12 +179,13 @@ export function parseI18nMeta(meta?: string): I18nMeta {
 }
 
 /**
- * Serialize the given `meta` into a string that can be used in a `$localize` tagged string metadata
- * block. The format is the same as that parsed by `parseI18nMeta()`.
+ * Serialize the given `meta` and `messagePart` a string that can be used in a `$localize`
+ * tagged string. The format of the metadata is the same as that parsed by `parseI18nMeta()`.
  *
  * @param meta The metadata to serialize
+ * @param messagePart The first part of the tagged string
  */
-export function serializeI18nMetaBlock(meta: I18nMeta): string {
+export function serializeI18nHead(meta: I18nMeta, messagePart: string): string {
   let metaBlock = meta.description || '';
   if (meta.meaning) {
     metaBlock = `${meta.meaning}|${metaBlock}`;
@@ -192,22 +193,28 @@ export function serializeI18nMetaBlock(meta: I18nMeta): string {
   if (meta.id) {
     metaBlock = `${metaBlock}@@${meta.id}`;
   }
-  return metaBlock !== '' ? `:${metaBlock}:` : '';
+  if (metaBlock === '') {
+    // There is no metaBlock, so we must ensure that any starting colon is escaped.
+    return escapeStartingColon(messagePart);
+  } else {
+    return `:${escapeColons(metaBlock)}:${messagePart}`;
+  }
 }
 
 /**
- * Convert a placeholder into marked block for rendering.
- *
- * We want our tagged literals to include placeholder name information to aid runtime translation.
- *
- * The expressions are marked with placeholder names by postfixing the expression with
- * `:placeHolderName:`. To achieve this, we actually "prefix" the message part that follows the
- * expression.
+ * Serialize the given `placeholderName` and `messagePart` into strings that can be used in a
+ * `$localize` tagged string.
  *
  * @param placeholderName The placeholder name to serialize
+ * @param messagePart The following message string after this placeholder
  */
-export function serializeI18nPlaceholderBlock(placeholderName: string): string {
-  return placeholderName !== '' ? `:${placeholderName}:` : '';
+export function serializeI18nTemplatePart(placeholderName: string, messagePart: string): string {
+  if (placeholderName === '') {
+    // There is no placeholder name block, so we must ensure that any starting colon is escaped.
+    return escapeStartingColon(messagePart);
+  } else {
+    return `:${placeholderName}:${messagePart}`;
+  }
 }
 
 // Converts i18n meta information for a message (id, description, meaning)
@@ -221,4 +228,12 @@ export function i18nMetaToDocStmt(meta: I18nMeta): o.JSDocCommentStmt|null {
     tags.push({tagName: o.JSDocTagName.Meaning, text: meta.meaning});
   }
   return tags.length == 0 ? null : new o.JSDocCommentStmt(tags);
+}
+
+export function escapeStartingColon(str: string): string {
+  return str.replace(/^:/, '\\:');
+}
+
+export function escapeColons(str: string): string {
+  return str.replace(/:/g, '\\:');
 }
