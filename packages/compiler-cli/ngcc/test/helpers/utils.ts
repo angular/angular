@@ -22,6 +22,7 @@ export function makeTestEntryPoint(
     path: absoluteFrom(`/node_modules/${entryPointName}`),
     typings: absoluteFrom(`/node_modules/${entryPointName}/index.d.ts`),
     compiledByAngular: true,
+    ignoreMissingDependencies: false,
   };
 }
 
