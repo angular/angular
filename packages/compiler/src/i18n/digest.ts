@@ -157,7 +157,7 @@ export function fingerprint(str: string): [number, number] {
   return [hi, lo];
 }
 
-export function computeMsgId(msg: string, meaning: string): string {
+export function computeMsgId(msg: string, meaning: string = ''): string {
   let [hi, lo] = fingerprint(msg);
 
   if (meaning) {
