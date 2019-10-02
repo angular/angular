@@ -37,6 +37,7 @@ import {StepperE2eModule} from './stepper/stepper-e2e-module';
 import {TabsE2eModule} from './tabs/tabs-e2e-module';
 import {ToolbarE2eModule} from './toolbar/toolbar-e2e-module';
 import {VirtualScrollE2eModule} from './virtual-scroll/virtual-scroll-e2e-module';
+import {MdcProgressBarE2eModule} from './mdc-progress-bar/mdc-progress-bar-e2e-module';
 
 @NgModule({
   imports: [
@@ -66,6 +67,7 @@ import {VirtualScrollE2eModule} from './virtual-scroll/virtual-scroll-e2e-module
     MdcRadioE2eModule,
     MdcSlideToggleE2eModule,
     MdcTabsE2eModule,
+    MdcProgressBarE2eModule,
     MenuE2eModule,
     ProgressBarE2eModule,
     ProgressSpinnerE2eModule,

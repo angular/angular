@@ -161,7 +161,7 @@
 /src/dev-app/mdc-checkbox/**                       @mmalerba
 /src/dev-app/mdc-chips/**                          @mmalerba
 /src/dev-app/mdc-menu/**                           @crisbeto
-# Note to implementer: please repossess
+/src/dev-app/mdc-progress-bar/**                   @crisbeto
 /src/dev-app/mdc-radio/**                          @mmalerba
 /src/dev-app/mdc-slide-toggle/**                   @crisbeto
 /src/dev-app/mdc-slider/**                         @devversion
@@ -214,7 +214,7 @@
 /src/e2e-app/mdc-checkbox/**                       @mmalerba
 /src/e2e-app/mdc-chips/**                          @mmalerba
 /src/e2e-app/mdc-menu/**                           @crisbeto
-# Note to implementer: please repossess
+/src/e2e-app/mdc-progress-bar/**                   @crisbeto
 /src/e2e-app/mdc-radio/**                          @mmalerba
 /src/e2e-app/mdc-slide-toggle/**                   @crisbeto
 /src/e2e-app/mdc-tabs/**                           @crisbeto

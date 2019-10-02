@@ -1,0 +1,51 @@
+<mat-button-toggle-group class="demo-progress-bar-controls" [(ngModel)]="color">
+  <mat-button-toggle value="primary">Primary Color</mat-button-toggle>
+  <mat-button-toggle value="accent">Accent Color</mat-button-toggle>
+  <mat-button-toggle value="warn">Warn Color</mat-button-toggle>
+</mat-button-toggle-group>
+
+<h1>Determinate</h1>
+
+<div class="demo-progress-bar-controls">
+  <span>Value: {{determinateProgressValue}}</span>
+  <br/>
+  <span>Last animation complete value: {{determinateAnimationEndValue}}</span>
+  <button mat-raised-button (click)="stepDeterminateProgressVal(10)">Increase</button>
+  <button mat-raised-button (click)="stepDeterminateProgressVal(-10)">Decrease</button>
+</div>
+
+<div class="demo-progress-bar-container">
+  <mat-progress-bar mode="determinate" [value]="determinateProgressValue" [color]="color"
+                    (animationEnd)="determinateAnimationEndValue = $event.value">
+  </mat-progress-bar>
+</div>
+
+<h1>Buffer</h1>
+
+<div class="demo-progress-bar-controls">
+  <span>Value: {{bufferProgressValue}}</span>
+  <br/>
+  <span>Last animation complete value: {{bufferAnimationEndValue}}</span>
+  <button mat-raised-button (click)="stepBufferProgressVal(10)">Increase</button>
+  <button mat-raised-button (click)="stepBufferProgressVal(-10)">Decrease</button>
+  <span class="demo-progress-bar-spacer"></span>
+  <span>Buffer Value: {{bufferBufferValue}}</span>
+  <button mat-raised-button (click)="stepBufferBufferVal(10)">Increase</button>
+  <button mat-raised-button (click)="stepBufferBufferVal(-10)">Decrease</button>
+</div>
+
+<div class="demo-progress-bar-container">
+  <mat-progress-bar [value]="bufferProgressValue" [bufferValue]="bufferBufferValue" mode="buffer"
+                   [color]="color" (animationEnd)="bufferAnimationEndValue = $event.value">
+  </mat-progress-bar>
+</div>
+
+<h1>Indeterminate</h1>
+<div class="demo-progress-bar-container">
+  <mat-progress-bar mode="indeterminate" [color]="color"></mat-progress-bar>
+</div>
+
+<h1>Query</h1>
+<div class="demo-progress-bar-container">
+  <mat-progress-bar mode="query" [color]="color"></mat-progress-bar>
+</div>

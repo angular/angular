@@ -2,6 +2,7 @@ import {Component, NgModule} from '@angular/core';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatCardModule} from '@angular/material-experimental/mdc-card';
 import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
+import {MatProgressBarModule} from '@angular/material-experimental/mdc-progress-bar';
 import {MatChipsModule} from '@angular/material-experimental/mdc-chips';
 import {MatMenuModule} from '@angular/material-experimental/mdc-menu';
 import {MatRadioModule} from '@angular/material-experimental/mdc-radio';
@@ -29,6 +30,7 @@ export class KitchenSinkMdc {
     MatSlideToggleModule,
     MatSliderModule,
     MatTabsModule,
+    MatProgressBarModule,
   ],
   declarations: [KitchenSinkMdc],
   exports: [KitchenSinkMdc],

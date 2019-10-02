@@ -13,6 +13,7 @@ entryPoints = [
     "mdc-helpers",
     "mdc-menu",
     "mdc-menu/testing",
+    "mdc-progress-bar",
     "mdc-radio",
     "mdc-select",
     "mdc-sidenav",

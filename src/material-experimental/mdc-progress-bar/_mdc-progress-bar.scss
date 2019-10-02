@@ -1,0 +1,33 @@
+@import '@material/linear-progress/mixins';
+@import '@material/theme/functions';
+@import '../mdc-helpers/mdc-helpers';
+
+@mixin _mat-mdc-progress-bar-color($color) {
+  // TODO(crisbeto): the buffer color should come from somewhere in MDC, however at the time of
+  // writing, their buffer color is hardcoded to #e6e6e6 which both doesn't account for theming
+  // and doesn't match the Material design spec. For now we approximate the buffer background by
+  // lightening the color of the primary bar.
+  $buffer-color: lighten(mdc-theme-prop-value($color), 30%);
+  @include mdc-linear-progress-bar-color($color, $query: $mat-theme-styles-query);
+  @include mdc-linear-progress-buffer-color($buffer-color, $query: $mat-theme-styles-query);
+}
+
+@mixin mat-progress-bar-theme-mdc($theme) {
+  @include mat-using-mdc-theme($theme) {
+    .mat-mdc-progress-bar {
+      @include _mat-mdc-progress-bar-color(primary);
+
+      &.mat-accent {
+        @include _mat-mdc-progress-bar-color(secondary);
+      }
+
+      &.mat-warn {
+        @include _mat-mdc-progress-bar-color(error);
+      }
+    }
+  }
+}
+
+@mixin mat-progress-bar-typography-mdc($config: null) {
+  // No typography for this component.
+}

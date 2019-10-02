@@ -64,6 +64,7 @@ var MATERIAL_EXPERIMENTAL_PACKAGES = [
   'mdc-helpers',
   'mdc-menu',
   'mdc-radio',
+  'mdc-progress-bar',
   'mdc-slide-toggle',
   'mdc-slider',
   'popover-edit',

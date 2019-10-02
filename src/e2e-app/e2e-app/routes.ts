@@ -19,6 +19,7 @@ import {MdcMenuE2e} from '../mdc-menu/mdc-menu-e2e';
 import {MdcRadioE2e} from '../mdc-radio/mdc-radio-e2e';
 import {MdcSlideToggleE2e} from '../mdc-slide-toggle/mdc-slide-toggle-e2e';
 import {MdcTabsE2e} from '../mdc-tabs/mdc-tabs-e2e';
+import {MdcProgressBarE2E} from '../mdc-progress-bar/mdc-progress-bar-e2e';
 import {MenuE2E} from '../menu/menu-e2e';
 import {ProgressBarE2E} from '../progress-bar/progress-bar-e2e';
 import {ProgressSpinnerE2E} from '../progress-spinner/progress-spinner-e2e';
@@ -53,6 +54,7 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'mdc-radio', component: MdcRadioE2e},
   {path: 'mdc-slide-toggle', component: MdcSlideToggleE2e},
   {path: 'mdc-tabs', component: MdcTabsE2e},
+  {path: 'mdc-progress-bar', component: MdcProgressBarE2E},
   {path: 'menu', component: MenuE2E},
   {path: 'progress-bar', component: ProgressBarE2E},
   {path: 'progress-spinner', component: ProgressSpinnerE2E},

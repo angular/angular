@@ -76,10 +76,10 @@ export class DevAppLayout {
     {name: 'MDC Chips', route: '/mdc-chips'},
     {name: 'MDC Menu', route: '/mdc-menu'},
     {name: 'MDC Radio', route: '/mdc-radio'},
+    {name: 'MDC Progress Bar', route: '/mdc-progress-bar'},
     {name: 'MDC Tabs', route: '/mdc-tabs'},
     {name: 'MDC Slide Toggle', route: '/mdc-slide-toggle'},
     {name: 'MDC Slider', route: '/mdc-slider'},
-
   ];
 
   constructor(

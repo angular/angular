@@ -1,0 +1,25 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "mdc-progress-bar",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "mdc-progress-bar-demo.html",
+        ":mdc_progress_bar_demo_scss",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-button",
+        "//src/material-experimental/mdc-progress-bar",
+        "//src/material/button-toggle",
+        "@npm//@angular/forms",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "mdc_progress_bar_demo_scss",
+    src = "mdc-progress-bar-demo.scss",
+)

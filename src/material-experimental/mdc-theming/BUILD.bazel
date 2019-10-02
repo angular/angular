@@ -13,6 +13,7 @@ sass_library(
         "//src/material-experimental/mdc-checkbox:mdc_checkbox_scss_lib",
         "//src/material-experimental/mdc-chips:mdc_chips_scss_lib",
         "//src/material-experimental/mdc-menu:mdc_menu_scss_lib",
+        "//src/material-experimental/mdc-progress-bar:mdc_progress_bar_scss_lib",
         "//src/material-experimental/mdc-radio:mdc_radio_scss_lib",
         "//src/material-experimental/mdc-slide-toggle:mdc_slide_toggle_scss_lib",
         "//src/material-experimental/mdc-slider:mdc_slider_scss_lib",

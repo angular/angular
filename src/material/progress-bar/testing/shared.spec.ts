@@ -13,7 +13,7 @@ export function runHarnessTests(progressBarModule: typeof MatProgressBarModule,
   beforeEach(async () => {
     await TestBed
         .configureTestingModule({
-          imports: [MatProgressBarModule],
+          imports: [progressBarModule],
           declarations: [ProgressBarHarnessTest],
         })
         .compileComponents();

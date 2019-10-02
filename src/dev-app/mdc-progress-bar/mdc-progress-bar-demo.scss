@@ -1,0 +1,16 @@
+.demo-progress-bar-container {
+  width: 100%;
+
+  mat-progress-bar {
+    margin: 20px 0;
+  }
+}
+
+.demo-progress-bar-spacer {
+  display: inline-block;
+  width: 50px;
+}
+
+.demo-progress-bar-controls {
+  margin: 10px 0;
+}

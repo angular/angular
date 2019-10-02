@@ -7,6 +7,7 @@
 @import '../mdc-slide-toggle/mdc-slide-toggle';
 @import '../mdc-slider/mdc-slider';
 @import '../mdc-tabs/mdc-tabs';
+@import '../mdc-progress-bar/mdc-progress-bar';
 
 @mixin angular-material-theme-mdc($theme) {
   @include mat-button-theme-mdc($theme);
@@ -16,6 +17,7 @@
   @include mat-checkbox-theme-mdc($theme);
   @include mat-chips-theme-mdc($theme);
   @include mat-menu-theme-mdc($theme);
+  @include mat-progress-bar-theme-mdc($theme);
   @include mat-radio-theme-mdc($theme);
   @include mat-slide-toggle-theme-mdc($theme);
   @include mat-slider-theme-mdc($theme);
