@@ -12,9 +12,10 @@ const packageJson = require('../package');
 
 const currentCommitSha = getCurrentCommitSha();
 
-// The "BUILD_SCM_VERSION" will be picked up by the "npm_package" and "ng_package" rule
-// in order to replace the "0.0.0-PLACEHOLDER" with a proper version
-console.log(`BUILD_SCM_VERSION ${packageJson.version}-${currentCommitSha.substr(0, 7)}`);
+// The "BUILD_SCM_VERSION" will be picked up by the "npm_package" and "ng_package"
+// rule in order to populate the "0.0.0-PLACEHOLDER". Note that the SHA will be only
+// appended for snapshots builds from within the "publish-build-artifacts.sh" script.
+console.log(`BUILD_SCM_VERSION ${packageJson.version}`);
 console.log(`BUILD_SCM_COMMIT_SHA ${currentCommitSha}`);
 console.log(`BUILD_SCM_BRANCH ${getCurrentBranchName()}`);
 console.log(`BUILD_SCM_USER ${getCurrentGitUser()}`);
