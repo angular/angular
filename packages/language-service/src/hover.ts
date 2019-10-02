@@ -88,7 +88,8 @@ function getDirectiveModule(
   const directiveSymbol = host.getStaticSymbol(directive.getSourceFile().fileName, directiveName);
   if (!directiveSymbol) return;
 
-  const ngModule = host.getAnalyzedModules().ngModuleByPipeOrDirective.get(directiveSymbol);
+  const analyzedModules = host.getAnalyzedModules(false);
+  const ngModule = analyzedModules.ngModuleByPipeOrDirective.get(directiveSymbol);
   if (!ngModule) return;
 
   const moduleName = ngModule.type.reference.name;
