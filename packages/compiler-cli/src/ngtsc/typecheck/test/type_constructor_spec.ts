@@ -62,12 +62,12 @@ TestClass.ngTypeCtor({value: 'test'});
         ];
         const {program, host, options} = makeProgram(files, undefined, undefined, false);
         const checker = program.getTypeChecker();
+        const reflectionHost = new TypeScriptReflectionHost(checker);
         const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
         const emitter = new ReferenceEmitter([
           new LocalIdentifierStrategy(),
-          new AbsoluteModuleStrategy(
-              program, checker, options, host, new TypeScriptReflectionHost(checker)),
-          new LogicalProjectStrategy(checker, logicalFs),
+          new AbsoluteModuleStrategy(program, checker, options, host, reflectionHost),
+          new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
         const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, _('/_typecheck_.ts'));
         const TestClass =
@@ -94,12 +94,12 @@ TestClass.ngTypeCtor({value: 'test'});
         ];
         const {program, host, options} = makeProgram(files, undefined, undefined, false);
         const checker = program.getTypeChecker();
+        const reflectionHost = new TypeScriptReflectionHost(checker);
         const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
         const emitter = new ReferenceEmitter([
           new LocalIdentifierStrategy(),
-          new AbsoluteModuleStrategy(
-              program, checker, options, host, new TypeScriptReflectionHost(checker)),
-          new LogicalProjectStrategy(checker, logicalFs),
+          new AbsoluteModuleStrategy(program, checker, options, host, reflectionHost),
+          new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
         const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, _('/_typecheck_.ts'));
         const TestClass =

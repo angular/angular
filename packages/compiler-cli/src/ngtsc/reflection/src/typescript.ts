@@ -280,6 +280,13 @@ export class TypeScriptReflectionHost implements ReflectionHost {
         return null;
       }
       return this.getDeclarationOfSymbol(shorthandSymbol, originalId);
+    } else if (
+        symbol.valueDeclaration !== undefined && ts.isExportSpecifier(symbol.valueDeclaration)) {
+      const localTarget = this.checker.getExportSpecifierLocalTargetSymbol(symbol.valueDeclaration);
+      if (localTarget === undefined) {
+        return null;
+      }
+      return this.getDeclarationOfSymbol(localTarget, originalId);
     }
 
     const importInfo = originalId && this.getImportOfIdentifier(originalId);
