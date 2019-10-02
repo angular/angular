@@ -33,7 +33,9 @@ export type ParsedTranslations = Record<MessageId, ParsedTranslation>;
  * `substitutions`.
  * The translation may reorder (or remove) substitutions as appropriate.
  *
- * If no translation matches then an error is thrown.
+ * If there is no translation with a matching message id then an error is thrown.
+ * If a translation contains a placeholder that is not found in the message being translated then an
+ * error is thrown.
  */
 export function translate(
     translations: Record<string, ParsedTranslation>, messageParts: TemplateStringsArray,
@@ -42,8 +44,14 @@ export function translate(
   const translation = translations[message.messageId];
   if (translation !== undefined) {
     return [
-      translation.messageParts,
-      translation.placeholderNames.map(placeholder => message.substitutions[placeholder])
+      translation.messageParts, translation.placeholderNames.map(placeholder => {
+        if (message.substitutions.hasOwnProperty(placeholder)) {
+          return message.substitutions[placeholder];
+        } else {
+          throw new Error(
+              `No placeholder found with name ${placeholder} in message "${message.messageId}" ("${message.messageString}").`);
+        }
+      })
     ];
   } else {
     throw new Error(
