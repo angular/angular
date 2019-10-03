@@ -20,7 +20,7 @@ import {MatTabGroup, _MatTabGroupBase} from './tab-group';
 import {MatTabHeader, _MatTabHeaderBase} from './tab-header';
 import {MatTabLabel} from './tab-label';
 import {MatTabLabelWrapper} from './tab-label-wrapper';
-import {MatTabLink, MatTabNav, _MatTabNavBase} from './tab-nav-bar/tab-nav-bar';
+import {MatTabLink, MatTabNav, _MatTabNavBase, _MatTabLinkBase} from './tab-nav-bar/tab-nav-bar';
 import {MatPaginatedTabHeader} from './paginated-tab-header';
 
 
@@ -62,6 +62,7 @@ import {MatPaginatedTabHeader} from './paginated-tab-header';
     _MatTabNavBase as any,
     _MatTabBodyBase as any,
     _MatTabHeaderBase as any,
+    _MatTabLinkBase as any,
   ],
 })
 export class MatTabsModule {}

@@ -191,6 +191,10 @@ const _MatTabLinkMixinBase:
         mixinTabIndex(mixinDisableRipple(mixinDisabled(MatTabLinkMixinBase)));
 
 /** Base class with all of the `MatTabLink` functionality. */
+@Directive({
+  // TODO(crisbeto): this selector can be removed when we update to Angular 9.0.
+  selector: 'do-not-use-abstract-mat-tab-link-base'
+})
 // tslint:disable-next-line:class-name
 export class _MatTabLinkBase extends _MatTabLinkMixinBase implements OnDestroy, CanDisable,
   CanDisableRipple, HasTabIndex, RippleTarget, FocusableOption {
