@@ -108,7 +108,7 @@ describe('ViewContainerRef', () => {
                selectors: [['test-cmp']],
                decls: 4,
                vars: 0,
-               attrs: [['testdir', '']],
+               consts: [['testdir', '']],
                template: (rf: RenderFlags, cmp: TestComponent) => {
                  if (rf & RenderFlags.Create) {
                    ɵɵtext(0, 'before|');
@@ -180,7 +180,7 @@ describe('ViewContainerRef', () => {
                selectors: [['test-cmp']],
                decls: 4,
                vars: 0,
-               attrs: [['testdir', '']],
+               consts: [['testdir', '']],
                template: (rf: RenderFlags, cmp: TestComponent) => {
                  if (rf & RenderFlags.Create) {
                    ɵɵtext(0, 'before|');
@@ -441,7 +441,7 @@ describe('ViewContainerRef', () => {
           selectors: [['dynamic-cmpt-with-view-queries']],
           decls: 2,
           vars: 0,
-          attrs: [['bar', '']],
+          consts: [['bar', '']],
           template: (rf: RenderFlags, ctx: DynamicCompWithViewQueries) => {
             if (rf & RenderFlags.Create) {
               ɵɵelement(0, 'div', 0, ['foo', '']);

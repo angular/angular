@@ -430,7 +430,7 @@ runInEachFileSystem((os) => {
            });
 
            const attrsMapping =
-               mappings.find(mapping => /attrs: \[\[1, "some-class"\]\]/.test(mapping.generated));
+               mappings.find(mapping => /consts: \[\[1, "some-class"\]\]/.test(mapping.generated));
            expect(attrsMapping).toBeDefined();
          });
     });

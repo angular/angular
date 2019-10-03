@@ -243,8 +243,8 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    */
   readonly template: ComponentTemplate<T>;
 
-  /** Attributes for all of the nodes in the component's view */
-  readonly attrs: TAttributes[]|null;
+  /** Constants associated with the component's view. */
+  readonly consts: TAttributes[]|null;
 
   /**
    * An array of `ngContent[selector]` values that were found in the template.

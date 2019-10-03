@@ -75,7 +75,7 @@ describe('compiler compliance: bindings', () => {
 
       const template = `
       …
-      attrs: [[${AttributeMarker.Bindings}, "title"]],
+      consts: [[${AttributeMarker.Bindings}, "title"]],
       template:function MyComponent_Template(rf, $ctx$){
         if (rf & 1) {
           $i0$.ɵɵelement(0, "a", 0);
@@ -109,7 +109,7 @@ describe('compiler compliance: bindings', () => {
 
       const template = `
       …
-      attrs: [[${AttributeMarker.Bindings}, "title"]],
+      consts: [[${AttributeMarker.Bindings}, "title"]],
       template:function MyComponent_Template(rf, $ctx$){
         if (rf & 1) {
           $i0$.ɵɵelement(0, "a", 0);
@@ -162,7 +162,7 @@ describe('compiler compliance: bindings', () => {
          };
 
          const template = `
-      attrs: [[${AttributeMarker.Bindings}, "for"]]
+      consts: [[${AttributeMarker.Bindings}, "for"]]
 
       // ...
 
@@ -640,7 +640,7 @@ describe('compiler compliance: bindings', () => {
       };
 
       const template = `
-        attrs: [["target", "_blank", "aria-label", "link", ${AttributeMarker.Bindings}, "title", "id", "customEvent"]],
+        consts: [["target", "_blank", "aria-label", "link", ${AttributeMarker.Bindings}, "title", "id", "customEvent"]],
         …
       `;
       const result = compile(files, angularFiles);
@@ -1253,7 +1253,7 @@ describe('compiler compliance: bindings', () => {
       const template = `
         const $_c1$ = ["myRef", ""];
         …
-        attrs: [["id", "my-id"]],
+        consts: [["id", "my-id"]],
         template:function MyComponent_Template(rf, $ctx$){
           if (rf & 1) {
             $i0$.ɵɵelementStart(0, "b", 0, $_c1$);
@@ -1285,7 +1285,7 @@ describe('compiler compliance: bindings', () => {
 
       const template = `
         …
-        attrs: [["value", "one", "#myInput", ""]],
+        consts: [["value", "one", "#myInput", ""]],
         template:function MyComponent_Template(rf, $ctx$){
           if (rf & 1) {
             $i0$.ɵɵelementStart(0, "div");
@@ -1309,7 +1309,7 @@ describe('compiler compliance: bindings', () => {
 
       const template = `
         …
-        attrs: [["[id]", "my-id", "(click)", "onclick"]],
+        consts: [["[id]", "my-id", "(click)", "onclick"]],
         template:function MyComponent_Template(rf, $ctx$){
           if (rf & 1) {
             $i0$.ɵɵelementStart(0, "div");

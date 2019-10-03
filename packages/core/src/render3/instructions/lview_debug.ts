@@ -102,7 +102,7 @@ export const TViewConstructor = class TView implements ITView {
       public pipeRegistry: PipeDefList|null,                 //
       public firstChild: TNode|null,                         //
       public schemas: SchemaMetadata[]|null,                 //
-      public attrs: TAttributes[]|null,                      //
+      public consts: TAttributes[]|null,                     //
       ) {}
 
   get template_(): string {

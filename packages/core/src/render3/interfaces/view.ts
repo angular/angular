@@ -566,7 +566,7 @@ export interface TView {
    * Array of attributes for all of the elements in the view. Used
    * for directive matching and attribute bindings.
    */
-  attrs: TAttributes[]|null;
+  consts: TAttributes[]|null;
 }
 
 export const enum RootContextFlags {Empty = 0b00, DetectChanges = 0b01, FlushPlayers = 0b10}

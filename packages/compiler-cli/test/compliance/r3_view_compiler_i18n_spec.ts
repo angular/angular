@@ -268,7 +268,7 @@ describe('i18n support in the template compiler', () => {
         }
         const $_c25$ = ["title", $I18N_23$];
         …
-        attrs: [[${AttributeMarker.I18n}, "title"]],
+        consts: [[${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -312,7 +312,7 @@ describe('i18n support in the template compiler', () => {
 
       const output = `
         …
-        attrs: [["id", "static", "title", ""]],
+        consts: [["id", "static", "title", ""]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelement(0, "div", 0);
@@ -333,7 +333,7 @@ describe('i18n support in the template compiler', () => {
 
       const output = `
         …
-        attrs: [[3, "title"]],
+        consts: [[3, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelement(0, "div", 0);
@@ -368,7 +368,7 @@ describe('i18n support in the template compiler', () => {
         }
         const $_c1$ = ["title", $I18N_1$];
         …
-        attrs: [["id", "static", ${AttributeMarker.I18n}, "title"]],
+        consts: [["id", "static", ${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
@@ -473,7 +473,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 5,
         vars: 8,
-        attrs: [["id", "dynamic-1", ${AttributeMarker.I18n}, "aria-roledescription", "title", "aria-label"], ["id", "dynamic-2", ${AttributeMarker.I18n}, "title", "aria-roledescription"]],
+        consts: [["id", "dynamic-1", ${AttributeMarker.I18n}, "aria-roledescription", "title", "aria-label"], ["id", "dynamic-2", ${AttributeMarker.I18n}, "title", "aria-roledescription"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
@@ -519,7 +519,7 @@ describe('i18n support in the template compiler', () => {
         }
         const $_c3$ = ["title", $I18N_1$];
         …
-        attrs: [[${AttributeMarker.I18n}, "title"]],
+        consts: [[${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
@@ -578,7 +578,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 1,
         vars: 1,
-        attrs: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.I18n}, "title"]],
+        consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", 0);
@@ -613,7 +613,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 2,
         vars: 1,
-        attrs: [[${AttributeMarker.I18n}, "title"]],
+        consts: [[${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
@@ -724,7 +724,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 5,
         vars: 8,
-        attrs: [[
+        consts: [[
           "id", "dynamic-1",
           ${AttributeMarker.I18n}, "aria-roledescription", "title", "aria-label"
         ], ["id", "dynamic-2", ${AttributeMarker.I18n}, "title", "aria-roledescription"]],
@@ -792,7 +792,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 1,
         vars: 1,
-        attrs: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.I18n}, "title"]],
+        consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", 0);
@@ -834,7 +834,7 @@ describe('i18n support in the template compiler', () => {
             $I18N_2$ = $localize \`Some content\`;
         }
         …
-        attrs: [[${AttributeMarker.I18n}, "title"]],
+        consts: [[${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
@@ -1362,7 +1362,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 9,
         vars: 7,
-        attrs: [[${AttributeMarker.I18n}, "title"]],
+        consts: [[${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -1451,7 +1451,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 3,
         vars: 1,
-        attrs: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -1509,7 +1509,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 3,
         vars: 2,
-        attrs: [["src", "logo.png"], ["src", "logo.png", ${AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${AttributeMarker.Bindings}, "title", ${AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${AttributeMarker.I18n}, "title"]],
+        consts: [["src", "logo.png"], ["src", "logo.png", ${AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${AttributeMarker.Bindings}, "title", ${AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelement(0, "img", 0);
@@ -1650,7 +1650,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 4,
         vars: 2,
-        attrs: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -1711,7 +1711,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 1,
         vars: 1,
-        attrs: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 3, 1, "div", 0);
@@ -1740,7 +1740,7 @@ describe('i18n support in the template compiler', () => {
             $I18N_1$ = $localize \`Hello\`;
         }
         …
-        attrs: [[${AttributeMarker.Bindings}, "click"]],
+        consts: [[${AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
@@ -1887,7 +1887,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 4,
         vars: 0,
-        attrs: [[${AttributeMarker.Classes}, "myClass"], [${AttributeMarker.Styles}, "padding", "10px"]],
+        consts: [[${AttributeMarker.Classes}, "myClass"], [${AttributeMarker.Styles}, "padding", "10px"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "span", 0);
@@ -2300,7 +2300,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        attrs: [["src", "logo.png", "title", "Logo"]],
+        consts: [["src", "logo.png", "title", "Logo"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementContainerStart(0);
@@ -2497,7 +2497,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 2,
         vars: 2,
-        attrs: [[4, "ngIf"]],
+        consts: [[4, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_0_Template, 1, 0, undefined, 0);
@@ -2725,7 +2725,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 4,
         vars: 3,
-        attrs: [["title", "icu only", ${AttributeMarker.Template}, "ngIf"], ["title", "icu and text", ${AttributeMarker.Template}, "ngIf"], ["title", "icu only"], ["title", "icu and text"]],
+        consts: [["title", "icu only", ${AttributeMarker.Template}, "ngIf"], ["title", "icu and text", ${AttributeMarker.Template}, "ngIf"], ["title", "icu only"], ["title", "icu and text"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -2836,7 +2836,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 5,
         vars: 1,
-        attrs: [[1, "other"]],
+        consts: [[1, "other"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -3042,7 +3042,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 4,
         vars: 3,
-        attrs: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -3231,7 +3231,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 3,
         vars: 2,
-        attrs: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -3320,7 +3320,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 3,
         vars: 4,
-        attrs: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");

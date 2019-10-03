@@ -181,7 +181,7 @@ it('should not invoke renderer destroy method for embedded views', () => {
       decls: 3,
       vars: 1,
       directives: [NgIf],
-      attrs: [[AttributeMarker.Template, 'ngIf']],
+      consts: [[AttributeMarker.Template, 'ngIf']],
       /**
        *  <div>Root view</div>
        *  <div *ngIf="visible">Child view</div>
@@ -397,7 +397,7 @@ describe('recursive components', () => {
       selectors: [['ng-if-tree']],
       decls: 3,
       vars: 3,
-      attrs: [[AttributeMarker.Bindings, 'data', AttributeMarker.Template, 'ngIf']],
+      consts: [[AttributeMarker.Bindings, 'data', AttributeMarker.Template, 'ngIf']],
       template: (rf: RenderFlags, ctx: NgIfTree) => {
         if (rf & RenderFlags.Create) {
           ɵɵtext(0);

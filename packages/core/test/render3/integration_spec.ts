@@ -280,7 +280,7 @@ describe('component animations', () => {
         decls: 1,
         vars: 1,
         selectors: [['foo']],
-        attrs: [[AttributeMarker.Bindings, '@fooAnimation']],
+        consts: [[AttributeMarker.Bindings, '@fooAnimation']],
         template: (rf: RenderFlags, ctx: AnimComp) => {
           if (rf & RenderFlags.Create) {
             ɵɵelement(0, 'div', 0);
@@ -317,7 +317,7 @@ describe('component animations', () => {
            decls: 1,
            vars: 1,
            selectors: [['foo']],
-           attrs: [['@fooAnimation', '']],
+           consts: [['@fooAnimation', '']],
            template: (rf: RenderFlags, ctx: AnimComp) => {
              if (rf & RenderFlags.Create) {
                ɵɵelement(0, 'div', 0);
@@ -479,7 +479,7 @@ describe('element discovery', () => {
         directives: [NgIf],
         decls: 2,
         vars: 1,
-        attrs: [['ngIf', '']],
+        consts: [['ngIf', '']],
         template: (rf: RenderFlags, ctx: StructuredComp) => {
           if (rf & RenderFlags.Create) {
             ɵɵelementStart(0, 'section');
@@ -861,7 +861,7 @@ describe('element discovery', () => {
            directives: [MyDir1, MyDir2, MyDir3],
            decls: 2,
            vars: 0,
-           attrs: [['my-dir-1', '', 'my-dir-2', ''], ['my-dir-3']],
+           consts: [['my-dir-1', '', 'my-dir-2', ''], ['my-dir-3']],
            template: (rf: RenderFlags, ctx: StructuredComp) => {
              if (rf & RenderFlags.Create) {
                ɵɵelement(0, 'div', 0);
@@ -954,7 +954,7 @@ describe('element discovery', () => {
            directives: [ChildComp, MyDir1, MyDir2],
            decls: 1,
            vars: 0,
-           attrs: [['my-dir-1', '', 'my-dir-2', '']],
+           consts: [['my-dir-1', '', 'my-dir-2', '']],
            template: (rf: RenderFlags, ctx: ParentComp) => {
              if (rf & RenderFlags.Create) {
                ɵɵelement(0, 'child-comp', 0);
@@ -1135,7 +1135,7 @@ describe('sanitization', () => {
         selectors: [['sanitize-this']],
         decls: 1,
         vars: 0,
-        attrs: [['unsafeUrlHostBindingDir', '']],
+        consts: [['unsafeUrlHostBindingDir', '']],
         template: (rf: RenderFlags, ctx: SimpleComp) => {
           if (rf & RenderFlags.Create) {
             ɵɵelement(0, 'blockquote', 0);

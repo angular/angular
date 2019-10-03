@@ -88,7 +88,7 @@ function getOrCreateEmbeddedTView(
   if (viewIndex >= containerTViews.length || containerTViews[viewIndex] == null) {
     containerTViews[viewIndex] = createTView(
         viewIndex, null, decls, vars, tView.directiveRegistry, tView.pipeRegistry, null, null,
-        tView.attrs);
+        tView.consts);
   }
   return containerTViews[viewIndex];
 }

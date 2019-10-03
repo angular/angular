@@ -507,7 +507,7 @@ describe('compiler compliance: styling', () => {
               selectors:[["my-component"]],
               decls: 1,
               vars: 4,
-              attrs: [[${AttributeMarker.Styles}, "opacity", "1"]],
+              consts: [[${AttributeMarker.Styles}, "opacity", "1"]],
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵɵelement(0, "div", 0);
@@ -701,7 +701,7 @@ describe('compiler compliance: styling', () => {
               selectors:[["my-component"]],
               decls: 1,
               vars: 4,
-              attrs: [[${AttributeMarker.Classes}, "grape"]],
+              consts: [[${AttributeMarker.Classes}, "grape"]],
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵɵelement(0, "div", 0);
@@ -750,7 +750,7 @@ describe('compiler compliance: styling', () => {
               selectors:[["my-component"]],
               decls: 1,
               vars: 2,
-              attrs: [[${AttributeMarker.Classes}, "foo", ${AttributeMarker.Styles}, "width", "100px"]],
+              consts: [[${AttributeMarker.Classes}, "foo", ${AttributeMarker.Styles}, "width", "100px"]],
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵɵelement(0, "div", 0);

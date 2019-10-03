@@ -172,8 +172,8 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
    */
   template: ComponentTemplate<T>;
 
-  /** Attributes for all of the nodes inside the component template. Used during creation. */
-  attrs?: TAttributes[];
+  /** Constants for the nodes in the component's view. */
+  consts?: TAttributes[];
 
   /**
    * An array of `ngContent[selector]` values that were found in the template.
@@ -256,7 +256,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     vars: componentDefinition.vars,
     factory: null,
     template: componentDefinition.template || null !,
-    attrs: componentDefinition.attrs || null,
+    consts: componentDefinition.consts || null,
     ngContentSelectors: componentDefinition.ngContentSelectors,
     hostBindings: componentDefinition.hostBindings || null,
     contentQueries: componentDefinition.contentQueries || null,

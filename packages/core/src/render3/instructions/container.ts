@@ -56,7 +56,7 @@ export function ɵɵcontainer(index: number): void {
  * @param decls The number of nodes, local refs, and pipes for this template
  * @param vars The number of bindings for this template
  * @param tagName The name of the container element, if applicable
- * @param attrsIndex Index of template in the attributes array.
+ * @param constsIndex Index of template in the `consts` array.
  * @param localRefs A set of local reference bindings on the element.
  * @param localRefExtractor A function which extracts local-refs values from the template.
  *        Defaults to the current element associated with the local-ref.
@@ -65,16 +65,16 @@ export function ɵɵcontainer(index: number): void {
  */
 export function ɵɵtemplate(
     index: number, templateFn: ComponentTemplate<any>| null, decls: number, vars: number,
-    tagName?: string | null, attrsIndex?: number | null, localRefs?: string[] | null,
+    tagName?: string | null, constsIndex?: number | null, localRefs?: string[] | null,
     localRefExtractor?: LocalRefExtractor) {
   const lView = getLView();
   const tView = lView[TVIEW];
-  const tViewAttrs = tView.attrs;
+  const tViewConsts = tView.consts;
 
   // TODO: consider a separate node type for templates
   const tContainerNode = containerInternal(
       lView, index, tagName || null,
-      tViewAttrs === null || attrsIndex == null ? null : tViewAttrs[attrsIndex]);
+      tViewConsts === null || constsIndex == null ? null : tViewConsts[constsIndex]);
   if (tView.firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
     resolveDirectives(tView, lView, tContainerNode, localRefs || null);
@@ -82,7 +82,7 @@ export function ɵɵtemplate(
 
     const embeddedTView = tContainerNode.tViews = createTView(
         -1, templateFn, decls, vars, tView.directiveRegistry, tView.pipeRegistry, null,
-        tView.schemas, tViewAttrs);
+        tView.schemas, tViewConsts);
     const embeddedTViewNode = createTNode(tView, null, TNodeType.View, -1, null, null) as TViewNode;
     embeddedTViewNode.injectorIndex = tContainerNode.injectorIndex;
     embeddedTView.node = embeddedTViewNode;

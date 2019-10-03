@@ -266,7 +266,7 @@ export function renderTemplate<T>(
       template: templateFn,
       decls: decls,
       vars: vars,
-      attrs: attrs,
+      consts: attrs,
     });
     def.directiveDefs = directives || null;
     def.pipeDefs = pipes || null;
@@ -370,7 +370,7 @@ export function createComponent(
     directives: DirectiveTypesOrFactory = [], pipes: PipeTypesOrFactory = [],
     viewQuery: ComponentTemplate<any>| null = null, providers: Provider[] = [],
     viewProviders: Provider[] = [], hostBindings?: HostBindingsFunction<any>,
-    attrs: TAttributes[] = []): ComponentType<any> {
+    consts: TAttributes[] = []): ComponentType<any> {
   return class Component {
     value: any;
     static ngFactoryDef = () => new Component;
@@ -385,7 +385,7 @@ export function createComponent(
       pipes: pipes,
       features: (providers.length > 0 || viewProviders.length > 0)?
       [ɵɵProvidersFeature(providers || [], viewProviders || [])]: [],
-      attrs: attrs,
+      consts: consts,
     });
   };
 }

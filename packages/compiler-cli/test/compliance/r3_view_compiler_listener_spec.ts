@@ -42,7 +42,7 @@ describe('compiler compliance: listen()', () => {
     // The template should look like this (where IDENT is a wild card for an identifier):
     const template = `
         …
-        attrs: [[${AttributeMarker.Bindings}, "click"]],
+        consts: [[${AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
@@ -88,7 +88,7 @@ describe('compiler compliance: listen()', () => {
 
     const template = `
         …
-        attrs: [[${AttributeMarker.Bindings}, "click"]],
+        consts: [[${AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "my-app", 0);
@@ -155,7 +155,7 @@ describe('compiler compliance: listen()', () => {
           }
         }
         // ...
-        attrs: [[${AttributeMarker.Template}, "ngIf"], [${AttributeMarker.Bindings}, "click"]],
+        consts: [[${AttributeMarker.Template}, "ngIf"], [${AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 3, 0, "div", 0);
@@ -200,7 +200,7 @@ describe('compiler compliance: listen()', () => {
           selectors: [["my-component"]],
           decls: 4,
           vars: 0,
-          attrs: [[${AttributeMarker.Bindings}, "click"]],
+          consts: [[${AttributeMarker.Bindings}, "click"]],
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               const $s$ = $r3$.ɵɵgetCurrentView();

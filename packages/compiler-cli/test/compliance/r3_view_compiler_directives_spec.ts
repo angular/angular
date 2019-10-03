@@ -140,7 +140,7 @@ describe('compiler compliance: directives', () => {
           …
           MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
               …
-              attrs: [[${AttributeMarker.Bindings}, "someDirective"]],
+              consts: [[${AttributeMarker.Bindings}, "someDirective"]],
               template: function MyComponent_Template(rf, ctx) {
                   if (rf & 1) {
                       $r3$.ɵɵelement(0, "div", 0);
@@ -198,7 +198,7 @@ describe('compiler compliance: directives', () => {
         …
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           …
-          attrs: [["directiveA", ""]],
+          consts: [["directiveA", ""]],
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template", 0);
@@ -253,7 +253,7 @@ describe('compiler compliance: directives', () => {
         …
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           …
-          attrs: [["directiveA", "", ${AttributeMarker.Template}, "ngIf"], ["directiveA", ""]],
+          consts: [["directiveA", "", ${AttributeMarker.Template}, "ngIf"], ["directiveA", ""]],
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵtemplate(0, MyComponent_ng_container_0_Template, 2, 0, "ng-container", 0);
@@ -299,7 +299,7 @@ describe('compiler compliance: directives', () => {
         …
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
             …
-            attrs: [[${AttributeMarker.Bindings}, "someDirective"]],
+            consts: [[${AttributeMarker.Bindings}, "someDirective"]],
             template: function MyComponent_Template(rf, ctx) {
                 if (rf & 1) {
                     $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 0, 0, "ng-template", 0);
@@ -346,7 +346,7 @@ describe('compiler compliance: directives', () => {
           …
           MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
               …
-              attrs: [[${AttributeMarker.Template}, "someDirective"]],
+              consts: [[${AttributeMarker.Template}, "someDirective"]],
               template: function MyComponent_Template(rf, ctx) {
                   if (rf & 1) {
                       $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", 0);
@@ -394,7 +394,7 @@ describe('compiler compliance: directives', () => {
         …
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
             …
-            attrs: [[${AttributeMarker.Bindings}, "someDirective"]],
+            consts: [[${AttributeMarker.Bindings}, "someDirective"]],
             template: function MyComponent_Template(rf, ctx) {
                 if (rf & 1) {
                     $r3$.ɵɵelementStart(0, "div", 0);

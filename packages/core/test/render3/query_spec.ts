@@ -254,7 +254,7 @@ describe('query', () => {
             selectors: [['app']],
             decls: 1,
             vars: 0,
-            attrs: [['myDir']],
+            consts: [['myDir']],
             template: function App_Template(rf: RenderFlags, ctx: App) {
               if (rf & RenderFlags.Create) {
                 ɵɵelement(0, 'div', 0);
@@ -300,7 +300,7 @@ describe('query', () => {
             selectors: [['app']],
             decls: 1,
             vars: 0,
-            attrs: [['myDir']],
+            consts: [['myDir']],
             template: function App_Template(rf: RenderFlags, ctx: App) {
               if (rf & RenderFlags.Create) {
                 ɵɵelement(0, 'div', 0);
@@ -2033,7 +2033,7 @@ describe('query', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: ViewQueryComponent,
           selectors: [['view-query']],
-          attrs: [['text', 'A'], ['text', 'B'], ['text', 'C'], ['text', 'D'], ['text', 'E']],
+          consts: [['text', 'A'], ['text', 'B'], ['text', 'C'], ['text', 'D'], ['text', 'E']],
           template: function(rf: RenderFlags, ctx: ViewQueryComponent) {
             if (rf & RenderFlags.Create) {
               ɵɵelement(0, 'span', 0);
