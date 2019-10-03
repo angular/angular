@@ -129,7 +129,7 @@ export class NgForOf<T> implements DoCheck {
    * [template input variable](guide/structural-directives#template-input-variable).
    */
   @Input()
-  set ngForOf(ngForOf: NgIterable<T>) {
+  set ngForOf(ngForOf: NgIterable<T>|undefined|null) {
     this._ngForOf = ngForOf;
     this._ngForOfDirty = true;
   }
@@ -165,8 +165,7 @@ export class NgForOf<T> implements DoCheck {
 
   get ngForTrackBy(): TrackByFunction<T> { return this._trackByFn; }
 
-  // TODO(issue/24571): remove '!'.
-  private _ngForOf !: NgIterable<T>;
+  private _ngForOf: NgIterable<T>|undefined|null = null;
   private _ngForOfDirty: boolean = true;
   private _differ: IterableDiffer<T>|null = null;
   // TODO(issue/24571): remove '!'.
@@ -219,8 +218,11 @@ export class NgForOf<T> implements DoCheck {
         (item: IterableChangeRecord<any>, adjustedPreviousIndex: number | null,
          currentIndex: number | null) => {
           if (item.previousIndex == null) {
+            // NgForOf is never "null" or "undefined" here because the differ detected
+            // that a new item needs to be inserted from the iterable. This implies that
+            // there is an iterable value for "_ngForOf".
             const view = this._viewContainer.createEmbeddedView(
-                this._template, new NgForOfContext<T>(null !, this._ngForOf, -1, -1),
+                this._template, new NgForOfContext<T>(null !, this._ngForOf !, -1, -1),
                 currentIndex === null ? undefined : currentIndex);
             const tuple = new RecordViewTuple<T>(item, view);
             insertTuples.push(tuple);
@@ -243,7 +245,7 @@ export class NgForOf<T> implements DoCheck {
       const viewRef = <EmbeddedViewRef<NgForOfContext<T>>>this._viewContainer.get(i);
       viewRef.context.index = i;
       viewRef.context.count = ilen;
-      viewRef.context.ngForOf = this._ngForOf;
+      viewRef.context.ngForOf = this._ngForOf !;
     }
 
     changes.forEachIdentityChange((record: any) => {
