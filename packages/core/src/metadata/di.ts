@@ -101,7 +101,7 @@ export interface Query {
   read: any;
   isViewQuery: boolean;
   selector: any;
-  static: boolean;
+  static?: boolean;
 }
 
 /**
@@ -222,8 +222,8 @@ export interface ContentChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts: {read?: any, static: boolean}): any;
-  new (selector: Type<any>|Function|string, opts: {read?: any, static: boolean}): ContentChild;
+  (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): any;
+  new (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ContentChild;
 }
 
 /**
@@ -348,8 +348,8 @@ export interface ViewChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts: {read?: any, static: boolean}): any;
-  new (selector: Type<any>|Function|string, opts: {read?: any, static: boolean}): ViewChild;
+  (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): any;
+  new (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ViewChild;
 }
 
 /**
