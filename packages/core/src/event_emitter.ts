@@ -62,12 +62,8 @@ import {Subject, Subscription} from 'rxjs';
  * @publicApi
  */
 export class EventEmitter<T extends any> extends Subject<T> {
-  // TODO: mark this as internal once all the facades are gone
-  // we can't mark it as internal now because EventEmitter exported via @angular/core would not
-  // contain this property making it incompatible with all the code that uses EventEmitter via
-  // facades, which are local to the code and do not have this property stripped.
   /**
-   * Internal
+   * @internal
    */
   __isAsync: boolean;  // tslint:disable-line
 
