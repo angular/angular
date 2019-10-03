@@ -20,8 +20,6 @@
 
   @include _mat-button-interactive();
   @include _mat-button-disabled();
-  @include _mat-button-ripple-position();
-
 }
 
 // Since the stroked button has has an actual border that reduces the available space for
