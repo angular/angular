@@ -179,7 +179,6 @@ module.exports =
 
         .config(function(filterMembers) {
           filterMembers.notAllowedPatterns.push(
-            /^__/,
             /^ng[A-Z].*Def$/
           );
         })
