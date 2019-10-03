@@ -146,7 +146,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     }
   }
 
-  diff(collection: NgIterable<V>): DefaultIterableDiffer<V>|null {
+  diff(collection: NgIterable<V>|null|undefined): DefaultIterableDiffer<V>|null {
     if (collection == null) collection = [];
     if (!isListLikeIterable(collection)) {
       throw new Error(

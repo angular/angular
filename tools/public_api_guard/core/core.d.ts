@@ -263,7 +263,7 @@ export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, Iter
     readonly length: number;
     constructor(trackByFn?: TrackByFunction<V>);
     check(collection: NgIterable<V>): boolean;
-    diff(collection: NgIterable<V>): DefaultIterableDiffer<V> | null;
+    diff(collection: NgIterable<V> | null | undefined): DefaultIterableDiffer<V> | null;
     forEachAddedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
     forEachIdentityChange(fn: (record: IterableChangeRecord_<V>) => void): void;
     forEachItem(fn: (record: IterableChangeRecord_<V>) => void): void;
@@ -506,7 +506,7 @@ export interface IterableChanges<V> {
 }
 
 export interface IterableDiffer<V> {
-    diff(object: NgIterable<V>): IterableChanges<V> | null;
+    diff(object: NgIterable<V> | undefined | null): IterableChanges<V> | null;
 }
 
 export interface IterableDifferFactory {
