@@ -95,7 +95,11 @@ export function runMigrationRules<T>(
       .filter(filePath => !resourceCollector.resolvedStylesheets.some(s => s.filePath === filePath))
       .forEach(filePath => {
         const stylesheet = resourceCollector.resolveExternalStylesheet(filePath, null);
-        rules.forEach(r => r.visitStylesheet(stylesheet));
+        const relativePath = getProjectRelativePath(filePath);
+        // do not visit stylesheets which have been referenced from a component.
+        if (!analyzedFiles.has(relativePath)) {
+          rules.forEach(r => r.visitStylesheet(stylesheet));
+        }
       });
 
   // Commit all recorded updates in the update recorder. We need to perform the
@@ -110,7 +114,7 @@ export function runMigrationRules<T>(
   // In case there are rule failures, print these to the CLI logger as warnings.
   if (ruleFailures.length) {
     ruleFailures.forEach(({filePath, message, position}) => {
-      const normalizedFilePath = normalize(relative(basePath, filePath));
+      const normalizedFilePath = normalize(getProjectRelativePath(filePath));
       const lineAndCharacter = `${position.line + 1}:${position.character + 1}`;
       logger.warn(`${normalizedFilePath}@${lineAndCharacter} - ${message}`);
     });
@@ -119,7 +123,7 @@ export function runMigrationRules<T>(
   return !!ruleFailures.length;
 
   function getUpdateRecorder(filePath: string): UpdateRecorder {
-    const treeFilePath = relative(basePath, filePath);
+    const treeFilePath = getProjectRelativePath(filePath);
     if (updateRecorderCache.has(treeFilePath)) {
       return updateRecorderCache.get(treeFilePath)!;
     }
@@ -134,8 +138,8 @@ export function runMigrationRules<T>(
     resourceCollector.visitNode(node);
   }
 
-  /** Gets the specified path relative to the project root. */
+  /** Gets the specified path relative to the project root in POSIX format. */
   function getProjectRelativePath(filePath: string) {
-    return relative(basePath, filePath);
+    return relative(basePath, filePath).replace(/\\/g, '/');
   }
 }

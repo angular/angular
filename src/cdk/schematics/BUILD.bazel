@@ -89,5 +89,5 @@ filegroup(
     srcs = glob([
         "ng-update/test-cases/**/*_input.ts",
         "ng-update/test-cases/**/*_expected_output.ts",
-    ]),
+    ]) + ["ng-update/test-cases/misc/global-stylesheets-test.scss"],
 )
