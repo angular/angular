@@ -34,7 +34,7 @@ export interface IterableDiffer<V> {
    * @returns an object describing the difference. The return value is only valid until the next
    * `diff()` invocation.
    */
-  diff(object: NgIterable<V>): IterableChanges<V>|null;
+  diff(object: NgIterable<V>|undefined|null): IterableChanges<V>|null;
 }
 
 /**
