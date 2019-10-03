@@ -1171,6 +1171,40 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement.firstChild.title).toEqual(`ANGULAR - value 1 - value 2 (fr)`);
     });
+
+    it('should create corresponding ng-reflect properties', () => {
+      @Component({
+        selector: 'welcome',
+        template: '{{ messageText }}',
+      })
+      class WelcomeComp {
+        @Input() messageText !: string;
+      }
+
+      @Component({
+        template: `
+          <welcome
+            messageText="Hello"
+            i18n-messageText="Welcome message description">
+          </welcome>
+        `
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, WelcomeComp],
+      });
+      loadTranslations({
+        [computeMsgId('Hello')]: 'Bonjour',
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const comp = fixture.debugElement.query(By.css('welcome'));
+      expect(comp.attributes['messagetext']).toBe('Bonjour');
+      expect(comp.attributes['ng-reflect-message-text']).toBe('Bonjour');
+    });
   });
 
   it('should work with directives and host bindings', () => {

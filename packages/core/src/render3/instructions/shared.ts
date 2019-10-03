@@ -888,21 +888,8 @@ export function elementPropertyInternal<T>(
   if (!nativeOnly && inputData != null && (dataValue = inputData[propName])) {
     setInputsForProperty(lView, dataValue, value);
     if (isComponentHost(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
-    if (ngDevMode) {
-      if (tNode.type === TNodeType.Element || tNode.type === TNodeType.Container) {
-        /**
-         * dataValue is an array containing runtime input or output names for the directives:
-         * i+0: directive instance index
-         * i+1: publicName
-         * i+2: privateName
-         *
-         * e.g. [0, 'change', 'change-minified']
-         * we want to set the reflected property with the privateName: dataValue[i+2]
-         */
-        for (let i = 0; i < dataValue.length; i += 3) {
-          setNgReflectProperty(lView, element, tNode.type, dataValue[i + 2] as string, value);
-        }
-      }
+    if (ngDevMode && (tNode.type === TNodeType.Element || tNode.type === TNodeType.Container)) {
+      setNgReflectProperties(lView, element, tNode.type, dataValue, value);
     }
   } else if (tNode.type === TNodeType.Element) {
     propName = mapPropName(propName);
@@ -945,7 +932,7 @@ function markDirtyIfOnPush(lView: LView, viewIndex: number): void {
   }
 }
 
-export function setNgReflectProperty(
+function setNgReflectProperty(
     lView: LView, element: RElement | RComment, type: TNodeType, attrName: string, value: any) {
   const renderer = lView[RENDERER];
   attrName = normalizeDebugBindingName(attrName);
@@ -966,6 +953,23 @@ export function setNgReflectProperty(
     } else {
       (element as RComment).textContent = textContent;
     }
+  }
+}
+
+export function setNgReflectProperties(
+    lView: LView, element: RElement | RComment, type: TNodeType, dataValue: PropertyAliasValue,
+    value: any) {
+  /**
+   * dataValue is an array containing runtime input or output names for the directives:
+   * i+0: directive instance index
+   * i+1: publicName
+   * i+2: privateName
+   *
+   * e.g. [0, 'change', 'change-minified']
+   * we want to set the reflected property with the privateName: dataValue[i+2]
+   */
+  for (let i = 0; i < dataValue.length; i += 3) {
+    setNgReflectProperty(lView, element, type, dataValue[i + 2] as string, value);
   }
 }
 
