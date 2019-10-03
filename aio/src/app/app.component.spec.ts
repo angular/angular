@@ -667,7 +667,7 @@ describe('AppComponent', () => {
 
       it('should restrain scrolling inside the ToC container', () => {
         const restrainScrolling = spyOn(component, 'restrainScrolling');
-        const evt = new MouseEvent('mousewheel');
+        const evt = new WheelEvent('wheel');
 
         setHasFloatingToc(true);
         expect(restrainScrolling).not.toHaveBeenCalled();
