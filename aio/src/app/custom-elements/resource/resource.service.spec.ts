@@ -43,7 +43,7 @@ describe('ResourceService', () => {
 
     it('categories observable should complete', () => {
       let completed = false;
-      resourceService.categories.subscribe(undefined, undefined, () => completed = true);
+      resourceService.categories.subscribe({complete: () => completed = true});
       expect(completed).toBe(true, 'observable completed');
     });
 
