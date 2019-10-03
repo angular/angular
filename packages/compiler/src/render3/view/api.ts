@@ -41,7 +41,7 @@ export interface R3DirectiveMetadata {
   /**
    * Dependencies of the directive's constructor.
    */
-  deps: R3DependencyMetadata[]|null;
+  deps: R3DependencyMetadata[]|'invalid'|null;
 
   /**
    * Unparsed selector of the directive, or `null` if there was no selector.

@@ -12,7 +12,7 @@ import {DefinitionKind} from '../constant_pool';
 import * as o from '../output/output_ast';
 import {OutputContext, error} from '../util';
 
-import {R3DependencyMetadata, compileFactoryFromMetadata, compileFactoryFunction, dependenciesFromGlobalMetadata} from './r3_factory';
+import {R3DependencyMetadata, R3FactoryTarget, compileFactoryFunction, dependenciesFromGlobalMetadata} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
 import {typeWithParameters} from './util';
 
@@ -89,8 +89,8 @@ export function compilePipeFromRender2(
     pure: pipe.pure,
   };
   const res = compilePipeFromMetadata(metadata);
-  const factoryRes =
-      compileFactoryFromMetadata({...metadata, injectFn: R3.directiveInject, isPipe: true});
+  const factoryRes = compileFactoryFunction(
+      {...metadata, injectFn: R3.directiveInject, target: R3FactoryTarget.Pipe});
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Pipe);
   const ngFactoryDefStatement = new o.ClassStmt(
       /* name */ name,

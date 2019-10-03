@@ -921,6 +921,8 @@ export interface ɵɵInjectorDef<T> {
 
 export declare function ɵɵinjectPipeChangeDetectorRef(flags?: InjectFlags): ChangeDetectorRef | null;
 
+export declare function ɵɵinvalidFactory(): never;
+
 export declare function ɵɵlistener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): void;
 
 export declare function ɵɵloadQuery<T>(): QueryList<T>;

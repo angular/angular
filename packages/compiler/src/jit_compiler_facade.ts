@@ -16,7 +16,7 @@ import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/int
 import {DeclareVarStmt, Expression, LiteralExpr, Statement, StmtModifier, WrappedNodeExpr} from './output/output_ast';
 import {JitEvaluator} from './output/output_jit';
 import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
-import {R3DependencyMetadata, R3ResolvedDependencyType, compileFactoryFromMetadata} from './render3/r3_factory';
+import {R3DependencyMetadata, R3FactoryTarget, R3ResolvedDependencyType, compileFactoryFunction} from './render3/r3_factory';
 import {R3JitReflector} from './render3/r3_jit';
 import {R3InjectorMetadata, R3NgModuleMetadata, compileInjector, compileNgModule} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata} from './render3/r3_pipe_compiler';
@@ -29,6 +29,7 @@ import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 
 export class CompilerFacadeImpl implements CompilerFacade {
   R3ResolvedDependencyType = R3ResolvedDependencyType as any;
+  R3FactoryTarget = R3FactoryTarget as any;
   ResourceLoader = ResourceLoader;
   private elementSchemaRegistry = new DomElementSchemaRegistry();
 
@@ -155,14 +156,14 @@ export class CompilerFacadeImpl implements CompilerFacade {
 
   compileFactory(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3FactoryDefMetadataFacade) {
-    const factoryRes = compileFactoryFromMetadata({
+    const factoryRes = compileFactoryFunction({
       name: meta.name,
       type: new WrappedNodeExpr(meta.type),
       typeArgumentCount: meta.typeArgumentCount,
       deps: convertR3DependencyMetadataArray(meta.deps),
       injectFn: meta.injectFn === 'directiveInject' ? Identifiers.directiveInject :
                                                       Identifiers.inject,
-      isPipe: meta.isPipe
+      target: meta.target,
     });
     return this.jitExpression(
         factoryRes.factory, angularCoreEnv, sourceMapUrl, factoryRes.statements);
