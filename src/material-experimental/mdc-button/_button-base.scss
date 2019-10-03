@@ -3,7 +3,7 @@
 // Adds a `before` pseudo element that acts as an overlay indicator for interaction states
 // such as focus, hover, and active.
 @mixin _mat-button-interactive() {
-  &::before {
+  &::before, &::after {
     content: '';
     pointer-events: none;
     position: absolute;
