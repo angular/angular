@@ -113,6 +113,34 @@ describe('styling', () => {
        expect(outer.textContent.trim()).toEqual('outer');
      });
 
+  it('should render initial styling for repeated nodes that a component host', () => {
+    @Component({
+      selector: '[comp]',
+      template: '',
+    })
+    class Comp {
+    }
+
+    @Component({
+      template: `
+        <ng-template ngFor [ngForOf]="items" let-item>
+          <p comp class="a">A</p>
+        </ng-template>
+      `
+    })
+    class App {
+      items = [1, 2, 3];
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.debugElement.queryAll(By.css('.a')).length).toBe(3);
+  });
+
   it('should do nothing for empty style bindings', () => {
     @Component({template: '<div [style.color]></div>'})
     class App {

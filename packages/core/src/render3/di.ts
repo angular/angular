@@ -152,10 +152,6 @@ export function getOrCreateNodeInjectorForNode(
     insertBloom(tView.data, tNode);  // foundation for node bloom
     insertBloom(hostView, null);     // foundation for cumulative bloom
     insertBloom(tView.blueprint, null);
-
-    ngDevMode && assertEqual(
-                     tNode.flags === 0 || tNode.flags === TNodeFlags.isComponentHost, true,
-                     'expected tNode.flags to not be initialized');
   }
 
   const parentLoc = getParentInjectorLocation(tNode, hostView);
