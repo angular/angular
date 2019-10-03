@@ -18,7 +18,7 @@ import {bindingUpdated} from './bindings';
 import {attachPatchData} from './context_discovery';
 import {setDelayProjection} from './instructions/all';
 import {attachI18nOpCodesDebug} from './instructions/lview_debug';
-import {TsickleIssue1009, allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty, textBindingInternal} from './instructions/shared';
+import {TsickleIssue1009, allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty, setNgReflectProperties, textBindingInternal} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
 import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from './interfaces/node';
@@ -1006,6 +1006,10 @@ function i18nAttributesFirstPass(lView: LView, tView: TView, index: number, valu
           const dataValue = tNode.inputs && tNode.inputs[attrName];
           if (dataValue) {
             setInputsForProperty(lView, dataValue, value);
+            if (ngDevMode) {
+              const element = getNativeByIndex(previousElementIndex, lView) as RElement | RComment;
+              setNgReflectProperties(lView, element, tNode.type, dataValue, value);
+            }
           }
         }
       }
