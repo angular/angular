@@ -30,11 +30,11 @@ describe('DocumentService', () => {
 
   function getServices(initialUrl: string = '') {
     const injector = createInjector(initialUrl);
-    httpMock = injector.get(HttpTestingController) as HttpTestingController;
+    httpMock = injector.inject(HttpTestingController);
     return {
-      locationService: injector.get(LocationService) as MockLocationService,
-      docService: injector.get(DocumentService) as DocumentService,
-      logger: injector.get(Logger) as MockLogger
+      locationService: injector.inject(LocationService) as any as MockLocationService,
+      docService: injector.inject(DocumentService) as any as DocumentService,
+      logger: injector.inject(Logger) as any as MockLogger,
     };
   }
 
