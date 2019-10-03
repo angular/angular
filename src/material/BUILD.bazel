@@ -1,5 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
+load("@npm//scss-bundle:index.bzl", "scss_bundle")
+load("//src/cdk:config.bzl", "CDK_SCSS_LIBS")
 load(
     "//src/material:config.bzl",
     "MATERIAL_ENTRYPOINTS",
@@ -19,14 +21,26 @@ filegroup(
     srcs = ["//src/material/%s:overview" % name for name in MATERIAL_ENTRYPOINTS],
 )
 
+scss_bundle(
+    name = "theming_bundle",
+    outs = ["_theming.scss"],
+    args = [
+        "--entry=$(location //src/material/core:theming/_all-theme.scss)",
+        "--verbosity=Errors",
+        "--dedupe=./src/**/*.scss",
+        "--dest=$(location :_theming.scss)",
+    ],
+    data = CDK_SCSS_LIBS + MATERIAL_SCSS_LIBS + ["//src/material/core:theming/_all-theme.scss"],
+)
+
 # Creates the @angular/material package published to npm.
 ng_package(
     name = "npm_package",
     srcs = [
-        "_theming.scss",
         "package.json",
     ],
     data = [
+        ":theming_bundle",
         "//src/material/core:theming_scss_lib",
         "//src/material/prebuilt-themes:deeppurple-amber",
         "//src/material/prebuilt-themes:indigo-pink",

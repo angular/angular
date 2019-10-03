@@ -142,7 +142,7 @@
     "rollup-plugin-alias": "^1.4.0",
     "rollup-plugin-node-resolve": "^3.0.3",
     "run-sequence": "^1.2.2",
-    "scss-bundle": "^2.0.1-beta.7",
+    "scss-bundle": "^2.5.1",
     "selenium-webdriver": "^3.6.0",
     "send": "^0.17.1",
     "shelljs": "^0.8.3",
