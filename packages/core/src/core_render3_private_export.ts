@@ -34,6 +34,7 @@ export {
   ɵɵdirectiveInject,
   ɵɵinjectAttribute,
   ɵɵinjectPipeChangeDetectorRef,
+  ɵɵinvalidFactory,
   ɵɵgetFactoryOf,
   ɵɵgetInheritedFactory,
   ɵɵsetComponentScope,

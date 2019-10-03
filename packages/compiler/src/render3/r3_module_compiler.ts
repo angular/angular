@@ -12,7 +12,7 @@ import {mapLiteral} from '../output/map_util';
 import * as o from '../output/output_ast';
 import {OutputContext} from '../util';
 
-import {R3DependencyMetadata, compileFactoryFunction} from './r3_factory';
+import {R3DependencyMetadata, R3FactoryTarget, compileFactoryFunction} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
 import {R3Reference, convertMetaToOutput, mapToMapExpression} from './util';
 
@@ -210,6 +210,7 @@ export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
     typeArgumentCount: 0,
     deps: meta.deps,
     injectFn: R3.inject,
+    target: R3FactoryTarget.NgModule,
   });
   const definitionMap = {
     factory: result.factory,

@@ -134,6 +134,25 @@ export function valueReferenceToExpression(
   }
 }
 
+/**
+ * Convert `ConstructorDeps` into the `R3DependencyMetadata` array for those deps if they're valid,
+ * or into an `'invalid'` signal if they're not.
+ *
+ * This is a companion function to `validateConstructorDependencies` which accepts invalid deps.
+ */
+export function unwrapConstructorDependencies(deps: ConstructorDeps | null): R3DependencyMetadata[]|
+    'invalid'|null {
+  if (deps === null) {
+    return null;
+  } else if (deps.deps !== null) {
+    // These constructor dependencies are valid.
+    return deps.deps;
+  } else {
+    // These deps are invalid.
+    return 'invalid';
+  }
+}
+
 export function getValidConstructorDependencies(
     clazz: ClassDeclaration, reflector: ReflectionHost,
     defaultImportRecorder: DefaultImportRecorder, isCore: boolean): R3DependencyMetadata[]|null {
@@ -141,6 +160,13 @@ export function getValidConstructorDependencies(
       clazz, getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore));
 }
 
+/**
+ * Validate that `ConstructorDeps` does not have any invalid dependencies and convert them into the
+ * `R3DependencyMetadata` array if so, or raise a diagnostic if some deps are invalid.
+ *
+ * This is a companion function to `unwrapConstructorDependencies` which does not accept invalid
+ * deps.
+ */
 export function validateConstructorDependencies(
     clazz: ClassDeclaration, deps: ConstructorDeps | null): R3DependencyMetadata[]|null {
   if (deps === null) {
