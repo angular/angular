@@ -65,8 +65,11 @@ export const enum TNodeFlags {
   /** This bit is set if the node has any "style" inputs */
   hasStyleInput = 0b00100000,
 
+  /** This bit is set if the node has initial styling */
+  hasInitialStyling = 0b01000000,
+
   /** This bit is set if the node has been detached by i18n */
-  isDetached = 0b01000000,
+  isDetached = 0b10000000,
 }
 
 /**
