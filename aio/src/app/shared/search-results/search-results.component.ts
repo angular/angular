@@ -14,7 +14,7 @@ export class SearchResultsComponent implements OnChanges {
    * The results to display
    */
   @Input()
-  searchResults: SearchResults;
+  searchResults: SearchResults | null = null;
 
   /**
    * Emitted when the user selects a search result
@@ -39,7 +39,7 @@ export class SearchResultsComponent implements OnChanges {
   }
 
   // Map the search results into groups by area
-  private processSearchResults(search: SearchResults) {
+  private processSearchResults(search: SearchResults | null) {
     if (!search) {
       return [];
     }
