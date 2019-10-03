@@ -199,6 +199,7 @@ export declare class MatDatepickerIntl {
     prevYearLabel: string;
     switchToMonthViewLabel: string;
     switchToMultiYearViewLabel: string;
+    formatYearRange(start: string, end: string): string;
 }
 
 export declare class MatDatepickerModule {

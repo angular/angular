@@ -82,7 +82,11 @@ export class MatCalendarHeader<D> {
     const minYearOfPage = activeYear - getActiveOffset(
       this._dateAdapter, this.calendar.activeDate, this.calendar.minDate, this.calendar.maxDate);
     const maxYearOfPage = minYearOfPage + yearsPerPage - 1;
-    return `${minYearOfPage} \u2013 ${maxYearOfPage}`;
+    const minYearName =
+      this._dateAdapter.getYearName(this._dateAdapter.createDate(minYearOfPage, 0, 1));
+    const maxYearName =
+      this._dateAdapter.getYearName(this._dateAdapter.createDate(maxYearOfPage, 0, 1));
+    return this._intl.formatYearRange(minYearName, maxYearName);
   }
 
   get periodButtonLabel(): string {

@@ -48,4 +48,9 @@ export class MatDatepickerIntl {
 
   /** A label for the 'switch to year view' button (used by screen readers). */
   switchToMultiYearViewLabel: string = 'Choose month and year';
+
+  /** Formats a range of years. */
+  formatYearRange(start: string, end: string): string {
+    return `${start} \u2013 ${end}`;
+  }
 }

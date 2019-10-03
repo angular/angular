@@ -1,7 +1,7 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {Component} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatNativeDateModule} from '@angular/material/core';
+import {MatNativeDateModule, DateAdapter} from '@angular/material/core';
 import {DEC, FEB, JAN} from '@angular/material/testing';
 import {By} from '@angular/platform-browser';
 import {MatCalendar} from './calendar';
@@ -148,6 +148,18 @@ describe('MatCalendarHeader', () => {
       expect(calendarInstance.currentView).toBe('month');
       expect(calendarInstance.activeDate).toEqual(new Date(2016, DEC, 31));
       expect(testComponent.selected).toBeFalsy('no date should be selected yet');
+    });
+
+    it('should format the year in the period button using the date adapter', () => {
+      const adapter = fixture.debugElement.injector.get(DateAdapter);
+
+      spyOn(adapter, 'getYearName').and.returnValue('FAKE_YEAR');
+
+      periodButton.click();
+      fixture.detectChanges();
+
+      expect(calendarInstance.currentView).toBe('multi-year');
+      expect(periodButton.textContent).toContain('FAKE_YEAR');
     });
   });
 
