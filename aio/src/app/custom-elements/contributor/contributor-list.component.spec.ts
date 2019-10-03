@@ -85,7 +85,7 @@ describe('ContributorListComponent', () => {
     searchResult: SearchResult = {};
     search = jasmine.createSpy('search').and.callFake(() => this.searchResult);
     setSearch = jasmine.createSpy('setSearch')
-      .and.callFake((label: string, result: SearchResult) => {
+      .and.callFake((_label: string, result: SearchResult) => {
         this.searchResult = result;
       });
   }

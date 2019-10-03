@@ -113,9 +113,9 @@ export class CodeComponent implements OnChanges {
     this.codeText = this.getCodeText(); // store the unformatted code as text (for copying)
 
     this.pretty
-        .formatCode(leftAlignedCode, this.language, this.getLinenums(leftAlignedCode))
+        .formatCode(leftAlignedCode, this.language, this.getLinenums())
         .pipe(tap(() => this.codeFormatted.emit()))
-        .subscribe(c => this.setCodeHtml(c), err => { /* ignore failure to format */ }
+        .subscribe(c => this.setCodeHtml(c), () => { /* ignore failure to format */ }
     );
   }
 
@@ -156,7 +156,7 @@ export class CodeComponent implements OnChanges {
   }
 
   /** Gets the calculated value of linenums (boolean/number). */
-  getLinenums(code: string) {
+  getLinenums() {
     const linenums =
       typeof this.linenums === 'boolean' ? this.linenums :
       this.linenums === 'true' ? true :
