@@ -10,7 +10,7 @@ import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
-import {TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
+import {TAttributes, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {StylingMapArray, TStylingContext} from '../interfaces/styling';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
@@ -83,16 +83,6 @@ export function ɵɵelementStart(
   if (tView.firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
     resolveDirectives(tView, lView, tNode, localRefs || null);
-
-    const inputData = tNode.inputs;
-    if (inputData != null) {
-      if (inputData.hasOwnProperty('class')) {
-        tNode.flags |= TNodeFlags.hasClassInput;
-      }
-      if (inputData.hasOwnProperty('style')) {
-        tNode.flags |= TNodeFlags.hasStyleInput;
-      }
-    }
 
     if (tView.queries !== null) {
       tView.queries.elementStart(tView, tNode);

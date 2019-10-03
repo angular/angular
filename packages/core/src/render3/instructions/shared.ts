@@ -843,6 +843,15 @@ function initializeInputAndOutputAliases(tView: TView, tNode: TNode): void {
     outputsStore = generatePropertyAliases(directiveDef.outputs, i, outputsStore);
   }
 
+  if (inputsStore !== null) {
+    if (inputsStore.hasOwnProperty('class')) {
+      tNode.flags |= TNodeFlags.hasClassInput;
+    }
+    if (inputsStore.hasOwnProperty('style')) {
+      tNode.flags |= TNodeFlags.hasStyleInput;
+    }
+  }
+
   tNode.inputs = inputsStore;
   tNode.outputs = outputsStore;
 }
