@@ -41,8 +41,8 @@ describe('NavigationService', () => {
       navService.navigationViews.subscribe(views => viewsEvents.push(views));
 
       expect(viewsEvents).toEqual([]);
-      httpMock.expectOne({}).flush({ TopBar: [ { url: 'a' }] });
-      expect(viewsEvents).toEqual([{ TopBar: [ { url: 'a' }] }]);
+      httpMock.expectOne({}).flush({ TopBar: [ { title: '', url: 'a' }] });
+      expect(viewsEvents).toEqual([{ TopBar: [ { title: '', url: 'a' }] }]);
     });
 
     it('navigationViews observable should complete', () => {
@@ -82,7 +82,7 @@ describe('NavigationService', () => {
       { title: 'a', tooltip: 'a tip' },
       { title: 'b' },
       { title: 'c!'},
-      { url: 'foo' }
+      { title: '', url: 'foo' }
     ];
 
     beforeEach(() => {
