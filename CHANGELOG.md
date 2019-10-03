@@ -1,3 +1,65 @@
+# 9.0.0-next.0 "cardboard-cpu" (2019-10-03)
+
+### cdk
+
+_Highlights_:
+* New infrastructure for creating component test harnesses is available in `@angular/cdk/testing`.
+  Documentation for this infrastructure and for specific Angular Material harnesses is in-progress.
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **drag-drop:** dragging styles not reset once dragging is dragging styles not reset once dragging is completed ([#17150](https://github.com/angular/components/issues/17150)) ([e62e6bd](https://github.com/angular/components/commit/e62e6bd)), closes [#17139](https://github.com/angular/components/issues/17139) |
+| feature |  **testing:** move harness code from cdk-experimental ([#17026](https://github.com/angular/components/issues/17026)) ([bacdc85](https://github.com/angular/components/commit/bacdc85)) |
+
+### material
+
+_Breaking changes:_
+
+* Components can no longer be imported through "@angular/material".
+Use the individual secondary entry-points, such as `@angular/material/button`.
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** focus monitor not identifying touch focus inside shadow root ([#17167](https://github.com/angular/components/issues/17167)) ([3673f3d](https://github.com/angular/components/commit/3673f3d)) |
+| bug fix |  **datepicker:** year not formatted in multi-year view button ([#17202](https://github.com/angular/components/issues/17202)) ([ae28fce](https://github.com/angular/components/commit/ae28fce)), closes [#17187](https://github.com/angular/components/issues/17187) |
+| bug fix |  **overlay:** error when trying to add/remove empty string class ([#14919](https://github.com/angular/components/issues/14919)) ([5509c23](https://github.com/angular/components/commit/5509c23)) |
+| bug fix |  **schematics:** support stricter TypeScript compiler flags ([#17159](https://github.com/angular/components/issues/17159)) ([f32fb68](https://github.com/angular/components/commit/f32fb68)), closes [#17135](https://github.com/angular/components/issues/17135) |
+| bug fix |  **select:** highlighted option not updated if value is reset while closed ([#17213](https://github.com/angular/components/issues/17213)) ([d453d06](https://github.com/angular/components/commit/d453d06)), closes [#17212](https://github.com/angular/components/issues/17212) |
+| bug fix |  **stepper:** unable to skip step if completed value is overwritten ([#15403](https://github.com/angular/components/issues/15403)) ([bebb9ff](https://github.com/angular/components/commit/bebb9ff)), closes [#15310](https://github.com/angular/components/issues/15310) |
+| bug fix |  **tabs:** avoid Ivy template type checking errors in tab link ([#17282](https://github.com/angular/components/issues/17282)) ([ef5d9cb](https://github.com/angular/components/commit/ef5d9cb)), closes [#17228](https://github.com/angular/components/issues/17228) |
+| bug fix |  **tabs:** avoid template type checking errors with Ivy ([#17228](https://github.com/angular/components/issues/17228)) ([8c98013](https://github.com/angular/components/commit/8c98013)), closes [#17022](https://github.com/angular/components/issues/17022) [#17121](https://github.com/angular/components/issues/17121) |
+| feature |  **autocomplete:** move harness out of experimental ([#17080](https://github.com/angular/components/issues/17080)) ([dec116b](https://github.com/angular/components/commit/dec116b)) |
+| feature |  **button:** move harness out of experimental ([#17098](https://github.com/angular/components/issues/17098)) ([3dc33f1](https://github.com/angular/components/commit/3dc33f1)) |
+| feature |  **checkbox:** move checkbox harness out of experimental ([#17067](https://github.com/angular/components/issues/17067)) ([09ded04](https://github.com/angular/components/commit/09ded04)) |
+| feature |  **core:** allow more granular control over sanity checks ([#16973](https://github.com/angular/components/issues/16973)) ([77994e9](https://github.com/angular/components/commit/77994e9)), closes [#16617](https://github.com/angular/components/issues/16617) |
+| feature |  **dialog:** move test harness out of experimental ([#17104](https://github.com/angular/components/issues/17104)) ([8859dfc](https://github.com/angular/components/commit/8859dfc)) |
+| feature |  **google-maps:** Add map-info-window component ([#17027](https://github.com/angular/components/issues/17027)) ([30de283](https://github.com/angular/components/commit/30de283)) |
+| feature |  **menu:** move test harness out of experimental ([#17113](https://github.com/angular/components/issues/17113)) ([170299b](https://github.com/angular/components/commit/170299b)) |
+| feature |  **progress:** move harnesses out of experimental ([#17115](https://github.com/angular/components/issues/17115)) ([26df035](https://github.com/angular/components/commit/26df035)) |
+| feature |  **radio:** move test harness out of experimental ([#17117](https://github.com/angular/components/issues/17117)) ([ef439b4](https://github.com/angular/components/commit/ef439b4)) |
+| feature |  **sidenav:** move harnesses out of experimental ([#17122](https://github.com/angular/components/issues/17122)) ([aa2e0ab](https://github.com/angular/components/commit/aa2e0ab)) |
+| feature |  **slide-toggle:** move harness out of experimental ([#17132](https://github.com/angular/components/issues/17132)) ([15ba871](https://github.com/angular/components/commit/15ba871)) |
+| feature |  **slide-toggle:** remove Hammer.js dependency ([#17102](https://github.com/angular/components/issues/17102)) ([534b9c2](https://github.com/angular/components/commit/534b9c2)) |
+| feature |  **slider:** move harness out of experimental ([#17136](https://github.com/angular/components/issues/17136)) ([8229353](https://github.com/angular/components/commit/8229353)) |
+| feature |  **slider:** remove Hammer.js dependency ([#16860](https://github.com/angular/components/issues/16860)) ([00a3e79](https://github.com/angular/components/commit/00a3e79)) |
+| feature |  **snack-bar:** add test harness for snack-bar ([#17127](https://github.com/angular/components/issues/17127)) ([6a732d3](https://github.com/angular/components/commit/6a732d3)) |
+| feature |  **tabs:** move harnesses out of experimental ([#17137](https://github.com/angular/components/issues/17137)) ([a2ccacd](https://github.com/angular/components/commit/a2ccacd)) |
+| feature |  **tooltip:** remove Hammer.js dependency ([#17003](https://github.com/angular/components/issues/17003)) ([4126029](https://github.com/angular/components/commit/4126029)), closes [#16850](https://github.com/angular/components/issues/16850) |
+| refactor |  remove re-exports from primary entry-point ([0c1d369](https://github.com/angular/components/commit/0c1d369)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-checkbox:** model value not updated through toggle method ([#17229](https://github.com/angular/components/issues/17229)) ([f178f20](https://github.com/angular/components/commit/f178f20)), closes [#11902](https://github.com/angular/components/issues/11902) |
+| bug fix |  **mdc-button:** use state container for button interaction ([#17284](https://github.com/angular/components/issues/17284)) ([ae682d8](https://github.com/angular/components/commit/ae682d8)) |
+| bug fix |  **mdc-button:** add ::after to reflect active styles ([#17283](https://github.com/angular/components/issues/17283)) ([4dbf9f6](https://github.com/angular/components/commit/4dbf9f6)) |
+| bug fix |  **mdc-radio:** rename mdc-radio APIs to match existing radio APIs ([#17178](https://github.com/angular/components/issues/17178)) ([8e141ef](https://github.com/angular/components/commit/8e141ef)) |
+| bug fix |  **mdc-slider:** incorrectly rendering extra background ([#17207](https://github.com/angular/components/issues/17207)) ([7bee53f](https://github.com/angular/components/commit/7bee53f)) |
+| feature |  **mdc-radio:** Set up the MDC foundation ([#17180](https://github.com/angular/components/issues/17180)) ([67f3c0b](https://github.com/angular/components/commit/67f3c0b)) |
+| feature |  **mdc-radio:** use MDC DOM structure and styles ([#17179](https://github.com/angular/components/issues/17179)) ([2112fac](https://github.com/angular/components/commit/2112fac)) |
+
+
 ## 8.2.2 "vantablack-rainbow" (2019-09-30)
 
 ### cdk
