@@ -10,7 +10,7 @@ import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
-import {TAttributes, TNodeType} from '../interfaces/node';
+import {TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {StylingMapArray, TStylingContext} from '../interfaces/styling';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
@@ -64,7 +64,9 @@ export function ɵɵelementStart(
     }
   }
 
-  renderInitialStyling(renderer, native, tNode);
+  if ((tNode.flags & TNodeFlags.hasInitialStyling) === TNodeFlags.hasInitialStyling) {
+    renderInitialStyling(renderer, native, tNode);
+  }
 
   appendChild(native, tNode, lView);
 

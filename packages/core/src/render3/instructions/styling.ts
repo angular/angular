@@ -8,7 +8,7 @@
 import {SafeValue} from '../../sanitization/bypass';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {setInputsForProperty} from '../instructions/shared';
-import {AttributeMarker, TAttributes, TNode, TNodeType} from '../interfaces/node';
+import {AttributeMarker, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {StylingMapArray, StylingMapArrayIndex, TStylingContext} from '../interfaces/styling';
 import {BINDING_INDEX, LView, RENDERER} from '../interfaces/view';
@@ -472,6 +472,10 @@ export function registerInitialStylingOnTNode(
       tNode.styles = styles;
     }
     updateRawValueOnContext(tNode.styles, stylingMapToString(styles, false));
+  }
+
+  if (hasAdditionalInitialStyling) {
+    tNode.flags |= TNodeFlags.hasInitialStyling;
   }
 
   return hasAdditionalInitialStyling;
