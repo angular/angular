@@ -95,6 +95,7 @@ sass_binary(
 dev_server(
     name = "devserver",
     srcs = [
+        "favicon.ico",
         "index.html",
         "system-config.js",
         "system-rxjs-operators.js",
