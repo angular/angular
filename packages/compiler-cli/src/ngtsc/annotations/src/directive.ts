@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, EMPTY_SOURCE_SPAN, Expression, Identifiers, ParseError, ParsedHostBindings, R3DirectiveMetadata, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings, verifyHostBindings} from '@angular/compiler';
+import {ConstantPool, EMPTY_SOURCE_SPAN, Expression, Identifiers, ParseError, ParsedHostBindings, R3DependencyMetadata, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings, verifyHostBindings} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -19,7 +19,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFl
 
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getValidConstructorDependencies, readBaseClass, unwrapExpression, unwrapForwardRef} from './util';
+import {findAngularDecorator, getConstructorDependencies, readBaseClass, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
@@ -89,7 +89,8 @@ export class DirectiveDecoratorHandler implements
       CompileResult[] {
     const meta = analysis.meta;
     const res = compileDirectiveFromMetadata(meta, pool, makeBindingParser());
-    const factoryRes = compileNgFactoryDefField({...meta, injectFn: Identifiers.directiveInject});
+    const factoryRes = compileNgFactoryDefField(
+        {...meta, injectFn: Identifiers.directiveInject, target: R3FactoryTarget.Directive});
     if (analysis.metadataStmt !== null) {
       factoryRes.statements.push(analysis.metadataStmt);
     }
@@ -228,11 +229,23 @@ export function extractDirectiveMetadata(
     exportAs = resolved.split(',').map(part => part.trim());
   }
 
+  const rawCtorDeps = getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore);
+  let ctorDeps: R3DependencyMetadata[]|'invalid'|null;
+
+  // Non-abstract directives (those with a selector) require valid constructor dependencies, whereas
+  // abstract directives are allowed to have invalid dependencies, given that a subclass may call
+  // the constructor explicitly.
+  if (selector !== null) {
+    ctorDeps = validateConstructorDependencies(clazz, rawCtorDeps);
+  } else {
+    ctorDeps = unwrapConstructorDependencies(rawCtorDeps);
+  }
+
   // Detect if the component inherits from another class
   const usesInheritance = reflector.hasBaseClass(clazz);
   const metadata: R3DirectiveMetadata = {
     name: clazz.name.text,
-    deps: getValidConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore), host,
+    deps: ctorDeps, host,
     lifecycle: {
         usesOnChanges,
     },
