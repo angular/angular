@@ -144,10 +144,10 @@ export class AppComponent implements OnInit {
     });
 
     // Compute the version picker list from the current version and the versions in the navigation map
-    combineLatest(
+    combineLatest([
       this.navigationService.versionInfo,
-      this.navigationService.navigationViews.pipe(map(views => views['docVersions'])))
-      .subscribe(([versionInfo, versions]) => {
+      this.navigationService.navigationViews.pipe(map(views => views['docVersions'])),
+    ]).subscribe(([versionInfo, versions]) => {
         // TODO(pbd): consider whether we can lookup the stable and next versions from the internet
         const computedVersions: NavigationNode[] = [
           { title: 'next', url: 'https://next.angular.io' },
@@ -175,7 +175,7 @@ export class AppComponent implements OnInit {
     this.navigationService.versionInfo.subscribe(vi => this.versionInfo = vi);
 
     const hasNonEmptyToc = this.tocService.tocList.pipe(map(tocList => tocList.length > 0));
-    combineLatest(hasNonEmptyToc, this.showFloatingToc)
+    combineLatest([hasNonEmptyToc, this.showFloatingToc])
         .subscribe(([hasToc, showFloatingToc]) => this.hasFloatingToc = hasToc && showFloatingToc);
 
     // Generally, we want to delay updating the shell (e.g. host classes, sidenav state) for the new
@@ -183,10 +183,10 @@ export class AppComponent implements OnInit {
     // the new document applied prematurely).
     // For the first document, though, (when we know there is no previous document), we want to
     // ensure the styles are applied as soon as possible to avoid flicker.
-    combineLatest(
+    combineLatest([
       this.documentService.currentDocument,  // ...needed to determine host classes
-      this.navigationService.currentNodes)   // ...needed to determine `sidenav` state
-      .pipe(first())
+      this.navigationService.currentNodes,   // ...needed to determine `sidenav` state
+    ]).pipe(first())
       .subscribe(() => this.updateShell());
   }
 

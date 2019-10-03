@@ -69,10 +69,10 @@ export class ApiListComponent implements OnInit {
 
   ngOnInit() {
     this.filteredSections =
-        combineLatest(
+        combineLatest([
           this.apiService.sections,
-          this.criteriaSubject
-        ).pipe(
+          this.criteriaSubject,
+        ]).pipe(
           map( results => ({ sections: results[0], criteria: results[1]})),
           map( results => (
                results.sections

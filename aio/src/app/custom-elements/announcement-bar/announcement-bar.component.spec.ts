@@ -25,8 +25,8 @@ describe('AnnouncementBarComponent', () => {
       providers: [{ provide: Logger, useClass: MockLogger }]
     });
 
-    httpMock = injector.get(HttpTestingController);
-    mockLogger = injector.get(Logger);
+    httpMock = injector.inject(HttpTestingController);
+    mockLogger = injector.inject(Logger) as any;
     fixture = TestBed.createComponent(AnnouncementBarComponent);
     component = fixture.componentInstance;
     element = fixture.nativeElement;

@@ -35,8 +35,8 @@ describe('ElementsLoader', () => {
       ]
     });
 
-    elementsLoader = injector.get(ElementsLoader);
-    compiler = injector.get(Compiler);
+    elementsLoader = injector.inject(ElementsLoader);
+    compiler = injector.inject(Compiler);
   });
 
   describe('loadContainedCustomElements()', () => {
