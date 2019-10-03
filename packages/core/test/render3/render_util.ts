@@ -103,7 +103,7 @@ export class TemplateFixture extends BaseFixture {
       private createBlock: () => void, private updateBlock: () => void = noop, decls: number = 0,
       private vars: number = 0, directives?: DirectiveTypesOrFactory|null,
       pipes?: PipeTypesOrFactory|null, sanitizer?: Sanitizer|null,
-      rendererFactory?: RendererFactory3, private _attrs?: TAttributes[]) {
+      rendererFactory?: RendererFactory3, private _consts?: TAttributes[]) {
     super();
     this._directiveDefs = toDefs(directives, extractDirectiveDef);
     this._pipeDefs = toDefs(pipes, extractPipeDef);
@@ -120,7 +120,7 @@ export class TemplateFixture extends BaseFixture {
           }
         },
         decls, vars, null !, this._rendererFactory, null, this._directiveDefs, this._pipeDefs,
-        sanitizer, this._attrs);
+        sanitizer, this._consts);
   }
 
   /**
@@ -132,7 +132,7 @@ export class TemplateFixture extends BaseFixture {
     renderTemplate(
         this.hostElement, updateBlock || this.updateBlock, 0, this.vars, null !,
         this._rendererFactory, this.hostView, this._directiveDefs, this._pipeDefs, this._sanitizer,
-        this._attrs);
+        this._consts);
   }
 
   destroy(): void {
@@ -243,12 +243,13 @@ export function resetDOM() {
  * @param host The host element node to use
  * @param directives Directive defs that should be used for matching
  * @param pipes Pipe defs that should be used for matching
+ * @param consts Constants associated with the template.
  */
 export function renderTemplate<T>(
     hostNode: RElement, templateFn: ComponentTemplate<T>, decls: number, vars: number, context: T,
     providedRendererFactory: RendererFactory3, componentView: LView | null,
     directives?: DirectiveDefListOrFactory | null, pipes?: PipeDefListOrFactory | null,
-    sanitizer?: Sanitizer | null, attrs?: TAttributes[]): LView {
+    sanitizer?: Sanitizer | null, consts?: TAttributes[]): LView {
   if (componentView === null) {
     resetComponentState();
     const renderer = providedRendererFactory.createRenderer(null, null);
@@ -266,7 +267,7 @@ export function renderTemplate<T>(
       template: templateFn,
       decls: decls,
       vars: vars,
-      consts: attrs,
+      consts: consts,
     });
     def.directiveDefs = directives || null;
     def.pipeDefs = pipes || null;
@@ -290,11 +291,11 @@ export function renderToHtml(
     template: ComponentTemplate<any>, ctx: any, decls: number = 0, vars: number = 0,
     directives?: DirectiveTypesOrFactory | null, pipes?: PipeTypesOrFactory | null,
     providedRendererFactory?: RendererFactory3 | null, keepNgReflect = false,
-    attrs?: TAttributes[]) {
+    consts?: TAttributes[]) {
   hostView = renderTemplate(
       containerEl, template, decls, vars, ctx, providedRendererFactory || testRendererFactory,
       hostView, toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef), null,
-      attrs);
+      consts);
   return toHtml(containerEl, keepNgReflect);
 }
 

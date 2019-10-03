@@ -24,9 +24,9 @@ export function createAndRenderLView(
 
 export function setupRootViewWithEmbeddedViews(
     templateFn: ComponentTemplate<any>| null, decls: number, vars: number, noOfViews: number,
-    embeddedViewContext: any = {}, attrs: TAttributes[] | null = null): LView {
+    embeddedViewContext: any = {}, consts: TAttributes[] | null = null): LView {
   // Create a root view with a container
-  const rootTView = createTView(-1, null, 1, 0, null, null, null, null, attrs);
+  const rootTView = createTView(-1, null, 1, 0, null, null, null, null, consts);
   const tContainerNode = getOrCreateTNode(rootTView, null, 0, TNodeType.Container, null, null);
   const rootLView = createLView(
       null, rootTView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null,
