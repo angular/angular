@@ -53,7 +53,7 @@ export class MatDialogConfig<D = any> {
   /** Whether the dialog has a backdrop. */
   hasBackdrop?: boolean = true;
 
-  /** Custom class for the backdrop, */
+  /** Custom class for the backdrop. */
   backdropClass?: string = '';
 
   /** Whether the user can use escape or clicking on the backdrop to close the modal. */
@@ -65,16 +65,16 @@ export class MatDialogConfig<D = any> {
   /** Height of the dialog. */
   height?: string = '';
 
-  /** Min-width of the dialog. If a number is provided, pixel units are assumed. */
+  /** Min-width of the dialog. If a number is provided, assumes pixel units. */
   minWidth?: number | string;
 
-  /** Min-height of the dialog. If a number is provided, pixel units are assumed. */
+  /** Min-height of the dialog. If a number is provided, assumes pixel units. */
   minHeight?: number | string;
 
-  /** Max-width of the dialog. If a number is provided, pixel units are assumed. Defaults to 80vw */
+  /** Max-width of the dialog. If a number is provided, assumes pixel units. Defaults to 80vw. */
   maxWidth?: number | string = '80vw';
 
-  /** Max-height of the dialog. If a number is provided, pixel units are assumed. */
+  /** Max-height of the dialog. If a number is provided, assumes pixel units. */
   maxHeight?: number | string;
 
   /** Position overrides. */
@@ -92,7 +92,7 @@ export class MatDialogConfig<D = any> {
   /** ID of the element that labels the dialog. */
   ariaLabelledBy?: string | null = null;
 
-  /** Aria label to assign to the dialog element */
+  /** Aria label to assign to the dialog element. */
   ariaLabel?: string | null = null;
 
   /** Whether the dialog should focus the first focusable element on open. */
