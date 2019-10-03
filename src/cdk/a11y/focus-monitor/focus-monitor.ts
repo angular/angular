@@ -117,7 +117,11 @@ export class FocusMonitor implements OnDestroy {
     if (this._touchTimeoutId != null) {
       clearTimeout(this._touchTimeoutId);
     }
-    this._lastTouchTarget = event.target;
+
+    // Since this listener is bound on the `document` level, any events coming from the shadow DOM
+    // will have their `target` set to the shadow root. If available, use `composedPath` to
+    // figure out the event target.
+    this._lastTouchTarget = event.composedPath ? event.composedPath()[0] : event.target;
     this._touchTimeoutId = setTimeout(() => this._lastTouchTarget = null, TOUCH_BUFFER_MS);
   }
 
