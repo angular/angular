@@ -296,6 +296,34 @@ describe('MatSelect', () => {
           flush();
         }));
 
+        it('should go back to first option if value is reset after interacting using the' +
+          'arrow keys on a closed select', fakeAsync(() => {
+            const formControl = fixture.componentInstance.control;
+            const options = fixture.componentInstance.options.toArray();
+
+            expect(formControl.value).toBeFalsy('Expected no initial value.');
+
+            dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+            flush();
+
+            expect(options[0].selected).toBe(true, 'Expected first option to be selected.');
+            expect(formControl.value).toBe(options[0].value,
+                'Expected value from first option to have been set on the model.');
+
+            formControl.reset();
+            fixture.detectChanges();
+
+            expect(options[0].selected).toBe(false, 'Expected first option to be deselected.');
+            expect(formControl.value).toBeFalsy('Expected value to be reset.');
+
+            dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+            flush();
+
+            expect(options[0].selected).toBe(true, 'Expected first option to be selected again.');
+            expect(formControl.value).toBe(options[0].value,
+                'Expected value from first option to have been set on the model again.');
+        }));
+
         it('should select first/last options via the HOME/END keys on a closed select',
           fakeAsync(() => {
             const formControl = fixture.componentInstance.control;
