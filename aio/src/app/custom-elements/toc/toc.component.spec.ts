@@ -1,7 +1,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { asapScheduler as asap, BehaviorSubject } from 'rxjs';
+import { asapScheduler, BehaviorSubject } from 'rxjs';
 
 import { ScrollService } from 'app/shared/scroll.service';
 import { TocItem, TocService } from 'app/shared/toc.service';
@@ -465,10 +465,11 @@ class TestScrollService {
 class TestTocService {
   tocList = new BehaviorSubject<TocItem[]>(getTestTocList());
   activeItemIndex = new BehaviorSubject<number | null>(null);
+
   setActiveIndex(index: number|null) {
     this.activeItemIndex.next(index);
-    if (asap.scheduled !== undefined) {
-      asap.flush();
+    if (asapScheduler.actions.length > 0) {
+      asapScheduler.flush();
     }
   }
 }

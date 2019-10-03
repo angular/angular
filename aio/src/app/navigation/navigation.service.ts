@@ -90,11 +90,12 @@ export class NavigationService {
    * See above for discussion of using `connect`.
    */
   private getCurrentNodes(navigationViews: Observable<NavigationViews>): Observable<CurrentNodes> {
-    const currentNodes = combineLatest(
+    const currentNodes = combineLatest([
       navigationViews.pipe(
           map(views => this.computeUrlToNavNodesMap(views))),
-          this.location.currentPath,
-      ).pipe(
+      this.location.currentPath,
+    ])
+      .pipe(
         map((result) => ({navMap: result[0] , url: result[1]})),
         map((result) => {
         const matchSpecialUrls = /^api/.exec(result.url);
