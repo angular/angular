@@ -30,7 +30,7 @@ export function extendStyles(
     source: Partial<DragCSSStyleDeclaration>) {
   for (let key in source) {
     if (source.hasOwnProperty(key)) {
-      dest[key as keyof CSSStyleDeclaration] = source[key as keyof CSSStyleDeclaration];
+      dest[key] = source[key]!;
     }
   }
 
