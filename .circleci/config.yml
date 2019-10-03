@@ -403,13 +403,9 @@ jobs:
       - *yarn_install
       - *setup_bazel_binary
 
-      # Setup Angular ivy snapshots built with ngtsc but locked to a specific tag. We
-      # cannot determine the tag automatically based on the Angular version specified in
-      # the "package.json" because the SHA is not known for the given release. Nor can
-      # we use ngcc to apply the ivy switches because ngcc currently does not handle the
-      # UMD format which is used by Bazel when running tests. UMD processing is in
-      # progress and tracked with FW-85.
-      - run: node ./scripts/circleci/setup-angular-snapshots.js --tag 9.0.0-next.0-ivy-aot+3122f3415
+      # Setup ngcc to make the Angular packages compatible with ngtsc (i.e. creating
+      # directive and component definitions as static class members).
+      - run: node ./scripts/circleci/setup-ivy-ngcc.js
       # Disable type checking when building with Ivy. This is necessary because
       # type checking is not complete yet and can incorrectly break compilation.
       # Issue is tracked with FW-1004.
