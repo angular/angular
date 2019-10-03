@@ -37,8 +37,7 @@
   ],
   "angularCompilerOptions": {
     "disableTypeScriptVersionCheck": true,
-    // TODO: Fix template type errors and enable.
-    // "fullTemplateTypeCheck": true,
+    "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true
   }
 }
