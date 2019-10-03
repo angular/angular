@@ -326,7 +326,6 @@ export declare class ErrorHandler {
 }
 
 export declare class EventEmitter<T extends any> extends Subject<T> {
-    __isAsync: boolean;
     constructor(isAsync?: boolean);
     emit(value?: T): void;
     subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription;
