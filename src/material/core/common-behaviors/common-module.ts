@@ -7,7 +7,6 @@
  */
 
 import {NgModule, InjectionToken, Optional, Inject, isDevMode, Version} from '@angular/core';
-import {HammerLoader, HAMMER_LOADER} from '@angular/platform-browser';
 import {BidiModule} from '@angular/cdk/bidi';
 import {VERSION as CDK_VERSION} from '@angular/cdk';
 
@@ -39,6 +38,11 @@ export interface GranularSanityChecks {
   doctype: boolean;
   theme: boolean;
   version: boolean;
+
+  /**
+   * @deprecated No longer being used.
+   * @breaking-change 10.0.0
+   */
   hammer: boolean;
 }
 
@@ -56,9 +60,6 @@ export class MatCommonModule {
   /** Whether we've done the global sanity checks (e.g. a theme is loaded, there is a doctype). */
   private _hasDoneGlobalChecks = false;
 
-  /** Whether we've already checked for HammerJs availability. */
-  private _hasCheckedHammer = false;
-
   /** Reference to the global `document` object. */
   private _document = typeof document === 'object' && document ? document : null;
 
@@ -68,10 +69,7 @@ export class MatCommonModule {
   /** Configured sanity checks. */
   private _sanityChecks: SanityChecks;
 
-  constructor(
-    @Optional() @Inject(MATERIAL_SANITY_CHECKS) sanityChecks: any,
-    @Optional() @Inject(HAMMER_LOADER) private _hammerLoader?: HammerLoader) {
-
+  constructor(@Optional() @Inject(MATERIAL_SANITY_CHECKS) sanityChecks: any) {
     // Note that `_sanityChecks` is typed to `any`, because AoT
     // throws an error if we use the `SanityChecks` type directly.
     this._sanityChecks = sanityChecks;
@@ -151,21 +149,5 @@ export class MatCommonModule {
           'Please ensure the versions of these two packages exactly match.'
       );
     }
-  }
-
-  /** Checks whether HammerJS is available. */
-  _checkHammerIsAvailable(): void {
-    if (this._hasCheckedHammer || !this._window) {
-      return;
-    }
-
-    const isEnabled = this._checksAreEnabled() &&
-      (this._sanityChecks === true || (this._sanityChecks as GranularSanityChecks).hammer);
-
-    if (isEnabled && !(this._window as any)['Hammer'] && !this._hammerLoader) {
-      console.warn(
-        'Could not find HammerJS. Certain Angular Material components may not work correctly.');
-    }
-    this._hasCheckedHammer = true;
   }
 }

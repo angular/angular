@@ -30,7 +30,6 @@ The Angular Material `ng add` schematic helps you setup an Angular CLI project t
   - Remove margins from `body`
   - Set `height: 100%` on `html` and `body`
   - Make Roboto the default font of your app
-- Install and import `hammerjs` for [gesture support](./getting-started#step-5-gesture-support) in your project
 
 
 ## Component schematics

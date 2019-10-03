@@ -39,7 +39,6 @@ export class DevAppLayout {
     {name: 'Drag and Drop', route: '/drag-drop'},
     {name: 'Expansion Panel', route: '/expansion'},
     {name: 'Focus Origin', route: '/focus-origin'},
-    {name: 'Gestures', route: '/gestures'},
     {name: 'Google Map', route: '/google-map'},
     {name: 'Grid List', route: '/grid-list'},
     {name: 'Icon', route: '/icon'},

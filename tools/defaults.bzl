@@ -221,7 +221,6 @@ def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], tags = [], **k
         bootstrap = [
             "@npm//:node_modules/zone.js/dist/zone-testing-bundle.js",
             "@npm//:node_modules/reflect-metadata/Reflect.js",
-            "@npm//:node_modules/hammerjs/hammer.js",
         ] + bootstrap,
         tags = ["native"] + tags,
         **kwargs

@@ -8,9 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {GestureConfig} from '@angular/material/core';
 import {MatListModule} from '@angular/material/list';
-import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {RouterModule} from '@angular/router';
 import {E2eAppLayout, Home} from './e2e-app-layout';
 
@@ -22,10 +20,6 @@ import {E2eAppLayout, Home} from './e2e-app-layout';
   ],
   declarations: [E2eAppLayout, Home],
   exports: [E2eAppLayout],
-
-  // We need to pass this in here, because the gesture config currently doesn't for lazy-loaded
-  // modules. See https://github.com/angular/components/issues/4595#issuecomment-416641018.
-  providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}]
 })
 export class E2eAppModule {
 }

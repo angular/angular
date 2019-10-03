@@ -20,6 +20,8 @@ import {
 /**
  * Injection token that can be used to provide options to the Hammerjs instance.
  * More info at http://hammerjs.github.io/api/.
+ * @deprecated No longer being used. To be removed.
+ * @breaking-change 10.0.0
  */
 export const MAT_HAMMER_OPTIONS = new InjectionToken<HammerOptions>('MAT_HAMMER_OPTIONS');
 
@@ -41,7 +43,11 @@ const noopHammerInstance: HammerInstance = {
   off: () => {},
 };
 
-/** Adjusts configuration of our gesture library, Hammer. */
+/**
+ * Adjusts configuration of our gesture library, Hammer.
+ * @deprecated No longer being used. To be removed.
+ * @breaking-change 10.0.0
+ */
 @Injectable()
 export class GestureConfig extends HammerGestureConfig {
   /** List of new event names to add to the gesture support list */
@@ -49,11 +55,8 @@ export class GestureConfig extends HammerGestureConfig {
 
   constructor(
     @Optional() @Inject(MAT_HAMMER_OPTIONS) private _hammerOptions?: HammerOptions,
-    @Optional() commonModule?: MatCommonModule) {
+    @Optional() _commonModule?: MatCommonModule) {
     super();
-    if (commonModule) {
-      commonModule._checkHammerIsAvailable();
-    }
   }
 
   /**

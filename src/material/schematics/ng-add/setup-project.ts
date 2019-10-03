@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {chain, noop, Rule, Tree} from '@angular-devkit/schematics';
+import {chain, Rule, Tree} from '@angular-devkit/schematics';
 import {
   addModuleImportToRootModule,
   getProjectFromWorkspace,
@@ -18,7 +18,6 @@ import chalk from 'chalk';
 import {getWorkspace} from '@schematics/angular/utility/config';
 import {getAppModulePath} from '@schematics/angular/utility/ng-ast-utils';
 import {addFontsToIndex} from './fonts/material-fonts';
-import {addHammerJsToMain} from './gestures/hammerjs-import';
 import {Schema} from './schema';
 import {addThemeToAppStyles} from './theming/theming';
 
@@ -36,7 +35,6 @@ const noopAnimationsModuleName = 'NoopAnimationsModule';
  */
 export default function(options: Schema): Rule {
   return chain([
-    options && options.gestures ? addHammerJsToMain(options) : noop(),
     addAnimationsModule(options),
     addThemeToAppStyles(options),
     addFontsToIndex(options),

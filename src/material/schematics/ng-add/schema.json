@@ -27,12 +27,6 @@
         ]
       }
     },
-    "gestures": {
-      "type": "boolean",
-      "default": true,
-      "description": "Whether gesture support should be set up.",
-      "x-prompt": "Set up HammerJS for gesture recognition?"
-    },
     "animations": {
       "type": "boolean",
       "default": true,

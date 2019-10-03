@@ -64,17 +64,6 @@ component by following these steps:
    @include mat-slide-toggle-typography-mdc();
    ```
 
-## API differences
-The experimental slide toggle API closely matches the
-[API of the standard slide toggle](https://material.angular.io/components/slide-toggle/api).
-`@angular/material-experimental/mdc-slide-toggle` exports symbols with the same name and public
-interface as all of the symbols found under `@angular/material/slide-toggle`, except for the
-following differences:
-
-* The MDC-based `mat-slide-toggle` drops the dependency on Hammer.js and as a result doesn't support
-dragging gestures.
-* As a result of dragging gestures not being supported, the `dragChange` event won't emit.
-
 ## Replacing the standard slide toggle in an existing app
 Because the experimental API mirrors the API for the standard slide toggle, it can easily be swapped
 in by just changing the import paths. There is currently no schematic for this, but you can run the

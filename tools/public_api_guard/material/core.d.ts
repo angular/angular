@@ -96,7 +96,7 @@ export declare type FloatLabelType = 'always' | 'never' | 'auto';
 
 export declare class GestureConfig extends HammerGestureConfig {
     events: string[];
-    constructor(_hammerOptions?: HammerOptions | undefined, commonModule?: MatCommonModule);
+    constructor(_hammerOptions?: HammerOptions | undefined, _commonModule?: MatCommonModule);
     buildHammer(element: HTMLElement): HammerInstance;
 }
 
@@ -197,8 +197,7 @@ export declare const MAT_OPTION_PARENT_COMPONENT: InjectionToken<MatOptionParent
 export declare const MAT_RIPPLE_GLOBAL_OPTIONS: InjectionToken<RippleGlobalOptions>;
 
 export declare class MatCommonModule {
-    constructor(sanityChecks: any, _hammerLoader?: HammerLoader | undefined);
-    _checkHammerIsAvailable(): void;
+    constructor(sanityChecks: any);
 }
 
 export declare type MatDateFormats = {

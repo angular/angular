@@ -114,7 +114,6 @@ ts_devserver(
     static_files = [
         "@npm//zone.js",
         "@npm//core-js",
-        "@npm//hammerjs",
         "@npm//material-components-web",
         "@npm//moment",
         "@npm//@webcomponents/custom-elements",

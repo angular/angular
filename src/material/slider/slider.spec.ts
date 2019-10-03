@@ -1609,7 +1609,6 @@ function dispatchMousedownEventSequence(sliderElement: HTMLElement, percentage: 
  * @param sliderElement The mat-slider element from which the event will be dispatched.
  * @param startPercent The percentage of the slider where the slide will begin.
  * @param endPercent The percentage of the slider where the slide will end.
- * @param gestureConfig The gesture config for the test to handle emitting the slide events.
  */
 function dispatchSlideEventSequence(sliderElement: HTMLElement, startPercent: number,
                                     endPercent: number): void {
@@ -1624,7 +1623,6 @@ function dispatchSlideEventSequence(sliderElement: HTMLElement, startPercent: nu
  * Dispatches a slide event from an element.
  * @param sliderElement The mat-slider element from which the event will be dispatched.
  * @param percent The percentage of the slider where the slide will happen.
- * @param gestureConfig The gesture config for the test to handle emitting the slide events.
  */
 function dispatchSlideEvent(sliderElement: HTMLElement, percent: number): void {
   const trackElement = sliderElement.querySelector('.mat-slider-wrapper')!;
@@ -1638,7 +1636,6 @@ function dispatchSlideEvent(sliderElement: HTMLElement, percent: number): void {
  * Dispatches a slidestart event from an element.
  * @param sliderElement The mat-slider element from which the event will be dispatched.
  * @param percent The percentage of the slider where the slide will begin.
- * @param gestureConfig The gesture config for the test to handle emitting the slide events.
  */
 function dispatchSlideStartEvent(sliderElement: HTMLElement, percent: number): void {
   const trackElement = sliderElement.querySelector('.mat-slider-wrapper')!;
@@ -1653,7 +1650,6 @@ function dispatchSlideStartEvent(sliderElement: HTMLElement, percent: number): v
  * Dispatches a slideend event from an element.
  * @param sliderElement The mat-slider element from which the event will be dispatched.
  * @param percent The percentage of the slider where the slide will end.
- * @param gestureConfig The gesture config for the test to handle emitting the slide events.
  */
 function dispatchSlideEndEvent(sliderElement: HTMLElement, percent: number): void {
   const trackElement = sliderElement.querySelector('.mat-slider-wrapper')!;

@@ -10,7 +10,7 @@ import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask, RunSchematicTask} from '@angular-devkit/schematics/tasks';
 import {addPackageToPackageJson, getPackageVersionFromPackageJson} from './package-config';
 import {Schema} from './schema';
-import {hammerjsVersion, materialVersion, requiredAngularVersionRange} from './version-names';
+import {materialVersion, requiredAngularVersionRange} from './version-names';
 
 /**
  * Schematic factory entry-point for the `ng-add` schematic. The ng-add schematic will be
@@ -33,10 +33,6 @@ export default function(options: Schema): Rule {
     addPackageToPackageJson(host, '@angular/material', `~${materialVersion}`);
     addPackageToPackageJson(host, '@angular/forms', angularDependencyVersion);
     addPackageToPackageJson(host, '@angular/animations', angularDependencyVersion);
-
-    if (options.gestures) {
-      addPackageToPackageJson(host, 'hammerjs', hammerjsVersion);
-    }
 
     // Since the Angular Material schematics depend on the schematic utility functions from the
     // CDK, we need to install the CDK before loading the schematic files that import from the CDK.

@@ -48,7 +48,6 @@ describe('ng-add schematic', () => {
 
     expect(dependencies['@angular/material']).toBeDefined();
     expect(dependencies['@angular/cdk']).toBeDefined();
-    expect(dependencies['hammerjs']).toBeDefined();
     expect(dependencies['@angular/forms'])
         .toBe(
             angularCoreVersion,
@@ -64,15 +63,6 @@ describe('ng-add schematic', () => {
             'Expected the modified "dependencies" to be sorted alphabetically.');
 
     expect(runner.tasks.some(task => task.name === 'run-schematic')).toBe(true);
-  });
-
-  it('should add hammerjs import to project main file', async () => {
-    const tree = await runner.runSchematicAsync('ng-add-setup-project', {}, appTree).toPromise();
-    const fileContent = getFileContent(tree, '/projects/material/src/main.ts');
-
-    expect(fileContent)
-        .toContain(
-            `import 'hammerjs';`, 'Expected the project main file to contain a HammerJS import.');
   });
 
   it('should add default theme', async () => {
@@ -147,26 +137,6 @@ describe('ng-add schematic', () => {
     expect(htmlContent).toContain('html, body { height: 100%; }');
     expect(htmlContent)
         .toContain('body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }');
-  });
-
-  describe('gestures disabled', () => {
-    it('should not add hammerjs to package.json', async () => {
-      const tree = await runner.runSchematicAsync('ng-add', {gestures: false}, appTree).toPromise();
-      const packageJson = JSON.parse(getFileContent(tree, '/package.json'));
-
-      expect(packageJson.dependencies['hammerjs'])
-          .toBeUndefined(`Expected 'hammerjs' to be not added to the package.json`);
-    });
-
-    it('should not add hammerjs import to project main file', async () => {
-      const tree = await runner.runSchematicAsync('ng-add', {gestures: false}, appTree).toPromise();
-      const fileContent = getFileContent(tree, '/projects/material/src/main.ts');
-
-      expect(fileContent)
-          .not.toContain(
-              `import 'hammerjs';`,
-              'Expected the project main file to not contain a HammerJS import.');
-    });
   });
 
   describe('animations enabled', () => {
