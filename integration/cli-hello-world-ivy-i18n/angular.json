@@ -54,6 +54,19 @@
                   "maximumError": "5mb"
                 }
               ]
+            },
+            "legacy-id-mode": {
+              "tsConfig": "src/tsconfig.legacy-id-mode.json",
+              "polyfills": "src/polyfills.legacy-id-mode.ts",
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
             }
           }
         },
@@ -71,6 +84,10 @@
             },
             "ci-production": {
               "browserTarget": "cli-hello-world-ivy-compat:build:production",
+              "progress": false
+            },
+            "legacy-id-mode": {
+              "browserTarget": "cli-hello-world-ivy-compat:build:legacy-id-mode",
               "progress": false
             }
           }
@@ -132,6 +149,9 @@
             },
             "ci-production": {
               "devServerTarget": "cli-hello-world-ivy-compat:serve:ci-production"
+            },
+            "legacy-id-mode": {
+              "devServerTarget": "cli-hello-world-ivy-compat:serve:legacy-id-mode"
             }
           }
         },
