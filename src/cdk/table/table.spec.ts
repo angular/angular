@@ -1396,7 +1396,7 @@ class FakeDataSource extends DataSource<TestData> {
 
   connect(collectionViewer: CollectionViewer) {
     this.isConnected = true;
-    return combineLatest(this._dataChange, collectionViewer.viewChange)
+    return combineLatest([this._dataChange, collectionViewer.viewChange])
       .pipe(map(data => data[0]));
   }
 

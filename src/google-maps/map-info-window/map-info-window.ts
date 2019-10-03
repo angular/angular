@@ -152,7 +152,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
   }
 
   private _combineOptions(): Observable<google.maps.InfoWindowOptions> {
-    return combineLatest(this._options, this._position).pipe(map(([options, position]) => {
+    return combineLatest([this._options, this._position]).pipe(map(([options, position]) => {
       const combinedOptions: google.maps.InfoWindowOptions = {
         ...options,
         position: position || options.position,

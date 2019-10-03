@@ -382,7 +382,7 @@ function bindSizeToPlayer(
   widthObs: Observable<number>,
   heightObs: Observable<number>
 ) {
-  return combineLatest(playerObs, widthObs, heightObs)
+  return combineLatest([playerObs, widthObs, heightObs])
       .subscribe(([player, width, height]) => player && player.setSize(width, height));
 }
 
@@ -391,10 +391,10 @@ function bindSuggestedQualityToPlayer(
   playerObs: Observable<YT.Player | undefined>,
   suggestedQualityObs: Observable<YT.SuggestedVideoQuality | undefined>
 ) {
-  return combineLatest(
+  return combineLatest([
     playerObs,
     suggestedQualityObs
-  ).subscribe(
+  ]).subscribe(
     ([player, suggestedQuality]) =>
         player && suggestedQuality && player.setPlaybackQuality(suggestedQuality));
 }
@@ -452,11 +452,11 @@ function createPlayerObservable(
   const playerOptions =
     videoIdObs
     .pipe(
-      withLatestFrom(combineLatest(widthObs, heightObs)),
+      withLatestFrom(combineLatest([widthObs, heightObs])),
       map(([videoId, [width, height]]) => videoId ? ({videoId, width, height, events}) : undefined),
     );
 
-  return combineLatest(youtubeContainer, playerOptions)
+  return combineLatest([youtubeContainer, playerOptions])
       .pipe(
         skipUntilRememberLatest(iframeApiAvailableObs),
         scan(syncPlayerState, undefined),
@@ -505,7 +505,7 @@ function bindCueVideoCall(
   suggestedQualityObs: Observable<YT.SuggestedVideoQuality | undefined>,
   destroyed: Observable<undefined>,
 ) {
-  const cueOptionsObs = combineLatest(startSecondsObs, endSecondsObs)
+  const cueOptionsObs = combineLatest([startSecondsObs, endSecondsObs])
     .pipe(map(([startSeconds, endSeconds]) => ({startSeconds, endSeconds})));
 
   // Only respond to changes in cue options if the player is not running.
@@ -520,14 +520,14 @@ function bindCueVideoCall(
   // If the player changed, there's no reason to run 'cue' unless there are cue options.
   const changedPlayer = playerObs.pipe(
     filterOnOther(
-      combineLatest(videoIdObs, cueOptionsObs),
+      combineLatest([videoIdObs, cueOptionsObs]),
       ([videoId, cueOptions], player) =>
           !!player &&
             (videoId != player.videoId || !!cueOptions.startSeconds || !!cueOptions.endSeconds)));
 
   merge(changedPlayer, changedVideoId, filteredCueOptions)
     .pipe(
-      withLatestFrom(combineLatest(playerObs, videoIdObs, cueOptionsObs, suggestedQualityObs)),
+      withLatestFrom(combineLatest([playerObs, videoIdObs, cueOptionsObs, suggestedQualityObs])),
       map(([_, values]) => values),
       takeUntil(destroyed),
     )

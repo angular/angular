@@ -1010,7 +1010,7 @@ class FakeDataSource extends DataSource<TestData> {
   connect(collectionViewer: CollectionViewer): Observable<TestData[]> {
     this.isConnected = true;
 
-    return combineLatest(this._dataChange, collectionViewer.viewChange).pipe(map(([data]) => {
+    return combineLatest([this._dataChange, collectionViewer.viewChange]).pipe(map(([data]) => {
       this.treeControl.dataNodes = data;
       return data;
     }));

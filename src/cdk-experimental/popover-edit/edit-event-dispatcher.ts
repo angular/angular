@@ -82,13 +82,13 @@ export class EditEventDispatcher {
   );
 
   /** An observable that emits the row containing focus or an active edit. */
-  readonly editingOrFocused = combineLatest(
+  readonly editingOrFocused = combineLatest([
       this.editing.pipe(
           map(cell => closest(cell, ROW_SELECTOR)),
           this._startWithNull,
       ),
       this.focused.pipe(this._startWithNull),
-  ).pipe(
+  ]).pipe(
       map(([editingRow, focusedRow]) => focusedRow || editingRow),
       this._distinctUntilChanged as MonoTypeOperatorFunction<Element|null>,
       auditTime(FOCUS_DELAY), // Use audit to skip over blur events to the next focused element.
@@ -103,7 +103,7 @@ export class EditEventDispatcher {
   private _currentlyEditing: Element|null = null;
 
   /** The combined set of row hover content states organized by row. */
-  private readonly _hoveredContentStateDistinct = combineLatest(
+  private readonly _hoveredContentStateDistinct = combineLatest([
       this._getFirstRowWithHoverContent(),
       this._getLastRowWithHoverContent(),
       this.editingOrFocused,
@@ -116,7 +116,7 @@ export class EditEventDispatcher {
           ),
           this._startWithNullDistinct,
       ),
-  ).pipe(
+  ]).pipe(
       skip(1), // Skip the initial emission of [null, null, null, null].
       map(computeHoverContentState),
       distinctUntilChanged(areMapEntriesEqual),
