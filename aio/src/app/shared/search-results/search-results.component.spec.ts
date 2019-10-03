@@ -31,7 +31,7 @@ describe('SearchResultsComponent', () => {
   /** Pass the given search results to the component and trigger change detection. */
   function setSearchResults(query: string, results: SearchResult[]) {
     component.searchResults = {query, results};
-    component.ngOnChanges({});
+    component.ngOnChanges();
     fixture.detectChanges();
   }
 

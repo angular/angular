@@ -47,7 +47,7 @@ describe('DocViewerComponent', () => {
       parentFixture.detectChanges();
     };
 
-    beforeEach(() => renderSpy = spyOn(docViewer, 'render').and.returnValue([null]));
+    beforeEach(() => renderSpy = spyOn(docViewer, 'render').and.returnValue(of(undefined)));
 
     it('should render the new document', () => {
       setCurrentDoc('foo', 'bar');
@@ -87,7 +87,7 @@ describe('DocViewerComponent', () => {
 
   describe('#ngOnDestroy()', () => {
     it('should stop responding to document changes', () => {
-      const renderSpy = spyOn(docViewer, 'render').and.returnValue([undefined]);
+      const renderSpy = spyOn(docViewer, 'render').and.returnValue(of(undefined));
 
       expect(renderSpy).not.toHaveBeenCalled();
 

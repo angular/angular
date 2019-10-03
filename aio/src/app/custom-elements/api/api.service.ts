@@ -45,7 +45,7 @@ export class ApiService implements OnDestroy {
       this.fetchSections(); // TODO: get URL for fetchSections by configuration?
 
       // makes sectionsSubject hot; subscribe ensures stays alive (always refCount > 0);
-      this._sections.subscribe(sections => this.logger.log('ApiService got API sections') );
+      this._sections.subscribe(sections => this.logger.log(`ApiService got API ${sections.length} section(s)`));
     }
 
     return this._sections.pipe(tap(sections => {

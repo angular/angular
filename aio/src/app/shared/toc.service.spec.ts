@@ -365,7 +365,7 @@ class MockScrollSpyService {
     return this.$$lastInfo;
   }
 
-  spyOn(headings: HTMLHeadingElement[]): ScrollSpyInfo {
+  spyOn(_headings: HTMLHeadingElement[]): ScrollSpyInfo {
     return this.$$lastInfo = {
       active: new Subject<ScrollItem | null>(),
       unspy: jasmine.createSpy('unspy'),

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { SearchResult, SearchResults, SearchArea } from 'app/search/interfaces';
 
 /**
@@ -27,7 +27,7 @@ export class SearchResultsComponent implements OnChanges {
   readonly topLevelFolders = ['guide', 'tutorial'];
   searchAreas: SearchArea[] = [];
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges() {
     this.searchAreas = this.processSearchResults(this.searchResults);
   }
 

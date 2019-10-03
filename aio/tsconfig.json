@@ -19,7 +19,10 @@
     ],
     "skipLibCheck": true,
     "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
     "noUnusedLocals": true,
+    "noUnusedParameters": true,
     // disabled because this is on by default in tsc 2.7 breaking our codebase - we need to refactor
     "strictPropertyInitialization": false
   },
