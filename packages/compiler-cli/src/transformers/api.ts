@@ -66,8 +66,7 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // be determined. When this value option is not provided or is `false`, constructor
   // parameters of classes marked with `@Injectable` whose type cannot be resolved will
   // produce a warning. With this option `true`, they produce an error. When this option is
-  // not provided is treated as if it were `false`. In Angular 6.0, if this option is not
-  // provided, it will be treated as `true`.
+  // not provided is treated as if it were `false`.
   strictInjectionParameters?: boolean;
 
   // Whether to generate a flat module index of the given name and the corresponding

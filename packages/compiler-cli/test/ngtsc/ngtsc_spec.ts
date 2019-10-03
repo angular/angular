@@ -1336,7 +1336,7 @@ runInEachFileSystem(os => {
              env.write('test.ts', `
             import {Injectable} from '@angular/core';
 
-            @Injectable()
+            @Injectable({providedIn: 'root'})
             export class Test {
               constructor(private notInjectable: string) {}
             }
@@ -1364,7 +1364,75 @@ runInEachFileSystem(os => {
 
              env.driveMain();
              const jsContents = env.getContents('test.js');
-             expect(jsContents).toMatch(/function Test_Factory\(t\) { throw new Error\(/ms);
+             expect(jsContents)
+                 .toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
+           });
+
+        it('should not give a compile-time error if an invalid @Injectable is used with useFactory',
+           () => {
+             env.tsconfig({strictInjectionParameters: true});
+             env.write('test.ts', `
+               import {Injectable} from '@angular/core';
+
+               @Injectable({
+                 providedIn: 'root',
+                 useFactory: () => '42',
+               })
+               export class Test {
+                 constructor(private notInjectable: string) {}
+               }
+             `);
+
+             env.driveMain();
+             const jsContents = env.getContents('test.js');
+             expect(jsContents)
+                 .toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
+           });
+
+        it('should not give a compile-time error if an invalid @Injectable is used with useExisting',
+           () => {
+             env.tsconfig({strictInjectionParameters: true});
+             env.write('test.ts', `
+               import {Injectable} from '@angular/core';
+
+               export class MyService {}
+
+               @Injectable({
+                 providedIn: 'root',
+                 useExisting: MyService,
+               })
+               export class Test {
+                 constructor(private notInjectable: string) {}
+               }
+             `);
+
+             env.driveMain();
+             const jsContents = env.getContents('test.js');
+             expect(jsContents)
+                 .toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
+           });
+
+        it('should not give a compile-time error if an invalid @Injectable is used with useClass',
+           () => {
+             env.tsconfig({strictInjectionParameters: true});
+             env.write('test.ts', `
+               import {Injectable} from '@angular/core';
+
+               export class MyService {}
+
+               @Injectable({
+                 providedIn: 'root',
+                 useClass: MyService,
+               })
+               export class Test {
+                 constructor(private notInjectable: string) {}
+               }
+             `);
+
+             env.driveMain();
+             const jsContents = env.getContents('test.js');
+             expect(jsContents)
+                 .toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
            });
       });
 
@@ -1382,7 +1450,8 @@ runInEachFileSystem(os => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toContain('Test.ɵfac = function Test_Factory(t) { throw new Error(');
+          expect(jsContents)
+              .toContain('Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()');
         });
 
         it('should compile an @Injectable provided in the root on a class with a non-injectable constructor',
@@ -1399,10 +1468,67 @@ runInEachFileSystem(os => {
              env.driveMain();
              const jsContents = env.getContents('test.js');
              expect(jsContents)
-                 .toContain('Test.ɵfac = function Test_Factory(t) { throw new Error(');
+                 .toContain('Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()');
            });
 
       });
+    });
+
+    describe('compiling invalid @Directives', () => {
+      describe('directives with a selector', () => {
+        it('should give a compile-time error if an invalid constructor is used', () => {
+          env.tsconfig({strictInjectionParameters: true});
+          env.write('test.ts', `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: 'app-test'})
+            export class Test {
+              constructor(private notInjectable: string) {}
+            }
+          `);
+
+          const errors = env.driveDiagnostics();
+          expect(errors.length).toBe(1);
+          expect(errors[0].messageText).toContain('No suitable injection token for parameter');
+        });
+      });
+
+      describe('abstract directives', () => {
+        it('should generate a factory function that throws', () => {
+          env.tsconfig({strictInjectionParameters: false});
+          env.write('test.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive()
+          export class Test {
+            constructor(private notInjectable: string) {}
+          }
+        `);
+
+          env.driveMain();
+          const jsContents = env.getContents('test.js');
+          expect(jsContents)
+              .toContain('Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()');
+        });
+      });
+
+      it('should generate a factory function that throws, even under strictInjectionParameters',
+         () => {
+           env.tsconfig({strictInjectionParameters: true});
+           env.write('test.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive()
+        export class Test {
+          constructor(private notInjectable: string) {}
+        }
+      `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+           expect(jsContents)
+               .toContain('Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()');
+         });
     });
 
     describe('templateUrl and styleUrls processing', () => {

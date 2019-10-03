@@ -56,6 +56,11 @@ export interface R3ConstructorFactoryMetadata {
    * function could be different, and other options control how it will be invoked.
    */
   injectFn: o.ExternalReference;
+
+  /**
+   * Type of the target being created by the factory.
+   */
+  target: R3FactoryTarget;
 }
 
 export enum R3FactoryDelegateType {
@@ -82,13 +87,12 @@ export interface R3ExpressionFactoryMetadata extends R3ConstructorFactoryMetadat
 export type R3FactoryMetadata = R3ConstructorFactoryMetadata | R3DelegatedFactoryMetadata |
     R3DelegatedFnOrClassMetadata | R3ExpressionFactoryMetadata;
 
-export interface R3FactoryDefMetadata {
-  name: string;
-  type: o.Expression;
-  typeArgumentCount: number;
-  deps: R3DependencyMetadata[]|'invalid'|null;
-  injectFn: o.ExternalReference;
-  isPipe?: boolean;
+export enum R3FactoryTarget {
+  Directive = 0,
+  Component = 1,
+  Injectable = 2,
+  Pipe = 3,
+  NgModule = 4,
 }
 
 /**
@@ -163,7 +167,7 @@ export interface R3FactoryFn {
 /**
  * Construct a factory function expression for the given `R3FactoryMetadata`.
  */
-export function compileFactoryFunction(meta: R3FactoryMetadata, isPipe = false): R3FactoryFn {
+export function compileFactoryFunction(meta: R3FactoryMetadata): R3FactoryFn {
   const t = o.variable('t');
   const statements: o.Statement[] = [];
 
@@ -179,8 +183,9 @@ export function compileFactoryFunction(meta: R3FactoryMetadata, isPipe = false):
   if (meta.deps !== null) {
     // There is a constructor (either explicitly or implicitly defined).
     if (meta.deps !== 'invalid') {
-      ctorExpr =
-          new o.InstantiateExpr(typeForCtor, injectDependencies(meta.deps, meta.injectFn, isPipe));
+      ctorExpr = new o.InstantiateExpr(
+          typeForCtor,
+          injectDependencies(meta.deps, meta.injectFn, meta.target === R3FactoryTarget.Pipe));
     }
   } else {
     const baseFactory = o.variable(`ɵ${meta.name}_BaseFactory`);
@@ -206,7 +211,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata, isPipe = false):
     if (ctorExprFinal !== null) {
       ctorStmt = r.set(ctorExprFinal).toStmt();
     } else {
-      ctorStmt = makeErrorStmt(meta.name);
+      ctorStmt = o.importExpr(R3.invalidFactory).callFn([]).toStmt();
     }
     body.push(o.ifStmt(t, [ctorStmt], [r.set(nonCtorExpr).toStmt()]));
     return r;
@@ -228,8 +233,9 @@ export function compileFactoryFunction(meta: R3FactoryMetadata, isPipe = false):
   } else if (isDelegatedMetadata(meta)) {
     // This type is created with a delegated factory. If a type parameter is not specified, call
     // the factory instead.
-    const delegateArgs = injectDependencies(meta.delegateDeps, meta.injectFn, isPipe);
-    // Either call `new delegate(...)` or `delegate(...)` depending on meta.useNewForDelegate.
+    const delegateArgs =
+        injectDependencies(meta.delegateDeps, meta.injectFn, meta.target === R3FactoryTarget.Pipe);
+    // Either call `new delegate(...)` or `delegate(...)` depending on meta.delegateType.
     const factoryExpr = new (
         meta.delegateType === R3FactoryDelegateType.Class ?
             o.InstantiateExpr :
@@ -245,7 +251,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata, isPipe = false):
   if (retExpr !== null) {
     body.push(new o.ReturnStatement(retExpr));
   } else {
-    body.push(makeErrorStmt(meta.name));
+    body.push(o.importExpr(R3.invalidFactory).callFn([]).toStmt());
   }
 
   return {
@@ -256,21 +262,6 @@ export function compileFactoryFunction(meta: R3FactoryMetadata, isPipe = false):
     type: o.expressionType(
         o.importExpr(R3.FactoryDef, [typeWithParameters(meta.type, meta.typeArgumentCount)]))
   };
-}
-
-/**
- * Constructs the factory def (`ɵfac`) from directive/component/pipe metadata.
- */
-export function compileFactoryFromMetadata(meta: R3FactoryDefMetadata): R3FactoryFn {
-  return compileFactoryFunction(
-      {
-        name: meta.name,
-        type: meta.type,
-        deps: meta.deps,
-        typeArgumentCount: meta.typeArgumentCount,
-        injectFn: meta.injectFn,
-      },
-      meta.isPipe);
 }
 
 function injectDependencies(
@@ -356,13 +347,6 @@ export function dependenciesFromGlobalMetadata(
   }
 
   return deps;
-}
-
-function makeErrorStmt(name: string): o.Statement {
-  return new o.ThrowStmt(new o.InstantiateExpr(new o.ReadVarExpr('Error'), [
-    o.literal(
-        `${name} has a constructor which is not compatible with Dependency Injection. It should probably not be @Injectable().`)
-  ]));
 }
 
 function isDelegatedMetadata(meta: R3FactoryMetadata): meta is R3DelegatedFactoryMetadata|

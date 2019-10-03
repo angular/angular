@@ -45,6 +45,7 @@ export interface CompilerFacade {
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
 
   R3ResolvedDependencyType: typeof R3ResolvedDependencyType;
+  R3FactoryTarget: typeof R3FactoryTarget;
   ResourceLoader: {new (): ResourceLoader};
 }
 
@@ -68,6 +69,14 @@ export enum R3ResolvedDependencyType {
   Token = 0,
   Attribute = 1,
   ChangeDetectorRef = 2,
+}
+
+export enum R3FactoryTarget {
+  Directive = 0,
+  Component = 1,
+  Injectable = 2,
+  Pipe = 3,
+  NgModule = 4,
 }
 
 export interface R3DependencyMetadataFacade {
@@ -167,7 +176,7 @@ export interface R3FactoryDefMetadataFacade {
   typeArgumentCount: number;
   deps: R3DependencyMetadataFacade[]|null;
   injectFn: 'directiveInject'|'inject';
-  isPipe: boolean;
+  target: R3FactoryTarget;
 }
 
 export type ViewEncapsulation = number;

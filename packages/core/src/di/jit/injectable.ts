@@ -48,15 +48,15 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
       get: () => {
         if (ngFactoryDef === null) {
           const metadata = getInjectableMetadata(type, srcMeta);
-          ngFactoryDef =
-              getCompilerFacade().compileFactory(angularCoreDiEnv, `ng:///${type.name}/ɵfac.js`, {
-                name: metadata.name,
-                type: metadata.type,
-                typeArgumentCount: metadata.typeArgumentCount,
-                deps: reflectDependencies(type),
-                injectFn: 'inject',
-                isPipe: false
-              });
+          const compiler = getCompilerFacade();
+          ngFactoryDef = compiler.compileFactory(angularCoreDiEnv, `ng:///${type.name}/ɵfac.js`, {
+            name: metadata.name,
+            type: metadata.type,
+            typeArgumentCount: metadata.typeArgumentCount,
+            deps: reflectDependencies(type),
+            injectFn: 'inject',
+            target: compiler.R3FactoryTarget.Pipe
+          });
         }
         return ngFactoryDef;
       },

@@ -56,6 +56,7 @@ export {
   ɵɵcontainerRefreshStart,
 
   ɵɵdirectiveInject,
+  ɵɵinvalidFactory,
 
   ɵɵelement,
   ɵɵelementContainer,
