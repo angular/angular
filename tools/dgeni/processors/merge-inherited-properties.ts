@@ -1,7 +1,7 @@
 import {DocCollection, Processor} from 'dgeni';
 import {ClassExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassExportDoc';
-import {ClassLikeExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassLikeExportDoc';
 import {MemberDoc} from 'dgeni-packages/typescript/api-doc-types/MemberDoc';
+import {getInheritedDocsOfClass} from '../common/class-inheritance';
 
 /**
  * Processor that merges inherited properties of a class with the class doc. This is necessary
@@ -16,25 +16,10 @@ export class MergeInheritedProperties implements Processor {
         .forEach(doc => this._addInheritedProperties(doc));
   }
 
-  /** Gets all class like export documents which the given doc inherits from. */
-  private _getBaseDocuments(doc: ClassLikeExportDoc): ClassLikeExportDoc[] {
-    const directBaseDocs = [
-      ...doc.implementsClauses.filter(clause => clause.doc).map(d => d.doc!),
-      ...doc.extendsClauses.filter(clause => clause.doc).map(d => d.doc!),
-    ];
-
-    return [
-      ...directBaseDocs,
-      // recursively collect base documents of direct base documents.
-      ...directBaseDocs.reduce(
-          (res: ClassLikeExportDoc[], d) => res.concat(this._getBaseDocuments(d)), []),
-    ];
-  }
-
   private _addInheritedProperties(doc: ClassExportDoc) {
     // Note that we need to get check all base documents. We cannot assume
     // that directive base documents already have merged inherited members.
-    this._getBaseDocuments(doc).forEach(d => {
+    getInheritedDocsOfClass(doc).forEach(d => {
       d.members.forEach(member => this._addMemberDocIfNotPresent(doc, member));
     });
   }

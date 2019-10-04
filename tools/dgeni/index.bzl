@@ -40,8 +40,9 @@ def _dgeni_api_docs(ctx):
             expected_outputs += [
                 # Declare the output for the current entry-point. The output file will always follow the
                 # same format: "{output_folder}/{package_name}-{entry_point_name}.html"
-                # (e.g. "api-docs/material-slider.html")
-                ctx.actions.declare_file("%s/%s-%s.html" % (output_dir_name, package_name, entry_point)),
+                # (e.g. "api-docs/material-slider-testing.html")
+                ctx.actions.declare_file("%s/%s-%s.html" %
+                                         (output_dir_name, package_name, entry_point.replace("/", "-"))),
             ]
 
         # Small workaround that ensures that the "ripple" API doc is properly exposed as an output

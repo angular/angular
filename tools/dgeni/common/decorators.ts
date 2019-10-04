@@ -42,10 +42,10 @@ export function isDeprecatedDoc(doc: any) {
   return (doc.tags && doc.tags.tags || []).some((tag: any) => tag.tagName === 'deprecated');
 }
 
-/** Whether the given document is annotated with the "@docs-primary-module" jsdoc tag. */
-export function isPrimaryModuleDoc(doc: any) {
+/** Whether the given document is annotated with the "@docs-primary-export" jsdoc tag. */
+export function isPrimaryExportDoc(doc: any) {
   return (doc.tags && doc.tags.tags || [])
-      .some((tag: any) => tag.tagName === 'docs-primary-module');
+      .some((tag: any) => tag.tagName === 'docs-primary-export');
 }
 
 export function getDirectiveSelectors(classDoc: CategorizedClassDoc) {

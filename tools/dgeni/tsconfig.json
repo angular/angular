@@ -9,6 +9,7 @@
     "strictFunctionTypes": true,
     "noImplicitThis": true,
     "noImplicitAny": true,
+    "target": "es2015",
     "types": [
       "node"
     ]

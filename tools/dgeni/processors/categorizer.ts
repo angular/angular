@@ -1,5 +1,6 @@
 import {DocCollection, Processor} from 'dgeni';
 import {MemberDoc} from 'dgeni-packages/typescript/api-doc-types/MemberDoc';
+import {getInheritedDocsOfClass} from '../common/class-inheritance';
 import {
   decorateDeprecatedDoc,
   getDirectiveSelectors,
@@ -82,7 +83,8 @@ export class Categorizer implements Processor {
 
   /**
    * Decorates all Dgeni class documents for a simpler use inside of the template.
-   * - Identifies directives, services or NgModules and marks them them inside of the doc.
+   * - Identifies directives, services, NgModules or harnesses and marks them them
+   *   inside of the doc.
    * - Links the Dgeni document to the Dgeni document that the current class extends from.
    */
   private _decorateClassDoc(classDoc: CategorizedClassDoc) {
@@ -91,6 +93,7 @@ export class Categorizer implements Processor {
     // store the extended class in a variable.
     classDoc.extendedDoc = classDoc.extendsClauses[0] ? classDoc.extendsClauses[0].doc! : undefined;
     classDoc.directiveMetadata = getDirectiveMetadata(classDoc);
+    classDoc.inheritedDocs = getInheritedDocsOfClass(classDoc);
 
     // In case the extended document is not public, we don't want to print it in the
     // rendered class API doc. This causes confusion and also is not helpful as the
@@ -108,6 +111,8 @@ export class Categorizer implements Processor {
       classDoc.isService = true;
     } else if (isNgModule(classDoc)) {
       classDoc.isNgModule = true;
+    } else if (this._isTestHarness(classDoc)) {
+      classDoc.isTestHarness = true;
     }
   }
 
@@ -186,6 +191,14 @@ export class Categorizer implements Processor {
     });
 
     classDoc.methods.push(...methodsToAdd);
+  }
+
+  /**
+   * Whether the given class doc is considered a test harness. We naively detect
+   * test harness classes by checking the inheritance chain for "ComponentHarness".
+   */
+  private _isTestHarness(doc: CategorizedClassDoc): boolean {
+    return doc.inheritedDocs.some(d => d.name === 'ComponentHarness');
   }
 }
 

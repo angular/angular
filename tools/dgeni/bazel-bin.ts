@@ -4,6 +4,7 @@ import {TsParser} from 'dgeni-packages/typescript/services/TsParser';
 import {readFileSync} from 'fs';
 import {join, relative} from 'path';
 import {apiDocsPackage} from './docs-package';
+import {EntryPointGrouper} from './processors/entry-point-grouper';
 
 /**
  * Determines the command line arguments for the current Bazel action. Since this action can
@@ -39,6 +40,7 @@ if (require.main === module) {
   // Configure the Dgeni docs package to respect our passed options from the Bazel rule.
   apiDocsPackage.config(function(readTypeScriptModules: ReadTypeScriptModules,
                                  tsParser: TsParser,
+                                 entryPointGrouper: EntryPointGrouper,
                                  templateFinder: any,
                                  writeFilesProcessor: any,
                                  readFilesProcessor: any) {
@@ -73,6 +75,7 @@ if (require.main === module) {
         const entryPointPath = `${packageName}/${entryPointName}`;
         const entryPointIndexPath = `${entryPointPath}/index.ts`;
 
+        entryPointGrouper.entryPoints.push(entryPointPath);
         tsParser.options.paths![`@angular/${entryPointPath}`] = [entryPointIndexPath];
         readTypeScriptModules.sourceFiles.push(entryPointIndexPath);
       });

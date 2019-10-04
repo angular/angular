@@ -57,7 +57,6 @@ ng_package(
     entry_point = ":public-api.ts",
     packages = [
         "//src/cdk/schematics:npm_package",
-        "//src/cdk/testing:npm_package",
     ],
     tags = ["release-package"],
     deps = CDK_TARGETS,
@@ -65,5 +64,7 @@ ng_package(
 
 filegroup(
     name = "overviews",
-    srcs = ["//src/cdk/%s:overview" % name for name in CDK_ENTRYPOINTS],
+    # Only secondary entry-points declare overview files currently. Entry-points
+    # which contain a slash are not in the top-level and do not have an overview.
+    srcs = ["//src/cdk/%s:overview" % ep for ep in CDK_ENTRYPOINTS if not "/" in ep],
 )

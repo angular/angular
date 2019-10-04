@@ -15,3 +15,8 @@ ts_library(
         "@npm//@angular/core",
     ],
 )
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
+)

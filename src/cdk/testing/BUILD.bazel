@@ -1,6 +1,5 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package")
 load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
 load("//tools:defaults.bzl", "markdown_to_html", "ng_web_test_suite", "ts_library")
 
@@ -13,15 +12,6 @@ ts_library(
         ],
     ),
     module_name = "@angular/cdk/testing",
-)
-
-npm_package(
-    name = "npm_package",
-    deps = [
-        ":testing",
-        "//src/cdk/testing/protractor",
-        "//src/cdk/testing/testbed",
-    ],
 )
 
 markdown_to_html(
