@@ -82,7 +82,9 @@ export function getEntryPointInfo(
     fs: FileSystem, config: NgccConfiguration, logger: Logger, packagePath: AbsoluteFsPath,
     entryPointPath: AbsoluteFsPath): EntryPoint|null {
   const packageJsonPath = resolve(entryPointPath, 'package.json');
-  const entryPointConfig = config.getConfig(packagePath).entryPoints[entryPointPath];
+  const packageVersion = getPackageVersion(fs, packageJsonPath);
+  const entryPointConfig =
+      config.getConfig(packagePath, packageVersion).entryPoints[entryPointPath];
   if (entryPointConfig === undefined && !fs.exists(packageJsonPath)) {
     return null;
   }
@@ -221,6 +223,23 @@ function guessTypingsFromPackageJson(
     if (fs.exists(typingsPath)) {
       return typingsPath;
     }
+  }
+  return null;
+}
+
+/**
+ * Find the version of the package at `packageJsonPath`.
+ *
+ * @returns the version string or `null` if the package.json does not exist or is invalid.
+ */
+function getPackageVersion(fs: FileSystem, packageJsonPath: AbsoluteFsPath): string|null {
+  try {
+    if (fs.exists(packageJsonPath)) {
+      const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+      return packageJson['version'] || null;
+    }
+  } catch {
+    // Do nothing
   }
   return null;
 }
