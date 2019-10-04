@@ -14,6 +14,9 @@ import {resetComponentState} from '../../../../src/render3/state';
 import {createBenchmark} from '../micro_bench';
 import {createAndRenderLView} from '../setup';
 
+const attrs =
+    ['name1', 'value1', 'name2', 'value2', 'name3', 'value3', 'name4', 'value4', 'name5', 'value5'];
+
 `<div>
     <button>0</button>
     <button>1</button>
@@ -30,34 +33,34 @@ import {createAndRenderLView} from '../setup';
 function testTemplate(rf: RenderFlags, ctx: any) {
   if (rf & 1) {
     ɵɵelementStart(0, 'div');
-    ɵɵelementStart(1, 'button');
+    ɵɵelementStart(1, 'button', attrs);
     ɵɵtext(2, '0');
     ɵɵelementEnd();
-    ɵɵelementStart(3, 'button');
+    ɵɵelementStart(3, 'button', attrs);
     ɵɵtext(4, '1');
     ɵɵelementEnd();
-    ɵɵelementStart(5, 'button');
+    ɵɵelementStart(5, 'button', attrs);
     ɵɵtext(6, '2');
     ɵɵelementEnd();
-    ɵɵelementStart(7, 'button');
+    ɵɵelementStart(7, 'button', attrs);
     ɵɵtext(8, '3');
     ɵɵelementEnd();
-    ɵɵelementStart(9, 'button');
+    ɵɵelementStart(9, 'button', attrs);
     ɵɵtext(10, '4');
     ɵɵelementEnd();
-    ɵɵelementStart(11, 'button');
+    ɵɵelementStart(11, 'button', attrs);
     ɵɵtext(12, '5');
     ɵɵelementEnd();
-    ɵɵelementStart(13, 'button');
+    ɵɵelementStart(13, 'button', attrs);
     ɵɵtext(14, '6');
     ɵɵelementEnd();
-    ɵɵelementStart(15, 'button');
+    ɵɵelementStart(15, 'button', attrs);
     ɵɵtext(16, '7');
     ɵɵelementEnd();
-    ɵɵelementStart(17, 'button');
+    ɵɵelementStart(17, 'button', attrs);
     ɵɵtext(18, '8');
     ɵɵelementEnd();
-    ɵɵelementStart(19, 'button');
+    ɵɵelementStart(19, 'button', attrs);
     ɵɵtext(20, '9');
     ɵɵelementEnd();
     ɵɵelementEnd();
