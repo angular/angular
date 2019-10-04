@@ -120,19 +120,24 @@ commands:
     description: Initializing environment (setting up variables, overwriting Yarn)
     steps:
       - run: ./.circleci/env.sh
-      # Overwrite the yarn installed in the docker container with our own version.
-      - run: |
-          ourYarn=$(realpath ./third_party/github.com/yarnpkg/yarn/releases/download/v1.17.3/bin/yarn.js)
-          sudo chmod a+x $ourYarn
-          sudo ln -fs $ourYarn /usr/local/bin/yarn
+      - run:
+          # Overwrite the yarn installed in the docker container with our own version.
+          name: Overwrite yarn with our own version
+          command: |
+            ourYarn=$(realpath ./third_party/github.com/yarnpkg/yarn/releases/download/v1.17.3/bin/yarn.js)
+            sudo chmod a+x $ourYarn
+            sudo ln -fs $ourYarn /usr/local/bin/yarn
       - run: echo "Yarn version $(yarn --version)"
-      # Configure git as the CircleCI `checkout` command does.
-      # This is needed because we only checkout on the setup job.
-      # Add GitHub to known hosts
-      - run: mkdir -p ~/.ssh
-      - run: echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
-      - run: git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
-      - run: git config --global gc.auto 0 || true
+      - run:
+          # Configure git as the CircleCI `checkout` command does.
+          # This is needed because we only checkout on the setup job.
+          # Add GitHub to known hosts
+          name: Configure git
+          command: |
+            mkdir -p ~/.ssh
+            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+            git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
+            git config --global gc.auto 0 || true
 
   # Normally this would be an individual job instead of a command.
   # But startup and setup time for each invidual windows job are high enough to discourage
