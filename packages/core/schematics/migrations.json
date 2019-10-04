@@ -39,6 +39,11 @@
       "version": "9-beta",
       "description": "Removes the `static` flag from dynamic queries.",
       "factory": "./migrations/dynamic-queries/index"
+    },
+    "migration-v9-postinstall-ngcc": {
+      "version": "9-beta",
+      "description": "Adds an ngcc call as a postinstall hook in package.json",
+      "factory": "./migrations/postinstall-ngcc/index"
     }
   }
 }
