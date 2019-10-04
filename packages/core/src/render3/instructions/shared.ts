@@ -33,7 +33,7 @@ import {isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {ActiveElementFlags, executeElementExitFn, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, hasActiveElementFlag, incrementActiveDirectiveId, namespaceHTMLInternal, selectView, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {renderStylingMap} from '../styling/bindings';
 import {NO_CHANGE} from '../tokens';
-import {ANIMATION_PROP_PREFIX, isAnimationProp} from '../util/attrs_utils';
+import {isAnimationProp} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
 import {getLViewParent} from '../util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
@@ -980,8 +980,7 @@ function validateProperty(
   // The property is considered valid if the element matches the schema, it exists on the element
   // or it is synthetic, and we are in a browser context (web worker nodes should be skipped).
   return matchingSchemas(hostView, tNode.tagName) || propName in element ||
-      propName[0] === ANIMATION_PROP_PREFIX || typeof Node !== 'function' ||
-      !(element instanceof Node);
+      isAnimationProp(propName) || typeof Node !== 'function' || !(element instanceof Node);
 }
 
 function matchingSchemas(hostView: LView, tagName: string | null): boolean {
