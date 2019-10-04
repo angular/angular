@@ -180,7 +180,8 @@ export function hasValueChanged(
 /**
  * Determines whether the provided styling value is truthy or falsy.
  */
-export function isStylingValueDefined(value: any) {
+export function isStylingValueDefined<T extends string|number|{}|null>(value: T):
+    value is NonNullable<T> {
   // the reason why null is compared against is because
   // a CSS class value that is set to `false` must be
   // respected (otherwise it would be treated as falsy).
