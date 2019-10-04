@@ -21,8 +21,8 @@ http_archive(
     patch_args = ["-p1"],
     # Patch https://github.com/bazelbuild/rules_nodejs/pull/903
     patches = ["//tools:rollup_bundle_commonjs_ignoreGlobal.patch"],
-    sha256 = "1249a60f88e4c0a46d78de06be04d3d41e7421dcfa0c956de65309a7b7ecf6f4",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.38.0/rules_nodejs-0.38.0.tar.gz"],
+    sha256 = "0942d188f4d0de6ddb743b9f6642a26ce1ad89f09c0035a9a5ca5ba9615c96aa",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.38.1/rules_nodejs-0.38.1.tar.gz"],
 )
 
 # Check the bazel version and download npm dependencies
