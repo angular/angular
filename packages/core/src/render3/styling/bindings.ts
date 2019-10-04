@@ -726,7 +726,8 @@ export function setStylingMapsSyncFn(fn: SyncStylingMapsFn) {
 export const setStyle: ApplyStylingFn =
     (renderer: Renderer3 | null, native: RElement, prop: string, value: string | null) => {
       if (renderer !== null) {
-        if (value) {
+        // Use `isStylingValueDefined` to account for falsy values that should be bound like 0.
+        if (isStylingValueDefined(value)) {
           // opacity, z-index and flexbox all have number values
           // and these need to be converted into strings so that
           // they can be assigned properly.
