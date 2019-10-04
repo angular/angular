@@ -1,7 +1,12 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
-load("//tools:defaults.bzl", "markdown_to_html", "ng_module")
+load(
+    "//tools:defaults.bzl",
+    "markdown_to_html",
+    "ng_module",
+    "sass_binary",
+    "sass_library",
+)
 
 ng_module(
     name = "form-field",

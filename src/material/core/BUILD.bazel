@@ -1,6 +1,5 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("//src/material:config.bzl", "MATERIAL_SCSS_LIBS")
 load(
     "//tools:defaults.bzl",
@@ -8,6 +7,8 @@ load(
     "ng_module",
     "ng_test_library",
     "ng_web_test_suite",
+    "sass_binary",
+    "sass_library",
 )
 
 exports_files(["theming/_theming.scss"])

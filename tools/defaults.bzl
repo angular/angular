@@ -1,5 +1,6 @@
 # Re-export of Bazel rules with repository-wide defaults
 
+load("@io_bazel_rules_sass//:defs.bzl", _sass_binary = "sass_binary", _sass_library = "sass_library")
 load("@npm_angular_bazel//:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("@npm_bazel_jasmine//:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm_bazel_karma//:index.bzl", _karma_web_test_suite = "karma_web_test_suite")
@@ -25,6 +26,15 @@ def _getDefaultTsConfig(testonly):
         return _DEFAULT_TSCONFIG_TEST
     else:
         return _DEFAULT_TSCONFIG_BUILD
+
+def sass_binary(sourcemap = False, **kwargs):
+    _sass_binary(
+        sourcemap = sourcemap,
+        **kwargs
+    )
+
+def sass_library(**kwargs):
+    _sass_library(**kwargs)
 
 def ts_library(tsconfig = None, deps = [], testonly = False, **kwargs):
     # Add tslib because we use import helpers for all public packages.

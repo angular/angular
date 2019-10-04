@@ -26,10 +26,6 @@ rerootedStyles = [file for target in CDK_ENTRYPOINTS_WITH_STYLES for file in [
         "%s-prebuilt.css" % target,
         target,
     ],
-    [
-        "%s-prebuilt.css.map" % target,
-        target,
-    ],
 ]]
 
 # Create genrules which re-root stylesheets from secondary entry-points.

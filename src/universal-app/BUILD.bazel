@@ -1,12 +1,11 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_test")
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//src/cdk:config.bzl", "CDK_TARGETS")
 load("//src/cdk-experimental:config.bzl", "CDK_EXPERIMENTAL_TARGETS")
 load("//src/material:config.bzl", "MATERIAL_TARGETS")
 load("//src/material-experimental:config.bzl", "MATERIAL_EXPERIMENTAL_TARGETS")
-load("//tools:defaults.bzl", "ng_module", "ts_library")
+load("//tools:defaults.bzl", "ng_module", "sass_binary", "ts_library")
 
 ng_module(
     name = "kitchen-sink",

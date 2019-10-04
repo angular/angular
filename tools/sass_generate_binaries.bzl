@@ -1,4 +1,4 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "sass_binary")
 
 # Generates multiple sass binaries based on a specified list of source files.
 # All generated sass binaries will be exposed as a filegroup that has all the
