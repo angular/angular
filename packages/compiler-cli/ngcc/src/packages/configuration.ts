@@ -44,13 +44,50 @@ export interface NgccEntryPointConfig {
   override?: PackageJsonFormatPropertiesMap;
 }
 
+/**
+ * The default configuration for ngcc.
+ *
+ * This is the ultimate fallback configuration that ngcc will use if there is no configuration
+ * for a package at the package level or project level.
+ *
+ * This configuration is for packages that are "dead" - i.e. no longer maintained and so are
+ * unlikely to be fixed to work with ngcc, nor provide a package level config of their own.
+ *
+ * The fallback process for looking up configuration is:
+ *
+ * Project -> Package -> Default
+ *
+ * If a package provides its own configuration then that would override this default one.
+ *
+ * Also application developers can always provide configuration at their project level which
+ * will override everything else.
+ *
+ * Note that the fallback is package based not entry-point based.
+ * For example, if a there is configuration for a package at the project level this will replace all
+ * entry-point configurations that may have been provided in the package level or default level
+ * configurations, even if the project level configuration does not provide for a given entry-point.
+ */
+export const DEFAULT_NGCC_CONFIG: NgccProjectConfig = {
+  packages: {
+      // Add default package configuration here. For example:
+      // '@angular/fire@^5.2.0': {
+      //   entryPoints: {
+      //     './database-deprecated': {
+      //       ignore: true,
+      //     },
+      //   },
+      // },
+  }
+};
+
 const NGCC_CONFIG_FILENAME = 'ngcc.config.js';
 
 export class NgccConfiguration {
-  // TODO: change string => ModuleSpecifier when we tighten the path types in #30556
+  private defaultConfig: NgccProjectConfig;
   private cache = new Map<string, NgccPackageConfig>();
 
   constructor(private fs: FileSystem, baseDir: AbsoluteFsPath) {
+    this.defaultConfig = this.processDefaultConfig(baseDir);
     const projectConfig = this.loadProjectConfig(baseDir);
     for (const packagePath in projectConfig.packages) {
       const absPackagePath = resolve(baseDir, 'node_modules', packagePath);
@@ -66,10 +103,24 @@ export class NgccConfiguration {
       return this.cache.get(packagePath) !;
     }
 
-    const packageConfig = this.loadPackageConfig(packagePath);
-    packageConfig.entryPoints = this.processEntryPoints(packagePath, packageConfig.entryPoints);
+    const packageConfig = this.loadPackageConfig(packagePath) ||
+        this.defaultConfig.packages[packagePath] || {entryPoints: {}};
     this.cache.set(packagePath, packageConfig);
     return packageConfig;
+  }
+
+  private processDefaultConfig(baseDir: AbsoluteFsPath): NgccProjectConfig {
+    const defaultConfig: NgccProjectConfig = {packages: {}};
+    for (const packagePath in DEFAULT_NGCC_CONFIG.packages) {
+      const absPackagePath = resolve(baseDir, 'node_modules', packagePath);
+      const packageConfig = DEFAULT_NGCC_CONFIG.packages[packagePath];
+      if (packageConfig) {
+        packageConfig.entryPoints =
+            this.processEntryPoints(absPackagePath, packageConfig.entryPoints);
+        defaultConfig.packages[absPackagePath] = packageConfig;
+      }
+    }
+    return defaultConfig;
   }
 
   private loadProjectConfig(baseDir: AbsoluteFsPath): NgccProjectConfig {
@@ -85,16 +136,18 @@ export class NgccConfiguration {
     }
   }
 
-  private loadPackageConfig(packagePath: AbsoluteFsPath): NgccPackageConfig {
+  private loadPackageConfig(packagePath: AbsoluteFsPath): NgccPackageConfig|null {
     const configFilePath = join(packagePath, NGCC_CONFIG_FILENAME);
     if (this.fs.exists(configFilePath)) {
       try {
-        return this.evalSrcFile(configFilePath);
+        const packageConfig = this.evalSrcFile(configFilePath);
+        packageConfig.entryPoints = this.processEntryPoints(packagePath, packageConfig.entryPoints);
+        return packageConfig;
       } catch (e) {
         throw new Error(`Invalid package configuration file at "${configFilePath}": ` + e.message);
       }
     } else {
-      return {entryPoints: {}};
+      return null;
     }
   }
 
