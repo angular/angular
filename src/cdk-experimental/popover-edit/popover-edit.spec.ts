@@ -3,7 +3,7 @@ import {LEFT_ARROW, UP_ARROW, RIGHT_ARROW, DOWN_ARROW, TAB} from '@angular/cdk/k
 import {CdkTableModule} from '@angular/cdk/table';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {CommonModule} from '@angular/common';
-import {Component, ElementRef, Type, ViewChild} from '@angular/core';
+import {Component, Directive, ElementRef, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed, tick, inject} from '@angular/core/testing';
 import {FormsModule, NgForm} from '@angular/forms';
 import {BidiModule, Direction} from '@angular/cdk/bidi';
@@ -61,6 +61,10 @@ interface PeriodicElement {
   weight: number;
 }
 
+@Directive({
+  // TODO(devversion): this selector can be removed when we update to Angular 9.0.
+  selector: 'do-not-use-abstract-cdk-popover-edit-base-test-component'
+})
 abstract class BaseTestComponent {
   @ViewChild('table', {static: false}) table: ElementRef;
 

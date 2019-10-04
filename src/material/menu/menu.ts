@@ -25,6 +25,7 @@ import {
   Component,
   ContentChild,
   ContentChildren,
+  Directive,
   ElementRef,
   EventEmitter,
   Inject,
@@ -90,6 +91,10 @@ export function MAT_MENU_DEFAULT_OPTIONS_FACTORY(): MatMenuDefaultOptions {
 const MAT_MENU_BASE_ELEVATION = 4;
 
 /** Base class with all of the `MatMenu` functionality. */
+@Directive({
+  // TODO(devversion): this selector can be removed when we update to Angular 9.0.
+  selector: 'do-not-use-abstract-mat-menu-base'
+})
 // tslint:disable-next-line:class-name
 export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnInit,
   OnDestroy {
@@ -445,6 +450,10 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
 }
 
 /** @docs-private We show the "_MatMenu" class as "MatMenu" in the docs. */
+@Directive({
+  // TODO(devversion): this selector can be removed when we update to Angular 9.0.
+  selector: 'do-not-use-abstract-mat-menu'
+})
 export class MatMenu extends _MatMenuBase {}
 
 // Note on the weird inheritance setup: we need three classes, because the MDC-based menu has to

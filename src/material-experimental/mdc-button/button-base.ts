@@ -7,7 +7,7 @@
  */
 
 import {Platform} from '@angular/cdk/platform';
-import {ElementRef, NgZone, ViewChild} from '@angular/core';
+import {Directive, ElementRef, Inject, NgZone, Optional, ViewChild} from '@angular/core';
 import {
   CanColor,
   CanColorCtor,
@@ -21,6 +21,7 @@ import {
   mixinDisableRipple,
   RippleAnimationConfig
 } from '@angular/material/core';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {numbers} from '@material/ripple';
 
 /** Inputs common to all buttons. */
@@ -78,6 +79,10 @@ export const _MatButtonBaseMixin: CanDisableRippleCtor&CanDisableCtor&CanColorCt
     typeof MatButtonMixinCore = mixinColor(mixinDisabled(mixinDisableRipple(MatButtonMixinCore)));
 
 /** Base class for all buttons.  */
+@Directive({
+  // TODO(devversion): this selector can be removed when we update to Angular 9.0.
+  selector: 'do-not-use-abstract-mat-button-base'
+})
 export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, CanColor,
                                                                   CanDisableRipple {
   /** The ripple animation configuration to use for the buttons. */
@@ -94,7 +99,8 @@ export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, Ca
 
   constructor(
       elementRef: ElementRef, public _platform: Platform, public _ngZone: NgZone,
-      public _animationMode?: string) {
+      // TODO(devversion): Injection can be removed if angular/angular#32981 is fixed.
+      @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super(elementRef);
 
     // For each of the variant selectors that is present in the button's host
@@ -144,10 +150,16 @@ export const MAT_ANCHOR_HOST = {
 /**
  * Anchor button base.
  */
+@Directive({
+  // TODO(devversion): this selector can be removed when we update to Angular 9.0.
+  selector: 'do-not-use-abstract-mat-anchor-base'
+})
 export class MatAnchorBase extends MatButtonBase {
   tabIndex: number;
 
-  constructor(elementRef: ElementRef, platform: Platform, ngZone: NgZone, animationMode?: string) {
+  constructor(elementRef: ElementRef, platform: Platform, ngZone: NgZone,
+              // TODO(devversion): Injection can be removed if angular/angular#32981 is fixed.
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(elementRef, platform, ngZone, animationMode);
   }
 

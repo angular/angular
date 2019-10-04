@@ -11,7 +11,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatMenuContent} from './menu-content';
-import {_MatMenu} from './menu';
+import {_MatMenu, _MatMenuBase, MatMenu} from './menu';
 import {MatMenuItem} from './menu-item';
 import {
   MatMenuTrigger,
@@ -24,7 +24,14 @@ import {
  */
 @NgModule({
   exports: [MatMenuTrigger, MatMenuContent, MatCommonModule],
-  declarations: [MatMenuTrigger, MatMenuContent],
+  declarations: [
+    MatMenuTrigger,
+    MatMenuContent,
+    // TODO(devversion): remove when `MatMenu` becomes a selectorless Directive.
+    MatMenu,
+    // TODO(devversion): remove when `_MatMenuBase` becomes a selectorless Directive.
+    _MatMenuBase
+  ],
   providers: [MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER]
 })
 // tslint:disable-next-line:class-name
