@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
+load("//tools:defaults.bzl", "markdown_to_html", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 ng_module(
     name = "clipboard",
@@ -9,7 +9,7 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = glob(["**/*.html"]),
-    module_name = "@angular/cdk-experimental/clipboard",
+    module_name = "@angular/cdk/clipboard",
     deps = [
         "@npm//@angular/common",
         "@npm//@angular/core",
@@ -34,4 +34,14 @@ ng_test_library(
 ng_web_test_suite(
     name = "unit_tests",
     deps = [":unit_test_sources"],
+)
+
+markdown_to_html(
+    name = "overview",
+    srcs = [":clipboard.md"],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )

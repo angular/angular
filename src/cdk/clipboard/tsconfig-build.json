@@ -8,7 +8,7 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
     "flatModuleOutFile": "index.js",
-    "flatModuleId": "@angular/cdk-experimental/clipboard",
+    "flatModuleId": "@angular/cdk/clipboard",
     "skipTemplateCodegen": true,
     "fullTemplateTypeCheck": true
   }

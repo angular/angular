@@ -21,18 +21,23 @@ import {Clipboard} from './clipboard';
 @Directive({
   selector: '[cdkCopyToClipboard]',
   host: {
-    '(click)': 'doCopy()',
+    '(click)': 'copy()',
   }
 })
 export class CdkCopyToClipboard {
   /** Content to be copied. */
   @Input('cdkCopyToClipboard') text = '';
 
+  /**
+   * Emits when some text is copied to the clipboard. The
+   * emitted value indicates whether copying was successful.
+   */
   @Output() copied = new EventEmitter<boolean>();
 
-  constructor(private readonly clipboard: Clipboard) {}
+  constructor(private readonly _clipboard: Clipboard) {}
 
-  doCopy() {
-    this.copied.emit(this.clipboard.copy(this.text));
+  /** Copies the current text to the clipboard. */
+  copy() {
+    this.copied.emit(this._clipboard.copy(this.text));
   }
 }

@@ -66,6 +66,7 @@
 /src/cdk/a11y/**                                   @jelbourn @devversion
 /src/cdk/accordion/**                              @jelbourn
 /src/cdk/bidi/**                                   @jelbourn
+/src/cdk/clipboard/**                              @jelbourn @xkxx
 /src/cdk/coercion/**                               @jelbourn
 /src/cdk/collections/**                            @jelbourn @crisbeto @andrewseguin
 /src/cdk/drag-drop/**                              @crisbeto
@@ -114,7 +115,7 @@
 /src/material-experimental/select/**               @crisbeto
 
 # CDK experimental package
-/src/cdk-experimental/**                           @jelbourn
+/src/cdk-experimental/*                            @jelbourn
 /src/cdk-experimental/dialog/**                    @jelbourn @crisbeto
 /src/cdk-experimental/popover-edit/**              @kseamon @andrewseguin
 /src/cdk-experimental/scrolling/**                 @mmalerba
@@ -243,6 +244,7 @@
 /tools/public_api_guard/cdk/accordion.d.ts         @jelbourn
 /tools/public_api_guard/cdk/bidi.d.ts              @jelbourn
 /tools/public_api_guard/cdk/cdk.d.ts               @jelbourn
+/tools/public_api_guard/cdk/clipboard.d.ts         @jelbourn @xkxx
 /tools/public_api_guard/cdk/coercion.d.ts          @jelbourn
 /tools/public_api_guard/cdk/collections.d.ts       @jelbourn @crisbeto @andrewseguin
 /tools/public_api_guard/cdk/drag-drop.d.ts         @crisbeto

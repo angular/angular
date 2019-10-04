@@ -3,6 +3,7 @@ CDK_ENTRYPOINTS = [
     "a11y",
     "accordion",
     "bidi",
+    "clipboard",
     "coercion",
     "collections",
     "drag-drop",

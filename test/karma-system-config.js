@@ -72,6 +72,7 @@ System.config({
     '@angular/cdk/a11y': 'dist/packages/cdk/a11y/index.js',
     '@angular/cdk/accordion': 'dist/packages/cdk/accordion/index.js',
     '@angular/cdk/bidi': 'dist/packages/cdk/bidi/index.js',
+    '@angular/cdk/cliboard': 'dist/packages/cdk/cliboard/index.js',
     '@angular/cdk/coercion': 'dist/packages/cdk/coercion/index.js',
     '@angular/cdk/collections': 'dist/packages/cdk/collections/index.js',
     '@angular/cdk/drag-drop': 'dist/packages/cdk/drag-drop/index.js',

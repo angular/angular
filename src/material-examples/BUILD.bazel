@@ -10,6 +10,7 @@ EXAMPLE_PACKAGES = [
     "//src/material-examples/cdk/a11y",
     "//src/material-examples/cdk/drag-drop",
     "//src/material-examples/cdk/platform",
+    "//src/material-examples/cdk/clipboard",
     "//src/material-examples/cdk-experimental/popover-edit",
     "//src/material-examples/cdk/portal",
     "//src/material-examples/cdk/scrolling",

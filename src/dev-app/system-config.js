@@ -12,6 +12,7 @@ var CDK_PACKAGES = [
   'a11y',
   'accordion',
   'bidi',
+  'clipboard',
   'coercion',
   'collections',
   'drag-drop',

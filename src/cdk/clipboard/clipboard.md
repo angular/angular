@@ -1,7 +1,16 @@
-**Warning: this service is still experimental. It may have bugs and the API may change at any
-time**
-
 The clipboard package provides helpers for working with the system clipboard.
+
+## `cdkCopyToClipboard` directive
+
+The `cdkCopyToClipboard` directive can be used to easily add copy-on-click
+functionality to an existing element. The directive selector doubles as an
+`@Input()` for the text to be copied.
+
+```html
+<img src="avatar.jpg" alt="Hero avatar" [cdkCopyToClipboard]="getShortBio()">
+```
+
+<!-- example(cdk-clipboard-overview) -->
 
 ## `Clipboard` service
 
@@ -49,14 +58,4 @@ class HeroProfile {
     setTimeout(attempt);
   }
 }
-```
-
-## `cdkCopyToClipboard` directive
-
-The `cdkCopyToClipboard` directive can be used to easily add copy-on-click
-functionality to an existing element. The directive selector doubles as an
-`@Input()` for the text to be copied.
-
-```html
-<img src="avatar.jpg" alt="Hero avatar" [cdkCopyToClipboard]="getShortBio()">
 ```
