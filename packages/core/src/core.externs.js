@@ -22,3 +22,9 @@ var wtf;
  * about the global variable.
  */
 var $localize;
+
+/**
+ * This is needed to prevent Closure from using `ng` while minifying scripts, to avoid collisions
+ * with `window.ng` that is used to expose debug utilities in dev mode.
+ */
+var ng;
