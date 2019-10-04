@@ -26,8 +26,6 @@
     "enableIvy": false,
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
-    "flatModuleOutFile": "index.js",
-    "flatModuleId": "@angular/material",
     "skipTemplateCodegen": true,
     "fullTemplateTypeCheck": true
   }
