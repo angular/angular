@@ -1006,8 +1006,7 @@ function i18nAttributesFirstPass(lView: LView, tView: TView, index: number, valu
           const dataValue = tNode.inputs && tNode.inputs[attrName];
           if (dataValue) {
             setInputsForProperty(lView, dataValue, value);
-            if (ngDevMode &&
-                (tNode.type === TNodeType.Element || tNode.type === TNodeType.Container)) {
+            if (ngDevMode) {
               const element = getNativeByIndex(previousElementIndex, lView) as RElement | RComment;
               setNgReflectProperties(lView, element, tNode.type, dataValue, value);
             }
