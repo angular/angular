@@ -1013,57 +1013,6 @@ function callUnwrapValue(nodeIndex: number, bindingIdx: number, expr: o.Expressi
   ]);
 }
 
-interface StaticAndDynamicQueryIds {
-  staticQueryIds: Set<number>;
-  dynamicQueryIds: Set<number>;
-}
-
-
-export function findStaticQueryIds(
-    nodes: TemplateAst[], result = new Map<TemplateAst, StaticAndDynamicQueryIds>()):
-    Map<TemplateAst, StaticAndDynamicQueryIds> {
-  nodes.forEach((node) => {
-    const staticQueryIds = new Set<number>();
-    const dynamicQueryIds = new Set<number>();
-    let queryMatches: QueryMatch[] = undefined !;
-    if (node instanceof ElementAst) {
-      findStaticQueryIds(node.children, result);
-      node.children.forEach((child) => {
-        const childData = result.get(child) !;
-        childData.staticQueryIds.forEach(queryId => staticQueryIds.add(queryId));
-        childData.dynamicQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
-      });
-      queryMatches = node.queryMatches;
-    } else if (node instanceof EmbeddedTemplateAst) {
-      findStaticQueryIds(node.children, result);
-      node.children.forEach((child) => {
-        const childData = result.get(child) !;
-        childData.staticQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
-        childData.dynamicQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
-      });
-      queryMatches = node.queryMatches;
-    }
-    if (queryMatches) {
-      queryMatches.forEach((match) => staticQueryIds.add(match.queryId));
-    }
-    dynamicQueryIds.forEach(queryId => staticQueryIds.delete(queryId));
-    result.set(node, {staticQueryIds, dynamicQueryIds});
-  });
-  return result;
-}
-
-export function staticViewQueryIds(nodeStaticQueryIds: Map<TemplateAst, StaticAndDynamicQueryIds>):
-    StaticAndDynamicQueryIds {
-  const staticQueryIds = new Set<number>();
-  const dynamicQueryIds = new Set<number>();
-  Array.from(nodeStaticQueryIds.values()).forEach((entry) => {
-    entry.staticQueryIds.forEach(queryId => staticQueryIds.add(queryId));
-    entry.dynamicQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
-  });
-  dynamicQueryIds.forEach(queryId => staticQueryIds.delete(queryId));
-  return {staticQueryIds, dynamicQueryIds};
-}
-
 function elementEventNameAndTarget(
     eventAst: BoundEventAst, dirAst: DirectiveAst | null): {name: string, target: string | null} {
   if (eventAst.isAnimation) {
