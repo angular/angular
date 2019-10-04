@@ -137,6 +137,20 @@ describe('styling', () => {
     expect(fixture.nativeElement.innerHTML).toBe('<div></div>');
   });
 
+  it('should be able to bind zero', () => {
+    @Component({template: '<div #div [style.opacity]="opacity"></div>'})
+    class App {
+      @ViewChild('div') div !: ElementRef<HTMLElement>;
+      opacity = 0;
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.div.nativeElement.style.opacity).toBe('0');
+  });
+
   it('should be able to bind a SafeValue to backgroundImage', () => {
     @Component({template: '<div [style.backgroundImage]="image"></div>'})
     class Cmp {
