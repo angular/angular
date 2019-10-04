@@ -32,11 +32,8 @@ export class NoopRenderer implements ProceduralRenderer3 {
   parentNode(node: RNode): RElement|null { throw new Error('Method not implemented.'); }
   nextSibling(node: RNode): RNode|null { throw new Error('Method not implemented.'); }
   setAttribute(el: RElement, name: string, value: string, namespace?: string|null|undefined): void {
-    throw new Error('Method not implemented.');
   }
-  removeAttribute(el: RElement, name: string, namespace?: string|null|undefined): void {
-    throw new Error('Method not implemented.');
-  }
+  removeAttribute(el: RElement, name: string, namespace?: string|null|undefined): void {}
   addClass(el: RElement, name: string): void {}
   removeClass(el: RElement, name: string): void {}
   setStyle(el: RElement, style: string, value: any, flags?: RendererStyleFlags3|undefined): void {}
