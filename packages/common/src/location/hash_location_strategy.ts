@@ -61,22 +61,20 @@ export class HashLocationStrategy extends LocationStrategy {
 
   prepareExternalUrl(internal: string): string {
     const url = joinWithSlash(this._baseHref, internal);
-    return url.length > 0 ? ('#' + url) : url;
+    const path = this._platformLocation.pathname;
+
+    return url.length > 0 ? (path + '#' + url) : path;
   }
 
   pushState(state: any, title: string, path: string, queryParams: string) {
-    let url: string|null = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
-    if (url.length == 0) {
-      url = this._platformLocation.pathname;
-    }
+    let url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
+
     this._platformLocation.pushState(state, title, url);
   }
 
   replaceState(state: any, title: string, path: string, queryParams: string) {
     let url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
-    if (url.length == 0) {
-      url = this._platformLocation.pathname;
-    }
+
     this._platformLocation.replaceState(state, title, url);
   }
 
