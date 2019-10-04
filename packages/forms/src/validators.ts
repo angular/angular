@@ -58,12 +58,14 @@ export const NG_ASYNC_VALIDATORS =
     new InjectionToken<Array<Validator|Function>>('NgAsyncValidators');
 
 /**
+ * A regular expression that matches valid e-mail addresses.
+ *
  * At a high level, this regexp matches e-mail addresses of the format `local-part@tld`, where:
  * - `local-part` consists of one or more of the allowed characters (alphanumeric and some
  *   punctuation symbols).
  * - `local-part` cannot begin or end with a period (`.`).
  * - `local-part` cannot be longer than 64 characters.
- * - `tld` consistst of one or more `labels` separated by periods (`.`). E.g. `localhost` or
+ * - `tld` consists of one or more `labels` separated by periods (`.`). For example `localhost` or
  *   `foo.com`.
  * - A `label` consists of one or more of the allowed characters (alphanumeric, dashes (`-`) and
  *   periods (`.`)).
@@ -77,8 +79,8 @@ export const NG_ASYNC_VALIDATORS =
  * https://github.com/angular/angular.js/blob/c133ef836/src/ng/directive/input.js#L27
  * It is based on the
  * [WHATWG version](https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address) with
- * some enhancements to incorporate more RFC rules (e.g. related to domain names and the lengths of
- * different parts of the address). The main differences from the WHATWG version are:
+ * some enhancements to incorporate more RFC rules (such as rules related to domain names and the
+ * lengths of different parts of the address). The main differences from the WHATWG version are:
  *   - Disallow `local-part` to begin or end with a period (`.`).
  *   - Disallow `local-part` length to exceed 64 characters.
  *   - Disallow total address length to exceed 254 characters.
@@ -222,8 +224,8 @@ export class Validators {
    * Tests the value using a [regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
    * pattern suitable for common usecases. The pattern is based on the definition of a valid email
    * address in the [WHATWG HTML specification](https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address)
-   * with some enhancements to incorporate more RFC rules (e.g. related to domain names and the
-   * lengths of different parts of the address).
+   * with some enhancements to incorporate more RFC rules (such as rules related to domain names and
+   * the lengths of different parts of the address).
    *
    * The differences from the WHATWG version include:
    * - Disallow `local-part` (the part before the `@` symbol) to begin or end with a period (`.`).
