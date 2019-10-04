@@ -61,13 +61,19 @@ export declare type GlobalDevModeContainer = {
  * used from the browser console when an application is not in production.
  */
 export function publishGlobalUtil(name: string, fn: Function): void {
-  const w = global as any as GlobalDevModeContainer;
-  ngDevMode && assertDefined(fn, 'function not defined');
-  if (w) {
-    let container = w[GLOBAL_PUBLISH_EXPANDO_KEY];
-    if (!container) {
-      container = w[GLOBAL_PUBLISH_EXPANDO_KEY] = {};
+  if (typeof COMPILED === 'undefined' || !COMPILED) {
+    // Note: we can't export `ng` when using closure enhanced optimization as:
+    // - closure declares globals itself for minified names, which sometimes clobber our `ng` global
+    // - we can't declare a closure extern as the namespace `ng` is already used within Google
+    //   for typings for AngularJS (via `goog.provide('ng....')`).
+    const w = global as any as GlobalDevModeContainer;
+    ngDevMode && assertDefined(fn, 'function not defined');
+    if (w) {
+      let container = w[GLOBAL_PUBLISH_EXPANDO_KEY];
+      if (!container) {
+        container = w[GLOBAL_PUBLISH_EXPANDO_KEY] = {};
+      }
+      container[name] = fn;
     }
-    container[name] = fn;
   }
 }
