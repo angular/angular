@@ -15,8 +15,8 @@ workspace(
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-RULES_NODEJS_VERSION = "0.37.1"
-RULES_NODEJS_SHA256 = "da217044d24abd16667324626a33581f3eaccabf80985b2688d6a08ed2f864be"
+RULES_NODEJS_VERSION = "0.38.1"
+RULES_NODEJS_SHA256 = "0942d188f4d0de6ddb743b9f6642a26ce1ad89f09c0035a9a5ca5ba9615c96aa"
 http_archive(
     name = "build_bazel_rules_nodejs",
     sha256 = RULES_NODEJS_SHA256,
@@ -73,8 +73,8 @@ install_bazel_dependencies()
 load("@npm_bazel_protractor//:package.bzl", "npm_bazel_protractor_dependencies")
 npm_bazel_protractor_dependencies()
 
-load("@npm_bazel_karma//:package.bzl", "rules_karma_dependencies")
-rules_karma_dependencies()
+load("@npm_bazel_karma//:package.bzl", "npm_bazel_karma_dependencies")
+npm_bazel_karma_dependencies()
 
 load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories")
 web_test_repositories()
