@@ -297,7 +297,7 @@ ivyEnabled && describe('render3 jit', () => {
   it('should compile ContentChild query with string predicate on a directive', () => {
     @Directive({selector: '[test]'})
     class TestDirective {
-      @ContentChild('foo', {static: false}) foo: ElementRef|undefined;
+      @ContentChild('foo') foo: ElementRef|undefined;
     }
 
     expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
@@ -319,7 +319,7 @@ ivyEnabled && describe('render3 jit', () => {
 
     @Directive({selector: '[test]'})
     class TestDirective {
-      @ContentChild(SomeDir, {static: false}) dir: SomeDir|undefined;
+      @ContentChild(SomeDir) dir: SomeDir|undefined;
     }
 
     expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
@@ -328,7 +328,7 @@ ivyEnabled && describe('render3 jit', () => {
   it('should compile ViewChild query on a component', () => {
     @Component({selector: 'test', template: ''})
     class TestComponent {
-      @ViewChild('foo', {static: false}) foo: ElementRef|undefined;
+      @ViewChild('foo') foo: ElementRef|undefined;
     }
 
     expect((TestComponent as any).ngComponentDef.foo).not.toBeNull();

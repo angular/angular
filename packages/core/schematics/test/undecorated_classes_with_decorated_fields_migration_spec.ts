@@ -159,7 +159,7 @@ describe('Undecorated classes with decorated fields migration', () => {
       import { ViewChild, ElementRef } from '@angular/core';
 
       export class Base {
-        @ViewChild('button', { static: false }) button: ElementRef<HTMLElement>;
+        @ViewChild('button') button: ElementRef<HTMLElement>;
       }
     `);
 
@@ -185,7 +185,7 @@ describe('Undecorated classes with decorated fields migration', () => {
       import { ContentChild, ElementRef } from '@angular/core';
 
       export class Base {
-        @ContentChild('button', { static: false }) button: ElementRef<HTMLElement>;
+        @ContentChild('button') button: ElementRef<HTMLElement>;
       }
     `);
 

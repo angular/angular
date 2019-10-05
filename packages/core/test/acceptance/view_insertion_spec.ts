@@ -89,10 +89,10 @@ describe('view insertion', () => {
             `
       })
       class App {
-        @ViewChild('container', {read: ViewContainerRef, static: false})
+        @ViewChild('container', {read: ViewContainerRef})
         container: ViewContainerRef = null !;
 
-        @ViewChild('empty', {read: TemplateRef, static: false})
+        @ViewChild('empty', {read: TemplateRef})
         empty: TemplateRef<any> = null !;
 
         view0: EmbeddedViewRef<any> = null !;
@@ -139,10 +139,10 @@ describe('view insertion', () => {
                 `
       })
       class Comp {
-        @ViewChild('container', {read: ViewContainerRef, static: false})
+        @ViewChild('container', {read: ViewContainerRef})
         container: ViewContainerRef = null !;
 
-        @ViewChild('projection', {read: TemplateRef, static: false})
+        @ViewChild('projection', {read: TemplateRef})
         projection: TemplateRef<any> = null !;
 
         view0: EmbeddedViewRef<any> = null !;
@@ -200,10 +200,10 @@ describe('view insertion', () => {
                 `
       })
       class App {
-        @ViewChild('container', {read: ViewContainerRef, static: false})
+        @ViewChild('container', {read: ViewContainerRef})
         container: ViewContainerRef = null !;
 
-        @ViewChild('subContainer', {read: TemplateRef, static: false})
+        @ViewChild('subContainer', {read: TemplateRef})
         subContainer: TemplateRef<any> = null !;
 
         view0: EmbeddedViewRef<any> = null !;

@@ -888,7 +888,7 @@ import {HostListener} from '../../src/metadata/directives';
              ]
            })
            class Cmp {
-             @ViewChild('container', {static: false}) public container: any;
+             @ViewChild('container') public container: any;
              public items: any[] = [];
            }
 
@@ -1202,9 +1202,9 @@ import {HostListener} from '../../src/metadata/directives';
              public exp1: any = '';
              public exp2: any = true;
 
-             @ViewChild('ancestor', {static: false}) public ancestorElm: any;
+             @ViewChild('ancestor') public ancestorElm: any;
 
-             @ViewChild('parent', {static: false}) public parentElm: any;
+             @ViewChild('parent') public parentElm: any;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1281,9 +1281,9 @@ import {HostListener} from '../../src/metadata/directives';
              public exp2: any = '';
              public parentExp: any = true;
 
-             @ViewChild('ancestor', {static: false}) public ancestorElm: any;
+             @ViewChild('ancestor') public ancestorElm: any;
 
-             @ViewChild('parent', {static: false}) public parentElm: any;
+             @ViewChild('parent') public parentElm: any;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1637,7 +1637,7 @@ import {HostListener} from '../../src/metadata/directives';
            class ParentCmp {
              public exp: any;
 
-             @ViewChild('child', {static: false}) public child: any;
+             @ViewChild('child') public child: any;
            }
 
            @Component({
@@ -1849,9 +1849,9 @@ import {HostListener} from '../../src/metadata/directives';
           public exp1: any;
           public exp2: any;
 
-          @ViewChild('parent', {static: false}) public elm1: any;
+          @ViewChild('parent') public elm1: any;
 
-          @ViewChild('child', {static: false}) public elm2: any;
+          @ViewChild('child') public elm2: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1911,7 +1911,7 @@ import {HostListener} from '../../src/metadata/directives';
              public exp: any;
              public items: any[] = [0, 1, 2, 3, 4];
 
-             @ViewChild('parent', {static: false}) public elm: any;
+             @ViewChild('parent') public elm: any;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1981,7 +1981,7 @@ import {HostListener} from '../../src/metadata/directives';
           public exp: any;
           public items: any[] = [0, 1, 2, 3, 4];
 
-          @ViewChild('parent', {static: false}) public elm: any;
+          @ViewChild('parent') public elm: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2034,7 +2034,7 @@ import {HostListener} from '../../src/metadata/directives';
              public exp1: any;
              public exp2: any;
 
-             @ViewChild('parent', {static: false}) public elm: any;
+             @ViewChild('parent') public elm: any;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2104,7 +2104,7 @@ import {HostListener} from '../../src/metadata/directives';
           public exp1: any;
           public exp2: any;
 
-          @ViewChild('parent', {static: false}) public elm: any;
+          @ViewChild('parent') public elm: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2157,7 +2157,7 @@ import {HostListener} from '../../src/metadata/directives';
           public exp1: any;
           public exp2: any;
 
-          @ViewChild('parent', {static: false}) public elm: any;
+          @ViewChild('parent') public elm: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2209,7 +2209,7 @@ import {HostListener} from '../../src/metadata/directives';
           public exp1: any;
           public exp2: any;
 
-          @ViewChild('parent', {static: false}) public elm: any;
+          @ViewChild('parent') public elm: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2258,7 +2258,7 @@ import {HostListener} from '../../src/metadata/directives';
            })
            class ParentCmp {
              public exp: boolean = true;
-             @ViewChild('child', {static: false}) public childElm: any;
+             @ViewChild('child') public childElm: any;
 
              public childEvent: any;
 
@@ -2694,7 +2694,7 @@ import {HostListener} from '../../src/metadata/directives';
         class ParentCmp {
           public exp: any;
 
-          @ViewChild('child', {static: false}) public childCmp: any;
+          @ViewChild('child') public childCmp: any;
         }
 
         @Component({
@@ -2758,7 +2758,7 @@ import {HostListener} from '../../src/metadata/directives';
           `
            })
            class ParentCmp {
-             @ViewChild('child', {static: false}) public childCmp: any;
+             @ViewChild('child') public childCmp: any;
 
              public exp: any;
              public log: string[] = [];
@@ -2936,7 +2936,7 @@ import {HostListener} from '../../src/metadata/directives';
            class ParentCmp {
              public exp: any;
 
-             @ViewChild('child', {static: false}) public childCmp: any;
+             @ViewChild('child') public childCmp: any;
            }
 
            @Component({
@@ -3015,13 +3015,13 @@ import {HostListener} from '../../src/metadata/directives';
            class ParentCmp {
              public exp: any;
 
-             @ViewChild('child', {static: false}) public innerCmp: any;
+             @ViewChild('child') public innerCmp: any;
            }
 
            @Component(
                {selector: 'child-cmp', template: '<grandchild-cmp #grandchild></grandchild-cmp>'})
            class ChildCmp {
-             @ViewChild('grandchild', {static: false}) public innerCmp: any;
+             @ViewChild('grandchild') public innerCmp: any;
            }
 
            @Component({

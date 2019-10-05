@@ -1624,7 +1624,7 @@ describe('compiler compliance', () => {
             })
             export class ViewQueryComponent {
               @ViewChild(SomeDirective, {static: true}) someDir !: SomeDirective;
-              @ViewChild('foo', {static: false}) foo !: ElementRef;
+              @ViewChild('foo') foo !: ElementRef;
             }
 
             @NgModule({declarations: [SomeDirective, ViewQueryComponent]})
@@ -1742,7 +1742,7 @@ describe('compiler compliance', () => {
               \`
             })
             export class ContentQueryComponent {
-              @ContentChild(SomeDirective, {static: false}) someDir: SomeDirective;
+              @ContentChild(SomeDirective) someDir: SomeDirective;
               @ContentChildren(SomeDirective) someDirList !: QueryList<SomeDirective>;
             }
 
@@ -1811,7 +1811,7 @@ describe('compiler compliance', () => {
               \`
             })
             export class ContentQueryComponent {
-              @ContentChild('myRef', {static: false}) myRef: any;
+              @ContentChild('myRef') myRef: any;
               @ContentChildren('myRef1, myRef2, myRef3') myRefs: QueryList<any>;
             }
             @NgModule({declarations: [ContentQueryComponent]})
@@ -1862,7 +1862,7 @@ describe('compiler compliance', () => {
             })
             export class ContentQueryComponent {
               @ContentChild(SomeDirective, {static: true}) someDir !: SomeDirective;
-              @ContentChild('foo', {static: false}) foo !: ElementRef;
+              @ContentChild('foo') foo !: ElementRef;
             }
 
             @Component({
@@ -1933,9 +1933,9 @@ describe('compiler compliance', () => {
               \`
             })
             export class ContentQueryComponent {
-              @ContentChild('myRef', {read: TemplateRef, static: false}) myRef: TemplateRef;
+              @ContentChild('myRef', {read: TemplateRef}) myRef: TemplateRef;
               @ContentChildren('myRef1, myRef2, myRef3', {read: ElementRef}) myRefs: QueryList<ElementRef>;
-              @ContentChild(SomeDirective, {read: ElementRef, static: false}) someDir: ElementRef;
+              @ContentChild(SomeDirective, {read: ElementRef}) someDir: ElementRef;
               @ContentChildren(SomeDirective, {read: TemplateRef}) someDirs: QueryList<TemplateRef>;
             }
             @NgModule({declarations: [ContentQueryComponent]})
@@ -3213,7 +3213,7 @@ describe('compiler compliance', () => {
           'spec.ts': `
             import {Component, NgModule, ContentChild} from '@angular/core';
             export class BaseClass {
-              @ContentChild('something', {static: false}) something: any;
+              @ContentChild('something') something: any;
             }
 
             @Component({

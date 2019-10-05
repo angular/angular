@@ -685,7 +685,7 @@ describe('styling', () => {
       template: '<span dir [classesInSchool]="classes" [styleOfClothing]="style"></span>',
     })
     class App {
-      @ViewChild(Dir, {static: false}) dir !: Dir;
+      @ViewChild(Dir) dir !: Dir;
 
       classes = 'math';
       style = '80s';
@@ -1898,7 +1898,7 @@ describe('styling', () => {
        class ParentCmp {
          private _prop = '';
 
-         @ViewChild('template', {read: ViewContainerRef, static: false})
+         @ViewChild('template', {read: ViewContainerRef})
          vcr: ViewContainerRef = null !;
 
          private child: ComponentRef<ChildCmp> = null !;
@@ -1983,7 +1983,7 @@ describe('styling', () => {
        class ParentCmp {
          updateChild = false;
 
-         @ViewChild('template', {read: ViewContainerRef, static: false})
+         @ViewChild('template', {read: ViewContainerRef})
          vcr: ViewContainerRef = null !;
 
          private child: ComponentRef<ChildCmp> = null !;
