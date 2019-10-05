@@ -154,6 +154,19 @@ function refinedVariableType(
     }
   }
 
+  // Special case the ngIf directive ( *ngIf="data$ | async as variable" )
+  const ngIfDirective =
+      templateElement.directives.find(d => identifierName(d.directive.type) === 'NgIf');
+  if (ngIfDirective) {
+    const ngIfBinding = ngIfDirective.inputs.find(i => i.directiveName === 'ngIf');
+    if (ngIfBinding) {
+      const bindingType = new AstType(info.members, info.query, {}).getType(ngIfBinding.value);
+      if (bindingType) {
+        return bindingType;
+      }
+    }
+  }
+
   // We can't do better, return any
   return info.query.getBuiltinType(BuiltinType.Any);
 }
