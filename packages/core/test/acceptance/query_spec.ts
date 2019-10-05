@@ -177,7 +177,7 @@ describe('query logic', () => {
 
     it('should support ViewChild query inherited from undecorated superclasses', () => {
       class MyComp {
-        @ViewChild('foo', {static: false}) foo: any;
+        @ViewChild('foo') foo: any;
       }
 
       @Component({selector: 'sub-comp', template: '<div #foo></div>'})
@@ -193,7 +193,7 @@ describe('query logic', () => {
 
     it('should support ViewChild query inherited from undecorated grand superclasses', () => {
       class MySuperComp {
-        @ViewChild('foo', {static: false}) foo: any;
+        @ViewChild('foo') foo: any;
       }
 
       class MyComp extends MySuperComp {}
@@ -287,7 +287,7 @@ describe('query logic', () => {
           `
       })
       class App {
-        @ViewChild(Required, {static: false}) requiredEl !: Required;
+        @ViewChild(Required) requiredEl !: Required;
         viewChildAvailableInAfterViewInit?: boolean;
 
         ngAfterViewInit() {
@@ -529,7 +529,7 @@ describe('query logic', () => {
 
     it('should support ContentChild query inherited from undecorated superclasses', () => {
       class MyComp {
-        @ContentChild('foo', {static: false}) foo: any;
+        @ContentChild('foo') foo: any;
       }
 
       @Component({selector: 'sub-comp', template: '<ng-content></ng-content>'})
@@ -538,7 +538,7 @@ describe('query logic', () => {
 
       @Component({template: '<sub-comp><div #foo></div></sub-comp>'})
       class App {
-        @ViewChild(SubComp, {static: false}) subComp !: SubComp;
+        @ViewChild(SubComp) subComp !: SubComp;
       }
 
       TestBed.configureTestingModule({declarations: [App, SubComp]});
@@ -550,7 +550,7 @@ describe('query logic', () => {
 
     it('should support ContentChild query inherited from undecorated grand superclasses', () => {
       class MySuperComp {
-        @ContentChild('foo', {static: false}) foo: any;
+        @ContentChild('foo') foo: any;
       }
 
       class MyComp extends MySuperComp {}
@@ -561,7 +561,7 @@ describe('query logic', () => {
 
       @Component({template: '<sub-comp><div #foo></div></sub-comp>'})
       class App {
-        @ViewChild(SubComp, {static: false}) subComp !: SubComp;
+        @ViewChild(SubComp) subComp !: SubComp;
       }
 
       TestBed.configureTestingModule({declarations: [App, SubComp]});
@@ -593,7 +593,7 @@ describe('query logic', () => {
       `
       })
       class App {
-        @ViewChild(SubComp, {static: false}) subComp !: SubComp;
+        @ViewChild(SubComp) subComp !: SubComp;
       }
 
       TestBed.configureTestingModule({declarations: [App, SubComp, SomeDir]});
@@ -628,7 +628,7 @@ describe('query logic', () => {
       `
       })
       class App {
-        @ViewChild(SubComp, {static: false}) subComp !: SubComp;
+        @ViewChild(SubComp) subComp !: SubComp;
       }
 
       TestBed.configureTestingModule({declarations: [App, SubComp, SomeDir]});
@@ -881,21 +881,21 @@ describe('query logic', () => {
                <ng-template #tpl1 let-idx="idx">
                  <div #foo [id]="'foo1_' + idx"></div>
                </ng-template>
-               
+
                <div #foo id="middle"></div>
-               
+
                <ng-template #tpl2 let-idx="idx">
                  <div #foo [id]="'foo2_' + idx"></div>
                </ng-template>
-               
+
                <ng-template vc></ng-template>
              `,
            })
            class TestComponent {
-             @ViewChild(ViewContainerManipulatorDirective, {static: false})
+             @ViewChild(ViewContainerManipulatorDirective)
              vc !: ViewContainerManipulatorDirective;
-             @ViewChild('tpl1', {static: false}) tpl1 !: TemplateRef<any>;
-             @ViewChild('tpl2', {static: false}) tpl2 !: TemplateRef<any>;
+             @ViewChild('tpl1') tpl1 !: TemplateRef<any>;
+             @ViewChild('tpl2') tpl2 !: TemplateRef<any>;
              @ViewChildren('foo') query !: QueryList<any>;
            }
 
@@ -960,13 +960,13 @@ describe('query logic', () => {
                </ng-template>
 
                <ng-template vc #vi0="vc"></ng-template>
-               <ng-template vc #vi1="vc"></ng-template> 
+               <ng-template vc #vi1="vc"></ng-template>
              `,
            })
            class TestComponent {
-             @ViewChild('tpl', {static: false}) tpl !: TemplateRef<any>;
-             @ViewChild('vi0', {static: false}) vi0 !: ViewContainerManipulatorDirective;
-             @ViewChild('vi1', {static: false}) vi1 !: ViewContainerManipulatorDirective;
+             @ViewChild('tpl') tpl !: TemplateRef<any>;
+             @ViewChild('vi0') vi0 !: ViewContainerManipulatorDirective;
+             @ViewChild('vi1') vi1 !: ViewContainerManipulatorDirective;
              @ViewChildren('foo') query !: QueryList<any>;
            }
 
@@ -1009,7 +1009,7 @@ describe('query logic', () => {
             <ng-template #tpl>
               <span #foo id="from_tpl"></span>
             </ng-template>
-            
+
             <ng-template [ngTemplateOutlet]="show ? tpl : null"></ng-template>
           `,
         })
@@ -1139,8 +1139,8 @@ function initWithTemplate(compType: Type<any>, template: string) {
 
 @Component({selector: 'local-ref-query-component', template: '<ng-content></ng-content>'})
 class QueryComp {
-  @ViewChild('viewQuery', {static: false}) viewChild !: any;
-  @ContentChild('contentQuery', {static: false}) contentChild !: any;
+  @ViewChild('viewQuery') viewChild !: any;
+  @ContentChild('contentQuery') contentChild !: any;
 
   @ViewChildren('viewQuery') viewChildren !: QueryList<any>;
   @ContentChildren('contentQuery') contentChildren !: QueryList<any>;
@@ -1183,7 +1183,7 @@ class StaticViewQueryComp {
     this._textDir = value;
   }
 
-  @ViewChild('foo', {static: false})
+  @ViewChild('foo')
   get foo(): ElementRef { return this._foo; }
 
   set foo(value: ElementRef) {
@@ -1208,7 +1208,7 @@ class SubclassStaticViewQueryComp extends StaticViewQueryComp {
   @ViewChild('bar', {static: true})
   bar !: ElementRef;
 
-  @ViewChild('baz', {static: false})
+  @ViewChild('baz')
   baz !: ElementRef;
 }
 
@@ -1227,7 +1227,7 @@ class StaticContentQueryComp {
     this._textDir = value;
   }
 
-  @ContentChild('foo', {static: false})
+  @ContentChild('foo')
   get foo(): ElementRef { return this._foo; }
 
   set foo(value: ElementRef) {
@@ -1250,7 +1250,7 @@ class StaticContentQueryDir {
     this._textDir = value;
   }
 
-  @ContentChild('foo', {static: false})
+  @ContentChild('foo')
   get foo(): ElementRef { return this._foo; }
 
   set foo(value: ElementRef) {
@@ -1264,7 +1264,7 @@ class SubclassStaticContentQueryComp extends StaticContentQueryComp {
   @ContentChild('bar', {static: true})
   bar !: ElementRef;
 
-  @ContentChild('baz', {static: false})
+  @ContentChild('baz')
   baz !: ElementRef;
 }
 

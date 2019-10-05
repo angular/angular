@@ -312,9 +312,9 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils deprecated', () =>
         `
       })
       class Comp {
-        @ViewChild(MyDir1, {static: false}) myDir1Instance !: MyDir1;
-        @ViewChild(MyDir2, {static: false}) myDir2Instance !: MyDir2;
-        @ViewChild(MyDir3, {static: false}) myDir3Instance !: MyDir3;
+        @ViewChild(MyDir1) myDir1Instance !: MyDir1;
+        @ViewChild(MyDir2) myDir2Instance !: MyDir2;
+        @ViewChild(MyDir3) myDir3Instance !: MyDir3;
       }
 
       TestBed.configureTestingModule({declarations: [Comp, MyDir1, MyDir2, MyDir3]});

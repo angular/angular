@@ -167,7 +167,7 @@ class BankAccount {
  `
 })
 class SimpleContentComp {
-  @ViewChild('content', {static: false}) content !: ElementRef;
+  @ViewChild('content') content !: ElementRef;
 }
 
 @Component({

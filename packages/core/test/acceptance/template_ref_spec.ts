@@ -37,7 +37,7 @@ describe('TemplateRef', () => {
         `
       })
       class App {
-        @ViewChild(MenuContent, {static: false}) content !: MenuContent;
+        @ViewChild(MenuContent) content !: MenuContent;
 
         constructor(public viewContainerRef: ViewContainerRef) {}
       }

@@ -26,7 +26,7 @@ export class Pane {
   `,
 })
 export class ViewChildComp {
-  @ViewChild(Pane, {static: false})
+  @ViewChild(Pane)
   set pane(v: Pane) {
     setTimeout(() => { this.selectedPane = v.id; }, 0);
   }

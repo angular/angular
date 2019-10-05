@@ -141,7 +141,7 @@ describe('ViewContainerRef', () => {
         `
       })
       class TestComp {
-        @ViewChild('container', {read: ViewContainerRef, static: false}) vcRef !: ViewContainerRef;
+        @ViewChild('container', {read: ViewContainerRef}) vcRef !: ViewContainerRef;
 
         constructor(public cfr: ComponentFactoryResolver) {}
 
@@ -2128,7 +2128,7 @@ class ViewContainerRefComp {
   `
 })
 class ViewContainerRefApp {
-  @ViewChild(ViewContainerRefComp, {static: false}) vcrComp !: ViewContainerRefComp;
+  @ViewChild(ViewContainerRefComp) vcrComp !: ViewContainerRefComp;
 }
 
 @Directive({selector: '[structDir]'})
