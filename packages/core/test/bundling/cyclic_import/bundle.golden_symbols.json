@@ -585,6 +585,9 @@
     "name": "saveResolvedLocalsInData"
   },
   {
+    "name": "selectClassBasedInputName"
+  },
+  {
     "name": "selectIndexInternal"
   },
   {

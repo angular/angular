@@ -5,7 +5,7 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
-import {TNode, TNodeFlags} from '../interfaces/node';
+import {PropertyAliases, TNode, TNodeFlags} from '../interfaces/node';
 import {LStylingData, StylingMapArray, StylingMapArrayIndex, TStylingConfig, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from '../interfaces/styling';
 import {NO_CHANGE} from '../tokens';
 
@@ -432,4 +432,10 @@ export function normalizeIntoStylingMap(
   }
 
   return stylingMapArr;
+}
+
+// TODO (matsko|AndrewKushnir): refactor this once we figure out how to generate separate
+// `input('class') + classMap()` instructions.
+export function selectClassBasedInputName(inputs: PropertyAliases): string {
+  return inputs.hasOwnProperty('class') ? 'class' : 'className';
 }
