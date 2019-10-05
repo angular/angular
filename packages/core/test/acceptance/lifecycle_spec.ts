@@ -1293,7 +1293,7 @@ describe('onInit', () => {
       `,
     })
     class App {
-      @ViewChild('container', {read: ViewContainerRef, static: false})
+      @ViewChild('container', {read: ViewContainerRef})
       viewContainerRef !: ViewContainerRef;
 
       constructor(public compFactoryResolver: ComponentFactoryResolver) {}

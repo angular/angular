@@ -752,7 +752,7 @@ describe('Query API', () => {
               class AutoProjecting {
                 // TODO(issue/24571):
                 // remove '!'.
-                @ContentChild(TemplateRef, {static: false})
+                @ContentChild(TemplateRef)
                 content !: TemplateRef<any>;
 
                 // TODO(issue/24571):
@@ -784,7 +784,7 @@ describe('Query API', () => {
            class AutoProjecting {
              // TODO(issue/24571):
              // remove '!'.
-             @ContentChild(TemplateRef, {static: false})
+             @ContentChild(TemplateRef)
              content !: TemplateRef<any>;
 
              // TODO(issue/24571):
@@ -839,7 +839,7 @@ class NeedsContentChild implements AfterContentInit, AfterContentChecked {
   // TODO(issue/24571): remove '!'.
   _child !: TextDirective;
 
-  @ContentChild(TextDirective, {static: false})
+  @ContentChild(TextDirective)
   set child(value) {
     this._child = value;
     this.logs.push(['setter', value ? value.text : null]);
@@ -856,7 +856,7 @@ class NeedsContentChild implements AfterContentInit, AfterContentChecked {
 @Directive({selector: '[directive-needs-content-child]'})
 class DirectiveNeedsContentChild {
   // TODO(issue/24571): remove '!'.
-  @ContentChild(TextDirective, {static: false}) child !: TextDirective;
+  @ContentChild(TextDirective) child !: TextDirective;
 }
 
 @Component({selector: 'needs-view-child', template: `<div *ngIf="shouldShow" text="foo"></div>`})
@@ -867,7 +867,7 @@ class NeedsViewChild implements AfterViewInit, AfterViewChecked {
   // TODO(issue/24571): remove '!'.
   _child !: TextDirective;
 
-  @ViewChild(TextDirective, {static: false})
+  @ViewChild(TextDirective)
   set child(value) {
     this._child = value;
     this.logs.push(['setter', value ? value.text : null]);
@@ -917,13 +917,13 @@ class NeedsQuery {
 @Component({selector: 'needs-four-queries', template: ''})
 class NeedsFourQueries {
   // TODO(issue/24571): remove '!'.
-  @ContentChild(TextDirective, {static: false}) query1 !: TextDirective;
+  @ContentChild(TextDirective) query1 !: TextDirective;
   // TODO(issue/24571): remove '!'.
-  @ContentChild(TextDirective, {static: false}) query2 !: TextDirective;
+  @ContentChild(TextDirective) query2 !: TextDirective;
   // TODO(issue/24571): remove '!'.
-  @ContentChild(TextDirective, {static: false}) query3 !: TextDirective;
+  @ContentChild(TextDirective) query3 !: TextDirective;
   // TODO(issue/24571): remove '!'.
-  @ContentChild(TextDirective, {static: false}) query4 !: TextDirective;
+  @ContentChild(TextDirective) query4 !: TextDirective;
 }
 
 @Component({
@@ -1042,9 +1042,9 @@ class NeedsContentChildrenWithRead {
 @Component({selector: 'needs-content-child-read', template: ''})
 class NeedsContentChildWithRead {
   // TODO(issue/24571): remove '!'.
-  @ContentChild('q', {read: TextDirective, static: false}) textDirChild !: TextDirective;
+  @ContentChild('q', {read: TextDirective}) textDirChild !: TextDirective;
   // TODO(issue/24571): remove '!'.
-  @ContentChild('nonExisting', {read: TextDirective, static: false})
+  @ContentChild('nonExisting', {read: TextDirective})
   nonExistingVar !: TextDirective;
 }
 
@@ -1089,17 +1089,17 @@ class NeedsViewChildrenWithRead {
 })
 class NeedsViewChildWithRead {
   // TODO(issue/24571): remove '!'.
-  @ViewChild('q', {read: TextDirective, static: false}) textDirChild !: TextDirective;
+  @ViewChild('q', {read: TextDirective}) textDirChild !: TextDirective;
   // TODO(issue/24571): remove '!'.
-  @ViewChild('nonExisting', {read: TextDirective, static: false}) nonExistingVar !: TextDirective;
+  @ViewChild('nonExisting', {read: TextDirective}) nonExistingVar !: TextDirective;
 }
 
 @Component({selector: 'needs-viewcontainer-read', template: '<div #q></div>'})
 class NeedsViewContainerWithRead {
   // TODO(issue/24571): remove '!'.
-  @ViewChild('q', {read: ViewContainerRef, static: false}) vc !: ViewContainerRef;
+  @ViewChild('q', {read: ViewContainerRef}) vc !: ViewContainerRef;
   // TODO(issue/24571): remove '!'.
-  @ViewChild('nonExisting', {read: ViewContainerRef, static: false})
+  @ViewChild('nonExisting', {read: ViewContainerRef})
   nonExistingVar !: ViewContainerRef;
   // TODO(issue/24571): remove '!'.
   @ContentChild(TemplateRef, {static: true}) template !: TemplateRef<Object>;
@@ -1128,7 +1128,7 @@ class ManualProjecting {
   @ContentChild(TemplateRef, {static: true}) template !: TemplateRef<any>;
 
   // TODO(issue/24571): remove '!'.
-  @ViewChild('vc', {read: ViewContainerRef, static: false})
+  @ViewChild('vc', {read: ViewContainerRef})
   vc !: ViewContainerRef;
 
   // TODO(issue/24571): remove '!'.
