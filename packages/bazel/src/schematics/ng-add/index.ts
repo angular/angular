@@ -53,6 +53,7 @@ function addDevDependenciesToPackageJson(options: Schema) {
       '@bazel/karma': '0.38.1',
       '@bazel/protractor': '0.38.1',
       '@bazel/typescript': '0.38.1',
+      'history-server': '^1.3.1',
     };
 
     const recorder = host.beginUpdate(packageJson);
