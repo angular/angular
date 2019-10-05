@@ -16,13 +16,13 @@ export class TslintUpdateRecorder implements UpdateRecorder {
 
   constructor(private ruleName: string, private sourceFile: ts.SourceFile) {}
 
-  addClassDecorator(node: ts.ClassDeclaration, decoratorText: string, moduleName: string) {
+  addClassDecorator(node: ts.ClassDeclaration, decoratorText: string, className: string) {
     // Adding a decorator should be the last replacement. Replacements/rule failures
     // are handled in reverse and in case a decorator and import are inserted at
     // the start of the file, the class decorator should come after the import.
     this.failures.unshift(new RuleFailure(
         this.sourceFile, node.getStart(), 0, `Class needs to be decorated with ` +
-            `"${decoratorText}" because it has been provided by "${moduleName}".`,
+            `"${decoratorText}" because it has been provided by "${className}".`,
         this.ruleName, Replacement.appendText(node.getStart(), `${decoratorText}\n`)));
   }
 
@@ -42,7 +42,7 @@ export class TslintUpdateRecorder implements UpdateRecorder {
         `Import needs to be updated to import symbols: "${newNamedBindings}"`, this.ruleName, fix));
   }
 
-  replaceDecorator(decorator: ts.Node, newText: string, moduleName: string): void {
+  replaceDecorator(decorator: ts.Node, newText: string, className: string): void {
     const fix = [
       Replacement.deleteText(decorator.getStart(), decorator.getWidth()),
       Replacement.appendText(decorator.getStart(), newText),
@@ -50,7 +50,7 @@ export class TslintUpdateRecorder implements UpdateRecorder {
     this.failures.push(new RuleFailure(
         this.sourceFile, decorator.getStart(), decorator.getEnd(),
         `Decorator needs to be replaced with "${newText}" because it has been provided ` +
-            `by "${moduleName}"`,
+            `by "${className}"`,
         this.ruleName, fix));
   }
 
