@@ -61,6 +61,20 @@ describe('completions', () => {
     expectContains(fileName, 'name', 'name', 'street');
   });
 
+  it('should be able to get completions for exported *ngIf variable', () => {
+    const fileName = mockHost.addCode(`
+      interface Person {
+        name: string,
+        street: string
+      }
+
+      @Component({template: '<div *ngIf="promised_person | async as person">{{person.~{name}name}}</div'})
+      export class MyComponent {
+        promised_person: Promise<Person>
+      }`);
+    expectContains(fileName, 'name', 'name', 'street');
+  });
+
   it('should be able to infer the type of a ngForOf with an async pipe', () => {
     const fileName = mockHost.addCode(`
       interface Person {

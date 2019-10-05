@@ -127,6 +127,18 @@ describe('expression diagnostics', () => {
       </div>
     `,
                                                            'Identifier \'nume\' is not defined'));
+  it('should accept an async *ngIf', () => accept(`
+      <div *ngIf="promised_person | async as p">
+        {{p.name.first}} {{p.name.last}}
+      </div>
+    `));
+  it('should reject misspelled field in async *ngIf', () => reject(
+                                                          `
+      <div *ngIf="promised_person | async as p">
+        {{p.name.first}} {{p.nume.last}}
+      </div>
+    `,
+                                                          'Identifier \'nume\' is not defined'));
   it('should reject access to potentially undefined field',
      () => reject(`<div>{{maybe_person.name.first}}`, 'The expression might be null'));
   it('should accept a safe accss to an undefined field',
