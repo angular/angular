@@ -20,6 +20,7 @@ load(
     "ts_providers_dict_to_struct",
     "tsc_wrapped_tsconfig",
 )
+load("@build_bazel_rules_nodejs//:providers.bzl", "transitive_js_ecma_script_module_info")
 
 _FLAT_DTS_FILE_SUFFIX = ".bundle.d.ts"
 _R3_SYMBOLS_DTS_FILE = "src/r3_symbols.d.ts"
@@ -612,7 +613,17 @@ def ng_module_impl(ctx, ts_compile_actions):
     return providers
 
 def _ng_module_impl(ctx):
-    return ts_providers_dict_to_struct(ng_module_impl(ctx, compile_ts))
+    ts_providers = ng_module_impl(ctx, compile_ts)
+
+    # Add in new JS providers
+    ts_providers["providers"].extend([
+        transitive_js_ecma_script_module_info(
+            sources = ts_providers["typescript"]["es6_sources"],
+            deps = ctx.attr.deps,
+        ),
+    ])
+
+    return ts_providers_dict_to_struct(ts_providers)
 
 local_deps_aspects = [collect_node_modules_aspect, _collect_summaries_aspect]
 
