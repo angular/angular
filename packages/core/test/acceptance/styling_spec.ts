@@ -551,6 +551,52 @@ describe('styling', () => {
     expect(capturedMyClassBindingCount).toEqual(1);
   });
 
+  it('should write to a `className` input binding', () => {
+    @Component({
+      selector: 'comp',
+      template: `{{className}}`,
+    })
+    class Comp {
+      @Input() className: string = '';
+    }
+    @Component({
+      template: `<comp [className]="'my-className'"></comp>`,
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [Comp, App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.debugElement.nativeElement.firstChild.innerHTML).toBe('my-className');
+  });
+
+  onlyInIvy('in Ivy [class] and [className] bindings on the same element are not allowed')
+      .it('should throw an error in case [class] and [className] bindings are used on the same element',
+          () => {
+            @Component({
+              selector: 'comp',
+              template: `{{class}} - {{className}}`,
+            })
+            class Comp {
+              @Input() class: string = '';
+              @Input() className: string = '';
+            }
+            @Component({
+              template: `<comp [class]="'my-class'" [className]="'className'"></comp>`,
+            })
+            class App {
+            }
+
+            TestBed.configureTestingModule({declarations: [Comp, App]});
+            expect(() => {
+              const fixture = TestBed.createComponent(App);
+              fixture.detectChanges();
+            })
+                .toThrowError(
+                    '[class] and [className] bindings can not be used on the same element simultaneously');
+          });
+
   onlyInIvy('only ivy persists static class/style attrs with their binding counterparts')
       .it('should write to a `class` input binding if there is a static class value and there is a binding value',
           () => {

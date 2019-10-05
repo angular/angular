@@ -402,7 +402,10 @@ function updateDirectiveInputValue(
     // directive input(s) in the event that it is falsy during the
     // first update pass.
     if (newValue || isContextLocked(context, false)) {
-      const inputName = isClassBased ? 'class' : 'style';
+      let inputName: string = 'style';
+      if (isClassBased) {
+        inputName = tNode.inputs !.hasOwnProperty('class') ? 'class' : 'className';
+      }
       const inputs = tNode.inputs ![inputName] !;
       const initialValue = getInitialStylingValue(context);
       const value = normalizeStylingDirectiveInputValue(initialValue, newValue, isClassBased);

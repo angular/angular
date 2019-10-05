@@ -132,7 +132,8 @@ export function ɵɵelementEnd(): void {
   }
 
   if (hasClassInput(tNode)) {
-    setDirectiveStylingInput(tNode.classes, lView, tNode.inputs !['class']);
+    const inputName = tNode.inputs !.hasOwnProperty('class') ? 'class' : 'className';
+    setDirectiveStylingInput(tNode.classes, lView, tNode.inputs ![inputName]);
   }
 
   if (hasStyleInput(tNode)) {

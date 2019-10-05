@@ -849,7 +849,7 @@ function initializeInputAndOutputAliases(tView: TView, tNode: TNode): void {
   }
 
   if (inputsStore !== null) {
-    if (inputsStore.hasOwnProperty('class')) {
+    if (inputsStore.hasOwnProperty('class') || inputsStore.hasOwnProperty('className')) {
       tNode.flags |= TNodeFlags.hasClassInput;
     }
     if (inputsStore.hasOwnProperty('style')) {
