@@ -163,3 +163,5 @@ and create it if it doesn't exist.
 1. You can find the settings under `Preferences->Other Settings->Bazel Settings`
 
 It will automatically recognize `*.bazel` and `*.bzl` files.
+
+
