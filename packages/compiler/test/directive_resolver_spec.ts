@@ -68,15 +68,15 @@ class SomeDirectiveWithViewChildren {
   c: any;
 }
 
-@Directive({selector: 'someDirective', queries: {'c': new ContentChild('c', {static: false})}})
+@Directive({selector: 'someDirective', queries: {'c': new ContentChild('c')}})
 class SomeDirectiveWithContentChild {
-  @ContentChild('a', {static: false}) a: any;
+  @ContentChild('a') a: any;
   c: any;
 }
 
-@Directive({selector: 'someDirective', queries: {'c': new ViewChild('c', {static: false})}})
+@Directive({selector: 'someDirective', queries: {'c': new ViewChild('c')}})
 class SomeDirectiveWithViewChild {
-  @ViewChild('a', {static: false}) a: any;
+  @ViewChild('a') a: any;
   c: any;
 }
 
@@ -408,41 +408,37 @@ class SomeDirectiveWithoutMetadata {}
 
       it('should append ContentChild', () => {
         const directiveMetadata = resolver.resolve(SomeDirectiveWithContentChild);
-        expect(directiveMetadata.queries).toEqual({
-          'c': new ContentChild('c', {static: false}),
-          'a': new ContentChild('a', {static: false})
-        });
+        expect(directiveMetadata.queries)
+            .toEqual({'c': new ContentChild('c'), 'a': new ContentChild('a')});
       });
 
       it('should append ViewChild', () => {
         const directiveMetadata = resolver.resolve(SomeDirectiveWithViewChild);
-        expect(directiveMetadata.queries).toEqual({
-          'c': new ViewChild('c', {static: false}),
-          'a': new ViewChild('a', {static: false})
-        });
+        expect(directiveMetadata.queries)
+            .toEqual({'c': new ViewChild('c'), 'a': new ViewChild('a')});
       });
 
       it('should support inheriting queries', () => {
         @Directive({selector: 'p'})
         class Parent {
-          @ContentChild('p1', {static: false})
+          @ContentChild('p1')
           p1: any;
-          @ContentChild('p21', {static: false})
+          @ContentChild('p21')
           p2: any;
         }
 
         class Child extends Parent {
-          @ContentChild('p22', {static: false})
+          @ContentChild('p22')
           p2: any;
-          @ContentChild('p3', {static: false})
+          @ContentChild('p3')
           p3: any;
         }
 
         const directiveMetadata = resolver.resolve(Child);
         expect(directiveMetadata.queries).toEqual({
-          'p1': new ContentChild('p1', {static: false}),
-          'p2': new ContentChild('p22', {static: false}),
-          'p3': new ContentChild('p3', {static: false})
+          'p1': new ContentChild('p1'),
+          'p2': new ContentChild('p22'),
+          'p3': new ContentChild('p3')
         });
       });
     });

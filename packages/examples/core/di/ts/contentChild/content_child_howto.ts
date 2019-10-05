@@ -15,7 +15,7 @@ class ChildDirective {
 
 @Directive({selector: 'someDir'})
 class SomeDir implements AfterContentInit {
-  @ContentChild(ChildDirective, {static: false}) contentChild !: ChildDirective;
+  @ContentChild(ChildDirective) contentChild !: ChildDirective;
 
   ngAfterContentInit() {
     // contentChild is set

@@ -81,7 +81,7 @@ export class DoCheckParentComponent {
   hero: Hero;
   power: string;
   title = 'DoCheck';
-  @ViewChild(DoCheckComponent, {static: false}) childView: DoCheckComponent;
+  @ViewChild(DoCheckComponent) childView: DoCheckComponent;
 
   constructor() { this.reset(); }
 

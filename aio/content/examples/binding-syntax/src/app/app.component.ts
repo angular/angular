@@ -8,7 +8,7 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 })
 export class AppComponent {
 
-  @ViewChild('bindingInput', { static: false }) bindingInput: ElementRef;
+  @ViewChild('bindingInput') bindingInput: ElementRef;
 
   isUnchanged = true;
 

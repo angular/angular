@@ -239,7 +239,7 @@ describe('component', () => {
       encapsulation: ViewEncapsulation.Emulated,
     })
     class Parent {
-      @ViewChild(Child, {static: false}) childInstance !: Child;
+      @ViewChild(Child) childInstance !: Child;
       constructor(public renderer: Renderer2) {}
     }
 

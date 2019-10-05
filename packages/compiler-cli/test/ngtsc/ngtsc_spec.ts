@@ -1094,7 +1094,7 @@ runInEachFileSystem(os => {
           template: '<ng-content></ng-content>'
         })
         export class TestCmp {
-          @Input() @ContentChild('foo', {static: false}) foo: any;
+          @Input() @ContentChild('foo') foo: any;
         }
       `);
 
@@ -1116,7 +1116,7 @@ runInEachFileSystem(os => {
         })
         export class TestCmp {
           @ContentChild('bar', {static: true})
-          @ContentChild('foo', {static: false})
+          @ContentChild('foo')
           foo: any;
         }
       `);
@@ -1138,7 +1138,7 @@ runInEachFileSystem(os => {
           template: '...'
         })
         export class TestCmp {
-          @ContentChild('foo', {static: false})
+          @ContentChild('foo')
           private someFn() {}
         }
       `);
@@ -1653,10 +1653,10 @@ runInEachFileSystem(os => {
           }
         })
         class FooCmp {
-          @ContentChild('bar', {read: TemplateRef, static: false}) child: any;
+          @ContentChild('bar', {read: TemplateRef}) child: any;
           @ContentChildren(TemplateRef) children: any;
           get aview(): any { return null; }
-          @ViewChild('accessor', {static: false}) set aview(value: any) {}
+          @ViewChild('accessor') set aview(value: any) {}
         }
     `);
 
@@ -1684,7 +1684,7 @@ runInEachFileSystem(os => {
           }
         })
         class FooCmp {
-          @ContentChild('bar', {read: TemplateRef, static: false}) child: any;
+          @ContentChild('bar', {read: TemplateRef}) child: any;
           @ContentChildren(TemplateRef) children: any;
           get aview(): any { return null; }
           @ViewChild('accessor') set aview(value: any) {}
@@ -1715,11 +1715,11 @@ runInEachFileSystem(os => {
           template: '<div #foo></div>',
         })
         class FooCmp {
-          @ContentChild(forwardRef(() => TemplateRef), {static: false}) child: any;
+          @ContentChild(forwardRef(() => TemplateRef)) child: any;
 
-          @ContentChild(forwardRef(function() { return ViewContainerRef; }), {static: false}) child2: any;
+          @ContentChild(forwardRef(function() { return ViewContainerRef; })) child2: any;
 
-          @ContentChild((forwardRef((function() { return 'parens'; }) as any)), {static: false}) childInParens: any;
+          @ContentChild((forwardRef((function() { return 'parens'; }) as any))) childInParens: any;
         }
     `);
 
