@@ -1447,7 +1447,7 @@ describe('Undecorated classes with DI migration', () => {
       expect(warnOutput.length).toBe(1);
       expect(warnOutput[0])
           .toMatch(
-              /ensure there are no AOT compilation errors and rerun the migration.*project failed: tsconfig\.json/);
+              /ensure there are no AOT compilation errors and rerun the migration. The following project failed: tsconfig\.json/);
       expect(errorOutput.length).toBe(1);
       expect(errorOutput[0]).toMatch(/Cannot determine the module for class TestComp/);
       expect(infoOutput.join(' '))
