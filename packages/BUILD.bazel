@@ -12,8 +12,8 @@ ts_library(
     name = "types",
     srcs = glob(["*.ts"]),
     deps = [
+        "//packages/zone.js/lib:zone_d_ts",
         "@npm//@types/hammerjs",
-        "@npm//zone.js",
     ],
 )
 

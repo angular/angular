@@ -14,7 +14,7 @@ ng_module(
         "//packages/core",
         "//packages/platform-browser-dynamic",
         "//packages/upgrade/src/common",
-        "@npm//zone.js",
+        "//packages/zone.js/lib:zone_d_ts",
     ],
 )
 

@@ -7,8 +7,8 @@
  */
 
 importScripts('npm/node_modules/reflect-metadata/Reflect.js');
-importScripts('npm/node_modules/zone.js/dist/zone.js');
-importScripts('npm/node_modules/zone.js/dist/long-stack-trace-zone.js');
+importScripts('angular/packages/zone.js/dist/zone.js');
+importScripts('angular/packages/zone.js/dist/long-stack-trace-zone.js');
 importScripts('npm/node_modules/systemjs/dist/system.js');
 
 importScripts('angular/modules/playground/systemjs-config.js');
