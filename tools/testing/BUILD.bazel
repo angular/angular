@@ -23,6 +23,7 @@ ts_library(
         "//packages/core/testing",
         "//packages/platform-server",
         "//packages/platform-server/testing",
+        "//packages/zone.js/lib",
         "@npm//domino",
     ],
 )

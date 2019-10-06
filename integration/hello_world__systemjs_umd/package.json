@@ -21,7 +21,7 @@
     "rxjs": "file:../../node_modules/rxjs",
     "systemjs": "0.20.2",
     "typescript": "file:../../node_modules/typescript",
-    "zone.js": "file:../../node_modules/zone.js"
+    "zone.js": "file:../../dist/bin/packages/zone.js/npm_package"
   },
   "devDependencies": {
     "@types/jasmine": "2.5.41",
