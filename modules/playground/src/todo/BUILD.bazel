@@ -28,7 +28,7 @@ ts_devserver(
     port = 4200,
     scripts = ["@npm//:node_modules/tslib/tslib.js"],
     static_files = [
-        "@npm//:node_modules/zone.js/dist/zone.js",
+        "//packages/zone.js/dist:zone.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
     deps = [":todo"],

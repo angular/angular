@@ -46,7 +46,7 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_module, assets = 
         port = 4200,
         entry_module = entry_module,
         static_files = [
-            "@npm//:node_modules/zone.js/dist/zone.js",
+            "//packages/zone.js/dist:zone.js",
             "@npm//:node_modules/angular/angular.js",
             "@npm//:node_modules/reflect-metadata/Reflect.js",
         ],

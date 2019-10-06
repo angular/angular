@@ -667,6 +667,7 @@ jobs:
           background: true
       - run: yarn tsc -p packages
       - run: yarn tsc -p modules
+      - run: yarn bazel build //packages/zone.js:npm_package
         # Waits for the Saucelabs tunnel to be ready. This ensures that we don't run tests
         # too early without Saucelabs not being ready.
       - run: ./scripts/saucelabs/wait-for-tunnel.sh

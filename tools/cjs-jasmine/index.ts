@@ -9,16 +9,16 @@
 'use strict';
 
 const glob = require('glob');
-require('zone.js/dist/zone-node.js');
+require('zone.js/lib/node/rollup-main.js');
 const JasmineRunner = require('jasmine');
 const path = require('path');
 require('source-map-support').install();
-require('zone.js/dist/long-stack-trace-zone.js');
-require('zone.js/dist/task-tracking.js');
-require('zone.js/dist/proxy.js');
-require('zone.js/dist/sync-test.js');
-require('zone.js/dist/async-test.js');
-require('zone.js/dist/fake-async-test.js');
+require('zone.js/lib/zone-spec/long-stack-trace.js');
+require('zone.js/lib/zone-spec/task-tracking.js');
+require('zone.js/lib/zone-spec/proxy.js');
+require('zone.js/lib/zone-spec/sync-test.js');
+require('zone.js/lib/zone-spec/async-test.js');
+require('zone.js/lib/zone-spec/fake-async-test.js');
 require('reflect-metadata/Reflect');
 const {generateSeed} = require('../../../tools/jasmine-seed-generator');
 
@@ -27,7 +27,7 @@ export {};
 
 const jrunner = new JasmineRunner({projectBaseDir: path.resolve(__dirname, '../../')});
 (global as any)['jasmine'] = jrunner.jasmine;
-require('zone.js/dist/jasmine-patch.js');
+require('zone.js/lib/jasmine/jasmine.js');
 
 (global as any).isBrowser = false;
 (global as any).isNode = true;

@@ -25,8 +25,8 @@ filegroup(
     srcs = [
         "@npm//:node_modules/@webcomponents/custom-elements/src/native-shim.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
-        "@npm//:node_modules/zone.js/dist/zone.js",
-        "@npm//:node_modules/zone.js/dist/zone-testing.js",
+        "//packages/zone.js/dist:zone.js",
+        "//packages/zone.js/dist:zone-testing.js",
     ],
 )
 

@@ -44,7 +44,7 @@ ts_devserver(
     ],
     static_files = [
         "ngsw-worker.js",
-        "@npm//:node_modules/zone.js/dist/zone.js",
+        "//packages/zone.js/dist:zone.js",
     ],
     deps = [":sw_push_examples"],
 )

@@ -9,15 +9,15 @@
 'use strict';
 
 const glob = require('glob');
-require('zone.js/dist/zone-node.js');
+import 'zone.js/lib/node/rollup-main';
 const JasmineRunner = require('jasmine');
 const path = require('path');
-require('zone.js/dist/long-stack-trace-zone.js');
-require('zone.js/dist/task-tracking.js');
-require('zone.js/dist/proxy.js');
-require('zone.js/dist/sync-test.js');
-require('zone.js/dist/async-test.js');
-require('zone.js/dist/fake-async-test.js');
+import 'zone.js/lib/zone-spec/long-stack-trace';
+import 'zone.js/lib/zone-spec/task-tracing';
+import 'zone.js/lib/zone-spec/proxy';
+import 'zone.js/lib/zone-spec/sync-test';
+import 'zone.js/lib/zone-spec/async-test';
+import 'zone.js/lib/zone-spec/fake-async-test';
 const {generateSeed} = require('../../../tools/jasmine-seed-generator');
 
 // Let TypeScript know this is a module
@@ -25,7 +25,7 @@ export {};
 
 const jrunner = new JasmineRunner({projectBaseDir: path.resolve(__dirname, '../../')});
 (global as any)['jasmine'] = jrunner.jasmine;
-require('zone.js/dist/jasmine-patch.js');
+import 'zone.js/lib/jasmine/jasmine';
 
 // Turn on full stack traces in errors to help debugging
 (<any>Error)['stackTraceLimit'] = Infinity;
