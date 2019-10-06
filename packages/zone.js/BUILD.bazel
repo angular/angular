@@ -26,7 +26,7 @@ npm_package(
         "README.md",
         "package.json",
     ],
-    visibility = ["//packages/zone.js/test:__pkg__"],
+    visibility = ["//visibility:public"],
     deps = [
         ":LICENSE.wrapped",
         ":LICENSE_copy",

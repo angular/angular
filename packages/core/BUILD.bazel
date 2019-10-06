@@ -18,8 +18,8 @@ ng_module(
         "//packages/core/src/reflection",
         "//packages/core/src/util",
         "//packages/localize",
+        "//packages/zone.js/lib:zone_d_ts",
         "@npm//rxjs",
-        "@npm//zone.js",
     ],
 )
 

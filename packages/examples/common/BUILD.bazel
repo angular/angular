@@ -45,7 +45,7 @@ ts_devserver(
         "//tools/rxjs:rxjs_umd_modules",
     ],
     static_files = [
-        "@npm//:node_modules/zone.js/dist/zone.js",
+        "//packages/zone.js/dist:zone.js",
     ],
     deps = [":common_examples"],
 )

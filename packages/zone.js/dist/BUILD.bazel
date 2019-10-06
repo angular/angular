@@ -1,7 +1,7 @@
 load("//tools:defaults.bzl", "rollup_bundle")
 load("//packages/zone.js:bundles.bzl", "ES2015_BUNDLES", "ES5_BUNDLES", "ES5_GLOBAL_BUNDLES")
 
-package(default_visibility = ["//packages/zone.js:__subpackages__"])
+package(default_visibility = ["//visibility:public"])
 
 # copy this file from //lib to //dist
 genrule(
@@ -13,9 +13,9 @@ genrule(
 
 genrule(
     name = "zone_d_ts",
-    srcs = ["//packages/zone.js/lib"],
+    srcs = ["//packages/zone.js/lib:zone_d_ts"],
     outs = ["zone.js.d.ts"],
-    cmd = "find $(SRCS) -name \"zone.d.ts\" -exec cp {} $(@D)/zone.js.d.ts \;",
+    cmd = "cp $< $@",
 )
 
 [

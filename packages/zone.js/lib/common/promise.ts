@@ -222,7 +222,7 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
   }
 
   function scheduleResolveOrReject<R, U1, U2>(
-      promise: ZoneAwarePromise<any>, zone: AmbientZone, chainPromise: ZoneAwarePromise<any>,
+      promise: ZoneAwarePromise<any>, zone: Zone, chainPromise: ZoneAwarePromise<any>,
       onFulfilled?: ((value: R) => U1) | null | undefined,
       onRejected?: ((error: any) => U2) | null | undefined): void {
     clearRejectedNoCatch(promise);
