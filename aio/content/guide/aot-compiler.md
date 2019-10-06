@@ -467,7 +467,7 @@ export class AppComponent {
 The collector can represent a function call or object creation with `new` as long as the syntax is valid.
 The compiler, however, can later refuse to generate a call to a _particular_ function or creation of a _particular_ object.
 
-The compiler can only create instances certain classes, supports only core decorators, and only supports calls to macros (functions or static methods) that return expressions.
+The compiler can only create instances of certain classes, supports only core decorators, and only supports calls to macros (functions or static methods) that return expressions.
 * New instances
 
    The compiler only allows metadata that create instances of the class `InjectionToken` from `@angular/core`.
