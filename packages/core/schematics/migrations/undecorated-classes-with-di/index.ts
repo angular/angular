@@ -171,7 +171,7 @@ function gracefullyCreateProgram(
 
     return {program, compiler};
   } catch (e) {
-    logger.warn(`\n${MIGRATION_AOT_FAILURE}. The following project failed: ${tsconfigPath}\n`);
+    logger.warn(`\n${MIGRATION_AOT_FAILURE} The following project failed: ${tsconfigPath}\n`);
     logger.error(`${e.toString()}\n`);
     logger.info(MIGRATION_RERUN_MESSAGE);
     return null;
