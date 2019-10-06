@@ -24,7 +24,6 @@
     "translated:legacy:serve": "serve ../tmp/translations/legacy --listen 4200",
     "translated:legacy:e2e": "npm-run-all -p -r translated:legacy:serve \"ng e2e --configuration=translated-legacy\"",
     "translated:legacy:translate": "localize-translate -r \"dist/\" -s \"**/*\" -o \"../tmp/translations/{{LOCALE}}\"",
-
     "translated:legacy-xlf:test": "yarn ng xi18n && yarn translated:legacy-xlf:update-translations && yarn ng build --configuration=translated-legacy && yarn translated:legacy:translate -t \"../tmp/legacy-locales/messages.legacy.xlf\" && yarn translated:legacy:e2e",
     "translated:legacy-xlf:update-translations": "sed -i.bak -e 's/source>/target>'/ -e 's/Hello/Bonjour/' -e 's/source-language=\"en-US\"/source-language=\"en-US\" target-language=\"legacy\"/' ../tmp/legacy-locales/messages.legacy.xlf",
     "translated:legacy-xmb:test": "yarn ng xi18n --format=xmb --outFile=messages.legacy.xmb && yarn translated:legacy-xmb:update-translations && yarn ng build --configuration=translated-legacy-xmb && yarn translated:legacy:translate -t \"../tmp/legacy-locales/messages.legacy.xtb\" && yarn translated:legacy:e2e",
@@ -46,7 +45,7 @@
     "rxjs": "file:../../node_modules/rxjs",
     "serve": "^11.2.0",
     "tslib": "file:../../node_modules/tslib",
-    "zone.js": "file:../../node_modules/zone.js"
+    "zone.js": "file:../../dist/bin/packages/zone.js/npm_package"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.900.0-rc.0",

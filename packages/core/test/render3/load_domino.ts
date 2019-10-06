@@ -7,11 +7,10 @@
  */
 
 // Needed to run animation tests
-require('zone.js/dist/zone-node.js');
-
+import 'zone.js/lib/node/rollup-main';
 import '@angular/compiler'; // For JIT mode. Must be in front of any other @angular/* imports.
-import {DominoAdapter} from '@angular/platform-server/src/domino_adapter';
 import {ɵgetDOM as getDOM} from '@angular/common';
+import {DominoAdapter} from '@angular/platform-server/src/domino_adapter';
 
 if (typeof window == 'undefined') {
   const domino = require('domino');

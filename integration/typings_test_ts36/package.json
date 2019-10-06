@@ -22,7 +22,7 @@
     "@types/jasmine": "2.5.41",
     "rxjs": "file:../../node_modules/rxjs",
     "typescript": "3.6.4",
-    "zone.js": "file:../../node_modules/zone.js"
+    "zone.js": "file:../../dist/bin/packages/zone.js/npm_package"
   },
   "scripts": {
     "test": "tsc"

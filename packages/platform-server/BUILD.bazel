@@ -19,9 +19,9 @@ ng_module(
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
+        "//packages/zone.js/lib:zone_d_ts",
         "@npm//@types/node",
         "@npm//rxjs",
-        "@npm//zone.js",
     ],
 )
 

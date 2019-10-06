@@ -9,6 +9,7 @@ cd "$(dirname "$0")"
 
 # basedir is the workspace root
 readonly basedir=$(pwd)/..
+readonly bazel_bin=$(yarn bin)/bazel
 
 # When running on the CI, we track the payload size of various integration output files. Also
 # we shard tests across multiple CI job instances. The script needs to be run with a shard index
@@ -34,6 +35,9 @@ else
   # Bazel eventually. For now, we just run all tests sequentially when running locally.
   TEST_DIRS=$(ls | grep -v node_modules)
 fi
+
+# We need to build zone.js npm package because it is not built in build-packages-dist.sh
+${bazel_bin} build //packages/zone.js:npm_package
 
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
 # Yarn will cache file://dist URIs and not update Angular code
