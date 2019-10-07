@@ -867,7 +867,8 @@ export class Router {
    * Otherwise, applies the given command starting from the root.
    *
    * @param commands An array of commands to apply.
-   * @param navigationExtras Options that control the navigation strategy.
+   * @param navigationExtras Options that control the navigation strategy. This function
+   * only utilizes properties in `NavigationExtras` that would change the provided URL.
    * @returns The new URL tree.
    *
    * @usageNotes
