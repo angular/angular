@@ -56,14 +56,11 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
     }
   }
 
-<<<<<<< HEAD
-=======
   resolveModuleNames?:
       (moduleNames: string[], containingFile: string, reusedNames: string[],
        redirectedReference: ts.ResolvedProjectReference,
        options: ts.CompilerOptions) => (ts.ResolvedModule | undefined)[];
 
->>>>>>> feat: typescript 3.6 support
   resolveTypeReferenceDirectives?:
       (names: string[], containingFile: string) => ts.ResolvedTypeReferenceDirective[];
 

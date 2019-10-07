@@ -186,7 +186,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       return moduleInfo && this.program.getSourceFile(absoluteFrom(moduleInfo.resolvedFileName));
     } else {
       const moduleInfo =
-          ts.resolveModuleName(moduleName, containingFile.fileName, this.compilerHost);
+        ts.resolveModuleName(moduleName, containingFile.fileName, this.program.getCompilerOptions(), this.compilerHost);
       return moduleInfo.resolvedModule &&
           this.program.getSourceFile(absoluteFrom(moduleInfo.resolvedModule.resolvedFileName));
     }

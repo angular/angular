@@ -81,13 +81,10 @@ export interface DirectiveType<T> extends Type<T> {
   ngFactoryDef: () => T;
 }
 
-<<<<<<< HEAD
 export enum DirectiveDefFlags {
   ContentQuery = 0b10
 }
 
-=======
->>>>>>> feat: typescript 3.6 support
 /**
  * A subclass of `Type` which has a static `ngPipeDef`:`PipeDef` field making it
  * consumable for rendering.

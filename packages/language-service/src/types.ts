@@ -295,7 +295,7 @@ export interface DiagnosticMessageChain {
   /**
    * The next message in the chain.
    */
-  next?: DiagnosticMessageChain;
+  next?: DiagnosticMessageChain[];
 }
 
 /**

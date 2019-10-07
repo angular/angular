@@ -628,7 +628,7 @@ class HiddenModule {
       it('using renderModuleFactory should work',
          async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
            const compilerFactory: CompilerFactory =
-               defaultPlatform.injector.get(CompilerFactory, null);
+               defaultPlatform.injector.get(CompilerFactory, null)!;
            const moduleFactory =
                compilerFactory.createCompiler().compileModuleSync(AsyncServerModule);
            renderModuleFactory(moduleFactory, {document: doc}).then(output => {
@@ -836,7 +836,7 @@ class HiddenModule {
       it('adds transfer script tag when using renderModuleFactory',
          async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
            const compilerFactory: CompilerFactory =
-               defaultPlatform.injector.get(CompilerFactory, null);
+               defaultPlatform.injector.get(CompilerFactory, null)!;
            const moduleFactory =
                compilerFactory.createCompiler().compileModuleSync(TransferStoreModule);
            renderModuleFactory(moduleFactory, {document: '<app></app>'}).then(output => {
