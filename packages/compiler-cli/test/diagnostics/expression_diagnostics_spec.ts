@@ -39,7 +39,7 @@ describe('expression diagnostics', () => {
       if (typeof messageText == 'string') {
         return messageText;
       } else {
-        if (messageText.next) return messageText.messageText + messageToString(messageText.next);
+        if (messageText.next) return messageText.messageText + messageText.next.map(messageToString);
         return messageText.messageText;
       }
     }

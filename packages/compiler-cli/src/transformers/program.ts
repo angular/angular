@@ -1109,7 +1109,7 @@ function diagnosticChainFromFormattedDiagnosticChain(chain: FormattedMessageChai
     DiagnosticMessageChain {
   return {
     messageText: chain.message,
-    next: chain.next && diagnosticChainFromFormattedDiagnosticChain(chain.next),
+    next: chain.next && chain.next.map(diagnosticChainFromFormattedDiagnosticChain),
     position: chain.position
   };
 }

@@ -1056,7 +1056,7 @@ function formatMetadataMessageChain(
   const next: FormattedMessageChain|undefined = chain.next ?
       formatMetadataMessageChain(chain.next, advise) :
       advise ? {message: advise} : undefined;
-  return {message, position, next};
+  return { message, position, next: next ? [next]: undefined};
 }
 
 function formatMetadataError(e: Error, context: StaticSymbol): Error {

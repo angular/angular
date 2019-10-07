@@ -612,7 +612,7 @@ function spanAt(sourceFile: ts.SourceFile, line: number, column: number): Span|u
 }
 
 function convertChain(chain: FormattedMessageChain): DiagnosticMessageChain {
-  return {message: chain.message, next: chain.next ? convertChain(chain.next) : undefined};
+  return { message: chain.message, next: chain.next ? chain.next.map(convertChain) : undefined};
 }
 
 function errorToDiagnosticWithChain(error: FormattedError, span: Span): DeclarationError {
