@@ -16,6 +16,7 @@
     "type": "git",
     "url": "https://github.com/angular/angular.git"
   },
+  "schematics": "./schematics/collection.json",
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
