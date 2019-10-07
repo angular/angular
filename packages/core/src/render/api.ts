@@ -7,118 +7,12 @@
  */
 
 import {InjectionToken} from '../di/injection_token';
-import {Injector} from '../di/injector';
 import {ViewEncapsulation} from '../metadata/view';
 import {injectRenderer2 as render3InjectRenderer2} from '../render3/view_engine_compatibility';
 import {noop} from '../util/noop';
 
 
-
-/**
- * @deprecated Use `RendererType2` (and `Renderer2`) instead.
- * @publicApi
- */
-export class RenderComponentType {
-  constructor(
-      public id: string, public templateUrl: string, public slotCount: number,
-      public encapsulation: ViewEncapsulation, public styles: Array<string|any[]>,
-      public animations: any) {}
-}
-
-/**
- * @deprecated Debug info is handled internally in the view engine now.
- */
-export abstract class RenderDebugInfo {
-  abstract get injector(): Injector;
-  abstract get component(): any;
-  abstract get providerTokens(): any[];
-  abstract get references(): {[key: string]: any};
-  abstract get context(): any;
-  abstract get source(): string;
-}
-
-/**
- * @deprecated Use the `Renderer2` instead.
- */
-export interface DirectRenderer {
-  remove(node: any): void;
-  appendChild(node: any, parent: any): void;
-  insertBefore(node: any, refNode: any): void;
-  nextSibling(node: any): any;
-  parentElement(node: any): any;
-}
-
-/**
- * @deprecated Use the `Renderer2` instead.
- * @publicApi
- */
-export abstract class Renderer {
-  abstract selectRootElement(selectorOrNode: string|any, debugInfo?: RenderDebugInfo): any;
-
-  abstract createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any;
-
-  abstract createViewRoot(hostElement: any): any;
-
-  abstract createTemplateAnchor(parentElement: any, debugInfo?: RenderDebugInfo): any;
-
-  abstract createText(parentElement: any, value: string, debugInfo?: RenderDebugInfo): any;
-
-  abstract projectNodes(parentElement: any, nodes: any[]): void;
-
-  abstract attachViewAfter(node: any, viewRootNodes: any[]): void;
-
-  abstract detachView(viewRootNodes: any[]): void;
-
-  abstract destroyView(hostElement: any, viewAllNodes: any[]): void;
-
-  abstract listen(renderElement: any, name: string, callback: Function): Function;
-
-  abstract listenGlobal(target: string, name: string, callback: Function): Function;
-
-  abstract setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void;
-
-  abstract setElementAttribute(renderElement: any, attributeName: string, attributeValue?: string):
-      void;
-
-  /**
-   * Used only in debug mode to serialize property changes to dom nodes as attributes.
-   */
-  abstract setBindingDebugInfo(renderElement: any, propertyName: string, propertyValue: string):
-      void;
-
-  abstract setElementClass(renderElement: any, className: string, isAdd: boolean): void;
-
-  abstract setElementStyle(renderElement: any, styleName: string, styleValue?: string): void;
-
-  abstract invokeElementMethod(renderElement: any, methodName: string, args?: any[]): void;
-
-  abstract setText(renderNode: any, text: string): void;
-
-  abstract animate(
-      element: any, startingStyles: any, keyframes: any[], duration: number, delay: number,
-      easing: string, previousPlayers?: any[]): any;
-}
-
 export const Renderer2Interceptor = new InjectionToken<Renderer2[]>('Renderer2Interceptor');
-
-/**
- * Injectable service that provides a low-level interface for modifying the UI.
- *
- * Use this service to bypass Angular's templating and make custom UI changes that can't be
- * expressed declaratively. For example if you need to set a property or an attribute whose name is
- * not statically known, use {@link Renderer#setElementProperty setElementProperty} or
- * {@link Renderer#setElementAttribute setElementAttribute} respectively.
- *
- * If you are implementing a custom renderer, you must implement this interface.
- *
- * The default Renderer implementation is `DomRenderer`. Also available is `WebWorkerRenderer`.
- *
- * @deprecated Use `RendererFactory2` instead.
- * @publicApi
- */
-export abstract class RootRenderer {
-  abstract renderComponent(componentType: RenderComponentType): Renderer;
-}
 
 /**
  * Used by `RendererFactory2` to associate custom rendering data and styles

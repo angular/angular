@@ -11,15 +11,14 @@ import {INJECTOR, Injector, resolveForwardRef} from '../di';
 import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
-import {Renderer as RendererV1, Renderer2} from '../render/api';
+import {Renderer2} from '../render/api';
 import {isObservable} from '../util/lang';
 import {stringify} from '../util/stringify';
 
-import {createChangeDetectorRef, createInjector, createRendererV1} from './refs';
+import {createChangeDetectorRef, createInjector} from './refs';
 import {BindingDef, BindingFlags, DepDef, DepFlags, NodeDef, NodeFlags, OutputDef, OutputType, ProviderData, QueryValueType, Services, ViewData, ViewFlags, ViewState, asElementData, asProviderData, shouldCallLifecycleInitHook} from './types';
 import {calcBindingFlags, checkBinding, dispatchEvent, isComponentView, splitDepsDsl, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
 
-const RendererV1TokenKey = tokenKey(RendererV1);
 const Renderer2TokenKey = tokenKey(Renderer2);
 const ElementRefTokenKey = tokenKey(ElementRef);
 const ViewContainerRefTokenKey = tokenKey(ViewContainerRef);
@@ -359,10 +358,6 @@ export function resolveDep(
   while (searchView) {
     if (elDef) {
       switch (tokenKey) {
-        case RendererV1TokenKey: {
-          const compView = findCompView(searchView, elDef, allowPrivateServices);
-          return createRendererV1(compView);
-        }
         case Renderer2TokenKey: {
           const compView = findCompView(searchView, elDef, allowPrivateServices);
           return compView.renderer;
