@@ -16,7 +16,6 @@ const COMPONENTS = [
   GoogleMap,
   MapInfoWindow,
   MapMarker,
-  MapInfoWindow,
 ];
 
 @NgModule({
