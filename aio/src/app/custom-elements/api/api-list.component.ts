@@ -114,20 +114,18 @@ export class ApiListComponent implements OnInit {
   private filterSection(section: ApiSection, { query, status, type }: SearchCriteria) {
     const sectionNameMatches = !query || section.name.indexOf(query) !== -1;
 
-    const returnTrue = () => true;
-    const matchesQuery = sectionNameMatches ?
-      returnTrue : (item: ApiItem) => item.name.indexOf(query!) !== -1;
-    const matchesStatus = status === 'all' ?
-      returnTrue : (item: ApiItem) => status === item.stability || (status === 'security-risk' && item.securityRisk);
-    const matchesType = type === 'all' ?
-      returnTrue : (item: ApiItem) => type === item.docType;
+    const matchesQuery = (item: ApiItem) =>
+      sectionNameMatches || item.name.indexOf(query!) !== -1;
+    const matchesStatus = (item: ApiItem) =>
+      status === 'all' || status === item.stability || (status === 'security-risk' && item.securityRisk);
+    const matchesType = (item: ApiItem) =>
+      type === 'all' || type === item.docType;
 
     const items = section.items!.filter(item =>
       matchesType(item) && matchesStatus(item) && matchesQuery(item));
 
     // If there are no items we still return an empty array if the section name matches and the type is 'package'
     return items.length ? items : (sectionNameMatches && type === 'package') ? [] : null;
-
   }
 
   // Get initial search criteria from URL search params

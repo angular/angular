@@ -1,7 +1,7 @@
 import { Component, NgModule, ViewChild } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { DocumentContents } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
@@ -20,9 +20,17 @@ export class TestDocViewerComponent extends DocViewerComponent {
   currViewContainer: HTMLElement;
   nextViewContainer: HTMLElement;
 
-  prepareTitleAndToc(_targetElem: HTMLElement, _docId: string): () => void { return null as any; }
-  render(_doc: DocumentContents): Observable<void> { return null as any; }
-  swapViews(_onInsertedCb?: () => void): Observable<void> { return null as any; }
+  prepareTitleAndToc(_targetElem: HTMLElement, _docId: string): () => void {
+    return () => undefined;
+  }
+
+  render(_doc: DocumentContents): Observable<void> {
+    return of(undefined);
+  }
+
+  swapViews(_onInsertedCb?: () => void): Observable<void> {
+    return of(undefined);
+  }
 }
 
 
