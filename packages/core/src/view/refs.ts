@@ -18,7 +18,6 @@ import {InternalNgModuleRef, NgModuleRef} from '../linker/ng_module_factory';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef, InternalViewRef, ViewRef} from '../linker/view_ref';
-import {Renderer as RendererV1, Renderer2} from '../render/api';
 import {stringify} from '../util/stringify';
 import {VERSION} from '../version';
 
@@ -355,122 +354,6 @@ export function nodeValue(view: ViewData, index: number): any {
   }
   throw new Error(`Illegal state: read nodeValue for node index ${index}`);
 }
-
-export function createRendererV1(view: ViewData): RendererV1 {
-  return new RendererAdapter(view.renderer);
-}
-
-class RendererAdapter implements RendererV1 {
-  constructor(private delegate: Renderer2) {}
-  selectRootElement(selectorOrNode: string|Element): Element {
-    return this.delegate.selectRootElement(selectorOrNode);
-  }
-
-  createElement(parent: Element|DocumentFragment, namespaceAndName: string): Element {
-    const [ns, name] = splitNamespace(namespaceAndName);
-    const el = this.delegate.createElement(name, ns);
-    if (parent) {
-      this.delegate.appendChild(parent, el);
-    }
-    return el;
-  }
-
-  createViewRoot(hostElement: Element): Element|DocumentFragment { return hostElement; }
-
-  createTemplateAnchor(parentElement: Element|DocumentFragment): Comment {
-    const comment = this.delegate.createComment('');
-    if (parentElement) {
-      this.delegate.appendChild(parentElement, comment);
-    }
-    return comment;
-  }
-
-  createText(parentElement: Element|DocumentFragment, value: string): any {
-    const node = this.delegate.createText(value);
-    if (parentElement) {
-      this.delegate.appendChild(parentElement, node);
-    }
-    return node;
-  }
-
-  projectNodes(parentElement: Element|DocumentFragment, nodes: Node[]) {
-    for (let i = 0; i < nodes.length; i++) {
-      this.delegate.appendChild(parentElement, nodes[i]);
-    }
-  }
-
-  attachViewAfter(node: Node, viewRootNodes: Node[]) {
-    const parentElement = this.delegate.parentNode(node);
-    const nextSibling = this.delegate.nextSibling(node);
-    for (let i = 0; i < viewRootNodes.length; i++) {
-      this.delegate.insertBefore(parentElement, viewRootNodes[i], nextSibling);
-    }
-  }
-
-  detachView(viewRootNodes: (Element|Text|Comment)[]) {
-    for (let i = 0; i < viewRootNodes.length; i++) {
-      const node = viewRootNodes[i];
-      const parentElement = this.delegate.parentNode(node);
-      this.delegate.removeChild(parentElement, node);
-    }
-  }
-
-  destroyView(hostElement: Element|DocumentFragment, viewAllNodes: Node[]) {
-    for (let i = 0; i < viewAllNodes.length; i++) {
-      this.delegate.destroyNode !(viewAllNodes[i]);
-    }
-  }
-
-  listen(renderElement: any, name: string, callback: Function): Function {
-    return this.delegate.listen(renderElement, name, <any>callback);
-  }
-
-  listenGlobal(target: string, name: string, callback: Function): Function {
-    return this.delegate.listen(target, name, <any>callback);
-  }
-
-  setElementProperty(
-      renderElement: Element|DocumentFragment, propertyName: string, propertyValue: any): void {
-    this.delegate.setProperty(renderElement, propertyName, propertyValue);
-  }
-
-  setElementAttribute(renderElement: Element, namespaceAndName: string, attributeValue?: string):
-      void {
-    const [ns, name] = splitNamespace(namespaceAndName);
-    if (attributeValue != null) {
-      this.delegate.setAttribute(renderElement, name, attributeValue, ns);
-    } else {
-      this.delegate.removeAttribute(renderElement, name, ns);
-    }
-  }
-
-  setBindingDebugInfo(renderElement: Element, propertyName: string, propertyValue: string): void {}
-
-  setElementClass(renderElement: Element, className: string, isAdd: boolean): void {
-    if (isAdd) {
-      this.delegate.addClass(renderElement, className);
-    } else {
-      this.delegate.removeClass(renderElement, className);
-    }
-  }
-
-  setElementStyle(renderElement: HTMLElement, styleName: string, styleValue?: string): void {
-    if (styleValue != null) {
-      this.delegate.setStyle(renderElement, styleName, styleValue);
-    } else {
-      this.delegate.removeStyle(renderElement, styleName);
-    }
-  }
-
-  invokeElementMethod(renderElement: Element, methodName: string, args: any[]): void {
-    (renderElement as any)[methodName].apply(renderElement, args);
-  }
-
-  setText(renderNode: Text, text: string): void { this.delegate.setValue(renderNode, text); }
-
-  animate(): any { throw new Error('Renderer.animate is no longer supported!'); }
-}
-
 
 export function createNgModuleRef(
     moduleType: Type<any>, parent: Injector, bootstrapComponents: Type<any>[],
