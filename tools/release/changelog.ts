@@ -3,7 +3,6 @@ import {createReadStream, createWriteStream, readFileSync} from 'fs';
 import {prompt} from 'inquirer';
 import {join} from 'path';
 import {Readable} from 'stream';
-import {releasePackages} from './release-output/release-packages';
 
 // These imports lack type definitions.
 const conventionalChangelog = require('conventional-changelog');
@@ -17,7 +16,7 @@ interface ChangelogPackage {
 }
 
 /** Hardcoded order of packages shown in the changelog. */
-const changelogPackageOrder = [
+const orderedChangelogPackages = [
   'cdk',
   'material',
   'google-maps',
@@ -97,6 +96,7 @@ export async function promptChangelogReleaseName(): Promise<string> {
 function createChangelogWriterOptions(changelogPath: string) {
   const existingChangelogContent = readFileSync(changelogPath, 'utf8');
   const commitSortFunction = changelogCompare.functionify(['type', 'scope', 'subject']);
+  const allPackages = [...orderedChangelogPackages, ...excludedChangelogPackages];
 
   return {
     // Overwrite the changelog templates so that we can render the commits grouped
@@ -125,7 +125,7 @@ function createChangelogWriterOptions(changelogPath: string) {
           // a commit targets the whole package and does not specify a specific scope.
           // e.g. "refactor(material-experimental): support strictness flags".
           if (!commit.package && commit.scope) {
-            const matchingPackage = releasePackages.find(pkgName => pkgName === commit.scope);
+            const matchingPackage = allPackages.find(pkgName => pkgName === commit.scope);
             if (matchingPackage) {
               commit.scope = null;
               commit.package = matchingPackage;
@@ -173,8 +173,8 @@ function createChangelogWriterOptions(changelogPath: string) {
  * sorted in alphabetical order after the hardcoded entries.
  */
 function preferredOrderComparator(a: string, b: string): number {
-  const aIndex = changelogPackageOrder.indexOf(a);
-  const bIndex = changelogPackageOrder.indexOf(b);
+  const aIndex = orderedChangelogPackages.indexOf(a);
+  const bIndex = orderedChangelogPackages.indexOf(b);
   // If a package name could not be found in the hardcoded order, it should be
   // sorted after the hardcoded entries in alphabetical order.
   if (aIndex === -1) {
