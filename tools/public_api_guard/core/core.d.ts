@@ -1200,40 +1200,6 @@ export declare class ReflectiveKey {
     static get(token: Object): ReflectiveKey;
 }
 
-/** @deprecated */
-export declare class RenderComponentType {
-    animations: any;
-    encapsulation: ViewEncapsulation;
-    id: string;
-    slotCount: number;
-    styles: Array<string | any[]>;
-    templateUrl: string;
-    constructor(id: string, templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation, styles: Array<string | any[]>, animations: any);
-}
-
-/** @deprecated */
-export declare abstract class Renderer {
-    abstract animate(element: any, startingStyles: any, keyframes: any[], duration: number, delay: number, easing: string, previousPlayers?: any[]): any;
-    abstract attachViewAfter(node: any, viewRootNodes: any[]): void;
-    abstract createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any;
-    abstract createTemplateAnchor(parentElement: any, debugInfo?: RenderDebugInfo): any;
-    abstract createText(parentElement: any, value: string, debugInfo?: RenderDebugInfo): any;
-    abstract createViewRoot(hostElement: any): any;
-    abstract destroyView(hostElement: any, viewAllNodes: any[]): void;
-    abstract detachView(viewRootNodes: any[]): void;
-    abstract invokeElementMethod(renderElement: any, methodName: string, args?: any[]): void;
-    abstract listen(renderElement: any, name: string, callback: Function): Function;
-    abstract listenGlobal(target: string, name: string, callback: Function): Function;
-    abstract projectNodes(parentElement: any, nodes: any[]): void;
-    abstract selectRootElement(selectorOrNode: string | any, debugInfo?: RenderDebugInfo): any;
-    abstract setBindingDebugInfo(renderElement: any, propertyName: string, propertyValue: string): void;
-    abstract setElementAttribute(renderElement: any, attributeName: string, attributeValue?: string): void;
-    abstract setElementClass(renderElement: any, className: string, isAdd: boolean): void;
-    abstract setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void;
-    abstract setElementStyle(renderElement: any, styleName: string, styleValue?: string): void;
-    abstract setText(renderNode: any, text: string): void;
-}
-
 export declare abstract class Renderer2 {
     abstract readonly data: {
         [key: string]: any;
@@ -1296,11 +1262,6 @@ export interface ResolvedReflectiveProvider {
 }
 
 export declare function resolveForwardRef<T>(type: T): T;
-
-/** @deprecated */
-export declare abstract class RootRenderer {
-    abstract renderComponent(componentType: RenderComponentType): Renderer;
-}
 
 export declare abstract class Sanitizer {
     abstract sanitize(context: SecurityContext, value: {} | string | null): string | null;
