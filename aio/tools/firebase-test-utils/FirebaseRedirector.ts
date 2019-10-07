@@ -11,7 +11,7 @@ export class FirebaseRedirector {
     this.redirects = redirects.map(redirect => new FirebaseRedirect(redirect.source, redirect.destination));
   }
 
-  redirect(url: string): string {
+  redirect(url: string) {
     let ttl = 50;
     while (ttl > 0) {
       const newUrl = this.doRedirect(url);
@@ -24,7 +24,6 @@ export class FirebaseRedirector {
     }
     throw new Error('infinite redirect loop');
   }
-
   private doRedirect(url: string) {
     for (const redirect of this.redirects) {
       const newUrl = redirect.replace(url);
