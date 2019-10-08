@@ -10,6 +10,7 @@ ts_library(
         "//packages:types",
         "//packages/localize",
         "//packages/localize/init",
+        "//packages/localize/src/utils",
     ],
 )
 

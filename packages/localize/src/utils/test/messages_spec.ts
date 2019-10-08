@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {findEndOfBlock, parseMessage, parseMetadata, splitBlock} from '../../src/utils/messages';
-import {makeTemplateObject} from '../../src/utils/translations';
+import {findEndOfBlock, makeTemplateObject, parseMessage, parseMetadata, splitBlock} from '..';
 
 describe('messages utils', () => {
   describe('parseMessage', () => {
@@ -42,21 +41,52 @@ describe('messages utils', () => {
       expect(message3.messageId).not.toEqual(message1.messageId);
     });
 
-    it('should compute the translation key, inferring placeholder names if not given', () => {
-      const message = parseMessage(makeTemplateObject(['a', 'b', 'c'], ['a', 'b', 'c']), [1, 2]);
-      expect(message.messageId).toEqual('8107531564991075946');
+    it('should infer placeholder names if not given', () => {
+      const parts1 = ['a', 'b', 'c'];
+      const message1 = parseMessage(makeTemplateObject(parts1, parts1), [1, 2]);
+      expect(message1.messageId).toEqual('8107531564991075946');
+
+      const parts2 = ['a', ':custom1:b', ':custom2:c'];
+      const message2 = parseMessage(makeTemplateObject(parts2, parts2), [1, 2]);
+      expect(message2.messageId).toEqual('1822117095464505589');
+
+      // Note that the placeholder names are part of the message so affect the message id.
+      expect(message1.messageId).not.toEqual(message2.messageId);
+      expect(message1.messageString).not.toEqual(message2.messageString);
     });
 
-    it('should compute the translation key, ignoring escaped placeholder names', () => {
+    it('should ignore placeholder blocks whose markers have been escaped', () => {
       const message = parseMessage(
           makeTemplateObject(['a', ':one:b', ':two:c'], ['a', '\\:one:b', '\\:two:c']), [1, 2]);
       expect(message.messageId).toEqual('2623373088949454037');
     });
 
-    it('should compute the translation key, handling empty raw values', () => {
+    it('should handle raw values that are empty (from synthesized AST)', () => {
       const message =
           parseMessage(makeTemplateObject(['a', ':one:b', ':two:c'], ['', '', '']), [1, 2]);
       expect(message.messageId).toEqual('8865273085679272414');
+    });
+
+    it('should extract the meaning, description and placeholder names', () => {
+      const message1 = parseMessage(makeTemplateObject(['abc'], ['abc']), []);
+      expect(message1.messageParts).toEqual(['abc']);
+      expect(message1.meaning).toEqual('');
+      expect(message1.description).toEqual('');
+      expect(message1.placeholderNames).toEqual([]);
+
+      const message2 = parseMessage(
+          makeTemplateObject([':meaning|description:abc'], [':meaning|description:abc']), []);
+      expect(message2.messageParts).toEqual(['abc']);
+      expect(message2.meaning).toEqual('meaning');
+      expect(message2.description).toEqual('description');
+      expect(message2.placeholderNames).toEqual([]);
+
+      const message3 = parseMessage(
+          makeTemplateObject(['a', ':custom:b', 'c'], ['a', ':custom:b', 'c']), [0, 1]);
+      expect(message3.messageParts).toEqual(['a', 'b', 'c']);
+      expect(message3.meaning).toEqual('');
+      expect(message3.description).toEqual('');
+      expect(message3.placeholderNames).toEqual(['custom', 'PH_1']);
     });
 
     it('should build a map of named placeholders to expressions', () => {
