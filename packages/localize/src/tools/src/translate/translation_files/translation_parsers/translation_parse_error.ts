@@ -8,10 +8,9 @@
 import {ParseErrorLevel, ParseSourceSpan} from '@angular/compiler';
 
 /**
- * Instances of this class are thrown when there is an error in the source code that is being
- * translated.
+ * This error is thrown when there is a problem parsing a translation file.
  */
-export class I18nError extends Error {
+export class TranslationParseError extends Error {
   constructor(
       public span: ParseSourceSpan, public msg: string,
       public level: ParseErrorLevel = ParseErrorLevel.ERROR) {

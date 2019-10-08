@@ -11,7 +11,7 @@ import {extname} from 'path';
 import {TargetMessageRenderer} from '../../../message_renderers/target_message_renderer';
 import {TranslationBundle} from '../../../translator';
 import {BaseVisitor} from '../base_visitor';
-import {I18nError} from '../i18n_error';
+import {TranslationParseError} from '../translation_parse_error';
 import {TranslationParser} from '../translation_parser';
 import {getAttrOrThrow, parseInnerRange} from '../translation_utils';
 import {Xliff2MessageSerializer} from './xliff2_message_serializer';
@@ -78,7 +78,7 @@ class Xliff2TranslationVisitor extends BaseVisitor {
     if (element.name === 'unit') {
       const externalId = getAttrOrThrow(element, 'id');
       if (this.translations[externalId] !== undefined) {
-        throw new I18nError(
+        throw new TranslationParseError(
             element.sourceSpan, `Duplicated translations for message "${externalId}"`);
       }
       visitAll(this, element.children, {unit: externalId});
@@ -86,7 +86,7 @@ class Xliff2TranslationVisitor extends BaseVisitor {
       assertTranslationUnit(element, context);
       const targetMessage = element.children.find(isTargetElement);
       if (targetMessage === undefined) {
-        throw new I18nError(element.sourceSpan, 'Missing required <target> element');
+        throw new TranslationParseError(element.sourceSpan, 'Missing required <target> element');
       }
       this.translations[context.unit] = serializeTargetMessage(targetMessage);
     } else {
@@ -97,7 +97,7 @@ class Xliff2TranslationVisitor extends BaseVisitor {
 
 function assertTranslationUnit(segment: Element, context: any) {
   if (context === undefined || context.unit === undefined) {
-    throw new I18nError(
+    throw new TranslationParseError(
         segment.sourceSpan, 'Invalid <segment> element: should be a child of a <unit> element.');
   }
 }

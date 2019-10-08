@@ -8,7 +8,7 @@
 import {Element, Expansion, ExpansionCase, Node, Text, visitAll} from '@angular/compiler';
 import {MessageRenderer} from '../../../message_renderers/message_renderer';
 import {BaseVisitor} from '../base_visitor';
-import {I18nError} from '../i18n_error';
+import {TranslationParseError} from '../translation_parse_error';
 import {getAttrOrThrow, getAttribute} from '../translation_utils';
 
 const INLINE_ELEMENTS = ['cp', 'sc', 'ec', 'mrk', 'sm', 'em'];
@@ -33,7 +33,7 @@ export class Xliff2MessageSerializer<T> extends BaseVisitor {
     } else if (INLINE_ELEMENTS.indexOf(element.name) !== -1) {
       visitAll(this, element.children);
     } else {
-      throw new I18nError(element.sourceSpan, `Invalid element found in message.`);
+      throw new TranslationParseError(element.sourceSpan, `Invalid element found in message.`);
     }
   }
 
