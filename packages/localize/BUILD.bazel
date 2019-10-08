@@ -34,8 +34,5 @@ ng_package(
     deps = [
         ":localize",
         "//packages/localize/init",
-        "@npm//@babel/core",
-        "@npm//glob",
-        "@npm//yargs",
     ],
 )
