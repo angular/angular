@@ -16,6 +16,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "progress": false,
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -31,6 +32,9 @@
             "scripts": []
           },
           "configurations": {
+            "view-engine": {
+              "tsConfig": "src/tsconfig.view-engine.json"
+            },
             "production": {
               "fileReplacements": [
                 {
@@ -55,9 +59,8 @@
                 }
               ]
             },
-            "legacy-id-mode": {
-              "tsConfig": "src/tsconfig.legacy-id-mode.json",
-              "polyfills": "src/polyfills.legacy-id-mode.ts",
+            "translated-legacy": {
+              "tsConfig": "src/tsconfig.legacy.json",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -66,7 +69,7 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true,
+              "buildOptimizer": true
             }
           }
         },
@@ -85,17 +88,15 @@
             "ci-production": {
               "browserTarget": "cli-hello-world-ivy-compat:build:production",
               "progress": false
-            },
-            "legacy-id-mode": {
-              "browserTarget": "cli-hello-world-ivy-compat:build:legacy-id-mode",
-              "progress": false
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "cli-hello-world-ivy-compat:build"
+            "browserTarget": "cli-hello-world-ivy-compat:build:view-engine",
+            "outputPath": "../tmp/legacy-locales/",
+            "outFile": "messages.legacy.xlf"
           }
         },
         "test": {
@@ -137,8 +138,9 @@
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "cli-hello-world-ivy-compat:serve"
+            "protractorConfig": "e2e/runtime/protractor.conf.js",
+            "devServerTarget": "cli-hello-world-ivy-compat:serve",
+            "webdriverUpdate": true
           },
           "configurations": {
             "production": {
@@ -150,8 +152,17 @@
             "ci-production": {
               "devServerTarget": "cli-hello-world-ivy-compat:serve:ci-production"
             },
-            "legacy-id-mode": {
-              "devServerTarget": "cli-hello-world-ivy-compat:serve:legacy-id-mode"
+            "translated-legacy": {
+              "devServerTarget": "",
+              "protractorConfig": "e2e/legacy/protractor.conf.js"
+            },
+            "translated-fr": {
+              "devServerTarget": "",
+              "protractorConfig": "e2e/fr/protractor.conf.js"
+            },
+            "translated-de": {
+              "devServerTarget": "",
+              "protractorConfig": "e2e/de/protractor.conf.js"
             }
           }
         },
