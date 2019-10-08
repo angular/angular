@@ -73,6 +73,8 @@ export function throwDialogContentAlreadyAttachedError() {
   },
 })
 export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
+  private _document: Document;
+
   /** State of the dialog animation. */
   _state: 'void' | 'enter' | 'exit' = 'enter';
 
@@ -120,10 +122,12 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
     private _elementRef: ElementRef<HTMLElement>,
     private _focusTrapFactory: FocusTrapFactory,
     private _changeDetectorRef: ChangeDetectorRef,
-    @Optional() @Inject(DOCUMENT) private _document: any,
+    @Optional() @Inject(DOCUMENT) _document: any,
     /** The dialog configuration. */
     public _config: DialogConfig) {
     super();
+
+    this._document = _document;
 
     // We use a Subject with a distinctUntilChanged, rather than a callback attached to .done,
     // because some browsers fire the done event twice and we don't want to emit duplicate events.
@@ -248,7 +252,17 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
     const toFocus = this._elementFocusedBeforeDialogWasOpened;
     // We need the extra check, because IE can set the `activeElement` to null in some cases.
     if (toFocus && typeof toFocus.focus === 'function') {
-      toFocus.focus();
+      const activeElement = this._document.activeElement;
+      const element = this._elementRef.nativeElement;
+
+      // Make sure that focus is still inside the dialog or is on the body (usually because a
+      // non-focusable element like the backdrop was clicked) before moving it. It's possible that
+      // the consumer moved it themselves before the animation was done, in which case we shouldn't
+      // do anything.
+      if (!activeElement || activeElement === this._document.body || activeElement === element ||
+        element.contains(activeElement)) {
+        toFocus.focus();
+      }
     }
   }
 }
