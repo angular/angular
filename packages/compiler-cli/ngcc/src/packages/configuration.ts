@@ -47,8 +47,8 @@ export interface NgccEntryPointConfig {
 /**
  * The default configuration for ngcc.
  *
- * This is the ultimate fall back configuration to use if there is no configuration for a package at
- * the package or project level.
+ * This is the ultimate fallback configuration that ngcc will use if there is no configuration
+ * for a package at the package level or project level.
  *
  * This configuration is for packages that are "dead" - i.e. no longer maintained and so are
  * unlikely to be fixed to work with ngcc, nor provide a package level config of their own.
@@ -57,18 +57,26 @@ export interface NgccEntryPointConfig {
  *
  * Project -> Package -> Default
  *
- * If a package provides its own configuration then it would override the default one.
- * And that application developers can always provide configuration at their project level which
+ * If a package provides its own configuration then that would override this default one.
+ *
+ * Also application developers can always provide configuration at their project level which
  * will override everything else.
  *
- * Also note that the fallback is package based not entry-point based.
- * For example if a there is configuration for a package at the project level this will replace all
+ * Note that the fallback is package based not entry-point based.
+ * For example, if a there is configuration for a package at the project level this will replace all
  * entry-point configurations that may have been provided in the package level or default level
  * configurations, even if the project level configuration does not provide for a given entry-point.
  */
 export const DEFAULT_NGCC_CONFIG: NgccProjectConfig = {
   packages: {
-      // Add default package configuration here
+      // Add default package configuration here. For example:
+      // '@angular/fire@^5.2.0': {
+      //   entryPoints: {
+      //     './database-deprecated': {
+      //       ignore: true,
+      //     },
+      //   },
+      // },
   }
 };
 

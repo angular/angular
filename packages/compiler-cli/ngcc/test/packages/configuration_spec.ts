@@ -159,6 +159,9 @@ runInEachFileSystem(() => {
           expect(readFileSpy)
               .toHaveBeenCalledWith(_Abs('/project-1/node_modules/package-1/ngcc.config.js'));
 
+          // Note that for `package-2` only the project level entry-point is left.
+          // This is because overriding happens for packages as a whole and there is no attempt to
+          // merge entry-points.
           const package2Config = configuration.getConfig(_Abs('/project-1/node_modules/package-2'));
           expect(package2Config).toEqual({
             entryPoints:
@@ -173,7 +176,7 @@ runInEachFileSystem(() => {
         const originalDefaultConfig = DEFAULT_NGCC_CONFIG.packages['package-1'];
         beforeEach(() => {
           DEFAULT_NGCC_CONFIG.packages['package-1'] = {
-            entryPoints: {'./entry-point-1': {}},
+            entryPoints: {'./default-level-entry-point': {}},
           };
         });
         afterEach(() => { DEFAULT_NGCC_CONFIG.packages['package-1'] = originalDefaultConfig; });
@@ -185,8 +188,64 @@ runInEachFileSystem(() => {
           expect(readFileSpy).not.toHaveBeenCalled();
 
           const config = configuration.getConfig(_Abs('/project-1/node_modules/package-1'));
-          expect(config).toEqual(
-              {entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}}});
+          expect(config).toEqual({
+            entryPoints:
+                {[_Abs('/project-1/node_modules/package-1/default-level-entry-point')]: {}}
+          });
+        });
+
+        it('should override default level config with package level config, if provided', () => {
+          loadTestFiles([{
+            name: _Abs('/project-1/node_modules/package-1/ngcc.config.js'),
+            contents: `
+            module.exports = {
+              entryPoints: {'./package-level-entry-point': {}},
+            };`,
+          }]);
+          const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+          const config = configuration.getConfig(_Abs('/project-1/node_modules/package-1'));
+          // Note that only the package-level-entry-point is left.
+          // This is because overriding happens for packages as a whole and there is no attempt to
+          // merge entry-points.
+          expect(config).toEqual({
+            entryPoints:
+                {[_Abs('/project-1/node_modules/package-1/package-level-entry-point')]: {}}
+          });
+        });
+
+        it('should override default level config with project level config, if provided', () => {
+          loadTestFiles([
+            {
+              name: _Abs('/project-1/node_modules/package-1/ngcc.config.js'),
+              contents: `
+            module.exports = {
+              entryPoints: {'./package-level-entry-point': {}},
+            };`,
+            },
+            {
+              name: _Abs('/project-1/ngcc.config.js'),
+              contents: `
+            module.exports = {
+              packages: {
+                'package-1': {
+                  entryPoints: {
+                    './project-level-entry-point': {}
+                  },
+                },
+              },
+            };`,
+            },
+          ]);
+
+          const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+          const config = configuration.getConfig(_Abs('/project-1/node_modules/package-1'));
+          // Note that only the project-level-entry-point is left.
+          // This is because overriding happens for packages as a whole and there is no attempt to
+          // merge entry-points.
+          expect(config).toEqual({
+            entryPoints:
+                {[_Abs('/project-1/node_modules/package-1/project-level-entry-point')]: {}}
+          });
         });
       });
     });
