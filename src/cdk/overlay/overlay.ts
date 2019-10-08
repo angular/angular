@@ -29,8 +29,8 @@ import {ScrollStrategyOptions} from './scroll/index';
 /** Next overlay unique ID. */
 let nextUniqueId = 0;
 
-// Note that Overlay is *not* scoped to the app root because the ComponentFactoryResolver
-// it needs is different based on where OverlayModule is imported.
+// Note that Overlay is *not* scoped to the app root because the of the ComponentFactoryResolver
+// which needs to be different depending on where OverlayModule is imported.
 
 /**
  * Service to create Overlays. Overlays are dynamically added pieces of floating UI, meant to be
