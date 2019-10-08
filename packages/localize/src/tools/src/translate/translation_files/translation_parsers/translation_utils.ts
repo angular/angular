@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Element, LexerRange, Node, XmlParser} from '@angular/compiler';
-import {I18nError} from './i18n_error';
+import {TranslationParseError} from './translation_parse_error';
 
 export function getAttrOrThrow(element: Element, attrName: string): string {
   const attrValue = getAttribute(element, attrName);
   if (attrValue === undefined) {
-    throw new I18nError(element.sourceSpan, `Missing required "${attrName}" attribute:`);
+    throw new TranslationParseError(
+        element.sourceSpan, `Missing required "${attrName}" attribute:`);
   }
   return attrValue;
 }

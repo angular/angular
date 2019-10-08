@@ -11,7 +11,7 @@ import {extname} from 'path';
 import {TargetMessageRenderer} from '../../../message_renderers/target_message_renderer';
 import {TranslationBundle} from '../../../translator';
 import {BaseVisitor} from '../base_visitor';
-import {I18nError} from '../i18n_error';
+import {TranslationParseError} from '../translation_parse_error';
 import {TranslationParser} from '../translation_parser';
 import {getAttrOrThrow, parseInnerRange} from '../translation_utils';
 import {Xliff1MessageSerializer} from './xliff1_message_serializer';
@@ -75,12 +75,13 @@ class XliffTranslationVisitor extends BaseVisitor {
     if (element.name === 'trans-unit') {
       const id = getAttrOrThrow(element, 'id');
       if (this.translations[id] !== undefined) {
-        throw new I18nError(element.sourceSpan, `Duplicated translations for message "${id}"`);
+        throw new TranslationParseError(
+            element.sourceSpan, `Duplicated translations for message "${id}"`);
       }
 
       const targetMessage = element.children.find(isTargetElement);
       if (targetMessage === undefined) {
-        throw new I18nError(element.sourceSpan, 'Missing required <target> element');
+        throw new TranslationParseError(element.sourceSpan, 'Missing required <target> element');
       }
       this.translations[id] = serializeTargetMessage(targetMessage);
     } else {
