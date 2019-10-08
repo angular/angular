@@ -19,8 +19,8 @@ load(
     "compile_ts",
     "ts_providers_dict_to_struct",
     "tsc_wrapped_tsconfig",
+    "transitive_js_ecma_script_module_info",
 )
-load("@build_bazel_rules_nodejs//:providers.bzl", "transitive_js_ecma_script_module_info")
 
 _FLAT_DTS_FILE_SUFFIX = ".bundle.d.ts"
 _R3_SYMBOLS_DTS_FILE = "src/r3_symbols.d.ts"
