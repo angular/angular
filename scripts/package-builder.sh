@@ -17,16 +17,13 @@ cd "$(dirname "$0")"
 
 # basedir is the workspace root
 readonly base_dir=$(pwd)/..
-# We need to resolve the Bazel binary in the node modules because running Bazel
-# through `yarn bazel` causes additional output that throws off command stdout.
-readonly bazel_bin=$(yarn bin)/bazel
-readonly bin=$(${bazel_bin} info bazel-bin)
+readonly bazel_bin=$(yarn run -s bazel info bazel-bin)
 
 function buildTargetPackages() {
   # List of targets to build, e.g. core, common, compiler, etc. Note that we want to
   # remove all carriage return ("\r") characters form the query output because otherwise
   # the carriage return is part of the bazel target name and bazel will complain.
-  targets=$(${bazel_bin} query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //packages/...) intersect kind(".*_package", //packages/...)' | tr -d "\r")
+  targets=$(yarn run -s bazel query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //packages/...) intersect kind(".*_package", //packages/...)' | tr -d "\r")
 
   # Path to the output directory into which we copy the npm packages.
   dest_path="$1"
@@ -44,7 +41,7 @@ function buildTargetPackages() {
   echo "##################################"
 
   # Use --config=release so that snapshot builds get published with embedded version info
-  echo "$targets" | xargs ${bazel_bin} build --config=release --define=compile=${compile_mode}
+  echo "$targets" | xargs yarn run -s bazel build --config=release --define=compile=${compile_mode}
 
   [[ -d "${base_dir}/${dest_path}" ]] || mkdir -p ${base_dir}/${dest_path}
 
@@ -52,7 +49,7 @@ function buildTargetPackages() {
 
   for pkg in ${dirs}; do
     # Skip any that don't have an "npm_package" target
-    src_dir="${bin}/packages/${pkg}/npm_package"
+    src_dir="${bazel_bin}/packages/${pkg}/npm_package"
     dest_dir="${base_dir}/${dest_path}/${pkg}"
     if [[ -d ${src_dir} ]]; then
       echo "# Copy artifacts to ${dest_dir}"
