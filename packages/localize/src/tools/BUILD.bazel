@@ -34,9 +34,5 @@ npm_package(
     ],
     deps = [
         ":tools",
-        "@npm//@babel/core",
-        "@npm//@babel/types",
-        "@npm//glob",
-        "@npm//yargs",
     ],
 )
