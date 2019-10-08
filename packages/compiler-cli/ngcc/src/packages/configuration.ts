@@ -121,30 +121,35 @@ export class NgccConfiguration {
     this.projectConfig = this.processProjectConfig(baseDir, this.loadProjectConfig(baseDir));
   }
 
-  getConfig(packagePath: AbsoluteFsPath, version: string|undefined): VersionedPackageConfig {
-    const cacheKey = packagePath + (version !== undefined ? `@${version}` : '');
+  /**
+   * Get a configuration for the given `version` of a package at `packagePath`.
+   *
+   * @param packagePath The path to the package whose config we want.
+   * @param version The version of the package whose config we want, or `null` if the package's
+   * package.json did not exist or was invalid.
+   */
+  getConfig(packagePath: AbsoluteFsPath, version: string|null): VersionedPackageConfig {
+    const cacheKey = packagePath + (version !== null ? `@${version}` : '');
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey) !;
     }
 
     const projectLevelConfig =
         findSatisfactoryVersion(this.projectConfig.packages[packagePath], version);
-    if (projectLevelConfig !== undefined) {
+    if (projectLevelConfig !== null) {
       this.cache.set(cacheKey, projectLevelConfig);
       return projectLevelConfig;
     }
 
-    if (version !== undefined) {
-      const packageLevelConfig = this.loadPackageConfig(packagePath, version);
-      if (packageLevelConfig !== undefined) {
-        this.cache.set(cacheKey, packageLevelConfig);
-        return packageLevelConfig;
-      }
+    const packageLevelConfig = this.loadPackageConfig(packagePath, version);
+    if (packageLevelConfig !== null) {
+      this.cache.set(cacheKey, packageLevelConfig);
+      return packageLevelConfig;
     }
 
     const defaultLevelConfig =
         findSatisfactoryVersion(this.defaultConfig.packages[packagePath], version);
-    if (defaultLevelConfig !== undefined) {
+    if (defaultLevelConfig !== null) {
       this.cache.set(cacheKey, defaultLevelConfig);
       return defaultLevelConfig;
     }
@@ -181,20 +186,20 @@ export class NgccConfiguration {
     }
   }
 
-  private loadPackageConfig(packagePath: AbsoluteFsPath, version: string): VersionedPackageConfig
-      |undefined {
+  private loadPackageConfig(packagePath: AbsoluteFsPath, version: string|null):
+      VersionedPackageConfig|null {
     const configFilePath = join(packagePath, NGCC_CONFIG_FILENAME);
     if (this.fs.exists(configFilePath)) {
       try {
         return {
-          versionRange: version,
+          versionRange: version || '*',
           entryPoints: this.processEntryPoints(packagePath, this.evalSrcFile(configFilePath)),
         };
       } catch (e) {
         throw new Error(`Invalid package configuration file at "${configFilePath}": ` + e.message);
       }
     } else {
-      return undefined;
+      return null;
     }
   }
 
@@ -236,13 +241,16 @@ export class NgccConfiguration {
 }
 
 function findSatisfactoryVersion(
-    configs: VersionedPackageConfig[] | undefined,
-    version: string | undefined): VersionedPackageConfig|undefined {
+    configs: VersionedPackageConfig[] | undefined, version: string | null): VersionedPackageConfig|
+    null {
   if (configs === undefined) {
-    return undefined;
+    return null;
   }
-  if (version === undefined) {
+  if (version === null) {
+    // The package has no version (!) - perhaps the entry-point was from a deep import, which made
+    // it impossible to find the package.json.
+    // So just return the first config that matches the package name.
     return configs[0];
   }
-  return configs.find(config => satisfies(version, config.versionRange));
+  return configs.find(config => satisfies(version, config.versionRange)) || null;
 }

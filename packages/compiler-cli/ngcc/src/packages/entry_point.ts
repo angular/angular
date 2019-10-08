@@ -227,14 +227,19 @@ function guessTypingsFromPackageJson(
   return null;
 }
 
-function getPackageVersion(fs: FileSystem, packageJsonPath: AbsoluteFsPath): string|undefined {
+/**
+ * Find the version of the package at `packageJsonPath`.
+ *
+ * @returns the version string or `null` if the package.json does not exist or is invalid.
+ */
+function getPackageVersion(fs: FileSystem, packageJsonPath: AbsoluteFsPath): string|null {
   try {
     if (fs.exists(packageJsonPath)) {
       const packageJson = JSON.parse(fs.readFile(packageJsonPath));
-      return packageJson['version'];
+      return packageJson['version'] || null;
     }
   } catch {
     // Do nothing
   }
-  return undefined;
+  return null;
 }
