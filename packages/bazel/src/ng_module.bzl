@@ -17,9 +17,9 @@ load(
     "TsConfigInfo",
     "collect_node_modules_aspect",
     "compile_ts",
+    "transitive_js_ecma_script_module_info",
     "ts_providers_dict_to_struct",
     "tsc_wrapped_tsconfig",
-    "transitive_js_ecma_script_module_info",
 )
 
 _FLAT_DTS_FILE_SUFFIX = ".bundle.d.ts"

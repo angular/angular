@@ -23,7 +23,7 @@ load(
     _TsConfigInfo = "TsConfigInfo",
 )
 load(
-    "@build_bazel_rules_nodejs//:providers.bzl", 
+    "@build_bazel_rules_nodejs//:providers.bzl",
     _transitive_js_ecma_script_module_info = "transitive_js_ecma_script_module_info",
 )
 
