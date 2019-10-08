@@ -22,6 +22,16 @@ export interface ParsedTranslation {
  */
 export type ParsedTranslations = Record<MessageId, ParsedTranslation>;
 
+export class MissingTranslationError extends Error {
+  private readonly type = 'MissingTranslationError';
+  constructor(readonly parsedMessage: ParsedMessage) {
+    super(`No translation found for ${describeMessage(parsedMessage)}.`);
+  }
+}
+
+export function isMissingTranslationError(e: any): e is MissingTranslationError {
+  return e.type === 'MissingTranslationError';
+}
 
 /**
  * Translate the text of the `$localize` tagged-string (i.e. `messageParts` and
@@ -43,20 +53,19 @@ export function translate(
     substitutions: readonly any[]): [TemplateStringsArray, readonly any[]] {
   const message = parseMessage(messageParts, substitutions);
   const translation = translations[message.messageId];
-  if (translation !== undefined) {
-    return [
-      translation.messageParts, translation.placeholderNames.map(placeholder => {
-        if (message.substitutions.hasOwnProperty(placeholder)) {
-          return message.substitutions[placeholder];
-        } else {
-          throw new Error(
-              `No placeholder found with name ${placeholder} in message ${describeMessage(message)}.`);
-        }
-      })
-    ];
-  } else {
-    throw new Error(`No translation found for ${describeMessage(message)}.`);
+  if (translation === undefined) {
+    throw new MissingTranslationError(message);
   }
+  return [
+    translation.messageParts, translation.placeholderNames.map(placeholder => {
+      if (message.substitutions.hasOwnProperty(placeholder)) {
+        return message.substitutions[placeholder];
+      } else {
+        throw new Error(
+            `No placeholder found with name ${placeholder} in message ${describeMessage(message)}.`);
+      }
+    })
+  ];
 }
 
 /**
@@ -78,6 +87,17 @@ export function parseTranslation(message: TargetMessage): ParsedTranslation {
   const rawMessageParts =
       messageParts.map(part => part.charAt(0) === BLOCK_MARKER ? '\\' + part : part);
   return {messageParts: makeTemplateObject(messageParts, rawMessageParts), placeholderNames};
+}
+
+/**
+ * Create a `ParsedTranslation` from a set of `messageParts` and `placeholderNames`.
+ *
+ * @param messageParts The message parts to appear in the ParsedTranslation.
+ * @param placeholderNames The names of the placeholders to intersperse between the `messageParts`.
+ */
+export function makeParsedTranslation(
+    messageParts: string[], placeholderNames: string[] = []): ParsedTranslation {
+  return {messageParts: makeTemplateObject(messageParts, messageParts), placeholderNames};
 }
 
 /**

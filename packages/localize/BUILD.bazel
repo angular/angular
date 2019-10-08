@@ -12,9 +12,8 @@ ts_library(
     ),
     module_name = "@angular/localize",
     deps = [
-        "//packages/compiler",
         "//packages/localize/src/localize",
-        "@npm//@types/node",
+        "//packages/localize/src/utils",
     ],
 )
 
@@ -27,6 +26,7 @@ ng_package(
     entry_point = ":index.ts",
     packages = [
         "//packages/localize/schematics:npm_package",
+        "//packages/localize/src/tools:npm_package",
     ],
     tags = [
         "release-with-framework",
