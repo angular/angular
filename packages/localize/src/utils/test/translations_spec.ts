@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {TargetMessage, computeMsgId} from '../../src/utils/messages';
-import {ParsedTranslation, makeTemplateObject, parseTranslation, translate} from '../../src/utils/translations';
+import {ParsedTranslation, TargetMessage, computeMsgId, makeTemplateObject, parseTranslation, translate} from '..';
 
 describe('utils', () => {
   describe('makeTemplateObject', () => {

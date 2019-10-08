@@ -1,0 +1,32 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*_spec.ts"],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/localize/src/tools",
+    ],
+)
+
+jasmine_node_test(
+    name = "integration",
+    bootstrap = [
+        "angular/tools/testing/init_node_no_angular_spec.js",
+    ],
+    data = glob(
+        [
+            "locales/**",
+            "test_files/**",
+        ],
+    ),
+    deps = [
+        ":test_lib",
+        "//tools/testing:node_no_angular",
+        "@npm//glob",
+        "@npm//yargs",
+    ],
+)

@@ -74,6 +74,18 @@ export interface ParsedMessage {
    * The meaning of the `message`, used to distinguish identical `messageString`s.
    */
   meaning: string;
+  /**
+   * The description of the `message`, used to aid translation.
+   */
+  description: string;
+  /**
+   * The static parts of the message.
+   */
+  messageParts: string[];
+  /**
+   * The names of the placeholders that will be replaced with substitutions.
+   */
+  placeholderNames: string[];
 }
 
 /**
@@ -85,6 +97,8 @@ export function parseMessage(
     messageParts: TemplateStringsArray, expressions?: readonly any[]): ParsedMessage {
   const substitutions: {[placeholderName: string]: any} = {};
   const metadata = parseMetadata(messageParts[0], messageParts.raw[0]);
+  const cleanedMessageParts: string[] = [metadata.text];
+  const placeholderNames: string[] = [];
   let messageString = metadata.text;
   for (let i = 1; i < messageParts.length; i++) {
     const {text: messagePart, block: placeholderName = computePlaceholderName(i)} =
@@ -93,12 +107,16 @@ export function parseMessage(
     if (expressions !== undefined) {
       substitutions[placeholderName] = expressions[i - 1];
     }
+    placeholderNames.push(placeholderName);
+    cleanedMessageParts.push(messagePart);
   }
   return {
     messageId: metadata.id || computeMsgId(messageString, metadata.meaning || ''),
     substitutions,
     messageString,
     meaning: metadata.meaning || '',
+    description: metadata.description || '',
+    messageParts: cleanedMessageParts, placeholderNames,
   };
 }
 
