@@ -21,7 +21,7 @@ For an existing application, you have to manually add the `RouterModule` and def
 Use the CLI to automatically create the app shell.
 
 <code-example language="bash">
-ng generate app-shell --client-project my-app
+ng generate app-shell
 </code-example>
 
 * `client-project` takes the name of your client application.
