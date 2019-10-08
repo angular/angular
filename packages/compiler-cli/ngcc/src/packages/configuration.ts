@@ -94,7 +94,7 @@ const NGCC_CONFIG_FILENAME = 'ngcc.config.js';
  * There are three levels at which configuration can be declared:
  *
  * * Default level - ngcc comes with built-in configuration for well known cases.
- * * Package level - a library author publishes an configuration with their package to fix known
+ * * Package level - a library author publishes a configuration with their package to fix known
  *   issues.
  * * Project level - the application developer provides a configuration that fixes issues specific
  *   to the libraries used in their application.
