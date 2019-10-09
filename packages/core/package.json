@@ -12,11 +12,9 @@
   "typings": "./core.d.ts",
   "author": "angular",
   "license": "MIT",
-  "dependencies": {
-    "tslib": "^1.9.0"
-  },
   "peerDependencies": {
     "rxjs": "^6.5.3",
+    "tslib": "^1.9.0",
     "zone.js": "~0.10.2"
   },
   "repository": {
