@@ -18,7 +18,7 @@ import {getComponent, getContext, getInjectionTokens, getInjector, getListeners,
 import {INTERPOLATION_DELIMITER, renderStringify} from '../render3/util/misc_utils';
 import {isStylingContext, stylingMapToStringMap} from '../render3/util/styling_utils';
 import {findComponentView} from '../render3/util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
+import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
 import {createProxy} from './proxy';
@@ -494,7 +494,7 @@ function _queryNodeChildrenR3(
     if (isComponentHost(tNode)) {
       // If the element is the host of a component, then all nodes in its view have to be processed.
       // Note: the component's content (tNode.child) will be processed from the insertion points.
-      const componentView = getComponentViewByIndex(tNode.index, lView);
+      const componentView = getComponentLViewByIndex(tNode.index, lView);
       if (componentView && componentView[TVIEW].firstChild) {
         _queryNodeChildrenR3(
             componentView[TVIEW].firstChild !, componentView, predicate, matches, elementsOnly,

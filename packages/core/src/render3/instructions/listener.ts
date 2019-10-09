@@ -16,7 +16,7 @@ import {isDirectiveHost} from '../interfaces/type_checks';
 import {CLEANUP, FLAGS, LView, LViewFlags, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {getLView, getPreviousOrParentTNode} from '../state';
-import {getComponentViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
+import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
 import {getCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
 
 /**
@@ -248,7 +248,7 @@ function wrapListener(
     // In order to be backwards compatible with View Engine, events on component host nodes
     // must also mark the component view itself dirty (i.e. the view that it owns).
     const startView = tNode.flags & TNodeFlags.isComponentHost ?
-        getComponentViewByIndex(tNode.index, lView) :
+        getComponentLViewByIndex(tNode.index, lView) :
         lView;
 
     // See interfaces/view.ts for more on LViewFlags.ManualOnPush
