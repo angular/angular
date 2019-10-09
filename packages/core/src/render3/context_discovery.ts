@@ -14,7 +14,7 @@ import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, HOST, LView, TVIEW} from './interfaces/view';
-import {getComponentViewByIndex, getNativeByTNodeOrNull, readPatchedData, unwrapRNode} from './util/view_utils';
+import {getComponentLViewByIndex, getNativeByTNodeOrNull, readPatchedData, unwrapRNode} from './util/view_utils';
 
 
 
@@ -157,14 +157,14 @@ export function getComponentViewByInstance(componentInstance: {}): LView {
 
   if (Array.isArray(lView)) {
     const nodeIndex = findViaComponent(lView, componentInstance);
-    view = getComponentViewByIndex(nodeIndex, lView);
+    view = getComponentLViewByIndex(nodeIndex, lView);
     const context = createLContext(lView, nodeIndex, view[HOST] as RElement);
     context.component = componentInstance;
     attachPatchData(componentInstance, context);
     attachPatchData(context.native, context);
   } else {
     const context = lView as any as LContext;
-    view = getComponentViewByIndex(context.nodeIndex, context.lView);
+    view = getComponentLViewByIndex(context.nodeIndex, context.lView);
   }
   return view;
 }
@@ -228,13 +228,13 @@ function findViaComponent(lView: LView, componentInstance: {}): number {
   if (componentIndices) {
     for (let i = 0; i < componentIndices.length; i++) {
       const elementComponentIndex = componentIndices[i];
-      const componentView = getComponentViewByIndex(elementComponentIndex, lView);
+      const componentView = getComponentLViewByIndex(elementComponentIndex, lView);
       if (componentView[CONTEXT] === componentInstance) {
         return elementComponentIndex;
       }
     }
   } else {
-    const rootComponentView = getComponentViewByIndex(HEADER_OFFSET, lView);
+    const rootComponentView = getComponentLViewByIndex(HEADER_OFFSET, lView);
     const rootComponent = rootComponentView[CONTEXT];
     if (rootComponent === componentInstance) {
       // we are dealing with the root element here therefore we know that the
