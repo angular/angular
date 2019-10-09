@@ -18,26 +18,26 @@ describe('providers App', () => {
     expect(page.getTitleText()).toEqual('Lazy loading feature modules');
   });
 
-  describe('Customers list', function() {
+  describe('Customers', function() {
     beforeEach(function() {
       customersButton.click();
     });
 
-    it('should show customers list when the button is clicked', function() {
-        let customersMessage = element(by.css('app-customer-list > p'));
-        expect(customersMessage.getText()).toBe('customer-list works!');
+    it('should show customers when the button is clicked', function() {
+        let customersMessage = element(by.css('app-customers > p'));
+        expect(customersMessage.getText()).toBe('customers works!');
     });
 
   });
 
-  describe('Orders list', function() {
+  describe('Orders', function() {
     beforeEach(function() {
       ordersButton.click();
     });
 
-    it('should show orders list when the button is clicked', function() {
-        let ordersMessage = element(by.css('app-order-list > p'));
-        expect(ordersMessage.getText()).toBe('order-list works!');
+    it('should show orders when the button is clicked', function() {
+        let ordersMessage = element(by.css('app-orders > p'));
+        expect(ordersMessage.getText()).toBe('orders works!');
     });
 
   });
