@@ -1708,7 +1708,7 @@ function _flattenGroupPlayersRecur(players: AnimationPlayer[], finalPlayers: Ani
     if (player instanceof AnimationGroupPlayer) {
       _flattenGroupPlayersRecur(player.players, finalPlayers);
     } else {
-      finalPlayers.push(player as AnimationPlayer);
+      finalPlayers.push(player);
     }
   }
 }

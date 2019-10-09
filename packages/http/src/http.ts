@@ -118,7 +118,7 @@ export class Http {
     if (typeof url === 'string') {
       responseObservable = httpRequest(
           this._backend,
-          new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, <string>url)));
+          new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url)));
     } else if (url instanceof Request) {
       responseObservable = httpRequest(this._backend, url);
     } else {
@@ -215,8 +215,7 @@ export class Jsonp extends Http {
   request(url: string|Request, options?: RequestOptionsArgs): Observable<Response> {
     let responseObservable: any;
     if (typeof url === 'string') {
-      url =
-          new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, <string>url));
+      url = new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url));
     }
     if (url instanceof Request) {
       if (url.method !== RequestMethod.Get) {

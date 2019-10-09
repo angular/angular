@@ -88,9 +88,8 @@ class SafeResourceUrlImpl extends SafeValueImpl implements SafeResourceUrl {
 }
 
 export function unwrapSafeValue(value: string | SafeValue): string {
-  return value instanceof SafeValueImpl ?
-      (value as SafeValueImpl).changingThisBreaksApplicationSecurity :
-      (value as string);
+  return value instanceof SafeValueImpl ? value.changingThisBreaksApplicationSecurity :
+                                          value as string;
 }
 
 
@@ -116,8 +115,7 @@ export function allowSanitizationBypassAndThrow(value: any, type: BypassType): b
 }
 
 export function getSanitizationBypassType(value: any): BypassType|null {
-  return value instanceof SafeValueImpl && (value as SafeValueImpl).getTypeName() as BypassType ||
-      null;
+  return value instanceof SafeValueImpl && value.getTypeName() as BypassType || null;
 }
 
 /**

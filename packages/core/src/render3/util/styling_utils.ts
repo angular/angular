@@ -397,7 +397,7 @@ export function normalizeIntoStylingMap(
 
   if (props) {
     for (let i = 0; i < props.length; i++) {
-      const prop = props[i] as string;
+      const prop = props[i];
       const newProp = normalizeProps ? hyphenate(prop) : prop;
       const value = allValuesTrue ? true : map ![prop];
       addItemToStylingMap(stylingMapArr, newProp, value, true);
