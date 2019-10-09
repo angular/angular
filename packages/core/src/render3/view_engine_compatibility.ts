@@ -122,7 +122,7 @@ export function createTemplateRef<T>(
 
         renderView(lView, embeddedTView, context);
 
-        const viewRef = new ViewRef(lView, context, -1);
+        const viewRef = new ViewRef<T>(lView);
         viewRef._tViewNode = lView[T_HOST] as TViewNode;
         return viewRef;
       }
@@ -295,7 +295,7 @@ export function createContainerRef(
 
         const wasDetached =
             view && removeFromArray(this._lContainer[VIEW_REFS] !, adjustedIdx) != null;
-        return wasDetached ? new ViewRef(view !, view ![CONTEXT], -1) : null;
+        return wasDetached ? new ViewRef(view !) : null;
       }
 
       private _adjustIndex(index?: number, shift: number = 0) {
@@ -370,22 +370,27 @@ export function injectChangeDetectorRef(isPipe = false): ViewEngine_ChangeDetect
 /**
  * Creates a ViewRef and stores it on the injector as ChangeDetectorRef (public alias).
  *
- * @param hostTNode The node that is requesting a ChangeDetectorRef
- * @param hostView The view to which the node belongs
+ * @param tNode The node that is requesting a ChangeDetectorRef
+ * @param lView The view to which the node belongs
  * @param isPipe Whether the view is being injected into a pipe.
  * @returns The ChangeDetectorRef to use
  */
-function createViewRef(
-    hostTNode: TNode, hostView: LView, isPipe: boolean): ViewEngine_ChangeDetectorRef {
-  if (isComponentHost(hostTNode) && !isPipe) {
-    const componentIndex = hostTNode.directiveStart;
-    const componentView = getComponentLViewByIndex(hostTNode.index, hostView);
-    return new ViewRef(componentView, null, componentIndex);
+function createViewRef(tNode: TNode, lView: LView, isPipe: boolean): ViewEngine_ChangeDetectorRef {
+  // `isComponentView` will be true for Component and Directives (but not for Pipes).
+  // See https://github.com/angular/angular/pull/33072 for proper fix
+  const isComponentView = !isPipe && isComponentHost(tNode);
+  if (isComponentView) {
+    // The LView represents the location where the component is declared.
+    // Instead we want the LView for the component View and so we need to look it up.
+    const componentView = getComponentLViewByIndex(tNode.index, lView);  // look down
+    return new ViewRef(componentView, componentView);
   } else if (
-      hostTNode.type === TNodeType.Element || hostTNode.type === TNodeType.Container ||
-      hostTNode.type === TNodeType.ElementContainer) {
-    const hostComponentView = findComponentView(hostView);
-    return new ViewRef(hostComponentView, hostComponentView[CONTEXT], -1);
+      tNode.type === TNodeType.Element || tNode.type === TNodeType.Container ||
+      tNode.type === TNodeType.ElementContainer) {
+    // The LView represents the location where the injection is requested from.
+    // We need to locate the containing LView (in case where the `lView` is an embedded view)
+    const hostComponentView = findComponentView(lView);  // look up
+    return new ViewRef(hostComponentView, lView);
   }
   return null !;
 }
