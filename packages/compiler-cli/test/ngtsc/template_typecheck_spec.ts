@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {absoluteFrom as _} from '../../src/ngtsc/file_system';
+import {absoluteFrom as _, getFileSystem} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
 
@@ -365,7 +365,29 @@ export declare class CommonModule {
       `);
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a valid HTML element.`);
+        expect(diags[0].messageText).toBe(`'foo' is not a known element:
+1. If 'foo' is an Angular component, then verify that it is part of this module.
+2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
+      });
+
+      it('should have a descriptive error for unknown elements that contain a dash', () => {
+        env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<my-foo>test</my-foo>',
+        })
+        export class FooCmp {}
+        @NgModule({
+          declarations: [FooCmp],
+        })
+        export class FooModule {}
+      `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(`'my-foo' is not a known element:
+1. If 'my-foo' is an Angular component, then verify that it is part of this module.
+2. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`);
       });
 
       it('should check for unknown properties', () => {
@@ -383,7 +405,27 @@ export declare class CommonModule {
       `);
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a valid property of <div>.`);
+        expect(diags[0].messageText)
+            .toBe(`Can't bind to 'foo' since it isn't a known property of 'div'.`);
+      });
+
+      it('should have a descriptive error for unknown properties with an "ng-" prefix', () => {
+        env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<div [foo]="1">test</div>',
+        })
+        export class FooCmp {}
+        @NgModule({
+          declarations: [FooCmp],
+        })
+        export class FooModule {}
+      `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(`Can't bind to 'foo' since it isn't a known property of 'div'.`);
       });
 
       it('should convert property names when binding special properties', () => {
@@ -423,8 +465,14 @@ export declare class CommonModule {
       `);
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(2);
-           expect(diags[0].messageText).toBe(`'custom-element' is not a valid HTML element.`);
-           expect(diags[1].messageText).toBe(`'foo' is not a valid property of <custom-element>.`);
+           expect(diags[0].messageText).toBe(`'custom-element' is not a known element:
+1. If 'custom-element' is an Angular component, then verify that it is part of this module.
+2. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`);
+           expect(diags[1].messageText)
+               .toBe(`Can't bind to 'foo' since it isn't a known property of 'custom-element'.
+1. If 'custom-element' is an Angular component and it has 'foo' input, then verify that it is part of this module.
+2. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
          });
 
       it('should not produce diagnostics for custom-elements-style elements when using the CUSTOM_ELEMENTS_SCHEMA',
