@@ -22,6 +22,7 @@ import {assertLContainer} from './assert';
 import {NodeInjector, getParentInjectorLocation} from './di';
 import {addToViewTree, createLContainer, createLView, renderView} from './instructions/shared';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from './interfaces/container';
+import {NodeInjectorFactory} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
 import {isComponentHost, isLContainer, isLView, isRootView} from './interfaces/type_checks';
@@ -373,8 +374,15 @@ export function injectChangeDetectorRef(isPipe = false): ViewEngine_ChangeDetect
  */
 function createViewRef(
     hostTNode: TNode, hostView: LView, isPipe: boolean): ViewEngine_ChangeDetectorRef {
-  if (isComponentHost(hostTNode) && !isPipe) {
-    const componentIndex = hostTNode.directiveStart;
+  const componentIndex = hostTNode.directiveStart;
+  let isComponent =
+      isComponentHost(hostTNode) && hostView[componentIndex] instanceof NodeInjectorFactory;
+  if (isComponent) {
+    // This happens when we are trying to inject `ViewRef` into a Component.
+    // In such a case the `isComponentHost` is true && the instance of the component at the
+    // node location is `NodeInjectorFactory` because the component is being created.
+    // Because the component instance is not yet available we need to pass in the index
+    // into the `ViewRef` and have the `ViewRef` look up the instance later.
     const componentView = getComponentViewByIndex(hostTNode.index, hostView);
     return new ViewRef(componentView, null, componentIndex);
   } else if (

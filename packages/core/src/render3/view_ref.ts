@@ -10,6 +10,7 @@ import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
+import {assertDefined} from '../util/assert';
 
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn} from './instructions/shared';
 import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
@@ -49,6 +50,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   }
 
   constructor(_lView: LView, private _context: T|null, private _componentIndex: number) {
+    ngDevMode && assertDefined(_lView, 'LView expected');
     this._lView = _lView;
   }
 
