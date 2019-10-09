@@ -12,14 +12,12 @@
   "typings": "./upgrade.d.ts",
   "author": "angular",
   "license": "MIT",
-  "dependencies": {
-    "tslib": "^1.9.0"
-  },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/compiler": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
-    "@angular/platform-browser-dynamic": "0.0.0-PLACEHOLDER"
+    "@angular/platform-browser-dynamic": "0.0.0-PLACEHOLDER",
+    "tslib": "^1.9.0"
   },
   "repository": {
     "type": "git",

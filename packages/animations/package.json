@@ -12,11 +12,9 @@
   "typings": "./animations.d.ts",
   "author": "angular",
   "license": "MIT",
-  "dependencies": {
-    "tslib": "^1.9.0"
-  },
   "peerDependencies": {
-    "@angular/core": "0.0.0-PLACEHOLDER"
+    "@angular/core": "0.0.0-PLACEHOLDER",
+    "tslib": "^1.9.0"
   },
   "repository": {
     "type": "git",
