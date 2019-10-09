@@ -1,7 +1,0 @@
-enabled: false
-
-branches:
-  - branchName: 7.3.x
-    label: "target: patch"
-  - branchName: 7.x
-    label: "target: minor"
