@@ -45,7 +45,7 @@ export function asyncFallback(fn: Function): (done: any) => any {
       }
       runInTestZone(fn, this, done, (err: any) => {
         if (typeof err === 'string') {
-          return done.fail(new Error(<string>err));
+          return done.fail(new Error(err));
         } else {
           done.fail(err);
         }

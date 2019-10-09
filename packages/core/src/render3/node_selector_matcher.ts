@@ -81,7 +81,7 @@ export function isNodeMatchingSelector(
     const current = selector[i];
     if (typeof current === 'number') {
       // If we finish processing a :not selector and it hasn't failed, return false
-      if (!skipToNextSelector && !isPositive(mode) && !isPositive(current as number)) {
+      if (!skipToNextSelector && !isPositive(mode) && !isPositive(current)) {
         return false;
       }
       // If we are skipping to the next :not() and this mode flag is positive,

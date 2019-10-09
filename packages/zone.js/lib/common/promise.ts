@@ -132,7 +132,7 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
       if (state !== REJECTED && value instanceof ZoneAwarePromise &&
           value.hasOwnProperty(symbolState) && value.hasOwnProperty(symbolValue) &&
           (value as any)[symbolState] !== UNRESOLVED) {
-        clearRejectedNoCatch(<Promise<any>>value as any);
+        clearRejectedNoCatch(value);
         resolvePromise(promise, (value as any)[symbolState], (value as any)[symbolValue]);
       } else if (state !== REJECTED && typeof then === 'function') {
         try {
