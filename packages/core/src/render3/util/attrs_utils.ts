@@ -73,9 +73,8 @@ export function setUpAttributes(renderer: Renderer3, native: RElement, attrs: TA
         }
       } else {
         isProc ?
-            (renderer as ProceduralRenderer3)
-                .setAttribute(native, attrName as string, attrVal as string) :
-            native.setAttribute(attrName as string, attrVal as string);
+            (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal as string) :
+            native.setAttribute(attrName, attrVal as string);
       }
       i++;
     }

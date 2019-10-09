@@ -168,8 +168,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     // Linking
     const link = this.directive.link;
-    const preLink = (typeof link == 'object') && (link as IDirectivePrePost).pre;
-    const postLink = (typeof link == 'object') ? (link as IDirectivePrePost).post : link;
+    const preLink = typeof link == 'object' && link.pre;
+    const postLink = typeof link == 'object' ? link.post : link;
     const attrs: IAttributes = NOT_SUPPORTED;
     const transcludeFn: ITranscludeFunction = NOT_SUPPORTED;
     if (preLink) {
@@ -229,7 +229,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
           `Binding definitions on scope and controller at the same time is not supported.`);
     }
 
-    const context = (btcIsObject) ? directive.bindToController : directive.scope;
+    const context = btcIsObject ? directive.bindToController : directive.scope;
     const bindings = new Bindings();
 
     if (typeof context == 'object') {

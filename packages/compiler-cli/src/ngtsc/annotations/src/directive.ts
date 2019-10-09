@@ -271,7 +271,7 @@ export function extractQueryMetadata(
   } else if (typeof arg === 'string') {
     predicate = [arg];
   } else if (isStringArrayOrDie(arg, '@' + name)) {
-    predicate = arg as string[];
+    predicate = arg;
   } else {
     throw new FatalDiagnosticError(
         ErrorCode.VALUE_HAS_WRONG_TYPE, node, `@${name} predicate cannot be interpreted`);

@@ -624,7 +624,7 @@ function findClassSymbolInContext(type: StaticSymbol, context: TypeContext): ts.
     // This handles a case where an <packageName>/index.d.ts and a <packageName>/<packageName>.d.ts
     // are in the same directory. If we are looking for <packageName>/<packageName> and didn't
     // find it, look for <packageName>/index.d.ts as the program might have found that instead.
-    const p = type.filePath as string;
+    const p = type.filePath;
     const m = p.match(INDEX_PATTERN);
     if (m) {
       const indexVersion = path.join(path.dirname(p), 'index.d.ts');

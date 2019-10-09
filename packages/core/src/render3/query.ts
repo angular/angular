@@ -195,7 +195,7 @@ class TQuery_ implements TQuery {
 
   private matchTNode(tView: TView, tNode: TNode): void {
     if (Array.isArray(this.metadata.predicate)) {
-      const localNames = this.metadata.predicate as string[];
+      const localNames = this.metadata.predicate;
       for (let i = 0; i < localNames.length; i++) {
         this.matchTNodeWithReadOption(tView, tNode, getIdxOfMatchingSelector(tNode, localNames[i]));
       }

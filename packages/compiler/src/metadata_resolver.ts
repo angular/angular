@@ -1012,18 +1012,19 @@ export class CompileMetadataResolver {
           return;
         } else {
           const providersInfo =
-              (<string[]>providers.reduce(
-                   (soFar: string[], seenProvider: any, seenProviderIdx: number) => {
-                     if (seenProviderIdx < providerIdx) {
-                       soFar.push(`${stringifyType(seenProvider)}`);
-                     } else if (seenProviderIdx == providerIdx) {
-                       soFar.push(`?${stringifyType(seenProvider)}?`);
-                     } else if (seenProviderIdx == providerIdx + 1) {
-                       soFar.push('...');
-                     }
-                     return soFar;
-                   },
-                   []))
+              providers
+                  .reduce(
+                      (soFar: string[], seenProvider: any, seenProviderIdx: number) => {
+                        if (seenProviderIdx < providerIdx) {
+                          soFar.push(`${stringifyType(seenProvider)}`);
+                        } else if (seenProviderIdx == providerIdx) {
+                          soFar.push(`?${stringifyType(seenProvider)}?`);
+                        } else if (seenProviderIdx == providerIdx + 1) {
+                          soFar.push('...');
+                        }
+                        return soFar;
+                      },
+                      [])
                   .join(', ');
           this._reportError(
               syntaxError(
