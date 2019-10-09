@@ -43,8 +43,7 @@ function compareSizeEntry(
     actual: DirectorySizeEntry | number, expected: DirectorySizeEntry | number, filePath: string,
     threshold: Threshold) {
   if (typeof actual !== 'number' && typeof expected !== 'number') {
-    return compareDirectorySizeEntry(
-        <DirectorySizeEntry>actual, <DirectorySizeEntry>expected, filePath, threshold);
+    return compareDirectorySizeEntry(actual, expected, filePath, threshold);
   } else {
     return compareActualSizeToExpected(<number>actual, <number>expected, filePath, threshold);
   }

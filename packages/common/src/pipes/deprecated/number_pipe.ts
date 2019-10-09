@@ -50,7 +50,7 @@ function formatNumber(
     }
   }
 
-  return NumberFormatter.format(value as number, locale, style, {
+  return NumberFormatter.format(value, locale, style, {
     minimumIntegerDigits: minInt,
     minimumFractionDigits: minFraction,
     maximumFractionDigits: maxFraction,
