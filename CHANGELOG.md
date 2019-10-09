@@ -1,3 +1,10 @@
+<a name="8.2.10"></a>
+## [8.2.10](https://github.com/angular/angular/compare/8.2.9...8.2.10) (2019-10-09)
+
+This release contains various API docs improvements.
+
+
+
 <a name="8.2.9"></a>
 ## [8.2.9](https://github.com/angular/angular/compare/8.2.8...8.2.9) (2019-10-02)
 
