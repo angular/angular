@@ -11,7 +11,7 @@ import {ParseSourceSpan} from '../parse_util';
 export class Message {
   sources: MessageSpan[];
   id: string = this.customId;
-  /** The id to use if there is no custom id and if `i18nLegacyMessageIdFormat` is true */
+  /** The id to use if there is no custom id and if `i18nLegacyMessageIdFormat` is not empty */
   legacyId?: string = '';
 
   /**

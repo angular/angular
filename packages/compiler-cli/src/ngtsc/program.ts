@@ -509,7 +509,7 @@ export class NgtscProgram implements api.Program {
           this.reflector, evaluator, metaRegistry, this.metaReader !, scopeReader, scopeRegistry,
           this.isCore, this.resourceManager, this.rootDirs,
           this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds !== false,
-          this.options.i18nLegacyMessageIdFormat || '', this.moduleResolver, this.cycleAnalyzer,
+          this.getI18nLegacyMessageFormat(), this.moduleResolver, this.cycleAnalyzer,
           this.refEmitter, this.defaultImportTracker, this.incrementalState),
       new DirectiveDecoratorHandler(
           this.reflector, evaluator, metaRegistry, this.defaultImportTracker, this.isCore),
@@ -527,6 +527,11 @@ export class NgtscProgram implements api.Program {
     return new IvyCompilation(
         handlers, this.reflector, this.importRewriter, this.incrementalState, this.perfRecorder,
         this.sourceToFactorySymbols, scopeRegistry);
+  }
+
+  private getI18nLegacyMessageFormat(): string {
+    return this.options.enableI18nLegacyMessageIdFormat !== false && this.options.i18nInFormat ||
+        '';
   }
 
   private get reflector(): TypeScriptReflectionHost {

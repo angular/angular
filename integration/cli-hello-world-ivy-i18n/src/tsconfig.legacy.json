@@ -2,6 +2,6 @@
   "extends": "./tsconfig.app.json",
   "angularCompilerOptions": {
     "enableIvy": true,
-    "i18nLegacyMessageIdFormat": "xlf"
+    "i18nInFormat": "xlf"
   }
 }
