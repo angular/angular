@@ -16,7 +16,7 @@ import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
 import {addParseSpanInfo, addSourceId, toAbsoluteSpan, wrapForDiagnostics} from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
-import {astToTypescript} from './expression';
+import {NULL_AS_ANY, astToTypescript} from './expression';
 import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateVariable, tsDeclareVariable} from './ts_util';
 
 
@@ -290,11 +290,11 @@ class TcbDirectiveOp extends TcbOp {
   execute(): ts.Identifier {
     const id = this.tcb.allocateId();
     // Process the directive and construct expressions for each of its bindings.
-    const bindings = tcbGetInputBindingExpressions(this.node, this.dir, this.tcb, this.scope);
+    const inputs = tcbGetDirectiveInputs(this.node, this.dir, this.tcb, this.scope);
 
     // Call the type constructor of the directive to infer a type, and assign the directive
     // instance.
-    const typeCtor = tcbCallTypeCtor(this.dir, this.tcb, bindings);
+    const typeCtor = tcbCallTypeCtor(this.dir, this.tcb, inputs);
     addParseSpanInfo(typeCtor, this.node.sourceSpan);
     this.scope.addStatement(tsCreateVariable(id, typeCtor));
     return id;
@@ -774,18 +774,25 @@ function tcbExpression(
  * the directive instance from any bound inputs.
  */
 function tcbCallTypeCtor(
-    dir: TypeCheckableDirectiveMeta, tcb: Context, bindings: TcbBinding[]): ts.Expression {
+    dir: TypeCheckableDirectiveMeta, tcb: Context, inputs: TcbDirectiveInput[]): ts.Expression {
   const typeCtor = tcb.env.typeCtorFor(dir);
 
-  // Construct an array of `ts.PropertyAssignment`s for each input of the directive that has a
-  // matching binding.
-  const members = bindings.map(({field, expression, sourceSpan}) => {
-    if (!tcb.env.config.checkTypeOfInputBindings) {
-      expression = tsCastToAny(expression);
+  // Construct an array of `ts.PropertyAssignment`s for each of the directive's inputs.
+  const members = inputs.map(input => {
+    if (input.type === 'binding') {
+      // For bound inputs, the property is assigned the binding expression.
+      let expression = input.expression;
+      if (!tcb.env.config.checkTypeOfInputBindings) {
+        expression = tsCastToAny(expression);
+      }
+      const assignment = ts.createPropertyAssignment(input.field, wrapForDiagnostics(expression));
+      addParseSpanInfo(assignment, input.sourceSpan);
+      return assignment;
+    } else {
+      // A type constructor is required to be called with all input properties, so any unset
+      // inputs are simply assigned a value of type `any` to ignore them.
+      return ts.createPropertyAssignment(input.field, NULL_AS_ANY);
     }
-    const assignment = ts.createPropertyAssignment(field, wrapForDiagnostics(expression));
-    addParseSpanInfo(assignment, sourceSpan);
-    return assignment;
   });
 
   // Call the `ngTypeCtor` method on the directive class, with an object literal argument created
@@ -796,17 +803,18 @@ function tcbCallTypeCtor(
       /* argumentsArray */[ts.createObjectLiteral(members)]);
 }
 
-interface TcbBinding {
+type TcbDirectiveInput = {
+  type: 'binding'; field: string; expression: ts.Expression; sourceSpan: ParseSourceSpan;
+} |
+{
+  type: 'unset';
   field: string;
-  property: string;
-  expression: ts.Expression;
-  sourceSpan: ParseSourceSpan;
-}
+};
 
-function tcbGetInputBindingExpressions(
+function tcbGetDirectiveInputs(
     el: TmplAstElement | TmplAstTemplate, dir: TypeCheckableDirectiveMeta, tcb: Context,
-    scope: Scope): TcbBinding[] {
-  const bindings: TcbBinding[] = [];
+    scope: Scope): TcbDirectiveInput[] {
+  const directiveInputs: TcbDirectiveInput[] = [];
   // `dir.inputs` is an object map of field names on the directive class to property names.
   // This is backwards from what's needed to match bindings - a map of properties to field names
   // is desired. Invert `dir.inputs` into `propMatch` to create this map.
@@ -817,11 +825,21 @@ function tcbGetInputBindingExpressions(
                                  propMatch.set(inputs[key] as string, key);
   });
 
+  // To determine which of directive's inputs are unset, we keep track of the set of field names
+  // that have not been seen yet. A field is removed from this set once a binding to it is found.
+  const unsetFields = new Set(propMatch.values());
+
   el.inputs.forEach(processAttribute);
   if (el instanceof TmplAstTemplate) {
     el.templateAttrs.forEach(processAttribute);
   }
-  return bindings;
+
+  // Add unset directive inputs for each of the remaining unset fields.
+  for (const field of unsetFields) {
+    directiveInputs.push({type: 'unset', field});
+  }
+
+  return directiveInputs;
 
   /**
    * Add a binding expression to the map for each input/template attribute of the directive that has
@@ -829,12 +847,16 @@ function tcbGetInputBindingExpressions(
    */
   function processAttribute(attr: TmplAstBoundAttribute | TmplAstTextAttribute): void {
     if (attr instanceof TmplAstBoundAttribute && propMatch.has(attr.name)) {
+      const field = propMatch.get(attr.name) !;
+
+      // Remove the field from the set of unseen fields, now that it's been assigned to.
+      unsetFields.delete(field);
+
       // Produce an expression representing the value of the binding.
       const expr = tcbExpression(attr.value, tcb, scope, attr.valueSpan || attr.sourceSpan);
-      // Call the callback.
-      bindings.push({
-        property: attr.name,
-        field: propMatch.get(attr.name) !,
+      directiveInputs.push({
+        type: 'binding',
+        field: field,
         expression: expr,
         sourceSpan: attr.sourceSpan,
       });

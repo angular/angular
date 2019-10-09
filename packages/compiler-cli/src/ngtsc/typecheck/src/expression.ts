@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {TypeCheckingConfig} from './api';
 import {AbsoluteSpan, addParseSpanInfo, wrapForDiagnostics} from './diagnostics';
 
-const NULL_AS_ANY =
+export const NULL_AS_ANY =
     ts.createAsExpression(ts.createNull(), ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
 const UNDEFINED = ts.createIdentifier('undefined');
 

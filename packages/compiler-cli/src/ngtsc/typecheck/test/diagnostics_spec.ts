@@ -33,7 +33,7 @@ runInEachFileSystem(() => {
           }]);
 
       expect(messages).toEqual(
-          [`synthetic.html(1, 10): Type 'string' is not assignable to type 'number | undefined'.`]);
+          [`synthetic.html(1, 10): Type 'string' is not assignable to type 'number'.`]);
     });
 
     it('infers type of template variables', () => {

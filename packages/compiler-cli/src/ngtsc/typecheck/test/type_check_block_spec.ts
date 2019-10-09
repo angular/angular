@@ -67,6 +67,21 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE)).toContain('var _t2 = _t1.$implicit;');
   });
 
+  it('should handle missing property bindings', () => {
+    const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+    const DIRECTIVES: TestDeclaration[] = [{
+      type: 'directive',
+      name: 'Dir',
+      selector: '[dir]',
+      inputs: {
+        fieldA: 'inputA',
+        fieldB: 'inputB',
+      },
+    }];
+    expect(tcb(TEMPLATE, DIRECTIVES))
+        .toContain('var _t2 = Dir.ngTypeCtor({ fieldA: ((ctx).foo), fieldB: (null as any) });');
+  });
+
   it('should generate a forward element reference correctly', () => {
     const TEMPLATE = `
       {{ i.value }}

@@ -123,7 +123,7 @@ export class TypeCheckContext {
     const ops = this.opMap.get(sf) !;
 
     // Push a `TypeCtorOp` into the operation queue for the source file.
-    ops.push(new TypeCtorOp(ref, ctorMeta, this.config));
+    ops.push(new TypeCtorOp(ref, ctorMeta));
   }
 
   /**
@@ -287,7 +287,7 @@ class TcbOp implements Op {
 class TypeCtorOp implements Op {
   constructor(
       readonly ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      readonly meta: TypeCtorMetadata, private config: TypeCheckingConfig) {}
+      readonly meta: TypeCtorMetadata) {}
 
   /**
    * Type constructor operations are inserted immediately before the end of the directive class.
@@ -296,7 +296,7 @@ class TypeCtorOp implements Op {
 
   execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
       string {
-    const tcb = generateInlineTypeCtor(this.ref.node, this.meta, this.config);
+    const tcb = generateInlineTypeCtor(this.ref.node, this.meta);
     return printer.printNode(ts.EmitHint.Unspecified, tcb, sf);
   }
 }
