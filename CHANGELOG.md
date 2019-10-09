@@ -1,3 +1,33 @@
+## 8.2.3 "tinsel-pretzel" (2019-10-08)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **drag-drop:** dragging styles not reset once dragging is… ([#17150](https://github.com/angular/components/issues/17150)) ([4d489f0](https://github.com/angular/components/commit/4d489f0)), closes [#17139](https://github.com/angular/components/issues/17139) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** focus monitor not identifying touch focus inside shadow root ([#17167](https://github.com/angular/components/issues/17167)) ([bacb8df](https://github.com/angular/components/commit/bacb8df)) |
+| bug fix |  **datepicker:** year not formatted in multi-year view button ([#17202](https://github.com/angular/components/issues/17202)) ([13363e6](https://github.com/angular/components/commit/13363e6)), closes [#17187](https://github.com/angular/components/issues/17187) |
+| bug fix |  **overlay:** error when trying to add/remove empty string cla… ([#14919](https://github.com/angular/components/issues/14919)) ([9894ab2](https://github.com/angular/components/commit/9894ab2)) |
+| bug fix |  **select:** highlighted option not updated if value is reset while closed ([#17213](https://github.com/angular/components/issues/17213)) ([d996abd](https://github.com/angular/components/commit/d996abd)), closes [#17212](https://github.com/angular/components/issues/17212) |
+| bug fix |  **stepper:** unable to skip step if completed value is overwritten ([#15403](https://github.com/angular/components/issues/15403)) ([9f497a0](https://github.com/angular/components/commit/9f497a0)), closes [#15310](https://github.com/angular/components/issues/15310) |
+| bug fix |  **tabs:** avoid Ivy template type checking errors in tab link ([#17282](https://github.com/angular/components/issues/17282)) ([cd11ae5](https://github.com/angular/components/commit/cd11ae5)), closes [#17228](https://github.com/angular/components/issues/17228) |
+| bug fix |  **tabs:** avoid template type checking errors with Ivy ([#17228](https://github.com/angular/components/issues/17228)) ([1bfa1ea](https://github.com/angular/components/commit/1bfa1ea)), closes [#17121](https://github.com/angular/components/issues/17121) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-checkbox:** model value not updated through toggle method ([#17229](https://github.com/angular/components/issues/17229)) ([73b086d](https://github.com/angular/components/commit/73b086d)), closes [#11902](https://github.com/angular/components/issues/11902) |
+| bug fix |  **mdc-button:** use state container for button interaction ([#17284](https://github.com/angular/components/issues/17284)) ([070d0a5](https://github.com/angular/components/commit/070d0a5)) |
+| bug fix |  **mdc-button:** add ::after to reflect active styles ([#17283](https://github.com/angular/components/issues/17283)) ([4380179](https://github.com/angular/components/commit/4380179)) |
+| bug fix |  **mdc-slider:** incorrectly rendering extra background ([#17207](https://github.com/angular/components/issues/17207)) ([561c90c](https://github.com/angular/components/commit/561c90c)) |
+
+
 # 9.0.0-next.0 "cardboard-cpu" (2019-10-03)
 
 ### cdk
