@@ -36,7 +36,7 @@ import {NO_CHANGE} from '../tokens';
 import {isAnimationProp} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
 import {getLViewParent} from '../util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
+import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
 
 import {selectIndexInternal} from './advance';
 import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeConstructor, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor, attachLContainerDebug, attachLViewDebug, cloneToLView, cloneToTViewData} from './lview_debug';
@@ -936,7 +936,7 @@ export function elementPropertyInternal<T>(
 /** If node is an OnPush component, marks its LView dirty. */
 function markDirtyIfOnPush(lView: LView, viewIndex: number): void {
   ngDevMode && assertLView(lView);
-  const childComponentLView = getComponentViewByIndex(viewIndex, lView);
+  const childComponentLView = getComponentLViewByIndex(viewIndex, lView);
   if (!(childComponentLView[FLAGS] & LViewFlags.CheckAlways)) {
     childComponentLView[FLAGS] |= LViewFlags.Dirty;
   }
@@ -1185,7 +1185,7 @@ function postProcessDirective<T>(
   }
 
   if (isComponentDef(def)) {
-    const componentView = getComponentViewByIndex(hostTNode.index, lView);
+    const componentView = getComponentLViewByIndex(hostTNode.index, lView);
     componentView[CONTEXT] = directive;
   }
 }
@@ -1502,7 +1502,7 @@ function refreshDynamicEmbeddedViews(lView: LView) {
  */
 function refreshComponent(hostLView: LView, componentHostIdx: number): void {
   ngDevMode && assertEqual(isCreationMode(hostLView), false, 'Should be run in update mode');
-  const componentView = getComponentViewByIndex(componentHostIdx, hostLView);
+  const componentView = getComponentLViewByIndex(componentHostIdx, hostLView);
   // Only attached components that are CheckAlways or OnPush and dirty should be refreshed
   if (viewAttachedToChangeDetector(componentView) &&
       componentView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
@@ -1513,7 +1513,7 @@ function refreshComponent(hostLView: LView, componentHostIdx: number): void {
 
 function renderComponent(hostLView: LView, componentHostIdx: number) {
   ngDevMode && assertEqual(isCreationMode(hostLView), true, 'Should be run in creation mode');
-  const componentView = getComponentViewByIndex(componentHostIdx, hostLView);
+  const componentView = getComponentLViewByIndex(componentHostIdx, hostLView);
   syncViewWithBlueprint(componentView);
   renderView(componentView, componentView[TVIEW], componentView[CONTEXT]);
 }

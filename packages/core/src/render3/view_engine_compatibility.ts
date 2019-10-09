@@ -32,7 +32,7 @@ import {getParentInjectorTNode} from './node_util';
 import {getLView, getPreviousOrParentTNode} from './state';
 import {getParentInjectorView, hasParentInjector} from './util/injector_utils';
 import {findComponentView} from './util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByTNode, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
+import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
 import {ViewRef} from './view_ref';
 
 
@@ -379,7 +379,7 @@ function createViewRef(
     hostTNode: TNode, hostView: LView, isPipe: boolean): ViewEngine_ChangeDetectorRef {
   if (isComponentHost(hostTNode) && !isPipe) {
     const componentIndex = hostTNode.directiveStart;
-    const componentView = getComponentViewByIndex(hostTNode.index, hostView);
+    const componentView = getComponentLViewByIndex(hostTNode.index, hostView);
     return new ViewRef(componentView, null, componentIndex);
   } else if (
       hostTNode.type === TNodeType.Element || hostTNode.type === TNodeType.Container ||
@@ -406,6 +406,6 @@ export function injectRenderer2(): Renderer2 {
   // DI happens before we've entered its view, `getLView` will return the parent view instead.
   const lView = getLView();
   const tNode = getPreviousOrParentTNode();
-  const nodeAtIndex = getComponentViewByIndex(tNode.index, lView);
+  const nodeAtIndex = getComponentLViewByIndex(tNode.index, lView);
   return getOrCreateRenderer2(isLView(nodeAtIndex) ? nodeAtIndex : lView);
 }
