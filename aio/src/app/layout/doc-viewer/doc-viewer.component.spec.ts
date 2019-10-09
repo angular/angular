@@ -47,7 +47,7 @@ describe('DocViewerComponent', () => {
       parentFixture.detectChanges();
     };
 
-    beforeEach(() => renderSpy = spyOn(docViewer, 'render').and.callThrough());
+    beforeEach(() => renderSpy = spyOn(docViewer, 'render').and.returnValue(of(undefined)));
 
     it('should render the new document', () => {
       setCurrentDoc('foo', 'bar');
@@ -87,7 +87,7 @@ describe('DocViewerComponent', () => {
 
   describe('#ngOnDestroy()', () => {
     it('should stop responding to document changes', () => {
-      const renderSpy = spyOn(docViewer, 'render').and.callThrough();
+      const renderSpy = spyOn(docViewer, 'render').and.returnValue(of(undefined));
 
       expect(renderSpy).not.toHaveBeenCalled();
 
@@ -301,8 +301,8 @@ describe('DocViewerComponent', () => {
     beforeEach(() => {
       const elementsLoader = TestBed.inject(ElementsLoader) as Partial<ElementsLoader> as MockElementsLoader;
       loadElementsSpy = elementsLoader.loadContainedCustomElements.and.returnValue(of(undefined));
-      prepareTitleAndTocSpy = spyOn(docViewer, 'prepareTitleAndToc').and.callThrough();
-      swapViewsSpy = spyOn(docViewer, 'swapViews').and.callThrough();
+      prepareTitleAndTocSpy = spyOn(docViewer, 'prepareTitleAndToc');
+      swapViewsSpy = spyOn(docViewer, 'swapViews').and.returnValue(of(undefined));
     });
 
     it('should return an `Observable`', () => {
