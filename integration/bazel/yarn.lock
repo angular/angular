@@ -30,12 +30,12 @@
     rxjs "6.4.0"
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "9.0.0-next.8"
+  version "9.0.0-next.10"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/bazel@file:../../dist/packages-dist/bazel":
-  version "9.0.0-next.9"
+  version "9.0.0-next.10"
   dependencies:
     "@angular-devkit/architect" "^0.800.0-beta.15"
     "@angular-devkit/core" "^8.0.0-beta.15"
@@ -57,12 +57,12 @@
     parse5 "^5.0.0"
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "9.0.0-next.8"
+  version "9.0.0-next.10"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
-  version "9.0.0-next.8"
+  version "9.0.0-next.10"
   dependencies:
     canonical-path "1.0.0"
     chokidar "^2.1.1"
@@ -76,17 +76,17 @@
     yargs "13.1.0"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
-  version "9.0.0-next.8"
+  version "9.0.0-next.10"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "9.0.0-next.8"
+  version "9.0.0-next.10"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/forms@file:../../dist/packages-dist/forms":
-  version "9.0.0-next.8"
+  version "9.0.0-next.10"
   dependencies:
     tslib "^1.9.0"
 
@@ -98,17 +98,17 @@
     tslib "^1.7.1"
 
 "@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
-  version "9.0.0-next.8"
+  version "9.0.0-next.10"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "9.0.0-next.8"
+  version "9.0.0-next.10"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/router@file:../../dist/packages-dist/router":
-  version "9.0.0-next.8"
+  version "9.0.0-next.10"
   dependencies:
     tslib "^1.9.0"
 
@@ -141,10 +141,10 @@
   resolved "https://registry.yarnpkg.com/@bazel/hide-bazel-files/-/hide-bazel-files-0.34.0.tgz#368ea84db2756ff80ead23bb9eb179e9ed24b462"
   integrity sha512-suyO6cZf8iV6W2LkM1X1spWBt7CsRRXH7gU1wYNuAuHYkkfI0A6qj84yPiIXiOt/2G44kbioGyC1bUsI3fKv7A==
 
-"@bazel/karma@0.38.1":
-  version "0.38.1"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.38.1.tgz#7175b2284d21b1a725f24d8ca24577ec7c54c222"
-  integrity sha512-Hz6+7tm70Qv59iX+iryln7WC1GT8R2Jc93zu6EdqlkyVSWbTb6J+pmp3hcBKG+4Y2iAlLk+Czaj8cQu1DRt8GQ==
+"@bazel/karma@0.38.2":
+  version "0.38.2"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.38.2.tgz#13c0eb8f09fdc579ef3a2493d6014d77cdc03670"
+  integrity sha512-pTeHciOyg5ViCCl8Vn5N/wSJSTrxh+26+drlh0GBW8gzUTGIfWDVnma3oA6lLp8zyaCzkpoMP2ukrwBky3nk1Q==
   dependencies:
     jasmine-core "2.8.0"
     karma "~4.1.0"
@@ -158,17 +158,17 @@
     semver "5.6.0"
     tmp "0.0.33"
 
-"@bazel/protractor@0.38.1":
-  version "0.38.1"
-  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-0.38.1.tgz#0785c863254071f6d848d1d78c7ceb47af9ae218"
-  integrity sha512-bAixjddJyGA4OKxkhKIWNH1u5atOm7qCQKTR5GFhEEECuxwabwuyZGDtGzWGKgngCwy7UZitG8BTX2CKU4cknw==
+"@bazel/protractor@0.38.2":
+  version "0.38.2"
+  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-0.38.2.tgz#be0804c246d412f8b285fc22a320ab9b471c7a5d"
+  integrity sha512-bo5v7CpG9TlPX2lx/XueviMt8KY7KDaL7rcw5SR3uU+4w+gX6bTjdnSsVXCUH2YrTTz6VgZaBZO3O0GTbjDP+w==
   dependencies:
     protractor "^5.4.2"
 
-"@bazel/typescript@0.38.1":
-  version "0.38.1"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.38.1.tgz#fe9a84e0992580a4b67cbc48fbe72f9154bacf56"
-  integrity sha512-etTftAm6jN0cdHS9Pgb6fJXgHaot+nRhgr8VjUKZr/ITs31U7iDA/9ehjoVFVbqzJzQy4BfdicbydP+cqXz2Xg==
+"@bazel/typescript@0.38.2":
+  version "0.38.2"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.38.2.tgz#d07e20c910e0e7250ebbdf64f3ef3014ad8e3039"
+  integrity sha512-KATYNcRaF5JxtmEAczpr1CRZwmPSTAWUA/3Ogp8R17SA7ts9P+K8WPr3eml1b9JkiUzmNvERMU8HNEslDMuhvg==
   dependencies:
     protobufjs "6.8.8"
     semver "5.6.0"
