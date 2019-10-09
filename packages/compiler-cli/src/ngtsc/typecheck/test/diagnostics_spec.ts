@@ -150,7 +150,7 @@ runInEachFileSystem(() => {
 
       expect(messages).toEqual([
         `synthetic.html(1, 29): Property 'heihgt' does not exist on type 'TestComponent'. Did you mean 'height'?`,
-        `synthetic.html(1, 6): 'srcc' is not a valid property of <img>.`,
+        `synthetic.html(1, 6): Can't bind to 'srcc' since it isn't a known property of 'img'.`,
       ]);
     });
 

@@ -61,7 +61,7 @@ export interface DomSchemaChecker {
  * Checks non-Angular elements and properties against the `DomElementSchemaRegistry`, a schema
  * maintained by the Angular team via extraction from a browser IDL.
  */
-export class RegistryDomSchemaChecker {
+export class RegistryDomSchemaChecker implements DomSchemaChecker {
   private _diagnostics: ts.Diagnostic[] = [];
 
   get diagnostics(): ReadonlyArray<ts.Diagnostic> { return this._diagnostics; }
@@ -71,9 +71,21 @@ export class RegistryDomSchemaChecker {
   checkElement(id: string, element: TmplAstElement, schemas: SchemaMetadata[]): void {
     if (!REGISTRY.hasElement(element.name, schemas)) {
       const mapping = this.resolver.getSourceMapping(id);
+
+      let errorMsg = `'${element.name}' is not a known element:\n`;
+      errorMsg +=
+          `1. If '${element.name}' is an Angular component, then verify that it is part of this module.\n`;
+      if (element.name.indexOf('-') > -1) {
+        errorMsg +=
+            `2. If '${element.name}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
+      } else {
+        errorMsg +=
+            `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+      }
+
       const diag = makeTemplateDiagnostic(
           mapping, element.sourceSpan, ts.DiagnosticCategory.Error,
-          ErrorCode.SCHEMA_INVALID_ELEMENT, `'${element.name}' is not a valid HTML element.`);
+          ErrorCode.SCHEMA_INVALID_ELEMENT, errorMsg);
       this._diagnostics.push(diag);
     }
   }
@@ -83,9 +95,22 @@ export class RegistryDomSchemaChecker {
       schemas: SchemaMetadata[]): void {
     if (!REGISTRY.hasProperty(element.name, name, schemas)) {
       const mapping = this.resolver.getSourceMapping(id);
+
+      let errorMsg =
+          `Can't bind to '${name}' since it isn't a known property of '${element.name}'.`;
+      if (element.name.startsWith('ng-')) {
+        errorMsg +=
+            `\n1. If '${name}' is an Angular directive, then add 'CommonModule' to the '@NgModule.imports' of this component.` +
+            `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+      } else if (element.name.indexOf('-') > -1) {
+        errorMsg +=
+            `\n1. If '${element.name}' is an Angular component and it has '${name}' input, then verify that it is part of this module.` +
+            `\n2. If '${element.name}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.` +
+            `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+      }
+
       const diag = makeTemplateDiagnostic(
-          mapping, span, ts.DiagnosticCategory.Error, ErrorCode.SCHEMA_INVALID_ATTRIBUTE,
-          `'${name}' is not a valid property of <${element.name}>.`);
+          mapping, span, ts.DiagnosticCategory.Error, ErrorCode.SCHEMA_INVALID_ATTRIBUTE, errorMsg);
       this._diagnostics.push(diag);
     }
   }
