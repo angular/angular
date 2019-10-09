@@ -1,3 +1,60 @@
+<a name="9.0.0-next.10"></a>
+# [9.0.0-next.10](https://github.com/angular/angular/compare/9.0.0-next.9...9.0.0-next.10) (2019-10-09)
+
+
+### Bug Fixes
+
+* **common:** expand type for "ngForOf" input to work with strict null checks ([#31371](https://github.com/angular/angular/issues/31371)) ([c1bb886](https://github.com/angular/angular/commit/c1bb886)), closes [#16373](https://github.com//github.com/angular/components/pull/16373)
+* **core:** ngNoopZone should have the same signature with ngZone ([#32068](https://github.com/angular/angular/issues/32068)) ([3a53e2c](https://github.com/angular/angular/commit/3a53e2c)), closes [#32063](https://github.com/angular/angular/issues/32063)
+* **core:** set migration schematic versions to valid semver versions ([#32991](https://github.com/angular/angular/issues/32991)) ([0119f46](https://github.com/angular/angular/commit/0119f46))
+* **core:** update migration descriptions with links to AIO documentation ([#32991](https://github.com/angular/angular/issues/32991)) ([f8eca84](https://github.com/angular/angular/commit/f8eca84))
+* **ivy:** avoid exposing `ng` with Closure Compiler enhanced optimizations ([#33010](https://github.com/angular/angular/issues/33010)) ([bad3434](https://github.com/angular/angular/commit/bad3434))
+* **ivy:** generate ng-reflect properties for i18n attributes ([#32989](https://github.com/angular/angular/issues/32989)) ([90fb5d9](https://github.com/angular/angular/commit/90fb5d9))
+* **ivy:** i18n - better translation warnings ([#32867](https://github.com/angular/angular/issues/32867)) ([97d5700](https://github.com/angular/angular/commit/97d5700))
+* **ivy:** i18n - do not render message ids unnecessarily ([#32867](https://github.com/angular/angular/issues/32867)) ([9188751](https://github.com/angular/angular/commit/9188751))
+* **ivy:** i18n - support colons in $localize metadata ([#32867](https://github.com/angular/angular/issues/32867)) ([d24ade9](https://github.com/angular/angular/commit/d24ade9))
+* **ivy:** i18n - throw an error if a translation contains an invalid placeholder ([#32867](https://github.com/angular/angular/issues/32867)) ([601f87c](https://github.com/angular/angular/commit/601f87c))
+* **ivy:** missing schematics field in localize package ([#33025](https://github.com/angular/angular/issues/33025)) ([d18289f](https://github.com/angular/angular/commit/d18289f)), closes [#32791](https://github.com/angular/angular/issues/32791)
+* **ivy:** process nested animation metadata ([#32818](https://github.com/angular/angular/issues/32818)) ([c61e4d7](https://github.com/angular/angular/commit/c61e4d7)), closes [#32794](https://github.com/angular/angular/issues/32794)
+* **ivy:** unable to bind style zero ([#32994](https://github.com/angular/angular/issues/32994)) ([3efb060](https://github.com/angular/angular/commit/3efb060)), closes [#32984](https://github.com/angular/angular/issues/32984)
+* **language-service:** create StaticReflector once only ([#32543](https://github.com/angular/angular/issues/32543)) ([adb562b](https://github.com/angular/angular/commit/adb562b))
+
+
+### Code Refactoring
+
+* **core:** remove deprecated Renderer ([#33019](https://github.com/angular/angular/issues/33019)) ([2265cb5](https://github.com/angular/angular/commit/2265cb5))
+
+
+### Features
+
+* **core:** default to dynamic queries ([#32720](https://github.com/angular/angular/issues/32720)) ([7806596](https://github.com/angular/angular/commit/7806596))
+* **core:** make static query flag optional ([#32986](https://github.com/angular/angular/issues/32986)) ([900d005](https://github.com/angular/angular/commit/900d005)), closes [#32686](https://github.com/angular/angular/issues/32686)
+* **forms:** formGroupName and formArrayName also accepts a number ([#32607](https://github.com/angular/angular/issues/32607)) ([fee28e2](https://github.com/angular/angular/commit/fee28e2))
+* **ivy:** i18n - implement compile-time inlining ([#32881](https://github.com/angular/angular/issues/32881)) ([2cdb3a0](https://github.com/angular/angular/commit/2cdb3a0))
+* **ivy:** i18n - render legacy message ids in `$localize` if requested ([#32937](https://github.com/angular/angular/issues/32937)) ([bcbf3e4](https://github.com/angular/angular/commit/bcbf3e4))
+* **language-service:** module definitions on directive hover ([#32763](https://github.com/angular/angular/issues/32763)) ([0d186dd](https://github.com/angular/angular/commit/0d186dd)), closes [#32565](https://github.com/angular/angular/issues/32565)
+* **ngcc:** expose `--create-ivy-entry-points` option on ivy-ngcc ([#33049](https://github.com/angular/angular/issues/33049)) ([b2b917d](https://github.com/angular/angular/commit/b2b917d)), closes [/github.com/angular/angular/pull/32999#issuecomment-539937368](https://github.com//github.com/angular/angular/pull/32999/issues/issuecomment-539937368)
+
+
+### Performance Improvements
+
+* **ivy:** add static attributes to the element_text_create benchmark ([#32997](https://github.com/angular/angular/issues/32997)) ([affae99](https://github.com/angular/angular/commit/affae99))
+* **ivy:** attempt rendering initial styling only if present ([#32979](https://github.com/angular/angular/issues/32979)) ([6004703](https://github.com/angular/angular/commit/6004703))
+* **ivy:** avoid memory allocation in the isAnimationProp check ([#32997](https://github.com/angular/angular/issues/32997)) ([9f0c549](https://github.com/angular/angular/commit/9f0c549))
+* **ivy:** increase number of created views in the element_text_create benchmark ([#32979](https://github.com/angular/angular/issues/32979)) ([8593d0d](https://github.com/angular/angular/commit/8593d0d))
+* **ivy:** limit TNode.inputs reads on first template pass ([#32979](https://github.com/angular/angular/issues/32979)) ([e6881b5](https://github.com/angular/angular/commit/e6881b5))
+* **ivy:** move attributes array into component def ([#32798](https://github.com/angular/angular/issues/32798)) ([d5b87d3](https://github.com/angular/angular/commit/d5b87d3))
+* **language-service:** improve Language service performance ([#32098](https://github.com/angular/angular/issues/32098)) ([65297cd](https://github.com/angular/angular/commit/65297cd))
+
+
+### BREAKING CHANGES
+
+* **core:** The deprecated type `Renderer` has been removed. Use `Renderer2` instead.
+* **core:** The deprecated type `RenderComponentType` has been removed. Use `RendererType2` instead.
+* **core:** The deprecated type `RootRenderer` has been removed. Use `RendererFactory2` instead.
+
+
+
 <a name="8.2.10"></a>
 ## [8.2.10](https://github.com/angular/angular/compare/8.2.9...8.2.10) (2019-10-09)
 
