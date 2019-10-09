@@ -14,9 +14,6 @@ import {resetComponentState} from '../../../../src/render3/state';
 import {createBenchmark} from '../micro_bench';
 import {createAndRenderLView} from '../setup';
 
-const attrs =
-    ['name1', 'value1', 'name2', 'value2', 'name3', 'value3', 'name4', 'value4', 'name5', 'value5'];
-
 `<div>
     <button>0</button>
     <button>1</button>
@@ -33,34 +30,34 @@ const attrs =
 function testTemplate(rf: RenderFlags, ctx: any) {
   if (rf & 1) {
     ɵɵelementStart(0, 'div');
-    ɵɵelementStart(1, 'button', attrs);
+    ɵɵelementStart(1, 'button', 0);
     ɵɵtext(2, '0');
     ɵɵelementEnd();
-    ɵɵelementStart(3, 'button', attrs);
+    ɵɵelementStart(3, 'button', 0);
     ɵɵtext(4, '1');
     ɵɵelementEnd();
-    ɵɵelementStart(5, 'button', attrs);
+    ɵɵelementStart(5, 'button', 0);
     ɵɵtext(6, '2');
     ɵɵelementEnd();
-    ɵɵelementStart(7, 'button', attrs);
+    ɵɵelementStart(7, 'button', 0);
     ɵɵtext(8, '3');
     ɵɵelementEnd();
-    ɵɵelementStart(9, 'button', attrs);
+    ɵɵelementStart(9, 'button', 0);
     ɵɵtext(10, '4');
     ɵɵelementEnd();
-    ɵɵelementStart(11, 'button', attrs);
+    ɵɵelementStart(11, 'button', 0);
     ɵɵtext(12, '5');
     ɵɵelementEnd();
-    ɵɵelementStart(13, 'button', attrs);
+    ɵɵelementStart(13, 'button', 0);
     ɵɵtext(14, '6');
     ɵɵelementEnd();
-    ɵɵelementStart(15, 'button', attrs);
+    ɵɵelementStart(15, 'button', 0);
     ɵɵtext(16, '7');
     ɵɵelementEnd();
-    ɵɵelementStart(17, 'button', attrs);
+    ɵɵelementStart(17, 'button', 0);
     ɵɵtext(18, '8');
     ɵɵelementEnd();
-    ɵɵelementStart(19, 'button', attrs);
+    ɵɵelementStart(19, 'button', 0);
     ɵɵtext(20, '9');
     ɵɵelementEnd();
     ɵɵelementEnd();
@@ -68,7 +65,9 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 }
 
 const viewTNode = createTNode(null !, null, TNodeType.View, -1, null, null) as TViewNode;
-const embeddedTView = createTView(-1, testTemplate, 21, 0, null, null, null, null, null);
+const embeddedTView = createTView(-1, testTemplate, 21, 0, null, null, null, null, [
+  ['name1', 'value1', 'name2', 'value2', 'name3', 'value3', 'name4', 'value4', 'name5', 'value5']
+]);
 
 // initialize global state
 resetComponentState();
