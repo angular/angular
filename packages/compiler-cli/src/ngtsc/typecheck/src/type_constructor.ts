@@ -67,12 +67,19 @@ export function generateTypeCtorDeclarationFn(
  *
  * An inline type constructor for NgFor looks like:
  *
- * static ngTypeCtor<T>(init: Partial<Pick<NgForOf<T>, 'ngForOf'|'ngForTrackBy'|'ngForTemplate'>>):
+ * static ngTypeCtor<T>(init: Pick<NgForOf<T>, 'ngForOf'|'ngForTrackBy'|'ngForTemplate'>):
  *   NgForOf<T>;
  *
  * A typical constructor would be:
  *
- * NgForOf.ngTypeCtor(init: {ngForOf: ['foo', 'bar']}); // Infers a type of NgForOf<string>.
+ * NgForOf.ngTypeCtor(init: {
+ *   ngForOf: ['foo', 'bar'],
+ *   ngForTrackBy: null as any,
+ *   ngForTemplate: null as any,
+ * }); // Infers a type of NgForOf<string>.
+ *
+ * Any inputs declared on the type for which no property binding is present are assigned a value of
+ * type `any`, to avoid producing any type errors for unset inputs.
  *
  * Inline type constructors are used when the type being created has bounded generic types which
  * make writing a declared type constructor (via `generateTypeCtorDeclarationFn`) difficult or
@@ -124,11 +131,10 @@ function constructTypeCtorParameter(
   // initType is the type of 'init', the single argument to the type constructor method.
   // If the Directive has any inputs, outputs, or queries, its initType will be:
   //
-  // Partial<Pick<rawType, 'inputField'|'outputField'|'queryField'>>
+  // Pick<rawType, 'inputField'|'outputField'|'queryField'>
   //
   // Pick here is used to select only those fields from which the generic type parameters of the
-  // directive will be inferred. Partial is used because inputs are optional, so there may not be
-  // bindings for each field.
+  // directive will be inferred.
   //
   // In the special case there are no inputs/outputs/etc, initType is set to {}.
   let initType: ts.TypeNode;
@@ -149,10 +155,7 @@ function constructTypeCtorParameter(
         keys.map(key => ts.createLiteralTypeNode(ts.createStringLiteral(key))));
 
     // Construct the Pick<rawType, keyTypeUnion>.
-    const pickType = ts.createTypeReferenceNode('Pick', [rawType, keyTypeUnion]);
-
-    // Construct the Partial<pickType>.
-    initType = ts.createTypeReferenceNode('Partial', [pickType]);
+    initType = ts.createTypeReferenceNode('Pick', [rawType, keyTypeUnion]);
   }
 
   // Create the 'init' parameter itself.
@@ -187,20 +190,20 @@ export function requiresInlineTypeCtor(node: ClassDeclaration<ts.ClassDeclaratio
  *   ngForOf: T[];
  * }
  *
- * declare function ctor<T>(o: Partial<Pick<NgFor<T>, 'ngForOf'>>): NgFor<T>;
+ * declare function ctor<T>(o: Pick<NgFor<T>, 'ngForOf'|'ngForTrackBy'|'ngForTemplate'>): NgFor<T>;
  * ```
  *
  * An invocation looks like:
  *
  * ```
- * var _t1 = ctor({ngForOf: [1, 2]});
+ * var _t1 = ctor({ngForOf: [1, 2], ngForTrackBy: null as any, ngForTemplate: null as any});
  * ```
  *
  * This correctly infers the type `NgFor<number>` for `_t1`, since `T` is inferred from the
  * assignment of type `number[]` to `ngForOf`'s type `T[]`. However, if `any` is passed instead:
  *
  * ```
- * var _t2 = ctor({ngForOf: [1, 2] as any});
+ * var _t2 = ctor({ngForOf: [1, 2] as any, ngForTrackBy: null as any, ngForTemplate: null as any});
  * ```
  *
  * then inference for `T` fails (it cannot be inferred from `T[] = any`). In this case, `T` takes
@@ -210,7 +213,7 @@ export function requiresInlineTypeCtor(node: ClassDeclaration<ts.ClassDeclaratio
  * default type will be used in the event that inference fails.
  *
  * ```
- * declare function ctor<T = any>(o: Partial<Pick<NgFor<T>, 'ngForOf'>>): NgFor<T>;
+ * declare function ctor<T = any>(o: Pick<NgFor<T>, 'ngForOf'>): NgFor<T>;
  *
  * var _t3 = ctor({ngForOf: [1, 2] as any});
  * ```
