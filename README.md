@@ -27,14 +27,13 @@ and which pieces are blocked) and make a comment.
 Please see our [`help wanted`](https://github.com/angular/components/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
 label for a list of issues where we could use help from the community.
 
-#### High level stuff planned for Q3 2019 (July  - Sept):
-* Creating both test harness infrastructure in `@angular/cdk/testing` and
-individual harnesses for the Angular Material components.
-[See the checkbox harness as an example](https://github.com/angular/components/pull/16334).
+#### High level stuff planned for Q4 2019 (Oct  - Nov):
+* Remove dependency on HammerJS
+* Finish remaining test harnesses for Angular Material components
 * Continuing to create new, API-compatible versions of the Angular Material components backed by
 MDC Web ([see @jelbourn's ng-conf talk](https://youtu.be/4EXQKP-Sihw?t=891)).
-* Rework ng-update schematics to no longer use tslint in order to resolve performance issues.
-* Continued work on switching our build from gulp to bazel.
+* New `@angular/google-maps` package
+* New `@angular/cdk/clipboard` subpackage
 
 
 #### Available features
