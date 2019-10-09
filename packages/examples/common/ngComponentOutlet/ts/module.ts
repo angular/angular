@@ -19,7 +19,7 @@ export class HelloWorld {
   selector: 'ng-component-outlet-simple-example',
   template: `<ng-container *ngComponentOutlet="HelloWorld"></ng-container>`
 })
-export class NgTemplateOutletSimpleExample {
+export class NgComponentOutletSimpleExample {
   // This field is necessary to expose HelloWorld to the template.
   HelloWorld = HelloWorld;
 }
@@ -46,7 +46,7 @@ export class CompleteComponent {
                                       injector: myInjector; 
                                       content: myContent"></ng-container>`
 })
-export class NgTemplateOutletCompleteExample {
+export class NgComponentOutletCompleteExample {
   // This field is necessary to expose CompleteComponent to the template.
   CompleteComponent = CompleteComponent;
   myInjector: Injector;
@@ -73,7 +73,7 @@ export class AppComponent {
 @NgModule({
   imports: [BrowserModule],
   declarations: [
-    AppComponent, NgTemplateOutletSimpleExample, NgTemplateOutletCompleteExample, HelloWorld,
+    AppComponent, NgComponentOutletSimpleExample, NgComponentOutletCompleteExample, HelloWorld,
     CompleteComponent
   ],
   entryComponents: [HelloWorld, CompleteComponent]
