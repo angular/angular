@@ -1,14 +1,17 @@
-# Undecorated classes migration (DI)
-
-This section discusses an Angular version 9 schematic that migrates
-two inheritance patterns that need to be updated to work with Ivy.
+# Undecorated Classes Migration
 
 ## What does this migration do?
 
 This migration adds an empty `@Directive()` decorator to undecorated
-base classes that are extended by either directives or components.
+base classes that:
 
-  Before:
+- use Angular features
+- are extended by directives or components
+
+For example, in the diff below, a `@Directive()` decorator is added to `BaseMenu` because `BaseMenu` uses dependency injection.
+
+
+  **Before:**
   ```ts
   export class BaseMenu {
     constructor(private vcr: ViewContainerRef) {}
@@ -18,7 +21,7 @@ base classes that are extended by either directives or components.
   export class SettingsMenu extends BaseMenu {}
   ```
 
-  After:
+  **After:**
   ```ts
   @Directive()
   export class BaseMenu {
@@ -29,9 +32,9 @@ base classes that are extended by either directives or components.
   export class SettingsMenu extends BaseMenu {}
   ```
 
-The schematic also copies any inherited directive or component metadata to the derived class.
+In the event that a directive or component is extended by a class without a decorator, the schematic copies any inherited directive or component metadata to the derived class.
 
-Before:
+**Before:**
 ```ts
 @Component({
   selector: 'base-menu',
@@ -42,7 +45,7 @@ class BaseMenu {}
 export class SettingsMenu extends BaseMenu {}
 ```
 
-After:
+**After:**
 ```ts
 @Component({
   selector: 'base-menu',
@@ -51,13 +54,54 @@ After:
 class BaseMenu {}
 
 @Component({
-  selector: 'settings-menu',
+  selector: 'base-menu',
   template: '<div></div>'
 })
 export class SettingsMenu extends BaseMenu {}
 ```
+
+This schematic also decorates classes that use Angular field decorators, including:
+- `@Input()`
+- `@Output()`
+- `@HostBinding()`
+- `@HostListener()`
+- `@ViewChild()` / `@ViewChildren()`
+- `@ContentChild()` / `@ContentChildren()`
+
+
+**Before:**
+```ts
+class Base {
+  @Output()
+  countChanged = new EventEmitter<number>();
+}
+
+@Directive({
+  selector: '[myDir]'
+})
+class Dir extends Base {
+}
+```
+
+**After:**
+```ts
+@Directive() // schematic adds @Directive()
+class Base {
+  @Output()
+  countChanged = new EventEmitter<number>();
+}
+
+@Directive({
+  selector: '[myDir]'
+})
+class Dir extends Base {
+}
+```
+
 
 ## Why is this migration necessary?
+
+### Migrating classes that use DI
 
 When a class has a `@Directive()` or `@Component()` decorator,
 the Angular compiler generates extra code to inject dependencies into
@@ -66,11 +110,11 @@ and the child class to apply a decorator to generate the correct code.
 
 You can think of this change as two cases: a parent class is missing a
 decorator or a child class is missing a decorator. In both scenarios,
-Angular's run-time needs additional information from the compiler.
+Angular's runtime needs additional information from the compiler.
 This additional information comes from adding decorators.
 
 
-### Decorator missing from parent class
+#### Decorator missing from parent class
 
 When the decorator is missing from the parent class,
 the subclass will inherit a constructor from a class for
@@ -91,7 +135,7 @@ provides this information.
 In the future, add `@Directive()` to base classes that
 do not already have decorators and are extended by directives.
 
-### Decorator missing from child class
+#### Decorator missing from child class
 
 When the child class is missing the decorator, the
 child class inherits from the
@@ -99,6 +143,37 @@ parent class yet has no decorators of its own.
 Without a decorator, the compiler has no way of knowing
 that the class is a `@Directive` or `@Component`, so
 it doesn't generate the proper instructions for the directive.
+
+
+### Migrating classes that use field decorators
+
+In ViewEngine, base classes with field decorators like `@Input()` worked
+even when the class did not have a `@Directive()` or `@Component()` decorator.
+For example:
+
+```ts
+class Base {
+  @Input()
+  foo: string;
+}
+
+@Directive(...)
+class Dir extends Base {
+  ngOnChanges(): void {
+    // notified when bindings to [foo] are updated
+  }
+}
+```
+
+However, this example won't compile with Ivy because the `Base` class
+_requires_ either a `@Directive()` or `@Component()` decorator to generate
+code for inputs, outputs, queries, and host bindings.
+
+Always requiring a class decorator leads to two main benefits for Angular:
+
+1. The previous behavior was inconsistent. Some Angular features required a decorator (dependency injection), but others did not. Now, all Angular features consistently require a class decorator.
+
+1. Supporting undecorated classes increases the code size and complexity of Angular. Always requiring class decorators allows the framework to become smaller and simpler for all users.
 
 
 ## What does it mean to have a `@Directive()` decorator with no metadata inside of it?
@@ -129,10 +204,13 @@ Classes that don't use Angular features don't need an Angular decorator.
 
 ## I'm a library author. Should I add the `@Directive()` decorator to base classes?
 
-
 As support for selectorless decorators is introduced in
 Angular version 9, if you want to support Angular version 8 and earlier, you
 shouldn't add a selectorless `@Directive()` decorator.
 You can either add `@Directive()` with a selector or
-add an explicit constructor to affected subclasses.
+move the Angular-specific features to affected subclasses.
+
+## What about applications using non-migrated libraries?
+
+`ngcc` should transform any non-migrated libraries to generate the proper code.
 
