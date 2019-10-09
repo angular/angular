@@ -336,12 +336,10 @@ export declare class CommonModule {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
-      expect(diags[0].messageText)
-          .toBe(`Type 'number' is not assignable to type 'string | undefined'.`);
+      expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
       expect(diags[0].start).toEqual(386);
       expect(diags[0].length).toEqual(14);
-      expect(diags[1].messageText)
-          .toBe(`Type 'number' is not assignable to type 'boolean | undefined'.`);
+      expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
       expect(diags[1].start).toEqual(401);
       expect(diags[1].length).toEqual(15);
     });
