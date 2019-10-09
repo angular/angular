@@ -13,7 +13,7 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEn
 
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn} from './instructions/shared';
 import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
-import {FLAGS, HOST, LView, LViewFlags, T_HOST} from './interfaces/view';
+import {CONTEXT, FLAGS, HOST, LView, LViewFlags, T_HOST} from './interfaces/view';
 import {destroyLView, renderDetachView} from './node_manipulation';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
 import {getNativeByTNode, getNativeByTNodeOrNull} from './util/view_utils';
@@ -35,11 +35,6 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    */
   public _tViewNode: TViewNode|null = null;
 
-  /**
-   * @internal
-   */
-  public _lView: LView;
-
   get rootNodes(): any[] {
     if (this._lView[HOST] == null) {
       const tView = this._lView[T_HOST] as TViewNode;
@@ -48,11 +43,29 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
     return [];
   }
 
-  constructor(_lView: LView, private _context: T|null, private _componentIndex: number) {
-    this._lView = _lView;
-  }
+  constructor(
+      /**
+       * This represents `LView` associated with the component when ViewRef is a ChangeDetectorRef.
+       *
+       * When ViewRef is created for a dynamic component, this also represents the `LView` for the
+       * component.
+       *
+       * For a "regular" ViewRef created for an embedded view, this is the `LView` for the embedded
+       * view.
+       *
+       * @internal
+       */
+      public _lView: LView,
 
-  get context(): T { return this._context ? this._context : this._lookUpContext(); }
+      /**
+       * This represents the `LView` associated with the point where `ChangeDetectorRef` was
+       * requested.
+       *
+       * This may be different from `_lView` if the `_cdRefInjectingView` is an embedded view.
+       */
+      private _cdRefInjectingView?: LView) {}
+
+  get context(): T { return this._lView[CONTEXT] as T; }
 
   get destroyed(): boolean {
     return (this._lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
@@ -109,7 +122,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * }
    * ```
    */
-  markForCheck(): void { markViewDirty(this._lView); }
+  markForCheck(): void { markViewDirty(this._cdRefInjectingView || this._lView); }
 
   /**
    * Detaches the view from the change detection tree.
@@ -273,15 +286,11 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
     }
     this._appRef = appRef;
   }
-
-  private _lookUpContext(): T {
-    return this._context = getLViewParent(this._lView) ![this._componentIndex] as T;
-  }
 }
 
 /** @internal */
 export class RootViewRef<T> extends ViewRef<T> {
-  constructor(public _view: LView) { super(_view, null, -1); }
+  constructor(public _view: LView) { super(_view); }
 
   detectChanges(): void { detectChangesInRootView(this._view); }
 
