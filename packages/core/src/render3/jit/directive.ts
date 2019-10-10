@@ -18,7 +18,7 @@ import {ViewEncapsulation} from '../../metadata/view';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {getBaseDef, getComponentDef, getDirectiveDef} from '../definition';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
-import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_FACTORY_DEF} from '../fields';
+import {NG_BASE_DEF, NG_COMP_DEF, NG_DIRECTIVE_DEF, NG_FACTORY_DEF} from '../fields';
 import {ComponentType} from '../interfaces/definition';
 import {stringifyForError} from '../util/misc_utils';
 
@@ -29,11 +29,11 @@ import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, tra
 
 /**
  * Compile an Angular component according to its decorator metadata, and patch the resulting
- * ngComponentDef onto the component type.
+ * component def (ɵcmp) onto the component type.
  *
  * Compilation may be asynchronous (due to the need to resolve URLs for the component template or
  * other resources, for example). In the event that compilation is not immediate, `compileComponent`
- * will enqueue resource resolution into a global queue and will fail to return the `ngComponentDef`
+ * will enqueue resource resolution into a global queue and will fail to return the `ɵcmp`
  * until the global queue has been resolved with a call to `resolveComponentResources`.
  */
 export function compileComponent(type: Type<any>, metadata: Component): void {
@@ -51,7 +51,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
   // because we'd have to resolve the asynchronous templates.
   addDirectiveFactoryDef(type, metadata);
 
-  Object.defineProperty(type, NG_COMPONENT_DEF, {
+  Object.defineProperty(type, NG_COMP_DEF, {
     get: () => {
       if (ngComponentDef === null) {
         const compiler = getCompilerFacade();

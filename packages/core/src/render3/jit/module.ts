@@ -16,7 +16,7 @@ import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} fr
 import {deepForEach, flatten} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
-import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
+import {NG_COMP_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {NgModuleType} from '../ng_module_ref';
 import {maybeUnwrapFn, stringifyForError} from '../util/misc_utils';
@@ -373,7 +373,7 @@ function computeCombinedExports(type: Type<any>): Type<any>[] {
 
 /**
  * Some declared components may be compiled asynchronously, and thus may not have their
- * ngComponentDef set yet. If this is the case, then a reference to the module is written into
+ * ɵcmp set yet. If this is the case, then a reference to the module is written into
  * the `ngSelectorScope` property of the declared type.
  */
 function setScopeOnDeclaredComponents(moduleType: Type<any>, ngModule: NgModule) {
@@ -382,9 +382,9 @@ function setScopeOnDeclaredComponents(moduleType: Type<any>, ngModule: NgModule)
   const transitiveScopes = transitiveScopesFor(moduleType);
 
   declarations.forEach(declaration => {
-    if (declaration.hasOwnProperty(NG_COMPONENT_DEF)) {
-      // An `ngComponentDef` field exists - go ahead and patch the component directly.
-      const component = declaration as Type<any>& {ngComponentDef: ComponentDef<any>};
+    if (declaration.hasOwnProperty(NG_COMP_DEF)) {
+      // A `ɵcmp` field exists - go ahead and patch the component directly.
+      const component = declaration as Type<any>& {ɵcmp: ComponentDef<any>};
       const componentDef = getComponentDef(component) !;
       patchComponentDefWithScope(componentDef, transitiveScopes);
     } else if (
@@ -404,8 +404,8 @@ export function patchComponentDefWithScope<C>(
   componentDef.directiveDefs = () =>
       Array.from(transitiveScopes.compilation.directives)
           .map(
-              dir => dir.hasOwnProperty(NG_COMPONENT_DEF) ? getComponentDef(dir) ! :
-                                                            getDirectiveDef(dir) !)
+              dir =>
+                  dir.hasOwnProperty(NG_COMP_DEF) ? getComponentDef(dir) ! : getDirectiveDef(dir) !)
           .filter(def => !!def);
   componentDef.pipeDefs = () =>
       Array.from(transitiveScopes.compilation.pipes).map(pipe => getPipeDef(pipe) !);
@@ -455,7 +455,7 @@ export function transitiveScopesFor<T>(
     if (getPipeDef(declaredWithDefs)) {
       scopes.compilation.pipes.add(declared);
     } else {
-      // Either declared has an ngComponentDef or ngDirectiveDef, or it's a component which hasn't
+      // Either declared has a ɵcmp or ngDirectiveDef, or it's a component which hasn't
       // had its template compiled yet. In either case, it gets added to the compilation's
       // directives.
       scopes.compilation.directives.add(declared);
@@ -486,14 +486,14 @@ export function transitiveScopesFor<T>(
   maybeUnwrapFn(def.exports).forEach(<E>(exported: Type<E>) => {
     const exportedType = exported as Type<E>& {
       // Components, Directives, NgModules, and Pipes can all be exported.
-      ngComponentDef?: any;
+      ɵcmp?: any;
       ngDirectiveDef?: any;
       ngModuleDef?: NgModuleDef<E>;
       ngPipeDef?: any;
     };
 
-    // Either the type is a module, a pipe, or a component/directive (which may not have an
-    // ngComponentDef as it might be compiled asynchronously).
+    // Either the type is a module, a pipe, or a component/directive (which may not have a
+    // ɵcmp as it might be compiled asynchronously).
     if (isNgModule(exportedType)) {
       // When this module exports another, the exported module's exported directives and pipes are
       // added to both the compilation and exported scopes of this module.

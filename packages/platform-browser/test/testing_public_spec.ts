@@ -781,7 +781,7 @@ const bTok = new InjectionToken<string>('b');
 
           it('should use set up providers', fakeAsync(() => {
                // Keeping this component inside the test is needed to make sure it's not resolved
-               // prior to this test, thus having ngComponentDef and a reference in resource
+               // prior to this test, thus having ɵcmp and a reference in resource
                // resolution queue. This is done to check external resoution logic in isolation by
                // configuring TestBed with the necessary ResourceLoader instance.
                @Component({

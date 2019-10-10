@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {ApplicationInitStatus, COMPILER_OPTIONS, Compiler, Component, Directive, Injector, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, Type, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵNG_COMPONENT_DEF as NG_COMPONENT_DEF, ɵNG_DIRECTIVE_DEF as NG_DIRECTIVE_DEF, ɵNG_INJECTOR_DEF as NG_INJECTOR_DEF, ɵNG_MODULE_DEF as NG_MODULE_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDef as InjectableDef} from '@angular/core';
+import {ApplicationInitStatus, COMPILER_OPTIONS, Compiler, Component, Directive, Injector, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, Type, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIRECTIVE_DEF as NG_DIRECTIVE_DEF, ɵNG_INJECTOR_DEF as NG_INJECTOR_DEF, ɵNG_MODULE_DEF as NG_MODULE_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDef as InjectableDef} from '@angular/core';
 import {ModuleRegistrationMap, getRegisteredModulesState, restoreRegisteredModulesState} from '../../src/linker/ng_module_factory_registration';
 
 import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
@@ -175,7 +175,7 @@ export class R3TestBedCompiler {
   }
 
   overrideTemplateUsingTestingModule(type: Type<any>, template: string): void {
-    const def = (type as any)[NG_COMPONENT_DEF];
+    const def = (type as any)[NG_COMP_DEF];
     const hasStyleUrls = (): boolean => {
       const metadata = this.resolvers.component.resolve(type) !as Component;
       return !!metadata.styleUrls && metadata.styleUrls.length > 0;
@@ -229,7 +229,7 @@ export class R3TestBedCompiler {
 
     this.applyProviderOverrides();
 
-    // Patch previously stored `styles` Component values (taken from ngComponentDef), in case these
+    // Patch previously stored `styles` Component values (taken from ɵcmp), in case these
     // Components have `styleUrls` fields defined and template override was requested.
     this.patchComponentsWithExistingStyles();
 
@@ -286,7 +286,7 @@ export class R3TestBedCompiler {
    */
   _getComponentFactories(moduleType: NgModuleType): ComponentFactory<any>[] {
     return maybeUnwrapFn(moduleType.ngModuleDef.declarations).reduce((factories, declaration) => {
-      const componentDef = (declaration as any).ngComponentDef;
+      const componentDef = (declaration as any).ɵcmp;
       componentDef && factories.push(new ComponentFactory(componentDef, this.testModuleRef !));
       return factories;
     }, [] as ComponentFactory<any>[]);
@@ -298,7 +298,7 @@ export class R3TestBedCompiler {
     this.pendingComponents.forEach(declaration => {
       needsAsyncResources = needsAsyncResources || isComponentDefPendingResolution(declaration);
       const metadata = this.resolvers.component.resolve(declaration) !;
-      this.maybeStoreNgDef(NG_COMPONENT_DEF, declaration);
+      this.maybeStoreNgDef(NG_COMP_DEF, declaration);
       compileComponent(declaration, metadata);
     });
     this.pendingComponents.clear();
@@ -333,9 +333,9 @@ export class R3TestBedCompiler {
 
     this.componentToModuleScope.forEach((moduleType, componentType) => {
       const moduleScope = getScopeOfModule(moduleType);
-      this.storeFieldOfDefOnType(componentType, NG_COMPONENT_DEF, 'directiveDefs');
-      this.storeFieldOfDefOnType(componentType, NG_COMPONENT_DEF, 'pipeDefs');
-      patchComponentDefWithScope((componentType as any).ngComponentDef, moduleScope);
+      this.storeFieldOfDefOnType(componentType, NG_COMP_DEF, 'directiveDefs');
+      this.storeFieldOfDefOnType(componentType, NG_COMP_DEF, 'pipeDefs');
+      patchComponentDefWithScope((componentType as any).ɵcmp, moduleScope);
     });
 
     this.componentToModuleScope.clear();
@@ -343,14 +343,13 @@ export class R3TestBedCompiler {
 
   private applyProviderOverrides(): void {
     const maybeApplyOverrides = (field: string) => (type: Type<any>) => {
-      const resolver =
-          field === NG_COMPONENT_DEF ? this.resolvers.component : this.resolvers.directive;
+      const resolver = field === NG_COMP_DEF ? this.resolvers.component : this.resolvers.directive;
       const metadata = resolver.resolve(type) !;
       if (this.hasProviderOverrides(metadata.providers)) {
         this.patchDefWithProviderOverrides(type, field);
       }
     };
-    this.seenComponents.forEach(maybeApplyOverrides(NG_COMPONENT_DEF));
+    this.seenComponents.forEach(maybeApplyOverrides(NG_COMP_DEF));
     this.seenDirectives.forEach(maybeApplyOverrides(NG_DIRECTIVE_DEF));
 
     this.seenComponents.clear();
@@ -390,7 +389,7 @@ export class R3TestBedCompiler {
 
   private patchComponentsWithExistingStyles(): void {
     this.existingComponentStyles.forEach(
-        (styles, type) => (type as any)[NG_COMPONENT_DEF].styles = styles);
+        (styles, type) => (type as any)[NG_COMP_DEF].styles = styles);
     this.existingComponentStyles.clear();
   }
 
@@ -419,10 +418,10 @@ export class R3TestBedCompiler {
   private queueType(type: Type<any>, moduleType: Type<any>|TestingModuleOverride): void {
     const component = this.resolvers.component.resolve(type);
     if (component) {
-      // Check whether a give Type has respective NG def (ngComponentDef) and compile if def is
+      // Check whether a give Type has respective NG def (ɵcmp) and compile if def is
       // missing. That might happen in case a class without any Angular decorators extends another
       // class where Component/Directive/Pipe decorator is defined.
-      if (isComponentDefPendingResolution(type) || !type.hasOwnProperty(NG_COMPONENT_DEF)) {
+      if (isComponentDefPendingResolution(type) || !type.hasOwnProperty(NG_COMP_DEF)) {
         this.pendingComponents.add(type);
       }
       this.seenComponents.add(type);
@@ -530,7 +529,7 @@ export class R3TestBedCompiler {
             // on objects they were applied to. In this particular case, situations where this code
             // is invoked should be quite rare to cause any noticeable impact, since it's applied
             // only to some test cases (for example when class with no annotations extends some
-            // @Component) when we need to clear 'ngComponentDef' field on a given class to restore
+            // @Component) when we need to clear 'ɵcmp' field on a given class to restore
             // its original state (before applying overrides and running tests).
             delete (type as any)[prop];
           } else {

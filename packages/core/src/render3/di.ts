@@ -256,7 +256,7 @@ export function diPublicInInjector(
  *
  * Then factory method generated is:
  * ```
- * MyComponent.ngComponentDef = defineComponent({
+ * MyComponent.ɵcmp = defineComponent({
  *   factory: () => new MyComponent(injectAttribute('title'))
  *   ...
  * })

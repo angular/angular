@@ -56,7 +56,7 @@ describe('lifecycles', () => {
         }
 
         static ngFactoryDef = () => new Component();
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵcmp = ɵɵdefineComponent({
           type: Component,
           selectors: [[name]],
           decls: decls,
