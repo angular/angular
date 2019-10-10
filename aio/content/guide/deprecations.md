@@ -41,8 +41,6 @@ v8 - v11
 | `@angular/core` | [`ReflectiveKey`](#core) | <!--v8--> v9 |
 | `@angular/core` | [`RenderComponentType`](#core) | <!--v7--> v9 |
 | `@angular/core` | [`ViewEncapsulation.Native`](#core) | v9 |
-| `@angular/forms` | [`ngForm` element selector](#ngform) | v9 |
-| `@angular/forms` | [`NgFormSelectorWarning`](#forms) | v9 |
 | `@angular/forms` | [`ngModel` with reactive forms](#ngmodel-reactive) | v9 |
 | `@angular/router` | [`preserveQueryParams`](#router) | <!--v7--> v9 |
 | `@angular/upgrade` | [`@angular/upgrade`](#upgrade) | <!--v8--> v9 |
@@ -107,7 +105,6 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
-| [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) | n/a | v6 | See [ngForm](#ngform). |
 
 {@a router}
 ### @angular/router
@@ -174,27 +171,6 @@ For more information, see [/deep/, >>>, and ::ng-deep](guide/component-styles#de
 
 The `<template>` tag was deprecated in v4 to avoid colliding with the DOM's element of the same name (such as when using web components). Use `<ng-template>` instead. For more information, see the [Ahead-of-Time Compilation](guide/angular-compiler-options#enablelegacytemplate) guide.
 
-
-
-{@a ngform}
-### ngForm element selector
-
-Support for using `ngForm` element selector was deprecated in v6.
-It has been deprecated to be consistent with other core Angular selectors, which are typically written in kebab-case.
-
-Deprecated:
-
-```
-<ngForm #myForm="ngForm">
-```
-
-Replacement:
-
-```
-<ng-form #myForm="ngForm">
-```
-
-The [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) directive is solely used to display warnings when the deprecated `ngForm` selector is used.
 
 
 {@a ngmodel-reactive}
@@ -405,9 +381,17 @@ The following APIs have been removed starting with version 8.0.0:
 | `@angular/core/testing` | [`TestBed.deprecatedOverrideProvider()`](https://v7.angular.io/api/core/testing/TestBed#deprecatedoverrideprovider) | [`TestBed.overrideProvider()`](api/core/testing/TestBed#overrideprovider) | none |
 | `@angular/core/testing` | [`TestBedStatic.deprecatedOverrideProvider()`](https://v7.angular.io/api/core/testing/TestBedStatic#deprecatedoverrideprovider) | [`TestBedStatic.overrideProvider()`](api/core/testing/TestBedStatic#overrideprovider) | none |
 | `@angular/service-worker` | `versionedFiles` | `files` | In the service worker configuration file `ngsw-config.json`, replace `versionedFiles` with `files`. See [Service Worker Configuration](guide/service-worker-config#assetgroups). |
-| `@angular/core` | [`Renderer`](https://v8.angular.io/api/core/Renderer) | [`Renderer2`](https://angular.io/api/core/Renderer2) | [Migration guide.](guide/migration-renderer)
-| `@angular/core` | [`RootRenderer`](https://v8.angular.io/api/core/RootRenderer) | [`RendererFactory2`](https://angular.io/api/core/RendererFactory2) | none
-| `@angular/core` | [`RenderComponentType`](https://v8.angular.io/api/core/RenderComponentType) | [`RendererType2`](https://angular.io/api/core/RendererType2) | none
+
+
+The following APIs have been removed starting with version 9.0.0:
+
+| Package | API            | Replacement | Notes |
+| ------- | -------------- | ----------- | ----- |
+| `@angular/core`  | [`Renderer`](https://v8.angular.io/api/core/Renderer) | [`Renderer2`](https://angular.io/api/core/Renderer2) | [Migration guide.](guide/migration-renderer)
+| `@angular/core`  | [`RootRenderer`](https://v8.angular.io/api/core/RootRenderer) | [`RendererFactory2`](https://angular.io/api/core/RendererFactory2) | none
+| `@angular/core`  | [`RenderComponentType`](https://v8.angular.io/api/core/RenderComponentType) | [`RendererType2`](https://angular.io/api/core/RendererType2) | none
+| `@angular/forms` | [`NgFormSelectorWarning`](https://v8.angular.io/api/forms/NgFormSelectorWarning) | none | none
+| `@angular/forms` | `ngForm` element selector | `ng-form` element selector | none
 
 
 <!-- The following anchor is used by redirects from the removed API pages. Do not change or remove. -->
