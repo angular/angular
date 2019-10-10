@@ -2,11 +2,11 @@ workspace(name = "angular_material")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# Add NodeJS rules (explicitly used for sass bundle rules)
+# Add NodeJS rules
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "1249a60f88e4c0a46d78de06be04d3d41e7421dcfa0c956de65309a7b7ecf6f4",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.38.0/rules_nodejs-0.38.0.tar.gz"],
+    sha256 = "1447312c8570e8916da0f5f415186e7098cdd4ce48e04b8e864f793c766959c3",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.38.2/rules_nodejs-0.38.2.tar.gz"],
 )
 
 # Add sass rules
@@ -39,7 +39,7 @@ yarn_install(
     # are executed in the Bazel sandbox.
     data = [
         "//:angular-tsconfig.json",
-        "//:tools/bazel/angular_bazel_0.38.0.patch",
+        "//:tools/bazel/angular_bazel_0.38.2.patch",
         "//:tools/bazel/flat_module_factory_resolution.patch",
         "//:tools/bazel/manifest_externs_hermeticity.patch",
         "//:tools/bazel/postinstall-patches.js",

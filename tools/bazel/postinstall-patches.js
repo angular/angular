@@ -101,9 +101,9 @@ shelljs.cat(path.join(__dirname, './manifest_externs_hermeticity.patch')).exec('
 
 // Patches https://github.com/angular/angular/pull/32889 into our "@angular/bazel"
 // installation. We need to patch it because otherwise the @angular/bazel PR cannot land
-// as the "component-unit-tests" job will fail due to not being updated to 0.38.0. Either
+// as the "component-unit-tests" job will fail due to not being updated to 0.38.2. Either
 // the framework or component repo needs to be patched to unblock the cyclic dependency.
-shelljs.cat(path.join(__dirname, './angular_bazel_0.38.0.patch')).exec('patch -p0');
+shelljs.cat(path.join(__dirname, './angular_bazel_0.38.2.patch')).exec('patch -p0');
 
 /**
  * Reads the specified file and replaces matches of the search expression

@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//internal/common:sources_aspect.bzl", "sources_aspect")
+load("@build_bazel_rules_nodejs//:providers.bzl", "JSNamedModuleInfo")
 
 """Gets the workspace name of the given rule context."""
 
@@ -27,16 +27,12 @@ def _dev_server_rule_impl(ctx):
     # Walk through all dependencies specified in the "deps" attribute. These labels need to be
     # unwrapped in case there are built using TypeScript-specific rules. This is because targets
     # built using "ts_library" or "ng_module" do not declare the generated JS files as default
-    # rule output. The output aspect that is applied to the "deps" attribute, provides two struct
-    # fields which resolve to the unwrapped JS output files.
-    # https://github.com/bazelbuild/rules_nodejs/blob/e04c8c31f3cb859754ea5c5e97f331a3932b725d/internal/common/sources_aspect.bzl#L53-L55
+    # rule output.
     for d in ctx.attr.deps:
-        if hasattr(d, "node_sources"):
-            files = depset(transitive = [files, d.node_sources])
+        if JSNamedModuleInfo in d:
+            files = depset(transitive = [files, d[JSNamedModuleInfo].sources])
         elif hasattr(d, "files"):
             files = depset(transitive = [files, d.files])
-        if hasattr(d, "dev_scripts"):
-            files = depset(transitive = [files, d.dev_scripts])
 
     workspace_name = _get_workspace_name(ctx)
     root_paths = ["", "/".join([workspace_name, ctx.label.package])] + ctx.attr.additional_root_paths
@@ -95,7 +91,6 @@ dev_server_rule = rule(
         ),
         "deps": attr.label_list(
             allow_files = True,
-            aspects = [sources_aspect],
             doc = """
               Dependencies that need to be available to the dev-server. This attribute can be
               used for TypeScript targets which provide multiple flavors of output.
