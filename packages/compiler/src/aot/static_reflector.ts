@@ -575,7 +575,7 @@ export class StaticReflector implements CompileReflector {
         if (isPrimitive(expression)) {
           return expression;
         }
-        if (expression instanceof Array) {
+        if (Array.isArray(expression)) {
           const result: any[] = [];
           for (const item of (<any>expression)) {
             // Check for a spread expression

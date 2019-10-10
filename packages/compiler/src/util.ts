@@ -168,7 +168,7 @@ export function stringify(token: any): string {
     return token;
   }
 
-  if (token instanceof Array) {
+  if (Array.isArray(token)) {
     return '[' + token.map(stringify).join(', ') + ']';
   }
 
