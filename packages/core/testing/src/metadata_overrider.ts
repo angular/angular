@@ -48,7 +48,7 @@ function removeMetadata(metadata: StringMap, remove: any, references: Map<any, s
   const removeObjects = new Set<string>();
   for (const prop in remove) {
     const removeValue = remove[prop];
-    if (removeValue instanceof Array) {
+    if (Array.isArray(removeValue)) {
       removeValue.forEach(
           (value: any) => { removeObjects.add(_propHashKey(prop, value, references)); });
     } else {
@@ -58,7 +58,7 @@ function removeMetadata(metadata: StringMap, remove: any, references: Map<any, s
 
   for (const prop in metadata) {
     const propValue = metadata[prop];
-    if (propValue instanceof Array) {
+    if (Array.isArray(propValue)) {
       metadata[prop] = propValue.filter(
           (value: any) => !removeObjects.has(_propHashKey(prop, value, references)));
     } else {
@@ -73,7 +73,7 @@ function addMetadata(metadata: StringMap, add: any) {
   for (const prop in add) {
     const addValue = add[prop];
     const propValue = metadata[prop];
-    if (propValue != null && propValue instanceof Array) {
+    if (propValue != null && Array.isArray(propValue)) {
       metadata[prop] = propValue.concat(addValue);
     } else {
       metadata[prop] = addValue;

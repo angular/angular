@@ -49,7 +49,7 @@ class SomeComponent {
     function createModule(options: CreateModuleOptions): Type<any>;
     function createModule(providersOrOptions: any[] | CreateModuleOptions | undefined): Type<any> {
       let options: CreateModuleOptions = {};
-      if (providersOrOptions instanceof Array) {
+      if (Array.isArray(providersOrOptions)) {
         options = {providers: providersOrOptions};
       } else {
         options = providersOrOptions || {};

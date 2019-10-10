@@ -189,7 +189,7 @@ function _normalizeProviders(
     } else if (b && typeof b == 'object' && (b as any).provide !== undefined) {
       res.push(b as NormalizedProvider);
 
-    } else if (b instanceof Array) {
+    } else if (Array.isArray(b)) {
       _normalizeProviders(b, res);
 
     } else {
