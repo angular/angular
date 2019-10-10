@@ -47,10 +47,10 @@ export const DISABLED = 'DISABLED';
 function _find(control: AbstractControl, path: Array<string|number>| string, delimiter: string) {
   if (path == null) return null;
 
-  if (!(path instanceof Array)) {
+  if (!Array.isArray(path)) {
     path = path.split(delimiter);
   }
-  if (path instanceof Array && path.length === 0) return null;
+  if (Array.isArray(path) && path.length === 0) return null;
 
   return path.reduce((v: AbstractControl | null, name) => {
     if (v instanceof FormGroup) {
