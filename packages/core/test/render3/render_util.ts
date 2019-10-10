@@ -375,7 +375,7 @@ export function createComponent(
   return class Component {
     value: any;
     static ngFactoryDef = () => new Component;
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵcmp = ɵɵdefineComponent({
       type: Component,
       selectors: [[name]],
       decls: decls,

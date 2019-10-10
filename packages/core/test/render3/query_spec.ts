@@ -249,7 +249,7 @@ describe('query', () => {
           alias?: Alias;
 
           static ngFactoryDef = function App_Factory() { return new App(); };
-          static ngComponentDef = ɵɵdefineComponent({
+          static ɵcmp = ɵɵdefineComponent({
             type: App,
             selectors: [['app']],
             decls: 1,
@@ -295,7 +295,7 @@ describe('query', () => {
           service?: Service;
 
           static ngFactoryDef = function App_Factory() { return new App(); };
-          static ngComponentDef = ɵɵdefineComponent({
+          static ɵcmp = ɵɵdefineComponent({
             type: App,
             selectors: [['app']],
             decls: 1,
@@ -839,7 +839,7 @@ describe('query', () => {
 
         class Child {
           static ngFactoryDef = () => childInstance = new Child();
-          static ngComponentDef = ɵɵdefineComponent({
+          static ɵcmp = ɵɵdefineComponent({
             type: Child,
             selectors: [['child']],
             decls: 0,
@@ -1959,7 +1959,7 @@ describe('query', () => {
         texts !: QueryList<TextDirective>;
 
         static ngFactoryDef = () => contentQueryDirective = new ContentQueryDirective();
-        static ngComponentDef = ɵɵdefineDirective({
+        static ɵcmp = ɵɵdefineDirective({
           type: ContentQueryDirective,
           selectors: [['', 'content-query', '']],
           contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
@@ -2030,7 +2030,7 @@ describe('query', () => {
         texts !: QueryList<TextDirective>;
 
         static ngFactoryDef = () => new ViewQueryComponent();
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵcmp = ɵɵdefineComponent({
           type: ViewQueryComponent,
           selectors: [['view-query']],
           consts: [['text', 'A'], ['text', 'B'], ['text', 'C'], ['text', 'D'], ['text', 'E']],

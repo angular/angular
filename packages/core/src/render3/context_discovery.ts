@@ -178,7 +178,7 @@ export function attachPatchData(target: any, data: LView | LContext) {
 }
 
 export function isComponentInstance(instance: any): boolean {
-  return instance && instance.constructor && instance.constructor.ngComponentDef;
+  return instance && instance.constructor && instance.constructor.ɵcmp;
 }
 
 export function isDirectiveInstance(instance: any): boolean {
