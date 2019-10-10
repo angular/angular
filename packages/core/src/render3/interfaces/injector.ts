@@ -242,9 +242,7 @@ export class NodeInjectorFactory {
 }
 
 export function isFactory(obj: any): obj is NodeInjectorFactory {
-  // See: https://jsperf.com/instanceof-vs-getprototypeof
-  return obj !== null && typeof obj == 'object' &&
-      Object.getPrototypeOf(obj) == NodeInjectorFactory.prototype;
+  return obj instanceof NodeInjectorFactory;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
