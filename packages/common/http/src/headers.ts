@@ -14,7 +14,7 @@ interface Update {
 
 /**
  * Represents the header configuration options for an HTTP request.
- * Instances are immutable with lazy parsing. Modifying methods return a cloned
+ * Instances are immutable. Modifying methods return a cloned
  * instance with the change. The original object is never changed.
  *
  * @publicApi
@@ -87,7 +87,7 @@ export class HttpHeaders {
   /**
    * Checks for existence of a given header.
    *
-   * @param name The name to check for existence.
+   * @param name The header name to check for existence.
    *
    * @returns True if the header exists, false otherwise.
    */
@@ -100,7 +100,7 @@ export class HttpHeaders {
   /**
    * Retrieves the first value of a given header.
    *
-   * @param name The header name to query.
+   * @param name The header name.
    *
    * @returns The value string if the header exists, null otherwise
    */
@@ -123,7 +123,7 @@ export class HttpHeaders {
   }
 
   /**
-   * Retrieves a list of header values for a given name.
+   * Retrieves a list of values for a given header.
    *
    * @param name The header name from which to retrieve values.
    *
@@ -136,8 +136,8 @@ export class HttpHeaders {
   }
 
   /**
-   * Appends a new value to the existing set of
-   * values for a header and returns a clone of the original headers instance.
+   * Appends a new value to the existing set of values for a header
+   * and returns them in a clone of the original instance.
    *
    * @param name The header name for which to append the value or values.
    * @param value The new value or array of values.
@@ -149,10 +149,9 @@ export class HttpHeaders {
     return this.clone({name, value, op: 'a'});
   }
   /**
-   * Sets or modifies a key value for a given header
-   * in a clone of the original instance.
-   * If the header already exists,
-   * its value is replaced with the given value in the returned object.
+   * Sets or modifies a value for a given header in a clone of the original instance.
+   * If the header already exists, its value is replaced with the given value
+   * in the returned object.
    *
    * @param name The header name.
    * @param value The value or values to set or overide for the given header.
