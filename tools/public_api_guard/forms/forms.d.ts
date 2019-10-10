@@ -327,8 +327,6 @@ export declare class FormGroupName extends AbstractFormGroupDirective implements
 }
 
 export declare class FormsModule {
-    static withConfig(opts: { warnOnDeprecatedNgFormSelector?: 'never' | 'once' | 'always';
-    }): ModuleWithProviders<FormsModule>;
 }
 
 export declare class MaxLengthValidator implements Validator, OnChanges {
@@ -395,11 +393,6 @@ export declare class NgForm extends ControlContainer implements Form, AfterViewI
         [key: string]: any;
     }): void;
     updateModel(dir: NgControl, value: any): void;
-}
-
-/** @deprecated */
-export declare class NgFormSelectorWarning {
-    constructor(ngFormWarning: string | null);
 }
 
 export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
