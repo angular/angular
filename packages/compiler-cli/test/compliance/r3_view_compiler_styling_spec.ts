@@ -95,7 +95,7 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+         MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
            …
            styles: ["div.cool { color: blue; }", ":host.nice p { color: gold; }"],
            encapsulation: 1
@@ -128,7 +128,7 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
-        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors:[["my-component"]],
           decls: 0,
@@ -167,7 +167,7 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
-        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors:[["my-component"]],
           decls: 0,
@@ -209,7 +209,7 @@ describe('compiler compliance: styling', () => {
 
       const template = `
         …
-        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
           …
           decls: 3,
           vars: 3,
@@ -270,7 +270,7 @@ describe('compiler compliance: styling', () => {
 
       const template = `
         …
-        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
           …
           decls: 1,
           vars: 1,
@@ -502,7 +502,7 @@ describe('compiler compliance: styling', () => {
 
          const template = `
           …
-          MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
               decls: 1,
@@ -550,7 +550,7 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
             type: MyComponent,
             selectors: [["my-component"]],
             decls: 1,
@@ -696,7 +696,7 @@ describe('compiler compliance: styling', () => {
 
          const template = `
           …
-          MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
               decls: 1,
@@ -745,7 +745,7 @@ describe('compiler compliance: styling', () => {
 
          const template = `
           …
-          MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
               decls: 1,

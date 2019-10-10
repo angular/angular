@@ -200,7 +200,7 @@ export class ConstantPool {
   public propertyNameOf(kind: DefinitionKind): string {
     switch (kind) {
       case DefinitionKind.Component:
-        return 'ngComponentDef';
+        return 'ɵcmp';
       case DefinitionKind.Directive:
         return 'ngDirectiveDef';
       case DefinitionKind.Injector:

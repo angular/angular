@@ -125,7 +125,7 @@ function declareTests(config?: {useJit: boolean}) {
     }
 
     function createComp<T>(compType: Type<T>, moduleType: Type<any>): ComponentFixture<T> {
-      const componentDef = (compType as any).ngComponentDef;
+      const componentDef = (compType as any).ɵcmp;
       if (componentDef) {
         // Since we avoid Components/Directives/Pipes recompiling in case there are no overrides, we
         // may face a problem where previously compiled defs available to a given

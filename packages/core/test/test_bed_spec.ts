@@ -506,7 +506,7 @@ describe('TestBed', () => {
         const getAOTCompiledComponent = () => {
           class ComponentClass {
             static ngFactoryDef = () => new ComponentClass();
-            static ngComponentDef = defineComponent({
+            static ɵcmp = defineComponent({
               type: ComponentClass,
               selectors: [['comp']],
               decls: 1,
@@ -616,13 +616,13 @@ describe('TestBed', () => {
               {set: {template: `<span someDirective>{{'hello' | somePipe}}</span>`}});
           TestBed.createComponent(SomeComponent);
 
-          const defBeforeReset = (SomeComponent as any).ngComponentDef;
+          const defBeforeReset = (SomeComponent as any).ɵcmp;
           expect(defBeforeReset.pipeDefs().length).toEqual(1);
           expect(defBeforeReset.directiveDefs().length).toEqual(2);  // directive + component
 
           TestBed.resetTestingModule();
 
-          const defAfterReset = (SomeComponent as any).ngComponentDef;
+          const defAfterReset = (SomeComponent as any).ɵcmp;
           expect(defAfterReset.pipeDefs).toBe(null);
           expect(defAfterReset.directiveDefs).toBe(null);
         });
@@ -654,8 +654,8 @@ describe('TestBed', () => {
              });
              TestBed.createComponent(ComponentWithNoAnnotations);
 
-             expect(ComponentWithNoAnnotations.hasOwnProperty('ngComponentDef')).toBeTruthy();
-             expect(SomeComponent.hasOwnProperty('ngComponentDef')).toBeTruthy();
+             expect(ComponentWithNoAnnotations.hasOwnProperty('ɵcmp')).toBeTruthy();
+             expect(SomeComponent.hasOwnProperty('ɵcmp')).toBeTruthy();
 
              expect(DirectiveWithNoAnnotations.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
              expect(SomeDirective.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
@@ -666,12 +666,12 @@ describe('TestBed', () => {
              TestBed.resetTestingModule();
 
              // ng defs should be removed from classes with no annotations
-             expect(ComponentWithNoAnnotations.hasOwnProperty('ngComponentDef')).toBeFalsy();
+             expect(ComponentWithNoAnnotations.hasOwnProperty('ɵcmp')).toBeFalsy();
              expect(DirectiveWithNoAnnotations.hasOwnProperty('ngDirectiveDef')).toBeFalsy();
              expect(PipeWithNoAnnotations.hasOwnProperty('ngPipeDef')).toBeFalsy();
 
              // ng defs should be preserved on super types
-             expect(SomeComponent.hasOwnProperty('ngComponentDef')).toBeTruthy();
+             expect(SomeComponent.hasOwnProperty('ɵcmp')).toBeTruthy();
              expect(SomeDirective.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
              expect(SomePipe.hasOwnProperty('ngPipeDef')).toBeTruthy();
            });
@@ -719,8 +719,7 @@ describe('TestBed', () => {
              }
 
              TestBed.configureTestingModule({imports: [MyModule]});
-             const originalResolver =
-                 (ComponentWithProvider as any).ngComponentDef.providersResolver;
+             const originalResolver = (ComponentWithProvider as any).ɵcmp.providersResolver;
              TestBed.overrideProvider(SomeInjectable, {useValue: {id: 'fake'}});
 
              const compiler = TestBed.inject(Compiler);
@@ -728,7 +727,7 @@ describe('TestBed', () => {
              compiler.compileModuleSync(MyModule);
 
              TestBed.resetTestingModule();
-             expect((ComponentWithProvider as any).ngComponentDef.providersResolver)
+             expect((ComponentWithProvider as any).ɵcmp.providersResolver)
                  .toEqual(originalResolver);
            });
       });

@@ -21,7 +21,7 @@ export class TreeFunction {
   static ngFactoryDef = () => new TreeFunction;
 
   /** @nocollapse */
-  static ngComponentDef = ɵɵdefineComponent({
+  static ɵcmp = ɵɵdefineComponent({
     type: TreeFunction,
     selectors: [['tree']],
     decls: 5,

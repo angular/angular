@@ -21,8 +21,7 @@ export function assertTNodeForLView(tNode: TNode, lView: LView) {
 
 export function assertComponentType(
     actual: any,
-    msg: string =
-        'Type passed in is not ComponentType, it does not have \'ngComponentDef\' property.') {
+    msg: string = 'Type passed in is not ComponentType, it does not have \'ɵcmp\' property.') {
   if (!getComponentDef(actual)) {
     throwError(msg);
   }
