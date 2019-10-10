@@ -27,7 +27,7 @@ export interface TabInfo {
     <div #content style="display: none"><ng-content></ng-content></div>
 
     <mat-card>
-      <mat-tab-group class="code-tab-group" disableRipple>
+      <mat-tab-group class="code-tab-group" [disableRipple]="true">
         <mat-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
           <ng-template mat-tab-label>
             <span class="{{ tab.class }}">{{ tab.header }}</span>

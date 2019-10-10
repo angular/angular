@@ -35,6 +35,17 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE)).toContain('((ctx).a)[(ctx).b];');
   });
 
+  it('should handle attribute values for directive inputs', () => {
+    const TEMPLATE = `<div dir inputA="value"></div>`;
+    const DIRECTIVES: TestDeclaration[] = [{
+      type: 'directive',
+      name: 'DirA',
+      selector: '[dir]',
+      inputs: {inputA: 'inputA'},
+    }];
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('inputA: ("value")');
+  });
+
   it('should handle empty bindings', () => {
     const TEMPLATE = `<div dir-a [inputA]=""></div>`;
     const DIRECTIVES: TestDeclaration[] = [{
