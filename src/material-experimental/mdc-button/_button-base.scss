@@ -34,6 +34,12 @@
     // smaller. We have special logic for stroked buttons to handle this scenario.
     border-radius: inherit;
   }
+
+  // The content should appear over the state and ripple layers, otherwise they may adversely affect
+  // the accessibility of the text content.
+  .mdc-button__label {
+    z-index: 1;
+  }
 }
 
 // MDC's disabled buttons define a default cursor with pointer-events none. However, they select
