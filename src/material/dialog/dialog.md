@@ -130,12 +130,12 @@ Several directives are available to make it easier to structure your dialog cont
 
 For example:
 ```html
-<h2 mat-dialog-title>Delete all</h2>
-<mat-dialog-content>Are you sure?</mat-dialog-content>
+<h2 mat-dialog-title>Delete all elements?</h2>
+<mat-dialog-content>This will delete all elements that are currently on this page and cannot be undone.</mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button mat-dialog-close>No</button>
+  <button mat-button mat-dialog-close>Cancel</button>
   <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
-  <button mat-button [mat-dialog-close]="true">Yes</button>
+  <button mat-button [mat-dialog-close]="true">Delete</button>
 </mat-dialog-actions>
 ```
 
