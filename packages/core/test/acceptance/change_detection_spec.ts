@@ -11,6 +11,7 @@ import {CommonModule} from '@angular/common';
 import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, Input, NgModule, OnInit, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 describe('change detection', () => {
 
@@ -911,6 +912,38 @@ describe('change detection', () => {
         fixture.componentInstance.comp.cdr.markForCheck();
         fixture.detectChanges();
         expect(fixture.nativeElement.textContent).toEqual('two - two');
+      });
+
+      it('should check insertion context with async pipe', () => {
+        @Component({
+          selector: 'insertion',
+          changeDetection: ChangeDetectionStrategy.OnPush,
+          template: ` <ng-container [ngTemplateOutlet]="template"> </ng-container> `
+        })
+        class Insertion {
+          @Input() template !: TemplateRef<{}>;
+        }
+
+        @Component({
+          changeDetection: ChangeDetectionStrategy.OnPush,
+          template: `
+          <insertion [template]="ref"><insertion>
+          <ng-template #ref>
+            <span>{{value | async}}</span>
+          </ng-template>
+          `
+        })
+        class Declaration {
+          value = new BehaviorSubject('initial value');
+        }
+
+        const fixture = TestBed.configureTestingModule({declarations: [Insertion, Declaration]})
+                            .createComponent(Declaration);
+        fixture.detectChanges();
+        expect(fixture.debugElement.nativeElement.textContent).toContain('initial value');
+        fixture.componentInstance.value.next('new value');
+        fixture.detectChanges();
+        expect(fixture.debugElement.nativeElement.textContent).toContain('new value');
       });
 
       // TODO(kara): add test for dynamic views once bug fix is in
