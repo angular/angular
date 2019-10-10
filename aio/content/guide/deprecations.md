@@ -347,6 +347,13 @@ See the [dedicated migration guide for adding missing `@Injectable` decorators](
 
  See the [dedicated migration guide for dynamic queries](guide/migration-dynamic-flag).
 
+{@a localize-migration}
+### Migrating to the new `$localize` i18n support
+
+ See the [dedicated migration guide for `$localize`](guide/migration-localize).
+
+
+
 {@a removed}
 ## Removed APIs
 
