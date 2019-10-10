@@ -14,8 +14,8 @@ interface Update {
 
 /**
  * Represents the header configuration options for an HTTP request.
- * Instances are immutable with lazy parsing.
- * Modifying methods return a cloned instance with the change.
+ * Instances are immutable with lazy parsing. Modifying methods return a cloned
+ * instance with the change. The original object is never changed.
  *
  * @publicApi
  */
@@ -85,11 +85,11 @@ export class HttpHeaders {
   }
 
   /**
-   * Checks for existence of a given key in the header.
+   * Checks for existence of a given header.
    *
-   * @param name The key name to check for existence.
+   * @param name The name to check for existence.
    *
-   * @returns True if the key exists, false otherwise.
+   * @returns True if the header exists, false otherwise.
    */
   has(name: string): boolean {
     this.init();
@@ -98,11 +98,11 @@ export class HttpHeaders {
   }
 
   /**
-   * Retrieves the first value of a given header key.
+   * Retrieves the first value of a given header.
    *
-   * @param name The header key name to query.
+   * @param name The header name to query.
    *
-   * @returns The value string if the key exists, null otherwise
+   * @returns The value string if the header exists, null otherwise
    */
   get(name: string): string|null {
     this.init();
@@ -112,9 +112,9 @@ export class HttpHeaders {
   }
 
   /**
-   * Retrieves the names of the header keys.
+   * Retrieves the names of the headers.
    *
-   * @returns A list of header key names.
+   * @returns A list of header names.
    */
   keys(): string[] {
     this.init();
@@ -123,11 +123,11 @@ export class HttpHeaders {
   }
 
   /**
-   * Retrieves a list of header values for a given key name.
+   * Retrieves a list of header values for a given name.
    *
-   * @param name The key name from which to retrieve values.
+   * @param name The header name from which to retrieve values.
    *
-   * @returns A string of values if the header key exists, null otherwise.
+   * @returns A string of values if the header exists, null otherwise.
    */
   getAll(name: string): string[]|null {
     this.init();
@@ -136,39 +136,39 @@ export class HttpHeaders {
   }
 
   /**
-   * Appends a new key value to the existing set of
-   * values and returns a clone of the original header instance.
+   * Appends a new value to the existing set of
+   * values for a header and returns a clone of the original headers instance.
    *
-   * @param name The header key name for which to append the value or values.
+   * @param name The header name for which to append the value or values.
    * @param value The new value or array of values.
    *
-   * @returns A clone of the HTTP header object with the value appended.
+   * @returns A clone of the HTTP headers object with the value appended to the given header.
    */
 
   append(name: string, value: string|string[]): HttpHeaders {
     return this.clone({name, value, op: 'a'});
   }
   /**
-   * Sets or modifies a key value for a given name
+   * Sets or modifies a key value for a given header
    * in a clone of the original instance.
-   * If the key name already exists,
+   * If the header already exists,
    * its value is replaced with the given value in the returned object.
    *
-   * @param name The header key name.
-   * @param value The value or values to set or overide for the given key.
+   * @param name The header name.
+   * @param value The value or values to set or overide for the given header.
    *
-   * @returns A clone of the HTTP header object with the newly set header value.
+   * @returns A clone of the HTTP headers object with the newly set header value.
    */
   set(name: string, value: string|string[]): HttpHeaders {
     return this.clone({name, value, op: 's'});
   }
   /**
-   * Deletes header values for a given key name.
+   * Deletes values for a given header in a clone of the original instance.
    *
-   * @param name The key name.
-   * @param value The value or values to delete for the given key name.
+   * @param name The header name.
+   * @param value The value or values to delete for the given header.
    *
-   * @returns A clone of the HTTP header object with the given value deleted.
+   * @returns A clone of the HTTP headers object with the given value deleted.
    */
   delete (name: string, value?: string|string[]): HttpHeaders {
     return this.clone({name, value, op: 'd'});
