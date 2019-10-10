@@ -98,6 +98,9 @@ describe('expression diagnostics', () => {
      () => reject(
          '<div *ngIf="persson">{{person.name.first}}</div>',
          'Identifier \'persson\' is not defined'));
+  it('should reject *ngIf of misspelled identifier in PrefixNot node',
+     () =>
+         reject('<div *ngIf="people && !persson"></div>', 'Identifier \'persson\' is not defined'));
   it('should accept an *ngFor', () => accept(`
       <div *ngFor="let p of people">
         {{p.name.first}} {{p.name.last}}
