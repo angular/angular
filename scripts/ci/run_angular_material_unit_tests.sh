@@ -14,13 +14,13 @@ angular_dir=$(pwd)
 sed -i'.bak' "s/\(_ENABLE_NG_TYPE_CHECKING = \)True/\1False/g" ${MATERIAL_REPO_TMP_DIR}/tools/defaults.bzl
 sed -i'.bak' "s/\(\"ivyTemplateTypeCheck\": \)False/\1True/g" dist/packages-dist-ivy-aot/bazel/src/ng_module.bzl
 
-# The components repository updated to rules_nodejs#0.38.0 before Angular Bazel did. To do this,
-# the `@angular/bazel` v0.38.0 compatibility changes were patched on postinstall. This now
+# The components repository updated to rules_nodejs#0.38.2 before Angular Bazel did. To do this,
+# the `@angular/bazel` v0.38.2 compatibility changes were patched on postinstall. This now
 # conflicts because we install a `@angular/bazel` version that already includes these compatibility
 # changes. This would result in the patch being a noop for which the `patch` command throws.
 # To work around this temporarily, we just ensure that the patch does not run on postinstall.
 # TODO: remove this once Angular components no longer needs the postinstall patch.
-sed -i -r "s/shelljs.cat.+angular_bazel_0\.38\.0\.patch.+;//g" ${MATERIAL_REPO_TMP_DIR}/tools/bazel/postinstall-patches.js
+sed -i -r "s/shelljs.cat.+angular_bazel_0\.38\.2\.patch.+;//g" ${MATERIAL_REPO_TMP_DIR}/tools/bazel/postinstall-patches.js
 
 # Switch into Material directory.
 cd ${MATERIAL_REPO_TMP_DIR}
