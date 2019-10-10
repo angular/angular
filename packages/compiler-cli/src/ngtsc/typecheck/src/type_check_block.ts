@@ -840,6 +840,7 @@ function tcbGetDirectiveInputs(
   const unsetFields = new Set(propMatch.values());
 
   el.inputs.forEach(processAttribute);
+  el.attributes.forEach(processAttribute);
   if (el instanceof TmplAstTemplate) {
     el.templateAttrs.forEach(processAttribute);
   }
@@ -856,21 +857,30 @@ function tcbGetDirectiveInputs(
    * a matching binding.
    */
   function processAttribute(attr: TmplAstBoundAttribute | TmplAstTextAttribute): void {
-    if (attr instanceof TmplAstBoundAttribute && propMatch.has(attr.name)) {
-      const field = propMatch.get(attr.name) !;
-
-      // Remove the field from the set of unseen fields, now that it's been assigned to.
-      unsetFields.delete(field);
-
-      // Produce an expression representing the value of the binding.
-      const expr = tcbExpression(attr.value, tcb, scope, attr.valueSpan || attr.sourceSpan);
-      directiveInputs.push({
-        type: 'binding',
-        field: field,
-        expression: expr,
-        sourceSpan: attr.sourceSpan,
-      });
+    // Skip the attribute if the directive does not have an input for it.
+    if (!propMatch.has(attr.name)) {
+      return;
     }
+    const field = propMatch.get(attr.name) !;
+
+    // Remove the field from the set of unseen fields, now that it's been assigned to.
+    unsetFields.delete(field);
+
+    let expr: ts.Expression;
+    if (attr instanceof TmplAstBoundAttribute) {
+      // Produce an expression representing the value of the binding.
+      expr = tcbExpression(attr.value, tcb, scope, attr.valueSpan || attr.sourceSpan);
+    } else {
+      // For regular attributes with a static string value, use the represented string literal.
+      expr = ts.createStringLiteral(attr.value);
+    }
+
+    directiveInputs.push({
+      type: 'binding',
+      field: field,
+      expression: expr,
+      sourceSpan: attr.sourceSpan,
+    });
   }
 }
 

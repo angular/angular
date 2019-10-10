@@ -80,6 +80,32 @@ export declare class CommonModule {
       env.driveMain();
     });
 
+    it('should check regular attributes that are directive inputs', () => {
+      env.write('test.ts', `
+        import {Component, Directive, NgModule, Input} from '@angular/core';
+    
+        @Component({
+          selector: 'test',
+          template: '<div dir foo="2"></div>',
+        })
+        class TestCmp {}
+    
+        @Directive({selector: '[dir]'})
+        class TestDir {
+          @Input() foo: number;
+        }
+    
+        @NgModule({
+          declarations: [TestCmp, TestDir],
+        })
+        class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+    });
+
     it('should check basic usage of NgIf', () => {
       env.write('test.ts', `
     import {CommonModule} from '@angular/common';
