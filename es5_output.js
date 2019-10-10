@@ -7669,32 +7669,14 @@ function _inheritsLoose(subClass, superClass) {
             function isRootView(target) {
                 return 0 != (512 & target[FLAGS])
             }
-            var TNODE = 8,
+            var elementDepthCount, bindingsEnabled, TNODE = 8,
                 PARENT_INJECTOR = 8,
                 INJECTOR_BLOOM_PARENT_SIZE = 9,
                 NO_PARENT_INJECTOR = -1,
                 NodeInjectorFactory = function(factory, isViewProvider, injectImplementation) {
                     this.factory = factory, this.resolving = !1, this.canSeeViewProviders = isViewProvider, this.injectImpl = injectImplementation
                 },
-                _stylingState = null,
-                _stateStorage = new Map,
-                _stylingElement = null,
-                STYLING_INDEX_START_VALUE = 1,
-                BIT_MASK_START_VALUE = 0;
-
-            function getStylingState(element, readFromMap) {
-                return _stylingElement && element === _stylingElement || (_stylingElement = element, readFromMap && (_stylingState = _stateStorage.get(element) || null), _stylingState = _stylingState || {
-                    classesBitMask: BIT_MASK_START_VALUE,
-                    classesIndex: STYLING_INDEX_START_VALUE,
-                    stylesBitMask: BIT_MASK_START_VALUE,
-                    stylesIndex: STYLING_INDEX_START_VALUE
-                }), _stylingState
-            }
-
-            function resetStylingState() {
-                _stylingState = null, _stylingElement = null
-            }
-            var elementDepthCount, bindingsEnabled, currentDirectiveDef = null;
+                currentDirectiveDef = null;
 
             function setCurrentDirectiveDef(def) {
                 currentDirectiveDef = def
@@ -7707,21 +7689,31 @@ function _inheritsLoose(subClass, superClass) {
             function getLView() {
                 return lView
             }
-            var previousOrParentTNode, isParent, lView, MIN_DIRECTIVE_ID = 1,
-                activeDirectiveId = MIN_DIRECTIVE_ID,
-                activeDirectiveSuperClassDepthPosition = 0,
-                activeDirectiveSuperClassHeight = 0;
+            var activeDirectiveId = 0;
+
+            function hasActiveElementFlag(flag) {
+                return (_selectedIndex & flag) === flag
+            }
 
             function setActiveHostElement(elementIndex) {
-                void 0 === elementIndex && (elementIndex = null), _selectedIndex !== elementIndex && (setSelectedIndex(null === elementIndex ? -1 : elementIndex), activeDirectiveId = null === elementIndex ? 0 : MIN_DIRECTIVE_ID, activeDirectiveSuperClassDepthPosition = 0, activeDirectiveSuperClassHeight = 0)
+                void 0 === elementIndex && (elementIndex = null), getSelectedIndex() !== elementIndex && (hasActiveElementFlag(1) && executeElementExitFn(), setSelectedIndex(null === elementIndex ? -1 : elementIndex), activeDirectiveId = 0)
+            }
+            var previousOrParentTNode, isParent, lView, _elementExitFn = null;
+
+            function executeElementExitFn() {
+                _elementExitFn(), _selectedIndex &= -2
+            }
+
+            function setElementExitFn(fn) {
+                _selectedIndex |= 1, _elementExitFn = fn
+            }
+
+            function getActiveDirectiveId() {
+                return activeDirectiveId
             }
 
             function incrementActiveDirectiveId() {
-                activeDirectiveId += 1 + activeDirectiveSuperClassHeight, activeDirectiveSuperClassDepthPosition = 0, activeDirectiveSuperClassHeight = 0
-            }
-
-            function adjustActiveDirectiveSuperClassDepthPosition(delta) {
-                activeDirectiveSuperClassDepthPosition += delta, activeDirectiveSuperClassHeight = Math.max(activeDirectiveSuperClassHeight, activeDirectiveSuperClassDepthPosition)
+                activeDirectiveId += 1
             }
 
             function \u0275\u0275restoreView(viewToRestore) {
@@ -7777,17 +7769,18 @@ function _inheritsLoose(subClass, superClass) {
             }
 
             function selectView(newView, hostTNode) {
+                hasActiveElementFlag(1) && executeElementExitFn();
                 var oldView = lView;
                 return previousOrParentTNode = hostTNode, isParent = !0, lView = contextLView = newView, oldView
             }
-            var _selectedIndex = -1;
+            var _selectedIndex = -2;
 
             function getSelectedIndex() {
-                return _selectedIndex
+                return _selectedIndex >> 1
             }
 
             function setSelectedIndex(index) {
-                _selectedIndex = index, resetStylingState()
+                _selectedIndex = index << 1
             }
             var _currentSanitizer, _currentNamespace = null;
 
@@ -7809,123 +7802,6 @@ function _inheritsLoose(subClass, superClass) {
 
             function getCurrentStyleSanitizer() {
                 return _currentSanitizer
-            }
-            var NO_CHANGE = {},
-                MAP_BASED_ENTRY_PROP_NAME = "--MAP--",
-                TEMPLATE_DIRECTIVE_INDEX = 0;
-
-            function updateLastDirectiveIndex(context, lastDirectiveIndex) {
-                lastDirectiveIndex === TEMPLATE_DIRECTIVE_INDEX ? context[2] > TEMPLATE_DIRECTIVE_INDEX && function(context) {
-                    setConfig(context, 2 | getConfig(context))
-                }(context) : context[2] = lastDirectiveIndex
-            }
-
-            function getConfig(context) {
-                return context[1]
-            }
-
-            function setConfig(context, value) {
-                context[1] = value
-            }
-
-            function getProp(context, index) {
-                return context[index + 2]
-            }
-
-            function getPropConfig(context, index) {
-                return 1 & context[index + 0]
-            }
-
-            function isSanitizationRequired(context, index) {
-                return (1 & getPropConfig(context, index)) > 0
-            }
-
-            function getGuardMask(context, index) {
-                return context[index + 0] >> 1
-            }
-
-            function setGuardMask(context, index, maskValue) {
-                var config = getPropConfig(context, index),
-                    guardMask = maskValue << 1;
-                context[index + 0] = config | guardMask
-            }
-
-            function getValuesCount(context, index) {
-                return context[index + 1]
-            }
-
-            function getBindingValue(context, index, offset) {
-                return context[index + 3 + offset]
-            }
-
-            function allowStylingFlush(context, index) {
-                return !(!context || index !== context[2])
-            }
-
-            function isContextLocked(context) {
-                return (1 & getConfig(context)) > 0
-            }
-
-            function stateIsPersisted(context) {
-                return (2 & getConfig(context)) > 0
-            }
-
-            function getPropValuesStartPosition(context) {
-                return 6 + context[4]
-            }
-
-            function hasValueChanged(a, b) {
-                if (b === NO_CHANGE) return !1;
-                var compareValueA = Array.isArray(a) ? a[0] : a,
-                    compareValueB = Array.isArray(b) ? b[0] : b;
-                return compareValueA instanceof String && (compareValueA = compareValueA.toString()), compareValueB instanceof String && (compareValueB = compareValueB.toString()), !Object.is(compareValueA, compareValueB)
-            }
-
-            function isStylingValueDefined(value) {
-                return null != value && "" !== value
-            }
-
-            function concatString(a, b, separator) {
-                return void 0 === separator && (separator = " "), a + (b.length && a.length ? separator : "") + b
-            }
-
-            function hyphenate(value) {
-                return value.replace(/[a-z][A-Z]/g, (function(v) {
-                    return v.charAt(0) + "-" + v.charAt(1)
-                })).toLowerCase()
-            }
-
-            function getStylingMapArray(value) {
-                return isStylingContext(value) ? value[0] : value
-            }
-
-            function isStylingContext(value) {
-                return Array.isArray(value) && value.length >= 6 && "string" != typeof value[1]
-            }
-
-            function getInitialStylingValue(context) {
-                var map = getStylingMapArray(context);
-                return map && map[0] || ""
-            }
-
-            function hasClassInput(tNode) {
-                return 0 != (16 & tNode.flags)
-            }
-
-            function hasStyleInput(tNode) {
-                return 0 != (32 & tNode.flags)
-            }
-
-            function getMapProp(map, index) {
-                return map[index + 0]
-            }
-
-            function setMapValue(map, index, value) {
-                map[index + 1] = value
-            }
-
-            function getMapValue(map, index) {
-                return map[index + 1]
             }
             var RendererStyleFlags3 = function() {
                 var RendererStyleFlags3 = {
@@ -8013,6 +7889,162 @@ function _inheritsLoose(subClass, superClass) {
 
             function maybeUnwrapFn(value) {
                 return value instanceof Function ? value() : value
+            }
+            var NO_CHANGE = {},
+                MAP_BASED_ENTRY_PROP_NAME = "[MAP]",
+                TEMPLATE_DIRECTIVE_INDEX = 0,
+                DEFAULT_BINDING_VALUE = null,
+                DEFAULT_BINDING_INDEX = 0,
+                DEFAULT_TOTAL_SOURCES = 1,
+                DEFAULT_GUARD_MASK_VALUE = 1;
+
+            function getConfig(context) {
+                return context[0]
+            }
+
+            function hasConfig(context, flag) {
+                return 0 != (getConfig(context) & flag)
+            }
+
+            function allowDirectStyling(context, hostBindingsMode) {
+                var config = getConfig(context);
+                return 0 != (config & getLockedConfig(hostBindingsMode)) && 0 == (4 & config) && 3 != (3 & config)
+            }
+
+            function patchConfig(context, flag) {
+                context[0] |= flag
+            }
+
+            function getProp(context, index) {
+                return context[index + 3]
+            }
+
+            function isSanitizationRequired(context, index) {
+                return 0 != (1 & function(context, index) {
+                    return 1 & context[index + 0]
+                }(context, index))
+            }
+
+            function getGuardMask(context, index, isHostBinding) {
+                return context[index + (isHostBinding ? 2 : 1)]
+            }
+
+            function getValuesCount(context) {
+                return getTotalSources(context) + 1
+            }
+
+            function getTotalSources(context) {
+                return context[1]
+            }
+
+            function getBindingValue(context, index, offset) {
+                return context[index + 4 + offset]
+            }
+
+            function getDefaultValue(context, index) {
+                return context[index + 4 + getTotalSources(context)]
+            }
+
+            function setValue(data, bindingIndex, value) {
+                data[bindingIndex] = value
+            }
+
+            function getValue(data, bindingIndex) {
+                return bindingIndex > 0 ? data[bindingIndex] : null
+            }
+
+            function isContextLocked(context, hostBindingsMode) {
+                return hasConfig(context, getLockedConfig(hostBindingsMode))
+            }
+
+            function getLockedConfig(hostBindingsMode) {
+                return hostBindingsMode ? 128 : 64
+            }
+
+            function hasValueChanged(a, b) {
+                if (b === NO_CHANGE) return !1;
+                var compareValueA = Array.isArray(a) ? a[0] : a,
+                    compareValueB = Array.isArray(b) ? b[0] : b;
+                return !Object.is(compareValueA, compareValueB)
+            }
+
+            function isStylingValueDefined(value) {
+                return null != value && "" !== value
+            }
+
+            function concatString(a, b, separator) {
+                return void 0 === separator && (separator = " "), a + (b.length && a.length ? separator : "") + b
+            }
+
+            function hyphenate(value) {
+                return value.replace(/[a-z][A-Z]/g, (function(v) {
+                    return v.charAt(0) + "-" + v.charAt(1)
+                })).toLowerCase()
+            }
+
+            function getStylingMapArray(value) {
+                return isStylingContext(value) ? value[2] : value
+            }
+
+            function isStylingContext(value) {
+                return Array.isArray(value) && value.length >= 3 && "string" != typeof value[1]
+            }
+
+            function getInitialStylingValue(context) {
+                var map = getStylingMapArray(context);
+                return map && map[0] || ""
+            }
+
+            function hasClassInput(tNode) {
+                return 0 != (16 & tNode.flags)
+            }
+
+            function hasStyleInput(tNode) {
+                return 0 != (32 & tNode.flags)
+            }
+
+            function getMapProp(map, index) {
+                return map[index + 0]
+            }
+            var MAP_DIRTY_VALUE = {
+                MAP_DIRTY_VALUE: !0
+            };
+
+            function setMapValue(map, index, value) {
+                map[index + 1] = value
+            }
+
+            function getMapValue(map, index) {
+                return map[index + 1]
+            }
+
+            function isHostStylingActive(directiveOrSourceId) {
+                return directiveOrSourceId !== TEMPLATE_DIRECTIVE_INDEX
+            }
+
+            function stylingMapToString(map, isClassBased) {
+                for (var str = "", i = 1; i < map.length; i += 2) {
+                    var prop = getMapProp(map, i),
+                        value = getMapValue(map, i),
+                        attrValue = concatString(prop, isClassBased ? "" : value, ":");
+                    str = concatString(str, attrValue, isClassBased ? " " : "; ")
+                }
+                return str
+            }
+
+            function addItemToStylingMap(stylingMapArr, prop, value, allowOverwrite) {
+                for (var j = 1; j < stylingMapArr.length; j += 2) {
+                    var propAtIndex = getMapProp(stylingMapArr, j);
+                    if (prop <= propAtIndex) {
+                        var applied = !1;
+                        if (propAtIndex === prop) {
+                            var valueAtIndex = stylingMapArr[j];
+                            !allowOverwrite && isStylingValueDefined(valueAtIndex) || (applied = !0, setMapValue(stylingMapArr, j, value))
+                        } else applied = !0, stylingMapArr.splice(j, 0, prop, value);
+                        return applied
+                    }
+                }
+                return stylingMapArr.push(prop, value), !0
             }
             var MONKEY_PATCH_KEY_NAME = "__ngContext__";
 
@@ -8333,7 +8365,7 @@ function _inheritsLoose(subClass, superClass) {
                 }(SafeValueImpl);
 
             function unwrapSafeValue(value) {
-                return value instanceof SafeValueImpl ? value.changingThisBreaksApplicationSecurity : ""
+                return value instanceof SafeValueImpl ? value.changingThisBreaksApplicationSecurity : value
             }
 
             function allowSanitizationBypassAndThrow(value, type) {
@@ -8790,111 +8822,169 @@ function _inheritsLoose(subClass, superClass) {
                 }
                 return !1
             }
-            var DEFAULT_GUARD_MASK_VALUE = 1,
-                STYLING_INDEX_FOR_MAP_BINDING = 0,
-                DEFAULT_BINDING_VALUE = null,
-                DEFAULT_SIZE_VALUE = 1,
-                deferredBindingQueue = [];
+            var _state = {
+                    element: null,
+                    directiveIndex: -1,
+                    sourceIndex: -1,
+                    classesBitMask: -1,
+                    classesIndex: -1,
+                    stylesBitMask: -1,
+                    stylesIndex: -1
+                },
+                BIT_MASK_START_VALUE = 0,
+                INDEX_START_VALUE = 1;
 
-            function updateClassBinding(context, data, element, prop, bindingIndex, value, deferRegistration, forceUpdate) {
+            function getStylingState(element, directiveIndex) {
+                return _state.element !== element ? (_state.element = element, _state.directiveIndex = directiveIndex, _state.sourceIndex = directiveIndex === TEMPLATE_DIRECTIVE_INDEX ? 0 : 1, _state.classesBitMask = BIT_MASK_START_VALUE, _state.classesIndex = INDEX_START_VALUE, _state.stylesBitMask = BIT_MASK_START_VALUE, _state.stylesIndex = INDEX_START_VALUE) : _state.directiveIndex !== directiveIndex && (_state.directiveIndex = directiveIndex, _state.sourceIndex++), _state
+            }
+            var STYLING_INDEX_FOR_MAP_BINDING = 0;
+
+            function updateClassViaContext(context, data, element, directiveIndex, prop, bindingIndex, value, forceUpdate) {
                 var isMapBased = !prop,
-                    state = getStylingState(element, stateIsPersisted(context)),
-                    index = isMapBased ? STYLING_INDEX_FOR_MAP_BINDING : state.classesIndex++;
-                return !(value === NO_CHANGE || !updateBindingData(context, data, index, prop, bindingIndex, value, deferRegistration, forceUpdate, !1) && !forceUpdate || (state.classesBitMask |= 1 << index, 0))
+                    state = getStylingState(element, directiveIndex),
+                    countIndex = isMapBased ? STYLING_INDEX_FOR_MAP_BINDING : state.classesIndex++;
+                return !(value === NO_CHANGE || !updateBindingData(context, data, countIndex, state.sourceIndex, prop, bindingIndex, value, forceUpdate, !1) && !forceUpdate || (state.classesBitMask |= 1 << countIndex, 0))
             }
 
-            function updateStyleBinding(context, data, element, prop, bindingIndex, value, sanitizer, deferRegistration, forceUpdate) {
+            function updateStyleViaContext(context, data, element, directiveIndex, prop, bindingIndex, value, sanitizer, forceUpdate) {
                 var isMapBased = !prop,
-                    state = getStylingState(element, stateIsPersisted(context)),
-                    index = isMapBased ? STYLING_INDEX_FOR_MAP_BINDING : state.stylesIndex++;
-                return !(value === NO_CHANGE || !updateBindingData(context, data, index, prop, bindingIndex, value, deferRegistration, forceUpdate, isMapBased || !!sanitizer && sanitizer(prop, null, 1)) && !forceUpdate || (state.stylesBitMask |= 1 << index, 0))
+                    state = getStylingState(element, directiveIndex),
+                    countIndex = isMapBased ? STYLING_INDEX_FOR_MAP_BINDING : state.stylesIndex++;
+                if (value !== NO_CHANGE) {
+                    var sanitizationRequired = !!isMapBased || !!sanitizer && sanitizer(prop, null, 1);
+                    if (updateBindingData(context, data, countIndex, state.sourceIndex, prop, bindingIndex, value, forceUpdate, sanitizationRequired) || forceUpdate) return state.stylesBitMask |= 1 << countIndex, !0
+                }
+                return !1
             }
 
-            function updateBindingData(context, data, counterIndex, prop, bindingIndex, value, deferRegistration, forceUpdate, sanitizationRequired) {
-                isContextLocked(context) || (deferRegistration ? function(context, counterIndex, prop, bindingIndex, sanitizationRequired) {
-                    deferredBindingQueue.unshift(context, counterIndex, prop, bindingIndex, sanitizationRequired)
-                }(context, counterIndex, prop, bindingIndex, sanitizationRequired) : (deferredBindingQueue.length && flushDeferredBindings(), registerBinding(context, counterIndex, prop, bindingIndex, sanitizationRequired)));
+            function updateBindingData(context, data, counterIndex, sourceIndex, prop, bindingIndex, value, forceUpdate, sanitizationRequired) {
+                var hostBindingsMode = isHostStylingActive(sourceIndex);
+                isContextLocked(context, hostBindingsMode) || (registerBinding(context, counterIndex, sourceIndex, prop, bindingIndex, sanitizationRequired), patchConfig(context, hostBindingsMode ? 32 : 16), patchConfig(context, prop ? 1 : 2));
                 var changed = forceUpdate || hasValueChanged(data[bindingIndex], value);
-                return changed && (data[bindingIndex] = value), changed
-            }
-
-            function flushDeferredBindings() {
-                for (var i = 0; i < deferredBindingQueue.length;) registerBinding(deferredBindingQueue[i++], deferredBindingQueue[i++], deferredBindingQueue[i++], deferredBindingQueue[i++], deferredBindingQueue[i++]);
-                deferredBindingQueue.length = 0
-            }
-
-            function registerBinding(context, countId, prop, bindingValue, sanitizationRequired) {
-                var registered = !1;
-                if (prop) {
-                    for (var found = !1, i = getPropValuesStartPosition(context); i < context.length;) {
-                        var valuesCount = getValuesCount(context, i),
-                            p = getProp(context, i);
-                        if (found = prop <= p) {
-                            prop < p && allocateNewContextEntry(context, i, prop, sanitizationRequired), addBindingIntoContext(context, !1, i, bindingValue, countId);
-                            break
+                return changed && (setValue(data, bindingIndex, value), 32 & getConfig(context) && !hostBindingsMode && (!prop || !value) && function(context, data, prop) {
+                    var valuesCount = getValuesCount(context);
+                    if (null !== prop && hasConfig(context, 1)) {
+                        for (var itemsPerRow = 4 + valuesCount, i = 3, found = !1; i < context.length;) {
+                            if (getProp(context, i) === prop) {
+                                found = !0;
+                                break
+                            }
+                            i += itemsPerRow
                         }
-                        i += 3 + valuesCount
+                        if (found)
+                            for (var bindingsStart = i + 4, valuesEnd = bindingsStart + valuesCount - 1, _i11 = bindingsStart + 1; _i11 < valuesEnd; _i11++) {
+                                var _bindingIndex = context[_i11];
+                                0 !== _bindingIndex && setValue(data, _bindingIndex, null)
+                            }
                     }
-                    found || (allocateNewContextEntry(context, context.length, prop, sanitizationRequired), addBindingIntoContext(context, !1, i, bindingValue, countId), registered = !0)
-                } else addBindingIntoContext(context, !0, 3, bindingValue, countId), registered = !0;
-                return registered
+                    if (hasConfig(context, 2))
+                        for (var _valuesEnd = 7 + valuesCount - 1, _i12 = 8; _i12 < _valuesEnd; _i12++) {
+                            var stylingMap = getValue(data, context[_i12]);
+                            stylingMap && (stylingMap[0] = MAP_DIRTY_VALUE)
+                        }
+                }(context, data, prop)), changed
+            }
+
+            function registerBinding(context, countId, sourceIndex, prop, bindingValue, sanitizationRequired) {
+                var found = !1;
+                prop = prop || MAP_BASED_ENTRY_PROP_NAME;
+                for (var totalSources = getTotalSources(context); totalSources <= sourceIndex;) addNewSourceColumn(context), totalSources++;
+                for (var isBindingIndexValue = "number" == typeof bindingValue, entriesPerRow = 4 + getValuesCount(context), i = 3; i < context.length;) {
+                    var p = getProp(context, i);
+                    if (prop <= p) {
+                        prop < p ? allocateNewContextEntry(context, i, prop, sanitizationRequired) : isBindingIndexValue && patchConfig(context, 4), addBindingIntoContext(context, i, bindingValue, countId, sourceIndex), found = !0;
+                        break
+                    }
+                    i += entriesPerRow
+                }
+                found || (allocateNewContextEntry(context, context.length, prop, sanitizationRequired), addBindingIntoContext(context, i, bindingValue, countId, sourceIndex))
             }
 
             function allocateNewContextEntry(context, index, prop, sanitizationRequired) {
                 var config = sanitizationRequired ? 1 : 0;
-                context.splice(index, 0, config, DEFAULT_SIZE_VALUE, prop, DEFAULT_BINDING_VALUE), setGuardMask(context, index, DEFAULT_GUARD_MASK_VALUE)
+                context.splice(index, 0, config, DEFAULT_GUARD_MASK_VALUE, DEFAULT_GUARD_MASK_VALUE, prop), index += 4;
+                for (var totalBindingsPerEntry = getTotalSources(context), i = 0; i < totalBindingsPerEntry; i++) context.splice(index, 0, DEFAULT_BINDING_INDEX), index++;
+                context.splice(index, 0, DEFAULT_BINDING_VALUE)
             }
 
-            function addBindingIntoContext(context, isMapBased, index, bindingValue, countId) {
-                var firstValueIndex = index + 3,
-                    lastValueIndex = firstValueIndex + getValuesCount(context, index);
-                if (isMapBased || lastValueIndex--, "number" == typeof bindingValue) {
-                    for (var i = firstValueIndex; i <= lastValueIndex; i++)
-                        if (context[i] === bindingValue) return;
-                    context.splice(lastValueIndex, 0, bindingValue), context[index + 1]++, setGuardMask(context, index, getGuardMask(context, index) | 1 << countId)
-                } else null !== bindingValue && null == context[lastValueIndex] && (context[lastValueIndex] = bindingValue)
+            function addBindingIntoContext(context, index, bindingValue, bitIndex, sourceIndex) {
+                if ("number" == typeof bindingValue) {
+                    var hostBindingsMode = isHostStylingActive(sourceIndex);
+                    context[index + 4 + sourceIndex] = bindingValue,
+                        function(context, index, maskValue, isHostBinding) {
+                            context[index + (isHostBinding ? 2 : 1)] = maskValue
+                        }(context, index, getGuardMask(context, index, hostBindingsMode) | 1 << bitIndex, hostBindingsMode)
+                } else null !== bindingValue && null === getDefaultValue(context, index) && function(context, index, value) {
+                    context[index + 4 + getTotalSources(context)] = value
+                }(context, index, bindingValue)
             }
 
-            function maybeApplyStyling(renderer, element, data, context, allowFlush, bitMask, styleSetter, styleSanitizer) {
-                return allowFlush && context && (function(context) {
-                    if (!isContextLocked(context)) {
-                        var initialValues = getStylingMapArray(context);
-                        initialValues && function(context, initialStyling) {
-                                for (var i = 1; i < initialStyling.length; i += 2) {
-                                    var value = getMapValue(initialStyling, i);
-                                    value && registerBinding(context, -1, getMapProp(initialStyling, i), value, !1)
-                                }
-                            }(context, initialValues),
-                            function(context) {
-                                setConfig(context, 1 | getConfig(context))
-                            }(context)
+            function addNewSourceColumn(context) {
+                for (var insertOffset = 4 + getValuesCount(context) - 1, index = 3; index < context.length;) index += insertOffset, context.splice(index++, 0, DEFAULT_BINDING_INDEX), index++;
+                context[1]++
+            }
+
+            function lockAndFinalizeContext(context, hostBindingsMode) {
+                ! function(context, initialStyling) {
+                    for (var hasInitialStyling = !1, i = 1; i < initialStyling.length; i += 2) {
+                        var value = getMapValue(initialStyling, i);
+                        value && (registerBinding(context, -1, 0, getMapProp(initialStyling, i), value, !1), hasInitialStyling = !0)
                     }
-                }(context), function(context, bitMask) {
-                    return context && bitMask > BIT_MASK_START_VALUE
-                }(context, bitMask)) ? (applyStyling(context, renderer, element, data, bitMask, styleSetter, styleSanitizer), !0) : allowFlush
+                    hasInitialStyling && patchConfig(context, 8)
+                }(context, getStylingMapArray(context)),
+                function(context, hostBindingsMode) {
+                    patchConfig(context, getLockedConfig(hostBindingsMode))
+                }(context, hostBindingsMode)
             }
 
-            function applyStyling(context, renderer, element, bindingData, bitMaskValue, applyStylingFn, sanitizer) {
-                for (var value, bitMask = !0 === (value = bitMaskValue) ? -1 : !1 === value ? 0 : value, stylingMapsSyncFn = _activeStylingMapApplyFn, mapsMode = (bitMask & getGuardMask(context, 3)) > 0 ? 1 : 0, i = getPropValuesStartPosition(context); i < context.length;) {
-                    var valuesCount = getValuesCount(context, i);
-                    if (bitMask & getGuardMask(context, i)) {
-                        for (var valueApplied = !1, prop = getProp(context, i), valuesCountUpToDefault = valuesCount - 1, defaultValue = getBindingValue(context, i, valuesCountUpToDefault), j = 0; j < valuesCountUpToDefault; j++) {
-                            var bindingIndex = getBindingValue(context, i, j),
-                                _value2 = bindingData[bindingIndex];
-                            if (isStylingValueDefined(_value2)) {
-                                applyStylingFn(renderer, element, prop, sanitizer && isSanitizationRequired(context, i) ? sanitizer(prop, _value2, 2) : _value2, bindingIndex), valueApplied = !0;
-                                break
+            function applyStylingViaContext(context, renderer, element, bindingData, bitMaskValue, applyStylingFn, sanitizer, hostBindingsMode) {
+                var value, bitMask = !0 === (value = bitMaskValue) ? -1 : !1 === value ? 0 : value,
+                    stylingMapsSyncFn = null,
+                    applyAllValues = !1;
+                hasConfig(context, 2) && (stylingMapsSyncFn = _activeStylingMapApplyFn, applyAllValues = 0 != (bitMask & getGuardMask(context, 3, hostBindingsMode)));
+                var valuesCount = getValuesCount(context),
+                    totalBindingsToVisit = 1,
+                    mapsMode = applyAllValues ? 1 : 0;
+                hostBindingsMode && (mapsMode |= 8, totalBindingsToVisit = valuesCount - 1);
+                for (var i = function(context) {
+                        var startPosition = 3;
+                        return hasConfig(context, 2) && (startPosition += 4 + getValuesCount(context)), startPosition
+                    }(context); i < context.length;) {
+                    if (bitMask & getGuardMask(context, i, hostBindingsMode)) {
+                        for (var valueApplied = !1, prop = getProp(context, i), defaultValue = getDefaultValue(context, i), j = 0; j < totalBindingsToVisit; j++) {
+                            var bindingIndex = getBindingValue(context, i, j);
+                            if (!valueApplied && 0 !== bindingIndex) {
+                                var _value2 = getValue(bindingData, bindingIndex);
+                                isStylingValueDefined(_value2) && (hostBindingsMode && 0 === j || applyStylingFn(renderer, element, prop, sanitizer && isSanitizationRequired(context, i) ? sanitizer(prop, _value2, 2) : unwrapSafeValue(_value2), bindingIndex), valueApplied = !0)
                             }
-                        }
-                        if (stylingMapsSyncFn) {
-                            var valueAppliedWithinMap = stylingMapsSyncFn(context, renderer, element, bindingData, applyStylingFn, sanitizer, mapsMode | (valueApplied ? 4 : 2), prop, defaultValue);
-                            valueApplied = valueApplied || valueAppliedWithinMap
+                            if (stylingMapsSyncFn) {
+                                var mode = mapsMode | (valueApplied ? 4 : 2);
+                                hostBindingsMode && 0 === j && (mode |= 16);
+                                var valueAppliedWithinMap = stylingMapsSyncFn(context, renderer, element, bindingData, j, applyStylingFn, sanitizer, mode, prop, defaultValue);
+                                valueApplied = valueApplied || valueAppliedWithinMap
+                            }
                         }
                         valueApplied || applyStylingFn(renderer, element, prop, defaultValue)
                     }
-                    i += 3 + valuesCount
+                    i += 4 + valuesCount
                 }
-                stylingMapsSyncFn && stylingMapsSyncFn(context, renderer, element, bindingData, applyStylingFn, sanitizer, mapsMode)
+                stylingMapsSyncFn && (hostBindingsMode && (mapsMode |= 16), stylingMapsSyncFn(context, renderer, element, bindingData, 0, applyStylingFn, sanitizer, mapsMode))
+            }
+
+            function applyStylingValue(renderer, context, element, prop, value, applyFn, bindingIndex, sanitizer) {
+                var valueToApply = unwrapSafeValue(value);
+                if (isStylingValueDefined(valueToApply)) valueToApply = sanitizer ? sanitizer(prop, value, 2) : valueToApply;
+                else if (hasConfig(context, 8)) {
+                    var initialStyles = getStylingMapArray(context);
+                    initialStyles && (valueToApply = function(map, prop) {
+                        for (var i = 1; i < map.length; i += 2) {
+                            var p = getMapProp(map, i);
+                            if (p >= prop) return p === prop ? getMapValue(map, i) : null
+                        }
+                        return null
+                    }(initialStyles, prop))
+                }
+                applyFn(renderer, element, prop, valueToApply, bindingIndex)
             }
             var _activeStylingMapApplyFn = null,
                 setStyle = function(renderer, native, prop, value) {
@@ -8941,7 +9031,7 @@ function _inheritsLoose(subClass, superClass) {
             }
 
             function selectIndexInternal(lView, index, checkNoChangesMode) {
-                if (!checkNoChangesMode)
+                if (hasActiveElementFlag(1) && executeElementExitFn(), !checkNoChangesMode)
                     if (3 == (3 & lView[FLAGS])) {
                         var preOrderCheckHooks = lView[TVIEW].preOrderCheckHooks;
                         null !== preOrderCheckHooks && executeCheckHooks(lView, preOrderCheckHooks, index)
@@ -8950,128 +9040,61 @@ function _inheritsLoose(subClass, superClass) {
                         null !== preOrderHooks && executeInitAndCheckHooks(lView, preOrderHooks, 0, index)
                     } setSelectedIndex(index)
             }
-            var syncStylingMap = function(context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp, defaultValue) {
+            var syncStylingMap = function(context, renderer, element, data, sourceIndex, applyStylingFn, sanitizer, mode, targetProp, defaultValue) {
                 var targetPropValueWasApplied = !1;
-                if (getValuesCount(context, 3)) {
+                if (getValuesCount(context)) {
                     var runTheSyncAlgorithm = !0,
                         loopUntilEnd = !targetProp;
-                    loopUntilEnd && -2 & mode && (runTheSyncAlgorithm = !1, targetPropValueWasApplied = !0), runTheSyncAlgorithm && (targetPropValueWasApplied = function innerSyncStylingMap(context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp, currentMapIndex, defaultValue) {
+                    loopUntilEnd && 0 == (1 & mode) && (runTheSyncAlgorithm = !1, targetPropValueWasApplied = !0), runTheSyncAlgorithm && (targetPropValueWasApplied = function innerSyncStylingMap(context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp, currentMapIndex, defaultValue) {
+                        var mapsLimit = getValuesCount(context) - 1 - 1,
+                            recurseInnerMaps = currentMapIndex < mapsLimit && 0 != (8 & mode),
+                            checkValuesOnly = 0 != (16 & mode);
+                        checkValuesOnly && (mode &= -17);
                         var mapIndex, indexValue, targetPropValueWasApplied = !1;
-                        if (currentMapIndex < getValuesCount(context, 3)) {
-                            for (var bindingIndex = getBindingValue(context, 3, currentMapIndex), stylingMapArr = data[bindingIndex], cursor = ((mapIndex = currentMapIndex) >= MAP_CURSORS.length && MAP_CURSORS.push(1), MAP_CURSORS[mapIndex]); cursor < stylingMapArr.length;) {
-                                var prop = getMapProp(stylingMapArr, cursor),
-                                    iteratedTooFar = targetProp && prop > targetProp,
-                                    isTargetPropMatched = !iteratedTooFar && prop === targetProp,
-                                    value = getMapValue(stylingMapArr, cursor),
-                                    valueIsDefined = isStylingValueDefined(value),
-                                    valueApplied = innerSyncStylingMap(context, renderer, element, data, applyStylingFn, sanitizer, iteratedTooFar ? mode : resolveInnerMapMode(mode, valueIsDefined, isTargetPropMatched), iteratedTooFar ? targetProp : prop, currentMapIndex + 1, defaultValue);
-                                if (iteratedTooFar) {
-                                    targetPropValueWasApplied || (targetPropValueWasApplied = valueApplied);
-                                    break
+                        if (currentMapIndex <= mapsLimit) {
+                            var cursor = ((mapIndex = currentMapIndex) >= MAP_CURSORS.length && MAP_CURSORS.push(1), MAP_CURSORS[mapIndex]),
+                                bindingIndex = getBindingValue(context, 3, currentMapIndex),
+                                stylingMapArr = getValue(data, bindingIndex);
+                            if (stylingMapArr) {
+                                for (; cursor < stylingMapArr.length;) {
+                                    var prop = getMapProp(stylingMapArr, cursor),
+                                        iteratedTooFar = targetProp && prop > targetProp,
+                                        isTargetPropMatched = !iteratedTooFar && prop === targetProp,
+                                        value = getMapValue(stylingMapArr, cursor),
+                                        valueIsDefined = isStylingValueDefined(value),
+                                        innerMode = iteratedTooFar ? mode : resolveInnerMapMode(mode, valueIsDefined, isTargetPropMatched),
+                                        valueApplied = !!recurseInnerMaps && innerSyncStylingMap(context, renderer, element, data, applyStylingFn, sanitizer, innerMode, iteratedTooFar ? targetProp : prop, currentMapIndex + 1, defaultValue);
+                                    if (iteratedTooFar) {
+                                        targetPropValueWasApplied || (targetPropValueWasApplied = valueApplied);
+                                        break
+                                    }
+                                    if (!valueApplied && isValueAllowedToBeApplied(mode, isTargetPropMatched) && (valueApplied = !0, !checkValuesOnly)) {
+                                        var bindingIndexToApply = isTargetPropMatched ? bindingIndex : null;
+                                        applyStylingFn(renderer, element, prop, isTargetPropMatched && !valueIsDefined ? defaultValue : sanitizer ? sanitizer(prop, value, 3) : value ? unwrapSafeValue(value) : null, bindingIndexToApply)
+                                    }
+                                    targetPropValueWasApplied = valueApplied && isTargetPropMatched, cursor += 2
                                 }
-                                if (!valueApplied && isValueAllowedToBeApplied(mode, isTargetPropMatched)) {
-                                    var useDefault = isTargetPropMatched && !valueIsDefined,
-                                        valueToApply = useDefault ? defaultValue : value,
-                                        bindingIndexToApply = useDefault ? bindingIndex : null;
-                                    applyStylingFn(renderer, element, prop, sanitizer ? sanitizer(prop, valueToApply, 3) : valueToApply, bindingIndexToApply), valueApplied = !0
-                                }
-                                targetPropValueWasApplied = valueApplied && isTargetPropMatched, cursor += 2
-                            }
-                            if (indexValue = cursor, MAP_CURSORS[currentMapIndex] = indexValue, 1 === stylingMapArr.length || !targetProp) return innerSyncStylingMap(context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp, currentMapIndex + 1, defaultValue)
+                                indexValue = cursor, MAP_CURSORS[currentMapIndex] = indexValue, !recurseInnerMaps || 1 !== stylingMapArr.length && targetProp || (targetPropValueWasApplied = innerSyncStylingMap(context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp, currentMapIndex + 1, defaultValue))
+                            } else recurseInnerMaps && (targetPropValueWasApplied = innerSyncStylingMap(context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp, currentMapIndex + 1, defaultValue))
                         }
                         return targetPropValueWasApplied
-                    }(context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp || null, 0, defaultValue || null)), loopUntilEnd && function() {
+                    }(context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp || null, sourceIndex, defaultValue || null)), loopUntilEnd && function() {
                         for (var i = 0; i < MAP_CURSORS.length; i++) MAP_CURSORS[i] = 1
                     }()
                 }
                 return targetPropValueWasApplied
             };
 
-            function activateStylingMapFeature() {
-                _activeStylingMapApplyFn = syncStylingMap
-            }
-
-            function resolveInnerMapMode(currentMode, valueIsDefined, isExactMatch) {
+            function resolveInnerMapMode(currentMode, valueIsDefined, isTargetPropMatched) {
                 var innerMode = currentMode;
-                return valueIsDefined || 4 & currentMode || !(isExactMatch || 1 & currentMode) ? (innerMode |= 4, innerMode &= -3) : (innerMode |= 2, innerMode &= -5), innerMode
+                return !valueIsDefined && (isTargetPropMatched ? 2 & currentMode : 1 & currentMode) ? (innerMode |= 2, innerMode &= -5) : (innerMode |= 4, innerMode &= -3), innerMode
             }
 
             function isValueAllowedToBeApplied(mode, isTargetPropMatched) {
-                var doApplyValue = (1 & mode) > 0;
+                var doApplyValue = 0 != (1 & mode);
                 return doApplyValue ? 4 & mode && isTargetPropMatched && (doApplyValue = !1) : 2 & mode && (doApplyValue = isTargetPropMatched), doApplyValue
             }
             var MAP_CURSORS = [];
-
-            function addItemToStylingMap(stylingMapArr, prop, value, allowOverwrite) {
-                for (var j = 1; j < stylingMapArr.length; j += 2) {
-                    var propAtIndex = getMapProp(stylingMapArr, j);
-                    if (prop <= propAtIndex) {
-                        var applied = !1;
-                        if (propAtIndex === prop) {
-                            var valueAtIndex = stylingMapArr[j];
-                            !allowOverwrite && isStylingValueDefined(valueAtIndex) || (applied = !0, setMapValue(stylingMapArr, j, value))
-                        } else applied = !0, stylingMapArr.splice(j, 0, prop, value);
-                        return applied
-                    }
-                }
-                return stylingMapArr.push(prop, value), !0
-            }
-
-            function stylingMapToString(map, isClassBased) {
-                for (var str = "", i = 1; i < map.length; i += 2) {
-                    var prop = getMapProp(map, i),
-                        value = getMapValue(map, i),
-                        attrValue = concatString(prop, isClassBased ? "" : value, ":");
-                    str = concatString(str, attrValue, isClassBased ? " " : "; ")
-                }
-                return str
-            }
-
-            function stylingMapToStringMap(map) {
-                var stringMap = {};
-                if (map)
-                    for (var i = 1; i < map.length; i += 2) {
-                        var prop = getMapProp(map, i),
-                            value = getMapValue(map, i);
-                        stringMap[prop] = value
-                    }
-                return stringMap
-            }
-            var NodeStylingDebug = function() {
-                function NodeStylingDebug(context, _data, _isClassBased) {
-                    this.context = context, this._data = _data, this._isClassBased = _isClassBased, this._sanitizer = null
-                }
-                var _proto103 = NodeStylingDebug.prototype;
-                return _proto103.overrideSanitizer = function(sanitizer) {
-                    this._sanitizer = sanitizer
-                }, _proto103._mapValues = function(fn) {
-                    getValuesCount(this.context, 3) > 0 && activateStylingMapFeature();
-                    var sanitizer = this._isClassBased ? null : this._sanitizer || getCurrentStyleSanitizer();
-                    applyStyling(this.context, null, {}, this._data, !0, (function(renderer, element, prop, value, bindingIndex) {
-                        fn(prop, value, bindingIndex || null)
-                    }), sanitizer)
-                }, _createClass(NodeStylingDebug, [{
-                    key: "summary",
-                    get: function() {
-                        var entries = {};
-                        return this._mapValues((function(prop, value, bindingIndex) {
-                            entries[prop] = {
-                                prop: prop,
-                                value: value,
-                                bindingIndex: bindingIndex
-                            }
-                        })), entries
-                    }
-                }, {
-                    key: "values",
-                    get: function() {
-                        var entries = {};
-                        return this._mapValues((function(prop, value) {
-                            entries[prop] = value
-                        })), entries
-                    }
-                }]), NodeStylingDebug
-            }();
 
             function refreshContentQueries(tView, lView) {
                 var contentQueries = tView.contentQueries;
@@ -9171,7 +9194,7 @@ function _inheritsLoose(subClass, superClass) {
                                             currentDirectiveIndex = _bindingRootIndex += INJECTOR_BLOOM_PARENT_SIZE + providerCount
                                         } else _bindingRootIndex += instruction;
                                         setBindingRoot(_bindingRootIndex)
-                                    } else null !== instruction && (viewData[BINDING_INDEX] = _bindingRootIndex, instruction(2, unwrapRNode(viewData[currentDirectiveIndex]), currentElementIndex), incrementActiveDirectiveId()), currentDirectiveIndex++
+                                    } else null !== instruction && (incrementActiveDirectiveId(), viewData[BINDING_INDEX] = _bindingRootIndex, instruction(2, unwrapRNode(viewData[currentDirectiveIndex]), currentElementIndex)), currentDirectiveIndex++
                                 }
                             }
                         } finally {
@@ -9217,7 +9240,7 @@ function _inheritsLoose(subClass, superClass) {
                 try {
                     setActiveHostElement(null), 2 & rf && lView.length > HEADER_OFFSET && selectIndexInternal(lView, 0, getCheckNoChangesMode()), templateFn(rf, context)
                 } finally {
-                    setSelectedIndex(prevSelectedIndex)
+                    hasActiveElementFlag(1) && executeElementExitFn(), setSelectedIndex(prevSelectedIndex)
                 }
             }
 
@@ -9250,7 +9273,7 @@ function _inheritsLoose(subClass, superClass) {
                         for (var i = start; i < end; i++) {
                             var def = tView.data[i],
                                 directive = viewData[i];
-                            def.hostBindings ? (invokeHostBindingsInCreationMode(def, expando, directive, tNode, firstTemplatePass), incrementActiveDirectiveId()) : firstTemplatePass && expando.push(null)
+                            def.hostBindings ? (incrementActiveDirectiveId(), invokeHostBindingsInCreationMode(def, expando, directive, tNode, firstTemplatePass)) : firstTemplatePass && expando.push(null)
                         }
                     } finally {
                         setActiveHostElement(selectedIndex)
@@ -10439,41 +10462,41 @@ function _inheritsLoose(subClass, superClass) {
                 }(getPreviousOrParentTNode(), attrNameToInject)
             }
 
-            function \u0275\u0275styling() {
-                var tNode, directiveIndex;
-                getLView()[TVIEW].firstTemplatePass && (tNode = getPreviousOrParentTNode(), directiveIndex = getActiveDirectiveStylingIndex(), updateLastDirectiveIndex(getClassesContext(tNode), directiveIndex), updateLastDirectiveIndex(getStylesContext(tNode), directiveIndex))
-            }
-
             function \u0275\u0275styleSanitizer(sanitizer) {
                 setCurrentStyleSanitizer(sanitizer)
             }
 
             function \u0275\u0275styleProp(prop, value, suffix) {
                 ! function(elementIndex, prop, value, suffix) {
-                    _stylingProp(elementIndex, getLView()[BINDING_INDEX]++, prop, function(value, suffix) {
+                    stylingProp(elementIndex, getLView()[BINDING_INDEX]++, prop, function(value, suffix) {
                         if (value === NO_CHANGE) return value;
                         var resolvedValue = null;
                         return null !== value && (resolvedValue = suffix ? renderStringify(value) + suffix : value), resolvedValue
-                    }(value, suffix), !1, deferStylingUpdate())
+                    }(value, suffix), !1)
                 }(getSelectedIndex(), prop, value, suffix)
             }
 
             function \u0275\u0275classProp(className, value) {
                 var bindingIndex = getLView()[BINDING_INDEX]++;
-                _stylingProp(getSelectedIndex(), bindingIndex, className, value, !0, deferStylingUpdate())
+                stylingProp(getSelectedIndex(), bindingIndex, className, value, !0)
             }
 
-            function _stylingProp(elementIndex, bindingIndex, prop, value, isClassBased, defer) {
-                var lView = getLView(),
+            function stylingProp(elementIndex, bindingIndex, prop, value, isClassBased) {
+                var updated = !1,
+                    lView = getLView(),
                     tNode = getTNode(elementIndex, lView),
                     native = getNativeByTNode(tNode, lView),
-                    valueHasChanged = !1;
-                if (isClassBased) valueHasChanged = updateClassBinding(getClassesContext(tNode), lView, native, prop, bindingIndex, value, defer, !1);
+                    hostBindingsMode = isHostStyling(),
+                    context = isClassBased ? getClassesContext(tNode) : getStylesContext(tNode),
+                    sanitizer = isClassBased ? null : getCurrentStyleSanitizer();
+                if (allowDirectStyling(context, hostBindingsMode)) updated = function(renderer, context, element, data, bindingIndex, prop, value, applyFn, sanitizer) {
+                    return !!hasValueChanged(data[bindingIndex], value) && (setValue(data, bindingIndex, value), applyStylingValue(renderer, context, element, prop, value, applyFn, bindingIndex, sanitizer), !0)
+                }(getRenderer(tNode, lView), context, native, lView, bindingIndex, prop, value, isClassBased ? setClass : setStyle, sanitizer);
                 else {
-                    var sanitizer = getCurrentStyleSanitizer();
-                    valueHasChanged = updateStyleBinding(getStylesContext(tNode), lView, native, prop, bindingIndex, value, sanitizer, defer, !1)
+                    var directiveIndex = getActiveDirectiveId();
+                    updated = isClassBased ? updateClassViaContext(context, lView, native, directiveIndex, prop, bindingIndex, value) : updateStyleViaContext(context, lView, native, directiveIndex, prop, bindingIndex, value, sanitizer), setElementExitFn(stylingApply)
                 }
-                return valueHasChanged
+                return updated
             }
 
             function \u0275\u0275styleMap(styles) {
@@ -10494,16 +10517,19 @@ function _inheritsLoose(subClass, superClass) {
                 var lView = getLView(),
                     tNode = getTNode(elementIndex, lView),
                     context = getClassesContext(tNode),
-                    directiveIndex = getActiveDirectiveStylingIndex(),
                     bindingIndex = lView[BINDING_INDEX]++;
-                !directiveIndex && hasClassInput(tNode) && classes !== NO_CHANGE && (updateDirectiveInputValue(context, lView, tNode, bindingIndex, classes, !0), classes = NO_CHANGE), _stylingMap(elementIndex, context, bindingIndex, classes, !0, deferStylingUpdate())
+                !isHostStyling() && hasClassInput(tNode) && classes !== NO_CHANGE && (updateDirectiveInputValue(context, lView, tNode, bindingIndex, classes, !0), classes = NO_CHANGE), _stylingMap(elementIndex, context, bindingIndex, classes, !0)
             }
 
-            function _stylingMap(elementIndex, context, bindingIndex, value, isClassBased, defer) {
-                activateStylingMapFeature();
-                var lView = getLView(),
-                    native = getNativeByTNode(getTNode(elementIndex, lView), lView),
+            function _stylingMap(elementIndex, context, bindingIndex, value, isClassBased) {
+                var updated = !1,
+                    lView = getLView(),
+                    directiveIndex = getActiveDirectiveId(),
+                    tNode = getTNode(elementIndex, lView),
+                    native = getNativeByTNode(tNode, lView),
                     oldValue = lView[bindingIndex],
+                    hostBindingsMode = isHostStyling(),
+                    sanitizer = getCurrentStyleSanitizer(),
                     valueHasChanged = hasValueChanged(oldValue, value),
                     stylingMapArr = value === NO_CHANGE ? NO_CHANGE : function(bindingValue, newValues, normalizeProps) {
                         var stylingMapArr = Array.isArray(bindingValue) ? bindingValue : [null];
@@ -10518,48 +10544,53 @@ function _inheritsLoose(subClass, superClass) {
                             }
                         return stylingMapArr
                     }(oldValue, value, !isClassBased);
-                return isClassBased ? updateClassBinding(context, lView, native, null, bindingIndex, stylingMapArr, defer, valueHasChanged) : updateStyleBinding(context, lView, native, null, bindingIndex, stylingMapArr, getCurrentStyleSanitizer(), defer, valueHasChanged), valueHasChanged
+                return allowDirectStyling(context, hostBindingsMode) ? updated = function(renderer, context, element, data, bindingIndex, map, applyFn, sanitizer, forceUpdate) {
+                    if (forceUpdate || hasValueChanged(data[bindingIndex], map)) {
+                        setValue(data, bindingIndex, map);
+                        for (var i = 1; i < map.length; i += 2) applyStylingValue(renderer, context, element, getMapProp(map, i), getMapValue(map, i), applyFn, bindingIndex, sanitizer);
+                        return !0
+                    }
+                    return !1
+                }(getRenderer(tNode, lView), context, native, lView, bindingIndex, stylingMapArr, isClassBased ? setClass : setStyle, sanitizer, valueHasChanged) : (updated = valueHasChanged, _activeStylingMapApplyFn = syncStylingMap, isClassBased ? updateClassViaContext(context, lView, native, directiveIndex, null, bindingIndex, stylingMapArr, valueHasChanged) : updateStyleViaContext(context, lView, native, directiveIndex, null, bindingIndex, stylingMapArr, sanitizer, valueHasChanged), setElementExitFn(stylingApply)), updated
             }
 
             function updateDirectiveInputValue(context, lView, tNode, bindingIndex, newValue, isClassBased) {
-                lView[bindingIndex] !== newValue && ((newValue || isContextLocked(context)) && setInputsForProperty(lView, tNode.inputs[isClassBased ? "class" : "style"], function(initialValue, bindingValue, isClassBased) {
-                    var classes, value = bindingValue;
-                    return initialValue.length > 0 && (value = isClassBased ? concatString(initialValue, ((classes = bindingValue) && "string" != typeof classes && (classes = Object.keys(classes).join(" ")), classes || "")) : concatString(initialValue, function(styles) {
-                        var str = "";
-                        if (styles)
-                            for (var props = Object.keys(styles), i = 0; i < props.length; i++) {
-                                var prop = props[i];
-                                str = concatString(str, prop + ":" + styles[prop], ";")
-                            }
-                        return str
-                    }(bindingValue), ";")), value
-                }(getInitialStylingValue(context), newValue, isClassBased)), lView[bindingIndex] = newValue)
+                if (lView[bindingIndex] !== newValue) {
+                    if (newValue || isContextLocked(context, !1)) {
+                        var inputName = isClassBased ? "class" : "style";
+                        setInputsForProperty(lView, tNode.inputs[inputName], function(initialValue, bindingValue, isClassBased) {
+                            var classes, value = bindingValue;
+                            return initialValue.length && (value = isClassBased ? concatString(initialValue, ((classes = bindingValue) && "string" != typeof classes && (classes = Object.keys(classes).join(" ")), classes || "")) : concatString(initialValue, function(styles) {
+                                var str = "";
+                                if (styles)
+                                    for (var props = Object.keys(styles), i = 0; i < props.length; i++) {
+                                        var prop = props[i];
+                                        str = concatString(str, prop + ":" + styles[prop], ";")
+                                    }
+                                return str
+                            }(bindingValue), ";")), value
+                        }(getInitialStylingValue(context), newValue, isClassBased)), setElementExitFn(stylingApply)
+                    }
+                    setValue(lView, bindingIndex, newValue)
+                }
             }
 
-            function \u0275\u0275stylingApply() {
-                var elementIndex = getSelectedIndex(),
-                    lView = getLView(),
-                    tNode = getTNode(elementIndex, lView),
-                    renderer = function(tNode, lView) {
-                        return 3 === tNode.type ? lView[RENDERER] : null
-                    }(tNode, lView),
+            function stylingApply() {
+                var lView = getLView(),
+                    tNode = getTNode(getSelectedIndex(), lView),
                     native = getNativeByTNode(tNode, lView),
-                    directiveIndex = getActiveDirectiveStylingIndex(),
+                    directiveIndex = getActiveDirectiveId(),
+                    renderer = getRenderer(tNode, lView),
                     sanitizer = getCurrentStyleSanitizer();
                 (function(renderer, data, classesContext, stylesContext, element, directiveIndex, styleSanitizer) {
-                    var persistState = classesContext ? stateIsPersisted(classesContext) : !!stylesContext && stateIsPersisted(stylesContext),
-                        allowFlushClasses = allowStylingFlush(classesContext, directiveIndex),
-                        allowFlushStyles = allowStylingFlush(stylesContext, directiveIndex);
-                    deferredBindingQueue.length && (allowFlushClasses || allowFlushStyles) && flushDeferredBindings();
-                    var state = getStylingState(element, persistState),
-                        classesFlushed = maybeApplyStyling(renderer, element, data, classesContext, allowFlushClasses, state.classesBitMask, setClass, null),
-                        stylesFlushed = maybeApplyStyling(renderer, element, data, stylesContext, allowFlushStyles, state.stylesBitMask, setStyle, styleSanitizer);
-                    classesFlushed && stylesFlushed ? (resetStylingState(), persistState && function(element) {
-                        _stateStorage.delete(element)
-                    }(element)) : persistState && function(element, state) {
-                        _stateStorage.set(element, state)
-                    }(element, state)
-                })(renderer, lView, getClassesContext(tNode), getStylesContext(tNode), native, directiveIndex, sanitizer), setCurrentStyleSanitizer(null)
+                    var state = getStylingState(element, directiveIndex),
+                        hostBindingsMode = isHostStylingActive(state.sourceIndex);
+                    stylesContext && (isContextLocked(stylesContext, hostBindingsMode) || lockAndFinalizeContext(stylesContext, hostBindingsMode), 0 !== state.stylesBitMask && applyStylingViaContext(stylesContext, renderer, element, data, state.stylesBitMask, setStyle, styleSanitizer, hostBindingsMode)), classesContext && (isContextLocked(classesContext, hostBindingsMode) || lockAndFinalizeContext(classesContext, hostBindingsMode), 0 !== state.classesBitMask && applyStylingViaContext(classesContext, renderer, element, data, state.classesBitMask, setClass, null, hostBindingsMode)), _state.element = null
+                })(renderer, lView, isStylingContext(tNode.classes) ? tNode.classes : null, isStylingContext(tNode.styles) ? tNode.styles : null, native, directiveIndex, sanitizer), setCurrentStyleSanitizer(null)
+            }
+
+            function getRenderer(tNode, lView) {
+                return 3 === tNode.type ? lView[RENDERER] : null
             }
 
             function registerInitialStylingOnTNode(tNode, attrs, startIndex) {
@@ -10574,10 +10605,6 @@ function _inheritsLoose(subClass, superClass) {
                 getStylingMapArray(context)[0] = value
             }
 
-            function getActiveDirectiveStylingIndex() {
-                return activeDirectiveId + activeDirectiveSuperClassDepthPosition
-            }
-
             function getStylesContext(tNode) {
                 return getContext(tNode, !1)
             }
@@ -10588,11 +10615,11 @@ function _inheritsLoose(subClass, superClass) {
 
             function getContext(tNode, isClassBased) {
                 var context = isClassBased ? tNode.classes : tNode.styles;
-                return isStylingContext(context) || (context = [context || [""], 0, TEMPLATE_DIRECTIVE_INDEX, 1, 0, MAP_BASED_ENTRY_PROP_NAME], isClassBased ? tNode.classes = context : tNode.styles = context), context
+                return isStylingContext(context) || (context = [0, DEFAULT_TOTAL_SOURCES, context || [""]], isClassBased ? tNode.classes = context : tNode.styles = context), context
             }
 
-            function deferStylingUpdate() {
-                return activeDirectiveSuperClassHeight > 0
+            function isHostStyling() {
+                return isHostStylingActive(getActiveDirectiveId())
             }
 
             function \u0275\u0275elementStart(index, name, attrs, localRefs) {
@@ -10634,7 +10661,7 @@ function _inheritsLoose(subClass, superClass) {
             }
 
             function setDirectiveStylingInput(context, lView, stylingInputs) {
-                setInputsForProperty(lView, stylingInputs, getInitialStylingValue(context) || null)
+                setInputsForProperty(lView, stylingInputs, context && getInitialStylingValue(context) || null)
             }
 
             function \u0275\u0275elementContainerStart(index, attrs, localRefs) {
@@ -11057,13 +11084,7 @@ function _inheritsLoose(subClass, superClass) {
             function inheritHostBindings(definition, superHostBindings) {
                 var prevHostBindings = definition.hostBindings;
                 superHostBindings !== prevHostBindings && (definition.hostBindings = prevHostBindings ? function(rf, ctx, elementIndex) {
-                    adjustActiveDirectiveSuperClassDepthPosition(1);
-                    try {
-                        superHostBindings(rf, ctx, elementIndex)
-                    } finally {
-                        adjustActiveDirectiveSuperClassDepthPosition(-1)
-                    }
-                    prevHostBindings(rf, ctx, elementIndex)
+                    superHostBindings(rf, ctx, elementIndex), prevHostBindings(rf, ctx, elementIndex)
                 } : superHostBindings)
             }
 
@@ -11662,7 +11683,7 @@ function _inheritsLoose(subClass, superClass) {
                                 })), componentDef.contentQueries && componentDef.contentQueries(1, component, rootView.length - 1);
                                 var rootTNode = getPreviousOrParentTNode();
                                 if (tView.firstTemplatePass && componentDef.hostBindings) {
-                                    setActiveHostElement(rootTNode.index - HEADER_OFFSET);
+                                    setActiveHostElement(rootTNode.index - HEADER_OFFSET), incrementActiveDirectiveId();
                                     var expando = tView.expandoInstructions;
                                     invokeHostBindingsInCreationMode(componentDef, expando, component, rootTNode, tView.firstTemplatePass), setActiveHostElement(null)
                                 }
@@ -13166,20 +13187,44 @@ function _inheritsLoose(subClass, superClass) {
                                     var attrValue = tNodeAttrs[i + 1];
                                     attributes[attrName] = attrValue, lowercaseTNodeAttrs.push(attrName.toLowerCase()), i += 2
                                 }
-                            for (var eAttrs = element.attributes, _i20 = 0; _i20 < eAttrs.length; _i20++) {
-                                var attr = eAttrs[_i20]; - 1 === lowercaseTNodeAttrs.indexOf(attr.name) && (attributes[attr.name] = attr.value)
+                            for (var eAttrs = element.attributes, _i22 = 0; _i22 < eAttrs.length; _i22++) {
+                                var attr = eAttrs[_i22]; - 1 === lowercaseTNodeAttrs.indexOf(attr.name) && (attributes[attr.name] = attr.value)
                             }
                             return attributes
                         }
                     }, {
                         key: "styles",
                         get: function() {
-                            return _getStylingDebugInfo(this.nativeElement, !1)
+                            return this.nativeElement && this.nativeElement.style ? this.nativeElement.style : {}
                         }
                     }, {
                         key: "classes",
                         get: function() {
-                            return _getStylingDebugInfo(this.nativeElement, !0)
+                            if (!this._classesProxy) {
+                                var element = this.nativeElement;
+                                this._classesProxy = function(handler) {
+                                    var g = _global;
+                                    if (!g.Proxy) throw new Error("Proxy is not supported in this browser");
+                                    return new g.Proxy({}, handler)
+                                }({
+                                    get: function(target, prop) {
+                                        return !!element && element.classList.contains(prop)
+                                    },
+                                    set: function(target, prop, value) {
+                                        return !!element && element.classList.toggle(prop, !!value)
+                                    },
+                                    ownKeys: function() {
+                                        return element ? Array.from(element.classList).sort() : []
+                                    },
+                                    getOwnPropertyDescriptor: function(k) {
+                                        return {
+                                            enumerable: !0,
+                                            configurable: !0
+                                        }
+                                    }
+                                })
+                            }
+                            return this._classesProxy
                         }
                     }, {
                         key: "childNodes",
@@ -13203,14 +13248,6 @@ function _inheritsLoose(subClass, superClass) {
                         }
                     }]), DebugElement__POST_R3__
                 }(DebugNode__POST_R3__);
-
-            function _getStylingDebugInfo(element, isClassBased) {
-                var context = loadLContext(element, !1);
-                if (!context) return {};
-                var lView = context.lView,
-                    tNode = lView[TVIEW].data[context.nodeIndex];
-                return isClassBased ? isStylingContext(tNode.classes) ? new NodeStylingDebug(tNode.classes, lView, !0).values : stylingMapToStringMap(tNode.classes) : isStylingContext(tNode.styles) ? new NodeStylingDebug(tNode.styles, lView, !1).values : stylingMapToStringMap(tNode.styles)
-            }
 
             function _queryAllR3(parentElement, predicate, matches, elementsOnly) {
                 var context = loadLContext(parentElement.nativeNode);
