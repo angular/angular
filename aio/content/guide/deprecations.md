@@ -362,6 +362,10 @@ See the [dedicated migration guide for adding missing `@Injectable` decorators](
 
  See the [dedicated migration guide for `$localize`](guide/migration-localize).
 
+{@a module-with-providers}
+### Migrating `ModuleWithProviders`
+
+ See the [dedicated migration guide for `ModuleWithProviders`](guide/migration-module-with-providers).
 
 
 {@a removed}
