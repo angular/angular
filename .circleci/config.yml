@@ -29,7 +29,7 @@ var_4_win: &cache_key_win_fallback v5-angular-win-node-12.0-
 
 # Cache key for the Material unit tests job. **Note** when updating the SHA in the cache keys,
 # also update the SHA for the "MATERIAL_REPO_COMMIT" environment variable.
-var_5: &material_unit_tests_cache_key v4-angular-material-361d1cf800641a6e77321c5d43d97ed854310b9a
+var_5: &material_unit_tests_cache_key v4-angular-material-d4bf7be64b03a2cfdaaf6f045cfc7c72de6470c2
 var_6: &material_unit_tests_cache_key_fallback v4-angular-material-
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages` and
