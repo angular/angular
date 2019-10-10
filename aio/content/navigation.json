@@ -744,6 +744,11 @@
           "title": "Usage Analytics",
           "tooltip": "For administrators, guide to gathering usage analytics from your users.",
           "url": "cli/usage-analytics-gathering"
+        },
+        {
+          "title": "ngcc",
+          "tooltip": "Description of the Angular Compatibility Compiler.",
+          "url": "guide/ngcc"
         }
       ]
     },
