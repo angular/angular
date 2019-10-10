@@ -33,7 +33,7 @@ ivyEnabled && describe('render3 jit', () => {
     }
     const SomeCmpAny = SomeCmp as any;
 
-    expect(SomeCmpAny.ngComponentDef).toBeDefined();
+    expect(SomeCmpAny.ɵcmp).toBeDefined();
     expect(SomeCmpAny.ngFactoryDef() instanceof SomeCmp).toBe(true);
   });
 
@@ -198,7 +198,7 @@ ivyEnabled && describe('render3 jit', () => {
     })
     class Cmp {
     }
-    const cmpDef: ComponentDef<Cmp> = (Cmp as any).ngComponentDef;
+    const cmpDef: ComponentDef<Cmp> = (Cmp as any).ɵcmp;
 
     expect(cmpDef.directiveDefs).toBeNull();
 
@@ -230,7 +230,7 @@ ivyEnabled && describe('render3 jit', () => {
       onChange(event: any): void {}
     }
 
-    const cmpDef = (Cmp as any).ngComponentDef as ComponentDef<Cmp>;
+    const cmpDef = (Cmp as any).ɵcmp as ComponentDef<Cmp>;
 
     expect(cmpDef.hostBindings).toBeDefined();
     expect(cmpDef.hostBindings !.length).toBe(3);
@@ -268,8 +268,8 @@ ivyEnabled && describe('render3 jit', () => {
     }
 
     const InputCompAny = InputComp as any;
-    expect(InputCompAny.ngComponentDef.inputs).toEqual({publicName: 'privateName'});
-    expect(InputCompAny.ngComponentDef.declaredInputs).toEqual({publicName: 'privateName'});
+    expect(InputCompAny.ɵcmp.inputs).toEqual({publicName: 'privateName'});
+    expect(InputCompAny.ɵcmp.declaredInputs).toEqual({publicName: 'privateName'});
   });
 
   it('should add @Input properties to a directive', () => {
@@ -331,7 +331,7 @@ ivyEnabled && describe('render3 jit', () => {
       @ViewChild('foo', {static: false}) foo: ElementRef|undefined;
     }
 
-    expect((TestComponent as any).ngComponentDef.foo).not.toBeNull();
+    expect((TestComponent as any).ɵcmp.foo).not.toBeNull();
   });
 
   it('should compile ViewChildren query on a component', () => {
@@ -340,7 +340,7 @@ ivyEnabled && describe('render3 jit', () => {
       @ViewChildren('foo') foos: QueryList<ElementRef>|undefined;
     }
 
-    expect((TestComponent as any).ngComponentDef.viewQuery).not.toBeNull();
+    expect((TestComponent as any).ɵcmp.viewQuery).not.toBeNull();
   });
 });
 

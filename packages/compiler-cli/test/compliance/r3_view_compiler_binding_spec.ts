@@ -714,7 +714,7 @@ describe('compiler compliance: bindings', () => {
       const HostBindingCompDeclaration = `
         const $ff$ = function ($v$) { return ["red", $v$]; };
         …
-        HostBindingComp.ngComponentDef = $r3$.ɵɵdefineComponent({
+        HostBindingComp.ɵcmp = $r3$.ɵɵdefineComponent({
           type: HostBindingComp,
           selectors: [["host-binding-comp"]],
           hostBindings: function HostBindingComp_HostBindings(rf, ctx, elIndex) {
@@ -862,7 +862,7 @@ describe('compiler compliance: bindings', () => {
         const $c0$ = ["title", "hello there from component", ${AttributeMarker.Styles}, "opacity", "1"];
         const $c1$ = ["title", "hello there from directive", ${AttributeMarker.Classes}, "one", "two", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"];
         …
-        HostAttributeComp.ngComponentDef = $r3$.ɵɵdefineComponent({
+        HostAttributeComp.ɵcmp = $r3$.ɵɵdefineComponent({
           type: HostAttributeComp,
           selectors: [["my-host-attribute-component"]],
           hostBindings: function HostAttributeComp_HostBindings(rf, ctx, elIndex) {

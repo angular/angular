@@ -34,7 +34,7 @@ describe('event listeners', () => {
           return comp;
         }
 
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵcmp = ɵɵdefineComponent({
       type: MyComp,
       selectors: [['comp']],
       decls: 2,
@@ -67,7 +67,7 @@ describe('event listeners', () => {
           return comp;
         }
 
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵcmp = ɵɵdefineComponent({
       type: MyCompWithGlobalListeners,
       selectors: [['comp']],
       decls: 1,
@@ -135,7 +135,7 @@ describe('event listeners', () => {
     }
 
     static ngFactoryDef = () => new PreventDefaultComp();
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵcmp = ɵɵdefineComponent({
       type: PreventDefaultComp,
       selectors: [['prevent-default-comp']],
       decls: 2,
@@ -326,7 +326,7 @@ describe('event listeners', () => {
       onClick() { this.counter++; }
 
       static ngFactoryDef = () => new AppComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: AppComp,
         selectors: [['app-comp']],
         decls: 1,
@@ -387,7 +387,7 @@ describe('event listeners', () => {
       onClick(index: number) { this.counters[index]++; }
 
       static ngFactoryDef = () => new AppComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: AppComp,
         selectors: [['app-comp']],
         decls: 1,
@@ -451,7 +451,7 @@ describe('event listeners', () => {
       onClick(index: number) { this.counters[index]++; }
 
       static ngFactoryDef = () => new AppComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: AppComp,
         selectors: [['app-comp']],
         decls: 1,
@@ -530,7 +530,7 @@ describe('event listeners', () => {
       onClick() { events.push('click!'); }
 
       static ngFactoryDef = () => { return new MyComp(); };
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: MyComp,
         selectors: [['comp']],
         decls: 1,
@@ -633,7 +633,7 @@ describe('event listeners', () => {
       onClick(a: any, b: any) { this.counter += a + b; }
 
       static ngFactoryDef = () => new MyComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: MyComp,
         selectors: [['comp']],
         decls: 2,
@@ -914,7 +914,7 @@ describe('event listeners', () => {
       onClick(comp: any) { this.comp = comp; }
 
       static ngFactoryDef = () => new App();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
         decls: 3,

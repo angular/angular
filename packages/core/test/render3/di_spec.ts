@@ -118,7 +118,7 @@ describe('di', () => {
       constructor(public renderer: Renderer2) {}
 
       static ngFactoryDef = () => new MyComp(ɵɵdirectiveInject(Renderer2 as any));
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: MyComp,
         selectors: [['my-comp']],
         decls: 1,

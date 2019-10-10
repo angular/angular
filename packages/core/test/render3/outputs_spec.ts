@@ -22,7 +22,7 @@ describe('outputs', () => {
     resetStream = new EventEmitter();
 
     static ngFactoryDef = () => buttonToggle = new ButtonToggle();
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵcmp = ɵɵdefineComponent({
       type: ButtonToggle,
       selectors: [['button-toggle']],
       template: function(rf: RenderFlags, ctx: any) {},

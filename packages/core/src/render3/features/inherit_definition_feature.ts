@@ -15,7 +15,7 @@ import {isComponentDef} from '../interfaces/type_checks';
 import {ɵɵNgOnChangesFeature} from './ng_onchanges_feature';
 
 function getSuperType(type: Type<any>): Type<any>&
-    {ngComponentDef?: ComponentDef<any>, ngDirectiveDef?: DirectiveDef<any>} {
+    {ɵcmp?: ComponentDef<any>, ngDirectiveDef?: DirectiveDef<any>} {
   return Object.getPrototypeOf(type.prototype).constructor;
 }
 
@@ -32,9 +32,9 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
     let superDef: DirectiveDef<any>|ComponentDef<any>|undefined = undefined;
     if (isComponentDef(definition)) {
       // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
-      superDef = superType.ngComponentDef || superType.ngDirectiveDef;
+      superDef = superType.ɵcmp || superType.ngDirectiveDef;
     } else {
-      if (superType.ngComponentDef) {
+      if (superType.ɵcmp) {
         throw new Error('Directives cannot inherit Components');
       }
       // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.

@@ -400,7 +400,7 @@ export class ComponentDecoratorHandler implements
       // First it needs to be determined if actually importing the directives/pipes used in the
       // template would create a cycle. Currently ngtsc refuses to generate cycles, so an option
       // known as "remote scoping" is used if a cycle would be created. In remote scoping, the
-      // module file sets the directives/pipes on the ngComponentDef of the component, without
+      // module file sets the directives/pipes on the ɵcmp of the component, without
       // requiring new imports (but also in a way that breaks tree shaking).
       //
       // Determining this is challenging, because the TemplateDefinitionBuilder is responsible for
@@ -456,7 +456,7 @@ export class ComponentDecoratorHandler implements
           this._recordSyntheticImport(pipe, context);
         }
 
-        // Check whether the directive/pipe arrays in ngComponentDef need to be wrapped in closures.
+        // Check whether the directive/pipe arrays in ɵcmp need to be wrapped in closures.
         // This is required if any directive/pipe reference is to a declaration in the same file but
         // declared after this component.
         const wrapDirectivesAndPipesInClosure =
@@ -493,7 +493,7 @@ export class ComponentDecoratorHandler implements
     }
     return [
       factoryRes, {
-        name: 'ngComponentDef',
+        name: 'ɵcmp',
         initializer: res.expression,
         statements: [],
         type: res.type,

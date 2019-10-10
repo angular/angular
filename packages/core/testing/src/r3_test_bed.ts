@@ -328,11 +328,11 @@ export class TestBedRender3 implements TestBed {
     const rootElId = `root-ng-internal-isolated-${_nextRootElementId++}`;
     testComponentRenderer.insertRootElement(rootElId);
 
-    const componentDef = (type as any).ngComponentDef;
+    const componentDef = (type as any).ɵcmp;
 
     if (!componentDef) {
       throw new Error(
-          `It looks like '${stringify(type)}' has not been IVY compiled - it has no 'ngComponentDef' field`);
+          `It looks like '${stringify(type)}' has not been IVY compiled - it has no 'ɵcmp' field`);
     }
 
     // TODO: Don't cast as `InjectionToken<boolean>`, proper type is boolean[]

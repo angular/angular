@@ -52,7 +52,7 @@ describe('compiler compliance: listen()', () => {
     };
 
     const componentDef = `
-      MyComponent.ngComponentDef = IDENT.ɵɵdefineComponent({
+      MyComponent.ɵcmp = IDENT.ɵɵdefineComponent({
           …
           inputs:{
             componentInput: "componentInput",

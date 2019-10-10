@@ -21,7 +21,7 @@ describe('ComponentFactory', () => {
     it('should correctly populate default properties', () => {
       class TestComponent {
         static ngFactoryDef = () => new TestComponent();
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵcmp = ɵɵdefineComponent({
           type: TestComponent,
           selectors: [['test', 'foo'], ['bar']],
           decls: 0,
@@ -42,7 +42,7 @@ describe('ComponentFactory', () => {
     it('should correctly populate defined properties', () => {
       class TestComponent {
         static ngFactoryDef = () => new TestComponent();
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵcmp = ɵɵdefineComponent({
           type: TestComponent,
           encapsulation: ViewEncapsulation.None,
           selectors: [['test', 'foo'], ['bar']],
@@ -90,7 +90,7 @@ describe('ComponentFactory', () => {
 
       class TestComponent {
         static ngFactoryDef = () => new TestComponent();
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵcmp = ɵɵdefineComponent({
           type: TestComponent,
           encapsulation: ViewEncapsulation.None,
           selectors: [['test']],

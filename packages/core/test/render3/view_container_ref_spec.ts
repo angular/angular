@@ -102,7 +102,7 @@ describe('ViewContainerRef', () => {
              // TODO(issue/24571): remove '!'.
              testDir !: TestDirective;
              static ngFactoryDef = () => new TestComponent();
-             static ngComponentDef = ɵɵdefineComponent({
+             static ɵcmp = ɵɵdefineComponent({
                type: TestComponent,
                encapsulation: ViewEncapsulation.None,
                selectors: [['test-cmp']],
@@ -174,7 +174,7 @@ describe('ViewContainerRef', () => {
              // TODO(issue/24571): remove '!'.
              testDir !: TestDirective;
              static ngFactoryDef = () => new TestComponent();
-             static ngComponentDef = ɵɵdefineComponent({
+             static ɵcmp = ɵɵdefineComponent({
                type: TestComponent,
                encapsulation: ViewEncapsulation.None,
                selectors: [['test-cmp']],
@@ -247,7 +247,7 @@ describe('ViewContainerRef', () => {
                     ɵɵdirectiveInject(ViewContainerRef as any), injectComponentFactoryResolver());
               }
 
-          static ngComponentDef = ɵɵdefineComponent({
+          static ɵcmp = ɵɵdefineComponent({
             type: AppComp,
             selectors: [['app-comp']],
             decls: 0,
@@ -263,7 +263,7 @@ describe('ViewContainerRef', () => {
 
           static ngFactoryDef = () => dynamicComp = new DynamicComp();
 
-          static ngComponentDef = ɵɵdefineComponent({
+          static ɵcmp = ɵɵdefineComponent({
             type: DynamicComp,
             selectors: [['dynamic-comp']],
             decls: 0,
@@ -368,7 +368,7 @@ describe('ViewContainerRef', () => {
       static ngFactoryDef = () =>
           new AppCmpt(ɵɵdirectiveInject(ViewContainerRef as any), injectComponentFactoryResolver())
 
-              static ngComponentDef = ɵɵdefineComponent({
+              static ɵcmp = ɵɵdefineComponent({
                 type: AppCmpt,
                 selectors: [['app']],
                 decls: 0,
@@ -436,7 +436,7 @@ describe('ViewContainerRef', () => {
         foo !: QueryList<any>;
 
         static ngFactoryDef = () => dynamicComp = new DynamicCompWithViewQueries();
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵcmp = ɵɵdefineComponent({
           type: DynamicCompWithViewQueries,
           selectors: [['dynamic-cmpt-with-view-queries']],
           decls: 2,
@@ -485,7 +485,7 @@ describe('ViewContainerRef', () => {
       static ngFactoryDef = () =>
           new CompWithListenerThatDestroysItself(ɵɵdirectiveInject(ChangeDetectorRef as any))
 
-              static ngComponentDef = ɵɵdefineComponent({
+              static ɵcmp = ɵɵdefineComponent({
                 type: CompWithListenerThatDestroysItself,
                 selectors: [['comp-with-listener-and-on-destroy']],
                 decls: 2,

@@ -8,7 +8,7 @@
 
 import {getClosureSafeProperty} from '../util/property';
 
-export const NG_COMPONENT_DEF = getClosureSafeProperty({ngComponentDef: getClosureSafeProperty});
+export const NG_COMP_DEF = getClosureSafeProperty({ɵcmp: getClosureSafeProperty});
 export const NG_DIRECTIVE_DEF = getClosureSafeProperty({ngDirectiveDef: getClosureSafeProperty});
 export const NG_PIPE_DEF = getClosureSafeProperty({ngPipeDef: getClosureSafeProperty});
 export const NG_MODULE_DEF = getClosureSafeProperty({ngModuleDef: getClosureSafeProperty});

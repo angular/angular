@@ -423,7 +423,7 @@ describe('providers', () => {
       });
     });
 
-    describe('with directives (order in ngComponentDef.directives matters)', () => {
+    describe('with directives (order in ɵcmp.directives matters)', () => {
       it('should work without providers nor viewProviders in component', () => {
         expectProvidersScenario({
           parent: {
@@ -647,7 +647,7 @@ describe('providers', () => {
       });
     });
 
-    describe('with directives (order in ngComponentDef.directives matters)', () => {
+    describe('with directives (order in ɵcmp.directives matters)', () => {
       it('should work without providers nor viewProviders in component', () => {
         expectProvidersScenario({
           parent: {
@@ -870,7 +870,7 @@ describe('providers', () => {
         static ngFactoryDef =
             () => { return new Repeated(ɵɵdirectiveInject(String), ɵɵdirectiveInject(Number)); }
 
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵcmp = ɵɵdefineComponent({
           type: Repeated,
           selectors: [['repeated']],
           decls: 2,
@@ -901,7 +901,7 @@ describe('providers', () => {
       })
       class ComponentWithProviders {
         static ngFactoryDef = () => new ComponentWithProviders();
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵcmp = ɵɵdefineComponent({
           type: ComponentWithProviders,
           selectors: [['component-with-providers']],
           decls: 2,
@@ -956,7 +956,7 @@ describe('providers', () => {
         static ngFactoryDef =
             () => { return new Repeated(ɵɵdirectiveInject(String), ɵɵdirectiveInject(Number)); }
 
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵcmp = ɵɵdefineComponent({
           type: Repeated,
           selectors: [['repeated']],
           decls: 2,
@@ -990,7 +990,7 @@ describe('providers', () => {
       })
       class ComponentWithProviders {
         static ngFactoryDef = () => new ComponentWithProviders();
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵcmp = ɵɵdefineComponent({
           type: ComponentWithProviders,
           selectors: [['component-with-providers']],
           decls: 2,
@@ -1039,7 +1039,7 @@ describe('providers', () => {
       constructor(private s: String) {}
 
       static ngFactoryDef = () => new EmbeddedComponent(ɵɵdirectiveInject(String));
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: EmbeddedComponent,
         selectors: [['embedded-cmp']],
         decls: 1,
@@ -1062,7 +1062,7 @@ describe('providers', () => {
       static ngFactoryDef = () => hostComponent = new HostComponent(
           ɵɵdirectiveInject(ViewContainerRef as any), injectComponentFactoryResolver())
 
-          static ngComponentDef = ɵɵdefineComponent({
+          static ɵcmp = ɵɵdefineComponent({
             type: HostComponent,
             selectors: [['host-cmp']],
             decls: 1,
@@ -1086,7 +1086,7 @@ describe('providers', () => {
       constructor() {}
 
       static ngFactoryDef = () => new AppComponent();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: AppComponent,
         selectors: [['app-cmp']],
         decls: 1,
@@ -1248,7 +1248,7 @@ describe('providers', () => {
       constructor() {}
 
       static ngFactoryDef = () => new MyComponent();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-cmp']],
         decls: 1,
@@ -1275,7 +1275,7 @@ describe('providers', () => {
       constructor() {}
 
       static ngFactoryDef = () => new AppComponent();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: AppComponent,
         selectors: [['app-cmp']],
         decls: 1,
@@ -1340,7 +1340,7 @@ describe('providers', () => {
         static ngFactoryDef =
             () => { return new MyComponent(ɵɵdirectiveInject(InjectableWithLifeCycleHooks)); }
 
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵcmp = ɵɵdefineComponent({
           type: MyComponent,
           selectors: [['my-comp']],
           decls: 1,
@@ -1367,7 +1367,7 @@ describe('providers', () => {
         public condition = true;
 
         static ngFactoryDef = () => new App();
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵcmp = ɵɵdefineComponent({
           type: App,
           selectors: [['app-cmp']],
           decls: 2,
@@ -1442,7 +1442,7 @@ function expectProvidersScenario(defs: {
 
   class ViewChildComponent {
     static ngFactoryDef = () => testComponentInjection(defs.viewChild, new ViewChildComponent());
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵcmp = ɵɵdefineComponent({
       type: ViewChildComponent,
       selectors: [['view-child']],
       decls: 1,
@@ -1470,7 +1470,7 @@ function expectProvidersScenario(defs: {
     static ngFactoryDef =
         () => { return testComponentInjection(defs.contentChild, new ContentChildComponent()); }
 
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵcmp = ɵɵdefineComponent({
       type: ContentChildComponent,
       selectors: [['content-child']],
       decls: 1,
@@ -1501,7 +1501,7 @@ function expectProvidersScenario(defs: {
 
   class ParentComponent {
     static ngFactoryDef = () => testComponentInjection(defs.parent, new ParentComponent());
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵcmp = ɵɵdefineComponent({
       type: ParentComponent,
       selectors: [['parent']],
       decls: 1,
@@ -1538,7 +1538,7 @@ function expectProvidersScenario(defs: {
 
   class App {
     static ngFactoryDef = () => testComponentInjection(defs.app, new App());
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵcmp = ɵɵdefineComponent({
       type: App,
       selectors: [['app']],
       decls: 2,

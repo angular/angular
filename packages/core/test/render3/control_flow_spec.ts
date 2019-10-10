@@ -699,7 +699,7 @@ describe('JS control flow', () => {
             return new Comp();
           }
 
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
         decls: 0,
@@ -713,7 +713,7 @@ describe('JS control flow', () => {
       condition2 = true;
 
       static ngFactoryDef = () => new App();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
         decls: 3,
@@ -769,7 +769,7 @@ describe('JS control flow', () => {
             return new Comp();
           }
 
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
         decls: 0,
@@ -783,7 +783,7 @@ describe('JS control flow', () => {
       condition2 = true;
 
       static ngFactoryDef = () => new App();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
         decls: 3,

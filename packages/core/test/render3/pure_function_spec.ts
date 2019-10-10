@@ -20,7 +20,7 @@ describe('object literals', () => {
     config !: {[key: string]: any};
 
     static ngFactoryDef = function ObjectComp_Factory() { return objectComp = new ObjectComp(); };
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵcmp = ɵɵdefineComponent({
       type: ObjectComp,
       selectors: [['object-comp']],
       decls: 0,
