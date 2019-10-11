@@ -202,7 +202,7 @@ export class ConstantPool {
       case DefinitionKind.Component:
         return 'ɵcmp';
       case DefinitionKind.Directive:
-        return 'ngDirectiveDef';
+        return 'ɵdir';
       case DefinitionKind.Injector:
         return 'ngInjectorDef';
       case DefinitionKind.Pipe:

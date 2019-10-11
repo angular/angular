@@ -100,7 +100,7 @@ export class DirectiveDecoratorHandler implements
     }
     return [
       factoryRes, {
-        name: 'ngDirectiveDef',
+        name: 'ɵdir',
         initializer: res.expression,
         statements: [],
         type: res.type,

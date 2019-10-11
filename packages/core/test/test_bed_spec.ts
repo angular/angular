@@ -657,8 +657,8 @@ describe('TestBed', () => {
              expect(ComponentWithNoAnnotations.hasOwnProperty('ɵcmp')).toBeTruthy();
              expect(SomeComponent.hasOwnProperty('ɵcmp')).toBeTruthy();
 
-             expect(DirectiveWithNoAnnotations.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
-             expect(SomeDirective.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
+             expect(DirectiveWithNoAnnotations.hasOwnProperty('ɵdir')).toBeTruthy();
+             expect(SomeDirective.hasOwnProperty('ɵdir')).toBeTruthy();
 
              expect(PipeWithNoAnnotations.hasOwnProperty('ngPipeDef')).toBeTruthy();
              expect(SomePipe.hasOwnProperty('ngPipeDef')).toBeTruthy();
@@ -667,12 +667,12 @@ describe('TestBed', () => {
 
              // ng defs should be removed from classes with no annotations
              expect(ComponentWithNoAnnotations.hasOwnProperty('ɵcmp')).toBeFalsy();
-             expect(DirectiveWithNoAnnotations.hasOwnProperty('ngDirectiveDef')).toBeFalsy();
+             expect(DirectiveWithNoAnnotations.hasOwnProperty('ɵdir')).toBeFalsy();
              expect(PipeWithNoAnnotations.hasOwnProperty('ngPipeDef')).toBeFalsy();
 
              // ng defs should be preserved on super types
              expect(SomeComponent.hasOwnProperty('ɵcmp')).toBeTruthy();
-             expect(SomeDirective.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
+             expect(SomeDirective.hasOwnProperty('ɵdir')).toBeTruthy();
              expect(SomePipe.hasOwnProperty('ngPipeDef')).toBeTruthy();
            });
 

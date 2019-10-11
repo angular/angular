@@ -71,7 +71,7 @@ describe('lifecycles', () => {
       ngOnInit() { events.push('dir'); }
 
       static ngFactoryDef = () => new Directive();
-      static ngDirectiveDef = ɵɵdefineDirective({type: Directive, selectors: [['', 'dir', '']]});
+      static ɵdir = ɵɵdefineDirective({type: Directive, selectors: [['', 'dir', '']]});
     }
 
     const directives = [Comp, Parent, ProjectedComp, Directive, NgIf];

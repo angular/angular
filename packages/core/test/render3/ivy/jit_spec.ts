@@ -281,8 +281,8 @@ ivyEnabled && describe('render3 jit', () => {
     }
 
     const InputDirAny = InputDir as any;
-    expect(InputDirAny.ngDirectiveDef.inputs).toEqual({publicName: 'privateName'});
-    expect(InputDirAny.ngDirectiveDef.declaredInputs).toEqual({publicName: 'privateName'});
+    expect(InputDirAny.ɵdir.inputs).toEqual({publicName: 'privateName'});
+    expect(InputDirAny.ɵdir.declaredInputs).toEqual({publicName: 'privateName'});
   });
 
   it('should compile ContentChildren query with string predicate on a directive', () => {
@@ -291,7 +291,7 @@ ivyEnabled && describe('render3 jit', () => {
       @ContentChildren('foo') foos: QueryList<ElementRef>|undefined;
     }
 
-    expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
+    expect((TestDirective as any).ɵdir.contentQueries).not.toBeNull();
   });
 
   it('should compile ContentChild query with string predicate on a directive', () => {
@@ -300,7 +300,7 @@ ivyEnabled && describe('render3 jit', () => {
       @ContentChild('foo', {static: false}) foo: ElementRef|undefined;
     }
 
-    expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
+    expect((TestDirective as any).ɵdir.contentQueries).not.toBeNull();
   });
 
   it('should compile ContentChildren query with type predicate on a directive', () => {
@@ -311,7 +311,7 @@ ivyEnabled && describe('render3 jit', () => {
       @ContentChildren(SomeDir) dirs: QueryList<SomeDir>|undefined;
     }
 
-    expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
+    expect((TestDirective as any).ɵdir.contentQueries).not.toBeNull();
   });
 
   it('should compile ContentChild query with type predicate on a directive', () => {
@@ -322,7 +322,7 @@ ivyEnabled && describe('render3 jit', () => {
       @ContentChild(SomeDir, {static: false}) dir: SomeDir|undefined;
     }
 
-    expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
+    expect((TestDirective as any).ɵdir.contentQueries).not.toBeNull();
   });
 
   it('should compile ViewChild query on a component', () => {

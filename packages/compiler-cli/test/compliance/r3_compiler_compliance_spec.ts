@@ -583,7 +583,7 @@ describe('compiler compliance', () => {
 
       // SomeDirective definition should be:
       const SomeDirectiveDefinition = `
-        SomeDirective.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        SomeDirective.ɵdir = $r3$.ɵɵdefineDirective({
           type: SomeDirective,
           selectors: [["", "some-directive", ""]]
         });
@@ -620,7 +620,7 @@ describe('compiler compliance', () => {
 
       expectEmit(source, ChildComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
       expectEmit(source, ChildComponentFactory, 'Incorrect ChildComponent.ngFactoryDef');
-      expectEmit(source, SomeDirectiveDefinition, 'Incorrect SomeDirective.ngDirectiveDef');
+      expectEmit(source, SomeDirectiveDefinition, 'Incorrect SomeDirective.ɵdir');
       expectEmit(source, SomeDirectiveFactory, 'Incorrect SomeDirective.ngFactoryDef');
       expectEmit(source, MyComponentDefinition, 'Incorrect MyComponentDefinition.ɵcmp');
       expectEmit(source, MyComponentFactory, 'Incorrect MyComponentDefinition.ngFactoryDef');
@@ -646,7 +646,7 @@ describe('compiler compliance', () => {
 
       // SomeDirective definition should be:
       const SomeDirectiveDefinition = `
-        SomeDirective.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        SomeDirective.ɵdir = $r3$.ɵɵdefineDirective({
           type: SomeDirective,
           selectors: [["div", "some-directive", "", 8, "foo", 3, "title", "", 9, "baz"]]
         });
@@ -657,7 +657,7 @@ describe('compiler compliance', () => {
 
       // OtherDirective definition should be:
       const OtherDirectiveDefinition = `
-        OtherDirective.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        OtherDirective.ɵdir = $r3$.ɵɵdefineDirective({
           type: OtherDirective,
           selectors: [["", 5, "span", "title", "", 9, "baz"]]
         });
@@ -669,9 +669,9 @@ describe('compiler compliance', () => {
       const result = compile(files, angularFiles);
       const source = result.source;
 
-      expectEmit(source, SomeDirectiveDefinition, 'Incorrect SomeDirective.ngDirectiveDef');
+      expectEmit(source, SomeDirectiveDefinition, 'Incorrect SomeDirective.ɵdir');
       expectEmit(source, SomeDirectiveFactory, 'Incorrect SomeDirective.ngFactoryDef');
-      expectEmit(source, OtherDirectiveDefinition, 'Incorrect OtherDirective.ngDirectiveDef');
+      expectEmit(source, OtherDirectiveDefinition, 'Incorrect OtherDirective.ɵdir');
       expectEmit(source, OtherDirectiveFactory, 'Incorrect OtherDirective.ngFactoryDef');
     });
 
@@ -789,7 +789,7 @@ describe('compiler compliance', () => {
       };
 
       const IfDirectiveDefinition = `
-        IfDirective.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        IfDirective.ɵdir = $r3$.ɵɵdefineDirective({
           type: IfDirective,
           selectors: [["", "if", ""]]
         });`;
@@ -835,7 +835,7 @@ describe('compiler compliance', () => {
       const result = compile(files, angularFiles);
       const source = result.source;
 
-      expectEmit(source, IfDirectiveDefinition, 'Incorrect IfDirective.ngDirectiveDef');
+      expectEmit(source, IfDirectiveDefinition, 'Incorrect IfDirective.ɵdir');
       expectEmit(source, IfDirectiveFactory, 'Incorrect IfDirective.ngFactoryDef');
       expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ɵcmp');
       expectEmit(source, MyComponentFactory, 'Incorrect MyComponent.ngFactoryDef');
@@ -2595,7 +2595,7 @@ describe('compiler compliance', () => {
 
         // TODO(benlesh): Enforce this when the directives are specified
         const ForDirectiveDefinition = `
-              ForOfDirective.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+              ForOfDirective.ɵdir = $r3$.ɵɵdefineDirective({
                 type: ForOfDirective,
                 selectors: [["", "forOf", ""]],
                 features: [$r3$.ɵɵNgOnChangesFeature()],
@@ -2676,7 +2676,7 @@ describe('compiler compliance', () => {
 
         // TODO(chuckj): Enforce this when the directives are specified
         const ForDirectiveDefinition = `
-          ForOfDirective.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+          ForOfDirective.ɵdir = $r3$.ɵɵdefineDirective({
             type: ForOfDirective,
             selectors: [["", "forOf", ""]],
             features: [$r3$.ɵɵNgOnChangesFeature()],
@@ -2926,7 +2926,7 @@ describe('compiler compliance', () => {
 
       // SomeDirective definition should be:
       const SomeDirectiveDefinition = `
-        SomeDirective.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        SomeDirective.ɵdir = $r3$.ɵɵdefineDirective({
           type: SomeDirective,
           selectors: [["", "some-directive", ""]],
           exportAs: ["someDir", "otherDir"]
@@ -2936,7 +2936,7 @@ describe('compiler compliance', () => {
       const result = compile(files, angularFiles);
       const source = result.source;
 
-      expectEmit(source, SomeDirectiveDefinition, 'Incorrect SomeDirective.ngDirectiveDef');
+      expectEmit(source, SomeDirectiveDefinition, 'Incorrect SomeDirective.ɵdir');
     });
 
     it('should not throw for empty property bindings on ng-template', () => {
