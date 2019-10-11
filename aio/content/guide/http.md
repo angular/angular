@@ -1044,6 +1044,14 @@ Now you can write a test that expects a GET Request to occur and provides a mock
   header="app/testing/http-client.spec.ts(httpClient.get)">
 </code-example>
 
+Now you can write a test that expects a POST Request to occur and provides a mock response.
+
+<code-example
+  path="http/src/testing/http-client.spec.ts"
+  region="post-test"
+  header="app/testing/http-client.spec.ts(httpClient.post)">
+</code-example>
+
 The last step, verifying that no requests remain outstanding, is common enough for you to move it into an `afterEach()` step:
 
 <code-example
