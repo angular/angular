@@ -196,11 +196,8 @@ describe('completions', () => {
   });
 
   function expectContains(fileName: string, locationMarker: string, ...names: string[]) {
-    let location = mockHost.getMarkerLocations(fileName) ![locationMarker];
-    if (location == null) {
-      throw new Error(`No marker ${locationMarker} found.`);
-    }
-    expectEntries(locationMarker, ngService.getCompletionsAt(fileName, location), ...names);
+    const marker = mockHost.getLocationMarkerFor(fileName, locationMarker);
+    expectEntries(locationMarker, ngService.getCompletionsAt(fileName, marker.start), ...names);
   }
 });
 
