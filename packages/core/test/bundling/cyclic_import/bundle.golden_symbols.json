@@ -3,9 +3,6 @@
     "name": "ACTIVE_INDEX"
   },
   {
-    "name": "BINDING_INDEX"
-  },
-  {
     "name": "BLOOM_MASK"
   },
   {
@@ -607,6 +604,9 @@
   },
   {
     "name": "setActiveHostElement"
+  },
+  {
+    "name": "setBindingIndex"
   },
   {
     "name": "setBindingRoot"

@@ -3,9 +3,6 @@
     "name": "ACTIVE_INDEX"
   },
   {
-    "name": "BINDING_INDEX"
-  },
-  {
     "name": "BIT_MASK_START_VALUE"
   },
   {
@@ -612,9 +609,6 @@
     "name": "getActiveDirectiveId"
   },
   {
-    "name": "getAndIncrementBindingIndex"
-  },
-  {
     "name": "getBeforeNodeForView"
   },
   {
@@ -1074,6 +1068,9 @@
     "name": "nativeRemoveNode"
   },
   {
+    "name": "nextBindingIndex"
+  },
+  {
     "name": "nextContextImpl"
   },
   {
@@ -1207,6 +1204,9 @@
   },
   {
     "name": "setActiveHostElement"
+  },
+  {
+    "name": "setBindingIndex"
   },
   {
     "name": "setBindingRoot"

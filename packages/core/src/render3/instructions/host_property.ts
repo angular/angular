@@ -7,8 +7,8 @@
  */
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {BINDING_INDEX, TVIEW} from '../interfaces/view';
-import {getLView, getSelectedIndex} from '../state';
+import {TVIEW} from '../interfaces/view';
+import {getLView, getSelectedIndex, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
 import {TsickleIssue1009, elementPropertyInternal, loadComponentRenderer, storePropertyBindingMetadata} from './shared';
@@ -30,7 +30,7 @@ import {TsickleIssue1009, elementPropertyInternal, loadComponentRenderer, storeP
 export function ɵɵhostProperty<T>(
     propName: string, value: T, sanitizer?: SanitizerFn | null): TsickleIssue1009 {
   const lView = getLView();
-  const bindingIndex = lView[BINDING_INDEX]++;
+  const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, value, sanitizer, true);
@@ -64,7 +64,7 @@ export function ɵɵhostProperty<T>(
 export function ɵɵupdateSyntheticHostBinding<T>(
     propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null): TsickleIssue1009 {
   const lView = getLView();
-  const bindingIndex = lView[BINDING_INDEX]++;
+  const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(
