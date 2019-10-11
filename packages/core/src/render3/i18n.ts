@@ -25,9 +25,9 @@ import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjecti
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {isLContainer} from './interfaces/type_checks';
-import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
+import {HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
 import {appendChild, applyProjection, createTextNode, nativeRemoveNode} from './node_manipulation';
-import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from './state';
+import {getBindingIndex, getIsParent, getLView, getPreviousOrParentTNode, nextBindingIndex, setIsNotParent, setPreviousOrParentTNode} from './state';
 import {renderStringify} from './util/misc_utils';
 import {getNativeByIndex, getNativeByTNode, getTNode, load} from './util/view_utils';
 
@@ -669,7 +669,7 @@ export function ɵɵi18nEnd(): void {
  */
 function i18nEndFirstPass(lView: LView, tView: TView) {
   ngDevMode && assertEqual(
-                   lView[BINDING_INDEX], tView.bindingStartIndex,
+                   getBindingIndex(), tView.bindingStartIndex,
                    'i18nEnd should be called before any binding');
 
   const rootIndex = i18nIndexStack[i18nIndexStackPointer--];
@@ -1036,7 +1036,7 @@ let shiftsCounter = 0;
  */
 export function ɵɵi18nExp<T>(value: T): TsickleIssue1009 {
   const lView = getLView();
-  if (bindingUpdated(lView, lView[BINDING_INDEX]++, value)) {
+  if (bindingUpdated(lView, nextBindingIndex(), value)) {
     changeMask = changeMask | (1 << shiftsCounter);
   }
   shiftsCounter++;
@@ -1065,7 +1065,7 @@ export function ɵɵi18nApply(index: number) {
       updateOpCodes = (tI18n as TI18n).update;
       icus = (tI18n as TI18n).icus;
     }
-    const bindingsStartIndex = lView[BINDING_INDEX] - shiftsCounter - 1;
+    const bindingsStartIndex = getBindingIndex() - shiftsCounter - 1;
     readUpdateOpCodes(updateOpCodes, icus, bindingsStartIndex, changeMask, lView);
 
     // Reset changeMask & maskBit to default for the next update cycle

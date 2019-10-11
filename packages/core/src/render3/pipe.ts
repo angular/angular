@@ -12,9 +12,9 @@ import {PipeTransform} from '../change_detection/pipe_transform';
 import {getFactoryDef} from './definition';
 import {store} from './instructions/all';
 import {PipeDef, PipeDefList} from './interfaces/definition';
-import {BINDING_INDEX, HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
+import {HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
 import {ɵɵpureFunction1, ɵɵpureFunction2, ɵɵpureFunction3, ɵɵpureFunction4, ɵɵpureFunctionV} from './pure_function';
-import {getLView} from './state';
+import {getBindingIndex, getLView} from './state';
 import {NO_CHANGE} from './tokens';
 import {load} from './util/view_utils';
 
@@ -200,7 +200,7 @@ function unwrapValue(lView: LView, newValue: any): any {
     newValue = WrappedValue.unwrap(newValue);
     // The NO_CHANGE value needs to be written at the index where the impacted binding value is
     // stored
-    const bindingToInvalidateIdx = lView[BINDING_INDEX];
+    const bindingToInvalidateIdx = getBindingIndex();
     lView[bindingToInvalidateIdx] = NO_CHANGE;
   }
   return newValue;

@@ -48,6 +48,12 @@ export function assertLessThan<T>(actual: T, expected: T, msg: string) {
   }
 }
 
+export function assertLessThanOrEqual<T>(actual: T, expected: T, msg: string) {
+  if (actual > expected) {
+    throwError(msg);
+  }
+}
+
 export function assertGreaterThan<T>(actual: T, expected: T, msg: string) {
   if (actual <= expected) {
     throwError(msg);

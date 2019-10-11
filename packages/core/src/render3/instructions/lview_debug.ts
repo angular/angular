@@ -19,7 +19,7 @@ import {SelectorFlags} from '../interfaces/projection';
 import {TQueries} from '../interfaces/query';
 import {RComment, RElement, RNode} from '../interfaces/renderer';
 import {TStylingContext} from '../interfaces/styling';
-import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, T_HOST} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, T_HOST} from '../interfaces/view';
 import {DebugNodeStyling, NodeStylingDebug} from '../styling/styling_debug';
 import {attachDebugObject} from '../util/debug_utils';
 import {isStylingContext} from '../util/styling_utils';
@@ -325,7 +325,6 @@ export class LViewDebug {
   get declarationView() { return toDebug(this._raw_lView[DECLARATION_VIEW]); }
   get queries() { return this._raw_lView[QUERIES]; }
   get tHost() { return this._raw_lView[T_HOST]; }
-  get bindingIndex() { return this._raw_lView[BINDING_INDEX]; }
 
   /**
    * Normalized view of child views (and containers) attached at this location.

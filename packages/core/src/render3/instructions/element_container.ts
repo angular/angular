@@ -11,10 +11,10 @@ import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TNodeType} from '../interfaces/node';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {BINDING_INDEX, HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
+import {HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
-import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {getBindingIndex, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
 
 import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 import {registerInitialStylingOnTNode} from './styling';
@@ -44,7 +44,7 @@ export function ɵɵelementContainerStart(
   const tViewConsts = tView.consts;
   const consts = tViewConsts === null || constsIndex == null ? null : tViewConsts[constsIndex];
   ngDevMode && assertEqual(
-                   lView[BINDING_INDEX], tView.bindingStartIndex,
+                   getBindingIndex(), tView.bindingStartIndex,
                    'element containers should be created before any bindings');
 
   ngDevMode && ngDevMode.rendererCreateComment++;

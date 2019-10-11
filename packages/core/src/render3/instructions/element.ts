@@ -14,10 +14,10 @@ import {TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {StylingMapArray, TStylingContext} from '../interfaces/styling';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
+import {HEADER_OFFSET, LView, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
-import {decreaseElementDepthCount, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {decreaseElementDepthCount, getBindingIndex, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {setUpAttributes} from '../util/attrs_utils';
 import {getInitialStylingValue, hasClassInput, hasStyleInput, selectClassBasedInputName} from '../util/styling_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
@@ -48,7 +48,7 @@ export function ɵɵelementStart(
   const tViewConsts = tView.consts;
   const consts = tViewConsts === null || constsIndex == null ? null : tViewConsts[constsIndex];
   ngDevMode && assertEqual(
-                   lView[BINDING_INDEX], tView.bindingStartIndex,
+                   getBindingIndex(), tView.bindingStartIndex,
                    'elements should be created before any bindings');
 
   ngDevMode && ngDevMode.rendererCreateElement++;
