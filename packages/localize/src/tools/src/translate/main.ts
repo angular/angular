@@ -38,6 +38,12 @@ if (require.main === module) {
                 'A glob pattern indicating what files to translate, relative to the `root` path. E.g. `bundles/**/*`.',
           })
 
+          .option('l', {
+            alias: 'source-locale',
+            describe:
+                'The source locale of the application. If this is provided then a copy of the application will be created with no translation but just the `$localize` calls stripped out.',
+          })
+
           .option('t', {
             alias: 'translations',
             required: true,
@@ -66,9 +72,10 @@ if (require.main === module) {
   const outputPathFn = getOutputPathFn(options['o']);
   const diagnostics = new Diagnostics();
   const missingTranslation: MissingTranslationStrategy = options['m'];
+  const sourceLocale: string|undefined = options['l'];
 
   translateFiles({sourceRootPath, sourceFilePaths, translationFilePaths, outputPathFn, diagnostics,
-                  missingTranslation});
+                  missingTranslation, sourceLocale});
 
   diagnostics.messages.forEach(m => console.warn(`${m.type}: ${m.message}`));
   process.exit(diagnostics.hasErrors ? 1 : 0);
@@ -81,10 +88,12 @@ export interface TranslateFilesOptions {
   outputPathFn: OutputPathFn;
   diagnostics: Diagnostics;
   missingTranslation: MissingTranslationStrategy;
+  sourceLocale?: string;
 }
 
 export function translateFiles({sourceRootPath, sourceFilePaths, translationFilePaths, outputPathFn,
-                                diagnostics, missingTranslation}: TranslateFilesOptions) {
+                                diagnostics, missingTranslation,
+                                sourceLocale}: TranslateFilesOptions) {
   const translationLoader = new TranslationLoader([
     new Xliff2TranslationParser(),
     new Xliff1TranslationParser(),
@@ -100,5 +109,6 @@ export function translateFiles({sourceRootPath, sourceFilePaths, translationFile
 
   const translations = translationLoader.loadBundles(translationFilePaths);
   sourceRootPath = resolve(sourceRootPath);
-  resourceProcessor.translateFiles(sourceFilePaths, sourceRootPath, outputPathFn, translations);
+  resourceProcessor.translateFiles(
+      sourceFilePaths, sourceRootPath, outputPathFn, translations, sourceLocale);
 }

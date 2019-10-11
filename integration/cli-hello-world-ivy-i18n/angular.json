@@ -156,6 +156,10 @@
               "devServerTarget": "",
               "protractorConfig": "e2e/legacy/protractor.conf.js"
             },
+            "translated-en": {
+              "devServerTarget": "",
+              "protractorConfig": "e2e/en/protractor.conf.js"
+            },
             "translated-fr": {
               "devServerTarget": "",
               "protractorConfig": "e2e/fr/protractor.conf.js"
