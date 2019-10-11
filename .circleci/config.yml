@@ -700,6 +700,8 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
+      - setup_circleci_bazel_config
+      - setup_bazel_rbe
         # Install
       - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive
         # Run zone.js tools tests
