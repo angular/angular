@@ -536,7 +536,9 @@ export function createDirectivesInstances(
     tView: TView, lView: LView, tNode: TElementNode | TContainerNode | TElementContainerNode) {
   if (!getBindingsEnabled()) return;
   instantiateAllDirectives(tView, lView, tNode);
-  invokeDirectivesHostBindings(tView, lView, tNode);
+  if ((tNode.flags & TNodeFlags.hasHostBindings) === TNodeFlags.hasHostBindings) {
+    invokeDirectivesHostBindings(tView, lView, tNode);
+  }
   setActiveHostElement(null);
 }
 
@@ -1069,9 +1071,8 @@ export function resolveDirectives(
 
       saveNameToExportMap(tView.data !.length - 1, def, exportsMap);
 
-      if (def.contentQueries) {
-        tNode.flags |= TNodeFlags.hasContentQuery;
-      }
+      if (def.contentQueries !== null) tNode.flags |= TNodeFlags.hasContentQuery;
+      if (def.hostBindings !== null) tNode.flags |= TNodeFlags.hasHostBindings;
 
       // Init hooks are queued now so ngOnInit is called in host components before
       // any projected components.
