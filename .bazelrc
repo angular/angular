@@ -71,6 +71,8 @@ test --test_output=errors
 # any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
 build --define=compile=legacy
 
+build --google_default_credentials
+
 #######################
 # Remote HTTP Caching #
 #######################
