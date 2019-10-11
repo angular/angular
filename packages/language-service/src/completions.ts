@@ -147,7 +147,7 @@ function getAttributeInfosForElement(
   if (selectors && selectors.length) {
     // All the attributes that are selectable should be shown.
     const applicableSelectors =
-        selectors.filter(selector => !selector.element || selector.element == elementName);
+        selectors.filter(selector => !selector.element || selector.element === elementName);
     const selectorAndAttributeNames =
         applicableSelectors.map(selector => ({selector, attrs: selector.attrs.filter(a => !!a)}));
     let attrs = flatten(selectorAndAttributeNames.map<AttrInfo[]>(selectorAndAttr => {
@@ -353,7 +353,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
       const selectorInfo = getSelectors(this.info);
       const selectors = selectorInfo.selectors;
       const selector =
-          selectors.filter(s => s.attrs.some((attr, i) => i % 2 == 0 && attr == key))[0];
+          selectors.filter(s => s.attrs.some((attr, i) => i % 2 === 0 && attr === key))[0];
 
       const templateBindingResult =
           this.info.expressionParser.parseTemplateBindings(key, this.attr.value, null, 0);
@@ -370,7 +370,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
       const keyCompletions = () => {
         let keys: string[] = [];
         if (selector) {
-          const attrNames = selector.attrs.filter((_, i) => i % 2 == 0);
+          const attrNames = selector.attrs.filter((_, i) => i % 2 === 0);
           keys = attrNames.filter(name => name.startsWith(key) && name != key)
                      .map(name => lowerName(name.substr(key.length)));
         }
@@ -386,7 +386,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
         });
       };
 
-      if (!binding || (binding.key == key && !binding.expression)) {
+      if (!binding || (binding.key === key && !binding.expression)) {
         // We are in the root binding. We should return `let` and keys that are left in the
         // selector.
         keyCompletions();
@@ -442,8 +442,8 @@ class ExpressionVisitor extends NullTemplateVisitor {
 
   private attributeValueCompletions(value: AST, position?: number) {
     const symbols = getExpressionCompletions(
-        this.getExpressionScope(), value, position == null ? this.attributeValuePosition : position,
-        this.info.template.query);
+        this.getExpressionScope(), value,
+        position === undefined ? this.attributeValuePosition : position, this.info.template.query);
     if (symbols) {
       this.result = this.symbolsToCompletions(symbols);
     }
@@ -503,7 +503,7 @@ function createElementCssSelector(element: Element): CssSelector {
     if (!attr.name.match(templateAttr)) {
       const [_, attrNameNoNs] = splitNsName(attr.name);
       cssSelector.addAttribute(attrNameNoNs, attr.value);
-      if (attr.name.toLowerCase() == 'class') {
+      if (attr.name.toLowerCase() === 'class') {
         const classes = attr.value.split(/s+/g);
         classes.forEach(className => cssSelector.addClassName(className));
       }

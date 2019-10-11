@@ -399,7 +399,7 @@ export class SchemaInformation {
         }
       }
       properties.forEach((property: string) => {
-        if (property == '') {
+        if (property === '') {
         } else if (property.startsWith('*')) {
           type[property.substring(1)] = EVENT;
         } else if (property.startsWith('!')) {
