@@ -231,6 +231,25 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Hello injected World !');
   });
 
+  it('allow to override multi provider', () => {
+    const token = new InjectionToken<string[]>('token');
+    @NgModule({providers: [{provide: token, useValue: 'valueFromModule', multi: true}]})
+    class MyModule {
+    }
+
+    @NgModule({providers: [{provide: token, useValue: 'valueFromModule2', multi: true}]})
+    class MyModule2 {
+    }
+
+    TestBed.configureTestingModule({imports: [MyModule, MyModule2]});
+    const overrideValue = ['override'];
+    TestBed.overrideProvider(token, { useValue: overrideValue, multi: true } as any);
+
+    const value = TestBed.inject(token);
+    expect(value.length).toEqual(overrideValue.length);
+    expect(value).toEqual(overrideValue);
+  });
+
   it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.overrideProvider)',
      () => {
        const serviceOverride = {

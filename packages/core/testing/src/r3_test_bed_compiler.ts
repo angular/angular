@@ -154,14 +154,12 @@ export class R3TestBedCompiler {
   overrideProvider(
       token: any,
       provider: {useFactory?: Function, useValue?: any, deps?: any[], multi?: boolean}): void {
-    const providerDef = provider.useFactory ?
-        {
-          provide: token,
-          useFactory: provider.useFactory,
-          deps: provider.deps || [],
-          multi: provider.multi,
-        } :
-        {provide: token, useValue: provider.useValue, multi: provider.multi};
+    const providerDef = provider.useFactory ? {
+      provide: token,
+      useFactory: provider.useFactory,
+      deps: provider.deps || [],
+    } :
+                                              {provide: token, useValue: provider.useValue};
 
     let injectableDef: InjectableDef<any>|null;
     const isRoot =
@@ -620,39 +618,18 @@ export class R3TestBedCompiler {
     if (!providers || !providers.length || this.providerOverridesByToken.size === 0) return [];
 
     const overrides = this.getProviderOverrides(providers);
-    const hasMultiProviderOverrides = overrides.some(isMultiProvider);
     const overriddenProviders = [...providers, ...overrides];
+    const tokenToProviderMap: Map<any, Provider> = new Map();
 
-    // No additional processing is required in case we have no multi providers to override
-    if (!hasMultiProviderOverrides) {
-      return overriddenProviders;
-    }
-
-    const final: Provider[] = [];
-    const seenMultiProviders = new Set<Provider>();
-
-    // We iterate through the list of providers in reverse order to make sure multi provider
-    // overrides take precedence over the values defined in provider list. We also fiter out all
-    // multi providers that have overrides, keeping overridden values only.
+    // Iterate through providers from the end so only the most recent provider is used for a given
+    // token and overrides are processed first.
     forEachRight(overriddenProviders, (provider: any) => {
       const token: any = getProviderToken(provider);
-      if (isMultiProvider(provider) && this.providerOverridesByToken.has(token)) {
-        if (!seenMultiProviders.has(token)) {
-          seenMultiProviders.add(token);
-          if (provider && provider.useValue && Array.isArray(provider.useValue)) {
-            forEachRight(provider.useValue, (value: any) => {
-              // Unwrap provider override array into individual providers in final set.
-              final.unshift({provide: token, useValue: value, multi: true});
-            });
-          } else {
-            final.unshift(provider);
-          }
-        }
-      } else {
-        final.unshift(provider);
+      if (!tokenToProviderMap.has(token)) {
+        tokenToProviderMap.set(token, provider);
       }
     });
-    return final;
+    return Array.from(tokenToProviderMap.values());
   }
 
   private hasProviderOverrides(providers?: Provider[]): boolean {
