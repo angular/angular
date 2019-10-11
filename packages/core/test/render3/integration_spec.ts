@@ -117,7 +117,7 @@ describe('render3 integration test', () => {
       // TODO(issue/24571): remove '!'.
       afterTree !: Tree;
 
-      static ngFactoryDef = () => new ChildComponent;
+      static ɵfac = () => new ChildComponent;
       static ɵcmp = ɵɵdefineComponent({
         selectors: [['child']],
         type: ChildComponent,
@@ -199,7 +199,7 @@ describe('render3 integration test', () => {
 describe('component styles', () => {
   it('should pass in the component styles directly into the underlying renderer', () => {
     class StyledComp {
-      static ngFactoryDef = () => new StyledComp();
+      static ɵfac = () => new StyledComp();
       static ɵcmp = ɵɵdefineComponent({
         type: StyledComp,
         styles: ['div { color: red; }'],
@@ -227,7 +227,7 @@ describe('component animations', () => {
     const animB = {name: 'b'};
 
     class AnimComp {
-      static ngFactoryDef = () => new AnimComp();
+      static ɵfac = () => new AnimComp();
       static ɵcmp = ɵɵdefineComponent({
         type: AnimComp,
         decls: 0,
@@ -254,7 +254,7 @@ describe('component animations', () => {
 
   it('should include animations in the renderType data array even if the array is empty', () => {
     class AnimComp {
-      static ngFactoryDef = () => new AnimComp();
+      static ɵfac = () => new AnimComp();
       static ɵcmp = ɵɵdefineComponent({
         type: AnimComp,
         decls: 0,
@@ -274,7 +274,7 @@ describe('component animations', () => {
 
   it('should allow [@trigger] bindings to be picked up by the underlying renderer', () => {
     class AnimComp {
-      static ngFactoryDef = () => new AnimComp();
+      static ɵfac = () => new AnimComp();
       static ɵcmp = ɵɵdefineComponent({
         type: AnimComp,
         decls: 1,
@@ -311,7 +311,7 @@ describe('component animations', () => {
   it('should allow creation-level [@trigger] properties to be picked up by the underlying renderer',
      () => {
        class AnimComp {
-         static ngFactoryDef = () => new AnimComp();
+         static ɵfac = () => new AnimComp();
          static ɵcmp = ɵɵdefineComponent({
            type: AnimComp,
            decls: 1,
@@ -345,7 +345,7 @@ describe('component animations', () => {
 
   //   it('should allow host binding animations to be picked up and rendered', () => {
   //     class ChildCompWithAnim {
-  //       static ngFactoryDef = () => new ChildCompWithAnim();
+  //       static ɵfac = () => new ChildCompWithAnim();
   //       static ɵdir = ɵɵdefineDirective({
   //         type: ChildCompWithAnim,
   //         selectors: [['child-comp-with-anim']],
@@ -360,7 +360,7 @@ describe('component animations', () => {
   //     }
 
   //     class ParentComp {
-  //       static ngFactoryDef = () => new ParentComp();
+  //       static ɵfac = () => new ParentComp();
   //       static ɵcmp = ɵɵdefineComponent({
   //         type: ParentComp,
   //         decls: 1,
@@ -390,7 +390,7 @@ describe('component animations', () => {
 describe('element discovery', () => {
   it('should only monkey-patch immediate child nodes in a component', () => {
     class StructuredComp {
-      static ngFactoryDef = () => new StructuredComp();
+      static ɵfac = () => new StructuredComp();
       static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
@@ -422,7 +422,7 @@ describe('element discovery', () => {
 
   it('should only monkey-patch immediate child nodes in a sub component', () => {
     class ChildComp {
-      static ngFactoryDef = () => new ChildComp();
+      static ɵfac = () => new ChildComp();
       static ɵcmp = ɵɵdefineComponent({
         type: ChildComp,
         selectors: [['child-comp']],
@@ -439,7 +439,7 @@ describe('element discovery', () => {
     }
 
     class ParentComp {
-      static ngFactoryDef = () => new ParentComp();
+      static ɵfac = () => new ParentComp();
       static ɵcmp = ɵɵdefineComponent({
         type: ParentComp,
         selectors: [['parent-comp']],
@@ -472,7 +472,7 @@ describe('element discovery', () => {
 
   it('should only monkey-patch immediate child nodes in an embedded template container', () => {
     class StructuredComp {
-      static ngFactoryDef = () => new StructuredComp();
+      static ɵfac = () => new StructuredComp();
       static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
@@ -522,7 +522,7 @@ describe('element discovery', () => {
 
   it('should return a context object from a given dom node', () => {
     class StructuredComp {
-      static ngFactoryDef = () => new StructuredComp();
+      static ɵfac = () => new StructuredComp();
       static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
@@ -560,7 +560,7 @@ describe('element discovery', () => {
 
   it('should cache the element context on a element was pre-emptively monkey-patched', () => {
     class StructuredComp {
-      static ngFactoryDef = () => new StructuredComp();
+      static ɵfac = () => new StructuredComp();
       static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
@@ -592,7 +592,7 @@ describe('element discovery', () => {
   it('should cache the element context on an intermediate element that isn\'t pre-emptively monkey-patched',
      () => {
        class StructuredComp {
-         static ngFactoryDef = () => new StructuredComp();
+         static ɵfac = () => new StructuredComp();
          static ɵcmp = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
@@ -625,7 +625,7 @@ describe('element discovery', () => {
   it('should be able to pull in element context data even if the element is decorated using styling',
      () => {
        class StructuredComp {
-         static ngFactoryDef = () => new StructuredComp();
+         static ɵfac = () => new StructuredComp();
          static ɵcmp = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
@@ -673,7 +673,7 @@ describe('element discovery', () => {
          </section>
        */
        class ProjectorComp {
-         static ngFactoryDef = () => new ProjectorComp();
+         static ɵfac = () => new ProjectorComp();
          static ɵcmp = ɵɵdefineComponent({
            type: ProjectorComp,
            selectors: [['projector-comp']],
@@ -696,7 +696,7 @@ describe('element discovery', () => {
        }
 
        class ParentComp {
-         static ngFactoryDef = () => new ParentComp();
+         static ɵfac = () => new ParentComp();
          static ɵcmp = ɵɵdefineComponent({
            type: ParentComp,
            selectors: [['parent-comp']],
@@ -770,7 +770,7 @@ describe('element discovery', () => {
   it('should return `null` when an element context is retrieved that is a DOM node that was not created by Angular',
      () => {
        class StructuredComp {
-         static ngFactoryDef = () => new StructuredComp();
+         static ɵfac = () => new StructuredComp();
          static ɵcmp = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
@@ -797,7 +797,7 @@ describe('element discovery', () => {
 
   it('should by default monkey-patch the bootstrap component with context details', () => {
     class StructuredComp {
-      static ngFactoryDef = () => new StructuredComp();
+      static ɵfac = () => new StructuredComp();
       static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
@@ -836,22 +836,22 @@ describe('element discovery', () => {
        let myDir3Instance: MyDir2|null = null;
 
        class MyDir1 {
-         static ngFactoryDef = () => myDir1Instance = new MyDir1();
+         static ɵfac = () => myDir1Instance = new MyDir1();
          static ɵdir = ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
        }
 
        class MyDir2 {
-         static ngFactoryDef = () => myDir2Instance = new MyDir2();
+         static ɵfac = () => myDir2Instance = new MyDir2();
          static ɵdir = ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
        }
 
        class MyDir3 {
-         static ngFactoryDef = () => myDir3Instance = new MyDir2();
+         static ɵfac = () => myDir3Instance = new MyDir2();
          static ɵdir = ɵɵdefineDirective({type: MyDir3, selectors: [['', 'my-dir-3', '']]});
        }
 
        class StructuredComp {
-         static ngFactoryDef = () => new StructuredComp();
+         static ɵfac = () => new StructuredComp();
          static ɵcmp = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
@@ -917,17 +917,17 @@ describe('element discovery', () => {
        let childComponentInstance: ChildComp|null = null;
 
        class MyDir1 {
-         static ngFactoryDef = () => myDir1Instance = new MyDir1();
+         static ɵfac = () => myDir1Instance = new MyDir1();
          static ɵdir = ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
        }
 
        class MyDir2 {
-         static ngFactoryDef = () => myDir2Instance = new MyDir2();
+         static ɵfac = () => myDir2Instance = new MyDir2();
          static ɵdir = ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
        }
 
        class ChildComp {
-         static ngFactoryDef = () => childComponentInstance = new ChildComp();
+         static ɵfac = () => childComponentInstance = new ChildComp();
          static ɵcmp = ɵɵdefineComponent({
            type: ChildComp,
            selectors: [['child-comp']],
@@ -942,7 +942,7 @@ describe('element discovery', () => {
        }
 
        class ParentComp {
-         static ngFactoryDef = () => new ParentComp();
+         static ɵfac = () => new ParentComp();
          static ɵcmp = ɵɵdefineComponent({
            type: ParentComp,
            selectors: [['parent-comp']],
@@ -1005,7 +1005,7 @@ describe('element discovery', () => {
   it('should monkey-patch sub components with the view data and then replace them with the context result once a lookup occurs',
      () => {
        class ChildComp {
-         static ngFactoryDef = () => new ChildComp();
+         static ɵfac = () => new ChildComp();
          static ɵcmp = ɵɵdefineComponent({
            type: ChildComp,
            selectors: [['child-comp']],
@@ -1022,7 +1022,7 @@ describe('element discovery', () => {
        }
 
        class ParentComp {
-         static ngFactoryDef = () => new ParentComp();
+         static ɵfac = () => new ParentComp();
          static ɵcmp = ɵɵdefineComponent({
            type: ParentComp,
            selectors: [['parent-comp']],
@@ -1066,7 +1066,7 @@ describe('element discovery', () => {
 describe('sanitization', () => {
   it('should sanitize data using the provided sanitization interface', () => {
     class SanitizationComp {
-      static ngFactoryDef = () => new SanitizationComp();
+      static ɵfac = () => new SanitizationComp();
       static ɵcmp = ɵɵdefineComponent({
         type: SanitizationComp,
         selectors: [['sanitize-this']],
@@ -1108,7 +1108,7 @@ describe('sanitization', () => {
       // @HostBinding()
       cite: any = 'http://cite-dir-value';
 
-      static ngFactoryDef = () => hostBindingDir = new UnsafeUrlHostBindingDir();
+      static ɵfac = () => hostBindingDir = new UnsafeUrlHostBindingDir();
       static ɵdir = ɵɵdefineDirective({
         type: UnsafeUrlHostBindingDir,
         selectors: [['', 'unsafeUrlHostBindingDir', '']],
@@ -1124,7 +1124,7 @@ describe('sanitization', () => {
     }
 
     class SimpleComp {
-      static ngFactoryDef = () => new SimpleComp();
+      static ɵfac = () => new SimpleComp();
       static ɵcmp = ɵɵdefineComponent({
         type: SimpleComp,
         selectors: [['sanitize-this']],

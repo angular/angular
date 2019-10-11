@@ -188,7 +188,7 @@ runInEachFileSystem(() => {
             decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
         const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
         expect(addDefinitionsSpy.calls.first().args[2])
-            .toEqual(`A.ngFactoryDef = function A_Factory(t) { return new (t || A)(); };
+            .toEqual(`A.ɵfac = function A_Factory(t) { return new (t || A)(); };
 A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
         ɵngcc0.ɵɵtext(0);
     } if (rf & 2) {
@@ -229,7 +229,7 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
              }));
 
              expect(addDefinitionsSpy.calls.first().args[2])
-                 .toEqual(`A.ngFactoryDef = function A_Factory(t) { return new (t || A)(); };
+                 .toEqual(`A.ɵfac = function A_Factory(t) { return new (t || A)(); };
 A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });
 /*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
         type: Directive,

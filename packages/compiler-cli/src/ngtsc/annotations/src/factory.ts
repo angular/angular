@@ -12,10 +12,5 @@ import {CompileResult} from '../../transform';
 
 export function compileNgFactoryDefField(metadata: R3FactoryDefMetadata): CompileResult {
   const res = compileFactoryFromMetadata(metadata);
-  return {
-    name: 'ngFactoryDef',
-    initializer: res.factory,
-    statements: res.statements,
-    type: res.type
-  };
+  return {name: 'ɵfac', initializer: res.factory, statements: res.statements, type: res.type};
 }

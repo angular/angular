@@ -220,7 +220,7 @@ describe('query', () => {
       class MyDirective {
         constructor(public service: Service) {}
 
-        static ngFactoryDef = function MyDirective_Factory() {
+        static ɵfac = function MyDirective_Factory() {
           return directive = new MyDirective(ɵɵdirectiveInject(Service));
         };
         static ɵdir = ɵɵdefineDirective({
@@ -248,7 +248,7 @@ describe('query', () => {
           service?: Service;
           alias?: Alias;
 
-          static ngFactoryDef = function App_Factory() { return new App(); };
+          static ɵfac = function App_Factory() { return new App(); };
           static ɵcmp = ɵɵdefineComponent({
             type: App,
             selectors: [['app']],
@@ -294,7 +294,7 @@ describe('query', () => {
         class App {
           service?: Service;
 
-          static ngFactoryDef = function App_Factory() { return new App(); };
+          static ɵfac = function App_Factory() { return new App(); };
           static ɵcmp = ɵɵdefineComponent({
             type: App,
             selectors: [['app']],
@@ -838,7 +838,7 @@ describe('query', () => {
         let childInstance: Child;
 
         class Child {
-          static ngFactoryDef = () => childInstance = new Child();
+          static ɵfac = () => childInstance = new Child();
           static ɵcmp = ɵɵdefineComponent({
             type: Child,
             selectors: [['child']],
@@ -1420,7 +1420,7 @@ describe('query', () => {
         this.vcr.createEmbeddedView(this.temp);
       }
 
-      static ngFactoryDef = () => new SomeDir(
+      static ɵfac = () => new SomeDir(
           ɵɵdirectiveInject(ViewContainerRef as any), ɵɵdirectiveInject(TemplateRef as any))
 
           static ɵdir = ɵɵdefineDirective({
@@ -1481,7 +1481,7 @@ describe('query', () => {
         this.contentCheckedQuerySnapshot = this.foos ? this.foos.length : 0;
       }
 
-      static ngFactoryDef = () => withContentInstance = new WithContentDirective();
+      static ɵfac = () => withContentInstance = new WithContentDirective();
       static ɵdir = ɵɵdefineDirective({
         type: WithContentDirective,
         selectors: [['', 'with-content', '']],
@@ -1679,7 +1679,7 @@ describe('query', () => {
     it('should report results to appropriate queries where deep content queries are nested', () => {
       class QueryDirective {
         fooBars: any;
-        static ngFactoryDef = () => new QueryDirective();
+        static ɵfac = () => new QueryDirective();
         static ɵdir = ɵɵdefineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
@@ -1745,7 +1745,7 @@ describe('query', () => {
 
       class QueryDirective {
         fooBars: any;
-        static ngFactoryDef = () => new QueryDirective();
+        static ɵfac = () => new QueryDirective();
         static ɵdir = ɵɵdefineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
@@ -1802,7 +1802,7 @@ describe('query', () => {
 
       class QueryDirective {
         fooBars: any;
-        static ngFactoryDef = () => new QueryDirective();
+        static ɵfac = () => new QueryDirective();
         static ɵdir = ɵɵdefineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
@@ -1863,7 +1863,7 @@ describe('query', () => {
        () => {
          class ShallowQueryDirective {
            foos: any;
-           static ngFactoryDef = () => new ShallowQueryDirective();
+           static ɵfac = () => new ShallowQueryDirective();
            static ɵdir = ɵɵdefineDirective({
              type: ShallowQueryDirective,
              selectors: [['', 'shallow-query', '']],
@@ -1884,7 +1884,7 @@ describe('query', () => {
 
          class DeepQueryDirective {
            foos: any;
-           static ngFactoryDef = () => new DeepQueryDirective();
+           static ɵfac = () => new DeepQueryDirective();
            static ɵdir = ɵɵdefineDirective({
              type: DeepQueryDirective,
              selectors: [['', 'deep-query', '']],
@@ -1946,7 +1946,7 @@ describe('query', () => {
     class TextDirective {
       value !: string;
 
-      static ngFactoryDef = () => new TextDirective();
+      static ɵfac = () => new TextDirective();
       static ɵdir = ɵɵdefineDirective(
           {type: TextDirective, selectors: [['', 'text', '']], inputs: {value: 'text'}});
     }
@@ -1958,7 +1958,7 @@ describe('query', () => {
         // @ContentChildren(TextDirective)
         texts !: QueryList<TextDirective>;
 
-        static ngFactoryDef = () => contentQueryDirective = new ContentQueryDirective();
+        static ɵfac = () => contentQueryDirective = new ContentQueryDirective();
         static ɵcmp = ɵɵdefineDirective({
           type: ContentQueryDirective,
           selectors: [['', 'content-query', '']],
@@ -2029,7 +2029,7 @@ describe('query', () => {
         // @ViewChildren(TextDirective)
         texts !: QueryList<TextDirective>;
 
-        static ngFactoryDef = () => new ViewQueryComponent();
+        static ɵfac = () => new ViewQueryComponent();
         static ɵcmp = ɵɵdefineComponent({
           type: ViewQueryComponent,
           selectors: [['view-query']],

@@ -166,7 +166,7 @@ function addDirectiveFactoryDef(type: Type<any>, metadata: Directive | Component
       if (ngFactoryDef === null) {
         const meta = getDirectiveMetadata(type, metadata);
         ngFactoryDef = getCompilerFacade().compileFactory(
-            angularCoreEnv, `ng:///${type.name}/ngFactoryDef.js`,
+            angularCoreEnv, `ng:///${type.name}/ɵfac.js`,
             {...meta.metadata, injectFn: 'directiveInject', isPipe: false});
       }
       return ngFactoryDef;

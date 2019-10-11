@@ -55,7 +55,7 @@ describe('lifecycles', () => {
           events.push(`${name}${this.val}`);
         }
 
-        static ngFactoryDef = () => new Component();
+        static ɵfac = () => new Component();
         static ɵcmp = ɵɵdefineComponent({
           type: Component,
           selectors: [[name]],
@@ -70,7 +70,7 @@ describe('lifecycles', () => {
     class Directive {
       ngOnInit() { events.push('dir'); }
 
-      static ngFactoryDef = () => new Directive();
+      static ɵfac = () => new Directive();
       static ɵdir = ɵɵdefineDirective({type: Directive, selectors: [['', 'dir', '']]});
     }
 

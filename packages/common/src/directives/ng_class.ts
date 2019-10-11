@@ -64,7 +64,7 @@ export const ngClassFactoryDef = ngClassFactoryDef__PRE_R3__;
  */
 export class NgClassBase {
   static ɵdir: any = ngClassDirectiveDef;
-  static ngFactoryDef: any = ngClassFactoryDef;
+  static ɵfac: any = ngClassFactoryDef;
 
   constructor(protected _delegate: NgClassImpl) {}
 

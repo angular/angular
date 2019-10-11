@@ -867,7 +867,7 @@ describe('providers', () => {
       class Repeated {
         constructor(private s: String, private n: Number) {}
 
-        static ngFactoryDef =
+        static ɵfac =
             () => { return new Repeated(ɵɵdirectiveInject(String), ɵɵdirectiveInject(Number)); }
 
         static ɵcmp = ɵɵdefineComponent({
@@ -900,7 +900,7 @@ describe('providers', () => {
             [{provide: String, useValue: 'foo'}, {provide: Number, useValue: 2, multi: true}],
       })
       class ComponentWithProviders {
-        static ngFactoryDef = () => new ComponentWithProviders();
+        static ɵfac = () => new ComponentWithProviders();
         static ɵcmp = ɵɵdefineComponent({
           type: ComponentWithProviders,
           selectors: [['component-with-providers']],
@@ -953,7 +953,7 @@ describe('providers', () => {
       class Repeated {
         constructor(private s: String, private n: Number) {}
 
-        static ngFactoryDef =
+        static ɵfac =
             () => { return new Repeated(ɵɵdirectiveInject(String), ɵɵdirectiveInject(Number)); }
 
         static ɵcmp = ɵɵdefineComponent({
@@ -989,7 +989,7 @@ describe('providers', () => {
         viewProviders: [{provide: toString, useValue: 'foo'}],
       })
       class ComponentWithProviders {
-        static ngFactoryDef = () => new ComponentWithProviders();
+        static ɵfac = () => new ComponentWithProviders();
         static ɵcmp = ɵɵdefineComponent({
           type: ComponentWithProviders,
           selectors: [['component-with-providers']],
@@ -1038,7 +1038,7 @@ describe('providers', () => {
     class EmbeddedComponent {
       constructor(private s: String) {}
 
-      static ngFactoryDef = () => new EmbeddedComponent(ɵɵdirectiveInject(String));
+      static ɵfac = () => new EmbeddedComponent(ɵɵdirectiveInject(String));
       static ɵcmp = ɵɵdefineComponent({
         type: EmbeddedComponent,
         selectors: [['embedded-cmp']],
@@ -1059,7 +1059,7 @@ describe('providers', () => {
     class HostComponent {
       constructor(public vcref: ViewContainerRef, public cfr: ComponentFactoryResolver) {}
 
-      static ngFactoryDef = () => hostComponent = new HostComponent(
+      static ɵfac = () => hostComponent = new HostComponent(
           ɵɵdirectiveInject(ViewContainerRef as any), injectComponentFactoryResolver())
 
           static ɵcmp = ɵɵdefineComponent({
@@ -1085,7 +1085,7 @@ describe('providers', () => {
     class AppComponent {
       constructor() {}
 
-      static ngFactoryDef = () => new AppComponent();
+      static ɵfac = () => new AppComponent();
       static ɵcmp = ɵɵdefineComponent({
         type: AppComponent,
         selectors: [['app-cmp']],
@@ -1247,7 +1247,7 @@ describe('providers', () => {
     class MyComponent {
       constructor() {}
 
-      static ngFactoryDef = () => new MyComponent();
+      static ɵfac = () => new MyComponent();
       static ɵcmp = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-cmp']],
@@ -1274,7 +1274,7 @@ describe('providers', () => {
     class AppComponent {
       constructor() {}
 
-      static ngFactoryDef = () => new AppComponent();
+      static ɵfac = () => new AppComponent();
       static ɵcmp = ɵɵdefineComponent({
         type: AppComponent,
         selectors: [['app-cmp']],
@@ -1337,7 +1337,7 @@ describe('providers', () => {
       class MyComponent {
         constructor(foo: InjectableWithLifeCycleHooks) {}
 
-        static ngFactoryDef =
+        static ɵfac =
             () => { return new MyComponent(ɵɵdirectiveInject(InjectableWithLifeCycleHooks)); }
 
         static ɵcmp = ɵɵdefineComponent({
@@ -1366,7 +1366,7 @@ describe('providers', () => {
       class App {
         public condition = true;
 
-        static ngFactoryDef = () => new App();
+        static ɵfac = () => new App();
         static ɵcmp = ɵɵdefineComponent({
           type: App,
           selectors: [['app-cmp']],
@@ -1441,7 +1441,7 @@ function expectProvidersScenario(defs: {
   }
 
   class ViewChildComponent {
-    static ngFactoryDef = () => testComponentInjection(defs.viewChild, new ViewChildComponent());
+    static ɵfac = () => testComponentInjection(defs.viewChild, new ViewChildComponent());
     static ɵcmp = ɵɵdefineComponent({
       type: ViewChildComponent,
       selectors: [['view-child']],
@@ -1458,7 +1458,7 @@ function expectProvidersScenario(defs: {
   }
 
   class ViewChildDirective {
-    static ngFactoryDef = () => testDirectiveInjection(defs.viewChild, new ViewChildDirective());
+    static ɵfac = () => testDirectiveInjection(defs.viewChild, new ViewChildDirective());
     static ɵdir = ɵɵdefineDirective({
       type: ViewChildDirective,
       selectors: [['view-child']],
@@ -1467,7 +1467,7 @@ function expectProvidersScenario(defs: {
   }
 
   class ContentChildComponent {
-    static ngFactoryDef =
+    static ɵfac =
         () => { return testComponentInjection(defs.contentChild, new ContentChildComponent()); }
 
     static ɵcmp = ɵɵdefineComponent({
@@ -1487,7 +1487,7 @@ function expectProvidersScenario(defs: {
   }
 
   class ContentChildDirective {
-    static ngFactoryDef =
+    static ɵfac =
         () => { return testDirectiveInjection(defs.contentChild, new ContentChildDirective()); }
 
     static ɵdir = ɵɵdefineDirective({
@@ -1500,7 +1500,7 @@ function expectProvidersScenario(defs: {
 
 
   class ParentComponent {
-    static ngFactoryDef = () => testComponentInjection(defs.parent, new ParentComponent());
+    static ɵfac = () => testComponentInjection(defs.parent, new ParentComponent());
     static ɵcmp = ɵɵdefineComponent({
       type: ParentComponent,
       selectors: [['parent']],
@@ -1518,7 +1518,7 @@ function expectProvidersScenario(defs: {
   }
 
   class ParentDirective {
-    static ngFactoryDef = () => testDirectiveInjection(defs.parent, new ParentDirective());
+    static ɵfac = () => testDirectiveInjection(defs.parent, new ParentDirective());
     static ɵdir = ɵɵdefineDirective({
       type: ParentDirective,
       selectors: [['parent']],
@@ -1527,7 +1527,7 @@ function expectProvidersScenario(defs: {
   }
 
   class ParentDirective2 {
-    static ngFactoryDef = () => testDirectiveInjection(defs.parent, new ParentDirective2());
+    static ɵfac = () => testDirectiveInjection(defs.parent, new ParentDirective2());
     static ɵdir = ɵɵdefineDirective({
       type: ParentDirective2,
       selectors: [['parent']],
@@ -1537,7 +1537,7 @@ function expectProvidersScenario(defs: {
 
 
   class App {
-    static ngFactoryDef = () => testComponentInjection(defs.app, new App());
+    static ɵfac = () => testComponentInjection(defs.app, new App());
     static ɵcmp = ɵɵdefineComponent({
       type: App,
       selectors: [['app']],

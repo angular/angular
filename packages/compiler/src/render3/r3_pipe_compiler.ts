@@ -97,7 +97,7 @@ export function compilePipeFromRender2(
       /* parent */ null,
       /* fields */
       [new o.ClassField(
-          /* name */ 'ngFactoryDef',
+          /* name */ 'ɵfac',
           /* type */ o.INFERRED_TYPE,
           /* modifiers */[o.StmtModifier.Static],
           /* initializer */ factoryRes.factory)],
