@@ -119,6 +119,7 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   checkQueries: false,
   checkTemplateBodies: true,
   checkTypeOfInputBindings: true,
+  strictNullInputBindings: true,
   // Feature is still in development.
   // TODO(alxhub): enable when DOM checking via lib.dom.d.ts is further along.
   checkTypeOfDomBindings: false,
@@ -160,6 +161,7 @@ export function tcb(
     applyTemplateContextGuards: true,
     checkQueries: false,
     checkTypeOfInputBindings: true,
+    strictNullInputBindings: true,
     checkTypeOfDomBindings: false,
     checkTypeOfPipes: true,
     checkTemplateBodies: true,
