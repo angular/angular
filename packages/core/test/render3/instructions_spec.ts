@@ -240,7 +240,7 @@ describe('instructions', () => {
       class NestedLoops {
         rows = [['a', 'b'], ['A', 'B'], ['a', 'b'], ['A', 'B']];
 
-        static ngFactoryDef = function ToDoAppComponent_Factory() { return new NestedLoops(); };
+        static ɵfac = function ToDoAppComponent_Factory() { return new NestedLoops(); };
         static ɵcmp = ɵɵdefineComponent({
           type: NestedLoops,
           selectors: [['nested-loops']],

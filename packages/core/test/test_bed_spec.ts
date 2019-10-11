@@ -505,7 +505,7 @@ describe('TestBed', () => {
          */
         const getAOTCompiledComponent = () => {
           class ComponentClass {
-            static ngFactoryDef = () => new ComponentClass();
+            static ɵfac = () => new ComponentClass();
             static ɵcmp = defineComponent({
               type: ComponentClass,
               selectors: [['comp']],
