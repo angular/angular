@@ -200,6 +200,36 @@ modified to serve `index.html`:
   try_files $uri $uri/ /index.html;
   ```
 
+* [Golang](https://golang.org/): Create a server written in Golang using ([gorilla/mux](https://github.com/gorilla/mux)),
+we create a basic golang file where we place the server `main.go`:
+
+  ``` go
+  package main
+  
+  import (
+  	"net/http"
+  	"os"
+  	"github.com/gorilla/mux"
+  )
+  var httpPort = "80"
+  var folderDist = "./dist"
+
+  func serverHandler(w http.ResponseWriter, r *http.Request) {
+  	if _, err := os.Stat(folderDist + r.URL.Path); err != nil {
+  		http.ServeFile(w, r, folderDist+"/index.html")
+  		return
+  	}
+  	http.ServeFile(w, r, folderDist+r.URL.Path)
+  }
+
+  func main() {
+  	r := mux.NewRouter()
+  	r.NotFoundHandler = r.NewRoute().HandlerFunc(serverHandler).GetHandler()
+  	http.Handle("/", r)
+  	http.ListenAndServe(":"+httpPort, nil)
+  }
+  ```
+
 
 * [IIS](https://www.iis.net/): add a rewrite rule to `web.config`, similar to the one shown
 [here](http://stackoverflow.com/a/26152011/2116927):
