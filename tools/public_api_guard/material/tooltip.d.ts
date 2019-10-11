@@ -36,7 +36,6 @@ export declare class MatTooltip implements OnDestroy, OnInit {
         main: OverlayConnectionPosition;
         fallback: OverlayConnectionPosition;
     };
-    _handleKeydown(e: KeyboardEvent): void;
     _isTooltipVisible(): boolean;
     hide(delay?: number): void;
     ngOnDestroy(): void;

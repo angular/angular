@@ -131,9 +131,6 @@ export function MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY(): MatTooltipDefaultOptions 
 @Directive({
   selector: '[matTooltip]',
   exportAs: 'matTooltip',
-  host: {
-    '(keydown)': '_handleKeydown($event)',
-  },
 })
 export class MatTooltip implements OnDestroy, OnInit {
   _overlayRef: OverlayRef | null;
@@ -285,6 +282,10 @@ export class MatTooltip implements OnDestroy, OnInit {
           _ngZone.run(() => this.show());
         }
     });
+
+    _ngZone.runOutsideAngular(() => {
+      _elementRef.nativeElement.addEventListener('keydown', this._handleKeydown);
+    });
   }
 
   /**
@@ -299,6 +300,8 @@ export class MatTooltip implements OnDestroy, OnInit {
    * Dispose the tooltip when destroyed.
    */
   ngOnDestroy() {
+    const nativeElement = this._elementRef.nativeElement;
+
     clearTimeout(this._touchstartTimeout);
 
     if (this._overlayRef) {
@@ -307,16 +310,17 @@ export class MatTooltip implements OnDestroy, OnInit {
     }
 
     // Clean up the event listeners set in the constructor
+    nativeElement.removeEventListener('keydown', this._handleKeydown);
     this._passiveListeners.forEach((listener, event) => {
-      this._elementRef.nativeElement.removeEventListener(event, listener, passiveListenerOptions);
+      nativeElement.removeEventListener(event, listener, passiveListenerOptions);
     });
     this._passiveListeners.clear();
 
     this._destroyed.next();
     this._destroyed.complete();
 
-    this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this.message);
-    this._focusMonitor.stopMonitoring(this._elementRef);
+    this._ariaDescriber.removeDescription(nativeElement, this.message);
+    this._focusMonitor.stopMonitoring(nativeElement);
   }
 
   /** Shows the tooltip after the delay in ms, defaults to tooltip-delay-show or 0ms if no input */
@@ -356,12 +360,15 @@ export class MatTooltip implements OnDestroy, OnInit {
     return !!this._tooltipInstance && this._tooltipInstance.isVisible();
   }
 
-  /** Handles the keydown events on the host element. */
-  _handleKeydown(e: KeyboardEvent) {
-    if (this._isTooltipVisible() && e.keyCode === ESCAPE && !hasModifierKey(e)) {
-      e.preventDefault();
-      e.stopPropagation();
-      this.hide(0);
+  /**
+   * Handles the keydown events on the host element.
+   * Needs to be an arrow function so that we can use it in addEventListener.
+   */
+  private _handleKeydown = (event: KeyboardEvent) => {
+    if (this._isTooltipVisible() && event.keyCode === ESCAPE && !hasModifierKey(event)) {
+      event.preventDefault();
+      event.stopPropagation();
+      this._ngZone.run(() => this.hide(0));
     }
   }
 
