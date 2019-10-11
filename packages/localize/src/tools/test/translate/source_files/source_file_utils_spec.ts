@@ -9,7 +9,7 @@ import {ɵmakeTemplateObject} from '@angular/localize';
 import {NodePath, transformSync} from '@babel/core';
 import generate from '@babel/generator';
 import template from '@babel/template';
-import {Expression, Identifier, TaggedTemplateExpression, ExpressionStatement, FunctionDeclaration, CallExpression, isParenthesizedExpression, numericLiteral, binaryExpression, NumericLiteral} from '@babel/types';
+import {Expression, Identifier, TaggedTemplateExpression, ExpressionStatement, FunctionDeclaration, CallExpression, isParenthesizedExpression, numericLiteral, binaryExpression, NumericLiteral, traverse} from '@babel/types';
 import {isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, isArrayOfExpressions, unwrapStringLiteralArray, unwrapMessagePartsFromLocalizeCall, wrapInParensIfNecessary, buildLocalizeReplacement, unwrapSubstitutionsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral} from '../../../src/translate/source_files/source_file_utils';
 
 describe('utils', () => {
@@ -71,17 +71,14 @@ describe('utils', () => {
 
   describe('unwrapMessagePartsFromLocalizeCall', () => {
     it('should return an array of string literals from a direct call to a tag function', () => {
-      const ast = template.ast `$localize(['a', 'b\\t', 'c'], 1, 2)` as ExpressionStatement;
-      const call = ast.expression as CallExpression;
+      const call = getFirstCallExpression(`$localize(['a', 'b\\t', 'c'], 1, 2)`);
       const parts = unwrapMessagePartsFromLocalizeCall(call);
       expect(parts).toEqual(['a', 'b\t', 'c']);
     });
 
     it('should return an array of string literals from a downleveled tagged template', () => {
-      const ast = template.ast
-      `$localize(__makeTemplateObject(['a', 'b\\t', 'c'], ['a', 'b\\\\t', 'c']), 1, 2)` as
-          ExpressionStatement;
-      const call = ast.expression as CallExpression;
+      let call = getFirstCallExpression(
+          `$localize(__makeTemplateObject(['a', 'b\\t', 'c'], ['a', 'b\\\\t', 'c']), 1, 2)`);
       const parts = unwrapMessagePartsFromLocalizeCall(call);
       expect(parts).toEqual(['a', 'b\t', 'c']);
       expect(parts.raw).toEqual(['a', 'b\\t', 'c']);
@@ -181,4 +178,22 @@ function collectExpressionsPlugin() {
   const expressions: NodePath<Expression>[] = [];
   const visitor = {Expression: (path: NodePath<Expression>) => { expressions.push(path); }};
   return {expressions, plugin: {visitor}};
+}
+
+function getFirstCallExpression(code: string): NodePath<CallExpression> {
+  let callPath: NodePath<CallExpression>|undefined = undefined;
+  transformSync(code, {
+    plugins: [{
+      visitor: {
+        CallExpression(path) {
+          callPath = path;
+          path.stop();
+        }
+      }
+    }]
+  });
+  if (callPath === undefined) {
+    throw new Error('CallExpression not found in code:' + code);
+  }
+  return callPath;
 }

@@ -97,9 +97,25 @@ describe('makeEs5Plugin', () => {
          expect(diagnostics.hasErrors).toBe(true);
          expect(diagnostics.messages[0]).toEqual({
            type: 'error',
-           message: '/app/dist/test.js: Unexpected argument to `$localize`: undefined\n' +
+           message: '/app/dist/test.js: `$localize` called without any arguments.\n' +
                '> 1 | $localize()\n' +
                '    | ^',
+         });
+       });
+
+    it('should add diagnostic error with code-frame information if the arguments to `$localize` are invalid',
+       () => {
+         const diagnostics = new Diagnostics();
+         const input = '$localize(...x)';
+         transformSync(
+             input,
+             {plugins: [makeEs5TranslatePlugin(diagnostics, {})], filename: '/app/dist/test.js'});
+         expect(diagnostics.hasErrors).toBe(true);
+         expect(diagnostics.messages[0]).toEqual({
+           type: 'error',
+           message: '/app/dist/test.js: Unexpected argument to `$localize` (expected an array).\n' +
+               '> 1 | $localize(...x)\n' +
+               '    |           ^',
          });
        });
 

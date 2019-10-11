@@ -51,41 +51,53 @@ export function buildLocalizeReplacement(
 *
 * @param call The AST node of the call to process.
 */
-export function unwrapMessagePartsFromLocalizeCall(call: t.CallExpression): TemplateStringsArray {
-  let cooked = call.arguments[0];
-  if (!t.isExpression(cooked)) {
-    throw new BabelParseError(call, 'Unexpected argument to `$localize`: ' + cooked);
+export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpression>):
+    TemplateStringsArray {
+  let cooked = call.get('arguments')[0];
+
+  if (cooked === undefined) {
+    throw new BabelParseError(call.node, '`$localize` called without any arguments.');
+  }
+  if (!cooked.isExpression()) {
+    throw new BabelParseError(
+        cooked.node, 'Unexpected argument to `$localize` (expected an array).');
   }
 
   // If there is no call to `__makeTemplateObject(...)`, then `raw` must be the same as `cooked`.
   let raw = cooked;
 
   // Check for cached call of the form `x || x = __makeTemplateObject(...)`
-  if (t.isLogicalExpression(cooked) && cooked.operator === '||' && t.isIdentifier(cooked.left) &&
-      t.isExpression(cooked.right)) {
-    if (t.isAssignmentExpression(cooked.right)) {
-      cooked = cooked.right.right;
+  if (cooked.isLogicalExpression() && cooked.node.operator === '||' &&
+      cooked.get('left').isIdentifier()) {
+    const right = cooked.get('right');
+    if (right.isAssignmentExpression()) {
+      cooked = right.get('right');
+      if (!cooked.isExpression()) {
+        throw new BabelParseError(
+            cooked.node, 'Unexpected "makeTemplateObject()" function (expected an expression).');
+      }
     }
   }
 
   // Check for `__makeTemplateObject(cooked, raw)` call
-  if (t.isCallExpression(cooked)) {
-    raw = cooked.arguments[1] as t.Expression;
-    if (!t.isExpression(raw)) {
+  if (cooked.isCallExpression()) {
+    const arg2 = cooked.get('arguments')[1];
+    if (!arg2.isExpression()) {
       throw new BabelParseError(
-          raw,
+          arg2.node,
           'Unexpected `raw` argument to the "makeTemplateObject()" function (expected an expression).');
     }
-    cooked = cooked.arguments[0];
-    if (!t.isExpression(cooked)) {
+    raw = arg2;
+    cooked = cooked.get('arguments')[0];
+    if (!cooked.isExpression()) {
       throw new BabelParseError(
-          cooked,
+          cooked.node,
           'Unexpected `cooked` argument to the "makeTemplateObject()" function (expected an expression).');
     }
   }
 
-  const cookedStrings = unwrapStringLiteralArray(cooked);
-  const rawStrings = unwrapStringLiteralArray(raw);
+  const cookedStrings = unwrapStringLiteralArray(cooked.node);
+  const rawStrings = unwrapStringLiteralArray(raw.node);
   return ɵmakeTemplateObject(cookedStrings, rawStrings);
 }
 
