@@ -174,7 +174,7 @@ export function performWatchCompilation(host: PerformWatchHost):
       const originalFileExists = cachedCompilerHost.fileExists;
       cachedCompilerHost.fileExists = function(fileName: string) {
         const ce = cacheEntry(fileName);
-        if (ce.exists == null) {
+        if (ce.exists === null) {
           ce.exists = originalFileExists.call(this, fileName);
         }
         return ce.exists !;
@@ -191,7 +191,7 @@ export function performWatchCompilation(host: PerformWatchHost):
       const originalReadFile = cachedCompilerHost.readFile;
       cachedCompilerHost.readFile = function(fileName: string) {
         const ce = cacheEntry(fileName);
-        if (ce.content == null) {
+        if (ce.content === null) {
           ce.content = originalReadFile.call(this, fileName);
         }
         return ce.content !;
@@ -223,7 +223,7 @@ export function performWatchCompilation(host: PerformWatchHost):
       host.reportDiagnostics([totalCompilationTimeDiagnostic(endTime - startTime)]);
     }
     const exitCode = exitCodeFromResult(compileResult.diagnostics);
-    if (exitCode == 0) {
+    if (exitCode === 0) {
       cachedProgram = compileResult.program;
       host.reportDiagnostics(
           [createMessageDiagnostic('Compilation complete. Watching for file changes.')]);

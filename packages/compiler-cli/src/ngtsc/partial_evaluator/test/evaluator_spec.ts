@@ -132,8 +132,8 @@ runInEachFileSystem(() => {
       expect(evaluate('const a = 3, b = 3;', 'a >= b')).toEqual(true);
       expect(evaluate('const a = 2, b = 3;', 'a >= b')).toEqual(false);
 
-      expect(evaluate('const a: any = 3, b = "3";', 'a == b')).toEqual(true);
-      expect(evaluate('const a: any = 2, b = "3";', 'a == b')).toEqual(false);
+      expect(evaluate('const a: any = 3, b = "3";', 'a === b')).toEqual(true);
+      expect(evaluate('const a: any = 2, b = "3";', 'a === b')).toEqual(false);
 
       expect(evaluate('const a: any = 2, b = "3";', 'a != b')).toEqual(true);
       expect(evaluate('const a: any = 3, b = "3";', 'a != b')).toEqual(false);

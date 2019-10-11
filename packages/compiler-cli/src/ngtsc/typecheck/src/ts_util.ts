@@ -100,7 +100,7 @@ function checkIfFileHasExport(sf: ts.SourceFile, name: string): boolean {
         if (element.propertyName === undefined && element.name.text === name) {
           // The named declaration is directly exported.
           return true;
-        } else if (element.propertyName !== undefined && element.propertyName.text == name) {
+        } else if (element.propertyName !== undefined && element.propertyName.text === name) {
           // The named declaration is exported via an alias.
           return true;
         }

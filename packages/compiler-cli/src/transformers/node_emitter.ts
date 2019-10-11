@@ -79,7 +79,7 @@ export function updateSourceFile(
 
   // Add static methods to all the classes referenced in module.
   let newStatements = sourceFile.statements.map(node => {
-    if (node.kind == ts.SyntaxKind.ClassDeclaration) {
+    if (node.kind === ts.SyntaxKind.ClassDeclaration) {
       const classDeclaration = node as ts.ClassDeclaration;
       const name = classDeclaration.name;
       if (name) {
@@ -107,9 +107,9 @@ export function updateSourceFile(
   });
 
   // Validate that all the classes have been generated
-  classNames.size == 0 ||
+  classNames.size === 0 ||
       error(
-          `${classNames.size == 1 ? 'Class' : 'Classes'} "${Array.from(classNames.keys()).join(', ')}" not generated`);
+          `${classNames.size === 1 ? 'Class' : 'Classes'} "${Array.from(classNames.keys()).join(', ')}" not generated`);
 
   // Add imports to the module required by the new methods
   const imports = converter.getImports();
@@ -242,7 +242,7 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
 
     const recordLastSourceRange = () => {
       if (lastRange && lastRangeStartNode && lastRangeEndNode) {
-        if (lastRangeStartNode == lastRangeEndNode) {
+        if (lastRangeStartNode === lastRangeEndNode) {
           ts.setSourceMapRange(lastRangeEndNode, lastRange);
         } else {
           ts.setSourceMapRange(lastRangeStartNode, lastRange);
@@ -285,7 +285,7 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   private sourceRangeOf(node: Node): ts.SourceMapRange|null {
     if (node.sourceSpan) {
       const span = node.sourceSpan;
-      if (span.start.file == span.end.file) {
+      if (span.start.file === span.end.file) {
         const file = span.start.file;
         if (file.url) {
           let source = this._templateSources.get(file);
@@ -373,8 +373,8 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
             field.name,
             /* questionToken */ undefined,
             /* type */ undefined,
-            field.initializer == null ? ts.createNull() :
-                                        field.initializer.visitExpression(this, null)));
+            field.initializer === undefined ? ts.createNull() :
+                                              field.initializer.visitExpression(this, null)));
     const getters = stmt.getters.map(
         getter => ts.createGetAccessor(
             /* decorators */ undefined, /* modifiers */ undefined, getter.name, /* parameters */[],
@@ -692,7 +692,7 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     let prefixIdent: ts.Identifier|null = null;
     if (moduleName) {
       let prefix = this._importsWithPrefixes.get(moduleName);
-      if (prefix == null) {
+      if (prefix === undefined) {
         prefix = `i${this._importsWithPrefixes.size}`;
         this._importsWithPrefixes.set(moduleName, prefix);
       }
@@ -744,5 +744,5 @@ function modifierFromModifier(modifier: StmtModifier): ts.Modifier {
 }
 
 function translateModifiers(modifiers: StmtModifier[] | null): ts.Modifier[]|undefined {
-  return modifiers == null ? undefined : modifiers !.map(modifierFromModifier);
+  return modifiers === null ? undefined : modifiers !.map(modifierFromModifier);
 }

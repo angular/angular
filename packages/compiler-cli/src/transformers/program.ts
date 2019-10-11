@@ -292,7 +292,7 @@ class AngularCompilerProgram implements Program {
 
     const writeTsFile: ts.WriteFileCallback =
         (outFileName, outData, writeByteOrderMark, onError?, sourceFiles?) => {
-          const sourceFile = sourceFiles && sourceFiles.length == 1 ? sourceFiles[0] : null;
+          const sourceFile = sourceFiles && sourceFiles.length === 1 ? sourceFiles[0] : null;
           let genFile: GeneratedFile|undefined;
           if (this.options.annotateForClosureCompiler && sourceFile &&
               TS.test(sourceFile.fileName)) {
@@ -301,7 +301,7 @@ class AngularCompilerProgram implements Program {
           this.writeFile(outFileName, outData, writeByteOrderMark, onError, undefined, sourceFiles);
         };
 
-    const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
+    const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) === EmitFlags.DTS;
 
     const tsCustomTransformers = this.calculateTransforms(
         /* genFiles */ undefined, /* partialModules */ modules,
@@ -376,7 +376,7 @@ class AngularCompilerProgram implements Program {
     const emittedSourceFiles = [] as ts.SourceFile[];
     const writeTsFile: ts.WriteFileCallback =
         (outFileName, outData, writeByteOrderMark, onError?, sourceFiles?) => {
-          const sourceFile = sourceFiles && sourceFiles.length == 1 ? sourceFiles[0] : null;
+          const sourceFile = sourceFiles && sourceFiles.length === 1 ? sourceFiles[0] : null;
           let genFile: GeneratedFile|undefined;
           if (sourceFile) {
             outSrcMapping.push({outFileName: outFileName, sourceFile});
@@ -400,7 +400,7 @@ class AngularCompilerProgram implements Program {
 
     const tsCustomTransformers = this.calculateTransforms(
         genFileByFileName, modules, /* stripDecorators */ undefined, customTransformers);
-    const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
+    const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) === EmitFlags.DTS;
     // Restore the original references before we emit so TypeScript doesn't emit
     // a reference to the .d.ts file.
     const augmentedReferences = new Map<ts.SourceFile, ReadonlyArray<ts.FileReference>>();
@@ -985,7 +985,7 @@ export function createSrcToOutPathMapper(
     } = path): (srcFileName: string) => string {
   if (outDir) {
     let path: {} = {};  // Ensure we error if we use `path` instead of `host`.
-    if (sampleSrcFileName == null || sampleOutFileName == null) {
+    if (sampleSrcFileName === undefined || sampleOutFileName === undefined) {
       throw new Error(`Can't calculate the rootDir without a sample srcFileName / outFileName. `);
     }
     const srcFileDir = normalizeSeparators(host.dirname(sampleSrcFileName));

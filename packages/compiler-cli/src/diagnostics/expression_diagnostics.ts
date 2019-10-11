@@ -112,7 +112,7 @@ function getVarDeclarations(
           if (value) {
             type = value.type !;
             let kind = info.query.getTypeKind(type);
-            if (kind === BuiltinType.Any || kind == BuiltinType.Unbound) {
+            if (kind === BuiltinType.Any || kind === BuiltinType.Unbound) {
               // The any type is not very useful here. For special cases, such as ngFor, we can do
               // better.
               type = refinedVariableType(type, info, current);
@@ -139,10 +139,10 @@ function refinedVariableType(
   // Special case the ngFor directive
   const ngForDirective = templateElement.directives.find(d => {
     const name = identifierName(d.directive.type);
-    return name == 'NgFor' || name == 'NgForOf';
+    return name === 'NgFor' || name === 'NgForOf';
   });
   if (ngForDirective) {
-    const ngForOfBinding = ngForDirective.inputs.find(i => i.directiveName == 'ngForOf');
+    const ngForOfBinding = ngForDirective.inputs.find(i => i.directiveName === 'ngForOf');
     if (ngForOfBinding) {
       const bindingType = new AstType(info.members, info.query, {}).getType(ngForOfBinding.value);
       if (bindingType) {
@@ -309,7 +309,7 @@ function hasTemplateReference(type: CompileTypeMetadata): boolean {
   if (type.diDeps) {
     for (let diDep of type.diDeps) {
       if (diDep.token && diDep.token.identifier &&
-          identifierName(diDep.token !.identifier !) == 'TemplateRef')
+          identifierName(diDep.token !.identifier !) === 'TemplateRef')
         return true;
     }
   }

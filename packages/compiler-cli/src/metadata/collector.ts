@@ -91,11 +91,11 @@ export class MetadataCollector {
     function maybeGetSimpleFunction(
         functionDeclaration: ts.FunctionDeclaration |
         ts.MethodDeclaration): {func: FunctionMetadata, name: string}|undefined {
-      if (functionDeclaration.name && functionDeclaration.name.kind == ts.SyntaxKind.Identifier) {
+      if (functionDeclaration.name && functionDeclaration.name.kind === ts.SyntaxKind.Identifier) {
         const nameNode = <ts.Identifier>functionDeclaration.name;
         const functionName = nameNode.text;
         const functionBody = functionDeclaration.body;
-        if (functionBody && functionBody.statements.length == 1) {
+        if (functionBody && functionBody.statements.length === 1) {
           const statement = functionBody.statements[0];
           if (statement.kind === ts.SyntaxKind.ReturnStatement) {
             const returnStatement = <ts.ReturnStatement>statement;
@@ -359,7 +359,7 @@ export class MetadataCollector {
             }
           }
 
-          if (moduleSpecifier && moduleSpecifier.kind == ts.SyntaxKind.StringLiteral) {
+          if (moduleSpecifier && moduleSpecifier.kind === ts.SyntaxKind.StringLiteral) {
             // Ignore exports that don't have string literals as exports.
             // This is allowed by the syntax but will be flagged as an error by the type checker.
             const from = (<ts.StringLiteral>moduleSpecifier).text;
@@ -440,7 +440,7 @@ export class MetadataCollector {
                 enumValue = evaluator.evaluateNode(member.initializer);
               }
               let name: string|undefined = undefined;
-              if (member.name.kind == ts.SyntaxKind.Identifier) {
+              if (member.name.kind === ts.SyntaxKind.Identifier) {
                 const identifier = <ts.Identifier>member.name;
                 name = identifier.text;
                 enumValueHolder[name] = enumValue;
@@ -476,7 +476,7 @@ export class MetadataCollector {
         case ts.SyntaxKind.VariableStatement:
           const variableStatement = <ts.VariableStatement>node;
           for (const variableDeclaration of variableStatement.declarationList.declarations) {
-            if (variableDeclaration.name.kind == ts.SyntaxKind.Identifier) {
+            if (variableDeclaration.name.kind === ts.SyntaxKind.Identifier) {
               const nameNode = <ts.Identifier>variableDeclaration.name;
               let varValue: MetadataValue;
               if (variableDeclaration.initializer) {
@@ -494,8 +494,8 @@ export class MetadataCollector {
                 }
                 exported = true;
               }
-              if (typeof varValue == 'string' || typeof varValue == 'number' ||
-                  typeof varValue == 'boolean') {
+              if (typeof varValue === 'string' || typeof varValue === 'number' ||
+                  typeof varValue === 'boolean') {
                 locals.define(nameNode.text, varValue);
                 if (exported) {
                   locals.defineReference(
@@ -723,7 +723,7 @@ function namesOf(parameters: ts.NodeArray<ts.ParameterDeclaration>): string[] {
   const result: string[] = [];
 
   function addNamesOf(name: ts.Identifier | ts.BindingPattern) {
-    if (name.kind == ts.SyntaxKind.Identifier) {
+    if (name.kind === ts.SyntaxKind.Identifier) {
       const identifier = <ts.Identifier>name;
       result.push(identifier.text);
     } else {

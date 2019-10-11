@@ -131,12 +131,12 @@ class TypeScriptSymbolQuery implements SymbolQuery {
   }
 
   getNonNullableType(symbol: Symbol): Symbol {
-    if (symbol instanceof TypeWrapper && (typeof this.checker.getNonNullableType == 'function')) {
+    if (symbol instanceof TypeWrapper && (typeof this.checker.getNonNullableType === 'function')) {
       const tsType = symbol.tsType;
       const nonNullableType = this.checker.getNonNullableType(tsType);
       if (nonNullableType != tsType) {
         return new TypeWrapper(nonNullableType, symbol.context);
-      } else if (nonNullableType == tsType) {
+      } else if (nonNullableType === tsType) {
         return symbol;
       }
     }
@@ -193,7 +193,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
       const constructorDeclaration = constructor.declarations ![0] as ts.ConstructorTypeNode;
       for (const parameter of constructorDeclaration.parameters) {
         const type = this.checker.getTypeAtLocation(parameter.type !);
-        if (type.symbol !.name == 'TemplateRef' && isReferenceType(type)) {
+        if (type.symbol !.name === 'TemplateRef' && isReferenceType(type)) {
           const typeReference = type as ts.TypeReference;
           if (typeReference.typeArguments && typeReference.typeArguments.length === 1) {
             return typeReference.typeArguments[0].symbol;
@@ -516,13 +516,13 @@ class PipesTable implements SymbolTable {
   get size() { return this.pipes.length; }
 
   get(key: string): Symbol|undefined {
-    const pipe = this.pipes.find(pipe => pipe.name == key);
+    const pipe = this.pipes.find(pipe => pipe.name === key);
     if (pipe) {
       return new PipeSymbol(pipe, this.context);
     }
   }
 
-  has(key: string): boolean { return this.pipes.find(pipe => pipe.name == key) != null; }
+  has(key: string): boolean { return this.pipes.find(pipe => pipe.name === key) != null; }
 
   values(): Symbol[] { return this.pipes.map(pipe => new PipeSymbol(pipe, this.context)); }
 }
@@ -557,7 +557,7 @@ class PipeSymbol implements Symbol {
 
   selectSignature(types: Symbol[]): Signature|undefined {
     let signature = selectSignature(this.tsType, this.context, types) !;
-    if (types.length == 1) {
+    if (types.length === 1) {
       const parameterType = types[0];
       if (parameterType instanceof TypeWrapper) {
         let resultType: ts.Type|undefined = undefined;
@@ -634,7 +634,7 @@ function findClassSymbolInContext(type: StaticSymbol, context: TypeContext): ts.
   if (sourceFile) {
     const moduleSymbol = (sourceFile as any).module || (sourceFile as any).symbol;
     const exports = context.checker.getExportsOfModule(moduleSymbol);
-    return (exports || []).find(symbol => symbol.name == type.name);
+    return (exports || []).find(symbol => symbol.name === type.name);
   }
 }
 
@@ -766,7 +766,7 @@ function getContainerOf(symbol: ts.Symbol, context: TypeContext): Symbol|undefin
 }
 
 function getTypeParameterOf(type: ts.Type, name: string): ts.Type|undefined {
-  if (type && type.symbol && type.symbol.name == name) {
+  if (type && type.symbol && type.symbol.name === name) {
     const typeArguments: ts.Type[] = (type as any).typeArguments;
     if (typeArguments && typeArguments.length <= 1) {
       return typeArguments[0];

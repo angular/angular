@@ -422,7 +422,7 @@ function parseDecoratedFields(
         field.decorators.forEach(decorator => {
           // The decorator either doesn't have an argument (@Input()) in which case the property
           // name is used, or it has one argument (@Output('named')).
-          if (decorator.args == null || decorator.args.length === 0) {
+          if (decorator.args === null || decorator.args.length === 0) {
             results[fieldName] = fieldName;
           } else if (decorator.args.length === 1) {
             const property = evaluator.evaluate(decorator.args[0]);
@@ -507,7 +507,7 @@ export function extractHostBindings(
             `Decorator host metadata must be a string -> string object, but found unparseable key ${key}`);
       }
 
-      if (typeof value == 'string') {
+      if (typeof value === 'string') {
         hostMetadata[key] = value;
       } else if (value instanceof DynamicValue) {
         hostMetadata[key] = new WrappedNodeExpr(value.node as ts.Expression);

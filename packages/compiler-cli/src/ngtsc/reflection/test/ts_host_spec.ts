@@ -457,7 +457,7 @@ runInEachFileSystem(() => {
   }
 
   function argExpressionToString(name: ts.Node | null): string {
-    if (name == null) {
+    if (name === null) {
       throw new Error('\'name\' argument can\'t be null');
     }
 

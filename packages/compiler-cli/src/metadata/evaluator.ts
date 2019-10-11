@@ -23,7 +23,7 @@ function isMethodCallOf(callExpression: ts.CallExpression, memberName: string): 
   if (expression.kind === ts.SyntaxKind.PropertyAccessExpression) {
     const propertyAccessExpression = <ts.PropertyAccessExpression>expression;
     const name = propertyAccessExpression.name;
-    if (name.kind == ts.SyntaxKind.Identifier) {
+    if (name.kind === ts.SyntaxKind.Identifier) {
       return name.text === memberName;
     }
   }
@@ -48,7 +48,7 @@ export function recordMapEntry<T extends MetadataEntry>(
     nodeMap.set(entry, node);
     if (node && (isMetadataImportedSymbolReferenceExpression(entry) ||
                  isMetadataImportDefaultReference(entry)) &&
-        entry.line == null) {
+        entry.line === null) {
       const info = sourceInfo(node, sourceFile);
       if (info.line != null) entry.line = info.line;
       if (info.character != null) entry.character = info.character;
@@ -129,7 +129,7 @@ export class Evaluator {
       private recordExport?: (name: string, value: MetadataValue) => void) {}
 
   nameOf(node: ts.Node|undefined): string|MetadataError {
-    if (node && node.kind == ts.SyntaxKind.Identifier) {
+    if (node && node.kind === ts.SyntaxKind.Identifier) {
       return (<ts.Identifier>node).text;
     }
     const result = node && this.evaluateNode(node);
@@ -290,7 +290,7 @@ export class Evaluator {
             case ts.SyntaxKind.ShorthandPropertyAssignment:
             case ts.SyntaxKind.PropertyAssignment:
               const assignment = <ts.PropertyAssignment|ts.ShorthandPropertyAssignment>child;
-              if (assignment.name.kind == ts.SyntaxKind.StringLiteral) {
+              if (assignment.name.kind === ts.SyntaxKind.StringLiteral) {
                 const name = (assignment.name as ts.StringLiteral).text;
                 quoted.push(name);
               }
@@ -350,7 +350,7 @@ export class Evaluator {
         if (isCallOf(callExpression, 'forwardRef') &&
             arrayOrEmpty(callExpression.arguments).length === 1) {
           const firstArgument = callExpression.arguments[0];
-          if (firstArgument.kind == ts.SyntaxKind.ArrowFunction) {
+          if (firstArgument.kind === ts.SyntaxKind.ArrowFunction) {
             const arrowFunction = <ts.ArrowFunction>firstArgument;
             return recordEntry(this.evaluateNode(arrowFunction.body), node);
           }
@@ -490,8 +490,8 @@ export class Evaluator {
           const reference = references[i];
           if (isMetadataSymbolicReferenceExpression(reference)) {
             if (candidate) {
-              if ((reference as any).name == candidate.name &&
-                  (reference as any).module == candidate.module && !(reference as any).arguments) {
+              if ((reference as any).name === candidate.name &&
+                  (reference as any).module === candidate.module && !(reference as any).arguments) {
                 candidate = reference;
               }
             } else {
@@ -591,7 +591,7 @@ export class Evaluator {
               case ts.SyntaxKind.CaretToken:
                 return <any>left ^ <any>right;
               case ts.SyntaxKind.EqualsEqualsToken:
-                return <any>left == <any>right;
+                return <any>left === <any>right;
               case ts.SyntaxKind.ExclamationEqualsToken:
                 return <any>left != <any>right;
               case ts.SyntaxKind.EqualsEqualsEqualsToken:
@@ -686,7 +686,7 @@ export class Evaluator {
 }
 
 function isPropertyAssignment(node: ts.Node): node is ts.PropertyAssignment {
-  return node.kind == ts.SyntaxKind.PropertyAssignment;
+  return node.kind === ts.SyntaxKind.PropertyAssignment;
 }
 
 const empty = ts.createNodeArray<any>();

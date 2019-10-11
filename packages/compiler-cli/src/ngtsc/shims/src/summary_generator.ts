@@ -89,5 +89,5 @@ export class SummaryGenerator implements ShimGenerator {
 
 function isExported(decl: ts.Declaration): boolean {
   return decl.modifiers !== undefined &&
-      decl.modifiers.some(mod => mod.kind == ts.SyntaxKind.ExportKeyword);
+      decl.modifiers.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword);
 }

@@ -53,7 +53,7 @@ const BINARY_OPERATORS = new Map<ts.SyntaxKind, BinaryOperatorDef>([
   [ts.SyntaxKind.LessThanEqualsToken, literalBinaryOp((a, b) => a <= b)],
   [ts.SyntaxKind.GreaterThanToken, literalBinaryOp((a, b) => a > b)],
   [ts.SyntaxKind.GreaterThanEqualsToken, literalBinaryOp((a, b) => a >= b)],
-  [ts.SyntaxKind.EqualsEqualsToken, literalBinaryOp((a, b) => a == b)],
+  [ts.SyntaxKind.EqualsEqualsToken, literalBinaryOp((a, b) => a === b)],
   [ts.SyntaxKind.EqualsEqualsEqualsToken, literalBinaryOp((a, b) => a === b)],
   [ts.SyntaxKind.ExclamationEqualsToken, literalBinaryOp((a, b) => a != b)],
   [ts.SyntaxKind.ExclamationEqualsEqualsToken, literalBinaryOp((a, b) => a !== b)],
@@ -203,7 +203,7 @@ export class StaticInterpreter {
         value = value.resolved;
       }
       if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' ||
-          value == null) {
+          value === null) {
         pieces.push(`${value}`);
       } else if (value instanceof DynamicValue) {
         return DynamicValue.fromDynamicInput(node, value);

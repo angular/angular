@@ -384,7 +384,7 @@ export class AstType implements AstVisitor {
     const member = receiverType.members().get(ast.name);
     if (!member) {
       let receiverInfo = receiverType.name;
-      if (receiverInfo == '$implict') {
+      if (receiverInfo === '$implict') {
         receiverInfo =
             'The component declaration, template variable declarations, and element references do';
       } else if (receiverType.nullable) {
@@ -398,7 +398,7 @@ export class AstType implements AstVisitor {
     }
     if (!member.public) {
       let receiverInfo = receiverType.name;
-      if (receiverInfo == '$implict') {
+      if (receiverInfo === '$implict') {
         receiverInfo = 'the component';
       } else {
         receiverInfo = `'${receiverInfo}'`;
@@ -424,7 +424,7 @@ export class AstType implements AstVisitor {
   }
 
   private isAny(symbol: Symbol): boolean {
-    return !symbol || this.query.getTypeKind(symbol) == BuiltinType.Any ||
+    return !symbol || this.query.getTypeKind(symbol) === BuiltinType.Any ||
         (!!symbol.type && this.isAny(symbol.type));
   }
 }

@@ -486,7 +486,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
 
   private originalFileExists(fileName: string): boolean {
     let fileExists = this.originalFileExistsCache.get(fileName);
-    if (fileExists == null) {
+    if (fileExists === undefined) {
       fileExists = this.context.fileExists(fileName);
       this.originalFileExistsCache.set(fileName, fileExists);
     }
@@ -571,8 +571,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   private hasBundleIndex(filePath: string): boolean {
     const checkBundleIndex = (directory: string): boolean => {
       let result = this.flatModuleIndexCache.get(directory);
-      if (result == null) {
-        if (path.basename(directory) == 'node_module') {
+      if (result === undefined) {
+        if (path.basename(directory) === 'node_module') {
           // Don't look outside the node_modules this package is installed in.
           result = false;
         } else {
