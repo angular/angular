@@ -23,9 +23,9 @@
     "@angular/compiler": "file:../../dist/packages-dist/compiler",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@bazel/bazel": "file:../../node_modules/@bazel/bazel",
-    "@bazel/karma": "0.38.2",
-    "@bazel/protractor": "0.38.2",
-    "@bazel/typescript": "0.38.2",
+    "@bazel/karma": "0.38.3",
+    "@bazel/protractor": "0.38.3",
+    "@bazel/typescript": "0.38.3",
     "@types/jasmine": "2.8.8",
     "http-server": "^0.11.1",
     "typescript": "3.4.2"

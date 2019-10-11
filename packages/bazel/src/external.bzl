@@ -14,18 +14,15 @@ load(
     _ts_providers_dict_to_struct = "ts_providers_dict_to_struct",
 )
 load(
-    "@build_bazel_rules_nodejs//internal/common:npm_package_info.bzl",
-    _NpmPackageInfo = "NpmPackageInfo",
-    _node_modules_aspect = "node_modules_aspect",
-)
-load(
     "@npm_bazel_typescript//internal:ts_config.bzl",
     _TsConfigInfo = "TsConfigInfo",
 )
 load(
     "@build_bazel_rules_nodejs//:providers.bzl",
+    _NpmPackageInfo = "NpmPackageInfo",
     _js_ecma_script_module_info = "js_ecma_script_module_info",
     _js_named_module_info = "js_named_module_info",
+    _node_modules_aspect = "node_modules_aspect",
 )
 
 NpmPackageInfo = _NpmPackageInfo
