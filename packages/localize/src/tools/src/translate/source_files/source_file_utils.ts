@@ -9,6 +9,7 @@ import {ɵParsedTranslation, ɵisMissingTranslationError, ɵmakeTemplateObject, 
 import {NodePath} from '@babel/traverse';
 import * as t from '@babel/types';
 import {Diagnostics} from '../../diagnostics';
+import {SourceMapType} from './source_maps';
 
 /**
  * Is the given `expression` an identifier with the correct name
@@ -269,6 +270,7 @@ export function isArrayOfExpressions(nodes: t.Node[]): nodes is t.Expression[] {
 /** Options that affect how the `makeEsXXXTranslatePlugin()` functions work. */
 export interface TranslatePluginOptions {
   missingTranslation?: MissingTranslationStrategy;
+  sourceMap?: SourceMapStrategy;
   localizeName?: string;
 }
 
@@ -276,6 +278,18 @@ export interface TranslatePluginOptions {
  * How to handle missing translations.
  */
 export type MissingTranslationStrategy = 'error' | 'warning' | 'ignore';
+
+/**
+ * How to render source maps for the translated source code files.
+ *
+ * * `inline`: render the source map as a data URL in the source map.
+ * * `external`: render the source map as a file with `.map` extension and write a comment to the
+ *   source file referencing the map file.
+ * * `hidden`: write the source map externally but do not add a comment to the source file.
+ * * `none`: do not render a source map.
+ * * `inherit`: follow the strategy of the input source map.
+ */
+export type SourceMapStrategy = SourceMapType | 'inherit';
 
 /**
  * Translate the text of the given message, using the given translations.

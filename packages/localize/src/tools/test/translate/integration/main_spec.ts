@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {resolve} from 'path';
-
 import {Diagnostics} from '../../../src/diagnostics';
 import {FileUtils} from '../../../src/file_utils';
 import {translateFiles} from '../../../src/translate/main';
 import {getOutputPathFn} from '../../../src/translate/output_path';
+import {getSourceMap} from './source_map_utils';
 
 describe('translateFiles()', () => {
   const tmpDir = process.env.TEST_TMPDIR;
@@ -31,7 +31,8 @@ describe('translateFiles()', () => {
       translationFilePaths: resolveAll(
           __dirname + '/locales', ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf']),
       diagnostics,
-      missingTranslation: 'error'
+      missingTranslation: 'error',
+      sourceMap: 'inherit',
     });
 
     expect(diagnostics.messages.length).toEqual(0);
@@ -60,16 +61,18 @@ describe('translateFiles()', () => {
           __dirname + '/locales', ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf']),
       diagnostics,
       missingTranslation: 'error',
+      sourceMap: 'inherit',
     });
 
     expect(diagnostics.messages.length).toEqual(0);
 
     expect(FileUtils.readFile(resolve(testDir, 'fr', 'test.js')))
-        .toEqual(`var name="World";var message="Bonjour, "+name+"!";`);
+        .toContain(`message="Bonjour, "+name+"!";`);
+
     expect(FileUtils.readFile(resolve(testDir, 'de', 'test.js')))
-        .toEqual(`var name="World";var message="Guten Tag, "+name+"!";`);
+        .toContain(`message="Guten Tag, "+name+"!";`);
     expect(FileUtils.readFile(resolve(testDir, 'es', 'test.js')))
-        .toEqual(`var name="World";var message="Hola, "+name+"!";`);
+        .toContain(`message="Hola, "+name+"!";`);
   });
 
   it('should transform and/or copy files to the destination folders', () => {
@@ -84,6 +87,7 @@ describe('translateFiles()', () => {
           __dirname + '/locales', ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf']),
       diagnostics,
       missingTranslation: 'error',
+      sourceMap: 'inherit',
     });
 
     expect(diagnostics.messages.length).toEqual(0);
@@ -102,11 +106,33 @@ describe('translateFiles()', () => {
         .toEqual('Contents of test-2.txt');
 
     expect(FileUtils.readFile(resolve(testDir, 'fr', 'test.js')))
-        .toEqual(`var name="World";var message="Bonjour, "+name+"!";`);
+        .toContain(`message="Bonjour, "+name+"!";`);
     expect(FileUtils.readFile(resolve(testDir, 'de', 'test.js')))
-        .toEqual(`var name="World";var message="Guten Tag, "+name+"!";`);
+        .toContain(`message="Guten Tag, "+name+"!";`);
     expect(FileUtils.readFile(resolve(testDir, 'es', 'test.js')))
-        .toEqual(`var name="World";var message="Hola, "+name+"!";`);
+        .toContain(`message="Hola, "+name+"!";`);
+  });
+
+  it('should merge source-map files into the destination folder', () => {
+    const diagnostics = new Diagnostics();
+    const outputPathFn = getOutputPathFn(resolve(testDir, '{{LOCALE}}'));
+    translateFiles({
+      sourceRootPath: resolve(__dirname, 'test_files'),
+      sourceFilePaths: resolveAll(__dirname + '/test_files', ['test.js', 'test.ts', 'test2.ts']),
+      outputPathFn,
+      translationFilePaths: resolveAll(
+          __dirname + '/locales', ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf']),
+      diagnostics,
+      missingTranslation: 'error',
+      sourceMap: 'inherit',
+    });
+
+    const map = getSourceMap(resolve(testDir, 'de', 'test.js'));
+    const mappedSegments = map.getMappedSegments();
+
+    expect(mappedSegments).toContain(['message', 'message']);
+    expect(mappedSegments).toContain([': string = $localize `Hello, ${', '="Guten Tag, "+']);
+    expect(mappedSegments).toContain(['name', 'name']);
   });
 });
 

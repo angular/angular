@@ -43,7 +43,7 @@ module.exports = (gulp) => () => {
         '!packages/zone.js/**/*.js',
         '!packages/zone.js/**/*.ts',
 
-        // Ignore test files
+        // Ignore $localize test files
         '!packages/localize/**/test_files/**',
       ])
       .pipe(tslint({

@@ -13,7 +13,7 @@ import * as yargs from 'yargs';
 import {AssetTranslationHandler} from './asset_files/asset_translation_handler';
 import {getOutputPathFn, OutputPathFn} from './output_path';
 import {SourceFileTranslationHandler} from './source_files/source_file_translation_handler';
-import {MissingTranslationStrategy} from './source_files/source_file_utils';
+import {MissingTranslationStrategy, SourceMapStrategy} from './source_files/source_file_utils';
 import {TranslationLoader} from './translation_files/translation_file_loader';
 import {SimpleJsonTranslationParser} from './translation_files/translation_parsers/simple_json/simple_json_translation_parser';
 import {Xliff1TranslationParser} from './translation_files/translation_parsers/xliff1/xliff1_translation_parser';
@@ -62,6 +62,11 @@ if (require.main === module) {
             choices: ['error', 'warning', 'ignore'],
             default: 'warning',
           })
+          .option('source-map', {
+            describe: 'How source maps for translated should be rendered.',
+            choices: ['inline', 'external', 'hidden', 'inherit', 'none'],
+            default: 'inherit',
+          })
           .help()
           .parse(args);
 
@@ -73,9 +78,10 @@ if (require.main === module) {
   const diagnostics = new Diagnostics();
   const missingTranslation: MissingTranslationStrategy = options['m'];
   const sourceLocale: string|undefined = options['l'];
+  const sourceMap: SourceMapStrategy = options['source-map'];
 
   translateFiles({sourceRootPath, sourceFilePaths, translationFilePaths, outputPathFn, diagnostics,
-                  missingTranslation, sourceLocale});
+                  missingTranslation, sourceLocale, sourceMap});
 
   diagnostics.messages.forEach(m => console.warn(`${m.type}: ${m.message}`));
   process.exit(diagnostics.hasErrors ? 1 : 0);
@@ -89,6 +95,7 @@ export interface TranslateFilesOptions {
   diagnostics: Diagnostics;
   missingTranslation: MissingTranslationStrategy;
   sourceLocale?: string;
+  sourceMap: SourceMapStrategy;
 }
 
 export function translateFiles({sourceRootPath, sourceFilePaths, translationFilePaths, outputPathFn,

@@ -28,6 +28,8 @@ const srcsToFmt = [
   '!**/dist/**',
   '!**/built/**',
   '!shims_for_IE.js',
+  // Ignore $localize test files
+  '!packages/localize/**/test_files/**',
 ];
 
 /**

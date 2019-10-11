@@ -3,12 +3,14 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 ts_library(
     name = "test_lib",
     testonly = True,
-    srcs = glob(
-        ["**/*_spec.ts"],
-    ),
+    srcs = [
+        "main_spec.ts",
+        "source_map_utils.ts",
+    ],
     deps = [
         "//packages:types",
         "//packages/localize/src/tools",
+        "@npm//source-map",
     ],
 )
 
@@ -26,7 +28,9 @@ jasmine_node_test(
     deps = [
         ":test_lib",
         "//tools/testing:node_no_angular",
+        "@npm//convert-source-map",
         "@npm//glob",
+        "@npm//source-map",
         "@npm//yargs",
     ],
 )

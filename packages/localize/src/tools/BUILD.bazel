@@ -22,6 +22,7 @@ ts_library(
         "//packages/localize",
         "@npm//@babel/core",
         "@npm//@babel/types",
+        "@npm//@types/convert-source-map",
         "@npm//@types/glob",
         "@npm//@types/node",
         "@npm//@types/yargs",
