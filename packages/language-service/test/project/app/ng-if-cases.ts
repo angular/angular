@@ -10,7 +10,7 @@ import {Component} from '@angular/core';
 
 @Component({
   template: `
-    <div ~{implicit}*ngIf="show; let l=unknown"~{implicit-end}>
+    <div ~{start-implicit}*ngIf="show; let l=unknown"~{end-implicit}>
       Showing now!
     </div>`,
 })

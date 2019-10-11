@@ -14,28 +14,28 @@ export interface Person {
 }
 
 @Component({
-  template: '{{~{foo}foo~{foo-end}}}',
+  template: '{{~{start-foo}foo~{end-foo}}}',
 })
 export class WrongFieldReference {
   bar = 'bar';
 }
 
 @Component({
-  template: '{{~{nam}person.nam~{nam-end}}}',
+  template: '{{~{start-nam}person.nam~{end-nam}}}',
 })
 export class WrongSubFieldReference {
   person: Person = {name: 'Bob', age: 23};
 }
 
 @Component({
-  template: '{{~{myField}myField~{myField-end}}}',
+  template: '{{~{start-myField}myField~{end-myField}}}',
 })
 export class PrivateReference {
   private myField = 'My Field';
 }
 
 @Component({
-  template: '{{~{mod}"a" ~{mod-end}% 2}}',
+  template: '{{~{start-mod}"a" ~{end-mod}% 2}}',
 })
 export class ExpectNumericType {
 }
