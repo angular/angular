@@ -35,9 +35,9 @@ type Resolvers = {
 };
 
 interface CleanupOperation {
-  field: string;
-  def: any;
-  original: unknown;
+  fieldName: string;
+  object: any;
+  originalValue: unknown;
 }
 
 export class R3TestBedCompiler {
@@ -159,7 +159,7 @@ export class R3TestBedCompiler {
           provide: token,
           useFactory: provider.useFactory,
           deps: provider.deps || [],
-          multi: provider.multi,
+          multi: provider.multi
         } :
         {provide: token, useValue: provider.useValue, multi: provider.multi};
 
@@ -381,8 +381,20 @@ export class R3TestBedCompiler {
 
       // Apply provider overrides to imported modules recursively
       const moduleDef: any = (moduleType as any)[NG_MOD_DEF];
-      for (const importType of moduleDef.imports) {
-        this.applyProviderOverridesToModule(importType);
+      for (const importedModule of moduleDef.imports) {
+        this.applyProviderOverridesToModule(importedModule);
+      }
+      // Also override the providers on any ModuleWithProviders imports since those don't appear in
+      // the moduleDef.
+      for (const importedModule of flatten(injectorDef.imports)) {
+        if (isModuleWithProviders(importedModule)) {
+          this.defCleanupOps.push({
+            object: importedModule,
+            fieldName: 'providers',
+            originalValue: importedModule.providers
+          });
+          importedModule.providers = this.getOverriddenProviders(importedModule.providers);
+        }
       }
     }
   }
@@ -485,10 +497,10 @@ export class R3TestBedCompiler {
     }
   }
 
-  private storeFieldOfDefOnType(type: Type<any>, defField: string, field: string): void {
+  private storeFieldOfDefOnType(type: Type<any>, defField: string, fieldName: string): void {
     const def: any = (type as any)[defField];
-    const original: any = def[field];
-    this.defCleanupOps.push({field, def, original});
+    const originalValue: any = def[fieldName];
+    this.defCleanupOps.push({object: def, fieldName, originalValue});
   }
 
   /**
@@ -519,7 +531,9 @@ export class R3TestBedCompiler {
   restoreOriginalState(): void {
     // Process cleanup ops in reverse order so the field's original value is restored correctly (in
     // case there were multiple overrides for the same field).
-    forEachRight(this.defCleanupOps, (op: CleanupOperation) => { op.def[op.field] = op.original; });
+    forEachRight(this.defCleanupOps, (op: CleanupOperation) => {
+      op.object[op.fieldName] = op.originalValue;
+    });
     // Restore initial component/directive/pipe defs
     this.initialNgDefs.forEach(
         (value: [string, PropertyDescriptor | undefined], type: Type<any>) => {
@@ -619,34 +633,23 @@ export class R3TestBedCompiler {
   private getOverriddenProviders(providers?: Provider[]): Provider[] {
     if (!providers || !providers.length || this.providerOverridesByToken.size === 0) return [];
 
-    const overrides = this.getProviderOverrides(providers);
-    const hasMultiProviderOverrides = overrides.some(isMultiProvider);
-    const overriddenProviders = [...providers, ...overrides];
-
-    // No additional processing is required in case we have no multi providers to override
-    if (!hasMultiProviderOverrides) {
-      return overriddenProviders;
-    }
-
+    const flattenedProviders = flatten<Provider[]>(providers);
+    const overrides = this.getProviderOverrides(flattenedProviders);
+    const overriddenProviders = [...flattenedProviders, ...overrides];
     const final: Provider[] = [];
     const seenMultiProviders = new Set<Provider>();
 
     // We iterate through the list of providers in reverse order to make sure multi provider
-    // overrides take precedence over the values defined in provider list. We also fiter out all
+    // overrides take precedence over the values defined in provider list. We also filter out all
     // multi providers that have overrides, keeping overridden values only.
     forEachRight(overriddenProviders, (provider: any) => {
       const token: any = getProviderToken(provider);
       if (isMultiProvider(provider) && this.providerOverridesByToken.has(token)) {
+        // Don't add overridden multi-providers twice because when you override a multi-provider, we
+        // treat it as `{multi: false}` to avoid providing the same value multiple times.
         if (!seenMultiProviders.has(token)) {
           seenMultiProviders.add(token);
-          if (provider && provider.useValue && Array.isArray(provider.useValue)) {
-            forEachRight(provider.useValue, (value: any) => {
-              // Unwrap provider override array into individual providers in final set.
-              final.unshift({provide: token, useValue: value, multi: true});
-            });
-          } else {
-            final.unshift(provider);
-          }
+          final.unshift({...provider, multi: false});
         }
       } else {
         final.unshift(provider);
