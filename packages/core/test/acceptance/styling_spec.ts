@@ -2241,6 +2241,101 @@ describe('styling', () => {
        fixture.detectChanges();
        expect(div.classList.contains('disabled')).toBe(false);
      });
+
+  it('should throw an error if a prop-based style/class binding value is changed during checkNoChanges',
+     () => {
+       let updateStyleBinding = false;
+       let updateStyleCount = 0;
+       let updateClassBinding = false;
+       let updateClassCount = 0;
+
+       @Component({
+         template: `
+        <div [style.color]="color" [class.foo]="fooClass"></div>
+      `
+       })
+       class Cmp {
+         private _color = 'red';
+         private _fooClass = true;
+
+         get color() {
+           if (updateStyleBinding && updateStyleCount++) {
+             this._color = 'blue';
+           }
+           return this._color;
+         }
+
+         get fooClass() {
+           if (updateClassBinding && updateClassCount++) {
+             this._fooClass = false;
+           }
+           return this._fooClass;
+         }
+       }
+
+       TestBed.configureTestingModule({declarations: [Cmp]});
+       const fixture = TestBed.createComponent(Cmp);
+       fixture.detectChanges();
+
+       updateStyleBinding = true;
+       updateStyleCount = 0;
+
+       expect(() => { fixture.detectChanges(); }).toThrow();
+
+       updateStyleBinding = false;
+       updateClassBinding = true;
+       updateClassCount = 0;
+
+       expect(() => { fixture.detectChanges(); }).toThrow();
+     });
+
+  onlyInIvy('only ivy allows for map-based style AND class bindings')
+      .it('should throw an error if a map-based style/class binding value is changed during checkNoChanges',
+          () => {
+            let updateStyleBinding = false;
+            let updateStyleCount = 0;
+            let updateClassBinding = false;
+            let updateClassCount = 0;
+
+            @Component({
+              template: `
+        <div [style]="style" [class]="klass"></div>
+      `
+            })
+            class Cmp {
+              private _style = {width: '100px'};
+              private _klass = {foo: true, bar: false};
+
+              get style() {
+                if (updateStyleBinding && updateStyleCount++) {
+                  this._style = {width: '200px'};
+                }
+                return this._style;
+              }
+
+              get klass() {
+                if (updateClassBinding && updateClassCount++) {
+                  this._klass = {foo: false, bar: true};
+                }
+                return this._klass;
+              }
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp]});
+            const fixture = TestBed.createComponent(Cmp);
+            fixture.detectChanges();
+
+            updateStyleBinding = true;
+            updateStyleCount = 0;
+
+            expect(() => { fixture.detectChanges(); }).toThrow();
+
+            updateStyleBinding = false;
+            updateClassBinding = true;
+            updateClassCount = 0;
+
+            expect(() => { fixture.detectChanges(); }).toThrow();
+          });
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {
