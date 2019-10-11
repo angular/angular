@@ -83,7 +83,8 @@ export abstract class _MatTabHeaderBase extends MatPaginatedTabHeader implements
   inputs: ['selectedIndex'],
   outputs: ['selectFocusedIndex', 'indexFocused'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default,
   host: {
     'class': 'mat-tab-header',
     '[class.mat-tab-header-pagination-controls-enabled]': '_showPaginationControls',

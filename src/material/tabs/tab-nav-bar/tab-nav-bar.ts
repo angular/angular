@@ -160,7 +160,8 @@ export abstract class _MatTabNavBase extends MatPaginatedTabHeader implements Af
     '[class.mat-warn]': 'color === "warn"',
   },
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MatTabNav extends _MatTabNavBase {
   @ContentChildren(forwardRef(() => MatTabLink), {descendants: true}) _items: QueryList<MatTabLink>;

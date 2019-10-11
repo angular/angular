@@ -360,7 +360,8 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
   templateUrl: 'tab-group.html',
   styleUrls: ['tab-group.css'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default,
   inputs: ['color', 'disableRipple'],
   host: {
     'class': 'mat-tab-group',
