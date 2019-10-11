@@ -477,7 +477,7 @@ export class HttpClient {
         if (options.params instanceof HttpParams) {
           params = options.params;
         } else {
-          params = new HttpParams({fromObject: options.params});
+          params = new HttpParams({ fromObject: options.params } as HttpParamsOptions);
         }
       }
 
