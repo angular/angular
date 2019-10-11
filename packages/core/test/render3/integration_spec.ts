@@ -346,7 +346,7 @@ describe('component animations', () => {
   //   it('should allow host binding animations to be picked up and rendered', () => {
   //     class ChildCompWithAnim {
   //       static ngFactoryDef = () => new ChildCompWithAnim();
-  //       static ngDirectiveDef = ɵɵdefineDirective({
+  //       static ɵdir = ɵɵdefineDirective({
   //         type: ChildCompWithAnim,
   //         selectors: [['child-comp-with-anim']],
   //         hostBindings: function(rf: RenderFlags, ctx: any, elementIndex: number): void {
@@ -837,20 +837,17 @@ describe('element discovery', () => {
 
        class MyDir1 {
          static ngFactoryDef = () => myDir1Instance = new MyDir1();
-         static ngDirectiveDef =
-             ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
+         static ɵdir = ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
        }
 
        class MyDir2 {
          static ngFactoryDef = () => myDir2Instance = new MyDir2();
-         static ngDirectiveDef =
-             ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
+         static ɵdir = ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
        }
 
        class MyDir3 {
          static ngFactoryDef = () => myDir3Instance = new MyDir2();
-         static ngDirectiveDef =
-             ɵɵdefineDirective({type: MyDir3, selectors: [['', 'my-dir-3', '']]});
+         static ɵdir = ɵɵdefineDirective({type: MyDir3, selectors: [['', 'my-dir-3', '']]});
        }
 
        class StructuredComp {
@@ -921,14 +918,12 @@ describe('element discovery', () => {
 
        class MyDir1 {
          static ngFactoryDef = () => myDir1Instance = new MyDir1();
-         static ngDirectiveDef =
-             ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
+         static ɵdir = ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
        }
 
        class MyDir2 {
          static ngFactoryDef = () => myDir2Instance = new MyDir2();
-         static ngDirectiveDef =
-             ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
+         static ɵdir = ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
        }
 
        class ChildComp {
@@ -1114,7 +1109,7 @@ describe('sanitization', () => {
       cite: any = 'http://cite-dir-value';
 
       static ngFactoryDef = () => hostBindingDir = new UnsafeUrlHostBindingDir();
-      static ngDirectiveDef = ɵɵdefineDirective({
+      static ɵdir = ɵɵdefineDirective({
         type: UnsafeUrlHostBindingDir,
         selectors: [['', 'unsafeUrlHostBindingDir', '']],
         hostBindings: (rf: RenderFlags, ctx: any) => {

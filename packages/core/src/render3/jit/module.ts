@@ -16,7 +16,7 @@ import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} fr
 import {deepForEach, flatten} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
-import {NG_COMP_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
+import {NG_COMP_DEF, NG_DIR_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {NgModuleType} from '../ng_module_ref';
 import {maybeUnwrapFn, stringifyForError} from '../util/misc_utils';
@@ -388,7 +388,7 @@ function setScopeOnDeclaredComponents(moduleType: Type<any>, ngModule: NgModule)
       const componentDef = getComponentDef(component) !;
       patchComponentDefWithScope(componentDef, transitiveScopes);
     } else if (
-        !declaration.hasOwnProperty(NG_DIRECTIVE_DEF) && !declaration.hasOwnProperty(NG_PIPE_DEF)) {
+        !declaration.hasOwnProperty(NG_DIR_DEF) && !declaration.hasOwnProperty(NG_PIPE_DEF)) {
       // Set `ngSelectorScope` for future reference when the component compilation finishes.
       (declaration as Type<any>& {ngSelectorScope?: any}).ngSelectorScope = moduleType;
     }
@@ -455,7 +455,7 @@ export function transitiveScopesFor<T>(
     if (getPipeDef(declaredWithDefs)) {
       scopes.compilation.pipes.add(declared);
     } else {
-      // Either declared has a ɵcmp or ngDirectiveDef, or it's a component which hasn't
+      // Either declared has a ɵcmp or ɵdir, or it's a component which hasn't
       // had its template compiled yet. In either case, it gets added to the compilation's
       // directives.
       scopes.compilation.directives.add(declared);
@@ -487,7 +487,7 @@ export function transitiveScopesFor<T>(
     const exportedType = exported as Type<E>& {
       // Components, Directives, NgModules, and Pipes can all be exported.
       ɵcmp?: any;
-      ngDirectiveDef?: any;
+      ɵdir?: any;
       ngModuleDef?: NgModuleDef<E>;
       ngPipeDef?: any;
     };

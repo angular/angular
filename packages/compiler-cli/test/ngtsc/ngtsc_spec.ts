@@ -373,7 +373,7 @@ runInEachFileSystem(os => {
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('TestBase.ngBaseDef = i0.ɵɵdefineBase');
       expect(jsContents).toContain('TestComponent.ɵcmp = i0.ɵɵdefineComponent');
-      expect(jsContents).toContain('TestDirective.ngDirectiveDef = i0.ɵɵdefineDirective');
+      expect(jsContents).toContain('TestDirective.ɵdir = i0.ɵɵdefineDirective');
       expect(jsContents).toContain('TestPipe.ngPipeDef = i0.ɵɵdefinePipe');
       expect(jsContents).toContain('TestInjectable.ngInjectableDef = i0.ɵɵdefineInjectable');
       expect(jsContents).toContain('MyModule.ngModuleDef = i0.ɵɵdefineNgModule');
@@ -1180,7 +1180,7 @@ runInEachFileSystem(os => {
 
         // Validate that each class has the primary definition.
         expect(jsContents).toContain('TestCmp.ɵcmp =');
-        expect(jsContents).toContain('TestDir.ngDirectiveDef =');
+        expect(jsContents).toContain('TestDir.ɵdir =');
         expect(jsContents).toContain('TestPipe.ngPipeDef =');
         expect(jsContents).toContain('TestNgModule.ngModuleDef =');
 
@@ -2946,7 +2946,7 @@ runInEachFileSystem(os => {
         import {ɵɵDirectiveDefWithMeta, ɵɵNgModuleDefWithMeta} from '@angular/core';
 
         export declare class ExternalDir {
-          static ngDirectiveDef: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
+          static ɵdir: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
         }
 
         export declare class ExternalModule {
@@ -2990,7 +2990,7 @@ runInEachFileSystem(os => {
         env.write('node_modules/external/internal.d.ts', `
 
         export declare class InternalDir {
-          static ngDirectiveDef: ɵɵDirectiveDefWithMeta<InternalDir, '[test]', never, never, never, never>;
+          static ɵdir: ɵɵDirectiveDefWithMeta<InternalDir, '[test]', never, never, never, never>;
         }
       `);
         env.write('test.ts', `
@@ -3233,7 +3233,7 @@ runInEachFileSystem(os => {
         import {ɵɵDirectiveDefWithMeta, ɵɵNgModuleDefWithMeta} from '@angular/core';
 
         export declare class ExternalDir {
-          static ngDirectiveDef: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
+          static ɵdir: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
         }
 
         export declare class ExternalModule {
@@ -4179,7 +4179,7 @@ export const Foo = Foo__PRE_R3__;
         import {ɵɵDirectiveDefWithMeta, ɵɵNgModuleDefWithMeta} from '@angular/core';
 
         export declare class ExternalDir {
-          static ngDirectiveDef: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
+          static ɵdir: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
         }
 
         export declare class AlphaModule {
@@ -4230,7 +4230,7 @@ export const Foo = Foo__PRE_R3__;
         import {LibModule} from './lib';
 
         export declare class ExternalDir {
-          static ngDirectiveDef: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
+          static ɵdir: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
         }
 
         export declare class ExternalModule {
@@ -4241,7 +4241,7 @@ export const Foo = Foo__PRE_R3__;
         import {ɵɵDirectiveDefWithMeta, ɵɵNgModuleDefWithMeta} from '@angular/core';
 
         export declare class LibDir {
-          static ngDirectiveDef: ɵɵDirectiveDefWithMeta<LibDir, '[lib]', never, never, never, never>;
+          static ɵdir: ɵɵDirectiveDefWithMeta<LibDir, '[lib]', never, never, never, never>;
         }
 
         export declare class LibModule {

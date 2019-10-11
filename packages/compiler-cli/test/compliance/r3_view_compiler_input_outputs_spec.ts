@@ -66,7 +66,7 @@ describe('compiler compliance: listen()', () => {
         });`;
 
     const directiveDef = `
-      MyDirective.ngDirectiveDef = IDENT.ɵɵdefineDirective({
+      MyDirective.ɵdir = IDENT.ɵɵdefineDirective({
         …
         inputs:{
           directiveInput: "directiveInput",

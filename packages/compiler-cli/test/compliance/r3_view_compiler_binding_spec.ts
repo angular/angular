@@ -668,7 +668,7 @@ describe('compiler compliance: bindings', () => {
       };
 
       const HostBindingDirDeclaration = `
-        HostBindingDir.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        HostBindingDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostBindingDir,
           selectors: [["", "hostBindingDir", ""]],
           hostBindings: function HostBindingDir_HostBindings(rf, ctx, elIndex) {
@@ -761,7 +761,7 @@ describe('compiler compliance: bindings', () => {
       };
 
       const HostAttributeDirDeclaration = `
-        HostAttributeDir.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
@@ -805,7 +805,7 @@ describe('compiler compliance: bindings', () => {
       const HostAttributeDirDeclaration = `
         const $c0$ = ["aria-label", "label"];
         …
-        HostAttributeDir.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
@@ -873,7 +873,7 @@ describe('compiler compliance: bindings', () => {
             …
           }
         …
-        HostAttributeDir.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {

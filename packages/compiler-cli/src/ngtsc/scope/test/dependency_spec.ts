@@ -85,7 +85,7 @@ runInEachFileSystem(() => {
       const {resolver, refs} = makeTestEnv({
         'test': `
         export declare class Dir {
-          static ngDirectiveDef: DirectiveMeta<Dir, '[dir]', ['exportAs'], {'input': 'input2'},
+          static ɵdir: DirectiveMeta<Dir, '[dir]', ['exportAs'], {'input': 'input2'},
             {'output': 'output2'}, ['query']>;
         }
 
@@ -103,7 +103,7 @@ runInEachFileSystem(() => {
       const {resolver, refs} = makeTestEnv({
         'test': `
         export declare class Dir {
-          static ngDirectiveDef: DirectiveMeta<Dir, '[dir]', never, never, never, never>;
+          static ɵdir: DirectiveMeta<Dir, '[dir]', never, never, never, never>;
         }
 
         export declare class ModuleA {
@@ -124,7 +124,7 @@ runInEachFileSystem(() => {
       const {resolver, refs} = makeTestEnv({
         'declaration': `
           export declare class Dir {
-            static ngDirectiveDef: DirectiveMeta<Dir, '[dir]', never, never, never, never>;
+            static ɵdir: DirectiveMeta<Dir, '[dir]', never, never, never, never>;
           }
 
           export declare class ModuleA {
@@ -152,7 +152,7 @@ runInEachFileSystem(() => {
           {
             'deep': `
             export declare class DeepDir {
-              static ngDirectiveDef: DirectiveMeta<DeepDir, '[deep]', never, never, never, never>;
+              static ɵdir: DirectiveMeta<DeepDir, '[deep]', never, never, never, never>;
             }
 
             export declare class DeepModule {
@@ -163,7 +163,7 @@ runInEachFileSystem(() => {
             import * as deep from 'deep';
 
             export declare class MiddleDir {
-              static ngDirectiveDef: DirectiveMeta<MiddleDir, '[middle]', never, never, never, never>;
+              static ɵdir: DirectiveMeta<MiddleDir, '[middle]', never, never, never, never>;
             }
 
             export declare class MiddleModule {
@@ -174,7 +174,7 @@ runInEachFileSystem(() => {
             import * as middle from 'middle';
 
             export declare class ShallowDir {
-              static ngDirectiveDef: DirectiveMeta<ShallowDir, '[middle]', never, never, never, never>;
+              static ɵdir: DirectiveMeta<ShallowDir, '[middle]', never, never, never, never>;
             }
 
             export declare class ShallowModule {
@@ -202,7 +202,7 @@ runInEachFileSystem(() => {
           {
             'deep': `
             export declare class DeepDir {
-              static ngDirectiveDef: DirectiveMeta<DeepDir, '[deep]', never, never, never, never>;
+              static ɵdir: DirectiveMeta<DeepDir, '[deep]', never, never, never, never>;
             }
 
             export declare class DeepModule {
@@ -213,7 +213,7 @@ runInEachFileSystem(() => {
             import * as deep from 'deep';
 
             export declare class MiddleDir {
-              static ngDirectiveDef: DirectiveMeta<MiddleDir, '[middle]', never, never, never, never>;
+              static ɵdir: DirectiveMeta<MiddleDir, '[middle]', never, never, never, never>;
             }
 
             export declare class MiddleModule {
@@ -224,7 +224,7 @@ runInEachFileSystem(() => {
             import * as middle from 'middle';
 
             export declare class ShallowDir {
-              static ngDirectiveDef: DirectiveMeta<ShallowDir, '[middle]', never, never, never, never>;
+              static ɵdir: DirectiveMeta<ShallowDir, '[middle]', never, never, never, never>;
             }
 
             export declare class ShallowModule {
@@ -253,7 +253,7 @@ runInEachFileSystem(() => {
              {
                'module': `
                 export declare class DeepDir {
-                  static ngDirectiveDef: DirectiveMeta<DeepDir, '[deep]', never, never, never, never>;
+                  static ɵdir: DirectiveMeta<DeepDir, '[deep]', never, never, never, never>;
                 }
 
                 export declare class DeepModule {

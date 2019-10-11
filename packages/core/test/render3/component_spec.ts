@@ -437,8 +437,7 @@ describe('recursive components', () => {
     }
   }
 
-  (NgIfTree.ɵcmp as ComponentDef<NgIfTree>).directiveDefs =
-      () => [NgIfTree.ɵcmp, NgIf.ngDirectiveDef];
+  (NgIfTree.ɵcmp as ComponentDef<NgIfTree>).directiveDefs = () => [NgIfTree.ɵcmp, NgIf.ɵdir];
 
   function _buildTree(currDepth: number): TreeNode {
     const children = currDepth < 2 ? _buildTree(currDepth + 1) : null;

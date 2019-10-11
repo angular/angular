@@ -182,7 +182,7 @@ export function isComponentInstance(instance: any): boolean {
 }
 
 export function isDirectiveInstance(instance: any): boolean {
-  return instance && instance.constructor && instance.constructor.ngDirectiveDef;
+  return instance && instance.constructor && instance.constructor.ɵdir;
 }
 
 /**

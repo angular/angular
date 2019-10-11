@@ -39,7 +39,7 @@ The mental model of Ivy is that the decorator is the compiler. That is
 the decorator can be thought of as parameters to a class transformer that
 transforms the class by generating definitions based on the decorator
 parameters. An `@Component` decorator transforms the class by adding
-a `ɵcmp` static property, `@Directive` adds `ngDirectiveDef`,
+a `ɵcmp` static property, `@Directive` adds `ɵdir`,
 `@Pipe` adds `ngPipeDef`, etc. In most cases values supplied to the
 decorator is sufficient to generate the definition. However, in the case of
 interpreting the template, the compiler needs to know the selector defined for
@@ -67,15 +67,15 @@ class:
 | `type`              | implicit              |
 | `isComponent`       | `ɵcmp`      |
 | `selector`          | `ngModuleScope`       |
-| `exportAs`          | `ngDirectiveDef`      |
-| `inputs`            | `ngDirectiveDef`      |
-| `outputs`           | `ngDirectiveDef`      |
-| `hostListeners`     | `ngDirectiveDef`      |
-| `hostProperties`    | `ngDirectiveDef`      |
-| `hostAttributes`    | `ngDirectiveDef`      |
+| `exportAs`          | `ɵdir`      |
+| `inputs`            | `ɵdir`      |
+| `outputs`           | `ɵdir`      |
+| `hostListeners`     | `ɵdir`      |
+| `hostProperties`    | `ɵdir`      |
+| `hostAttributes`    | `ɵdir`      |
 | `providers`         | `ngInjectorDef`       |
 | `viewProviders`     | `ɵcmp`      |
-| `queries`           | `ngDirectiveDef`      |
+| `queries`           | `ɵdir`      |
 | `guards`            | not used              |
 | `viewQueries`       | `ɵcmp`      |
 | `entryComponents`   | not used              |
@@ -86,8 +86,8 @@ class:
 | `componentFactory`  | not used              |
 
 Only one definition is generated per class. All components are directives so a
-`ɵcmp` contains all the `ngDirectiveDef` information. All directives
-are injectable so `ɵcmp` and `ngDirectiveDef` contain `ngInjectableDef`
+`ɵcmp` contains all the `ɵdir` information. All directives
+are injectable so `ɵcmp` and `ɵdir` contain `ngInjectableDef`
 information.
 
 For `CompilePipeSummary` the table looks like:
@@ -193,7 +193,7 @@ manually.
 The metadata for a directive is transformed by:
 
 1. Removing the `@Directive` directive.
-2. Add  `"ngDirectiveDef": {}` static field.
+2. Add  `"ɵdir": {}` static field.
 3. Add `"ngSelector": <selector-value>` static field.
 
 ##### example
@@ -213,7 +213,7 @@ export class MyDirective {
   constructor() {
     this.dirId = 'some id';
   }
-  static ngDirectiveDef = ɵɵdefineDirective({...});
+  static ɵdir = ɵɵdefineDirective({...});
 }
 ```
 
@@ -226,7 +226,7 @@ export class MyDirective {
     "MyDirective": {
       "__symbolic": "class",
       "statics": {
-        "ngDirectiveDef": {},
+        "ɵdir": {},
         "ngSelector": "[my-dir]"
       }
     }

@@ -101,7 +101,7 @@ describe('event listeners', () => {
     static ngFactoryDef = function HostListenerDir_Factory() {
       return new GlobalHostListenerDir();
     };
-    static ngDirectiveDef = ɵɵdefineDirective({
+    static ɵdir = ɵɵdefineDirective({
       type: GlobalHostListenerDir,
       selectors: [['', 'hostListenerDir', '']],
       hostBindings: function HostListenerDir_HostBindings(
@@ -581,7 +581,7 @@ describe('event listeners', () => {
       onClick() { events.push('click!'); }
 
       static ngFactoryDef = function HostListenerDir_Factory() { return new HostListenerDir(); };
-      static ngDirectiveDef = ɵɵdefineDirective({
+      static ɵdir = ɵɵdefineDirective({
         type: HostListenerDir,
         selectors: [['', 'hostListenerDir', '']],
         hostBindings: function HostListenerDir_HostBindings(

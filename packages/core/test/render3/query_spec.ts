@@ -223,7 +223,7 @@ describe('query', () => {
         static ngFactoryDef = function MyDirective_Factory() {
           return directive = new MyDirective(ɵɵdirectiveInject(Service));
         };
-        static ngDirectiveDef = ɵɵdefineDirective({
+        static ɵdir = ɵɵdefineDirective({
           type: MyDirective,
           selectors: [['', 'myDir', '']],
           features: [ɵɵProvidersFeature([Service, {provide: Alias, useExisting: Service}])],
@@ -1423,7 +1423,7 @@ describe('query', () => {
       static ngFactoryDef = () => new SomeDir(
           ɵɵdirectiveInject(ViewContainerRef as any), ɵɵdirectiveInject(TemplateRef as any))
 
-          static ngDirectiveDef = ɵɵdefineDirective({
+          static ɵdir = ɵɵdefineDirective({
             type: SomeDir,
             selectors: [['', 'someDir', '']],
           });
@@ -1482,7 +1482,7 @@ describe('query', () => {
       }
 
       static ngFactoryDef = () => withContentInstance = new WithContentDirective();
-      static ngDirectiveDef = ɵɵdefineDirective({
+      static ɵdir = ɵɵdefineDirective({
         type: WithContentDirective,
         selectors: [['', 'with-content', '']],
         contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
@@ -1680,7 +1680,7 @@ describe('query', () => {
       class QueryDirective {
         fooBars: any;
         static ngFactoryDef = () => new QueryDirective();
-        static ngDirectiveDef = ɵɵdefineDirective({
+        static ɵdir = ɵɵdefineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
           exportAs: ['query'],
@@ -1746,7 +1746,7 @@ describe('query', () => {
       class QueryDirective {
         fooBars: any;
         static ngFactoryDef = () => new QueryDirective();
-        static ngDirectiveDef = ɵɵdefineDirective({
+        static ɵdir = ɵɵdefineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
           exportAs: ['query'],
@@ -1803,7 +1803,7 @@ describe('query', () => {
       class QueryDirective {
         fooBars: any;
         static ngFactoryDef = () => new QueryDirective();
-        static ngDirectiveDef = ɵɵdefineDirective({
+        static ɵdir = ɵɵdefineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
           exportAs: ['query'],
@@ -1864,7 +1864,7 @@ describe('query', () => {
          class ShallowQueryDirective {
            foos: any;
            static ngFactoryDef = () => new ShallowQueryDirective();
-           static ngDirectiveDef = ɵɵdefineDirective({
+           static ɵdir = ɵɵdefineDirective({
              type: ShallowQueryDirective,
              selectors: [['', 'shallow-query', '']],
              exportAs: ['shallow-query'],
@@ -1885,7 +1885,7 @@ describe('query', () => {
          class DeepQueryDirective {
            foos: any;
            static ngFactoryDef = () => new DeepQueryDirective();
-           static ngDirectiveDef = ɵɵdefineDirective({
+           static ɵdir = ɵɵdefineDirective({
              type: DeepQueryDirective,
              selectors: [['', 'deep-query', '']],
              exportAs: ['deep-query'],
@@ -1947,7 +1947,7 @@ describe('query', () => {
       value !: string;
 
       static ngFactoryDef = () => new TextDirective();
-      static ngDirectiveDef = ɵɵdefineDirective(
+      static ɵdir = ɵɵdefineDirective(
           {type: TextDirective, selectors: [['', 'text', '']], inputs: {value: 'text'}});
     }
 

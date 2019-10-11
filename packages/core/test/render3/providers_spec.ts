@@ -1459,7 +1459,7 @@ function expectProvidersScenario(defs: {
 
   class ViewChildDirective {
     static ngFactoryDef = () => testDirectiveInjection(defs.viewChild, new ViewChildDirective());
-    static ngDirectiveDef = ɵɵdefineDirective({
+    static ɵdir = ɵɵdefineDirective({
       type: ViewChildDirective,
       selectors: [['view-child']],
       features: defs.viewChild && [ɵɵProvidersFeature(defs.viewChild.directiveProviders || [])],
@@ -1490,7 +1490,7 @@ function expectProvidersScenario(defs: {
     static ngFactoryDef =
         () => { return testDirectiveInjection(defs.contentChild, new ContentChildDirective()); }
 
-    static ngDirectiveDef = ɵɵdefineDirective({
+    static ɵdir = ɵɵdefineDirective({
       type: ContentChildDirective,
       selectors: [['content-child']],
       features:
@@ -1519,7 +1519,7 @@ function expectProvidersScenario(defs: {
 
   class ParentDirective {
     static ngFactoryDef = () => testDirectiveInjection(defs.parent, new ParentDirective());
-    static ngDirectiveDef = ɵɵdefineDirective({
+    static ɵdir = ɵɵdefineDirective({
       type: ParentDirective,
       selectors: [['parent']],
       features: defs.parent && [ɵɵProvidersFeature(defs.parent.directiveProviders || [])],
@@ -1528,7 +1528,7 @@ function expectProvidersScenario(defs: {
 
   class ParentDirective2 {
     static ngFactoryDef = () => testDirectiveInjection(defs.parent, new ParentDirective2());
-    static ngDirectiveDef = ɵɵdefineDirective({
+    static ɵdir = ɵɵdefineDirective({
       type: ParentDirective2,
       selectors: [['parent']],
       features: defs.parent && [ɵɵProvidersFeature(defs.parent.directive2Providers || [])],
