@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {SanitizerFn} from '../interfaces/sanitization';
-import {BINDING_INDEX, TVIEW} from '../interfaces/view';
-import {getLView, getSelectedIndex} from '../state';
+import {TVIEW} from '../interfaces/view';
+import {getBindingIndex, getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
 import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
@@ -86,9 +86,9 @@ export function ɵɵpropertyInterpolate1(
   const interpolatedValue = interpolation1(lView, prefix, v0, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     elementPropertyInternal(lView, getSelectedIndex(), propName, interpolatedValue, sanitizer);
-    ngDevMode && storePropertyBindingMetadata(
-                     lView[TVIEW].data, getSelectedIndex(), propName, lView[BINDING_INDEX] - 1,
-                     prefix, suffix);
+    ngDevMode &&
+        storePropertyBindingMetadata(
+            lView[TVIEW].data, getSelectedIndex(), propName, getBindingIndex() - 1, prefix, suffix);
   }
   return ɵɵpropertyInterpolate1;
 }
@@ -133,7 +133,7 @@ export function ɵɵpropertyInterpolate2(
     elementPropertyInternal(lView, nodeIndex, propName, interpolatedValue, sanitizer);
     ngDevMode &&
         storePropertyBindingMetadata(
-            lView[TVIEW].data, nodeIndex, propName, lView[BINDING_INDEX] - 2, prefix, i0, suffix);
+            lView[TVIEW].data, nodeIndex, propName, getBindingIndex() - 2, prefix, i0, suffix);
   }
   return ɵɵpropertyInterpolate2;
 }
@@ -179,9 +179,9 @@ export function ɵɵpropertyInterpolate3(
   if (interpolatedValue !== NO_CHANGE) {
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, interpolatedValue, sanitizer);
-    ngDevMode && storePropertyBindingMetadata(
-                     lView[TVIEW].data, nodeIndex, propName, lView[BINDING_INDEX] - 3, prefix, i0,
-                     i1, suffix);
+    ngDevMode &&
+        storePropertyBindingMetadata(
+            lView[TVIEW].data, nodeIndex, propName, getBindingIndex() - 3, prefix, i0, i1, suffix);
   }
   return ɵɵpropertyInterpolate3;
 }
@@ -230,8 +230,8 @@ export function ɵɵpropertyInterpolate4(
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, interpolatedValue, sanitizer);
     ngDevMode && storePropertyBindingMetadata(
-                     lView[TVIEW].data, nodeIndex, propName, lView[BINDING_INDEX] - 4, prefix, i0,
-                     i1, i2, suffix);
+                     lView[TVIEW].data, nodeIndex, propName, getBindingIndex() - 4, prefix, i0, i1,
+                     i2, suffix);
   }
   return ɵɵpropertyInterpolate4;
 }
@@ -283,8 +283,8 @@ export function ɵɵpropertyInterpolate5(
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, interpolatedValue, sanitizer);
     ngDevMode && storePropertyBindingMetadata(
-                     lView[TVIEW].data, nodeIndex, propName, lView[BINDING_INDEX] - 5, prefix, i0,
-                     i1, i2, i3, suffix);
+                     lView[TVIEW].data, nodeIndex, propName, getBindingIndex() - 5, prefix, i0, i1,
+                     i2, i3, suffix);
   }
   return ɵɵpropertyInterpolate5;
 }
@@ -339,8 +339,8 @@ export function ɵɵpropertyInterpolate6(
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, interpolatedValue, sanitizer);
     ngDevMode && storePropertyBindingMetadata(
-                     lView[TVIEW].data, nodeIndex, propName, lView[BINDING_INDEX] - 6, prefix, i0,
-                     i1, i2, i3, i4, suffix);
+                     lView[TVIEW].data, nodeIndex, propName, getBindingIndex() - 6, prefix, i0, i1,
+                     i2, i3, i4, suffix);
   }
   return ɵɵpropertyInterpolate6;
 }
@@ -397,8 +397,8 @@ export function ɵɵpropertyInterpolate7(
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, interpolatedValue, sanitizer);
     ngDevMode && storePropertyBindingMetadata(
-                     lView[TVIEW].data, nodeIndex, propName, lView[BINDING_INDEX] - 7, prefix, i0,
-                     i1, i2, i3, i4, i5, suffix);
+                     lView[TVIEW].data, nodeIndex, propName, getBindingIndex() - 7, prefix, i0, i1,
+                     i2, i3, i4, i5, suffix);
   }
   return ɵɵpropertyInterpolate7;
 }
@@ -457,8 +457,8 @@ export function ɵɵpropertyInterpolate8(
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, interpolatedValue, sanitizer);
     ngDevMode && storePropertyBindingMetadata(
-                     lView[TVIEW].data, nodeIndex, propName, lView[BINDING_INDEX] - 8, prefix, i0,
-                     i1, i2, i3, i4, i5, i6, suffix);
+                     lView[TVIEW].data, nodeIndex, propName, getBindingIndex() - 8, prefix, i0, i1,
+                     i2, i3, i4, i5, i6, suffix);
   }
   return ɵɵpropertyInterpolate8;
 }
@@ -507,7 +507,7 @@ export function ɵɵpropertyInterpolateV(
       }
       storePropertyBindingMetadata(
           lView[TVIEW].data, nodeIndex, propName,
-          lView[BINDING_INDEX] - interpolationInBetween.length + 1, ...interpolationInBetween);
+          getBindingIndex() - interpolationInBetween.length + 1, ...interpolationInBetween);
     }
   }
   return ɵɵpropertyInterpolateV;

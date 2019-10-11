@@ -10,7 +10,7 @@ import {ErrorHandler} from '../../error_handler';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/sanitizer';
-import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertNotEqual, assertNotSame} from '../../util/assert';
+import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertLessThanOrEqual, assertNotEqual, assertNotSame} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
@@ -27,10 +27,10 @@ import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, Pro
 import {RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
-import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {ActiveElementFlags, enterView, executeElementExitFn, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, hasActiveElementFlag, incrementActiveDirectiveId, leaveView, leaveViewProcessExit, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
+import {ActiveElementFlags, enterView, executeElementExitFn, getBindingIndex, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, hasActiveElementFlag, incrementActiveDirectiveId, leaveView, leaveViewProcessExit, setActiveHostElement, setBindingIndex, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {renderStylingMap} from '../styling/bindings';
 import {NO_CHANGE} from '../tokens';
 import {isAnimationProp} from '../util/attrs_utils';
@@ -50,11 +50,11 @@ import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeConstructor, TNod
 const _CLEAN_PROMISE = (() => Promise.resolve(null))();
 
 /** Sets the host bindings for the current view. */
-export function setHostBindings(tView: TView, viewData: LView): void {
+export function setHostBindings(tView: TView, lView: LView): void {
   const selectedIndex = getSelectedIndex();
   try {
     if (tView.expandoInstructions !== null) {
-      let bindingRootIndex = viewData[BINDING_INDEX] = tView.expandoStartIndex;
+      let bindingRootIndex = setBindingIndex(tView.expandoStartIndex);
       setBindingRoot(bindingRootIndex);
       let currentDirectiveIndex = -1;
       let currentElementIndex = -1;
@@ -91,8 +91,8 @@ export function setHostBindings(tView: TView, viewData: LView): void {
             // are run because this way the first directive ID value is not zero.
             incrementActiveDirectiveId();
 
-            viewData[BINDING_INDEX] = bindingRootIndex;
-            const hostCtx = unwrapRNode(viewData[currentDirectiveIndex]);
+            setBindingIndex(bindingRootIndex);
+            const hostCtx = unwrapRNode(lView[currentDirectiveIndex]);
             instruction(RenderFlags.Update, hostCtx, currentElementIndex);
           }
           currentDirectiveIndex++;
@@ -377,7 +377,7 @@ export function refreshView<T>(
   try {
     resetPreOrderHookFlags(lView);
 
-    setBindingRoot(lView[BINDING_INDEX] = tView.bindingStartIndex);
+    setBindingIndex(tView.bindingStartIndex);
     if (templateFn !== null) {
       executeTemplate(lView, templateFn, RenderFlags.Update, context);
     }
@@ -665,7 +665,6 @@ function createViewBlueprint(bindingStartIndex: number, initialViewLength: numbe
   for (let i = 0; i < initialViewLength; i++) {
     blueprint.push(i < bindingStartIndex ? null : NO_CHANGE);
   }
-  blueprint[BINDING_INDEX] = bindingStartIndex;
 
   return blueprint as LView;
 }
@@ -1190,8 +1189,8 @@ function postProcessDirective<T>(
  * A lighter version of postProcessDirective() that is used for the root component.
  */
 function postProcessBaseDirective<T>(lView: LView, hostTNode: TNode, directive: T): void {
-  ngDevMode && assertEqual(
-                   lView[BINDING_INDEX], lView[TVIEW].bindingStartIndex,
+  ngDevMode && assertLessThanOrEqual(
+                   getBindingIndex(), lView[TVIEW].bindingStartIndex,
                    'directives should be created before any bindings');
   attachPatchData(directive, lView);
   const native = getNativeByTNode(hostTNode, lView);

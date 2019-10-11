@@ -13,8 +13,8 @@ import {AttributeMarker, TAttributes, TNode, TNodeFlags, TNodeType} from '../int
 import {RElement} from '../interfaces/renderer';
 import {StylingMapArray, StylingMapArrayIndex, TStylingConfig, TStylingContext} from '../interfaces/styling';
 import {isDirectiveHost} from '../interfaces/type_checks';
-import {BINDING_INDEX, LView, RENDERER} from '../interfaces/view';
-import {getActiveDirectiveId, getCheckNoChangesMode, getCurrentStyleSanitizer, getLView, getSelectedIndex, resetCurrentStyleSanitizer, setCurrentStyleSanitizer, setElementExitFn} from '../state';
+import {LView, RENDERER} from '../interfaces/view';
+import {getActiveDirectiveId, getCheckNoChangesMode, getCurrentStyleSanitizer, getLView, getSelectedIndex, nextBindingIndex, nextBindingIndex2, resetCurrentStyleSanitizer, setCurrentStyleSanitizer, setElementExitFn} from '../state';
 import {applyStylingMapDirectly, applyStylingValueDirectly, flushStyling, setClass, setStyle, updateClassViaContext, updateStyleViaContext} from '../styling/bindings';
 import {activateStylingMapFeature} from '../styling/map_based_bindings';
 import {attachStylingDebugObject} from '../styling/styling_debug';
@@ -90,13 +90,11 @@ export function ɵɵstyleProp(
 export function stylePropInternal(
     elementIndex: number, prop: string, value: string | number | SafeValue | null,
     suffix?: string | null | undefined): void {
-  const lView = getLView();
-
   // if a value is interpolated then it may render a `NO_CHANGE` value.
   // in this case we do not need to do anything, but the binding index
   // still needs to be incremented because all styling binding values
   // are stored inside of the lView.
-  const bindingIndex = getAndIncrementBindingIndex(lView, false);
+  const bindingIndex = nextBindingIndex();
 
   const updated =
       stylingProp(elementIndex, bindingIndex, prop, resolveStylePropValue(value, suffix), false);
@@ -124,13 +122,11 @@ export function stylePropInternal(
  * @codeGenApi
  */
 export function ɵɵclassProp(className: string, value: boolean | null): void {
-  const lView = getLView();
-
   // if a value is interpolated then it may render a `NO_CHANGE` value.
   // in this case we do not need to do anything, but the binding index
   // still needs to be incremented because all styling binding values
   // are stored inside of the lView.
-  const bindingIndex = getAndIncrementBindingIndex(lView, false);
+  const bindingIndex = nextBindingIndex();
 
   const updated = stylingProp(getSelectedIndex(), bindingIndex, className, value, true);
   if (ngDevMode) {
@@ -248,7 +244,7 @@ export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | nu
   // in this case we do not need to do anything, but the binding index
   // still needs to be incremented because all styling binding values
   // are stored inside of the lView.
-  const bindingIndex = getAndIncrementBindingIndex(lView, true);
+  const bindingIndex = nextBindingIndex2();
 
   // inputs are only evaluated from a template binding into a directive, therefore,
   // there should not be a situation where a directive host bindings function
@@ -300,7 +296,7 @@ export function classMapInternal(
   // in this case we do not need to do anything, but the binding index
   // still needs to be incremented because all styling binding values
   // are stored inside of the lView.
-  const bindingIndex = getAndIncrementBindingIndex(lView, true);
+  const bindingIndex = nextBindingIndex2();
 
   // inputs are only evaluated from a template binding into a directive, therefore,
   // there should not be a situation where a directive host bindings function
@@ -583,12 +579,4 @@ function resolveStylePropValue(
  */
 function isHostStyling(): boolean {
   return isHostStylingActive(getActiveDirectiveId());
-}
-
-function getAndIncrementBindingIndex(lView: LView, isMapBased: boolean): number {
-  // map-based bindings use two slots because the previously constructed
-  // className / style value must be compared against.
-  const index = lView[BINDING_INDEX];
-  lView[BINDING_INDEX] += isMapBased ? 2 : 1;
-  return index;
 }
