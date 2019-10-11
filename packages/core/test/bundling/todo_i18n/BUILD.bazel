@@ -50,6 +50,7 @@ ts_library(
         "//packages/core",
         "//packages/core/testing",
         "//packages/localize",
+        "//packages/localize/init",
         "//packages/private/testing",
     ],
 )
