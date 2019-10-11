@@ -75,11 +75,11 @@ export const enum RenderFlags {
 export interface ComponentType<T> extends Type<T> { ɵcmp: never; }
 
 /**
- * A subclass of `Type` which has a static `ngDirectiveDef`:`DirectiveDef` field making it
+ * A subclass of `Type` which has a static `ɵdir`:`DirectiveDef` field making it
  * consumable for rendering.
  */
 export interface DirectiveType<T> extends Type<T> {
-  ngDirectiveDef: never;
+  ɵdir: never;
   ngFactoryDef: () => T;
 }
 

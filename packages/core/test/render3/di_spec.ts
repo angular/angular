@@ -29,7 +29,7 @@ describe('di', () => {
       value = 'DirB';
 
       static ngFactoryDef = () => new DirB();
-      static ngDirectiveDef =
+      static ɵdir =
           ɵɵdefineDirective({selectors: [['', 'dirB', '']], type: DirB, inputs: {value: 'value'}});
     }
 
@@ -40,7 +40,7 @@ describe('di', () => {
         value !: string;
 
         static ngFactoryDef = () => new DirB();
-        static ngDirectiveDef =
+        static ɵdir =
             ɵɵdefineDirective({type: DirB, selectors: [['', 'dirB', '']], inputs: {value: 'dirB'}});
       }
 
@@ -56,7 +56,7 @@ describe('di', () => {
                 return dirA;
               }
 
-          static ngDirectiveDef = ɵɵdefineDirective({type: DirA, selectors: [['', 'dirA', '']]});
+          static ɵdir = ɵɵdefineDirective({type: DirA, selectors: [['', 'dirA', '']]});
         }
 
         beforeEach(() => dirA = null);
@@ -82,7 +82,7 @@ describe('di', () => {
           constructor(@Self() public dirB: DirB) {}
 
           static ngFactoryDef = () => dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Self));
-          static ngDirectiveDef = ɵɵdefineDirective({type: DirA, selectors: [['', 'dirA', '']]});
+          static ɵdir = ɵɵdefineDirective({type: DirA, selectors: [['', 'dirA', '']]});
         }
 
         const DirC = createDirective('dirC');

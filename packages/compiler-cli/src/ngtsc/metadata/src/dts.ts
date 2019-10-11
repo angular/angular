@@ -69,7 +69,7 @@ export class DtsMetadataReader implements MetadataReader {
   getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
     const clazz = ref.node;
     const def = this.reflector.getMembersOfClass(clazz).find(
-        field => field.isStatic && (field.name === 'ɵcmp' || field.name === 'ngDirectiveDef'));
+        field => field.isStatic && (field.name === 'ɵcmp' || field.name === 'ɵdir'));
     if (def === undefined) {
       // No definition could be found.
       return null;

@@ -395,7 +395,7 @@ export function createDirective(
     name: string, {exportAs}: {exportAs?: string[]} = {}): DirectiveType<any> {
   return class Directive {
     static ngFactoryDef = () => new Directive();
-    static ngDirectiveDef = ɵɵdefineDirective({
+    static ɵdir = ɵɵdefineDirective({
       type: Directive,
       selectors: [['', name, '']],
       exportAs: exportAs,
