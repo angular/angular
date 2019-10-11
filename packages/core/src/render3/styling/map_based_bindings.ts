@@ -227,7 +227,9 @@ function innerSyncStylingMap(
                   (value ? unwrapSafeValue(value) : null);
             }
 
-            applyStylingFn(renderer, element, prop, finalValue, bindingIndexToApply);
+            applyStylingFn(
+                renderer, element, prop, finalValue, useDefault ? defaultValue : value,
+                bindingIndexToApply);
           }
         }
 

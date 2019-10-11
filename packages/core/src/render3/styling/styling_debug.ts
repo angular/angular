@@ -265,8 +265,9 @@ export class NodeStylingDebug implements DebugNodeStyling {
     }
 
     const mapFn: ApplyStylingFn =
-        (renderer: any, element: RElement, prop: string, value: string | null,
-         bindingIndex?: number | null) => fn(prop, value, bindingIndex || null);
+        (renderer: any, element: RElement, prop: string, sanitizedValue: string | null,
+         rawValue: string | null, bindingIndex?: number | null) =>
+            fn(prop, sanitizedValue, bindingIndex || null);
 
     const sanitizer = this._isClassBased ? null : (this._sanitizer || getCurrentStyleSanitizer());
 

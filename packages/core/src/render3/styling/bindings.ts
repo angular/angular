@@ -567,7 +567,7 @@ export function applyStylingViaContext(
               const finalValue = sanitizer && isSanitizationRequired(context, i) ?
                   sanitizer(prop, value, StyleSanitizeMode.SanitizeOnly) :
                   unwrapSafeValue(value);
-              applyStylingFn(renderer, element, prop, finalValue, bindingIndex);
+              applyStylingFn(renderer, element, prop, finalValue, value, bindingIndex);
             }
             valueApplied = true;
           }
@@ -602,7 +602,7 @@ export function applyStylingViaContext(
       // prop-based or map-based bindings code. If and when this happens, just apply the
       // default value (even if the default value is `null`).
       if (!valueApplied) {
-        applyStylingFn(renderer, element, prop, defaultValue);
+        applyStylingFn(renderer, element, prop, defaultValue, defaultValue);
       }
     }
 
@@ -669,7 +669,7 @@ export function applyStylingMapDirectly(
 
       // default case: apply `null` to remove the value
       if (!applied) {
-        applyFn(renderer, element, prop, null, bindingIndex);
+        applyFn(renderer, element, prop, null, null, bindingIndex);
       }
     }
 
@@ -744,7 +744,7 @@ export function applyStylingValueDirectly(
 
     // default case: apply `null` to remove the value
     if (!applied) {
-      applyFn(renderer, element, prop, null, bindingIndex);
+      applyFn(renderer, element, prop, null, null, bindingIndex);
     }
   }
   return applied;
@@ -757,7 +757,7 @@ function applyStylingValue(
   if (isStylingValueDefined(valueToApply)) {
     valueToApply =
         sanitizer ? sanitizer(prop, value, StyleSanitizeMode.SanitizeOnly) : valueToApply;
-    applyFn(renderer, element, prop, valueToApply, bindingIndex);
+    applyFn(renderer, element, prop, valueToApply, value, bindingIndex);
     return true;
   }
   return false;
@@ -770,10 +770,10 @@ function findAndApplyMapValue(
        i += StylingMapArrayIndex.TupleSize) {
     const p = getMapProp(map, i);
     if (p === prop) {
-      let valueToApply = getMapValue(map, i);
-      valueToApply =
-          sanitizer ? sanitizer(prop, valueToApply, StyleSanitizeMode.SanitizeOnly) : valueToApply;
-      applyFn(renderer, element, prop, valueToApply, bindingIndex);
+      const value = getMapValue(map, i);
+      const sanitizedValue =
+          sanitizer ? sanitizer(prop, value, StyleSanitizeMode.SanitizeOnly) : value;
+      applyFn(renderer, element, prop, sanitizedValue, value, bindingIndex);
       return true;
     }
     if (p > prop) {
@@ -807,17 +807,18 @@ export function setStylingMapsSyncFn(fn: SyncStylingMapsFn) {
  * Assigns a style value to a style property for the given element.
  */
 export const setStyle: ApplyStylingFn =
-    (renderer: Renderer3 | null, native: RElement, prop: string, value: string | null) => {
+    (renderer: Renderer3 | null, native: RElement, prop: string, sanitizedValue: string | null,
+     rawValue: string | null) => {
       if (renderer !== null) {
         // Use `isStylingValueDefined` to account for falsy values that should be bound like 0.
-        if (isStylingValueDefined(value)) {
+        if (isStylingValueDefined(rawValue)) {
           // opacity, z-index and flexbox all have number values
           // and these need to be converted into strings so that
           // they can be assigned properly.
-          value = value.toString();
+          sanitizedValue = sanitizedValue !== null ? sanitizedValue.toString() : null;
           ngDevMode && ngDevMode.rendererSetStyle++;
           if (isProceduralRenderer(renderer)) {
-            renderer.setStyle(native, prop, value, RendererStyleFlags3.DashCase);
+            renderer.setStyle(native, prop, sanitizedValue, RendererStyleFlags3.DashCase);
           } else {
             // The reason why native style may be `null` is either because
             // it's a container element or it's a part of a test
@@ -825,7 +826,7 @@ export const setStyle: ApplyStylingFn =
             // case it's safe not to apply styling to the element.
             const nativeStyle = native.style;
             if (nativeStyle != null) {
-              nativeStyle.setProperty(prop, value);
+              nativeStyle.setProperty(prop, sanitizedValue);
             }
           }
         } else {
@@ -847,9 +848,10 @@ export const setStyle: ApplyStylingFn =
  * Adds/removes the provided className value to the provided element.
  */
 export const setClass: ApplyStylingFn =
-    (renderer: Renderer3 | null, native: RElement, className: string, value: any) => {
+    (renderer: Renderer3 | null, native: RElement, className: string, sanitizedValue: any,
+     rawValue: any) => {
       if (renderer !== null && className !== '') {
-        if (value) {
+        if (rawValue) {
           ngDevMode && ngDevMode.rendererAddClass++;
           if (isProceduralRenderer(renderer)) {
             renderer.addClass(native, className);
@@ -896,9 +898,9 @@ export function renderStylingMap(
       const prop = getMapProp(stylingMapArr, i);
       const value = getMapValue(stylingMapArr, i);
       if (isClassBased) {
-        setClass(renderer, element, prop, value, null);
+        setClass(renderer, element, prop, value, value, null);
       } else {
-        setStyle(renderer, element, prop, value, null);
+        setStyle(renderer, element, prop, value, value, null);
       }
     }
   }
