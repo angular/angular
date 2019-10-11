@@ -11,12 +11,12 @@ import {attachPatchData} from '../context_discovery';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags, registerPostOrderHooks} from '../hooks';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
-import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeFlags, TNodeType, TViewNode} from '../interfaces/node';
+import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType, TViewNode} from '../interfaces/node';
 import {isDirectiveHost} from '../interfaces/type_checks';
-import {BINDING_INDEX, FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
+import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild, removeView} from '../node_manipulation';
-import {getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {getBindingIndex, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {getNativeByTNode, load} from '../util/view_utils';
 
 import {addToViewTree, createDirectivesInstances, createLContainer, createTNode, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
@@ -172,7 +172,7 @@ function containerInternal(
     lView: LView, nodeIndex: number, tagName: string | null,
     attrs: TAttributes | null): TContainerNode {
   ngDevMode && assertEqual(
-                   lView[BINDING_INDEX], lView[TVIEW].bindingStartIndex,
+                   getBindingIndex(), lView[TVIEW].bindingStartIndex,
                    'container nodes should be created before any bindings');
 
   const adjustedIndex = nodeIndex + HEADER_OFFSET;
