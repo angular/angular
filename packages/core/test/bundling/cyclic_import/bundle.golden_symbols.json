@@ -141,19 +141,10 @@
     "name": "__window"
   },
   {
-    "name": "_currentNamespace"
-  },
-  {
-    "name": "_elementExitFn"
-  },
-  {
     "name": "_global"
   },
   {
     "name": "_renderCompCount"
-  },
-  {
-    "name": "_selectedIndex"
   },
   {
     "name": "addComponentLogic"
@@ -187,9 +178,6 @@
   },
   {
     "name": "callHooks"
-  },
-  {
-    "name": "checkNoChangesMode"
   },
   {
     "name": "concatString"
@@ -430,6 +418,9 @@
   },
   {
     "name": "instantiateRootComponent"
+  },
+  {
+    "name": "instructionState"
   },
   {
     "name": "invertObject"
