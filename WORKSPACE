@@ -21,8 +21,8 @@ http_archive(
     patch_args = ["-p1"],
     # Patch https://github.com/bazelbuild/rules_nodejs/pull/903
     patches = ["//tools:rollup_bundle_commonjs_ignoreGlobal.patch"],
-    sha256 = "1447312c8570e8916da0f5f415186e7098cdd4ce48e04b8e864f793c766959c3",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.38.2/rules_nodejs-0.38.2.tar.gz"],
+    sha256 = "ad4be2c6f40f5af70c7edf294955f9d9a0222c8e2756109731b25f79ea2ccea0",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.38.3/rules_nodejs-0.38.3.tar.gz"],
 )
 
 # Check the bazel version and download npm dependencies
@@ -56,7 +56,8 @@ Try running `yarn bazel` instead.
 #   - 0.34.0 introduces protractor rule
 #   - 0.37.1 windows fixes
 #   - 0.38.2 Adds NpmPackageInfo & JSNamedModuleInfo providers
-check_rules_nodejs_version(minimum_version_string = "0.38.2")
+#   - 0.38.3 all providers loaded from //:providers.bzl
+check_rules_nodejs_version(minimum_version_string = "0.38.3")
 
 # Setup the Node.js toolchain
 node_repositories(
