@@ -121,11 +121,6 @@ build:remote --remote_accept_cached=false
 # By default, do not upload local results to cache, to be set to true for CI based on environment
 build:remote --remote_upload_local_results=false
 
-# Build Event Service Configuration
-build:remote --bes_backend=buildeventservice.googleapis.com
-build:remote --bes_timeout=30s
-build:remote --bes_results_url="https://source.cloud.google.com/results/invocations/"
-
 ###############################
 # NodeJS rules settings
 # These settings are required for rules_nodejs
