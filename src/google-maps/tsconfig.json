@@ -6,8 +6,7 @@
     "baseUrl": ".",
     "paths": {},
     "types": [
-      "jasmine",
-      "googlemaps"
+      "jasmine"
     ]
   },
   "include": [

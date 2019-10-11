@@ -5,7 +5,7 @@
     "rootDir": "..",
     "baseUrl": ".",
     "paths": {},
-    "types": ["jasmine", "youtube"]
+    "types": ["jasmine"]
   },
   "include": ["*.ts"]
 }

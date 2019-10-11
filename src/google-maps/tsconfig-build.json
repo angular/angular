@@ -11,9 +11,6 @@
     "rootDirs": [
       ".",
       "../../dist/packages/google-maps"
-    ],
-    "types": [
-      "googlemaps"
     ]
   },
   "files": [

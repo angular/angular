@@ -7,7 +7,7 @@
     "importHelpers": false,
     "module": "commonjs",
     "target": "es5",
-    "types": ["jasmine", "youtube"]
+    "types": ["jasmine"]
   },
   "angularCompilerOptions": {
     "strictMetadataEmit": true,

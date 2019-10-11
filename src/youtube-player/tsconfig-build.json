@@ -12,7 +12,6 @@
       ".",
       "../../dist/packages/youtube-player"
     ],
-    "types": ["youtube"]
   },
   "files": [
     "public-api.ts",

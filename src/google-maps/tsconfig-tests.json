@@ -8,9 +8,8 @@
     "module": "commonjs",
     "target": "es5",
     "types": [
-      "jasmine",
-      "googlemaps"
-    ],
+      "jasmine"
+    ]
   },
   "angularCompilerOptions": {
     "strictMetadataEmit": true,

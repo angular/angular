@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1265
+/// <reference types="youtube" />
+
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
