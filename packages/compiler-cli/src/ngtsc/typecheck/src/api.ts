@@ -84,6 +84,18 @@ export interface TypeCheckingConfig {
   checkTypeOfInputBindings: boolean;
 
   /**
+   * Whether to use strict null types for input bindings for directives.
+   *
+   * If this is `true`, applications that are compiled with TypeScript's `strictNullChecks` enabled
+   * will produce type errors for bindings which can evaluate to `undefined` or `null` where the
+   * inputs's type does not include `undefined` or `null` in its type. If set to `false`, all
+   * binding expressions are wrapped in a non-null assertion operator to effectively disable strict
+   * null checks. This may be particularly useful when the directive is from a library that is not
+   * compiled with `strictNullChecks` enabled.
+   */
+  strictNullInputBindings: boolean;
+
+  /**
    * Whether to check the left-hand side type of binding operations to DOM properties.
    *
    * As `checkTypeOfBindings`, but only applies to bindings to DOM properties.

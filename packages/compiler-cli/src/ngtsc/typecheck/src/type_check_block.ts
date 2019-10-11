@@ -388,11 +388,14 @@ class TcbUnclaimedInputsOp extends TcbOp {
 
       let expr = tcbExpression(
           binding.value, this.tcb, this.scope, binding.valueSpan || binding.sourceSpan);
-
-      // If checking the type of bindings is disabled, cast the resulting expression to 'any' before
-      // the assignment.
       if (!this.tcb.env.config.checkTypeOfInputBindings) {
+        // If checking the type of bindings is disabled, cast the resulting expression to 'any'
+        // before the assignment.
         expr = tsCastToAny(expr);
+      } else if (!this.tcb.env.config.strictNullInputBindings) {
+        // If strict null checks are disabled, erase `null` and `undefined` from the type by
+        // wrapping the expression in a non-null assertion.
+        expr = ts.createNonNullExpression(expr);
       }
 
       if (this.tcb.env.config.checkTypeOfDomBindings && binding.type === BindingType.Property) {
@@ -781,11 +784,18 @@ function tcbCallTypeCtor(
   const members = inputs.map(input => {
     if (input.type === 'binding') {
       // For bound inputs, the property is assigned the binding expression.
-      let expression = input.expression;
+      let expr = input.expression;
       if (!tcb.env.config.checkTypeOfInputBindings) {
-        expression = tsCastToAny(expression);
+        // If checking the type of bindings is disabled, cast the resulting expression to 'any'
+        // before the assignment.
+        expr = tsCastToAny(expr);
+      } else if (!tcb.env.config.strictNullInputBindings) {
+        // If strict null checks are disabled, erase `null` and `undefined` from the type by
+        // wrapping the expression in a non-null assertion.
+        expr = ts.createNonNullExpression(expr);
       }
-      const assignment = ts.createPropertyAssignment(input.field, wrapForDiagnostics(expression));
+
+      const assignment = ts.createPropertyAssignment(input.field, wrapForDiagnostics(expr));
       addParseSpanInfo(assignment, input.sourceSpan);
       return assignment;
     } else {
