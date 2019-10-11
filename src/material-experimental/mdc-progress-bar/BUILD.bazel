@@ -23,6 +23,7 @@ ng_module(
     module_name = "@angular/material-experimental/mdc-progress-bar",
     deps = [
         "//src/cdk/bidi",
+        "//src/cdk/platform",
         "//src/material/core",
         "//src/material/progress-bar",
         "@npm//@angular/core",
