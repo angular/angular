@@ -116,7 +116,8 @@ describe('GoogleMap', () => {
     fixture.componentInstance.zoom = 12;
     fixture.detectChanges();
 
-    expect(mapSpy.setOptions).toHaveBeenCalledWith({center: {lat: 8, lng: 9}, zoom: 12});
+    expect(mapSpy.setCenter).toHaveBeenCalledWith({lat: 8, lng: 9});
+    expect(mapSpy.setZoom).toHaveBeenCalledWith(12);
   });
 
   it('sets map options', () => {

@@ -22,9 +22,9 @@ export interface TestingWindow extends Window {
 /** Creates a jasmine.SpyObj for a google.maps.Map. */
 export function createMapSpy(options: google.maps.MapOptions): jasmine.SpyObj<UpdatedGoogleMap> {
   const mapSpy = jasmine.createSpyObj('google.maps.Map', [
-    'setOptions', 'setMap', 'addListener', 'fitBounds', 'panBy', 'panTo', 'panToBounds',
-    'getBounds', 'getCenter', 'getClickableIcons', 'getHeading', 'getMapTypeId', 'getProjection',
-    'getStreetView', 'getTilt', 'getZoom'
+    'setOptions', 'setCenter', 'setZoom', 'setMap', 'addListener', 'fitBounds', 'panBy', 'panTo',
+    'panToBounds', 'getBounds', 'getCenter', 'getClickableIcons', 'getHeading', 'getMapTypeId',
+    'getProjection', 'getStreetView', 'getTilt', 'getZoom'
   ]);
   mapSpy.addListener.and.returnValue({remove: () => {}});
   return mapSpy;

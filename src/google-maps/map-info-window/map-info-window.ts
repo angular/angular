@@ -36,7 +36,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
   }
 
   @Input()
-  set position(position: google.maps.LatLngLiteral) {
+  set position(position: google.maps.LatLngLiteral|google.maps.LatLng) {
     this._position.next(position);
   }
 
@@ -74,7 +74,8 @@ export class MapInfoWindow implements OnInit, OnDestroy {
   @Output() zindexChanged = new EventEmitter<void>();
 
   private readonly _options = new BehaviorSubject<google.maps.InfoWindowOptions>({});
-  private readonly _position = new BehaviorSubject<google.maps.LatLngLiteral|undefined>(undefined);
+  private readonly _position =
+      new BehaviorSubject<google.maps.LatLngLiteral|google.maps.LatLng|undefined>(undefined);
 
   private readonly _listeners: google.maps.MapsEventListener[] = [];
 

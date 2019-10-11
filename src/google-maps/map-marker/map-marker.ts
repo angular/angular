@@ -17,7 +17,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {map, takeUntil} from 'rxjs/operators';
+import {map, take, takeUntil} from 'rxjs/operators';
 
 import {GoogleMap} from '../google-map/google-map';
 
@@ -52,7 +52,7 @@ export class MapMarker implements OnInit, OnDestroy {
   }
 
   @Input()
-  set position(position: google.maps.LatLngLiteral) {
+  set position(position: google.maps.LatLngLiteral|google.maps.LatLng) {
     this._position.next(position);
   }
 
@@ -195,7 +195,8 @@ export class MapMarker implements OnInit, OnDestroy {
   private readonly _options =
       new BehaviorSubject<google.maps.MarkerOptions>(DEFAULT_MARKER_OPTIONS);
   private readonly _title = new BehaviorSubject<string|undefined>(undefined);
-  private readonly _position = new BehaviorSubject<google.maps.LatLngLiteral|undefined>(undefined);
+  private readonly _position =
+      new BehaviorSubject<google.maps.LatLngLiteral|google.maps.LatLng|undefined>(undefined);
   private readonly _label =
       new BehaviorSubject<string|google.maps.MarkerLabel|undefined>(undefined);
   private readonly _clickable = new BehaviorSubject<boolean|undefined>(undefined);
@@ -211,15 +212,17 @@ export class MapMarker implements OnInit, OnDestroy {
   ngOnInit() {
     const combinedOptionsChanges = this._combineOptions();
 
-    combinedOptionsChanges.pipe(takeUntil(this._destroy)).subscribe(options => {
-      if (this._marker) {
-        this._marker.setOptions(options);
-      } else {
-        this._marker = new google.maps.Marker(options);
-        this._marker.setMap(this.googleMap._googleMap);
-        this._initializeEventHandlers();
-      }
+    combinedOptionsChanges.pipe(take(1)).subscribe(options => {
+      this._marker = new google.maps.Marker(options);
+      this._marker.setMap(this.googleMap._googleMap);
+      this._initializeEventHandlers();
     });
+
+    this._watchForOptionsChanges();
+    this._watchForTitleChanges();
+    this._watchForPositionChanges();
+    this._watchForLabelChanges();
+    this._watchForClickableChanges();
   }
 
   ngOnDestroy() {
@@ -342,6 +345,46 @@ export class MapMarker implements OnInit, OnDestroy {
           };
           return combinedOptions;
         }));
+  }
+
+  private _watchForOptionsChanges() {
+    this._options.pipe(takeUntil(this._destroy)).subscribe(options => {
+      if (this._marker) {
+        this._marker.setOptions(options);
+      }
+    });
+  }
+
+  private _watchForTitleChanges() {
+    this._title.pipe(takeUntil(this._destroy)).subscribe(title => {
+      if (this._marker) {
+        this._marker.setTitle(title !== undefined ? title : null);
+      }
+    });
+  }
+
+  private _watchForPositionChanges() {
+    this._position.pipe(takeUntil(this._destroy)).subscribe(position => {
+      if (this._marker) {
+        this._marker.setPosition(position || null);
+      }
+    });
+  }
+
+  private _watchForLabelChanges() {
+    this._label.pipe(takeUntil(this._destroy)).subscribe(label => {
+      if (this._marker) {
+        this._marker.setLabel(label !== undefined ? label : null);
+      }
+    });
+  }
+
+  private _watchForClickableChanges() {
+    this._clickable.pipe(takeUntil(this._destroy)).subscribe(clickable => {
+      if (this._marker) {
+        this._marker.setClickable(!!clickable);
+      }
+    });
   }
 
   private _initializeEventHandlers() {

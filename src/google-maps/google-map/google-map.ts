@@ -63,7 +63,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   @Input() width = DEFAULT_WIDTH;
 
   @Input()
-  set center(center: google.maps.LatLngLiteral) {
+  set center(center: google.maps.LatLngLiteral|google.maps.LatLng) {
     this._center.next(center);
   }
   @Input()
@@ -191,7 +191,8 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   private readonly _listeners: google.maps.MapsEventListener[] = [];
 
   private readonly _options = new BehaviorSubject<google.maps.MapOptions>(DEFAULT_OPTIONS);
-  private readonly _center = new BehaviorSubject<google.maps.LatLngLiteral|undefined>(undefined);
+  private readonly _center =
+      new BehaviorSubject<google.maps.LatLngLiteral|google.maps.LatLng|undefined>(undefined);
   private readonly _zoom = new BehaviorSubject<number|undefined>(undefined);
 
   private readonly _destroy = new Subject<void>();
@@ -224,7 +225,9 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
       this._initializeEventHandlers();
     });
 
-    this._watchForOptionsChanges(combinedOptionsChanges);
+    this._watchForOptionsChanges();
+    this._watchForCenterChanges();
+    this._watchForZoomChanges();
   }
 
   ngOnDestroy() {
@@ -404,12 +407,31 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
         shareReplay(1));
   }
 
-  private _watchForOptionsChanges(
-      optionsChanges: Observable<google.maps.MapOptions>) {
-    combineLatest([this._googleMapChanges, optionsChanges])
+  private _watchForOptionsChanges() {
+    combineLatest([this._googleMapChanges, this._options])
         .pipe(takeUntil(this._destroy))
         .subscribe(([googleMap, options]) => {
           googleMap.setOptions(options);
+        });
+  }
+
+  private _watchForCenterChanges() {
+    combineLatest([this._googleMapChanges, this._center])
+        .pipe(takeUntil(this._destroy))
+        .subscribe(([googleMap, center]) => {
+          if (center) {
+            googleMap.setCenter(center);
+          }
+        });
+  }
+
+  private _watchForZoomChanges() {
+    combineLatest([this._googleMapChanges, this._zoom])
+        .pipe(takeUntil(this._destroy))
+        .subscribe(([googleMap, zoom]) => {
+          if (zoom !== undefined) {
+            googleMap.setZoom(zoom);
+          }
         });
   }
 
