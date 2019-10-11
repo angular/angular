@@ -200,10 +200,15 @@ export function translate(
       } else if (missingTranslation === 'warning') {
         diagnostics.warn(e.message);
       }
+      // Return the parsed message because this will have the meta blocks stripped
+      return [
+        ɵmakeTemplateObject(e.parsedMessage.messageParts, e.parsedMessage.messageParts),
+        substitutions
+      ];
     } else {
       diagnostics.error(e.message);
+      return [messageParts, substitutions];
     }
-    return [messageParts, substitutions];
   }
 }
 
