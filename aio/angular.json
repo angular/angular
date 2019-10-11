@@ -87,7 +87,11 @@
                   "with": "src/environments/environment.stable.ts"
                 }
               ],
-              "serviceWorker": true
+              "serviceWorker": true,
+              "experimentalRollupPass": true,
+              "vendorChunk": false,
+              "commonChunk": false,
+              "namedChunks": false
             },
             "archive": {
               "fileReplacements": [
