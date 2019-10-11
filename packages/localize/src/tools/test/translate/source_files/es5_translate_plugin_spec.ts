@@ -20,6 +20,22 @@ describe('makeEs5Plugin', () => {
       expect(output.code).toEqual('const b = 10;\n"try\\n" + (40 + b) + "\\n  me";');
     });
 
+    it('should strip meta blocks', () => {
+      const diagnostics = new Diagnostics();
+      const input =
+          'const b = 10;\n$localize([":description:try\\n", ":placeholder:\\n  me"], 40 + b);';
+      const output = transformSync(input, {plugins: [makeEs5TranslatePlugin(diagnostics, {})]}) !;
+      expect(output.code).toEqual('const b = 10;\n"try\\n" + (40 + b) + "\\n  me";');
+    });
+
+    it('should not strip escaped meta blocks', () => {
+      const diagnostics = new Diagnostics();
+      const input =
+          `$localize(__makeTemplateObject([':desc:try', 'me'], ['\\\\\\:desc:try', 'me']), 40 + 2);`;
+      const output = transformSync(input, {plugins: [makeEs5TranslatePlugin(diagnostics, {})]}) !;
+      expect(output.code).toEqual('":desc:try" + (40 + 2) + "me";');
+    });
+
     it('should transform nested `$localize` calls', () => {
       const diagnostics = new Diagnostics();
       const input = '$localize(["a", "b", "c"], 1, $localize(["x", "y", "z"], 5, 6));';
