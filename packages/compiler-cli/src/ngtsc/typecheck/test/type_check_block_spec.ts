@@ -222,6 +222,7 @@ describe('type check blocks', () => {
       checkQueries: false,
       checkTemplateBodies: true,
       checkTypeOfInputBindings: true,
+      strictNullInputBindings: true,
       checkTypeOfDomBindings: false,
       checkTypeOfPipes: true,
       strictSafeNavigationTypes: true,
@@ -257,20 +258,37 @@ describe('type check blocks', () => {
       });
     });
 
+    describe('config.strictNullInputBindings', () => {
+      const TEMPLATE = `<div dir [dirInput]="a" [nonDirInput]="b"></div>`;
+
+      it('should include null and undefined when enabled', () => {
+        const block = tcb(TEMPLATE, DIRECTIVES);
+        expect(block).toContain('Dir.ngTypeCtor({ dirInput: ((ctx).a) })');
+        expect(block).toContain('(ctx).b;');
+      });
+      it('should use the non-null assertion operator when disabled', () => {
+        const DISABLED_CONFIG:
+            TypeCheckingConfig = {...BASE_CONFIG, strictNullInputBindings: false};
+        const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
+        expect(block).toContain('Dir.ngTypeCtor({ dirInput: ((ctx).a!) })');
+        expect(block).toContain('(ctx).b!;');
+      });
+    });
+
     describe('config.checkTypeOfBindings', () => {
-      const TEMPLATE = `<div dir [dirInput]="a" [nonDirInput]="a"></div>`;
+      const TEMPLATE = `<div dir [dirInput]="a" [nonDirInput]="b"></div>`;
 
       it('should check types of bindings when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain('Dir.ngTypeCtor({ dirInput: ((ctx).a) })');
-        expect(block).toContain('(ctx).a;');
+        expect(block).toContain('(ctx).b;');
       });
       it('should not check types of bindings when disabled', () => {
         const DISABLED_CONFIG:
             TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfInputBindings: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).toContain('Dir.ngTypeCtor({ dirInput: (((ctx).a as any)) })');
-        expect(block).toContain('((ctx).a as any);');
+        expect(block).toContain('((ctx).b as any);');
       });
     });
 
