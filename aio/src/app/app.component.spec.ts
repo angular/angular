@@ -1,5 +1,5 @@
 import { NO_ERRORS_SCHEMA, DebugElement } from '@angular/core';
-import { inject, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { inject, ComponentFixture, TestBed, fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -529,7 +529,8 @@ describe('AppComponent', () => {
       it('should call `scrollAfterRender` (via `onDocInserted`) when navigate to a new Doc', fakeAsync(() => {
         locationService.go('guide/pipes');
         tick(1); // triggers the HTTP response for the document
-        fixture.detectChanges(); // triggers the event that calls `onDocInserted`
+        fixture.detectChanges();  // passes the new doc to the `DocViewer`
+        flushMicrotasks();  // triggers the `DocViewer` event that calls `onDocInserted`
 
         expect(scrollAfterRenderSpy).toHaveBeenCalledWith(scrollDelay);
 

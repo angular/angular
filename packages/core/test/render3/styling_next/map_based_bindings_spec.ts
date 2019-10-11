@@ -81,5 +81,5 @@ describe('map-based bindings', () => {
 
 function createAndAssertValues(newValue: any, entries: any[]) {
   const result = createMap(null, newValue);
-  expect(result).toEqual([newValue || null, ...entries]);
+  expect(result).toEqual([newValue, ...entries]);
 }

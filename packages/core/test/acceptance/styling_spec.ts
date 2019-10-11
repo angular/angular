@@ -2241,6 +2241,57 @@ describe('styling', () => {
        fixture.detectChanges();
        expect(div.classList.contains('disabled')).toBe(false);
      });
+
+  it('should throw an error if a prop-based style/class binding value is changed during checkNoChanges',
+     () => {
+       @Component({
+         template: `
+        <div [style.color]="color" [class.foo]="fooClass"></div>
+      `
+       })
+       class Cmp {
+         color = 'red';
+         fooClass = true;
+
+         ngAfterViewInit() {
+           this.color = 'blue';
+           this.fooClass = false;
+         }
+       }
+
+       TestBed.configureTestingModule({declarations: [Cmp]});
+       const fixture = TestBed.createComponent(Cmp);
+
+       expect(() => {
+         fixture.detectChanges();
+       }).toThrowError(/ExpressionChangedAfterItHasBeenCheckedError/);
+     });
+
+  onlyInIvy('only ivy allows for map-based style AND class bindings')
+      .it('should throw an error if a map-based style/class binding value is changed during checkNoChanges',
+          () => {
+            @Component({
+              template: `
+                <div [style]="style" [class]="klass"></div>
+              `
+            })
+            class Cmp {
+              style: any = {width: '100px'};
+              klass: any = {foo: true, bar: false};
+
+              ngAfterViewInit() {
+                this.style = {height: '200px'};
+                this.klass = {foo: false};
+              }
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp]});
+            const fixture = TestBed.createComponent(Cmp);
+
+            expect(() => {
+              fixture.detectChanges();
+            }).toThrowError(/ExpressionChangedAfterItHasBeenCheckedError/);
+          });
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {
