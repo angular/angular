@@ -34,7 +34,6 @@ v8 - v11
 
 | Area | API or Feature | May be removed in |
 | ---- | -------------- | ----------------- |
-| `@angular/common` | [Pipes using Intl API](#i18n-pipes) | <!--v8--> v9 |
 | `@angular/common` | [`ReflectiveInjector`](#reflectiveinjector) | <!--v8--> v9 |
 | `@angular/core` | [`CollectionChangeRecord`](#core) | <!--v7--> v9 |
 | `@angular/core` | [`DefaultIterableDiffer`](#core) | <!--v7--> v9 |
@@ -68,21 +67,6 @@ This section contains a complete list all of the currently-deprecated APIs, with
 Tip: In the [API reference section](api) of this doc site, deprecated APIs are indicated by ~~strikethrough.~~ You can filter the API list by [**Status: deprecated**](api?status=deprecated).
 
 </div>
-
-
-
-{@a common}
-### @angular/common
-
-
-| API | Replacement | Deprecation announced | Notes |
-| --- | ----------- | --------------------- | ----- |
-| [`DeprecatedI18NPipesModule`](api/common/DeprecatedI18NPipesModule) | [`CommonModule`](api/common/CommonModule#pipes) | v5 | See [Pipes](#i18n-pipes) |
- | [`DeprecatedCurrencyPipe`](api/common/DeprecatedCurrencyPipe) | [`CurrencyPipe`](api/common/CurrencyPipe) | v5  | See [Pipes](#i18n-pipes) |
- | [`DeprecatedDatePipe`](api/common/DeprecatedDatePipe) | [`DatePipe`](api/common/DatePipe) | v5  | See [Pipes](#i18n-pipes) |
- | [`DeprecatedDecimalPipe`](api/common/DeprecatedDecimalPipe) | [`DecimalPipe`](api/common/DecimalPipe) | v5  | See [Pipes](#i18n-pipes) |
- | [`DeprecatedPercentPipe`](api/common/DeprecatedPercentPipe) | [`PercentPipe`](api/common/PercentPipe) | v5 | See [Pipes](#i18n-pipes) |
-
 
 {@a core}
 ### @angular/core
@@ -221,23 +205,6 @@ After:
 ```
 Injector.create({providers});
 ```
-
-{@a i18n-pipes}
-### Pipes using Intl API
-
-<!--
-From https://blog.angular.io/version-5-0-0-of-angular-now-available-37e414935ced
--->
-
-Angular used to rely on the browser to provide number, date, and currency formatting using browser i18n APIs. This practice meant that most apps needed to use a polyfill, users were seeing inconsistent results across browsers, and common formats (such as the currency pipe) didn’t match developer expectations out of the box.
-
-In version 4.3, Angular introduced new number, date, and currency pipes that increase standardization across browsers and eliminate the need for i18n polyfills. These pipes use the Unicode Common Locale Data Repository (CLDR) instead of the JS Intl API to provide extensive locale support.
-
-In version 5.0.0, Angular updated its standard pipes to use the CLRD implementation.
-At that time, Angular also added [`DeprecatedI18NPipesModule`](api/common/DeprecatedI18NPipesModule) and related APIs to provide limited-time access to the old behavior. If you need to use these `Deprecated*` pipes, see [Angular change log](https://github.com/angular/angular/blob/master/CHANGELOG.md#i18n-pipes) and the [Date Formats mappings](https://docs.google.com/spreadsheets/d/12iygt-_cakNP1VO7MV9g4lq9NsxVWG4tSfc98HpHb0k/edit#gid=0 "Date Formats Google sheet").
-
-Reminder: If you use these `Deprecated*` pipes, you should migrate to the current APIs listed above as soon as possible. These deprecated APIs are candidates for removal in version 9.
-
 
 {@a loadChildren}
 ### loadChildren string syntax
