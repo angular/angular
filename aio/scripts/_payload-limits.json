@@ -4,8 +4,8 @@
       "uncompressed": {
         "runtime-es5": 2981,
         "runtime-es2015": 2987,
-        "main-es5": 541840,
-        "main-es2015": 457135,
+        "main-es5": 545369,
+        "main-es2015": 460590,
         "polyfills-es5": 143165,
         "polyfills-es2015": 52503
       }
@@ -16,8 +16,8 @@
       "uncompressed": {
         "runtime-es5": 2981,
         "runtime-es2015": 2987,
-        "main-es5": 545197,
-        "main-es2015": 460505,
+        "main-es5": 545899,
+        "main-es2015": 461159,
         "polyfills-es5": 143165,
         "polyfills-es2015": 52503
       }
@@ -28,8 +28,8 @@
       "uncompressed": {
         "runtime-es5": 3091,
         "runtime-es2015": 3097,
-        "main-es5": 522775,
-        "main-es2015": 437775,
+        "main-es5": 521188,
+        "main-es2015": 436779,
         "polyfills-es5": 143165,
         "polyfills-es2015": 52503
       }
