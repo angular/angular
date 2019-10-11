@@ -327,13 +327,7 @@
     "name": "_currentInjector"
   },
   {
-    "name": "_currentNamespace"
-  },
-  {
     "name": "_devMode"
-  },
-  {
-    "name": "_elementExitFn"
   },
   {
     "name": "_global"
@@ -342,16 +336,10 @@
     "name": "_renderCompCount"
   },
   {
-    "name": "_selectedIndex"
-  },
-  {
     "name": "_state"
   },
   {
     "name": "_symbolIterator"
-  },
-  {
-    "name": "activeDirectiveId"
   },
   {
     "name": "addBindingIntoContext"
@@ -447,9 +435,6 @@
     "name": "checkNoChangesInternal"
   },
   {
-    "name": "checkNoChangesMode"
-  },
-  {
     "name": "cleanUpView"
   },
   {
@@ -460,9 +445,6 @@
   },
   {
     "name": "containerInternal"
-  },
-  {
-    "name": "contextLView"
   },
   {
     "name": "createContainerRef"
@@ -898,6 +880,9 @@
   },
   {
     "name": "instantiateRootComponent"
+  },
+  {
+    "name": "instructionState"
   },
   {
     "name": "interpolation1"

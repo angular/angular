@@ -184,7 +184,7 @@ function stylingProp(
       // it's important we remove the current style sanitizer once the
       // element exits, otherwise it will be used by the next styling
       // instructions for the next element.
-      setElementExitFn(resetCurrentStyleSanitizer);
+      setElementExitFn(stylingApply);
     }
   } else {
     // Context Resolution (or first update) Case: save the value
@@ -354,7 +354,7 @@ function _stylingMap(
       // it's important we remove the current style sanitizer once the
       // element exits, otherwise it will be used by the next styling
       // instructions for the next element.
-      setElementExitFn(resetCurrentStyleSanitizer);
+      setElementExitFn(stylingApply);
     }
   } else {
     updated = valueHasChanged;
