@@ -15,7 +15,7 @@ export interface Person {
 
 @Component({
   template: `
-    <div *ngFor="let person of ~{people_1}people_1~{people_1-end}">
+    <div *ngFor="let person of ~{start-people_1}people_1~{end-people_1}">
       <span>{{person.name}}</span>
     </div>`,
 })
@@ -24,7 +24,7 @@ export class UnknownPeople {
 
 @Component({
   template: `
-    <div ~{even_1}*ngFor="let person of people; let e = even_1"~{even_1-end}>
+    <div ~{start-even_1}*ngFor="let person of people; let e = even_1"~{end-even_1}>
       <span>{{person.name}}</span>
     </div>`,
 })
@@ -34,7 +34,7 @@ export class UnknownEven {
 
 @Component({
   template: `
-    <div *ngFor="let person of people; trackBy ~{trackBy_1}trackBy_1~{trackBy_1-end}">
+    <div *ngFor="let person of people; trackBy ~{start-trackBy_1}trackBy_1~{end-trackBy_1}">
       <span>{{person.name}}</span>
     </div>`,
 })

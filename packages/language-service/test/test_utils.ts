@@ -181,20 +181,6 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     }
   }
 
-  getMarkerLocations(fileName: string): {[name: string]: number}|undefined {
-    let content = this.getRawFileContent(fileName);
-    if (content) {
-      return getLocationMarkers(content);
-    }
-  }
-
-  getReferenceMarkers(fileName: string): ReferenceResult|undefined {
-    let content = this.getRawFileContent(fileName);
-    if (content) {
-      return getReferenceMarkers(content);
-    }
-  }
-
   /**
    * Reset the project to its original state, effectively removing all overrides.
    */
@@ -279,61 +265,94 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
   }
 
   /**
-   * Returns the definition marker ᐱselectorᐱ for the specified 'selector'.
+   * Returns the definition marker `ᐱselectorᐱ` for the specified 'selector'.
    * Asserts that marker exists.
    * @param fileName name of the file
    * @param selector name of the marker
    */
   getDefinitionMarkerFor(fileName: string, selector: string): ts.TextSpan {
-    const markers = this.getReferenceMarkers(fileName);
-    expect(markers).toBeDefined();
-    expect(Object.keys(markers !.definitions)).toContain(selector);
-    expect(markers !.definitions[selector].length).toBe(1);
-    const marker = markers !.definitions[selector][0];
-    expect(marker.start).toBeLessThanOrEqual(marker.end);
+    const content = this.getRawFileContent(fileName);
+    if (!content) {
+      throw new Error(`File does not exist: ${fileName}`);
+    }
+    const markers = getReferenceMarkers(content);
+    const definitions = markers.definitions[selector];
+    if (!definitions || !definitions.length) {
+      throw new Error(`Failed to find marker '${selector}' in ${fileName}`);
+    }
+    if (definitions.length > 1) {
+      throw new Error(`Multiple positions found for '${selector}' in ${fileName}`);
+    }
+    const {start, end} = definitions[0];
+    if (start > end) {
+      throw new Error(`Marker '${selector}' in ${fileName} is invalid: ${start} > ${end}`);
+    }
     return {
-      start: marker.start,
-      length: marker.end - marker.start,
+      start,
+      length: end - start,
     };
   }
 
   /**
-   * Returns the reference marker «selector» for the specified 'selector'.
+   * Returns the reference marker `«selector»` for the specified 'selector'.
    * Asserts that marker exists.
    * @param fileName name of the file
    * @param selector name of the marker
    */
   getReferenceMarkerFor(fileName: string, selector: string): ts.TextSpan {
-    const markers = this.getReferenceMarkers(fileName);
-    expect(markers).toBeDefined();
-    expect(Object.keys(markers !.references)).toContain(selector);
-    expect(markers !.references[selector].length).toBe(1);
-    const marker = markers !.references[selector][0];
-    expect(marker.start).toBeLessThanOrEqual(marker.end);
+    const content = this.getRawFileContent(fileName);
+    if (!content) {
+      throw new Error(`File does not exist: ${fileName}`);
+    }
+    const markers = getReferenceMarkers(content);
+    const references = markers.references[selector];
+    if (!references || !references.length) {
+      throw new Error(`Failed to find marker '${selector}' in ${fileName}`);
+    }
+    if (references.length > 1) {
+      throw new Error(`Multiple positions found for '${selector}' in ${fileName}`);
+    }
+    const {start, end} = references[0];
+    if (start > end) {
+      throw new Error(`Marker '${selector}' in ${fileName} is invalid: ${start} > ${end}`);
+    }
     return {
-      start: marker.start,
-      length: marker.end - marker.start,
+      start,
+      length: end - start,
     };
   }
 
   /**
-   * Returns the location marker ~{selector} for the specified 'selector'.
+   * Returns the location marker `~{selector}` or the marker pair
+   * `~{start-selector}` and `~{end-selector}` for the specified 'selector'.
    * Asserts that marker exists.
    * @param fileName name of the file
    * @param selector name of the marker
    */
   getLocationMarkerFor(fileName: string, selector: string): ts.TextSpan {
-    const markers = this.getMarkerLocations(fileName);
-    expect(markers).toBeDefined();
-    const start = markers ![`start-${selector}`];
-    expect(start).toBeDefined();
-    const end = markers ![`end-${selector}`];
-    expect(end).toBeDefined();
-    expect(start).toBeLessThanOrEqual(end);
-    return {
-      start: start,
-      length: end - start,
-    };
+    const content = this.getRawFileContent(fileName);
+    if (!content) {
+      throw new Error(`File does not exist: ${fileName}`);
+    }
+    const markers = getLocationMarkers(content);
+    // Look for just the selector itself
+    const position = markers[selector];
+    if (position !== undefined) {
+      return {
+        start: position,
+        length: 0,
+      };
+    }
+    // Look for start and end markers for the selector
+    const start = markers[`start-${selector}`];
+    const end = markers[`end-${selector}`];
+    if (start !== undefined && end !== undefined) {
+      return {
+        start,
+        length: end - start,
+      };
+    }
+    throw new Error(`Failed to find marker '${selector}' in ${fileName}`);
   }
 }
 
