@@ -9,7 +9,7 @@ import {ɵmakeTemplateObject} from '@angular/localize';
 import {NodePath, transformSync} from '@babel/core';
 import generate from '@babel/generator';
 import template from '@babel/template';
-import {Expression, Identifier, TaggedTemplateExpression, ExpressionStatement, FunctionDeclaration, CallExpression, isParenthesizedExpression, numericLiteral, binaryExpression, NumericLiteral, traverse} from '@babel/types';
+import {Expression, Identifier, TaggedTemplateExpression, ExpressionStatement, FunctionDeclaration, CallExpression, isParenthesizedExpression, numericLiteral, binaryExpression, NumericLiteral} from '@babel/types';
 import {isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, isArrayOfExpressions, unwrapStringLiteralArray, unwrapMessagePartsFromLocalizeCall, wrapInParensIfNecessary, buildLocalizeReplacement, unwrapSubstitutionsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral} from '../../../src/translate/source_files/source_file_utils';
 
 describe('utils', () => {
@@ -71,17 +71,44 @@ describe('utils', () => {
 
   describe('unwrapMessagePartsFromLocalizeCall', () => {
     it('should return an array of string literals from a direct call to a tag function', () => {
-      const call = getFirstCallExpression(`$localize(['a', 'b\\t', 'c'], 1, 2)`);
-      const parts = unwrapMessagePartsFromLocalizeCall(call);
+      const localizeCall = getLocalizeCall(`$localize(['a', 'b\\t', 'c'], 1, 2)`);
+      const parts = unwrapMessagePartsFromLocalizeCall(localizeCall);
       expect(parts).toEqual(['a', 'b\t', 'c']);
     });
 
     it('should return an array of string literals from a downleveled tagged template', () => {
-      let call = getFirstCallExpression(
+      let localizeCall = getLocalizeCall(
           `$localize(__makeTemplateObject(['a', 'b\\t', 'c'], ['a', 'b\\\\t', 'c']), 1, 2)`);
-      const parts = unwrapMessagePartsFromLocalizeCall(call);
+      const parts = unwrapMessagePartsFromLocalizeCall(localizeCall);
       expect(parts).toEqual(['a', 'b\t', 'c']);
       expect(parts.raw).toEqual(['a', 'b\\t', 'c']);
+    });
+
+    it('should return an array of string literals from a lazy load template helper', () => {
+      let localizeCall = getLocalizeCall(`
+        function _templateObject() {
+          var e = _taggedTemplateLiteral(['a', 'b', 'c'], ['a', 'b', 'c']);
+          return _templateObject = function() { return e }, e
+        }
+        $localize(_templateObject(), 1, 2)`);
+      const parts = unwrapMessagePartsFromLocalizeCall(localizeCall);
+      expect(parts).toEqual(['a', 'b', 'c']);
+      expect(parts.raw).toEqual(['a', 'b', 'c']);
+    });
+
+    it('should remove a lazy load template helper', () => {
+      let localizeCall = getLocalizeCall(`
+        function _templateObject() {
+          var e = _taggedTemplateLiteral(['a', 'b', 'c'], ['a', 'b', 'c']);
+          return _templateObject = function() { return e }, e
+        }
+        $localize(_templateObject(), 1, 2)`);
+      const localizeStatement = localizeCall.parentPath as NodePath<ExpressionStatement>;
+      const statements = localizeStatement.container as object[];
+      expect(statements.length).toEqual(2);
+      unwrapMessagePartsFromLocalizeCall(localizeCall);
+      expect(statements.length).toEqual(1);
+      expect(statements[0]).toBe(localizeStatement.node);
     });
   });
 
@@ -180,20 +207,15 @@ function collectExpressionsPlugin() {
   return {expressions, plugin: {visitor}};
 }
 
-function getFirstCallExpression(code: string): NodePath<CallExpression> {
-  let callPath: NodePath<CallExpression>|undefined = undefined;
-  transformSync(code, {
-    plugins: [{
-      visitor: {
-        CallExpression(path) {
-          callPath = path;
-          path.stop();
-        }
-      }
-    }]
+function getLocalizeCall(code: string): NodePath<CallExpression> {
+  let callPaths: NodePath<CallExpression>[] = [];
+  transformSync(code, {plugins: [{visitor: {CallExpression(path) { callPaths.push(path); }}}]});
+  const localizeCall = callPaths.find(p => {
+    const callee = p.get('callee');
+    return (callee.isIdentifier() && callee.node.name === '$localize');
   });
-  if (callPath === undefined) {
-    throw new Error('CallExpression not found in code:' + code);
+  if (!localizeCall) {
+    throw new Error(`$localize cannot be found in ${code}`);
   }
-  return callPath;
+  return localizeCall;
 }
