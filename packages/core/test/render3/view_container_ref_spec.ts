@@ -32,7 +32,7 @@ describe('ViewContainerRef', () => {
     static ngFactoryDef = () => directiveInstance = new DirectiveWithVCRef(
         ɵɵdirectiveInject(ViewContainerRef as any), injectComponentFactoryResolver())
 
-        static ngDirectiveDef = ɵɵdefineDirective({
+        static ɵdir = ɵɵdefineDirective({
           type: DirectiveWithVCRef,
           selectors: [['', 'vcref', '']],
           inputs: {tplRef: 'tplRef', name: 'name'}
@@ -68,7 +68,7 @@ describe('ViewContainerRef', () => {
                    return instance;
                  }
 
-             static ngDirectiveDef = ɵɵdefineDirective({
+             static ɵdir = ɵɵdefineDirective({
                type: TestDirective,
                selectors: [['', 'testdir', '']],
              });
@@ -140,7 +140,7 @@ describe('ViewContainerRef', () => {
              static ngFactoryDef = () => directiveInstance = new TestDirective(
                  ɵɵdirectiveInject(ViewContainerRef as any), ɵɵdirectiveInject(TemplateRef as any))
 
-                 static ngDirectiveDef =
+                 static ɵdir =
                      ɵɵdefineDirective({type: TestDirective, selectors: [['', 'testdir', '']]});
 
              constructor(private _vcRef: ViewContainerRef, private _tplRef: TemplateRef<{}>) {}

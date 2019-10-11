@@ -38,7 +38,7 @@ describe('outputs', () => {
     changeStream = new EventEmitter();
 
     static ngFactoryDef = () => otherDir = new OtherDir;
-    static ngDirectiveDef = ɵɵdefineDirective(
+    static ɵdir = ɵɵdefineDirective(
         {type: OtherDir, selectors: [['', 'otherDir', '']], outputs: {changeStream: 'change'}});
   }
 

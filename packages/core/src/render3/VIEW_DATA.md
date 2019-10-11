@@ -172,7 +172,7 @@ class Child {
 })
 class Tooltip {
   @HostBinding('title') hostTitle = 'greeting';
-  static ngDirectiveDef = ɵɵdefineDirective({
+  static ɵdir = ɵɵdefineDirective({
     ...
     hostVars: 1
   });
@@ -206,8 +206,8 @@ The `EXPANDO` section needs additional information for information stored in `TV
 | 1     | 2                                   | Injector size. Number of values to skip to get to Host Bindings.
 | 2     | Child.ɵcmp.hostBindings   | The function to call. (Only when `hostVars` is not `0`)
 | 3     | Child.ɵcmp.hostVars       | Number of host bindings to process. (Only when `hostVars` is not `0`)
-| 4     | Tooltip.ngDirectiveDef.hostBindings | The function to call. (Only when `hostVars` is not `0`)
-| 5     | Tooltip.ngDirectiveDef.hostVars     | Number of host bindings to process. (Only when `hostVars` is not `0`)
+| 4     | Tooltip.ɵdir.hostBindings | The function to call. (Only when `hostVars` is not `0`)
+| 5     | Tooltip.ɵdir.hostVars     | Number of host bindings to process. (Only when `hostVars` is not `0`)
 
 The reason for this layout is to make the host binding update efficient using this pseudo code:
 ```typescript
@@ -245,9 +245,9 @@ The above code should execute as:
 | `Child.ɵcmp.hostBindings`   | invoke with =>     | `\* new Child() *\ 19`    | `\* <child> *\ 10`
 |                                       | `21`               | `\* new Tooltip() *\ 20`  | `\* <child> *\ 10`
 | `Child.ɵcmp.hostVars`       | `22`               | `\* new Tooltip() *\ 20`  | `\* <child> *\ 10`
-| `Tooltip.ngDirectiveDef.hostBindings` | invoke with =>     | `\* new Tooltip() *\ 20`  | `\* <child> *\ 10`
+| `Tooltip.ɵdir.hostBindings` | invoke with =>     | `\* new Tooltip() *\ 20`  | `\* <child> *\ 10`
 |                                       | `22`               | `21`                      | `\* <child> *\ 10`
-| `Tooltip.ngDirectiveDef.hostVars`     | `22`               | `21`                      | `\* <child> *\ 10`
+| `Tooltip.ɵdir.hostVars`     | `22`               | `21`                      | `\* <child> *\ 10`
 
 ## `EXPANDO` and Injection
 
