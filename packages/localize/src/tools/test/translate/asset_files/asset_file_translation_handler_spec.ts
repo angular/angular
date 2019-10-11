@@ -8,6 +8,7 @@
 import {Diagnostics} from '../../../src/diagnostics';
 import {FileUtils} from '../../../src/file_utils';
 import {AssetTranslationHandler} from '../../../src/translate/asset_files/asset_translation_handler';
+import {TranslationBundle} from '../../../src/translate/translator';
 
 describe('AssetTranslationHandler', () => {
   describe('canTranslate()', () => {
@@ -36,6 +37,20 @@ describe('AssetTranslationHandler', () => {
 
       expect(FileUtils.writeFile).toHaveBeenCalledWith('/translations/en/relative/path', contents);
       expect(FileUtils.writeFile).toHaveBeenCalledWith('/translations/fr/relative/path', contents);
+    });
+
+    it('should write the translated file to the source locale if provided', () => {
+      const diagnostics = new Diagnostics();
+      const handler = new AssetTranslationHandler();
+      const translations: TranslationBundle[] = [];
+      const contents = Buffer.from('contents');
+      const sourceLocale = 'en-US';
+      handler.translate(
+          diagnostics, '/root/path', 'relative/path', contents, mockOutputPathFn, translations,
+          sourceLocale);
+
+      expect(FileUtils.writeFile)
+          .toHaveBeenCalledWith('/translations/en-US/relative/path', contents);
     });
   });
 });
