@@ -1,4 +1,4 @@
-import {Platform, PlatformModule} from '@angular/cdk/platform';
+import {Platform, PlatformModule, _supportsShadowDom} from '@angular/cdk/platform';
 import {wrappedErrorMessage, MockNgZone} from '@angular/cdk/private/testing';
 import {
   createFakeEvent,
@@ -12,6 +12,8 @@ import {
   Provider,
   NgZone,
   Directive,
+  ViewEncapsulation,
+  ElementRef,
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {
@@ -1503,7 +1505,26 @@ describe('MatInput with appearance', () => {
     }));
 
 
+  it('should calculate the outline gaps inside the shadow DOM', fakeAsync(() => {
+    if (!_supportsShadowDom()) {
+      return;
+    }
 
+    fixture.destroy();
+    TestBed.resetTestingModule();
+
+    const outlineFixture = createComponent(MatInputWithOutlineAppearanceInShadowDOM);
+    outlineFixture.detectChanges();
+    flush();
+    outlineFixture.detectChanges();
+
+    const formField = outlineFixture.componentInstance.formField.nativeElement;
+    const outlineStart = formField.querySelector('.mat-form-field-outline-start') as HTMLElement;
+    const outlineGap = formField.querySelector('.mat-form-field-outline-gap') as HTMLElement;
+
+    expect(parseInt(outlineStart.style.width || '0')).toBeGreaterThan(0);
+    expect(parseInt(outlineGap.style.width || '0')).toBeGreaterThan(0);
+  }));
 
 });
 
@@ -2009,6 +2030,19 @@ class MatInputWithoutPlaceholder {
   `
 })
 class MatInputWithOutlineInsideInvisibleElement {}
+
+@Component({
+  template: `
+    <mat-form-field appearance="outline" #formField>
+      <mat-label>Hello</mat-label>
+      <input matInput>
+    </mat-form-field>
+  `,
+  encapsulation: ViewEncapsulation.ShadowDom
+})
+class MatInputWithOutlineAppearanceInShadowDOM {
+  @ViewChild('formField', {read: ElementRef, static: false}) formField: ElementRef<HTMLElement>;
+}
 
 
 // Styles to reset padding and border to make measurement comparisons easier.
