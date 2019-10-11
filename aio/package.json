@@ -23,7 +23,7 @@
     "build-local-with-viewengine": "yarn ~~build",
     "prebuild-local-with-viewengine-ci": "node scripts/switch-to-viewengine && yarn setup-local --no-build-packages",
     "build-local-with-viewengine-ci": "yarn ~~build --progress=false",
-    "extract-cli-command-docs": "node tools/transforms/cli-docs-package/extract-cli-commands.js a0ecddbf1",
+    "extract-cli-command-docs": "node tools/transforms/cli-docs-package/extract-cli-commands.js 38635d2d9",
     "lint": "yarn check-env && yarn docs-lint && ng lint && yarn example-lint && yarn tools-lint",
     "test": "yarn check-env && ng test",
     "pree2e": "yarn check-env && yarn update-webdriver",
