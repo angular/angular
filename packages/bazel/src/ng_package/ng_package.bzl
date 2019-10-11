@@ -14,8 +14,7 @@ specification of this format at https://goo.gl/jB3GVv
 """
 
 load("@build_bazel_rules_nodejs//internal/common:collect_es6_sources.bzl", "collect_es6_sources")
-load("@build_bazel_rules_nodejs//:providers.bzl", "JSNamedModuleInfo")
-load("@build_bazel_rules_nodejs//internal/common:npm_package_info.bzl", "NpmPackageInfo")
+load("@build_bazel_rules_nodejs//:providers.bzl", "JSNamedModuleInfo", "NpmPackageInfo")
 load(
     "@build_bazel_rules_nodejs//internal/rollup:rollup_bundle.bzl",
     "ROLLUP_ATTRS",
