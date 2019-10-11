@@ -110,16 +110,10 @@ build:remote --extra_execution_platforms=//tools:rbe_ubuntu1604-angular
 build:remote --host_platform=//tools:rbe_ubuntu1604-angular
 build:remote --platforms=//tools:rbe_ubuntu1604-angular
 
-# Remote instance.
+# Remote instance and caching
 build:remote --remote_instance_name=projects/internal-200822/instances/default_instance
 build:remote --project_id=internal-200822
-
-# Remote caching
 build:remote --remote_cache=remotebuildexecution.googleapis.com
-# By default, do not accept remote cache, to be set to true for CI based on environment
-build:remote --remote_accept_cached=false
-# By default, do not upload local results to cache, to be set to true for CI based on environment
-build:remote --remote_upload_local_results=false
 
 ###############################
 # NodeJS rules settings
