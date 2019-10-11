@@ -79,21 +79,29 @@ export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpressi
     }
   }
 
-  // Check for `__makeTemplateObject(cooked, raw)` call
+  // Check for `__makeTemplateObject(cooked, raw)` or `__templateObject()` calls.
   if (cooked.isCallExpression()) {
-    const arg2 = cooked.get('arguments')[1];
-    if (!arg2.isExpression()) {
-      throw new BabelParseError(
-          arg2.node,
-          'Unexpected `raw` argument to the "makeTemplateObject()" function (expected an expression).');
+    let call = cooked;
+    if (call.get('arguments').length === 0) {
+      // No arguments so perhaps it is a `__templateObject()` call.
+      // Unwrap this to get the `_taggedTemplateLiteral(cooked, raw)` call.
+      call = unwrapLazyLoadHelperCall(call);
     }
-    raw = arg2;
-    cooked = cooked.get('arguments')[0];
+
+    cooked = call.get('arguments')[0];
     if (!cooked.isExpression()) {
       throw new BabelParseError(
           cooked.node,
           'Unexpected `cooked` argument to the "makeTemplateObject()" function (expected an expression).');
     }
+    const arg2 = call.get('arguments')[1];
+    if (arg2 && !arg2.isExpression()) {
+      throw new BabelParseError(
+          arg2.node,
+          'Unexpected `raw` argument to the "makeTemplateObject()" function (expected an expression).');
+    }
+    // If there is no second argument then assume that raw and cooked are the same
+    raw = arg2 !== undefined ? arg2 : cooked;
   }
 
   const cookedStrings = unwrapStringLiteralArray(cooked.node);
@@ -151,6 +159,93 @@ export function unwrapStringLiteralArray(array: t.Expression): string[] {
         array, 'Unexpected messageParts for `$localize` (expected an array of strings).');
   }
   return array.elements.map((str: t.StringLiteral) => str.value);
+}
+
+/**
+ * This expression is believed to be a call to a "lazy-load" template object helper function.
+ * This is expected to be of the form:
+ *
+ * ```ts
+ *  function _templateObject() {
+ *    var e = _taggedTemplateLiteral(['cooked string', 'raw string']);
+ *    return _templateObject = function() { return e }, e
+ *  }
+ * ```
+ *
+ * We unwrap this to return the call to `_taggedTemplateLiteral()`.
+ *
+ * @param call the call expression to unwrap
+ * @returns the  call expression
+ */
+export function unwrapLazyLoadHelperCall(call: NodePath<t.CallExpression>):
+    NodePath<t.CallExpression> {
+  const callee = call.get('callee');
+  if (!callee.isIdentifier()) {
+    throw new BabelParseError(
+        callee.node,
+        'Unexpected lazy-load helper call (expected a call of the form `_templateObject()`).');
+  }
+  const lazyLoadBinding = call.scope.getBinding(callee.node.name);
+  if (!lazyLoadBinding) {
+    throw new BabelParseError(callee.node, 'Missing declaration for lazy-load helper function');
+  }
+  const lazyLoadFn = lazyLoadBinding.path;
+  if (!lazyLoadFn.isFunctionDeclaration()) {
+    throw new BabelParseError(
+        lazyLoadFn.node, 'Unexpected expression (expected a function declaration');
+  }
+  const returnedNode = getReturnedExpression(lazyLoadFn);
+
+  if (returnedNode.isCallExpression()) {
+    return returnedNode;
+  }
+
+  if (returnedNode.isIdentifier()) {
+    const identifierName = returnedNode.node.name;
+    const declaration = returnedNode.scope.getBinding(identifierName);
+    if (declaration === undefined) {
+      throw new BabelParseError(
+          returnedNode.node, 'Missing declaration for return value from helper.');
+    }
+    if (!declaration.path.isVariableDeclarator()) {
+      throw new BabelParseError(
+          declaration.path.node,
+          'Unexpected helper return value declaration (expected a variable declaration).');
+    }
+    const initializer = declaration.path.get('init');
+    if (!initializer.isCallExpression()) {
+      throw new BabelParseError(
+          declaration.path.node,
+          'Unexpected return value from helper (expected a call expression).');
+    }
+
+    // Remove the lazy load helper if this is the only reference to it.
+    if (lazyLoadBinding.references === 1) {
+      lazyLoadFn.remove();
+    }
+
+    return initializer;
+  }
+  return call;
+}
+
+function getReturnedExpression(fn: NodePath<t.FunctionDeclaration>): NodePath<t.Expression> {
+  const bodyStatements = fn.get('body').get('body');
+  for (const statement of bodyStatements) {
+    if (statement.isReturnStatement()) {
+      const argument = statement.get('argument');
+      if (argument.isSequenceExpression()) {
+        const expressions = argument.get('expressions');
+        return Array.isArray(expressions) ? expressions[expressions.length - 1] : expressions;
+      } else if (argument.isExpression()) {
+        return argument;
+      } else {
+        throw new BabelParseError(
+            statement.node, 'Invalid return argument in helper function (expected an expression).');
+      }
+    }
+  }
+  throw new BabelParseError(fn.node, 'Missing return statement in helper function.');
 }
 
 /**
