@@ -154,12 +154,15 @@ export class R3TestBedCompiler {
   overrideProvider(
       token: any,
       provider: {useFactory?: Function, useValue?: any, deps?: any[], multi?: boolean}): void {
-    const providerDef = provider.useFactory ? {
-      provide: token,
-      useFactory: provider.useFactory,
-      deps: provider.deps || [],
-    } :
-                                              {provide: token, useValue: provider.useValue};
+    // Note, we explicitly avoid setting `multi: true` here. If multi is true and we set it, TestBed
+    // will override
+    // all instances of the token and when the test module is finalized, the injector will add each
+    // occurrence of the
+    // override to the records. We only ever want one when it's overridden, so we treat it as
+    // non-multi.
+    const providerDef = provider.useFactory ?
+        {provide: token, useFactory: provider.useFactory, deps: provider.deps || []} :
+        {provide: token, useValue: provider.useValue};
 
     let injectableDef: InjectableDef<any>|null;
     const isRoot =

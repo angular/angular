@@ -231,7 +231,7 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Hello injected World !');
   });
 
-  it('allow to override multi provider', () => {
+  describe('allow override of multi provider', () => {
     const token = new InjectionToken<string[]>('token');
     @NgModule({providers: [{provide: token, useValue: 'valueFromModule', multi: true}]})
     class MyModule {
@@ -241,13 +241,27 @@ describe('TestBed', () => {
     class MyModule2 {
     }
 
-    TestBed.configureTestingModule({imports: [MyModule, MyModule2]});
-    const overrideValue = ['override'];
-    TestBed.overrideProvider(token, { useValue: overrideValue, multi: true } as any);
+    beforeEach(() => { TestBed.configureTestingModule({imports: [MyModule, MyModule2]}); });
 
-    const value = TestBed.inject(token);
-    expect(value.length).toEqual(overrideValue.length);
-    expect(value).toEqual(overrideValue);
+    it('with an array', () => {
+      const overrideValue = ['override'];
+      TestBed.overrideProvider(token, { useValue: overrideValue, multi: true } as any);
+
+      const value = TestBed.inject(token);
+      expect(value.length).toEqual(overrideValue.length);
+      expect(value).toEqual(overrideValue);
+    });
+
+    it('with a non-array', () => {
+      // This is actually invalid because multi providers return arrays. We have this here so we can
+      // ensure Ivy behaves the same as VE does currently.
+      const overrideValue = 'override';
+      TestBed.overrideProvider(token, { useValue: overrideValue, multi: true } as any);
+
+      const value = TestBed.inject(token);
+      expect(value.length).toEqual(overrideValue.length);
+      expect(value).toEqual(overrideValue as {} as string[]);
+    });
   });
 
   it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.overrideProvider)',
