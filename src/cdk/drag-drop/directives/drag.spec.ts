@@ -3518,6 +3518,33 @@ describe('CdkDrag', () => {
         expect(spy).toHaveBeenCalledWith(dragItem, dropInstances[1]);
       }));
 
+    it('should not call the `enterPredicate` if the pointer is not over the container',
+      fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+        fixture.detectChanges();
+
+        const dropInstances = fixture.componentInstance.dropInstances.toArray();
+        const spy = jasmine.createSpy('enterPredicate spy').and.returnValue(true);
+        const groups = fixture.componentInstance.groupedDragItems.slice();
+        const dragElement = groups[0][1].element.nativeElement;
+        const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+        dropInstances[1].enterPredicate = spy;
+        fixture.detectChanges();
+
+        startDraggingViaMouse(fixture, dragElement);
+
+        dispatchMouseEvent(document, 'mousemove', targetRect.left - 1, targetRect.top - 1);
+        fixture.detectChanges();
+
+        expect(spy).not.toHaveBeenCalled();
+
+        dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
+        fixture.detectChanges();
+
+        expect(spy).toHaveBeenCalledTimes(1);
+      }));
+
     it('should be able to start dragging after an item has been transferred', fakeAsync(() => {
       const fixture = createComponent(ConnectedDropZones);
       fixture.detectChanges();

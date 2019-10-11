@@ -782,7 +782,7 @@ export class DropListRef<T = any> {
    * @param y Position of the item along the Y axis.
    */
   _canReceive(item: DragRef, x: number, y: number): boolean {
-    if (!this.enterPredicate(item, this) || !isInsideClientRect(this._clientRect, x, y)) {
+    if (!isInsideClientRect(this._clientRect, x, y) || !this.enterPredicate(item, this)) {
       return false;
     }
 
