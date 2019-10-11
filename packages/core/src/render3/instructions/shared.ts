@@ -1091,7 +1091,7 @@ export function resolveDirectives(
 function instantiateAllDirectives(tView: TView, lView: LView, tNode: TNode) {
   const start = tNode.directiveStart;
   const end = tNode.directiveEnd;
-  if (!tView.firstTemplatePass && start < end) {
+  if (!tView.firstTemplatePass) {
     getOrCreateNodeInjectorForNode(
         tNode as TElementNode | TContainerNode | TElementContainerNode, lView);
   }
@@ -1367,13 +1367,13 @@ function setInputsFromAttrs<T>(
   }
 
   const initialInputs: InitialInputs|null = initialInputData[directiveIndex];
-  if (initialInputs) {
+  if (initialInputs !== null) {
     const setInput = def.setInput;
     for (let i = 0; i < initialInputs.length;) {
       const publicName = initialInputs[i++];
       const privateName = initialInputs[i++];
       const value = initialInputs[i++];
-      if (setInput) {
+      if (setInput !== null) {
         def.setInput !(instance, value, publicName, privateName);
       } else {
         (instance as any)[privateName] = value;
