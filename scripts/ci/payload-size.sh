@@ -26,9 +26,16 @@ getGzipSize() {
 calculateSize() {
   label=$(echo "$filename" | sed "s/.*\///" | sed "s/\..*//")
 
-  payloadData="$payloadData\"uncompressed/$label\": $(stat -c%s "$filename"), "
-  payloadData="$payloadData\"gzip7/$label\": $(getGzipSize "$filename" 7), "
-  payloadData="$payloadData\"gzip9/$label\": $(getGzipSize "$filename" 9), "
+  rawSize=$(stat -c%s "$filename")
+  gzip7Size=$(getGzipSize "$filename" 7)
+  gzip9Size=$(getGzipSize "$filename" 9)
+
+  # Log the sizes (for information/debugging purposes).
+  printf "Size: %6d  (gzip7: %6d, gzip9: %6d)  %s\n" $rawSize $gzip7Size $gzip9Size $label
+
+  payloadData="$payloadData\"uncompressed/$label\": $rawSize, "
+  payloadData="$payloadData\"gzip7/$label\": $gzip7Size, "
+  payloadData="$payloadData\"gzip9/$label\": $gzip9Size, "
 }
 
 # Check whether the file size is under limit.
