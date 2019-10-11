@@ -12,7 +12,7 @@ import {assertDefined, assertEqual} from '../util/assert';
 import {assertLViewOrUndefined} from './assert';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
-import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TVIEW} from './interfaces/view';
+import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TVIEW} from './interfaces/view';
 
 
 /**
@@ -61,6 +61,11 @@ interface LFrame {
    * Used by binding instructions. Updated as part of advance instruction.
    */
   selectedIndex: number;
+
+  /**
+   * Current pointer to the binding index.
+   */
+  bindingIndex: number;
 
   /**
    * The last viewData retrieved by nextContext().
@@ -433,11 +438,42 @@ export function getBindingRoot() {
   let index = lFrame.bindingRootIndex;
   if (index === -1) {
     const lView = lFrame.lView;
-    index = lFrame.bindingRootIndex = lView[BINDING_INDEX] = lView[TVIEW].bindingStartIndex;
+    index = lFrame.bindingRootIndex = lView[TVIEW].bindingStartIndex;
   }
   return index;
 }
 
+export function getBindingIndex(): number {
+  return instructionState.lFrame.bindingIndex;
+}
+
+export function setBindingIndex(value: number): number {
+  return instructionState.lFrame.bindingIndex = value;
+}
+
+export function nextBindingIndex(): number {
+  return instructionState.lFrame.bindingIndex++;
+}
+
+export function nextBindingIndex2(): number {
+  const lFrame = instructionState.lFrame;
+  const index = lFrame.bindingIndex;
+  lFrame.bindingIndex = lFrame.bindingIndex + 2;
+  return index;
+}
+
+export function incrementBindingIndex(count: number): number {
+  return instructionState.lFrame.bindingIndex += count;
+}
+
+/**
+ * Set a new binding root index so that host template functions can execute.
+ *
+ * Bindings inside the host template are 0 index. But because we don't know ahead of time
+ * how many host bindings we have we can't pre-compute them. For this reason they are all
+ * 0 index and we just shift the root so that they match next available location in the LView.
+ * @param value
+ */
 export function setBindingRoot(value: number) {
   instructionState.lFrame.bindingRootIndex = value;
 }
@@ -513,6 +549,7 @@ export function enterView(newView: LView, tNode: TNode | null): void {
   newLFrame.currentDirectiveDef = null;
   newLFrame.activeDirectiveId = 0;
   newLFrame.bindingRootIndex = -1;
+  newLFrame.bindingIndex = newView === null ? -1 : newView[TVIEW].bindingStartIndex;
   newLFrame.currentQueryIndex = 0;
 }
 
@@ -539,6 +576,7 @@ function createLFrame(parent: LFrame | null): LFrame {
     currentDirectiveDef: null,      //
     activeDirectiveId: 0,           //
     bindingRootIndex: -1,           //
+    bindingIndex: -1,               //
     currentQueryIndex: 0,           //
     parent: parent !,               //
     child: null,                    //
