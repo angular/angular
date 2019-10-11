@@ -53,14 +53,14 @@ describe('compiler compliance: directives', () => {
         `;
 
       const MyComponentFactory = `
-        MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
+        MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
       `;
 
       const result = compile(files, angularFiles);
       const source = result.source;
 
       expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
-      expectEmit(source, MyComponentFactory, 'Incorrect ChildComponent.ngFactoryDef');
+      expectEmit(source, MyComponentFactory, 'Incorrect ChildComponent.ɵfac');
     });
 
     it('should not match directives on i18n-prefixed attributes', () => {
@@ -103,14 +103,14 @@ describe('compiler compliance: directives', () => {
         `;
 
       const MyComponentFactory = `
-        MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
+        MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
       `;
 
       const result = compile(files, angularFiles);
       const source = result.source;
 
       expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
-      expectEmit(source, MyComponentFactory, 'Incorrect ChildComponent.ngFactoryDef');
+      expectEmit(source, MyComponentFactory, 'Incorrect ChildComponent.ɵfac');
     });
 
     it('should match directives on element bindings', () => {

@@ -28,7 +28,7 @@ describe('di', () => {
     class DirB {
       value = 'DirB';
 
-      static ngFactoryDef = () => new DirB();
+      static ɵfac = () => new DirB();
       static ɵdir =
           ɵɵdefineDirective({selectors: [['', 'dirB', '']], type: DirB, inputs: {value: 'value'}});
     }
@@ -39,7 +39,7 @@ describe('di', () => {
         // TODO(issue/24571): remove '!'.
         value !: string;
 
-        static ngFactoryDef = () => new DirB();
+        static ɵfac = () => new DirB();
         static ɵdir =
             ɵɵdefineDirective({type: DirB, selectors: [['', 'dirB', '']], inputs: {value: 'dirB'}});
       }
@@ -50,7 +50,7 @@ describe('di', () => {
         class DirA {
           constructor(@Optional() public dirB: DirB|null) {}
 
-          static ngFactoryDef =
+          static ɵfac =
               () => {
                 dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Optional));
                 return dirA;
@@ -81,7 +81,7 @@ describe('di', () => {
         class DirA {
           constructor(@Self() public dirB: DirB) {}
 
-          static ngFactoryDef = () => dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Self));
+          static ɵfac = () => dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Self));
           static ɵdir = ɵɵdefineDirective({type: DirA, selectors: [['', 'dirA', '']]});
         }
 
@@ -117,7 +117,7 @@ describe('di', () => {
     class MyComp {
       constructor(public renderer: Renderer2) {}
 
-      static ngFactoryDef = () => new MyComp(ɵɵdirectiveInject(Renderer2 as any));
+      static ɵfac = () => new MyComp(ɵɵdirectiveInject(Renderer2 as any));
       static ɵcmp = ɵɵdefineComponent({
         type: MyComp,
         selectors: [['my-comp']],

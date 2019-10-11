@@ -80,7 +80,7 @@ export interface ComponentType<T> extends Type<T> { ɵcmp: never; }
  */
 export interface DirectiveType<T> extends Type<T> {
   ɵdir: never;
-  ngFactoryDef: () => T;
+  ɵfac: () => T;
 }
 
 export enum DirectiveDefFlags {

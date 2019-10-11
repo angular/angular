@@ -67,8 +67,8 @@ runInEachFileSystem(os => {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Dep>;');
       expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Service>;');
-      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<Dep>;');
-      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<Service>;');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Dep>;');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Service>;');
     });
 
     it('should compile Injectables with a generic service', () => {
@@ -85,7 +85,7 @@ runInEachFileSystem(os => {
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Store.ngInjectableDef =');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<Store<any>>;');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Store<any>>;');
       expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Store<any>>;');
     });
 
@@ -110,14 +110,14 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('Service.ngInjectableDef =');
       expect(jsContents)
           .toContain(
-              'Service.ngFactoryDef = function Service_Factory(t) { return new (t || Service)(i0.ɵɵinject(Dep)); };');
+              'Service.ɵfac = function Service_Factory(t) { return new (t || Service)(i0.ɵɵinject(Dep)); };');
       expect(jsContents).toContain('providedIn: \'root\' })');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Dep>;');
       expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Service>;');
-      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<Dep>;');
-      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<Service>;');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Dep>;');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Service>;');
     });
 
     it('should compile Injectables with providedIn and factory without errors', () => {
@@ -142,7 +142,7 @@ runInEachFileSystem(os => {
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Service>;');
-      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<Service>;');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Service>;');
     });
 
     it('should compile Injectables with providedIn and factory with deps without errors', () => {
@@ -171,7 +171,7 @@ runInEachFileSystem(os => {
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Service>;');
-      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<Service>;');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Service>;');
     });
 
     it('should compile @Injectable with an @Optional dependency', () => {
@@ -206,14 +206,14 @@ runInEachFileSystem(os => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('TestCmp.ɵcmp = i0.ɵɵdefineComponent');
-      expect(jsContents).toContain('TestCmp.ngFactoryDef = function');
+      expect(jsContents).toContain('TestCmp.ɵfac = function');
       expect(jsContents).not.toContain('__decorate');
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
               'static ɵcmp: i0.ɵɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never>');
-      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<TestCmp>');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestCmp>');
     });
 
     it('should compile Components (dynamic inline template) without errors', () => {
@@ -231,7 +231,7 @@ runInEachFileSystem(os => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('TestCmp.ɵcmp = i0.ɵɵdefineComponent');
-      expect(jsContents).toContain('TestCmp.ngFactoryDef = function');
+      expect(jsContents).toContain('TestCmp.ɵfac = function');
       expect(jsContents).not.toContain('__decorate');
 
       const dtsContents = env.getContents('test.d.ts');
@@ -239,7 +239,7 @@ runInEachFileSystem(os => {
       expect(dtsContents)
           .toContain(
               'static ɵcmp: i0.ɵɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never>');
-      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<TestCmp>');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestCmp>');
     });
 
     it('should compile Components (function call inline template) without errors', () => {
@@ -260,14 +260,14 @@ runInEachFileSystem(os => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('TestCmp.ɵcmp = i0.ɵɵdefineComponent');
-      expect(jsContents).toContain('TestCmp.ngFactoryDef = function');
+      expect(jsContents).toContain('TestCmp.ɵfac = function');
       expect(jsContents).not.toContain('__decorate');
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
               'static ɵcmp: i0.ɵɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never>');
-      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<TestCmp>');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestCmp>');
     });
 
     it('should compile Components (external template) without errors', () => {
@@ -899,10 +899,10 @@ runInEachFileSystem(os => {
               'TestPipe.ngPipeDef = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: false })');
       expect(jsContents)
           .toContain(
-              'TestPipe.ngFactoryDef = function TestPipe_Factory(t) { return new (t || TestPipe)(); }');
+              'TestPipe.ɵfac = function TestPipe_Factory(t) { return new (t || TestPipe)(); }');
       expect(dtsContents)
           .toContain('static ngPipeDef: i0.ɵɵPipeDefWithMeta<TestPipe, "test-pipe">;');
-      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<TestPipe>;');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestPipe>;');
     });
 
     it('should compile pure Pipes without errors', () => {
@@ -925,10 +925,10 @@ runInEachFileSystem(os => {
               'TestPipe.ngPipeDef = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: true })');
       expect(jsContents)
           .toContain(
-              'TestPipe.ngFactoryDef = function TestPipe_Factory(t) { return new (t || TestPipe)(); }');
+              'TestPipe.ɵfac = function TestPipe_Factory(t) { return new (t || TestPipe)(); }');
       expect(dtsContents)
           .toContain('static ngPipeDef: i0.ɵɵPipeDefWithMeta<TestPipe, "test-pipe">;');
-      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<TestPipe>;');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestPipe>;');
     });
 
     it('should compile Pipes with dependencies', () => {
@@ -969,7 +969,7 @@ runInEachFileSystem(os => {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain('static ngPipeDef: i0.ɵɵPipeDefWithMeta<TestPipe<any>, "test-pipe">;');
-      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<TestPipe<any>>;');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestPipe<any>>;');
     });
 
     it('should include @Pipes in @NgModule scopes', () => {
@@ -1309,8 +1309,7 @@ runInEachFileSystem(os => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents)
-              .toContain('Test.ngFactoryDef = function Test_Factory(t) { throw new Error(');
+          expect(jsContents).toContain('Test.ɵfac = function Test_Factory(t) { throw new Error(');
         });
 
         it('should compile an @Injectable provided in the root on a class with a non-injectable constructor',
@@ -1327,7 +1326,7 @@ runInEachFileSystem(os => {
              env.driveMain();
              const jsContents = env.getContents('test.js');
              expect(jsContents)
-                 .toContain('Test.ngFactoryDef = function Test_Factory(t) { throw new Error(');
+                 .toContain('Test.ɵfac = function Test_Factory(t) { throw new Error(');
            });
 
       });
@@ -1640,7 +1639,7 @@ runInEachFileSystem(os => {
       const jsContents = env.getContents('test.js');
       expect(jsContents)
           .toContain(
-              `FooCmp.ngFactoryDef = function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵɵinjectAttribute("test"), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef), i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.Injector), i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.TemplateRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef)); }`);
+              `FooCmp.ɵfac = function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵɵinjectAttribute("test"), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef), i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.Injector), i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.TemplateRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef)); }`);
     });
 
     it('should generate queries for components', () => {

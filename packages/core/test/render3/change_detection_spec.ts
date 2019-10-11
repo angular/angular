@@ -25,7 +25,7 @@ describe('change detection', () => {
       doCheckCount = 0;
       ngDoCheck(): void { this.doCheckCount++; }
 
-      static ngFactoryDef = () => new MyComponent();
+      static ɵfac = () => new MyComponent();
       static ɵcmp = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],
@@ -101,7 +101,7 @@ describe('change detection', () => {
 
       onClick() {}
 
-      static ngFactoryDef = () => comp = new MyComponent();
+      static ɵfac = () => comp = new MyComponent();
       static ɵcmp = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],
@@ -139,7 +139,7 @@ describe('change detection', () => {
 
         onClick() {}
 
-        static ngFactoryDef = () => comp = new ManualComponent();
+        static ɵfac = () => comp = new ManualComponent();
         static ɵcmp = ɵɵdefineComponent({
           type: ManualComponent,
           selectors: [['manual-comp']],
@@ -175,7 +175,7 @@ describe('change detection', () => {
       class ManualApp {
         name: string = 'Nancy';
 
-        static ngFactoryDef = () => new ManualApp();
+        static ɵfac = () => new ManualApp();
         static ɵcmp = ɵɵdefineComponent({
           type: ManualApp,
           selectors: [['manual-app']],
@@ -230,7 +230,7 @@ describe('change detection', () => {
              doCheckCount = 0;
              ngDoCheck(): void { this.doCheckCount++; }
 
-             static ngFactoryDef = () => parent = new ButtonParent();
+             static ɵfac = () => parent = new ButtonParent();
              static ɵcmp = ɵɵdefineComponent({
                type: ButtonParent,
                selectors: [['button-parent']],
@@ -307,7 +307,7 @@ describe('change detection', () => {
         return 'works';
       }
 
-      static ngFactoryDef = () => new MyComponent();
+      static ɵfac = () => new MyComponent();
       static ɵcmp = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],

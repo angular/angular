@@ -259,7 +259,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata, isPipe = false):
 }
 
 /**
- * Constructs the `ngFactoryDef` from directive/component/pipe metadata.
+ * Constructs the factory def (`ɵfac`) from directive/component/pipe metadata.
  */
 export function compileFactoryFromMetadata(meta: R3FactoryDefMetadata): R3FactoryFn {
   return compileFactoryFunction(

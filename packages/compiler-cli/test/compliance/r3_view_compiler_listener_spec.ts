@@ -220,14 +220,14 @@ describe('compiler compliance: listen()', () => {
       `;
 
     const MyComponentFactory = `
-      MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
+      MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
     `;
 
     const result = compile(files, angularFiles);
     const source = result.source;
 
     expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ɵcmp');
-    expectEmit(source, MyComponentFactory, 'Incorrect MyComponent.ngFactoryDef');
+    expectEmit(source, MyComponentFactory, 'Incorrect MyComponent.ɵfac');
   });
 
 });
