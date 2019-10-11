@@ -225,10 +225,130 @@ describe('TestBed', () => {
   });
 
   it('allow to override a provider', () => {
-    TestBed.overrideProvider(NAME, {useValue: 'injected World !'});
+    TestBed.overrideProvider(NAME, {useValue: 'injected World!'});
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
-    expect(hello.nativeElement).toHaveText('Hello injected World !');
+    expect(hello.nativeElement).toHaveText('Hello injected World!');
+  });
+
+  it('uses the most recent provider override', () => {
+    TestBed.overrideProvider(NAME, {useValue: 'injected World!'});
+    TestBed.overrideProvider(NAME, {useValue: 'injected World a second time!'});
+    const hello = TestBed.createComponent(HelloWorld);
+    hello.detectChanges();
+    expect(hello.nativeElement).toHaveText('Hello injected World a second time!');
+  });
+
+  it('overrides a providers in an array', () => {
+    TestBed.configureTestingModule({
+      imports: [HelloWorldModule],
+      providers: [
+        [{provide: NAME, useValue: 'injected World!'}],
+      ]
+    });
+    TestBed.overrideProvider(NAME, {useValue: 'injected World a second time!'});
+    const hello = TestBed.createComponent(HelloWorld);
+    hello.detectChanges();
+    expect(hello.nativeElement).toHaveText('Hello injected World a second time!');
+  });
+
+  describe('multi providers', () => {
+    const multiToken = new InjectionToken<string[]>('multiToken');
+    const singleToken = new InjectionToken<string>('singleToken');
+    @NgModule({providers: [{provide: multiToken, useValue: 'valueFromModule', multi: true}]})
+    class MyModule {
+    }
+
+    @NgModule({
+      providers: [
+        {provide: singleToken, useValue: 't1'},
+        {provide: multiToken, useValue: 'valueFromModule2', multi: true},
+        {provide: multiToken, useValue: 'secondValueFromModule2', multi: true}
+      ]
+    })
+    class MyModule2 {
+    }
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [MyModule, MyModule2],
+      });
+    });
+
+    it('is preserved when other provider is overridden', () => {
+      TestBed.overrideProvider(singleToken, {useValue: ''});
+      const value = TestBed.inject(multiToken);
+      expect(value.length).toEqual(3);
+    });
+
+    it('overridden with an array', () => {
+      const overrideValue = ['override'];
+      TestBed.overrideProvider(multiToken, { useValue: overrideValue, multi: true } as any);
+
+      const value = TestBed.inject(multiToken);
+      expect(value.length).toEqual(overrideValue.length);
+      expect(value).toEqual(overrideValue);
+    });
+
+    it('overridden with a non-array', () => {
+      // This is actually invalid because multi providers return arrays. We have this here so we can
+      // ensure Ivy behaves the same as VE does currently.
+      const overrideValue = 'override';
+      TestBed.overrideProvider(multiToken, { useValue: overrideValue, multi: true } as any);
+
+      const value = TestBed.inject(multiToken);
+      expect(value.length).toEqual(overrideValue.length);
+      expect(value).toEqual(overrideValue as {} as string[]);
+    });
+  });
+
+  describe('overrides providers in ModuleWithProviders', () => {
+    const TOKEN = new InjectionToken<string[]>('token');
+    @NgModule()
+    class MyMod {
+      static multi = false;
+
+      static forRoot() {
+        return {
+          ngModule: MyMod,
+          providers: [{provide: TOKEN, multi: MyMod.multi, useValue: 'forRootValue'}]
+        };
+      }
+    }
+
+    beforeEach(() => MyMod.multi = true);
+
+    it('when provider is a "regular" provider', () => {
+      MyMod.multi = false;
+      @NgModule({imports: [MyMod.forRoot()]})
+      class MyMod2 {
+      }
+      TestBed.configureTestingModule({imports: [MyMod2]});
+      TestBed.overrideProvider(TOKEN, {useValue: ['override']});
+      expect(TestBed.inject(TOKEN)).toEqual(['override']);
+    });
+
+    it('when provider is multi', () => {
+      @NgModule({imports: [MyMod.forRoot()]})
+      class MyMod2 {
+      }
+      TestBed.configureTestingModule({imports: [MyMod2]});
+      TestBed.overrideProvider(TOKEN, {useValue: ['override']});
+      expect(TestBed.inject(TOKEN)).toEqual(['override']);
+    });
+
+    it('restores the original value', () => {
+      @NgModule({imports: [MyMod.forRoot()]})
+      class MyMod2 {
+      }
+      TestBed.configureTestingModule({imports: [MyMod2]});
+      TestBed.overrideProvider(TOKEN, {useValue: ['override']});
+      expect(TestBed.inject(TOKEN)).toEqual(['override']);
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({imports: [MyMod2]});
+      expect(TestBed.inject(TOKEN)).toEqual(['forRootValue']);
+    });
   });
 
   it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.overrideProvider)',
