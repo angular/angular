@@ -21,6 +21,23 @@ describe('makeEs2015Plugin', () => {
       expect(output.code).toEqual('const b = 10;\n"try\\n" + (40 + b) + "\\n  me";');
     });
 
+    it('should strip meta blocks', () => {
+      const diagnostics = new Diagnostics();
+      const input = 'const b = 10;\n$localize `:description:try\\n${40 + b}\\n  me`;';
+      const output =
+          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]}) !;
+      expect(output.code).toEqual('const b = 10;\n"try\\n" + (40 + b) + "\\n  me";');
+    });
+
+    it('should not strip escaped meta blocks', () => {
+      const diagnostics = new Diagnostics();
+      const input = 'const b = 10;\n$localize `\\:description:try\\n${40 + b}\\n  me`;';
+      const output =
+          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]}) !;
+      expect(output.code).toEqual('const b = 10;\n":description:try\\n" + (40 + b) + "\\n  me";');
+    });
+
+
     it('should transform nested `$localize` tags', () => {
       const diagnostics = new Diagnostics();
       const input = '$localize`a${1}b${$localize`x${5}y${6}z`}c`;';
