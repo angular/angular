@@ -106,6 +106,42 @@ export declare class CommonModule {
       expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
     });
 
+    it('should check event bindings', () => {
+      env.write('test.ts', `
+        import {Component, Directive, EventEmitter, NgModule, Output} from '@angular/core';
+    
+        @Component({
+          selector: 'test',
+          template: '<div dir (update)="update($event); updated = true" (focus)="update($event); focused = true"></div>',
+        })
+        class TestCmp {
+          update(data: string) {}
+        }
+    
+        @Directive({selector: '[dir]'})
+        class TestDir {
+          @Output() update = new EventEmitter<number>();
+        }
+    
+        @NgModule({
+          declarations: [TestCmp, TestDir],
+        })
+        class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(3);
+      expect(diags[0].messageText)
+          .toEqual(`Argument of type 'number' is not assignable to parameter of type 'string'.`);
+      expect(diags[1].messageText)
+          .toEqual(`Property 'updated' does not exist on type 'TestCmp'. Did you mean 'update'?`);
+      // Disabled because `checkTypeOfDomEvents` is disabled by default
+      // expect(diags[2].messageText)
+      //     .toEqual(
+      //         `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`);
+      expect(diags[2].messageText).toEqual(`Property 'focused' does not exist on type 'TestCmp'.`);
+    });
+
     it('should check basic usage of NgIf', () => {
       env.write('test.ts', `
     import {CommonModule} from '@angular/common';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DYNAMIC_TYPE, ExpressionType, ExternalExpr, Type} from '@angular/compiler';
+import {ExpressionType, ExternalExpr, ReadVarExpr, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {NOOP_DEFAULT_IMPORT_RECORDER, Reference, ReferenceEmitter} from '../../imports';
@@ -39,6 +39,9 @@ export class Environment {
 
   private pipeInsts = new Map<ClassDeclaration, ts.Expression>();
   protected pipeInstStatements: ts.Statement[] = [];
+
+  private outputHelperIdent: ts.Identifier|null = null;
+  protected helperStatements: ts.Statement[] = [];
 
   constructor(
       readonly config: TypeCheckingConfig, protected importManager: ImportManager,
@@ -106,6 +109,92 @@ export class Environment {
   }
 
   /**
+   * Declares a helper function to be able to cast directive outputs of type `EventEmitter<T>` to
+   * have an accurate `subscribe()` method that properly carries over the generic type `T` into the
+   * listener function passed as argument to `subscribe`. This is done to work around a typing
+   * deficiency in `EventEmitter.subscribe`, where the listener function is typed as any.
+   */
+  declareOutputHelper(): ts.Expression {
+    if (this.outputHelperIdent !== null) {
+      return this.outputHelperIdent;
+    }
+
+    const eventEmitter = this.referenceExternalType(
+        '@angular/core', 'EventEmitter', [new ExpressionType(new ReadVarExpr('T'))]);
+
+    const outputHelperIdent = ts.createIdentifier('_outputHelper');
+    const genericTypeDecl = ts.createTypeParameterDeclaration('T');
+    const genericTypeRef = ts.createTypeReferenceNode('T', /* typeParameters */ undefined);
+
+    // Declare a type that has a `subscribe` method that carries over type `T` as parameter
+    // into the callback. The below code generates the following type literal:
+    // `{subscribe(cb: (event: T) => any): void;}`
+    const observableLike = ts.createTypeLiteralNode([ts.createMethodSignature(
+        /* typeParameters */ undefined,
+        /* parameters */[ts.createParameter(
+            /* decorators */ undefined,
+            /* modifiers */ undefined,
+            /* dotDotDotToken */ undefined,
+            /* name */ 'cb',
+            /* questionToken */ undefined,
+            /* type */ ts.createFunctionTypeNode(
+                /* typeParameters */ undefined,
+                /* parameters */[ts.createParameter(
+                    /* decorators */ undefined,
+                    /* modifiers */ undefined,
+                    /* dotDotDotToken */ undefined,
+                    /* name */ 'event',
+                    /* questionToken */ undefined,
+                    /* type */ genericTypeRef)],
+                /* type */ ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)))],
+        /* type */ ts.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
+        /* name */ 'subscribe',
+        /* questionToken */ undefined)]);
+
+    // Declares the first signature of `_outputHelper` that matches arguments of type
+    // `EventEmitter`, to convert them into `observableLike` defined above. The following
+    // statement is generated:
+    // `declare function _outputHelper<T>(output: EventEmitter<T>): observableLike;`
+    this.helperStatements.push(ts.createFunctionDeclaration(
+        /* decorators */ undefined,
+        /* modifiers */[ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
+        /* asteriskToken */ undefined,
+        /* name */ outputHelperIdent,
+        /* typeParameters */[genericTypeDecl],
+        /* parameters */[ts.createParameter(
+            /* decorators */ undefined,
+            /* modifiers */ undefined,
+            /* dotDotDotToken */ undefined,
+            /* name */ 'output',
+            /* questionToken */ undefined,
+            /* type */ eventEmitter)],
+        /* type */ observableLike,
+        /* body */ undefined));
+
+    // Declares the second signature of `_outputHelper` that matches all other argument types,
+    // i.e. ensures type identity for output types other than `EventEmitter`. This corresponds
+    // with the following statement:
+    // `declare function _outputHelper<T>(output: T): T;`
+    this.helperStatements.push(ts.createFunctionDeclaration(
+        /* decorators */ undefined,
+        /* modifiers */[ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
+        /* asteriskToken */ undefined,
+        /* name */ outputHelperIdent,
+        /* typeParameters */[genericTypeDecl],
+        /* parameters */[ts.createParameter(
+            /* decorators */ undefined,
+            /* modifiers */ undefined,
+            /* dotDotDotToken */ undefined,
+            /* name */ 'output',
+            /* questionToken */ undefined,
+            /* type */ genericTypeRef)],
+        /* type */ genericTypeRef,
+        /* body */ undefined));
+
+    return this.outputHelperIdent = outputHelperIdent;
+  }
+
+  /**
    * Generate a `ts.Expression` that references the given node.
    *
    * This may involve importing the node into the file if it's not declared there already.
@@ -131,28 +220,19 @@ export class Environment {
   }
 
   /**
-   * Generate a `ts.TypeNode` that references a given type from '@angular/core'.
+   * Generate a `ts.TypeNode` that references a given type from the provided module.
    *
-   * This will involve importing the type into the file, and will also add a number of generic type
-   * parameters (using `any`) as requested.
+   * This will involve importing the type into the file, and will also add type parameters if
+   * provided.
    */
-  referenceCoreType(name: string, typeParamCount: number = 0): ts.TypeNode {
-    const external = new ExternalExpr({
-      moduleName: '@angular/core',
-      name,
-    });
-    let typeParams: Type[]|null = null;
-    if (typeParamCount > 0) {
-      typeParams = [];
-      for (let i = 0; i < typeParamCount; i++) {
-        typeParams.push(DYNAMIC_TYPE);
-      }
-    }
+  referenceExternalType(moduleName: string, name: string, typeParams?: Type[]): ts.TypeNode {
+    const external = new ExternalExpr({moduleName, name});
     return translateType(new ExpressionType(external, null, typeParams), this.importManager);
   }
 
   getPreludeStatements(): ts.Statement[] {
     return [
+      ...this.helperStatements,
       ...this.pipeInstStatements,
       ...this.typeCtorStatements,
     ];
