@@ -261,6 +261,7 @@ export interface CompileEntryComponentMetadata {
 // as we need to be able to serialize this from/to JSON!
 export interface CompileDirectiveSummary extends CompileTypeSummary {
   type: CompileTypeMetadata;
+  summaryKind: CompileSummaryKind.Directive;
   isComponent: boolean;
   selector: string|null;
   exportAs: string|null;
@@ -485,6 +486,7 @@ export class CompileDirectiveMetadata {
 
 export interface CompilePipeSummary extends CompileTypeSummary {
   type: CompileTypeMetadata;
+  summaryKind: CompileSummaryKind.Pipe;
   name: string;
   pure: boolean;
 }
@@ -518,6 +520,7 @@ export class CompilePipeMetadata {
 // as we need to be able to serialize this from/to JSON!
 export interface CompileNgModuleSummary extends CompileTypeSummary {
   type: CompileTypeMetadata;
+  summaryKind: CompileSummaryKind.NgModule;
 
   // Note: This is transitive over the exported modules.
   exportedDirectives: CompileIdentifierMetadata[];
