@@ -374,7 +374,7 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('TestBase.ngBaseDef = i0.ɵɵdefineBase');
       expect(jsContents).toContain('TestComponent.ɵcmp = i0.ɵɵdefineComponent');
       expect(jsContents).toContain('TestDirective.ɵdir = i0.ɵɵdefineDirective');
-      expect(jsContents).toContain('TestPipe.ngPipeDef = i0.ɵɵdefinePipe');
+      expect(jsContents).toContain('TestPipe.ɵpipe = i0.ɵɵdefinePipe');
       expect(jsContents).toContain('TestInjectable.ngInjectableDef = i0.ɵɵdefineInjectable');
       expect(jsContents).toContain('MyModule.ngModuleDef = i0.ɵɵdefineNgModule');
       expect(jsContents).toContain('MyModule.ngInjectorDef = i0.ɵɵdefineInjector');
@@ -896,12 +896,11 @@ runInEachFileSystem(os => {
 
       expect(jsContents)
           .toContain(
-              'TestPipe.ngPipeDef = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: false })');
+              'TestPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: false })');
       expect(jsContents)
           .toContain(
               'TestPipe.ɵfac = function TestPipe_Factory(t) { return new (t || TestPipe)(); }');
-      expect(dtsContents)
-          .toContain('static ngPipeDef: i0.ɵɵPipeDefWithMeta<TestPipe, "test-pipe">;');
+      expect(dtsContents).toContain('static ɵpipe: i0.ɵɵPipeDefWithMeta<TestPipe, "test-pipe">;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestPipe>;');
     });
 
@@ -922,12 +921,11 @@ runInEachFileSystem(os => {
 
       expect(jsContents)
           .toContain(
-              'TestPipe.ngPipeDef = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: true })');
+              'TestPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: true })');
       expect(jsContents)
           .toContain(
               'TestPipe.ɵfac = function TestPipe_Factory(t) { return new (t || TestPipe)(); }');
-      expect(dtsContents)
-          .toContain('static ngPipeDef: i0.ɵɵPipeDefWithMeta<TestPipe, "test-pipe">;');
+      expect(dtsContents).toContain('static ɵpipe: i0.ɵɵPipeDefWithMeta<TestPipe, "test-pipe">;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestPipe>;');
     });
 
@@ -965,10 +963,10 @@ runInEachFileSystem(os => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('TestPipe.ngPipeDef =');
+      expect(jsContents).toContain('TestPipe.ɵpipe =');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
-          .toContain('static ngPipeDef: i0.ɵɵPipeDefWithMeta<TestPipe<any>, "test-pipe">;');
+          .toContain('static ɵpipe: i0.ɵɵPipeDefWithMeta<TestPipe<any>, "test-pipe">;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestPipe<any>>;');
     });
 
@@ -1181,7 +1179,7 @@ runInEachFileSystem(os => {
         // Validate that each class has the primary definition.
         expect(jsContents).toContain('TestCmp.ɵcmp =');
         expect(jsContents).toContain('TestDir.ɵdir =');
-        expect(jsContents).toContain('TestPipe.ngPipeDef =');
+        expect(jsContents).toContain('TestPipe.ɵpipe =');
         expect(jsContents).toContain('TestNgModule.ngModuleDef =');
 
         // Validate that each class also has an injectable definition.

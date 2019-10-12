@@ -30,7 +30,7 @@ describe('pipe', () => {
       transform(value: any) { return new WrappedValue('Bar'); }
 
       static ɵfac = function WrappingPipe_Factory() { return new WrappingPipe(); };
-      static ngPipeDef = ɵɵdefinePipe({name: 'wrappingPipe', type: WrappingPipe, pure: false});
+      static ɵpipe = ɵɵdefinePipe({name: 'wrappingPipe', type: WrappingPipe, pure: false});
     }
 
     function createTemplate() {

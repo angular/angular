@@ -450,7 +450,7 @@ export function transitiveScopesFor<T>(
   };
 
   maybeUnwrapFn(def.declarations).forEach(declared => {
-    const declaredWithDefs = declared as Type<any>& { ngPipeDef?: any; };
+    const declaredWithDefs = declared as Type<any>& { ɵpipe?: any; };
 
     if (getPipeDef(declaredWithDefs)) {
       scopes.compilation.pipes.add(declared);
@@ -489,7 +489,7 @@ export function transitiveScopesFor<T>(
       ɵcmp?: any;
       ɵdir?: any;
       ngModuleDef?: NgModuleDef<E>;
-      ngPipeDef?: any;
+      ɵpipe?: any;
     };
 
     // Either the type is a module, a pipe, or a component/directive (which may not have a
