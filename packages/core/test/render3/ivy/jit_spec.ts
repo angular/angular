@@ -241,7 +241,7 @@ ivyEnabled && describe('render3 jit', () => {
     class P {
     }
 
-    const pipeDef = (P as any).ngPipeDef as PipeDef<P>;
+    const pipeDef = (P as any).ɵpipe as PipeDef<P>;
     const pipeFactory = (P as any).ɵfac as FactoryFn<P>;
     expect(pipeDef.name).toBe('test-pipe');
     expect(pipeDef.pure).toBe(false, 'pipe should not be pure');
@@ -254,7 +254,7 @@ ivyEnabled && describe('render3 jit', () => {
     class P {
     }
 
-    const pipeDef = (P as any).ngPipeDef as PipeDef<P>;
+    const pipeDef = (P as any).ɵpipe as PipeDef<P>;
     expect(pipeDef.pure).toBe(true, 'pipe should be pure');
   });
 

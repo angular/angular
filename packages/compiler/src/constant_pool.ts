@@ -206,7 +206,7 @@ export class ConstantPool {
       case DefinitionKind.Injector:
         return 'ngInjectorDef';
       case DefinitionKind.Pipe:
-        return 'ngPipeDef';
+        return 'ɵpipe';
     }
     error(`Unknown definition kind ${kind}`);
     return '<unknown>';

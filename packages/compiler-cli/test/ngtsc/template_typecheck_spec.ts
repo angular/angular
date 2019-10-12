@@ -40,7 +40,7 @@ export declare class NgForOfContext<T> {
 export declare class IndexPipe {
   transform<T>(value: T[], index: number): T;
 
-  static ngPipeDef: i0.ɵPipeDefWithMeta<IndexPipe, 'index'>;
+  static ɵpipe: i0.ɵPipeDefWithMeta<IndexPipe, 'index'>;
 }
 
 export declare class NgForOf<T> {

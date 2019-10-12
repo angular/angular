@@ -2016,7 +2016,7 @@ describe('compiler compliance', () => {
         };
 
         const MyPipeDefinition = `
-            MyPipe.ngPipeDef = $r3$.ɵɵdefinePipe({
+            MyPipe.ɵpipe = $r3$.ɵɵdefinePipe({
               name: "myPipe",
               type: MyPipe,
               pure: false
@@ -2028,7 +2028,7 @@ describe('compiler compliance', () => {
         `;
 
         const MyPurePipeDefinition = `
-            MyPurePipe.ngPipeDef = $r3$.ɵɵdefinePipe({
+            MyPurePipe.ɵpipe = $r3$.ɵɵdefinePipe({
               name: "myPurePipe",
               type: MyPurePipe,
               pure: true
@@ -2182,7 +2182,7 @@ describe('compiler compliance', () => {
            };
 
            const MyPipeDefinition = `
-              MyPipe.ngPipeDef = $r3$.ɵɵdefinePipe({
+              MyPipe.ɵpipe = $r3$.ɵɵdefinePipe({
                 name: "myPipe",
                 type: MyPipe,
                 pure: true
@@ -2194,7 +2194,7 @@ describe('compiler compliance', () => {
             `;
 
            const MyOtherPipeDefinition = `
-              MyOtherPipe.ngPipeDef = $r3$.ɵɵdefinePipe({
+              MyOtherPipe.ɵpipe = $r3$.ɵɵdefinePipe({
                 name: "myOtherPipe",
                 type: MyOtherPipe,
                 pure: true

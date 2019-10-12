@@ -21,12 +21,12 @@ declare class SubComponent extends SuperComponent {
   static ɵcmp: ɵɵComponentDefWithMeta<SubComponent, '[sub]', never, {}, {}, never>;
 }
 
-declare class SuperPipe { static ngPipeDef: PipeDefWithMeta<SuperPipe, 'super'>; }
+declare class SuperPipe { static ɵpipe: PipeDefWithMeta<SuperPipe, 'super'>; }
 
 declare class SubPipe extends SuperPipe {
   onlyInSubtype: string;
 
-  static ngPipeDef: PipeDefWithMeta<SubPipe, 'sub'>;
+  static ɵpipe: PipeDefWithMeta<SubPipe, 'sub'>;
 }
 
 describe('inheritance strict type checking', () => {
