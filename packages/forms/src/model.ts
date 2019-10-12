@@ -1366,7 +1366,7 @@ export class FormGroup extends AbstractControl {
    * ```
    *
    * @throws When strict checks fail, such as setting the value of a control
-   * that doesn't exist or if you excluding the value of a control.
+   * that doesn't exist or if you exclude a value of a control that does exist.
    *
    * @param value The new value for the control that matches the structure of the group.
    * @param options Configuration options that determine how the control propagates changes
