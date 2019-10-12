@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveSummary, CompileSummaryKind, StaticSymbol} from '@angular/compiler';
+import {CompileSummaryKind, StaticSymbol} from '@angular/compiler';
 import * as ts from 'typescript';
 import {AstResult} from './common';
 import {locateSymbol} from './locate_symbol';
@@ -24,6 +24,7 @@ const SYMBOL_TEXT = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.text];
  * return the corresponding quick info.
  * @param info template AST
  * @param position location of the symbol
+ * @param host Language Service host to query
  */
 export function getHover(info: AstResult, position: number, host: Readonly<TypeScriptServiceHost>):
     ts.QuickInfo|undefined {
