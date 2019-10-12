@@ -110,6 +110,8 @@ export function shouldReportDiagnostic(diagnostic: ts.Diagnostic): boolean {
     return false;
   } else if (code === 2695 /* Left side of comma operator is unused and has no side effects. */) {
     return false;
+  } else if (code === 7006 /* Parameter '$event' implicitly has an 'any' type. */) {
+    return false;
   }
   return true;
 }
