@@ -10,7 +10,7 @@ import {getClosureSafeProperty} from '../util/property';
 
 export const NG_COMP_DEF = getClosureSafeProperty({ɵcmp: getClosureSafeProperty});
 export const NG_DIR_DEF = getClosureSafeProperty({ɵdir: getClosureSafeProperty});
-export const NG_PIPE_DEF = getClosureSafeProperty({ngPipeDef: getClosureSafeProperty});
+export const NG_PIPE_DEF = getClosureSafeProperty({ɵpipe: getClosureSafeProperty});
 export const NG_MODULE_DEF = getClosureSafeProperty({ngModuleDef: getClosureSafeProperty});
 export const NG_LOCALE_ID_DEF = getClosureSafeProperty({ngLocaleIdDef: getClosureSafeProperty});
 export const NG_BASE_DEF = getClosureSafeProperty({ngBaseDef: getClosureSafeProperty});
