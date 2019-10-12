@@ -405,6 +405,13 @@ export class NgtscProgram implements api.Program {
         strictNullInputBindings: true,
         // Even in full template type-checking mode, DOM binding checks are not quite ready yet.
         checkTypeOfDomBindings: false,
+        checkTypeOfOutputEvents: true,
+        checkTypeOfAnimationEvents: true,
+        // Checking of DOM events currently has an adverse effect on developer experience,
+        // e.g. for `<input (blur)="update($event.target.value)">` enabling this check results in:
+        // - error TS2531: Object is possibly 'null'.
+        // - error TS2339: Property 'value' does not exist on type 'EventTarget'.
+        checkTypeOfDomEvents: false,
         checkTypeOfPipes: true,
         strictSafeNavigationTypes: true,
       };
@@ -416,6 +423,9 @@ export class NgtscProgram implements api.Program {
         checkTypeOfInputBindings: false,
         strictNullInputBindings: false,
         checkTypeOfDomBindings: false,
+        checkTypeOfOutputEvents: false,
+        checkTypeOfAnimationEvents: false,
+        checkTypeOfDomEvents: false,
         checkTypeOfPipes: false,
         strictSafeNavigationTypes: false,
       };

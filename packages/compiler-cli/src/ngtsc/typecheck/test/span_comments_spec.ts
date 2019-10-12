@@ -59,14 +59,33 @@ describe('type check blocks diagnostics', () => {
           .toContain('(ctx).method((ctx).a /*10,11*/, (ctx).b /*13,14*/) /*3,16*/;');
     });
 
+    it('should annotate function calls', () => {
+      const TEMPLATE = `{{ method(a)(b, c) }}`;
+      expect(tcbWithSpans(TEMPLATE))
+          .toContain(
+              '((ctx).method((ctx).a /*10,11*/) /*3,12*/)((ctx).b /*13,14*/, (ctx).c /*16,17*/) /*3,19*/;');
+    });
+
     it('should annotate property access', () => {
       const TEMPLATE = `{{ a.b.c }}`;
       expect(tcbWithSpans(TEMPLATE)).toContain('(((ctx).a /*3,4*/).b /*3,6*/).c /*3,9*/;');
     });
 
+    it('should annotate property writes', () => {
+      const TEMPLATE = `<div (click)="a.b.c = d"></div>`;
+      expect(tcbWithSpans(TEMPLATE))
+          .toContain('((((ctx).a /*14,15*/).b /*14,17*/).c = (ctx).d /*22,23*/) /*14,23*/');
+    });
+
     it('should annotate keyed property access', () => {
       const TEMPLATE = `{{ a[b] }}`;
       expect(tcbWithSpans(TEMPLATE)).toContain('((ctx).a /*3,4*/)[(ctx).b /*5,6*/] /*3,8*/;');
+    });
+
+    it('should annotate keyed property writes', () => {
+      const TEMPLATE = `<div (click)="a[b] = c"></div>`;
+      expect(tcbWithSpans(TEMPLATE))
+          .toContain('(((ctx).a /*14,15*/)[(ctx).b /*16,17*/] = (ctx).c /*21,22*/) /*14,22*/');
     });
 
     it('should annotate safe property access', () => {
@@ -85,6 +104,12 @@ describe('type check blocks diagnostics', () => {
     it('should annotate $any casts', () => {
       const TEMPLATE = `{{ $any(a) }}`;
       expect(tcbWithSpans(TEMPLATE)).toContain('((ctx).a /*8,9*/ as any) /*3,11*/;');
+    });
+
+    it('should annotate chained expressions', () => {
+      const TEMPLATE = `<div (click)="a; b; c"></div>`;
+      expect(tcbWithSpans(TEMPLATE))
+          .toContain('((ctx).a /*14,15*/, (ctx).b /*17,18*/, (ctx).c /*20,21*/) /*14,21*/');
     });
 
     it('should annotate pipe usages', () => {
