@@ -40,7 +40,7 @@ the decorator can be thought of as parameters to a class transformer that
 transforms the class by generating definitions based on the decorator
 parameters. An `@Component` decorator transforms the class by adding
 a `ɵcmp` static property, `@Directive` adds `ɵdir`,
-`@Pipe` adds `ngPipeDef`, etc. In most cases values supplied to the
+`@Pipe` adds `ɵpipe`, etc. In most cases values supplied to the
 decorator is sufficient to generate the definition. However, in the case of
 interpreting the template, the compiler needs to know the selector defined for
 each component, directive and pipe that are in scope of the template. The
@@ -98,7 +98,7 @@ For `CompilePipeSummary` the table looks like:
 |---------------------|-----------------------|
 | `type`              | implicit              |
 | `name`              | `ngModuleScope`       |
-| `pure`              | `ngPipeDef`           |
+| `pure`              | `ɵpipe`           |
 
 The only pieces of information that are not generated into the definition are
 the directive selector and the pipe name as they go into the module scope.
@@ -239,7 +239,7 @@ export class MyDirective {
 The metadata for a pipe is transformed by:
 
 1. Removing the `@Pipe` directive.
-2. Add  `"ngPipeDef": {}` static field.
+2. Add  `"ɵpipe": {}` static field.
 3. Add `"ngSelector": <name-value>` static field.
 
 ##### example
@@ -256,7 +256,7 @@ export class MyPipe implements PipeTransform {
 ```js
 export class MyPipe {
   transform(...) ...
-  static ngPipeDef = ɵɵdefinePipe({...});
+  static ɵpipe = ɵɵdefinePipe({...});
 }
 ```
 
@@ -269,7 +269,7 @@ export class MyPipe {
     "MyPipe": {
       "__symbolic": "class",
       "statics": {
-        "ngPipeDef": {},
+        "ɵpipe": {},
         "ngSelector": "myPipe"
       }
     }
