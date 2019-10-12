@@ -102,7 +102,7 @@ export class DtsMetadataReader implements MetadataReader {
    */
   getPipeMetadata(ref: Reference<ClassDeclaration>): PipeMeta|null {
     const def = this.reflector.getMembersOfClass(ref.node).find(
-        field => field.isStatic && field.name === 'ngPipeDef');
+        field => field.isStatic && field.name === 'ɵpipe');
     if (def === undefined) {
       // No definition could be found.
       return null;

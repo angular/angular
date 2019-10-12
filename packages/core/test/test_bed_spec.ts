@@ -660,20 +660,20 @@ describe('TestBed', () => {
              expect(DirectiveWithNoAnnotations.hasOwnProperty('ɵdir')).toBeTruthy();
              expect(SomeDirective.hasOwnProperty('ɵdir')).toBeTruthy();
 
-             expect(PipeWithNoAnnotations.hasOwnProperty('ngPipeDef')).toBeTruthy();
-             expect(SomePipe.hasOwnProperty('ngPipeDef')).toBeTruthy();
+             expect(PipeWithNoAnnotations.hasOwnProperty('ɵpipe')).toBeTruthy();
+             expect(SomePipe.hasOwnProperty('ɵpipe')).toBeTruthy();
 
              TestBed.resetTestingModule();
 
              // ng defs should be removed from classes with no annotations
              expect(ComponentWithNoAnnotations.hasOwnProperty('ɵcmp')).toBeFalsy();
              expect(DirectiveWithNoAnnotations.hasOwnProperty('ɵdir')).toBeFalsy();
-             expect(PipeWithNoAnnotations.hasOwnProperty('ngPipeDef')).toBeFalsy();
+             expect(PipeWithNoAnnotations.hasOwnProperty('ɵpipe')).toBeFalsy();
 
              // ng defs should be preserved on super types
              expect(SomeComponent.hasOwnProperty('ɵcmp')).toBeTruthy();
              expect(SomeDirective.hasOwnProperty('ɵdir')).toBeTruthy();
-             expect(SomePipe.hasOwnProperty('ngPipeDef')).toBeTruthy();
+             expect(SomePipe.hasOwnProperty('ɵpipe')).toBeTruthy();
            });
 
         it('should clean up overridden providers for modules that are imported more than once',
