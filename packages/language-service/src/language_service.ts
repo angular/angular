@@ -95,7 +95,7 @@ class LanguageServiceImpl implements LanguageService {
     this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
     const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
-      return getHover(templateInfo, position);
+      return getHover(templateInfo, position, this.host);
     }
 
     // Attempt to get Angular-specific hover information in a TypeScript file, the NgModule a

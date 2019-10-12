@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CompileSummaryKind, StaticSymbol} from '@angular/compiler';
 import * as ts from 'typescript';
 import {AstResult} from './common';
 import {locateSymbol} from './locate_symbol';
@@ -23,13 +24,21 @@ const SYMBOL_TEXT = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.text];
  * return the corresponding quick info.
  * @param info template AST
  * @param position location of the symbol
+ * @param host Language Service host to query
  */
-export function getHover(info: AstResult, position: number): ts.QuickInfo|undefined {
+export function getHover(info: AstResult, position: number, host: Readonly<TypeScriptServiceHost>):
+    ts.QuickInfo|undefined {
   const symbolInfo = locateSymbol(info, position);
   if (!symbolInfo) {
     return;
   }
-  const {symbol, span} = symbolInfo;
+  const {symbol, span, compileTypeSummary} = symbolInfo;
+  const textSpan = {start: span.start, length: span.end - span.start};
+
+  if (compileTypeSummary && compileTypeSummary.summaryKind === CompileSummaryKind.Directive) {
+    return getDirectiveModule(compileTypeSummary.type.reference, textSpan, host);
+  }
+
   const containerDisplayParts: ts.SymbolDisplayPart[] = symbol.container ?
       [
         {text: symbol.container.name, kind: symbol.container.kind},
@@ -39,10 +48,7 @@ export function getHover(info: AstResult, position: number): ts.QuickInfo|undefi
   return {
     kind: symbol.kind as ts.ScriptElementKind,
     kindModifiers: '',  // kindModifier info not available on 'ng.Symbol'
-    textSpan: {
-      start: span.start,
-      length: span.end - span.start,
-    },
+    textSpan,
     // this would generate a string like '(property) ClassX.propY'
     // 'kind' in displayParts does not really matter because it's dropped when
     // displayParts get converted to string.
@@ -69,7 +75,17 @@ export function getTsHover(
   if (!node) return;
   switch (node.kind) {
     case ts.SyntaxKind.Identifier:
-      return getDirectiveModule(node as ts.Identifier, host);
+      const directiveId = node as ts.Identifier;
+      if (ts.isClassDeclaration(directiveId.parent)) {
+        const directiveName = directiveId.text;
+        const directiveSymbol = host.getStaticSymbol(node.getSourceFile().fileName, directiveName);
+        if (!directiveSymbol) return;
+        return getDirectiveModule(
+            directiveSymbol,
+            {start: directiveId.getStart(), length: directiveId.end - directiveId.getStart()},
+            host);
+      }
+      break;
     default:
       break;
   }
@@ -82,36 +98,33 @@ export function getTsHover(
  * @param host Language Service host to query
  */
 function getDirectiveModule(
-    directive: ts.Identifier, host: Readonly<TypeScriptServiceHost>): ts.QuickInfo|undefined {
-  if (!ts.isClassDeclaration(directive.parent)) return;
-  const directiveName = directive.text;
-  const directiveSymbol = host.getStaticSymbol(directive.getSourceFile().fileName, directiveName);
-  if (!directiveSymbol) return;
-
+    directive: StaticSymbol, textSpan: ts.TextSpan,
+    host: Readonly<TypeScriptServiceHost>): ts.QuickInfo|undefined {
   const analyzedModules = host.getAnalyzedModules(false);
-  const ngModule = analyzedModules.ngModuleByPipeOrDirective.get(directiveSymbol);
+  const ngModule = analyzedModules.ngModuleByPipeOrDirective.get(directive);
   if (!ngModule) return;
+
+  const isComponent =
+      host.getDeclarations(directive.filePath)
+          .find(decl => decl.type === directive && decl.metadata && decl.metadata.isComponent);
 
   const moduleName = ngModule.type.reference.name;
   return {
     kind: ts.ScriptElementKind.classElement,
     kindModifiers:
         ts.ScriptElementKindModifier.none,  // kindModifier info not available on 'ng.Symbol'
-    textSpan: {
-      start: directive.getStart(),
-      length: directive.end - directive.getStart(),
-    },
+    textSpan,
     // This generates a string like '(directive) NgModule.Directive: class'
     // 'kind' in displayParts does not really matter because it's dropped when
     // displayParts get converted to string.
     displayParts: [
       {text: '(', kind: SYMBOL_PUNC},
-      {text: 'directive', kind: SYMBOL_TEXT},
+      {text: isComponent ? 'component' : 'directive', kind: SYMBOL_TEXT},
       {text: ')', kind: SYMBOL_PUNC},
       {text: ' ', kind: SYMBOL_SPACE},
       {text: moduleName, kind: SYMBOL_CLASS},
       {text: '.', kind: SYMBOL_PUNC},
-      {text: directiveName, kind: SYMBOL_CLASS},
+      {text: directive.name, kind: SYMBOL_CLASS},
       {text: ':', kind: SYMBOL_PUNC},
       {text: ' ', kind: SYMBOL_SPACE},
       {text: ts.ScriptElementKind.classElement, kind: SYMBOL_TEXT},

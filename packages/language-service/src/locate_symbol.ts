@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, ElementAst, TemplateAstPath, findNode, tokenReference} from '@angular/compiler';
+import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, CompileTypeSummary, ElementAst, TemplateAstPath, findNode, tokenReference} from '@angular/compiler';
 import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
 
 import {AstResult} from './common';
@@ -17,6 +17,7 @@ import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, inSpan, offsetSpan, s
 export interface SymbolInfo {
   symbol: Symbol;
   span: Span;
+  compileTypeSummary: CompileTypeSummary|undefined;
 }
 
 /**
@@ -27,6 +28,7 @@ export interface SymbolInfo {
 export function locateSymbol(info: AstResult, position: number): SymbolInfo|undefined {
   const templatePosition = position - info.template.span.start;
   const path = findTemplateAstAt(info.templateAst, templatePosition);
+  let compileTypeSummary: CompileTypeSummary|undefined = undefined;
   if (path.tail) {
     let symbol: Symbol|undefined = undefined;
     let span: Span|undefined = undefined;
@@ -57,7 +59,8 @@ export function locateSymbol(info: AstResult, position: number): SymbolInfo|unde
           visitElement(ast) {
             const component = ast.directives.find(d => d.directive.isComponent);
             if (component) {
-              symbol = info.template.query.getTypeSymbol(component.directive.type.reference);
+              compileTypeSummary = component.directive;
+              symbol = info.template.query.getTypeSymbol(compileTypeSummary.type.reference);
               symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.COMPONENT);
               span = spanOf(ast);
             } else {
@@ -65,7 +68,8 @@ export function locateSymbol(info: AstResult, position: number): SymbolInfo|unde
               const directive = ast.directives.find(
                   d => d.directive.selector != null && d.directive.selector.indexOf(ast.name) >= 0);
               if (directive) {
-                symbol = info.template.query.getTypeSymbol(directive.directive.type.reference);
+                compileTypeSummary = directive.directive;
+                symbol = info.template.query.getTypeSymbol(compileTypeSummary.type.reference);
                 symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.DIRECTIVE);
                 span = spanOf(ast);
               }
@@ -100,7 +104,8 @@ export function locateSymbol(info: AstResult, position: number): SymbolInfo|unde
           },
           visitText(ast) {},
           visitDirective(ast) {
-            symbol = info.template.query.getTypeSymbol(ast.directive.type.reference);
+            compileTypeSummary = ast.directive;
+            symbol = info.template.query.getTypeSymbol(compileTypeSummary.type.reference);
             span = spanOf(ast);
           },
           visitDirectiveProperty(ast) {
@@ -112,7 +117,7 @@ export function locateSymbol(info: AstResult, position: number): SymbolInfo|unde
         },
         null);
     if (symbol && span) {
-      return {symbol, span: offsetSpan(span, info.template.span.start)};
+      return {symbol, span: offsetSpan(span, info.template.span.start), compileTypeSummary};
     }
   }
 }

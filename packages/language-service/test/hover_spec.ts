@@ -103,7 +103,7 @@ describe('hover', () => {
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
-    expect(toText(displayParts)).toBe('(component) TestComponent');
+    expect(toText(displayParts)).toBe('(component) AppModule.TestComponent: class');
   });
 
   it('should be able to find an event provider', () => {
@@ -149,7 +149,7 @@ describe('hover', () => {
     expect(quickInfo).toBeUndefined();
   });
 
-  it('should be able to find a directive module', () => {
+  it('should be able to find the NgModule of a component', () => {
     const fileName = '/app/app.component.ts';
     mockHost.override(fileName, `
       import {Component} from '@angular/core';
@@ -165,7 +165,24 @@ describe('hover', () => {
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
-    expect(toText(displayParts)).toBe('(directive) AppModule.AppComponent: class');
+    expect(toText(displayParts)).toBe('(component) AppModule.AppComponent: class');
+  });
+
+  it('should be able to find the NgModule of a directive', () => {
+    const fileName = '/app/parsing-cases.ts';
+    mockHost.override(fileName, `
+      import {Directive} from '@angular/core';
+
+      @Directive({
+        selector: '[string-model]',
+      })
+      export class «StringModel» {}`);
+    const marker = mockHost.getReferenceMarkerFor(fileName, 'StringModel');
+    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    expect(quickInfo).toBeTruthy();
+    const {textSpan, displayParts} = quickInfo !;
+    expect(textSpan).toEqual(marker);
+    expect(toText(displayParts)).toBe('(directive) AppModule.StringModel: class');
   });
 });
 
