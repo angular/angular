@@ -108,6 +108,32 @@ export interface TypeCheckingConfig {
   checkTypeOfDomBindings: boolean;
 
   /**
+   * Whether to infer the type of the `$event` variable in event bindings for directive outputs.
+   *
+   * If this is `true`, the type of `$event` will be inferred based on the generic type of
+   * `EventEmitter`/`Subject` of the output. If set to `false`, the `$event` variable will be of
+   * type `any`.
+   */
+  checkTypeOfOutputEvents: boolean;
+
+  /**
+   * Whether to infer the type of the `$event` variable in event bindings for animations.
+   *
+   * If this is `true`, the type of `$event` will be `AnimationEvent` from `@angular/animations`.
+   * If set to `false`, the `$event` variable will be of type `any`.
+   */
+  checkTypeOfAnimationEvents: boolean;
+
+  /**
+   * Whether to infer the type of the `$event` variable in event bindings to DOM events.
+   *
+   * If this is `true`, the type of `$event` will be inferred based on TypeScript's
+   * `HTMLElementEventMap`, with a fallback to the native `Event` type. If set to `false`, the
+   * `$event` variable will be of type `any`.
+   */
+  checkTypeOfDomEvents: boolean;
+
+  /**
    * Whether to include type information from pipes in the type-checking operation.
    *
    * If this is `true`, then the pipe's type signature for `transform()` will be used to check the

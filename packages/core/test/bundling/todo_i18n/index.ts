@@ -82,9 +82,9 @@ class TodoStore {
           <input *ngIf="todo.editing"
                  class="edit" #editedtodo
                  [value]="todo.title"
-                 (blur)="updateEditingTodo(todo, editedtodo.value)"
-                 (keyup)="updateEditedTodoValue($event.target.value)"
-                 (keyup)="$event.code == 'Enter' && updateEditingTodo(todo, editedtodo.value)"
+                 (blur)="updateEditedTodoValue(todo, editedtodo.value)"
+                 (keyup)="updateEditedTodoValue(todo, $event.target.value)"
+                 (keyup)="$event.code == 'Enter' && updateEditedTodoValue(todo, editedtodo.value)"
                  (keyup)="$event.code == 'Escape' && cancelEditingTodo(todo)">
         </li>
       </ul>
