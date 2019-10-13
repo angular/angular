@@ -12,6 +12,7 @@ pkg_npm(
     deps = [
         "//packages/core/schematics/migrations/abstract-control-parent",
         "//packages/core/schematics/migrations/dynamic-queries",
+        "//packages/core/schematics/migrations/initial-navigation",
         "//packages/core/schematics/migrations/missing-injectable",
         "//packages/core/schematics/migrations/module-with-providers",
         "//packages/core/schematics/migrations/move-document",
