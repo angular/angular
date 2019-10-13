@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, CompileTypeSummary, ElementAst, TemplateAstPath, findNode, tokenReference} from '@angular/compiler';
+import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, CompileTypeSummary, CssSelector, DirectiveAst, ElementAst, SelectorMatcher, TemplateAstPath, findNode, tokenReference} from '@angular/compiler';
 import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
 
 import {AstResult} from './common';
@@ -88,7 +88,28 @@ export function locateSymbol(info: AstResult, position: number): SymbolInfo|unde
             }
           },
           visitElementProperty(ast) { attributeValueSymbol(ast.value); },
-          visitAttr(ast) {},
+          visitAttr(ast) {
+            const element = path.head;
+            if (!element || !(element instanceof ElementAst)) return;
+            // Create a mapping of all directives applied to the element from their selectors.
+            const matcher = new SelectorMatcher<DirectiveAst>();
+            for (const dir of element.directives) {
+              if (!dir.directive.selector) continue;
+              matcher.addSelectables(CssSelector.parse(dir.directive.selector), dir);
+            }
+
+            // See if this attribute matches the selector of any directive on the element.
+            // TODO(ayazhafiz): Consider caching selector matches (at the expense of potentially
+            // very high memory usage).
+            const attributeSelector = `[${ast.name}=${ast.value}]`;
+            const parsedAttribute = CssSelector.parse(attributeSelector);
+            if (!parsedAttribute.length) return;
+            matcher.match(parsedAttribute[0], (_, directive) => {
+              symbol = info.template.query.getTypeSymbol(directive.directive.type.reference);
+              symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.DIRECTIVE);
+              span = spanOf(ast);
+            });
+          },
           visitBoundText(ast) {
             const expressionPosition = templatePosition - ast.sourceSpan.start.offset;
             if (inSpan(expressionPosition, ast.value.span)) {
