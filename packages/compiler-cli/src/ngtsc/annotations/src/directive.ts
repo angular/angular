@@ -55,31 +55,24 @@ export class DirectiveDecoratorHandler implements
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.defaultImportRecorder, this.isCore);
     const analysis = directiveResult && directiveResult.metadata;
-
-    // If the directive has a selector, it should be registered with the `SelectorScopeRegistry` so
-    // when this directive appears in an `@NgModule` scope, its selector can be determined.
-    if (analysis && analysis.selector !== null) {
-      const ref = new Reference(node);
-      this.metaRegistry.registerDirectiveMetadata({
-        ref,
-        name: node.name.text,
-        selector: analysis.selector,
-        exportAs: analysis.exportAs,
-        inputs: analysis.inputs,
-        outputs: analysis.outputs,
-        queries: analysis.queries.map(query => query.propertyName),
-        isComponent: false, ...extractDirectiveGuards(node, this.reflector),
-        baseClass: readBaseClass(node, this.reflector, this.evaluator),
-      });
-    }
-
-    if (analysis && !analysis.selector) {
-      this.metaRegistry.registerAbstractDirective(node);
-    }
-
     if (analysis === undefined) {
       return {};
     }
+
+    // Register this directive's information with the `MetadataRegistry`. This ensures that
+    // the information about the directive is available during the compile() phase.
+    const ref = new Reference(node);
+    this.metaRegistry.registerDirectiveMetadata({
+      ref,
+      name: node.name.text,
+      selector: analysis.selector,
+      exportAs: analysis.exportAs,
+      inputs: analysis.inputs,
+      outputs: analysis.outputs,
+      queries: analysis.queries.map(query => query.propertyName),
+      isComponent: false, ...extractDirectiveGuards(node, this.reflector),
+      baseClass: readBaseClass(node, this.reflector, this.evaluator),
+    });
 
     return {
       analysis: {

@@ -192,7 +192,7 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     name: type.name,
     type: type,
     typeArgumentCount: 0,
-    selector: metadata.selector !,
+    selector: metadata.selector !== undefined ? metadata.selector : null,
     deps: reflectDependencies(type),
     host: metadata.host || EMPTY_OBJ,
     propMetadata: propMetadata,

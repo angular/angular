@@ -262,7 +262,9 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       }
 
       for (const decl of analysis.declarations) {
-        if (this.metaReader.isAbstractDirective(decl)) {
+        const metadata = this.metaReader.getDirectiveMetadata(decl);
+
+        if (metadata !== null && metadata.selector === null) {
           throw new FatalDiagnosticError(
               ErrorCode.DIRECTIVE_MISSING_SELECTOR, decl.node,
               `Directive ${decl.node.name.text} has no selector, please add it!`);
