@@ -126,6 +126,8 @@ describe('makeEs5Plugin', () => {
       const output = transformSync(input, {plugins: [makeEs5TranslatePlugin(diagnostics, {})]}) !;
       expect(output.code).toContain('const message = ":escaped-colons:Welcome to the i18n app."');
       expect(output.code).toContain('console.log(" Hello " + \'\ufffd0\ufffd\' + "! ");');
+      expect(output.code).not.toContain('templateObject');
+      expect(output.code).not.toContain('templateObject2');
     });
 
     it('should add diagnostic error with code-frame information if the arguments to `$localize` are missing',

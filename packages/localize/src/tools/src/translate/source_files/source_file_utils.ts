@@ -218,6 +218,12 @@ export function unwrapLazyLoadHelperCall(call: NodePath<t.CallExpression>):
           declaration.path.node,
           'Unexpected return value from helper (expected a call expression).');
     }
+
+    // Remove the lazy load helper if this is the only reference to it.
+    if (lazyLoadBinding.references === 1) {
+      lazyLoadFn.remove();
+    }
+
     return initializer;
   }
   return call;
