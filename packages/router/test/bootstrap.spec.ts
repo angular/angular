@@ -58,7 +58,7 @@ describe('bootstrap', () => {
     }
   }));
 
-  it('should wait for resolvers to complete when initialNavigation = enabled', (done) => {
+  it('should wait for resolvers to complete when initialNavigation = enabledBlocking', (done) => {
     @Component({selector: 'test', template: 'test'})
     class TestCmpEnabled {
     }
@@ -68,7 +68,7 @@ describe('bootstrap', () => {
         BrowserModule,
         RouterModule.forRoot(
             [{path: '**', component: TestCmpEnabled, resolve: {test: TestResolver}}],
-            {useHash: true, initialNavigation: 'enabled'})
+            {useHash: true, initialNavigation: 'enabledBlocking'})
       ],
       declarations: [RootCmp, TestCmpEnabled],
       bootstrap: [RootCmp],
@@ -95,7 +95,7 @@ describe('bootstrap', () => {
     });
   });
 
-  it('should NOT wait for resolvers to complete when initialNavigation = legacy_enabled',
+  it('should NOT wait for resolvers to complete when initialNavigation = enabledNonBlocking',
      (done) => {
        @Component({selector: 'test', template: 'test'})
        class TestCmpLegacyEnabled {
@@ -106,7 +106,7 @@ describe('bootstrap', () => {
            BrowserModule,
            RouterModule.forRoot(
                [{path: '**', component: TestCmpLegacyEnabled, resolve: {test: TestResolver}}],
-               {useHash: true, initialNavigation: 'legacy_enabled'})
+               {useHash: true, initialNavigation: 'enabledNonBlocking'})
          ],
          declarations: [RootCmp, TestCmpLegacyEnabled],
          bootstrap: [RootCmp],
@@ -150,37 +150,6 @@ describe('bootstrap', () => {
             {useHash: true, initialNavigation: 'disabled'})
       ],
       declarations: [RootCmp, TestCmpDiabled],
-      bootstrap: [RootCmp],
-      providers: [...testProviders, TestResolver],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-    class TestModule {
-      constructor(router: Router) {
-        log.push('TestModule');
-        router.events.subscribe(e => log.push(e.constructor.name));
-      }
-    }
-
-    platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
-      const router = res.injector.get(Router);
-      expect(log).toEqual(['TestModule', 'RootCmp']);
-      done();
-    });
-  });
-
-  it('should not run navigation when initialNavigation = legacy_disabled', (done) => {
-    @Component({selector: 'test', template: 'test'})
-    class TestCmpLegacyDisabled {
-    }
-
-    @NgModule({
-      imports: [
-        BrowserModule,
-        RouterModule.forRoot(
-            [{path: '**', component: TestCmpLegacyDisabled, resolve: {test: TestResolver}}],
-            {useHash: true, initialNavigation: 'legacy_disabled'})
-      ],
-      declarations: [RootCmp, TestCmpLegacyDisabled],
       bootstrap: [RootCmp],
       providers: [...testProviders, TestResolver],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]

@@ -44,6 +44,7 @@ v9 - v12
 | `@angular/core`               | [`ViewEncapsulation.Native`](#core)                                           | <!--v6--> v11 |
 | `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | <!--v6--> v11 |
 | `@angular/router`             | [`preserveQueryParams`](#router)                                              | <!--v7--> v11 |
+| `@angular/router`             | [`InitialNavigation` legacy options](#router)                                 | <!--v10--> v13 |
 | `@angular/upgrade`            | [`@angular/upgrade`](#upgrade)                                                | <!--v8--> v11 |
 | `@angular/upgrade`            | [`getAngularLib`](#upgrade-static)                                            | <!--v8--> v11 |
 | `@angular/upgrade`            | [`setAngularLib`](#upgrade-static)                                            | <!--v8--> v11 |
@@ -122,6 +123,7 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [`preserveQueryParams`](api/router/NavigationExtras#preserveQueryParams) | [`queryParamsHandling`](api/router/NavigationExtras#queryParamsHandling) | v4 | none |
+| [`InitialNavigation`](api/router/InitialNavigation) `enabled` option | `enabledBlocking` | v10 | See [initialNavigation changes](#initial-navigation) |
 
 {@a platform-webworker}
 ### @angular/platform-webworker
@@ -517,6 +519,17 @@ The final decision was made on three key points:
 * __Usage statistics__: We looked at usage trends for IE 9 and 10 from various sources and all indicated that usage percentages were extremely small (fractions of 1%).
 * __Feedback from partners__: We also reached out to some of our Angular customers and none expressed concern about dropping IE 9 and 10 support.
 
+{@a initial-navigation}
+### Changes to `RouterModule#ExtraOptions#InitialNavigation`
+
+As of v4, several options for `initialNavigation` in `@angular/router` `RouterModule` were deprecated
+and marked as legacy properties (e.g. `legacy_enabled` and `legacy_disabled`). However, these properties
+were not removed, and further, the default behavior was not assigned to a newer property. The default
+was `legacy_enabled` (or `true`) since v4. In v10, this behavior is preserved, but encapsulated in an
+officially supported option, `enabledNonBlocking`. The property meant to replace it, `enabled`, is now
+deprecated in favor of a newer parallel option called `enabledBlocking`. `legacy_diasabled` (or `false`)
+is removed in favor of the existent `disabled` option.
+
 {@a removed}
 ## Removed APIs
 
@@ -526,6 +539,7 @@ The following APIs have been removed starting with version 10.0.0*:
 | ---------------- | -------------- | ----------- | ----- |
 | `@angular/core`  | Undecorated base classes that use Angular features | Add Angular decorator | See [migration guide](guide/migration-undecorated-classes) for more info |
 | `@angular/core`  | `ModuleWithProviders` without a generic             | `ModuleWithProviders` with a generic | See [migration guide](guide/migration-module-with-providers) for more info |
+| `@angular/router` | [InitialNavigation](api/router/InitialNavigation) `legacy_enabled`, `legacy_disabled`, `true`, and `false` values | `enabledBlocking`, `enabledNonBlocking`, and `disabled` are the new options | The transition to the new options is not exactly 1:1. Please take care when migrating your applications. |
 
 *To see APIs removed in version 9, check out this guide on the [version 9 docs site](https://v9.angular.io/guide/deprecations#removed).
 
