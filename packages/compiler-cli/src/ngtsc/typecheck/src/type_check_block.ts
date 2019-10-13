@@ -943,74 +943,24 @@ class TcbExpressionTranslator {
    */
   protected resolve(ast: AST): ts.Expression|null {
     if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver) {
-      // Check whether the template metadata has bound a target for this expression. If so, then
-      // resolve that target. If not, then the expression is referencing the top-level component
-      // context.
-      const binding = this.tcb.boundTarget.getExpressionTarget(ast);
-      if (binding !== null) {
-        // This expression has a binding to some variable or reference in the template. Resolve it.
-        if (binding instanceof TmplAstVariable) {
-          const expr = ts.getMutableClone(this.scope.resolve(binding));
-          addParseSpanInfo(expr, toAbsoluteSpan(ast.span, this.sourceSpan));
-          return expr;
-        } else if (binding instanceof TmplAstReference) {
-          if (!this.tcb.env.config.checkTypeOfReferences) {
-            // References are pinned to 'any'.
-            return NULL_AS_ANY;
-          }
-
-          const target = this.tcb.boundTarget.getReferenceTarget(binding);
-          if (target === null) {
-            throw new Error(`Unbound reference? ${binding.name}`);
-          }
-
-          // The reference is either to an element, an <ng-template> node, or to a directive on an
-          // element or template.
-
-          if (target instanceof TmplAstElement) {
-            const expr = ts.getMutableClone(this.scope.resolve(target));
-            addParseSpanInfo(expr, toAbsoluteSpan(ast.span, this.sourceSpan));
-            return expr;
-          } else if (target instanceof TmplAstTemplate) {
-            // Direct references to an <ng-template> node simply require a value of type
-            // `TemplateRef<any>`. To get this, an expression of the form
-            // `(null as any as TemplateRef<any>)` is constructed.
-            let value: ts.Expression = ts.createNull();
-            value =
-                ts.createAsExpression(value, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
-            value = ts.createAsExpression(
-                value,
-                this.tcb.env.referenceExternalType('@angular/core', 'TemplateRef', [DYNAMIC_TYPE]));
-            value = ts.createParen(value);
-            addParseSpanInfo(value, toAbsoluteSpan(ast.span, this.sourceSpan));
-            return value;
-          } else {
-            const expr = ts.getMutableClone(this.scope.resolve(target.node, target.directive));
-            addParseSpanInfo(expr, toAbsoluteSpan(ast.span, this.sourceSpan));
-            return expr;
-          }
-        } else {
-          throw new Error(`Unreachable: ${binding}`);
-        }
-      } else {
-        // This is a PropertyRead(ImplicitReceiver) and probably refers to a property access on the
-        // component context. Let it fall through resolution here so it will be caught when the
-        // ImplicitReceiver is resolved in the branch below.
-        return null;
-      }
+      // Try to resolve a bound target for this expression. If no such target is available, then
+      // the expression is referencing the top-level component context. In that case, `null` is
+      // returned here to let it fall through resolution so it will be caught when the
+      // `ImplicitReceiver` is resolved in the branch below.
+      return this.resolveTarget(ast);
     } else if (ast instanceof ImplicitReceiver) {
       // AST instances representing variables and references look very similar to property reads
-      // from the component context: both have the shape
-      // PropertyRead(ImplicitReceiver, 'propertyName').
+      // or method calls from the component context: both have the shape
+      // PropertyRead(ImplicitReceiver, 'propName') or MethodCall(ImplicitReceiver, 'methodName').
       //
-      // `tcbExpression` will first try to `tcbResolve` the outer PropertyRead. If this works, it's
-      // because the `BoundTarget` found an expression target for the whole expression, and
-      // therefore `tcbExpression` will never attempt to `tcbResolve` the ImplicitReceiver of that
-      // PropertyRead.
+      // `translate` will first try to `resolve` the outer PropertyRead/MethodCall. If this works,
+      // it's because the `BoundTarget` found an expression target for the whole expression, and
+      // therefore `translate` will never attempt to `resolve` the ImplicitReceiver of that
+      // PropertyRead/MethodCall.
       //
-      // Therefore if `tcbResolve` is called on an `ImplicitReceiver`, it's because no outer
-      // PropertyRead resolved to a variable or reference, and therefore this is a property read on
-      // the component context itself.
+      // Therefore if `resolve` is called on an `ImplicitReceiver`, it's because no outer
+      // PropertyRead/MethodCall resolved to a variable or reference, and therefore this is a
+      // property read or method call on the component context itself.
       return ts.createIdentifier('ctx');
     } else if (ast instanceof BindingPipe) {
       const expr = this.translate(ast.exp);
@@ -1025,18 +975,90 @@ class TcbExpressionTranslator {
       const result = tsCallMethod(pipe, 'transform', [expr, ...args]);
       addParseSpanInfo(result, toAbsoluteSpan(ast.span, this.sourceSpan));
       return result;
-    } else if (
-        ast instanceof MethodCall && ast.receiver instanceof ImplicitReceiver &&
-        ast.name === '$any' && ast.args.length === 1) {
-      const expr = this.translate(ast.args[0]);
-      const exprAsAny =
-          ts.createAsExpression(expr, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
-      const result = ts.createParen(exprAsAny);
-      addParseSpanInfo(result, toAbsoluteSpan(ast.span, this.sourceSpan));
-      return result;
+    } else if (ast instanceof MethodCall && ast.receiver instanceof ImplicitReceiver) {
+      // Resolve the special `$any(expr)` syntax to insert a cast of the argument to type `any`.
+      if (ast.name === '$any' && ast.args.length === 1) {
+        const expr = this.translate(ast.args[0]);
+        const exprAsAny =
+            ts.createAsExpression(expr, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+        const result = ts.createParen(exprAsAny);
+        addParseSpanInfo(result, toAbsoluteSpan(ast.span, this.sourceSpan));
+        return result;
+      }
+
+      // Attempt to resolve a bound target for the method, and generate the method call if a target
+      // could be resolved. If no target is available, then the method is referencing the top-level
+      // component context, in which case `null` is returned to let the `ImplicitReceiver` being
+      // resolved to the component context.
+      const receiver = this.resolveTarget(ast);
+      if (receiver === null) {
+        return null;
+      }
+
+      const method = ts.createPropertyAccess(wrapForDiagnostics(receiver), ast.name);
+      const args = ast.args.map(arg => this.translate(arg));
+      const node = ts.createCall(method, undefined, args);
+      addParseSpanInfo(node, toAbsoluteSpan(ast.span, this.sourceSpan));
+      return node;
     } else {
       // This AST isn't special after all.
       return null;
+    }
+  }
+
+  /**
+   * Attempts to resolve a bound target for a given expression, and translates it into the
+   * appropriate `ts.Expression` that represents the bound target. If no target is available,
+   * `null` is returned.
+   */
+  protected resolveTarget(ast: AST): ts.Expression|null {
+    const binding = this.tcb.boundTarget.getExpressionTarget(ast);
+    if (binding === null) {
+      return null;
+    }
+
+    // This expression has a binding to some variable or reference in the template. Resolve it.
+    if (binding instanceof TmplAstVariable) {
+      const expr = ts.getMutableClone(this.scope.resolve(binding));
+      addParseSpanInfo(expr, toAbsoluteSpan(ast.span, this.sourceSpan));
+      return expr;
+    } else if (binding instanceof TmplAstReference) {
+      if (!this.tcb.env.config.checkTypeOfReferences) {
+        // References are pinned to 'any'.
+        return NULL_AS_ANY;
+      }
+
+      const target = this.tcb.boundTarget.getReferenceTarget(binding);
+      if (target === null) {
+        throw new Error(`Unbound reference? ${binding.name}`);
+      }
+
+      // The reference is either to an element, an <ng-template> node, or to a directive on an
+      // element or template.
+
+      if (target instanceof TmplAstElement) {
+        const expr = ts.getMutableClone(this.scope.resolve(target));
+        addParseSpanInfo(expr, toAbsoluteSpan(ast.span, this.sourceSpan));
+        return expr;
+      } else if (target instanceof TmplAstTemplate) {
+        // Direct references to an <ng-template> node simply require a value of type
+        // `TemplateRef<any>`. To get this, an expression of the form
+        // `(null as any as TemplateRef<any>)` is constructed.
+        let value: ts.Expression = ts.createNull();
+        value = ts.createAsExpression(value, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+        value = ts.createAsExpression(
+            value,
+            this.tcb.env.referenceExternalType('@angular/core', 'TemplateRef', [DYNAMIC_TYPE]));
+        value = ts.createParen(value);
+        addParseSpanInfo(value, toAbsoluteSpan(ast.span, this.sourceSpan));
+        return value;
+      } else {
+        const expr = ts.getMutableClone(this.scope.resolve(target.node, target.directive));
+        addParseSpanInfo(expr, toAbsoluteSpan(ast.span, this.sourceSpan));
+        return expr;
+      }
+    } else {
+      throw new Error(`Unreachable: ${binding}`);
     }
   }
 }

@@ -59,6 +59,12 @@ describe('type check blocks diagnostics', () => {
           .toContain('(ctx).method((ctx).a /*10,11*/, (ctx).b /*13,14*/) /*3,16*/;');
     });
 
+    it('should annotate method calls of variables', () => {
+      const TEMPLATE = `<ng-template let-method>{{ method(a, b) }}</ng-template>`;
+      expect(tcbWithSpans(TEMPLATE))
+          .toContain('(_t2 /*27,40*/).method((ctx).a /*34,35*/, (ctx).b /*37,38*/) /*27,40*/;');
+    });
+
     it('should annotate function calls', () => {
       const TEMPLATE = `{{ method(a)(b, c) }}`;
       expect(tcbWithSpans(TEMPLATE))
