@@ -304,10 +304,6 @@ export function compileComponentFromMetadata(
     definitionMap.set('changeDetection', o.literal(changeDetection));
   }
 
-  // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
-  // string literal, which must be on one line.
-  const selectorForType = (meta.selector || '').replace(/\n/g, '');
-
   const expression = o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()]);
   const type = createTypeForDef(meta, R3.ComponentDefWithMeta);
 
@@ -538,11 +534,11 @@ function stringArrayAsType(arr: string[]): o.Type {
 function createTypeForDef(meta: R3DirectiveMetadata, typeBase: o.ExternalReference): o.Type {
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
   // string literal, which must be on one line.
-  const selectorForType = (meta.selector || '').replace(/\n/g, '');
+  const selectorForType = meta.selector !== null ? meta.selector.replace(/\n/g, '') : null;
 
   return o.expressionType(o.importExpr(typeBase, [
     typeWithParameters(meta.type, meta.typeArgumentCount),
-    stringAsType(selectorForType),
+    selectorForType !== null ? stringAsType(selectorForType) : o.NONE_TYPE,
     meta.exportAs !== null ? stringArrayAsType(meta.exportAs) : o.NONE_TYPE,
     stringMapAsType(meta.inputs),
     stringMapAsType(meta.outputs),

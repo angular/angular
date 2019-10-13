@@ -216,24 +216,20 @@ export class ComponentDecoratorHandler implements
           `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);
     }
 
-    // If the component has a selector, it should be registered with the
-    // `LocalModuleScopeRegistry`
-    // so that when this component appears in an `@NgModule` scope, its selector can be
-    // determined.
-    if (metadata.selector !== null) {
-      const ref = new Reference(node);
-      this.metaRegistry.registerDirectiveMetadata({
-        ref,
-        name: node.name.text,
-        selector: metadata.selector,
-        exportAs: metadata.exportAs,
-        inputs: metadata.inputs,
-        outputs: metadata.outputs,
-        queries: metadata.queries.map(query => query.propertyName),
-        isComponent: true, ...extractDirectiveGuards(node, this.reflector),
-        baseClass: readBaseClass(node, this.reflector, this.evaluator),
-      });
-    }
+    // Register this component's information with the `MetadataRegistry`. This ensures that
+    // the information about the component is available during the compile() phase.
+    const ref = new Reference(node);
+    this.metaRegistry.registerDirectiveMetadata({
+      ref,
+      name: node.name.text,
+      selector: metadata.selector,
+      exportAs: metadata.exportAs,
+      inputs: metadata.inputs,
+      outputs: metadata.outputs,
+      queries: metadata.queries.map(query => query.propertyName),
+      isComponent: true, ...extractDirectiveGuards(node, this.reflector),
+      baseClass: readBaseClass(node, this.reflector, this.evaluator),
+    });
 
     // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
     // precede inline styles, and styles defined in the template override styles defined in the
@@ -325,7 +321,9 @@ export class ComponentDecoratorHandler implements
     const matcher = new SelectorMatcher<DirectiveMeta>();
     if (scope !== null) {
       for (const directive of scope.compilation.directives) {
-        matcher.addSelectables(CssSelector.parse(directive.selector), directive);
+        if (directive.selector !== null) {
+          matcher.addSelectables(CssSelector.parse(directive.selector), directive);
+        }
       }
     }
     const binder = new R3TargetBinder(matcher);
@@ -368,8 +366,10 @@ export class ComponentDecoratorHandler implements
     const scope = this.scopeReader.getScopeForComponent(node);
     if (scope !== null) {
       for (const meta of scope.compilation.directives) {
-        const extMeta = flattenInheritedDirectiveMetadata(this.metaReader, meta.ref);
-        matcher.addSelectables(CssSelector.parse(meta.selector), extMeta);
+        if (meta.selector !== null) {
+          const extMeta = flattenInheritedDirectiveMetadata(this.metaReader, meta.ref);
+          matcher.addSelectables(CssSelector.parse(meta.selector), extMeta);
+        }
       }
       for (const {name, ref} of scope.compilation.pipes) {
         if (!ts.isClassDeclaration(ref.node)) {
@@ -422,9 +422,11 @@ export class ComponentDecoratorHandler implements
 
       for (const dir of scope.compilation.directives) {
         const {ref, selector} = dir;
-        const expression = this.refEmitter.emit(ref, context);
-        directives.push({selector, expression});
-        matcher.addSelectables(CssSelector.parse(selector), {...dir, expression});
+        if (selector !== null) {
+          const expression = this.refEmitter.emit(ref, context);
+          directives.push({selector, expression});
+          matcher.addSelectables(CssSelector.parse(selector), {...dir, expression});
+        }
       }
       const pipes = new Map<string, Expression>();
       for (const pipe of scope.compilation.pipes) {

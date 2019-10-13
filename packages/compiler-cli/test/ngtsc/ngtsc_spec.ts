@@ -191,6 +191,50 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('inject(Dep, 8)');
     });
 
+    it('should compile Directives without errors', () => {
+      env.write('test.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive({selector: '[dir]'})
+        export class TestDir {}
+      `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('TestDir.ɵdir = i0.ɵɵdefineDirective');
+      expect(jsContents).toContain('TestDir.ɵfac = function');
+      expect(jsContents).not.toContain('__decorate');
+
+      const dtsContents = env.getContents('test.d.ts');
+      expect(dtsContents)
+          .toContain(
+              'static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestDir, "[dir]", never, {}, {}, never>');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestDir>');
+    });
+
+    it('should compile abstract Directives without errors', () => {
+      env.write('test.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive()
+        export class TestDir {}
+      `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('TestDir.ɵdir = i0.ɵɵdefineDirective');
+      expect(jsContents).toContain('TestDir.ɵfac = function');
+      expect(jsContents).not.toContain('__decorate');
+
+      const dtsContents = env.getContents('test.d.ts');
+      expect(dtsContents)
+          .toContain(
+              'static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestDir, never, never, {}, {}, never>');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestDir>');
+    });
+
     it('should compile Components (inline template) without errors', () => {
       env.write('test.ts', `
         import {Component} from '@angular/core';

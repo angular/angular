@@ -370,10 +370,15 @@ export declare class CommonModule {
       env.write('test.ts', `
     import {Component, Directive, Input, NgModule} from '@angular/core';
 
+    @Directive()
+    class AbstractDir {
+      @Input() fromAbstract!: number;
+    }
+
     @Directive({
       selector: '[base]',
     })
-    class BaseDir {
+    class BaseDir extends AbstractDir {
       @Input() fromBase!: string;
     }
 
@@ -386,7 +391,7 @@ export declare class CommonModule {
 
     @Component({
       selector: 'test',
-      template: '<div child [fromBase]="3" [fromChild]="4"></div>',
+      template: '<div child [fromAbstract]="true" [fromBase]="3" [fromChild]="4"></div>',
     })
     class TestCmp {}
 
@@ -397,13 +402,68 @@ export declare class CommonModule {
     `);
 
       const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(2);
-      expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
-      expect(diags[0].start).toEqual(386);
-      expect(diags[0].length).toEqual(14);
-      expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
-      expect(diags[1].start).toEqual(401);
-      expect(diags[1].length).toEqual(15);
+      expect(diags.length).toBe(3);
+      expect(diags[0].messageText).toBe(`Type 'true' is not assignable to type 'number'.`);
+      expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[fromAbstract]="true"');
+      expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
+      expect(getSourceCodeForDiagnostic(diags[1])).toEqual('[fromBase]="3"');
+      expect(diags[2].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
+      expect(getSourceCodeForDiagnostic(diags[2])).toEqual('[fromChild]="4"');
+    });
+
+    it('should properly type-check inherited directives from external libraries', () => {
+      env.write('node_modules/external/index.d.ts', `
+        import * as i0 from '@angular/core';
+
+        export declare class AbstractDir {
+          fromAbstract: number;
+
+          static ɵdir: i0.ɵɵDirectiveDefWithMeta<AbstractDir, never, never, {'fromAbstract': 'fromAbstract'}, never, never>;
+        }
+
+        export declare class BaseDir extends AbstractDir {
+          fromBase: string;
+
+          static ɵdir: i0.ɵɵDirectiveDefWithMeta<BaseDir, '[base]', never, {'fromBase': 'fromBase'}, never, never>;
+        }
+        
+        export declare class ExternalModule {
+          static ɵmod: i0.ɵɵNgModuleDefWithMeta<ExternalModule, [typeof BaseDir], never, [typeof BaseDir]>;
+        }
+      `);
+
+      env.write('test.ts', `
+        import {Component, Directive, Input, NgModule} from '@angular/core';
+        import {BaseDir, ExternalModule} from 'external';
+    
+        @Directive({
+          selector: '[child]',
+        })
+        class ChildDir extends BaseDir {
+          @Input() fromChild!: boolean;
+        }
+    
+        @Component({
+          selector: 'test',
+          template: '<div child [fromAbstract]="true" [fromBase]="3" [fromChild]="4"></div>',
+        })
+        class TestCmp {}
+    
+        @NgModule({
+          declarations: [TestCmp, ChildDir],
+          imports: [ExternalModule],
+        })
+        class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(3);
+      expect(diags[0].messageText).toBe(`Type 'true' is not assignable to type 'number'.`);
+      expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[fromAbstract]="true"');
+      expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
+      expect(getSourceCodeForDiagnostic(diags[1])).toEqual('[fromBase]="3"');
+      expect(diags[2].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
+      expect(getSourceCodeForDiagnostic(diags[2])).toEqual('[fromChild]="4"');
     });
 
     describe('input coercion', () => {

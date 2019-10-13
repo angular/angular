@@ -21,11 +21,6 @@ import {extractDirectiveGuards, extractReferencesFromType, readStringArrayType, 
 export class DtsMetadataReader implements MetadataReader {
   constructor(private checker: ts.TypeChecker, private reflector: ReflectionHost) {}
 
-  isAbstractDirective(ref: Reference<ClassDeclaration>): boolean {
-    const meta = this.getDirectiveMetadata(ref);
-    return meta !== null && meta.selector === null;
-  }
-
   /**
    * Read the metadata from a class that has already been compiled somehow (either it's in a .d.ts
    * file, or in a .ts file with a handwritten definition).
@@ -79,15 +74,12 @@ export class DtsMetadataReader implements MetadataReader {
       // The type metadata was the wrong shape.
       return null;
     }
-    const selector = readStringType(def.type.typeArguments[1]);
-    if (selector === null) {
-      return null;
-    }
 
     return {
       ref,
       name: clazz.name.text,
-      isComponent: def.name === 'ɵcmp', selector,
+      isComponent: def.name === 'ɵcmp',
+      selector: readStringType(def.type.typeArguments[1]),
       exportAs: readStringArrayType(def.type.typeArguments[2]),
       inputs: readStringMapType(def.type.typeArguments[3]),
       outputs: readStringMapType(def.type.typeArguments[4]),
