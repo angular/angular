@@ -106,6 +106,20 @@ describe('hover', () => {
     expect(toText(displayParts)).toBe('(component) AppModule.TestComponent: class');
   });
 
+  it('should be able to find a reference to a directive', () => {
+    const fileName = mockHost.addCode(`
+      @Component({
+        template: '<test-comp «string-model»></test-comp>'
+      })
+      export class MyComponent { }`);
+    const marker = mockHost.getReferenceMarkerFor(fileName, 'string-model');
+    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    expect(quickInfo).toBeTruthy();
+    const {textSpan, displayParts} = quickInfo !;
+    expect(textSpan).toEqual(marker);
+    expect(toText(displayParts)).toBe('(directive) StringModel');
+  });
+
   it('should be able to find an event provider', () => {
     const fileName = mockHost.addCode(`
       @Component({
