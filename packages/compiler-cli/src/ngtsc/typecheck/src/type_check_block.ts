@@ -857,6 +857,11 @@ function tcbGetDirectiveInputs(
    * a matching binding.
    */
   function processAttribute(attr: TmplAstBoundAttribute | TmplAstTextAttribute): void {
+    // Skip non-property bindings.
+    if (attr instanceof TmplAstBoundAttribute && attr.type !== BindingType.Property) {
+      return;
+    }
+
     // Skip the attribute if the directive does not have an input for it.
     if (!propMatch.has(attr.name)) {
       return;

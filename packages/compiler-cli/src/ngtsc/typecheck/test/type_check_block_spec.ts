@@ -129,6 +129,22 @@ describe('type check blocks', () => {
     expect(block).not.toContain('.style = ');
   });
 
+  it('should only apply property bindings to directives', () => {
+    const TEMPLATE = `
+      <div dir [style.color]="'blue'" [class.strong]="false" [attr.enabled]="true"></div>
+    `;
+    const DIRECTIVES: TestDeclaration[] = [{
+      type: 'directive',
+      name: 'Dir',
+      selector: '[dir]',
+      inputs: {'color': 'color', 'strong': 'strong', 'enabled': 'enabled'},
+    }];
+    const block = tcb(TEMPLATE, DIRECTIVES);
+    expect(block).toContain(
+        'var _t2 = Dir.ngTypeCtor({ color: (null as any), strong: (null as any), enabled: (null as any) });');
+    expect(block).toContain('"blue"; false; true;');
+  });
+
   it('should generate a circular directive reference correctly', () => {
     const TEMPLATE = `
       <div dir #d="dir" [input]="d"></div>
