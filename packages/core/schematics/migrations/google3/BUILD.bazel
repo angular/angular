@@ -7,6 +7,8 @@ ts_library(
     visibility = ["//packages/core/schematics/test/google3:__pkg__"],
     deps = [
         "//packages/core/schematics/migrations/dynamic-queries",
+        "//packages/core/schematics/migrations/initial-navigation",
+        "//packages/core/schematics/migrations/initial-navigation/google3",
         "//packages/core/schematics/migrations/missing-injectable",
         "//packages/core/schematics/migrations/missing-injectable/google3",
         "//packages/core/schematics/migrations/navigation-extras-omissions",
