@@ -564,9 +564,24 @@ It does not, however, rewrite the `.d.ts` file, so TypeScript doesn't recognize 
 {@a binding-expression-validation}
 ## Phase 3: Template type checking
 
+One of the Angular compiler's most helpful features is the ability to type-check expressions within templates, and catch any errors before they cause crashes at runtime.
 In the template type-checking phase, the Angular template compiler uses the TypeScript compiler to validate the binding expressions in templates.
+
 Enable this phase explicitly by adding the compiler option `"fullTemplateTypeCheck"` in the `"angularCompilerOptions"` of the project's `tsconfig.json`
 (see [Angular Compiler Options](guide/angular-compiler-options)).
+
+<div class="alert is-helpful>
+
+In [Angular Ivy](guide/ivy), the template type checker has been completely rewritten to be more capable as well as stricter, meaning it can catch a variety of new errors that the previous type checker would not detect.
+
+As a result, templates that previously compiled under View Engine can fail type checking under Ivy. This can happen because Ivy's stricter checking catches genuine errors, or because application code is not typed correctly, or because the application uses libraries in which typings are inaccurate or not specific enough.
+
+This stricter type checking is not enabled by default in version 9, but can be enabled by setting the `strictTemplates` configuration option.
+We do expect to make strict type checking the default in the future.
+
+<!-- For more information about type-checking options, and about improvements to template type checking in version 9 and above, see [Template type checking](guide/template-type-checking). -->
+
+</div>
 
 Template validation produces error messages when a type error is detected in a template binding
 expression, similar to how type errors are reported by the TypeScript compiler against code in a `.ts`
