@@ -260,6 +260,37 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * @internal
    */
   ivyTemplateTypeCheck?: boolean;
+
+  /**
+   * Enables the generation of alias re-exports of directives/pipes that are visible from an
+   * NgModule from that NgModule's file.
+   *
+   * This option should be disabled for application builds or for Angular Package Format libraries
+   * (where NgModules along with their directives/pipes are exported via a single entrypoint).
+   *
+   * For other library compilations which are intended to be path-mapped into an application build
+   * (or another library), enabling this option enables the resulting deep imports to work
+   * correctly.
+   *
+   * A consumer of such a path-mapped library will write an import like:
+   *
+   * ```typescript
+   * import {LibModule} from 'lib/deep/path/to/module';
+   * ```
+   *
+   * The compiler will attempt to generate imports of directives/pipes from that same module
+   * specifier (the compiler does not rewrite the user's given import path, unlike View Engine).
+   *
+   * ```typescript
+   * import {LibDir, LibCmp, LibPipe} from 'lib/deep/path/to/module';
+   * ```
+   *
+   * It would be burdensome for users to have to re-export all directives/pipes alongside each
+   * NgModule to support this import model. Enabling this option tells the compiler to generate
+   * private re-exports alongside the NgModule of all the directives/pipes it makes available, to
+   * support these future imports.
+   */
+  generateDeepReexports?: boolean;
 }
 
 export interface CompilerHost extends ts.CompilerHost {
