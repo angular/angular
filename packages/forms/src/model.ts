@@ -1638,8 +1638,8 @@ export class FormGroup extends AbstractControl {
    *   last: 'last'
    * });
    *
-   * console.log(this.form.value);  // {first: 'name', last: 'last name'}
-   * console.log(this.form.get('first').status);  // 'DISABLED'
+   * console.log(form.value);  // {last: 'last'}
+   * console.log(form.get('first').status);  // 'DISABLED'
    * ```
    */
   reset(value: any = {}, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
