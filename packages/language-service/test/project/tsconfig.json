@@ -1,6 +1,7 @@
 {
   "//00": "This file is used for IDE only, actual compilation options is in MockTypescriptHost in test_utils.ts",
   "compilerOptions": {
+    "lib": ["es2015"],
     "strict": true,
     "experimentalDecorators": true,
     "baseUrl": "../../../..",
