@@ -16,7 +16,7 @@ import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
 
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
-import {NG_BASE_DEF, NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_LOCALE_ID_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
+import {NG_BASE_DEF, NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_LOCALE_ID_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction, ɵɵBaseDef} from './interfaces/definition';
 import {TAttributes} from './interfaces/node';
 // while SelectorFlags is unused here, it's required so that types don't get resolved lazily
@@ -768,9 +768,9 @@ export function getFactoryDef<T>(type: any, throwNotFound?: boolean): FactoryFn<
 export function getNgModuleDef<T>(type: any, throwNotFound: true): NgModuleDef<T>;
 export function getNgModuleDef<T>(type: any): NgModuleDef<T>|null;
 export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleDef<T>|null {
-  const ngModuleDef = type[NG_MODULE_DEF] || null;
+  const ngModuleDef = type[NG_MOD_DEF] || null;
   if (!ngModuleDef && throwNotFound === true) {
-    throw new Error(`Type ${stringify(type)} does not have 'ngModuleDef' property.`);
+    throw new Error(`Type ${stringify(type)} does not have 'ɵmod' property.`);
   }
   return ngModuleDef;
 }
