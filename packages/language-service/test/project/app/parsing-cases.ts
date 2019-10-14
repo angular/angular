@@ -143,10 +143,18 @@ export class ForUsingComponent {
     <div *ngFor="let person of people | async">
       {{person.~{async-person-name}name}}
     </div>
+    <div *ngIf="promisedPerson | async as person">
+      {{person.~{promised-person-name}name}}
+    </div>
   `,
 })
 export class AsyncForUsingComponent {
   people: Promise<Person[]> = Promise.resolve([]);
+  promisedPerson: Promise<Person> = Promise.resolve({
+    name: 'John Doe',
+    age: 42,
+    street: '123 Angular Ln',
+  });
 }
 
 @Component({
