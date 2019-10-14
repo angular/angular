@@ -3302,6 +3302,311 @@ runInEachFileSystem(os => {
       });
     });
 
+    describe('aliasing re-exports', () => {
+      beforeEach(() => {
+        env.tsconfig({
+          'generateDeepReexports': true,
+        });
+      });
+
+      it('should re-export a directive from a different file under a private symbol name', () => {
+        env.write('dir.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: 'dir',
+          })
+          export class Dir {}
+        `);
+        env.write('module.ts', `
+          import {Directive, NgModule} from '@angular/core';
+          import {Dir} from './dir';
+
+          @Directive({selector: '[inline]'})
+          export class InlineDir {}
+
+          @NgModule({
+            declarations: [Dir, InlineDir],
+            exports: [Dir, InlineDir],
+          })
+          export class Module {}
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('module.js');
+        const dtsContents = env.getContents('module.d.ts');
+
+        expect(jsContents).toContain('export { Dir as ɵngExportɵModuleɵDir } from "./dir";');
+        expect(jsContents).not.toContain('ɵngExportɵModuleɵInlineDir');
+        expect(dtsContents).toContain('export { Dir as ɵngExportɵModuleɵDir } from "./dir";');
+        expect(dtsContents).not.toContain('ɵngExportɵModuleɵInlineDir');
+      });
+
+      it('should re-export a directive from an exported NgModule under a private symbol name',
+         () => {
+           env.write('dir.ts', `
+          import {Directive, NgModule} from '@angular/core';
+
+          @Directive({
+            selector: 'dir',
+          })
+          export class Dir {}
+
+          @NgModule({
+            declarations: [Dir],
+            exports: [Dir],
+          })
+          export class DirModule {}
+        `);
+           env.write('module.ts', `
+          import {NgModule} from '@angular/core';
+          import {DirModule} from './dir';
+
+          @NgModule({
+            exports: [DirModule],
+          })
+          export class Module {}
+        `);
+
+           env.driveMain();
+           const jsContents = env.getContents('module.js');
+           const dtsContents = env.getContents('module.d.ts');
+
+           expect(jsContents).toContain('export { Dir as ɵngExportɵModuleɵDir } from "./dir";');
+           expect(dtsContents).toContain('export { Dir as ɵngExportɵModuleɵDir } from "./dir";');
+         });
+
+      it('should not re-export a directive that\'s not exported from the NgModule', () => {
+        env.write('dir.ts', `
+             import {Directive} from '@angular/core';
+   
+             @Directive({
+               selector: 'dir',
+             })
+             export class Dir {}
+           `);
+        env.write('module.ts', `
+             import {NgModule} from '@angular/core';
+             import {Dir} from './dir';
+   
+             @NgModule({
+               declarations: [Dir],
+               exports: [],
+             })
+             export class Module {}
+           `);
+
+        env.driveMain();
+        const jsContents = env.getContents('module.js');
+        const dtsContents = env.getContents('module.d.ts');
+
+        expect(jsContents).not.toContain('ɵngExportɵModuleɵDir');
+        expect(dtsContents).not.toContain('ɵngExportɵModuleɵDir');
+      });
+
+      it('should not re-export a directive that\'s already exported', () => {
+        env.write('dir.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: 'dir',
+          })
+          export class Dir {}
+        `);
+        env.write('module.ts', `
+          import {NgModule} from '@angular/core';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Dir],
+            exports: [Dir],
+          })
+          export class Module {}
+
+          export {Dir};
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('module.js');
+        const dtsContents = env.getContents('module.d.ts');
+
+        expect(jsContents).not.toContain('ɵngExportɵModuleɵDir');
+        expect(dtsContents).not.toContain('ɵngExportɵModuleɵDir');
+      });
+
+      it('should not re-export a directive from an exported, external NgModule', () => {
+        env.write(`node_modules/external/index.d.ts`, `
+          import {ɵɵDirectiveDefWithMeta, ɵɵNgModuleDefWithMeta} from '@angular/core';
+  
+          export declare class ExternalDir {
+            static ɵdir: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
+          }
+  
+          export declare class ExternalModule {
+            static ɵmod: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
+          }
+          `);
+        env.write('module.ts', `
+          import {NgModule} from '@angular/core';
+          import {ExternalModule} from 'external';
+
+          @NgModule({
+            exports: [ExternalModule],
+          })
+          export class Module {}
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('module.js');
+
+        expect(jsContents).not.toContain('ɵngExportɵExternalModuleɵExternalDir');
+      });
+
+      it('should error when two directives with the same declared name are exported from the same NgModule',
+         () => {
+           env.write('dir.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: 'dir',
+          })
+          export class Dir {}
+        `);
+           env.write('dir2.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: 'dir',
+          })
+          export class Dir {}
+        `);
+           env.write('module.ts', `
+          import {NgModule} from '@angular/core';
+          import {Dir} from './dir';
+          import {Dir as Dir2} from './dir2';
+
+          @NgModule({
+            declarations: [Dir, Dir2],
+            exports: [Dir, Dir2],
+          })
+          export class Module {}
+        `);
+
+           const diag = env.driveDiagnostics();
+           expect(diag.length).toBe(1);
+           expect(diag[0] !.code).toEqual(ngErrorCode(ErrorCode.NGMODULE_REEXPORT_NAME_COLLISION));
+         });
+
+      it('should not error when two directives with the same declared name are exported from the same NgModule, but one is exported from the file directly',
+         () => {
+           env.write('dir.ts', `
+             import {Directive} from '@angular/core';
+   
+             @Directive({
+               selector: 'dir',
+             })
+             export class Dir {}
+           `);
+           env.write('dir2.ts', `
+             import {Directive} from '@angular/core';
+   
+             @Directive({
+               selector: 'dir',
+             })
+             export class Dir {}
+           `);
+           env.write('module.ts', `
+             import {NgModule} from '@angular/core';
+             import {Dir} from './dir';
+             import {Dir as Dir2} from './dir2';
+   
+             @NgModule({
+               declarations: [Dir, Dir2],
+               exports: [Dir, Dir2],
+             })
+             export class Module {}
+
+             export {Dir} from './dir2';
+           `);
+
+           env.driveMain();
+           const jsContents = env.getContents('module.js');
+           expect(jsContents).toContain('export { Dir as ɵngExportɵModuleɵDir } from "./dir";');
+         });
+
+      it('should choose a re-exported symbol if one is present', () => {
+        env.write(`node_modules/external/dir.d.ts`, `
+          import {ɵɵDirectiveDefWithMeta} from '@angular/core';
+  
+          export declare class ExternalDir {
+            static ɵdir: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
+          }
+          `);
+        env.write('node_modules/external/module.d.ts', `
+          import {ɵɵNgModuleDefWithMeta} from '@angular/core';
+          import {ExternalDir} from './dir';
+  
+          export declare class ExternalModule {
+            static ɵmod: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
+          }
+  
+          export {ExternalDir as ɵngExportɵExternalModuleɵExternalDir};
+        `);
+        env.write('test.ts', `
+          import {Component, Directive, NgModule} from '@angular/core';
+          import {ExternalModule} from 'external/module';
+  
+          @Component({
+            selector: 'test-cmp',
+            template: '<div test></div>',
+          })
+          class Cmp {}
+  
+          @NgModule({
+            declarations: [Cmp],
+            imports: [ExternalModule],
+          })
+          class Module {}
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('import * as i1 from "external/module";');
+        expect(jsContents).toContain('directives: [i1.ɵngExportɵExternalModuleɵExternalDir]');
+      });
+
+      it('should not generate re-exports when disabled', () => {
+        // Return to the default configuration, which has re-exports disabled.
+        env.tsconfig();
+
+        env.write('dir.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: 'dir',
+          })
+          export class Dir {}
+        `);
+        env.write('module.ts', `
+          import {NgModule} from '@angular/core';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Dir],
+            exports: [Dir],
+          })
+          export class Module {}
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('module.js');
+        const dtsContents = env.getContents('module.d.ts');
+
+        expect(jsContents).not.toContain('ɵngExportɵModuleɵDir');
+        expect(dtsContents).not.toContain('ɵngExportɵModuleɵDir');
+      });
+    });
+
     it('should execute custom transformers', () => {
       let beforeCount = 0;
       let afterCount = 0;

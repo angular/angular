@@ -18,7 +18,7 @@ import {CycleAnalyzer, ImportGraph} from './cycles';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
 import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from './file_system';
-import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, DefaultImportTracker, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
+import {AbsoluteModuleStrategy, AliasStrategy, AliasingHost, DefaultImportTracker, FileToModuleAliasingHost, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
 import {IncrementalState} from './incremental';
 import {IndexedComponent, IndexingContext} from './indexer';
 import {generateAnalysis} from './indexer/src/transform';
@@ -60,6 +60,7 @@ export class NgtscProgram implements api.Program {
   private cycleAnalyzer: CycleAnalyzer;
   private metaReader: MetadataReader|null = null;
 
+  private aliasingHost: AliasingHost|null = null;
   private refEmitter: ReferenceEmitter|null = null;
   private fileToModuleHost: FileToModuleHost|null = null;
   private defaultImportTracker: DefaultImportTracker;
@@ -351,6 +352,10 @@ export class NgtscProgram implements api.Program {
       declarationTransformFactory(compilation),
     ];
 
+    // Only add aliasing re-exports to the .d.ts output if the `AliasingHost` requests it.
+    if (this.aliasingHost !== null && this.aliasingHost.aliasExportsInDts) {
+      afterDeclarationsTransforms.push(aliasTransformFactory(compilation.exportStatements));
+    }
 
     if (this.factoryToSourceInfo !== null) {
       beforeTransforms.push(
@@ -475,7 +480,6 @@ export class NgtscProgram implements api.Program {
   private makeCompilation(): IvyCompilation {
     const checker = this.tsProgram.getTypeChecker();
 
-    let aliasGenerator: AliasGenerator|null = null;
     // Construct the ReferenceEmitter.
     if (this.fileToModuleHost === null || !this.options._useHostForImportGeneration) {
       // The CompilerHost doesn't have fileNameToModuleName, so build an NPM-centric reference
@@ -491,6 +495,15 @@ export class NgtscProgram implements api.Program {
         // an error.
         new LogicalProjectStrategy(this.reflector, new LogicalFileSystem(this.rootDirs)),
       ]);
+
+      // If an entrypoint is present, then all user imports should be directed through the
+      // entrypoint and private exports are not needed. The compiler will validate that all publicly
+      // visible directives/pipes are importable via this entrypoint.
+      if (this.entryPoint === null && this.options.generateDeepReexports === true) {
+        // No entrypoint is present and deep re-exports were requested, so configure the aliasing
+        // system to generate them.
+        this.aliasingHost = new PrivateExportAliasingHost(this.reflector);
+      }
     } else {
       // The CompilerHost supports fileNameToModuleName, so use that to emit imports.
       this.refEmitter = new ReferenceEmitter([
@@ -501,16 +514,16 @@ export class NgtscProgram implements api.Program {
         // Then use fileNameToModuleName to emit imports.
         new FileToModuleStrategy(this.reflector, this.fileToModuleHost),
       ]);
-      aliasGenerator = new AliasGenerator(this.fileToModuleHost);
+      this.aliasingHost = new FileToModuleAliasingHost(this.fileToModuleHost);
     }
 
     const evaluator = new PartialEvaluator(this.reflector, checker, this.incrementalState);
     const dtsReader = new DtsMetadataReader(checker, this.reflector);
     const localMetaRegistry = new LocalMetadataRegistry();
     const localMetaReader = new CompoundMetadataReader([localMetaRegistry, this.incrementalState]);
-    const depScopeReader = new MetadataDtsModuleScopeResolver(dtsReader, aliasGenerator);
+    const depScopeReader = new MetadataDtsModuleScopeResolver(dtsReader, this.aliasingHost);
     const scopeRegistry = new LocalModuleScopeRegistry(
-        localMetaReader, depScopeReader, this.refEmitter, aliasGenerator, this.incrementalState);
+        localMetaReader, depScopeReader, this.refEmitter, this.aliasingHost, this.incrementalState);
     const scopeReader = new CompoundComponentScopeReader([scopeRegistry, this.incrementalState]);
     const metaRegistry =
         new CompoundMetadataRegistry([localMetaRegistry, scopeRegistry, this.incrementalState]);

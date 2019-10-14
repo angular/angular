@@ -272,21 +272,24 @@ export class TypeScriptReflectionHost implements ReflectionHost {
   private getDeclarationOfSymbol(symbol: ts.Symbol, originalId: ts.Identifier|null): Declaration
       |null {
     // If the symbol points to a ShorthandPropertyAssignment, resolve it.
-    if (symbol.valueDeclaration !== undefined &&
-        ts.isShorthandPropertyAssignment(symbol.valueDeclaration)) {
-      const shorthandSymbol =
-          this.checker.getShorthandAssignmentValueSymbol(symbol.valueDeclaration);
+    let valueDeclaration: ts.Declaration|undefined = undefined;
+    if (symbol.valueDeclaration !== undefined) {
+      valueDeclaration = symbol.valueDeclaration;
+    } else if (symbol.declarations.length > 0) {
+      valueDeclaration = symbol.declarations[0];
+    }
+    if (valueDeclaration !== undefined && ts.isShorthandPropertyAssignment(valueDeclaration)) {
+      const shorthandSymbol = this.checker.getShorthandAssignmentValueSymbol(valueDeclaration);
       if (shorthandSymbol === undefined) {
         return null;
       }
       return this.getDeclarationOfSymbol(shorthandSymbol, originalId);
-    } else if (
-        symbol.valueDeclaration !== undefined && ts.isExportSpecifier(symbol.valueDeclaration)) {
-      const localTarget = this.checker.getExportSpecifierLocalTargetSymbol(symbol.valueDeclaration);
-      if (localTarget === undefined) {
+    } else if (valueDeclaration !== undefined && ts.isExportSpecifier(valueDeclaration)) {
+      const targetSymbol = this.checker.getExportSpecifierLocalTargetSymbol(valueDeclaration);
+      if (targetSymbol === undefined) {
         return null;
       }
-      return this.getDeclarationOfSymbol(localTarget, originalId);
+      return this.getDeclarationOfSymbol(targetSymbol, originalId);
     }
 
     const importInfo = originalId && this.getImportOfIdentifier(originalId);
