@@ -360,7 +360,7 @@ function getTargetedEntryPoints(
   if (invalidTarget !== undefined) {
     throw new Error(
         `The target entry-point "${invalidTarget.entryPoint.name}" has missing dependencies:\n` +
-        invalidTarget.missingDependencies.map(dep => ` - ${dep}\n`));
+        invalidTarget.missingDependencies.map(dep => ` - ${dep}\n`).join(''));
   }
   if (entryPointInfo.entryPoints.length === 0) {
     markNonAngularPackageAsProcessed(fs, pkgJsonUpdater, absoluteTargetEntryPointPath);
