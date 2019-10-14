@@ -1,4 +1,5 @@
 import {OverlayContainer} from '@angular/cdk/overlay';
+import {expectAsyncError} from '@angular/cdk/private/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
@@ -42,9 +43,15 @@ export function runHarnessTests(
     expect(inputs.length).toBe(5);
   });
 
-  it('should be able to get text inside the input', async () => {
+  it('should load harness for autocomplete with value', async () => {
+    const ac = await loader.getHarness(autocompleteHarness.with({value: /Prefilled/}));
+    const id = await (await ac.host()).getAttribute('id');
+    expect(id).toBe('prefilled');
+  });
+
+  it('should be able to get value of the input', async () => {
     const input = await loader.getHarness(autocompleteHarness.with({selector: '#prefilled'}));
-    expect(await input.getText()).toBe('Prefilled value');
+    expect(await input.getValue()).toBe('Prefilled value');
   });
 
   it('should get disabled state', async () => {
@@ -67,13 +74,7 @@ export function runHarnessTests(
   it('should be able to type in an input', async () => {
     const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
     await input.enterText('Hello there');
-    expect(await input.getText()).toBe('Hello there');
-  });
-
-  it('should be able to get the autocomplete panel', async () => {
-    const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
-    await input.focus();
-    expect(await input.getPanel()).toBeTruthy();
+    expect(await input.getValue()).toBe('Hello there');
   });
 
   it('should be able to get the autocomplete panel options', async () => {
@@ -83,6 +84,15 @@ export function runHarnessTests(
 
     expect(options.length).toBe(11);
     expect(await options[5].getText()).toBe('New York');
+  });
+
+  it('should be able to get filtered options', async () => {
+    const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
+    await input.focus();
+    const options = await input.getOptions({text: /New/});
+
+    expect(options.length).toBe(1);
+    expect(await options[0].getText()).toBe('New York');
   });
 
   it('should be able to get the autocomplete panel groups', async () => {
@@ -95,14 +105,13 @@ export function runHarnessTests(
     expect(options.length).toBe(11);
   });
 
-  it('should be able to get the autocomplete panel', async () => {
-    // Focusing without any options will render the panel, but it'll be invisible.
-    fixture.componentInstance.states = [];
-    fixture.detectChanges();
-
-    const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
+  it('should be able to get filtered panel groups', async () => {
+    const input = await loader.getHarness(autocompleteHarness.with({selector: '#grouped'}));
     await input.focus();
-    expect(await input.isPanelVisible()).toBe(false);
+    const groups = await input.getOptionGroups({labelText: 'Two'});
+
+    expect(groups.length).toBe(1);
+    expect(await groups[0].getLabelText()).toBe('Two');
   });
 
   it('should be able to get whether the autocomplete is open', async () => {
@@ -111,6 +120,19 @@ export function runHarnessTests(
     expect(await input.isOpen()).toBe(false);
     await input.focus();
     expect(await input.isOpen()).toBe(true);
+  });
+
+  it('should be able to select option', async () => {
+    const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
+    await input.selectOption({text: 'New York'});
+    expect(await input.getValue()).toBe('NY');
+  });
+
+  it('should throw when selecting an option that is not available', async () => {
+    const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
+    await input.enterText('New');
+    await expectAsyncError(() => input.selectOption({text: 'Texas'}),
+        /Error: Could not find a mat-option matching {"text":"Texas"}/);
   });
 }
 

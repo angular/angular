@@ -6,10 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate, TestElement} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {AutocompleteHarnessFilters} from './autocomplete-harness-filters';
-import {MatAutocompleteOptionHarness, MatAutocompleteOptionGroupHarness} from './option-harness';
+import {
+  MatAutocompleteOptionGroupHarness,
+  MatAutocompleteOptionHarness,
+  OptionGroupHarnessFilters,
+  OptionHarnessFilters
+} from './option-harness';
 
 /** Selector for the autocomplete panel. */
 const PANEL_SELECTOR = '.mat-autocomplete-panel';
@@ -20,10 +25,7 @@ const PANEL_SELECTOR = '.mat-autocomplete-panel';
  */
 export class MatAutocompleteHarness extends ComponentHarness {
   private _documentRootLocator = this.documentRootLocatorFactory();
-  private _panel = this._documentRootLocator.locatorFor(PANEL_SELECTOR);
   private _optionalPanel = this._documentRootLocator.locatorForOptional(PANEL_SELECTOR);
-  private _options = this._documentRootLocator.locatorForAll(MatAutocompleteOptionHarness);
-  private _groups = this._documentRootLocator.locatorForAll(MatAutocompleteOptionGroupHarness);
 
   static hostSelector = '.mat-autocomplete-trigger';
 
@@ -35,22 +37,20 @@ export class MatAutocompleteHarness extends ComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: AutocompleteHarnessFilters = {}): HarnessPredicate<MatAutocompleteHarness> {
-    return new HarnessPredicate(MatAutocompleteHarness, options);
+    return new HarnessPredicate(MatAutocompleteHarness, options)
+        .addOption('value', options.value,
+            (harness, value) => HarnessPredicate.stringMatches(harness.getValue(), value));
   }
 
-  async getAttribute(attributeName: string): Promise<string|null> {
-    return (await this.host()).getAttribute(attributeName);
+  /** Gets the value of the autocomplete input. */
+  async getValue(): Promise<string> {
+    return (await this.host()).getProperty('value');
   }
 
   /** Gets a boolean promise indicating if the autocomplete input is disabled. */
   async isDisabled(): Promise<boolean> {
     const disabled = (await this.host()).getAttribute('disabled');
     return coerceBooleanProperty(await disabled);
-  }
-
-  /** Gets a promise for the autocomplete's text. */
-  async getText(): Promise<string> {
-    return (await this.host()).getProperty('value');
   }
 
   /** Focuses the input and returns a void promise that indicates when the action is complete. */
@@ -68,28 +68,31 @@ export class MatAutocompleteHarness extends ComponentHarness {
     return (await this.host()).sendKeys(value);
   }
 
-  /** Gets the autocomplete panel. */
-  async getPanel(): Promise<TestElement> {
-    return this._panel();
-  }
-
   /** Gets the options inside the autocomplete panel. */
-  async getOptions(): Promise<MatAutocompleteOptionHarness[]> {
-    return this._options();
+  async getOptions(filters: OptionHarnessFilters = {}): Promise<MatAutocompleteOptionHarness[]> {
+    return this._documentRootLocator.locatorForAll(MatAutocompleteOptionHarness.with(filters))();
   }
 
   /** Gets the groups of options inside the panel. */
-  async getOptionGroups(): Promise<MatAutocompleteOptionGroupHarness[]> {
-    return this._groups();
+  async getOptionGroups(filters: OptionGroupHarnessFilters = {}):
+      Promise<MatAutocompleteOptionGroupHarness[]> {
+    return this._documentRootLocator.locatorForAll(
+        MatAutocompleteOptionGroupHarness.with(filters))();
   }
 
-  /** Gets whether the autocomplete panel is visible. */
-  async isPanelVisible(): Promise<boolean> {
-    return (await this._panel()).hasClass('mat-autocomplete-visible');
+  /** Selects the first option matching the given filters. */
+  async selectOption(filters: OptionHarnessFilters): Promise<void> {
+    await this.focus(); // Focus the input to make sure the autocomplete panel is shown.
+    const options = await this.getOptions(filters);
+    if (!options.length) {
+      throw Error(`Could not find a mat-option matching ${JSON.stringify(filters)}`);
+    }
+    await options[0].select();
   }
 
   /** Gets whether the autocomplete is open. */
   async isOpen(): Promise<boolean> {
-    return !!(await this._optionalPanel());
+    const panel = await this._optionalPanel();
+    return !!panel && await panel.hasClass('mat-autocomplete-visible');
   }
 }
