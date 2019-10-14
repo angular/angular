@@ -13,7 +13,7 @@ import {platformBrowser} from '@angular/platform-browser';
 import {ExpandingRowBenchmarkModule} from './benchmark';
 import {ExpandingRowBenchmarkModuleNgFactory} from './benchmark.ngfactory';
 
-setMode(ExpandingRowBenchmarkModule.hasOwnProperty('ngModuleDef') ? 'Ivy' : 'ViewEngine');
+setMode(ExpandingRowBenchmarkModule.hasOwnProperty('ɵmod') ? 'Ivy' : 'ViewEngine');
 enableProdMode();
 platformBrowser().bootstrapModuleFactory(ExpandingRowBenchmarkModuleNgFactory);
 

@@ -24,7 +24,7 @@ import {ReferencesRegistry} from './references_registry';
 import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression} from './util';
 
 export interface NgModuleAnalysis {
-  ngModuleDef: R3NgModuleMetadata;
+  ɵmod: R3NgModuleMetadata;
   ngInjectorDef: R3InjectorMetadata;
   metadataStmt: Statement|null;
   declarations: Reference<ClassDeclaration>[];
@@ -236,8 +236,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     return {
       analysis: {
         id,
-        ngModuleDef,
-        ngInjectorDef,
+        ɵmod: ngModuleDef, ngInjectorDef,
         declarations: declarationRefs,
         exports: exportRefs,
         metadataStmt: generateSetClassMetadataCall(
@@ -282,7 +281,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
   compile(node: ClassDeclaration, analysis: NgModuleAnalysis): CompileResult[] {
     const ngInjectorDef = compileInjector(analysis.ngInjectorDef);
-    const ngModuleDef = compileNgModule(analysis.ngModuleDef);
+    const ngModuleDef = compileNgModule(analysis.ɵmod);
     const ngModuleStatements = ngModuleDef.additionalStatements;
     if (analysis.metadataStmt !== null) {
       ngModuleStatements.push(analysis.metadataStmt);
@@ -309,7 +308,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     }
     const res: CompileResult[] = [
       {
-        name: 'ngModuleDef',
+        name: 'ɵmod',
         initializer: ngModuleDef.expression,
         statements: ngModuleStatements,
         type: ngModuleDef.type,

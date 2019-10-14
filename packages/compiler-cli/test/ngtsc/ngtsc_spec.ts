@@ -376,7 +376,7 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('TestDirective.ɵdir = i0.ɵɵdefineDirective');
       expect(jsContents).toContain('TestPipe.ɵpipe = i0.ɵɵdefinePipe');
       expect(jsContents).toContain('TestInjectable.ngInjectableDef = i0.ɵɵdefineInjectable');
-      expect(jsContents).toContain('MyModule.ngModuleDef = i0.ɵɵdefineNgModule');
+      expect(jsContents).toContain('MyModule.ɵmod = i0.ɵɵdefineNgModule');
       expect(jsContents).toContain('MyModule.ngInjectorDef = i0.ɵɵdefineInjector');
       expect(jsContents).toContain('inputs: { input: "input" }');
       expect(jsContents).toContain('outputs: { output: "output" }');
@@ -512,7 +512,7 @@ runInEachFileSystem(os => {
               'static ɵcmp: i0.ɵɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never>');
       expect(dtsContents)
           .toContain(
-              'static ngModuleDef: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], never, never>');
+              'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], never, never>');
       expect(dtsContents).not.toContain('__decorate');
     });
 
@@ -607,7 +607,7 @@ runInEachFileSystem(os => {
 
       declare class RouterModule {
         static forRoot(): ModuleWithProviders<RouterModule>;
-        static ngModuleDef: ɵɵNgModuleDefWithMeta<RouterModule, [typeof RouterComp], never, [typeof RouterComp]>;
+        static ɵmod: ɵɵNgModuleDefWithMeta<RouterModule, [typeof RouterComp], never, [typeof RouterComp]>;
       }
     `);
 
@@ -657,7 +657,7 @@ runInEachFileSystem(os => {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
-              'static ngModuleDef: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
+              'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
       expect(dtsContents).toContain('static ngInjectorDef: i0.ɵɵInjectorDef');
     });
 
@@ -697,7 +697,7 @@ runInEachFileSystem(os => {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
-              'static ngModuleDef: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
+              'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
       expect(dtsContents).toContain('static ngInjectorDef: i0.ɵɵInjectorDef');
     });
 
@@ -741,7 +741,7 @@ runInEachFileSystem(os => {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
-              'static ngModuleDef: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
+              'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
       expect(dtsContents).toContain('static ngInjectorDef: i0.ɵɵInjectorDef');
     });
 
@@ -1180,7 +1180,7 @@ runInEachFileSystem(os => {
         expect(jsContents).toContain('TestCmp.ɵcmp =');
         expect(jsContents).toContain('TestDir.ɵdir =');
         expect(jsContents).toContain('TestPipe.ɵpipe =');
-        expect(jsContents).toContain('TestNgModule.ngModuleDef =');
+        expect(jsContents).toContain('TestNgModule.ɵmod =');
 
         // Validate that each class also has an injectable definition.
         expect(jsContents).toContain('TestCmp.ngInjectableDef =');
@@ -1453,7 +1453,7 @@ runInEachFileSystem(os => {
 
         declare class RouterModule {
           static forRoot(): ModuleWithProviders<RouterModule>;
-          static ngModuleDef: ɵɵNgModuleDefWithMeta<RouterModule, never, never, never>;
+          static ɵmod: ɵɵNgModuleDefWithMeta<RouterModule, never, never, never>;
         }
     `);
 
@@ -1492,7 +1492,7 @@ runInEachFileSystem(os => {
         env.write('node_modules/router/internal.d.ts', `
         import {ɵɵNgModuleDefWithMeta} from '@angular/core';
         export declare class InternalRouterModule {
-          static ngModuleDef: ɵɵNgModuleDefWithMeta<InternalRouterModule, never, never, never>;
+          static ɵmod: ɵɵNgModuleDefWithMeta<InternalRouterModule, never, never, never>;
         }
     `);
 
@@ -1508,14 +1508,14 @@ runInEachFileSystem(os => {
                 'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.InternalRouterModule], never>');
       });
 
-      it('should not reference a constant with a ModuleWithProviders value in ngModuleDef imports',
+      it('should not reference a constant with a ModuleWithProviders value in module def imports',
          () => {
            env.write('dep.d.ts', `
           import {ModuleWithProviders, ɵɵNgModuleDefWithMeta as ɵɵNgModuleDefWithMeta} from '@angular/core';
 
           export declare class DepModule {
             static forRoot(arg1: any, arg2: any): ModuleWithProviders<DepModule>;
-            static ngModuleDef: ɵɵNgModuleDefWithMeta<DepModule, never, never, never>;
+            static ɵmod: ɵɵNgModuleDefWithMeta<DepModule, never, never, never>;
           }
         `);
            env.write('test.ts', `
@@ -1555,7 +1555,7 @@ runInEachFileSystem(os => {
 
       declare class RouterModule {
         static forRoot(): (MyType)&{ngModule:RouterModule};
-        static ngModuleDef: ɵɵNgModuleDefWithMeta<RouterModule, never, never, never>;
+        static ɵmod: ɵɵNgModuleDefWithMeta<RouterModule, never, never, never>;
       }
   `);
 
@@ -1587,7 +1587,7 @@ runInEachFileSystem(os => {
 
         declare class RouterModule {
           static forRoot(): core.ModuleWithProviders<RouterModule>;
-          static ngModuleDef: ɵɵNgModuleDefWithMeta<RouterModule, never, never, never>;
+          static ɵmod: ɵɵNgModuleDefWithMeta<RouterModule, never, never, never>;
         }
     `);
 
@@ -2947,7 +2947,7 @@ runInEachFileSystem(os => {
         }
 
         export declare class ExternalModule {
-          static ngModuleDef: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
+          static ɵmod: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
         }
       `);
         env.write('test.ts', `
@@ -2981,7 +2981,7 @@ runInEachFileSystem(os => {
         export {InternalDir as ExternalDir} from './internal';
 
         export declare class ExternalModule {
-          static ngModuleDef: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof InternalDir], never, [typeof InternalDir]>;
+          static ɵmod: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof InternalDir], never, [typeof InternalDir]>;
         }
       `);
         env.write('node_modules/external/internal.d.ts', `
@@ -3234,7 +3234,7 @@ runInEachFileSystem(os => {
         }
 
         export declare class ExternalModule {
-          static ngModuleDef: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
+          static ɵmod: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
         }
       `);
 
@@ -3543,7 +3543,7 @@ runInEachFileSystem(os => {
         export declare class RouterModule {
           static forRoot(arg1: any, arg2: any): ModuleWithProviders<RouterModule>;
           static forChild(arg1: any): ModuleWithProviders<RouterModule>;
-          static ngModuleDef: ɵɵNgModuleDefWithMeta<RouterModule, never, never, never>;
+          static ɵmod: ɵɵNgModuleDefWithMeta<RouterModule, never, never, never>;
         }
       `);
       });
@@ -4180,7 +4180,7 @@ export const Foo = Foo__PRE_R3__;
         }
 
         export declare class AlphaModule {
-          static ngModuleDef: ɵɵNgModuleDefWithMeta<AlphaModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
+          static ɵmod: ɵɵNgModuleDefWithMeta<AlphaModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
         }
       `);
 
@@ -4190,7 +4190,7 @@ export const Foo = Foo__PRE_R3__;
         import {AlphaModule} from './alpha';
 
         export declare class BetaModule {
-          static ngModuleDef: ɵɵNgModuleDefWithMeta<AlphaModule, never, never, [typeof AlphaModule]>;
+          static ɵmod: ɵɵNgModuleDefWithMeta<AlphaModule, never, never, [typeof AlphaModule]>;
         }
       `);
 
@@ -4231,7 +4231,7 @@ export const Foo = Foo__PRE_R3__;
         }
 
         export declare class ExternalModule {
-          static ngModuleDef: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir, typeof LibModule]>;
+          static ɵmod: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir, typeof LibModule]>;
         }
       `);
         env.write('lib.d.ts', `
@@ -4242,7 +4242,7 @@ export const Foo = Foo__PRE_R3__;
         }
 
         export declare class LibModule {
-          static ngModuleDef: ɵɵNgModuleDefWithMeta<LibModule, [typeof LibDir], never, [typeof LibDir]>;
+          static ɵmod: ɵɵNgModuleDefWithMeta<LibModule, [typeof LibDir], never, [typeof LibDir]>;
         }
       `);
         env.write('foo.ts', `
