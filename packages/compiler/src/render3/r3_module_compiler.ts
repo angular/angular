@@ -251,7 +251,7 @@ export function compileNgModuleFromRender2(
       /* name */ className,
       /* parent */ null,
       /* fields */[new o.ClassField(
-          /* name */ 'ngInjectorDef',
+          /* name */ 'ɵinj',
           /* type */ o.INFERRED_TYPE,
           /* modifiers */[o.StmtModifier.Static],
           /* initializer */ injectorDef, )],

@@ -350,7 +350,7 @@ function preR3NgModuleCompile(moduleType: Type<any>, metadata?: NgModule): void 
     imports = [...imports, metadata.exports];
   }
 
-  (moduleType as InjectorType<any>).ngInjectorDef = ɵɵdefineInjector({
+  (moduleType as InjectorType<any>).ɵinj = ɵɵdefineInjector({
     factory: convertInjectableProviderToFactory(moduleType, {useClass: moduleType}),
     providers: metadata && metadata.providers,
     imports: imports,
