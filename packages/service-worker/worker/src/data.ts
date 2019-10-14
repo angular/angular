@@ -8,6 +8,7 @@
 
 import {Adapter, Context} from './adapter';
 import {Database, Table} from './database';
+import {DebugHandler} from './debug';
 import {DataGroupConfig} from './manifest';
 
 /**
@@ -243,7 +244,8 @@ export class DataGroup {
 
   constructor(
       private scope: ServiceWorkerGlobalScope, private adapter: Adapter,
-      private config: DataGroupConfig, private db: Database, private prefix: string) {
+      private config: DataGroupConfig, private db: Database, private debugHandler: DebugHandler,
+      private prefix: string) {
     this.patterns = this.config.patterns.map(pattern => new RegExp(pattern));
     this.cache = this.scope.caches.open(`${this.prefix}:dynamic:${this.config.name}:cache`);
     this.lruTable = this.db.open(`${this.prefix}:dynamic:${this.config.name}:lru`);
@@ -356,7 +358,7 @@ export class DataGroup {
       ctx.waitUntil(this.safeCacheResponse(req, networkFetch, lru));
     } else {
       // The request completed in time, so cache it inline with the response flow.
-      await this.cacheResponse(req, res, lru);
+      await this.safeCacheResponse(req, res, lru);
     }
 
     return res;
@@ -385,7 +387,7 @@ export class DataGroup {
       const fromCache = await this.loadFromCache(req, lru);
       res = (fromCache !== null) ? fromCache.res : null;
     } else {
-      await this.cacheResponse(req, res, lru, true);
+      await this.safeCacheResponse(req, res, lru, true);
     }
 
     // Either the network fetch didn't time out, or the cache yielded a usable response.
@@ -442,7 +444,10 @@ export class DataGroup {
       } catch (err) {
         // Saving the API response failed. This could be a result of a full storage.
         // Since this data is cached lazily and temporarily, continue serving clients as usual.
-        // TODO: Log error
+        this.debugHandler.log(
+            err,
+            `DataGroup(${this.config.name}@${this.config.version}).safeCacheResponse(${req.url}, status: ${res.status})`);
+
         // TODO: Better detect/handle full storage; e.g. using
         // [navigator.storage](https://developer.mozilla.org/en-US/docs/Web/API/NavigatorStorage/storage).
       }

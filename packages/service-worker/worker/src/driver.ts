@@ -533,7 +533,8 @@ export class Driver implements Debuggable, UpdateSource {
       // created for it.
       if (!this.versions.has(hash)) {
         this.versions.set(
-            hash, new AppVersion(this.scope, this.adapter, this.db, this.idle, manifest, hash));
+            hash, new AppVersion(
+                      this.scope, this.adapter, this.db, this.idle, this.debugger, manifest, hash));
       }
     });
 
@@ -783,7 +784,8 @@ export class Driver implements Debuggable, UpdateSource {
   }
 
   private async setupUpdate(manifest: Manifest, hash: string): Promise<void> {
-    const newVersion = new AppVersion(this.scope, this.adapter, this.db, this.idle, manifest, hash);
+    const newVersion =
+        new AppVersion(this.scope, this.adapter, this.db, this.idle, this.debugger, manifest, hash);
 
     // Firstly, check if the manifest version is correct.
     if (manifest.configVersion !== SUPPORTED_CONFIG_VERSION) {

@@ -34,6 +34,9 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
           .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
           .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
           .addUnhashedFile('/unhashed/b.txt', 'this is unhashed b', {'Cache-Control': 'no-cache'})
+          .addUnhashedFile('/api/foo', 'this is api foo', {'Cache-Control': 'no-cache'})
+          .addUnhashedFile(
+              '/api-static/bar', 'this is static api bar', {'Cache-Control': 'no-cache'})
           .build();
 
   const distUpdate =
@@ -172,9 +175,19 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         version: 42,
         maxAge: 3600000,
         maxSize: 100,
-        strategy: 'performance',
+        strategy: 'freshness',
         patterns: [
           '/api/.*',
+        ],
+      },
+      {
+        name: 'api-static',
+        version: 43,
+        maxAge: 3600000,
+        maxSize: 100,
+        strategy: 'performance',
+        patterns: [
+          '/api-static/.*',
         ],
       },
     ],
@@ -829,6 +842,9 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
            `ngsw:${baseHref}:42:data:dynamic:api:cache`,
            `ngsw:${baseHref}:db:ngsw:${baseHref}:42:data:dynamic:api:lru`,
            `ngsw:${baseHref}:db:ngsw:${baseHref}:42:data:dynamic:api:age`,
+           `ngsw:${baseHref}:43:data:dynamic:api-static:cache`,
+           `ngsw:${baseHref}:db:ngsw:${baseHref}:43:data:dynamic:api-static:lru`,
+           `ngsw:${baseHref}:db:ngsw:${baseHref}:43:data:dynamic:api-static:age`,
       ];
 
       const getClientAssignments = async(sw: SwTestHarness, baseHref: string) => {
@@ -1229,6 +1245,48 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         expect(driver.state).toBe(DriverReadyState.EXISTING_CLIENTS_ONLY);
         server.assertSawRequestFor('/foo.txt');
       });
+
+      it('keeps serving api requests with freshness strategy when failing to write to cache',
+         async() => {
+           // Initialize the SW.
+           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+           await driver.initialized;
+           server.clearRequests();
+
+           // Make the caches unwritable.
+           spyOn(MockCache.prototype, 'put').and.throwError('Can\'t touch this');
+           spyOn(driver.debugger, 'log');
+
+           expect(await makeRequest(scope, '/api/foo')).toEqual('this is api foo');
+           expect(driver.state).toBe(DriverReadyState.NORMAL);
+           // Since we are swallowing an error here, make sure it is at least properly logged
+           expect(driver.debugger.log)
+               .toHaveBeenCalledWith(
+                   new Error('Can\'t touch this'),
+                   'DataGroup(api@42).safeCacheResponse(/api/foo, status: 200)');
+           server.assertSawRequestFor('/api/foo');
+         });
+
+      it('keeps serving api requests with performance strategy when failing to write to cache',
+         async() => {
+           // Initialize the SW.
+           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+           await driver.initialized;
+           server.clearRequests();
+
+           // Make the caches unwritable.
+           spyOn(MockCache.prototype, 'put').and.throwError('Can\'t touch this');
+           spyOn(driver.debugger, 'log');
+
+           expect(await makeRequest(scope, '/api-static/bar')).toEqual('this is static api bar');
+           expect(driver.state).toBe(DriverReadyState.NORMAL);
+           // Since we are swallowing an error here, make sure it is at least properly logged
+           expect(driver.debugger.log)
+               .toHaveBeenCalledWith(
+                   new Error('Can\'t touch this'),
+                   'DataGroup(api-static@43).safeCacheResponse(/api-static/bar, status: 200)');
+           server.assertSawRequestFor('/api-static/bar');
+         });
 
       it('enters degraded mode when something goes wrong with the latest version', async() => {
         await driver.initialized;
