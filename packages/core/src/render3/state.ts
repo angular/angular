@@ -500,6 +500,10 @@ export function setCurrentStyleSanitizer(sanitizer: StyleSanitizeFn | null) {
   _currentSanitizer = sanitizer;
 }
 
+export function resetCurrentStyleSanitizer() {
+  setCurrentStyleSanitizer(null);
+}
+
 export function getCurrentStyleSanitizer() {
   return _currentSanitizer;
 }

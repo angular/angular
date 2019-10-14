@@ -2117,6 +2117,62 @@ describe('styling', () => {
       expect(div.nativeElement.style['width']).toEqual('200px');
     }
   });
+
+  it('should not set classes when falsy value is passed while a sanitizer is present', () => {
+    @Component({
+      // Note that we use `background` here because it needs to be sanitized.
+      template: `
+        <span class="container" [ngClass]="{disabled: isDisabled}"></span>
+        <div [style.background]="background"></div>
+      `,
+    })
+
+    class AppComponent {
+      isDisabled = false;
+      background = 'orange';
+    }
+
+    TestBed.configureTestingModule({declarations: [AppComponent]});
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    const span = fixture.nativeElement.querySelector('span');
+    expect(span.classList).not.toContain('disabled');
+
+    // The issue we're testing for happens after the second change detection.
+    fixture.detectChanges();
+    expect(span.classList).not.toContain('disabled');
+  });
+
+  it('should not set classes when falsy value is passed while a sanitizer from host bindings is present',
+     () => {
+       @Directive({selector: '[blockStyles]'})
+       class StylesDirective {
+         @HostBinding('style.border')
+         border = '1px solid red';
+
+         @HostBinding('style.background')
+         background = 'white';
+       }
+
+       @Component({
+         template: `<div class="container" [ngClass]="{disabled: isDisabled}" blockStyles></div>`,
+       })
+       class AppComponent {
+         isDisabled = false;
+       }
+
+       TestBed.configureTestingModule({declarations: [AppComponent, StylesDirective]});
+       const fixture = TestBed.createComponent(AppComponent);
+       fixture.detectChanges();
+
+       const div = fixture.nativeElement.querySelector('div');
+       expect(div.classList.contains('disabled')).toBe(false);
+
+       // The issue we're testing for happens after the second change detection.
+       fixture.detectChanges();
+       expect(div.classList.contains('disabled')).toBe(false);
+     });
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {

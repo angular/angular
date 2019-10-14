@@ -1155,6 +1155,9 @@
     "name": "resetComponentState"
   },
   {
+    "name": "resetCurrentStyleSanitizer"
+  },
+  {
     "name": "resetPreOrderHookFlags"
   },
   {
