@@ -83,6 +83,11 @@ export class Renderer {
       compiledFile.compiledClasses.forEach(clazz => {
         const renderedDefinition = renderDefinitions(compiledFile.sourceFile, clazz, importManager);
         this.srcFormatter.addDefinitions(outputText, clazz, renderedDefinition);
+
+        if (!isEntryPoint && clazz.reexports.length > 0) {
+          this.srcFormatter.addDirectExports(
+              outputText, clazz.reexports, importManager, compiledFile.sourceFile);
+        }
       });
 
       this.srcFormatter.addConstants(

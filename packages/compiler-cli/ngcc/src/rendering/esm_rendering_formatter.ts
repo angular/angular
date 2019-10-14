@@ -16,6 +16,7 @@ import {ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyze
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {RenderingFormatter, RedundantDecoratorMap} from './rendering_formatter';
 import {stripExtension} from './utils';
+import {Reexport} from '../../../src/ngtsc/imports';
 
 /**
  * A RenderingFormatter that works with ECMAScript Module import and export statements.
@@ -55,6 +56,22 @@ export class EsmRenderingFormatter implements RenderingFormatter {
       const exportStr = `\nexport {${exportStatement}}${exportFrom};`;
       output.append(exportStr);
     });
+  }
+
+
+  /**
+   * Add plain exports to the end of the file.
+   *
+   * Unlike `addExports`, direct exports go directly in a .js and .d.ts file and don't get added to
+   * an entrypoint.
+   */
+  addDirectExports(
+      output: MagicString, exports: Reexport[], importManager: ImportManager,
+      file: ts.SourceFile): void {
+    for (const e of exports) {
+      const exportStatement = `\nexport {${e.symbolName} as ${e.asAlias}} from '${e.fromModule}';`;
+      output.append(exportStatement);
+    }
   }
 
   /**

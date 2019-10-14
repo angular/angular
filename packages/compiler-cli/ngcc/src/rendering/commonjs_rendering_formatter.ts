@@ -8,6 +8,7 @@
 import {dirname, relative} from 'canonical-path';
 import * as ts from 'typescript';
 import MagicString from 'magic-string';
+import {Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {isRequireCall} from '../host/commonjs_host';
@@ -51,6 +52,17 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
       const exportStr = `\nexports.${e.identifier} = ${importNamespace}${namedImport.symbol};`;
       output.append(exportStr);
     });
+  }
+
+  addDirectExports(
+      output: MagicString, exports: Reexport[], importManager: ImportManager,
+      file: ts.SourceFile): void {
+    for (const e of exports) {
+      const namedImport = importManager.generateNamedImport(e.fromModule, e.symbolName);
+      const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport}.` : '';
+      const exportStr = `\nexports.${e.asAlias} = ${importNamespace}${namedImport.symbol};`;
+      output.append(exportStr);
+    }
   }
 
   protected findEndOfImports(sf: ts.SourceFile): number {

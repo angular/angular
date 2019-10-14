@@ -10,6 +10,7 @@ import * as ts from 'typescript';
 import {fromObject, generateMapFileComment, SourceMapConverter} from 'convert-source-map';
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {Reexport} from '../../../src/ngtsc/imports';
 import {loadTestFiles} from '../../../test/helpers';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
@@ -30,6 +31,9 @@ class TestRenderingFormatter implements RenderingFormatter {
   }
   addExports(output: MagicString, baseEntryPointPath: string, exports: ExportInfo[]) {
     output.prepend('\n// ADD EXPORTS\n');
+  }
+  addDirectExports(output: MagicString, exports: Reexport[]): void {
+    output.prepend('\n// ADD DIRECT EXPORTS\n');
   }
   addConstants(output: MagicString, constants: string, file: ts.SourceFile): void {
     output.prepend('\n// ADD CONSTANTS\n');

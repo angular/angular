@@ -7,6 +7,7 @@
  */
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
+import {Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {CompiledClass} from '../analysis/types';
@@ -31,6 +32,9 @@ export interface RenderingFormatter {
   addExports(
       output: MagicString, entryPointBasePath: string, exports: ExportInfo[],
       importManager: ImportManager, file: ts.SourceFile): void;
+  addDirectExports(
+      output: MagicString, exports: Reexport[], importManager: ImportManager,
+      file: ts.SourceFile): void;
   addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string): void;
   removeDecorators(output: MagicString, decoratorsToRemove: RedundantDecoratorMap): void;
   rewriteSwitchableDeclarations(
