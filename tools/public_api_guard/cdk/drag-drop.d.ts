@@ -13,7 +13,10 @@ export declare class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDes
     constrainPosition?: (point: Point, dragRef: DragRef) => Point;
     data: T;
     disabled: boolean;
-    dragStartDelay: number;
+    dragStartDelay: number | {
+        touch: number;
+        mouse: number;
+    };
     dropContainer: CdkDropList;
     dropped: EventEmitter<CdkDragDrop<any>>;
     element: ElementRef<HTMLElement>;
@@ -194,7 +197,10 @@ export declare class DragRef<T = any> {
     constrainPosition?: (point: Point, dragRef: DragRef) => Point;
     data: T;
     disabled: boolean;
-    dragStartDelay: number;
+    dragStartDelay: number | {
+        touch: number;
+        mouse: number;
+    };
     dropped: Subject<{
         previousIndex: number;
         currentIndex: number;

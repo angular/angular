@@ -208,7 +208,7 @@ export class DragRef<T = any> {
    * Amount of milliseconds to wait after the user has put their
    * pointer down before starting to drag the element.
    */
-  dragStartDelay: number = 0;
+  dragStartDelay: number | {touch: number, mouse: number} = 0;
 
   /** Whether starting to drag this element is disabled. */
   get disabled(): boolean {
@@ -533,7 +533,7 @@ export class DragRef<T = any> {
       // in the `pointerMove` subscription, because we're not guaranteed to have one move event
       // per pixel of movement (e.g. if the user moves their pointer quickly).
       if (isOverThreshold) {
-        const isDelayElapsed = Date.now() >= this._dragStartTime + (this.dragStartDelay || 0);
+        const isDelayElapsed = Date.now() >= this._dragStartTime + this._getDragStartDelay(event);
         if (!isDelayElapsed) {
           this._endDragSequence(event);
           return;
@@ -1148,6 +1148,19 @@ export class DragRef<T = any> {
     if (x !== this._passiveTransform.x || y !== this._passiveTransform.y) {
       this.setFreeDragPosition({y, x});
     }
+  }
+
+  /** Gets the drag start delay, based on the event type. */
+  private _getDragStartDelay(event: MouseEvent | TouchEvent): number {
+    const value = this.dragStartDelay;
+
+    if (typeof value === 'number') {
+      return value;
+    } else if (isTouchEvent(event)) {
+      return value.touch;
+    }
+
+    return value ? value.mouse : 0;
   }
 }
 

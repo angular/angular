@@ -993,6 +993,27 @@ describe('CdkDrag', () => {
           'Expected element to be dragged after all the time has passed.');
     }));
 
+    it('should be able to configure the drag start delay based on the event type', fakeAsync(() => {
+      // We can't use Jasmine's `clock` because Zone.js interferes with it.
+      spyOn(Date, 'now').and.callFake(() => currentTime);
+      let currentTime = 0;
+
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.componentInstance.dragStartDelay = {touch: 500, mouse: 0};
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      expect(dragElement.style.transform).toBeFalsy('Expected element not to be moved by default.');
+
+      dragElementViaTouch(fixture, dragElement, 50, 100);
+      expect(dragElement.style.transform)
+          .toBeFalsy('Expected element not to be moved via touch because it has a delay.');
+
+      dragElementViaMouse(fixture, dragElement, 50, 100);
+      expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)',
+          'Expected element to be moved via mouse because it has no delay.');
+    }));
+
     it('should be able to get the current position', fakeAsync(() => {
       const fixture = createComponent(StandaloneDraggable);
       fixture.detectChanges();
@@ -4293,7 +4314,7 @@ class StandaloneDraggable {
   endedSpy = jasmine.createSpy('ended spy');
   releasedSpy = jasmine.createSpy('released spy');
   boundary: string | HTMLElement;
-  dragStartDelay: number | string;
+  dragStartDelay: number | string | {touch: number, mouse: number};
   constrainPosition: (point: Point) => Point;
   freeDragPosition?: {x: number, y: number};
 }

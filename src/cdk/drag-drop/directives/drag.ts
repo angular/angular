@@ -118,7 +118,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
    * Amount of milliseconds to wait after the user has put their
    * pointer down before starting to drag the element.
    */
-  @Input('cdkDragStartDelay') dragStartDelay: number = 0;
+  @Input('cdkDragStartDelay') dragStartDelay: number | {touch: number, mouse: number} = 0;
 
   /**
    * Sets the position of a `CdkDrag` that is outside of a drop container.
@@ -326,6 +326,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     ref.beforeStarted.subscribe(() => {
       if (!ref.isDragging()) {
         const dir = this._dir;
+        const dragStartDelay = this.dragStartDelay;
         const placeholder = this._placeholderTemplate ? {
           template: this._placeholderTemplate.templateRef,
           context: this._placeholderTemplate.data,
@@ -339,7 +340,8 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
 
         ref.disabled = this.disabled;
         ref.lockAxis = this.lockAxis;
-        ref.dragStartDelay = coerceNumberProperty(this.dragStartDelay);
+        ref.dragStartDelay = (typeof dragStartDelay === 'object' && dragStartDelay) ?
+            dragStartDelay : coerceNumberProperty(dragStartDelay);
         ref.constrainPosition = this.constrainPosition;
         ref
           .withBoundaryElement(this._getBoundaryElement())
