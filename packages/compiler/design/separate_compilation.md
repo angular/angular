@@ -65,22 +65,22 @@ class:
 | field               | destination           |
 |---------------------|-----------------------|
 | `type`              | implicit              |
-| `isComponent`       | `ɵcmp`      |
+| `isComponent`       | `ɵcmp`                |
 | `selector`          | `ngModuleScope`       |
-| `exportAs`          | `ɵdir`      |
-| `inputs`            | `ɵdir`      |
-| `outputs`           | `ɵdir`      |
-| `hostListeners`     | `ɵdir`      |
-| `hostProperties`    | `ɵdir`      |
-| `hostAttributes`    | `ɵdir`      |
+| `exportAs`          | `ɵdir`                |
+| `inputs`            | `ɵdir`                |
+| `outputs`           | `ɵdir`                |
+| `hostListeners`     | `ɵdir`                |
+| `hostProperties`    | `ɵdir`                |
+| `hostAttributes`    | `ɵdir`                |
 | `providers`         | `ngInjectorDef`       |
-| `viewProviders`     | `ɵcmp`      |
-| `queries`           | `ɵdir`      |
+| `viewProviders`     | `ɵcmp`                |
+| `queries`           | `ɵdir`                |
 | `guards`            | not used              |
-| `viewQueries`       | `ɵcmp`      |
+| `viewQueries`       | `ɵcmp`                |
 | `entryComponents`   | not used              |
-| `changeDetection`   | `ɵcmp`      |
-| `template`          | `ɵcmp`      |
+| `changeDetection`   | `ɵcmp`                |
+| `template`          | `ɵcmp`                |
 | `componentViewType` | not used              |
 | `renderType`        | not used              |
 | `componentFactory`  | not used              |
@@ -98,7 +98,7 @@ For `CompilePipeSummary` the table looks like:
 |---------------------|-----------------------|
 | `type`              | implicit              |
 | `name`              | `ngModuleScope`       |
-| `pure`              | `ɵpipe`           |
+| `pure`              | `ɵpipe`               |
 
 The only pieces of information that are not generated into the definition are
 the directive selector and the pipe name as they go into the module scope.
