@@ -12,11 +12,11 @@ import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/test
 /** Create a base app used for testing. */
 export async function createTestApp(runner: SchematicTestRunner, appOptions = {}, tree?: Tree):
     Promise<UnitTestTree> {
-  const workspaceTree = runner.runExternalSchematic('@schematics/angular', 'workspace', {
+  const workspaceTree = await runner.runExternalSchematicAsync('@schematics/angular', 'workspace', {
     name: 'workspace',
     version: '6.0.0',
     newProjectRoot: 'projects',
-  }, tree);
+  }, tree).toPromise();
 
   return runner.runExternalSchematicAsync('@schematics/angular', 'application',
       {name: 'material', ...appOptions}, workspaceTree).toPromise();
