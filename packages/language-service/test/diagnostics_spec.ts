@@ -24,6 +24,10 @@ import {MockTypescriptHost} from './test_utils';
  * as well.
  */
 
+const EXPRESSION_CASES = '/app/expression-cases.ts';
+const NG_FOR_CASES = '/app/ng-for-cases.ts';
+const NG_IF_CASES = '/app/ng-if-cases.ts';
+
 describe('diagnostics', () => {
   let mockHost: MockTypescriptHost;
   let ngHost: TypeScriptServiceHost;
@@ -55,6 +59,62 @@ describe('diagnostics', () => {
       const ngDiags = ngLS.getDiagnostics(file);
       expect(ngDiags).toEqual([]);
     }
+  });
+
+  describe('in expression-cases.ts', () => {
+    it('should report access to an unknown field', () => {
+      const diags = ngLS.getDiagnostics(EXPRESSION_CASES).map(d => d.messageText);
+      expect(diags).toContain(
+          `Identifier 'foo' is not defined. ` +
+          `The component declaration, template variable declarations, ` +
+          `and element references do not contain such a member`);
+    });
+
+    it('should report access to an unknown sub-field', () => {
+      const diags = ngLS.getDiagnostics(EXPRESSION_CASES).map(d => d.messageText);
+      expect(diags).toContain(
+          `Identifier 'nam' is not defined. 'Person' does not contain such a member`);
+    });
+
+    it('should report access to a private member', () => {
+      const diags = ngLS.getDiagnostics(EXPRESSION_CASES).map(d => d.messageText);
+      expect(diags).toContain(`Identifier 'myField' refers to a private member of the component`);
+    });
+
+    it('should report numeric operator errors', () => {
+      const diags = ngLS.getDiagnostics(EXPRESSION_CASES).map(d => d.messageText);
+      expect(diags).toContain('Expected a numeric type');
+    });
+  });
+
+  describe('in ng-for-cases.ts', () => {
+    it('should report an unknown field', () => {
+      const diags = ngLS.getDiagnostics(NG_FOR_CASES).map(d => d.messageText);
+      expect(diags).toContain(
+          `Identifier 'people_1' is not defined. ` +
+          `The component declaration, template variable declarations, ` +
+          `and element references do not contain such a member`);
+    });
+
+    it('should report an unknown context reference', () => {
+      const diags = ngLS.getDiagnostics(NG_FOR_CASES).map(d => d.messageText);
+      expect(diags).toContain(`The template context does not define a member called 'even_1'`);
+    });
+
+    it('should report an unknown value in a key expression', () => {
+      const diags = ngLS.getDiagnostics(NG_FOR_CASES).map(d => d.messageText);
+      expect(diags).toContain(
+          `Identifier 'trackBy_1' is not defined. ` +
+          `The component declaration, template variable declarations, ` +
+          `and element references do not contain such a member`);
+    });
+  });
+
+  describe('in ng-if-cases.ts', () => {
+    it('should report an implicit context reference', () => {
+      const diags = ngLS.getDiagnostics(NG_IF_CASES).map(d => d.messageText);
+      expect(diags).toContain(`The template context does not define a member called 'unknown'`);
+    });
   });
 
   // #17611
@@ -487,7 +547,7 @@ describe('diagnostics', () => {
   describe('templates', () => {
     it('should report errors for invalid templateUrls', () => {
       const fileName = mockHost.addCode(`
-	@Component({
+        @Component({
           templateUrl: '«notAFile»',
         })
         export class MyComponent {}`);
@@ -506,10 +566,10 @@ describe('diagnostics', () => {
 
     it('should not report errors for valid templateUrls', () => {
       const fileName = mockHost.addCode(`
-	@Component({
+        @Component({
           templateUrl: './test.ng',
-	})
-	export class MyComponent {}`);
+        })
+        export class MyComponent {}`);
 
       const diagnostics = ngLS.getDiagnostics(fileName) !;
       const urlDiagnostic =
