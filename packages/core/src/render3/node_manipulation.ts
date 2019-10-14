@@ -93,7 +93,7 @@ function applyToElementOrContainer(
       lNodeToHandle = lNodeToHandle[HOST] !;
     }
     const rNode: RNode = unwrapRNode(lNodeToHandle);
-    ngDevMode && assertDomNode(rNode);
+    ngDevMode && !isProceduralRenderer(renderer) && assertDomNode(rNode);
 
     if (action === WalkTNodeTreeAction.Create && parent !== null) {
       if (beforeNode == null) {
