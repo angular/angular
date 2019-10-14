@@ -82,7 +82,7 @@ class ExampleBoilerPlate {
     if (ivy) {
       // We only need the "es2015" bundles as the CLI webpack build does not need
       // any other formats for building and serving.
-      shelljs.exec(`yarn --cwd ${SHARED_PATH} ivy-ngcc --properties es2015`);
+      shelljs.exec(`yarn --cwd ${SHARED_PATH} ngcc --properties es2015`);
     }
 
     exampleFolders.forEach(exampleFolder => {

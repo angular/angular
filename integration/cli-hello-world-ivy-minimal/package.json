@@ -7,7 +7,7 @@
     "e2e": "ng e2e --webdriver-update=false",
     "lint": "ng lint",
     "ng": "ng",
-    "postinstall": "webdriver-manager update --gecko=false --standalone=false $CI_CHROMEDRIVER_VERSION_ARG && yarn ivy-ngcc",
+    "postinstall": "webdriver-manager update --gecko=false --standalone=false $CI_CHROMEDRIVER_VERSION_ARG && yarn ngcc",
     "start": "ng serve",
     "pretest": "ng version",
     "test": "ng test --progress=false --watch=false && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production"
