@@ -8,7 +8,7 @@
 
 import {R3InjectorMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
 import {resolveForwardRef} from '../../di/forward_ref';
-import {NG_INJECTOR_DEF} from '../../di/interface/defs';
+import {NG_INJ_DEF} from '../../di/interface/defs';
 import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Component} from '../../metadata';
@@ -93,7 +93,7 @@ export function compileNgModule(moduleType: Type<any>, ngModule: NgModule = {}):
 }
 
 /**
- * Compiles and adds the `ɵmod` and `ngInjectorDef` properties to the module class.
+ * Compiles and adds the `ɵmod` and `ɵinj` properties to the module class.
  *
  * It's possible to compile a module via this API which will allow duplicate declarations in its
  * root.
@@ -135,7 +135,7 @@ export function compileNgModuleDefs(
   });
 
   let ngInjectorDef: any = null;
-  Object.defineProperty(moduleType, NG_INJECTOR_DEF, {
+  Object.defineProperty(moduleType, NG_INJ_DEF, {
     get: () => {
       if (ngInjectorDef === null) {
         ngDevMode && verifySemanticsOfNgModuleDef(
@@ -151,7 +151,7 @@ export function compileNgModuleDefs(
           ],
         };
         ngInjectorDef = getCompilerFacade().compileInjector(
-            angularCoreEnv, `ng:///${moduleType.name}/ngInjectorDef.js`, meta);
+            angularCoreEnv, `ng:///${moduleType.name}/ɵinj.js`, meta);
       }
       return ngInjectorDef;
     },

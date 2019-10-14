@@ -270,14 +270,14 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });
           const definitions: string = addDefinitionsSpy.calls.first().args[2];
           const ngModuleDef = definitions.indexOf('ɵmod');
           expect(ngModuleDef).not.toEqual(-1, 'ɵmod should exist');
-          const ngInjectorDef = definitions.indexOf('ngInjectorDef');
-          expect(ngInjectorDef).not.toEqual(-1, 'ngInjectorDef should exist');
+          const ngInjectorDef = definitions.indexOf('ɵinj');
+          expect(ngInjectorDef).not.toEqual(-1, 'ɵinj should exist');
           const setClassMetadata = definitions.indexOf('setClassMetadata');
           expect(setClassMetadata).not.toEqual(-1, 'setClassMetadata call should exist');
           expect(setClassMetadata)
               .toBeGreaterThan(ngModuleDef, 'setClassMetadata should follow ɵmod');
           expect(setClassMetadata)
-              .toBeGreaterThan(ngInjectorDef, 'setClassMetadata should follow ngInjectorDef');
+              .toBeGreaterThan(ngInjectorDef, 'setClassMetadata should follow ɵinj');
         });
 
         it('should render classes without decorators if handler matches', () => {

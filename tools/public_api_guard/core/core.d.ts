@@ -471,7 +471,7 @@ export declare abstract class Injector {
 export declare const INJECTOR: InjectionToken<Injector>;
 
 export interface InjectorType<T> extends Type<T> {
-    ngInjectorDef: never;
+    ɵinj: never;
 }
 
 export interface Input {

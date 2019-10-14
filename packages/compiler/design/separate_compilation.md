@@ -73,7 +73,7 @@ class:
 | `hostListeners`     | `ɵdir`                |
 | `hostProperties`    | `ɵdir`                |
 | `hostAttributes`    | `ɵdir`                |
-| `providers`         | `ngInjectorDef`       |
+| `providers`         | `ɵinj`                |
 | `viewProviders`     | `ɵcmp`                |
 | `queries`           | `ɵdir`                |
 | `guards`            | not used              |
@@ -282,7 +282,7 @@ export class MyPipe {
 The metadata for a module is transformed by:
 
 1. Remove the `@NgModule` directive.
-2. Add  `"ngInjectorDef": {}` static field.
+2. Add  `"ɵinj": {}` static field.
 3. Add `"ngModuleScope": <module-scope>` static field.
 
 The scope value is an array the following type:
@@ -329,7 +329,7 @@ export class MyModule {}
 *my.module.js*
 ```js
 export class MyModule {
-  static ngInjectorDef = ɵɵdefineInjector(...);
+  static ɵinj = ɵɵdefineInjector(...);
 }
 ```
 
@@ -342,7 +342,7 @@ export class MyModule {
     "MyModule": {
       "__symbolic": "class",
       "statics": {
-        "ngInjectorDef": {},
+        "ɵinj": {},
         "ngModuleScope": [
           {
             "type": {
@@ -389,7 +389,7 @@ manually written as:
 
 ```ts
 export class MyModule {
-  static ngInjectorDef = ɵɵdefineInjector({
+  static ɵinj = ɵɵdefineInjector({
     providers: [{
       provide: Service, useClass: ServiceImpl
     }],
@@ -440,7 +440,7 @@ properties by including a `// @__BUILD_OPTIMIZER_REMOVE_` comment:
 
 ```ts
 export class MyModule {
-  static ngInjectorDef = ɵɵdefineInjector({
+  static ɵinj = ɵɵdefineInjector({
     providers: [{
       provide: Service, useClass: ServiceImpl
     }],

@@ -251,11 +251,11 @@ export class R3Injector {
     defOrWrappedDef = resolveForwardRef(defOrWrappedDef);
     if (!defOrWrappedDef) return false;
 
-    // Either the defOrWrappedDef is an InjectorType (with ngInjectorDef) or an
+    // Either the defOrWrappedDef is an InjectorType (with injector def) or an
     // InjectorDefTypeWithProviders (aka ModuleWithProviders). Detecting either is a megamorphic
     // read, so care is taken to only do the read once.
 
-    // First attempt to read the ngInjectorDef.
+    // First attempt to read the injector def (`ɵinj`).
     let def = getInjectorDef(defOrWrappedDef);
 
     // If that's not present, then attempt to read ngModule from the InjectorDefTypeWithProviders.
@@ -416,7 +416,8 @@ function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>
     return factory;
   }
 
-  // If the token is an NgModule, it's also injectable but the factory is on its ngInjectorDef.
+  // If the token is an NgModule, it's also injectable but the factory is on its injector def
+  // (`ɵinj`)
   const injectorDef = getInjectorDef(token);
   if (injectorDef !== null) {
     return injectorDef.factory;
