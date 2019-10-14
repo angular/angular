@@ -66,16 +66,16 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
 
 
 # Did it compile @angular/core/ApplicationModule correctly?
-  grep "ApplicationModule.ngModuleDef = ɵɵdefineNgModule" node_modules/@angular/core/fesm2015/core.js
+  grep "ApplicationModule.ɵmod = ɵɵdefineNgModule" node_modules/@angular/core/fesm2015/core.js
   assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (fesm2015)."
 
-  grep "ApplicationModule.ngModuleDef = ɵɵdefineNgModule" node_modules/@angular/core/fesm5/core.js
+  grep "ApplicationModule.ɵmod = ɵɵdefineNgModule" node_modules/@angular/core/fesm5/core.js
   assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (fesm5)."
 
-  grep "ApplicationModule.ngModuleDef = ɵngcc0.ɵɵdefineNgModule" node_modules/@angular/core/esm2015/src/application_module.js
+  grep "ApplicationModule.ɵmod = ɵngcc0.ɵɵdefineNgModule" node_modules/@angular/core/esm2015/src/application_module.js
   assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (esm2015)."
 
-  grep "ApplicationModule.ngModuleDef = ɵngcc0.ɵɵdefineNgModule" node_modules/@angular/core/esm5/src/application_module.js
+  grep "ApplicationModule.ɵmod = ɵngcc0.ɵɵdefineNgModule" node_modules/@angular/core/esm5/src/application_module.js
   assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (esm5)."
 
 

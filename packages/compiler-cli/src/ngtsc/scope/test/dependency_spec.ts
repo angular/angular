@@ -90,7 +90,7 @@ runInEachFileSystem(() => {
         }
 
         export declare class Module {
-          static ngModuleDef: ModuleMeta<Module, [typeof Dir], never, [typeof Dir]>;
+          static ɵmod: ModuleMeta<Module, [typeof Dir], never, [typeof Dir]>;
         }
       `
       });
@@ -107,11 +107,11 @@ runInEachFileSystem(() => {
         }
 
         export declare class ModuleA {
-          static ngModuleDef: ModuleMeta<ModuleA, [typeof Dir], never, [typeof Dir]>;
+          static ɵmod: ModuleMeta<ModuleA, [typeof Dir], never, [typeof Dir]>;
         }
 
         export declare class ModuleB {
-          static ngModuleDef: ModuleMeta<ModuleB, never, never, [typeof ModuleA]>;
+          static ɵmod: ModuleMeta<ModuleB, never, never, [typeof ModuleA]>;
         }
       `
       });
@@ -128,14 +128,14 @@ runInEachFileSystem(() => {
           }
 
           export declare class ModuleA {
-            static ngModuleDef: ModuleMeta<ModuleA, [typeof Dir], never, [typeof Dir]>;
+            static ɵmod: ModuleMeta<ModuleA, [typeof Dir], never, [typeof Dir]>;
           }
         `,
         'exported': `
           import * as d from 'declaration';
 
           export declare class ModuleB {
-            static ngModuleDef: ModuleMeta<ModuleB, never, never, [typeof d.ModuleA]>;
+            static ɵmod: ModuleMeta<ModuleB, never, never, [typeof d.ModuleA]>;
           }
         `
       });
@@ -156,7 +156,7 @@ runInEachFileSystem(() => {
             }
 
             export declare class DeepModule {
-              static ngModuleDef: ModuleMeta<DeepModule, [typeof DeepDir], never, [typeof DeepDir]>;
+              static ɵmod: ModuleMeta<DeepModule, [typeof DeepDir], never, [typeof DeepDir]>;
             }
       `,
             'middle': `
@@ -167,7 +167,7 @@ runInEachFileSystem(() => {
             }
 
             export declare class MiddleModule {
-              static ngModuleDef: ModuleMeta<MiddleModule, [typeof MiddleDir], never, [typeof MiddleDir, typeof deep.DeepModule]>;
+              static ɵmod: ModuleMeta<MiddleModule, [typeof MiddleDir], never, [typeof MiddleDir, typeof deep.DeepModule]>;
             }
       `,
             'shallow': `
@@ -178,7 +178,7 @@ runInEachFileSystem(() => {
             }
 
             export declare class ShallowModule {
-              static ngModuleDef: ModuleMeta<ShallowModule, [typeof ShallowDir], never, [typeof ShallowDir, typeof middle.MiddleModule]>;
+              static ɵmod: ModuleMeta<ShallowModule, [typeof ShallowDir], never, [typeof ShallowDir, typeof middle.MiddleModule]>;
             }
       `,
           },
@@ -206,7 +206,7 @@ runInEachFileSystem(() => {
             }
 
             export declare class DeepModule {
-              static ngModuleDef: ModuleMeta<DeepModule, [typeof DeepDir], never, [typeof DeepDir]>;
+              static ɵmod: ModuleMeta<DeepModule, [typeof DeepDir], never, [typeof DeepDir]>;
             }
     `,
             'middle': `
@@ -217,7 +217,7 @@ runInEachFileSystem(() => {
             }
 
             export declare class MiddleModule {
-              static ngModuleDef: ModuleMeta<MiddleModule, [typeof MiddleDir], [typeof deep.DeepModule], [typeof MiddleDir, typeof deep.DeepDir]>;
+              static ɵmod: ModuleMeta<MiddleModule, [typeof MiddleDir], [typeof deep.DeepModule], [typeof MiddleDir, typeof deep.DeepDir]>;
             }
     `,
             'shallow': `
@@ -228,7 +228,7 @@ runInEachFileSystem(() => {
             }
 
             export declare class ShallowModule {
-              static ngModuleDef: ModuleMeta<ShallowModule, [typeof ShallowDir], never, [typeof ShallowDir, typeof middle.MiddleModule]>;
+              static ɵmod: ModuleMeta<ShallowModule, [typeof ShallowDir], never, [typeof ShallowDir, typeof middle.MiddleModule]>;
             }
     `,
           },
@@ -257,11 +257,11 @@ runInEachFileSystem(() => {
                 }
 
                 export declare class DeepModule {
-                  static ngModuleDef: ModuleMeta<DeepModule, [typeof DeepDir], never, [typeof DeepDir]>;
+                  static ɵmod: ModuleMeta<DeepModule, [typeof DeepDir], never, [typeof DeepDir]>;
                 }
 
                 export declare class DeepExportModule {
-                  static ngModuleDef: ModuleMeta<DeepExportModule, never, never, [typeof DeepModule]>;
+                  static ɵmod: ModuleMeta<DeepExportModule, never, never, [typeof DeepModule]>;
                 }
               `,
              },

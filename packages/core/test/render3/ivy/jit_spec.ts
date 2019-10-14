@@ -156,7 +156,7 @@ ivyEnabled && describe('render3 jit', () => {
     class Module {
     }
 
-    const moduleDef: NgModuleDef<Module> = (Module as any).ngModuleDef;
+    const moduleDef: NgModuleDef<Module> = (Module as any).ɵmod;
     expect(moduleDef).toBeDefined();
     if (!Array.isArray(moduleDef.declarations)) {
       return fail('Expected an array');
@@ -208,7 +208,7 @@ ivyEnabled && describe('render3 jit', () => {
     class Module {
     }
 
-    const moduleDef: NgModuleDef<Module> = (Module as any).ngModuleDef;
+    const moduleDef: NgModuleDef<Module> = (Module as any).ɵmod;
     // directive defs are still null, since no directives were in that component
     expect(cmpDef.directiveDefs).toBeNull();
   });

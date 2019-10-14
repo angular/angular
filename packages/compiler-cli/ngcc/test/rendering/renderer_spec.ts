@@ -268,14 +268,14 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
           const definitions: string = addDefinitionsSpy.calls.first().args[2];
-          const ngModuleDef = definitions.indexOf('ngModuleDef');
-          expect(ngModuleDef).not.toEqual(-1, 'ngModuleDef should exist');
+          const ngModuleDef = definitions.indexOf('ɵmod');
+          expect(ngModuleDef).not.toEqual(-1, 'ɵmod should exist');
           const ngInjectorDef = definitions.indexOf('ngInjectorDef');
           expect(ngInjectorDef).not.toEqual(-1, 'ngInjectorDef should exist');
           const setClassMetadata = definitions.indexOf('setClassMetadata');
           expect(setClassMetadata).not.toEqual(-1, 'setClassMetadata call should exist');
           expect(setClassMetadata)
-              .toBeGreaterThan(ngModuleDef, 'setClassMetadata should follow ngModuleDef');
+              .toBeGreaterThan(ngModuleDef, 'setClassMetadata should follow ɵmod');
           expect(setClassMetadata)
               .toBeGreaterThan(ngInjectorDef, 'setClassMetadata should follow ngInjectorDef');
         });

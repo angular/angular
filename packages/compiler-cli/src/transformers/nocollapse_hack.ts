@@ -24,7 +24,7 @@ const R3_DEF_NAME_PATTERN = [
   'ɵdir',
   'ngInjectableDef',
   'ngInjectorDef',
-  'ngModuleDef',
+  'ɵmod',
   'ɵpipe',
   'ɵfac',
 ].join('|');

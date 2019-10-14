@@ -38,7 +38,7 @@ export class DtsMetadataReader implements MetadataReader {
     // This operation is explicitly not memoized, as it depends on `ref.ownedByModuleGuess`.
     // TODO(alxhub): investigate caching of .d.ts module metadata.
     const ngModuleDef = this.reflector.getMembersOfClass(clazz).find(
-        member => member.name === 'ngModuleDef' && member.isStatic);
+        member => member.name === 'ɵmod' && member.isStatic);
     if (ngModuleDef === undefined) {
       return null;
     } else if (

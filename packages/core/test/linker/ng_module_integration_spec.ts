@@ -335,14 +335,14 @@ function declareTests(config?: {useJit: boolean}) {
           .it('should register a module even if not importing the .ngfactory file or calling create()',
               () => {
                 class ChildModule {
-                  static ngModuleDef = defineNgModule({
+                  static ɵmod = defineNgModule({
                     type: ChildModule,
                     id: 'child',
                   });
                 }
 
                 class Module {
-                  static ngModuleDef = defineNgModule({
+                  static ɵmod = defineNgModule({
                     type: Module,
                     id: 'test',
                     imports: [ChildModule],

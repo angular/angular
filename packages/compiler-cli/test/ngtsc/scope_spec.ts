@@ -51,7 +51,7 @@ runInEachFileSystem(() => {
           const dtsContents = env.getContents('test.d.ts');
           expect(dtsContents)
               .toContain(
-                  'static ngModuleDef: i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof OtherModule], never>');
+                  'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof OtherModule], never>');
         });
 
         it('should produce an error when an invalid class is imported', () => {
@@ -112,7 +112,7 @@ runInEachFileSystem(() => {
           const dtsContents = env.getContents('test.d.ts');
           expect(dtsContents)
               .toContain(
-                  'static ngModuleDef: i0.ɵɵNgModuleDefWithMeta<TestModule, never, never, [typeof OtherModule]>');
+                  'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, never, never, [typeof OtherModule]>');
         });
 
         it('should produce an error when a non-NgModule class is exported', () => {

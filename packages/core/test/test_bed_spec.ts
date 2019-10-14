@@ -553,7 +553,7 @@ describe('TestBed', () => {
 
           // This is an AOT compiled module which declares (but does not export) SomeComponent.
           class ModuleClass {
-            static ngModuleDef = defineNgModule({
+            static ɵmod = defineNgModule({
               type: ModuleClass,
               declarations: [SomeComponent],
             });

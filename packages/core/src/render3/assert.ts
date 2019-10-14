@@ -29,8 +29,7 @@ export function assertComponentType(
 
 export function assertNgModuleType(
     actual: any,
-    msg: string =
-        'Type passed in is not NgModuleType, it does not have \'ngModuleDef\' property.') {
+    msg: string = 'Type passed in is not NgModuleType, it does not have \'ɵmod\' property.') {
   if (!getNgModuleDef(actual)) {
     throwError(msg);
   }

@@ -16,7 +16,7 @@ import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} fr
 import {deepForEach, flatten} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
-import {NG_COMP_DEF, NG_DIR_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
+import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {NgModuleType} from '../ng_module_ref';
 import {maybeUnwrapFn, stringifyForError} from '../util/misc_utils';
@@ -93,7 +93,7 @@ export function compileNgModule(moduleType: Type<any>, ngModule: NgModule = {}):
 }
 
 /**
- * Compiles and adds the `ngModuleDef` and `ngInjectorDef` properties to the module class.
+ * Compiles and adds the `ɵmod` and `ngInjectorDef` properties to the module class.
  *
  * It's possible to compile a module via this API which will allow duplicate declarations in its
  * root.
@@ -105,7 +105,7 @@ export function compileNgModuleDefs(
   ngDevMode && assertDefined(ngModule, 'Required value ngModule');
   const declarations: Type<any>[] = flatten(ngModule.declarations || EMPTY_ARRAY);
   let ngModuleDef: any = null;
-  Object.defineProperty(moduleType, NG_MODULE_DEF, {
+  Object.defineProperty(moduleType, NG_MOD_DEF, {
     configurable: true,
     get: () => {
       if (ngModuleDef === null) {
@@ -115,7 +115,7 @@ export function compileNgModuleDefs(
           throw new Error(`'${stringifyForError(moduleType)}' module can't import itself`);
         }
         ngModuleDef = getCompilerFacade().compileNgModule(
-            angularCoreEnv, `ng:///${moduleType.name}/ngModuleDef.js`, {
+            angularCoreEnv, `ng:///${moduleType.name}/ɵmod.js`, {
               type: moduleType,
               bootstrap: flatten(ngModule.bootstrap || EMPTY_ARRAY).map(resolveForwardRef),
               declarations: declarations.map(resolveForwardRef),
@@ -429,7 +429,7 @@ export function transitiveScopesFor<T>(
     moduleType: Type<T>,
     processNgModuleFn?: (ngModule: NgModuleType) => void): NgModuleTransitiveScopes {
   if (!isNgModule(moduleType)) {
-    throw new Error(`${moduleType.name} does not have an ngModuleDef`);
+    throw new Error(`${moduleType.name} does not have a module def (ɵmod property)`);
   }
   const def = getNgModuleDef(moduleType) !;
 
@@ -465,11 +465,11 @@ export function transitiveScopesFor<T>(
   maybeUnwrapFn(def.imports).forEach(<I>(imported: Type<I>) => {
     const importedType = imported as Type<I>& {
       // If imported is an @NgModule:
-      ngModuleDef?: NgModuleDef<I>;
+      ɵmod?: NgModuleDef<I>;
     };
 
     if (!isNgModule<I>(importedType)) {
-      throw new Error(`Importing ${importedType.name} which does not have an ngModuleDef`);
+      throw new Error(`Importing ${importedType.name} which does not have a ɵmod property`);
     }
 
     if (processNgModuleFn) {
@@ -488,7 +488,7 @@ export function transitiveScopesFor<T>(
       // Components, Directives, NgModules, and Pipes can all be exported.
       ɵcmp?: any;
       ɵdir?: any;
-      ngModuleDef?: NgModuleDef<E>;
+      ɵmod?: NgModuleDef<E>;
       ɵpipe?: any;
     };
 
@@ -528,6 +528,6 @@ function isModuleWithProviders(value: any): value is ModuleWithProviders<{}> {
   return (value as{ngModule?: any}).ngModule !== undefined;
 }
 
-function isNgModule<T>(value: Type<T>): value is Type<T>&{ngModuleDef: NgModuleDef<T>} {
+function isNgModule<T>(value: Type<T>): value is Type<T>&{ɵmod: NgModuleDef<T>} {
   return !!getNgModuleDef(value);
 }
