@@ -12,6 +12,7 @@ export * from './build-component';
 export * from './get-project';
 export * from './html-head-element';
 export * from './parse5-element';
+export * from './project-index-file';
 export * from './project-main-file';
 export * from './project-style-file';
 export * from './project-targets';

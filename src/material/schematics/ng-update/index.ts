@@ -11,6 +11,7 @@ import {createUpgradeRule, TargetVersion} from '@angular/cdk/schematics';
 import chalk from 'chalk';
 
 import {materialUpgradeData} from './upgrade-data';
+import {HammerGesturesRule} from './upgrade-rules/hammer-gestures-v9/hammer-gestures-rule';
 import {MiscClassInheritanceRule} from './upgrade-rules/misc-checks/misc-class-inheritance-rule';
 import {MiscClassNamesRule} from './upgrade-rules/misc-checks/misc-class-names-rule';
 import {MiscImportsRule} from './upgrade-rules/misc-checks/misc-imports-rule';
@@ -29,6 +30,7 @@ const materialMigrationRules = [
   MiscTemplateRule,
   RippleSpeedFactorRule,
   SecondaryEntryPointsRule,
+  HammerGesturesRule,
 ];
 
 /** Entry point for the migration schematics with target of Angular Material v6 */

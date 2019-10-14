@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {UpdateRecorder} from '@angular-devkit/schematics';
+import {logging} from '@angular-devkit/core';
+import {SchematicContext, Tree, UpdateRecorder} from '@angular-devkit/schematics';
 import * as ts from 'typescript';
 import {ResolvedResource} from './component-resource-collector';
 import {TargetVersion} from './target-version';
@@ -26,11 +27,35 @@ export class MigrationRule<T> {
   ruleEnabled = true;
 
   constructor(
-      public program: ts.Program, public typeChecker: ts.TypeChecker,
-      public targetVersion: TargetVersion, public upgradeData: T) {}
+      /** TypeScript program for the migration. */
+      public program: ts.Program,
+      /** TypeChecker instance for the analysis program. */
+      public typeChecker: ts.TypeChecker,
+      /** Version for which the migration rule should run. */
+      public targetVersion: TargetVersion,
+      /** Upgrade data passed to the migration. */
+      public upgradeData: T,
+      /** Devkit tree for the current migration. Can be used to insert/remove files. */
+      public tree: Tree,
+      /** Gets the update recorder for a given source file or resolved template. */
+      public getUpdateRecorder: (filePath: string) => UpdateRecorder,
+      /** Base directory of the virtual file system tree. */
+      public basePath: string,
+      /** Logger that can be used to print messages as part of the migration. */
+      public logger: logging.LoggerApi,
+      /** Whether the migration runs for a test target. */
+      public isTestTarget: boolean,
+      /** Path to the tsconfig that is migrated. */
+      public tsconfigPath: string) {}
 
   /** Method can be used to perform global analysis of the program. */
   init(): void {}
+
+  /**
+   * Method that will be called once all nodes, templates and stylesheets
+   * have been visited.
+   */
+  postAnalysis(): void {}
 
   /**
    * Method that will be called for each node in a given source file. Unlike tslint, this
@@ -46,11 +71,6 @@ export class MigrationRule<T> {
   /** Method that will be called for each stylesheet in the program. */
   visitStylesheet(stylesheet: ResolvedResource): void {}
 
-  /** Gets the update recorder for a given source file or resolved template. */
-  getUpdateRecorder(filePath: string): UpdateRecorder {
-    throw new Error('MigrationRule#getUpdateRecorder is not implemented.');
-  }
-
   /** Creates a failure with a specified message at the given node location. */
   createFailureAtNode(node: ts.Node, message: string) {
     const sourceFile = node.getSourceFile();
@@ -60,4 +80,17 @@ export class MigrationRule<T> {
       message: message,
     });
   }
+
+  /** Prints the specified message with "info" loglevel. */
+  printInfo(text: string) {
+    this.logger.info(`- ${this.tsconfigPath}: ${text}`);
+  }
+
+  /**
+   * Static method that will be called once the migration of all project targets
+   * has been performed. This method can be used to make changes respecting the
+   * migration result of all individual targets. e.g. removing HammerJS if it
+   * is not needed in any project target.
+   */
+  static globalPostMigration(tree: Tree, context: SchematicContext) {}
 }

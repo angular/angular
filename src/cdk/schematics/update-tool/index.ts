@@ -17,12 +17,15 @@ import {MigrationFailure, MigrationRule} from './migration-rule';
 import {TargetVersion} from './target-version';
 import {parseTsconfigFile} from './utils/parse-tsconfig';
 
-export type Constructor<T> = new (...args: any[]) => T;
+export type Constructor<T> = (new (...args: any[]) => T);
+export type MigrationRuleType<T> = Constructor<MigrationRule<T>>
+    & {[m in keyof typeof MigrationRule]: (typeof MigrationRule)[m]};
+
 
 export function runMigrationRules<T>(
-    tree: Tree, logger: logging.LoggerApi, tsconfigPath: string, targetVersion: TargetVersion,
-    ruleTypes: Constructor<MigrationRule<T>>[], upgradeData: T,
-    analyzedFiles: Set<string>): boolean {
+    tree: Tree, logger: logging.LoggerApi, tsconfigPath: string, isTestTarget: boolean,
+    targetVersion: TargetVersion, ruleTypes: MigrationRuleType<T>[], upgradeData: T,
+    analyzedFiles: Set<string>): {hasFailures: boolean} {
   // The CLI uses the working directory as the base directory for the
   // virtual file system tree.
   const basePath = process.cwd();
@@ -44,8 +47,9 @@ export function runMigrationRules<T>(
 
   // Create instances of all specified migration rules.
   for (const ruleCtor of ruleTypes) {
-    const rule = new ruleCtor(program, typeChecker, targetVersion, upgradeData);
-    rule.getUpdateRecorder = getUpdateRecorder;
+    const rule = new ruleCtor(
+        program, typeChecker, targetVersion, upgradeData, tree, getUpdateRecorder, basePath, logger,
+        isTestTarget, tsconfigPath);
     rule.init();
     if (rule.ruleEnabled) {
       rules.push(rule);
@@ -102,6 +106,9 @@ export function runMigrationRules<T>(
         }
       });
 
+  // Call the "postAnalysis" method for each migration rule.
+  rules.forEach(r => r.postAnalysis());
+
   // Commit all recorded updates in the update recorder. We need to perform the
   // replacements per source file in order to ensure that offsets in the TypeScript
   // program are not incorrectly shifted.
@@ -120,7 +127,9 @@ export function runMigrationRules<T>(
     });
   }
 
-  return !!ruleFailures.length;
+  return {
+    hasFailures: !!ruleFailures.length,
+  };
 
   function getUpdateRecorder(filePath: string): UpdateRecorder {
     const treeFilePath = getProjectRelativePath(filePath);

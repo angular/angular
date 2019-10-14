@@ -10,6 +10,7 @@ import {normalize} from '@angular-devkit/core';
 import {WorkspaceProject, WorkspaceSchema} from '@angular-devkit/core/src/experimental/workspace';
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
 import {
+  defaultTargetBuilders,
   getProjectFromWorkspace,
   getProjectStyleFile,
   getProjectTargetOptions,
@@ -26,12 +27,6 @@ const prebuiltThemePathSegment = '@angular/material/prebuilt-themes';
 
 /** Default file name of the custom theme that can be generated. */
 const defaultCustomThemeFilename = 'custom-theme.scss';
-
-/** Object that maps a CLI target to its default builder name. */
-const defaultTargetBuilders = {
-  build: '@angular-devkit/build-angular:browser',
-  test: '@angular-devkit/build-angular:karma',
-};
 
 /** Add pre-built styles to the main project style file. */
 export function addThemeToAppStyles(options: Schema): (host: Tree) => Tree {

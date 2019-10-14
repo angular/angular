@@ -40,7 +40,7 @@ function onMigrationComplete(targetVersion: TargetVersion, hasFailures: boolean)
 
   if (hasFailures) {
     console.log(chalk.yellow(
-      '  ⚠  Some issues were detected but could not be fixed automatically. Please check the ' +
-      'output above and fix these issues manually.'));
+        '  ⚠  Some issues were detected but could not be fixed automatically. Please check the ' +
+        'output above and fix these issues manually.'));
   }
 }

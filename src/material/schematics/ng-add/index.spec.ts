@@ -4,13 +4,12 @@ import {Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {
   addModuleImportToRootModule,
-  getProjectFromWorkspace,
+  getProjectFromWorkspace, getProjectIndexFiles,
   getProjectStyleFile,
   getProjectTargetOptions,
 } from '@angular/cdk/schematics';
 import {createTestApp, getFileContent} from '@angular/cdk/schematics/testing';
 import {getWorkspace} from '@schematics/angular/utility/config';
-import {getIndexHtmlPath} from './fonts/project-index-html';
 
 describe('ng-add schematic', () => {
   let runner: SchematicTestRunner;
@@ -112,18 +111,22 @@ describe('ng-add schematic', () => {
     const workspace = getWorkspace(tree);
     const project = getProjectFromWorkspace(workspace);
 
-    const indexPath = getIndexHtmlPath(project);
-    const buffer = tree.read(indexPath)!;
-    const htmlContent = buffer.toString();
+    const indexFiles = getProjectIndexFiles(project);
+    expect(indexFiles.length).toBe(1);
 
-    // Ensure that the indentation has been determined properly. We want to make sure that
-    // the created links properly align with the existing HTML. Default CLI projects use an
-    // indentation of two columns.
-    expect(htmlContent)
+    indexFiles.forEach(indexPath => {
+      const buffer = tree.read(indexPath)!;
+      const htmlContent = buffer.toString();
+
+      // Ensure that the indentation has been determined properly. We want to make sure that
+      // the created links properly align with the existing HTML. Default CLI projects use an
+      // indentation of two columns.
+      expect(htmlContent)
         .toContain('  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"');
-    expect(htmlContent)
+      expect(htmlContent)
         .toContain(
           '  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap"');
+    });
   });
 
   it('should add material app styles', async () => {

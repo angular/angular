@@ -6,7 +6,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 filegroup(
     name = "schematics_assets",
-    srcs = glob([
+    srcs = ["ng-update/upgrade-rules/hammer-gestures-v9/gesture-config.template"] + glob([
         "ng-generate/*/files/**/*",
         "**/*.json",
     ]),
@@ -70,6 +70,7 @@ ts_library(
     tsconfig = ":tsconfig.json",
     deps = [
         ":schematics",
+        "//src/cdk/private/testing",
         "//src/cdk/schematics",
         "//src/cdk/schematics/testing",
         "@npm//@angular-devkit/core",

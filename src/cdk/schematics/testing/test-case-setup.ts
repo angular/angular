@@ -14,6 +14,7 @@ import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/test
 import {readFileSync, removeSync} from 'fs-extra';
 import {sync as globSync} from 'glob';
 import {basename, extname, join, relative, sep} from 'path';
+import {EMPTY} from 'rxjs';
 import {createTestApp} from '../testing';
 
 /** Suffix that indicates whether a given file is a test case input. */
@@ -53,7 +54,15 @@ export async function createFileSystemTestApp(runner: SchematicTestRunner) {
   };
 
   function writeFile(filePath: string, content: string) {
+    // Update the temp file system host to reflect the changes in the real file system.
+    // This is still necessary since we depend on the real file system for parsing the
+    // TypeScript project.
     tempFileSystemHost.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(content));
+    if (hostTree.exists(filePath)) {
+      hostTree.overwrite(filePath, content);
+    } else {
+      hostTree.create(filePath, content);
+    }
   }
 }
 
@@ -95,6 +104,12 @@ export async function createTestCaseSetup(migrationName: string, collectionPath:
     // from within the project.
     process.chdir(tempPath);
 
+    // Patch "executePostTasks" to do nothing. This is necessary since
+    // we cannot run the node install task in unit tests. Rather we just
+    // assert that certain async post tasks are scheduled.
+    // TODO(devversion): RxJS version conflicts between angular-devkit and our dev deps.
+    runner.engine.executePostTasks = () => EMPTY as any;
+
     await runner.runSchematicAsync(migrationName, {}, appTree).toPromise();
 
     // Switch back to the initial working directory.
@@ -103,7 +118,7 @@ export async function createTestCaseSetup(migrationName: string, collectionPath:
     return {logOutput};
   };
 
-  return {appTree, writeFile, tempPath, removeTempDir, runFixers};
+  return {runner, appTree, writeFile, tempPath, removeTempDir, runFixers};
 }
 
 /**

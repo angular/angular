@@ -12,6 +12,7 @@ export enum TargetVersion {
   V7 = 'version 7',
   V8 = 'version 8',
   V9 = 'version 9',
+  V10 = 'version 10',
 }
 
 /**
