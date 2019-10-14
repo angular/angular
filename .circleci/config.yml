@@ -622,7 +622,9 @@ jobs:
           command: ./scripts/ci/run_angular_material_unit_tests.sh
 
   test_zonejs:
-    executor: default-executor
+    executor:
+      name: default-executor
+      resource_class: xlarge
     steps:
       - custom_attach_workspace
       - init_environment
