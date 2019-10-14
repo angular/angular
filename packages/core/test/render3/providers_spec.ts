@@ -1134,7 +1134,7 @@ describe('providers', () => {
                {provide: String, useValue: 'From module injector'}
              ]
            });
-           static ngModuleDef: NgModuleDef<any> = { bootstrap: [] } as any;
+           static ɵmod: NgModuleDef<any> = { bootstrap: [] } as any;
          }
          const myAppModuleFactory = new NgModuleFactory(MyAppModule);
          const ngModuleRef = myAppModuleFactory.create(null);
