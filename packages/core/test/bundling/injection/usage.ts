@@ -30,7 +30,7 @@ export class ScopedService {
 }
 
 export class DefinedInjector {
-  static ngInjectorDef = ɵɵdefineInjector({
+  static ɵinj = ɵɵdefineInjector({
     factory: () => new DefinedInjector(),
     providers: [ScopedService],
   });

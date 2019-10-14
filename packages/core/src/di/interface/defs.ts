@@ -104,7 +104,7 @@ export interface InjectorType<T> extends Type<T> {
   /**
    * Opaque type whose structure is highly version dependent. Do not rely on any properties.
    */
-  ngInjectorDef: never;
+  ɵinj: never;
 }
 
 /**
@@ -159,7 +159,7 @@ export const defineInjectable = ɵɵdefineInjectable;
 /**
  * Construct an `InjectorDef` which configures an injector.
  *
- * This should be assigned to a static `ngInjectorDef` field on a type, which will then be an
+ * This should be assigned to a static injector def (`ɵinj`) field on a type, which will then be an
  * `InjectorType`.
  *
  * Options:
@@ -223,13 +223,13 @@ export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDef<T>|nu
 }
 
 /**
- * Read the `ngInjectorDef` type in a way which is immune to accidentally reading inherited value.
+ * Read the injector def type in a way which is immune to accidentally reading inherited value.
  *
- * @param type type which may have `ngInjectorDef`
+ * @param type type which may have an injector def (`ɵinj`)
  */
 export function getInjectorDef<T>(type: any): ɵɵInjectorDef<T>|null {
-  return type && type.hasOwnProperty(NG_INJECTOR_DEF) ? (type as any)[NG_INJECTOR_DEF] : null;
+  return type && type.hasOwnProperty(NG_INJ_DEF) ? (type as any)[NG_INJ_DEF] : null;
 }
 
 export const NG_INJECTABLE_DEF = getClosureSafeProperty({ngInjectableDef: getClosureSafeProperty});
-export const NG_INJECTOR_DEF = getClosureSafeProperty({ngInjectorDef: getClosureSafeProperty});
+export const NG_INJ_DEF = getClosureSafeProperty({ɵinj: getClosureSafeProperty});

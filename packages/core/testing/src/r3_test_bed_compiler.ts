@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {ApplicationInitStatus, COMPILER_OPTIONS, Compiler, Component, Directive, Injector, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, Type, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJECTOR_DEF as NG_INJECTOR_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDef as InjectableDef} from '@angular/core';
+import {ApplicationInitStatus, COMPILER_OPTIONS, Compiler, Component, Directive, Injector, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, Type, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDef as InjectableDef} from '@angular/core';
 import {ModuleRegistrationMap, getRegisteredModulesState, restoreRegisteredModulesState} from '../../src/linker/ng_module_factory_registration';
 
 import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
@@ -362,7 +362,7 @@ export class R3TestBedCompiler {
     }
     this.moduleProvidersOverridden.add(moduleType);
 
-    const injectorDef: any = (moduleType as any)[NG_INJECTOR_DEF];
+    const injectorDef: any = (moduleType as any)[NG_INJ_DEF];
     if (this.providerOverridesByToken.size > 0) {
       // Extract the list of providers from ModuleWithProviders, so we can define the final list of
       // providers that might have overrides.
@@ -373,9 +373,9 @@ export class R3TestBedCompiler {
                                    isModuleWithProviders(imported) ? imported.providers : []));
       const providers = [...providersFromModules, ...injectorDef.providers];
       if (this.hasProviderOverrides(providers)) {
-        this.maybeStoreNgDef(NG_INJECTOR_DEF, moduleType);
+        this.maybeStoreNgDef(NG_INJ_DEF, moduleType);
 
-        this.storeFieldOfDefOnType(moduleType, NG_INJECTOR_DEF, 'providers');
+        this.storeFieldOfDefOnType(moduleType, NG_INJ_DEF, 'providers');
         injectorDef.providers = this.getOverriddenProviders(providers);
       }
 
@@ -410,7 +410,7 @@ export class R3TestBedCompiler {
     }
     // Cache the initial ngModuleDef as it will be overwritten.
     this.maybeStoreNgDef(NG_MOD_DEF, ngModule);
-    this.maybeStoreNgDef(NG_INJECTOR_DEF, ngModule);
+    this.maybeStoreNgDef(NG_INJ_DEF, ngModule);
 
     compileNgModuleDefs(ngModule as NgModuleType<any>, metadata);
   }

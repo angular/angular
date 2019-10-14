@@ -23,7 +23,7 @@ const R3_DEF_NAME_PATTERN = [
   'ɵcmp',
   'ɵdir',
   'ngInjectableDef',
-  'ngInjectorDef',
+  'ɵinj',
   'ɵmod',
   'ɵpipe',
   'ɵfac',

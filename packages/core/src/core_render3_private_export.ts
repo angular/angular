@@ -230,7 +230,7 @@ export {
 
 export {
   NG_INJECTABLE_DEF as ɵNG_INJECTABLE_DEF,
-  NG_INJECTOR_DEF as ɵNG_INJECTOR_DEF,
+  NG_INJ_DEF as ɵNG_INJ_DEF,
 } from './di/interface/defs';
 
 export {

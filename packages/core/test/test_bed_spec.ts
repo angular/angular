@@ -699,7 +699,7 @@ describe('TestBed', () => {
 
              // The providers for the module should have been restored to the original array, with
              // no trace of the overridden providers.
-             expect((Module as any).ngInjectorDef.providers).toEqual([Token]);
+             expect((Module as any).ɵinj.providers).toEqual([Token]);
            });
 
         it('should clean up overridden providers on components whose modules are compiled more than once',

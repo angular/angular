@@ -326,7 +326,7 @@ describe('providers', () => {
 
   describe('single', () => {
     class MyModule {
-      static ngInjectorDef = ɵɵdefineInjector(
+      static ɵinj = ɵɵdefineInjector(
           {factory: () => new MyModule(), providers: [{provide: String, useValue: 'From module'}]});
     }
 
@@ -536,7 +536,7 @@ describe('providers', () => {
 
   describe('multi', () => {
     class MyModule {
-      static ngInjectorDef = ɵɵdefineInjector({
+      static ɵinj = ɵɵdefineInjector({
         factory: () => new MyModule(),
         providers: [{provide: String, useValue: 'From module', multi: true}]
       });
@@ -833,7 +833,7 @@ describe('providers', () => {
 
     it('should work with a module', () => {
       class MyModule {
-        static ngInjectorDef = ɵɵdefineInjector({
+        static ɵinj = ɵɵdefineInjector({
           factory: () => new MyModule(),
           providers: [{provide: String, useValue: 'From module'}]
         });
@@ -1126,7 +1126,7 @@ describe('providers', () => {
          expect(fixture.html).toEqual('<host-cmp>foo</host-cmp>');
 
          class MyAppModule {
-           static ngInjectorDef = ɵɵdefineInjector({
+           static ɵinj = ɵɵdefineInjector({
              factory: () => new MyAppModule(),
              imports: [],
              providers: [
@@ -1210,7 +1210,7 @@ describe('providers', () => {
 
   describe('injection flags', () => {
     class MyModule {
-      static ngInjectorDef = ɵɵdefineInjector(
+      static ɵinj = ɵɵdefineInjector(
           {factory: () => new MyModule(), providers: [{provide: String, useValue: 'Module'}]});
     }
     it('should not fall through to ModuleInjector if flags limit the scope', () => {

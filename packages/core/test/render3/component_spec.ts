@@ -90,7 +90,7 @@ describe('component', () => {
     }
 
     class MyModule {
-      static ngInjectorDef = ɵɵdefineInjector({
+      static ɵinj = ɵɵdefineInjector({
         factory: () => new MyModule(),
         providers: [{provide: MyService, useValue: new MyService('injector')}]
       });
