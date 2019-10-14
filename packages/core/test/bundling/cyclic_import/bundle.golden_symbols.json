@@ -156,6 +156,9 @@
     "name": "addToViewTree"
   },
   {
+    "name": "allocLFrame"
+  },
+  {
     "name": "allocStylingMapArray"
   },
   {
@@ -184,6 +187,9 @@
   },
   {
     "name": "createDirectivesInstances"
+  },
+  {
+    "name": "createLFrame"
   },
   {
     "name": "createLView"
@@ -226,6 +232,12 @@
   },
   {
     "name": "elementCreate"
+  },
+  {
+    "name": "enterDI"
+  },
+  {
+    "name": "enterView"
   },
   {
     "name": "executeCheckHooks"
@@ -480,6 +492,15 @@
     "name": "isStylingValueDefined"
   },
   {
+    "name": "leaveDI"
+  },
+  {
+    "name": "leaveView"
+  },
+  {
+    "name": "leaveViewProcessExit"
+  },
+  {
     "name": "locateHostElement"
   },
   {
@@ -487,9 +508,6 @@
   },
   {
     "name": "matchTemplateAttribute"
-  },
-  {
-    "name": "namespaceHTMLInternal"
   },
   {
     "name": "nativeAppendChild"
@@ -561,9 +579,6 @@
     "name": "renderView"
   },
   {
-    "name": "resetComponentState"
-  },
-  {
     "name": "resetPreOrderHookFlags"
   },
   {
@@ -582,9 +597,6 @@
     "name": "selectIndexInternal"
   },
   {
-    "name": "selectView"
-  },
-  {
     "name": "setActiveHostElement"
   },
   {
@@ -598,9 +610,6 @@
   },
   {
     "name": "setCurrentQueryIndex"
-  },
-  {
-    "name": "setCurrentStyleSanitizer"
   },
   {
     "name": "setDirectiveStylingInput"
@@ -634,9 +643,6 @@
   },
   {
     "name": "setStyle"
-  },
-  {
-    "name": "setTNodeAndViewData"
   },
   {
     "name": "setUpAttributes"

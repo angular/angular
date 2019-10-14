@@ -15,7 +15,7 @@ import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {assertFirstTemplatePass, assertLView} from '../assert';
-import {attachPatchData, getComponentViewByInstance} from '../context_discovery';
+import {attachPatchData} from '../context_discovery';
 import {getFactoryDef} from '../definition';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
@@ -30,7 +30,7 @@ import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRoo
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {ActiveElementFlags, executeElementExitFn, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, hasActiveElementFlag, incrementActiveDirectiveId, namespaceHTMLInternal, selectView, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
+import {ActiveElementFlags, enterView, executeElementExitFn, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, hasActiveElementFlag, incrementActiveDirectiveId, leaveView, leaveViewProcessExit, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {renderStylingMap} from '../styling/bindings';
 import {NO_CHANGE} from '../tokens';
 import {isAnimationProp} from '../util/attrs_utils';
@@ -312,7 +312,7 @@ export function allocExpando(view: LView, numSlotsToAlloc: number) {
  */
 export function renderView<T>(lView: LView, tView: TView, context: T): void {
   ngDevMode && assertEqual(isCreationMode(lView), true, 'Should be run in creation mode');
-  const oldView = selectView(lView, lView[T_HOST]);
+  enterView(lView, lView[T_HOST]);
   try {
     const viewQuery = tView.viewQuery;
     if (viewQuery !== null) {
@@ -357,7 +357,7 @@ export function renderView<T>(lView: LView, tView: TView, context: T): void {
 
   } finally {
     lView[FLAGS] &= ~LViewFlags.CreationMode;
-    selectView(oldView, null);
+    leaveView();
   }
 }
 
@@ -372,7 +372,7 @@ export function renderView<T>(lView: LView, tView: TView, context: T): void {
 export function refreshView<T>(
     lView: LView, tView: TView, templateFn: ComponentTemplate<{}>| null, context: T) {
   ngDevMode && assertEqual(isCreationMode(lView), false, 'Should be run in update mode');
-  const oldView = selectView(lView, lView[T_HOST]);
+  enterView(lView, lView[T_HOST]);
   const flags = lView[FLAGS];
   try {
     resetPreOrderHookFlags(lView);
@@ -463,7 +463,7 @@ export function refreshView<T>(
 
   } finally {
     lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
-    selectView(oldView, null);
+    leaveViewProcessExit();
   }
 }
 
@@ -472,8 +472,6 @@ export function renderComponentOrTemplate<T>(
   const rendererFactory = hostView[RENDERER_FACTORY];
   const normalExecutionPath = !getCheckNoChangesMode();
   const creationModeIsActive = isCreationMode(hostView);
-  const previousOrParentTNode = getPreviousOrParentTNode();
-  const isParent = getIsParent();
   try {
     if (normalExecutionPath && !creationModeIsActive && rendererFactory.begin) {
       rendererFactory.begin();
@@ -487,13 +485,11 @@ export function renderComponentOrTemplate<T>(
     if (normalExecutionPath && !creationModeIsActive && rendererFactory.end) {
       rendererFactory.end();
     }
-    setPreviousOrParentTNode(previousOrParentTNode, isParent);
   }
 }
 
 function executeTemplate<T>(
     lView: LView, templateFn: ComponentTemplate<T>, rf: RenderFlags, context: T) {
-  namespaceHTMLInternal();
   const prevSelectedIndex = getSelectedIndex();
   try {
     setActiveHostElement(null);
@@ -1659,9 +1655,6 @@ export function tickRootContext(rootContext: RootContext) {
 
 export function detectChangesInternal<T>(view: LView, context: T) {
   const rendererFactory = view[RENDERER_FACTORY];
-  const previousOrParentTNode = getPreviousOrParentTNode();
-  const isParent = getIsParent();
-
   if (rendererFactory.begin) rendererFactory.begin();
   try {
     const tView = view[TVIEW];
@@ -1671,7 +1664,6 @@ export function detectChangesInternal<T>(view: LView, context: T) {
     throw error;
   } finally {
     if (rendererFactory.end) rendererFactory.end();
-    setPreviousOrParentTNode(previousOrParentTNode, isParent);
   }
 }
 
@@ -1682,18 +1674,6 @@ export function detectChangesInternal<T>(view: LView, context: T) {
  */
 export function detectChangesInRootView(lView: LView): void {
   tickRootContext(lView[CONTEXT] as RootContext);
-}
-
-
-/**
- * Checks the change detector and its children, and throws if any changes are detected.
- *
- * This is used in development mode to verify that running change detection doesn't
- * introduce other changes.
- */
-export function checkNoChanges<T>(component: T): void {
-  const view = getComponentViewByInstance(component);
-  checkNoChangesInternal<T>(view, component);
 }
 
 export function checkNoChangesInternal<T>(view: LView, context: T) {

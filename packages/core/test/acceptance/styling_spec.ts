@@ -2105,7 +2105,7 @@ describe('styling', () => {
        expect(readyChild).toBeTruthy();
      });
 
-  onlyInIvy('only ivy allows for multiple styles/classes to be balanaced across directives')
+  onlyInIvy('only ivy allows for multiple styles/classes to be balanced across directives')
       .it('should allow various duplicate properties to be defined in various styling maps within the template and directive styling bindings',
           () => {
             @Component({
