@@ -11,43 +11,45 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 
 import {AppComponent} from './app.component';
-import {ExpectNumericType, LowercasePipe, PrivateReference, WrongFieldReference, WrongSubFieldReference} from './expression-cases';
-import {UnknownEven, UnknownPeople, UnknownTrackBy} from './ng-for-cases';
-import {ShowIf} from './ng-if-cases';
-import {AttributeBinding, CaseIncompleteOpen, CaseMissingClosing, CaseUnknown, EmptyInterpolation, EventBinding, ForLetIEqual, ForOfEmpty, ForOfLetEmpty, ForUsingComponent, NoValueAttribute, NumberModel, Pipes, PropertyBinding, References, StringModel, TemplateReference, TestComponent, TwoWayBinding} from './parsing-cases';
+import * as ExpressionCases from './expression-cases';
+import * as NgForCases from './ng-for-cases';
+import * as NgIfCases from './ng-if-cases';
+import * as ParsingCases from './parsing-cases';
 
 @NgModule({
   imports: [CommonModule, FormsModule],
   declarations: [
     AppComponent,
-    CaseIncompleteOpen,
-    CaseMissingClosing,
-    CaseUnknown,
-    Pipes,
-    TemplateReference,
-    NoValueAttribute,
-    AttributeBinding,
-    StringModel,
-    NumberModel,
-    PropertyBinding,
-    EventBinding,
-    TwoWayBinding,
-    EmptyInterpolation,
-    ForOfEmpty,
-    ForOfLetEmpty,
-    ForLetIEqual,
-    ForUsingComponent,
-    References,
-    TestComponent,
-    WrongFieldReference,
-    WrongSubFieldReference,
-    PrivateReference,
-    ExpectNumericType,
-    UnknownPeople,
-    UnknownEven,
-    UnknownTrackBy,
-    ShowIf,
-    LowercasePipe,
+    ExpressionCases.ExpectNumericType,
+    ExpressionCases.LowercasePipe,
+    ExpressionCases.PrivateReference,
+    ExpressionCases.WrongFieldReference,
+    ExpressionCases.WrongSubFieldReference,
+    NgForCases.UnknownEven,
+    NgForCases.UnknownPeople,
+    NgForCases.UnknownTrackBy,
+    NgIfCases.ShowIf,
+    ParsingCases.AsyncForUsingComponent,
+    ParsingCases.AttributeBinding,
+    ParsingCases.CaseIncompleteOpen,
+    ParsingCases.CaseMissingClosing,
+    ParsingCases.CaseUnknown,
+    ParsingCases.EmptyInterpolation,
+    ParsingCases.EventBinding,
+    ParsingCases.FooComponent,
+    ParsingCases.ForLetIEqual,
+    ParsingCases.ForOfEmpty,
+    ParsingCases.ForOfLetEmpty,
+    ParsingCases.ForUsingComponent,
+    ParsingCases.NoValueAttribute,
+    ParsingCases.NumberModel,
+    ParsingCases.Pipes,
+    ParsingCases.PropertyBinding,
+    ParsingCases.References,
+    ParsingCases.StringModel,
+    ParsingCases.TemplateReference,
+    ParsingCases.TestComponent,
+    ParsingCases.TwoWayBinding,
   ]
 })
 export class AppModule {
