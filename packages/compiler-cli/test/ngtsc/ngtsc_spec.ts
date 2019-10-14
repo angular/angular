@@ -377,7 +377,7 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('TestPipe.ɵpipe = i0.ɵɵdefinePipe');
       expect(jsContents).toContain('TestInjectable.ngInjectableDef = i0.ɵɵdefineInjectable');
       expect(jsContents).toContain('MyModule.ɵmod = i0.ɵɵdefineNgModule');
-      expect(jsContents).toContain('MyModule.ngInjectorDef = i0.ɵɵdefineInjector');
+      expect(jsContents).toContain('MyModule.ɵinj = i0.ɵɵdefineInjector');
       expect(jsContents).toContain('inputs: { input: "input" }');
       expect(jsContents).toContain('outputs: { output: "output" }');
     });
@@ -650,7 +650,7 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
       expect(jsContents)
           .toContain(
-              `TestModule.ngInjectorDef = i0.ɵɵdefineInjector({ factory: ` +
+              `TestModule.ɵinj = i0.ɵɵdefineInjector({ factory: ` +
               `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
               `Token, useValue: 'test' }], imports: [[OtherModule]] });`);
 
@@ -658,7 +658,7 @@ runInEachFileSystem(os => {
       expect(dtsContents)
           .toContain(
               'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
-      expect(dtsContents).toContain('static ngInjectorDef: i0.ɵɵInjectorDef');
+      expect(dtsContents).toContain('static ɵinj: i0.ɵɵInjectorDef');
     });
 
     it('should compile NgModules with factory providers without errors', () => {
@@ -690,7 +690,7 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
       expect(jsContents)
           .toContain(
-              `TestModule.ngInjectorDef = i0.ɵɵdefineInjector({ factory: ` +
+              `TestModule.ɵinj = i0.ɵɵdefineInjector({ factory: ` +
               `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
               `Token, useFactory: function () { return new Token(); } }], imports: [[OtherModule]] });`);
 
@@ -698,7 +698,7 @@ runInEachFileSystem(os => {
       expect(dtsContents)
           .toContain(
               'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
-      expect(dtsContents).toContain('static ngInjectorDef: i0.ɵɵInjectorDef');
+      expect(dtsContents).toContain('static ɵinj: i0.ɵɵInjectorDef');
     });
 
     it('should compile NgModules with factory providers and deps without errors', () => {
@@ -734,7 +734,7 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
       expect(jsContents)
           .toContain(
-              `TestModule.ngInjectorDef = i0.ɵɵdefineInjector({ factory: ` +
+              `TestModule.ɵinj = i0.ɵɵdefineInjector({ factory: ` +
               `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
               `Token, useFactory: function (dep) { return new Token(dep); }, deps: [Dep] }], imports: [[OtherModule]] });`);
 
@@ -742,7 +742,7 @@ runInEachFileSystem(os => {
       expect(dtsContents)
           .toContain(
               'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
-      expect(dtsContents).toContain('static ngInjectorDef: i0.ɵɵInjectorDef');
+      expect(dtsContents).toContain('static ɵinj: i0.ɵɵInjectorDef');
     });
 
     it('should compile NgModules with references to local components', () => {
