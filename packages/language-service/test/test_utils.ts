@@ -185,6 +185,15 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
    * Reset the project to its original state, effectively removing all overrides.
    */
   reset() {
+    // Remove overrides from scriptNames
+    let length = 0;
+    for (let i = 0; i < this.scriptNames.length; ++i) {
+      const fileName = this.scriptNames[i];
+      if (!this.overrides.has(fileName)) {
+        this.scriptNames[length++] = fileName;
+      }
+    }
+    this.scriptNames.splice(length);
     this.overrides.clear();
     this.overrideDirectory.clear();
     this.options = COMPILER_OPTIONS;
