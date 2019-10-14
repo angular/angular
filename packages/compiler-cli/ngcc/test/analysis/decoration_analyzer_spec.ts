@@ -80,6 +80,7 @@ runInEachFileSystem(() => {
         handler.resolve.and.callFake((decl: ts.Declaration, analysis: any) => {
           logs.push(`resolve: ${(decl as any).name.text}@${analysis.decoratorName}`);
           analysis.resolved = true;
+          return {};
         });
         // The "test" compilation result is just the name of the decorator being compiled
         // (suffixed with `(compiled)`)

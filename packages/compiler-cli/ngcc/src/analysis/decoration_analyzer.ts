@@ -11,9 +11,10 @@ import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHa
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
 import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
 import {FileSystem, LogicalFileSystem, absoluteFrom, dirname, resolve} from '../../../src/ngtsc/file_system';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../../src/ngtsc/imports';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
+import {ClassDeclaration} from '../../../src/ngtsc/reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
 import {CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
 import {NgccClassSymbol, NgccReflectionHost} from '../host/ngcc_host';
@@ -48,6 +49,11 @@ export class DecorationAnalyzer {
   private rootDirs = this.bundle.rootDirs;
   private packagePath = this.bundle.entryPoint.package;
   private isCore = this.bundle.isCore;
+
+  /**
+   * Map of NgModule declarations to the re-exports for that NgModule.
+   */
+  private reexportMap = new Map<ts.Declaration, Map<string, [string, string]>>();
   resourceManager = new NgccResourceLoader(this.fs);
   metaRegistry = new LocalMetadataRegistry();
   dtsMetaReader = new DtsMetadataReader(this.typeChecker, this.reflectionHost);
@@ -61,10 +67,12 @@ export class DecorationAnalyzer {
     // based on whether a bestGuessOwningModule is present in the Reference.
     new LogicalProjectStrategy(this.reflectionHost, new LogicalFileSystem(this.rootDirs)),
   ]);
+  aliasingHost = this.bundle.entryPoint.generateDeepReexports?
+                 new PrivateExportAliasingHost(this.reflectionHost): null;
   dtsModuleScopeResolver =
-      new MetadataDtsModuleScopeResolver(this.dtsMetaReader, /* aliasGenerator */ null);
+      new MetadataDtsModuleScopeResolver(this.dtsMetaReader, this.aliasingHost);
   scopeRegistry = new LocalModuleScopeRegistry(
-      this.metaRegistry, this.dtsModuleScopeResolver, this.refEmitter, /* aliasGenerator */ null);
+      this.metaRegistry, this.dtsModuleScopeResolver, this.refEmitter, this.aliasingHost);
   fullRegistry = new CompoundMetadataRegistry([this.metaRegistry, this.scopeRegistry]);
   evaluator = new PartialEvaluator(this.reflectionHost, this.typeChecker);
   moduleResolver = new ModuleResolver(this.program, this.options, this.host);
@@ -161,7 +169,9 @@ export class DecorationAnalyzer {
     const constantPool = new ConstantPool();
     const compiledClasses: CompiledClass[] = analyzedFile.analyzedClasses.map(analyzedClass => {
       const compilation = this.compileClass(analyzedClass, constantPool);
-      return {...analyzedClass, compilation};
+      const declaration = analyzedClass.declaration;
+      const reexports: Reexport[] = this.getReexportsForClass(declaration);
+      return {...analyzedClass, compilation, reexports};
     });
     return {constantPool, sourceFile: analyzedFile.sourceFile, compiledClasses};
   }
@@ -187,9 +197,30 @@ export class DecorationAnalyzer {
     analyzedFile.analyzedClasses.forEach(({declaration, matches}) => {
       matches.forEach(({handler, analysis}) => {
         if ((handler.resolve !== undefined) && analysis) {
-          handler.resolve(declaration, analysis);
+          const res = handler.resolve(declaration, analysis);
+          if (res.reexports !== undefined) {
+            this.addReexports(res.reexports, declaration);
+          }
         }
       });
     });
+  }
+
+  private getReexportsForClass(declaration: ClassDeclaration<ts.Declaration>) {
+    const reexports: Reexport[] = [];
+    if (this.reexportMap.has(declaration)) {
+      this.reexportMap.get(declaration) !.forEach(([fromModule, symbolName], asAlias) => {
+        reexports.push({asAlias, fromModule, symbolName});
+      });
+    }
+    return reexports;
+  }
+
+  private addReexports(reexports: Reexport[], declaration: ClassDeclaration<ts.Declaration>) {
+    const map = new Map<string, [string, string]>();
+    for (const reexport of reexports) {
+      map.set(reexport.asAlias, [reexport.fromModule, reexport.symbolName]);
+    }
+    this.reexportMap.set(declaration, map);
   }
 }

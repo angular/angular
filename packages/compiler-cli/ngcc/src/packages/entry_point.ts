@@ -38,6 +38,8 @@ export interface EntryPoint extends JsonObject {
   compiledByAngular: boolean;
   /** Should ngcc ignore missing dependencies and process this entrypoint anyway? */
   ignoreMissingDependencies: boolean;
+  /** Should ngcc generate deep re-exports for this entrypoint? */
+  generateDeepReexports: boolean;
 }
 
 export type JsonPrimitive = string | number | boolean | null;
@@ -124,6 +126,8 @@ export function getEntryPointInfo(
     typings: resolve(entryPointPath, typings), compiledByAngular,
     ignoreMissingDependencies:
         entryPointConfig !== undefined ? !!entryPointConfig.ignoreMissingDependencies : false,
+    generateDeepReexports:
+        entryPointConfig !== undefined ? !!entryPointConfig.generateDeepReexports : false,
   };
 
   return entryPointInfo;
