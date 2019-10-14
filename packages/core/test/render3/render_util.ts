@@ -14,7 +14,7 @@ import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {Renderer2} from '@angular/core/src/render/api';
 import {createLView, createTView, getOrCreateTNode, getOrCreateTView, renderComponentOrTemplate} from '@angular/core/src/render3/instructions/shared';
 import {TAttributes, TNodeType} from '@angular/core/src/render3/interfaces/node';
-import {getLView, resetComponentState, selectView} from '@angular/core/src/render3/state';
+import {enterView, getLView} from '@angular/core/src/render3/state';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 import {SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as R3_CHANGE_DETECTOR_REF_FACTORY} from '../../src/change_detection/change_detector_ref';
@@ -32,7 +32,7 @@ import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveT
 import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {HEADER_OFFSET, LView, LViewFlags, TVIEW, T_HOST} from '../../src/render3/interfaces/view';
+import {HEADER_OFFSET, LView, LViewFlags, T_HOST} from '../../src/render3/interfaces/view';
 import {destroyLView} from '../../src/render3/node_manipulation';
 import {getRootView} from '../../src/render3/util/view_traversal_utils';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
@@ -251,7 +251,6 @@ export function renderTemplate<T>(
     directives?: DirectiveDefListOrFactory | null, pipes?: PipeDefListOrFactory | null,
     sanitizer?: Sanitizer | null, consts?: TAttributes[]): LView {
   if (componentView === null) {
-    resetComponentState();
     const renderer = providedRendererFactory.createRenderer(null, null);
 
     // We need to create a root view so it's possible to look up the host element through its index
@@ -259,7 +258,7 @@ export function renderTemplate<T>(
     const hostLView = createLView(
         null, tView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null,
         providedRendererFactory, renderer);
-    selectView(hostLView, null);  // SUSPECT! why do we need to enter the View?
+    enterView(hostLView, null);
 
     const def: ComponentDef<any> = ɵɵdefineComponent({
       selectors: [],

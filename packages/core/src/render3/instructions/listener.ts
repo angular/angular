@@ -17,7 +17,10 @@ import {CLEANUP, FLAGS, LView, LViewFlags, RENDERER, TVIEW} from '../interfaces/
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {getLView, getPreviousOrParentTNode} from '../state';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
+
 import {getCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
+
+
 
 /**
  * Adds an event listener to the current node.
@@ -213,7 +216,7 @@ function listenerInternal(
 }
 
 function executeListenerWithErrorHandling(
-    lView: LView, listenerFn: (e?: any) => any, e: any): boolean {
+    lView: LView, tNode: TNode, listenerFn: (e?: any) => any, e: any): boolean {
   try {
     // Only explicitly returning false from a listener should preventDefault
     return listenerFn(e) !== false;
@@ -256,13 +259,13 @@ function wrapListener(
       markViewDirty(startView);
     }
 
-    let result = executeListenerWithErrorHandling(lView, listenerFn, e);
+    let result = executeListenerWithErrorHandling(lView, tNode, listenerFn, e);
     // A just-invoked listener function might have coalesced listeners so we need to check for
     // their presence and invoke as needed.
     let nextListenerFn = (<any>wrapListenerIn_markDirtyAndPreventDefault).__ngNextListenerFn__;
     while (nextListenerFn) {
       // We should prevent default if any of the listeners explicitly return false
-      result = executeListenerWithErrorHandling(lView, nextListenerFn, e) && result;
+      result = executeListenerWithErrorHandling(lView, tNode, nextListenerFn, e) && result;
       nextListenerFn = (<any>nextListenerFn).__ngNextListenerFn__;
     }
 

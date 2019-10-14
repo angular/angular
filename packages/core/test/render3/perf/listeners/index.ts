@@ -10,7 +10,6 @@ import {ɵɵlistener} from '../../../../src/render3/instructions/listener';
 import {createTNode, createTView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {TNodeType, TViewNode} from '../../../../src/render3/interfaces/node';
-import {resetComponentState} from '../../../../src/render3/state';
 import {createBenchmark} from '../micro_bench';
 import {createAndRenderLView} from '../setup';
 
@@ -78,9 +77,6 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 const viewTNode = createTNode(null !, null, TNodeType.View, -1, null, null) as TViewNode;
 const embeddedTView =
     createTView(-1, testTemplate, 11, 0, null, null, null, null, [[3, 'click', 'input']]);
-
-// initialize global state
-resetComponentState();
 
 // create view once so we don't profile first template pass
 createAndRenderLView(null, embeddedTView, viewTNode);

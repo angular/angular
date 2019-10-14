@@ -9,7 +9,6 @@ import {ɵɵdefineDirective, ɵɵelementEnd, ɵɵelementStart, ɵɵtext} from '.
 import {createTNode, createTView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {TNodeType, TViewNode} from '../../../../src/render3/interfaces/node';
-import {resetComponentState} from '../../../../src/render3/state';
 import {createBenchmark} from '../micro_bench';
 import {createAndRenderLView} from '../setup';
 
@@ -77,9 +76,6 @@ const viewTNode = createTNode(null !, null, TNodeType.View, -1, null, null) as T
 const embeddedTView = createTView(
     -1, testTemplate, 21, 10, [Tooltip.ɵdir], null, null, null,
     [['position', 'top', 3, 'tooltip']]);
-
-// initialize global state
-resetComponentState();
 
 // create view once so we don't profile first template pass
 createAndRenderLView(null, embeddedTView, viewTNode);

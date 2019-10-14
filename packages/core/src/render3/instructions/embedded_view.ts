@@ -14,10 +14,10 @@ import {TContainerNode, TNodeType} from '../interfaces/node';
 import {CONTEXT, LView, LViewFlags, PARENT, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {insertView, removeView} from '../node_manipulation';
-import {getIsParent, getLView, getPreviousOrParentTNode, selectView, setIsParent, setPreviousOrParentTNode} from '../state';
+import {enterView, getIsParent, getLView, getPreviousOrParentTNode, leaveViewProcessExit, setIsParent, setPreviousOrParentTNode} from '../state';
 import {isCreationMode} from '../util/view_utils';
-
 import {assignTViewNodeToLView, createLView, createTView, refreshView, renderView} from './shared';
+
 
 
 /**
@@ -42,7 +42,7 @@ export function ɵɵembeddedViewStart(viewBlockId: number, decls: number, vars: 
 
   if (viewToRender) {
     setIsParent();
-    selectView(viewToRender, viewToRender[TVIEW].node);
+    enterView(viewToRender, viewToRender[TVIEW].node);
   } else {
     // When we create a new LView, we always reset the state of the instructions.
     viewToRender = createLView(
@@ -52,7 +52,7 @@ export function ɵɵembeddedViewStart(viewBlockId: number, decls: number, vars: 
     const tParentNode = getIsParent() ? previousOrParentTNode :
                                         previousOrParentTNode && previousOrParentTNode.parent;
     assignTViewNodeToLView(viewToRender[TVIEW], tParentNode, viewBlockId, viewToRender);
-    selectView(viewToRender, viewToRender[TVIEW].node);
+    enterView(viewToRender, viewToRender[TVIEW].node);
   }
   if (lContainer) {
     if (isCreationMode(viewToRender)) {
@@ -138,6 +138,6 @@ export function ɵɵembeddedViewEnd(): void {
 
   const lContainer = lView[PARENT] as LContainer;
   ngDevMode && assertLContainerOrUndefined(lContainer);
-  selectView(lContainer[PARENT] !, null);
+  leaveViewProcessExit();
   setPreviousOrParentTNode(viewHost !, false);
 }

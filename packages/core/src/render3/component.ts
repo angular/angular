@@ -23,7 +23,7 @@ import {TElementNode, TNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
-import {getPreviousOrParentTNode, incrementActiveDirectiveId, resetComponentState, selectView, setActiveHostElement} from './state';
+import {enterView, getPreviousOrParentTNode, incrementActiveDirectiveId, leaveView, setActiveHostElement} from './state';
 import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler, stringifyForError} from './util/misc_utils';
 import {getRootContext} from './util/view_traversal_utils';
@@ -111,10 +111,6 @@ export function renderComponent<T>(
   ngDevMode && publishDefaultGlobalUtils();
   ngDevMode && assertComponentType(componentType);
 
-  // this is preemptively set to avoid having test and debug code accidentally
-  // read data from a previous application state...
-  setActiveHostElement(null);
-
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
   const componentDef = getComponentDef<T>(componentType) !;
@@ -133,7 +129,7 @@ export function renderComponent<T>(
       null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, undefined,
       opts.injector || null);
 
-  const oldView = selectView(rootView, null);
+  enterView(rootView, null);
   let component: T;
 
   try {
@@ -149,7 +145,7 @@ export function renderComponent<T>(
     refreshView(rootView, rootTView, null, null);
 
   } finally {
-    selectView(oldView, null);
+    leaveView();
     if (rendererFactory.end) rendererFactory.end();
   }
 
@@ -170,7 +166,6 @@ export function renderComponent<T>(
 export function createRootComponentView(
     rNode: RElement | null, def: ComponentDef<any>, rootView: LView,
     rendererFactory: RendererFactory3, renderer: Renderer3, sanitizer?: Sanitizer | null): LView {
-  resetComponentState();
   const tView = rootView[TVIEW];
   ngDevMode && assertDataInRange(rootView, 0 + HEADER_OFFSET);
   rootView[0 + HEADER_OFFSET] = rNode;

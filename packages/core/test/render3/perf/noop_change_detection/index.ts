@@ -18,7 +18,7 @@ const noopChangeDetection = createBenchmark('noop change detection');
 const refreshTime = noopChangeDetection('refresh');
 
 // run change detection in the update mode
-console.profile('noop_refresh');
+console.profile('noop_change_detection');
 while (refreshTime()) {
   refreshView(rootLView, rootTView, null, null);
 }
