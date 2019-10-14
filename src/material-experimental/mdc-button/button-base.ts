@@ -103,11 +103,15 @@ export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, Ca
       @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super(elementRef);
 
+    const classList = (elementRef.nativeElement as HTMLElement).classList;
+
     // For each of the variant selectors that is present in the button's host
     // attributes, add the correct corresponding MDC classes.
     for (const pair of HOST_SELECTOR_MDC_CLASS_PAIR) {
       if (this._hasHostAttributes(pair.selector)) {
-        (elementRef.nativeElement as HTMLElement).classList.add(...pair.mdcClasses);
+        pair.mdcClasses.forEach(className => {
+          classList.add(className);
+        });
       }
     }
   }
