@@ -16,7 +16,7 @@ import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
 
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
-import {NG_BASE_DEF, NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_LOCALE_ID_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
+import {NG_BASE_DEF, NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_LOC_ID_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction, ɵɵBaseDef} from './interfaces/definition';
 import {TAttributes} from './interfaces/node';
 // while SelectorFlags is unused here, it's required so that types don't get resolved lazily
@@ -776,5 +776,5 @@ export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleD
 }
 
 export function getNgLocaleIdDef(type: any): string|null {
-  return (type as any)[NG_LOCALE_ID_DEF] || null;
+  return (type as any)[NG_LOC_ID_DEF] || null;
 }
