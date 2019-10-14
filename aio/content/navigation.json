@@ -577,11 +577,6 @@
           "tooltip": "Using builders to customize Angular CLI."
         },
         {
-          "url": "guide/ivy",
-          "title": "Angular Ivy",
-          "tooltip": "Opting out of Angular Ivy with Angular CLI."
-        },
-        {
           "url": "guide/web-worker",
           "title": "Web Workers",
           "tooltip": "Using Web Workers with Angular CLI."
@@ -712,6 +707,11 @@
           "url": "guide/deprecations",
           "title": "Deprecations",
           "tooltip": "Summary of Angular APIs and features that are deprecated."
+        },
+        {
+          "url": "guide/ivy",
+          "title": "Angular Ivy",
+          "tooltip": "About the Angular Ivy compilation and rendering pipeline."
         }
       ]
     },
