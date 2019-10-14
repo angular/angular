@@ -363,6 +363,9 @@
     "name": "addToViewTree"
   },
   {
+    "name": "allocLFrame"
+  },
+  {
     "name": "allocStylingMapArray"
   },
   {
@@ -462,6 +465,9 @@
     "name": "createLContext"
   },
   {
+    "name": "createLFrame"
+  },
+  {
     "name": "createLView"
   },
   {
@@ -526,6 +532,12 @@
   },
   {
     "name": "elementPropertyInternal"
+  },
+  {
+    "name": "enterDI"
+  },
+  {
+    "name": "enterView"
   },
   {
     "name": "executeCheckHooks"
@@ -978,6 +990,15 @@
     "name": "iterateListLike"
   },
   {
+    "name": "leaveDI"
+  },
+  {
+    "name": "leaveView"
+  },
+  {
+    "name": "leaveViewProcessExit"
+  },
+  {
     "name": "listenerInternal"
   },
   {
@@ -1021,9 +1042,6 @@
   },
   {
     "name": "matchTemplateAttribute"
-  },
-  {
-    "name": "namespaceHTMLInternal"
   },
   {
     "name": "nativeAppendChild"
@@ -1140,9 +1158,6 @@
     "name": "renderView"
   },
   {
-    "name": "resetComponentState"
-  },
-  {
     "name": "resetCurrentStyleSanitizer"
   },
   {
@@ -1174,9 +1189,6 @@
   },
   {
     "name": "selectIndexInternal"
-  },
-  {
-    "name": "selectView"
   },
   {
     "name": "setActiveElementFlag"
@@ -1246,9 +1258,6 @@
   },
   {
     "name": "setStyle"
-  },
-  {
-    "name": "setTNodeAndViewData"
   },
   {
     "name": "setUpAttributes"
