@@ -17,7 +17,7 @@ import {TNODE} from '../../src/render3/interfaces/injector';
 import {TNodeType} from '../../src/render3/interfaces/node';
 import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
 import {LViewFlags, TVIEW} from '../../src/render3/interfaces/view';
-import {selectView} from '../../src/render3/state';
+import {enterView, leaveViewProcessExit} from '../../src/render3/state';
 
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, createComponent, createDirective} from './render_util';
@@ -225,7 +225,7 @@ describe('di', () => {
       const contentView = createLView(
           null, createTView(-1, null, 1, 0, null, null, null, null, null), null,
           LViewFlags.CheckAlways, null, null, {} as any, {} as any);
-      const oldView = selectView(contentView, null);
+      enterView(contentView, null);
       try {
         const parentTNode =
             getOrCreateTNode(contentView[TVIEW], null, 0, TNodeType.Element, null, null);
@@ -237,7 +237,7 @@ describe('di', () => {
         const injector = getOrCreateNodeInjectorForNode(parentTNode, contentView);
         expect(injector).not.toEqual(-1);
       } finally {
-        selectView(oldView, null);
+        leaveViewProcessExit();
       }
     });
   });
