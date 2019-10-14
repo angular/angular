@@ -756,7 +756,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
       let chipIndex: number = this.chips.toArray().indexOf(event.chip);
 
       if (this._isValidIndex(chipIndex)) {
-        this._keyManager.updateActiveItemIndex(chipIndex);
+        this._keyManager.updateActiveItem(chipIndex);
       }
       this.stateChanges.next();
     });

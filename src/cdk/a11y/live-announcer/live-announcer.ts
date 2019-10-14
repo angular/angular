@@ -17,8 +17,6 @@ import {
   NgZone,
   OnDestroy,
   Optional,
-  Provider,
-  SkipSelf,
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 import {
@@ -226,24 +224,3 @@ export class CdkAriaLive implements OnDestroy {
     }
   }
 }
-
-
-/** @docs-private @deprecated @breaking-change 8.0.0 */
-export function LIVE_ANNOUNCER_PROVIDER_FACTORY(
-    parentAnnouncer: LiveAnnouncer, liveElement: any, _document: any, ngZone: NgZone) {
-  return parentAnnouncer || new LiveAnnouncer(liveElement, ngZone, _document);
-}
-
-
-/** @docs-private @deprecated @breaking-change 8.0.0 */
-export const LIVE_ANNOUNCER_PROVIDER: Provider = {
-  // If there is already a LiveAnnouncer available, use that. Otherwise, provide a new one.
-  provide: LiveAnnouncer,
-  deps: [
-    [new Optional(), new SkipSelf(), LiveAnnouncer],
-    [new Optional(), new Inject(LIVE_ANNOUNCER_ELEMENT_TOKEN)],
-    DOCUMENT,
-    NgZone,
-  ],
-  useFactory: LIVE_ANNOUNCER_PROVIDER_FACTORY
-};

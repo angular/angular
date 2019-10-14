@@ -868,7 +868,7 @@ describe('Key managers', () => {
 
       keyManager.updateActiveItem(1);
       expect(keyManager.activeItemIndex)
-          .toBe(1, `Expected activeItemIndex to update after calling updateActiveItemIndex().`);
+          .toBe(1, `Expected activeItemIndex to update after calling updateActiveItem().`);
       expect(itemList.items[1].focus).not.toHaveBeenCalledTimes(1);
     });
 

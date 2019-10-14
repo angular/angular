@@ -126,7 +126,7 @@ export abstract class MatPaginatedTabHeader implements AfterContentChecked, Afte
       this._selectedIndex = value;
 
       if (this._keyManager) {
-        this._keyManager.updateActiveItemIndex(value);
+        this._keyManager.updateActiveItem(value);
       }
     }
   }

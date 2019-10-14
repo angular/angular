@@ -513,7 +513,7 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
       let chipIndex: number = this._chips.toArray().indexOf(event.chip as MatChipOption);
 
       if (this._isValidIndex(chipIndex)) {
-        this._keyManager.updateActiveItemIndex(chipIndex);
+        this._keyManager.updateActiveItem(chipIndex);
       }
     });
   }

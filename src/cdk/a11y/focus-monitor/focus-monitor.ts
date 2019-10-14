@@ -14,9 +14,7 @@ import {
   Injectable,
   NgZone,
   OnDestroy,
-  Optional,
   Output,
-  SkipSelf,
 } from '@angular/core';
 import {Observable, of as observableOf, Subject, Subscription} from 'rxjs';
 import {coerceElement} from '@angular/cdk/coercion';
@@ -454,17 +452,3 @@ export class CdkMonitorFocus implements OnDestroy {
     this._monitorSubscription.unsubscribe();
   }
 }
-
-/** @docs-private @deprecated @breaking-change 8.0.0 */
-export function FOCUS_MONITOR_PROVIDER_FACTORY(
-    parentDispatcher: FocusMonitor, ngZone: NgZone, platform: Platform) {
-  return parentDispatcher || new FocusMonitor(ngZone, platform);
-}
-
-/** @docs-private @deprecated @breaking-change 8.0.0 */
-export const FOCUS_MONITOR_PROVIDER = {
-  // If there is already a FocusMonitor available, use that. Otherwise, provide a new one.
-  provide: FocusMonitor,
-  deps: [[new Optional(), new SkipSelf(), FocusMonitor], NgZone, Platform],
-  useFactory: FOCUS_MONITOR_PROVIDER_FACTORY
-};

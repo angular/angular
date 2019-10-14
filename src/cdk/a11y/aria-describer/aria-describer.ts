@@ -7,14 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {
-  Inject,
-  Injectable,
-  InjectionToken,
-  OnDestroy,
-  Optional,
-  SkipSelf,
-} from '@angular/core';
+import {Inject, Injectable, OnDestroy} from '@angular/core';
 import {addAriaReferencedId, getAriaReferenceIds, removeAriaReferencedId} from './aria-reference';
 
 
@@ -256,20 +249,3 @@ export class AriaDescriber implements OnDestroy {
     return element.nodeType === this._document.ELEMENT_NODE;
   }
 }
-
-
-/** @docs-private @deprecated @breaking-change 8.0.0 */
-export function ARIA_DESCRIBER_PROVIDER_FACTORY(parentDispatcher: AriaDescriber, _document: any) {
-  return parentDispatcher || new AriaDescriber(_document);
-}
-
-/** @docs-private @deprecated @breaking-change 8.0.0 */
-export const ARIA_DESCRIBER_PROVIDER = {
-  // If there is already an AriaDescriber available, use that. Otherwise, provide a new one.
-  provide: AriaDescriber,
-  deps: [
-    [new Optional(), new SkipSelf(), AriaDescriber],
-    DOCUMENT as InjectionToken<any>
-  ],
-  useFactory: ARIA_DESCRIBER_PROVIDER_FACTORY
-};

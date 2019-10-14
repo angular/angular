@@ -1141,7 +1141,7 @@ function assertCorrectKeyboardInteraction(fixture: ComponentFixture<any>,
 
   // When the focus is on the last step and right arrow key is pressed, the focus should cycle
   // through to the first step.
-  stepperComponent._keyManager.updateActiveItemIndex(2);
+  stepperComponent._keyManager.updateActiveItem(2);
   stepHeaderEl = stepHeaders[2].nativeElement;
   dispatchKeyboardEvent(stepHeaderEl, 'keydown', nextKey);
   fixture.detectChanges();

@@ -318,16 +318,6 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   }
 
   /**
-   * Allows setting of the activeItemIndex without any other effects.
-   * @param index The new activeItemIndex.
-   * @deprecated Use `updateActiveItem` instead.
-   * @breaking-change 8.0.0
-   */
-  updateActiveItemIndex(index: number): void {
-    this.updateActiveItem(index);
-  }
-
-  /**
    * This method sets the active item, given a list of items and the delta between the
    * currently active item and the new active item. It will calculate differently
    * depending on whether wrap mode is turned on.

@@ -6,14 +6,6 @@ export declare class ActiveDescendantKeyManager<T> extends ListKeyManager<Highli
     setActiveItem(item: T): void;
 }
 
-export declare const ARIA_DESCRIBER_PROVIDER: {
-    provide: typeof AriaDescriber;
-    deps: (Optional[] | InjectionToken<any>)[];
-    useFactory: typeof ARIA_DESCRIBER_PROVIDER_FACTORY;
-};
-
-export declare function ARIA_DESCRIBER_PROVIDER_FACTORY(parentDispatcher: AriaDescriber, _document: any): AriaDescriber;
-
 export declare class AriaDescriber implements OnDestroy {
     constructor(_document: any);
     describe(hostElement: Element, message: string | HTMLElement): void;
@@ -48,14 +40,6 @@ export declare class CdkTrapFocus implements OnDestroy, AfterContentInit, DoChec
     ngDoCheck(): void;
     ngOnDestroy(): void;
 }
-
-export declare const FOCUS_MONITOR_PROVIDER: {
-    provide: typeof FocusMonitor;
-    deps: (Optional[] | typeof NgZone | typeof Platform)[];
-    useFactory: typeof FOCUS_MONITOR_PROVIDER_FACTORY;
-};
-
-export declare function FOCUS_MONITOR_PROVIDER_FACTORY(parentDispatcher: FocusMonitor, ngZone: NgZone, platform: Platform): FocusMonitor;
 
 export interface FocusableOption extends ListKeyManagerOption {
     focus(origin?: FocusOrigin): void;
@@ -137,7 +121,6 @@ export declare class ListKeyManager<T extends ListKeyManagerOption> {
     skipPredicate(predicate: (item: T) => boolean): this;
     updateActiveItem(item: T): void;
     updateActiveItem(index: number): void;
-    updateActiveItemIndex(index: number): void;
     withAllowedModifierKeys(keys: ListKeyManagerModifierKey[]): this;
     withHorizontalOrientation(direction: 'ltr' | 'rtl' | null): this;
     withTypeAhead(debounceInterval?: number): this;
@@ -157,10 +140,6 @@ export declare const LIVE_ANNOUNCER_DEFAULT_OPTIONS: InjectionToken<LiveAnnounce
 export declare const LIVE_ANNOUNCER_ELEMENT_TOKEN: InjectionToken<HTMLElement | null>;
 
 export declare function LIVE_ANNOUNCER_ELEMENT_TOKEN_FACTORY(): null;
-
-export declare const LIVE_ANNOUNCER_PROVIDER: Provider;
-
-export declare function LIVE_ANNOUNCER_PROVIDER_FACTORY(parentAnnouncer: LiveAnnouncer, liveElement: any, _document: any, ngZone: NgZone): LiveAnnouncer;
 
 export declare class LiveAnnouncer implements OnDestroy {
     constructor(elementToken: any, _ngZone: NgZone, _document: any, _defaultOptions?: LiveAnnouncerDefaultOptions | undefined);
