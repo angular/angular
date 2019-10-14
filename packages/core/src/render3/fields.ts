@@ -12,7 +12,7 @@ export const NG_COMP_DEF = getClosureSafeProperty({ɵcmp: getClosureSafeProperty
 export const NG_DIR_DEF = getClosureSafeProperty({ɵdir: getClosureSafeProperty});
 export const NG_PIPE_DEF = getClosureSafeProperty({ɵpipe: getClosureSafeProperty});
 export const NG_MOD_DEF = getClosureSafeProperty({ɵmod: getClosureSafeProperty});
-export const NG_LOCALE_ID_DEF = getClosureSafeProperty({ngLocaleIdDef: getClosureSafeProperty});
+export const NG_LOC_ID_DEF = getClosureSafeProperty({ɵloc: getClosureSafeProperty});
 export const NG_BASE_DEF = getClosureSafeProperty({ngBaseDef: getClosureSafeProperty});
 export const NG_FACTORY_DEF = getClosureSafeProperty({ɵfac: getClosureSafeProperty});
 
