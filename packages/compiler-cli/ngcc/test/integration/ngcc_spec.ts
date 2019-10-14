@@ -752,6 +752,132 @@ runInEachFileSystem(() => {
       });
     });
 
+    describe('aliasing re-exports in commonjs', () => {
+      it('should add re-exports to commonjs files', () => {
+        loadTestFiles([
+          {
+            name: _('/node_modules/test-package/package.json'),
+            contents: `
+              {
+                "name": "test-package",
+                "main": "./index.js",
+                "typings": "./index.d.ts"
+              }
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/index.js'),
+            contents: `
+              var __export = null;
+              __export(require("./module"));
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/index.d.ts'),
+            contents: `
+              export * from "./module";
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/index.metadata.json'),
+            contents: '{}',
+          },
+          {
+            name: _('/node_modules/test-package/module.js'),
+            contents: `
+              var __decorate = null;
+              var core_1 = require("@angular/core");
+              var directive_1 = require("./directive");
+              var FooModule = /** @class */ (function () {
+                  function FooModule() {
+                  }
+                  FooModule = __decorate([
+                      core_1.NgModule({
+                          declarations: [directive_1.Foo],
+                          exports: [directive_1.Foo],
+                      })
+                  ], FooModule);
+                  return FooModule;
+              }());
+              exports.FooModule = FooModule;
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/module.d.ts'),
+            contents: `
+              export declare class FooModule {}
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/module.metadata.json'),
+            contents: '{}',
+          },
+          {
+            name: _('/node_modules/test-package/directive.js'),
+            contents: `
+              var __decorate = null;
+              var core_1 = require("@angular/core");
+              var Foo = /** @class */ (function () {
+                  function Foo() {
+                  }
+                  Foo = __decorate([
+                      core_1.Directive({
+                          selector: '[foo]',
+                      })
+                  ], Foo);
+                  return Foo;
+              }());
+              exports.Foo = Foo;
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/directive.d.ts'),
+            contents: `
+              export declare class Foo {}
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/directive.metadata.json'),
+            contents: '{}',
+          },
+          {
+            name: _('/ngcc.config.js'),
+            contents: `
+              module.exports = {
+                packages: {
+                  'test-package': {
+                    entryPoints: {
+                      '.': {
+                        generateDeepReexports: true
+                      },
+                    },
+                  },
+                },
+              };
+            `,
+          }
+        ]);
+
+        mainNgcc({
+          basePath: '/node_modules',
+          targetEntryPointPath: 'test-package',
+          propertiesToConsider: ['main'],
+        });
+
+        expect(loadPackage('test-package').__processed_by_ivy_ngcc__).toEqual({
+          main: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+
+        const jsContents = fs.readFile(_(`/node_modules/test-package/module.js`));
+        const dtsContents = fs.readFile(_(`/node_modules/test-package/module.d.ts`));
+        expect(jsContents).toContain(`var ɵngcc1 = require('./directive');`);
+        expect(jsContents).toContain('exports.ɵngExportɵFooModuleɵFoo = ɵngcc1.Foo;');
+        expect(dtsContents)
+            .toContain(`export {Foo as ɵngExportɵFooModuleɵFoo} from './directive';`);
+      });
+    });
+
     function loadPackage(
         packageName: string, basePath: AbsoluteFsPath = _('/node_modules')): EntryPointPackageJson {
       return JSON.parse(fs.readFile(fs.resolve(basePath, packageName, 'package.json')));

@@ -50,6 +50,13 @@ export interface NgccEntryPointConfig {
    * even in the face of such missing dependencies.
    */
   ignoreMissingDependencies?: boolean;
+
+  /**
+   * Enabling this option for an entrypoint tells ngcc that deep imports might be used for the files
+   * it contains, and that it should generate private re-exports alongside the NgModule of all the
+   * directives/pipes it makes available in support of those imports.
+   */
+  generateDeepReexports?: boolean;
 }
 
 /**
