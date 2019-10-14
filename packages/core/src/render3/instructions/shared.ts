@@ -1463,8 +1463,8 @@ const LContainerArray: any = ((typeof ngDevMode === 'undefined' || ngDevMode) &&
 export function createLContainer(
     hostNative: RElement | RComment | LView, currentView: LView, native: RComment, tNode: TNode,
     isForViewContainerRef?: boolean): LContainer {
-  ngDevMode && assertDomNode(native);
   ngDevMode && assertLView(currentView);
+  ngDevMode && !isProceduralRenderer(currentView[RENDERER]) && assertDomNode(native);
   // https://jsperf.com/array-literal-vs-new-array-really
   const lContainer: LContainer = new (ngDevMode ? LContainerArray : Array)(
       hostNative,  // host native

@@ -198,3 +198,49 @@ function getAnimationRendererFactory2(document: any): RendererFactory2 {
           document.body, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
       fakeNgZone);
 }
+
+describe('custom renderer', () => {
+  @Component({
+    selector: 'some-component',
+    template: `<div><span></span></div>`,
+  })
+  class SomeComponent {
+  }
+
+  /**
+   * Creates a patched renderer factory that creates elements with a shape different than DOM node
+   */
+  function createPatchedRendererFactory(document: any) {
+    let rendererFactory = getRendererFactory2(document);
+    const origCreateRenderer = rendererFactory.createRenderer;
+    rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
+      const renderer = origCreateRenderer.call(this, element, type);
+      renderer.appendChild = () => {};
+      renderer.createElement = (name: string) => ({
+        name,
+        el: document.createElement(name),
+      });
+      return renderer;
+    };
+
+    return rendererFactory;
+  }
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [SomeComponent],
+      providers: [{
+        provide: RendererFactory2,
+        useFactory: (document: any) => createPatchedRendererFactory(document),
+        deps: [DOCUMENT]
+      }]
+    });
+  });
+
+  it('should not trigger errors', () => {
+    expect(() => {
+      const fixture = TestBed.createComponent(SomeComponent);
+      fixture.detectChanges();
+    }).not.toThrow();
+  });
+});
