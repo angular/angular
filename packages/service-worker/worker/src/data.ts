@@ -334,7 +334,7 @@ export class DataGroup {
       res = fromCache.res;
       // Check the age of the resource.
       if (this.config.refreshAheadMs !== undefined && fromCache.age >= this.config.refreshAheadMs) {
-        ctx.waitUntil(this.safeCacheResponse(req, this.safeFetch(req)));
+        ctx.waitUntil(this.safeCacheResponse(req, this.safeFetch(req), lru));
       }
     }
 
@@ -353,7 +353,7 @@ export class DataGroup {
       res = this.adapter.newResponse(null, {status: 504, statusText: 'Gateway Timeout'});
 
       // Cache the network response eventually.
-      ctx.waitUntil(this.safeCacheResponse(req, networkFetch));
+      ctx.waitUntil(this.safeCacheResponse(req, networkFetch, lru));
     } else {
       // The request completed in time, so cache it inline with the response flow.
       await this.cacheResponse(req, res, lru);
@@ -378,7 +378,7 @@ export class DataGroup {
 
     // If the network fetch times out or errors, fall back on the cache.
     if (res === undefined) {
-      ctx.waitUntil(this.safeCacheResponse(req, networkFetch, true));
+      ctx.waitUntil(this.safeCacheResponse(req, networkFetch, lru, true));
 
       // Ignore the age, the network response will be cached anyway due to the
       // behavior of freshness.
@@ -432,12 +432,23 @@ export class DataGroup {
     }
   }
 
-  private async safeCacheResponse(req: Request, res: Promise<Response>, okToCacheOpaque?: boolean):
-      Promise<void> {
+  private async safeCacheResponse(
+      req: Request, resOrPromise: Promise<Response>|Response, lru: LruList,
+      okToCacheOpaque?: boolean): Promise<void> {
     try {
-      await this.cacheResponse(req, await res, await this.lru(), okToCacheOpaque);
+      const res = await resOrPromise;
+      try {
+        await this.cacheResponse(req, res, lru, okToCacheOpaque);
+      } catch (err) {
+        // Saving the API response failed. This could be a result of a full storage.
+        // Since this data is cached lazily and temporarily, continue serving clients as usual.
+        // TODO: Log error
+        // TODO: Better detect/handle full storage; e.g. using
+        // [navigator.storage](https://developer.mozilla.org/en-US/docs/Web/API/NavigatorStorage/storage).
+      }
     } catch {
-      // TODO: handle this error somehow?
+      // Request failed
+      // TODO: Handle this error somehow?
     }
   }
 
