@@ -65,6 +65,12 @@ export enum ErrorCode {
   NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC = 6005,
 
   /**
+   * Raised when an NgModule exports multiple directives/pipes of the same name and the compiler
+   * attempts to generate private re-exports within the NgModule file.
+   */
+  NGMODULE_REEXPORT_NAME_COLLISION = 6006,
+
+  /**
    * Raised when ngcc tries to inject a synthetic decorator over one that already exists.
    */
   NGCC_MIGRATION_DECORATOR_INJECTION_ERROR = 7001,

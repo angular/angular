@@ -7,9 +7,10 @@
  */
 import {ExternalExpr, ExternalReference} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {AliasGenerator, FileToModuleHost, Reference} from '../../imports';
+import {AliasingHost, FileToModuleAliasingHost, FileToModuleHost, Reference} from '../../imports';
 import {DtsMetadataReader} from '../../metadata';
 import {ClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {makeProgram} from '../../testing';
@@ -42,7 +43,7 @@ export declare type PipeMeta<A, B> = never;
  * destructured to retrieve references to specific declared classes.
  */
 function makeTestEnv(
-    modules: {[module: string]: string}, aliasGenerator: AliasGenerator | null = null): {
+    modules: {[module: string]: string}, aliasGenerator: AliasingHost | null = null): {
   refs: {[name: string]: Reference<ClassDeclaration>},
   resolver: MetadataDtsModuleScopeResolver,
 } {
@@ -182,7 +183,7 @@ runInEachFileSystem(() => {
             }
       `,
           },
-          new AliasGenerator(testHost));
+          new FileToModuleAliasingHost(testHost));
       const {ShallowModule} = refs;
       const scope = resolver.resolve(ShallowModule) !;
       const [DeepDir, MiddleDir, ShallowDir] = scopeToRefs(scope);
@@ -232,7 +233,7 @@ runInEachFileSystem(() => {
             }
     `,
           },
-          new AliasGenerator(testHost));
+          new FileToModuleAliasingHost(testHost));
       const {ShallowModule} = refs;
       const scope = resolver.resolve(ShallowModule) !;
       const [DeepDir, MiddleDir, ShallowDir] = scopeToRefs(scope);
@@ -265,7 +266,7 @@ runInEachFileSystem(() => {
                 }
               `,
              },
-             new AliasGenerator(testHost));
+             new FileToModuleAliasingHost(testHost));
          const {DeepExportModule} = refs;
          const scope = resolver.resolve(DeepExportModule) !;
          const [DeepDir] = scopeToRefs(scope);
