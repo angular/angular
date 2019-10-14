@@ -360,32 +360,32 @@ export class MapMarker implements OnInit, OnDestroy {
 
   private _watchForTitleChanges() {
     this._title.pipe(takeUntil(this._destroy)).subscribe(title => {
-      if (this._marker) {
-        this._marker.setTitle(title !== undefined ? title : null);
+      if (this._marker && title !== undefined) {
+        this._marker.setTitle(title);
       }
     });
   }
 
   private _watchForPositionChanges() {
     this._position.pipe(takeUntil(this._destroy)).subscribe(position => {
-      if (this._marker) {
-        this._marker.setPosition(position || null);
+      if (this._marker && position) {
+        this._marker.setPosition(position);
       }
     });
   }
 
   private _watchForLabelChanges() {
     this._label.pipe(takeUntil(this._destroy)).subscribe(label => {
-      if (this._marker) {
-        this._marker.setLabel(label !== undefined ? label : null);
+      if (this._marker && label !== undefined) {
+        this._marker.setLabel(label);
       }
     });
   }
 
   private _watchForClickableChanges() {
     this._clickable.pipe(takeUntil(this._destroy)).subscribe(clickable => {
-      if (this._marker) {
-        this._marker.setClickable(!!clickable);
+      if (this._marker && clickable !== undefined) {
+        this._marker.setClickable(clickable);
       }
     });
   }
