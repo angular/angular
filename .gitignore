@@ -4,6 +4,7 @@
 /bazel-out
 /integration/bazel/bazel-*
 e2e_test.*
+*.log
 node_modules
 tools/gulp-tasks/cldr/cldr-data/
 
