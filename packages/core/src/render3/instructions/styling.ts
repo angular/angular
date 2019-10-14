@@ -13,7 +13,7 @@ import {RElement} from '../interfaces/renderer';
 import {StylingMapArray, StylingMapArrayIndex, TStylingConfig, TStylingContext} from '../interfaces/styling';
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {BINDING_INDEX, LView, RENDERER} from '../interfaces/view';
-import {getActiveDirectiveId, getCurrentStyleSanitizer, getLView, getSelectedIndex, setCurrentStyleSanitizer, setElementExitFn} from '../state';
+import {getActiveDirectiveId, getCurrentStyleSanitizer, getLView, getSelectedIndex, resetCurrentStyleSanitizer, setCurrentStyleSanitizer, setElementExitFn} from '../state';
 import {applyStylingMapDirectly, applyStylingValueDirectly, flushStyling, setClass, setStyle, updateClassViaContext, updateStyleViaContext} from '../styling/bindings';
 import {activateStylingMapFeature} from '../styling/map_based_bindings';
 import {attachStylingDebugObject} from '../styling/styling_debug';
@@ -174,10 +174,18 @@ function stylingProp(
   // Direct Apply Case: bypass context resolution and apply the
   // style/class value directly to the element
   if (allowDirectStyling(context, hostBindingsMode)) {
+    const sanitizerToUse = isClassBased ? null : sanitizer;
     const renderer = getRenderer(tNode, lView);
     updated = applyStylingValueDirectly(
         renderer, context, native, lView, bindingIndex, prop, value, isClassBased,
-        isClassBased ? setClass : setStyle, sanitizer);
+        isClassBased ? setClass : setStyle, sanitizerToUse);
+
+    if (sanitizerToUse) {
+      // it's important we remove the current style sanitizer once the
+      // element exits, otherwise it will be used by the next styling
+      // instructions for the next element.
+      setElementExitFn(resetCurrentStyleSanitizer);
+    }
   } else {
     // Context Resolution (or first update) Case: save the value
     // and defer to the context to flush and apply the style/class binding
@@ -337,10 +345,17 @@ function _stylingMap(
   // Direct Apply Case: bypass context resolution and apply the
   // style/class map values directly to the element
   if (allowDirectStyling(context, hostBindingsMode)) {
+    const sanitizerToUse = isClassBased ? null : sanitizer;
     const renderer = getRenderer(tNode, lView);
     updated = applyStylingMapDirectly(
         renderer, context, native, lView, bindingIndex, stylingMapArr as StylingMapArray,
-        isClassBased, isClassBased ? setClass : setStyle, sanitizer, valueHasChanged);
+        isClassBased, isClassBased ? setClass : setStyle, sanitizerToUse, valueHasChanged);
+    if (sanitizerToUse) {
+      // it's important we remove the current style sanitizer once the
+      // element exits, otherwise it will be used by the next styling
+      // instructions for the next element.
+      setElementExitFn(resetCurrentStyleSanitizer);
+    }
   } else {
     updated = valueHasChanged;
     activateStylingMapFeature();
@@ -442,7 +457,7 @@ function stylingApply(): void {
   const classesContext = isStylingContext(tNode.classes) ? tNode.classes as TStylingContext : null;
   const stylesContext = isStylingContext(tNode.styles) ? tNode.styles as TStylingContext : null;
   flushStyling(renderer, lView, classesContext, stylesContext, native, directiveIndex, sanitizer);
-  setCurrentStyleSanitizer(null);
+  resetCurrentStyleSanitizer();
 }
 
 function getRenderer(tNode: TNode, lView: LView) {

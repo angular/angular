@@ -756,7 +756,7 @@ function applyStylingValue(
   let valueToApply: string|null = unwrapSafeValue(value);
   if (isStylingValueDefined(valueToApply)) {
     valueToApply =
-        sanitizer ? sanitizer(prop, value, StyleSanitizeMode.SanitizeOnly) : valueToApply;
+        sanitizer ? sanitizer(prop, value, StyleSanitizeMode.ValidateAndSanitize) : valueToApply;
     applyFn(renderer, element, prop, valueToApply, bindingIndex);
     return true;
   }
@@ -771,8 +771,9 @@ function findAndApplyMapValue(
     const p = getMapProp(map, i);
     if (p === prop) {
       let valueToApply = getMapValue(map, i);
-      valueToApply =
-          sanitizer ? sanitizer(prop, valueToApply, StyleSanitizeMode.SanitizeOnly) : valueToApply;
+      valueToApply = sanitizer ?
+          sanitizer(prop, valueToApply, StyleSanitizeMode.ValidateAndSanitize) :
+          valueToApply;
       applyFn(renderer, element, prop, valueToApply, bindingIndex);
       return true;
     }
