@@ -31,3 +31,4 @@ if (typeof window == 'undefined') {
   (global as any).isBrowser = false;
   (global as any).isNode = true;
 }
+// test change

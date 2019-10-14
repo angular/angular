@@ -1,0 +1,824 @@
+version: 3
+pullapprove_conditions:
+  - condition: "'WIP' not in title and 'PR state: WIP' not in labels"
+    unmet_status: pending
+    explanation: "Waiting to send reviews as PR is WIP"
+
+groups:
+  # ================================================
+  #  Animations
+  # ================================================
+  animations:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/animations/*',
+          'packages/platform-browser/animations/*',
+          'aio/content/guide/animations.md',
+          'aio/content/examples/animations/*',
+          'aio/content/images/guide/animations/*',
+          'aio/content/guide/complex-animation-sequences.md',
+          'aio/content/guide/reusable-animations.md',
+          'aio/content/guide/route-animations.md',
+          'aio/content/guide/transition-and-triggers.md'
+          ])
+    reviewers:
+      users:
+        - matsko
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Bazel
+  # ================================================
+  bazel:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/bazel/*',
+          'aio/content/guide/bazel.md'
+          ])
+    reviewers:
+      users:
+        - alexeagle
+        - kyliau
+        - IgorMinar
+        - mgechev
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Compiler
+  # ================================================
+  compiler:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/compiler/*',
+          'packages/examples/compiler/*',
+          'packages/compiler-cli/*',
+          'aio/content/guide/angular-compiler-options.md',
+          'aio/content/guide/aot-compiler.md',
+          'aio/content/guide/aot-metadata-errors.md'
+          ])
+    reviewers:
+      users:
+        - alxhub
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  NGCC
+  # ================================================
+  ngcc:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/compiler-cli/ngcc/*'
+          ])
+    reviewers:
+      users:
+        - alxhub
+        - gkalpak
+        - petebacondarwin
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  CLI integration
+  # ================================================
+  cli-integration:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/compiler-cli/src/ngtools/*',
+          'aio/content/guide/cli-builder.md',
+          'aio/content/guide/ivy.md',
+          'aio/content/guide/web-worker.md'
+          ])
+    reviewers:
+      users:
+        - filipesilva
+        - mgechev
+        - vikerman
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Core
+  # ================================================
+  core:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/core/*',
+          'packages/examples/core/*',
+          'packages/common/*',
+          'packages/platform-browser/*',
+          'packages/examples/platform-browser/*',
+          'packages/platform-browser-dynamic/*',
+          'packages/platform-webworker/*',
+          'packages/platform-webworker-dynamic/*',
+          'packages/examples/common/*',
+          'packages/docs/*',
+          'aio/content/guide/accessibility.md',
+          'aio/content/examples/accessibility/*',
+          'aio/content/guide/architecture-components.md',
+          'aio/content/guide/architecture-modules.md',
+          'aio/content/guide/architecture-next-steps.md',
+          'aio/content/guide/architecture-services.md',
+          'aio/content/guide/architecture.md',
+          'aio/content/examples/architecture/*',
+          'aio/content/images/guide/architecture/*',
+          'aio/content/guide/attribute-directives.md',
+          'aio/content/examples/attribute-directives/*',
+          'aio/content/images/guide/attribute-directives/*',
+          'aio/content/guide/bootstrapping.md',
+          'aio/content/examples/bootstrapping/*',
+          'aio/content/guide/cheatsheet.md',
+          'aio/content/guide/component-interaction.md',
+          'aio/content/examples/component-interaction/*',
+          'aio/content/images/guide/component-interaction/*',
+          'aio/content/guide/component-styles.md',
+          'aio/content/examples/component-styles/*',
+          'aio/content/guide/dependency-injection.md',
+          'aio/content/examples/dependency-injection/*',
+          'aio/content/images/guide/dependency-injection/*',
+          'aio/content/guide/dependency-injection-in-action.md',
+          'aio/content/examples/dependency-injection-in-action/*',
+          'aio/content/images/guide/dependency-injection-in-action/*',
+          'aio/content/guide/dependency-injection-navtree.md',
+          'aio/content/guide/dependency-injection-providers.md',
+          'aio/content/guide/displaying-data.md',
+          'aio/content/examples/displaying-data/*',
+          'aio/content/images/guide/displaying-data/*',
+          'aio/content/guide/dynamic-component-loader.md',
+          'aio/content/examples/dynamic-component-loader/*',
+          'aio/content/images/guide/dynamic-component-loader/*',
+          'aio/content/guide/entry-components.md',
+          'aio/content/guide/feature-modules.md',
+          'aio/content/examples/feature-modules/*',
+          'aio/content/images/guide/feature-modules/*',
+          'aio/content/guide/frequent-ngmodules.md',
+          'aio/content/images/guide/frequent-ngmodules/*',
+          'aio/content/guide/hierarchical-dependency-injection.md',
+          'aio/content/examples/hierarchical-dependency-injection/*',
+          'aio/content/examples/providers-viewproviders/*',
+          'aio/content/examples/resolution-modifiers/*',
+          'aio/content/guide/lazy-loading-ngmodules.md',
+          'aio/content/examples/lazy-loading-ngmodules/*',
+          'aio/content/images/guide/lazy-loading-ngmodules/*',
+          'aio/content/guide/lifecycle-hooks.md',
+          'aio/content/examples/lifecycle-hooks/*',
+          'aio/content/images/guide/lifecycle-hooks/*',
+          'aio/content/examples/ngcontainer/*',
+          'aio/content/guide/ngmodules.md',
+          'aio/content/examples/ngmodules/*',
+          'aio/content/guide/ngmodule-api.md',
+          'aio/content/guide/ngmodule-faq.md',
+          'aio/content/examples/ngmodule-faq/*',
+          'aio/content/guide/ngmodule-vs-jsmodule.md',
+          'aio/content/guide/module-types.md',
+          'aio/content/guide/template-syntax.md',
+          'aio/content/examples/built-in-template-functions/*',
+          'aio/content/examples/event-binding/*',
+          'aio/content/examples/interpolation/*',
+          'aio/content/examples/template-syntax/*',
+          'aio/content/images/guide/template-syntax/*',
+          'aio/content/examples/binding-syntax/*',
+          'aio/content/examples/property-binding/*',
+          'aio/content/examples/attribute-binding/*',
+          'aio/content/examples/two-way-binding/*',
+          'aio/content/examples/built-in-directives/*',
+          'aio/content/images/guide/built-in-directives/*',
+          'aio/content/examples/template-reference-variables/*',
+          'aio/content/examples/inputs-outputs/*',
+          'aio/content/images/guide/inputs-outputs/*',
+          'aio/content/examples/template-expression-operators/*',
+          'aio/content/guide/pipes.md',
+          'aio/content/examples/pipes/*',
+          'aio/content/images/guide/pipes/*',
+          'aio/content/guide/providers.md',
+          'aio/content/examples/providers/*',
+          'aio/content/guide/singleton-services.md',
+          'aio/content/guide/set-document-title.md',
+          'aio/content/examples/set-document-title/*',
+          'aio/content/images/guide/set-document-title/*',
+          'aio/content/guide/sharing-ngmodules.md',
+          'aio/content/guide/structural-directives.md',
+          'aio/content/examples/structural-directives/*',
+          'aio/content/images/guide/structural-directives/*',
+          'aio/content/guide/user-input.md',
+          'aio/content/examples/user-input/*',
+          'aio/content/images/guide/user-input/*'
+          ])
+    reviewers:
+      users:
+        - alxhub
+        - AndrewKushnir
+        - kara
+        - mhevery
+        - pkozlowski-opensource
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  http
+  # ================================================
+  http:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/common/http/*',
+          'packages/http/*',
+          'packages/examples/http/*',
+          'aio/content/guide/http.md',
+          'aio/content/examples/http/*',
+          'aio/content/images/guide/http/*'
+          ])
+    reviewers:
+      users:
+        - alxhub
+        - IgorMinar
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Elements
+  # ================================================
+  elements:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/elements/*',
+          'aio/content/examples/elements/*',
+          'aio/content/images/guide/elements/*',
+          'aio/content/guide/elements.md'
+          ])
+    reviewers:
+      users:
+        - andrewseguin
+        - gkalpak
+        - robwormald
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Forms
+  # ================================================
+  forms:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/forms/*',
+          'packages/examples/forms/*',
+          'aio/content/guide/forms.md',
+          'aio/content/examples/forms/*',
+          'aio/content/images/guide/forms/*',
+          'aio/content/guide/forms-overview.md',
+          'aio/content/examples/forms-overview/*',
+          'aio/content/images/guide/forms-overview/*',
+          'aio/content/guide/form-validation.md',
+          'aio/content/examples/form-validation/*',
+          'aio/content/images/guide/form-validation/*',
+          'aio/content/guide/dynamic-form.md',
+          'aio/content/examples/dynamic-form/*',
+          'aio/content/images/guide/dynamic-form/*',
+          'aio/content/guide/reactive-forms.md',
+          'aio/content/examples/reactive-forms/*',
+          'aio/content/images/guide/reactive-forms/*'
+          ])
+    reviewers:
+      users:
+        - AndrewKushnir
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Language Service
+  # ================================================
+  language-service:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/language-service/*',
+          'aio/content/guide/language-service.md',
+          'aio/content/images/guide/language-service/*'
+        ])
+    reviewers:
+      users:
+        - kyliau
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Platform Server
+  # ================================================
+  platform-server:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/platform-server/*',
+          'aio/content/guide/universal.md',
+          'aio/content/examples/universal/*'
+          ])
+    reviewers:
+      users:
+        - alxhub
+        - vikerman
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Router
+  # ================================================
+  router:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/router/*',
+          'packages/examples/router/*',
+          'aio/content/guide/router.md',
+          'aio/content/examples/router/*',
+          'aio/content/images/guide/router/*'
+          ])
+    reviewers:
+      users:
+        - atscott
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Service Worker
+  # ================================================
+  server-worker:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/service-worker/*',
+          'packages/examples/service-worker/*',
+          'aio/content/guide/service-worker-getting-started.md',
+          'aio/content/examples/service-worker-getting-started/*',
+          'aio/content/guide/app-shell.md',
+          'aio/content/guide/service-worker-communications.md',
+          'aio/content/guide/service-worker-config.md',
+          'aio/content/guide/service-worker-devops.md',
+          'aio/content/guide/service-worker-intro.md',
+          'aio/content/images/guide/service-worker/*'
+          ])
+    reviewers:
+      users:
+        - alxhub
+        - gkalpak
+        - IgorMinar
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Upgrade
+  # ================================================
+  upgrade:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/upgrade/*',
+          'packages/common/upgrade/*',
+          'packages/examples/upgrade/*',
+          'aio/content/guide/upgrade.md',
+          'aio/content/examples/upgrade-lazy-load-ajs/*',
+          'aio/content/examples/upgrade-module/*',
+          'aio/content/images/guide/upgrade/*',
+          'aio/content/examples/upgrade-phonecat-1-typescript/*',
+          'aio/content/examples/upgrade-phonecat-2-hybrid/*',
+          'aio/content/examples/upgrade-phonecat-3-final/*',
+          'aio/content/guide/upgrade-performance.md',
+          'aio/content/guide/upgrade-setup.md',
+          'aio/content/guide/ajs-quick-reference.md',
+          'aio/content/examples/ajs-quick-reference/*'
+          ])
+    reviewers:
+      users:
+        - gkalpak
+        - petebacondarwin
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Testing
+  # ================================================
+  testing:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'testing/*',
+          'aio/content/guide/testing.md',
+          'aio/content/examples/testing/*',
+          'aio/content/images/guide/testing/*'
+          ])
+    reviewers:
+      users:
+        - vikerman
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  i18n
+  # ================================================
+  i18n:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/core/src/i18n/*',
+          'packages/core/src/render3/i18n.ts',
+          'packages/core/src/render3/i18n.md',
+          'packages/core/src/render3/interfaces/i18n.ts',
+          'packages/common/locales/*',
+          'packages/common/src/i18n/*',
+          'packages/common/src/pipes/date_pipe.ts',
+          'packages/common/src/pipes/i18n_plural_pipe.ts',
+          'packages/common/src/pipes/i18n_select_pipe.ts',
+          'packages/common/src/pipes/number_pipe.ts',
+          'packages/compiler/src/i18n/*',
+          'packages/compiler/src/render3/view/i18n/*',
+          'packages/compiler-cli/src/extract_i18n.ts',
+          'packages/localize/*',
+          'aio/content/guide/i18n.md',
+          'aio/content/examples/i18n/*'
+          ])
+    reviewers:
+      users:
+        - AndrewKushnir
+        - mhevery
+        - petebacondarwin
+        - vikerman
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Angular security
+  # ================================================
+  angular-security:
+    conditions:
+      - >
+          contains_any_fnmatches(files, [
+            'packages/core/src/sanitization/*',
+            'packages/core/test/linker/security_integration_spec.ts',
+            'packages/compiler/src/schema/*',
+            'packages/platform-browser/src/security/*',
+            'aio/content/guide/security.md',
+            'aio/content/examples/security/*',
+            'aio/content/images/guide/security/*'
+            ])
+    reviewers:
+      users:
+        - IgorMinar
+        - mhevery
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  zone.js
+  # ================================================
+  zone-js:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/zone.js/*'
+          ])
+    reviewers:
+      users:
+        - JiaLiPassion
+        - mhevery
+        - vikerman
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Benchpress
+  # ================================================
+  benchpress:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'packages/benchpress/*'
+          ])
+    reviewers:
+      users:
+        - alxhub
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Integration
+  # ================================================
+  integration:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'integration/*'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - josephperrott
+        - mhevery
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Docs-infra
+  # ================================================
+  docs-infra:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'aio/*',
+          'aio/aio-builds-setup/*',
+          'aio/content/examples/*',
+          'aio/scripts/*',
+          'aio/src/*',
+          'aio/tests/*',
+          'aio/tools/*',
+          'aio/content/guide/docs-style-guide.md',
+          'aio/content/examples/docs-style-guide/*',
+          'aio/content/images/guide/docs-style-guide/*',
+          'aio/content/guide/visual-studio-2015.md',
+          'aio/content/examples/visual-studio-2015/*'
+          ])
+    reviewers:
+      users:
+        - gkalpak
+        - IgorMinar
+        - petebacondarwin
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Docs: Gettings Started & Tutorial
+  # ================================================
+  docs-getting-started-and-tutorial:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'aio/content/guide/setup-local.md',
+          'aio/content/images/guide/setup-local/*',
+          'aio/content/tutorial/*',
+          'aio/content/images/guide/toh/*',
+          'aio/content/examples/toh-pt0/*',
+          'aio/content/examples/toh-pt1/*',
+          'aio/content/examples/toh-pt2/*',
+          'aio/content/examples/toh-pt3/*',
+          'aio/content/examples/toh-pt4/*',
+          'aio/content/examples/toh-pt5/*',
+          'aio/content/examples/toh-pt6/*',
+          'aio/content/examples/getting-started-v0/*',
+          'aio/content/examples/getting-started/*',
+          'aio/content/start/*',
+          'aio/content/images/guide/start/*'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - stephenfluin
+      teams:
+        - ~test-framework-global-approvers-for-docs-only-changes
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Docs: Observables
+  # ================================================
+  docs-observables:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'aio/content/guide/observables.md',
+          'aio/content/examples/observables/*',
+          'aio/content/guide/comparing-observables.md',
+          'aio/content/guide/observables-in-angular.md',
+          'aio/content/examples/observables-in-angular/*',
+          'aio/content/guide/practical-observable-usage.md',
+          'aio/content/examples/practical-observable-usage/*',
+          'aio/content/guide/rx-library.md',
+          'aio/content/examples/rx-library/*'
+          ])
+    reviewers:
+      users:
+        - alxhub
+      teams:
+        - ~test-framework-global-approvers-for-docs-only-changes
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Docs: Packaging, Tooling, Releasing
+  # ================================================
+  docs-packaging-tooling-releasing:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'aio/content/guide/npm-packages.md',
+          'aio/content/guide/browser-support.md',
+          'aio/content/guide/typescript-configuration.md',
+          'aio/content/examples/setup/*',
+          'aio/content/guide/build.md',
+          'aio/content/images/guide/build/*',
+          'aio/content/guide/deployment.md',
+          'aio/content/images/guide/deployment/*',
+          'aio/content/guide/file-structure.md',
+          'aio/content/guide/releases.md',
+          'aio/content/guide/updating.md',
+          'aio/content/guide/workspace-config.md',
+          'aio/content/guide/deprecations.md',
+          'aio/content/guide/migration-renderer.md',
+          'aio/content/guide/migration-undecorated-classes.md',
+          'aio/content/guide/migration-dynamic-flag.md',
+          'aio/content/guide/migration-injectable.md'
+          ])
+    reviewers:
+      users:
+        - alan-agius4
+        - IgorMinar
+        - mgechev
+        - vikerman
+      teams:
+        - ~test-framework-global-approvers-for-docs-only-changes
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Docs: Libraries
+  # ================================================
+  docs-libraries:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'aio/content/guide/creating-libraries.md',
+          'aio/content/guide/libraries.md',
+          'aio/content/guide/using-libraries.md'
+          ])
+    reviewers:
+      users:
+        - alan-agius4
+        - IgorMinar
+        - mgechev
+        - vikerman
+      teams:
+        - ~test-framework-global-approvers-for-docs-only-changes
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Docs: Schematics
+  # ================================================
+  docs-schematics:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'aio/content/marketing/*',
+          'aio/content/images/bios/*',
+          'aio/content/images/marketing/*',
+          'aio/content/navigation.json',
+          'aio/content/license.md'
+          ])
+    reviewers:
+      users:
+        - alan-agius4
+        - IgorMinar
+        - mgechev
+        - vikerman
+      teams:
+        - ~test-framework-global-approvers-for-docs-only-changes
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Docs: Marketing
+  # ================================================
+  docs-marketing:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'aio/content/marketing/*',
+          'aio/content/images/bios/*',
+          'aio/content/images/marketing/*',
+          'aio/content/navigation.json',
+          'aio/content/license.md'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+        - stephenfluin
+      teams:
+        - ~test-framework-global-approvers-for-docs-only-changes
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Dev-infra
+  # ================================================
+  dev-infra:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          '*',
+          '.buildkite/*',
+          '.circleci/*',
+          '.devcontainer/*',
+          '.github/*',
+          '.vscode/*',
+          'docs/BAZEL.md',
+          'packages/*',
+          'packages/examples/test-utils/*',
+          'packages/private/*',
+          'scripts/*',
+          'third_party/*',
+          'tools/build/*',
+          'tools/cjs-jasmine/*',
+          'tools/gulp-tasks/*',
+          'tools/ngcontainer/*',
+          'tools/npm/*',
+          'tools/npm_workspace/*',
+          'tools/public_api_guard/*',
+          'tools/rxjs/*',
+          'tools/size-tracking/*',
+          'tools/source-map-test/*',
+          'tools/symbol-extractor/*',
+          'tools/testing/*',
+          'tools/ts-api-guardian/*',
+          'tools/tslint/*',
+          'tools/validate-commit-message/*',
+          'tools/yarn/*',
+          'tools/*',
+          '*.bzl',
+          '*.BAZEL'
+          ])
+    reviewers:
+      users:
+        - devversion
+        - filipesilva
+        - gkalpak
+        - IgorMinar
+        - josephperrott
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Material CI
+  # ================================================
+  material-ci:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'tools/material-ci/*'
+          ])
+    reviewers:
+      users:
+        - alxhub
+        - AndrewKushnir
+        - kara
+        - mhevery
+        - pkozlowski-opensource
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Public API
+  # ================================================
+  public-api:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'tools/public_api_guard/*',
+          'aio/content/guide/glossary.md',
+          'aio/content/guide/styleguide.md',
+          'aio/content/examples/styleguide/*',
+          'aio/content/images/guide/styleguide/*'
+          ])
+    reviewers:
+      users:
+        - IgorMinar
+      teams:
+        - ~test-framework-global-approvers
+
+  # ================================================
+  #  Special cases
+  # ================================================
+  static_query_migration:
+    conditions:
+      - >
+        contains_any_fnmatches(files, [
+          'aio/content/guide/static-query-migration.md'
+          ])
+    reviewers:
+      users:
+        - kara
+      teams:
+        - ~test-framework-global-approvers-for-docs-only-changes
+        - ~test-framework-global-approvers
+
+  # ====================================================
+  #  Catch all for if no groups match the code change
+  # ====================================================
+  fallback:
+    conditions:
+      - len(groups.active) == 0
+    reviewers:
+      users:
+        - IgorMinar
+      teams:
+        - ~test-framework-global-approvers
