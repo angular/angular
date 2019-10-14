@@ -324,7 +324,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     if (this.localeId) {
       res.push({
-        name: 'ngLocaleIdDef',
+        name: 'ɵloc',
         initializer: new LiteralExpr(this.localeId),
         statements: [],
         type: STRING_TYPE
