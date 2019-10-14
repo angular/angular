@@ -51,6 +51,7 @@ runInEachFileSystem(() => {
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/valid_entry_point'),
            compiledByAngular: true,
            ignoreMissingDependencies: false,
+           generateDeepReexports: false,
          });
        });
 
@@ -111,6 +112,7 @@ runInEachFileSystem(() => {
         packageJson: overriddenPackageJson,
         compiledByAngular: true,
         ignoreMissingDependencies: false,
+        generateDeepReexports: false,
       });
     });
 
@@ -158,6 +160,7 @@ runInEachFileSystem(() => {
            packageJson: {name: 'some_package/missing_package_json', ...override},
            compiledByAngular: true,
            ignoreMissingDependencies: false,
+           generateDeepReexports: false,
          });
        });
 
@@ -215,6 +218,7 @@ runInEachFileSystem(() => {
           packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_typings'),
           compiledByAngular: true,
           ignoreMissingDependencies: false,
+          generateDeepReexports: false,
         });
       });
     }
@@ -239,6 +243,7 @@ runInEachFileSystem(() => {
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_metadata'),
            compiledByAngular: false,
            ignoreMissingDependencies: false,
+           generateDeepReexports: false,
          });
        });
 
@@ -266,6 +271,7 @@ runInEachFileSystem(() => {
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_metadata'),
            compiledByAngular: true,
            ignoreMissingDependencies: false,
+           generateDeepReexports: false,
          });
        });
 
@@ -295,6 +301,7 @@ runInEachFileSystem(() => {
             loadPackageJson(fs, '/project/node_modules/some_package/types_rather_than_typings'),
         compiledByAngular: true,
         ignoreMissingDependencies: false,
+        generateDeepReexports: false,
       });
     });
 
@@ -327,6 +334,7 @@ runInEachFileSystem(() => {
         packageJson: loadPackageJson(fs, '/project/node_modules/some_package/material_style'),
         compiledByAngular: true,
         ignoreMissingDependencies: false,
+        generateDeepReexports: false,
       });
     });
 
