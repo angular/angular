@@ -446,7 +446,7 @@ export declare abstract class ViewportScroller {
     abstract scrollToPosition(position: [number, number]): void;
     abstract setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void;
     abstract setOffset(offset: [number, number] | (() => [number, number])): void;
-    static ngInjectableDef: never;
+    static ɵprov: never;
 }
 
 export declare enum WeekDay {

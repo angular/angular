@@ -423,7 +423,7 @@ export class MetadataBundler {
         result[key] = this.convertFunction(moduleName, value);
       } else if (isMetadataSymbolicCallExpression(value)) {
         // Class members can also contain static members that call a function with module
-        // references. e.g. "static ngInjectableDef = ɵɵdefineInjectable(..)". We also need to
+        // references. e.g. "static ɵprov = ɵɵdefineInjectable(..)". We also need to
         // convert these module references because otherwise these resolve to non-existent files.
         result[key] = this.convertValue(moduleName, value);
       } else {
