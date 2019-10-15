@@ -126,9 +126,9 @@ describe('@angular/core ng_package', () => {
       });
 
       if (ivyEnabled) {
-        it('should have decorators downleveled to static props e.g. ngInjectableDef', () => {
+        it('should have decorators downleveled to static props e.g. ɵprov', () => {
           expect(shx.cat('fesm5/core.js')).not.toContain('__decorate');
-          expect(shx.cat('fesm5/core.js')).toContain('.ngInjectableDef = ');
+          expect(shx.cat('fesm5/core.js')).toContain('.ɵprov = ');
         });
       } else {
         it('should have decorators',

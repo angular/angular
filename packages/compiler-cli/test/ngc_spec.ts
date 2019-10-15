@@ -2082,7 +2082,7 @@ describe('ngc transformer command-line', () => {
         })
         export class ServiceModule {}
         `);
-        expect(source).not.toMatch(/ngInjectableDef/);
+        expect(source).not.toMatch(/ɵprov/);
       });
       it('on a service with a base class service', () => {
         const source = compileService(`
@@ -2102,7 +2102,7 @@ describe('ngc transformer command-line', () => {
         })
         export class ServiceModule {}
         `);
-        expect(source).not.toMatch(/ngInjectableDef/);
+        expect(source).not.toMatch(/ɵprov/);
       });
     });
 
@@ -2116,21 +2116,20 @@ describe('ngc transformer command-line', () => {
         })
         export class Service {}
       `);
-      expect(source).toMatch(/ngInjectableDef = .+\.ɵɵdefineInjectable\(/);
-      expect(source).toMatch(/ngInjectableDef.*token: Service/);
-      expect(source).toMatch(/ngInjectableDef.*providedIn: .+\.Module/);
+      expect(source).toMatch(/ɵprov = .+\.ɵɵdefineInjectable\(/);
+      expect(source).toMatch(/ɵprov.*token: Service/);
+      expect(source).toMatch(/ɵprov.*providedIn: .+\.Module/);
     });
 
-    it('ngInjectableDef in es5 mode is annotated @nocollapse when closure options are enabled',
-       () => {
-         writeConfig(`{
+    it('ɵprov in es5 mode is annotated @nocollapse when closure options are enabled', () => {
+      writeConfig(`{
         "extends": "./tsconfig-base.json",
         "angularCompilerOptions": {
           "annotateForClosureCompiler": true
         },
         "files": ["service.ts"]
       }`);
-         const source = compileService(`
+      const source = compileService(`
         import {Injectable} from '@angular/core';
         import {Module} from './module';
 
@@ -2139,8 +2138,8 @@ describe('ngc transformer command-line', () => {
         })
         export class Service {}
       `);
-         expect(source).toMatch(/\/\*\* @nocollapse \*\/ Service\.ngInjectableDef =/);
-       });
+      expect(source).toMatch(/\/\*\* @nocollapse \*\/ Service\.ɵprov =/);
+    });
 
     it('compiles a useValue InjectableDef', () => {
       const source = compileService(`
@@ -2155,7 +2154,7 @@ describe('ngc transformer command-line', () => {
         })
         export class Service {}
       `);
-      expect(source).toMatch(/ngInjectableDef.*return CONST_SERVICE/);
+      expect(source).toMatch(/ɵprov.*return CONST_SERVICE/);
     });
 
     it('compiles a useExisting InjectableDef', () => {
@@ -2172,7 +2171,7 @@ describe('ngc transformer command-line', () => {
         })
         export class Service {}
       `);
-      expect(source).toMatch(/ngInjectableDef.*return ..\.ɵɵinject\(Existing\)/);
+      expect(source).toMatch(/ɵprov.*return ..\.ɵɵinject\(Existing\)/);
     });
 
     it('compiles a useFactory InjectableDef with optional dep', () => {
@@ -2192,7 +2191,7 @@ describe('ngc transformer command-line', () => {
           constructor(e: Existing|null) {}
         }
       `);
-      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.ɵɵinject\(Existing, 8\)/);
+      expect(source).toMatch(/ɵprov.*return ..\(..\.ɵɵinject\(Existing, 8\)/);
     });
 
     it('compiles a useFactory InjectableDef with skip-self dep', () => {
@@ -2212,7 +2211,7 @@ describe('ngc transformer command-line', () => {
           constructor(e: Existing) {}
         }
       `);
-      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.ɵɵinject\(Existing, 4\)/);
+      expect(source).toMatch(/ɵprov.*return ..\(..\.ɵɵinject\(Existing, 4\)/);
     });
 
     it('compiles a service that depends on a token', () => {
@@ -2229,9 +2228,9 @@ describe('ngc transformer command-line', () => {
           constructor(@Inject(TOKEN) value: boolean) {}
         }
       `);
-      expect(source).toMatch(/ngInjectableDef = .+\.ɵɵdefineInjectable\(/);
-      expect(source).toMatch(/ngInjectableDef.*token: Service/);
-      expect(source).toMatch(/ngInjectableDef.*providedIn: .+\.Module/);
+      expect(source).toMatch(/ɵprov = .+\.ɵɵdefineInjectable\(/);
+      expect(source).toMatch(/ɵprov.*token: Service/);
+      expect(source).toMatch(/ɵprov.*providedIn: .+\.Module/);
     });
 
     it('generates exports.* references when outputting commonjs', () => {

@@ -14,10 +14,10 @@ class MockRootScopeInjector implements Injector {
   get<T>(
       token: Type<T>|InjectionToken<T>, defaultValue?: any,
       flags: InjectFlags = InjectFlags.Default): T {
-    if ((token as any).ngInjectableDef && (token as any).ngInjectableDef.providedIn === 'root') {
+    if ((token as any).ɵprov && (token as any).ɵprov.providedIn === 'root') {
       const old = setCurrentInjector(this);
       try {
-        return (token as any).ngInjectableDef.factory();
+        return (token as any).ɵprov.factory();
       } finally {
         setCurrentInjector(old);
       }

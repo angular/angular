@@ -231,7 +231,7 @@ describe('metadata bundler', () => {
             import {sharedFn} from '../shared';
           
             export class MyClass {
-              static ngInjectableDef = sharedFn(); 
+              static ɵprov = sharedFn(); 
             }
           `,
         }
@@ -244,7 +244,7 @@ describe('metadata bundler', () => {
     // The unbundled metadata should reference symbols using the relative module path.
     expect(deepIndexMetadata.metadata['MyClass']).toEqual(jasmine.objectContaining<MetadataEntry>({
       statics: {
-        ngInjectableDef: {
+        ɵprov: {
           __symbolic: 'call',
           expression: {
             __symbolic: 'reference',
@@ -260,7 +260,7 @@ describe('metadata bundler', () => {
     // anywhere and it's not guaranteed that the relatively referenced files are present.
     expect(bundledMetadata.metadata['MyClass']).toEqual(jasmine.objectContaining<MetadataEntry>({
       statics: {
-        ngInjectableDef: {
+        ɵprov: {
           __symbolic: 'call',
           expression: {
             __symbolic: 'reference',

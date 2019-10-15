@@ -126,7 +126,7 @@ export class InjectableCompiler {
           className, null,
           [
             new o.ClassField(
-                'ngInjectableDef', o.INFERRED_TYPE, [o.StmtModifier.Static],
+                'ɵprov', o.INFERRED_TYPE, [o.StmtModifier.Static],
                 this.injectableDef(injectable, ctx)),
           ],
           [], new o.ClassMethod(null, [], []), []);
