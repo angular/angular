@@ -3385,6 +3385,30 @@ describe('i18n support in the template compiler', () => {
 
       verify(input, output);
     });
+
+    it('should attach metadata in case an ICU represents the whole message', () => {
+      const input = `
+        <div i18n="meaningA|descA@@idA">{count, select, 1 {one} other {more than one}}</div>
+      `;
+
+      const output = String.raw `
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc descA
+             * @meaning meaningA
+             */
+            const $MSG_EXTERNAL_idA$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, 1 {one} other {more than one}}");
+            $I18N_0$ = $MSG_EXTERNAL_idA$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_0$ = $localize \`:meaningA|descA@@idA:{VAR_SELECT, select, 1 {one} other {more than one}}\`;
+        }
+        $I18N_0$ = i0.ɵɵi18nPostprocess($I18N_0$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
+      `;
+
+      verify(input, output);
+    });
   });
 
   describe('errors', () => {
