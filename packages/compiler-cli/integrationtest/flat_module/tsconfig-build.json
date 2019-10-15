@@ -15,7 +15,8 @@
     "noImplicitAny": true,
     "outDir": "../node_modules/flat_module",
     "rootDir": "",
-    "target": "es5"
+    "target": "es5",
+    "typeRoots": ["../node_modules/@types"]
  },
 
  "files": ["public-api.ts"]
