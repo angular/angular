@@ -45,7 +45,6 @@ describe('expression AST absolute source spans', () => {
   });
 
   it('should provide absolute offsets of an expression in a template attribute', () => {
-    debugger;
     expect(humanizeExpressionSource(parse('<div *ngIf="value | async"></div>').nodes)).toContain([
       '(value | async)', new AbsoluteSourceSpan(12, 25)
     ]);
