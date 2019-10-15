@@ -1031,6 +1031,26 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(fixture.debugElement.nativeElement.innerHTML).toContain('A');
       expect(fixture.debugElement.nativeElement.innerHTML).toContain('B');
     });
+
+    it('should use metadata from container element if a message is a single ICU', () => {
+      loadTranslations({idA: '{VAR_SELECT, select, 1 {un} other {plus d\'un}}'});
+
+      @Component({
+        selector: 'app',
+        template: `
+          <div i18n="@@idA">{count, select, 1 {one} other {more than one}}</div>
+        `
+      })
+      class AppComponent {
+        count = 2;
+      }
+
+      TestBed.configureTestingModule({declarations: [AppComponent]});
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.debugElement.nativeElement.innerHTML).toContain('plus d\'un');
+    });
   });
 
   describe('should support attributes', () => {
