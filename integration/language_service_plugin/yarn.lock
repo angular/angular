@@ -3,12 +3,10 @@
 
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "8.0.0-beta.13"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.10"
 
 "@angular/language-service@file:../../dist/packages-dist/language-service":
-  version "8.0.0-beta.13"
+  version "9.0.0-next.10"
 
 "@types/node@file:../../node_modules/@types/node":
   version "10.9.4"
@@ -91,13 +89,8 @@ path-is-absolute@^1.0.0:
   resolved "https://registry.yarnpkg.com/path-is-absolute/-/path-is-absolute-1.0.1.tgz#174b9268735534ffbc7ace6bf53a5a9e1b5c5f5f"
   integrity sha1-F0uSaHNVNP+8es5r9TpanhtcX18=
 
-tslib@^1.9.0:
-  version "1.9.3"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
-  integrity sha512-4krF8scpejhaOgqzBEcGM7yDIEfi0/8+8zDRZhNZZ2kjmHJ4hv3zCbQWxoJGz1iw5U0Jl0nma13xzHXcncMavQ==
-
 "typescript@file:../../node_modules/typescript":
-  version "3.4.2"
+  version "3.5.3"
 
 wrappy@1:
   version "1.0.2"

@@ -23,7 +23,8 @@
     // compatible with the option. Disabled until the integration test support the strict flag.
     // TODO(devversion): this has been enabled without the integration test code being
     "strictPropertyInitialization": false,
-    "target": "es5"
+    "target": "es5",
+    "typeRoots": ["node_modules/@types"]
   },
 
   "files": [
