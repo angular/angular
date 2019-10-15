@@ -378,7 +378,7 @@ export function injectChangeDetectorRef(isPipe = false): ViewEngine_ChangeDetect
 function createViewRef(tNode: TNode, lView: LView, isPipe: boolean): ViewEngine_ChangeDetectorRef {
   // `isComponentView` will be true for Component and Directives (but not for Pipes).
   // See https://github.com/angular/angular/pull/33072 for proper fix
-  const isComponentView = isComponentHost(tNode) && !isPipe;
+  const isComponentView = !isPipe && isComponentHost(tNode);
   if (isComponentView) {
     // The LView represents the location where the component is declared.
     // Instead we want the LView for the component View and so we need to look it up.
