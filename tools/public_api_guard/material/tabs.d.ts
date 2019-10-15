@@ -28,10 +28,11 @@ export declare abstract class _MatTabBodyBase implements OnInit, OnDestroy {
 }
 
 export declare abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements AfterContentInit, AfterContentChecked, OnDestroy, CanColor, CanDisableRipple {
+    abstract _allTabs: QueryList<MatTab>;
     _animationMode?: string | undefined;
     abstract _tabBodyWrapper: ElementRef;
     abstract _tabHeader: MatTabGroupBaseHeader;
-    abstract _tabs: QueryList<MatTab>;
+    _tabs: QueryList<MatTab>;
     readonly animationDone: EventEmitter<void>;
     animationDuration: string;
     backgroundColor: ThemePalette;
@@ -86,6 +87,8 @@ export declare abstract class _MatTabNavBase extends MatPaginatedTabHeader imple
     updateActiveLink(_element?: ElementRef): void;
 }
 
+export declare const MAT_TAB_GROUP: InjectionToken<any>;
+
 export declare const MAT_TABS_CONFIG: InjectionToken<MatTabsConfig>;
 
 export declare class MatInkBar {
@@ -97,6 +100,7 @@ export declare class MatInkBar {
 }
 
 export declare class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnChanges, OnDestroy {
+    _closestTabGroup?: any;
     _explicitContent: TemplateRef<any>;
     _implicitContent: TemplateRef<any>;
     readonly _stateChanges: Subject<void>;
@@ -108,7 +112,8 @@ export declare class MatTab extends _MatTabMixinBase implements OnInit, CanDisab
     position: number | null;
     templateLabel: MatTabLabel;
     textLabel: string;
-    constructor(_viewContainerRef: ViewContainerRef);
+    constructor(_viewContainerRef: ViewContainerRef,
+    _closestTabGroup?: any);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
@@ -140,9 +145,9 @@ export declare class MatTabContent {
 }
 
 export declare class MatTabGroup extends _MatTabGroupBase {
+    _allTabs: QueryList<MatTab>;
     _tabBodyWrapper: ElementRef;
     _tabHeader: MatTabGroupBaseHeader;
-    _tabs: QueryList<MatTab>;
     constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, defaultConfig?: MatTabsConfig, animationMode?: string);
 }
 

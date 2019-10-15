@@ -36,9 +36,10 @@ import {
   mixinDisableRipple,
   ThemePalette,
 } from '@angular/material/core';
-import {merge, Subscription} from 'rxjs';
-import {MatTab} from './tab';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+import {merge, Subscription} from 'rxjs';
+import {startWith} from 'rxjs/operators';
+import {MatTab, MAT_TAB_GROUP} from './tab';
 
 
 /** Used to generate unique ID's for each tab component */
@@ -88,9 +89,17 @@ interface MatTabGroupBaseHeader {
 // tslint:disable-next-line:class-name
 export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements AfterContentInit,
     AfterContentChecked, OnDestroy, CanColor, CanDisableRipple {
-  abstract _tabs: QueryList<MatTab>;
+
+  /**
+   * All tabs inside the tab group. This includes tabs that belong to groups that are nested
+   * inside the current one. We filter out only the tabs that belong to this group in `_tabs`.
+   */
+  abstract _allTabs: QueryList<MatTab>;
   abstract _tabBodyWrapper: ElementRef;
   abstract _tabHeader: MatTabGroupBaseHeader;
+
+  /** All of the tabs that belong to the group. */
+  _tabs: QueryList<MatTab> = new QueryList<MatTab>();
 
   /** The tab index that should be selected after the content has been checked. */
   private _indexToSelect: number | null = 0;
@@ -220,6 +229,7 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
   }
 
   ngAfterContentInit() {
+    this._subscribeToAllTabChanges();
     this._subscribeToTabLabels();
 
     // Subscribe to changes in the amount of tabs, in order to be
@@ -243,9 +253,25 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
         }
       }
 
-      this._subscribeToTabLabels();
       this._changeDetectorRef.markForCheck();
     });
+  }
+
+  /** Listens to changes in all of the tabs. */
+  private _subscribeToAllTabChanges() {
+    // Since we use a query with `descendants: true` to pick up the tabs, we may end up catching
+    // some that are inside of nested tab groups. We filter them out manually by checking that
+    // the closest group to the tab is the current one.
+    this._allTabs.changes
+      .pipe(startWith(this._allTabs))
+      .subscribe((tabs: QueryList<MatTab>) => {
+        this._tabs.reset(tabs.filter(tab => {
+          // @breaking-change 10.0.0 Remove null check for `_closestTabGroup`
+          // once it becomes a required parameter in MatTab.
+          return !tab._closestTabGroup || tab._closestTabGroup === this;
+        }));
+        this._tabs.notifyOnChanges();
+      });
   }
 
   ngOnDestroy() {
@@ -363,6 +389,10 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
   // tslint:disable-next-line:validate-decorators
   changeDetection: ChangeDetectionStrategy.Default,
   inputs: ['color', 'disableRipple'],
+  providers: [{
+    provide: MAT_TAB_GROUP,
+    useExisting: MatTabGroup
+  }],
   host: {
     'class': 'mat-tab-group',
     '[class.mat-tab-group-dynamic-height]': 'dynamicHeight',
@@ -370,7 +400,7 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
   },
 })
 export class MatTabGroup extends _MatTabGroupBase {
-  @ContentChildren(MatTab) _tabs: QueryList<MatTab>;
+  @ContentChildren(MatTab, {descendants: true}) _allTabs: QueryList<MatTab>;
   @ViewChild('tabBodyWrapper', {static: false}) _tabBodyWrapper: ElementRef;
   @ViewChild('tabHeader', {static: false}) _tabHeader: MatTabGroupBaseHeader;
 

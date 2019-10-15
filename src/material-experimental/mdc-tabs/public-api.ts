@@ -27,4 +27,5 @@ export {
   MatTabHeaderPosition,
   MatTabsConfig,
   MAT_TABS_CONFIG,
+  MAT_TAB_GROUP,
 } from '@angular/material/tabs';

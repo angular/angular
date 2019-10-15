@@ -18,7 +18,12 @@ import {
   Inject,
   Optional,
 } from '@angular/core';
-import {_MatTabGroupBase, MAT_TABS_CONFIG, MatTabsConfig} from '@angular/material/tabs';
+import {
+  _MatTabGroupBase,
+  MAT_TABS_CONFIG,
+  MatTabsConfig,
+  MAT_TAB_GROUP,
+} from '@angular/material/tabs';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MatTab} from './tab';
 import {MatTabHeader} from './tab-header';
@@ -37,6 +42,10 @@ import {MatTabHeader} from './tab-header';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['color', 'disableRipple'],
+  providers: [{
+    provide: MAT_TAB_GROUP,
+    useExisting: MatTabGroup
+  }],
   host: {
     'class': 'mat-mdc-tab-group',
     '[class.mat-mdc-tab-group-dynamic-height]': 'dynamicHeight',
@@ -44,7 +53,7 @@ import {MatTabHeader} from './tab-header';
   },
 })
 export class MatTabGroup extends _MatTabGroupBase {
-  @ContentChildren(MatTab) _tabs: QueryList<MatTab>;
+  @ContentChildren(MatTab, {descendants: true}) _allTabs: QueryList<MatTab>;
   @ViewChild('tabBodyWrapper', {static: false}) _tabBodyWrapper: ElementRef;
   @ViewChild('tabHeader', {static: false}) _tabHeader: MatTabHeader;
 

@@ -20,6 +20,9 @@ import {
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
+  InjectionToken,
+  Inject,
+  Optional,
 } from '@angular/core';
 import {CanDisable, CanDisableCtor, mixinDisabled} from '@angular/material/core';
 import {Subject} from 'rxjs';
@@ -32,6 +35,12 @@ import {MatTabLabel} from './tab-label';
 class MatTabBase {}
 const _MatTabMixinBase: CanDisableCtor & typeof MatTabBase =
     mixinDisabled(MatTabBase);
+
+/**
+ * Used to provide a tab group to a tab without causing a circular dependency.
+ * @docs-private
+ */
+export const MAT_TAB_GROUP = new InjectionToken<any>('MAT_TAB_GROUP');
 
 @Component({
   moduleId: module.id,
@@ -107,7 +116,13 @@ export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnCh
    */
   isActive = false;
 
-  constructor(private _viewContainerRef: ViewContainerRef) {
+  constructor(
+    private _viewContainerRef: ViewContainerRef,
+    /**
+     * @deprecated `_closestTabGroup` parameter to become required.
+     * @breaking-change 10.0.0
+     */
+    @Optional() @Inject(MAT_TAB_GROUP) public _closestTabGroup?: any) {
     super();
   }
 

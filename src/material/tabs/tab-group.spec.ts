@@ -23,6 +23,8 @@ describe('MatTabGroup', () => {
         TemplateTabs,
         TabGroupWithAriaInputs,
         TabGroupWithIsActiveBinding,
+        NestedTabs,
+        TabGroupWithIndirectDescendantTabs,
       ],
     });
 
@@ -588,6 +590,33 @@ describe('MatTabGroup', () => {
     }));
   });
 
+  describe('nested tabs', () => {
+    it('should not pick up the tabs from descendant tab groups', fakeAsync(() => {
+      const fixture = TestBed.createComponent(NestedTabs);
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      const groups = fixture.componentInstance.groups.toArray();
+
+      expect(groups.length).toBe(2);
+      expect(groups[0]._tabs.map((tab: MatTab) => tab.textLabel))
+          .toEqual(['One', 'Two']);
+      expect(groups[1]._tabs.map((tab: MatTab) => tab.textLabel))
+        .toEqual(['Inner tab one', 'Inner tab two']);
+    }));
+
+    it('should pick up indirect descendant tabs', fakeAsync(() => {
+      const fixture = TestBed.createComponent(TabGroupWithIndirectDescendantTabs);
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      const tabs = fixture.componentInstance.tabGroup._tabs;
+      expect(tabs.map((tab: MatTab) => tab.textLabel)).toEqual(['One', 'Two']);
+    }));
+  });
+
   /**
    * Checks that the `selectedIndex` has been updated; checks that the label and body have their
    * respective `active` classes
@@ -824,7 +853,9 @@ class TabGroupWithSimpleApi {
     </mat-tab-group>
   `,
 })
-class NestedTabs {}
+class NestedTabs {
+  @ViewChildren(MatTabGroup) groups: QueryList<MatTabGroup>;
+}
 
 @Component({
   selector: 'template-tabs',
@@ -880,3 +911,18 @@ class TabGroupWithIsActiveBinding {
   `,
 })
 class TabsWithCustomAnimationDuration {}
+
+
+@Component({
+  template: `
+    <mat-tab-group>
+      <ng-container [ngSwitch]="true">
+        <mat-tab label="One">Tab one content</mat-tab>
+        <mat-tab label="Two">Tab two content</mat-tab>
+      </ng-container>
+    </mat-tab-group>
+  `,
+})
+class TabGroupWithIndirectDescendantTabs {
+  @ViewChild(MatTabGroup, {static: false}) tabGroup: MatTabGroup;
+}
