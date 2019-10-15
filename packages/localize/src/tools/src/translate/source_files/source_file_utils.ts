@@ -15,7 +15,7 @@ import {Diagnostics} from '../../diagnostics';
  * @param expression The expression to check.
  */
 export function isNamedIdentifier(
-    expression: NodePath<t.Expression>, name: string): expression is NodePath<t.Identifier> {
+    expression: NodePath, name: string): expression is NodePath<t.Identifier> {
   return expression.isIdentifier() && expression.node.name === name;
 }
 
@@ -309,7 +309,7 @@ export function translate(
 
 export class BabelParseError extends Error {
   private readonly type = 'BabelParseError';
-  constructor(public node: t.BaseNode, message: string) { super(message); }
+  constructor(public node: t.Node, message: string) { super(message); }
 }
 
 export function isBabelParseError(e: any): e is BabelParseError {
