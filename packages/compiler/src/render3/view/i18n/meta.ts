@@ -52,10 +52,11 @@ export class I18nMetaVisitor implements html.Visitor {
       message.id = typeof meta !== 'string' && (meta as i18n.Message).id || decimalDigest(message);
     }
 
-    if (this.i18nLegacyMessageIdFormat === 'xlf') {
+    if (this.i18nLegacyMessageIdFormat === 'xlf' || this.i18nLegacyMessageIdFormat === 'xliff') {
       message.legacyId = computeDigest(message);
     } else if (
-        this.i18nLegacyMessageIdFormat === 'xlf2' || this.i18nLegacyMessageIdFormat === 'xmb') {
+        this.i18nLegacyMessageIdFormat === 'xlf2' || this.i18nLegacyMessageIdFormat === 'xliff2' ||
+        this.i18nLegacyMessageIdFormat === 'xmb') {
       message.legacyId = computeDecimalDigest(message);
     } else if (typeof meta !== 'string') {
       // This occurs if we are doing the 2nd pass after whitespace removal
