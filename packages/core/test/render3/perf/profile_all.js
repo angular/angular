@@ -10,7 +10,7 @@ const shell = require('shelljs');
 const fs = require('fs');
 const path = require('path');
 
-const argv = process.argv
+const argv = process.argv;
 const baseDir = path.dirname(argv[1]);
 const readPath = argv[2] == '--read' ? argv[3] : null;
 const writePath = argv[2] == '--write' ? argv[3] : null;
@@ -21,7 +21,7 @@ const UNITS = {
   'us': 1e-6,
   'ms': 1e-3,
   's': 1,
-}
+};
 
 // Contains the list of tests which should be built and profiled
 const profileTests =
@@ -54,7 +54,7 @@ if (readPath) {
       name: run.name,
       base_time: run.time,
       base_unit: run.unit,
-    }
+    };
   });
 }
 profileTests.forEach((name) => {
@@ -86,7 +86,7 @@ if (writePath) {
       name: run.name,
       time: run.time,
       unit: run.unit,
-    }
+    };
   });
   fs.writeFileSync(writePath, JSON.stringify(baseTimes, undefined, 2));
 }
