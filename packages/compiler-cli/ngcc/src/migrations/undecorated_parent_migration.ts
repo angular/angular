@@ -68,7 +68,6 @@ export class UndecoratedParentMigration implements Migration {
       return makeDiagnostic(
           ErrorCode.NGCC_MIGRATION_EXTERNAL_BASE_CLASS, baseClassExpr,
           `${clazz.name.text} class has a dynamic base class ${baseClassExpr.getText()}, so it is not possible to migrate.`);
-      return null;
     }
 
     const baseClazz = host.reflectionHost.getDeclarationOfIdentifier(baseClassExpr) !.node;
