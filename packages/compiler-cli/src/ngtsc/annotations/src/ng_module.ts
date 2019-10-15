@@ -358,7 +358,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
                                                   ts.FunctionExpression): ts.Expression|null {
     const type = node.type || null;
     return type &&
-        (this._reflectModuleFromTypeParam(type) || this._reflectModuleFromLiteralType(type));
+        (this._reflectModuleFromTypeParam(type, node) || this._reflectModuleFromLiteralType(type));
   }
 
   /**
@@ -367,7 +367,9 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
    * @param type The type to reflect on.
    * @returns the identifier of the NgModule type if found, or null otherwise.
    */
-  private _reflectModuleFromTypeParam(type: ts.TypeNode): ts.Expression|null {
+  private _reflectModuleFromTypeParam(
+      type: ts.TypeNode,
+      node: ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression): ts.Expression|null {
     // Examine the type of the function to see if it's a ModuleWithProviders reference.
     if (!ts.isTypeReferenceNode(type)) {
       return null;
@@ -395,7 +397,15 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     // If there's no type parameter specified, bail.
     if (type.typeArguments === undefined || type.typeArguments.length !== 1) {
-      return null;
+      const parent =
+          ts.isMethodDeclaration(node) && ts.isClassDeclaration(node.parent) ? node.parent : null;
+      const symbolName = (parent && parent.name ? parent.name.getText() + '.' : '') +
+          (node.name ? node.name.getText() : 'anonymous');
+      throw new FatalDiagnosticError(
+          ErrorCode.NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC, type,
+          `${symbolName} returns a ModuleWithProviders type without a generic type argument. ` +
+              `Please add a generic type argument to the ModuleWithProviders type. If this ` +
+              `occurrence is in library code you don't control, please contact the library authors.`);
     }
 
     const arg = type.typeArguments[0];

@@ -1469,6 +1469,31 @@ runInEachFileSystem(os => {
                 'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>');
       });
 
+      it('should throw if ModuleWithProviders is missing its generic type argument', () => {
+        env.write(`test.ts`, `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from 'router';
+
+          @NgModule({imports: [RouterModule.forRoot()]})
+          export class TestModule {}
+        `);
+
+        env.write('node_modules/router/index.d.ts', `
+          import {ModuleWithProviders, ɵɵNgModuleDefWithMeta} from '@angular/core';
+
+          declare class RouterModule {
+            static forRoot(): ModuleWithProviders;
+            static ɵmod: ɵɵNgModuleDefWithMeta<RouterModule, never, never, never>;
+          }
+        `);
+        const errors = env.driveDiagnostics();
+        expect(trim(errors[0].messageText as string))
+            .toContain(
+                `RouterModule.forRoot returns a ModuleWithProviders type without a generic type argument. ` +
+                `Please add a generic type argument to the ModuleWithProviders type. If this ` +
+                `occurrence is in library code you don't control, please contact the library authors.`);
+      });
+
       it('should extract the generic type if it is provided as qualified type name', () => {
         env.write(`test.ts`, `
         import {NgModule} from '@angular/core';
