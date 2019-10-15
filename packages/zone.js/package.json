@@ -15,6 +15,7 @@
     "test": "test"
   },
   "devDependencies": {
+    "@types/node": "^10.9.4",
     "domino": "2.1.2",
     "mocha": "^3.1.2",
     "mock-require": "3.0.3",

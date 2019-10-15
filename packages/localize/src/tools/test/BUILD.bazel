@@ -12,6 +12,9 @@ ts_library(
         "//packages/localize",
         "//packages/localize/src/tools",
         "@npm//@babel/types",
+        "@npm//@types/babel__core",
+        "@npm//@types/babel__generator",
+        "@npm//@types/babel__template",
         "@npm//@types/glob",
     ],
 )
