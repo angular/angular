@@ -44,6 +44,13 @@ describe('expression AST absolute source spans', () => {
         .toContain(['condition ? true : false', new AbsoluteSourceSpan(22, 46)]);
   });
 
+  it('should provide absolute offsets of an expression in a template attribute', () => {
+    debugger;
+    expect(humanizeExpressionSource(parse('<div *ngIf="value | async"></div>').nodes)).toContain([
+      '(value | async)', new AbsoluteSourceSpan(12, 25)
+    ]);
+  });
+
   describe('binary expression', () => {
     it('should provide absolute offsets of a binary expression', () => {
       expect(humanizeExpressionSource(parse('<div>{{1 + 2}}<div>').nodes)).toContain([
