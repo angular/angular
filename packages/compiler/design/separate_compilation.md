@@ -87,7 +87,7 @@ class:
 
 Only one definition is generated per class. All components are directives so a
 `ɵcmp` contains all the `ɵdir` information. All directives
-are injectable so `ɵcmp` and `ɵdir` contain `ngInjectableDef`
+are injectable so `ɵcmp` and `ɵdir` contain `ɵprov`
 information.
 
 For `CompilePipeSummary` the table looks like:

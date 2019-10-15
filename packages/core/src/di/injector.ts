@@ -90,7 +90,7 @@ export abstract class Injector {
   }
 
   /** @nocollapse */
-  static ngInjectableDef = ɵɵdefineInjectable({
+  static ɵprov = ɵɵdefineInjectable({
     token: Injector,
     providedIn: 'any' as any,
     factory: () => ɵɵinject(INJECTOR),

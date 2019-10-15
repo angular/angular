@@ -88,7 +88,7 @@ describe('compiler compliance: dependency injection', () => {
       }`;
 
     const def = `
-      MyService.ngInjectableDef = $r3$.ɵɵdefineInjectable({
+      MyService.ɵprov = $r3$.ɵɵdefineInjectable({
         token: MyService,
         factory: function(t) {
           return MyService.ɵfac(t);
@@ -144,7 +144,7 @@ describe('compiler compliance: dependency injection', () => {
        };
 
        const def = `
-          MyService.ngInjectableDef = $r3$.ɵɵdefineInjectable({
+          MyService.ɵprov = $r3$.ɵɵdefineInjectable({
             token: MyService,
             factory: function() {
               return alternateFactory();
@@ -178,7 +178,7 @@ describe('compiler compliance: dependency injection', () => {
        };
 
        const def = `
-          MyService.ngInjectableDef = $r3$.ɵɵdefineInjectable({
+          MyService.ɵprov = $r3$.ɵɵdefineInjectable({
             token: MyService,
             factory: function MyService_Factory(t) {
               var r = null;
@@ -217,7 +217,7 @@ describe('compiler compliance: dependency injection', () => {
        };
 
        const factory = `
-          MyService.ngInjectableDef = $r3$.ɵɵdefineInjectable({
+          MyService.ɵprov = $r3$.ɵɵdefineInjectable({
             token: MyService,
             factory: function(t) {
               return MyAlternateService.ɵfac(t);
@@ -253,7 +253,7 @@ describe('compiler compliance: dependency injection', () => {
        };
 
        const factory = `
-          MyService.ngInjectableDef = $r3$.ɵɵdefineInjectable({
+          MyService.ɵprov = $r3$.ɵɵdefineInjectable({
             token: MyService,
             factory: function MyService_Factory(t) {
               var r = null;
@@ -290,7 +290,7 @@ describe('compiler compliance: dependency injection', () => {
     };
 
     const factory = `
-      SomeProvider.ngInjectableDef = $r3$.ɵɵdefineInjectable({
+      SomeProvider.ɵprov = $r3$.ɵɵdefineInjectable({
         token: SomeProvider,
         factory: function(t) {
           return SomeProviderImpl.ɵfac(t);

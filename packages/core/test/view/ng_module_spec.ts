@@ -25,7 +25,7 @@ class MyChildModule {}
 class NotMyModule {}
 
 class Bar {
-  static ngInjectableDef: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
+  static ɵprov: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
     token: Bar,
     factory: () => new Bar(),
     providedIn: MyModule,
@@ -33,7 +33,7 @@ class Bar {
 }
 
 class Baz {
-  static ngInjectableDef: ɵɵInjectableDef<Baz> = ɵɵdefineInjectable({
+  static ɵprov: ɵɵInjectableDef<Baz> = ɵɵdefineInjectable({
     token: Baz,
     factory: () => new Baz(),
     providedIn: NotMyModule,
@@ -43,7 +43,7 @@ class Baz {
 class HasNormalDep {
   constructor(public foo: Foo) {}
 
-  static ngInjectableDef: ɵɵInjectableDef<HasNormalDep> = ɵɵdefineInjectable({
+  static ɵprov: ɵɵInjectableDef<HasNormalDep> = ɵɵdefineInjectable({
     token: HasNormalDep,
     factory: () => new HasNormalDep(inject(Foo)),
     providedIn: MyModule,
@@ -53,7 +53,7 @@ class HasNormalDep {
 class HasDefinedDep {
   constructor(public bar: Bar) {}
 
-  static ngInjectableDef: ɵɵInjectableDef<HasDefinedDep> = ɵɵdefineInjectable({
+  static ɵprov: ɵɵInjectableDef<HasDefinedDep> = ɵɵdefineInjectable({
     token: HasDefinedDep,
     factory: () => new HasDefinedDep(inject(Bar)),
     providedIn: MyModule,
@@ -63,7 +63,7 @@ class HasDefinedDep {
 class HasOptionalDep {
   constructor(public baz: Baz|null) {}
 
-  static ngInjectableDef: ɵɵInjectableDef<HasOptionalDep> = ɵɵdefineInjectable({
+  static ɵprov: ɵɵInjectableDef<HasOptionalDep> = ɵɵdefineInjectable({
     token: HasOptionalDep,
     factory: () => new HasOptionalDep(inject(Baz, InjectFlags.Optional)),
     providedIn: MyModule,
@@ -71,7 +71,7 @@ class HasOptionalDep {
 }
 
 class ChildDep {
-  static ngInjectableDef: ɵɵInjectableDef<ChildDep> = ɵɵdefineInjectable({
+  static ɵprov: ɵɵInjectableDef<ChildDep> = ɵɵdefineInjectable({
     token: ChildDep,
     factory: () => new ChildDep(),
     providedIn: MyChildModule,
@@ -80,7 +80,7 @@ class ChildDep {
 
 class FromChildWithOptionalDep {
   constructor(public baz: Baz|null) {}
-  static ngInjectableDef: ɵɵInjectableDef<FromChildWithOptionalDep> = ɵɵdefineInjectable({
+  static ɵprov: ɵɵInjectableDef<FromChildWithOptionalDep> = ɵɵdefineInjectable({
     token: FromChildWithOptionalDep,
     factory: () => new FromChildWithOptionalDep(inject(Baz, InjectFlags.Default)),
     providedIn: MyChildModule,
@@ -91,7 +91,7 @@ class FromChildWithSkipSelfDep {
   constructor(
       public skipSelfChildDep: ChildDep|null, public selfChildDep: ChildDep|null,
       public optionalSelfBar: Bar|null) {}
-  static ngInjectableDef: ɵɵInjectableDef<FromChildWithSkipSelfDep> = ɵɵdefineInjectable({
+  static ɵprov: ɵɵInjectableDef<FromChildWithSkipSelfDep> = ɵɵdefineInjectable({
     token: FromChildWithSkipSelfDep,
     factory: () => new FromChildWithSkipSelfDep(
                  inject(ChildDep, InjectFlags.SkipSelf|InjectFlags.Optional),
@@ -215,7 +215,7 @@ describe('NgModuleRef_ injector', () => {
 
       ngOnDestroy(): void { Service.destroyed++; }
 
-      static ngInjectableDef: ɵɵInjectableDef<Service> = ɵɵdefineInjectable({
+      static ɵprov: ɵɵInjectableDef<Service> = ɵɵdefineInjectable({
         token: Service,
         factory: () => new Service(),
         providedIn: 'root',

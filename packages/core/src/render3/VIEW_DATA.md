@@ -331,9 +331,9 @@ The above will create the following layout:
 | `EXPANDO`
 | 11..18| cumulativeBloom                              | templateBloom
 |       | *sub-section: `component` and `directives`*
-| 19    | `factory(Child.ɵcmp.factory)`*     | `Child`
+| 19    | `factory(Child.ɵcmp.factory)`*               | `Child`
 |       | *sub-section: `providers`*
-| 20    | `factory(ServiceA.ngInjectableDef.factory)`* | `ServiceA`
+| 20    | `factory(ServiceA.ɵprov.factory)`*           | `ServiceA`
 | 22    | `'someServiceBValue'`*                       | `ServiceB`
 |       | *sub-section: `viewProviders`*
 | 22    | `factory(()=> new Service())`*               | `ServiceC`
@@ -420,7 +420,7 @@ A pseudo-implementation of `inject` function.
 ```typescript
 function inject(token: any): any {
   let injectableDef;
-  if (typeof token === 'function' && injectableDef = token.ngInjectableDef) {
+  if (typeof token === 'function' && injectableDef = token.ɵprov) {
     const provideIn = injectableDef.provideIn;
    if (provideIn === '__node_injector__') {
       // if we are injecting `Injector` than create a wrapper object around the inject but which

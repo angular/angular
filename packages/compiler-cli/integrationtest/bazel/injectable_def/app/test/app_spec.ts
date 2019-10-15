@@ -125,14 +125,14 @@ describe('ngInjectableDef Bazel Integration', () => {
     expect(TestBed.inject(Service).value).toEqual('overridden');
   });
 
-  it('does not override existing ngInjectableDef', () => {
+  it('does not override existing ɵprov', () => {
     @Injectable({
       providedIn: 'root',
       useValue: new Service(false),
     })
     class Service {
       constructor(public value: boolean) {}
-      static ngInjectableDef = {
+      static ɵprov = {
         providedIn: 'root',
         factory: () => new Service(true),
         token: Service,
@@ -143,7 +143,7 @@ describe('ngInjectableDef Bazel Integration', () => {
     expect(TestBed.inject(Service).value).toEqual(true);
   });
 
-  it('does not override existing ngInjectableDef in case of inheritance', () => {
+  it('does not override existing ɵprov in case of inheritance', () => {
     @Injectable({
       providedIn: 'root',
       useValue: new ParentService(false),

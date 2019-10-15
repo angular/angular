@@ -91,7 +91,7 @@ export const Injectable: InjectableDecorator = makeDecorator(
  *
  * @publicApi
  */
-export interface InjectableType<T> extends Type<T> { ngInjectableDef: ɵɵInjectableDef<T>; }
+export interface InjectableType<T> extends Type<T> { ɵprov: ɵɵInjectableDef<T>; }
 
 /**
  * Supports @Injectable() in JIT mode for Render2.
@@ -100,7 +100,7 @@ function render2CompileInjectable(injectableType: Type<any>, options?: {
   providedIn?: Type<any>| 'root' | 'platform' | 'any' | null
 } & InjectableProvider): void {
   if (options && options.providedIn !== undefined && !getInjectableDef(injectableType)) {
-    (injectableType as InjectableType<any>).ngInjectableDef = ɵɵdefineInjectable({
+    (injectableType as InjectableType<any>).ɵprov = ɵɵdefineInjectable({
       token: injectableType,
       providedIn: options.providedIn,
       factory: convertInjectableProviderToFactory(injectableType, options),
