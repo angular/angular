@@ -34,8 +34,11 @@ shell.exec(
         .join(' '));
 
 // profile tests
+// tslint:disable-next-line:no-console
 console.log('------------------------------------------------');
+// tslint:disable-next-line:no-console
 console.log('PROFILING');
+// tslint:disable-next-line:no-console
 console.log('------------------------------------------------');
 
 // This stores the results of the run
@@ -55,6 +58,7 @@ if (readPath) {
   });
 }
 profileTests.forEach((name) => {
+  // tslint:disable-next-line:no-console
   console.log('----------------', name, '----------------');
   const log =
       shell.exec(`node dist/bin/packages/core/test/render3/perf/${name}.min_debug.es2015.js`);
@@ -70,6 +74,7 @@ profileTests.forEach((name) => {
     runTime['%'] = Number.parseFloat(change.toFixed(2));
   }
 });
+// tslint:disable-next-line:no-console
 console.log('================================================');
 
 // If we have the writePath than write the `times` to file
@@ -87,4 +92,5 @@ if (writePath) {
 }
 
 // Pretty print the table with the run information
+// tslint:disable-next-line:no-console
 console.table(times, ['time', 'unit', 'base_time', 'base_unit', '%']);
