@@ -7,7 +7,7 @@
  */
 const performance = require('perf_hooks').performance;
 
-const MIN_SAMPLE_COUNT_NO_IMPROVEMENT = 10;
+const MIN_SAMPLE_COUNT_NO_IMPROVEMENT = 30;
 const MIN_SAMPLE_DURATION = 100;
 
 const UNITS = ['ms', 'us', 'ns', 'ps'];
