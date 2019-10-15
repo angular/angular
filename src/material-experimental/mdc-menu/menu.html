@@ -1,6 +1,7 @@
 <ng-template>
   <div
     class="mat-mdc-menu-panel mdc-menu-surface mdc-menu-surface--open"
+    [id]="panelId"
     [ngClass]="_classList"
     (keydown)="_handleKeydown($event)"
     (click)="closed.emit('click')"

@@ -76,6 +76,7 @@ const passiveEventListenerOptions = normalizePassiveListenerOptions({passive: tr
     'class': 'mat-menu-trigger',
     'aria-haspopup': 'true',
     '[attr.aria-expanded]': 'menuOpen || null',
+    '[attr.aria-controls]': 'menuOpen ? menu.panelId : null',
     '(mousedown)': '_handleMousedown($event)',
     '(keydown)': '_handleKeydown($event)',
     '(click)': '_handleClick($event)',

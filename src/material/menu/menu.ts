@@ -90,6 +90,8 @@ export function MAT_MENU_DEFAULT_OPTIONS_FACTORY(): MatMenuDefaultOptions {
  */
 const MAT_MENU_BASE_ELEVATION = 4;
 
+let menuPanelUid = 0;
+
 /** Base class with all of the `MatMenu` functionality. */
 @Directive({
   // TODO(devversion): this selector can be removed when we update to Angular 9.0.
@@ -236,6 +238,8 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
    * @breaking-change 8.0.0
    */
   @Output() close = this.closed;
+
+  readonly panelId = `mat-menu-panel-${menuPanelUid++}`;
 
   constructor(
     private _elementRef: ElementRef<HTMLElement>,

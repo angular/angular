@@ -20,6 +20,7 @@ export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatM
     lazyContent: MatMenuContent;
     overlapTrigger: boolean;
     panelClass: string;
+    readonly panelId: string;
     parentMenu: MatMenuPanel | undefined;
     templateRef: TemplateRef<any>;
     xPosition: MenuPositionX;
@@ -105,6 +106,7 @@ export interface MatMenuPanel<T = any> {
     hasBackdrop?: boolean;
     lazyContent?: MatMenuContent;
     overlapTrigger: boolean;
+    readonly panelId?: string;
     parentMenu?: MatMenuPanel | undefined;
     removeItem?: (item: T) => void;
     resetActiveItem: () => void;

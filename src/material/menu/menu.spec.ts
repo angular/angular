@@ -76,6 +76,15 @@ describe('MatMenu', () => {
     overlayContainer.ngOnDestroy();
   }));
 
+  it('should aria-controls the menu panel', () => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.triggerEl.nativeElement.getAttribute('aria-controls'))
+        .toBe(fixture.componentInstance.menu.panelId);
+  });
+
   it('should open the menu as an idempotent operation', () => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
     fixture.detectChanges();
