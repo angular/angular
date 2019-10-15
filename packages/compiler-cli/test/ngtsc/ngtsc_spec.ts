@@ -2064,9 +2064,39 @@ runInEachFileSystem(os => {
          expect(jsContents).toContain(':@@5dbba0a3da8dff890e20cf76eb075d58900fbcd3:Some text');
        });
 
+    it('should render legacy id when `enableI18nLegacyMessageIdFormat` is not false and `i18nInFormat` is set to "xliff"',
+       () => {
+         env.tsconfig({i18nInFormat: 'xliff'});
+         env.write(`test.ts`, `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'test',
+          template: '<div i18n>Some text</div>'
+        })
+        class FooCmp {}`);
+         env.driveMain();
+         const jsContents = env.getContents('test.js');
+         expect(jsContents).toContain(':@@5dbba0a3da8dff890e20cf76eb075d58900fbcd3:Some text');
+       });
+
     it('should render legacy id when `enableI18nLegacyMessageIdFormat` is not false and `i18nInFormat` is set to "xlf2"',
        () => {
          env.tsconfig({i18nInFormat: 'xlf2'});
+         env.write(`test.ts`, `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'test',
+          template: '<div i18n>Some text</div>'
+        })
+        class FooCmp {}`);
+         env.driveMain();
+         const jsContents = env.getContents('test.js');
+         expect(jsContents).toContain(':@@8321000940098097247:Some text');
+       });
+
+    it('should render legacy id when `enableI18nLegacyMessageIdFormat` is not false and `i18nInFormat` is set to "xliff2"',
+       () => {
+         env.tsconfig({i18nInFormat: 'xliff2'});
          env.write(`test.ts`, `
         import {Component} from '@angular/core';
         @Component({
