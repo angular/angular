@@ -8,4 +8,3 @@
 
 export * from './menu-harness';
 export * from './menu-harness-filters';
-export * from './menu-item-harness';

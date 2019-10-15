@@ -14,4 +14,5 @@ export interface MenuHarnessFilters extends BaseHarnessFilters {
 
 export interface MenuItemHarnessFilters extends BaseHarnessFilters {
   text?: string | RegExp;
+  hasSubmenu?: boolean;
 }

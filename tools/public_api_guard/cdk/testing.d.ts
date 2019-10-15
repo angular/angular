@@ -12,6 +12,7 @@ export interface BaseHarnessFilters {
 export declare function clearElement(element: HTMLInputElement | HTMLTextAreaElement): void;
 
 export declare abstract class ComponentHarness {
+    protected readonly locatorFactory: LocatorFactory;
     constructor(locatorFactory: LocatorFactory);
     protected documentRootLocatorFactory(): LocatorFactory;
     protected forceStabilize(): Promise<void>;

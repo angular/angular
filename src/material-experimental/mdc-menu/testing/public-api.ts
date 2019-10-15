@@ -7,4 +7,3 @@
  */
 
 export * from './menu-harness';
-export * from './menu-item-harness';
