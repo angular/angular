@@ -26,7 +26,7 @@ following products on your development machine:
 
 * [Yarn](https://yarnpkg.com) (version specified in the engines field of [`package.json`](../package.json)) which is used to install dependencies.
 
-* [Java Development Kit](http://www.oracle.com/technetwork/es/java/javase/downloads/index.html) which is used
+* [Java Development Kit](https://www.oracle.com/technetwork/java/javase/downloads/index.html) which is used
   to execute the selenium standalone server for e2e testing.
 
 ## Getting the Sources
