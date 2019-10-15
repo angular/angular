@@ -229,7 +229,7 @@ export {
 } from './render3/fields';
 
 export {
-  NG_INJECTABLE_DEF as ɵNG_INJECTABLE_DEF,
+  NG_PROV_DEF as ɵNG_PROV_DEF,
   NG_INJ_DEF as ɵNG_INJ_DEF,
 } from './di/interface/defs';
 

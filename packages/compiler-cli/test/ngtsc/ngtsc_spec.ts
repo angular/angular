@@ -61,12 +61,12 @@ runInEachFileSystem(os => {
 
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('Dep.ngInjectableDef =');
-      expect(jsContents).toContain('Service.ngInjectableDef =');
+      expect(jsContents).toContain('Dep.ɵprov =');
+      expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Dep>;');
-      expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDef<Dep>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDef<Service>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Dep>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Service>;');
     });
@@ -83,10 +83,10 @@ runInEachFileSystem(os => {
 
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('Store.ngInjectableDef =');
+      expect(jsContents).toContain('Store.ɵprov =');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Store<any>>;');
-      expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Store<any>>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDef<Store<any>>;');
     });
 
     it('should compile Injectables with providedIn without errors', () => {
@@ -106,16 +106,16 @@ runInEachFileSystem(os => {
 
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('Dep.ngInjectableDef =');
-      expect(jsContents).toContain('Service.ngInjectableDef =');
+      expect(jsContents).toContain('Dep.ɵprov =');
+      expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents)
           .toContain(
               'Service.ɵfac = function Service_Factory(t) { return new (t || Service)(i0.ɵɵinject(Dep)); };');
       expect(jsContents).toContain('providedIn: \'root\' })');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Dep>;');
-      expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDef<Dep>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDef<Service>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Dep>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Service>;');
     });
@@ -134,14 +134,14 @@ runInEachFileSystem(os => {
 
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('Service.ngInjectableDef =');
+      expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents)
           .toContain('factory: function () { return (function () { return new Service(); })(); }');
       expect(jsContents).toContain('Service_Factory(t) { return new (t || Service)(); }');
       expect(jsContents).toContain(', providedIn: \'root\' });');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDef<Service>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Service>;');
     });
 
@@ -162,7 +162,7 @@ runInEachFileSystem(os => {
 
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('Service.ngInjectableDef =');
+      expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
       expect(jsContents).toContain('return new (t || Service)(i0.ɵɵinject(Dep));');
       expect(jsContents)
@@ -170,7 +170,7 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('return r; }, providedIn: \'root\' });');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDef<Service>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Service>;');
     });
 
@@ -375,7 +375,7 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('TestComponent.ɵcmp = i0.ɵɵdefineComponent');
       expect(jsContents).toContain('TestDirective.ɵdir = i0.ɵɵdefineDirective');
       expect(jsContents).toContain('TestPipe.ɵpipe = i0.ɵɵdefinePipe');
-      expect(jsContents).toContain('TestInjectable.ngInjectableDef = i0.ɵɵdefineInjectable');
+      expect(jsContents).toContain('TestInjectable.ɵprov = i0.ɵɵdefineInjectable');
       expect(jsContents).toContain('MyModule.ɵmod = i0.ɵɵdefineNgModule');
       expect(jsContents).toContain('MyModule.ɵinj = i0.ɵɵdefineInjector');
       expect(jsContents).toContain('inputs: { input: "input" }');
@@ -1183,10 +1183,10 @@ runInEachFileSystem(os => {
         expect(jsContents).toContain('TestNgModule.ɵmod =');
 
         // Validate that each class also has an injectable definition.
-        expect(jsContents).toContain('TestCmp.ngInjectableDef =');
-        expect(jsContents).toContain('TestDir.ngInjectableDef =');
-        expect(jsContents).toContain('TestPipe.ngInjectableDef =');
-        expect(jsContents).toContain('TestNgModule.ngInjectableDef =');
+        expect(jsContents).toContain('TestCmp.ɵprov =');
+        expect(jsContents).toContain('TestDir.ɵprov =');
+        expect(jsContents).toContain('TestPipe.ɵprov =');
+        expect(jsContents).toContain('TestNgModule.ɵprov =');
 
         // Validate that each class's .d.ts declaration has the primary definition.
         expect(dtsContents).toContain('ComponentDefWithMeta<TestCmp');

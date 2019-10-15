@@ -58,7 +58,7 @@ describe('providers', () => {
       public greet: string;
       constructor(private provider: GreeterProvider) { this.greet = this.provider.provide(); }
 
-      static ngInjectableDef = ɵɵdefineInjectable({
+      static ɵprov = ɵɵdefineInjectable({
         token: GreeterInj,
         factory: () => new GreeterInj(ɵɵinject(GreeterProvider as any)),
       });
@@ -816,7 +816,7 @@ describe('providers', () => {
     it('should work with root', () => {
       @Injectable({providedIn: 'root'})
       class FooForRoot {
-        static ngInjectableDef = ɵɵdefineInjectable({
+        static ɵprov = ɵɵdefineInjectable({
           token: FooForRoot,
           factory: () => new FooForRoot(),
           providedIn: 'root',
@@ -841,7 +841,7 @@ describe('providers', () => {
 
       @Injectable({providedIn: MyModule})
       class FooForModule {
-        static ngInjectableDef = ɵɵdefineInjectable({
+        static ɵprov = ɵɵdefineInjectable({
           token: FooForModule,
           factory: () => new FooForModule(),
           providedIn: MyModule,
@@ -1168,7 +1168,7 @@ describe('providers', () => {
          class MyService {
            constructor(public value: String) {}
 
-           static ngInjectableDef = ɵɵdefineInjectable({
+           static ɵprov = ɵɵdefineInjectable({
              token: MyService,
              factory: () => new MyService(ɵɵinject(String)),
            });
@@ -1188,7 +1188,7 @@ describe('providers', () => {
 
     it('should make sure that parent service does not see overrides in child directives', () => {
       class Greeter {
-        static ngInjectableDef = ɵɵdefineInjectable({
+        static ɵprov = ɵɵdefineInjectable({
           token: Greeter,
           factory: () => new Greeter(ɵɵinject(String)),
         });
@@ -1233,7 +1233,7 @@ describe('providers', () => {
     class SomeInj implements Some {
       constructor(public location: String) {}
 
-      static ngInjectableDef = ɵɵdefineInjectable({
+      static ɵprov = ɵɵdefineInjectable({
         token: SomeInj,
         factory: () => new SomeInj(ɵɵinject(String)),
       });

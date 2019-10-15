@@ -27,10 +27,10 @@
     "name": "NG_FACTORY_DEF"
   },
   {
-    "name": "NG_INJECTABLE_DEF"
+    "name": "NG_INJ_DEF"
   },
   {
-    "name": "NG_INJ_DEF"
+    "name": "NG_PROV_DEF"
   },
   {
     "name": "NG_TEMP_TOKEN_PATH"

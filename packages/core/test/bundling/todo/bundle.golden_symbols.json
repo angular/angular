@@ -135,10 +135,10 @@
     "name": "NG_FACTORY_DEF"
   },
   {
-    "name": "NG_INJECTABLE_DEF"
+    "name": "NG_PIPE_DEF"
   },
   {
-    "name": "NG_PIPE_DEF"
+    "name": "NG_PROV_DEF"
   },
   {
     "name": "NG_TEMPLATE_SELECTOR"

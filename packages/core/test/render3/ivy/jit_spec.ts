@@ -43,8 +43,8 @@ ivyEnabled && describe('render3 jit', () => {
     }
     const ServiceAny = Service as any;
 
-    expect(ServiceAny.ngInjectableDef).toBeDefined();
-    expect(ServiceAny.ngInjectableDef.providedIn).toBe('root');
+    expect(ServiceAny.ɵprov).toBeDefined();
+    expect(ServiceAny.ɵprov.providedIn).toBe('root');
     expect(ɵɵinject(Service) instanceof Service).toBe(true);
   });
 
@@ -167,7 +167,7 @@ ivyEnabled && describe('render3 jit', () => {
 
   it('compiles a module to an ɵinj with the providers', () => {
     class Token {
-      static ngInjectableDef = ɵɵdefineInjectable({
+      static ɵprov = ɵɵdefineInjectable({
         token: Token,
         providedIn: 'root',
         factory: () => 'default',
