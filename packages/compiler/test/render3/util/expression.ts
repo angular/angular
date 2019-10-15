@@ -102,7 +102,10 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
     super.visitQuote(ast, null);
   }
 
-  visitTemplate(ast: t.Template) { t.visitAll(this, ast.children); }
+  visitTemplate(ast: t.Template) {
+    t.visitAll(this, ast.children);
+    t.visitAll(this, ast.templateAttrs);
+  }
   visitElement(ast: t.Element) {
     t.visitAll(this, ast.children);
     t.visitAll(this, ast.inputs);
