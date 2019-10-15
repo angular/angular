@@ -16,8 +16,8 @@ import {createAndRenderLView} from '../setup';
 class Tooltip {
   tooltip?: string;
   position?: string;
-  static ngFactoryDef = () => new Tooltip();
-  static ngDirectiveDef = ɵɵdefineDirective({
+  static ɵfac = () => new Tooltip();
+  static ɵdir = ɵɵdefineDirective({
     type: Tooltip,
     selectors: [['', 'tooltip', '']],
     inputs: {tooltip: 'tooltip', position: 'position'}
@@ -75,7 +75,7 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 
 const viewTNode = createTNode(null !, null, TNodeType.View, -1, null, null) as TViewNode;
 const embeddedTView = createTView(
-    -1, testTemplate, 21, 10, [Tooltip.ngDirectiveDef], null, null, null,
+    -1, testTemplate, 21, 10, [Tooltip.ɵdir], null, null, null,
     [['position', 'top', 3, 'tooltip']]);
 
 // initialize global state
