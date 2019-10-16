@@ -145,6 +145,29 @@ describe('ng-add schematic', () => {
     expect(json.devDependencies['@angular/bazel']).toBe('1.2.3');
   });
 
+  it('should remove unneeded dependencies', async() => {
+    const packageJson = JSON.parse(host.readContent('/package.json'));
+    packageJson.devDependencies['@angular-devkit/build-angular'] = '1.2.3';
+    host.overwrite('/package.json', JSON.stringify(packageJson));
+    host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
+    const content = host.readContent('/package.json');
+    const json = JSON.parse(content);
+    expect(json.devDependencies['angular-devkit/build-angular']).toBeUndefined();
+  });
+
+  it('should append to scripts.postinstall if it already exists', async() => {
+    const packageJson = JSON.parse(host.readContent('/package.json'));
+    packageJson['scripts'] = {
+      postinstall: 'angular rocks',
+    };
+    host.overwrite('/package.json', JSON.stringify(packageJson));
+    host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
+    const content = host.readContent('/package.json');
+    const json = JSON.parse(content);
+    expect(json.scripts['postinstall'])
+        .toBe('angular rocks; ngc -p ./angular-metadata.tsconfig.json');
+  });
+
   it('should not create Bazel workspace file', async() => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const {files} = host;
