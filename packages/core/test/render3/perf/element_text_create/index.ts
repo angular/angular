@@ -81,9 +81,7 @@ const createTime = elementTextCreate('create');
 
 console.profile('element_text_create');
 while (createTime()) {
-  for (let i = 0; i < 100000; i++) {
-    createAndRenderLView(null, embeddedTView, viewTNode);
-  }
+  createAndRenderLView(null, embeddedTView, viewTNode);
 }
 console.profileEnd();
 

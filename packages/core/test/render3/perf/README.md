@@ -1,19 +1,19 @@
 ### Build
 
 ```
-yarn bazel build //packages/core/test/render3/perf:{name}.min_debug.es2015.js --define=compile=aot
+yarn bazel build //packages/core/test/render3/perf:${BENCHMARK}.min_debug.es2015.js --define=compile=aot
 ```
 
 ### Run 
 
 ```
-node dist/bin/packages/core/test/render3/perf/{name}.min_debug.es2015.js
+node dist/bin/packages/core/test/render3/perf/${BENCHMARK}.min_debug.es2015.js
 ```
 
 ### Profile
 
 ```
-node --no-turbo-inlining --inspect-brk dist/bin/packages/core/test/render3/perf/{name}.min_debug.es2015.js
+node --no-turbo-inlining --inspect-brk dist/bin/packages/core/test/render3/perf/${BENCHMARK}.min_debug.es2015.js
 ```
 
 then connect with a debugger (the `--inspect-brk` option will make sure that benchmark execution doesn't start until a debugger is connected and the code execution is manually resumed). 
@@ -64,7 +64,8 @@ The resulting output should look something like this:
 
 ### Notes
 
-In all the above commands {name} should be replaced with the actual benchmark (folder) name, ex.:
+In all the above commands `${BENCHMARK}` should be replaced with the actual benchmark (folder) name, ex.:
 - build: `yarn bazel build //packages/core/test/render3/perf:noop_change_detection.min_debug.es2015.js --define=compile=aot`
 - run: `time node dist/bin/packages/core/test/render3/perf/noop_change_detection.min_debug.es2015.js`
 - profile: `node --no-turbo-inlining --inspect-brk dist/bin/packages/core/test/render3/perf/noop_change_detection.min_debug.es2015.js profile`
+- experimenting `BENCHMARK=noop_change_detection; yarn bazel build //packages/core/test/render3/perf:${BENCHMARK}.min_debug.es2015.js --define=compile=aot && node dist/bin/packages/core/test/render3/perf/${BENCHMARK}.min_debug.es2015.js`
