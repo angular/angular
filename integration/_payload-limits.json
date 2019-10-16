@@ -14,9 +14,12 @@
   "cli-hello-world-ivy-minimal": {
     "master": {
       "uncompressed": {
-        "runtime": 1485,
-        "main": 14213,
-        "polyfills": 45482
+        "runtime-es2015": 1485,
+        "runtime-es5": 1485,
+        "main-es2015": 14440,
+        "main-es5": 14582,
+        "polyfills-es2015": 36808,
+        "polyfills-es5": 127675
       }
     }
   },
