@@ -19,7 +19,7 @@ import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {decreaseElementDepthCount, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {setUpAttributes} from '../util/attrs_utils';
-import {getInitialStylingValue, hasClassInput, hasStyleInput} from '../util/styling_utils';
+import {getInitialStylingValue, hasClassInput, hasStyleInput, selectClassBasedInputName} from '../util/styling_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
 
 import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, renderInitialStyling, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';
@@ -132,7 +132,7 @@ export function ɵɵelementEnd(): void {
   }
 
   if (hasClassInput(tNode)) {
-    const inputName = tNode.inputs !.hasOwnProperty('class') ? 'class' : 'className';
+    const inputName: string = selectClassBasedInputName(tNode.inputs !);
     setDirectiveStylingInput(tNode.classes, lView, tNode.inputs ![inputName]);
   }
 

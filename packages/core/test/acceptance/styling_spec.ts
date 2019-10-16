@@ -571,6 +571,28 @@ describe('styling', () => {
     expect(fixture.debugElement.nativeElement.firstChild.innerHTML).toBe('my-className');
   });
 
+  onlyInIvy('only ivy combines static and dynamic class-related attr values')
+      .fit('should write to a `className` input binding, when static `class` is present', () => {
+        @Component({
+          selector: 'comp',
+          template: `{{className}}`,
+        })
+        class Comp {
+          @Input() className: string = '';
+        }
+
+        @Component({
+          template: `<comp class="static" [className]="'my-className'"></comp>`,
+        })
+        class App {
+        }
+
+        TestBed.configureTestingModule({declarations: [Comp, App]});
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        expect(fixture.debugElement.nativeElement.firstChild.innerHTML).toBe('static my-className');
+      });
+
   onlyInIvy('in Ivy [class] and [className] bindings on the same element are not allowed')
       .it('should throw an error in case [class] and [className] bindings are used on the same element',
           () => {
