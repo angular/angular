@@ -5,15 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+// tslint:disable:no-console
 
 const shell = require('shelljs');
 const fs = require('fs');
 const path = require('path');
+const commandLineArgs = require('command-line-args');
 
-const argv = process.argv;
-const baseDir = path.dirname(argv[1]);
-const readPath = argv[2] == '--read' ? argv[3] : null;
-const writePath = argv[2] == '--write' ? argv[3] : null;
+const baseDir = path.dirname(process.argv[1]);
+const options = commandLineArgs([
+  {name: 'read', alias: 'r', type: String},
+  {name: 'write', alias: 'w', type: String},
+]);
+const readPath = options['read'];
+const writePath = options['write'];
 
 const UNITS = {
   'ps': 1e-12,
@@ -27,22 +32,21 @@ const UNITS = {
 const profileTests =
     shell.ls(baseDir).filter((filename) => fs.statSync(path.join(baseDir, filename)).isDirectory());
 
+
 // build tests
-shell.exec(
-    `yarn bazel build --define=compile=aot ` +
+console.log('Building profile tests.');
+const profileTestStr =
     profileTests.map((name) => `//packages/core/test/render3/perf:${name}.min_debug.es2015.js`)
-        .join(' '));
+        .join(' ');
+shell.exec(`yarn bazel build --define=compile=aot ${profileTestStr} > /dev/null 2>&1`);
 
 // profile tests
-// tslint:disable-next-line:no-console
 console.log('------------------------------------------------');
-// tslint:disable-next-line:no-console
 console.log('PROFILING');
-// tslint:disable-next-line:no-console
 console.log('------------------------------------------------');
 
 // This stores the results of the run
-const times = {};
+const TIMES = {};
 
 
 // If we have a readPath than read it into the `times`
@@ -50,7 +54,7 @@ if (readPath) {
   const json = JSON.parse(shell.cat(readPath));
   Object.keys(json).forEach((name) => {
     const run = json[name];
-    times[name] = {
+    TIMES[name] = {
       name: run.name,
       base_time: run.time,
       base_unit: run.unit,
@@ -58,13 +62,12 @@ if (readPath) {
   });
 }
 profileTests.forEach((name) => {
-  // tslint:disable-next-line:no-console
-  console.log('----------------', name, '----------------');
-  const log =
-      shell.exec(`node dist/bin/packages/core/test/render3/perf/${name}.min_debug.es2015.js`);
+  console.log(`Running profiling test: ${name}`);
+  const log = shell.exec(
+      `node dist/bin/packages/core/test/render3/perf/${name}.min_debug.es2015.js`, {silent: true});
   if (log.code != 0) throw new Error(log);
   const matches = log.stdout.match(/: ([\d\.]+) (.s)/);
-  const runTime = times[name] || (times[name] = {name: name});
+  const runTime = TIMES[name] || (TIMES[name] = {name: name});
   runTime.time = Number.parseFloat(matches[1]);
   runTime.unit = matches[2];
   if (runTime.base_unit) {
@@ -74,14 +77,13 @@ profileTests.forEach((name) => {
     runTime['%'] = Number.parseFloat(change.toFixed(2));
   }
 });
-// tslint:disable-next-line:no-console
 console.log('================================================');
 
 // If we have the writePath than write the `times` to file
 if (writePath) {
   const baseTimes = {};
   profileTests.forEach((name) => {
-    const run = times[name];
+    const run = TIMES[name];
     baseTimes[name] = {
       name: run.name,
       time: run.time,
@@ -89,8 +91,10 @@ if (writePath) {
     };
   });
   fs.writeFileSync(writePath, JSON.stringify(baseTimes, undefined, 2));
+} else {
+  if (!!TIMES[Object.keys(TIMES)[0]].base_time) {
+    console.table(TIMES, ['time', 'unit', 'base_time', 'base_unit', '%']);
+  } else {
+    console.table(TIMES, ['time', 'unit']);
+  }
 }
-
-// Pretty print the table with the run information
-// tslint:disable-next-line:no-console
-console.table(times, ['time', 'unit', 'base_time', 'base_unit', '%']);

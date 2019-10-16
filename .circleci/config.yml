@@ -744,6 +744,18 @@ jobs:
           command: yarn circleci-win-ivy
           no_output_timeout: 45m
 
+  run_perf_tests:
+    executor:
+      name: default-executor
+      resource_class: xlarge
+    steps:
+      - custom_attach_workspace
+      - init_environment
+      - setup_circleci_bazel_config
+      - setup_bazel_rbe
+      - run:
+          name: "Renderer3 profiling test"
+          command: packages/core/test/render3/perf/compare-profiles.sh $CI_COMMIT
 
 workflows:
   version: 2
@@ -864,6 +876,9 @@ workflows:
           <<: *ignore_pull_requests
           requires:
             - test_ivy_aot
+      - run_perf_tests:
+          requires:
+            - setup
 
   aio_monitoring:
     jobs:

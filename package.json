@@ -80,6 +80,7 @@
     "chai": "^4.1.2",
     "chalk": "^2.3.1",
     "chokidar": "^2.1.1",
+    "command-line-args": "^5.1.1",
     "convert-source-map": "^1.5.1",
     "core-js": "^2.4.1",
     "dependency-graph": "^0.7.2",
