@@ -84,6 +84,7 @@ sass_binary(
         "external/npm/node_modules",
     ],
     deps = [
+        "//src/material-experimental/mdc-slider:mdc_slider_scss_lib",
         "//src/material-experimental/mdc-theming:all_themes",
         "//src/material-experimental/mdc-typography:all_typography",
         "//src/material-experimental/popover-edit:popover_edit_scss_lib",

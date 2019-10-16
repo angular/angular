@@ -1,4 +1,5 @@
 @import '../material/core/theming/all-theme';
+@import '../material-experimental/mdc-slider/mdc-slider';
 @import '../material-experimental/mdc-theming/all-theme';
 @import '../material-experimental/mdc-typography/all-typography';
 
@@ -18,3 +19,4 @@ $candy-app-theme: mat-light-theme($candy-app-primary, $candy-app-accent);
 // Include the default theme styles.
 @include angular-material-theme($candy-app-theme);
 @include angular-material-theme-mdc($candy-app-theme);
+@include mat-slider-theme-mdc($candy-app-theme);
