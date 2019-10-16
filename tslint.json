@@ -14,6 +14,7 @@
       true,
       "log"
     ],
+    "no-construct": true,
     "no-duplicate-imports": true,
     "no-duplicate-variable": true,
     "no-jasmine-focus": true,
