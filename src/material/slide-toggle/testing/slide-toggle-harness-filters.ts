@@ -10,4 +10,5 @@ import {BaseHarnessFilters} from '@angular/cdk/testing';
 
 export interface SlideToggleHarnessFilters extends BaseHarnessFilters {
   label?: string | RegExp;
+  name?: string;
 }

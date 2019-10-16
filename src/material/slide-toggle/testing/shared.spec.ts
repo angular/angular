@@ -43,6 +43,13 @@ export function runHarnessTests(
     expect(await slideToggles[0].getLabelText()).toBe('Second');
   });
 
+  it('should load slide-toggle with name', async () => {
+    const slideToggles = await loader.getAllHarnesses(
+        slideToggleHarness.with({name: 'first-name'}));
+    expect(slideToggles.length).toBe(1);
+    expect(await slideToggles[0].getLabelText()).toBe('First');
+  });
+
   it('should get checked state', async () => {
     const [checkedToggle, uncheckedToggle] = await loader.getAllHarnesses(slideToggleHarness);
     expect(await checkedToggle.isChecked()).toBe(true);
