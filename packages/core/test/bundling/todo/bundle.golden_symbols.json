@@ -1182,6 +1182,9 @@
     "name": "searchTokensOnInjector"
   },
   {
+    "name": "selectClassBasedInputName"
+  },
+  {
     "name": "selectIndexInternal"
   },
   {
