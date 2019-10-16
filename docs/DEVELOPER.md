@@ -97,7 +97,8 @@ A better way is to set up your IDE to format the changed file on each file save.
 
 ### VS Code
 1. Install [Clang-Format](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format) extension for VS Code.
-2. [Configure](../.vscode/README.md) settings.
+2. It will automatically pick up the settings from `.vscode/settings.json`.
+If you haven't already, create a `settings.json` file by following the instructions [here](../.vscode/README.md).
 
 ### WebStorm / IntelliJ
 1. Install the [ClangFormatIJ](https://plugins.jetbrains.com/plugin/8396-clangformatij) plugin
