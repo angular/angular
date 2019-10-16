@@ -92,7 +92,7 @@ const COMPILER_OPTIONS: Readonly<ts.CompilerOptions> = {
 };
 
 export class MockTypescriptHost implements ts.LanguageServiceHost {
-  private angularPath?: string;
+  private readonly angularPath: string;
   private readonly nodeModulesPath: string;
   private readonly scriptVersion = new Map<string, number>();
   private readonly overrides = new Map<string, string>();
@@ -127,13 +127,15 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
   }
 
   addScript(fileName: string, content: string) {
+    if (this.scriptVersion.has(fileName)) {
+      throw new Error(`${fileName} is already in the root files.`);
+    }
+    this.scriptVersion.set(fileName, 0);
     this.projectVersion++;
     this.overrides.set(fileName, content);
     this.overrideDirectory.add(path.dirname(fileName));
     this.scriptNames.push(fileName);
   }
-
-  forgetAngular() { this.angularPath = undefined; }
 
   overrideOptions(options: Partial<ts.CompilerOptions>) {
     this.options = {...this.options, ...options};
@@ -185,6 +187,16 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
    * Reset the project to its original state, effectively removing all overrides.
    */
   reset() {
+    // project version and script version must be monotonically increasing,
+    // they must not be reset to zero.
+    this.projectVersion++;
+    for (const fileName of this.overrides.keys()) {
+      const version = this.scriptVersion.get(fileName);
+      if (version === undefined) {
+        throw new Error(`No prior version found for ${fileName}`);
+      }
+      this.scriptVersion.set(fileName, version + 1);
+    }
     // Remove overrides from scriptNames
     let length = 0;
     for (let i = 0; i < this.scriptNames.length; ++i) {
@@ -251,7 +263,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
           return result;
         }
       }
-      if (this.angularPath && name.startsWith('/' + node_modules + at_angular)) {
+      if (name.startsWith('/' + node_modules + at_angular)) {
         return this.myPath.posix.join(
             this.angularPath, name.substr(node_modules.length + at_angular.length + 1));
       }
