@@ -66,7 +66,6 @@ interface DragHelperTemplate<T = any> {
 
 /**
  * Reference to a draggable item. Used to manipulate or dispose of the item.
- * @docs-private
  */
 export class DragRef<T = any> {
   /** Element displayed next to the user's pointer while the element is dragged. */

@@ -69,7 +69,6 @@ export interface DropListRefInternal extends DropListRef {}
 
 /**
  * Reference to a drop list. Used to manipulate or dispose of the container.
- * @docs-private
  */
 export class DropListRef<T = any> {
   /** Element that the drop list is attached to. */
