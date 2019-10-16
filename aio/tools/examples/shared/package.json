@@ -39,8 +39,8 @@
     "express": "^4.14.1",
     "rxjs": "^6.5.1",
     "systemjs": "0.19.39",
-    "web-animations-js": "^2.3.1",
     "tslib": "^1.9.0",
+    "web-animations-js": "^2.3.1",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
@@ -72,7 +72,7 @@
     "karma-jasmine-html-reporter": "^1.4.2",
     "lite-server": "^2.2.2",
     "lodash": "^4.16.2",
-    "protractor": "~5.4.0",
+    "protractor": "^5.4.2",
     "rimraf": "^2.5.4",
     "rollup": "^1.1.0",
     "rollup-plugin-commonjs": "^9.2.1",
