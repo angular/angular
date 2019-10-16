@@ -8,7 +8,6 @@
 
 import * as ts from 'typescript';
 import {createLanguageService} from '../src/language_service';
-import * as ng from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 import {MockTypescriptHost} from './test_utils';
 
@@ -29,17 +28,12 @@ const NG_FOR_CASES = '/app/ng-for-cases.ts';
 const NG_IF_CASES = '/app/ng-if-cases.ts';
 
 describe('diagnostics', () => {
-  let mockHost: MockTypescriptHost;
-  let ngHost: TypeScriptServiceHost;
-  let tsLS: ts.LanguageService;
-  let ngLS: ng.LanguageService;
+  const mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
+  const tsLS = ts.createLanguageService(mockHost);
+  const ngHost = new TypeScriptServiceHost(mockHost, tsLS);
+  const ngLS = createLanguageService(ngHost);
 
-  beforeEach(() => {
-    mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
-    tsLS = ts.createLanguageService(mockHost);
-    ngHost = new TypeScriptServiceHost(mockHost, tsLS);
-    ngLS = createLanguageService(ngHost);
-  });
+  beforeEach(() => { mockHost.reset(); });
 
   it('should produce no diagnostics for test.ng', () => {
     // there should not be any errors on existing external template

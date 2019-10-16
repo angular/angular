@@ -13,7 +13,6 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler-cli/test:test_utils",
         "//packages/language-service",
-        "@npm//reflect-metadata",
         "@npm//typescript",
     ],
 )

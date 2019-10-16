@@ -9,24 +9,17 @@
 import * as ts from 'typescript';
 
 import {createLanguageService} from '../src/language_service';
-import {LanguageService} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {MockTypescriptHost} from './test_utils';
 
 describe('definitions', () => {
-  let mockHost: MockTypescriptHost;
-  let service: ts.LanguageService;
-  let ngHost: TypeScriptServiceHost;
-  let ngService: LanguageService;
+  const mockHost = new MockTypescriptHost(['/app/main.ts']);
+  const service = ts.createLanguageService(mockHost);
+  const ngHost = new TypeScriptServiceHost(mockHost, service);
+  const ngService = createLanguageService(ngHost);
 
-  beforeEach(() => {
-    // Create a new mockHost every time to reset any files that are overridden.
-    mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
-    service = ts.createLanguageService(mockHost);
-    ngHost = new TypeScriptServiceHost(mockHost, service);
-    ngService = createLanguageService(ngHost);
-  });
+  beforeEach(() => { mockHost.reset(); });
 
   it('should be able to find field in an interpolation', () => {
     const fileName = mockHost.addCode(`
@@ -201,7 +194,6 @@ describe('definitions', () => {
   });
 
   it('should be able to find an input provider', () => {
-    // '/app/parsing-cases.ts', 'tcName',
     const fileName = mockHost.addCode(`
       @Component({
         template: '<test-comp ~{start-my}[«tcName»]="name"~{end-my}></div>'
