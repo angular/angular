@@ -8,4 +8,6 @@
 
 import {BaseHarnessFilters} from '@angular/cdk/testing';
 
-export interface DrawerHarnessFilters extends BaseHarnessFilters {}
+export interface DrawerHarnessFilters extends BaseHarnessFilters {
+  position?: 'start' | 'end';
+}

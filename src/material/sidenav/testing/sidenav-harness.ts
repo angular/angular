@@ -24,7 +24,9 @@ export class MatSidenavHarness extends MatDrawerHarness {
    * @return `HarnessPredicate` configured with the given options.
    */
   static with(options: DrawerHarnessFilters = {}): HarnessPredicate<MatDrawerHarness> {
-    return new HarnessPredicate(MatDrawerHarness, options);
+    return new HarnessPredicate(MatDrawerHarness, options)
+        .addOption('position', options.position,
+            async (harness, position) => (await harness.getPosition()) === position);
   }
 
   /** Gets whether the sidenav is fixed in the viewport. */

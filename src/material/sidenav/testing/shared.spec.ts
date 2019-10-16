@@ -31,6 +31,12 @@ export function runHarnessTests(sidenavModule: typeof MatSidenavModule,
       expect(drawers.length).toBe(3);
     });
 
+    it('should load drawer harness based on position', async () => {
+      const drawers = await loader.getAllHarnesses(drawerHarness.with({position: 'end'}));
+      expect(drawers.length).toBe(1);
+      expect(await (await drawers[0].host()).text()).toBe('Two');
+    });
+
     it('should be able to get whether the drawer is open', async () => {
       const drawers = await loader.getAllHarnesses(drawerHarness);
 
