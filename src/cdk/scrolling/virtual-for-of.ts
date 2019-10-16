@@ -83,10 +83,10 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
 
   /** The DataSource to display. */
   @Input()
-  get cdkVirtualForOf(): DataSource<T> | Observable<T[]> | NgIterable<T> {
+  get cdkVirtualForOf(): DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined {
     return this._cdkVirtualForOf;
   }
-  set cdkVirtualForOf(value: DataSource<T> | Observable<T[]> | NgIterable<T>) {
+  set cdkVirtualForOf(value: DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined) {
     this._cdkVirtualForOf = value;
     const ds = isDataSource(value) ? value :
         // Slice the value if its an NgIterable to ensure we're working with an array.
@@ -94,7 +94,7 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
             value instanceof Observable ? value : Array.prototype.slice.call(value || []));
     this._dataSourceChanges.next(ds);
   }
-  _cdkVirtualForOf: DataSource<T> | Observable<T[]> | NgIterable<T>;
+  _cdkVirtualForOf: DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined;
 
   /**
    * The `TrackByFunction` to use for tracking changes. The `TrackByFunction` takes the index and
@@ -363,7 +363,9 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
     // comment node which can throw off the move when it's being repeated for all items.
     return this._viewContainerRef.createEmbeddedView(this._template, {
       $implicit: null!,
-      cdkVirtualForOf: this._cdkVirtualForOf,
+      // It's guaranteed that the iterable is not "undefined" or "null" because we only
+      // generate views for elements if the "cdkVirtualForOf" iterable has elements.
+      cdkVirtualForOf: this._cdkVirtualForOf!,
       index: -1,
       count: -1,
       first: false,

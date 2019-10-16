@@ -60,8 +60,8 @@ export declare class CdkScrollable implements OnInit, OnDestroy {
 }
 
 export declare class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy {
-    _cdkVirtualForOf: DataSource<T> | Observable<T[]> | NgIterable<T>;
-    cdkVirtualForOf: DataSource<T> | Observable<T[]> | NgIterable<T>;
+    _cdkVirtualForOf: DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined;
+    cdkVirtualForOf: DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined;
     cdkVirtualForTemplate: TemplateRef<CdkVirtualForOfContext<T>>;
     cdkVirtualForTemplateCacheSize: number;
     cdkVirtualForTrackBy: TrackByFunction<T> | undefined;
