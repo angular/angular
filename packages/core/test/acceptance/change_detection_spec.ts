@@ -11,7 +11,7 @@ import {CommonModule} from '@angular/common';
 import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, Input, NgModule, OnInit, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 
 describe('change detection', () => {
 
@@ -914,7 +914,7 @@ describe('change detection', () => {
         expect(fixture.nativeElement.textContent).toEqual('two - two');
       });
 
-      it('should check insertion context with async pipe', () => {
+      it('async pipe should trigger CD for embedded views where the declaration and insertion views are different', () => {
         @Component({
           selector: 'insertion',
           changeDetection: ChangeDetectionStrategy.OnPush,
@@ -924,10 +924,12 @@ describe('change detection', () => {
           @Input() template !: TemplateRef<{}>;
         }
 
+        // This component uses async pipe (which calls markForCheck) in a view that has different
+        // insertion and declaration views.
         @Component({
           changeDetection: ChangeDetectionStrategy.OnPush,
           template: `
-          <insertion [template]="ref"><insertion>
+          <insertion [template]="ref"></insertion>
           <ng-template #ref>
             <span>{{value | async}}</span>
           </ng-template>

@@ -388,7 +388,7 @@ function createViewRef(tNode: TNode, lView: LView, isPipe: boolean): ViewEngine_
       tNode.type === TNodeType.Element || tNode.type === TNodeType.Container ||
       tNode.type === TNodeType.ElementContainer) {
     // The LView represents the location where the injection is requested from.
-    // We need to locate the containing LVIew (in case where the `lView` is emended view)
+    // We need to locate the containing LView (in case where the `lView` is amended view)
     const hostComponentView = findComponentView(lView);  // look up
     return new ViewRef(hostComponentView, lView);
   }

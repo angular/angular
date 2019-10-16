@@ -58,9 +58,9 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
        * This represents the `LView` associated with the point where `ViewContainerRef` was
        * requested.
        *
-       * This may be different from `_componentLView` if the `_embeddedLView` is an embedded view.
+       * This may be different from `_componentLView` if the `_requestingLView` is an embedded view.
        */
-      private _embeddedLView: LView) {}
+      private _requestingLView: LView) {}
 
   get context(): T { return this._componentLView[CONTEXT] as T; }
 
@@ -119,7 +119,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * }
    * ```
    */
-  markForCheck(): void { markViewDirty(this._embeddedLView); }
+  markForCheck(): void { markViewDirty(this._requestingLView); }
 
   /**
    * Detaches the view from the change detection tree.
