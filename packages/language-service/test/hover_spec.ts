@@ -9,28 +9,17 @@
 import * as ts from 'typescript';
 
 import {createLanguageService} from '../src/language_service';
-import {LanguageService} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {MockTypescriptHost} from './test_utils';
 
-fdescribe('hover', () => {
-  // const mockHost: MockTypescriptHost;
-  // const tsLS: ts.LanguageService;
-  // const ngLSHost: TypeScriptServiceHost;
-  // const ngLS: LanguageService;
+describe('hover', () => {
   const mockHost = new MockTypescriptHost(['/app/main.ts']);
   const tsLS = ts.createLanguageService(mockHost);
   const ngLSHost = new TypeScriptServiceHost(mockHost, tsLS);
   const ngLS = createLanguageService(ngLSHost);
 
-  beforeEach(() => {
-    // mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
-    // tsLS = ts.createLanguageService(mockHost);
-    // ngLSHost = new TypeScriptServiceHost(mockHost, tsLS);
-    // ngLS = createLanguageService(ngLSHost);
-    mockHost.reset();
-  });
+  beforeEach(() => { mockHost.reset(); });
 
   it('should be able to find field in an interpolation', () => {
     const fileName = mockHost.addCode(`
@@ -188,20 +177,18 @@ fdescribe('hover', () => {
   });
 
   it('should be able to find the NgModule of a directive', () => {
-    const fileName = '/app/app.component.ts';
-    mockHost.override(fileName, `
-      import {Directive} from '@angular/core';
-
-      @Directive({
-        selector: '[string-model]',
-      })
-      export class «AppComponent» {}`);
-    const marker = mockHost.getReferenceMarkerFor(fileName, 'AppComponent');
-    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    const fileName = '/app/parsing-cases.ts';
+    const content = mockHost.readFile(fileName) !;
+    const position = content.indexOf('StringModel');
+    expect(position).toBeGreaterThan(0);
+    const quickInfo = ngLS.getHoverAt(fileName, position);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
-    expect(textSpan).toEqual(marker);
-    expect(toText(displayParts)).toBe('(directive) AppModule.AppComponent: class');
+    expect(textSpan).toEqual({
+      start: position,
+      length: 'StringModel'.length,
+    });
+    expect(toText(displayParts)).toBe('(directive) AppModule.StringModel: class');
   });
 });
 
