@@ -539,7 +539,6 @@ export function createDirectivesInstances(
   if ((tNode.flags & TNodeFlags.hasHostBindings) === TNodeFlags.hasHostBindings) {
     invokeDirectivesHostBindings(tView, lView, tNode);
   }
-  setActiveHostElement(null);
 }
 
 /**
@@ -1118,7 +1117,6 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
   const expando = tView.expandoInstructions !;
   const firstTemplatePass = tView.firstTemplatePass;
   const elementIndex = tNode.index - HEADER_OFFSET;
-  const selectedIndex = getSelectedIndex();
   try {
     setActiveHostElement(elementIndex);
 
@@ -1135,7 +1133,7 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
       }
     }
   } finally {
-    setActiveHostElement(selectedIndex);
+    setActiveHostElement(null);
   }
 }
 
