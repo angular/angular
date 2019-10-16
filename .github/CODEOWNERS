@@ -294,6 +294,7 @@
 /tools/public_api_guard/material/tooltip.d.ts           @andrewseguin
 /tools/public_api_guard/material/tree.d.ts              @jelbourn @andrewseguin
 /tools/public_api_guard/material/material.d.ts          @jelbourn
+/tools/public_api_guard/youtube-player/youtube-player.d.ts      @jelbourn @nathantate
 
 # Misc
 /*                                                 @angular/dev-infra-components @jelbourn

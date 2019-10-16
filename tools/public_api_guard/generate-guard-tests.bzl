@@ -31,4 +31,6 @@ def generate_test_targets(golden_files):
             ],
             golden = "angular_material/tools/public_api_guard/%s" % golden_file,
             use_angular_tag_rules = False,
+            # Required for the `youtube-player` package.
+            allow_module_identifiers = ["YT"],
         )
