@@ -14,17 +14,22 @@ import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {MockTypescriptHost} from './test_utils';
 
-describe('hover', () => {
-  let mockHost: MockTypescriptHost;
-  let tsLS: ts.LanguageService;
-  let ngLSHost: TypeScriptServiceHost;
-  let ngLS: LanguageService;
+fdescribe('hover', () => {
+  // const mockHost: MockTypescriptHost;
+  // const tsLS: ts.LanguageService;
+  // const ngLSHost: TypeScriptServiceHost;
+  // const ngLS: LanguageService;
+  const mockHost = new MockTypescriptHost(['/app/main.ts']);
+  const tsLS = ts.createLanguageService(mockHost);
+  const ngLSHost = new TypeScriptServiceHost(mockHost, tsLS);
+  const ngLS = createLanguageService(ngLSHost);
 
   beforeEach(() => {
-    mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
-    tsLS = ts.createLanguageService(mockHost);
-    ngLSHost = new TypeScriptServiceHost(mockHost, tsLS);
-    ngLS = createLanguageService(ngLSHost);
+    // mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
+    // tsLS = ts.createLanguageService(mockHost);
+    // ngLSHost = new TypeScriptServiceHost(mockHost, tsLS);
+    // ngLS = createLanguageService(ngLSHost);
+    mockHost.reset();
   });
 
   it('should be able to find field in an interpolation', () => {
@@ -183,20 +188,20 @@ describe('hover', () => {
   });
 
   it('should be able to find the NgModule of a directive', () => {
-    const fileName = '/app/parsing-cases.ts';
+    const fileName = '/app/app.component.ts';
     mockHost.override(fileName, `
       import {Directive} from '@angular/core';
 
       @Directive({
         selector: '[string-model]',
       })
-      export class «StringModel» {}`);
-    const marker = mockHost.getReferenceMarkerFor(fileName, 'StringModel');
+      export class «AppComponent» {}`);
+    const marker = mockHost.getReferenceMarkerFor(fileName, 'AppComponent');
     const quickInfo = ngLS.getHoverAt(fileName, marker.start);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
-    expect(toText(displayParts)).toBe('(directive) AppModule.StringModel: class');
+    expect(toText(displayParts)).toBe('(directive) AppModule.AppComponent: class');
   });
 });
 
