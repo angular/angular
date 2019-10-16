@@ -46,6 +46,7 @@ runInEachFileSystem(() => {
     let TYPINGS_DTS_FILES: TestFile[];
     let MODULE_WITH_PROVIDERS_PROGRAM: TestFile[];
     let NAMESPACED_IMPORT_FILE: TestFile;
+    let INDEX_SIGNATURE_PROP_FILE: TestFile;
 
     beforeEach(() => {
       _ = absoluteFrom;
@@ -690,6 +691,15 @@ runInEachFileSystem(() => {
     ];
     `
       };
+
+      INDEX_SIGNATURE_PROP_FILE = {
+        name: _('/index_signature_prop.d.ts'),
+        contents: `
+          abstract class IndexSignatureClass {
+            [key: string]: any;
+          }
+        `,
+      };
     });
 
     describe('getDecoratorsOfDeclaration()', () => {
@@ -939,6 +949,20 @@ runInEachFileSystem(() => {
         expect(staticProperty.isStatic).toEqual(true);
         expect(ts.isPropertyAccessExpression(staticProperty.implementation !)).toEqual(true);
         expect(staticProperty.value !.getText()).toEqual(`'static'`);
+      });
+
+      it('should ignore index signature properties', () => {
+        loadTestFiles([INDEX_SIGNATURE_PROP_FILE]);
+        const logger = new MockLogger();
+        const {program} = makeTestBundleProgram(INDEX_SIGNATURE_PROP_FILE.name);
+        const host = new Esm2015ReflectionHost(logger, false, program.getTypeChecker());
+        const classNode = getDeclaration(
+            program, INDEX_SIGNATURE_PROP_FILE.name, 'IndexSignatureClass',
+            isNamedClassDeclaration);
+        const members = host.getMembersOfClass(classNode);
+
+        expect(members).toEqual([]);
+        expect(logger.logs.warn).toEqual([]);
       });
 
       it('should throw if the symbol is not a class', () => {
