@@ -90,9 +90,7 @@ const createTime = directiveInstantiate('create');
 
 console.profile('directive_instantiate');
 while (createTime()) {
-  for (let i = 0; i < 50000; i++) {
-    createAndRenderLView(null, embeddedTView, viewTNode);
-  }
+  createAndRenderLView(null, embeddedTView, viewTNode);
 }
 console.profileEnd();
 
