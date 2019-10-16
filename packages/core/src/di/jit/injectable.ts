@@ -34,7 +34,7 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
       get: () => {
         if (ngInjectableDef === null) {
           ngInjectableDef = getCompilerFacade().compileInjectable(
-              angularCoreDiEnv, `ng:///${type.name}/ngInjectableDef.js`,
+              angularCoreDiEnv, `ng:///${type.name}/ɵprov.js`,
               getInjectableMetadata(type, srcMeta));
         }
         return ngInjectableDef;

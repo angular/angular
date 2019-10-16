@@ -27,6 +27,12 @@
     "name": "NG_FACTORY_DEF"
   },
   {
+    "name": "NG_INJECTABLE_DEF"
+  },
+  {
+    "name": "NG_INJECTOR_DEF"
+  },
+  {
     "name": "NG_INJ_DEF"
   },
   {

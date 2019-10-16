@@ -190,7 +190,7 @@ export function ɵɵdefineInjector(options: {factory: () => any, providers?: any
  * @param type A type which may have its own (non-inherited) `ɵprov`.
  */
 export function getInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
-  const def = type[NG_PROV_DEF] as ɵɵInjectableDef<T>;
+  const def = (type[NG_PROV_DEF] || type[NG_INJECTABLE_DEF]) as ɵɵInjectableDef<T>;
   // The definition read above may come from a base class. `hasOwnProperty` is not sufficient to
   // distinguish this case, as in older browsers (e.g. IE10) static property inheritance is
   // implemented by copying the properties.
@@ -210,13 +210,14 @@ export function getInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
  * `ɵprov` on an ancestor only.
  */
 export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
-  if (type && type[NG_PROV_DEF]) {
+  const def = type && (type[NG_PROV_DEF] || type[NG_INJECTABLE_DEF]);
+  if (def) {
     // TODO(FW-1307): Re-add ngDevMode when closure can handle it
     // ngDevMode &&
     console.warn(
         `DEPRECATED: DI is instantiating a token "${type.name}" that inherits its @Injectable decorator but does not provide one itself.\n` +
         `This will become an error in v10. Please add @Injectable() to the "${type.name}" class.`);
-    return type[NG_PROV_DEF];
+    return def;
   } else {
     return null;
   }
@@ -228,8 +229,14 @@ export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDef<T>|nu
  * @param type type which may have an injector def (`ɵinj`)
  */
 export function getInjectorDef<T>(type: any): ɵɵInjectorDef<T>|null {
-  return type && type.hasOwnProperty(NG_INJ_DEF) ? (type as any)[NG_INJ_DEF] : null;
+  return type && (type.hasOwnProperty(NG_INJ_DEF) || type.hasOwnProperty(NG_INJECTOR_DEF)) ?
+      (type as any)[NG_INJ_DEF] :
+      null;
 }
 
 export const NG_PROV_DEF = getClosureSafeProperty({ɵprov: getClosureSafeProperty});
 export const NG_INJ_DEF = getClosureSafeProperty({ɵinj: getClosureSafeProperty});
+
+// We need to keep these around so we can read off old defs if new defs are unavailable
+export const NG_INJECTABLE_DEF = getClosureSafeProperty({ngInjectableDef: getClosureSafeProperty});
+export const NG_INJECTOR_DEF = getClosureSafeProperty({ngInjectorDef: getClosureSafeProperty});
