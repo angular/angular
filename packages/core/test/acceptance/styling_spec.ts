@@ -572,7 +572,7 @@ describe('styling', () => {
   });
 
   onlyInIvy('only ivy combines static and dynamic class-related attr values')
-      .fit('should write to a `className` input binding, when static `class` is present', () => {
+      .it('should write to a `className` input binding, when static `class` is present', () => {
         @Component({
           selector: 'comp',
           template: `{{className}}`,
