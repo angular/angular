@@ -203,7 +203,7 @@ export class StylingBuilder {
     if (isMapBased) {
       if (this._classMapInput) {
         throw new Error(
-            '[class] and [className] bindings can not be used on the same element simultaneously');
+            '[class] and [className] bindings cannot be used on the same element simultaneously');
       }
       this._classMapInput = entry;
     } else {
