@@ -2292,6 +2292,23 @@ describe('styling', () => {
               fixture.detectChanges();
             }).toThrowError(/ExpressionChangedAfterItHasBeenCheckedError/);
           });
+
+  it('should properly merge class interpolation with class-based directives', () => {
+    @Component(
+        {template: `<div class="zero {{one}}" [class.two]="true" [ngClass]="'three'"></div>`})
+    class MyComp {
+      one = 'one';
+    }
+
+    const fixture =
+        TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+    fixture.detectChanges();
+
+    expect(fixture.debugElement.nativeElement.innerHTML).toContain('zero');
+    expect(fixture.debugElement.nativeElement.innerHTML).toContain('one');
+    expect(fixture.debugElement.nativeElement.innerHTML).toContain('two');
+    expect(fixture.debugElement.nativeElement.innerHTML).toContain('three');
+  });
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {
