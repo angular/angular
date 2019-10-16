@@ -616,7 +616,7 @@ describe('styling', () => {
               fixture.detectChanges();
             })
                 .toThrowError(
-                    '[class] and [className] bindings can not be used on the same element simultaneously');
+                    '[class] and [className] bindings cannot be used on the same element simultaneously');
           });
 
   onlyInIvy('only ivy persists static class/style attrs with their binding counterparts')
