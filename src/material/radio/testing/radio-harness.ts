@@ -30,8 +30,6 @@ export class MatRadioGroupHarness extends ComponentHarness {
         .addOption('name', options.name, this._checkRadioGroupName);
   }
 
-  private _radioButtons = this.locatorForAll(MatRadioButtonHarness);
-
   /** Gets the name of the radio-group. */
   async getName(): Promise<string|null> {
     const hostName = await this._getGroupNameFromHost();
@@ -59,8 +57,8 @@ export class MatRadioGroupHarness extends ComponentHarness {
     return (await this.host()).getProperty('id');
   }
 
-  /** Gets the selected radio-button in a radio-group. */
-  async getSelectedRadioButton(): Promise<MatRadioButtonHarness|null> {
+  /** Gets the checked radio-button in a radio-group. */
+  async getCheckedRadioButton(): Promise<MatRadioButtonHarness|null> {
     for (let radioButton of await this.getRadioButtons()) {
       if (await radioButton.isChecked()) {
         return radioButton;
@@ -69,18 +67,27 @@ export class MatRadioGroupHarness extends ComponentHarness {
     return null;
   }
 
-  /** Gets the selected value of the radio-group. */
-  async getSelectedValue(): Promise<string|null> {
-    const selectedRadio = await this.getSelectedRadioButton();
-    if (!selectedRadio) {
+  /** Gets the checked value of the radio-group. */
+  async getCheckedValue(): Promise<string|null> {
+    const checkedRadio = await this.getCheckedRadioButton();
+    if (!checkedRadio) {
       return null;
     }
-    return selectedRadio.getValue();
+    return checkedRadio.getValue();
   }
 
   /** Gets all radio buttons which are part of the radio-group. */
-  async getRadioButtons(): Promise<MatRadioButtonHarness[]> {
-    return (await this._radioButtons());
+  async getRadioButtons(filter: RadioButtonHarnessFilters = {}): Promise<MatRadioButtonHarness[]> {
+    return this.locatorForAll(MatRadioButtonHarness.with(filter))();
+  }
+
+  /** Checks a radio button in this group. */
+  async checkRadioButton(filter: RadioButtonHarnessFilters = {}): Promise<void> {
+    const radioButtons = await this.getRadioButtons(filter);
+    if (!radioButtons.length) {
+      throw Error(`Could not find radio button matching ${JSON.stringify(filter)}`);
+    }
+    return radioButtons[0].check();
   }
 
   private async _getGroupNameFromHost() {

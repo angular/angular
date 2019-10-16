@@ -26,6 +26,7 @@ ng_test_library(
     deps = [
         ":testing",
         "//src/cdk/platform",
+        "//src/cdk/private/testing",
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
         "//src/material/radio",

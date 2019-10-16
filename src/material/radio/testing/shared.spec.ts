@@ -1,4 +1,5 @@
 import {Platform} from '@angular/cdk/platform';
+import {expectAsyncError} from '@angular/cdk/private/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
@@ -105,10 +106,10 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
       expect(await groups[1].getId()).toBe('new-group-name');
     });
 
-    it('should get selected value of radio-group', async () => {
+    it('should get checked value of radio-group', async () => {
       const [firstGroup, secondGroup] = await loader.getAllHarnesses(radioGroupHarness);
-      expect(await firstGroup.getSelectedValue()).toBe('opt2');
-      expect(await secondGroup.getSelectedValue()).toBe(null);
+      expect(await firstGroup.getCheckedValue()).toBe('opt2');
+      expect(await secondGroup.getCheckedValue()).toBe(null);
     });
 
     it('should get radio-button harnesses of radio-group', async () => {
@@ -120,18 +121,36 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
       expect((await groups[2].getRadioButtons()).length).toBe(2);
     });
 
-    it('should get selected radio-button harnesses of radio-group', async () => {
+    it('should get radio buttons from group with filter', async () => {
+      const group = await loader.getHarness(radioGroupHarness.with({name: 'my-group-1-name'}));
+      expect((await group.getRadioButtons({label: 'opt2'})).length).toBe(1);
+    });
+
+    it('should get checked radio-button harnesses of radio-group', async () => {
       const groups = await loader.getAllHarnesses(radioGroupHarness);
       expect(groups.length).toBe(3);
 
-      const groupOneSelected = await groups[0].getSelectedRadioButton();
-      const groupTwoSelected = await groups[1].getSelectedRadioButton();
-      const groupThreeSelected = await groups[2].getSelectedRadioButton();
+      const groupOneChecked = await groups[0].getCheckedRadioButton();
+      const groupTwoChecked = await groups[1].getCheckedRadioButton();
+      const groupThreeChecked = await groups[2].getCheckedRadioButton();
 
-      expect(groupOneSelected).not.toBeNull();
-      expect(groupTwoSelected).toBeNull();
-      expect(groupThreeSelected).toBeNull();
-      expect(await groupOneSelected!.getId()).toBe('opt2-group-one');
+      expect(groupOneChecked).not.toBeNull();
+      expect(groupTwoChecked).toBeNull();
+      expect(groupThreeChecked).toBeNull();
+      expect(await groupOneChecked!.getId()).toBe('opt2-group-one');
+    });
+
+    it('should check radio button in group', async () => {
+      const group = await loader.getHarness(radioGroupHarness.with({name: 'my-group-1-name'}));
+      expect(await group.getCheckedValue()).toBe('opt2');
+      await group.checkRadioButton({label: 'opt3'});
+      expect(await group.getCheckedValue()).toBe('opt3');
+    });
+
+    it('should throw error when checking invalid radio button', async () => {
+      const group = await loader.getHarness(radioGroupHarness.with({name: 'my-group-1-name'}));
+      await expectAsyncError(() => group.checkRadioButton({label: 'opt4'}),
+          /Error: Could not find radio button matching {"label":"opt4"}/);
     });
   });
 
@@ -222,7 +241,7 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
       await uncheckedRadio.check();
       expect(await uncheckedRadio.isChecked()).toBe(true);
       // Checked radio state should change since the two radio's
-      // have the same name and only one can be selected.
+      // have the same name and only one can be checked.
       expect(await checkedRadio.isChecked()).toBe(false);
     });
 
