@@ -33,7 +33,7 @@ export const INJECTOR = new InjectionToken<Injector>(
     -1 as any  // `-1` is used by Ivy DI system as special value to recognize it as `Injector`.
     );
 
-const _THROW_IF_NOT_FOUND = new Object();
+const _THROW_IF_NOT_FOUND = {};
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 
 export const NG_TEMP_TOKEN_PATH = 'ngTempTokenPath';

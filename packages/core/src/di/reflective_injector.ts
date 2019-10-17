@@ -16,7 +16,7 @@ import {ReflectiveDependency, ResolvedReflectiveFactory, ResolvedReflectiveProvi
 
 
 // Threshold for the dynamic version
-const UNDEFINED = new Object();
+const UNDEFINED = {};
 
 /**
  * A ReflectiveDependency injection container used for instantiating objects and resolving
