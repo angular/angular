@@ -71,8 +71,6 @@ test --test_output=errors
 # any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
 build --define=compile=legacy
 
-build --google_default_credentials
-
 #######################
 # Remote HTTP Caching #
 #######################
@@ -86,6 +84,7 @@ build --remote_upload_local_results=false
 #  --config=-http-caching            #
 ######################################
 build:remote-http-caching --remote_upload_local_results=true
+build:remote-http-caching --google_default_credentials
 
 ##################################
 # Remote Build Execution support #
@@ -99,6 +98,7 @@ import %workspace%/third_party/github.com/bazelbuild/bazel-toolchains/bazelrc/.b
 # Increase the default number of jobs by 50% because our build has lots of
 # parallelism
 build:remote --jobs=150
+build:remote --google_default_credentials
 
 # Toolchain and platform related flags
 build:remote --host_javabase=@rbe_ubuntu1604_angular//java:jdk
