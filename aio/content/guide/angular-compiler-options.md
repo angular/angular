@@ -120,7 +120,7 @@ would be `"index.d.ts"`.
 
 When true (recommended), enables the [binding expression validation](guide/aot-compiler#binding-expression-validation) phase of the template compiler, which uses TypeScript to validate binding expressions.
 
-Default is currently false.
+Default is currently `true`.
 
 ### `generateCodeForLibraries`
 
