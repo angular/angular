@@ -95,7 +95,7 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
             resolvedPromise.then((_) => { throw new Error('async'); });
             flushMicrotasks();
           })();
-        }).toThrow();
+        }).toThrowError(/Uncaught \(in promise\): Error: async/);
       });
 
       it('should complain if a test throws an exception', () => {
