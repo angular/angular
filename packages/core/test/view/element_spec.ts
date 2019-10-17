@@ -62,7 +62,7 @@ const removeEventListener = 'removeEventListener';
       });
 
       it('should add debug information to the renderer', () => {
-        const someContext = new Object();
+        const someContext = {};
         const {view, rootNodes} = createAndGetRootNodes(
             compViewDef([elementDef(0, NodeFlags.None, null, null, 0, 'div')]), someContext);
         expect(getDebugNode(rootNodes[0]) !.nativeNode).toBe(asElementData(view, 0).renderElement);

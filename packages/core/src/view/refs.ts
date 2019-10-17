@@ -26,7 +26,7 @@ import {DepFlags, ElementData, NgModuleData, NgModuleDefinition, NodeDef, NodeFl
 import {markParentViewsForCheck, resolveDefinition, rootRenderNodes, splitNamespace, tokenKey, viewParentEl} from './util';
 import {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView, renderDetachView} from './view_attach';
 
-const EMPTY_CONTEXT = new Object();
+const EMPTY_CONTEXT = {};
 
 // Attention: this function is called as top level function.
 // Putting any logic in here will destroy closure tree shaking!
