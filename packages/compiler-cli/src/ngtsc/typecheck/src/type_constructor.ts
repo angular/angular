@@ -22,7 +22,7 @@ export function generateTypeCtorDeclarationFn(
 
   const rawTypeArgs =
       node.typeParameters !== undefined ? generateGenericArgs(node.typeParameters) : undefined;
-  const rawType: ts.TypeNode = ts.createTypeReferenceNode(nodeTypeRef, rawTypeArgs);
+  const rawType = ts.createTypeReferenceNode(nodeTypeRef, rawTypeArgs);
 
   const initParam = constructTypeCtorParameter(node, meta, rawType);
 
@@ -97,7 +97,7 @@ export function generateInlineTypeCtor(
   // `FooDirective<T extends Bar>`, its rawType would be `FooDirective<T>`.
   const rawTypeArgs =
       node.typeParameters !== undefined ? generateGenericArgs(node.typeParameters) : undefined;
-  const rawType: ts.TypeNode = ts.createTypeReferenceNode(node.name, rawTypeArgs);
+  const rawType = ts.createTypeReferenceNode(node.name, rawTypeArgs);
 
   const initParam = constructTypeCtorParameter(node, meta, rawType);
 
@@ -126,7 +126,7 @@ export function generateInlineTypeCtor(
 
 function constructTypeCtorParameter(
     node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata,
-    rawType: ts.TypeNode): ts.ParameterDeclaration {
+    rawType: ts.TypeReferenceNode): ts.ParameterDeclaration {
   // initType is the type of 'init', the single argument to the type constructor method.
   // If the Directive has any inputs, its initType will be:
   //
@@ -136,19 +136,41 @@ function constructTypeCtorParameter(
   // directive will be inferred.
   //
   // In the special case there are no inputs, initType is set to {}.
-  let initType: ts.TypeNode;
+  let initType: ts.TypeNode|null = null;
 
   const keys: string[] = meta.fields.inputs;
-  if (keys.length === 0) {
-    // Special case - no inputs, outputs, or other fields which could influence the result type.
-    initType = ts.createTypeLiteralNode([]);
-  } else {
+  const plainKeys: ts.LiteralTypeNode[] = [];
+  const coercedKeys: ts.PropertySignature[] = [];
+  for (const key of keys) {
+    if (!meta.coercedInputFields.has(key)) {
+      plainKeys.push(ts.createLiteralTypeNode(ts.createStringLiteral(key)));
+    } else {
+      coercedKeys.push(ts.createPropertySignature(
+          /* modifiers */ undefined,
+          /* name */ key,
+          /* questionToken */ undefined,
+          /* type */ ts.createTypeQueryNode(
+              ts.createQualifiedName(rawType.typeName, `ngAcceptInputType_${key}`)),
+          /* initializer */ undefined));
+    }
+  }
+  if (plainKeys.length > 0) {
     // Construct a union of all the field names.
-    const keyTypeUnion = ts.createUnionTypeNode(
-        keys.map(key => ts.createLiteralTypeNode(ts.createStringLiteral(key))));
+    const keyTypeUnion = ts.createUnionTypeNode(plainKeys);
 
     // Construct the Pick<rawType, keyTypeUnion>.
     initType = ts.createTypeReferenceNode('Pick', [rawType, keyTypeUnion]);
+  }
+  if (coercedKeys.length > 0) {
+    const coercedLiteral = ts.createTypeLiteralNode(coercedKeys);
+
+    initType =
+        initType !== null ? ts.createUnionTypeNode([initType, coercedLiteral]) : coercedLiteral;
+  }
+
+  if (initType === null) {
+    // Special case - no inputs, outputs, or other fields which could influence the result type.
+    initType = ts.createTypeLiteralNode([]);
   }
 
   // Create the 'init' parameter itself.

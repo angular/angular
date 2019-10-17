@@ -82,20 +82,25 @@ export function readStringArrayType(type: ts.TypeNode): string[] {
 export function extractDirectiveGuards(node: ClassDeclaration, reflector: ReflectionHost): {
   ngTemplateGuards: TemplateGuardMeta[],
   hasNgTemplateContextGuard: boolean,
+  coercedInputFields: Set<string>,
 } {
   const staticMembers = reflector.getMembersOfClass(node).filter(member => member.isStatic);
   const ngTemplateGuards = staticMembers.map(extractTemplateGuard)
                                .filter((guard): guard is TemplateGuardMeta => guard !== null);
   const hasNgTemplateContextGuard = staticMembers.some(
       member => member.kind === ClassMemberKind.Method && member.name === 'ngTemplateContextGuard');
-  return {hasNgTemplateContextGuard, ngTemplateGuards};
+
+  const coercedInputFields =
+      new Set(staticMembers.map(extractCoercedInput)
+                  .filter((inputName): inputName is string => inputName !== null));
+  return {hasNgTemplateContextGuard, ngTemplateGuards, coercedInputFields};
 }
 
 function extractTemplateGuard(member: ClassMember): TemplateGuardMeta|null {
   if (!member.name.startsWith('ngTemplateGuard_')) {
     return null;
   }
-  const inputName = member.name.split('_', 2)[1];
+  const inputName = afterUnderscore(member.name);
   if (member.kind === ClassMemberKind.Property) {
     let type: string|null = null;
     if (member.type !== null && ts.isLiteralTypeNode(member.type) &&
@@ -113,6 +118,13 @@ function extractTemplateGuard(member: ClassMember): TemplateGuardMeta|null {
   } else {
     return null;
   }
+}
+
+function extractCoercedInput(member: ClassMember): string|null {
+  if (member.kind !== ClassMemberKind.Property || !member.name.startsWith('ngAcceptInputType_')) {
+    return null !;
+  }
+  return afterUnderscore(member.name);
 }
 
 /**
@@ -157,4 +169,12 @@ export class CompoundMetadataReader implements MetadataReader {
     }
     return null;
   }
+}
+
+function afterUnderscore(str: string): string {
+  const pos = str.indexOf('_');
+  if (pos === -1) {
+    throw new Error(`Expected '${str}' to contain '_'`);
+  }
+  return str.substr(pos + 1);
 }
