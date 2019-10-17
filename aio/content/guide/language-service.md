@@ -43,8 +43,8 @@ In this example, Angular doesn't know what `orders` is or where it comes from.
 
 ### Quick info and navigation
 
-Navigation allows you to hover to see where components, directives, modules, and so on come from.
-You can then click and press F12 to go directly to the definition.
+The quick-info feature allows you to hover to see where components, directives, modules, and so on come from.
+You can then click "Go to definition" or press F12 to go directly to the definition.
 
 <figure>
   <img src="generated/images/guide/language-service/language-navigation.gif" alt="navigation">
@@ -144,7 +144,11 @@ When you trigger a completion list within a template, the editor first parses th
 HTML [abstract syntax tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
 The Angular compiler interprets that tree to determine the context: which module the template is part of, the current scope, the component selector, and where your cursor is in the template AST. It can then determine the symbols that could potentially be at that position..
 
-It's a little more involved if you are in an interpolation. If you have an interpolation of `{{data.---}}` inside a `div` and need the completion list after `data.---`, the compiler can't use the HTML AST to find the answer. The HTML AST can only tell the compiler that there is some text with the characters "`{{data.---}}`". That's when the template parser produces an expression AST, which resides within the template AST. The Angular Language Services then looks at `data.---` within its context and asks the TypeScript Language Service what the members of data are. TypeScript then returns the list of possibilities.
+It's a little more involved if you are in an interpolation.
+If you have an interpolation of `{{data.---}}` inside a `div` and need the completion list after `data.---`, the compiler can't use the HTML AST to find the answer.
+The HTML AST can only tell the compiler that there is some text with the characters "`{{data.---}}`".
+That's when the template parser produces an expression AST, which resides within the template AST.
+The Angular Language Services then looks at `data.---` within its context, asks the TypeScript Language Service what the members of `data` are, and returns the list of possibilities.
 
 <hr>
 
