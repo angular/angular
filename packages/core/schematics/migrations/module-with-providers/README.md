@@ -1,7 +1,6 @@
 ## ModuleWithProviders migration
 
-Automatically migrates `ModuleWithProviders` to include explicit generic typing. The 
-`ModuleWithProviders` type will not default to the `any` type for its generic as of v9.
+ModuleWithProviders` type will not default to the `any` type for its generic in a future version of Angular.
 
 #### Before
 ```ts
