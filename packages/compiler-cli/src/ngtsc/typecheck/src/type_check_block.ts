@@ -1144,6 +1144,16 @@ function tcbGetDirectiveInputs(
       expr = ts.createStringLiteral(attr.value);
     }
 
+    // Wrap the expression if the directive has a coercion function provided.
+    if (dir.coercedInputs.has(attr.name)) {
+      const dirId = tcb.env.reference(dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
+      const coercionFn = ts.createPropertyAccess(dirId, `ngCoerceInput_${attr.name}`);
+      expr = ts.createCall(
+          /* expression */ coercionFn,
+          /* typeArguments */ undefined,
+          /* argumentsArray */[expr]);
+    }
+
     directiveInputs.push({
       type: 'binding',
       field: field,

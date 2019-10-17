@@ -268,7 +268,34 @@ describe('type check blocks', () => {
       expect(block).toContain(
           '_t1.addEventListener("event", $event => (ctx).foo(($event as any)));');
     });
+  });
 
+  describe('input coercion', () => {
+    it('should coerce a basic input', () => {
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'MatInput',
+        selector: '[matInput]',
+        inputs: {'value': 'value'},
+        coercedInputs: ['value'],
+      }];
+      const TEMPLATE = `<input matInput [value]="expr">`;
+      const block = tcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('value: (MatInput.ngCoerceInput_value((ctx).expr))');
+    });
+
+    it('should coerce based on input name, not field name', () => {
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'MatInput',
+        selector: '[matInput]',
+        inputs: {'field': 'value'},
+        coercedInputs: ['value'],
+      }];
+      const TEMPLATE = `<input matInput [value]="expr">`;
+      const block = tcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('field: (MatInput.ngCoerceInput_value((ctx).expr))');
+    });
   });
 
   describe('config', () => {
