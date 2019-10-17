@@ -1,4 +1,4 @@
-import {getMultipleValuesInSingleSelectionError, SelectionModel} from './selection';
+import {getMultipleValuesInSingleSelectionError, SelectionModel} from './selection-model';
 
 
 describe('SelectionModel', () => {

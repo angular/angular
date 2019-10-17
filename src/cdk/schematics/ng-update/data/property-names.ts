@@ -22,14 +22,24 @@ export interface PropertyNameUpgradeData {
 }
 
 export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
-  [TargetVersion.V9]: [{
-    pr: 'https://github.com/angular/components/pull/17084',
-    changes: [{
-      replace: 'boundaryElementSelector',
-      replaceWith: 'boundaryElement',
-      whitelist: {classes: ['CdkDrag']}
-    }]
-  }],
+  [TargetVersion.V9]: [
+    {
+      pr: 'https://github.com/angular/components/pull/17084',
+      changes: [{
+        replace: 'boundaryElementSelector',
+        replaceWith: 'boundaryElement',
+        whitelist: {classes: ['CdkDrag']}
+      }]
+    },
+    {
+      pr: 'https://github.com/angular/components/pull/17302',
+      changes: [{
+        replace: 'onChange',
+        replaceWith: 'changed',
+        whitelist: {classes: ['SelectionModel']}
+      }]
+    }
+  ],
   [TargetVersion.V8]: [],
   [TargetVersion.V7]: [
     {

@@ -539,7 +539,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   ngAfterContentInit() {
     this._initKeyManager();
 
-    this._selectionModel.onChange.pipe(takeUntil(this._destroy)).subscribe(event => {
+    this._selectionModel.changed.pipe(takeUntil(this._destroy)).subscribe(event => {
       event.added.forEach(option => option.select());
       event.removed.forEach(option => option.deselect());
     });

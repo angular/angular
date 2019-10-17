@@ -400,7 +400,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
     }
 
     // Sync external changes to the model back to the options.
-    this.selectedOptions.onChange.pipe(takeUntil(this._destroyed)).subscribe(event => {
+    this.selectedOptions.changed.pipe(takeUntil(this._destroyed)).subscribe(event => {
       if (event.added) {
         for (let item of event.added) {
           item.selected = true;

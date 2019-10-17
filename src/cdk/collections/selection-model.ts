@@ -36,13 +36,6 @@ export class SelectionModel<T> {
   /** Event emitted when the value has changed. */
   changed: Subject<SelectionChange<T>> = new Subject();
 
-  /**
-   * Event emitted when the value has changed.
-   * @deprecated Use `changed` instead.
-   * @breaking-change 8.0.0 To be changed to `changed`
-   */
-  onChange: Subject<SelectionChange<T>> = this.changed;
-
   constructor(
     private _multiple = false,
     initiallySelectedValues?: T[],

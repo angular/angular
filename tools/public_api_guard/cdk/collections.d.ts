@@ -30,7 +30,6 @@ export interface SelectionChange<T> {
 
 export declare class SelectionModel<T> {
     changed: Subject<SelectionChange<T>>;
-    onChange: Subject<SelectionChange<T>>;
     readonly selected: T[];
     constructor(_multiple?: boolean, initiallySelectedValues?: T[], _emitChanges?: boolean);
     clear(): void;
