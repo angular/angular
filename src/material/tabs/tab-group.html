@@ -1,6 +1,7 @@
 <mat-tab-header #tabHeader
                [selectedIndex]="selectedIndex"
                [disableRipple]="disableRipple"
+               [disablePagination]="disablePagination"
                (indexFocused)="_focusChanged($event)"
                (selectFocusedIndex)="selectedIndex = $event">
   <div class="mat-tab-label" role="tab" matTabLabelWrapper mat-ripple cdkMonitorElementFocus
