@@ -249,7 +249,7 @@ Angular libraries have this option to ensure that all Angular `.metadata.json` f
 ### No arrow functions
 
 The AOT compiler does not support [function expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/function)
-and [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions), also called _lambda_ functions.
+and [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions), also called _lambda_ functions in a metadata expression.
 
 Consider the following component decorator:
 
