@@ -19,6 +19,8 @@
       "spaces"
     ],
     "eofline": true,
+    "no-construct": true,
+    "prefer-literal": [true, "object"],
     "no-duplicate-variable": true,
     "no-eval": true,
     "no-arg": true,

@@ -154,7 +154,8 @@
     "tslint": "^5.19.0",
     "tsutils": "^3.0.0",
     "typescript": "3.5.3",
-    "uglify-js": "^2.8.14"
+    "uglify-js": "^2.8.14",
+    "vrsource-tslint-rules": "5.1.1"
   },
   "resolutions": {
     "dgeni-packages/typescript": "3.5.3"
