@@ -147,7 +147,8 @@ export class NgtscProgram implements api.Program {
     }
 
     if (generators.length > 0) {
-      this.host = new GeneratedShimsHostWrapper(host, generators);
+      // FIXME: Remove the any cast once google3 is fully on TS3.6.
+      this.host = (new GeneratedShimsHostWrapper(host, generators) as any);
     }
 
     this.tsProgram =
