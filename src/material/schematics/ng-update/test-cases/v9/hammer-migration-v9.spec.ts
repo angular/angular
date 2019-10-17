@@ -536,6 +536,54 @@ describe('v9 HammerJS removal', () => {
         export class AppModule { }`);
     });
 
+    it('should add gesture config provider to app module if module is referenced through ' +
+        're-exports in bootstrap', async () => {
+      writeFile('/projects/cdk-testing/src/app/app.component.html', `
+        <span (pinch)="onPinch($event)"></span>
+      `);
+
+      writeFile('/projects/cdk-testing/src/main.ts', `
+        import 'hammerjs';
+        import { enableProdMode } from '@angular/core';
+        import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+        
+        import { AppModule } from './app/';
+        import { environment } from './environments/environment';
+        
+        if (environment.production) {
+          enableProdMode();
+        }
+        
+        platformBrowserDynamic().bootstrapModule(AppModule)
+          .catch(err => console.error(err));
+      `);
+
+      writeFile('/projects/cdk-testing/src/app/index.ts', `export * from './app.module';`);
+
+      await runMigration();
+
+      expect(tree.readContent('/projects/cdk-testing/src/main.ts')).toContain(`import 'hammerjs';`);
+      expect(tree.exists('/projects/cdk-testing/src/gesture-config.ts')).toBe(true);
+      expect(tree.readContent('/projects/cdk-testing/src/app/app.module.ts')).toContain(dedent`\
+        import { BrowserModule, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
+        import { NgModule } from '@angular/core';
+
+        import { AppComponent } from './app.component';
+        import { GestureConfig } from "../gesture-config";
+
+        @NgModule({
+          declarations: [
+            AppComponent
+          ],
+          imports: [
+            BrowserModule
+          ],
+          providers: [{ provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig }],
+          bootstrap: [AppComponent]
+        })
+        export class AppModule { }`);
+    });
+
     it('should not add gesture config provider multiple times if already provided', async () => {
       writeFile('/projects/cdk-testing/src/app/app.component.html', `
         <span (pinch)="onPinch($event)"></span>

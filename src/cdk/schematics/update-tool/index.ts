@@ -122,8 +122,8 @@ export function runMigrationRules<T>(
   if (ruleFailures.length) {
     ruleFailures.forEach(({filePath, message, position}) => {
       const normalizedFilePath = normalize(getProjectRelativePath(filePath));
-      const lineAndCharacter = `${position.line + 1}:${position.character + 1}`;
-      logger.warn(`${normalizedFilePath}@${lineAndCharacter} - ${message}`);
+      const lineAndCharacter = position ? `@${position.line + 1}:${position.character + 1}` : '';
+      logger.warn(`${normalizedFilePath}${lineAndCharacter} - ${message}`);
     });
   }
 

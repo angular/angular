@@ -28,7 +28,6 @@ import {
 } from '@schematics/angular/utility/ast-utils';
 import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace} from '@schematics/angular/utility/config';
-import {getAppModulePath} from '@schematics/angular/utility/ng-ast-utils';
 import {WorkspaceProject} from '@schematics/angular/utility/workspace-models';
 import chalk from 'chalk';
 import {readFileSync} from 'fs';
@@ -37,6 +36,7 @@ import * as ts from 'typescript';
 
 import {getProjectFromProgram} from './cli-workspace';
 import {findHammerScriptImportElements} from './find-hammer-script-tags';
+import {findMainModuleExpression} from './find-main-module';
 import {isHammerJsUsedInTemplate} from './hammer-template-check';
 import {getImportOfIdentifier, Import} from './identifier-imports';
 import {ImportManager} from './import-manager';
@@ -52,6 +52,9 @@ const HAMMER_MODULE_SPECIFIER = 'hammerjs';
 
 const CANNOT_REMOVE_REFERENCE_ERROR =
     `Cannot remove reference to "GestureConfig". Please remove manually.`;
+
+const CANNOT_SETUP_APP_MODULE_ERROR = `Could not setup HammerJS gesture in module. Please ` +
+  `manually ensure that the Hammer gesture config is set up.`;
 
 interface IdentifierReference {
   node: ts.Identifier;
@@ -198,21 +201,8 @@ export class HammerGesturesRule extends MigrationRule<null> {
     this._gestureConfigReferences.forEach(
         i => this._replaceGestureConfigReference(i, gestureConfigPath));
 
-    const appModulePath = getAppModulePath(this.tree, getProjectMainFile(project));
-    const sourceFile = this.program.getSourceFile(join(this.basePath, appModulePath));
-
-    if (!sourceFile) {
-      this.failures.push({
-        filePath: appModulePath,
-        message: `Could not setup HammerJS gesture in module. Please manually ensure that ` +
-            `the Hammer gesture config is set up.`,
-        position: {character: 0, line: 0}
-      });
-      return;
-    }
-
-    // Setup the gesture config provider in the project app module if not done.
-    this._setupGestureConfigProviderIfNeeded(sourceFile, appModulePath, gestureConfigPath);
+    // Setup the gesture config provider in the project app module if not done already.
+    this._setupGestureConfigInAppModule(project, gestureConfigPath);
   }
 
   /**
@@ -531,12 +521,38 @@ export class HammerGesturesRule extends MigrationRule<null> {
     });
   }
 
-  /**
-   * Sets up the Hammer gesture config provider in the given app module
-   * if needed.
-   */
-  private _setupGestureConfigProviderIfNeeded(
-      sourceFile: ts.SourceFile, appModulePath: string, configPath: string) {
+  /** Sets up the Hammer gesture config provider in the app module if needed. */
+  private _setupGestureConfigInAppModule(project: WorkspaceProject, configPath: string) {
+    const mainFilePath = join(this.basePath, getProjectMainFile(project));
+    const mainFile = this.program.getSourceFile(mainFilePath);
+    if (!mainFile) {
+      this.failures.push({
+        filePath: mainFilePath,
+        message: CANNOT_SETUP_APP_MODULE_ERROR,
+      });
+      return;
+    }
+
+    const appModuleExpr = findMainModuleExpression(mainFile);
+    if (!appModuleExpr) {
+      this.failures.push({
+        filePath: mainFilePath,
+        message: CANNOT_SETUP_APP_MODULE_ERROR,
+      });
+      return;
+    }
+
+    const appModuleSymbol = this._getDeclarationSymbolOfNode(unwrapExpression(appModuleExpr));
+    if (!appModuleSymbol || !appModuleSymbol.valueDeclaration) {
+      this.failures.push({
+        filePath: mainFilePath,
+        message: CANNOT_SETUP_APP_MODULE_ERROR,
+      });
+      return;
+    }
+
+    const sourceFile = appModuleSymbol.valueDeclaration.getSourceFile();
+    const relativePath = relative(this.basePath, sourceFile.fileName);
     const hammerConfigTokenExpr = this._importManager.addImportToSourceFile(
         sourceFile, HAMMER_CONFIG_TOKEN_NAME, HAMMER_CONFIG_TOKEN_MODULE);
     const gestureConfigExpr = this._importManager.addImportToSourceFile(
@@ -574,8 +590,8 @@ export class HammerGesturesRule extends MigrationRule<null> {
       return;
     }
 
-    const changeActions = addSymbolToNgModuleMetadata(
-        sourceFile, appModulePath, 'providers', this._printNode(newProviderNode, sourceFile), null);
+    const changeActions = addSymbolToNgModuleMetadata(sourceFile, relativePath, 'providers',
+        this._printNode(newProviderNode, sourceFile), null);
 
     changeActions.forEach(change => {
       if (change instanceof InsertChange) {
@@ -668,7 +684,7 @@ export class HammerGesturesRule extends MigrationRule<null> {
     }
 
     context.logger.info(chalk.yellow(
-        '  ⚠   The HammerJS v9 migration for Angular components is not able to migrate tests. ' +
+        '⚠ The HammerJS v9 migration for Angular components is not able to migrate tests. ' +
         'Please manually clean up tests in your project if they rely on HammerJS.'));
 
     // Clean global state once the workspace has been migrated. This is technically
