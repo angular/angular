@@ -7,7 +7,7 @@
  */
 
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
-import {TabGroupHarnessFilters} from './tab-harness-filters';
+import {TabGroupHarnessFilters, TabHarnessFilters} from './tab-harness-filters';
 import {MatTabHarness} from './tab-harness';
 
 /**
@@ -34,11 +34,9 @@ export class MatTabGroupHarness extends ComponentHarness {
         });
   }
 
-  private _tabs = this.locatorForAll(MatTabHarness);
-
   /** Gets all tabs of the tab group. */
-  async getTabs(): Promise<MatTabHarness[]> {
-    return this._tabs();
+  async getTabs(filter: TabHarnessFilters = {}): Promise<MatTabHarness[]> {
+    return this.locatorForAll(MatTabHarness.with(filter))();
   }
 
   /** Gets the selected tab of the tab group. */
@@ -51,5 +49,14 @@ export class MatTabGroupHarness extends ComponentHarness {
       }
     }
     throw new Error('No selected tab could be found.');
+  }
+
+  /** Selects a tab in this tab group. */
+  async selectTab(filter: TabHarnessFilters = {}): Promise<void> {
+    const tabs = await this.getTabs(filter);
+    if (!tabs.length) {
+      throw Error(`Cannot find mat-tab matching filter ${JSON.stringify(filter)}`);
+    }
+    await tabs[0].select();
   }
 }

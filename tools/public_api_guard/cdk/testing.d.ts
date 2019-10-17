@@ -63,6 +63,9 @@ export declare abstract class HarnessEnvironment<E> implements HarnessLoader, Lo
     getChildLoader(selector: string): Promise<HarnessLoader>;
     protected abstract getDocumentRoot(): E;
     getHarness<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): Promise<T>;
+    harnessLoaderFor(selector: string): Promise<HarnessLoader>;
+    harnessLoaderForAll(selector: string): Promise<HarnessLoader[]>;
+    harnessLoaderForOptional(selector: string): Promise<HarnessLoader | null>;
     locatorFor<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T>;
     locatorFor(selector: string): AsyncFactoryFn<TestElement>;
     locatorForAll<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T[]>;
@@ -96,10 +99,13 @@ export interface LocatorFactory {
     rootElement: TestElement;
     documentRootLocatorFactory(): LocatorFactory;
     forceStabilize(): Promise<void>;
-    locatorFor(selector: string): AsyncFactoryFn<TestElement>;
+    harnessLoaderFor(selector: string): Promise<HarnessLoader>;
+    harnessLoaderForAll(selector: string): Promise<HarnessLoader[]>;
+    harnessLoaderForOptional(selector: string): Promise<HarnessLoader | null>;
     locatorFor<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T>;
-    locatorForAll(selector: string): AsyncFactoryFn<TestElement[]>;
+    locatorFor(selector: string): AsyncFactoryFn<TestElement>;
     locatorForAll<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T[]>;
+    locatorForAll(selector: string): AsyncFactoryFn<TestElement[]>;
     locatorForOptional(selector: string): AsyncFactoryFn<TestElement | null>;
     locatorForOptional<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T | null>;
 }

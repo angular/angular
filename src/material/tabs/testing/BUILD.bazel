@@ -25,6 +25,7 @@ ng_test_library(
     srcs = ["shared.spec.ts"],
     deps = [
         ":testing",
+        "//src/cdk/private/testing",
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
         "//src/material/tabs",

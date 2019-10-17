@@ -7,7 +7,9 @@
  */
 import {BaseHarnessFilters} from '@angular/cdk/testing';
 
-export interface TabHarnessFilters extends BaseHarnessFilters {}
+export interface TabHarnessFilters extends BaseHarnessFilters {
+  label?: string | RegExp;
+}
 
 export interface TabGroupHarnessFilters extends BaseHarnessFilters {
   selectedTabLabel?: string | RegExp;

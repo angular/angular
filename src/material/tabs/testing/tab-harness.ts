@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate, TestElement} from '@angular/cdk/testing';
+import {ComponentHarness, HarnessLoader, HarnessPredicate} from '@angular/cdk/testing';
 import {TabHarnessFilters} from './tab-harness-filters';
 
 /**
@@ -20,10 +20,10 @@ export class MatTabHarness extends ComponentHarness {
    * Gets a `HarnessPredicate` that can be used to search for a tab with specific attributes.
    */
   static with(options: TabHarnessFilters = {}): HarnessPredicate<MatTabHarness> {
-    return new HarnessPredicate(MatTabHarness, options);
+    return new HarnessPredicate(MatTabHarness, options)
+        .addOption('label', options.label,
+            (harness, label) => HarnessPredicate.stringMatches(harness.getLabel(), label));
   }
-
-  private _rootLocatorFactory = this.documentRootLocatorFactory();
 
   /** Gets the label of the tab. */
   async getLabel(): Promise<string> {
@@ -38,15 +38,6 @@ export class MatTabHarness extends ComponentHarness {
   /** Gets the value of the "aria-labelledby" attribute. */
   async getAriaLabelledby(): Promise<string|null> {
     return (await this.host()).getAttribute('aria-labelledby');
-  }
-
-  /**
-   * Gets the content element of the given tab. Note that the element will be empty
-   * until the tab is selected. This is an implementation detail of the tab-group
-   * in order to avoid rendering of non-active tabs.
-   */
-  async getContentElement(): Promise<TestElement> {
-    return this._rootLocatorFactory.locatorFor(`#${await this._getContentId()}`)();
   }
 
   /** Whether the tab is selected. */
@@ -67,6 +58,22 @@ export class MatTabHarness extends ComponentHarness {
    */
   async select(): Promise<void> {
     await (await this.host()).click();
+  }
+
+  /** Gets the text content of the tab. */
+  async getTextContent(): Promise<string> {
+    const contentId = await this._getContentId();
+    const contentEl = await this.documentRootLocatorFactory().locatorFor(`#${contentId}`)();
+    return contentEl.text();
+  }
+
+  /**
+   * Gets a `HarnessLoader` that can be used to load harnesses for components within the tab's
+   * content area.
+   */
+  async getHarnessLoaderForContent(): Promise<HarnessLoader> {
+    const contentId = await this._getContentId();
+    return this.documentRootLocatorFactory().harnessLoaderFor(`#${contentId}`);
   }
 
   /** Gets the element id for the content of the current tab. */

@@ -144,6 +144,29 @@ export interface LocatorFactory {
       harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T[]>;
 
   /**
+   * Gets a `HarnessLoader` instance for an element under the root of this `LocatorFactory`.
+   * @param selector The selector for the root element.
+   * @return A `HarnessLoader` rooted at the first element matching the given selector.
+   * @throws If no matching element is found for the given selector.
+   */
+  harnessLoaderFor(selector: string): Promise<HarnessLoader>;
+
+  /**
+   * Gets a `HarnessLoader` instance for an element under the root of this `LocatorFactory`
+   * @param selector The selector for the root element.
+   * @return A `HarnessLoader` rooted at the first element matching the given selector, or null if
+   *     no matching element is found.
+   */
+  harnessLoaderForOptional(selector: string): Promise<HarnessLoader | null>;
+
+  /**
+   * Gets a list of `HarnessLoader` instances, one for each matching element.
+   * @param selector The selector for the root element.
+   * @return A list of `HarnessLoader`, one rooted at each element matching the given selector.
+   */
+  harnessLoaderForAll(selector: string): Promise<HarnessLoader[]>;
+
+  /**
    * Flushes change detection and async tasks.
    * In most cases it should not be necessary to call this manually. However, there may be some edge
    * cases where it is needed to fully flush animation events.

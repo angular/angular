@@ -1,4 +1,5 @@
-import {HarnessLoader} from '@angular/cdk/testing';
+import {expectAsyncError} from '@angular/cdk/private/testing';
+import {ComponentHarness, HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -51,6 +52,26 @@ export function runHarnessTests(
     expect(tabs.length).toBe(3);
   });
 
+  it('should be able to get filtered tabs', async () => {
+    const tabGroup = await loader.getHarness(tabGroupHarness);
+    const tabs = await tabGroup.getTabs({label: 'Third'});
+    expect(tabs.length).toBe(1);
+    expect(await tabs[0].getLabel()).toBe('Third');
+  });
+
+  it('should be able to select tab from tab-group', async () => {
+    const tabGroup = await loader.getHarness(tabGroupHarness);
+    expect(await (await tabGroup.getSelectedTab()).getLabel()).toBe('First');
+    await tabGroup.selectTab({label: 'Second'});
+    expect(await (await tabGroup.getSelectedTab()).getLabel()).toBe('Second');
+  });
+
+  it('should throw error when attempting to select invalid tab', async () => {
+    const tabGroup = await loader.getHarness(tabGroupHarness);
+    await expectAsyncError(() => tabGroup.selectTab({label: 'Fake'}),
+        /Error: Cannot find mat-tab matching filter {"label":"Fake"}/);
+  });
+
   it('should be able to get label of tabs', async () => {
     const tabGroup = await loader.getHarness(tabGroupHarness);
     const tabs = await tabGroup.getTabs();
@@ -75,16 +96,13 @@ export function runHarnessTests(
     expect(await tabs[2].getAriaLabelledby()).toBe('tabLabelId');
   });
 
-  it('should be able to get content element of active tab', async () => {
+  it('should be able to get harness loader for content element of active tab', async () => {
     const tabGroup = await loader.getHarness(tabGroupHarness);
     const tabs = await tabGroup.getTabs();
-    expect(await (await tabs[0].getContentElement()).text()).toBe('Content 1');
-  });
-
-  it('should be able to get content element of active tab', async () => {
-    const tabGroup = await loader.getHarness(tabGroupHarness);
-    const tabs = await tabGroup.getTabs();
-    expect(await (await tabs[0].getContentElement()).text()).toBe('Content 1');
+    expect(await tabs[0].getTextContent()).toBe('Content 1');
+    const tabContentLoader = await tabs[0].getHarnessLoaderForContent();
+    const tabContentHarness = await tabContentLoader.getHarness(TestTabContentHarness);
+    expect(await (await tabContentHarness.host()).text()).toBe('Content 1');
   });
 
   it('should be able to get disabled state of tab', async () => {
@@ -136,15 +154,23 @@ export function runHarnessTests(
 @Component({
   template: `
     <mat-tab-group>
-      <mat-tab label="First" aria-label="First tab">Content 1</mat-tab>
-      <mat-tab label="Second" aria-label="Second tab">Content 2</mat-tab>
+      <mat-tab label="First" aria-label="First tab">
+        <span class="test-tab-content">Content 1</span>
+      </mat-tab>
+      <mat-tab label="Second" aria-label="Second tab">
+        <span class="test-tab-content">Content 2</span>
+      </mat-tab>
       <mat-tab label="Third" aria-labelledby="tabLabelId" [disabled]="isDisabled">
         <ng-template matTabLabel>Third</ng-template>
-        Content 3
+        <span class="test-tab-content">Content 3</span>
       </mat-tab>
     </mat-tab-group>
   `
 })
 class TabGroupHarnessTest {
   isDisabled = false;
+}
+
+class TestTabContentHarness extends ComponentHarness {
+  static hostSelector = '.test-tab-content';
 }
