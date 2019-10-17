@@ -82,5 +82,5 @@ export const CUSTOM_ELEMENTS_SCHEMA: any = false;
 export const NO_ERRORS_SCHEMA: any = false;
 
 export class EventEmitter<T> {
-  subscribe(cb: (event: T) => any): unknown { return null; }
+  subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown { return null; }
 }

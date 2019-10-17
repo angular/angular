@@ -123,12 +123,11 @@ export class Environment {
         '@angular/core', 'EventEmitter', [new ExpressionType(new ReadVarExpr('T'))]);
 
     const outputHelperIdent = ts.createIdentifier('_outputHelper');
-    const genericTypeDecl =
-        ts.createTypeParameterDeclaration(ts.createIdentifier('T'), undefined, undefined);
-    const genericTypeRef = ts.createTypeReferenceNode(ts.createIdentifier('T'), undefined);
+    const genericTypeDecl = ts.createTypeParameterDeclaration('T');
+    const genericTypeRef = ts.createTypeReferenceNode('T', /* typeParameters */ undefined);
 
     // Declare a type that has a `subscribe` method that carries over type `T` as parameter
-    // into the callback. The below code generates the following object literal:
+    // into the callback. The below code generates the following type literal:
     // `{subscribe(cb: (event: T) => any): void;}`
     const observableLike = ts.createTypeLiteralNode([ts.createMethodSignature(
         /* typeParameters */ undefined,
@@ -136,7 +135,7 @@ export class Environment {
             /* decorators */ undefined,
             /* modifiers */ undefined,
             /* dotDotDotToken */ undefined,
-            /* name */ ts.createIdentifier('cb'),
+            /* name */ 'cb',
             /* questionToken */ undefined,
             /* type */ ts.createFunctionTypeNode(
                 /* typeParameters */ undefined,
@@ -144,12 +143,12 @@ export class Environment {
                     /* decorators */ undefined,
                     /* modifiers */ undefined,
                     /* dotDotDotToken */ undefined,
-                    /* name */ ts.createIdentifier('event'),
+                    /* name */ 'event',
                     /* questionToken */ undefined,
                     /* type */ genericTypeRef)],
                 /* type */ ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)))],
         /* type */ ts.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
-        /* name */ ts.createIdentifier('subscribe'),
+        /* name */ 'subscribe',
         /* questionToken */ undefined)]);
 
     // Declares the first signature of `_outputHelper` that matches arguments of type
@@ -166,7 +165,7 @@ export class Environment {
             /* decorators */ undefined,
             /* modifiers */ undefined,
             /* dotDotDotToken */ undefined,
-            /* name */ ts.createIdentifier('output'),
+            /* name */ 'output',
             /* questionToken */ undefined,
             /* type */ eventEmitter)],
         /* type */ observableLike,
@@ -186,7 +185,7 @@ export class Environment {
             /* decorators */ undefined,
             /* modifiers */ undefined,
             /* dotDotDotToken */ undefined,
-            /* name */ ts.createIdentifier('output'),
+            /* name */ 'output',
             /* questionToken */ undefined,
             /* type */ genericTypeRef)],
         /* type */ genericTypeRef,
