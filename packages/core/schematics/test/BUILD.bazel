@@ -10,6 +10,7 @@ ts_library(
     deps = [
         "//packages/core/schematics/migrations/dynamic-queries",
         "//packages/core/schematics/migrations/missing-injectable",
+        "//packages/core/schematics/migrations/module-with-providers",
         "//packages/core/schematics/migrations/move-document",
         "//packages/core/schematics/migrations/postinstall-ngcc",
         "//packages/core/schematics/migrations/renderer-to-renderer2",

@@ -572,7 +572,7 @@ export declare class ModuleWithComponentFactories<T> {
     constructor(ngModuleFactory: NgModuleFactory<T>, componentFactories: ComponentFactory<any>[]);
 }
 
-export interface ModuleWithProviders<T = any /** TODO(alxhub): remove default when callers pass explicit type param */> {
+export interface ModuleWithProviders<T> {
     ngModule: Type<T>;
     providers?: Provider[];
 }
