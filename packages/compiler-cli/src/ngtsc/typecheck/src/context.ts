@@ -90,6 +90,7 @@ export class TypeCheckContext {
             // TODO(alxhub): support queries
             queries: dir.queries,
           },
+          coercedInputFields: dir.coercedInputFields,
         });
       }
     }

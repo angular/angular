@@ -677,6 +677,80 @@ In this example it is recommended to include the checking of `address` in the `*
   }
 ```
 
+### Input setter coercion
+
+Occasionally it is desirable for the `@Input` of a directive or component to alter the value bound to it, typically using a getter/setter pair for the input. As an example, consider this custom button component:
+
+Consider the following directive:
+
+```typescript
+@Component({
+  selector: 'submit-button',
+  template: `
+    <div class="wrapper">
+      <button [disabled]="disabled">Submit</button>'
+    </div>
+  `,
+})
+class SubmitButton {
+  private _disabled: boolean;
+
+  get disabled(): boolean {
+    return this._disabled;
+  }
+
+  set disabled(value: boolean) {
+    this._disabled = value;
+  }
+}
+```
+
+Here, the `disabled` input of the component is being passed on to the `<button>` in the template. All of this works as expected, as long as a `boolean` value is bound to the input. But, suppose a consumer uses this input in the template as an attribute:
+
+```html
+<submit-button disabled></submit-button>
+```
+
+This has the same effect as the binding:
+
+```html
+<submit-button [disabled]="''"></submit-button>
+```
+
+At runtime, the input will be set to the empty string, which is not a `boolean` value. Angular component libraries that deal with this problem often "coerce" the value into the right type in the setter:
+
+```typescript
+set disabled(value: boolean) {
+  this._disabled = (value === '') || value;
+}
+```
+
+It would be ideal to change the type of `value` here, from `boolean` to `boolean|''`, to match the set of values which are actually accepted by the setter. Unfortunately, TypeScript requires that both the getter and setter have the same type, so if the getter should return a `boolean` then the setter is stuck with the narrower type.
+
+If the consumer has Angular's strictest type checking for templates enabled, this creates a problem: the empty string `''` is not actually assignable to the `disabled` field, which will create a type error when the attribute form is used.
+
+As a workaround for this problem, Angular supports checking a wider, more permissive type for `@Input`s than is declared for the input field itself. This is enabled by adding a static property with the `ngAcceptInputType_` prefix to the component class:
+
+```typescript
+class SubmitButton {
+  private _disabled: boolean;
+
+  get disabled(): boolean {
+    return this._disabled;
+  }
+
+  set disabled(value: boolean) {
+    this._disabled = (value === '') || value;
+  }
+
+  static ngAcceptInputType_disabled: boolean|'';
+}
+```
+
+This field does not need to have a value. Its existence communicates to the Angular type checker that the `disabled` input should be considered as accepting bindings that match the type `boolean|''`. The suffix should be the `@Input` _field_ name.
+
+Care should be taken that if an `ngAcceptInputType_` override is present for a given input, then the setter should be able to handle any values of the overridden type.
+
 ### Disabling type checking using `$any()`
 
 Disable checking of a binding expression by surrounding the expression in a call to the [`$any()` cast pseudo-function](guide/template-syntax).
