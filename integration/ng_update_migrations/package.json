@@ -30,7 +30,7 @@
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
     "@types/jasmine": "~3.3.8",
     "@types/jasminewd2": "~2.0.3",
-    "@types/node": "~8.9.4",
+    "@types/node": "file:../../node_modules/@types/node",
     "chalk": "^2.4.2",
     "diff": "^4.0.1",
     "glob": "^7.1.4",
