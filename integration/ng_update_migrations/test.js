@@ -22,8 +22,8 @@ const fromVersion = '8.0.0';
 const toVersion = '9.0.0';
 // Note that we need to specify "--allow-dirty" as the repository will become dirty
 // if dependencies for the integration test are installed (i.e. modified lock files)
-const updateCommandArgs =
-    ['@angular/core', '--migrate-only', '--from', fromVersion, '--to', toVersion, '--allow-dirty'];
+const updateCommandArgs = ['@angular/core', '--migrate-only', '--from', fromVersion,
+    '--to', toVersion, '--allow-dirty', '--skip-commits'];
 
 // Print out the command that is used to run the migrations for easier debugging.
 console.error(`Running "ng update ${updateCommandArgs.join(' ')}":`);
