@@ -20,8 +20,7 @@ try {
   process.exit(0);
 }
 
-const {set, cd, sed, echo, ls} = require('shelljs');
-const {readFileSync} = require('fs');
+const {set, cd, sed, rm} = require('shelljs');
 const path = require('path');
 const log = console.log;
 
@@ -51,21 +50,5 @@ log('\n# patch: @bazel/karma 0.29.0 to disable chrome sandbox for OSX');
 sed('-i', 'process.platform !== \'linux\'',
     'process.platform !== \'linux\' && process.platform !== \'darwin\'',
     'node_modules/@bazel/karma/karma.conf.js');
-
-// Workaround https://github.com/bazelbuild/rules_nodejs/issues/1033
-// TypeScript doesn't understand typings without "declare module" unless
-// they are actually resolved by the @types default mechanism
-log('\n# patch: @types/babel__* adding declare module wrappers');
-ls('node_modules/@types').filter(f => f.startsWith('babel__')).forEach(pkg => {
-  const modName = '@' + pkg.replace('__', '/');
-  const typingsFile = `node_modules/@types/${pkg}/index.d.ts`;
-  // Only add the patch if it is not already there.
-  if (readFileSync(typingsFile, 'utf8').indexOf('/*added by tools/postinstall_patches.js*/') ===
-      -1) {
-    const insertPrefix = `/*added by tools/postinstall_patches.js*/ declare module "${modName}" { `;
-    sed('-i', `(// Type definitions for ${modName})`, insertPrefix + '$1', typingsFile);
-    echo('}').toEnd(typingsFile);
-  }
-});
 
 log('===== finished running the postinstall-patches.js script =====');
