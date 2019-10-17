@@ -30,7 +30,6 @@
 
   "files": [
     "index.ts",
-    "ngtools2.ts",
     "src/main.ts",
     "src/extract_i18n.ts",
     "src/language_services.ts",

@@ -98,36 +98,6 @@ jasmine_node_test(
     ],
 )
 
-# ngctools_api_spec
-ts_library(
-    name = "ngtools_api_lib",
-    testonly = True,
-    srcs = [
-        "ngtools_api_spec.ts",
-    ],
-    deps = [
-        ":test_utils",
-        "//packages/compiler",
-        "//packages/compiler-cli",
-        "//packages/private/testing",
-        "@npm//typescript",
-    ],
-)
-
-jasmine_node_test(
-    name = "ngtools_api",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
-    data = [
-        "//packages/core:npm_package",
-        "//packages/router:npm_package",
-    ],
-    deps = [
-        ":ngtools_api_lib",
-        "//packages/core",
-        "//tools/testing:node",
-    ],
-)
-
 # perform_watch_spec
 ts_library(
     name = "perform_watch_lib",
