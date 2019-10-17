@@ -30,7 +30,7 @@ export {global as ɵglobal} from './util/global';
 export {looseIdentical as ɵlooseIdentical,} from './util/comparison';
 export {stringify as ɵstringify} from './util/stringify';
 export {makeDecorator as ɵmakeDecorator} from './util/decorators';
-export {isObservable as ɵisObservable, isPromise as ɵisPromise} from './util/lang';
+export {isPromise as ɵisPromise} from './util/lang';
 export {clearOverrides as ɵclearOverrides, initServicesIfNeeded as ɵinitServicesIfNeeded, overrideComponentView as ɵoverrideComponentView, overrideProvider as ɵoverrideProvider} from './view/index';
 export {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from './view/provider';
 export {getLocalePluralCase as ɵgetLocalePluralCase, findLocaleData as ɵfindLocaleData} from './i18n/locale_data_api';

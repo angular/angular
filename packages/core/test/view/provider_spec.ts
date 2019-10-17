@@ -12,6 +12,7 @@ import {ArgumentType, DepFlags, NodeFlags, Services, anchorDef, asElementData, d
 import {TestBed, withModule} from '@angular/core/testing';
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {ivyEnabled} from '@angular/private/testing';
+import {Observable} from 'rxjs';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetRootNodes, compViewDef, compViewDefFactory} from './helper';
 
@@ -339,15 +340,12 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
       it('should listen to provider events', () => {
         let emitter = new EventEmitter<any>();
         let unsubscribeSpy: any;
-
         class SomeService {
-          emitter = {
-            subscribe: (callback: any) => {
-              const subscription = emitter.subscribe(callback);
-              unsubscribeSpy = spyOn(subscription, 'unsubscribe').and.callThrough();
-              return subscription;
-            }
-          };
+          emitter = new Observable((callback: any) => {
+            const subscription = emitter.subscribe(callback);
+            unsubscribeSpy = spyOn(subscription, 'unsubscribe').and.callThrough();
+            return subscription;
+          });
         }
 
         const handleEvent = jasmine.createSpy('handleEvent');
