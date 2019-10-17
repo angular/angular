@@ -44,6 +44,11 @@
       "version": "9-beta",
       "description": "Adds an ngcc call as a postinstall hook in package.json",
       "factory": "./migrations/postinstall-ngcc/index"
+    },
+    "migration-v9-module-with-providers": {
+      "version": "9.0.0-beta",
+      "description": "Adds explicit typing to `ModuleWithProviders`",
+      "factory": "./migrations/module-with-providers/index"
     }
   }
 }
