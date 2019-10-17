@@ -172,6 +172,11 @@ commands:
     description: Set up CircleCI bazel configuration on Windows
     steps:
       - run: copy .circleci\bazel.windows.rc $env:USERPROFILE\.bazelrc
+      - run: mkdir %APPDATA%\gcloud
+      # We need ensure that the same default digest is used for encoding and decoding
+      # with openssl. Openssl versions might have different default digests which can
+      # cause decryption failures based on the openssl version. https://stackoverflow.com/a/39641378/4317734
+      - run: openssl aes-256-cbc -d -in .circleci/gcp_token -md md5 -k "$CI_REPO_NAME" -out %APPDATA%/gcloud/application_default_credentials.json
 
   setup_bazel_rbe:
     description: Setup bazel RBE remote execution
