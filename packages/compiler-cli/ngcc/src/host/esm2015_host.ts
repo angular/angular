@@ -1212,9 +1212,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     let name: string|null = null;
     let nameNode: ts.Identifier|null = null;
 
-    if (!isClassMemberType(node) || ts.isIndexSignatureDeclaration(node)) {
-      // `node` is not a class member or is an index signature, for example on an abstract class:
-      // `abstract class Foo { [key: string]: any; }`
+    if (!isClassMemberType(node)) {
       return null;
     }
 
@@ -1780,7 +1778,10 @@ function isNamedDeclaration(node: ts.Declaration): node is ts.NamedDeclaration&
 
 function isClassMemberType(node: ts.Declaration): node is ts.ClassElement|
     ts.PropertyAccessExpression|ts.BinaryExpression {
-  return ts.isClassElement(node) || isPropertyAccess(node) || ts.isBinaryExpression(node);
+  return (ts.isClassElement(node) || isPropertyAccess(node) || ts.isBinaryExpression(node)) &&
+      // Additionally, ensure `node` is not an index signature, for example on an abstract class:
+      // `abstract class Foo { [key: string]: any; }`
+      !ts.isIndexSignatureDeclaration(node);
 }
 
 /**
