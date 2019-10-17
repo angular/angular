@@ -36,7 +36,7 @@ export class NodeJSFileSystem implements FileSystem {
       path = this.dirname(path);
     }
     while (parents.length) {
-      this.mkdir(parents.pop() !);
+      this.safeMkdir(parents.pop() !);
     }
   }
   isCaseSensitive(): boolean {
@@ -69,6 +69,18 @@ export class NodeJSFileSystem implements FileSystem {
   normalize<T extends string>(path: T): T {
     // Convert backslashes to forward slashes
     return path.replace(/\\/g, '/') as T;
+  }
+
+  private safeMkdir(path: AbsoluteFsPath): void {
+    try {
+      this.mkdir(path);
+    } catch (err) {
+      // Ignore the error, if the path already exists and points to a directory.
+      // Re-throw otherwise.
+      if (!this.exists(path) || !this.stat(path).isDirectory()) {
+        throw err;
+      }
+    }
   }
 }
 
