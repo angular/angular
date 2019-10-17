@@ -31,7 +31,7 @@ export class ProductDetailsComponent implements OnInit {
   ngOnInit() {
 // #enddocregion props-methods
     this.route.paramMap.subscribe(params => {
-      this.product = products[+params.get('productId')];
+      this.product = products[Number(params.get('productId'))];
     });
 // #docregion props-methods
   }
