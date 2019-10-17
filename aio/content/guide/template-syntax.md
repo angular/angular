@@ -804,7 +804,7 @@ Imagine the following malicious content.
 
 In the component template, the content might be used with interpolation:
 
-<code-example path="property-binding/src/app/app.component.html" region="malicious-interpolated" header="src/app/app.component.ts"></code-example>
+<code-example path="property-binding/src/app/app.component.html" region="malicious-interpolated" header="src/app/app.component.html"></code-example>
 
 Fortunately, Angular data binding is on alert for dangerous HTML. In the above case,
 the HTML displays as is, and the Javascript does not execute. Angular **does not**
