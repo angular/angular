@@ -13,7 +13,7 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEn
 
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn} from './instructions/shared';
 import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
-import {FLAGS, HOST, LView, LViewFlags, T_HOST} from './interfaces/view';
+import {CONTEXT, FLAGS, HOST, LView, LViewFlags, T_HOST} from './interfaces/view';
 import {destroyLView, renderDetachView} from './node_manipulation';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
 import {getNativeByTNode, getNativeByTNodeOrNull} from './util/view_utils';
@@ -48,11 +48,9 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
     return [];
   }
 
-  constructor(_lView: LView, private _context: T|null, private _componentIndex: number) {
-    this._lView = _lView;
-  }
+  constructor(_lView: LView, private _cdRefInjectingView?: LView) { this._lView = _lView; }
 
-  get context(): T { return this._context ? this._context : this._lookUpContext(); }
+  get context(): T { return this._lView[CONTEXT] as T; }
 
   get destroyed(): boolean {
     return (this._lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
@@ -109,7 +107,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * }
    * ```
    */
-  markForCheck(): void { markViewDirty(this._lView); }
+  markForCheck(): void { markViewDirty(this._cdRefInjectingView || this._lView); }
 
   /**
    * Detaches the view from the change detection tree.
@@ -273,21 +271,15 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
     }
     this._appRef = appRef;
   }
-
-  private _lookUpContext(): T {
-    return this._context = getLViewParent(this._lView) ![this._componentIndex] as T;
-  }
 }
 
 /** @internal */
 export class RootViewRef<T> extends ViewRef<T> {
-  constructor(public _view: LView) { super(_view, null, -1); }
+  constructor(public _view: LView) { super(_view); }
 
   detectChanges(): void { detectChangesInRootView(this._view); }
 
   checkNoChanges(): void { checkNoChangesInRootView(this._view); }
-
-  get context(): T { return null !; }
 }
 
 function collectNativeNodes(lView: LView, parentTNode: TNode, result: any[]): any[] {

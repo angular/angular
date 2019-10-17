@@ -25,7 +25,7 @@ import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from './in
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
 import {isComponentHost, isLContainer, isLView, isRootView} from './interfaces/type_checks';
-import {CONTEXT, DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
+import {DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
 import {getParentInjectorTNode} from './node_util';
@@ -122,7 +122,7 @@ export function createTemplateRef<T>(
 
         renderView(lView, embeddedTView, context);
 
-        const viewRef = new ViewRef(lView, context, -1);
+        const viewRef = new ViewRef<T>(lView);
         viewRef._tViewNode = lView[T_HOST] as TViewNode;
         return viewRef;
       }
@@ -291,7 +291,7 @@ export function createContainerRef(
 
         const wasDetached =
             view && removeFromArray(this._lContainer[VIEW_REFS] !, adjustedIdx) != null;
-        return wasDetached ? new ViewRef(view !, view ![CONTEXT], -1) : null;
+        return wasDetached ? new ViewRef(view !) : null;
       }
 
       private _adjustIndex(index?: number, shift: number = 0) {
@@ -374,14 +374,13 @@ export function injectChangeDetectorRef(isPipe = false): ViewEngine_ChangeDetect
 function createViewRef(
     hostTNode: TNode, hostView: LView, isPipe: boolean): ViewEngine_ChangeDetectorRef {
   if (isComponentHost(hostTNode) && !isPipe) {
-    const componentIndex = hostTNode.directiveStart;
     const componentView = getComponentViewByIndex(hostTNode.index, hostView);
-    return new ViewRef(componentView, null, componentIndex);
+    return new ViewRef(componentView);
   } else if (
       hostTNode.type === TNodeType.Element || hostTNode.type === TNodeType.Container ||
       hostTNode.type === TNodeType.ElementContainer) {
     const hostComponentView = findComponentView(hostView);
-    return new ViewRef(hostComponentView, hostComponentView[CONTEXT], -1);
+    return new ViewRef(hostComponentView, hostView);
   }
   return null !;
 }
