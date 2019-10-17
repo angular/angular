@@ -18,7 +18,7 @@ import {stringify} from '../util/stringify';
 import {DepDef, DepFlags, NgModuleData, NgModuleDefinition, NgModuleProviderDef, NodeFlags} from './types';
 import {splitDepsDsl, tokenKey} from './util';
 
-const UNDEFINED_VALUE = new Object();
+const UNDEFINED_VALUE = {};
 
 const InjectorRefTokenKey = tokenKey(Injector);
 const INJECTORRefTokenKey = tokenKey(INJECTOR);
