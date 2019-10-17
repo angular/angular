@@ -321,13 +321,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   get focused(): boolean {
     return this._focused || this._panelOpen;
   }
-  /**
-   * @deprecated Setter to be removed as this property is intended to be readonly.
-   * @breaking-change 8.0.0
-   */
-  set focused(value: boolean) {
-    this._focused = value;
-  }
   private _focused = false;
 
   /** A name for this control that can be used by `mat-form-field`. */
@@ -495,11 +488,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     @Self() @Optional() public ngControl: NgControl,
     @Attribute('tabindex') tabIndex: string,
     @Inject(MAT_SELECT_SCROLL_STRATEGY) scrollStrategyFactory: any,
-    /**
-     * @deprecated _liveAnnouncer to be turned into a required parameter.
-     * @breaking-change 8.0.0
-     */
-    private _liveAnnouncer?: LiveAnnouncer) {
+    private _liveAnnouncer: LiveAnnouncer) {
     super(elementRef, _defaultErrorStateMatcher, _parentForm,
           _parentFormGroup, ngControl);
 
@@ -739,8 +728,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       const selectedOption = this.selected;
 
       // Since the value has changed, we need to announce it ourselves.
-      // @breaking-change 8.0.0 remove null check for _liveAnnouncer.
-      if (this._liveAnnouncer && selectedOption && previouslySelectedOption !== selectedOption) {
+      if (selectedOption && previouslySelectedOption !== selectedOption) {
         // We set a duration on the live announcement, because we want the live element to be
         // cleared after a while so that users can't navigate to it using the arrow keys.
         this._liveAnnouncer.announce((selectedOption as MatOption).viewValue, 10000);

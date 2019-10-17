@@ -27,7 +27,6 @@ import {
 export const matSelectAnimations: {
   readonly transformPanelWrap: AnimationTriggerMetadata;
   readonly transformPanel: AnimationTriggerMetadata;
-  readonly fadeInContent: AnimationTriggerMetadata;
 } = {
   /**
    * This animation ensures the select's overlay panel animation (transformPanel) is called when
@@ -66,35 +65,5 @@ export const matSelectAnimations: {
     })),
     transition('void => *', animate('120ms cubic-bezier(0, 0, 0.2, 1)')),
     transition('* => void', animate('100ms 25ms linear', style({opacity: 0})))
-  ]),
-
-  /**
-   * This animation fades in the background color and text content of the
-   * select's options. It is time delayed to occur 100ms after the overlay
-   * panel has transformed in.
-   * @deprecated Not used anymore. To be removed.
-   * @breaking-change 8.0.0
-   */
-  fadeInContent: trigger('fadeInContent', [
-    state('showing', style({opacity: 1})),
-    transition('void => showing', [
-      style({opacity: 0}),
-      animate('150ms 100ms cubic-bezier(0.55, 0, 0.55, 0.2)')
-    ])
   ])
 };
-
-
-/**
- * @deprecated
- * @breaking-change 8.0.0
- * @docs-private
- */
-export const transformPanel = matSelectAnimations.transformPanel;
-
-/**
- * @deprecated
- * @breaking-change 8.0.0
- * @docs-private
- */
-export const fadeInContent = matSelectAnimations.fadeInContent;

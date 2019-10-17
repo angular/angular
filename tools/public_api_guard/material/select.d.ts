@@ -1,5 +1,3 @@
-export declare const fadeInContent: AnimationTriggerMetadata;
-
 export declare const MAT_SELECT_SCROLL_STRATEGY: InjectionToken<() => ScrollStrategy>;
 
 export declare const MAT_SELECT_SCROLL_STRATEGY_PROVIDER: {
@@ -39,7 +37,7 @@ export declare class MatSelect extends _MatSelectMixinBase implements AfterConte
     disableOptionCentering: boolean;
     readonly empty: boolean;
     errorStateMatcher: ErrorStateMatcher;
-    focused: boolean;
+    readonly focused: boolean;
     id: string;
     multiple: boolean;
     ngControl: NgControl;
@@ -64,8 +62,7 @@ export declare class MatSelect extends _MatSelectMixinBase implements AfterConte
     typeaheadDebounceInterval: number;
     value: any;
     readonly valueChange: EventEmitter<any>;
-    constructor(_viewportRuler: ViewportRuler, _changeDetectorRef: ChangeDetectorRef, _ngZone: NgZone, _defaultErrorStateMatcher: ErrorStateMatcher, elementRef: ElementRef, _dir: Directionality, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _parentFormField: MatFormField, ngControl: NgControl, tabIndex: string, scrollStrategyFactory: any,
-    _liveAnnouncer?: LiveAnnouncer | undefined);
+    constructor(_viewportRuler: ViewportRuler, _changeDetectorRef: ChangeDetectorRef, _ngZone: NgZone, _defaultErrorStateMatcher: ErrorStateMatcher, elementRef: ElementRef, _dir: Directionality, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _parentFormField: MatFormField, ngControl: NgControl, tabIndex: string, scrollStrategyFactory: any, _liveAnnouncer: LiveAnnouncer);
     _calculateOverlayScroll(selectedIndex: number, scrollBuffer: number, maxScroll: number): number;
     _getAriaActiveDescendant(): string | null;
     _getAriaLabel(): string | null;
@@ -96,7 +93,6 @@ export declare class MatSelect extends _MatSelectMixinBase implements AfterConte
 export declare const matSelectAnimations: {
     readonly transformPanelWrap: AnimationTriggerMetadata;
     readonly transformPanel: AnimationTriggerMetadata;
-    readonly fadeInContent: AnimationTriggerMetadata;
 };
 
 export declare class MatSelectChange {
@@ -124,5 +120,3 @@ export declare const SELECT_PANEL_MAX_HEIGHT = 256;
 export declare const SELECT_PANEL_PADDING_X = 16;
 
 export declare const SELECT_PANEL_VIEWPORT_PADDING = 8;
-
-export declare const transformPanel: AnimationTriggerMetadata;
