@@ -81,7 +81,8 @@ export class Environment {
           outputs: Object.keys(dir.outputs),
           // TODO: support queries
           queries: dir.queries,
-        }
+        },
+        coercedInputFields: dir.coercedInputFields,
       };
       const typeCtor = generateTypeCtorDeclarationFn(node, meta, nodeTypeRef.typeName, this.config);
       this.typeCtorStatements.push(typeCtor);
