@@ -20,7 +20,12 @@ export class MergeInheritedProperties implements Processor {
     // Note that we need to get check all base documents. We cannot assume
     // that directive base documents already have merged inherited members.
     getInheritedDocsOfClass(doc).forEach(d => {
-      d.members.forEach(member => this._addMemberDocIfNotPresent(doc, member));
+      d.members.forEach(member => {
+        // only add inherited class members which are not "protected" or "private".
+        if (member.accessibility === 'public') {
+          this._addMemberDocIfNotPresent(doc, member);
+        }
+      });
     });
   }
 
