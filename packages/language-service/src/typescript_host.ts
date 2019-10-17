@@ -510,6 +510,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
           );
       const htmlResult = htmlParser.parse(template.source, fileName, {
         tokenizeExpansionForms: true,
+        preserveLineEndings: true,  // do not convert CRLF to LF
       });
       const {directives, pipes, schemas} = this.getModuleMetadataForDirective(classSymbol);
       const parseResult =

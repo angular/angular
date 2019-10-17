@@ -101,6 +101,10 @@ export interface TokenizeOptions {
    * included in source-map segments.  A common example is whitespace.
    */
   leadingTriviaChars?: string[];
+  /**
+   * If true, do not convert CRLF to LF.
+   */
+  preserveLineEndings?: boolean;
 }
 
 export function tokenize(
@@ -134,6 +138,7 @@ class _Tokenizer {
   private _currentTokenType: TokenType|null = null;
   private _expansionCaseStack: TokenType[] = [];
   private _inInterpolation: boolean = false;
+  private readonly _preserveLineEndings: boolean;
   tokens: Token[] = [];
   errors: TokenError[] = [];
 
@@ -153,6 +158,7 @@ class _Tokenizer {
         options.range || {endPos: _file.content.length, startPos: 0, startLine: 0, startCol: 0};
     this._cursor = options.escapedString ? new EscapedCharacterCursor(_file, range) :
                                            new PlainCharacterCursor(_file, range);
+    this._preserveLineEndings = options.preserveLineEndings || false;
     try {
       this._cursor.init();
     } catch (e) {
@@ -161,6 +167,9 @@ class _Tokenizer {
   }
 
   private _processCarriageReturns(content: string): string {
+    if (this._preserveLineEndings) {
+      return content;
+    }
     // http://www.w3.org/TR/html5/syntax.html#preprocessing-the-input-stream
     // In order to keep the original position in the source, we can not
     // pre-process it.

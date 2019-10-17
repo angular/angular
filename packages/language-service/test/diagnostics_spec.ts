@@ -645,30 +645,27 @@ describe('diagnostics', () => {
     });
   });
 
-  // https://github.com/angular/vscode-ng-language-service/issues/235
-  // There is no easy fix for this issue currently due to the way template
-  // tokenization is done. In the example below, the whole string
-  // `\r\n{{line0}}\r\n{{line1}}\r\n{{line2}}` is tokenized as a whole, and then
-  // CR characters are stripped from it. Source span information is lost in the
-  // process. For more discussion, see the link above.
-  /*
   it('should work correctly with CRLF endings', () => {
+    // https://github.com/angular/vscode-ng-language-service/issues/235
+    // In the example below, the string
+    // `\r\n{{line0}}\r\n{{line1}}\r\n{{line2}}` is tokenized as a whole,
+    // and then CRLF characters are converted to LF.
+    // Source span information is lost in the process.
     const fileName = '/app/test.ng';
-    const content = mockHost.override(fileName,
-  '\r\n<div>\r\n{{line0}}\r\n{{line1}}\r\n{{line2}}\r\n</div>');
+    const content =
+        mockHost.override(fileName, '\r\n<div>\r\n{{line0}}\r\n{{line1}}\r\n{{line2}}\r\n</div>');
     const ngDiags = ngLS.getDiagnostics(fileName);
     expect(ngDiags.length).toBe(3);
     for (let i = 0; i < 3; ++i) {
       const {messageText, start, length} = ngDiags[i];
       expect(messageText)
           .toBe(
-              `Identifier 'line${i}' is not defined. The component declaration, template variable
-  declarations, and element references do not contain such a member`);
+              `Identifier 'line${i}' is not defined. ` +
+              `The component declaration, template variable declarations, and ` +
+              `element references do not contain such a member`);
       // Assert that the span is actually highlight the bounded text. The span
       // would be off if CRLF endings are not handled properly.
       expect(content.substring(start !, start ! + length !)).toBe(`line${i}`);
     }
   });
-  */
-
 });
