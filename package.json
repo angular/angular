@@ -38,7 +38,7 @@
     "check-rollup-globals": "ts-node --project scripts/ scripts/check-rollup-globals.ts"
   },
   "version": "9.0.0-next.0",
-  "requiredAngularVersion": "^8.0.0 || ^9.0.0-0",
+  "requiredAngularVersion": "^9.0.0-0 || ^10.0.0-0",
   "requiredMDCVersion": "^4.0.0-alpha.0",
   "dependencies": {
     "@angular/animations": "^9.0.0-next.10",
