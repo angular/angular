@@ -194,7 +194,7 @@ Let's take a quick look a the product list component's class definition:
 ### Composition
 -->
 
-An Angular application comprises a tree of components, in which each Angular component has a specific purpose and responsibility.
+An Angular application consists of a tree of components, in which each Angular component has a specific purpose and responsibility.
 
 Currently, the example app has three components:
 
