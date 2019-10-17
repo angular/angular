@@ -20,6 +20,7 @@ import {createMouseEvent, el} from '../../../testing/src/browser_util';
   let zone: NgZone;
 
   describe('EventManager', () => {
+
     beforeEach(() => {
       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
       zone = new NgZone({});
@@ -295,7 +296,7 @@ import {createMouseEvent, el} from '../../../testing/src/browser_util';
       expect(receivedEvents).toEqual([]);
     });
 
-    it('should run blackListedEvents handler outside of ngZone', () => {
+    it('should run blockListedEvents handler outside of ngZone', () => {
       const Zone = (window as any)['Zone'];
       const element = el('<div><div></div></div>');
       doc.body.appendChild(element);
@@ -311,44 +312,12 @@ import {createMouseEvent, el} from '../../../testing/src/browser_util';
       let remover = manager.addEventListener(element, 'scroll', handler);
       getDOM().dispatchEvent(element, dispatchedEvent);
       expect(receivedEvent).toBe(dispatchedEvent);
-      expect(receivedZone.name).not.toEqual('angular');
+      expect(receivedZone.name).toBe(Zone.root.name);
 
       receivedEvent = null;
       remover && remover();
       getDOM().dispatchEvent(element, dispatchedEvent);
       expect(receivedEvent).toBe(null);
-    });
-
-    it('should only trigger one Change detection when bubbling', (done: DoneFn) => {
-      doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
-      zone = new NgZone({shouldCoalesceEventChangeDetection: true});
-      domEventPlugin = new DomEventsPlugin(doc, zone, null);
-      const element = el('<div></div>');
-      const child = el('<div></div>');
-      element.appendChild(child);
-      doc.body.appendChild(element);
-      const dispatchedEvent = createMouseEvent('click');
-      let receivedEvents: any = [];
-      let stables: any = [];
-      const handler = (e: any) => { receivedEvents.push(e); };
-      const manager = new EventManager([domEventPlugin], zone);
-      let removerChild: any;
-      let removerParent: any;
-
-      zone.run(() => {
-        removerChild = manager.addEventListener(child, 'click', handler);
-        removerParent = manager.addEventListener(element, 'click', handler);
-      });
-      zone.onStable.subscribe((isStable: any) => { stables.push(isStable); });
-      getDOM().dispatchEvent(child, dispatchedEvent);
-      requestAnimationFrame(() => {
-        expect(receivedEvents.length).toBe(2);
-        expect(stables.length).toBe(1);
-
-        removerChild && removerChild();
-        removerParent && removerParent();
-        done();
-      });
     });
   });
 })();
@@ -363,12 +332,12 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
 
   addEventListener(element: any, eventName: string, handler: Function) {
     this.eventHandler[eventName] = handler;
-    return () => { delete this.eventHandler[eventName]; };
+    return () => { delete (this.eventHandler[eventName]); };
   }
 }
 
 class FakeNgZone extends NgZone {
-  constructor() { super({enableLongStackTrace: false, shouldCoalesceEventChangeDetection: true}); }
+  constructor() { super({enableLongStackTrace: false}); }
   run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T { return fn(); }
   runOutsideAngular(fn: Function) { return fn(); }
 }
