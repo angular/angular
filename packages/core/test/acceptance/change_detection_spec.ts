@@ -914,39 +914,40 @@ describe('change detection', () => {
         expect(fixture.nativeElement.textContent).toEqual('two - two');
       });
 
-      it('async pipe should trigger CD for embedded views where the declaration and insertion views are different', () => {
-        @Component({
-          selector: 'insertion',
-          changeDetection: ChangeDetectionStrategy.OnPush,
-          template: ` <ng-container [ngTemplateOutlet]="template"> </ng-container> `
-        })
-        class Insertion {
-          @Input() template !: TemplateRef<{}>;
-        }
+      it('async pipe should trigger CD for embedded views where the declaration and insertion views are different',
+         () => {
+           @Component({
+             selector: 'insertion',
+             changeDetection: ChangeDetectionStrategy.OnPush,
+             template: ` <ng-container [ngTemplateOutlet]="template"> </ng-container> `
+           })
+           class Insertion {
+             @Input() template !: TemplateRef<{}>;
+           }
 
-        // This component uses async pipe (which calls markForCheck) in a view that has different
-        // insertion and declaration views.
-        @Component({
-          changeDetection: ChangeDetectionStrategy.OnPush,
-          template: `
+           // This component uses async pipe (which calls markForCheck) in a view that has different
+           // insertion and declaration views.
+           @Component({
+             changeDetection: ChangeDetectionStrategy.OnPush,
+             template: `
           <insertion [template]="ref"></insertion>
           <ng-template #ref>
             <span>{{value | async}}</span>
           </ng-template>
           `
-        })
-        class Declaration {
-          value = new BehaviorSubject('initial value');
-        }
+           })
+           class Declaration {
+             value = new BehaviorSubject('initial value');
+           }
 
-        const fixture = TestBed.configureTestingModule({declarations: [Insertion, Declaration]})
-                            .createComponent(Declaration);
-        fixture.detectChanges();
-        expect(fixture.debugElement.nativeElement.textContent).toContain('initial value');
-        fixture.componentInstance.value.next('new value');
-        fixture.detectChanges();
-        expect(fixture.debugElement.nativeElement.textContent).toContain('new value');
-      });
+           const fixture = TestBed.configureTestingModule({declarations: [Insertion, Declaration]})
+                               .createComponent(Declaration);
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement.textContent).toContain('initial value');
+           fixture.componentInstance.value.next('new value');
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement.textContent).toContain('new value');
+         });
 
       // TODO(kara): add test for dynamic views once bug fix is in
     });

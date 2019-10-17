@@ -1599,11 +1599,6 @@ export function markViewDirty(lView: LView): LView|null {
   while (lView) {
     lView[FLAGS] |= LViewFlags.Dirty;
     const parent = getLViewParent(lView);
-    const declParent = lView[DECLARATION_VIEW];
-    if (parent !== declParent && declParent != null) {
-      ngDevMode && assertLView(declParent);
-      markViewDirty(declParent);
-    }
     // Stop traversing up as soon as you find a root view that wasn't attached to any container
     if (isRootView(lView) && !parent) {
       return lView;
