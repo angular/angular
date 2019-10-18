@@ -122,7 +122,7 @@ export function createTemplateRef<T>(
 
         renderView(lView, embeddedTView, context);
 
-        const viewRef = new ViewRef<T>(lView, lView);
+        const viewRef = new ViewRef<T>(lView);
         viewRef._tViewNode = lView[T_HOST] as TViewNode;
         return viewRef;
       }
@@ -245,7 +245,7 @@ export function createContainerRef(
           throw new Error('Cannot insert a destroyed View in a ViewContainer!');
         }
         this.allocateContainerIfNeeded();
-        const lView = (viewRef as ViewRef<any>)._componentLView !;
+        const lView = (viewRef as ViewRef<any>)._lView !;
         const adjustedIdx = this._adjustIndex(index);
 
         if (viewAttachedToContainer(lView)) {
@@ -295,7 +295,7 @@ export function createContainerRef(
 
         const wasDetached =
             view && removeFromArray(this._lContainer[VIEW_REFS] !, adjustedIdx) != null;
-        return wasDetached ? new ViewRef(view !, view !) : null;
+        return wasDetached ? new ViewRef(view !) : null;
       }
 
       private _adjustIndex(index?: number, shift: number = 0) {
@@ -388,7 +388,7 @@ function createViewRef(tNode: TNode, lView: LView, isPipe: boolean): ViewEngine_
       tNode.type === TNodeType.Element || tNode.type === TNodeType.Container ||
       tNode.type === TNodeType.ElementContainer) {
     // The LView represents the location where the injection is requested from.
-    // We need to locate the containing LView (in case where the `lView` is amended view)
+    // We need to locate the containing LView (in case where the `lView` is an embedded view)
     const hostComponentView = findComponentView(lView);  // look up
     return new ViewRef(hostComponentView, lView);
   }

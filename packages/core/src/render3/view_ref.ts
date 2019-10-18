@@ -36,36 +36,39 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   public _tViewNode: TViewNode|null = null;
 
   get rootNodes(): any[] {
-    if (this._componentLView[HOST] == null) {
-      const tView = this._componentLView[T_HOST] as TViewNode;
-      return collectNativeNodes(this._componentLView, tView, []);
+    if (this._lView[HOST] == null) {
+      const tView = this._lView[T_HOST] as TViewNode;
+      return collectNativeNodes(this._lView, tView, []);
     }
     return [];
   }
 
   constructor(
       /**
-       * This represents the `LView` associated with the component.
+       * This represents `LView` associated with the component when ViewRef is a ChangeDetectorRef.
        *
-       * If `ViewContainerRef` was requested at embedded view this `LView` would be its closest
-       * component `LView`
+       * When ViewRef is created for a dynamic component, this also represents the `LView` for the
+       * component.
+       *
+       * For a "regular" ViewRef created for an embedded view, this is the `LView` for the embedded
+       * view.
        *
        * @internal
        */
-      public _componentLView: LView,
+      public _lView: LView,
 
       /**
-       * This represents the `LView` associated with the point where `ViewContainerRef` was
+       * This represents the `LView` associated with the point where `ChangeDetectorRef` was
        * requested.
        *
-       * This may be different from `_componentLView` if the `_requestingLView` is an embedded view.
+       * This may be different from `_lView` if the `_cdRefInjectingView` is an embedded view.
        */
-      private _requestingLView: LView) {}
+      private _cdRefInjectingView?: LView) {}
 
-  get context(): T { return this._componentLView[CONTEXT] as T; }
+  get context(): T { return this._lView[CONTEXT] as T; }
 
   get destroyed(): boolean {
-    return (this._componentLView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
+    return (this._lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
   }
 
   destroy(): void {
@@ -80,10 +83,10 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
 
       this._viewContainerRef = null;
     }
-    destroyLView(this._componentLView);
+    destroyLView(this._lView);
   }
 
-  onDestroy(callback: Function) { storeCleanupFn(this._componentLView, callback); }
+  onDestroy(callback: Function) { storeCleanupFn(this._lView, callback); }
 
   /**
    * Marks a view and all of its ancestors dirty.
@@ -119,7 +122,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * }
    * ```
    */
-  markForCheck(): void { markViewDirty(this._requestingLView); }
+  markForCheck(): void { markViewDirty(this._cdRefInjectingView || this._lView); }
 
   /**
    * Detaches the view from the change detection tree.
@@ -174,7 +177,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * }
    * ```
    */
-  detach(): void { this._componentLView[FLAGS] &= ~LViewFlags.Attached; }
+  detach(): void { this._lView[FLAGS] &= ~LViewFlags.Attached; }
 
   /**
    * Re-attaches a view to the change detection tree.
@@ -232,7 +235,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * }
    * ```
    */
-  reattach(): void { this._componentLView[FLAGS] |= LViewFlags.Attached; }
+  reattach(): void { this._lView[FLAGS] |= LViewFlags.Attached; }
 
   /**
    * Checks the view and its children.
@@ -255,7 +258,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    *
    * See {@link ChangeDetectorRef#detach detach} for more information.
    */
-  detectChanges(): void { detectChangesInternal(this._componentLView, this.context); }
+  detectChanges(): void { detectChangesInternal(this._lView, this.context); }
 
   /**
    * Checks the change detector and its children, and throws if any changes are detected.
@@ -263,7 +266,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * This is used in development mode to verify that running change detection doesn't
    * introduce other changes.
    */
-  checkNoChanges(): void { checkNoChangesInternal(this._componentLView, this.context); }
+  checkNoChanges(): void { checkNoChangesInternal(this._lView, this.context); }
 
   attachToViewContainerRef(vcRef: viewEngine_ViewContainerRef) {
     if (this._appRef) {
@@ -274,7 +277,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
 
   detachFromAppRef() {
     this._appRef = null;
-    renderDetachView(this._componentLView);
+    renderDetachView(this._lView);
   }
 
   attachToAppRef(appRef: ApplicationRef) {
@@ -287,7 +290,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
 
 /** @internal */
 export class RootViewRef<T> extends ViewRef<T> {
-  constructor(public _view: LView) { super(_view, _view); }
+  constructor(public _view: LView) { super(_view); }
 
   detectChanges(): void { detectChangesInRootView(this._view); }
 
