@@ -26,6 +26,7 @@ import {MockTypescriptHost} from './test_utils';
 const EXPRESSION_CASES = '/app/expression-cases.ts';
 const NG_FOR_CASES = '/app/ng-for-cases.ts';
 const NG_IF_CASES = '/app/ng-if-cases.ts';
+const TEST_TEMPLATE = '/app/test.ng';
 
 describe('diagnostics', () => {
   const mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
@@ -52,6 +53,26 @@ describe('diagnostics', () => {
       expect(semanticDiags).toEqual([]);
       const ngDiags = ngLS.getDiagnostics(file);
       expect(ngDiags).toEqual([]);
+    }
+  });
+
+  // https://github.com/angular/vscode-ng-language-service/issues/242
+  it('should support $any() type cast function', () => {
+    mockHost.override(TEST_TEMPLATE, `<div>{{$any(title).xyz}}</div>`);
+    const diags = ngLS.getDiagnostics(TEST_TEMPLATE);
+    expect(diags).toEqual([]);
+  });
+
+  it('should report error for $any() with incorrect number of arguments', () => {
+    const templates = [
+      '<div>{{$any().xyz}}</div>',              // no argument
+      '<div>{{$any(title, title).xyz}}</div>',  // two arguments
+    ];
+    for (const template of templates) {
+      mockHost.override(TEST_TEMPLATE, template);
+      const diags = ngLS.getDiagnostics(TEST_TEMPLATE);
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe('Unable to resolve signature for call of method $any');
     }
   });
 

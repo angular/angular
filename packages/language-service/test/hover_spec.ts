@@ -13,6 +13,8 @@ import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {MockTypescriptHost} from './test_utils';
 
+const TEST_TEMPLATE = '/app/test.ng';
+
 describe('hover', () => {
   const mockHost = new MockTypescriptHost(['/app/main.ts']);
   const tsLS = ts.createLanguageService(mockHost);
@@ -189,6 +191,19 @@ describe('hover', () => {
       length: 'StringModel'.length,
     });
     expect(toText(displayParts)).toBe('(directive) AppModule.StringModel: class');
+  });
+
+  it('should be able to provide quick info for $any() cast function', () => {
+    const content = mockHost.override(TEST_TEMPLATE, '<div>{{$any(title)}}</div>');
+    const position = content.indexOf('$any');
+    const quickInfo = ngLS.getHoverAt(TEST_TEMPLATE, position);
+    expect(quickInfo).toBeDefined();
+    const {textSpan, displayParts} = quickInfo !;
+    expect(textSpan).toEqual({
+      start: position,
+      length: '$any(title)'.length,
+    });
+    expect(toText(displayParts)).toBe('(method) $any');
   });
 });
 
