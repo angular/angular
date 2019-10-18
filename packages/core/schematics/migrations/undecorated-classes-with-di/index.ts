@@ -38,6 +38,12 @@ export default function(): Rule {
     const failures: string[] = [];
 
     ctx.logger.info('------ Undecorated classes with DI migration ------');
+    ctx.logger.info(
+        'As of Angular 9, it is no longer supported to use Angular DI ' +
+        'on a class that does not have an Angular decorator. ');
+    ctx.logger.info('Read more about this in the dedicated guide: ');
+    ctx.logger.info('https://v9.angular.io/guide/migration-undecorated-classes');
+
 
     if (!buildPaths.length) {
       throw new SchematicsException(
