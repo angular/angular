@@ -209,6 +209,9 @@ export class DragRef<T = any> {
    */
   dragStartDelay: number | {touch: number, mouse: number} = 0;
 
+  /** Class to be added to the preview element. */
+  previewClass: string|string[]|undefined;
+
   /** Whether starting to drag this element is disabled. */
   get disabled(): boolean {
     return this._disabled || !!(this._dropContainer && this._dropContainer.disabled);
@@ -844,6 +847,7 @@ export class DragRef<T = any> {
    */
   private _createPreviewElement(): HTMLElement {
     const previewConfig = this._previewTemplate;
+    const previewClass = this.previewClass;
     const previewTemplate = previewConfig ? previewConfig.template : null;
     let preview: HTMLElement;
 
@@ -868,7 +872,7 @@ export class DragRef<T = any> {
       // It's important that we disable the pointer events on the preview, because
       // it can throw off the `document.elementFromPoint` calls in the `CdkDropList`.
       pointerEvents: 'none',
-      // We have to reset the margin, because can throw off positioning relative to the viewport.
+      // We have to reset the margin, because it can throw off positioning relative to the viewport.
       margin: '0',
       position: 'fixed',
       top: '0',
@@ -877,9 +881,16 @@ export class DragRef<T = any> {
     });
 
     toggleNativeDragInteractions(preview, false);
-
     preview.classList.add('cdk-drag-preview');
     preview.setAttribute('dir', this._direction);
+
+    if (previewClass) {
+      if (Array.isArray(previewClass)) {
+        previewClass.forEach(className => preview.classList.add(className));
+      } else {
+        preview.classList.add(previewClass);
+      }
+    }
 
     return preview;
   }

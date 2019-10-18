@@ -1977,6 +1977,31 @@ describe('CdkDrag', () => {
           .toBeFalsy('Expected preview to be removed from the DOM if the transition timed out');
     }));
 
+    it('should be able to set a single class on a preview', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.componentInstance.previewClass = 'custom-class';
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+      startDraggingViaMouse(fixture, item);
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+      expect(preview.classList).toContain('custom-class');
+    }));
+
+    it('should be able to set multiple classes on a preview', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.componentInstance.previewClass = ['custom-class-1', 'custom-class-2'];
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+      startDraggingViaMouse(fixture, item);
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+      expect(preview.classList).toContain('custom-class-1');
+      expect(preview.classList).toContain('custom-class-2');
+    }));
+
     it('should emit the released event as soon as the item is released', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
@@ -2757,6 +2782,19 @@ describe('CdkDrag', () => {
       const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
 
       expect(preview.style.transform).toBe('translate3d(100px, 50px, 0px)');
+    }));
+
+    it('should be able to set a class on a custom preview', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZoneWithCustomPreview);
+      fixture.componentInstance.previewClass = 'custom-class';
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+      startDraggingViaMouse(fixture, item);
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+      expect(preview.classList).toContain('custom-preview');
+      expect(preview.classList).toContain('custom-class');
     }));
 
     it('should not throw when custom preview only has text', fakeAsync(() => {
@@ -4467,6 +4505,7 @@ const DROP_ZONE_FIXTURE_TEMPLATE = `
       cdkDrag
       [cdkDragData]="item"
       [cdkDragBoundary]="boundarySelector"
+      [cdkDragPreviewClass]="previewClass"
       [style.height.px]="item.height"
       [style.margin-bottom.px]="item.margin"
       style="width: 100%; background: red;">{{item.value}}</div>
@@ -4485,6 +4524,7 @@ class DraggableInDropZone {
   ];
   dropZoneId = 'items';
   boundarySelector: string;
+  previewClass: string | string[];
   sortedSpy = jasmine.createSpy('sorted spy');
   droppedSpy = jasmine.createSpy('dropped spy').and.callFake((event: CdkDragDrop<string[]>) => {
     moveItemInArray(this.items, event.previousIndex, event.currentIndex);
@@ -4604,6 +4644,7 @@ class DraggableInScrollableHorizontalDropZone extends DraggableInHorizontalDropZ
         cdkDrag
         [cdkDragConstrainPosition]="constrainPosition"
         [cdkDragBoundary]="boundarySelector"
+        [cdkDragPreviewClass]="previewClass"
         style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">
           {{item}}
 
@@ -4623,6 +4664,7 @@ class DraggableInDropZoneWithCustomPreview {
   items = ['Zero', 'One', 'Two', 'Three'];
   boundarySelector: string;
   renderCustomPreview = true;
+  previewClass: string | string[];
   constrainPosition: (point: Point) => Point;
 }
 

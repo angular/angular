@@ -145,6 +145,9 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
    */
   @Input('cdkDragConstrainPosition') constrainPosition?: (point: Point, dragRef: DragRef) => Point;
 
+  /** Class to be added to the preview element. */
+  @Input('cdkDragPreviewClass') previewClass: string | string[];
+
   /** Emits when the user starts dragging the item. */
   @Output('cdkDragStarted') started: EventEmitter<CdkDragStart> = new EventEmitter<CdkDragStart>();
 
@@ -343,6 +346,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
         ref.dragStartDelay = (typeof dragStartDelay === 'object' && dragStartDelay) ?
             dragStartDelay : coerceNumberProperty(dragStartDelay);
         ref.constrainPosition = this.constrainPosition;
+        ref.previewClass = this.previewClass;
         ref
           .withBoundaryElement(this._getBoundaryElement())
           .withPlaceholderTemplate(placeholder)
