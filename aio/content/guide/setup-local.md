@@ -104,8 +104,10 @@ to `http://localhost:4200/`.
 Your app greets you with a message:
 
 
-<figure>
-  <img src='generated/images/guide/setup-local/app-works.png' alt="Welcome to my-app!">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/setup-local/app-works.png' alt="Welcome to my-app!">
+  </div>
 </figure>
 
 

@@ -765,16 +765,20 @@ Once the app warms up, you'll see a row of navigation buttons
 and the *Heroes* view with its list of heroes.
 
 
-<figure>
-  <img src='generated/images/guide/router/hero-list.png' alt="Hero List">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/router/hero-list.png' alt="Hero List">
+  </div>
 </figure>
 
 
 
 Select one hero and the app takes you to a hero editing screen.
 
-<figure>
-  <img src='generated/images/guide/router/hero-detail.png' alt="Crisis Center Detail">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/router/hero-detail.png' alt="Crisis Center Detail">
+  </div>
 </figure>
 
 
@@ -790,8 +794,10 @@ Angular app navigation updates the browser history as normal web navigation does
 Now click the *Crisis Center* link for a list of ongoing crises.
 
 
-<figure>
-  <img src='generated/images/guide/router/crisis-center-list.png' alt="Crisis Center List">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/router/crisis-center-list.png' alt="Crisis Center List">
+  </div>
 </figure>
 
 
@@ -803,8 +809,10 @@ Alter the name of a crisis.
 Notice that the corresponding name in the crisis list does _not_ change.
 
 
-<figure>
-  <img src='generated/images/guide/router/crisis-center-detail.png' alt="Crisis Center Detail">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/router/crisis-center-detail.png' alt="Crisis Center Detail">
+  </div>
 </figure>
 
 
@@ -819,8 +827,10 @@ Click the browser back button or the "Heroes" link instead.
 Up pops a dialog box.
 
 
-<figure>
-  <img src='generated/images/guide/router/confirm-dialog.png' alt="Confirm Dialog">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/router/confirm-dialog.png' alt="Confirm Dialog">
+  </div>
 </figure>
 
 
@@ -842,8 +852,10 @@ Proceed to the first application milestone.
 Begin with a simple version of the app that navigates between two empty views.
 
 
-<figure>
-  <img src='generated/images/guide/router/router-1-anim.gif' alt="App in action">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/router/router-1-anim.gif' alt="App in action">
+  </div>
 </figure>
 
 {@a import}
@@ -928,8 +940,10 @@ Registering the `RouterModule.forRoot()` in the `AppModule` imports makes the `R
 The root `AppComponent` is the application shell. It has a title, a navigation bar with two links, and a router outlet where the router swaps components on and off the page. Here's what you get:
 
 
-<figure>
-  <img src='generated/images/guide/router/shell-and-outlet.png' alt="Shell">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/router/shell-and-outlet.png' alt="Shell">
+  </div>
 </figure>
 
 The router outlet serves as a placeholder when the routed components will be rendered below it.
@@ -1363,8 +1377,10 @@ from the <live-example name="toh-pt4" title="Tour of Heroes: Services example co
 Here's how the user will experience this version of the app:
 
 
-<figure>
-  <img src='generated/images/guide/router/router-2-anim.gif' alt="App in action">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/router/router-2-anim.gif' alt="App in action">
+  </div>
 </figure>
 
 
@@ -1944,8 +1960,10 @@ For example, when returning to the hero-detail.component.ts list from the hero d
 it would be nice if the viewed hero was preselected in the list.
 
 
-<figure>
-  <img src='generated/images/guide/router/selected-hero.png' alt="Selected hero">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/router/selected-hero.png' alt="Selected hero">
+  </div>
 </figure>
 
 
@@ -2129,8 +2147,10 @@ Add some styles to apply when the list item is selected.
 
 When the user navigates from the heroes list to the "Magneta" hero and back, "Magneta" appears selected:
 
-<figure>
-  <img src='generated/images/guide/router/selected-hero.png' alt="Selected List">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/router/selected-hero.png' alt="Selected List">
+  </div>
 </figure>
 
 
@@ -2523,8 +2543,10 @@ to conform to the following recommended pattern for Angular applications:
 If your app had many feature areas, the app component trees might look like this:
 
 
-<figure>
-  <img src='generated/images/guide/router/component-tree.png' alt="Component Tree">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/router/component-tree.png' alt="Component Tree">
+  </div>
 </figure>
 
 
@@ -2789,8 +2811,10 @@ It displays a simple form with a header, an input box for the message,
 and two buttons, "Send" and "Cancel".
 
 
-<figure>
-  <img src='generated/images/guide/router/contact-popup.png' alt="Contact popup">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/router/contact-popup.png' alt="Contact popup">
+  </div>
 </figure>
 
 

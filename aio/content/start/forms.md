@@ -73,8 +73,10 @@ Next, you'll add a checkout form at the bottom of the "Cart" page.
 
 After putting a few items in the cart, users can now review their items, enter name and address, and submit their purchase:
 
-<figure>
-  <img src='generated/images/guide/start/cart-with-items-and-form.png' alt="Cart page with checkout form">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/start/cart-with-items-and-form.png' alt="Cart page with checkout form">
+  </div>
 </figure>
 
 

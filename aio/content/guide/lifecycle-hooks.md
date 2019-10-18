@@ -291,8 +291,10 @@ The peek-a-boo exists to show how Angular calls the hooks in the expected order.
 
 This snapshot reflects the state of the log after the user clicked the *Create...* button and then the *Destroy...* button.
 
-<figure>
-  <img src="generated/images/guide/lifecycle-hooks/peek-a-boo.png" alt="Peek-a-boo">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/lifecycle-hooks/peek-a-boo.png" alt="Peek-a-boo">
+  </div>
 </figure>
 
 The sequence of log messages follows the prescribed hook calling order:
@@ -349,8 +351,10 @@ Here it is attached to the repeated hero `<div>`:
 Each spy's birth and death marks the birth and death of the attached hero `<div>`
 with an entry in the *Hook Log* as seen here:
 
-<figure>
-  <img src='generated/images/guide/lifecycle-hooks/spy-directive.gif' alt="Spy Directive">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/lifecycle-hooks/spy-directive.gif' alt="Spy Directive">
+  </div>
 </figure>
 
 Adding a hero results in a new hero `<div>`. The spy's `ngOnInit()` logs that event.
@@ -440,8 +444,10 @@ The host `OnChangesParentComponent` binds to them like this:
 
 Here's the sample in action as the user makes changes.
 
-<figure>
-  <img src='generated/images/guide/lifecycle-hooks/on-changes-anim.gif' alt="OnChanges">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/lifecycle-hooks/on-changes-anim.gif' alt="OnChanges">
+  </div>
 </figure>
 
 The log entries appear as the string value of the *power* property changes.
@@ -473,8 +479,10 @@ This code inspects certain _values of interest_, capturing and comparing their c
 It writes a special message to the log when there are no substantive changes to the `hero` or the `power`
 so you can see how often `DoCheck` is called. The results are illuminating:
 
-<figure>
-  <img src='generated/images/guide/lifecycle-hooks/do-check-anim.gif' alt="DoCheck">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/lifecycle-hooks/do-check-anim.gif' alt="DoCheck">
+  </div>
 </figure>
 
 While the `ngDoCheck()` hook can detect when the hero's `name` has changed, it has a frightful cost.
@@ -527,8 +535,10 @@ for one turn of the browser's JavaScript cycle and that's just long enough.
 
 Here's *AfterView* in action:
 
-<figure>
-  <img src='generated/images/guide/lifecycle-hooks/after-view-anim.gif' alt="AfterView">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/lifecycle-hooks/after-view-anim.gif' alt="AfterView">
+  </div>
 </figure>
 
 Notice that Angular frequently calls `AfterViewChecked()`, often when there are no changes of interest.
@@ -572,8 +582,10 @@ The `<ng-content>` tag is a *placeholder* for the external content.
 It tells Angular where to insert that content.
 In this case, the projected content is the `<app-child>` from the parent.
 
-<figure>
-  <img src='generated/images/guide/lifecycle-hooks/projected-child-view.png' alt="Projected Content">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/lifecycle-hooks/projected-child-view.png' alt="Projected Content">
+  </div>
 </figure>
 
 <div class="alert is-helpful">

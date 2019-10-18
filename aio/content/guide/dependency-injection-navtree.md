@@ -145,8 +145,10 @@ the same way you've done it before.
 
 Here's *Alex* and family in action.
 
-<figure>
-  <img src="generated/images/guide/dependency-injection-in-action/alex.png" alt="Alex in action">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/dependency-injection-in-action/alex.png" alt="Alex in action">
+  </div>
 </figure>
 
 
@@ -201,8 +203,10 @@ which *is* what parent means.
 Here's *Alice*, *Barry*, and family in action.
 
 
-<figure>
-  <img src="generated/images/guide/dependency-injection-in-action/alice.png" alt="Alice in action">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/dependency-injection-in-action/alice.png" alt="Alice in action">
+  </div>
 </figure>
 
 

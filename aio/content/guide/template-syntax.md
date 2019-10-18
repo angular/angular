@@ -969,8 +969,10 @@ template statement on the right.
 The following event binding listens for the button's click events, calling
 the component's `onSave()` method whenever a click occurs:
 
-<figure>
-  <img src='generated/images/guide/template-syntax/syntax-diagram.svg' alt="Syntax diagram">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/template-syntax/syntax-diagram.svg' alt="Syntax diagram">
+  </div>
 </figure>
 
 ### Target event
@@ -1306,8 +1308,10 @@ for example, the following changes the `<input>` value to uppercase:
 
 Here are all variations in action, including the uppercase version:
 
-<figure>
-  <img src='generated/images/guide/built-in-directives/ng-model-anim.gif' alt="NgModel variations">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/built-in-directives/ng-model-anim.gif' alt="NgModel variations">
+  </div>
 </figure>
 
 <hr/>
@@ -1512,8 +1516,10 @@ Here is an illustration of the `trackBy` effect.
 * With no `trackBy`, both buttons trigger complete DOM element replacement.
 * With `trackBy`, only changing the `id` triggers element replacement.
 
-<figure>
-  <img src="generated/images/guide/built-in-directives/ngfor-trackby.gif" alt="Animation of trackBy">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/built-in-directives/ngfor-trackby.gif" alt="Animation of trackBy">
+  </div>
 </figure>
 
 
@@ -1538,8 +1544,10 @@ Angular puts only the selected element into the DOM.
 
  <code-example path="built-in-directives/src/app/app.component.html" region="NgSwitch" header="src/app/app.component.html"></code-example>
 
-<figure>
-  <img src="generated/images/guide/built-in-directives/ngswitch.gif" alt="Animation of NgSwitch">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/built-in-directives/ngswitch.gif" alt="Animation of NgSwitch">
+  </div>
 </figure>
 
 `NgSwitch` is the controller directive. Bind it to an expression that returns
@@ -1695,8 +1703,10 @@ child component. So an `@Input()` allows data to be input _into_ the
 child component from the parent component.
 
 
-<figure>
-  <img src="generated/images/guide/inputs-outputs/input.svg" alt="Input data flow diagram">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/inputs-outputs/input.svg" alt="Input data flow diagram">
+  </div>
 </figure>
 
 To illustrate the use of `@Input()`, edit these parts of your app:
@@ -1742,8 +1752,10 @@ With `@Input()`, Angular passes the value for `currentItem` to the child so that
 
 The following diagram shows this structure:
 
-<figure>
-  <img src="generated/images/guide/inputs-outputs/input-diagram-target-source.svg" alt="Property binding diagram">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/inputs-outputs/input-diagram-target-source.svg" alt="Property binding diagram">
+  </div>
 </figure>
 
 The target in the square brackets, `[]`, is the property you decorate
@@ -1776,8 +1788,10 @@ the child _out_ to the parent.
 An `@Output()` property should normally be initialized to an Angular [`EventEmitter`](api/core/EventEmitter) with values flowing out of the component as [events](#event-binding).
 
 
-<figure>
-  <img src="generated/images/guide/inputs-outputs/output.svg" alt="Output diagram">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/inputs-outputs/output.svg" alt="Output diagram">
+  </div>
 </figure>
 
 Just like with `@Input()`, you can use `@Output()`
@@ -1918,8 +1932,10 @@ The target, `item`, which is an `@Input()` property in the child component class
 The following diagram is of an `@Input()` and an `@Output()` on the same
 child component and shows the different parts of each:
 
-<figure>
-  <img src="generated/images/guide/inputs-outputs/input-output-diagram.svg" alt="Input/Output diagram">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/inputs-outputs/input-output-diagram.svg" alt="Input/Output diagram">
+  </div>
 </figure>
 
 As the diagram shows, use inputs and outputs together in the same manner as using them separately. Here, the child selector is `<app-input-output>` with `item` and `deleteRequest` being `@Input()` and `@Output()`

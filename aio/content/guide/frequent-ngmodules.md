@@ -111,8 +111,10 @@ directives in `CommonModule`; they don’t need to re-install app-wide providers
 If you do import `BrowserModule` into a lazy loaded feature module,
 Angular returns an error telling you to use `CommonModule` instead.
 
-<figure>
- <img src="generated/images/guide/frequent-ngmodules/browser-module-error.gif" width=750 alt="BrowserModule error">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/frequent-ngmodules/browser-module-error.gif" width=750 alt="BrowserModule error">
+  </div>
 </figure>
 
 <hr />

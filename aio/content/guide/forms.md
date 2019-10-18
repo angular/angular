@@ -45,8 +45,10 @@ otherwise wrestle with yourself.
 
 You'll learn to build a template-driven form that looks like this:
 
-<figure>
-  <img src="generated/images/guide/forms/hero-form-1.png" alt="Clean Form">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/forms/hero-form-1.png" alt="Clean Form">
+  </div>
 </figure>
 
 The *Hero Employment Agency* uses this form to maintain personal information about heroes.
@@ -56,8 +58,10 @@ Two of the three fields on this form are required. Required fields have a green 
 
 If you delete the hero name, the form displays a validation error in an attention-grabbing style:
 
-<figure>
-  <img src="generated/images/guide/forms/hero-form-2.png" alt="Invalid, Name Required">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/forms/hero-form-2.png" alt="Invalid, Name Required">
+  </div>
 </figure>
 
 Note that the *Submit* button is disabled, and the "required" bar to the left of the input control changes from green to red.
@@ -272,8 +276,10 @@ you display its name using the interpolation syntax.
 
 Running the app right now would be disappointing.
 
-<figure>
-  <img src="generated/images/guide/forms/hero-form-3.png" alt="Early form with no binding">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/forms/hero-form-3.png" alt="Early form with no binding">
+  </div>
 </figure>
 
 
@@ -335,8 +341,10 @@ adding and deleting characters, you'd see them appear and disappear
 from the interpolated text.
 At some point it might look like this:
 
-<figure>
-  <img src="generated/images/guide/forms/ng-model-in-action.png" alt="ngModel in action">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/forms/ng-model-in-action.png" alt="ngModel in action">
+  </div>
 </figure>
 
 The diagnostic is evidence that values really are flowing from the input box to the model and
@@ -383,8 +391,10 @@ After revision, the core of the form should look like this:
 
 If you run the app now and change every hero model property, the form might display like this:
 
-<figure>
-  <img src="generated/images/guide/forms/ng-model-in-action-2.png" alt="ngModel in action">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/forms/ng-model-in-action-2.png" alt="ngModel in action">
+  </div>
 </figure>
 
 The diagnostic near the top of the form
@@ -483,14 +493,18 @@ Follow these steps *precisely*:
 
 The actions and effects are as follows:
 
-<figure>
-  <img src="generated/images/guide/forms/control-state-transitions-anim.gif" alt="Control State Transition">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/forms/control-state-transitions-anim.gif" alt="Control State Transition">
+  </div>
 </figure>
 
 You should see the following transitions and class names:
 
-<figure>
-  <img src="generated/images/guide/forms/ng-control-class-changes.png" alt="Control state transitions">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/forms/ng-control-class-changes.png" alt="Control state transitions">
+  </div>
 </figure>
 
 The `ng-valid`/`ng-invalid` pair is the most interesting, because you want to send a
@@ -504,8 +518,10 @@ To create such visual feedback, add definitions for the `ng-*` CSS classes.
 You can mark required fields and invalid data at the same time with a colored bar
 on the left of the input box:
 
-<figure>
-  <img src="generated/images/guide/forms/validity-required-indicator.png" alt="Invalid Form">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/forms/validity-required-indicator.png" alt="Invalid Form">
+  </div>
 </figure>
 
 You achieve this effect by adding these class definitions to a new `forms.css` file
@@ -525,8 +541,10 @@ Leverage the control's state to reveal a helpful message.
 
 When the user deletes the name, the form should look like this:
 
-<figure>
-  <img src="generated/images/guide/forms/name-required-error.png" alt="Name required">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/forms/name-required-error.png" alt="Name required">
+  </div>
 </figure>
 
 To achieve this effect, extend the `<input>` tag with the following:
