@@ -51,8 +51,10 @@ You define a component's view with its companion template. A template is a form 
 
 Views are typically arranged hierarchically, allowing you to modify or show and hide entire UI sections or pages as a unit. The template immediately associated with a component defines that component's *host view*. The component can also define a *view hierarchy*, which contains *embedded views*, hosted by other components.
 
-<figure>
-<img src="generated/images/guide/architecture/component-tree.png" alt="Component tree" class="left">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/architecture/component-tree.png" alt="Component tree" class="left">
+  </div>  
 </figure>
 
 A view hierarchy can include views from components in the same NgModule, but it also can (and often does) include views from components that are defined in different NgModules.
@@ -81,8 +83,10 @@ Angular supports *two-way data binding*, a mechanism for coordinating the parts 
 
 The following diagram shows the four forms of data binding markup. Each form has a direction: to the DOM, from the DOM, or both.
 
-<figure>
-<img src="generated/images/guide/architecture/databinding.png" alt="Data Binding" class="left">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/architecture/databinding.png" alt="Data Binding" class="left">
+  </div>
 </figure>
 
 This example from the `HeroListComponent` template uses three of these forms.
@@ -110,14 +114,18 @@ as with event binding.
 Angular processes *all* data bindings once for each JavaScript event cycle,
 from the root of the application component tree through all child components.
 
-<figure>
-  <img src="generated/images/guide/architecture/component-databinding.png" alt="Data Binding" class="left">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/architecture/component-databinding.png" alt="Data Binding" class="left">
+  </div>
 </figure>
 
 Data binding plays an important role in communication between a template and its component, and is also important for communication between parent and child components.
 
-<figure>
-  <img src="generated/images/guide/architecture/parent-child-binding.png" alt="Parent/Child binding" class="left">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/architecture/parent-child-binding.png" alt="Parent/Child binding" class="left">
+  </div>
 </figure>
 
 ### Pipes

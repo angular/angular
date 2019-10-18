@@ -196,10 +196,10 @@ It's difficult to identify the _selected hero_ in the list when all `<li>` eleme
 
 If the user clicks "Magneta", that hero should render with a distinctive but subtle background color like this:
 
-<figure>
-
-  <img src='generated/images/guide/toh/heroes-list-selected.png' alt="Selected hero">
-
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/toh/heroes-list-selected.png' alt="Selected hero">
+  </div>
 </figure>
 
 That _selected hero_ coloring is the work of the `.selected` CSS class in the [styles you added earlier](#styles).

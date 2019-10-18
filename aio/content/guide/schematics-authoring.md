@@ -359,8 +359,10 @@ When you add a new named schematic to this collection, it is automatically added
 In addition to the name and description, each schematic has a `factory` property that identifies the schematic’s entry point.
 In the example, you invoke the schematic's defined functionality by calling the `helloWorld()` function in the main file,  `hello-world/index.ts`.
 
-<figure>
-  <img src="generated/images/guide/schematics/collection-files.gif" alt="overview">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/schematics/collection-files.gif" alt="overview">
+  </div>
 </figure>
 
 Each named schematic in the collection has the following main parts.
