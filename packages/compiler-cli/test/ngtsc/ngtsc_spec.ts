@@ -1486,11 +1486,12 @@ runInEachFileSystem(os => {
             static ɵmod: ɵɵNgModuleDefWithMeta<RouterModule, never, never, never>;
           }
         `);
-
         const errors = env.driveDiagnostics();
         expect(trim(errors[0].messageText as string))
             .toContain(
-                `ModuleWithProviders annotation of RouterModule is missing its generic type argument in NgModule of TestModule`);
+                `RouterModule.forRoot returns a ModuleWithProviders type without a generic type argument. ` +
+                `Please add a generic type argument to the ModuleWithProviders type. If this ` +
+                `occurrence is in library code you don't control, please contact the library authors.`);
       });
 
       it('should extract the generic type if it is provided as qualified type name', () => {

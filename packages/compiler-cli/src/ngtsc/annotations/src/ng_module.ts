@@ -89,7 +89,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     }
 
     const moduleResolvers = combineResolvers([
-      ref => this._extractModuleFromModuleWithProvidersFn(ref.node, name),
+      ref => this._extractModuleFromModuleWithProvidersFn(ref.node),
       forwardRefResolver,
     ]);
 
@@ -353,12 +353,12 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
    * Given a `FunctionDeclaration`, `MethodDeclaration` or `FunctionExpression`, check if it is
    * typed as a `ModuleWithProviders` and return an expression referencing the module if available.
    */
-  private _extractModuleFromModuleWithProvidersFn(
-      node: ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression,
-      className: string): ts.Expression|null {
+  private _extractModuleFromModuleWithProvidersFn(node: ts.FunctionDeclaration|
+                                                  ts.MethodDeclaration|
+                                                  ts.FunctionExpression): ts.Expression|null {
     const type = node.type || null;
-    return type && (this._reflectModuleFromTypeParam(type, node, className) ||
-                    this._reflectModuleFromLiteralType(type));
+    return type &&
+        (this._reflectModuleFromTypeParam(type, node) || this._reflectModuleFromLiteralType(type));
   }
 
   /**
@@ -368,8 +368,8 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
    * @returns the identifier of the NgModule type if found, or null otherwise.
    */
   private _reflectModuleFromTypeParam(
-      type: ts.TypeNode, node: ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression,
-      className: string): ts.Expression|null {
+      type: ts.TypeNode,
+      node: ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression): ts.Expression|null {
     // Examine the type of the function to see if it's a ModuleWithProviders reference.
     if (!ts.isTypeReferenceNode(type)) {
       return null;
@@ -397,13 +397,15 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     // If there's no type parameter specified, bail.
     if (type.typeArguments === undefined || type.typeArguments.length !== 1) {
-      const providerName = ts.isMethodDeclaration(node) && ts.isClassDeclaration(node.parent) ?
-          node.parent.name :
-          node.name;
+      const parent =
+          ts.isMethodDeclaration(node) && ts.isClassDeclaration(node.parent) ? node.parent : null;
+      const symbolName = (parent && parent.name ? parent.name.getText() + '.' : '') +
+          (node.name ? node.name.getText() : 'anonymous');
       throw new FatalDiagnosticError(
           ErrorCode.NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC, type,
-          `ModuleWithProviders annotation of ${providerName ? providerName.getText() : 'provider'} ` +
-              `is missing its generic type argument in NgModule of ${className}`);
+          `${symbolName} returns a ModuleWithProviders type without a generic type argument. ` +
+              `Please add a generic type argument to the ModuleWithProviders type. If this ` +
+              `occurrence is in library code you don't control, please contact the library authors.`);
     }
 
     const arg = type.typeArguments[0];
