@@ -82,6 +82,8 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | [`wtfStartTimeRange`](api/core/wtfStartTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
 | [`wtfEndTimeRange`](api/core/wtfEndTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
 | [`wtfLeave`](api/core/wtfLeave) | none | v8 | See [Web Tracing Framework](#wtf) |
+| [`entryComponents`](api/core/NgModule#entryComponents) | none | v9 | See [`entryComponents`](#entryComponents) |
+| [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS) | none | v9 | See [`ANALYZE_FOR_ENTRY_COMPONENTS`](#entryComponents) |
 
 
 {@a forms}
@@ -317,6 +319,10 @@ and image processing). Learn more in the
 As of Angular version 8, all  `platform-webworker` APIs are deprecated.
 This includes both packages: `@angular/platform-webworker` and
 `@angular/platform-webworker-dynamic`.
+
+{@a entryComponents}
+### `entryComponents` and `ANALYZE_FOR_ENTRY_COMPONENTS` no longer required
+Previously, the `entryComponents` array in the `NgModule` definition was used to tell the compiler which components would be created and inserted dynamically. With Ivy, this isn't a requirement anymore and the `entryComponents` array can be removed from existing module declarations. The same applies to the `ANALYZE_FOR_ENTRY_COMPONENTS` injection token.
 
 
 ## Angular version 9 schematics
