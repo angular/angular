@@ -19,7 +19,7 @@ import {getFactoryDef} from './definition';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
 import {DirectiveDef, FactoryFn} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE, isFactory} from './interfaces/injector';
-import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeProviderIndexes, TNodeType} from './interfaces/node';
+import {AttributeMarker, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeProviderIndexes, TNodeType} from './interfaces/node';
 import {isComponentDef, isComponentHost} from './interfaces/type_checks';
 import {DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
@@ -528,7 +528,7 @@ export function locateDirectiveOrProvider<T>(
 * instantiates the `injectable` and caches the value.
 */
 export function getNodeInjectable(
-    tData: TData, lView: LView, index: number, tNode: TElementNode): any {
+    tData: TData, lView: LView, index: number, tNode: TDirectiveHostNode): any {
   let value = lView[index];
   if (isFactory(value)) {
     const factory: NodeInjectorFactory = value;
