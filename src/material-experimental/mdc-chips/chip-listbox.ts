@@ -70,7 +70,7 @@ export const MAT_CHIP_LISTBOX_CONTROL_VALUE_ACCESSOR: any = {
     '[tabIndex]': 'empty ? -1 : tabIndex',
     // TODO: replace this binding with use of AriaDescriber
     '[attr.aria-describedby]': '_ariaDescribedby || null',
-    '[attr.aria-required]': 'required.toString()',
+    '[attr.aria-required]': 'role ? required : null',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.aria-multiselectable]': 'multiple',
     '[attr.aria-orientation]': 'ariaOrientation',

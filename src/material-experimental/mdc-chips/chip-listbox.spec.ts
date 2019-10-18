@@ -93,6 +93,22 @@ describe('MatChipListbox', () => {
 
         expect(chips.toArray().every(chip => chip.disabled)).toBe(true);
       }));
+
+      it('should not set a role on the grid when the list is empty', () => {
+        testComponent.chips = [];
+        fixture.detectChanges();
+
+        expect(chipListboxNativeElement.hasAttribute('role')).toBe(false);
+      });
+
+      it('should not set aria-required when it does not have a role', () => {
+        testComponent.chips = [];
+        fixture.detectChanges();
+
+        expect(chipListboxNativeElement.hasAttribute('role')).toBe(false);
+        expect(chipListboxNativeElement.hasAttribute('aria-required')).toBe(false);
+      });
+
     });
 
     describe('with selected chips', () => {

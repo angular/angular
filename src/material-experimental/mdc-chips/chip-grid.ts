@@ -88,7 +88,7 @@ const _MatChipGridMixinBase: CanUpdateErrorStateCtor & typeof MatChipGridBase =
     '[tabIndex]': '_chips && _chips.length === 0 ? -1 : tabIndex',
     // TODO: replace this binding with use of AriaDescriber
     '[attr.aria-describedby]': '_ariaDescribedby || null',
-    '[attr.aria-required]': 'required.toString()',
+    '[attr.aria-required]': 'role ? required : null',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.aria-invalid]': 'errorState',
     '[class.mat-mdc-chip-list-disabled]': 'disabled',

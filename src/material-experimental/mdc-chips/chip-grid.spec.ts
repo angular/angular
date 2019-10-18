@@ -96,6 +96,22 @@ describe('MatChipGrid', () => {
 
         expect(chips.toArray().every(chip => chip.disabled)).toBe(true);
       }));
+
+      it('should not set a role on the grid when the list is empty', () => {
+        testComponent.chips = [];
+        fixture.detectChanges();
+
+        expect(chipGridNativeElement.hasAttribute('role')).toBe(false);
+      });
+
+      it('should not set aria-required when it does not have a role', () => {
+        testComponent.chips = [];
+        fixture.detectChanges();
+
+        expect(chipGridNativeElement.hasAttribute('role')).toBe(false);
+        expect(chipGridNativeElement.hasAttribute('aria-required')).toBe(false);
+      });
+
     });
 
     describe('focus behaviors', () => {

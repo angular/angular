@@ -132,6 +132,14 @@ describe('MatChipList', () => {
 
         expect(chipListNativeElement.getAttribute('role')).toBeNull('Expect no role attribute');
       });
+
+      it('should not have aria-required when it has no role', () => {
+        fixture.componentInstance.foods = [];
+        fixture.detectChanges();
+
+        expect(chipListNativeElement.hasAttribute('role')).toBe(false);
+        expect(chipListNativeElement.hasAttribute('aria-required')).toBe(false);
+      });
     });
 
     describe('focus behaviors', () => {
