@@ -1096,14 +1096,27 @@ function instantiateAllDirectives(tView: TView, lView: LView, tNode: TDirectiveH
   if (!tView.firstTemplatePass) {
     getOrCreateNodeInjectorForNode(tNode, lView);
   }
+
   for (let i = start; i < end; i++) {
     const def = tView.data[i] as DirectiveDef<any>;
-    if (isComponentDef(def)) {
-      assertNodeOfPossibleTypes(tNode, TNodeType.Element);
-      addComponentLogic(lView, tNode as TElementNode, def);
+    const isComponent = isComponentDef(def);
+
+    if (isComponent) {
+      ngDevMode && assertNodeOfPossibleTypes(tNode, TNodeType.Element);
+      addComponentLogic(lView, tNode as TElementNode, def as ComponentDef<any>);
     }
+
     const directive = getNodeInjectable(tView.data, lView, i, tNode);
-    postProcessDirective(lView, tNode, directive, def, i - start);
+
+    postProcessBaseDirective(lView, tNode, directive);
+    if (tNode.initialInputs !== null) {
+      setInputsFromAttrs(lView, i - start, directive, def, tNode);
+    }
+
+    if (isComponent) {
+      const componentView = getComponentLViewByIndex(tNode.index, lView);
+      componentView[CONTEXT] = directive;
+    }
   }
 }
 
@@ -1167,23 +1180,6 @@ export function generateExpandoInstructionBlock(
   const providerCount = tView.data.length - providerStartIndex;
   (tView.expandoInstructions || (tView.expandoInstructions = [
    ])).push(elementIndex, providerCount, directiveCount);
-}
-
-/**
- * Process a directive on the current node after its creation.
- */
-function postProcessDirective<T>(
-    lView: LView, hostTNode: TNode, directive: T, def: DirectiveDef<T>,
-    directiveDefIdx: number): void {
-  postProcessBaseDirective(lView, hostTNode, directive);
-  if (hostTNode.initialInputs !== null) {
-    setInputsFromAttrs(lView, directiveDefIdx, directive, def, hostTNode);
-  }
-
-  if (isComponentDef(def)) {
-    const componentView = getComponentLViewByIndex(hostTNode.index, lView);
-    componentView[CONTEXT] = directive;
-  }
 }
 
 /**
