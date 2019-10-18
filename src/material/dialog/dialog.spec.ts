@@ -1148,6 +1148,43 @@ describe('MatDialog', () => {
       document.body.removeChild(button);
     }));
 
+    it('should not move focus if it was moved outside the dialog while animating', fakeAsync(() => {
+      // Create a element that has focus before the dialog is opened.
+      const button = document.createElement('button');
+      const otherButton = document.createElement('button');
+      const body = document.body;
+      button.id = 'dialog-trigger';
+      otherButton.id = 'other-button';
+      body.appendChild(button);
+      body.appendChild(otherButton);
+      button.focus();
+
+      const dialogRef = dialog.open(PizzaMsg, {viewContainerRef: testViewContainerRef });
+
+      flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      expect(document.activeElement!.id)
+          .not.toBe('dialog-trigger', 'Expected the focus to change when dialog was opened.');
+
+      // Start the closing sequence and move focus out of dialog.
+      dialogRef.close();
+      otherButton.focus();
+
+      expect(document.activeElement!.id)
+          .toBe('other-button', 'Expected focus to be on the alternate button.');
+
+      flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      flush();
+
+      expect(document.activeElement!.id)
+          .toBe('other-button', 'Expected focus to stay on the alternate button.');
+
+      body.removeChild(button);
+      body.removeChild(otherButton);
+    }));
 
   });
 

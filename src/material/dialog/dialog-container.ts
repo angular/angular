@@ -71,6 +71,8 @@ export function throwMatDialogContentAlreadyAttachedError() {
   },
 })
 export class MatDialogContainer extends BasePortalOutlet {
+  private _document: Document;
+
   /** The portal outlet inside of this container into which the dialog content will be loaded. */
   @ViewChild(CdkPortalOutlet, {static: true}) _portalOutlet: CdkPortalOutlet;
 
@@ -96,12 +98,13 @@ export class MatDialogContainer extends BasePortalOutlet {
     private _elementRef: ElementRef,
     private _focusTrapFactory: FocusTrapFactory,
     private _changeDetectorRef: ChangeDetectorRef,
-    @Optional() @Inject(DOCUMENT) private _document: any,
+    @Optional() @Inject(DOCUMENT) _document: any,
     /** The dialog configuration. */
     public _config: MatDialogConfig) {
 
     super();
     this._ariaLabelledBy = _config.ariaLabelledBy || null;
+    this._document = _document;
   }
 
   /**
@@ -163,7 +166,17 @@ export class MatDialogContainer extends BasePortalOutlet {
 
     // We need the extra check, because IE can set the `activeElement` to null in some cases.
     if (this._config.restoreFocus && toFocus && typeof toFocus.focus === 'function') {
-      toFocus.focus();
+      const activeElement = this._document.activeElement;
+      const element = this._elementRef.nativeElement;
+
+      // Make sure that focus is still inside the dialog or is on the body (usually because a
+      // non-focusable element like the backdrop was clicked) before moving it. It's possible that
+      // the consumer moved it themselves before the animation was done, in which case we shouldn't
+      // do anything.
+      if (!activeElement || activeElement === this._document.body || activeElement === element ||
+        element.contains(activeElement)) {
+        toFocus.focus();
+      }
     }
 
     if (this._focusTrap) {
