@@ -234,22 +234,6 @@ describe('CachedFileSystem', () => {
     });
   });
 
-  describe('mkdir()', () => {
-    it('should call delegate', () => {
-      const spy = spyOn(delegate, 'mkdir');
-      fs.mkdir(xyzPath);
-      expect(spy).toHaveBeenCalledWith(xyzPath);
-    });
-
-    it('should update the "exists" cache', () => {
-      spyOn(delegate, 'mkdir');
-      const existsSpy = spyOn(delegate, 'exists');
-      fs.mkdir(xyzPath);
-      expect(fs.exists(xyzPath)).toEqual(true);
-      expect(existsSpy).not.toHaveBeenCalled();
-    });
-  });
-
   describe('ensureDir()', () => {
     it('should call delegate', () => {
       const ensureDirSpy = spyOn(delegate, 'ensureDir');
