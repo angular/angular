@@ -11,8 +11,8 @@ import {Injector} from '@angular/core';
 import {LoadedRouterConfig, RunGuardsAndResolvers} from '../config';
 import {ChildrenOutletContexts, OutletContext} from '../router_outlet_context';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, equalParamsAndUrlSegments} from '../router_state';
-import {equalPath} from '../url_tree';
-import {forEach, shallowEqual} from '../utils/collection';
+import {equalPath, equalQueryParams} from '../url_tree';
+import {forEach} from '../utils/collection';
 import {TreeNode, nodeChildrenAsMap} from '../utils/tree';
 
 export class CanActivate {
@@ -156,14 +156,14 @@ function shouldRunGuardsAndResolvers(
 
     case 'pathParamsOrQueryParamsChange':
       return !equalPath(curr.url, future.url) ||
-          !shallowEqual(curr.queryParams, future.queryParams);
+          !equalQueryParams(curr.queryParams, future.queryParams);
 
     case 'always':
       return true;
 
     case 'paramsOrQueryParamsChange':
       return !equalParamsAndUrlSegments(curr, future) ||
-          !shallowEqual(curr.queryParams, future.queryParams);
+          !equalQueryParams(curr.queryParams, future.queryParams);
 
     case 'paramsChange':
     default:

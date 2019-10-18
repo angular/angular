@@ -12,7 +12,7 @@ import {map} from 'rxjs/operators';
 
 import {Data, ResolveData, Route} from './config';
 import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
-import {UrlSegment, UrlSegmentGroup, UrlTree, equalSegments} from './url_tree';
+import {UrlSegment, UrlSegmentGroup, UrlTree, equalQueryParams, equalSegments} from './url_tree';
 import {shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
@@ -386,7 +386,7 @@ export function advanceActivatedRoute(route: ActivatedRoute): void {
     const currentSnapshot = route.snapshot;
     const nextSnapshot = route._futureSnapshot;
     route.snapshot = nextSnapshot;
-    if (!shallowEqual(currentSnapshot.queryParams, nextSnapshot.queryParams)) {
+    if (!equalQueryParams(currentSnapshot.queryParams, nextSnapshot.queryParams)) {
       (<any>route.queryParams).next(nextSnapshot.queryParams);
     }
     if (currentSnapshot.fragment !== nextSnapshot.fragment) {

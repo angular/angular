@@ -109,3 +109,16 @@ export function wrapIntoObservable<T>(value: T | Promise<T>| Observable<T>): Obs
 
   return of (value);
 }
+
+export function areArraysEqual(arr1: any[], arr2: any[]): boolean {
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+
+  return arr1.every((val, index) => {
+    if (Array.isArray(val) && Array.isArray(arr2[index])) {
+      return areArraysEqual(val, arr2[index]);
+    }
+    return val === arr2[index];
+  });
+}

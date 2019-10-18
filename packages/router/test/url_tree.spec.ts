@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DefaultUrlSerializer, containsTree} from '../src/url_tree';
+import {DefaultUrlSerializer, containsTree, equalQueryParams} from '../src/url_tree';
 
 describe('UrlTree', () => {
   const serializer = new DefaultUrlSerializer();
@@ -41,9 +41,21 @@ describe('UrlTree', () => {
         expect(containsTree(t1, t2, true)).toBe(true);
       });
 
+      it('should return true when queryParams are the same array values', () => {
+        const t1 = serializer.parse('/one/two?test=1&test=2&page=5');
+        const t2 = serializer.parse('/one/two?test=1&test=2&page=5');
+        expect(containsTree(t1, t2, true)).toBe(true);
+      });
+
       it('should return false when queryParams are not the same', () => {
         const t1 = serializer.parse('/one/two?test=1&page=5');
         const t2 = serializer.parse('/one/two?test=1');
+        expect(containsTree(t1, t2, true)).toBe(false);
+      });
+
+      it('should return false when queryParams are not the same array values', () => {
+        const t1 = serializer.parse('/one/two?test=1&test=2&page=5');
+        const t2 = serializer.parse('/one/two?test=1&test=3&page=5');
         expect(containsTree(t1, t2, true)).toBe(false);
       });
 
@@ -115,6 +127,12 @@ describe('UrlTree', () => {
         expect(containsTree(t1, t2, false)).toBe(true);
       });
 
+      it('should return true when queryParams are the same array values', () => {
+        const t1 = serializer.parse('/one/two?test=1&test=2&page=5');
+        const t2 = serializer.parse('/one/two?test=1&test=2&page=5');
+        expect(containsTree(t1, t2, false)).toBe(true);
+      });
+
       it('should return true when container contains containees queryParams', () => {
         const t1 = serializer.parse('/one/two?test=1&u=5');
         const t2 = serializer.parse('/one/two?u=5');
@@ -139,11 +157,29 @@ describe('UrlTree', () => {
         expect(containsTree(t1, t2, false)).toBe(false);
       });
 
+      it('should return false when containee has different array values of queryParams', () => {
+        const t1 = serializer.parse('/one/two?test=1&test=2&page=5');
+        const t2 = serializer.parse('/one/two?test=1&test=3&page=5');
+        expect(containsTree(t1, t2, false)).toBe(false);
+      });
+
       it('should return false when containee has more queryParams than container', () => {
         const t1 = serializer.parse('/one/two?page=5');
         const t2 = serializer.parse('/one/two?page=5&test=1');
         expect(containsTree(t1, t2, false)).toBe(false);
       });
+    });
+  });
+
+  describe('equalQueryParams', () => {
+    it('should return true for the same params', () => {
+      expect(equalQueryParams({'a': '1', 'b': '2'}, {'a': '1', 'b': '2'})).toBe(true);
+      expect(equalQueryParams({'a': ['1', '2', '3']}, {'a': ['1', '2', '3']})).toBe(true);
+    });
+
+    it('should return false for different arrays', () => {
+      expect(equalQueryParams({'a': '1', 'b': '2'}, {'a': '1', 'b': '3'})).toBe(false);
+      expect(equalQueryParams({'a': ['1', '2', '3']}, {'a': ['1', '2', '4']})).toBe(false);
     });
   });
 });

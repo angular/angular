@@ -7,7 +7,7 @@
  */
 
 import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
-import {forEach, shallowEqual} from './utils/collection';
+import {areArraysEqual, forEach, shallowEqual} from './utils/collection';
 
 export function createEmptyUrlTree() {
   return new UrlTree(new UrlSegmentGroup([], {}), {}, null);
@@ -23,9 +23,17 @@ export function containsTree(container: UrlTree, containee: UrlTree, exact: bool
       containsSegmentGroup(container.root, containee.root);
 }
 
-function equalQueryParams(container: Params, containee: Params): boolean {
-  // TODO: This does not handle array params correctly.
-  return shallowEqual(container, containee);
+export function equalQueryParams(container: Params, containee: Params): boolean {
+  // Casting Object.keys return values to include `undefined` as there are some cases
+  // in IE 11 where this can happen. Cannot provide a test because the behavior only
+  // exists in certain circumstances in IE 11, therefore doing this cast ensures the
+  // logic is correct for when this edge case is hit.
+  const k1 = Object.keys(container) as string[] | undefined;
+  const k2 = Object.keys(containee) as string[] | undefined;
+  if (!k1 || !k2 || k1.length != k2.length) {
+    return false;
+  }
+  return k1.every(key => equalQueryParam(container[key], containee[key]));
 }
 
 function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
@@ -39,9 +47,17 @@ function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGro
 }
 
 function containsQueryParams(container: Params, containee: Params): boolean {
-  // TODO: This does not handle array params correctly.
-  return Object.keys(containee).length <= Object.keys(container).length &&
-      Object.keys(containee).every(key => containee[key] === container[key]);
+  // Casting Object.keys return values to include `undefined` as there are some cases
+  // in IE 11 where this can happen. Cannot provide a test because the behavior only
+  // exists in certain circumstances in IE 11, therefore doing this cast ensures the
+  // logic is correct for when this edge case is hit.
+  const k1 = Object.keys(container) as string[] | undefined;
+  const k2 = Object.keys(containee) as string[] | undefined;
+  if (!k1 || !k2 || k1.length < k2.length) {
+    return false;
+  }
+
+  return k2.every(key => equalQueryParam(container[key], containee[key]));
 }
 
 function containsSegmentGroup(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
@@ -71,6 +87,16 @@ function containsSegmentGroupHelper(
     if (!container.children[PRIMARY_OUTLET]) return false;
     return containsSegmentGroupHelper(container.children[PRIMARY_OUTLET], containee, next);
   }
+}
+
+function equalQueryParam(p1: any, p2: any) {
+  if (p1 === p2) {
+    return true;
+  }
+  if (Array.isArray(p1) && Array.isArray(p2)) {
+    return areArraysEqual(p1, p2);
+  }
+  return false;
 }
 
 /**
