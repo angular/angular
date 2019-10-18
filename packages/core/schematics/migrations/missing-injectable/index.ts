@@ -24,6 +24,10 @@ export default function(): Rule {
     const failures: string[] = [];
 
     ctx.logger.info('------ Missing @Injectable migration ------');
+    ctx.logger.info('In Angular 9, enforcement of @Injectable decorators for DI is a bit ');
+    ctx.logger.info('stricter. Read more about this in the dedicated guide: ');
+    ctx.logger.info('https://v9.angular.io/guide/migration-injectable');
+
     if (!buildPaths.length && !testPaths.length) {
       throw new SchematicsException(
           'Could not find any tsconfig file. Cannot add the "@Injectable" decorator to providers ' +
