@@ -69,8 +69,10 @@ Let's animate a simple transition that changes a single HTML element from one st
 
 In HTML, these attributes are set using ordinary CSS styles such as color and opacity. In Angular, use the `style()` function to specify a set of CSS styles for use with animations. You can collect a set of styles in an animation state, and give the state a name, such as `open` or `closed`.
 
-<figure>
-<img src="generated/images/guide/animations/open-closed.png" alt="open and closed states">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/animations/open-closed.png" alt="open and closed states">
+  </div>
 </figure>
 
 ### Animation state and styles
@@ -166,8 +168,10 @@ The `trigger()` function describes the property name to watch for changes. When 
 
 In this example, we'll name the trigger `openClose`, and attach it to the `button` element. The trigger describes the open and closed states, and the timings for the two transitions.
 
-<figure>
-<img src="generated/images/guide/animations/triggering-the-animation.png" alt="triggering the animation">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/animations/triggering-the-animation.png" alt="triggering the animation">
+  </div>
 </figure>
 
 <div class="alert is-helpful">

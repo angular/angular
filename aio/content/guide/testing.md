@@ -41,8 +41,10 @@ It shows that Karma ran three tests that all passed.
 
 A chrome browser also opens and displays the test output in the "Jasmine HTML Reporter" like this.
 
-<figure>
-  <img src='generated/images/guide/testing/initial-jasmine-html-reporter.png' alt="Jasmine HTML Reporter in the browser">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/testing/initial-jasmine-html-reporter.png' alt="Jasmine HTML Reporter in the browser">
+  </div>
 </figure>
 
 Most people find this browser output easier to read than the console log.
@@ -2256,8 +2258,10 @@ tests with the `RouterTestingModule`.
 
 The `HeroDetailComponent` is a simple view with a title, two hero fields, and two buttons.
 
-<figure>
-  <img src='generated/images/guide/testing/hero-detail.component.png' alt="HeroDetailComponent in action">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/testing/hero-detail.component.png' alt="HeroDetailComponent in action">
+  </div>
 </figure>
 
 But there's plenty of template complexity even in this simple form.
@@ -2685,8 +2689,10 @@ A better solution is to create an artificial test component that demonstrates al
 
 <code-example path="testing/src/app/shared/highlight.directive.spec.ts" region="test-component" header="app/shared/highlight.directive.spec.ts (TestComponent)"></code-example>
 
-<figure>
-  <img src='generated/images/guide/testing/highlight-directive-spec.png' alt="HighlightDirective spec in action">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/testing/highlight-directive-spec.png' alt="HighlightDirective spec in action">
+  </div>
 </figure>
 
 <div class="alert is-helpful">
@@ -2766,8 +2772,10 @@ Debug specs in the browser in the same way that you debug an application.
 1. Set a breakpoint in the test.
 1. Refresh the browser, and it stops at the breakpoint.
 
-<figure>
-  <img src='generated/images/guide/testing/karma-1st-spec-debug.png' alt="Karma debugging">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/testing/karma-1st-spec-debug.png' alt="Karma debugging">
+  </div>
 </figure>
 
 <hr>

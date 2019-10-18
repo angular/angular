@@ -16,8 +16,10 @@ contextual possibilities and hints as you type. This example shows
 autocomplete in an interpolation. As you type it out,
 you can hit tab to complete.
 
-<figure>
-  <img src="generated/images/guide/language-service/language-completion.gif" alt="autocompletion">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/language-service/language-completion.gif" alt="autocompletion">
+  </div>
 </figure>
 
 There are also completions within
@@ -29,8 +31,10 @@ show up in the completion list.
 The Angular Language Service can also forewarn you of mistakes in your code.
 In this example, Angular doesn't know what `orders` is or where it comes from.
 
-<figure>
-  <img src="generated/images/guide/language-service/language-error.gif" alt="error checking">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/language-service/language-error.gif" alt="error checking">
+  </div>
 </figure>
 
 ## Navigation
@@ -39,8 +43,10 @@ Navigation allows you to hover to
 see where a component, directive, module, etc. is from and then
 click and press F12 to go directly to its definition.
 
-<figure>
-  <img src="generated/images/guide/language-service/language-navigation.gif" alt="navigation">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/language-service/language-navigation.gif" alt="navigation">
+  </div>
 </figure>
 
 

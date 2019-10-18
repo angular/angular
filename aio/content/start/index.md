@@ -34,10 +34,12 @@ bar&mdash;containing the store name and
 checkout icon&mdash;and the title for a product list.
 
 
-<figure>
+<figure class="lightbox">
+  <div class="card">
     <img src="generated/images/guide/start/new-app.png" alt="Starter online store app">
 </figure>
 
+</div>
 
 <div class="callout is-helpful">
 <header>StackBlitz tips</header>
@@ -96,8 +98,10 @@ file `product-list.component.html`.
 
       The preview pane immediately updates to display the name of each product in the list.
 
-      <figure>
-        <img src="generated/images/guide/start/template-syntax-product-names.png" alt="Product names added to list">
+      <figure class="lightbox">
+        <div class="card">
+          <img src="generated/images/guide/start/template-syntax-product-names.png" alt="Product names added to list">
+        </div>
       </figure>
 
 1. To make each product name a link to product details, add the `<a>` element and set its title to be the product's name by using the property binding `[ ]` syntax, as follows:
@@ -112,8 +116,10 @@ file `product-list.component.html`.
     property value as text; property binding `[ ]` lets you
     use the property value in a template expression.
 
-    <figure>
+    <figure class="lightbox">
+      <div class="card">
       <img src="generated/images/guide/start/template-syntax-product-anchor.png" alt="Product name anchor text is product name property">
+      </div>
     </figure>
 
 
@@ -124,8 +130,10 @@ file `product-list.component.html`.
 
     The app now displays the name and description of each product in the list. Notice that the final product does not have a description paragraph. Because the product's description property is empty, Angular doesn't create the `<p>` element&mdash;including the word "Description".
 
-    <figure>
+    <figure class="lightbox">
+      <div class="card">
       <img src="generated/images/guide/start/template-syntax-product-description.png" alt="Product descriptions added to list">
+      </div>
     </figure>
 
 1. Add a button so users can share a product with friends. Bind the button's `click` event to the `share()` method (in `product-list.component.ts`). Event binding uses a set of parentheses, `( )`, around the event, as in the following `<button>` element:
@@ -135,14 +143,18 @@ file `product-list.component.html`.
 
     Each product now has a "Share" button:
 
-    <figure>
+    <figure class="lightbox">
+      <div class="card">
       <img src="generated/images/guide/start/template-syntax-product-share-button.png" alt="Share button added for each product">
+      </div>
     </figure>
 
     Test the "Share" button:
 
-    <figure>
+    <figure class="lightbox">
+      <div class="card">
       <img src="generated/images/guide/start/template-syntax-product-share-alert.png" alt="Alert box indicating product has been shared">
+      </div>
     </figure>
 
 The app now has a product list and sharing feature.
@@ -198,8 +210,10 @@ An Angular application comprises a tree of components, in which each Angular com
 
 Currently, the example app has three components:
 
-<figure>
+<figure class="lightbox">
+  <div class="card">
   <img src="generated/images/guide/start/app-components.png" alt="Online store with three components">
+  </div>
 </figure>
 
 * `app-root` (orange box) is the application shell. This is the first component to load and the parent of all other components. You can think of it as the base page.
@@ -228,8 +242,10 @@ The next step is to create a new alert feature that takes a product as an input.
 
     1. Right click on the `app` folder and use the `Angular Generator` to generate a new component named `product-alerts`.
 
-        <figure>
+        <figure class="lightbox">
+          <div class="card">
           <img src="generated/images/guide/start/generate-component.png" alt="StackBlitz command to generate component">
+          </div>
         </figure>
 
         The generator creates starter files for all three parts of the component:
@@ -277,10 +293,11 @@ The next step is to create a new alert feature that takes a product as an input.
 
 The new product alert component takes a product as input from the product list. With that input, it shows or hides the "Notify Me" button, based on the price of the product. The Phone XL price is over $700, so the "Notify Me" button appears on that product.
 
-<figure>
+<figure class="lightbox">
+  <div class="card">
   <img src="generated/images/guide/start/product-alert-button.png" alt="Product alert button added to products over $700">
+  </div>
 </figure>
-
 
 <div class="alert is-helpful">
 
@@ -323,8 +340,10 @@ To make the "Notify Me" button work, you need to configure two things:
 
 1. Try the "Notify Me" button:
 
-    <figure>
+    <figure class="lightbox">
+      <div class="card">
       <img src="generated/images/guide/start/product-alert-notification.png" alt="Product alert notification confirmation dialog">
+      </div>
     </figure>
 
 

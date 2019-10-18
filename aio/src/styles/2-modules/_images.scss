@@ -1,4 +1,5 @@
-.content {
+.content,
+.sidenav-content {
   img {
 
     &.right {
@@ -56,6 +57,11 @@
       border-radius: 4px;
       padding: 8px;
       background-color: $white;
+
+      img {
+        max-width: 100%;
+        height: auto;
+      }
     }
   }
 }
