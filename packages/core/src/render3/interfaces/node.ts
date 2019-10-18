@@ -603,6 +603,11 @@ export interface TProjectionNode extends TNode {
 }
 
 /**
+ * An union type representing all TNode types that can host a directive.
+ */
+export type TDirectiveHostNode = TElementNode | TContainerNode | TElementContainerNode;
+
+/**
  * This mapping is necessary so we can set input properties and output listeners
  * properly at runtime when property names are minified or aliased.
  *

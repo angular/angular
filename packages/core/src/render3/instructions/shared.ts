@@ -23,7 +23,7 @@ import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags, re
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/injector';
-import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
+import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
@@ -1090,19 +1090,19 @@ export function resolveDirectives(
 /**
  * Instantiate all the directives that were previously resolved on the current node.
  */
-function instantiateAllDirectives(tView: TView, lView: LView, tNode: TNode) {
+function instantiateAllDirectives(tView: TView, lView: LView, tNode: TDirectiveHostNode) {
   const start = tNode.directiveStart;
   const end = tNode.directiveEnd;
   if (!tView.firstTemplatePass) {
-    getOrCreateNodeInjectorForNode(
-        tNode as TElementNode | TContainerNode | TElementContainerNode, lView);
+    getOrCreateNodeInjectorForNode(tNode, lView);
   }
   for (let i = start; i < end; i++) {
     const def = tView.data[i] as DirectiveDef<any>;
     if (isComponentDef(def)) {
-      addComponentLogic(lView, tNode, def as ComponentDef<any>);
+      assertNodeOfPossibleTypes(tNode, TNodeType.Element);
+      addComponentLogic(lView, tNode as TElementNode, def);
     }
-    const directive = getNodeInjectable(tView.data, lView !, i, tNode as TElementNode);
+    const directive = getNodeInjectable(tView.data, lView, i, tNode);
     postProcessDirective(lView, tNode, directive, def, i - start);
   }
 }
@@ -1306,7 +1306,7 @@ function baseResolveDirective<T>(tView: TView, viewData: LView, def: DirectiveDe
   viewData.push(nodeInjectorFactory);
 }
 
-function addComponentLogic<T>(lView: LView, hostTNode: TNode, def: ComponentDef<T>): void {
+function addComponentLogic<T>(lView: LView, hostTNode: TElementNode, def: ComponentDef<T>): void {
   const native = getNativeByTNode(hostTNode, lView) as RElement;
   const tView = getOrCreateTView(def);
 
