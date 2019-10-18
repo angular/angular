@@ -44,6 +44,11 @@
       "version": "9-beta",
       "description": "Adds an ngcc call as a postinstall hook in package.json",
       "factory": "./migrations/postinstall-ngcc/index"
+    },
+    "migration-v9-update-typescript": {
+      "version": "9-beta",
+      "description": "Updates TypeScript to the version Angular supports.",
+      "factory": "./migrations/update-typescript/index"
     }
   }
 }
