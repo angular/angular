@@ -10,6 +10,7 @@ import {getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from '@an
 import * as ts from 'typescript';
 
 import {isAstResult} from './common';
+import {createGlobalSymbolTable} from './global_symbols';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 
@@ -48,8 +49,10 @@ abstract class BaseTemplate implements ng.TemplateSource {
     if (!this.membersTable) {
       const typeChecker = this.program.getTypeChecker();
       const sourceFile = this.classDeclNode.getSourceFile();
-      this.membersTable =
-          getClassMembersFromDeclaration(this.program, typeChecker, sourceFile, this.classDeclNode);
+      this.membersTable = this.query.mergeSymbolTable([
+        createGlobalSymbolTable(this.query),
+        getClassMembersFromDeclaration(this.program, typeChecker, sourceFile, this.classDeclNode),
+      ]);
     }
     return this.membersTable;
   }

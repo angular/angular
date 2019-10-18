@@ -11,6 +11,7 @@ ts_library(
     deps = [
         "//packages:types",
         "//packages/compiler",
+        "//packages/compiler-cli",
         "//packages/compiler-cli/test:test_utils",
         "//packages/language-service",
         "@npm//typescript",
@@ -21,7 +22,6 @@ jasmine_node_test(
     name = "test",
     data = [
         "//packages/common:npm_package",
-        "//packages/compiler:npm_package",
         "//packages/core:npm_package",
         "//packages/forms:npm_package",
     ],
