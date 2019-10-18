@@ -496,6 +496,19 @@ describe('MatSnackBar', () => {
     expect(overlayContainerElement.childElementCount).toBe(0);
   }));
 
+  it('should cap the timeout to the maximum accepted delay in setTimeout', fakeAsync(() => {
+    const config = new MatSnackBarConfig();
+    config.duration = Infinity;
+    snackBar.open('content', 'test', config);
+    viewContainerFixture.detectChanges();
+    spyOn(window, 'setTimeout').and.callThrough();
+    tick(100);
+
+    expect(window.setTimeout).toHaveBeenCalledWith(jasmine.any(Function), Math.pow(2, 31) - 1);
+
+    flush();
+  }));
+
   describe('with custom component', () => {
     it('should open a custom component', () => {
       const snackBarRef = snackBar.openFromComponent(BurritosNotification);
