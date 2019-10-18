@@ -137,6 +137,7 @@ function bypassSanitizationTrustString(
 function bypassSanitizationTrustString(
     trustedString: string, mode: BypassType.ResourceUrl): TrustedResourceUrlString;
 function bypassSanitizationTrustString(trustedString: string, mode: BypassType): TrustedString {
+  // tslint:disable-next-line
   const trusted = new String(trustedString) as TrustedString;
   trusted[BRAND] = mode;
   return trusted;
