@@ -82,12 +82,18 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
     addClass: (className: string) => this._rootElement.classList.add(className),
     getBuffer: () => this._bufferBar,
     getPrimaryBar: () => this._primaryBar,
+    // TODO(crisbeto): remove the ` as MDCLinearProgressAdapter` below once this is released:
+    // tslint:disable-next-line:max-line-length
+    // https://github.com/material-components/material-components-web/commit/062ade5c052cf00cefeee6e8e0acf7d16c4ce338
+    // We add `forceLayout` before the code requiring it is in the canary
+    // release so that our cronjob that runs against master doesn't fail.
+    forceLayout: () => this._platform.isBrowser && this._rootElement.offsetWidth,
     hasClass: (className: string) => this._rootElement.classList.contains(className),
     removeClass: (className: string) => this._rootElement.classList.remove(className),
     setStyle: (el: HTMLElement, styleProperty: string, value: string) => {
       (el.style as any)[styleProperty] = value;
     }
-  };
+  } as MDCLinearProgressAdapter;
 
   /** Flag that indicates whether NoopAnimations mode is set to true. */
   _isNoopAnimation = false;

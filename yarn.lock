@@ -7996,7 +7996,7 @@ matchdep@^2.0.0:
     resolve "^1.4.0"
     stack-trace "0.0.10"
 
-material-components-web@^4.0.0-canary.e851d4f40.0:
+material-components-web@^4.0.0-canary.062ade5c0.0:
   version "4.0.0-canary.e851d4f40.0"
   resolved "https://registry.yarnpkg.com/material-components-web/-/material-components-web-4.0.0-canary.e851d4f40.0.tgz#a3c0539eca3a78498056ba4268115ab332c29658"
   integrity sha512-QNv/KGq3zYdxqNrWJu9ksryEGHIzy0LWoNixR/4gaqV5Cick/b74+7u/qni81ZGib7A10Y8iYVo3kPASPnceVw==
