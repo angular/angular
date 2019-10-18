@@ -214,6 +214,17 @@ describe('ModuleWithProviders migration', () => {
     expect(tree.readContent('/index.ts')).not.toContain(`ModuleWithProviders `);
   });
 
+  it('should not add generic type for const variables without initialization', async() => {
+    writeFile('/index.ts', `
+      import {ModuleWithProviders} from '@angular/core';
+     
+      export const myModuleWithProviders: ModuleWithProviders;
+    `);
+
+    await runMigration();
+    expect(tree.readContent('/index.ts')).toContain(`TODO`);
+  });
+
   function writeFile(filePath: string, contents: string) {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }

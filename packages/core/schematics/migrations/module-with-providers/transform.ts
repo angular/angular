@@ -8,7 +8,7 @@
 
 import {UpdateRecorder} from '@angular-devkit/schematics';
 import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
-import {PartialEvaluator, ResolvedValue, ResolvedValueMap} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
+import {DynamicValue, PartialEvaluator, ResolvedValue, ResolvedValueMap} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import * as ts from 'typescript';
 
@@ -19,6 +19,8 @@ export interface AnalysisFailure {
   node: ts.Node;
   message: string;
 }
+
+const TODO_COMMENT = 'TODO: The following node requires a generic type';
 
 export class ModuleWithProvidersTransform {
   private printer = ts.createPrinter();
@@ -47,6 +49,8 @@ export class ModuleWithProvidersTransform {
       moduleText = this._getReturnStatementNgModuleType(returnStatement);
     } else if (ts.isPropertyDeclaration(parent) || ts.isVariableDeclaration(parent)) {
       if (!parent.initializer) {
+        addTodoToNode(type, TODO_COMMENT);
+        this._updateNode(type, type);
         return [{node: parent, message: `Unable to determine type for declaration.`}];
       }
 
@@ -64,12 +68,8 @@ export class ModuleWithProvidersTransform {
 
   /** Add a given generic to a type reference node */
   migrateTypeReferenceNode(node: ts.TypeReferenceNode, typeName: string) {
-    const sourceFile = node.getSourceFile();
-    const updateRecorder = this.getUpdateRecorder(sourceFile);
     const newGenericExpr = createModuleWithProvidersType(typeName, node);
-    const newTypeReferenceNodeText =
-        this.printer.printNode(ts.EmitHint.Unspecified, newGenericExpr, sourceFile);
-    addGenericType(updateRecorder, node, newTypeReferenceNodeText);
+    this._updateNode(node, newGenericExpr);
   }
 
   /**
@@ -82,18 +82,14 @@ export class ModuleWithProvidersTransform {
     }
     this.visitedMethods.add(method);
 
-    const sourceFile = method.getSourceFile();
-    const updateRecorder = this.getUpdateRecorder(sourceFile);
     const newGenericExpr =
         createModuleWithProvidersType(typeName, method.type as ts.TypeReferenceNode);
     const newMethodDecl = ts.updateMethod(
         method, method.decorators, method.modifiers, method.asteriskToken, method.name,
         method.questionToken, method.typeParameters, method.parameters, newGenericExpr,
         method.body);
-    const newMethodText =
-        this.printer.printNode(ts.EmitHint.Unspecified, newMethodDecl, sourceFile);
 
-    addGenericType(updateRecorder, method, newMethodText);
+    this._updateNode(method, newMethodDecl);
   }
 
   /** Whether the resolved value map represents a ModuleWithProviders object */
@@ -136,14 +132,34 @@ export class ModuleWithProvidersTransform {
       if (mapValue instanceof Reference && ts.isClassDeclaration(mapValue.node) &&
           mapValue.node.name) {
         return mapValue.node.name.text;
+      } else if (mapValue instanceof DynamicValue) {
+        addTodoToNode(mapValue.node, TODO_COMMENT);
+        this._updateNode(mapValue.node, mapValue.node);
       }
     }
 
     return undefined;
   }
+
+  private _updateNode(node: ts.Node, newNode: ts.Node) {
+    const newText = this.printer.printNode(ts.EmitHint.Unspecified, newNode, node.getSourceFile());
+    const recorder = this.getUpdateRecorder(node.getSourceFile());
+
+    recorder.remove(node.getStart(), node.getWidth());
+    recorder.insertRight(node.getStart(), newText);
+  }
 }
 
-function addGenericType(recorder: UpdateRecorder, node: ts.Node, newText: string) {
-  recorder.remove(node.getStart(), node.getWidth());
-  recorder.insertRight(node.getStart(), newText);
+/**
+ * Adds a to-do to the given TypeScript node which alerts developers to fix
+ * potential issues identified by the migration.
+ */
+function addTodoToNode(node: ts.Node, text: string) {
+  ts.setSyntheticLeadingComments(node, [{
+                                   pos: -1,
+                                   end: -1,
+                                   hasTrailingNewLine: false,
+                                   kind: ts.SyntaxKind.MultiLineCommentTrivia,
+                                   text: ` ${text} `
+                                 }]);
 }

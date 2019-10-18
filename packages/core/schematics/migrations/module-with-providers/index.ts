@@ -81,7 +81,7 @@ function runModuleWithProvidersMigration(tree: Tree, tsconfigPath: string, baseP
   });
 
   resolvedNonGenerics.forEach(type => {
-      transformer.migrateType(type).forEach(({message, node}) => {
+    transformer.migrateType(type).forEach(({message, node}) => {
       const nodeSourceFile = node.getSourceFile();
       const relativeFilePath = relative(basePath, nodeSourceFile.fileName);
       const {line, character} =
