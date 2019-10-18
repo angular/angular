@@ -56,7 +56,7 @@ $lightgrey: #F5F6F7;
 
 // STATE COLORS
 $focus-outline-ondark: rgba($white, 0.8);
-$focus-outline-onlight: rgba($accentblue);
+$focus-outline-onlight: $accentblue;
 
 // GRADIENTS
 $bluegradient: linear-gradient(145deg,$blue-900,$blue-400);
