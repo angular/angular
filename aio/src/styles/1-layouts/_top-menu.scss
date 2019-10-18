@@ -98,7 +98,7 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
   margin: 0 16px 0 0;
 
   &:focus {
-    outline-color: rgba($white, 0.8);
+    outline-color: $focus-outline-ondark;
     outline-offset: 4px;
   }
 
@@ -165,7 +165,7 @@ aio-top-menu {
         .nav-link-inner {
           background: rgba($white, 0.15);
           border-radius: 1px;
-          box-shadow: 0 0 1px 2px rgba($white, 0.75);
+          box-shadow: 0 0 1px 2px $focus-outline-ondark;
         }
       }
 
@@ -238,7 +238,7 @@ aio-search-box.search-container {
       margin: 0 -16px;
 
       &:focus {
-        outline-color: rgba($white, 0.8);
+        outline-color: $focus-outline-ondark;
         outline-offset: -16px;
       }
 
