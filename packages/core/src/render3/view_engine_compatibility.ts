@@ -225,7 +225,13 @@ export function createContainerRef(
           ngModuleRef?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<C> {
         const contextInjector = injector || this.parentInjector;
         if (!ngModuleRef && (componentFactory as any).ngModule == null && contextInjector) {
-          ngModuleRef = contextInjector.get(viewEngine_NgModuleRef, null) || undefined;
+          // DO NOT REFACTOR. The code here used to have a `value || undefined` expression
+          // which seems to cause internal google apps to fail. This is documented in the
+          // following internal bug issue: go/b/142967802
+          const result = contextInjector.get(viewEngine_NgModuleRef, null);
+          if (result) {
+            ngModuleRef = result;
+          }
         }
 
         const componentRef =
