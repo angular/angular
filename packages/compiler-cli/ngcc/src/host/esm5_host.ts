@@ -165,19 +165,17 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     const superDeclaration = super.getDeclarationOfIdentifier(id);
 
     if (superDeclaration === null || superDeclaration.node === null) {
-      return null;
+      return superDeclaration;
     }
 
     // Get the identifier for the outer class node (if any).
-    const outerClassNode = ts.isFunctionDeclaration(superDeclaration.node) ?
-        getClassDeclarationFromInnerFunctionDeclaration(superDeclaration.node) :
-        null;
+    const outerClassNode = getClassDeclarationFromInnerFunctionDeclaration(superDeclaration.node);
     const declaration = outerClassNode !== null ?
         super.getDeclarationOfIdentifier(outerClassNode.name) :
         superDeclaration;
 
     if (!declaration || declaration.node === null) {
-      return null;
+      return declaration;
     }
 
     if (!ts.isVariableDeclaration(declaration.node) || declaration.node.initializer !== undefined ||
