@@ -35,20 +35,20 @@ Here's a simple root NgModule definition.
 
 NgModules provide a *compilation context* for their components. A root NgModule always has a root component that is created during bootstrap, but any NgModule can include any number of additional components, which can be loaded through the router or created through the template. The components that belong to an NgModule share a compilation context.
 
-<figure>
-
-<img src="generated/images/guide/architecture/compilation-context.png" alt="Component compilation context" class="left">
-
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/architecture/compilation-context.png" alt="Component compilation context" class="left">
+  </div>
 </figure>
 
 <br class="clear">
 
 A component and its template together define a *view*. A component can contain a *view hierarchy*, which allows you to define arbitrarily complex areas of the screen that can be created, modified, and destroyed as a unit. A view hierarchy can mix views defined in components that belong to different NgModules. This is often the case, especially for UI libraries.
 
-<figure>
-
-<img src="generated/images/guide/architecture/view-hierarchy.png" alt="View hierarchy" class="left">
-
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/architecture/view-hierarchy.png" alt="View hierarchy" class="left">
+  </div>
 </figure>
 
 <br class="clear">
