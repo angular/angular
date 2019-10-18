@@ -190,7 +190,10 @@ export class DropListRef<T = any> {
   private _stopScrollTimers = new Subject<void>();
 
   /** Shadow root of the current element. Necessary for `elementFromPoint` to resolve correctly. */
-  private _shadowRoot: DocumentOrShadowRoot;
+  private _cachedShadowRoot: DocumentOrShadowRoot | null = null;
+
+  /** Reference to the document. */
+  private _document: Document;
 
   constructor(
     element: ElementRef<HTMLElement> | HTMLElement,
@@ -198,8 +201,8 @@ export class DropListRef<T = any> {
     _document: any,
     private _ngZone: NgZone,
     private _viewportRuler: ViewportRuler) {
-    const nativeNode = this.element = coerceElement(element);
-    this._shadowRoot = getShadowRoot(nativeNode) || _document;
+    this.element = coerceElement(element);
+    this._document = _document;
     _dragDropRegistry.registerDropContainer(this);
   }
 
@@ -785,7 +788,7 @@ export class DropListRef<T = any> {
       return false;
     }
 
-    const elementFromPoint = this._shadowRoot.elementFromPoint(x, y) as HTMLElement | null;
+    const elementFromPoint = this._getShadowRoot().elementFromPoint(x, y) as HTMLElement | null;
 
     // If there's no element at the pointer position, then
     // the client rect is probably scrolled out of the view.
@@ -842,6 +845,20 @@ export class DropListRef<T = any> {
         this._cacheOwnPosition();
       }
     });
+  }
+
+  /**
+   * Lazily resolves and returns the shadow root of the element. We do this in a function, rather
+   * than saving it in property directly on init, because we want to resolve it as late as possible
+   * in order to ensure that the element has been moved into the shadow DOM. Doing it inside the
+   * constructor might be too early if the element is inside of something like `ngFor` or `ngIf`.
+   */
+  private _getShadowRoot(): DocumentOrShadowRoot {
+    if (!this._cachedShadowRoot) {
+      this._cachedShadowRoot = getShadowRoot(coerceElement(this.element)) || this._document;
+    }
+
+    return this._cachedShadowRoot;
   }
 }
 

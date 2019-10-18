@@ -4233,6 +4233,40 @@ describe('CdkDrag', () => {
       });
     }));
 
+    it('should be able to drop into a new container inside the Shadow DOM and ngIf',
+      fakeAsync(() => {
+        // This test is only relevant for Shadow DOM-supporting browsers.
+        if (!_supportsShadowDom()) {
+          return;
+        }
+
+        const fixture = createComponent(ConnectedDropZonesInsideShadowRootWithNgIf);
+        fixture.detectChanges();
+
+        const groups = fixture.componentInstance.groupedDragItems;
+        const item = groups[0][1];
+        const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+        dragElementViaMouse(fixture, item.element.nativeElement,
+          targetRect.left + 1, targetRect.top + 1);
+        flush();
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.droppedSpy).toHaveBeenCalledTimes(1);
+
+        const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+        expect(event).toEqual({
+          previousIndex: 1,
+          currentIndex: 3,
+          item,
+          container: fixture.componentInstance.dropInstances.toArray()[1],
+          previousContainer: fixture.componentInstance.dropInstances.first,
+          isPointerOverContainer: true,
+          distance: {x: jasmine.any(Number), y: jasmine.any(Number)}
+        });
+      }));
+
   });
 
   describe('with nested drags', () => {
@@ -4744,6 +4778,13 @@ class ConnectedDropZones implements AfterViewInit {
 class ConnectedDropZonesInsideShadowRoot extends ConnectedDropZones {
 }
 
+@Component({
+  encapsulation: ViewEncapsulation.ShadowDom,
+  styles: CONNECTED_DROP_ZONES_STYLES,
+  template: `<div *ngIf="true">${CONNECTED_DROP_ZONES_TEMPLATE}</div>`
+})
+class ConnectedDropZonesInsideShadowRootWithNgIf extends ConnectedDropZones {
+}
 
 @Component({
   encapsulation: ViewEncapsulation.None,
