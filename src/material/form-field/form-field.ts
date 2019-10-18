@@ -270,10 +270,10 @@ export class MatFormField extends _MatFormFieldMixinBase
   }
 
   @ContentChild(MatPlaceholder, {static: false}) _placeholderChild: MatPlaceholder;
-  @ContentChildren(MatError) _errorChildren: QueryList<MatError>;
-  @ContentChildren(MatHint) _hintChildren: QueryList<MatHint>;
-  @ContentChildren(MatPrefix) _prefixChildren: QueryList<MatPrefix>;
-  @ContentChildren(MatSuffix) _suffixChildren: QueryList<MatSuffix>;
+  @ContentChildren(MatError, {descendants: true}) _errorChildren: QueryList<MatError>;
+  @ContentChildren(MatHint, {descendants: true}) _hintChildren: QueryList<MatHint>;
+  @ContentChildren(MatPrefix, {descendants: true}) _prefixChildren: QueryList<MatPrefix>;
+  @ContentChildren(MatSuffix, {descendants: true}) _suffixChildren: QueryList<MatSuffix>;
 
   constructor(
       public _elementRef: ElementRef, private _changeDetectorRef: ChangeDetectorRef,
