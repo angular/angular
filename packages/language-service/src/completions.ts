@@ -28,7 +28,7 @@ const hiddenHtmlElements = {
   link: true,
 };
 
-const ANGULAR_PSEUDO_ELEMENTS = ['ng-container', 'ng-content', 'ng-template'] as const ;
+const ANGULAR_ELEMENTS: ReadonlyArray<string> = ['ng-container', 'ng-content', 'ng-template'] as const ;
 
 export function getTemplateCompletions(
     templateInfo: AstResult, position: number): ts.CompletionEntry[] {
@@ -244,18 +244,18 @@ function elementCompletions(info: AstResult, path: AstPath<HtmlAst>): ts.Complet
       sortText: name,
     };
   });
-  const pseudoElements = ANGULAR_PSEUDO_ELEMENTS.map(name => {
+  const angularElements = ANGULAR_ELEMENTS.map(name => {
     return {
       name,
       // Need to cast to unknown because Angular's CompletionKind includes HTML
       // entites.
-      kind: CompletionKind.PSEUDO_ELEMENT as unknown as ts.ScriptElementKind,
+      kind: CompletionKind.ANGULAR_ELEMENT as unknown as ts.ScriptElementKind,
       sortText: name,
     };
   });
 
   // Return components and html elements
-  return uniqueByName([...htmlElements, ...components, ...pseudoElements]);
+  return uniqueByName([...htmlElements, ...components, ...angularElements]);
 }
 
 /**
