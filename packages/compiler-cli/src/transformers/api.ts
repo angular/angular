@@ -197,6 +197,23 @@ export interface CompilerOptions extends ts.CompilerOptions {
   enableResourceInlining?: boolean;
 
   /**
+   * Controls whether ngtsc will emit `.ngfactory.js` shims for each compiled `.ts` file.
+   *
+   * These shims support legacy imports from `ngfactory` files, by exporting a factory shim
+   * for each component or NgModule in the original `.ts` file.
+   */
+  generateNgFactoryShims?: boolean;
+
+  /**
+   * Controls whether ngtsc will emit `.ngsummary.js` shims for each compiled `.ts` file.
+   *
+   * These shims support legacy imports from `ngsummary` files, by exporting an empty object
+   * for each NgModule in the original `.ts` file. The only purpose of summaries is to feed them to
+   * `TestBed`, which is a no-op in Ivy.
+   */
+  generateNgSummaryShims?: boolean;
+
+  /**
    * Tells the compiler to generate definitions using the Render3 style code generation.
    * This option defaults to `true`.
    *

@@ -83,7 +83,15 @@ export class NgtscProgram implements api.Program {
     this.rootDirs = getRootDirs(host, options);
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
     this.resourceManager = new HostResourceLoader(host, options);
-    const shouldGenerateShims = options.allowEmptyCodegenFiles || false;
+    // TODO(alxhub): remove the fallback to allowEmptyCodegenFiles after verifying that the rest of
+    // our build tooling is no longer relying on it.
+    const allowEmptyCodegenFiles = options.allowEmptyCodegenFiles || false;
+    const shouldGenerateFactoryShims = options.generateNgFactoryShims !== undefined ?
+        options.generateNgFactoryShims :
+        allowEmptyCodegenFiles;
+    const shouldGenerateSummaryShims = options.generateNgSummaryShims !== undefined ?
+        options.generateNgSummaryShims :
+        allowEmptyCodegenFiles;
     const normalizedRootNames = rootNames.map(n => absoluteFrom(n));
     if (host.fileNameToModuleName !== undefined) {
       this.fileToModuleHost = host as FileToModuleHost;
@@ -91,10 +99,14 @@ export class NgtscProgram implements api.Program {
     let rootFiles = [...rootNames];
 
     const generators: ShimGenerator[] = [];
-    if (shouldGenerateShims) {
+    let summaryGenerator: SummaryGenerator|null = null;
+    if (shouldGenerateSummaryShims) {
       // Summary generation.
-      const summaryGenerator = SummaryGenerator.forRootFiles(normalizedRootNames);
+      summaryGenerator = SummaryGenerator.forRootFiles(normalizedRootNames);
+      generators.push(summaryGenerator);
+    }
 
+    if (shouldGenerateFactoryShims) {
       // Factory generation.
       const factoryGenerator = FactoryGenerator.forRootFiles(normalizedRootNames);
       const factoryFileMap = factoryGenerator.factoryFileMap;
@@ -107,8 +119,14 @@ export class NgtscProgram implements api.Program {
       });
 
       const factoryFileNames = Array.from(factoryFileMap.keys());
-      rootFiles.push(...factoryFileNames, ...summaryGenerator.getSummaryFileNames());
-      generators.push(summaryGenerator, factoryGenerator);
+      rootFiles.push(...factoryFileNames);
+      generators.push(factoryGenerator);
+    }
+
+    // Done separately to preserve the order of factory files before summary files in rootFiles.
+    // TODO(alxhub): validate that this is necessary.
+    if (shouldGenerateSummaryShims) {
+      rootFiles.push(...summaryGenerator !.getSummaryFileNames());
     }
 
     this.typeCheckFilePath = typeCheckFilePath(this.rootDirs);

@@ -2340,7 +2340,7 @@ runInEachFileSystem(os => {
     });
 
     it('should generate correct factory stubs for a test module', () => {
-      env.tsconfig({'allowEmptyCodegenFiles': true});
+      env.tsconfig({'generateNgFactoryShims': true});
 
       env.write('test.ts', `
         import {Injectable, NgModule} from '@angular/core';
@@ -2374,126 +2374,130 @@ runInEachFileSystem(os => {
       expect(emptyFactory).toContain(`export var \u0275NonEmptyModule = true;`);
     });
 
-    it('should generate correct type annotation for NgModuleFactory calls in ngfactories', () => {
-      env.tsconfig({'allowEmptyCodegenFiles': true});
-      env.write('test.ts', `
-      import {Component} from '@angular/core';
-      @Component({
-        selector: 'test',
-        template: '...',
-      })
-      export class TestCmp {}
-    `);
-      env.driveMain();
+    describe('ngfactory shims', () => {
+      beforeEach(() => { env.tsconfig({'generateNgFactoryShims': true}); });
 
-      const ngfactoryContents = env.getContents('test.ngfactory.d.ts');
-      expect(ngfactoryContents).toContain(`i0.ɵNgModuleFactory<any>`);
+      it('should generate correct type annotation for NgModuleFactory calls in ngfactories', () => {
+        env.write('test.ts', `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'test',
+          template: '...',
+        })
+        export class TestCmp {}
+      `);
+        env.driveMain();
+
+        const ngfactoryContents = env.getContents('test.ngfactory.d.ts');
+        expect(ngfactoryContents).toContain(`i0.ɵNgModuleFactory<any>`);
+      });
+
+      it('should copy a top-level comment into a factory stub', () => {
+        env.tsconfig({'allowEmptyCodegenFiles': true});
+
+        env.write('test.ts', `/** I am a top-level comment. */
+          import {NgModule} from '@angular/core';
+  
+          @NgModule({})
+          export class TestModule {}
+      `);
+        env.driveMain();
+
+        const factoryContents = env.getContents('test.ngfactory.js');
+        expect(factoryContents).toMatch(/^\/\*\* I am a top-level comment\. \*\//);
+      });
+
+      it('should be able to compile an app using the factory shim', () => {
+        env.tsconfig({'allowEmptyCodegenFiles': true});
+
+        env.write('test.ts', `
+          export {MyModuleNgFactory} from './my-module.ngfactory';
+      `);
+
+        env.write('my-module.ts', `
+          import {NgModule} from '@angular/core';
+  
+          @NgModule({})
+          export class MyModule {}
+      `);
+
+        env.driveMain();
+      });
+
+      it('should generate correct imports in factory stubs when compiling @angular/core', () => {
+        env.tsconfig({'allowEmptyCodegenFiles': true});
+
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+  
+          @NgModule({})
+          export class TestModule {}
+      `);
+
+        // Trick the compiler into thinking it's compiling @angular/core.
+        env.write('r3_symbols.ts', 'export const ITS_JUST_ANGULAR = true;');
+
+        env.driveMain();
+
+        const factoryContents = env.getContents('test.ngfactory.js');
+        expect(normalize(factoryContents)).toBe(normalize(`
+        import * as i0 from "./r3_symbols";
+        import { TestModule } from './test';
+        export var TestModuleNgFactory = new i0.NgModuleFactory(TestModule);
+      `));
+      });
     });
 
-    it('should copy a top-level comment into a factory stub', () => {
-      env.tsconfig({'allowEmptyCodegenFiles': true});
 
-      env.write('test.ts', `/** I am a top-level comment. */
-        import {NgModule} from '@angular/core';
+    describe('ngsummary shim generation', () => {
+      beforeEach(() => { env.tsconfig({'generateNgSummaryShims': true}); });
 
-        @NgModule({})
-        export class TestModule {}
-    `);
-      env.driveMain();
+      it('should generate a summary stub for decorated classes in the input file only', () => {
+        env.write('test.ts', `
+          import {Injectable, NgModule} from '@angular/core';
+  
+          export class NotAModule {}
+  
+          @NgModule({})
+          export class TestModule {}
+      `);
 
-      const factoryContents = env.getContents('test.ngfactory.js');
-      expect(factoryContents).toMatch(/^\/\*\* I am a top-level comment\. \*\//);
+        env.driveMain();
+
+        const summaryContents = env.getContents('test.ngsummary.js');
+        expect(summaryContents).toEqual(`export var TestModuleNgSummary = null;\n`);
+      });
+
+      it('should generate a summary stub for classes exported via exports', () => {
+        env.write('test.ts', `
+          import {Injectable, NgModule} from '@angular/core';
+  
+          @NgModule({})
+          class NotDirectlyExported {}
+  
+          export {NotDirectlyExported};
+      `);
+
+        env.driveMain();
+
+        const summaryContents = env.getContents('test.ngsummary.js');
+        expect(summaryContents).toEqual(`export var NotDirectlyExportedNgSummary = null;\n`);
+      });
+
+      it('it should generate empty export when there are no other summary symbols, to ensure the output is a valid ES module',
+         () => {
+           env.write('empty.ts', `
+          export class NotAModule {}
+      `);
+
+           env.driveMain();
+
+           const emptySummary = env.getContents('empty.ngsummary.js');
+           // The empty export ensures this js file is still an ES module.
+           expect(emptySummary).toEqual(`export var \u0275empty = null;\n`);
+         });
     });
 
-    it('should be able to compile an app using the factory shim', () => {
-      env.tsconfig({'allowEmptyCodegenFiles': true});
-
-      env.write('test.ts', `
-        export {MyModuleNgFactory} from './my-module.ngfactory';
-    `);
-
-      env.write('my-module.ts', `
-        import {NgModule} from '@angular/core';
-
-        @NgModule({})
-        export class MyModule {}
-    `);
-
-      env.driveMain();
-    });
-
-    it('should generate correct imports in factory stubs when compiling @angular/core', () => {
-      env.tsconfig({'allowEmptyCodegenFiles': true});
-
-      env.write('test.ts', `
-        import {NgModule} from '@angular/core';
-
-        @NgModule({})
-        export class TestModule {}
-    `);
-
-      // Trick the compiler into thinking it's compiling @angular/core.
-      env.write('r3_symbols.ts', 'export const ITS_JUST_ANGULAR = true;');
-
-      env.driveMain();
-
-      const factoryContents = env.getContents('test.ngfactory.js');
-      expect(normalize(factoryContents)).toBe(normalize(`
-      import * as i0 from "./r3_symbols";
-      import { TestModule } from './test';
-      export var TestModuleNgFactory = new i0.NgModuleFactory(TestModule);
-    `));
-    });
-
-    it('should generate a summary stub for decorated classes in the input file only', () => {
-      env.tsconfig({'allowEmptyCodegenFiles': true});
-
-      env.write('test.ts', `
-        import {Injectable, NgModule} from '@angular/core';
-
-        export class NotAModule {}
-
-        @NgModule({})
-        export class TestModule {}
-    `);
-
-      env.driveMain();
-
-      const summaryContents = env.getContents('test.ngsummary.js');
-      expect(summaryContents).toEqual(`export var TestModuleNgSummary = null;\n`);
-    });
-
-    it('should generate a summary stub for classes exported via exports', () => {
-      env.tsconfig({'allowEmptyCodegenFiles': true});
-
-      env.write('test.ts', `
-        import {Injectable, NgModule} from '@angular/core';
-
-        @NgModule({})
-        class NotDirectlyExported {}
-
-        export {NotDirectlyExported};
-    `);
-
-      env.driveMain();
-
-      const summaryContents = env.getContents('test.ngsummary.js');
-      expect(summaryContents).toEqual(`export var NotDirectlyExportedNgSummary = null;\n`);
-    });
-
-    it('it should generate empty export when there are no other summary symbols, to ensure the output is a valid ES module',
-       () => {
-         env.tsconfig({'allowEmptyCodegenFiles': true});
-         env.write('empty.ts', `
-        export class NotAModule {}
-    `);
-
-         env.driveMain();
-
-         const emptySummary = env.getContents('empty.ngsummary.js');
-         // The empty export ensures this js file is still an ES module.
-         expect(emptySummary).toEqual(`export var \u0275empty = null;\n`);
-       });
 
     it('should compile a banana-in-a-box inside of a template', () => {
       env.write('test.ts', `
@@ -2963,13 +2967,13 @@ runInEachFileSystem(os => {
     it('should compile programs with typeRoots', () => {
       // Write out a custom tsconfig.json that includes 'typeRoots' and 'files'. 'files' is
       // necessary because otherwise TS picks up the testTypeRoot/test/index.d.ts file into the
-      // program automatically. Shims are also turned on (via allowEmptyCodegenFiles) because the
-      // shim ts.CompilerHost wrapper can break typeRoot functionality (which this test is meant to
-      // detect).
+      // program automatically. Shims are also turned on because the shim ts.CompilerHost wrapper
+      // can break typeRoot functionality (which this test is meant to detect).
       env.write('tsconfig.json', `{
       "extends": "./tsconfig-base.json",
       "angularCompilerOptions": {
-        "allowEmptyCodegenFiles": true
+        "generateNgFactoryShims": true,
+        "generateNgSummaryShims": true,
       },
       "compilerOptions": {
         "typeRoots": ["./testTypeRoot"],

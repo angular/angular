@@ -305,6 +305,8 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "enableResourceInlining": ctx.attr.inline_resources,
         "generateCodeForLibraries": False,
         "allowEmptyCodegenFiles": True,
+        "generateNgFactoryShims": True,
+        "generateNgSummaryShims": True,
         # Summaries are only enabled if Angular outputs are to be produced.
         "enableSummariesForJit": is_legacy_ngc,
         "enableIvy": _enable_ivy_value(ctx),
