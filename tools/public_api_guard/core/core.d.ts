@@ -18,6 +18,7 @@ export interface AfterViewInit {
     ngAfterViewInit(): void;
 }
 
+/** @deprecated */
 export declare const ANALYZE_FOR_ENTRY_COMPONENTS: InjectionToken<any>;
 
 export declare const APP_BOOTSTRAP_LISTENER: InjectionToken<((compRef: ComponentRef<any>) => void)[]>;
@@ -116,7 +117,7 @@ export interface Component extends Directive {
     animations?: any[];
     changeDetection?: ChangeDetectionStrategy;
     encapsulation?: ViewEncapsulation;
-    entryComponents?: Array<Type<any> | any[]>;
+    /** @deprecated */ entryComponents?: Array<Type<any> | any[]>;
     interpolation?: [string, string];
     moduleId?: string;
     preserveWhitespaces?: boolean;
@@ -581,7 +582,7 @@ export declare type NgIterable<T> = Array<T> | Iterable<T>;
 export interface NgModule {
     bootstrap?: Array<Type<any> | any[]>;
     declarations?: Array<Type<any> | any[]>;
-    entryComponents?: Array<Type<any> | any[]>;
+    /** @deprecated */ entryComponents?: Array<Type<any> | any[]>;
     exports?: Array<Type<any> | any[]>;
     id?: string;
     imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;

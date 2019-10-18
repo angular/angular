@@ -45,6 +45,7 @@ import {makePropDecorator} from '../util/decorators';
  * ```
  *
  * @publicApi
+ * @deprecated Since 9.0.0. With Ivy, this property is no longer necessary.
  */
 export const ANALYZE_FOR_ENTRY_COMPONENTS = new InjectionToken<any>('AnalyzeForEntryComponents');
 
