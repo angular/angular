@@ -305,9 +305,10 @@ class TemplateParseVisitor implements html.Visitor {
         }
         hasInlineTemplates = true;
         const parsedVariables: ParsedVariable[] = [];
+        const absoluteOffset = (attr.valueSpan || attr.sourceSpan).start.offset;
         this._bindingParser.parseInlineTemplateBinding(
-            templateKey !, templateValue !, attr.sourceSpan, attr.sourceSpan.start.offset,
-            templateMatchableAttrs, templateElementOrDirectiveProps, parsedVariables);
+            templateKey !, templateValue !, attr.sourceSpan, absoluteOffset, templateMatchableAttrs,
+            templateElementOrDirectiveProps, parsedVariables);
         templateElementVars.push(...parsedVariables.map(v => t.VariableAst.fromParsedVariable(v)));
       }
 
