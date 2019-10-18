@@ -74,11 +74,6 @@ export class CachedFileSystem implements FileSystem {
     this.existsCache.set(to, true);
   }
 
-  mkdir(path: AbsoluteFsPath): void {
-    this.delegate.mkdir(path);
-    this.existsCache.set(path, true);
-  }
-
   ensureDir(path: AbsoluteFsPath): void {
     this.delegate.ensureDir(path);
     while (!this.isRoot(path)) {

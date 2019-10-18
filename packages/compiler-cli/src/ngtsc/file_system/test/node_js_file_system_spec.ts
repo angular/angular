@@ -105,14 +105,6 @@ describe('NodeJSFileSystem', () => {
     });
   });
 
-  describe('mkdir()', () => {
-    it('should delegate to fs.mkdirSync()', () => {
-      const spy = spyOn(realFs, 'mkdirSync');
-      fs.mkdir(xyzPath);
-      expect(spy).toHaveBeenCalledWith(xyzPath);
-    });
-  });
-
   describe('ensureDir()', () => {
     it('should call exists() and fs.mkdir()', () => {
       const aPath = absoluteFrom('/a');

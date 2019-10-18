@@ -27,7 +27,6 @@ export class InvalidFileSystem implements FileSystem {
   extname(path: AbsoluteFsPath|PathSegment): string { throw makeError(); }
   copyFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void { throw makeError(); }
   moveFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void { throw makeError(); }
-  mkdir(path: AbsoluteFsPath): void { throw makeError(); }
   ensureDir(path: AbsoluteFsPath): void { throw makeError(); }
   isCaseSensitive(): boolean { throw makeError(); }
   resolve(...paths: string[]): AbsoluteFsPath { throw makeError(); }
