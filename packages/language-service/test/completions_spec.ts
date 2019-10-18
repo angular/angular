@@ -147,6 +147,12 @@ describe('completions', () => {
     expectContain(completions, CompletionKind.PROPERTY, ['title', 'subTitle']);
   });
 
+  it('should suggest $any() type cast function in an interpolation', () => {
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'sub-start');
+    const completions = ngLS.getCompletionsAt(APP_COMPONENT, marker.start);
+    expectContain(completions, CompletionKind.METHOD, ['$any']);
+  });
+
   describe('in external template', () => {
     it('should be able to get entity completions in external template', () => {
       const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'entity-amp');
