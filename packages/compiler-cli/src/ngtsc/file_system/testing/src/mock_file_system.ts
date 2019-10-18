@@ -96,10 +96,21 @@ export abstract class MockFileSystem implements FileSystem {
     delete folder[name];
   }
 
-  mkdir(path: AbsoluteFsPath): void { this.ensureFolders(this._fileTree, this.splitPath(path)); }
-
   ensureDir(path: AbsoluteFsPath): void {
-    this.ensureFolders(this._fileTree, this.splitPath(path));
+    const segments = this.splitPath(path);
+    let current: Folder = this._fileTree;
+
+    // Convert the root folder to a canonical empty string `''` (on Windows it would be `'C:'`).
+    segments[0] = '';
+    for (const segment of segments) {
+      if (isFile(current[segment])) {
+        throw new Error(`Folder already exists as a file.`);
+      }
+      if (!current[segment]) {
+        current[segment] = {};
+      }
+      current = current[segment] as Folder;
+    }
   }
 
   isRoot(path: AbsoluteFsPath): boolean { return this.dirname(path) === path; }
@@ -172,21 +183,6 @@ export abstract class MockFileSystem implements FileSystem {
     const segments = this.splitPath(path);
     const file = segments.pop() !;
     return [path.substring(0, path.length - file.length - 1) as AbsoluteFsPath, file];
-  }
-
-  protected ensureFolders(current: Folder, segments: string[]): Folder {
-    // Convert the root folder to a canonical empty string `""` (on Windows it would be `C:`).
-    segments[0] = '';
-    for (const segment of segments) {
-      if (isFile(current[segment])) {
-        throw new Error(`Folder already exists as a file.`);
-      }
-      if (!current[segment]) {
-        current[segment] = {};
-      }
-      current = current[segment] as Folder;
-    }
-    return current;
   }
 }
 export interface FindResult {
