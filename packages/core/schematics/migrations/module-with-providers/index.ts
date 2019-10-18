@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
+import {Rule, SchematicContext, SchematicsException, Tree, UpdateRecorder} from '@angular-devkit/schematics';
 import {dirname, relative} from 'path';
 import * as ts from 'typescript';
 
@@ -14,9 +14,8 @@ import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
 
-import {NgModuleCollector} from './module_collector';
+import {Collector} from './collector';
 import {ModuleWithProvidersTransform} from './transform';
-import {UpdateRecorder} from './update_recorder';
 
 
 
@@ -60,14 +59,14 @@ function runModuleWithProvidersMigration(tree: Tree, tsconfigPath: string, baseP
 
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);
   const typeChecker = program.getTypeChecker();
-  const moduleCollector = new NgModuleCollector(typeChecker);
+  const moduleCollector = new Collector(typeChecker);
   const sourceFiles = program.getSourceFiles().filter(
       f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
 
   // Analyze source files by detecting all modules.
   sourceFiles.forEach(sourceFile => moduleCollector.visitNode(sourceFile));
 
-  const {resolvedModules} = moduleCollector;
+  const {resolvedModules, resolvedNonGenerics} = moduleCollector;
   const transformer = new ModuleWithProvidersTransform(typeChecker, getUpdateRecorder);
   const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
 
@@ -81,10 +80,20 @@ function runModuleWithProvidersMigration(tree: Tree, tsconfigPath: string, baseP
     });
   });
 
+  resolvedNonGenerics.forEach(type => {
+      transformer.migrateType(type).forEach(({message, node}) => {
+      const nodeSourceFile = node.getSourceFile();
+      const relativeFilePath = relative(basePath, nodeSourceFile.fileName);
+      const {line, character} =
+          ts.getLineAndCharacterOfPosition(node.getSourceFile(), node.getStart());
+      failures.push(`${relativeFilePath}@${line + 1}:${character + 1}: ${message}`);
+    });
+  });
+
   // Walk through each update recorder and commit the update. We need to commit the
   // updates in batches per source file as there can be only one recorder per source
   // file in order to avoid shift character offsets.
-  updateRecorders.forEach(recorder => recorder.commitUpdate());
+  updateRecorders.forEach(recorder => tree.commitUpdate(recorder));
 
   return failures;
 
@@ -93,14 +102,7 @@ function runModuleWithProvidersMigration(tree: Tree, tsconfigPath: string, baseP
     if (updateRecorders.has(sourceFile)) {
       return updateRecorders.get(sourceFile) !;
     }
-    const treeRecorder = tree.beginUpdate(relative(basePath, sourceFile.fileName));
-    const recorder: UpdateRecorder = {
-      addGenericType(node: ts.MethodDeclaration, newText: string) {
-        treeRecorder.remove(node.getStart(), node.getWidth());
-        treeRecorder.insertRight(node.getStart(), newText);
-      },
-      commitUpdate() { tree.commitUpdate(treeRecorder); }
-    };
+    const recorder = tree.beginUpdate(relative(basePath, sourceFile.fileName));
     updateRecorders.set(sourceFile, recorder);
     return recorder;
   }

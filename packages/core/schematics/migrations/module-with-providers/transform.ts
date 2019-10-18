@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {UpdateRecorder} from '@angular-devkit/schematics';
 import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
-import {DynamicValue, PartialEvaluator, ResolvedValue, ResolvedValueMap} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
+import {PartialEvaluator, ResolvedValue, ResolvedValueMap} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import * as ts from 'typescript';
 
-import {ResolvedNgModule} from './module_collector';
-import {UpdateRecorder} from './update_recorder';
-import {addGeneric} from './util';
+import {ResolvedNgModule} from './collector';
+import {createModuleWithProvidersType} from './util';
 
 export interface AnalysisFailure {
   node: ts.Node;
@@ -27,7 +27,6 @@ export class ModuleWithProvidersTransform {
 
   /** Set of methods which were already checked or migrated. */
   private visitedMethods = new Set<ts.MethodDeclaration>();
-  private failures: AnalysisFailure[] = [];
 
   constructor(
       private typeChecker: ts.TypeChecker,
@@ -35,8 +34,42 @@ export class ModuleWithProvidersTransform {
 
   /** Migrates a given NgModule by walking through the referenced providers and static methods. */
   migrateModule(module: ResolvedNgModule): AnalysisFailure[] {
-    module.staticMethods.forEach(this._resolveStaticMethod.bind(this));
-    return this.failures;
+    return module.staticMethodsWithoutType.map(this._resolveStaticMethod.bind(this))
+        .filter(v => v) as AnalysisFailure[];
+  }
+
+  /** Migrates a ModuleWithProviders type definition that has no explicit generic type */
+  migrateType(type: ts.TypeReferenceNode) {
+    const parent = type.parent;
+    let moduleText: string|undefined;
+    if ((ts.isFunctionDeclaration(parent) || ts.isMethodDeclaration(parent)) && parent.body) {
+      const returnStatement = parent.body.statements.find(ts.isReturnStatement);
+      moduleText = this._getReturnStatementNgModuleType(returnStatement);
+    } else if (ts.isPropertyDeclaration(parent) || ts.isVariableDeclaration(parent)) {
+      if (!parent.initializer) {
+        return [{node: parent, message: `Unable to determine type for declaration.`}];
+      }
+
+      const evaluatedExpr = this.partialEvaluator.evaluate(parent.initializer);
+      moduleText = this._visitObjectLiteralExpressionResolvedValue(evaluatedExpr);
+    }
+
+    if (moduleText) {
+      this.migrateTypeReferenceNode(type, moduleText);
+      return [];
+    }
+
+    return [{node: parent, message: `Type is not statically analyzable.`}];
+  }
+
+  /** Add a given generic to a type reference node */
+  migrateTypeReferenceNode(node: ts.TypeReferenceNode, typeName: string) {
+    const sourceFile = node.getSourceFile();
+    const updateRecorder = this.getUpdateRecorder(sourceFile);
+    const newGenericExpr = createModuleWithProvidersType(typeName, node);
+    const newTypeReferenceNodeText =
+        this.printer.printNode(ts.EmitHint.Unspecified, newGenericExpr, sourceFile);
+    addGenericType(updateRecorder, node, newTypeReferenceNodeText);
   }
 
   /**
@@ -51,7 +84,8 @@ export class ModuleWithProvidersTransform {
 
     const sourceFile = method.getSourceFile();
     const updateRecorder = this.getUpdateRecorder(sourceFile);
-    const newGenericExpr = addGeneric(typeName, method.type as ts.TypeReferenceNode);
+    const newGenericExpr =
+        createModuleWithProvidersType(typeName, method.type as ts.TypeReferenceNode);
     const newMethodDecl = ts.updateMethod(
         method, method.decorators, method.modifiers, method.asteriskToken, method.name,
         method.questionToken, method.typeParameters, method.parameters, newGenericExpr,
@@ -59,7 +93,7 @@ export class ModuleWithProvidersTransform {
     const newMethodText =
         this.printer.printNode(ts.EmitHint.Unspecified, newMethodDecl, sourceFile);
 
-    updateRecorder.addGenericType(method, newMethodText);
+    addGenericType(updateRecorder, method, newMethodText);
   }
 
   /** Whether the resolved value map represents a ModuleWithProviders object */
@@ -71,30 +105,45 @@ export class ModuleWithProvidersTransform {
   }
 
   /** Determine the generic type of a suspected ModuleWithProviders return type */
-  private _resolveStaticMethod(node: ts.MethodDeclaration) {
+  private _resolveStaticMethod(node: ts.MethodDeclaration): AnalysisFailure|null {
     const returnStatement: ts.ReturnStatement|undefined = node.body &&
         node.body.statements.find(n => ts.isReturnStatement(n)) as ts.ReturnStatement | undefined;
+    const moduleText = this._getReturnStatementNgModuleType(returnStatement);
 
+    if (moduleText) {
+      this.migrateStaticMethod(node, moduleText);
+      return null;
+    }
+
+    return {node: node, message: `Method type is not statically analyzable.`};
+  }
+
+  /** Evaluate and return the ngModule type from a method or function's return statement */
+  private _getReturnStatementNgModuleType(returnStatement?: ts.ReturnStatement): string|undefined {
     // No return type found, exit
     if (!returnStatement || !returnStatement.expression) {
       return;
     }
 
     const evaluatedExpr = this.partialEvaluator.evaluate(returnStatement.expression);
-    this._visitReturnStatementResolvedValue(evaluatedExpr, node);
+    return this._visitObjectLiteralExpressionResolvedValue(evaluatedExpr);
   }
 
-  /** Visits the given resolved return statement of a static method. */
-  private _visitReturnStatementResolvedValue(value: ResolvedValue, method: ts.MethodDeclaration) {
+  /** Visits a given object literal expression to determine the ngModule type. */
+  private _visitObjectLiteralExpressionResolvedValue(value: ResolvedValue): string|undefined {
     if (value instanceof Map && this.isModuleWithProvidersType(value)) {
       const mapValue = value.get('ngModule') !;
       if (mapValue instanceof Reference && ts.isClassDeclaration(mapValue.node) &&
           mapValue.node.name) {
-        this.migrateStaticMethod(method, mapValue.node.name.text);
+        return mapValue.node.name.text;
       }
-    } else if (value instanceof DynamicValue) {
-      this.failures.push(
-          {node: value.node, message: `Return statement is not statically analyzable.`});
     }
+
+    return undefined;
   }
+}
+
+function addGenericType(recorder: UpdateRecorder, node: ts.Node, newText: string) {
+  recorder.remove(node.getStart(), node.getWidth());
+  recorder.insertRight(node.getStart(), newText);
 }

@@ -121,7 +121,7 @@ describe('ModuleWithProviders migration', () => {
 
   it('should add generic type for const variable', async() => {
     writeFile('/index.ts', `
-        import {NgModule} from '@angular/core';
+        import {ModuleWithProviders, NgModule} from '@angular/core';
         
         @NgModule({})
         export class BaseModule {}
@@ -180,6 +180,38 @@ describe('ModuleWithProviders migration', () => {
 
     await runMigration();
     expect(tree.readContent('/index.ts')).not.toContain(`ModuleWithProviders<BaseModule>`);
+  });
+
+  it('should add generic type for const variables and functions with incomplete type', async() => {
+    writeFile('/index.ts', `
+      import {ModuleWithProviders, NgModule} from '@angular/core';
+      
+      @NgModule({})
+      export class BaseModule {}
+     
+      export const myModuleWithProviders: ModuleWithProviders = {ngModule: BaseModule};
+      
+      export function mwpFunction: ModuleWithProviders {
+        return myModuleWithProviders;
+      }
+      
+      export class MwpClass {
+        mwp: ModuleWithProviders = myModuleWithProviders;
+        private _mwp: ModuleWithProviders = myModuleWithProviders;
+        
+        getMwp(): ModuleWithProviders {
+          return myModuleWithProviders;
+        }
+        
+        static initMwp(): ModuleWithProviders {
+          return myModuleWithProviders;
+        }
+      }
+    `);
+
+    await runMigration();
+    // Note the explicit space at the end here
+    expect(tree.readContent('/index.ts')).not.toContain(`ModuleWithProviders `);
   });
 
   function writeFile(filePath: string, contents: string) {

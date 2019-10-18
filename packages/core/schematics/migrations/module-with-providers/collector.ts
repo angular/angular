@@ -15,21 +15,29 @@ export interface ResolvedNgModule {
   name: string;
   node: ts.ClassDeclaration;
   decorator: NgDecorator;
-  staticMethods: ts.MethodDeclaration[];
+  /**
+   * List of found static method declarations on the module which do not
+   * declare an explicit return type.
+   */
+  staticMethodsWithoutType: ts.MethodDeclaration[];
 }
 
 /**
  * Visitor that walks through specified TypeScript nodes and collects all
- * found NgModule definitions.
+ * found NgModule static methods without types and all ModuleWithProviders
+ * usages without generic types attached.
  */
-export class NgModuleCollector {
+export class Collector {
   resolvedModules: ResolvedNgModule[] = [];
+  resolvedNonGenerics: ts.TypeReferenceNode[] = [];
 
   constructor(public typeChecker: ts.TypeChecker) {}
 
   visitNode(node: ts.Node) {
     if (ts.isClassDeclaration(node)) {
       this.visitClassDeclaration(node);
+    } else if (isModuleWithProvidersNotGeneric(this.typeChecker, node)) {
+      this.resolvedNonGenerics.push(node);
     }
 
     ts.forEachChild(node, n => this.visitNode(n));
@@ -56,20 +64,16 @@ export class NgModuleCollector {
       return;
     }
 
-    const staticMethods =
-        node.members.filter(isStaticMethod)
-            .filter(node => !node.type || isModuleWithProvidersNotGeneric(node.type));
-
     this.resolvedModules.push({
       name: node.name ? node.name.text : 'default',
       node,
       decorator,
-      staticMethods,
+      staticMethodsWithoutType: node.members.filter(isStaticMethodNoType),
     });
   }
 }
 
-function isStaticMethod(node: ts.ClassElement): node is ts.MethodDeclaration {
+function isStaticMethodNoType(node: ts.ClassElement): node is ts.MethodDeclaration {
   return ts.isMethodDeclaration(node) && !!node.modifiers &&
-      node.modifiers.findIndex(m => m.kind === ts.SyntaxKind.StaticKeyword) > -1;
+      node.modifiers.findIndex(m => m.kind === ts.SyntaxKind.StaticKeyword) > -1 && !node.type;
 }
