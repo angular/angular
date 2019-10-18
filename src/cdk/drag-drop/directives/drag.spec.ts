@@ -3358,6 +3358,57 @@ describe('CdkDrag', () => {
         cleanup();
       }));
 
+    it('should pick up descendants inside of containers', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZoneWithContainer);
+      fixture.detectChanges();
+      const dragItems = fixture.componentInstance.dragItems;
+      const firstItem = dragItems.first;
+      const thirdItemRect = dragItems.toArray()[2].element.nativeElement.getBoundingClientRect();
+
+      dragElementViaMouse(fixture, firstItem.element.nativeElement,
+          thirdItemRect.left + 1, thirdItemRect.top + 1);
+      flush();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).toHaveBeenCalledTimes(1);
+
+      const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      // Assert the event like this, rather than `toHaveBeenCalledWith`, because Jasmine will
+      // go into an infinite loop trying to stringify the event, if the test fails.
+      expect(event).toEqual({
+        previousIndex: 0,
+        currentIndex: 2,
+        item: firstItem,
+        container: fixture.componentInstance.dropInstance,
+        previousContainer: fixture.componentInstance.dropInstance,
+        isPointerOverContainer: true,
+        distance: {x: jasmine.any(Number), y: jasmine.any(Number)}
+      });
+    }));
+
+    it('should not pick up items from descendant drop lists', fakeAsync(() => {
+      const fixture = createComponent(NestedDropZones);
+      fixture.detectChanges();
+      const {dragItems, innerList, outerList} = fixture.componentInstance;
+      const innerClasses = innerList.nativeElement.classList;
+      const outerClasses = outerList.nativeElement.classList;
+      const draggingClass = 'cdk-drop-list-dragging';
+
+      expect(innerClasses).not.toContain(draggingClass,
+          'Expected inner list to start off as not dragging.');
+      expect(outerClasses).not.toContain(draggingClass,
+          'Expected outer list to start off as not dragging.');
+
+      startDraggingViaMouse(fixture, dragItems.first.element.nativeElement);
+      fixture.detectChanges();
+
+      expect(innerClasses).toContain(draggingClass,
+          'Expected inner list to be dragging.');
+      expect(outerClasses).not.toContain(draggingClass,
+          'Expected outer list to not be dragging.');
+    }));
+
   });
 
   describe('in a connected drop container', () => {
@@ -4561,6 +4612,32 @@ class DraggableInScrollableVerticalDropZone extends DraggableInDropZone {
   }
 }
 
+@Component({
+  // Note that we need the blank `ngSwitch` below to hit the code path that we're testing.
+  template: `
+    <div
+      cdkDropList
+      class="drop-list"
+      style="width: 100px; background: pink;"
+      [id]="dropZoneId"
+      [cdkDropListData]="items"
+      (cdkDropListSorted)="sortedSpy($event)"
+      (cdkDropListDropped)="droppedSpy($event)">
+        <ng-container [ngSwitch]="true">
+          <div
+            *ngFor="let item of items"
+            cdkDrag
+            [cdkDragData]="item"
+            [cdkDragBoundary]="boundarySelector"
+            [style.height.px]="item.height"
+            [style.margin-bottom.px]="item.margin"
+            style="width: 100%; background: red;">{{item.value}}</div>
+        </ng-container>
+    </div>
+  `
+})
+class DraggableInDropZoneWithContainer extends DraggableInDropZone {}
+
 // Use inline blocks here to avoid flexbox issues and not to have to flip floats in rtl.
 const HORIZONTAL_FIXTURE_STYLES = `
   .cdk-drop-list {
@@ -5095,16 +5172,14 @@ class WrappedDropContainerComponent {
       class="container"
       (cdkDragStarted)="containerDragStartedSpy($event)"
       (cdkDragMoved)="containerDragMovedSpy($event)"
-      (cdkDragReleased)="containerDragReleasedSpy($event)"
-    >
+      (cdkDragReleased)="containerDragReleasedSpy($event)">
       <div
         cdkDrag
         class="item"
         #item
         (cdkDragStarted)="itemDragStartedSpy($event)"
         (cdkDragMoved)="itemDragMovedSpy($event)"
-        (cdkDragReleased)="itemDragReleasedSpy($event)"
-      >
+        (cdkDragReleased)="itemDragReleasedSpy($event)">
       </div>
     </div>`
 })
@@ -5118,6 +5193,31 @@ class NestedDragsComponent {
   itemDragStartedSpy = jasmine.createSpy('item drag started spy');
   itemDragMovedSpy = jasmine.createSpy('item drag moved spy');
   itemDragReleasedSpy = jasmine.createSpy('item drag released spy');
+}
+
+@Component({
+  styles: [`
+    .drop-list {
+      width: 100px;
+      background: pink;
+    }
+  `],
+  template: `
+    <div cdkDropList class="drop-list" #outerList>
+      <div cdkDropList class="drop-list" #innerList>
+        <div
+          *ngFor="let item of items"
+          cdkDrag
+          style="width: 100%; background: red; height: ${ITEM_HEIGHT}px;">{{item}}</div>
+      </div>
+    </div>
+  `
+})
+class NestedDropZones {
+  @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
+  @ViewChild('outerList', {static: false}) outerList: ElementRef<HTMLElement>;
+  @ViewChild('innerList', {static: false}) innerList: ElementRef<HTMLElement>;
+  items = ['Zero', 'One', 'Two', 'Three'];
 }
 
 /**

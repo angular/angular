@@ -69,11 +69,7 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
   _dropListRef: DropListRef<CdkDropList<T>>;
 
   /** Draggable items in the container. */
-  @ContentChildren(CdkDrag, {
-    // Explicitly set to false since some of the logic below makes assumptions about it.
-    // The `.withItems` call below should be updated if we ever need to switch this to `true`.
-    descendants: false
-  }) _draggables: QueryList<CdkDrag>;
+  @ContentChildren(CdkDrag, {descendants: true}) _draggables: QueryList<CdkDrag>;
 
   /**
    * Other draggable containers that this container is connected to and into which the
@@ -172,7 +168,13 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
     this._draggables.changes
       .pipe(startWith(this._draggables), takeUntil(this._destroyed))
       .subscribe((items: QueryList<CdkDrag>) => {
-        this._dropListRef.withItems(items.map(drag => drag._dragRef));
+        this._dropListRef.withItems(items.reduce((filteredItems, drag) => {
+          if (drag.dropContainer === this) {
+            filteredItems.push(drag._dragRef);
+          }
+
+          return filteredItems;
+        }, [] as DragRef[]));
       });
   }
 
