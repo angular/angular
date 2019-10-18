@@ -28,7 +28,8 @@ const hiddenHtmlElements = {
   link: true,
 };
 
-const ANGULAR_ELEMENTS: ReadonlyArray<string> = ['ng-container', 'ng-content', 'ng-template'] as const ;
+const ANGULAR_ELEMENTS: ReadonlyArray<string> =
+    ['ng-container', 'ng-content', 'ng-template'] as const ;
 
 export function getTemplateCompletions(
     templateInfo: AstResult, position: number): ts.CompletionEntry[] {
