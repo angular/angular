@@ -1817,8 +1817,58 @@ runInEachFileSystem(() => {
            superGetDeclarationOfIdentifierSpy.calls.reset();
 
            expect(host.getDeclarationOfIdentifier(innerIdentifier) !.node).toBe(outerDeclaration);
+           expect(superGetDeclarationOfIdentifierSpy).toHaveBeenCalledWith(innerIdentifier);
            expect(superGetDeclarationOfIdentifierSpy).toHaveBeenCalledWith(outerIdentifier);
-           expect(superGetDeclarationOfIdentifierSpy).toHaveBeenCalledTimes(1);
+           expect(superGetDeclarationOfIdentifierSpy).toHaveBeenCalledTimes(2);
+         });
+
+      it('should return the correct outer declaration for an aliased inner class declaration inside an ES5 IIFE',
+         () => {
+           // Note that the inner class declaration `function FroalaEditorModule() {}` is aliased
+           // internally to `FroalaEditorModule_1`, which is used in the object returned from
+           // `forRoot()`.
+           const PROGRAM_FILE: TestFile = {
+             name: _('/test.js'),
+             contents: `
+            var FroalaEditorModule = /** @class */ (function () {
+              function FroalaEditorModule() {
+              }
+              FroalaEditorModule_1 = FroalaEditorModule;
+              FroalaEditorModule.forRoot = function () {
+                  return { ngModule: FroalaEditorModule_1, providers: [] };
+              };
+              var FroalaEditorModule_1;
+              FroalaEditorModule = FroalaEditorModule_1 = __decorate([
+                  NgModule({
+                      declarations: [FroalaEditorDirective],
+                      exports: [FroalaEditorDirective]
+                  })
+              ], FroalaEditorModule);
+              return FroalaEditorModule;
+          }());
+          export { FroalaEditorModule };
+          `
+           };
+
+           loadTestFiles([PROGRAM_FILE]);
+           const {program} = makeTestBundleProgram(PROGRAM_FILE.name);
+           const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+
+           const expectedDeclaration = getDeclaration(
+               program, PROGRAM_FILE.name, 'FroalaEditorModule', isNamedVariableDeclaration);
+           // Grab the `FroalaEditorModule_1` identifier returned from the `forRoot()` method
+           const forRootMethod = ((((expectedDeclaration.initializer as ts.ParenthesizedExpression)
+                                        .expression as ts.CallExpression)
+                                       .expression as ts.FunctionExpression)
+                                      .body.statements[2] as ts.ExpressionStatement);
+           const identifier =
+               (((((forRootMethod.expression as ts.BinaryExpression).right as ts.FunctionExpression)
+                      .body.statements[0] as ts.ReturnStatement)
+                     .expression as ts.ObjectLiteralExpression)
+                    .properties[0] as ts.PropertyAssignment)
+                   .initializer as ts.Identifier;
+           const actualDeclaration = host.getDeclarationOfIdentifier(identifier) !;
+           expect(actualDeclaration.node !.getText()).toBe(expectedDeclaration.getText());
          });
     });
 
