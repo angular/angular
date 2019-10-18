@@ -137,7 +137,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     }
 
     const outerDeclaration = getClassDeclarationFromInnerFunctionDeclaration(declaration);
-    if (outerDeclaration === undefined || !hasNameIdentifier(outerDeclaration)) {
+    if (outerDeclaration === null || !hasNameIdentifier(outerDeclaration)) {
       return undefined;
     }
 
@@ -162,12 +162,23 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * otherwise.
    */
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
-    // Get the identifier for the outer class node (if any).
-    const outerClassNode = getClassDeclarationFromInnerFunctionDeclaration(id.parent);
-    const declaration = super.getDeclarationOfIdentifier(outerClassNode ? outerClassNode.name : id);
+    const superDeclaration = super.getDeclarationOfIdentifier(id);
 
-    if (!declaration || declaration.node === null || !ts.isVariableDeclaration(declaration.node) ||
-        declaration.node.initializer !== undefined ||
+    if (superDeclaration === null || superDeclaration.node === null) {
+      return superDeclaration;
+    }
+
+    // Get the identifier for the outer class node (if any).
+    const outerClassNode = getClassDeclarationFromInnerFunctionDeclaration(superDeclaration.node);
+    const declaration = outerClassNode !== null ?
+        super.getDeclarationOfIdentifier(outerClassNode.name) :
+        superDeclaration;
+
+    if (!declaration || declaration.node === null) {
+      return declaration;
+    }
+
+    if (!ts.isVariableDeclaration(declaration.node) || declaration.node.initializer !== undefined ||
         // VariableDeclaration => VariableDeclarationList => VariableStatement => IIFE Block
         !ts.isBlock(declaration.node.parent.parent.parent)) {
       return declaration;
@@ -528,35 +539,35 @@ function readPropertyFunctionExpression(object: ts.ObjectLiteralExpression, name
  * @returns the outer variable declaration or `undefined` if it is not a "class".
  */
 function getClassDeclarationFromInnerFunctionDeclaration(node: ts.Node):
-    ClassDeclaration<ts.VariableDeclaration>|undefined {
+    ClassDeclaration<ts.VariableDeclaration>|null {
   if (ts.isFunctionDeclaration(node)) {
     // It might be the function expression inside the IIFE. We need to go 5 levels up...
 
     // 1. IIFE body.
     let outerNode = node.parent;
-    if (!outerNode || !ts.isBlock(outerNode)) return undefined;
+    if (!outerNode || !ts.isBlock(outerNode)) return null;
 
     // 2. IIFE function expression.
     outerNode = outerNode.parent;
-    if (!outerNode || !ts.isFunctionExpression(outerNode)) return undefined;
+    if (!outerNode || !ts.isFunctionExpression(outerNode)) return null;
 
     // 3. IIFE call expression.
     outerNode = outerNode.parent;
-    if (!outerNode || !ts.isCallExpression(outerNode)) return undefined;
+    if (!outerNode || !ts.isCallExpression(outerNode)) return null;
 
     // 4. Parenthesis around IIFE.
     outerNode = outerNode.parent;
-    if (!outerNode || !ts.isParenthesizedExpression(outerNode)) return undefined;
+    if (!outerNode || !ts.isParenthesizedExpression(outerNode)) return null;
 
     // 5. Outer variable declaration.
     outerNode = outerNode.parent;
-    if (!outerNode || !ts.isVariableDeclaration(outerNode)) return undefined;
+    if (!outerNode || !ts.isVariableDeclaration(outerNode)) return null;
 
     // Finally, ensure that the variable declaration has a `name` identifier.
-    return hasNameIdentifier(outerNode) ? outerNode : undefined;
+    return hasNameIdentifier(outerNode) ? outerNode : null;
   }
 
-  return undefined;
+  return null;
 }
 
 export function getIifeBody(declaration: ts.Declaration): ts.Block|undefined {
