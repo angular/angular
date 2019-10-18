@@ -620,8 +620,9 @@ export class R3TestBedCompiler {
   private getOverriddenProviders(providers?: Provider[]): Provider[] {
     if (!providers || !providers.length || this.providerOverridesByToken.size === 0) return [];
 
-    const overrides = this.getProviderOverrides(providers);
-    const overriddenProviders = [...providers, ...overrides];
+    const flattenedProviders = flatten<Provider[]>(providers);
+    const overrides = this.getProviderOverrides(flattenedProviders);
+    const overriddenProviders = [...flattenedProviders, ...overrides];
     const tokenToProviderMap: Map<any, Provider> = new Map();
 
     // Iterate through providers from the end so only the most recent provider is used for a given

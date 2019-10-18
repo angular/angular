@@ -225,10 +225,31 @@ describe('TestBed', () => {
   });
 
   it('allow to override a provider', () => {
-    TestBed.overrideProvider(NAME, {useValue: 'injected World !'});
+    TestBed.overrideProvider(NAME, {useValue: 'injected World!'});
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
-    expect(hello.nativeElement).toHaveText('Hello injected World !');
+    expect(hello.nativeElement).toHaveText('Hello injected World!');
+  });
+
+  it('uses the most recent provider override', () => {
+    TestBed.overrideProvider(NAME, {useValue: 'injected World!'});
+    TestBed.overrideProvider(NAME, {useValue: 'injected World a second time!'});
+    const hello = TestBed.createComponent(HelloWorld);
+    hello.detectChanges();
+    expect(hello.nativeElement).toHaveText('Hello injected World a second time!');
+  });
+
+  it('overrides a providers in an array', () => {
+    TestBed.configureTestingModule({
+      imports: [HelloWorldModule],
+      providers: [
+        [{provide: NAME, useValue: 'injected World!'}],
+      ]
+    });
+    TestBed.overrideProvider(NAME, {useValue: 'injected World a second time!'});
+    const hello = TestBed.createComponent(HelloWorld);
+    hello.detectChanges();
+    expect(hello.nativeElement).toHaveText('Hello injected World a second time!');
   });
 
   describe('allow override of multi provider', () => {
