@@ -9,9 +9,3 @@ import %workspace%/.circleci/bazel.common.rc
 # Save downloaded repositories in a location that can be cached by CircleCI. This helps us
 # speeding up the analysis time significantly with Bazel managed node dependencies on the CI.
 build --repository_cache=C:/Users/circleci/bazel_repository_cache
-
-# All windows jobs run on master and should use http caching
-build --config=remote-http-caching
-
-# TODO(josephperrott): remove after #33109 lands
-build --google_default_credentials
