@@ -26,7 +26,7 @@ import {
   getDecoratorMetadata,
   getMetadataField
 } from '@schematics/angular/utility/ast-utils';
-import {InsertChange} from '@schematics/angular/utility/change';
+import {Change, InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace} from '@schematics/angular/utility/config';
 import {WorkspaceProject} from '@schematics/angular/utility/workspace-models';
 import chalk from 'chalk';
@@ -46,15 +46,20 @@ import {removeElementFromHtml} from './remove-element-from-html';
 const GESTURE_CONFIG_CLASS_NAME = 'GestureConfig';
 const GESTURE_CONFIG_FILE_NAME = 'gesture-config';
 const GESTURE_CONFIG_TEMPLATE_PATH = './gesture-config.template';
+
 const HAMMER_CONFIG_TOKEN_NAME = 'HAMMER_GESTURE_CONFIG';
 const HAMMER_CONFIG_TOKEN_MODULE = '@angular/platform-browser';
+
+const HAMMER_MODULE_NAME = 'HammerModule';
+const HAMMER_MODULE_IMPORT = '@angular/platform-browser';
+
 const HAMMER_MODULE_SPECIFIER = 'hammerjs';
 
 const CANNOT_REMOVE_REFERENCE_ERROR =
     `Cannot remove reference to "GestureConfig". Please remove manually.`;
 
-const CANNOT_SETUP_APP_MODULE_ERROR = `Could not setup HammerJS gesture in module. Please ` +
-  `manually ensure that the Hammer gesture config is set up.`;
+const CANNOT_SETUP_APP_MODULE_ERROR = `Could not setup Hammer gestures in module. Please ` +
+    `manually ensure that the Hammer gesture config is set up.`;
 
 interface IdentifierReference {
   node: ts.Identifier;
@@ -92,10 +97,16 @@ export class HammerGesturesRule extends MigrationRule<null> {
   private _gestureConfigReferences: IdentifierReference[] = [];
 
   /**
-   * List of identifiers which resolve to "HAMMER_GESTURE_CONFIG" token from
+   * List of identifiers which resolve to the "HAMMER_GESTURE_CONFIG" token from
    * "@angular/platform-browser".
    */
   private _hammerConfigTokenReferences: IdentifierReference[] = [];
+
+  /**
+   * List of identifiers which resolve to the "HammerModule" from
+   * "@angular/platform-browser".
+   */
+  private _hammerModuleReferences: IdentifierReference[] = [];
 
   /**
    * List of identifiers that have been deleted from source files. This can be
@@ -114,6 +125,7 @@ export class HammerGesturesRule extends MigrationRule<null> {
     this._checkForRuntimeHammerUsage(node);
     this._checkForMaterialGestureConfig(node);
     this._checkForHammerGestureConfigToken(node);
+    this._checkForHammerModuleReference(node);
   }
 
   postAnalysis(): void {
@@ -129,28 +141,29 @@ export class HammerGesturesRule extends MigrationRule<null> {
       // remove the dependency.
       HammerGesturesRule.globalUsesHammer = true;
 
-      // If hammer is only used at runtime, we don't need the gesture config
-      // and can remove it (along with the hammer config token if possible)
+      // If hammer is only used at runtime, we don't need the gesture config or "HammerModule"
+      // and can remove it (along with the hammer config token import if no longer needed).
       if (!this._usedInTemplate) {
-        this._removeGestureConfigSetup();
+        this._removeMaterialGestureConfigSetup();
+        this._removeHammerModuleReferences();
       } else {
         this._setupHammerGestureConfig();
       }
     } else {
-      // If HammerJS could not be detected, but we detected a custom gesture
-      // config setup, we just remove all references to the Angular Material
-      // gesture config. Otherwise we completely remove HammerJS from the app.
+      // If HammerJS could not be detected, but we detected a custom gesture config
+      // setup, we only remove all references to the Angular Material gesture config.
       if (hasCustomGestureConfigSetup) {
-        this._removeGestureConfigSetup();
+        this._removeMaterialGestureConfigSetup();
         // Print a message if we found a custom gesture config setup in combination with
         // references to the Angular Material gesture config. This is ambiguous and the
         // migration just removes the Material gesture config setup, but we still want
         // to create an information message.
         if (this._gestureConfigReferences.length) {
-          this.printInfo(chalk.yellow(
-              'The HammerJS v9 migration for Angular components detected that the Angular ' +
-              'Material gesture config is used while a custom gesture config is set up. The ' +
-              'migration removed all references to the Angular Material gesture config.'));
+          this.printInfo(
+              'The HammerJS v9 migration for Angular components detected that HammerJS is' +
+              'manually set up in combination with references to the Angular Material gesture ' +
+              'config. The migration is unable to perform the full migration for this target, ' +
+              'but removed all references to the deprecated Angular Material gesture config.');
         }
       } else {
         this._removeHammerSetup();
@@ -201,8 +214,9 @@ export class HammerGesturesRule extends MigrationRule<null> {
     this._gestureConfigReferences.forEach(
         i => this._replaceGestureConfigReference(i, gestureConfigPath));
 
-    // Setup the gesture config provider in the project app module if not done already.
-    this._setupGestureConfigInAppModule(project, gestureConfigPath);
+    // Setup the gesture config provider and the "HammerModule" in the project app
+    // module if not done already.
+    this._setupHammerGesturesInAppModule(project, gestureConfigPath);
   }
 
   /**
@@ -216,21 +230,61 @@ export class HammerGesturesRule extends MigrationRule<null> {
 
     this._installImports.forEach(i => this._importManager.deleteImportByDeclaration(i));
 
-    this._removeGestureConfigSetup();
+    this._removeMaterialGestureConfigSetup();
+    this._removeHammerModuleReferences();
     this._removeHammerFromIndexFile(project);
   }
 
   /**
-   * Removes the gesture config setup by deleting all found references
-   * to a gesture config. Additionally, unused imports to the hammer gesture
-   * config token from platform-browser are removed as well.
+   * Removes the gesture config setup by deleting all found references to the Angular
+   * Material gesture config. Additionally, unused imports to the hammer gesture config
+   * token from "@angular/platform-browser" will be removed as well.
    */
-  private _removeGestureConfigSetup() {
+  private _removeMaterialGestureConfigSetup() {
     this._gestureConfigReferences.forEach(r => this._removeGestureConfigReference(r));
 
     this._hammerConfigTokenReferences.forEach(r => {
       if (r.isImport) {
         this._removeHammerConfigTokenImportIfUnused(r);
+      }
+    });
+  }
+
+  /** Removes all references to the "HammerModule" from "@angular/platform-browser". */
+  private _removeHammerModuleReferences() {
+    this._hammerModuleReferences.forEach(({node, isImport, importData}) => {
+      const sourceFile = node.getSourceFile();
+      const recorder = this.getUpdateRecorder(sourceFile.fileName);
+
+      // Only remove the import for the HammerModule if the module has been accessed
+      // through a non-namespaced identifier access.
+      if (!isNamespacedIdentifierAccess(node)) {
+        this._importManager.deleteNamedBindingImport(
+            sourceFile, HAMMER_MODULE_NAME, importData.moduleName);
+      }
+
+      // For references from within an import, we do not need to do anything other than
+      // removing the import. For other references, we remove the import and the actual
+      // identifier in the module imports.
+      if (isImport) {
+        return;
+      }
+
+      // If the "HammerModule" is referenced within an array literal, we can
+      // remove the element easily. Otherwise if it's outside of an array literal,
+      // we need to replace the reference with an empty object literal w/ todo to
+      // not break the application.
+      if (ts.isArrayLiteralExpression(node.parent)) {
+        // Removes the "HammerModule" from the parent array expression. Removes
+        // the trailing comma token if present.
+        removeElementFromArrayExpression(node, recorder);
+      } else {
+        recorder.remove(node.getStart(), node.getWidth());
+        recorder.insertRight(node.getStart(), `/* TODO: remove */ {}`);
+        this._nodeFailures.push({
+          node: node,
+          message: 'Unable to delete reference to "HammerModule".',
+        });
       }
     });
   }
@@ -245,6 +299,21 @@ export class HammerGesturesRule extends MigrationRule<null> {
       if (importData && importData.symbolName === HAMMER_CONFIG_TOKEN_NAME &&
           importData.moduleName === HAMMER_CONFIG_TOKEN_MODULE) {
         this._hammerConfigTokenReferences.push(
+            {node, importData, isImport: ts.isImportSpecifier(node.parent)});
+      }
+    }
+  }
+
+  /**
+   * Checks if the given node is a reference to the HammerModule from
+   * "@angular/platform-browser". If so, keeps track of the reference.
+   */
+  private _checkForHammerModuleReference(node: ts.Node) {
+    if (ts.isIdentifier(node)) {
+      const importData = getImportOfIdentifier(node, this.typeChecker);
+      if (importData && importData.symbolName === HAMMER_MODULE_NAME &&
+          importData.moduleName === HAMMER_MODULE_IMPORT) {
+        this._hammerModuleReferences.push(
             {node, importData, isImport: ts.isImportSpecifier(node.parent)});
       }
     }
@@ -377,15 +446,15 @@ export class HammerGesturesRule extends MigrationRule<null> {
       {node, importData, isImport}: IdentifierReference, newPath: string) {
     const sourceFile = node.getSourceFile();
     const recorder = this.getUpdateRecorder(sourceFile.fileName);
-    // List of all identifiers referring to the gesture config in the current file. This
-    // allows us to add a import for the new gesture configuration without generating a
-    // new unique identifier for the import. i.e. "GestureConfig_1". The import manager
-    // checks for possible name collisions, but is able to ignore specific identifiers.
-    const gestureIdentifiersInFile =
-        this._gestureConfigReferences.filter(d => d.node.getSourceFile() === sourceFile)
-            .map(d => d.node);
-
     const newModuleSpecifier = getModuleSpecifier(newPath, sourceFile.fileName);
+
+    // List of all identifiers referring to the gesture config in the current file. This
+    // allows us to add an import for the copied gesture configuration without generating a
+    // new identifier for the import to avoid collisions. i.e. "GestureConfig_1". The import
+    // manager checks for possible name collisions, but is able to ignore specific identifiers.
+    // We use this to ignore all references to the original Angular Material gesture config,
+    // because these will be replaced and therefore will not interfere.
+    const gestureIdentifiersInFile = this._getGestureConfigIdentifiersOfFile(sourceFile);
 
     // If the parent of the identifier is accessed through a namespace, we can just
     // import the new gesture config without rewriting the import declaration because
@@ -522,7 +591,7 @@ export class HammerGesturesRule extends MigrationRule<null> {
   }
 
   /** Sets up the Hammer gesture config provider in the app module if needed. */
-  private _setupGestureConfigInAppModule(project: WorkspaceProject, configPath: string) {
+  private _setupHammerGesturesInAppModule(project: WorkspaceProject, gestureConfigPath: string) {
     const mainFilePath = join(this.basePath, getProjectMainFile(project));
     const mainFile = this.program.getSourceFile(mainFilePath);
     if (!mainFile) {
@@ -553,10 +622,14 @@ export class HammerGesturesRule extends MigrationRule<null> {
 
     const sourceFile = appModuleSymbol.valueDeclaration.getSourceFile();
     const relativePath = relative(this.basePath, sourceFile.fileName);
+    const hammerModuleExpr = this._importManager.addImportToSourceFile(
+        sourceFile, HAMMER_MODULE_NAME, HAMMER_MODULE_IMPORT);
     const hammerConfigTokenExpr = this._importManager.addImportToSourceFile(
         sourceFile, HAMMER_CONFIG_TOKEN_NAME, HAMMER_CONFIG_TOKEN_MODULE);
     const gestureConfigExpr = this._importManager.addImportToSourceFile(
-        sourceFile, GESTURE_CONFIG_CLASS_NAME, getModuleSpecifier(configPath, sourceFile.fileName));
+        sourceFile, GESTURE_CONFIG_CLASS_NAME,
+        getModuleSpecifier(gestureConfigPath, sourceFile.fileName), false,
+        this._getGestureConfigIdentifiersOfFile(sourceFile));
 
     const recorder = this.getUpdateRecorder(sourceFile.fileName);
     const newProviderNode = ts.createObjectLiteral([
@@ -572,26 +645,33 @@ export class HammerGesturesRule extends MigrationRule<null> {
     }
 
     const providersField = getMetadataField(metadata[0], 'providers')[0];
+    const importsField = getMetadataField(metadata[0], 'imports')[0];
+
     const providerIdentifiers =
         providersField ? findMatchingChildNodes(providersField, ts.isIdentifier) : null;
+    const importIdentifiers =
+        importsField ? findMatchingChildNodes(importsField, ts.isIdentifier) : null;
+    const changeActions: Change[] = [];
 
-    // If the providers field exists and already contains references to the hammer
-    // gesture config token and the gesture config, we naively assume that the gesture
-    // config is already set up. This check is slightly naive because it assumes that
-    // references to these two tokens always mean that they are set up as a provider
-    // definition. This is not guaranteed because it could be just by incident that
-    // gesture config is somehow references in a different provider than for setting up
-    // the gesture config token from platform-browser. This check can never be very
-    // robust without actually interpreting the providers field like NGC or ngtsc would.
-    // (this would involve partial interpretation with metadata.json file support)
-    if (providerIdentifiers &&
-        this._hammerConfigTokenReferences.some(r => providerIdentifiers.includes(r.node)) &&
-        this._gestureConfigReferences.some(r => providerIdentifiers.includes(r.node))) {
-      return;
+    // If the providers field exists and already contains references to the hammer gesture
+    // config token and the gesture config, we naively assume that the gesture config is
+    // already set up. We only want to add the gesture config provider if it is not set up.
+    if (!providerIdentifiers ||
+        !(this._hammerConfigTokenReferences.some(r => providerIdentifiers.includes(r.node)) &&
+          this._gestureConfigReferences.some(r => providerIdentifiers.includes(r.node)))) {
+      changeActions.push(...addSymbolToNgModuleMetadata(
+          sourceFile, relativePath, 'providers', this._printNode(newProviderNode, sourceFile),
+          null));
     }
 
-    const changeActions = addSymbolToNgModuleMetadata(sourceFile, relativePath, 'providers',
-        this._printNode(newProviderNode, sourceFile), null);
+    // If the "HammerModule" is not already imported in the app module, we set it up
+    // by adding it to the "imports" field.
+    if (!importIdentifiers ||
+        !this._hammerModuleReferences.some(r => importIdentifiers.includes(r.node))) {
+      changeActions.push(...addSymbolToNgModuleMetadata(
+          sourceFile, relativePath, 'imports', this._printNode(hammerModuleExpr, sourceFile),
+          null));
+    }
 
     changeActions.forEach(change => {
       if (change instanceof InsertChange) {
@@ -603,6 +683,12 @@ export class HammerGesturesRule extends MigrationRule<null> {
   /** Prints a given node within the specified source file. */
   private _printNode(node: ts.Node, sourceFile: ts.SourceFile): string {
     return this._printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
+  }
+
+  /** Gets all referenced gesture config identifiers of a given source file */
+  private _getGestureConfigIdentifiersOfFile(sourceFile: ts.SourceFile): ts.Identifier[] {
+    return this._gestureConfigReferences.filter(d => d.node.getSourceFile() === sourceFile)
+        .map(d => d.node);
   }
 
   /** Gets the symbol that contains the value declaration of the specified node. */

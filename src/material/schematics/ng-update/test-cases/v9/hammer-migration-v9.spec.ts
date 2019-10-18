@@ -102,6 +102,41 @@ describe('v9 HammerJS removal', () => {
         export class TestModule {}`);
     });
 
+    it('should remove references to HammerModule', async () => {
+      writeFile('/projects/cdk-testing/src/test.module.ts', dedent`
+        import {NgModule} from '@angular/core';
+        import {HAMMER_GESTURE_CONFIG, HammerModule} from '@angular/platform-browser'; // some comment
+        import {GestureConfig} from '@angular/material/core';
+
+        @NgModule({
+          providers: [
+            {provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig},
+            OtherProvider,
+          ],
+          imports: [
+            HammerModule,
+            OtherModule
+          ],
+        })
+        export class TestModule {}
+      `);
+
+      await runMigration();
+
+      expect(tree.readContent('/projects/cdk-testing/src/test.module.ts')).toContain(dedent`
+        import {NgModule} from '@angular/core';
+
+        @NgModule({
+          providers: [
+            OtherProvider,
+          ],
+          imports: [
+            OtherModule
+          ],
+        })
+        export class TestModule {}`);
+    });
+
     it('should remove references to gesture config if imports are aliased', async () => {
       writeFile('/projects/cdk-testing/src/test.module.ts', dedent`
         import {NgModule} from '@angular/core';
@@ -318,14 +353,15 @@ describe('v9 HammerJS removal', () => {
 
       writeFile('/projects/cdk-testing/src/test.module.ts', dedent`
         import {NgModule} from '@angular/core';
-        import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
+        import {HAMMER_GESTURE_CONFIG, HammerModule} from '@angular/platform-browser';
         import {GestureConfig} from '@angular/material/core';
 
         @NgModule({
           providers: [
             {provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig},
             OtherProvider,
-          ]
+          ],
+          imports: [HammerModule],
         })
         export class TestModule {}
       `);
@@ -340,7 +376,8 @@ describe('v9 HammerJS removal', () => {
         @NgModule({
           providers: [
             OtherProvider,
-          ]
+          ],
+          imports: [],
         })
         export class TestModule {}`);
     });
@@ -507,7 +544,7 @@ describe('v9 HammerJS removal', () => {
         export class TestModule {}`);
     });
 
-    it('should add gesture config provider to app module', async () => {
+    it('should set up Hammer gestures in app module', async () => {
       writeFile('/projects/cdk-testing/src/app/app.component.html', `
         <span (pinch)="onPinch($event)"></span>
       `);
@@ -517,7 +554,7 @@ describe('v9 HammerJS removal', () => {
       expect(tree.readContent('/projects/cdk-testing/src/main.ts')).toContain(`import 'hammerjs';`);
       expect(tree.exists('/projects/cdk-testing/src/gesture-config.ts')).toBe(true);
       expect(tree.readContent('/projects/cdk-testing/src/app/app.module.ts')).toContain(dedent`\
-        import { BrowserModule, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
+        import { BrowserModule, HammerModule, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
         import { NgModule } from '@angular/core';
 
         import { AppComponent } from './app.component';
@@ -528,7 +565,8 @@ describe('v9 HammerJS removal', () => {
             AppComponent
           ],
           imports: [
-            BrowserModule
+            BrowserModule,
+            HammerModule
           ],
           providers: [{ provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig }],
           bootstrap: [AppComponent]
@@ -565,7 +603,7 @@ describe('v9 HammerJS removal', () => {
       expect(tree.readContent('/projects/cdk-testing/src/main.ts')).toContain(`import 'hammerjs';`);
       expect(tree.exists('/projects/cdk-testing/src/gesture-config.ts')).toBe(true);
       expect(tree.readContent('/projects/cdk-testing/src/app/app.module.ts')).toContain(dedent`\
-        import { BrowserModule, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
+        import { BrowserModule, HammerModule, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
         import { NgModule } from '@angular/core';
 
         import { AppComponent } from './app.component';
@@ -576,7 +614,8 @@ describe('v9 HammerJS removal', () => {
             AppComponent
           ],
           imports: [
-            BrowserModule
+            BrowserModule,
+            HammerModule
           ],
           providers: [{ provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig }],
           bootstrap: [AppComponent]
@@ -610,7 +649,7 @@ describe('v9 HammerJS removal', () => {
       expect(tree.readContent('/projects/cdk-testing/src/main.ts')).toContain(`import 'hammerjs';`);
       expect(tree.exists('/projects/cdk-testing/src/gesture-config.ts')).toBe(true);
       expect(tree.readContent('/projects/cdk-testing/src/app/app.module.ts')).toContain(dedent`
-        import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
+        import { HAMMER_GESTURE_CONFIG, HammerModule } from '@angular/platform-browser';
         import {NgModule} from '@angular/core';
         import { GestureConfig } from "../gesture-config";
 
@@ -621,6 +660,38 @@ describe('v9 HammerJS removal', () => {
               useClass: GestureConfig
             },
           ],
+          imports: [HammerModule],
+        })
+        export class AppModule {}`);
+    });
+
+    it('should not add HammerModule multiple times if already provided', async () => {
+      writeFile('/projects/cdk-testing/src/app/app.component.html', `
+        <span (pinch)="onPinch($event)"></span>
+      `);
+
+      writeFile('/projects/cdk-testing/src/app/app.module.ts', dedent`
+        import {HammerModule as myHammerModule} from '@angular/platform-browser';
+        import {NgModule} from '@angular/core';
+
+        @NgModule({
+          imports: [myHammerModule],
+        })
+        export class AppModule {}
+      `);
+
+      await runMigration();
+
+      expect(tree.readContent('/projects/cdk-testing/src/main.ts')).toContain(`import 'hammerjs';`);
+      expect(tree.exists('/projects/cdk-testing/src/gesture-config.ts')).toBe(true);
+      expect(tree.readContent('/projects/cdk-testing/src/app/app.module.ts')).toContain(dedent`
+        import { HammerModule as myHammerModule, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
+        import {NgModule} from '@angular/core';
+        import { GestureConfig } from "../gesture-config";
+
+        @NgModule({
+          imports: [myHammerModule],
+          providers: [{ provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig }],
         })
         export class AppModule {}`);
     });
@@ -710,8 +781,8 @@ describe('v9 HammerJS removal', () => {
 
        const {logOutput} = await runMigration();
 
-       expect(logOutput).toContain(
-          `Material gesture config is used while a custom gesture config is set up`);
+       expect(logOutput).toContain(`unable to perform the full migration for this target, but ` +
+         `removed all references to the deprecated Angular Material gesture config.`);
        expect(tree.readContent('/projects/cdk-testing/src/main.ts')).toContain('hammerjs');
        expect(tree.readContent('/projects/cdk-testing/src/test.component.ts')).toContain(dedent`
          import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
