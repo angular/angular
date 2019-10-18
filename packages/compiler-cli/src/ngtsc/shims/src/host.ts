@@ -34,7 +34,7 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
     if (delegate.resolveModuleNames !== undefined) {
       this.resolveModuleNames =
           (moduleNames: string[], containingFile: string, reusedNames: string[],
-           redirectedReference: ts.ResolvedProjectReference, options: ts.CompilerOptions) =>
+           redirectedReference: ts.ResolvedProjectReference, options?: ts.CompilerOptions) =>
               // FIXME: Additional parameters are required in TS3.6, but ignored in 3.5.
           // Remove the any cast once google3 is fully on TS3.6.
           (delegate.resolveModuleNames as any) !(
