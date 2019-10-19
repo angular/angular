@@ -1131,6 +1131,11 @@ function tcbGetDirectiveInputs(
       return;
     }
 
+    // Skip text attributes if configured to do so.
+    if (!tcb.env.config.checkTypeOfAttributes && attr instanceof TmplAstTextAttribute) {
+      return;
+    }
+
     // Skip the attribute if the directive does not have an input for it.
     if (!propMatch.has(attr.name)) {
       return;

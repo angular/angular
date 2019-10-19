@@ -426,6 +426,7 @@ export class NgtscProgram implements api.Program {
         checkTemplateBodies: true,
         checkTypeOfInputBindings: true,
         strictNullInputBindings: true,
+        checkTypeOfAttributes: true,
         // Even in full template type-checking mode, DOM binding checks are not quite ready yet.
         checkTypeOfDomBindings: false,
         checkTypeOfOutputEvents: true,
@@ -446,6 +447,7 @@ export class NgtscProgram implements api.Program {
         checkTemplateBodies: false,
         checkTypeOfInputBindings: false,
         strictNullInputBindings: false,
+        checkTypeOfAttributes: false,
         checkTypeOfDomBindings: false,
         checkTypeOfOutputEvents: false,
         checkTypeOfAnimationEvents: false,
