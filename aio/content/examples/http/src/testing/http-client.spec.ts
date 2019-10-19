@@ -91,7 +91,7 @@ describe('HttpClient testing', () => {
     httpTestingController.verify();
   });
   // #enddocregion post-test
-  
+
   it('can test HttpClient.get with matching header', () => {
 
     // Make an HTTP GET request with specific header
