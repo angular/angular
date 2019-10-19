@@ -134,6 +134,15 @@ export interface TypeCheckingConfig {
   checkTypeOfDomEvents: boolean;
 
   /**
+   * Whether to infer the type of local references.
+   *
+   * If this is `true`, the type of any `#ref` variable in the template will be determined by the
+   * referenced entity (either a directive or a DOM element). If set to `false`, the type of `ref`
+   * will be `any`.
+   */
+  checkTypeOfReferences: boolean;
+
+  /**
    * Whether to include type information from pipes in the type-checking operation.
    *
    * If this is `true`, then the pipe's type signature for `transform()` will be used to check the

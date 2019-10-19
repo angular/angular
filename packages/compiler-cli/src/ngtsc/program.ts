@@ -435,6 +435,7 @@ export class NgtscProgram implements api.Program {
         // - error TS2531: Object is possibly 'null'.
         // - error TS2339: Property 'value' does not exist on type 'EventTarget'.
         checkTypeOfDomEvents: false,
+        checkTypeOfReferences: true,
         checkTypeOfPipes: true,
         strictSafeNavigationTypes: true,
       };
@@ -449,6 +450,7 @@ export class NgtscProgram implements api.Program {
         checkTypeOfOutputEvents: false,
         checkTypeOfAnimationEvents: false,
         checkTypeOfDomEvents: false,
+        checkTypeOfReferences: false,
         checkTypeOfPipes: false,
         strictSafeNavigationTypes: false,
       };

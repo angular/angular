@@ -954,6 +954,11 @@ class TcbExpressionTranslator {
           addParseSpanInfo(expr, toAbsoluteSpan(ast.span, this.sourceSpan));
           return expr;
         } else if (binding instanceof TmplAstReference) {
+          if (!this.tcb.env.config.checkTypeOfReferences) {
+            // References are pinned to 'any'.
+            return NULL_AS_ANY;
+          }
+
           const target = this.tcb.boundTarget.getReferenceTarget(binding);
           if (target === null) {
             throw new Error(`Unbound reference? ${binding.name}`);
