@@ -155,6 +155,7 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   checkTypeOfOutputEvents: true,
   checkTypeOfAnimationEvents: true,
   checkTypeOfDomEvents: true,
+  checkTypeOfReferences: true,
   checkTypeOfPipes: true,
   strictSafeNavigationTypes: true,
 };
@@ -198,6 +199,7 @@ export function tcb(
     checkTypeOfOutputEvents: true,
     checkTypeOfAnimationEvents: true,
     checkTypeOfDomEvents: true,
+    checkTypeOfReferences: true,
     checkTypeOfPipes: true,
     checkTemplateBodies: true,
     strictSafeNavigationTypes: true,
