@@ -107,10 +107,10 @@ export interface TypeCheckingConfig {
    * Whether to check text attributes that happen to be consumed by a directive or component.
    *
    * For example, in a template containing `<input matInput disabled>` the `disabled` attribute ends
-   * up being consumed as an input with type `boolean` by the `matInput` directive. At runtime the
-   * input will be set to the attribute's string value, which is the empty string for attributes
-   * without a value, so with this flag set to `true` an error would be reported. If set to `false`,
-   * text attributes will never report an error.
+   * up being consumed as an input with type `boolean` by the `matInput` directive. At runtime, the
+   * input will be set to the attribute's string value, which is an empty string for attributes
+   * without a value, so with this flag set to `true`, an error would be reported. If set to
+   * `false`, text attributes will never report an error.
    *
    * Note that if `checkTypeOfInputBindings` is set to `false`, this flag has no effect.
    */
@@ -129,7 +129,8 @@ export interface TypeCheckingConfig {
   checkTypeOfDomBindings: boolean;
 
   /**
-   * Whether to infer the type of the `$event` variable in event bindings for directive outputs.
+   * Whether to infer the type of the `$event` variable in event bindings for directive outputs or
+   * animation events.
    *
    * If this is `true`, the type of `$event` will be inferred based on the generic type of
    * `EventEmitter`/`Subject` of the output. If set to `false`, the `$event` variable will be of
