@@ -59,6 +59,11 @@ export declare class CommonModule {
   static ɵmod: i0.ɵɵNgModuleDefWithMeta<CommonModule, [typeof NgIf, typeof NgForOf, typeof IndexPipe], never, [typeof NgIf, typeof NgForOf, typeof IndexPipe]>;
 }
 `);
+      env.write('node_modules/@angular/animations/index.d.ts', `
+export declare class AnimationEvent {
+  element: any;
+}
+`);
     });
 
     it('should check a simple component', () => {
@@ -81,6 +86,8 @@ export declare class CommonModule {
     });
 
     it('should check regular attributes that are directive inputs', () => {
+      env.tsconfig(
+          {fullTemplateTypeCheck: true, strictInputTypes: true, strictAttributeTypes: true});
       env.write('test.ts', `
         import {Component, Directive, NgModule, Input} from '@angular/core';
     
@@ -107,6 +114,7 @@ export declare class CommonModule {
     });
 
     it('should check event bindings', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
       env.write('test.ts', `
         import {Component, Directive, EventEmitter, NgModule, Output} from '@angular/core';
     
@@ -140,6 +148,449 @@ export declare class CommonModule {
       //     .toEqual(
       //         `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`);
       expect(diags[2].messageText).toEqual(`Property 'focused' does not exist on type 'TestCmp'.`);
+    });
+
+    describe('strictInputTypes', () => {
+      beforeEach(() => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule, Input} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '<div dir [foo]="invalid && 1"></div>',
+          })
+          class TestCmp {}
+
+          @Directive({selector: '[dir]'})
+          class TestDir {
+            @Input() foo: string;
+          }
+
+          @NgModule({
+            declarations: [TestCmp, TestDir],
+          })
+          class Module {}
+        `);
+      });
+
+      it('should check expressions and their type when enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
+        expect(diags[1].messageText)
+            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+      });
+
+      it('should check expressions and their type when overall strictness is enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
+        expect(diags[1].messageText)
+            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+      });
+
+      it('should check expressions but not their type when not enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+      });
+    });
+
+    describe('strictNullInputTypes', () => {
+      beforeEach(() => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule, Input} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '<div dir [foo]="invalid && nullable"></div>',
+          })
+          class TestCmp {
+            nullable: string | null | undefined;
+          }
+
+          @Directive({selector: '[dir]'})
+          class TestDir {
+            @Input() foo: string;
+          }
+
+          @NgModule({
+            declarations: [TestCmp, TestDir],
+          })
+          class Module {}
+        `);
+      });
+
+      it('should check expressions and their nullability when enabled', () => {
+        env.tsconfig(
+            {fullTemplateTypeCheck: true, strictInputTypes: true, strictNullInputTypes: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText)
+            .toEqual(`Type 'string | null | undefined' is not assignable to type 'string'.`);
+        expect(diags[1].messageText)
+            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+      });
+
+      it('should check expressions and their nullability when overall strictness is enabled',
+         () => {
+           env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(2);
+           expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText)
+               .toEqual(`Type 'string | null | undefined' is not assignable to type 'string'.`);
+           expect(diags[1].messageText)
+               .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+         });
+
+      it('should check expressions but not their nullability when not enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+      });
+    });
+
+    describe('strictSafeNavigationTypes', () => {
+      beforeEach(() => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule, Input} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '<div dir [foo]="invalid && user?.name"></div>',
+          })
+          class TestCmp {
+            user?: {name: string};
+          }
+
+          @Directive({selector: '[dir]'})
+          class TestDir {
+            @Input() foo: string;
+          }
+
+          @NgModule({
+            declarations: [TestCmp, TestDir],
+          })
+          class Module {}
+        `);
+      });
+
+      it('should infer result type for safe navigation expressions when enabled', () => {
+        env.tsconfig({
+          fullTemplateTypeCheck: true,
+          strictInputTypes: true,
+          strictNullInputTypes: true,
+          strictSafeNavigationTypes: true
+        });
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText)
+            .toEqual(`Type 'string | undefined' is not assignable to type 'string'.`);
+        expect(diags[1].messageText)
+            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+      });
+
+      it('should infer result type for safe navigation expressions when overall strictness is enabled',
+         () => {
+           env.tsconfig({
+             fullTemplateTypeCheck: true,
+             strictTemplates: true,
+           });
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(2);
+           expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText)
+               .toEqual(`Type 'string | undefined' is not assignable to type 'string'.`);
+           expect(diags[1].messageText)
+               .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+         });
+
+      it('should not infer result type for safe navigation expressions when not enabled', () => {
+        env.tsconfig({
+          fullTemplateTypeCheck: true,
+          strictInputTypes: true,
+        });
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+      });
+    });
+
+    describe('strictOutputEventTypes', () => {
+      beforeEach(() => {
+        env.write('test.ts', `
+          import {Component, Directive, EventEmitter, NgModule, Output} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '<div dir (update)="invalid && update($event);"></div>',
+          })
+          class TestCmp {
+            update(data: string) {}
+          }
+
+          @Directive({selector: '[dir]'})
+          class TestDir {
+            @Output() update = new EventEmitter<number>();
+          }
+
+          @NgModule({
+            declarations: [TestCmp, TestDir],
+          })
+          class Module {}
+        `);
+      });
+
+      it('should expressions and infer type of $event when enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText)
+            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect(diags[1].messageText)
+            .toEqual(`Argument of type 'number' is not assignable to parameter of type 'string'.`);
+      });
+
+      it('should expressions and infer type of $event when overall strictness is enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText)
+            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect(diags[1].messageText)
+            .toEqual(`Argument of type 'number' is not assignable to parameter of type 'string'.`);
+      });
+
+      it('should check expressions but not infer type of $event when not enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+      });
+    });
+
+    describe('strictOutputEventTypes and animation event bindings', () => {
+      beforeEach(() => {
+        env.write('test.ts', `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '<div (@animation.done)="invalid; update($event);"></div>',
+          })
+          class TestCmp {
+            update(data: string) {}
+          }
+
+          @NgModule({
+            declarations: [TestCmp],
+          })
+          class Module {}
+        `);
+      });
+
+      it('should check expressions and let $event be of type AnimationEvent when enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText)
+            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect(diags[1].messageText)
+            .toEqual(
+                `Argument of type 'AnimationEvent' is not assignable to parameter of type 'string'.`);
+      });
+
+      it('should check expressions and let $event be of type AnimationEvent when overall strictness is enabled',
+         () => {
+           env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(2);
+           expect(diags[0].messageText)
+               .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+           expect(diags[1].messageText)
+               .toEqual(
+                   `Argument of type 'AnimationEvent' is not assignable to parameter of type 'string'.`);
+         });
+
+      it('should check expressions and let $event be of type any when not enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+      });
+    });
+
+    describe('strictDomLocalRefTypes', () => {
+      beforeEach(() => {
+        env.write('test.ts', `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '<input #ref>{{ref.does_not_exist}}',
+          })
+          class TestCmp {}
+
+          @NgModule({
+            declarations: [TestCmp],
+          })
+          class Module {}
+        `);
+      });
+
+      it('should infer the type of DOM references when enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true, strictDomLocalRefTypes: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toEqual(`Property 'does_not_exist' does not exist on type 'HTMLInputElement'.`);
+      });
+
+      it('should infer the type of DOM references when overall strictness is enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toEqual(`Property 'does_not_exist' does not exist on type 'HTMLInputElement'.`);
+      });
+
+      it('should let the type of DOM references be any when not enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+    });
+
+    describe('strictAttributeTypes', () => {
+      beforeEach(() => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule, Input} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '<textarea dir disabled cols="3"></textarea>',
+          })
+          class TestCmp {}
+
+          @Directive({selector: '[dir]'})
+          class TestDir {
+            @Input() disabled: boolean;
+            @Input() cols: number;
+          }
+
+          @NgModule({
+            declarations: [TestCmp, TestDir],
+          })
+          class Module {}
+        `);
+      });
+
+      it('should produce an error for text attributes when enabled', () => {
+        env.tsconfig(
+            {fullTemplateTypeCheck: true, strictInputTypes: true, strictAttributeTypes: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'boolean'.`);
+        expect(diags[1].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+      });
+
+      it('should produce an error for text attributes when overall strictness is enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'boolean'.`);
+        expect(diags[1].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+      });
+
+      it('should not produce an error for text attributes when not enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+    });
+
+    describe('strictDomEventTypes', () => {
+      beforeEach(() => {
+        env.write('test.ts', `
+          import {Component, NgModule} from '@angular/core';
+      
+          @Component({
+            selector: 'test',
+            template: '<div (focus)="invalid; update($event)"></div>',
+          })
+          class TestCmp {
+            update(data: string) {}
+          }
+   
+          @NgModule({
+            declarations: [TestCmp],
+          })
+          class Module {}
+        `);
+      });
+
+      it('should check expressions and infer type of $event when enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true, strictDomEventTypes: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText)
+            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect(diags[1].messageText)
+            .toEqual(
+                `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`);
+      });
+
+      it('should check expressions and infer type of $event when overall strictness is enabled',
+         () => {
+           env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(2);
+           expect(diags[0].messageText)
+               .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+           expect(diags[1].messageText)
+               .toEqual(
+                   `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`);
+         });
+
+      it('should check expressions but not infer type of $event when not enabled', () => {
+        env.tsconfig({fullTemplateTypeCheck: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+      });
     });
 
     it('should check basic usage of NgIf', () => {
@@ -212,6 +663,7 @@ export declare class CommonModule {
     });
 
     it('should report an error inside the NgFor template', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
       env.write('test.ts', `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
@@ -315,6 +767,7 @@ export declare class CommonModule {
     });
 
     it('should constrain types using type parameter bounds', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
       env.write('test.ts', `
     import {CommonModule} from '@angular/common';
     import {Component, Input, NgModule} from '@angular/core';
@@ -367,6 +820,7 @@ export declare class CommonModule {
        });
 
     it('should properly type-check inherited directives', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
       env.write('test.ts', `
     import {Component, Directive, Input, NgModule} from '@angular/core';
 
@@ -412,6 +866,8 @@ export declare class CommonModule {
     });
 
     it('should properly type-check inherited directives from external libraries', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+
       env.write('node_modules/external/index.d.ts', `
         import * as i0 from '@angular/core';
 
@@ -511,6 +967,8 @@ export declare class CommonModule {
 
       it('should give an error if the binding expression type is not accepted by the coercion function',
          () => {
+           env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+
            env.write('test.ts', `
             import {Component, NgModule} from '@angular/core';
             import {MatInputModule} from '@angular/material';
