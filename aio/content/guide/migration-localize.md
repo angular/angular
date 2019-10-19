@@ -29,7 +29,8 @@ The symbol is loaded by importing the `@angular/localize/init` module, which has
 
 ## Why is this migration necessary?
 
-Prior to Angular version 9, Angular's internationalization (i18n) system inlined translated messages into the compiled output as part of this template compilation. This approach required running the template compiler once per target locale, often leading to slow production build times.
+Prior to Angular version 9, Angular's internationalization (i18n) system inlined translated messages into the compiled output as part of this template compilation.
+This approach required running the template compiler once per target locale, often leading to slow production build times.
 
 In the new i18n system, the Angular compiler tags i18n messages in the compiled code with a global `$localize` handler.
 The inlining of translations then occurs as a post-compilation step for each locale.
@@ -55,7 +56,8 @@ if your app uses Angular's i18n APIs.
 
 ## Why is my tslint failing?
 
-The import of `@angular/localize/init` may cause a tslint error for `no-import-side-effect` because it adds to the global context (that is, a side effect). To fix this error, add the following to your `tslint.config`:
+The import of `@angular/localize/init` may cause a tslint error for `no-import-side-effect` because it adds to the global context (that is, a side effect).
+To fix this error, add the following to your `tslint.config`:
 
 ```json
 
