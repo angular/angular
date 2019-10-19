@@ -33,6 +33,15 @@ export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): bool
   let key: string;
   for (let i = 0; i < k1.length; i++) {
     key = k1[i];
+    if (Array.isArray(a[key]) && Array.isArray(b[key])) {
+      const v1: string[] = a[key];
+      const v2: string[] = b[key];
+      if (v1.length === v2.length && v1.every((v, i) => v === v2[i])) {
+        return true;
+      } else {
+        return false;
+      }
+    }
     if (a[key] !== b[key]) {
       return false;
     }
