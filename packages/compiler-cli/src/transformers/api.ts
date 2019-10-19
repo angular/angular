@@ -112,6 +112,100 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // This will be true be default in Angular 6.
   fullTemplateTypeCheck?: boolean;
 
+  /**
+   * Whether to check the type of a binding to a directive/component input against the type of the
+   * field on the directive/component.
+   *
+   * For example, if this is `false` then the expression `[input]="expr"` will have `expr` type-
+   * checked, but not the assignment of the resulting type to the `input` property of whichever
+   * directive or component is receiving the binding. If set to `true`, both sides of the assignment
+   * are checked.
+   *
+   * Defaults to `true` if "fullTemplateTypeCheck" is set, `false` otherwise.
+   */
+  strictInputTypes?: boolean;
+
+  /**
+   * Whether to use strict null types for input bindings for directives.
+   *
+   * If this is `true`, applications that are compiled with TypeScript's `strictNullChecks` enabled
+   * will produce type errors for bindings which can evaluate to `undefined` or `null` where the
+   * inputs's type does not include `undefined` or `null` in its type. If set to `false`, all
+   * binding expressions are wrapped in a non-null assertion operator to effectively disable strict
+   * null checks.
+   *
+   * Defaults to `true` if "fullTemplateTypeCheck" is set, `false` otherwise. Note that if
+   * `strictInputTypes` is set to `false`, this flag has no effect.
+   */
+  strictNullInputTypes?: boolean;
+
+  /**
+   * Whether to check text attributes that happen to be consumed by a directive or component.
+   *
+   * For example, in a template containing `<input matInput disabled>` the `disabled` attribute ends
+   * up being consumed as an input with type `boolean` by the `matInput` directive. At runtime the
+   * input will be set to the attribute's string value, which is the empty string for attributes
+   * without a value, so with this flag set to `true` an error would be reported. If set to `false`,
+   * text attributes will never report an error.
+   *
+   * Note that if `strictInputTypes` is set to `false`, this flag has no effect.
+   */
+  strictAttributeTypes?: boolean;
+
+  /**
+   * Whether to use a strict type for null-safe navigation operations.
+   *
+   * If this is `false`, then the return type of `a?.b` or `a?()` will be `any`. If set to `true`,
+   * then the return type of `a?.b` for example will be the same as the type of the ternary
+   * expression `a != null ? a.b : a`.
+   *
+   * Defaults to `true` if "fullTemplateTypeCheck" is set, `false` otherwise.
+   */
+  strictSafeNavigationTypes?: boolean;
+
+  /**
+   * Whether to infer the type of local references.
+   *
+   * If this is `true`, the type of `#ref` variables in the template will be determined by the
+   * referenced entity (either a directive or a DOM element). If set to `false`, the type of `ref`
+   * will be `any`.
+   *
+   * Defaults to `true` if "fullTemplateTypeCheck" is set, `false` otherwise.
+   */
+  strictLocalRefTypes?: boolean;
+
+  /**
+   * Whether to infer the type of the `$event` variable in event bindings for directive outputs.
+   *
+   * If this is `true`, the type of `$event` will be inferred based on the generic type of
+   * `EventEmitter`/`Subject` of the output. If set to `false`, the `$event` variable will be of
+   * type `any`.
+   *
+   * Defaults to `true` if "fullTemplateTypeCheck" is set, `false` otherwise.
+   */
+  strictOutputEventTypes?: boolean;
+
+  /**
+   * Whether to infer the type of the `$event` variable in event bindings for animations.
+   *
+   * If this is `true`, the type of `$event` will be `AnimationEvent` from `@angular/animations`.
+   * If set to `false`, the `$event` variable will be of type `any`.
+   *
+   * Defaults to `true` if "fullTemplateTypeCheck" is set, `false` otherwise.
+   */
+  strictAnimationEventTypes?: boolean;
+
+  /**
+   * Whether to infer the type of the `$event` variable in event bindings to DOM events.
+   *
+   * If this is `true`, the type of `$event` will be inferred based on TypeScript's
+   * `HTMLElementEventMap`, with a fallback to the native `Event` type. If set to `false`, the
+   * `$event` variable will be of type `any`.
+   *
+   * Defaults to `false`.
+   */
+  strictDomEventTypes?: boolean;
+
   // Whether to use the CompilerHost's fileNameToModuleName utility (if available) to generate
   // import module specifiers. This is false by default, and exists to support running ngtsc
   // within Google. This option is internal and is used by the ng_module.bzl rule to switch

@@ -458,6 +458,33 @@ export class NgtscProgram implements api.Program {
       };
     }
 
+    // Apply explicitly configured strictness flags on top of the default configuration
+    // based on "fullTemplateTypeCheck".
+    if (this.options.strictInputTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfInputBindings = this.options.strictInputTypes;
+    }
+    if (this.options.strictNullInputTypes !== undefined) {
+      typeCheckingConfig.strictNullInputBindings = this.options.strictNullInputTypes;
+    }
+    if (this.options.strictOutputEventTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfOutputEvents = this.options.strictOutputEventTypes;
+    }
+    if (this.options.strictAnimationEventTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfAnimationEvents = this.options.strictAnimationEventTypes;
+    }
+    if (this.options.strictDomEventTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfDomEvents = this.options.strictDomEventTypes;
+    }
+    if (this.options.strictSafeNavigationTypes !== undefined) {
+      typeCheckingConfig.strictSafeNavigationTypes = this.options.strictSafeNavigationTypes;
+    }
+    if (this.options.strictLocalRefTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfReferences = this.options.strictLocalRefTypes;
+    }
+    if (this.options.strictAttributeTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfAttributes = this.options.strictAttributeTypes;
+    }
+
     // Execute the typeCheck phase of each decorator in the program.
     const prepSpan = this.perfRecorder.start('typeCheckPrep');
     const ctx = new TypeCheckContext(typeCheckingConfig, this.refEmitter !, this.typeCheckFilePath);
