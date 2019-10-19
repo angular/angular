@@ -38,6 +38,7 @@ v9 - v12
 | `@angular/common` | [`ReflectiveInjector`](#reflectiveinjector) | <!--v8--> v9 |
 | `@angular/core` | [`CollectionChangeRecord`](#core) | <!--v7--> v9 |
 | `@angular/core` | [`DefaultIterableDiffer`](#core) | <!--v7--> v9 |
+| `@angular/core` | [`ModuleWithProviders` without a generic](#moduleWithProviders) | v10 |
 | `@angular/core` | [`ReflectiveKey`](#core) | <!--v8--> v9 |
 | `@angular/core` | [`RenderComponentType`](#core) | <!--v7--> v9 |
 | `@angular/core` | [`ViewEncapsulation.Native`](#core) | v9 |
@@ -53,7 +54,6 @@ v9 - v12
 | `@angular/router` | [`loadChildren` string syntax](#loadChildren) | v11 |
 | `@angular/router` | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
 | `@angular/core/testing` | [`TestBed.get`](#testing) | v12 |
-
 
 
 
@@ -86,6 +86,8 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | [`wtfLeave`](api/core/wtfLeave) | none | v8 | See [Web Tracing Framework](#wtf) |
 | [`entryComponents`](api/core/NgModule#entryComponents) | none | v9 | See [`entryComponents`](#entryComponents) |
 | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS) | none | v9 | See [`ANALYZE_FOR_ENTRY_COMPONENTS`](#entryComponents) |
+
+
 
 
 {@a testing}
@@ -333,6 +335,50 @@ This includes both packages: `@angular/platform-webworker` and
 {@a entryComponents}
 ### `entryComponents` and `ANALYZE_FOR_ENTRY_COMPONENTS` no longer required
 Previously, the `entryComponents` array in the `NgModule` definition was used to tell the compiler which components would be created and inserted dynamically. With Ivy, this isn't a requirement anymore and the `entryComponents` array can be removed from existing module declarations. The same applies to the `ANALYZE_FOR_ENTRY_COMPONENTS` injection token.
+
+{@a moduleWithProviders}
+### `ModuleWithProviders` type without a generic
+
+Some Angular libraries, such as `@angular/router` and `@ngrx/store`, implement APIs that return a type called `ModuleWithProviders` (typically via a method named `forRoot()`).
+This type represents an `NgModule` along with additional providers.
+Angular version 9 deprecates use of `ModuleWithProviders` without an explicitly generic type, where the generic type refers to the type of the `NgModule`.
+In a future version of Angular, the generic will no longer be optional.
+
+
+If you're using the CLI, `ng update` should [migrate your code automatically](guide/migration-module-with-providers).
+If you're not using the CLI, you can add any missing generic types to your application manually.
+For example:
+
+**Before**
+```ts
+@NgModule({...})
+export class MyModule {
+  static forRoot(config: SomeConfig): ModuleWithProviders {
+    return {
+      ngModule: SomeModule,
+      providers: [
+        {provide: SomeConfig, useValue: config}
+      ]
+    };
+  }
+}
+```
+
+**After**
+
+```ts
+@NgModule({...})
+export class MyModule {
+  static forRoot(config: SomeConfig): ModuleWithProviders<SomeModule> {
+    return {
+      ngModule: SomeModule,
+      providers: [
+        {provide: SomeConfig, useValue: config }
+      ]
+    };
+  }
+}
+```
 
 
 ## Angular version 9 schematics
