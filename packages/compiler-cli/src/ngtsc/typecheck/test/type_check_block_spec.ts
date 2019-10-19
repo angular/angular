@@ -291,6 +291,7 @@ describe('type check blocks', () => {
       checkTypeOfOutputEvents: true,
       checkTypeOfAnimationEvents: true,
       checkTypeOfDomEvents: true,
+      checkTypeOfReferences: true,
       checkTypeOfPipes: true,
       strictSafeNavigationTypes: true,
     };
@@ -416,6 +417,20 @@ describe('type check blocks', () => {
       });
     });
 
+    describe('config.checkTypeOfReferences', () => {
+      const TEMPLATE = `<input #ref>{{ref.value}}`;
+
+      it('should trace references when enabled', () => {
+        const block = tcb(TEMPLATE);
+        expect(block).toContain('(_t1).value');
+      });
+
+      it('should use any for reference types when disabled', () => {
+        const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfReferences: false};
+        const block = tcb(TEMPLATE, [], DISABLED_CONFIG);
+        expect(block).toContain('(null as any).value');
+      });
+    });
 
     describe('config.checkTypeOfPipes', () => {
       const TEMPLATE = `{{a | test:b:c}}`;
