@@ -14,6 +14,7 @@ interface Data {
   name: string;
 }
 
+const testData: Data = {name: 'Test Data'};
 const testUrl = '/data';
 
 // #docregion setup
@@ -29,32 +30,33 @@ describe('HttpClient testing', () => {
     // Inject the http service and test controller for each test
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);
+
+    // The following `expectOne()` will match the request's URL.
+    // If no requests or multiple requests matched that URL
+    // `expectOne()` would throw.
+    const req = httpTestingController.expectOne('/data');
   });
   // #enddocregion setup
+
   // #docregion afterEach
   afterEach(() => {
     // After every test, assert that there are no more pending requests.
     httpTestingController.verify();
   });
   // #enddocregion afterEach
+
   // #docregion setup
   /// Tests begin ///
   // #enddocregion setup
+
   // #docregion get-test
   it('can test HttpClient.get', () => {
-    const testData: Data = {name: 'Test Data'};
-
     // Make an HTTP GET request
     httpClient.get<Data>(testUrl)
       .subscribe(data =>
         // When observable resolves, result should match test data
         expect(data).toEqual(testData)
       );
-
-    // The following `expectOne()` will match the request's URL.
-    // If no requests or multiple requests matched that URL
-    // `expectOne()` would throw.
-    const req = httpTestingController.expectOne('/data');
 
     // Assert that the request is a GET.
     expect(req.request.method).toEqual('GET');
@@ -67,8 +69,30 @@ describe('HttpClient testing', () => {
     httpTestingController.verify();
   });
   // #enddocregion get-test
+
+  // #docregion post-test
+  it('can test HttpClient.post', () => {
+    // Make an HTTP POST request
+    httpClient.post<Data>(testUrl, {
+      name: 'Test Data'
+    }).subscribe(data =>
+        // When observable resolves, result should match test data
+        expect(data).toEqual(testData)
+      );
+
+    // Assert that the request is a POST.
+    expect(req.request.method).toEqual('POST');
+
+    // Respond with mock data, causing Observable to resolve.
+    // Subscribe callback asserts that correct data was returned.
+    req.flush(testData);
+
+    // Finally, assert that there are no outstanding requests.
+    httpTestingController.verify();
+  });
+  // #enddocregion post-test
+  
   it('can test HttpClient.get with matching header', () => {
-    const testData: Data = {name: 'Test Data'};
 
     // Make an HTTP GET request with specific header
     httpClient.get<Data>(testUrl, {
@@ -78,13 +102,14 @@ describe('HttpClient testing', () => {
         expect(data).toEqual(testData)
       );
 
-      // Find request with a predicate function.
+    // Find request with a predicate function.
     // #docregion predicate
     // Expect one request with an authorization header
     const req = httpTestingController.expectOne(
       req => req.headers.has('Authorization')
     );
     // #enddocregion predicate
+
     req.flush(testData);
   });
 

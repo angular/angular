@@ -88,6 +88,7 @@ The component becomes harder to understand, harder to test, and the data access 
 That's why it's a best practice to separate presentation of data from data access by
 encapsulating data access in a separate service and delegating to that service in
 the component, even in simple cases like this one.
+
 </div>
 
 ### Requesting a typed response
@@ -113,7 +114,7 @@ Next, specify that interface as the `HttpClient.get()` call's type parameter in 
 
 <div class="alert is-helpful">
 
- When you pass an interface as a type parameter to the `HttpClient.get()` method, use the RxJS `map` operator to transform the response data as needed by the UI. You can then pass the transformed data to the [async pipe](api/common/AsyncPipe).
+When you pass an interface as a type parameter to the `HttpClient.get()` method, use the RxJS `map` operator to transform the response data as needed by the UI. You can then pass the transformed data to the [async pipe](api/common/AsyncPipe).
 
 </div>
 
@@ -143,7 +144,6 @@ For example, the following `subscribe` callback receives `data` as an Object, an
    });
 </code-example>
 
-
 ### Reading the full response
 
 The response body doesn't return all the data you may need. Sometimes servers return special headers or status codes to indicate certain conditions that are important to the application workflow.
@@ -160,11 +160,11 @@ Now `HttpClient.get()` returns an `Observable` of type `HttpResponse` rather tha
 The component's `showConfigResponse()` method displays the response headers as well as the configuration:
 
 <code-example
-  path="http/src/app/config/config.component.ts"
-  region="showConfigResponse"
-  header="app/config/config.component.ts (showConfigResponse)"
- >
-</code-example>
+path="http/src/app/config/config.component.ts"
+region="showConfigResponse"
+header="app/config/config.component.ts (showConfigResponse)"
+
+> </code-example>
 
 As you can see, the response object has a `body` property of the correct type.
 
@@ -223,16 +223,17 @@ What happens if the request fails on the server, or if a poor network connection
 You _could_ handle in the component by adding a second callback to the `.subscribe()`:
 
 <code-example
-  path="http/src/app/config/config.component.ts"
-  region="v3"
-  header="app/config/config.component.ts (showConfig v.3 with error handling)"
- >
-</code-example>
+path="http/src/app/config/config.component.ts"
+region="v3"
+header="app/config/config.component.ts (showConfig v.3 with error handling)"
+
+> </code-example>
 
 It's certainly a good idea to give the user some kind of feedback when data access fails.
 But displaying the raw error object returned by `HttpClient` is far from the best way to do it.
 
 {@a error-details}
+
 ### Getting error details
 
 Detecting that an error occurred is one thing.
@@ -286,6 +287,7 @@ _Pipe_ it onto the `HttpClient` method result just before the error handler.
 </code-example>
 
 {@a rxjs}
+
 ## Observables and operators
 
 The previous sections of this guide referred to RxJS `Observables` and operators such as `catchError` and `retry`.
@@ -407,7 +409,6 @@ You must call _subscribe()_ or nothing happens. Just calling `HeroesService.dele
 
 </div>
 
-
 <code-example
   path="http/src/app/heroes/heroes.component.ts"
   region="delete-hero-no-subscribe">
@@ -426,7 +427,7 @@ The [`AsyncPipe`](api/common/AsyncPipe) subscribes (and unsubscribes) for you au
 
 All observables returned from `HttpClient` methods are _cold_ by design.
 Execution of the HTTP request is _deferred_, allowing you to extend the
-observable with additional operations such as  `tap` and `catchError` before anything actually happens.
+observable with additional operations such as `tap` and `catchError` before anything actually happens.
 
 Calling `subscribe(...)` triggers execution of the observable and causes
 `HttpClient` to compose and send the HTTP request to the server.
@@ -439,13 +440,14 @@ In fact, each `subscribe()` initiates a separate, independent execution of the o
 Subscribing twice results in two HTTP requests.
 
 ```javascript
-const req = http.get<Heroes>('/api/heroes');
+const req = http.get < Heroes > "/api/heroes";
 // 0 requests made - .subscribe() not called.
 req.subscribe();
 // 1 request made.
 req.subscribe();
 // 2 requests made.
 ```
+
 </div>
 
 ### Making a PUT request
@@ -467,6 +469,7 @@ in order to initiate the request.
 We have discussed the basic HTTP functionality in `@angular/common/http`, but sometimes you need to do more than make simple requests and get data back.
 
 {@a intercepting-requests-and-responses }
+
 ### HTTP interceptors
 
 _HTTP Interception_ is a major feature of `@angular/common/http`.
@@ -474,7 +477,7 @@ With interception, you declare _interceptors_ that inspect and transform HTTP re
 The same interceptors may also inspect and transform the server's responses on their way back to the application.
 Multiple interceptors form a _forward-and-backward_ chain of request/response handlers.
 
-Interceptors can perform a variety of  _implicit_ tasks, from authentication to logging, in a routine, standard way, for every HTTP request/response.
+Interceptors can perform a variety of _implicit_ tasks, from authentication to logging, in a routine, standard way, for every HTTP request/response.
 
 Without interception, developers would have to implement these tasks _explicitly_
 for each `HttpClient` method call.
@@ -483,7 +486,7 @@ for each `HttpClient` method call.
 
 To implement an interceptor, declare a class that implements the `intercept()` method of the `HttpInterceptor` interface.
 
- Here is a do-nothing _noop_ interceptor that simply passes the request through without touching it:
+Here is a do-nothing _noop_ interceptor that simply passes the request through without touching it:
 <code-example
   path="http/src/app/http-interceptors/noop-interceptor.ts"
   header="app/http-interceptors/noop-interceptor.ts">
@@ -508,7 +511,6 @@ This _no-op_ interceptor simply calls `next.handle()` with the original request 
 
 The `next` object represents the next interceptor in the chain of interceptors.
 The final `next` in the chain is the `HttpClient` backend handler that sends the request to the server and receives the server's response.
-
 
 Most interceptors call `next.handle()` so that the request flows through to the next interceptor and, eventually, the backend handler.
 An interceptor _could_ skip calling `next.handle()`, short-circuit the chain, and [return its own `Observable`](#caching) with an artificial server response.
@@ -573,7 +575,7 @@ There are many more interceptors in the complete sample code.
 #### Interceptor order
 
 Angular applies interceptors in the order that you provide them.
-If you provide interceptors _A_, then _B_, then _C_,  requests will flow in _A->B->C_ and
+If you provide interceptors _A_, then _B_, then _C_, requests will flow in _A->B->C_ and
 responses will flow out _C->B->A_.
 
 You cannot change the order or remove interceptors later.
@@ -605,9 +607,10 @@ If an interceptor could modify the original request object, the re-tried operati
 TypeScript will prevent you from setting `HttpRequest` readonly properties.
 
 ```javascript
-  // Typescript disallows the following assignment because req.url is readonly
-  req.url = req.url.replace('http://', 'https://');
+// Typescript disallows the following assignment because req.url is readonly
+req.url = req.url.replace("http://", "https://");
 ```
+
 To alter the request, clone it first and modify the clone before passing it to `next.handle()`.
 You can clone and modify the request in a single step as in this example.
 
@@ -625,7 +628,7 @@ The `readonly` assignment guard can't prevent deep updates and, in particular,
 it can't prevent you from modifying a property of a request body object.
 
 ```javascript
-  req.body.name = req.body.name.trim(); // bad idea!
+req.body.name = req.body.name.trim(); // bad idea!
 ```
 
 If you must mutate the request body, copy it first, change the copy,
@@ -673,9 +676,9 @@ there's a `setHeaders` shortcut for it:
 
 An interceptor that alters headers can be used for a number of different operations, including:
 
-* Authentication/authorization
-* Caching behavior; for example, `If-Modified-Since`
-* XSRF protection
+- Authentication/authorization
+- Caching behavior; for example, `If-Modified-Since`
+- XSRF protection
 
 #### Logging
 
@@ -747,6 +750,7 @@ Data services, such as `PackageSearchService`, are unaware that
 some of their `HttpClient` requests actually return cached responses.
 
 {@a cache-refresh}
+
 #### Return a multi-valued _Observable_
 
 The `HttpClient.get()` method normally returns an _observable_
@@ -816,7 +820,7 @@ import {HttpParams} from "@angular/common/http";
 If there is a search term, the code constructs an options object with an HTML URL-encoded search parameter.
 If the term were "foo", the GET request URL would be `api/heroes?name=foo`.
 
-The `HttpParams` are immutable so you'll have to save the returned value of the `.set()` method in order  to update the options.
+The `HttpParams` are immutable so you'll have to save the returned value of the `.set()` method in order to update the options.
 
 #### Use `fromString` to create HttpParams
 
@@ -884,13 +888,13 @@ The `withRefresh` option is explained [below](#cache-refresh).
 The `switchMap()` operator has three important characteristics.
 
 1. It takes a function argument that returns an `Observable`.
-`PackageSearchService.search` returns an `Observable`, as other data service methods do.
+   `PackageSearchService.search` returns an `Observable`, as other data service methods do.
 
 2. If a previous search request is still _in-flight_ (as when the network connection is poor),
-it cancels that request and sends a new one.
+   it cancels that request and sends a new one.
 
 3. It returns service responses in their original request order, even if the
-server returns them out of order.
+   server returns them out of order.
 
 <div class="alert is-helpful">
 
@@ -968,7 +972,7 @@ In order to prevent collisions in environments where multiple Angular apps share
 
 <div class="alert is-important">
 
-*`HttpClient` supports only the client half of the XSRF protection scheme.*
+_`HttpClient` supports only the client half of the XSRF protection scheme._
 Your backend service must be configured to set the cookie for your page, and to verify that
 the header is present on all eligible requests.
 If not, Angular's default protection will be ineffective.
@@ -1042,6 +1046,14 @@ Now you can write a test that expects a GET Request to occur and provides a mock
   path="http/src/testing/http-client.spec.ts"
   region="get-test"
   header="app/testing/http-client.spec.ts(httpClient.get)">
+</code-example>
+
+Now you can write a test that expects a POST Request to occur and provides a mock response.
+
+<code-example
+  path="http/src/testing/http-client.spec.ts"
+  region="post-test"
+  header="app/testing/http-client.spec.ts(httpClient.post)">
 </code-example>
 
 The last step, verifying that no requests remain outstanding, is common enough for you to move it into an `afterEach()` step:
