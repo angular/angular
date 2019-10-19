@@ -2,19 +2,24 @@
 
 ## Migration Overview
 
-The `Renderer` class has been marked as deprecated since Angular version 4. This section provides guidance on migrating from this deprecated API to the newer `Renderer2` API and what it means for your app.
+The `Renderer` class has been marked as deprecated since Angular version 4.
+This section provides guidance on migrating from this deprecated API to the newer `Renderer2` API and what it means for your app.
 
 ## Why should I migrate to Renderer2?
 
-The deprecated `Renderer` class has been removed in version 9 of Angular, so it's necessary to migrate to a supported API. Using `Renderer2` is the recommended strategy because it supports a similar set of functionality to `Renderer`. The API surface is quite large (with 19 methods), but the schematic should simplify this process for your applications.
+The deprecated `Renderer` class has been removed in version 9 of Angular, so it's necessary to migrate to a supported API.
+Using `Renderer2` is the recommended strategy because it supports a similar set of functionality to `Renderer`.
+The API surface is quite large (with 19 methods), but the schematic should simplify this process for your applications.
 
 ## Is there action required on my end?
 
-No. The schematic should handle most cases with the exception of `Renderer.animate()` and `Renderer.setDebugInfo()`, which already aren’t supported.
+No.
+The schematic should handle most cases with the exception of `Renderer.animate()` and `Renderer.setDebugInfo()`, which already aren't supported.
 
 ## What are the `__ngRendererX` methods? Why are they necessary?
 
-Some methods either don't have exact equivalents in `Renderer2`, or they correspond to more than one expression. For example, both renderers have a `createElement()` method, but they're not equal because a call such as `renderer.createElement(parentNode, namespaceAndName)` in the `Renderer` corresponds to the following block of code in `Renderer2`:
+Some methods either don't have exact equivalents in `Renderer2`, or they correspond to more than one expression.
+For example, both renderers have a `createElement()` method, but they're not equal because a call such as `renderer.createElement(parentNode, namespaceAndName)` in the `Renderer` corresponds to the following block of code in `Renderer2`:
 
 ```ts
 const [namespace, name] = splitNamespace(namespaceAndName);
@@ -25,7 +30,10 @@ if (parentNode) {
 return el;
 ```
 
-Migration has to guarantee that the return values of functions and types of variables stay the same. To handle the majority of cases safely, the schematic declares helper functions at the bottom of the user's file. These helpers encapsulate your own logic and keep the replacements inside your code down to a single function call. Here's an example of how the `createElement()` migration looks:
+Migration has to guarantee that the return values of functions and types of variables stay the same.
+To handle the majority of cases safely, the schematic declares helper functions at the bottom of the user's file.
+These helpers encapsulate your own logic and keep the replacements inside your code down to a single function call.
+Here's an example of how the `createElement()` migration looks:
 
 
 **Before:**
