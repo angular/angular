@@ -293,6 +293,7 @@ describe('type check blocks', () => {
       checkTemplateBodies: true,
       checkTypeOfInputBindings: true,
       strictNullInputBindings: true,
+      checkTypeOfAttributes: true,
       checkTypeOfDomBindings: false,
       checkTypeOfOutputEvents: true,
       checkTypeOfAnimationEvents: true,
@@ -435,6 +436,31 @@ describe('type check blocks', () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfReferences: false};
         const block = tcb(TEMPLATE, [], DISABLED_CONFIG);
         expect(block).toContain('(null as any).value');
+      });
+    });
+
+    describe('config.checkTypeOfAttributes', () => {
+      const TEMPLATE = `<textarea dir disabled cols="3" [rows]="2">{{ref.value}}</textarea>`;
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {'disabled': 'disabled', 'cols': 'cols', 'rows': 'rows'},
+      }];
+
+      it('should assign string value to the input when enabled', () => {
+        const block = tcb(TEMPLATE, DIRECTIVES);
+        expect(block).toContain('disabled: ("")');
+        expect(block).toContain('cols: ("3")');
+        expect(block).toContain('rows: (2)');
+      });
+
+      it('should use any for attributes but still check bound attributes when disabled', () => {
+        const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfAttributes: false};
+        const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
+        expect(block).toContain('disabled: (null as any)');
+        expect(block).toContain('cols: (null as any)');
+        expect(block).toContain('rows: (2)');
       });
     });
 

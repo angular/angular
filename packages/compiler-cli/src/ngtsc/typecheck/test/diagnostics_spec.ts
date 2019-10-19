@@ -154,6 +154,25 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('checks text attributes that are consumed by bindings with literal string types', () => {
+      const messages = diagnose(
+          `<div dir mode="drak"></div><div dir mode="light"></div>`, `
+        class Dir {
+          mode: 'dark'|'light';
+        }
+        class TestComponent {}`,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            inputs: {'mode': 'mode'},
+          }]);
+
+      expect(messages).toEqual([
+        `synthetic.html(1, 10): Type '"drak"' is not assignable to type '"dark" | "light"'.`,
+      ]);
+    });
+
     it('produces diagnostics for pipes', () => {
       const messages = diagnose(
           `<div>{{ person.name | pipe:person.age:1 }}</div>`, `
