@@ -425,26 +425,29 @@ export class NgtscProgram implements api.Program {
     // requested.
     let typeCheckingConfig: TypeCheckingConfig;
     if (this.options.fullTemplateTypeCheck) {
+      const strictTemplates = !!this.options.strictTemplates;
       typeCheckingConfig = {
         applyTemplateContextGuards: true,
         checkQueries: false,
         checkTemplateBodies: true,
-        checkTypeOfInputBindings: true,
-        strictNullInputBindings: true,
-        checkTypeOfAttributes: true,
+        checkTypeOfInputBindings: strictTemplates,
+        strictNullInputBindings: strictTemplates,
+        checkTypeOfAttributes: strictTemplates,
         // Even in full template type-checking mode, DOM binding checks are not quite ready yet.
         checkTypeOfDomBindings: false,
-        checkTypeOfOutputEvents: true,
-        checkTypeOfAnimationEvents: true,
+        checkTypeOfOutputEvents: strictTemplates,
+        checkTypeOfAnimationEvents: strictTemplates,
         // Checking of DOM events currently has an adverse effect on developer experience,
         // e.g. for `<input (blur)="update($event.target.value)">` enabling this check results in:
         // - error TS2531: Object is possibly 'null'.
         // - error TS2339: Property 'value' does not exist on type 'EventTarget'.
-        checkTypeOfDomEvents: false,
-        checkTypeOfDomReferences: true,
+        checkTypeOfDomEvents: strictTemplates,
+        checkTypeOfDomReferences: strictTemplates,
+        // Non-DOM references have the correct type in View Engine so there is no strictness flag.
         checkTypeOfNonDomReferences: true,
+        // Pipes are checked in View Engine so there is no strictness flag.
         checkTypeOfPipes: true,
-        strictSafeNavigationTypes: true,
+        strictSafeNavigationTypes: strictTemplates,
       };
     } else {
       typeCheckingConfig = {
@@ -463,6 +466,31 @@ export class NgtscProgram implements api.Program {
         checkTypeOfPipes: false,
         strictSafeNavigationTypes: false,
       };
+    }
+
+    // Apply explicitly configured strictness flags on top of the default configuration
+    // based on "fullTemplateTypeCheck".
+    if (this.options.strictInputTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfInputBindings = this.options.strictInputTypes;
+    }
+    if (this.options.strictNullInputTypes !== undefined) {
+      typeCheckingConfig.strictNullInputBindings = this.options.strictNullInputTypes;
+    }
+    if (this.options.strictOutputEventTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfOutputEvents = this.options.strictOutputEventTypes;
+      typeCheckingConfig.checkTypeOfAnimationEvents = this.options.strictOutputEventTypes;
+    }
+    if (this.options.strictDomEventTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfDomEvents = this.options.strictDomEventTypes;
+    }
+    if (this.options.strictSafeNavigationTypes !== undefined) {
+      typeCheckingConfig.strictSafeNavigationTypes = this.options.strictSafeNavigationTypes;
+    }
+    if (this.options.strictDomLocalRefTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfDomReferences = this.options.strictDomLocalRefTypes;
+    }
+    if (this.options.strictAttributeTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfAttributes = this.options.strictAttributeTypes;
     }
 
     // Execute the typeCheck phase of each decorator in the program.
