@@ -18,7 +18,7 @@ export function createModuleWithProvidersType(
       typeNode, typeNode.typeName, ts.createNodeArray([typeReferenceNode]));
 }
 
-/** Determine whether a node is a ModuleWithProviders type reference node with a generic type */
+/** Determine whether a node is a ModuleWithProviders type reference node without a generic type */
 export function isModuleWithProvidersNotGeneric(
     typeChecker: ts.TypeChecker, node: ts.Node): node is ts.TypeReferenceNode {
   if (!ts.isTypeReferenceNode(node) || !ts.isIdentifier(node.typeName)) {
@@ -26,5 +26,6 @@ export function isModuleWithProvidersNotGeneric(
   }
 
   const imp = getImportOfIdentifier(typeChecker, node.typeName);
-  return !!imp && imp.name === 'ModuleWithProviders' && imp.importModule === '@angular/core';
+  return !!imp && imp.name === 'ModuleWithProviders' && imp.importModule === '@angular/core' &&
+      !node.typeArguments;
 }

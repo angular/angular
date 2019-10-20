@@ -15,7 +15,7 @@ import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host'
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
 
 import {Collector} from './collector';
-import {ModuleWithProvidersTransform} from './transform';
+import {AnalysisFailure, ModuleWithProvidersTransform} from './transform';
 
 
 
@@ -59,36 +59,28 @@ function runModuleWithProvidersMigration(tree: Tree, tsconfigPath: string, baseP
 
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);
   const typeChecker = program.getTypeChecker();
-  const moduleCollector = new Collector(typeChecker);
+  const collector = new Collector(typeChecker);
   const sourceFiles = program.getSourceFiles().filter(
       f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
 
   // Analyze source files by detecting all modules.
-  sourceFiles.forEach(sourceFile => moduleCollector.visitNode(sourceFile));
+  sourceFiles.forEach(sourceFile => collector.visitNode(sourceFile));
 
-  const {resolvedModules, resolvedNonGenerics} = moduleCollector;
+  const {resolvedModules, resolvedNonGenerics} = collector;
   const transformer = new ModuleWithProvidersTransform(typeChecker, getUpdateRecorder);
   const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
 
-  resolvedModules.forEach(module => {
-    transformer.migrateModule(module).forEach(({message, node}) => {
-      const nodeSourceFile = node.getSourceFile();
-      const relativeFilePath = relative(basePath, nodeSourceFile.fileName);
-      const {line, character} =
-          ts.getLineAndCharacterOfPosition(node.getSourceFile(), node.getStart());
-      failures.push(`${relativeFilePath}@${line + 1}:${character + 1}: ${message}`);
-    });
-  });
-
-  resolvedNonGenerics.forEach(type => {
-    transformer.migrateType(type).forEach(({message, node}) => {
-      const nodeSourceFile = node.getSourceFile();
-      const relativeFilePath = relative(basePath, nodeSourceFile.fileName);
-      const {line, character} =
-          ts.getLineAndCharacterOfPosition(node.getSourceFile(), node.getStart());
-      failures.push(`${relativeFilePath}@${line + 1}:${character + 1}: ${message}`);
-    });
-  });
+  [...resolvedModules.reduce(
+       (failures, m) => failures.concat(transformer.migrateModule(m)), [] as AnalysisFailure[]),
+   ...resolvedNonGenerics.reduce(
+       (failures, t) => failures.concat(transformer.migrateType(t)), [] as AnalysisFailure[])]
+      .forEach(({message, node}) => {
+        const nodeSourceFile = node.getSourceFile();
+        const relativeFilePath = relative(basePath, nodeSourceFile.fileName);
+        const {line, character} =
+            ts.getLineAndCharacterOfPosition(node.getSourceFile(), node.getStart());
+        failures.push(`${relativeFilePath}@${line + 1}:${character + 1}: ${message}`);
+      });
 
   // Walk through each update recorder and commit the update. We need to commit the
   // updates in batches per source file as there can be only one recorder per source

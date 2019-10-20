@@ -27,26 +27,29 @@ export class ModuleWithProvidersTransform {
   private partialEvaluator: PartialEvaluator =
       new PartialEvaluator(new TypeScriptReflectionHost(this.typeChecker), this.typeChecker);
 
-  /** Set of methods which were already checked or migrated. */
-  private visitedMethods = new Set<ts.MethodDeclaration>();
-
   constructor(
       private typeChecker: ts.TypeChecker,
       private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder) {}
 
   /** Migrates a given NgModule by walking through the referenced providers and static methods. */
   migrateModule(module: ResolvedNgModule): AnalysisFailure[] {
-    return module.staticMethodsWithoutType.map(this._resolveStaticMethod.bind(this))
+    return module.staticMethodsWithoutType.map(this._migrateStaticNgModuleMethod.bind(this))
         .filter(v => v) as AnalysisFailure[];
   }
 
   /** Migrates a ModuleWithProviders type definition that has no explicit generic type */
-  migrateType(type: ts.TypeReferenceNode) {
+  migrateType(type: ts.TypeReferenceNode): AnalysisFailure[] {
     const parent = type.parent;
     let moduleText: string|undefined;
     if ((ts.isFunctionDeclaration(parent) || ts.isMethodDeclaration(parent)) && parent.body) {
       const returnStatement = parent.body.statements.find(ts.isReturnStatement);
-      moduleText = this._getReturnStatementNgModuleType(returnStatement);
+
+      // No return type found, exit
+      if (!returnStatement || !returnStatement.expression) {
+        return [{node: parent, message: `Return type is not statically analyzable.`}];
+      }
+
+      moduleText = this._getNgModuleTypeOfExpression(returnStatement.expression);
     } else if (ts.isPropertyDeclaration(parent) || ts.isVariableDeclaration(parent)) {
       if (!parent.initializer) {
         addTodoToNode(type, TODO_COMMENT);
@@ -54,12 +57,11 @@ export class ModuleWithProvidersTransform {
         return [{node: parent, message: `Unable to determine type for declaration.`}];
       }
 
-      const evaluatedExpr = this.partialEvaluator.evaluate(parent.initializer);
-      moduleText = this._visitObjectLiteralExpressionResolvedValue(evaluatedExpr);
+      moduleText = this._getNgModuleTypeOfExpression(parent.initializer);
     }
 
     if (moduleText) {
-      this.migrateTypeReferenceNode(type, moduleText);
+      this._addGenericToTypeReference(type, moduleText);
       return [];
     }
 
@@ -67,7 +69,7 @@ export class ModuleWithProvidersTransform {
   }
 
   /** Add a given generic to a type reference node */
-  migrateTypeReferenceNode(node: ts.TypeReferenceNode, typeName: string) {
+  private _addGenericToTypeReference(node: ts.TypeReferenceNode, typeName: string) {
     const newGenericExpr = createModuleWithProvidersType(typeName, node);
     this._updateNode(node, newGenericExpr);
   }
@@ -76,12 +78,7 @@ export class ModuleWithProvidersTransform {
    * Migrates a given static method if its ModuleWithProviders does not provide
    * a generic type.
    */
-  migrateStaticMethod(method: ts.MethodDeclaration, typeName: string) {
-    if (this.visitedMethods.has(method)) {
-      return;
-    }
-    this.visitedMethods.add(method);
-
+  private _updateStaticMethodType(method: ts.MethodDeclaration, typeName: string) {
     const newGenericExpr =
         createModuleWithProvidersType(typeName, method.type as ts.TypeReferenceNode);
     const newMethodDecl = ts.updateMethod(
@@ -100,33 +97,38 @@ export class ModuleWithProvidersTransform {
     return ngModule && (value.size === 1 || (providers && value.size === 2));
   }
 
-  /** Determine the generic type of a suspected ModuleWithProviders return type */
-  private _resolveStaticMethod(node: ts.MethodDeclaration): AnalysisFailure|null {
-    const returnStatement: ts.ReturnStatement|undefined = node.body &&
+  /** Determine the generic type of a suspected ModuleWithProviders return type and add it
+   * explicitly */
+  private _migrateStaticNgModuleMethod(node: ts.MethodDeclaration): AnalysisFailure|null {
+    const returnStatement = node.body &&
         node.body.statements.find(n => ts.isReturnStatement(n)) as ts.ReturnStatement | undefined;
-    const moduleText = this._getReturnStatementNgModuleType(returnStatement);
+
+    // No return type found, exit
+    if (!returnStatement || !returnStatement.expression) {
+      return {node: node, message: `Return type is not statically analyzable.`};
+    }
+
+    const moduleText = this._getNgModuleTypeOfExpression(returnStatement.expression);
 
     if (moduleText) {
-      this.migrateStaticMethod(node, moduleText);
+      this._updateStaticMethodType(node, moduleText);
       return null;
     }
 
     return {node: node, message: `Method type is not statically analyzable.`};
   }
 
-  /** Evaluate and return the ngModule type from a method or function's return statement */
-  private _getReturnStatementNgModuleType(returnStatement?: ts.ReturnStatement): string|undefined {
-    // No return type found, exit
-    if (!returnStatement || !returnStatement.expression) {
-      return;
-    }
-
-    const evaluatedExpr = this.partialEvaluator.evaluate(returnStatement.expression);
-    return this._visitObjectLiteralExpressionResolvedValue(evaluatedExpr);
+  /** Evaluate and return the ngModule type from an expression */
+  private _getNgModuleTypeOfExpression(expr: ts.Expression): string|undefined {
+    const evaluatedExpr = this.partialEvaluator.evaluate(expr);
+    return this._getTypeOfResolvedValue(evaluatedExpr);
   }
 
-  /** Visits a given object literal expression to determine the ngModule type. */
-  private _visitObjectLiteralExpressionResolvedValue(value: ResolvedValue): string|undefined {
+  /**
+   * Visits a given object literal expression to determine the ngModule type. If the expression
+   * cannot be resolved, add a TODO to alert the user.
+   */
+  private _getTypeOfResolvedValue(value: ResolvedValue): string|undefined {
     if (value instanceof Map && this.isModuleWithProvidersType(value)) {
       const mapValue = value.get('ngModule') !;
       if (mapValue instanceof Reference && ts.isClassDeclaration(mapValue.node) &&

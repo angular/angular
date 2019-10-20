@@ -191,7 +191,7 @@ describe('ModuleWithProviders migration', () => {
      
       export const myModuleWithProviders: ModuleWithProviders = {ngModule: BaseModule};
       
-      export function mwpFunction: ModuleWithProviders {
+      export function mwpFunction(): ModuleWithProviders {
         return myModuleWithProviders;
       }
       
