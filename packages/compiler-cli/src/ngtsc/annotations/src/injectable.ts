@@ -116,7 +116,8 @@ function extractInjectableMetadata(
   const typeArgumentCount = reflector.getGenericArityOfClass(clazz) || 0;
   if (decorator.args === null) {
     throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_NOT_CALLED, decorator.node, '@Injectable must be called');
+        ErrorCode.DECORATOR_NOT_CALLED, Decorator.nodeForError(decorator),
+        '@Injectable must be called');
   }
   if (decorator.args.length === 0) {
     return {
@@ -202,7 +203,8 @@ function extractInjectableCtorDeps(
     strictCtorDeps: boolean) {
   if (decorator.args === null) {
     throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_NOT_CALLED, decorator.node, '@Injectable must be called');
+        ErrorCode.DECORATOR_NOT_CALLED, Decorator.nodeForError(decorator),
+        '@Injectable must be called');
   }
 
   let ctorDeps: R3DependencyMetadata[]|'invalid'|null = null;

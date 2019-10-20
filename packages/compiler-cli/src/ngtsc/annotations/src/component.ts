@@ -509,7 +509,7 @@ export class ComponentDecoratorHandler implements
     }
     if (decorator.args === null || decorator.args.length !== 1) {
       throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
+          ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
           `Incorrect number of arguments to @Component decorator`);
     }
     const meta = unwrapExpression(decorator.args[0]);
@@ -624,7 +624,8 @@ export class ComponentDecoratorHandler implements
   } {
     if (!component.has('template')) {
       throw new FatalDiagnosticError(
-          ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node, 'component is missing a template');
+          ErrorCode.COMPONENT_MISSING_TEMPLATE, Decorator.nodeForError(decorator),
+          'component is missing a template');
     }
     const templateExpr = component.get('template') !;
 

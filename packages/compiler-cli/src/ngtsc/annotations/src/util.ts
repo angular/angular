@@ -55,7 +55,7 @@ export function getConstructorDependencies(
       if (name === 'Inject') {
         if (dec.args === null || dec.args.length !== 1) {
           throw new FatalDiagnosticError(
-              ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
+              ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(dec),
               `Unexpected number of arguments to @Inject().`);
         }
         token = new WrappedNodeExpr(dec.args[0]);
@@ -70,14 +70,15 @@ export function getConstructorDependencies(
       } else if (name === 'Attribute') {
         if (dec.args === null || dec.args.length !== 1) {
           throw new FatalDiagnosticError(
-              ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
+              ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(dec),
               `Unexpected number of arguments to @Attribute().`);
         }
         token = new WrappedNodeExpr(dec.args[0]);
         resolved = R3ResolvedDependencyType.Attribute;
       } else {
         throw new FatalDiagnosticError(
-            ErrorCode.DECORATOR_UNEXPECTED, dec.node, `Unexpected decorator ${name} on parameter.`);
+            ErrorCode.DECORATOR_UNEXPECTED, Decorator.nodeForError(dec),
+            `Unexpected decorator ${name} on parameter.`);
       }
     });
 

@@ -121,7 +121,7 @@ export function extractDirectiveMetadata(
     directive = new Map<string, ts.Expression>();
   } else if (decorator.args.length !== 1) {
     throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
+        ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
         `Incorrect number of arguments to @${decorator.name} decorator`);
   } else {
     const meta = unwrapExpression(decorator.args[0]);
@@ -447,7 +447,7 @@ export function queriesFromFields(
     evaluator: PartialEvaluator): R3QueryMetadata[] {
   return fields.map(({member, decorators}) => {
     const decorator = decorators[0];
-    const node = member.node || decorator.node;
+    const node = member.node || Decorator.nodeForError(decorator);
 
     // Throw in case of `@Input() @ContentChild('foo') foo: any`, which is not supported in Ivy
     if (member.decorators !.some(v => v.name === 'Input')) {
@@ -465,7 +465,7 @@ export function queriesFromFields(
           'Query decorator must go on a property-type member');
     }
     return extractQueryMetadata(
-        decorator.node, decorator.name, decorator.args || [], member.name, reflector, evaluator);
+        node, decorator.name, decorator.args || [], member.name, reflector, evaluator);
   });
 }
 

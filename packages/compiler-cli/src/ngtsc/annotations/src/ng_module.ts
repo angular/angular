@@ -67,7 +67,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     const name = node.name.text;
     if (decorator.args === null || decorator.args.length > 1) {
       throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
+          ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
           `Incorrect number of arguments to @NgModule decorator`);
     }
 
