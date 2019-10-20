@@ -202,7 +202,7 @@ export { SomeDirective };
 
             const decorator = decorators[0];
             expect(decorator.name).toEqual('Directive');
-            expect(decorator.identifier.getText()).toEqual('Directive');
+            expect(decorator.identifier !.getText()).toEqual('Directive');
             expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
             expect(decorator.args !.map(arg => arg.getText())).toEqual([
               '{ selector: \'[someDirective]\' }',
@@ -224,7 +224,7 @@ export { SomeDirective };
 
                const decorator = decorators[0];
                expect(decorator.name).toEqual('Directive');
-               expect(decorator.identifier.getText()).toEqual('Directive');
+               expect(decorator.identifier !.getText()).toEqual('Directive');
                expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
                expect(decorator.args !.map(arg => arg.getText())).toEqual([
                  '{ selector: \'[someDirective]\' }',
@@ -245,7 +245,7 @@ export { SomeDirective };
 
             const decorator = decorators[0];
             expect(decorator.name).toEqual('Directive');
-            expect(decorator.identifier.getText()).toEqual('Directive');
+            expect(decorator.identifier !.getText()).toEqual('Directive');
             expect(decorator.import).toEqual({name: 'Directive', from: './directives'});
             expect(decorator.args !.map(arg => arg.getText())).toEqual([
               '{ selector: \'[someDirective]\' }',
@@ -470,7 +470,7 @@ export { SomeDirective };
             const classNode = getDeclaration(
                 program, _('/some_directive.js'), 'SomeDirective', isNamedVariableDeclaration);
             const classDecorators = host.getDecoratorsOfDeclaration(classNode) !;
-            const decoratorNode = classDecorators[0].node;
+            const decoratorNode = classDecorators[0].node !;
 
             const identifierOfDirective =
                 ts.isCallExpression(decoratorNode) && ts.isIdentifier(decoratorNode.expression) ?

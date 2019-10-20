@@ -425,7 +425,7 @@ SOME DEFINITION TEXT
                decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
            const decorator = compiledClass.decorators ![0];
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString())
                .not.toContain(`{ type: core.Directive, args: [{ selector: '[a]' }] },`);
@@ -446,7 +446,7 @@ SOME DEFINITION TEXT
                decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'B') !;
            const decorator = compiledClass.decorators ![0];
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString())
                .toContain(`{ type: core.Directive, args: [{ selector: '[a]' }] },`);
@@ -467,7 +467,7 @@ SOME DEFINITION TEXT
                decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
            const decorator = compiledClass.decorators ![0];
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
            renderer.removeDecorators(output, decoratorsToRemove);
            renderer.addDefinitions(output, compiledClass, 'SOME DEFINITION TEXT');
            expect(output.toString())
@@ -490,7 +490,7 @@ SOME DEFINITION TEXT
                decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
            const decorator = compiledClass.decorators !.find(d => d.name === 'Directive') !;
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString()).not.toContain(`core.Directive({ selector: '[a]' }),`);
            expect(output.toString()).toContain(`OtherA()`);
@@ -507,7 +507,7 @@ SOME DEFINITION TEXT
                decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'B') !;
            const decorator = compiledClass.decorators !.find(d => d.name === 'Directive') !;
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString()).toContain(`core.Directive({ selector: '[a]' }),`);
            expect(output.toString()).toContain(`OtherA()`);
@@ -525,7 +525,7 @@ SOME DEFINITION TEXT
                decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
            const decorator = compiledClass.decorators !.find(d => d.name === 'Directive') !;
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString()).toContain(`core.Directive({ selector: '[a]' }),`);
            expect(output.toString()).toContain(`OtherA()`);

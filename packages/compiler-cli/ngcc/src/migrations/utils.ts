@@ -37,20 +37,14 @@ export function createDirectiveDecorator(clazz: ClassDeclaration): Decorator {
     // TODO: At the moment ngtsc does not accept a directive with no selector
     ts.createPropertyAssignment('selector', ts.createStringLiteral('NGCC_DUMMY')),
   ]);
-  const decoratorType = ts.createIdentifier('Directive');
-  const decoratorNode = ts.createObjectLiteral([
-    ts.createPropertyAssignment('type', decoratorType),
-    ts.createPropertyAssignment('args', ts.createArrayLiteral([selectorArg])),
-  ]);
-
-  setParentPointers(clazz.getSourceFile(), decoratorNode);
 
   return {
     name: 'Directive',
-    identifier: decoratorType,
+    identifier: null,
     import: {name: 'Directive', from: '@angular/core'},
-    node: decoratorNode,
-    args: [selectorArg],
+    node: null,
+    synthesizedFor: clazz.name,
+    args: [reifySourceFile(selectorArg)],
   };
 }
 
@@ -58,27 +52,33 @@ export function createDirectiveDecorator(clazz: ClassDeclaration): Decorator {
  * Create an empty `Injectable` decorator that will be associated with the `clazz`.
  */
 export function createInjectableDecorator(clazz: ClassDeclaration): Decorator {
-  const decoratorType = ts.createIdentifier('Injectable');
-  const decoratorNode = ts.createObjectLiteral([
-    ts.createPropertyAssignment('type', decoratorType),
-    ts.createPropertyAssignment('args', ts.createArrayLiteral([])),
-  ]);
-
-  setParentPointers(clazz.getSourceFile(), decoratorNode);
-
   return {
     name: 'Injectable',
-    identifier: decoratorType,
+    identifier: null,
     import: {name: 'Injectable', from: '@angular/core'},
-    node: decoratorNode,
+    node: null,
+    synthesizedFor: clazz.name,
     args: [],
   };
 }
 
+const EMPTY_SF = ts.createSourceFile('(empty)', '', ts.ScriptTarget.Latest);
+
 /**
- * Ensure that a tree of AST nodes have their parents wired up.
+ * Takes a `ts.Expression` and returns the same `ts.Expression`, but with an associated
+ * `ts.SourceFile`.
+ *
+ * This transformation is necessary to use synthetic `ts.Expression`s with the `PartialEvaluator`,
+ * and many decorator arguments are interpreted in this way.
  */
-export function setParentPointers(parent: ts.Node, child: ts.Node): void {
-  child.parent = parent;
-  ts.forEachChild(child, grandchild => setParentPointers(child, grandchild));
+function reifySourceFile(expr: ts.Expression): ts.Expression {
+  const printer = ts.createPrinter();
+  const exprText = printer.printNode(ts.EmitHint.Unspecified, expr, EMPTY_SF);
+  const sf = ts.createSourceFile(
+      '(synthetic)', `const expr = ${exprText};`, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const stmt = sf.statements[0];
+  if (!ts.isVariableStatement(stmt)) {
+    throw new Error(`Expected VariableStatement, got ${ts.SyntaxKind[stmt.kind]}`);
+  }
+  return stmt.declarationList.declarations[0].initializer !;
 }

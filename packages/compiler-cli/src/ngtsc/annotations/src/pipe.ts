@@ -53,11 +53,13 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     const type = new WrappedNodeExpr(clazz.name);
     if (decorator.args === null) {
       throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_NOT_CALLED, decorator.node, `@Pipe must be called`);
+          ErrorCode.DECORATOR_NOT_CALLED, Decorator.nodeForError(decorator),
+          `@Pipe must be called`);
     }
     if (decorator.args.length !== 1) {
       throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_ARITY_WRONG, decorator.node, '@Pipe must have exactly one argument');
+          ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
+          '@Pipe must have exactly one argument');
     }
     const meta = unwrapExpression(decorator.args[0]);
     if (!ts.isObjectLiteralExpression(meta)) {

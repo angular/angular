@@ -9,9 +9,12 @@
 import * as ts from 'typescript';
 
 /**
- * Metadata extracted from an instance of a decorator on another declaration.
+ * Metadata extracted from an instance of a decorator on another declaration, or synthesized from
+ * other information about a class.
  */
-export interface Decorator {
+export type Decorator = ConcreteDecorator | SyntheticDecorator;
+
+export interface BaseDecorator {
   /**
    * Name by which the decorator was invoked in the user's code.
    *
@@ -23,7 +26,7 @@ export interface Decorator {
   /**
    * Identifier which refers to the decorator in the user's code.
    */
-  identifier: DecoratorIdentifier;
+  identifier: DecoratorIdentifier|null;
 
   /**
    * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
@@ -32,15 +35,53 @@ export interface Decorator {
   import : Import | null;
 
   /**
-   * TypeScript reference to the decorator itself.
+   * TypeScript reference to the decorator itself, or `null` if the decorator is synthesized (e.g.
+   * in ngcc).
    */
-  node: ts.Node;
+  node: ts.Node|null;
 
   /**
-   * Arguments of the invocation of the decorator, if the decorator is invoked, or `null` otherwise.
+   * Arguments of the invocation of the decorator, if the decorator is invoked, or `null`
+   * otherwise.
    */
   args: ts.Expression[]|null;
 }
+
+/**
+ * Metadata extracted from an instance of a decorator on another declaration, which was actually
+ * present in a file.
+ *
+ * Concrete decorators always have an `identifier` and a `node`.
+ */
+export interface ConcreteDecorator extends BaseDecorator {
+  identifier: DecoratorIdentifier;
+  node: ts.Node;
+}
+
+/**
+ * Synthetic decorators never have an `identifier` or a `node`, but know the node for which they
+ * were synthesized.
+ */
+export interface SyntheticDecorator extends BaseDecorator {
+  identifier: null;
+  node: null;
+
+  /**
+   * The `ts.Node` for which this decorator was created.
+   */
+  synthesizedFor: ts.Node;
+}
+
+export const Decorator = {
+  nodeForError: (decorator: Decorator): ts.Node => {
+    if (decorator.node !== null) {
+      return decorator.node;
+    } else {
+      // TODO(alxhub): we can't rely on narrowing until TS 3.6 is in g3.
+      return (decorator as SyntheticDecorator).synthesizedFor;
+    }
+  },
+};
 
 /**
  * A decorator is identified by either a simple identifier (e.g. `Decorator`) or, in some cases,
