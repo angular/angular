@@ -119,7 +119,8 @@ export class DecorationAnalyzer {
                               .map(sourceFile => this.analyzeFile(sourceFile))
                               .filter(isDefined);
     const migrationHost = new DefaultMigrationHost(
-        this.reflectionHost, this.fullMetaReader, this.evaluator, this.handlers, analyzedFiles);
+        this.reflectionHost, this.fullMetaReader, this.evaluator, this.handlers,
+        this.bundle.entryPoint.path, analyzedFiles);
     analyzedFiles.forEach(analyzedFile => this.migrateFile(migrationHost, analyzedFile));
     analyzedFiles.forEach(analyzedFile => this.resolveFile(analyzedFile));
     const compiledFiles = analyzedFiles.map(analyzedFile => this.compileFile(analyzedFile));
