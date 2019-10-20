@@ -122,6 +122,9 @@ function classMemberToMetadata(
  * Convert a reflected decorator to metadata.
  */
 function decoratorToMetadata(decorator: Decorator): ts.ObjectLiteralExpression {
+  if (decorator.identifier === null) {
+    throw new Error('Illegal state: synthesized decorator cannot be emitted in class metadata.');
+  }
   // Decorators have a type.
   const properties: ts.ObjectLiteralElementLike[] = [
     ts.createPropertyAssignment('type', ts.getMutableClone(decorator.identifier)),
