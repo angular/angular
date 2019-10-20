@@ -19,7 +19,8 @@ export function isClassDeclaration(clazz: ts.Declaration): clazz is ClassDeclara
  * Returns true if the `clazz` is decorated as a `Directive` or `Component`.
  */
 export function hasDirectiveDecorator(host: MigrationHost, clazz: ClassDeclaration): boolean {
-  return host.metadata.getDirectiveMetadata(new Reference(clazz)) !== null;
+  const ref = new Reference(clazz);
+  return host.metadata.getDirectiveMetadata(ref) !== null;
 }
 
 /**
@@ -33,18 +34,13 @@ export function hasConstructor(host: MigrationHost, clazz: ClassDeclaration): bo
  * Create an empty `Directive` decorator that will be associated with the `clazz`.
  */
 export function createDirectiveDecorator(clazz: ClassDeclaration): Decorator {
-  const selectorArg = ts.createObjectLiteral([
-    // TODO: At the moment ngtsc does not accept a directive with no selector
-    ts.createPropertyAssignment('selector', ts.createStringLiteral('NGCC_DUMMY')),
-  ]);
-
   return {
     name: 'Directive',
     identifier: null,
     import: {name: 'Directive', from: '@angular/core'},
     node: null,
     synthesizedFor: clazz.name,
-    args: [reifySourceFile(selectorArg)],
+    args: [],
   };
 }
 
