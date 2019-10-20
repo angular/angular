@@ -130,6 +130,9 @@ export class Renderer {
       }
 
       clazz.decorators.forEach(dec => {
+        if (dec.node === null) {
+          return;
+        }
         const decoratorArray = dec.node.parent !;
         if (!decoratorsToRemove.has(decoratorArray)) {
           decoratorsToRemove.set(decoratorArray, [dec.node]);
