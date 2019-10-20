@@ -42,4 +42,20 @@ export interface MigrationHost {
    * @param decorator the decorator to inject.
    */
   injectSyntheticDecorator(clazz: ClassDeclaration, decorator: Decorator): void;
+
+  /**
+   * Retrieves all decorators that are associated with the class, including synthetic decorators
+   * that have been injected before.
+   * @param clazz the class for which all decorators are retrieved.
+   * @returns the list of the decorators, or null if the class was not decorated.
+   */
+  getAllDecorators(clazz: ClassDeclaration): Decorator[]|null;
+
+  /**
+   * Determines whether the provided class in within scope of the entry-point that is currently
+   * being compiled.
+   * @param clazz the class for which to be determine whether it is within the current entry-point.
+   * @returns true if the file is part of the compiled entry-point, false otherwise.
+   */
+  isInScope(clazz: ClassDeclaration): boolean;
 }
