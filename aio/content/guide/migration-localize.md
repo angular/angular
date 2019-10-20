@@ -43,8 +43,10 @@ This has the side-effect of attaching a minimal implementation of `$localize` to
 If this import is missing, you will see an error message like this:
 
 ```
-Error: The global function `$localize` is missing.
-Please add `import '@angular/localize/init';` to your polyfills.ts file.
+Error: It looks like your application or one of its dependencies is using i18n.
+Angular 9 introduced a global `$localize()` function that needs to be loaded.
+Please run `ng add @angular/localize` from the Angular CLI.
+(For non-CLI projects, add `import '@angular/localize/init';` to your polyfills.ts file)
 ```
 
 This schematic automatically adds the `@angular/localize/init` import for you
@@ -60,7 +62,7 @@ The import of `@angular/localize/init` may cause a tslint error for `no-import-s
 "no-import-side-effect": [
   true,
   {
-    "ignore-module": "(core-js/.*|zone\\.js/.*|@angular\/localize)$"
+    "ignore-module": "(core-js/.*|zone\\.js/.*|@angular/localize/init)$"
   }
 ]
 
