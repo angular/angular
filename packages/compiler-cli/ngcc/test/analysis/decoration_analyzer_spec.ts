@@ -199,10 +199,10 @@ runInEachFileSystem(() => {
         it('should call `apply()` on each migration for each class', () => {
           expect(migrationLogs).toEqual([
             'migration1:MyComponent',
-            'migration2:MyComponent',
             'migration1:MyDirective',
-            'migration2:MyDirective',
             'migration1:MyOtherComponent',
+            'migration2:MyComponent',
+            'migration2:MyDirective',
             'migration2:MyOtherComponent',
           ]);
         });
