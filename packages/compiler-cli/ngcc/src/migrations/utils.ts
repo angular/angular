@@ -55,6 +55,27 @@ export function createDirectiveDecorator(clazz: ClassDeclaration): Decorator {
 }
 
 /**
+ * Create an empty `Injectable` decorator that will be associated with the `clazz`.
+ */
+export function createInjectableDecorator(clazz: ClassDeclaration): Decorator {
+  const decoratorType = ts.createIdentifier('Injectable');
+  const decoratorNode = ts.createObjectLiteral([
+    ts.createPropertyAssignment('type', decoratorType),
+    ts.createPropertyAssignment('args', ts.createArrayLiteral([])),
+  ]);
+
+  setParentPointers(clazz.getSourceFile(), decoratorNode);
+
+  return {
+    name: 'Injectable',
+    identifier: decoratorType,
+    import: {name: 'Injectable', from: '@angular/core'},
+    node: decoratorNode,
+    args: [],
+  };
+}
+
+/**
  * Ensure that a tree of AST nodes have their parents wired up.
  */
 export function setParentPointers(parent: ts.Node, child: ts.Node): void {
