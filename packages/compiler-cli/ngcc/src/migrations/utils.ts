@@ -19,7 +19,8 @@ export function isClassDeclaration(clazz: ts.Declaration): clazz is ClassDeclara
  * Returns true if the `clazz` is decorated as a `Directive` or `Component`.
  */
 export function hasDirectiveDecorator(host: MigrationHost, clazz: ClassDeclaration): boolean {
-  return host.metadata.getDirectiveMetadata(new Reference(clazz)) !== null;
+  const ref = new Reference(clazz);
+  return host.metadata.getDirectiveMetadata(ref) !== null || host.metadata.isAbstractDirective(ref);
 }
 
 /**
