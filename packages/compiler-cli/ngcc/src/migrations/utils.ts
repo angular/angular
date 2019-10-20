@@ -33,24 +33,12 @@ export function hasConstructor(host: MigrationHost, clazz: ClassDeclaration): bo
  * Create an empty `Directive` decorator that will be associated with the `clazz`.
  */
 export function createDirectiveDecorator(clazz: ClassDeclaration): Decorator {
-  const selectorArg = ts.createObjectLiteral([
-    // TODO: At the moment ngtsc does not accept a directive with no selector
-    ts.createPropertyAssignment('selector', ts.createStringLiteral('NGCC_DUMMY')),
-  ]);
-  const decoratorType = ts.createIdentifier('Directive');
-  const decoratorNode = ts.createObjectLiteral([
-    ts.createPropertyAssignment('type', decoratorType),
-    ts.createPropertyAssignment('args', ts.createArrayLiteral([selectorArg])),
-  ]);
-
-  setParentPointers(clazz.getSourceFile(), decoratorNode);
-
   return {
     name: 'Directive',
-    identifier: decoratorType,
+    identifier: null,
     import: {name: 'Directive', from: '@angular/core'},
-    node: decoratorNode,
-    args: [selectorArg],
+    node: clazz.name,
+    args: [],
   };
 }
 
@@ -58,27 +46,11 @@ export function createDirectiveDecorator(clazz: ClassDeclaration): Decorator {
  * Create an empty `Injectable` decorator that will be associated with the `clazz`.
  */
 export function createInjectableDecorator(clazz: ClassDeclaration): Decorator {
-  const decoratorType = ts.createIdentifier('Injectable');
-  const decoratorNode = ts.createObjectLiteral([
-    ts.createPropertyAssignment('type', decoratorType),
-    ts.createPropertyAssignment('args', ts.createArrayLiteral([])),
-  ]);
-
-  setParentPointers(clazz.getSourceFile(), decoratorNode);
-
   return {
     name: 'Injectable',
-    identifier: decoratorType,
+    identifier: null,
     import: {name: 'Injectable', from: '@angular/core'},
-    node: decoratorNode,
+    node: clazz.name,
     args: [],
   };
-}
-
-/**
- * Ensure that a tree of AST nodes have their parents wired up.
- */
-export function setParentPointers(parent: ts.Node, child: ts.Node): void {
-  child.parent = parent;
-  ts.forEachChild(child, grandchild => setParentPointers(child, grandchild));
 }

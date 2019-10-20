@@ -21,9 +21,10 @@ export interface Decorator {
   name: string;
 
   /**
-   * Identifier which refers to the decorator in the user's code.
+   * Identifier which refers to the decorator in the user's code, or `null` if the decorator is
+   * synthesized in ngcc.
    */
-  identifier: DecoratorIdentifier;
+  identifier: DecoratorIdentifier|null;
 
   /**
    * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
@@ -32,7 +33,8 @@ export interface Decorator {
   import : Import | null;
 
   /**
-   * TypeScript reference to the decorator itself.
+   * TypeScript reference to the decorator itself, or the node for which the decorator was
+   * synthesized in ngcc.
    */
   node: ts.Node;
 
