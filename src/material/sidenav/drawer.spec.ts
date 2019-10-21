@@ -18,12 +18,13 @@ import {PlatformModule, Platform} from '@angular/cdk/platform';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
 import {CdkScrollable} from '@angular/cdk/scrolling';
+import {CommonModule} from '@angular/common';
 
 
 describe('MatDrawer', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MatSidenavModule, A11yModule, PlatformModule, NoopAnimationsModule],
+      imports: [MatSidenavModule, A11yModule, PlatformModule, NoopAnimationsModule, CommonModule],
       declarations: [
         BasicTestApp,
         DrawerContainerNoDrawerTestApp,
@@ -33,6 +34,8 @@ describe('MatDrawer', () => {
         DrawerWithFocusableElements,
         DrawerOpenBinding,
         DrawerWithoutFocusableElements,
+        IndirectDescendantDrawer,
+        NestedDrawerContainers,
       ],
     });
 
@@ -323,6 +326,46 @@ describe('MatDrawer', () => {
       expect(document.activeElement)
           .toBe(closeButton, 'Expected focus not to be restored to the open button on close.');
     }));
+
+    it('should pick up drawers that are not direct descendants', fakeAsync(() => {
+      const fixture = TestBed.createComponent(IndirectDescendantDrawer);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.drawer.opened).toBe(false);
+
+      fixture.componentInstance.container.open();
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.drawer.opened).toBe(true);
+    }));
+
+    it('should not pick up drawers from nested containers', fakeAsync(() => {
+      const fixture = TestBed.createComponent(NestedDrawerContainers);
+      const instance = fixture.componentInstance;
+      fixture.detectChanges();
+
+      expect(instance.outerDrawer.opened).toBe(false);
+      expect(instance.innerDrawer.opened).toBe(false);
+
+      instance.outerContainer.open();
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      expect(instance.outerDrawer.opened).toBe(true);
+      expect(instance.innerDrawer.opened).toBe(false);
+
+      instance.innerContainer.open();
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      expect(instance.outerDrawer.opened).toBe(true);
+      expect(instance.innerDrawer.opened).toBe(true);
+    }));
+
   });
 
   describe('attributes', () => {
@@ -997,4 +1040,39 @@ class AutosizeDrawer {
 })
 class DrawerContainerWithContent {
   @ViewChild(MatDrawerContainer, {static: false}) drawerContainer: MatDrawerContainer;
+}
+
+
+@Component({
+  // Note that we need the `ng-container` with the `ngSwitch` so that
+  // there's a directive between the container and the drawer.
+  template: `
+    <mat-drawer-container #container>
+      <ng-container [ngSwitch]="true">
+        <mat-drawer #drawer>Drawer</mat-drawer>
+      </ng-container>
+    </mat-drawer-container>`,
+})
+class IndirectDescendantDrawer {
+  @ViewChild('container', {static: false}) container: MatDrawerContainer;
+  @ViewChild('drawer', {static: false}) drawer: MatDrawer;
+}
+
+@Component({
+  template: `
+    <mat-drawer-container #outerContainer>
+      <mat-drawer #outerDrawer>Drawer</mat-drawer>
+      <mat-drawer-content>
+        <mat-drawer-container #innerContainer>
+          <mat-drawer #innerDrawer>Drawer</mat-drawer>
+        </mat-drawer-container>
+      </mat-drawer-content>
+    </mat-drawer-container>
+  `,
+})
+class NestedDrawerContainers {
+  @ViewChild('outerContainer', {static: false}) outerContainer: MatDrawerContainer;
+  @ViewChild('outerDrawer', {static: false}) outerDrawer: MatDrawer;
+  @ViewChild('innerContainer', {static: false}) innerContainer: MatDrawerContainer;
+  @ViewChild('innerDrawer', {static: false}) innerDrawer: MatDrawer;
 }

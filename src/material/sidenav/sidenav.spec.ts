@@ -1,29 +1,26 @@
-import {Component} from '@angular/core';
-import {async, TestBed, ComponentFixture} from '@angular/core/testing';
-import {MatSidenav, MatSidenavModule} from './index';
+import {Component, ViewChild} from '@angular/core';
+import {async, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {MatSidenav, MatSidenavModule, MatSidenavContainer} from './index';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
+import {CommonModule} from '@angular/common';
 
 
 describe('MatSidenav', () => {
-  let fixture: ComponentFixture<SidenavWithFixedPosition>;
-  let sidenavEl: HTMLElement;
-
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MatSidenavModule, NoopAnimationsModule],
-      declarations: [SidenavWithFixedPosition],
+      imports: [MatSidenavModule, NoopAnimationsModule, CommonModule],
+      declarations: [SidenavWithFixedPosition, IndirectDescendantSidenav, NestedSidenavContainers],
     });
 
     TestBed.compileComponents();
-
-    fixture = TestBed.createComponent(SidenavWithFixedPosition);
-    fixture.detectChanges();
-
-    sidenavEl = fixture.debugElement.query(By.directive(MatSidenav))!.nativeElement;
   }));
 
   it('should be fixed position when in fixed mode', () => {
+    const fixture = TestBed.createComponent(SidenavWithFixedPosition);
+    fixture.detectChanges();
+    const sidenavEl = fixture.debugElement.query(By.directive(MatSidenav))!.nativeElement;
+
     expect(sidenavEl.classList).toContain('mat-sidenav-fixed');
 
     fixture.componentInstance.fixed = false;
@@ -33,6 +30,10 @@ describe('MatSidenav', () => {
   });
 
   it('should set fixed bottom and top when in fixed mode', () => {
+    const fixture = TestBed.createComponent(SidenavWithFixedPosition);
+    fixture.detectChanges();
+    const sidenavEl = fixture.debugElement.query(By.directive(MatSidenav))!.nativeElement;
+
     expect(sidenavEl.style.top).toBe('20px');
     expect(sidenavEl.style.bottom).toBe('30px');
 
@@ -42,6 +43,46 @@ describe('MatSidenav', () => {
     expect(sidenavEl.style.top).toBeFalsy();
     expect(sidenavEl.style.bottom).toBeFalsy();
   });
+
+  it('should pick up sidenavs that are not direct descendants', fakeAsync(() => {
+    const fixture = TestBed.createComponent(IndirectDescendantSidenav);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.sidenav.opened).toBe(false);
+
+    fixture.componentInstance.container.open();
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.sidenav.opened).toBe(true);
+  }));
+
+  it('should not pick up sidenavs from nested containers', fakeAsync(() => {
+    const fixture = TestBed.createComponent(NestedSidenavContainers);
+    const instance = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(instance.outerSidenav.opened).toBe(false);
+    expect(instance.innerSidenav.opened).toBe(false);
+
+    instance.outerContainer.open();
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    expect(instance.outerSidenav.opened).toBe(true);
+    expect(instance.innerSidenav.opened).toBe(false);
+
+    instance.innerContainer.open();
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    expect(instance.outerSidenav.opened).toBe(true);
+    expect(instance.innerSidenav.opened).toBe(true);
+  }));
+
 });
 
 
@@ -64,4 +105,40 @@ class SidenavWithFixedPosition {
   fixed = true;
   fixedTop = 20;
   fixedBottom = 30;
+}
+
+
+@Component({
+  // Note that we need the `ng-container` with the `ngSwitch` so that
+  // there's a directive between the container and the sidenav.
+  template: `
+    <mat-sidenav-container #container>
+      <ng-container [ngSwitch]="true">
+        <mat-sidenav #sidenav>Sidenav.</mat-sidenav>
+      </ng-container>
+      <mat-sidenav-content>Some content.</mat-sidenav-content>
+    </mat-sidenav-container>`,
+})
+class IndirectDescendantSidenav {
+  @ViewChild('container', {static: false}) container: MatSidenavContainer;
+  @ViewChild('sidenav', {static: false}) sidenav: MatSidenav;
+}
+
+@Component({
+  template: `
+    <mat-sidenav-container #outerContainer>
+      <mat-sidenav #outerSidenav>Sidenav</mat-sidenav>
+      <mat-sidenav-content>
+        <mat-sidenav-container #innerContainer>
+          <mat-sidenav #innerSidenav>Sidenav</mat-sidenav>
+        </mat-sidenav-container>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  `,
+})
+class NestedSidenavContainers {
+  @ViewChild('outerContainer', {static: false}) outerContainer: MatSidenavContainer;
+  @ViewChild('outerSidenav', {static: false}) outerSidenav: MatSidenav;
+  @ViewChild('innerContainer', {static: false}) innerContainer: MatSidenavContainer;
+  @ViewChild('innerSidenav', {static: false}) innerSidenav: MatSidenav;
 }

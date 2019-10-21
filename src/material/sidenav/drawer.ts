@@ -71,6 +71,13 @@ export const MAT_DRAWER_DEFAULT_AUTOSIZE =
       factory: MAT_DRAWER_DEFAULT_AUTOSIZE_FACTORY,
     });
 
+
+/**
+ * Used to provide a drawer container to a drawer while avoiding circular references.
+ * @docs-private
+ */
+export const MAT_DRAWER_CONTAINER = new InjectionToken('MAT_DRAWER_CONTAINER');
+
 /** @docs-private */
 export function MAT_DRAWER_DEFAULT_AUTOSIZE_FACTORY(): boolean {
   return false;
@@ -246,7 +253,12 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
               private _focusMonitor: FocusMonitor,
               private _platform: Platform,
               private _ngZone: NgZone,
-              @Optional() @Inject(DOCUMENT) private _doc: any) {
+              @Optional() @Inject(DOCUMENT) private _doc: any,
+              /**
+               * @deprecated `_container` parameter to be made required.
+               * @breaking-change 10.0.0
+               */
+              @Optional() @Inject(MAT_DRAWER_CONTAINER) public _container?: MatDrawerContainer) {
 
     this.openedChange.subscribe((opened: boolean) => {
       if (opened) {
@@ -459,9 +471,23 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  providers: [{
+    provide: MAT_DRAWER_CONTAINER,
+    useExisting: MatDrawerContainer
+  }]
 })
 export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy {
-  @ContentChildren(MatDrawer) _drawers: QueryList<MatDrawer>;
+  /** All drawers in the container. Includes drawers from inside nested containers. */
+  @ContentChildren(MatDrawer, {
+    // We need to use `descendants: true`, because Ivy will no longer match
+    // indirect descendants if it's left as false.
+    descendants: true
+  })
+  _allDrawers: QueryList<MatDrawer>;
+
+  /** Drawers that belong to this container. */
+  _drawers = new QueryList<MatDrawer>();
+
   @ContentChild(MatDrawerContent, {static: false}) _content: MatDrawerContent;
   @ViewChild(MatDrawerContent, {static: false}) _userContent: MatDrawerContent;
 
@@ -565,6 +591,14 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
   }
 
   ngAfterContentInit() {
+    this._allDrawers.changes
+      .pipe(startWith(this._allDrawers), takeUntil(this._destroyed))
+      .subscribe((drawer: QueryList<MatDrawer>) => {
+        // @breaking-change 10.0.0 Remove `_container` check once container parameter is required.
+        this._drawers.reset(drawer.filter(item => !item._container || item._container === this));
+        this._drawers.notifyOnChanges();
+      });
+
     this._drawers.changes.pipe(startWith(null)).subscribe(() => {
       this._validateDrawers();
 

@@ -7,6 +7,7 @@ export declare class MatDrawer implements AfterContentInit, AfterContentChecked,
     _animationStarted: Subject<AnimationEvent>;
     _animationState: 'open-instant' | 'open' | 'void';
     readonly _closedStream: Observable<void>;
+    _container?: MatDrawerContainer | undefined;
     readonly _isFocusTrapEnabled: boolean;
     readonly _modeChanged: Subject<void>;
     readonly _openedStream: Observable<void>;
@@ -20,7 +21,8 @@ export declare class MatDrawer implements AfterContentInit, AfterContentChecked,
     readonly openedChange: EventEmitter<boolean>;
     readonly openedStart: Observable<void>;
     position: 'start' | 'end';
-    constructor(_elementRef: ElementRef<HTMLElement>, _focusTrapFactory: FocusTrapFactory, _focusMonitor: FocusMonitor, _platform: Platform, _ngZone: NgZone, _doc: any);
+    constructor(_elementRef: ElementRef<HTMLElement>, _focusTrapFactory: FocusTrapFactory, _focusMonitor: FocusMonitor, _platform: Platform, _ngZone: NgZone, _doc: any,
+    _container?: MatDrawerContainer | undefined);
     _animationDoneListener(event: AnimationEvent): void;
     _animationStartListener(event: AnimationEvent): void;
     close(): Promise<MatDrawerToggleResult>;
@@ -36,6 +38,7 @@ export declare const matDrawerAnimations: {
 };
 
 export declare class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy {
+    _allDrawers: QueryList<MatDrawer>;
     _backdropOverride: boolean | null;
     _content: MatDrawerContent;
     readonly _contentMarginChanges: Subject<{
@@ -81,8 +84,8 @@ export declare class MatSidenav extends MatDrawer {
 }
 
 export declare class MatSidenavContainer extends MatDrawerContainer {
+    _allDrawers: QueryList<MatSidenav>;
     _content: MatSidenavContent;
-    _drawers: QueryList<MatSidenav>;
 }
 
 export declare class MatSidenavContent extends MatDrawerContent {

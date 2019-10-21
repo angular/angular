@@ -20,7 +20,7 @@ import {
   ElementRef,
   NgZone,
 } from '@angular/core';
-import {MatDrawer, MatDrawerContainer, MatDrawerContent} from './drawer';
+import {MatDrawer, MatDrawerContainer, MatDrawerContent, MAT_DRAWER_CONTAINER} from './drawer';
 import {matDrawerAnimations} from './drawer-animations';
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
@@ -112,8 +112,19 @@ export class MatSidenav extends MatDrawer {
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  providers: [{
+    provide: MAT_DRAWER_CONTAINER,
+    useExisting: MatSidenavContainer
+  }]
+
 })
 export class MatSidenavContainer extends MatDrawerContainer {
-  @ContentChildren(MatSidenav) _drawers: QueryList<MatSidenav>;
+  @ContentChildren(MatSidenav, {
+    // We need to use `descendants: true`, because Ivy will no longer match
+    // indirect descendants if it's left as false.
+    descendants: true
+  })
+  _allDrawers: QueryList<MatSidenav>;
+
   @ContentChild(MatSidenavContent, {static: false}) _content: MatSidenavContent;
 }

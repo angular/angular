@@ -65,6 +65,7 @@ ng_test_library(
         "//src/cdk/platform",
         "//src/cdk/scrolling",
         "//src/cdk/testing",
+        "@npm//@angular/common",
         "@npm//@angular/platform-browser",
     ],
 )
