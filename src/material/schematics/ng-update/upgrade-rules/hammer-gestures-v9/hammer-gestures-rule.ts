@@ -12,12 +12,12 @@ import {
   Path as DevkitPath
 } from '@angular-devkit/core';
 import {SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
-import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 import {
   getProjectIndexFiles,
   getProjectMainFile,
   MigrationFailure,
   MigrationRule,
+  PostMigrationAction,
   ResolvedResource,
   TargetVersion
 } from '@angular/cdk/schematics';
@@ -762,11 +762,11 @@ export class HammerGesturesRule extends MigrationRule<null> {
    * on the analysis of the individual targets. For example: we only remove Hammer
    * from the "package.json" if it is not used in *any* project target.
    */
-  static globalPostMigration(tree: Tree, context: SchematicContext) {
+  static globalPostMigration(tree: Tree, context: SchematicContext): PostMigrationAction {
     if (!this.globalUsesHammer && this._removeHammerFromPackageJson(tree)) {
       // Since Hammer has been removed from the workspace "package.json" file,
       // we schedule a node package install task to refresh the lock file.
-      context.addTask(new NodePackageInstallTask({quiet: false}));
+      return {runPackageManager: true};
     }
 
     context.logger.info(chalk.yellow(

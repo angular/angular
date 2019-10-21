@@ -7,6 +7,7 @@
  */
 
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
+import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 
 import {MigrationRuleType, runMigrationRules} from '../../update-tool';
 import {TargetVersion} from '../../update-tool/target-version';
@@ -79,12 +80,23 @@ export function createUpgradeRule(
     buildPaths.forEach(p => runMigration(p, false));
     testPaths.forEach(p => runMigration(p, true));
 
-    // Run the global post migration static members for all migration rules.
-    rules.forEach(r => r.globalPostMigration(tree, context));
+    let runPackageManager = false;
 
-    // Execute all asynchronous tasks and await them here. We want to run
-    // the "onMigrationCompleteFn" after all work is done.
-    await context.engine.executePostTasks().toPromise();
+    // Run the global post migration static members for all migration rules.
+    rules.forEach(rule => {
+      const actionResult = rule.globalPostMigration(tree, context);
+      if (actionResult) {
+        runPackageManager = runPackageManager || actionResult.runPackageManager;
+      }
+    });
+
+    // If a rule requested the package manager to run, we run it as an
+    // asynchronous post migration task. We cannot run it synchronously,
+    // as file changes from the current migration task are not applied to
+    // the file system yet.
+    if (runPackageManager) {
+      context.addTask(new NodePackageInstallTask({quiet: false}));
+    }
 
     if (onMigrationCompleteFn) {
       onMigrationCompleteFn(targetVersion, hasRuleFailures);
