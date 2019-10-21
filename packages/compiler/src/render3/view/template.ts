@@ -1965,19 +1965,21 @@ export function parseTemplate(
   // before we run whitespace removal process, because existing i18n
   // extraction process (ng xi18n) relies on a raw content to generate
   // message ids
-  rootNodes = html.visitAll(
-      new I18nMetaVisitor(interpolationConfig, !preserveWhitespaces, i18nLegacyMessageIdFormat),
-      rootNodes);
+  const i18nMetaVisitor = new I18nMetaVisitor(
+      interpolationConfig, /* keepI18nAttrs */ !preserveWhitespaces, i18nLegacyMessageIdFormat);
+  rootNodes = html.visitAll(i18nMetaVisitor, rootNodes);
 
   if (!preserveWhitespaces) {
     rootNodes = html.visitAll(new WhitespaceVisitor(), rootNodes);
 
-    // run i18n meta visitor again in case we remove whitespaces, because
-    // that might affect generated i18n message content. During this pass
-    // i18n IDs generated at the first pass will be preserved, so we can mimic
-    // existing extraction process (ng xi18n)
-    rootNodes = html.visitAll(
-        new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false), rootNodes);
+    // run i18n meta visitor again in case whitespaces are removed (because that might affect
+    // generated i18n message content) and first pass indicated that i18n content is present in a
+    // template. During this pass i18n IDs generated at the first pass will be preserved, so we can
+    // mimic existing extraction process (ng xi18n)
+    if (i18nMetaVisitor.hasI18nMeta) {
+      rootNodes = html.visitAll(
+          new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false), rootNodes);
+    }
   }
 
   const {nodes, errors, styleUrls, styles} = htmlAstToRender3Ast(rootNodes, bindingParser);
