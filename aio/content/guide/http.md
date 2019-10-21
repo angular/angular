@@ -440,7 +440,7 @@ In fact, each `subscribe()` initiates a separate, independent execution of the o
 Subscribing twice results in two HTTP requests.
 
 ```javascript
-const req = http.get < Heroes > "/api/heroes";
+const req = http.get<Heroes>('/api/heroes');
 // 0 requests made - .subscribe() not called.
 req.subscribe();
 // 1 request made.
@@ -608,7 +608,7 @@ TypeScript will prevent you from setting `HttpRequest` readonly properties.
 
 ```javascript
 // Typescript disallows the following assignment because req.url is readonly
-req.url = req.url.replace("http://", "https://");
+req.url = req.url.replace('http://", "https://');
 ```
 
 To alter the request, clone it first and modify the clone before passing it to `next.handle()`.
