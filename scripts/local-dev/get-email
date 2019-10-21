@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+
+/**
+ * Retrieves the email value from a json object.  This assumes
+ * the email attributes is at the base of the object, as returned
+ * by Google Cloud's tokeninfo api.
+ */
+
+// Read information being piped in.
+var stdin = process.openStdin();
+// Stored data stream.
+var data = "";
+
+// Store each chunk of the stream in data.
+stdin.on('data', chunk => data += chunk);
+
+// After stream ends, parse data and get value requested.
+stdin.on('end', () => {
+  // The JSON object, to be accessed.
+  let output = JSON.parse(data);
+
+  // Print the output to STDOUT.
+  console.log(output['email']);
+});
