@@ -3113,6 +3113,7 @@ describe('MatSelect', () => {
       BasicSelect,
       MultiSelect,
       SelectWithGroups,
+      SelectWithIndirectDescendantGroups,
     ])));
 
     beforeEach((inject([ViewportRuler], (vr: ViewportRuler) => {
@@ -3292,6 +3293,45 @@ describe('MatSelect', () => {
 
         checkTriggerAlignedWithOption(7, groupFixture.componentInstance.select);
       }));
+
+      it('should account for indirect preceding label groups when aligning the option',
+        fakeAsync(() => {
+          // Test is off-by-one on edge for some reason, but verified that it looks correct through
+          // manual testing.
+          if (platform.EDGE) {
+            return;
+          }
+
+          fixture.destroy();
+
+          let groupFixture = TestBed.createComponent(SelectWithIndirectDescendantGroups);
+          groupFixture.detectChanges();
+          trigger = groupFixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
+          formField = groupFixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
+
+          formField.style.position = 'fixed';
+          formField.style.top = '200px';
+          formField.style.left = '100px';
+
+          // Select an option in the third group, which has a couple of group labels before it.
+          groupFixture.componentInstance.control.setValue('vulpix-7');
+          groupFixture.detectChanges();
+
+          trigger.click();
+          groupFixture.detectChanges();
+          flush();
+
+          const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
+
+          // The selected option should be scrolled to the center of the panel.
+          // This will be its original offset from the scrollTop - half the panel height + half the
+          // option height. 10 (option index + 3 group labels before it) * 48 (option height) = 480
+          // 480 (offset from scrollTop) - 256/2 + 48/2 = 376px
+          expect(Math.floor(scrollContainer.scrollTop))
+              .toBe(376, `Expected overlay panel to be scrolled to center the selected option.`);
+
+          checkTriggerAlignedWithOption(7, groupFixture.componentInstance.select);
+        }));
 
     });
 
@@ -4812,6 +4852,29 @@ class SelectWithGroups {
 
   @ViewChild(MatSelect, {static: false}) select: MatSelect;
   @ViewChildren(MatOption) options: QueryList<MatOption>;
+}
+
+@Component({
+  selector: 'select-with-indirect-groups',
+  // Note that we need the blank `ngSwitch` in order to have
+  // a directive between `mat-select` and `mat-optgroup`.
+  template: `
+    <mat-form-field>
+      <mat-select placeholder="Pokemon" [formControl]="control">
+        <ng-container [ngSwitch]="true">
+          <mat-optgroup *ngFor="let group of pokemonTypes" [label]="group.name"
+            [disabled]="group.disabled">
+            <mat-option *ngFor="let pokemon of group.pokemon" [value]="pokemon.value">
+              {{ pokemon.viewValue }}
+            </mat-option>
+          </mat-optgroup>
+          <mat-option value="mime-11">Mr. Mime</mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+  `
+})
+class SelectWithIndirectDescendantGroups extends SelectWithGroups {
 }
 
 @Component({

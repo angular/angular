@@ -336,10 +336,10 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   @ViewChild(CdkConnectedOverlay, {static: false}) overlayDir: CdkConnectedOverlay;
 
   /** All of the defined select options. */
-  @ContentChildren(MatOption, { descendants: true }) options: QueryList<MatOption>;
+  @ContentChildren(MatOption, {descendants: true}) options: QueryList<MatOption>;
 
   /** All of the defined groups of options. */
-  @ContentChildren(MatOptgroup) optionGroups: QueryList<MatOptgroup>;
+  @ContentChildren(MatOptgroup, {descendants: true}) optionGroups: QueryList<MatOptgroup>;
 
   /** Classes to be passed to the select panel. Supports the same syntax as `ngClass`. */
   @Input() panelClass: string|string[]|Set<string>|{[key: string]: any};
