@@ -123,10 +123,10 @@
     "name": "NEXT"
   },
   {
-    "name": "NG_COMPONENT_DEF"
+    "name": "NG_COMP_DEF"
   },
   {
-    "name": "NG_DIRECTIVE_DEF"
+    "name": "NG_DIR_DEF"
   },
   {
     "name": "NG_ELEMENT_ID"
@@ -139,6 +139,9 @@
   },
   {
     "name": "NG_PIPE_DEF"
+  },
+  {
+    "name": "NG_PROV_DEF"
   },
   {
     "name": "NG_TEMPLATE_SELECTOR"
@@ -324,13 +327,7 @@
     "name": "_currentInjector"
   },
   {
-    "name": "_currentNamespace"
-  },
-  {
     "name": "_devMode"
-  },
-  {
-    "name": "_elementExitFn"
   },
   {
     "name": "_global"
@@ -339,16 +336,10 @@
     "name": "_renderCompCount"
   },
   {
-    "name": "_selectedIndex"
-  },
-  {
     "name": "_state"
   },
   {
     "name": "_symbolIterator"
-  },
-  {
-    "name": "activeDirectiveId"
   },
   {
     "name": "addBindingIntoContext"
@@ -444,9 +435,6 @@
     "name": "checkNoChangesInternal"
   },
   {
-    "name": "checkNoChangesMode"
-  },
-  {
     "name": "cleanUpView"
   },
   {
@@ -457,9 +445,6 @@
   },
   {
     "name": "containerInternal"
-  },
-  {
-    "name": "contextLView"
   },
   {
     "name": "createContainerRef"
@@ -897,6 +882,9 @@
     "name": "instantiateRootComponent"
   },
   {
+    "name": "instructionState"
+  },
+  {
     "name": "interpolation1"
   },
   {
@@ -1155,6 +1143,9 @@
     "name": "resetComponentState"
   },
   {
+    "name": "resetCurrentStyleSanitizer"
+  },
+  {
     "name": "resetPreOrderHookFlags"
   },
   {
@@ -1177,6 +1168,9 @@
   },
   {
     "name": "searchTokensOnInjector"
+  },
+  {
+    "name": "selectClassBasedInputName"
   },
   {
     "name": "selectIndexInternal"

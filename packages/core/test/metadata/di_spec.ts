@@ -83,13 +83,13 @@ class Simple {
 @Component({selector: 'view-child-type-selector', template: ''})
 class ViewChildTypeSelectorComponent {
   // TODO(issue/24571): remove '!'.
-  @ViewChild(Simple, {static: false}) child !: Simple;
+  @ViewChild(Simple) child !: Simple;
 }
 
 @Component({selector: 'view-child-string-selector', template: ''})
 class ViewChildStringSelectorComponent {
   // TODO(issue/24571): remove '!'.
-  @ViewChild('child', {static: false}) child !: ElementRef;
+  @ViewChild('child') child !: ElementRef;
 }
 
 @Component({selector: 'view-children-type-selector', template: ''})

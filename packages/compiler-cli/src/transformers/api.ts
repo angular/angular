@@ -16,7 +16,7 @@ export const SOURCE = 'angular' as 'angular';
 export interface DiagnosticMessageChain {
   messageText: string;
   position?: Position;
-  next?: DiagnosticMessageChain;
+  next?: DiagnosticMessageChain[];
 }
 
 export interface Diagnostic {
@@ -195,6 +195,23 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * load statically at compile-time.
    */
   enableResourceInlining?: boolean;
+
+  /**
+   * Controls whether ngtsc will emit `.ngfactory.js` shims for each compiled `.ts` file.
+   *
+   * These shims support legacy imports from `ngfactory` files, by exporting a factory shim
+   * for each component or NgModule in the original `.ts` file.
+   */
+  generateNgFactoryShims?: boolean;
+
+  /**
+   * Controls whether ngtsc will emit `.ngsummary.js` shims for each compiled `.ts` file.
+   *
+   * These shims support legacy imports from `ngsummary` files, by exporting an empty object
+   * for each NgModule in the original `.ts` file. The only purpose of summaries is to feed them to
+   * `TestBed`, which is a no-op in Ivy.
+   */
+  generateNgSummaryShims?: boolean;
 
   /**
    * Tells the compiler to generate definitions using the Render3 style code generation.

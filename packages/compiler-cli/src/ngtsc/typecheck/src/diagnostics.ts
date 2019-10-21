@@ -110,6 +110,8 @@ export function shouldReportDiagnostic(diagnostic: ts.Diagnostic): boolean {
     return false;
   } else if (code === 2695 /* Left side of comma operator is unused and has no side effects. */) {
     return false;
+  } else if (code === 7006 /* Parameter '$event' implicitly has an 'any' type. */) {
+    return false;
   }
   return true;
 }
@@ -270,5 +272,5 @@ function parseParseSpanComment(commentText: string): ParseSpan|null {
     return null;
   }
 
-  return {start: +match[1], end: +match[2]};
+  return new ParseSpan(+match[1], +match[2]);
 }

@@ -119,7 +119,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     }
     return [
       factoryRes, {
-        name: 'ngPipeDef',
+        name: 'ɵpipe',
         initializer: res.expression,
         statements: [],
         type: res.type,

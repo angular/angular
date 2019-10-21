@@ -334,9 +334,8 @@ export function compileDirectiveFromRender2(
   const factoryRes = compileFactoryFromMetadata({...meta, injectFn: R3.directiveInject});
   const ngFactoryDefStatement = new o.ClassStmt(
       name, null,
-      [new o.ClassField(
-          'ngFactoryDef', o.INFERRED_TYPE, [o.StmtModifier.Static], factoryRes.factory)],
-      [], new o.ClassMethod(null, [], []), []);
+      [new o.ClassField('ɵfac', o.INFERRED_TYPE, [o.StmtModifier.Static], factoryRes.factory)], [],
+      new o.ClassMethod(null, [], []), []);
   const directiveDefStatement = new o.ClassStmt(
       name, null,
       [new o.ClassField(definitionField, o.INFERRED_TYPE, [o.StmtModifier.Static], res.expression)],
@@ -387,9 +386,8 @@ export function compileComponentFromRender2(
   const factoryRes = compileFactoryFromMetadata({...meta, injectFn: R3.directiveInject});
   const ngFactoryDefStatement = new o.ClassStmt(
       name, null,
-      [new o.ClassField(
-          'ngFactoryDef', o.INFERRED_TYPE, [o.StmtModifier.Static], factoryRes.factory)],
-      [], new o.ClassMethod(null, [], []), []);
+      [new o.ClassField('ɵfac', o.INFERRED_TYPE, [o.StmtModifier.Static], factoryRes.factory)], [],
+      new o.ClassMethod(null, [], []), []);
   const componentDefStatement = new o.ClassStmt(
       name, null,
       [new o.ClassField(definitionField, o.INFERRED_TYPE, [o.StmtModifier.Static], res.expression)],

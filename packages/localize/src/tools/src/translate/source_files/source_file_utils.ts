@@ -15,7 +15,7 @@ import {Diagnostics} from '../../diagnostics';
  * @param expression The expression to check.
  */
 export function isNamedIdentifier(
-    expression: NodePath<t.Expression>, name: string): expression is NodePath<t.Identifier> {
+    expression: NodePath, name: string): expression is NodePath<t.Identifier> {
   return expression.isIdentifier() && expression.node.name === name;
 }
 
@@ -51,41 +51,61 @@ export function buildLocalizeReplacement(
 *
 * @param call The AST node of the call to process.
 */
-export function unwrapMessagePartsFromLocalizeCall(call: t.CallExpression): TemplateStringsArray {
-  let cooked = call.arguments[0];
-  if (!t.isExpression(cooked)) {
-    throw new BabelParseError(call, 'Unexpected argument to `$localize`: ' + cooked);
+export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpression>):
+    TemplateStringsArray {
+  let cooked = call.get('arguments')[0];
+
+  if (cooked === undefined) {
+    throw new BabelParseError(call.node, '`$localize` called without any arguments.');
+  }
+  if (!cooked.isExpression()) {
+    throw new BabelParseError(
+        cooked.node, 'Unexpected argument to `$localize` (expected an array).');
   }
 
   // If there is no call to `__makeTemplateObject(...)`, then `raw` must be the same as `cooked`.
   let raw = cooked;
 
   // Check for cached call of the form `x || x = __makeTemplateObject(...)`
-  if (t.isLogicalExpression(cooked) && cooked.operator === '||' && t.isIdentifier(cooked.left) &&
-      t.isExpression(cooked.right)) {
-    if (t.isAssignmentExpression(cooked.right)) {
-      cooked = cooked.right.right;
+  if (cooked.isLogicalExpression() && cooked.node.operator === '||' &&
+      cooked.get('left').isIdentifier()) {
+    const right = cooked.get('right');
+    if (right.isAssignmentExpression()) {
+      cooked = right.get('right');
+      if (!cooked.isExpression()) {
+        throw new BabelParseError(
+            cooked.node, 'Unexpected "makeTemplateObject()" function (expected an expression).');
+      }
     }
   }
 
-  // Check for `__makeTemplateObject(cooked, raw)` call
-  if (t.isCallExpression(cooked)) {
-    raw = cooked.arguments[1] as t.Expression;
-    if (!t.isExpression(raw)) {
-      throw new BabelParseError(
-          raw,
-          'Unexpected `raw` argument to the "makeTemplateObject()" function (expected an expression).');
+  // Check for `__makeTemplateObject(cooked, raw)` or `__templateObject()` calls.
+  if (cooked.isCallExpression()) {
+    let call = cooked;
+    if (call.get('arguments').length === 0) {
+      // No arguments so perhaps it is a `__templateObject()` call.
+      // Unwrap this to get the `_taggedTemplateLiteral(cooked, raw)` call.
+      call = unwrapLazyLoadHelperCall(call);
     }
-    cooked = cooked.arguments[0];
-    if (!t.isExpression(cooked)) {
+
+    cooked = call.get('arguments')[0];
+    if (!cooked.isExpression()) {
       throw new BabelParseError(
-          cooked,
+          cooked.node,
           'Unexpected `cooked` argument to the "makeTemplateObject()" function (expected an expression).');
     }
+    const arg2 = call.get('arguments')[1];
+    if (arg2 && !arg2.isExpression()) {
+      throw new BabelParseError(
+          arg2.node,
+          'Unexpected `raw` argument to the "makeTemplateObject()" function (expected an expression).');
+    }
+    // If there is no second argument then assume that raw and cooked are the same
+    raw = arg2 !== undefined ? arg2 : cooked;
   }
 
-  const cookedStrings = unwrapStringLiteralArray(cooked);
-  const rawStrings = unwrapStringLiteralArray(raw);
+  const cookedStrings = unwrapStringLiteralArray(cooked.node);
+  const rawStrings = unwrapStringLiteralArray(raw.node);
   return ɵmakeTemplateObject(cookedStrings, rawStrings);
 }
 
@@ -142,6 +162,93 @@ export function unwrapStringLiteralArray(array: t.Expression): string[] {
 }
 
 /**
+ * This expression is believed to be a call to a "lazy-load" template object helper function.
+ * This is expected to be of the form:
+ *
+ * ```ts
+ *  function _templateObject() {
+ *    var e = _taggedTemplateLiteral(['cooked string', 'raw string']);
+ *    return _templateObject = function() { return e }, e
+ *  }
+ * ```
+ *
+ * We unwrap this to return the call to `_taggedTemplateLiteral()`.
+ *
+ * @param call the call expression to unwrap
+ * @returns the  call expression
+ */
+export function unwrapLazyLoadHelperCall(call: NodePath<t.CallExpression>):
+    NodePath<t.CallExpression> {
+  const callee = call.get('callee');
+  if (!callee.isIdentifier()) {
+    throw new BabelParseError(
+        callee.node,
+        'Unexpected lazy-load helper call (expected a call of the form `_templateObject()`).');
+  }
+  const lazyLoadBinding = call.scope.getBinding(callee.node.name);
+  if (!lazyLoadBinding) {
+    throw new BabelParseError(callee.node, 'Missing declaration for lazy-load helper function');
+  }
+  const lazyLoadFn = lazyLoadBinding.path;
+  if (!lazyLoadFn.isFunctionDeclaration()) {
+    throw new BabelParseError(
+        lazyLoadFn.node, 'Unexpected expression (expected a function declaration');
+  }
+  const returnedNode = getReturnedExpression(lazyLoadFn);
+
+  if (returnedNode.isCallExpression()) {
+    return returnedNode;
+  }
+
+  if (returnedNode.isIdentifier()) {
+    const identifierName = returnedNode.node.name;
+    const declaration = returnedNode.scope.getBinding(identifierName);
+    if (declaration === undefined) {
+      throw new BabelParseError(
+          returnedNode.node, 'Missing declaration for return value from helper.');
+    }
+    if (!declaration.path.isVariableDeclarator()) {
+      throw new BabelParseError(
+          declaration.path.node,
+          'Unexpected helper return value declaration (expected a variable declaration).');
+    }
+    const initializer = declaration.path.get('init');
+    if (!initializer.isCallExpression()) {
+      throw new BabelParseError(
+          declaration.path.node,
+          'Unexpected return value from helper (expected a call expression).');
+    }
+
+    // Remove the lazy load helper if this is the only reference to it.
+    if (lazyLoadBinding.references === 1) {
+      lazyLoadFn.remove();
+    }
+
+    return initializer;
+  }
+  return call;
+}
+
+function getReturnedExpression(fn: NodePath<t.FunctionDeclaration>): NodePath<t.Expression> {
+  const bodyStatements = fn.get('body').get('body');
+  for (const statement of bodyStatements) {
+    if (statement.isReturnStatement()) {
+      const argument = statement.get('argument');
+      if (argument.isSequenceExpression()) {
+        const expressions = argument.get('expressions');
+        return Array.isArray(expressions) ? expressions[expressions.length - 1] : expressions;
+      } else if (argument.isExpression()) {
+        return argument;
+      } else {
+        throw new BabelParseError(
+            statement.node, 'Invalid return argument in helper function (expected an expression).');
+      }
+    }
+  }
+  throw new BabelParseError(fn.node, 'Missing return statement in helper function.');
+}
+
+/**
 * Is the given `node` an array of literal strings?
 *
 * @param node The node to test.
@@ -188,16 +295,21 @@ export function translate(
       } else if (missingTranslation === 'warning') {
         diagnostics.warn(e.message);
       }
+      // Return the parsed message because this will have the meta blocks stripped
+      return [
+        ɵmakeTemplateObject(e.parsedMessage.messageParts, e.parsedMessage.messageParts),
+        substitutions
+      ];
     } else {
       diagnostics.error(e.message);
+      return [messageParts, substitutions];
     }
-    return [messageParts, substitutions];
   }
 }
 
 export class BabelParseError extends Error {
   private readonly type = 'BabelParseError';
-  constructor(public node: t.BaseNode, message: string) { super(message); }
+  constructor(public node: t.Node, message: string) { super(message); }
 }
 
 export function isBabelParseError(e: any): e is BabelParseError {

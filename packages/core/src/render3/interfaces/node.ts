@@ -46,30 +46,37 @@ export const enum TNodeType {
  */
 export const enum TNodeFlags {
   /** This bit is set if the node is a host for any directive (including a component) */
-  isDirectiveHost = 0b00000001,
+  isDirectiveHost = 0b000000001,
 
   /**
    * This bit is set if the node is a host for a component. Setting this bit implies that the
    * isDirectiveHost bit is set as well. */
-  isComponentHost = 0b00000010,
+  isComponentHost = 0b000000010,
 
   /** This bit is set if the node has been projected */
-  isProjected = 0b00000100,
+  isProjected = 0b000000100,
 
   /** This bit is set if any directive on this node has content queries */
-  hasContentQuery = 0b00001000,
+  hasContentQuery = 0b000001000,
 
   /** This bit is set if the node has any "class" inputs */
-  hasClassInput = 0b00010000,
+  hasClassInput = 0b000010000,
 
   /** This bit is set if the node has any "style" inputs */
-  hasStyleInput = 0b00100000,
+  hasStyleInput = 0b000100000,
 
   /** This bit is set if the node has initial styling */
-  hasInitialStyling = 0b01000000,
+  hasInitialStyling = 0b001000000,
 
   /** This bit is set if the node has been detached by i18n */
-  isDetached = 0b10000000,
+  isDetached = 0b010000000,
+
+  /**
+   * This bit is set if the node has directives with host bindings. This flags allows us to guard
+   * host-binding logic and invoke it only on nodes that actually have directives with host
+   * bindings.
+   */
+  hasHostBindings = 0b100000000,
 }
 
 /**

@@ -28,6 +28,8 @@ const hiddenHtmlElements = {
   link: true,
 };
 
+const ANGULAR_ELEMENTS: ReadonlyArray<string> = ['ng-container', 'ng-content', 'ng-template'];
+
 export function getTemplateCompletions(
     templateInfo: AstResult, position: number): ts.CompletionEntry[] {
   let result: ts.CompletionEntry[] = [];
@@ -147,7 +149,7 @@ function getAttributeInfosForElement(
   if (selectors && selectors.length) {
     // All the attributes that are selectable should be shown.
     const applicableSelectors =
-        selectors.filter(selector => !selector.element || selector.element == elementName);
+        selectors.filter(selector => !selector.element || selector.element === elementName);
     const selectorAndAttributeNames =
         applicableSelectors.map(selector => ({selector, attrs: selector.attrs.filter(a => !!a)}));
     let attrs = flatten(selectorAndAttributeNames.map<AttrInfo[]>(selectorAndAttr => {
@@ -242,9 +244,18 @@ function elementCompletions(info: AstResult, path: AstPath<HtmlAst>): ts.Complet
       sortText: name,
     };
   });
+  const angularElements = ANGULAR_ELEMENTS.map(name => {
+    return {
+      name,
+      // Need to cast to unknown because Angular's CompletionKind includes HTML
+      // entites.
+      kind: CompletionKind.ANGULAR_ELEMENT as unknown as ts.ScriptElementKind,
+      sortText: name,
+    };
+  });
 
   // Return components and html elements
-  return uniqueByName(htmlElements.concat(components));
+  return uniqueByName([...htmlElements, ...components, ...angularElements]);
 }
 
 /**
@@ -353,7 +364,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
       const selectorInfo = getSelectors(this.info);
       const selectors = selectorInfo.selectors;
       const selector =
-          selectors.filter(s => s.attrs.some((attr, i) => i % 2 == 0 && attr == key))[0];
+          selectors.filter(s => s.attrs.some((attr, i) => i % 2 === 0 && attr === key))[0];
 
       const templateBindingResult =
           this.info.expressionParser.parseTemplateBindings(key, this.attr.value, null, 0);
@@ -370,7 +381,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
       const keyCompletions = () => {
         let keys: string[] = [];
         if (selector) {
-          const attrNames = selector.attrs.filter((_, i) => i % 2 == 0);
+          const attrNames = selector.attrs.filter((_, i) => i % 2 === 0);
           keys = attrNames.filter(name => name.startsWith(key) && name != key)
                      .map(name => lowerName(name.substr(key.length)));
         }
@@ -386,7 +397,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
         });
       };
 
-      if (!binding || (binding.key == key && !binding.expression)) {
+      if (!binding || (binding.key === key && !binding.expression)) {
         // We are in the root binding. We should return `let` and keys that are left in the
         // selector.
         keyCompletions();
@@ -415,9 +426,12 @@ class ExpressionVisitor extends NullTemplateVisitor {
              valueRelativePosition > binding.span.start + (binding.key.length - key.length)) ||
             !binding.key) {
           const span = new ParseSpan(0, this.attr.value.length);
+          const offset = ast.sourceSpan.start.offset;
           this.attributeValueCompletions(
               binding.expression ? binding.expression.ast :
-                                   new PropertyRead(span, new ImplicitReceiver(span), ''),
+                                   new PropertyRead(
+                                       span, span.toAbsolute(offset),
+                                       new ImplicitReceiver(span, span.toAbsolute(offset)), ''),
               valueRelativePosition);
         } else {
           keyCompletions();
@@ -439,8 +453,8 @@ class ExpressionVisitor extends NullTemplateVisitor {
 
   private attributeValueCompletions(value: AST, position?: number) {
     const symbols = getExpressionCompletions(
-        this.getExpressionScope(), value, position == null ? this.attributeValuePosition : position,
-        this.info.template.query);
+        this.getExpressionScope(), value,
+        position === undefined ? this.attributeValuePosition : position, this.info.template.query);
     if (symbols) {
       this.result = this.symbolsToCompletions(symbols);
     }
@@ -500,7 +514,7 @@ function createElementCssSelector(element: Element): CssSelector {
     if (!attr.name.match(templateAttr)) {
       const [_, attrNameNoNs] = splitNsName(attr.name);
       cssSelector.addAttribute(attrNameNoNs, attr.value);
-      if (attr.name.toLowerCase() == 'class') {
+      if (attr.name.toLowerCase() === 'class') {
         const classes = attr.value.split(/s+/g);
         classes.forEach(className => cssSelector.addClassName(className));
       }

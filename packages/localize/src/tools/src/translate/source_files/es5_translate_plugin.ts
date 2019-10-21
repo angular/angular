@@ -21,7 +21,7 @@ export function makeEs5TranslatePlugin(
         try {
           const calleePath = callPath.get('callee');
           if (isNamedIdentifier(calleePath, localizeName) && isGlobalIdentifier(calleePath)) {
-            const messageParts = unwrapMessagePartsFromLocalizeCall(callPath.node);
+            const messageParts = unwrapMessagePartsFromLocalizeCall(callPath);
             const expressions = unwrapSubstitutionsFromLocalizeCall(callPath.node);
             const translated =
                 translate(diagnostics, translations, messageParts, expressions, missingTranslation);

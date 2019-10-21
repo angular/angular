@@ -15,18 +15,12 @@ import {TypeScriptServiceHost} from '../src/typescript_host';
 import {MockTypescriptHost} from './test_utils';
 
 describe('references', () => {
-  let documentRegistry = ts.createDocumentRegistry();
-  let mockHost: MockTypescriptHost;
-  let service: ts.LanguageService;
-  let ngHost: TypeScriptServiceHost;
-  let ngService: LanguageService = createLanguageService(undefined !);
+  const mockHost = new MockTypescriptHost(['/app/main.ts']);
+  const service = ts.createLanguageService(mockHost);
+  const ngHost = new TypeScriptServiceHost(mockHost, service);
+  const ngService = createLanguageService(ngHost);
 
-  beforeEach(() => {
-    mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
-    service = ts.createLanguageService(mockHost, documentRegistry);
-    ngHost = new TypeScriptServiceHost(mockHost, service);
-    ngService = createLanguageService(ngHost);
-  });
+  beforeEach(() => { mockHost.reset(); });
 
   it('should be able to get template references',
      () => { expect(() => ngService.getTemplateReferences()).not.toThrow(); });

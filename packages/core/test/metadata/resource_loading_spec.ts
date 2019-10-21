@@ -18,7 +18,7 @@ describe('resource_loading', () => {
     it('should throw an error when compiling component that has unresolved templateUrl', () => {
       const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
       compileComponent(MyComponent, {templateUrl: 'someUrl'});
-      expect(() => MyComponent.ngComponentDef).toThrowError(`
+      expect(() => MyComponent.ɵcmp).toThrowError(`
 Component 'MyComponent' is not resolved:
  - templateUrl: someUrl
 Did you run and wait for 'resolveComponentResources()'?`.trim());
@@ -27,7 +27,7 @@ Did you run and wait for 'resolveComponentResources()'?`.trim());
     it('should throw an error when compiling component that has unresolved styleUrls', () => {
       const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
       compileComponent(MyComponent, {styleUrls: ['someUrl1', 'someUrl2']});
-      expect(() => MyComponent.ngComponentDef).toThrowError(`
+      expect(() => MyComponent.ɵcmp).toThrowError(`
 Component 'MyComponent' is not resolved:
  - styleUrls: ["someUrl1","someUrl2"]
 Did you run and wait for 'resolveComponentResources()'?`.trim());
@@ -38,7 +38,7 @@ Did you run and wait for 'resolveComponentResources()'?`.trim());
          const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
          compileComponent(
              MyComponent, {templateUrl: 'someUrl', styleUrls: ['someUrl1', 'someUrl2']});
-         expect(() => MyComponent.ngComponentDef).toThrowError(`
+         expect(() => MyComponent.ɵcmp).toThrowError(`
 Component 'MyComponent' is not resolved:
  - templateUrl: someUrl
  - styleUrls: ["someUrl1","someUrl2"]
@@ -64,7 +64,7 @@ Did you run and wait for 'resolveComponentResources()'?`.trim());
       const metadata: Component = {templateUrl: 'test://content'};
       compileComponent(MyComponent, metadata);
       await resolveComponentResources(testResolver);
-      expect(MyComponent.ngComponentDef).toBeDefined();
+      expect(MyComponent.ɵcmp).toBeDefined();
       expect(metadata.template).toBe('content');
       expect(resourceFetchCount).toBe(1);
     });
@@ -74,7 +74,7 @@ Did you run and wait for 'resolveComponentResources()'?`.trim());
       const metadata: Component = {template: '', styleUrls: ['test://style1', 'test://style2']};
       compileComponent(MyComponent, metadata);
       await resolveComponentResources(testResolver);
-      expect(MyComponent.ngComponentDef).toBeDefined();
+      expect(MyComponent.ɵcmp).toBeDefined();
       expect(metadata.styleUrls).toBe(undefined);
       expect(metadata.styles).toEqual(['style1', 'style2']);
       expect(resourceFetchCount).toBe(2);
@@ -85,7 +85,7 @@ Did you run and wait for 'resolveComponentResources()'?`.trim());
       const metadata: Component = {template: '', styleUrls: ['test://style1', 'test://style1']};
       compileComponent(MyComponent, metadata);
       await resolveComponentResources(testResolver);
-      expect(MyComponent.ngComponentDef).toBeDefined();
+      expect(MyComponent.ɵcmp).toBeDefined();
       expect(metadata.styleUrls).toBe(undefined);
       expect(metadata.styles).toEqual(['style1', 'style1']);
       expect(resourceFetchCount).toBe(1);
@@ -136,7 +136,7 @@ Did you run and wait for 'resolveComponentResources()'?`.trim());
       const metadata: Component = {templateUrl: 'test://content'};
       compileComponent(MyComponent, metadata);
       await resolveComponentResources(fetch);
-      expect(MyComponent.ngComponentDef).toBeDefined();
+      expect(MyComponent.ɵcmp).toBeDefined();
       expect(metadata.template).toBe('response for test://content');
     });
   });

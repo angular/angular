@@ -84,6 +84,7 @@ build --remote_upload_local_results=false
 #  --config=-http-caching            #
 ######################################
 build:remote-http-caching --remote_upload_local_results=true
+build:remote-http-caching --google_default_credentials
 
 ##################################
 # Remote Build Execution support #
@@ -97,6 +98,7 @@ import %workspace%/third_party/github.com/bazelbuild/bazel-toolchains/bazelrc/.b
 # Increase the default number of jobs by 50% because our build has lots of
 # parallelism
 build:remote --jobs=150
+build:remote --google_default_credentials
 
 # Toolchain and platform related flags
 build:remote --host_javabase=@rbe_ubuntu1604_angular//java:jdk
@@ -110,21 +112,10 @@ build:remote --extra_execution_platforms=//tools:rbe_ubuntu1604-angular
 build:remote --host_platform=//tools:rbe_ubuntu1604-angular
 build:remote --platforms=//tools:rbe_ubuntu1604-angular
 
-# Remote instance.
+# Remote instance and caching
 build:remote --remote_instance_name=projects/internal-200822/instances/default_instance
 build:remote --project_id=internal-200822
-
-# Remote caching
 build:remote --remote_cache=remotebuildexecution.googleapis.com
-# By default, do not accept remote cache, to be set to true for CI based on environment
-build:remote --remote_accept_cached=false
-# By default, do not upload local results to cache, to be set to true for CI based on environment
-build:remote --remote_upload_local_results=false
-
-# Build Event Service Configuration
-build:remote --bes_backend=buildeventservice.googleapis.com
-build:remote --bes_timeout=30s
-build:remote --bes_results_url="https://source.cloud.google.com/results/invocations/"
 
 ###############################
 # NodeJS rules settings

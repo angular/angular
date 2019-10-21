@@ -13,6 +13,7 @@
     "noImplicitAny": true,
     "outDir": "../node_modules/third_party",
     "rootDir": "",
-    "target": "es5"
+    "target": "es5",
+    "typeRoots": ["../node_modules/@types"]
  }
 }

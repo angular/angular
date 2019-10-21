@@ -176,11 +176,11 @@ export class R3Injector {
         // SkipSelf isn't set, check if the record belongs to this injector.
         let record: Record<T>|undefined|null = this.records.get(token);
         if (record === undefined) {
-          // No record, but maybe the token is scoped to this injector. Look for an ngInjectableDef
-          // with a scope matching this injector.
+          // No record, but maybe the token is scoped to this injector. Look for an injectable
+          // def with a scope matching this injector.
           const def = couldBeInjectableType(token) && getInjectableDef(token);
           if (def && this.injectableDefInScope(def)) {
-            // Found an ngInjectableDef and it's scoped to this injector. Pretend as if it was here
+            // Found an injectable def and it's scoped to this injector. Pretend as if it was here
             // all along.
             record = makeRecord(injectableDefOrInjectorDefFactory(token), NOT_YET);
           } else {
@@ -251,11 +251,11 @@ export class R3Injector {
     defOrWrappedDef = resolveForwardRef(defOrWrappedDef);
     if (!defOrWrappedDef) return false;
 
-    // Either the defOrWrappedDef is an InjectorType (with ngInjectorDef) or an
+    // Either the defOrWrappedDef is an InjectorType (with injector def) or an
     // InjectorDefTypeWithProviders (aka ModuleWithProviders). Detecting either is a megamorphic
     // read, so care is taken to only do the read once.
 
-    // First attempt to read the ngInjectorDef.
+    // First attempt to read the injector def (`ɵinj`).
     let def = getInjectorDef(defOrWrappedDef);
 
     // If that's not present, then attempt to read ngModule from the InjectorDefTypeWithProviders.
@@ -408,7 +408,7 @@ export class R3Injector {
 }
 
 function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>): () => any {
-  // Most tokens will have an ngInjectableDef directly on them, which specifies a factory directly.
+  // Most tokens will have an injectable def directly on them, which specifies a factory directly.
   const injectableDef = getInjectableDef(token);
   const factory = injectableDef !== null ? injectableDef.factory : getFactoryDef(token);
 
@@ -416,16 +416,17 @@ function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>
     return factory;
   }
 
-  // If the token is an NgModule, it's also injectable but the factory is on its ngInjectorDef.
+  // If the token is an NgModule, it's also injectable but the factory is on its injector def
+  // (`ɵinj`)
   const injectorDef = getInjectorDef(token);
   if (injectorDef !== null) {
     return injectorDef.factory;
   }
 
-  // InjectionTokens should have an ngInjectableDef and thus should be handled above.
+  // InjectionTokens should have an injectable def (ɵprov) and thus should be handled above.
   // If it's missing that, it's an error.
   if (token instanceof InjectionToken) {
-    throw new Error(`Token ${stringify(token)} is missing an ngInjectableDef definition.`);
+    throw new Error(`Token ${stringify(token)} is missing a ɵprov definition.`);
   }
 
   // Undecorated types can sometimes be created if they have no constructor arguments.
@@ -446,8 +447,8 @@ function getUndecoratedInjectableFactory(token: Function) {
   }
 
   // The constructor function appears to have no parameters.
-  // This might be because it inherits from a super-class. In which case, use an ngInjectableDef
-  // from an ancestor if there is one.
+  // This might be because it inherits from a super-class. In which case, use an injectable
+  // def from an ancestor if there is one.
   // Otherwise this really is a simple class with no dependencies, so return a factory that
   // just instantiates the zero-arg constructor.
   const inheritedInjectableDef = getInheritedInjectableDef(token);

@@ -18,10 +18,10 @@ export class TreeFunction {
   data: TreeNode = emptyTree;
 
   /** @nocollapse */
-  static ngFactoryDef = () => new TreeFunction;
+  static ɵfac = () => new TreeFunction;
 
   /** @nocollapse */
-  static ngComponentDef = ɵɵdefineComponent({
+  static ɵcmp = ɵɵdefineComponent({
     type: TreeFunction,
     selectors: [['tree']],
     decls: 5,

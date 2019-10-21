@@ -8,7 +8,7 @@
 
 import {R3InjectorMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
 import {resolveForwardRef} from '../../di/forward_ref';
-import {NG_INJECTOR_DEF} from '../../di/interface/defs';
+import {NG_INJ_DEF} from '../../di/interface/defs';
 import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Component} from '../../metadata';
@@ -16,7 +16,7 @@ import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} fr
 import {deepForEach, flatten} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
-import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
+import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {NgModuleType} from '../ng_module_ref';
 import {maybeUnwrapFn, stringifyForError} from '../util/misc_utils';
@@ -93,7 +93,7 @@ export function compileNgModule(moduleType: Type<any>, ngModule: NgModule = {}):
 }
 
 /**
- * Compiles and adds the `ngModuleDef` and `ngInjectorDef` properties to the module class.
+ * Compiles and adds the `ɵmod` and `ɵinj` properties to the module class.
  *
  * It's possible to compile a module via this API which will allow duplicate declarations in its
  * root.
@@ -105,7 +105,7 @@ export function compileNgModuleDefs(
   ngDevMode && assertDefined(ngModule, 'Required value ngModule');
   const declarations: Type<any>[] = flatten(ngModule.declarations || EMPTY_ARRAY);
   let ngModuleDef: any = null;
-  Object.defineProperty(moduleType, NG_MODULE_DEF, {
+  Object.defineProperty(moduleType, NG_MOD_DEF, {
     configurable: true,
     get: () => {
       if (ngModuleDef === null) {
@@ -115,7 +115,7 @@ export function compileNgModuleDefs(
           throw new Error(`'${stringifyForError(moduleType)}' module can't import itself`);
         }
         ngModuleDef = getCompilerFacade().compileNgModule(
-            angularCoreEnv, `ng:///${moduleType.name}/ngModuleDef.js`, {
+            angularCoreEnv, `ng:///${moduleType.name}/ɵmod.js`, {
               type: moduleType,
               bootstrap: flatten(ngModule.bootstrap || EMPTY_ARRAY).map(resolveForwardRef),
               declarations: declarations.map(resolveForwardRef),
@@ -135,7 +135,7 @@ export function compileNgModuleDefs(
   });
 
   let ngInjectorDef: any = null;
-  Object.defineProperty(moduleType, NG_INJECTOR_DEF, {
+  Object.defineProperty(moduleType, NG_INJ_DEF, {
     get: () => {
       if (ngInjectorDef === null) {
         ngDevMode && verifySemanticsOfNgModuleDef(
@@ -151,7 +151,7 @@ export function compileNgModuleDefs(
           ],
         };
         ngInjectorDef = getCompilerFacade().compileInjector(
-            angularCoreEnv, `ng:///${moduleType.name}/ngInjectorDef.js`, meta);
+            angularCoreEnv, `ng:///${moduleType.name}/ɵinj.js`, meta);
       }
       return ngInjectorDef;
     },
@@ -373,7 +373,7 @@ function computeCombinedExports(type: Type<any>): Type<any>[] {
 
 /**
  * Some declared components may be compiled asynchronously, and thus may not have their
- * ngComponentDef set yet. If this is the case, then a reference to the module is written into
+ * ɵcmp set yet. If this is the case, then a reference to the module is written into
  * the `ngSelectorScope` property of the declared type.
  */
 function setScopeOnDeclaredComponents(moduleType: Type<any>, ngModule: NgModule) {
@@ -382,13 +382,13 @@ function setScopeOnDeclaredComponents(moduleType: Type<any>, ngModule: NgModule)
   const transitiveScopes = transitiveScopesFor(moduleType);
 
   declarations.forEach(declaration => {
-    if (declaration.hasOwnProperty(NG_COMPONENT_DEF)) {
-      // An `ngComponentDef` field exists - go ahead and patch the component directly.
-      const component = declaration as Type<any>& {ngComponentDef: ComponentDef<any>};
+    if (declaration.hasOwnProperty(NG_COMP_DEF)) {
+      // A `ɵcmp` field exists - go ahead and patch the component directly.
+      const component = declaration as Type<any>& {ɵcmp: ComponentDef<any>};
       const componentDef = getComponentDef(component) !;
       patchComponentDefWithScope(componentDef, transitiveScopes);
     } else if (
-        !declaration.hasOwnProperty(NG_DIRECTIVE_DEF) && !declaration.hasOwnProperty(NG_PIPE_DEF)) {
+        !declaration.hasOwnProperty(NG_DIR_DEF) && !declaration.hasOwnProperty(NG_PIPE_DEF)) {
       // Set `ngSelectorScope` for future reference when the component compilation finishes.
       (declaration as Type<any>& {ngSelectorScope?: any}).ngSelectorScope = moduleType;
     }
@@ -404,8 +404,8 @@ export function patchComponentDefWithScope<C>(
   componentDef.directiveDefs = () =>
       Array.from(transitiveScopes.compilation.directives)
           .map(
-              dir => dir.hasOwnProperty(NG_COMPONENT_DEF) ? getComponentDef(dir) ! :
-                                                            getDirectiveDef(dir) !)
+              dir =>
+                  dir.hasOwnProperty(NG_COMP_DEF) ? getComponentDef(dir) ! : getDirectiveDef(dir) !)
           .filter(def => !!def);
   componentDef.pipeDefs = () =>
       Array.from(transitiveScopes.compilation.pipes).map(pipe => getPipeDef(pipe) !);
@@ -429,7 +429,7 @@ export function transitiveScopesFor<T>(
     moduleType: Type<T>,
     processNgModuleFn?: (ngModule: NgModuleType) => void): NgModuleTransitiveScopes {
   if (!isNgModule(moduleType)) {
-    throw new Error(`${moduleType.name} does not have an ngModuleDef`);
+    throw new Error(`${moduleType.name} does not have a module def (ɵmod property)`);
   }
   const def = getNgModuleDef(moduleType) !;
 
@@ -450,12 +450,12 @@ export function transitiveScopesFor<T>(
   };
 
   maybeUnwrapFn(def.declarations).forEach(declared => {
-    const declaredWithDefs = declared as Type<any>& { ngPipeDef?: any; };
+    const declaredWithDefs = declared as Type<any>& { ɵpipe?: any; };
 
     if (getPipeDef(declaredWithDefs)) {
       scopes.compilation.pipes.add(declared);
     } else {
-      // Either declared has an ngComponentDef or ngDirectiveDef, or it's a component which hasn't
+      // Either declared has a ɵcmp or ɵdir, or it's a component which hasn't
       // had its template compiled yet. In either case, it gets added to the compilation's
       // directives.
       scopes.compilation.directives.add(declared);
@@ -465,11 +465,11 @@ export function transitiveScopesFor<T>(
   maybeUnwrapFn(def.imports).forEach(<I>(imported: Type<I>) => {
     const importedType = imported as Type<I>& {
       // If imported is an @NgModule:
-      ngModuleDef?: NgModuleDef<I>;
+      ɵmod?: NgModuleDef<I>;
     };
 
     if (!isNgModule<I>(importedType)) {
-      throw new Error(`Importing ${importedType.name} which does not have an ngModuleDef`);
+      throw new Error(`Importing ${importedType.name} which does not have a ɵmod property`);
     }
 
     if (processNgModuleFn) {
@@ -486,14 +486,14 @@ export function transitiveScopesFor<T>(
   maybeUnwrapFn(def.exports).forEach(<E>(exported: Type<E>) => {
     const exportedType = exported as Type<E>& {
       // Components, Directives, NgModules, and Pipes can all be exported.
-      ngComponentDef?: any;
-      ngDirectiveDef?: any;
-      ngModuleDef?: NgModuleDef<E>;
-      ngPipeDef?: any;
+      ɵcmp?: any;
+      ɵdir?: any;
+      ɵmod?: NgModuleDef<E>;
+      ɵpipe?: any;
     };
 
-    // Either the type is a module, a pipe, or a component/directive (which may not have an
-    // ngComponentDef as it might be compiled asynchronously).
+    // Either the type is a module, a pipe, or a component/directive (which may not have a
+    // ɵcmp as it might be compiled asynchronously).
     if (isNgModule(exportedType)) {
       // When this module exports another, the exported module's exported directives and pipes are
       // added to both the compilation and exported scopes of this module.
@@ -528,6 +528,6 @@ function isModuleWithProviders(value: any): value is ModuleWithProviders<{}> {
   return (value as{ngModule?: any}).ngModule !== undefined;
 }
 
-function isNgModule<T>(value: Type<T>): value is Type<T>&{ngModuleDef: NgModuleDef<T>} {
+function isNgModule<T>(value: Type<T>): value is Type<T>&{ɵmod: NgModuleDef<T>} {
   return !!getNgModuleDef(value);
 }

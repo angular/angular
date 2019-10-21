@@ -551,6 +551,74 @@ describe('styling', () => {
     expect(capturedMyClassBindingCount).toEqual(1);
   });
 
+  it('should write to a `className` input binding', () => {
+    @Component({
+      selector: 'comp',
+      template: `{{className}}`,
+    })
+    class Comp {
+      @Input() className: string = '';
+    }
+    @Component({
+      template: `<comp [className]="'my-className'"></comp>`,
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [Comp, App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.debugElement.nativeElement.firstChild.innerHTML).toBe('my-className');
+  });
+
+  onlyInIvy('only ivy combines static and dynamic class-related attr values')
+      .it('should write to a `className` input binding, when static `class` is present', () => {
+        @Component({
+          selector: 'comp',
+          template: `{{className}}`,
+        })
+        class Comp {
+          @Input() className: string = '';
+        }
+
+        @Component({
+          template: `<comp class="static" [className]="'my-className'"></comp>`,
+        })
+        class App {
+        }
+
+        TestBed.configureTestingModule({declarations: [Comp, App]});
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        expect(fixture.debugElement.nativeElement.firstChild.innerHTML).toBe('static my-className');
+      });
+
+  onlyInIvy('in Ivy [class] and [className] bindings on the same element are not allowed')
+      .it('should throw an error in case [class] and [className] bindings are used on the same element',
+          () => {
+            @Component({
+              selector: 'comp',
+              template: `{{class}} - {{className}}`,
+            })
+            class Comp {
+              @Input() class: string = '';
+              @Input() className: string = '';
+            }
+            @Component({
+              template: `<comp [class]="'my-class'" [className]="'className'"></comp>`,
+            })
+            class App {
+            }
+
+            TestBed.configureTestingModule({declarations: [Comp, App]});
+            expect(() => {
+              const fixture = TestBed.createComponent(App);
+              fixture.detectChanges();
+            })
+                .toThrowError(
+                    '[class] and [className] bindings cannot be used on the same element simultaneously');
+          });
+
   onlyInIvy('only ivy persists static class/style attrs with their binding counterparts')
       .it('should write to a `class` input binding if there is a static class value and there is a binding value',
           () => {
@@ -685,7 +753,7 @@ describe('styling', () => {
       template: '<span dir [classesInSchool]="classes" [styleOfClothing]="style"></span>',
     })
     class App {
-      @ViewChild(Dir, {static: false}) dir !: Dir;
+      @ViewChild(Dir) dir !: Dir;
 
       classes = 'math';
       style = '80s';
@@ -1898,7 +1966,7 @@ describe('styling', () => {
        class ParentCmp {
          private _prop = '';
 
-         @ViewChild('template', {read: ViewContainerRef, static: false})
+         @ViewChild('template', {read: ViewContainerRef})
          vcr: ViewContainerRef = null !;
 
          private child: ComponentRef<ChildCmp> = null !;
@@ -1983,7 +2051,7 @@ describe('styling', () => {
        class ParentCmp {
          updateChild = false;
 
-         @ViewChild('template', {read: ViewContainerRef, static: false})
+         @ViewChild('template', {read: ViewContainerRef})
          vcr: ViewContainerRef = null !;
 
          private child: ComponentRef<ChildCmp> = null !;
@@ -2116,6 +2184,130 @@ describe('styling', () => {
       expect(div.nativeElement.classList.contains('other-class')).toBeTruthy();
       expect(div.nativeElement.style['width']).toEqual('200px');
     }
+  });
+
+  it('should not set classes when falsy value is passed while a sanitizer is present', () => {
+    @Component({
+      // Note that we use `background` here because it needs to be sanitized.
+      template: `
+        <span class="container" [ngClass]="{disabled: isDisabled}"></span>
+        <div [style.background]="background"></div>
+      `,
+    })
+
+    class AppComponent {
+      isDisabled = false;
+      background = 'orange';
+    }
+
+    TestBed.configureTestingModule({declarations: [AppComponent]});
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    const span = fixture.nativeElement.querySelector('span');
+    expect(span.classList).not.toContain('disabled');
+
+    // The issue we're testing for happens after the second change detection.
+    fixture.detectChanges();
+    expect(span.classList).not.toContain('disabled');
+  });
+
+  it('should not set classes when falsy value is passed while a sanitizer from host bindings is present',
+     () => {
+       @Directive({selector: '[blockStyles]'})
+       class StylesDirective {
+         @HostBinding('style.border')
+         border = '1px solid red';
+
+         @HostBinding('style.background')
+         background = 'white';
+       }
+
+       @Component({
+         template: `<div class="container" [ngClass]="{disabled: isDisabled}" blockStyles></div>`,
+       })
+       class AppComponent {
+         isDisabled = false;
+       }
+
+       TestBed.configureTestingModule({declarations: [AppComponent, StylesDirective]});
+       const fixture = TestBed.createComponent(AppComponent);
+       fixture.detectChanges();
+
+       const div = fixture.nativeElement.querySelector('div');
+       expect(div.classList.contains('disabled')).toBe(false);
+
+       // The issue we're testing for happens after the second change detection.
+       fixture.detectChanges();
+       expect(div.classList.contains('disabled')).toBe(false);
+     });
+
+  it('should throw an error if a prop-based style/class binding value is changed during checkNoChanges',
+     () => {
+       @Component({
+         template: `
+        <div [style.color]="color" [class.foo]="fooClass"></div>
+      `
+       })
+       class Cmp {
+         color = 'red';
+         fooClass = true;
+
+         ngAfterViewInit() {
+           this.color = 'blue';
+           this.fooClass = false;
+         }
+       }
+
+       TestBed.configureTestingModule({declarations: [Cmp]});
+       const fixture = TestBed.createComponent(Cmp);
+
+       expect(() => {
+         fixture.detectChanges();
+       }).toThrowError(/ExpressionChangedAfterItHasBeenCheckedError/);
+     });
+
+  onlyInIvy('only ivy allows for map-based style AND class bindings')
+      .it('should throw an error if a map-based style/class binding value is changed during checkNoChanges',
+          () => {
+            @Component({
+              template: `
+                <div [style]="style" [class]="klass"></div>
+              `
+            })
+            class Cmp {
+              style: any = {width: '100px'};
+              klass: any = {foo: true, bar: false};
+
+              ngAfterViewInit() {
+                this.style = {height: '200px'};
+                this.klass = {foo: false};
+              }
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp]});
+            const fixture = TestBed.createComponent(Cmp);
+
+            expect(() => {
+              fixture.detectChanges();
+            }).toThrowError(/ExpressionChangedAfterItHasBeenCheckedError/);
+          });
+
+  it('should properly merge class interpolation with class-based directives', () => {
+    @Component(
+        {template: `<div class="zero {{one}}" [class.two]="true" [ngClass]="'three'"></div>`})
+    class MyComp {
+      one = 'one';
+    }
+
+    const fixture =
+        TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+    fixture.detectChanges();
+
+    expect(fixture.debugElement.nativeElement.innerHTML).toContain('zero');
+    expect(fixture.debugElement.nativeElement.innerHTML).toContain('one');
+    expect(fixture.debugElement.nativeElement.innerHTML).toContain('two');
+    expect(fixture.debugElement.nativeElement.innerHTML).toContain('three');
   });
 });
 

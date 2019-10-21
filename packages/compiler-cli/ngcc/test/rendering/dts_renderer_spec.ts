@@ -119,7 +119,7 @@ runInEachFileSystem(() => {
       const typingsFile = result.find(f => f.path === _('/typings/file.d.ts')) !;
       expect(typingsFile.contents)
           .toContain(
-              'foo(x: number): number;\n    static ngFactoryDef: ɵngcc0.ɵɵFactoryDef<A>;\n    static ngDirectiveDef: ɵngcc0.ɵɵDirectiveDefWithMeta');
+              'foo(x: number): number;\n    static ɵfac: ɵngcc0.ɵɵFactoryDef<A>;\n    static ɵdir: ɵngcc0.ɵɵDirectiveDefWithMeta');
     });
 
     it('should render imports into typings files', () => {

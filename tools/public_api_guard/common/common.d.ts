@@ -27,30 +27,6 @@ export declare class DecimalPipe implements PipeTransform {
     transform(value: any, digitsInfo?: string, locale?: string): string | null;
 }
 
-export declare class DeprecatedCurrencyPipe implements PipeTransform {
-    constructor(_locale: string);
-    transform(value: any, currencyCode?: string, symbolDisplay?: boolean, digits?: string): string | null;
-}
-
-export declare class DeprecatedDatePipe implements PipeTransform {
-    constructor(_locale: string);
-    transform(value: any, pattern?: string): string | null;
-}
-
-export declare class DeprecatedDecimalPipe implements PipeTransform {
-    constructor(_locale: string);
-    transform(value: any, digits?: string): string | null;
-}
-
-/** @deprecated */
-export declare class DeprecatedI18NPipesModule {
-}
-
-export declare class DeprecatedPercentPipe implements PipeTransform {
-    constructor(_locale: string);
-    transform(value: any, digits?: string): string | null;
-}
-
 export declare const DOCUMENT: InjectionToken<Document>;
 
 export declare function formatCurrency(value: number, locale: string, currency: string, currencyCode?: string, digitsInfo?: string): string;
@@ -224,8 +200,8 @@ export declare class NgClassBase {
     getValue(): {
         [key: string]: any;
     } | null;
-    static ngDirectiveDef: any;
-    static ngFactoryDef: any;
+    static ɵdir: any;
+    static ɵfac: any;
 }
 
 export declare class NgComponentOutlet implements OnChanges, OnDestroy {
@@ -273,10 +249,8 @@ export declare class NgIfContext {
 }
 
 export declare class NgLocaleLocalization extends NgLocalization {
-    /** @deprecated */ protected deprecatedPluralFn?: ((locale: string, value: string | number) => Plural) | null | undefined;
     protected locale: string;
-    constructor(locale: string,
-    /** @deprecated */ deprecatedPluralFn?: ((locale: string, value: string | number) => Plural) | null | undefined);
+    constructor(locale: string);
     getPluralCategory(value: any, locale?: string): string;
 }
 
@@ -309,8 +283,8 @@ export declare class NgStyleBase {
     getValue(): {
         [key: string]: any;
     } | null;
-    static ngDirectiveDef: any;
-    static ngFactory: any;
+    static ɵdir: any;
+    static ɵfac: any;
 }
 
 export declare class NgSwitch {
@@ -446,7 +420,7 @@ export declare abstract class ViewportScroller {
     abstract scrollToPosition(position: [number, number]): void;
     abstract setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void;
     abstract setOffset(offset: [number, number] | (() => [number, number])): void;
-    static ngInjectableDef: never;
+    static ɵprov: never;
 }
 
 export declare enum WeekDay {

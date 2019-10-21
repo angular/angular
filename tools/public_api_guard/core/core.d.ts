@@ -18,6 +18,7 @@ export interface AfterViewInit {
     ngAfterViewInit(): void;
 }
 
+/** @deprecated */
 export declare const ANALYZE_FOR_ENTRY_COMPONENTS: InjectionToken<any>;
 
 export declare const APP_BOOTSTRAP_LISTENER: InjectionToken<((compRef: ComponentRef<any>) => void)[]>;
@@ -116,7 +117,7 @@ export interface Component extends Directive {
     animations?: any[];
     changeDetection?: ChangeDetectionStrategy;
     encapsulation?: ViewEncapsulation;
-    entryComponents?: Array<Type<any> | any[]>;
+    /** @deprecated */ entryComponents?: Array<Type<any> | any[]>;
     interpolation?: [string, string];
     moduleId?: string;
     preserveWhitespaces?: boolean;
@@ -428,7 +429,7 @@ export interface InjectableDecorator {
 export declare type InjectableProvider = ValueSansProvider | ExistingSansProvider | StaticClassSansProvider | ConstructorSansProvider | FactorySansProvider | ClassSansProvider;
 
 export interface InjectableType<T> extends Type<T> {
-    ngInjectableDef: never;
+    ɵprov: never;
 }
 
 export interface InjectDecorator {
@@ -446,7 +447,7 @@ export declare enum InjectFlags {
 
 export declare class InjectionToken<T> {
     protected _desc: string;
-    readonly ngInjectableDef: never | undefined;
+    readonly ɵprov: never | undefined;
     constructor(_desc: string, options?: {
         providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
         factory: () => T;
@@ -459,7 +460,7 @@ export declare abstract class Injector {
     /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: Object;
-    static ngInjectableDef: never;
+    static ɵprov: never;
     /** @deprecated */ static create(providers: StaticProvider[], parent?: Injector): Injector;
     static create(options: {
         providers: StaticProvider[];
@@ -471,7 +472,7 @@ export declare abstract class Injector {
 export declare const INJECTOR: InjectionToken<Injector>;
 
 export interface InjectorType<T> extends Type<T> {
-    ngInjectorDef: never;
+    ɵinj: never;
 }
 
 export interface Input {
@@ -517,7 +518,7 @@ export declare class IterableDiffers {
     /** @deprecated */ factories: IterableDifferFactory[];
     constructor(factories: IterableDifferFactory[]);
     find(iterable: any): IterableDifferFactory;
-    static ngInjectableDef: never;
+    static ɵprov: never;
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
     static extend(factories: IterableDifferFactory[]): StaticProvider;
 }
@@ -552,7 +553,7 @@ export declare class KeyValueDiffers {
     /** @deprecated */ factories: KeyValueDifferFactory[];
     constructor(factories: KeyValueDifferFactory[]);
     find(kv: any): KeyValueDifferFactory;
-    static ngInjectableDef: never;
+    static ɵprov: never;
     static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
     static extend<S>(factories: KeyValueDifferFactory[]): StaticProvider;
 }
@@ -581,7 +582,7 @@ export declare type NgIterable<T> = Array<T> | Iterable<T>;
 export interface NgModule {
     bootstrap?: Array<Type<any> | any[]>;
     declarations?: Array<Type<any> | any[]>;
-    entryComponents?: Array<Type<any> | any[]>;
+    /** @deprecated */ entryComponents?: Array<Type<any> | any[]>;
     exports?: Array<Type<any> | any[]>;
     id?: string;
     imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;
@@ -803,7 +804,7 @@ export declare const ɵɵdefineDirective: <T>(directiveDefinition: {
     type: Type<T>;
     selectors: (string | SelectorFlags)[][];
     inputs?: { [P in keyof T]?: string | [string, string] | undefined; } | undefined;
-    outputs?: { [P in keyof T]?: string | undefined; } | undefined;
+    outputs?: { [P_1 in keyof T]?: string | undefined; } | undefined;
     features?: DirectiveDefFeature[] | undefined;
     hostBindings?: HostBindingsFunction<T> | undefined;
     contentQueries?: ContentQueriesFunction<T> | undefined;
@@ -1266,7 +1267,7 @@ export declare function resolveForwardRef<T>(type: T): T;
 
 export declare abstract class Sanitizer {
     abstract sanitize(context: SecurityContext, value: {} | string | null): string | null;
-    static ngInjectableDef: never;
+    static ɵprov: never;
 }
 
 export interface SchemaMetadata {

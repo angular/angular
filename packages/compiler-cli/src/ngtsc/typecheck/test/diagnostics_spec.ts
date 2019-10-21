@@ -33,7 +33,7 @@ runInEachFileSystem(() => {
           }]);
 
       expect(messages).toEqual(
-          [`synthetic.html(1, 10): Type 'string' is not assignable to type 'number | undefined'.`]);
+          [`synthetic.html(1, 10): Type 'string' is not assignable to type 'number'.`]);
     });
 
     it('infers type of template variables', () => {
@@ -150,7 +150,7 @@ runInEachFileSystem(() => {
 
       expect(messages).toEqual([
         `synthetic.html(1, 29): Property 'heihgt' does not exist on type 'TestComponent'. Did you mean 'height'?`,
-        `synthetic.html(1, 6): 'srcc' is not a valid property of <img>.`,
+        `synthetic.html(1, 6): Can't bind to 'srcc' since it isn't a known property of 'img'.`,
       ]);
     });
 
@@ -183,6 +183,62 @@ runInEachFileSystem(() => {
       }`);
 
       expect(messages).toEqual([]);
+    });
+
+    describe('outputs', () => {
+      it('should produce a diagnostic for directive outputs', () => {
+        const messages = diagnose(
+            `<div dir (event)="handleEvent($event)"></div>`, `
+          import {EventEmitter} from '@angular/core';
+          class Dir {
+            out = new EventEmitter<number>();
+          }
+          class TestComponent {
+            handleEvent(event: string): void {}
+          }`,
+            [{type: 'directive', name: 'Dir', selector: '[dir]', outputs: {'out': 'event'}}]);
+
+        expect(messages).toEqual([
+          `synthetic.html(1, 31): Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        ]);
+      });
+
+      it('should produce a diagnostic for animation events', () => {
+        const messages = diagnose(`<div dir (@animation.done)="handleEvent($event)"></div>`, `
+          class TestComponent {
+            handleEvent(event: string): void {}
+          }`);
+
+        expect(messages).toEqual([
+          `synthetic.html(1, 41): Argument of type 'AnimationEvent' is not assignable to parameter of type 'string'.`,
+        ]);
+      });
+
+      it('should produce a diagnostic for element outputs', () => {
+        const messages = diagnose(`<div (click)="handleEvent($event)"></div>`, `
+          import {EventEmitter} from '@angular/core';
+          class TestComponent {
+            handleEvent(event: string): void {}
+          }`);
+
+        expect(messages).toEqual([
+          `synthetic.html(1, 27): Argument of type 'MouseEvent' is not assignable to parameter of type 'string'.`,
+        ]);
+      });
+
+      it('should not produce a diagnostic when $event implicitly has an any type', () => {
+        const messages = diagnose(
+            `<div dir (event)="handleEvent($event)"></div>`, `
+          class Dir {
+            out: any;
+          }
+          class TestComponent {
+            handleEvent(event: string): void {}
+          }`,
+            [{type: 'directive', name: 'Dir', selector: '[dir]', outputs: {'out': 'event'}}]);
+
+        expect(messages).toEqual([]);
+      });
     });
 
     describe('strict null checks', () => {

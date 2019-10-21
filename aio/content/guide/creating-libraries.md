@@ -1,4 +1,4 @@
-# Creating Libraries
+﻿# Creating Libraries
 
 You can create and publish new libraries to extend Angular functionality. If you find that you need to solve the same problem in more than one app (or want to share your solution with other developers), you have a candidate for a library.
 
@@ -13,8 +13,14 @@ A simple example might be a button that sends users to your company website, tha
 Use the Angular CLI to generate a new library skeleton with the following command:
 
 <code-example language="bash">
+ ng new my-workspace --create-application=false
+ cd my-workspace
  ng generate library my-lib
 </code-example>
+
+<div class="alert is-helpful">
+     <p>You can use the monorepo model to use the same workspace for multiple projects. See <a href="guide/file-structure#multiple-projects">Setting up for a multi-project workspace</a>.</p>
+</div>
 
 This creates the `projects/my-lib` folder in your workspace, which contains a component and a service inside an NgModule.
 The workspace configuration file, `angular.json`, is updated with a project of type 'library'.

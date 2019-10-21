@@ -143,6 +143,7 @@ runInEachFileSystem(() => {
            path: absoluteFrom('/node_modules/test'),
            typings: absoluteFrom('/node_modules/test/index.d.ts'),
            compiledByAngular: true,
+           ignoreMissingDependencies: false,
          };
          const esm5bundle = makeEntryPointBundle(fs, entryPoint, './index.js', false, 'esm5', true);
 
@@ -189,6 +190,7 @@ runInEachFileSystem(() => {
            path: absoluteFrom('/node_modules/test'),
            typings: absoluteFrom('/node_modules/test/index.d.ts'),
            compiledByAngular: true,
+           ignoreMissingDependencies: false,
          };
          const esm5bundle = makeEntryPointBundle(
              fs, entryPoint, './index.js', false, 'esm5', /* transformDts */ true,
@@ -210,6 +212,7 @@ runInEachFileSystem(() => {
            path: absoluteFrom('/node_modules/test'),
            typings: absoluteFrom('/node_modules/test/index.d.ts'),
            compiledByAngular: true,
+           ignoreMissingDependencies: false,
          };
          const esm5bundle = makeEntryPointBundle(
              fs, entryPoint, './index.js', false, 'esm5', /* transformDts */ true,

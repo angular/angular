@@ -66,10 +66,10 @@
     "name": "NEXT"
   },
   {
-    "name": "NG_COMPONENT_DEF"
+    "name": "NG_COMP_DEF"
   },
   {
-    "name": "NG_DIRECTIVE_DEF"
+    "name": "NG_DIR_DEF"
   },
   {
     "name": "NG_ELEMENT_ID"
@@ -141,19 +141,10 @@
     "name": "__window"
   },
   {
-    "name": "_currentNamespace"
-  },
-  {
-    "name": "_elementExitFn"
-  },
-  {
     "name": "_global"
   },
   {
     "name": "_renderCompCount"
-  },
-  {
-    "name": "_selectedIndex"
   },
   {
     "name": "addComponentLogic"
@@ -187,9 +178,6 @@
   },
   {
     "name": "callHooks"
-  },
-  {
-    "name": "checkNoChangesMode"
   },
   {
     "name": "concatString"
@@ -432,6 +420,9 @@
     "name": "instantiateRootComponent"
   },
   {
+    "name": "instructionState"
+  },
+  {
     "name": "invertObject"
   },
   {
@@ -583,6 +574,9 @@
   },
   {
     "name": "saveResolvedLocalsInData"
+  },
+  {
+    "name": "selectClassBasedInputName"
   },
   {
     "name": "selectIndexInternal"

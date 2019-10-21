@@ -1,8 +1,8 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 
-import { Observable, of, timer } from 'rxjs';
-import { catchError, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { asapScheduler, Observable, of, timer } from 'rxjs';
+import { catchError, observeOn, switchMap, takeUntil, tap } from 'rxjs/operators';
 
 import { DocumentContents, FILE_NOT_FOUND_ID, FETCHING_ERROR_ID } from 'app/documents/document.service';
 import { Logger } from 'app/shared/logger.service';
@@ -78,6 +78,7 @@ export class DocViewerComponent implements OnDestroy {
 
     this.docContents$
         .pipe(
+            observeOn(asapScheduler),
             switchMap(newDoc => this.render(newDoc)),
             takeUntil(this.onDestroy$),
         )

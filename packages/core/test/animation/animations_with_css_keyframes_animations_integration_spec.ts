@@ -165,7 +165,7 @@ import {TestBed} from '../../testing';
         ]
       })
       class Cmp {
-        @ViewChild('elm', {static: false}) public element: any;
+        @ViewChild('elm') public element: any;
 
         public myAnimationExp = '';
       }
@@ -216,7 +216,7 @@ import {TestBed} from '../../testing';
         ]
       })
       class Cmp {
-        @ViewChild('elm', {static: false}) public element: any;
+        @ViewChild('elm') public element: any;
 
         public myAnimationExp = '';
       }

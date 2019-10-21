@@ -54,17 +54,17 @@ export const ngClassFactoryDef = ngClassFactoryDef__PRE_R3__;
  * While this is a base class that NgClass extends from, the
  * class itself acts as a container for non-VE code to setup
  * a link to the `[class]` host binding (via the static
- * `ngDirectiveDef` property on the class).
+ * `ɵdir` property on the class).
  *
- * Note that the `ngDirectiveDef` property's code is switched
+ * Note that the `ɵdir` property's code is switched
  * depending if VE is present or not (this allows for the
  * binding code to be set only for newer versions of Angular).
  *
  * @publicApi
  */
 export class NgClassBase {
-  static ngDirectiveDef: any = ngClassDirectiveDef;
-  static ngFactoryDef: any = ngClassFactoryDef;
+  static ɵdir: any = ngClassDirectiveDef;
+  static ɵfac: any = ngClassFactoryDef;
 
   constructor(protected _delegate: NgClassImpl) {}
 

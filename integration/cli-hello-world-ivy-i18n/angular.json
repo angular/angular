@@ -1,27 +1,23 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
-  "cli": {
-    "packageManager": "yarn"
-  },
   "newProjectRoot": "projects",
   "projects": {
-    "cli-hello-world-ivy-compat": {
+    "cli-hello-world-ivy-i18n": {
+      "projectType": "application",
+      "schematics": {},
       "root": "",
       "sourceRoot": "src",
-      "projectType": "application",
       "prefix": "app",
-      "schematics": {},
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "progress": false,
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.app.json",
+            "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
               "src/assets"
@@ -29,11 +25,12 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "progress": false
           },
           "configurations": {
             "view-engine": {
-              "tsConfig": "src/tsconfig.view-engine.json"
+              "tsConfig": "tsconfig.view-engine.json"
             },
             "production": {
               "fileReplacements": [
@@ -56,11 +53,16 @@
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
                 }
               ]
             },
             "translated-legacy": {
-              "tsConfig": "src/tsconfig.legacy.json",
+              "tsConfig": "tsconfig.legacy.json",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -76,17 +78,17 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "cli-hello-world-ivy-compat:build"
+            "browserTarget": "cli-hello-world-ivy-i18n:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "cli-hello-world-ivy-compat:build:production"
+              "browserTarget": "cli-hello-world-ivy-i18n:build:production"
             },
             "ci": {
               "progress": false
             },
             "ci-production": {
-              "browserTarget": "cli-hello-world-ivy-compat:build:production",
+              "browserTarget": "cli-hello-world-ivy-i18n:build:production",
               "progress": false
             }
           }
@@ -94,7 +96,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "cli-hello-world-ivy-compat:build:view-engine",
+            "browserTarget": "cli-hello-world-ivy-i18n:build:view-engine",
             "outputPath": "../tmp/legacy-locales/",
             "outFile": "messages.legacy.xlf"
           }
@@ -104,57 +106,57 @@
           "options": {
             "main": "src/test.ts",
             "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.spec.json",
-            "karmaConfig": "src/karma.conf.js",
+            "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
             "styles": [
               "src/styles.css"
             ],
             "scripts": [],
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ]
+            "progress": false,
+            "watch": false
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "src/tsconfig.app.json",
-              "src/tsconfig.spec.json"
+              "tsconfig.app.json",
+              "tsconfig.spec.json",
+              "e2e/tsconfig.json"
             ],
             "exclude": [
               "**/node_modules/**"
             ]
           }
-        }
-      }
-    },
-    "cli-hello-world-ivy-compat-e2e": {
-      "root": "e2e/",
-      "projectType": "application",
-      "prefix": "",
-      "architect": {
+        },
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/runtime/protractor.conf.js",
-            "devServerTarget": "cli-hello-world-ivy-compat:serve",
-            "webdriverUpdate": true
+            "devServerTarget": "cli-hello-world-ivy-i18n:serve",
+            "webdriverUpdate": false
           },
           "configurations": {
             "production": {
-              "devServerTarget": "cli-hello-world-ivy-compat:serve:production"
+              "devServerTarget": "cli-hello-world-ivy-i18n:serve:production"
             },
             "ci": {
-              "devServerTarget": "cli-hello-world-ivy-compat:serve:ci"
+              "devServerTarget": "cli-hello-world-ivy-i18n:serve:ci"
             },
             "ci-production": {
-              "devServerTarget": "cli-hello-world-ivy-compat:serve:ci-production"
+              "devServerTarget": "cli-hello-world-ivy-i18n:serve:ci-production"
             },
             "translated-legacy": {
               "devServerTarget": "",
               "protractorConfig": "e2e/legacy/protractor.conf.js"
+            },
+            "translated-en": {
+              "devServerTarget": "",
+              "protractorConfig": "e2e/en/protractor.conf.js"
             },
             "translated-fr": {
               "devServerTarget": "",
@@ -165,18 +167,8 @@
               "protractorConfig": "e2e/de/protractor.conf.js"
             }
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": "e2e/tsconfig.e2e.json",
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
         }
       }
-    }
-  },
-  "defaultProject": "cli-hello-world-ivy-compat"
+    }},
+  "defaultProject": "cli-hello-world-ivy-i18n"
 }

@@ -50,9 +50,9 @@ function addDevDependenciesToPackageJson(options: Schema) {
       '@angular/bazel': angularCoreVersion,
       '@bazel/bazel': '^0.28.1',
       '@bazel/ibazel': '^0.10.2',
-      '@bazel/karma': '0.38.1',
-      '@bazel/protractor': '0.38.1',
-      '@bazel/typescript': '0.38.1',
+      '@bazel/karma': '0.38.3',
+      '@bazel/protractor': '0.38.3',
+      '@bazel/typescript': '0.38.3',
       'history-server': '^1.3.1',
     };
 
@@ -71,6 +71,47 @@ function addDevDependenciesToPackageJson(options: Schema) {
         insertPropertyInAstObjectInOrder(recorder, devDeps, packageName, version, indent);
       }
     }
+    host.commitUpdate(recorder);
+    return host;
+  };
+}
+
+/**
+ * Remove packages that are not needed under Bazel.
+ * @param options
+ */
+function removeObsoleteDependenciesFromPackageJson(options: Schema) {
+  return (host: Tree) => {
+    const packageJson = 'package.json';
+    if (!host.exists(packageJson)) {
+      throw new Error(`Could not find ${packageJson}`);
+    }
+    const buffer = host.read(packageJson);
+    if (!buffer) {
+      throw new Error('Failed to read package.json content');
+    }
+    const content = buffer.toString();
+    const jsonAst = parseJsonAst(content) as JsonAstObject;
+    const deps = findPropertyInAstObject(jsonAst, 'dependencies') as JsonAstObject;
+    const devDeps = findPropertyInAstObject(jsonAst, 'devDependencies') as JsonAstObject;
+
+    const depsToRemove = [
+      '@angular-devkit/build-angular',
+    ];
+
+    const recorder = host.beginUpdate(packageJson);
+
+    for (const packageName of depsToRemove) {
+      const depNode = findPropertyInAstObject(deps, packageName);
+      if (depNode) {
+        removeKeyValueInAstObject(recorder, content, deps, packageName);
+      }
+      const devDepNode = findPropertyInAstObject(devDeps, packageName);
+      if (devDepNode) {
+        removeKeyValueInAstObject(recorder, content, devDeps, packageName);
+      }
+    }
+
     host.commitUpdate(recorder);
     return host;
   };
@@ -292,13 +333,19 @@ function addPostinstallToGenerateNgSummaries() {
     }
     const scripts = findPropertyInAstObject(jsonAst, 'scripts') as JsonAstObject;
     const recorder = host.beginUpdate(packageJson);
+    const ngcCommand = 'ngc -p ./angular-metadata.tsconfig.json';
     if (scripts) {
-      insertPropertyInAstObjectInOrder(
-          recorder, scripts, 'postinstall', 'ngc -p ./angular-metadata.tsconfig.json', 4);
+      const postInstall = findPropertyInAstObject(scripts, 'postinstall');
+      if (postInstall) {
+        const command = `${postInstall.value}; ${ngcCommand}`;
+        replacePropertyInAstObject(recorder, scripts, 'postinstall', command);
+      } else {
+        insertPropertyInAstObjectInOrder(recorder, scripts, 'postinstall', ngcCommand, 4);
+      }
     } else {
       insertPropertyInAstObjectInOrder(
           recorder, jsonAst, 'scripts', {
-            postinstall: 'ngc -p ./angular-metadata.tsconfig.json',
+            postinstall: ngcCommand,
           },
           2);
     }
@@ -329,6 +376,7 @@ export default function(options: Schema): Rule {
     return chain([
       addFilesRequiredByBazel(options),
       addDevDependenciesToPackageJson(options),
+      removeObsoleteDependenciesFromPackageJson(options),
       addPostinstallToGenerateNgSummaries(),
       backupAngularJson(),
       updateAngularJsonToUseBazelBuilder(options),

@@ -20,8 +20,8 @@ describe('ComponentFactory', () => {
   describe('constructor()', () => {
     it('should correctly populate default properties', () => {
       class TestComponent {
-        static ngFactoryDef = () => new TestComponent();
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵfac = () => new TestComponent();
+        static ɵcmp = ɵɵdefineComponent({
           type: TestComponent,
           selectors: [['test', 'foo'], ['bar']],
           decls: 0,
@@ -41,8 +41,8 @@ describe('ComponentFactory', () => {
 
     it('should correctly populate defined properties', () => {
       class TestComponent {
-        static ngFactoryDef = () => new TestComponent();
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵfac = () => new TestComponent();
+        static ɵcmp = ɵɵdefineComponent({
           type: TestComponent,
           encapsulation: ViewEncapsulation.None,
           selectors: [['test', 'foo'], ['bar']],
@@ -89,8 +89,8 @@ describe('ComponentFactory', () => {
       createRenderer3Spy = spyOn(domRendererFactory3, 'createRenderer').and.callThrough();
 
       class TestComponent {
-        static ngFactoryDef = () => new TestComponent();
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵfac = () => new TestComponent();
+        static ɵcmp = ɵɵdefineComponent({
           type: TestComponent,
           encapsulation: ViewEncapsulation.None,
           selectors: [['test']],

@@ -60,7 +60,12 @@ export function updateClassViaContext(
   const isMapBased = !prop;
   const state = getStylingState(element, directiveIndex);
   const countIndex = isMapBased ? STYLING_INDEX_FOR_MAP_BINDING : state.classesIndex++;
-  if (value !== NO_CHANGE) {
+  const hostBindingsMode = isHostStylingActive(state.sourceIndex);
+
+  // even if the initial value is a `NO_CHANGE` value (e.g. interpolation or [ngClass])
+  // then we still need to register the binding within the context so that the context
+  // is aware of the binding before it gets locked.
+  if (!isContextLocked(context, hostBindingsMode) || value !== NO_CHANGE) {
     const updated = updateBindingData(
         context, data, countIndex, state.sourceIndex, prop, bindingIndex, value, forceUpdate,
         false);
@@ -95,7 +100,12 @@ export function updateStyleViaContext(
   const isMapBased = !prop;
   const state = getStylingState(element, directiveIndex);
   const countIndex = isMapBased ? STYLING_INDEX_FOR_MAP_BINDING : state.stylesIndex++;
-  if (value !== NO_CHANGE) {
+  const hostBindingsMode = isHostStylingActive(state.sourceIndex);
+
+  // even if the initial value is a `NO_CHANGE` value (e.g. interpolation or [ngStyle])
+  // then we still need to register the binding within the context so that the context
+  // is aware of the binding before it gets locked.
+  if (!isContextLocked(context, hostBindingsMode) || value !== NO_CHANGE) {
     const sanitizationRequired = isMapBased ?
         true :
         (sanitizer ? sanitizer(prop !, null, StyleSanitizeMode.ValidateProperty) : false);
@@ -756,7 +766,7 @@ function applyStylingValue(
   let valueToApply: string|null = unwrapSafeValue(value);
   if (isStylingValueDefined(valueToApply)) {
     valueToApply =
-        sanitizer ? sanitizer(prop, value, StyleSanitizeMode.SanitizeOnly) : valueToApply;
+        sanitizer ? sanitizer(prop, value, StyleSanitizeMode.ValidateAndSanitize) : valueToApply;
     applyFn(renderer, element, prop, valueToApply, bindingIndex);
     return true;
   }
@@ -771,8 +781,9 @@ function findAndApplyMapValue(
     const p = getMapProp(map, i);
     if (p === prop) {
       let valueToApply = getMapValue(map, i);
-      valueToApply =
-          sanitizer ? sanitizer(prop, valueToApply, StyleSanitizeMode.SanitizeOnly) : valueToApply;
+      valueToApply = sanitizer ?
+          sanitizer(prop, valueToApply, StyleSanitizeMode.ValidateAndSanitize) :
+          valueToApply;
       applyFn(renderer, element, prop, valueToApply, bindingIndex);
       return true;
     }

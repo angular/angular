@@ -155,14 +155,13 @@ export function getOrCreateNodeInjectorForNode(
   }
 
   const parentLoc = getParentInjectorLocation(tNode, hostView);
-  const parentIndex = getParentInjectorIndex(parentLoc);
-  const parentLView = getParentInjectorView(parentLoc, hostView);
-
   const injectorIndex = tNode.injectorIndex;
 
   // If a parent injector can't be found, its location is set to -1.
   // In that case, we don't need to set up a cumulative bloom
   if (hasParentInjector(parentLoc)) {
+    const parentIndex = getParentInjectorIndex(parentLoc);
+    const parentLView = getParentInjectorView(parentLoc, hostView);
     const parentData = parentLView[TVIEW].data as any;
     // Creates a cumulative bloom filter that merges the parent's bloom filter
     // and its own cumulative bloom (which contains tokens for all ancestors)
@@ -256,7 +255,7 @@ export function diPublicInInjector(
  *
  * Then factory method generated is:
  * ```
- * MyComponent.ngComponentDef = defineComponent({
+ * MyComponent.ɵcmp = defineComponent({
  *   factory: () => new MyComponent(injectAttribute('title'))
  *   ...
  * })

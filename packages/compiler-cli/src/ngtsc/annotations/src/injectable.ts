@@ -92,7 +92,7 @@ export class InjectableDecoratorHandler implements
     }
 
     results.push({
-      name: 'ngInjectableDef',
+      name: 'ɵprov',
       initializer: res.expression, statements,
       type: res.type,
     });
@@ -214,8 +214,7 @@ function extractInjectableCtorDeps(
     // Angular's DI.
     //
     // To deal with this, @Injectable() without an argument is more lenient, and if the
-    // constructor
-    // signature does not work for DI then an ngInjectableDef that throws.
+    // constructor signature does not work for DI then a provider def (ɵprov) that throws.
     if (strictCtorDeps) {
       ctorDeps = getValidConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore);
     } else {

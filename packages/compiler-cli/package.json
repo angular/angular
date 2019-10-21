@@ -5,7 +5,8 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "bin": {
-    "ivy-ngcc": "./ngcc/main-ngcc.js",
+    "ivy-ngcc": "./ngcc/main-ivy-ngcc.js",
+    "ngcc": "./ngcc/main-ngcc.js",
     "ngc": "./src/main.js",
     "ng-xi18n": "./src/extract_i18n.js"
   },
@@ -19,12 +20,12 @@
     "magic-string": "^0.25.0",
     "semver": "^6.3.0",
     "source-map": "^0.6.1",
-    "tslib": "^1.9.0",
     "yargs": "13.1.0"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
-    "typescript": ">=3.4 <3.6"
+    "tslib": "^1.10.0",
+    "typescript": ">=3.6 <3.7"
   },
   "engines": {
     "node": ">=8.0"

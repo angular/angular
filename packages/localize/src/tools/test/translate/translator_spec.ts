@@ -7,7 +7,8 @@
  */
 import {Diagnostics as Diagnostics} from '../../src/diagnostics';
 import {FileUtils} from '../../src/file_utils';
-import {TranslationHandler, Translator} from '../../src/translate/translator';
+import {OutputPathFn} from '../../src/translate/output_path';
+import {TranslationBundle, TranslationHandler, Translator} from '../../src/translate/translator';
 
 describe('Translator', () => {
   describe('translateFiles()', () => {
@@ -34,9 +35,24 @@ describe('Translator', () => {
 
       expect(handler.log).toEqual([
         'canTranslate(file1.js, resource file 1)',
-        'translate(/dist, file1.js, resource file 1)',
+        'translate(/dist, file1.js, resource file 1, ...)',
         'canTranslate(images/img.gif, resource file 2)',
-        'translate(/dist, images/img.gif, resource file 2)',
+        'translate(/dist, images/img.gif, resource file 2, ...)',
+      ]);
+    });
+
+    it('should pass the sourceLocale through to `translate()` if provided', () => {
+      const diagnostics = new Diagnostics();
+      const handler = new MockTranslationHandler(true);
+      const translator = new Translator([handler], diagnostics);
+      translator.translateFiles(
+          ['/dist/file1.js', '/dist/images/img.gif'], '/dist', mockOutputPathFn, [], 'en-US');
+
+      expect(handler.log).toEqual([
+        'canTranslate(file1.js, resource file 1)',
+        'translate(/dist, file1.js, resource file 1, ..., en-US)',
+        'canTranslate(images/img.gif, resource file 2)',
+        'translate(/dist, images/img.gif, resource file 2, ..., en-US)',
       ]);
     });
 
@@ -55,9 +71,9 @@ describe('Translator', () => {
       ]);
       expect(handler2.log).toEqual([
         'canTranslate(file1.js, resource file 1)',
-        'translate(/dist, file1.js, resource file 1)',
+        'translate(/dist, file1.js, resource file 1, ...)',
         'canTranslate(images/img.gif, resource file 2)',
-        'translate(/dist, images/img.gif, resource file 2)',
+        'translate(/dist, images/img.gif, resource file 2, ...)',
       ]);
     });
 
@@ -86,8 +102,12 @@ class MockTranslationHandler implements TranslationHandler {
     return this._canTranslate;
   }
 
-  translate(_diagnostics: Diagnostics, rootPath: string, relativePath: string, contents: Buffer) {
-    this.log.push(`translate(${rootPath}, ${relativePath}, ${contents})`);
+  translate(
+      _diagnostics: Diagnostics, rootPath: string, relativePath: string, contents: Buffer,
+      _outputPathFn: OutputPathFn, _translations: TranslationBundle[], sourceLocale?: string) {
+    this.log.push(
+        `translate(${rootPath}, ${relativePath}, ${contents}, ...` +
+        (sourceLocale !== undefined ? `, ${sourceLocale})` : ')'));
   }
 }
 

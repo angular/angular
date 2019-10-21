@@ -32,8 +32,11 @@ export default function(): Rule {
     const logger = context.logger;
 
     logger.info('------ Renderer to Renderer2 Migration ------');
-    logger.info('As of Angular 9, the Renderer class is no longer available.');
-    logger.info('Renderer2 should be used instead.');
+    logger.info('As of Angular 9, the Renderer class is no longer available. ');
+    logger.info('Renderer2 should be used instead. Read more about this in ');
+    logger.info('the dedicated guide: ');
+    logger.info('https://v9.angular.io/guide/migration-renderer');
+
 
     if (!allPaths.length) {
       throw new SchematicsException(

@@ -14,8 +14,7 @@ specification of this format at https://goo.gl/jB3GVv
 """
 
 load("@build_bazel_rules_nodejs//internal/common:collect_es6_sources.bzl", "collect_es6_sources")
-load("@build_bazel_rules_nodejs//internal/common:node_module_info.bzl", "NodeModuleSources")
-load("@build_bazel_rules_nodejs//internal/common:sources_aspect.bzl", "sources_aspect")
+load("@build_bazel_rules_nodejs//:providers.bzl", "JSNamedModuleInfo", "NpmPackageInfo")
 load(
     "@build_bazel_rules_nodejs//internal/rollup:rollup_bundle.bzl",
     "ROLLUP_ATTRS",
@@ -347,9 +346,9 @@ def _ng_package_impl(ctx):
         node_modules_files = _filter_js_inputs(ctx.files.node_modules)
 
         # Also include files from npm fine grained deps as inputs.
-        # These deps are identified by the NodeModuleSources provider.
+        # These deps are identified by the NpmPackageInfo provider.
         for d in ctx.attr.deps:
-            if NodeModuleSources in d:
+            if NpmPackageInfo in d:
                 node_modules_files += _filter_js_inputs(d.files)
         esm5_rollup_inputs = depset(node_modules_files, transitive = [esm5_sources])
 
@@ -455,9 +454,9 @@ def _ng_package_impl(ctx):
 
     devfiles = depset()
     if ctx.attr.include_devmode_srcs:
-        for d in ctx.attr.deps:
-            if hasattr(d, "node_sources"):
-                devfiles = depset(transitive = [devfiles, d.node_sources])
+        for dep in ctx.attr.deps:
+            if JSNamedModuleInfo in dep:
+                devfiles = depset(transitive = [devfiles, dep[JSNamedModuleInfo].sources])
 
     # Re-use the create_package function from the nodejs npm_package rule.
     package_dir = create_package(
@@ -469,7 +468,7 @@ def _ng_package_impl(ctx):
         files = depset([package_dir]),
     )]
 
-DEPS_ASPECTS = [esm5_outputs_aspect, sources_aspect]
+DEPS_ASPECTS = [esm5_outputs_aspect]
 
 # Workaround skydoc bug which assumes ROLLUP_DEPS_ASPECTS is a str type
 [DEPS_ASPECTS.append(a) for a in ROLLUP_DEPS_ASPECTS]

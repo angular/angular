@@ -174,17 +174,16 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       return null;
     }
 
-    return {node: importedFile, viaModule: importInfo.from};
+    const viaModule = !importInfo.from.startsWith('.') ? importInfo.from : null;
+    return {node: importedFile, viaModule};
   }
 
   private resolveModuleName(moduleName: string, containingFile: ts.SourceFile): ts.SourceFile
       |undefined {
     if (this.compilerHost.resolveModuleNames) {
-      // FIXME: remove the "as any" cast once on TS3.6.
-      const moduleInfo = (this.compilerHost as any)
-                             .resolveModuleNames(
-                                 [moduleName], containingFile.fileName, undefined, undefined,
-                                 this.program.getCompilerOptions())[0];
+      const moduleInfo = this.compilerHost.resolveModuleNames(
+          [moduleName], containingFile.fileName, undefined, undefined,
+          this.program.getCompilerOptions())[0];
       return moduleInfo && this.program.getSourceFile(absoluteFrom(moduleInfo.resolvedFileName));
     } else {
       const moduleInfo = ts.resolveModuleName(

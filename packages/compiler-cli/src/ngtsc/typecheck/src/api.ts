@@ -84,6 +84,18 @@ export interface TypeCheckingConfig {
   checkTypeOfInputBindings: boolean;
 
   /**
+   * Whether to use strict null types for input bindings for directives.
+   *
+   * If this is `true`, applications that are compiled with TypeScript's `strictNullChecks` enabled
+   * will produce type errors for bindings which can evaluate to `undefined` or `null` where the
+   * inputs's type does not include `undefined` or `null` in its type. If set to `false`, all
+   * binding expressions are wrapped in a non-null assertion operator to effectively disable strict
+   * null checks. This may be particularly useful when the directive is from a library that is not
+   * compiled with `strictNullChecks` enabled.
+   */
+  strictNullInputBindings: boolean;
+
+  /**
    * Whether to check the left-hand side type of binding operations to DOM properties.
    *
    * As `checkTypeOfBindings`, but only applies to bindings to DOM properties.
@@ -94,6 +106,32 @@ export interface TypeCheckingConfig {
    * for assignability to the underlying DOM element properties.
    */
   checkTypeOfDomBindings: boolean;
+
+  /**
+   * Whether to infer the type of the `$event` variable in event bindings for directive outputs.
+   *
+   * If this is `true`, the type of `$event` will be inferred based on the generic type of
+   * `EventEmitter`/`Subject` of the output. If set to `false`, the `$event` variable will be of
+   * type `any`.
+   */
+  checkTypeOfOutputEvents: boolean;
+
+  /**
+   * Whether to infer the type of the `$event` variable in event bindings for animations.
+   *
+   * If this is `true`, the type of `$event` will be `AnimationEvent` from `@angular/animations`.
+   * If set to `false`, the `$event` variable will be of type `any`.
+   */
+  checkTypeOfAnimationEvents: boolean;
+
+  /**
+   * Whether to infer the type of the `$event` variable in event bindings to DOM events.
+   *
+   * If this is `true`, the type of `$event` will be inferred based on TypeScript's
+   * `HTMLElementEventMap`, with a fallback to the native `Event` type. If set to `false`, the
+   * `$event` variable will be of type `any`.
+   */
+  checkTypeOfDomEvents: boolean;
 
   /**
    * Whether to include type information from pipes in the type-checking operation.

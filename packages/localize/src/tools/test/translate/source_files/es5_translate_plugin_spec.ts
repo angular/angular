@@ -20,6 +20,22 @@ describe('makeEs5Plugin', () => {
       expect(output.code).toEqual('const b = 10;\n"try\\n" + (40 + b) + "\\n  me";');
     });
 
+    it('should strip meta blocks', () => {
+      const diagnostics = new Diagnostics();
+      const input =
+          'const b = 10;\n$localize([":description:try\\n", ":placeholder:\\n  me"], 40 + b);';
+      const output = transformSync(input, {plugins: [makeEs5TranslatePlugin(diagnostics, {})]}) !;
+      expect(output.code).toEqual('const b = 10;\n"try\\n" + (40 + b) + "\\n  me";');
+    });
+
+    it('should not strip escaped meta blocks', () => {
+      const diagnostics = new Diagnostics();
+      const input =
+          `$localize(__makeTemplateObject([':desc:try', 'me'], ['\\\\\\:desc:try', 'me']), 40 + 2);`;
+      const output = transformSync(input, {plugins: [makeEs5TranslatePlugin(diagnostics, {})]}) !;
+      expect(output.code).toEqual('":desc:try" + (40 + 2) + "me";');
+    });
+
     it('should transform nested `$localize` calls', () => {
       const diagnostics = new Diagnostics();
       const input = '$localize(["a", "b", "c"], 1, $localize(["x", "y", "z"], 5, 6));';
@@ -87,6 +103,33 @@ describe('makeEs5Plugin', () => {
       expect(output.code).toEqual('"try" + (40 + 2) + "me";');
     });
 
+    it('should handle lazy-load helper calls', () => {
+      const diagnostics = new Diagnostics();
+      const input = `
+      function _templateObject2() {
+        var e = _taggedTemplateLiteral([':escaped-colons:Welcome to the i18n app.'], ['\\\\\\:escaped-colons:Welcome to the i18n app.']);
+        return _templateObject2 = function() { return e }, e
+      }
+      function _templateObject() {
+        var e = _taggedTemplateLiteral([' Hello ', ':INTERPOLATION:! ']);
+        return _templateObject = function() { return e }, e
+      }
+      function _taggedTemplateLiteral(e, t) {
+        return t || (t = e.slice(0)),
+               Object.freeze(Object.defineProperties(e, {raw: {value: Object.freeze(t)}}))
+      }
+      const message = $localize(_templateObject2());
+      function foo() {
+        console.log($localize(_templateObject(), '\ufffd0\ufffd'));
+      }
+      `;
+      const output = transformSync(input, {plugins: [makeEs5TranslatePlugin(diagnostics, {})]}) !;
+      expect(output.code).toContain('const message = ":escaped-colons:Welcome to the i18n app."');
+      expect(output.code).toContain('console.log(" Hello " + \'\ufffd0\ufffd\' + "! ");');
+      expect(output.code).not.toContain('templateObject');
+      expect(output.code).not.toContain('templateObject2');
+    });
+
     it('should add diagnostic error with code-frame information if the arguments to `$localize` are missing',
        () => {
          const diagnostics = new Diagnostics();
@@ -97,9 +140,25 @@ describe('makeEs5Plugin', () => {
          expect(diagnostics.hasErrors).toBe(true);
          expect(diagnostics.messages[0]).toEqual({
            type: 'error',
-           message: '/app/dist/test.js: Unexpected argument to `$localize`: undefined\n' +
+           message: '/app/dist/test.js: `$localize` called without any arguments.\n' +
                '> 1 | $localize()\n' +
                '    | ^',
+         });
+       });
+
+    it('should add diagnostic error with code-frame information if the arguments to `$localize` are invalid',
+       () => {
+         const diagnostics = new Diagnostics();
+         const input = '$localize(...x)';
+         transformSync(
+             input,
+             {plugins: [makeEs5TranslatePlugin(diagnostics, {})], filename: '/app/dist/test.js'});
+         expect(diagnostics.hasErrors).toBe(true);
+         expect(diagnostics.messages[0]).toEqual({
+           type: 'error',
+           message: '/app/dist/test.js: Unexpected argument to `$localize` (expected an array).\n' +
+               '> 1 | $localize(...x)\n' +
+               '    |           ^',
          });
        });
 

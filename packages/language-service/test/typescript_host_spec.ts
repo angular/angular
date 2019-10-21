@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import 'reflect-metadata';
 import * as ts from 'typescript';
 
 import {TypeScriptServiceHost} from '../src/typescript_host';
@@ -95,7 +94,7 @@ describe('TypeScriptServiceHost', () => {
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     const templates = ngLSHost.getTemplates('/app/parsing-cases.ts');
-    expect(templates.length).toBe(16);
+    expect(templates.length).toBe(18);
   });
 
   it('should be able to find external template', () => {

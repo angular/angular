@@ -505,8 +505,8 @@ describe('TestBed', () => {
          */
         const getAOTCompiledComponent = () => {
           class ComponentClass {
-            static ngFactoryDef = () => new ComponentClass();
-            static ngComponentDef = defineComponent({
+            static ɵfac = () => new ComponentClass();
+            static ɵcmp = defineComponent({
               type: ComponentClass,
               selectors: [['comp']],
               decls: 1,
@@ -553,7 +553,7 @@ describe('TestBed', () => {
 
           // This is an AOT compiled module which declares (but does not export) SomeComponent.
           class ModuleClass {
-            static ngModuleDef = defineNgModule({
+            static ɵmod = defineNgModule({
               type: ModuleClass,
               declarations: [SomeComponent],
             });
@@ -616,13 +616,13 @@ describe('TestBed', () => {
               {set: {template: `<span someDirective>{{'hello' | somePipe}}</span>`}});
           TestBed.createComponent(SomeComponent);
 
-          const defBeforeReset = (SomeComponent as any).ngComponentDef;
+          const defBeforeReset = (SomeComponent as any).ɵcmp;
           expect(defBeforeReset.pipeDefs().length).toEqual(1);
           expect(defBeforeReset.directiveDefs().length).toEqual(2);  // directive + component
 
           TestBed.resetTestingModule();
 
-          const defAfterReset = (SomeComponent as any).ngComponentDef;
+          const defAfterReset = (SomeComponent as any).ɵcmp;
           expect(defAfterReset.pipeDefs).toBe(null);
           expect(defAfterReset.directiveDefs).toBe(null);
         });
@@ -654,26 +654,26 @@ describe('TestBed', () => {
              });
              TestBed.createComponent(ComponentWithNoAnnotations);
 
-             expect(ComponentWithNoAnnotations.hasOwnProperty('ngComponentDef')).toBeTruthy();
-             expect(SomeComponent.hasOwnProperty('ngComponentDef')).toBeTruthy();
+             expect(ComponentWithNoAnnotations.hasOwnProperty('ɵcmp')).toBeTruthy();
+             expect(SomeComponent.hasOwnProperty('ɵcmp')).toBeTruthy();
 
-             expect(DirectiveWithNoAnnotations.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
-             expect(SomeDirective.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
+             expect(DirectiveWithNoAnnotations.hasOwnProperty('ɵdir')).toBeTruthy();
+             expect(SomeDirective.hasOwnProperty('ɵdir')).toBeTruthy();
 
-             expect(PipeWithNoAnnotations.hasOwnProperty('ngPipeDef')).toBeTruthy();
-             expect(SomePipe.hasOwnProperty('ngPipeDef')).toBeTruthy();
+             expect(PipeWithNoAnnotations.hasOwnProperty('ɵpipe')).toBeTruthy();
+             expect(SomePipe.hasOwnProperty('ɵpipe')).toBeTruthy();
 
              TestBed.resetTestingModule();
 
              // ng defs should be removed from classes with no annotations
-             expect(ComponentWithNoAnnotations.hasOwnProperty('ngComponentDef')).toBeFalsy();
-             expect(DirectiveWithNoAnnotations.hasOwnProperty('ngDirectiveDef')).toBeFalsy();
-             expect(PipeWithNoAnnotations.hasOwnProperty('ngPipeDef')).toBeFalsy();
+             expect(ComponentWithNoAnnotations.hasOwnProperty('ɵcmp')).toBeFalsy();
+             expect(DirectiveWithNoAnnotations.hasOwnProperty('ɵdir')).toBeFalsy();
+             expect(PipeWithNoAnnotations.hasOwnProperty('ɵpipe')).toBeFalsy();
 
              // ng defs should be preserved on super types
-             expect(SomeComponent.hasOwnProperty('ngComponentDef')).toBeTruthy();
-             expect(SomeDirective.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
-             expect(SomePipe.hasOwnProperty('ngPipeDef')).toBeTruthy();
+             expect(SomeComponent.hasOwnProperty('ɵcmp')).toBeTruthy();
+             expect(SomeDirective.hasOwnProperty('ɵdir')).toBeTruthy();
+             expect(SomePipe.hasOwnProperty('ɵpipe')).toBeTruthy();
            });
 
         it('should clean up overridden providers for modules that are imported more than once',
@@ -699,7 +699,7 @@ describe('TestBed', () => {
 
              // The providers for the module should have been restored to the original array, with
              // no trace of the overridden providers.
-             expect((Module as any).ngInjectorDef.providers).toEqual([Token]);
+             expect((Module as any).ɵinj.providers).toEqual([Token]);
            });
 
         it('should clean up overridden providers on components whose modules are compiled more than once',
@@ -719,8 +719,7 @@ describe('TestBed', () => {
              }
 
              TestBed.configureTestingModule({imports: [MyModule]});
-             const originalResolver =
-                 (ComponentWithProvider as any).ngComponentDef.providersResolver;
+             const originalResolver = (ComponentWithProvider as any).ɵcmp.providersResolver;
              TestBed.overrideProvider(SomeInjectable, {useValue: {id: 'fake'}});
 
              const compiler = TestBed.inject(Compiler);
@@ -728,7 +727,7 @@ describe('TestBed', () => {
              compiler.compileModuleSync(MyModule);
 
              TestBed.resetTestingModule();
-             expect((ComponentWithProvider as any).ngComponentDef.providersResolver)
+             expect((ComponentWithProvider as any).ɵcmp.providersResolver)
                  .toEqual(originalResolver);
            });
       });

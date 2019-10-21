@@ -28,8 +28,8 @@ import {createDirectiveDecorator, hasConstructor, hasDirectiveDecorator, isClass
  * ```
  *
  * When compiling `DerivedDir` which extends the undecorated `BasePlain` class, the compiler needs
- * to generate an `ngDirectiveDef` for `DerivedDir`. In particular, it needs to generate a factory
- * function that creates instances of `DerivedDir`.
+ * to generate a directive def (`ɵdir`) for `DerivedDir`. In particular, it needs to generate a
+ * factory function that creates instances of `DerivedDir`.
  *
  * As `DerivedDir` has no constructor, the factory function for `DerivedDir` must delegate to the
  * factory function for `BasePlain`. But for this to work, `BasePlain` must have a factory function,
@@ -68,7 +68,6 @@ export class UndecoratedParentMigration implements Migration {
       return makeDiagnostic(
           ErrorCode.NGCC_MIGRATION_EXTERNAL_BASE_CLASS, baseClassExpr,
           `${clazz.name.text} class has a dynamic base class ${baseClassExpr.getText()}, so it is not possible to migrate.`);
-      return null;
     }
 
     const baseClazz = host.reflectionHost.getDeclarationOfIdentifier(baseClassExpr) !.node;

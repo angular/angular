@@ -451,7 +451,7 @@
       function(componentType, opts) {
         void 0 === opts && (opts = {});
         var component, rendererFactory = opts.rendererFactory || domRendererFactory3,
-                       componentDef = componentType.ngComponentDef;
+                       componentDef = componentType.ɵcmp;
         componentDef.type != componentType && (componentDef.type = componentType);
         var hostNode = locateHostElement(rendererFactory, opts.host || componentDef.tag),
             oldView = enterView(
@@ -546,7 +546,7 @@
  */ (component);
       }(function() {
         function HelloWorld() { this.name = 'World'; }
-        HelloWorld.ngComponentDef = function(componentDefinition) {
+        HelloWorld.ɵcmp = function(componentDefinition) {
           var type = componentDefinition.type, def = {
             type: type,
             diPublic: null,

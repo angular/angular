@@ -23,7 +23,7 @@ export interface R3NgModuleDef {
 }
 
 /**
- * Metadata required by the module compiler to generate a `ngModuleDef` for a type.
+ * Metadata required by the module compiler to generate a module def (`ɵmod`) for a type.
  */
 export interface R3NgModuleMetadata {
   /**
@@ -251,7 +251,7 @@ export function compileNgModuleFromRender2(
       /* name */ className,
       /* parent */ null,
       /* fields */[new o.ClassField(
-          /* name */ 'ngInjectorDef',
+          /* name */ 'ɵinj',
           /* type */ o.INFERRED_TYPE,
           /* modifiers */[o.StmtModifier.Static],
           /* initializer */ injectorDef, )],
@@ -261,7 +261,7 @@ export function compileNgModuleFromRender2(
 }
 
 function accessExportScope(module: o.Expression): o.Expression {
-  const selectorScope = new o.ReadPropExpr(module, 'ngModuleDef');
+  const selectorScope = new o.ReadPropExpr(module, 'ɵmod');
   return new o.ReadPropExpr(selectorScope, 'exported');
 }
 

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Closure compiler transforms the form `Service.ngInjectableDef = X` into
-// `Service$ngInjectableDef = X`. To prevent this transformation, such assignments need to be
+// Closure compiler transforms the form `Service.ɵprov = X` into
+// `Service$ɵprov = X`. To prevent this transformation, such assignments need to be
 // annotated with @nocollapse. Unfortunately, a bug in Typescript where comments aren't propagated
 // through the TS transformations precludes adding the comment via the AST. This workaround detects
-// the static assignments to R3 properties such as ngInjectableDef using a regex, as output files
+// the static assignments to R3 properties such as ɵprov using a regex, as output files
 // are written, and applies the annotation through regex replacement.
 //
 // TODO(alxhub): clean up once fix for TS transformers lands in upstream
@@ -20,13 +20,13 @@
 // Pattern matching all Render3 property names.
 const R3_DEF_NAME_PATTERN = [
   'ngBaseDef',
-  'ngComponentDef',
-  'ngDirectiveDef',
-  'ngInjectableDef',
-  'ngInjectorDef',
-  'ngModuleDef',
-  'ngPipeDef',
-  'ngFactoryDef',
+  'ɵcmp',
+  'ɵdir',
+  'ɵprov',
+  'ɵinj',
+  'ɵmod',
+  'ɵpipe',
+  'ɵfac',
 ].join('|');
 
 // Pattern matching `Identifier.property` where property is a Render3 property.

@@ -13,11 +13,12 @@ load(
     "DEFAULT_NG_COMPILER",
     "DEFAULT_NG_XI18N",
     "DEPS_ASPECTS",
-    "NodeModuleSources",
+    "NpmPackageInfo",
     "TsConfigInfo",
-    "collect_node_modules_aspect",
     "compile_ts",
-    "transitive_js_ecma_script_module_info",
+    "js_ecma_script_module_info",
+    "js_named_module_info",
+    "node_modules_aspect",
     "ts_providers_dict_to_struct",
     "tsc_wrapped_tsconfig",
 )
@@ -304,6 +305,8 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "enableResourceInlining": ctx.attr.inline_resources,
         "generateCodeForLibraries": False,
         "allowEmptyCodegenFiles": True,
+        "generateNgFactoryShims": True,
+        "generateNgSummaryShims": True,
         # Summaries are only enabled if Angular outputs are to be produced.
         "enableSummariesForJit": is_legacy_ngc,
         "enableIvy": _enable_ivy_value(ctx),
@@ -527,11 +530,11 @@ def _compile_action(
             file_inputs += ctx.attr.tsconfig[TsConfigInfo].deps
 
     # Also include files from npm fine grained deps as action_inputs.
-    # These deps are identified by the NodeModuleSources provider.
+    # These deps are identified by the NpmPackageInfo provider.
     for d in ctx.attr.deps:
-        if NodeModuleSources in d:
+        if NpmPackageInfo in d:
             # Note: we can't avoid calling .to_list() on sources
-            file_inputs.extend(_filter_ts_inputs(d[NodeModuleSources].sources.to_list()))
+            file_inputs.extend(_filter_ts_inputs(d[NpmPackageInfo].sources.to_list()))
 
     # Collect the inputs and summary files from our deps
     action_inputs = depset(
@@ -617,7 +620,11 @@ def _ng_module_impl(ctx):
 
     # Add in new JS providers
     ts_providers["providers"].extend([
-        transitive_js_ecma_script_module_info(
+        js_named_module_info(
+            sources = ts_providers["typescript"]["es5_sources"],
+            deps = ctx.attr.deps,
+        ),
+        js_ecma_script_module_info(
             sources = ts_providers["typescript"]["es6_sources"],
             deps = ctx.attr.deps,
         ),
@@ -625,7 +632,7 @@ def _ng_module_impl(ctx):
 
     return ts_providers_dict_to_struct(ts_providers)
 
-local_deps_aspects = [collect_node_modules_aspect, _collect_summaries_aspect]
+local_deps_aspects = [node_modules_aspect, _collect_summaries_aspect]
 
 # Workaround skydoc bug which assumes DEPS_ASPECTS is a str type
 [local_deps_aspects.append(a) for a in DEPS_ASPECTS]

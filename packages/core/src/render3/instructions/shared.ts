@@ -39,7 +39,7 @@ import {getLViewParent} from '../util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
 
 import {selectIndexInternal} from './advance';
-import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeConstructor, TNodeInitialData, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor, attachLContainerDebug, attachLViewDebug, cloneToLView, cloneToTViewData} from './lview_debug';
+import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeConstructor, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor, attachLContainerDebug, attachLViewDebug, cloneToLView, cloneToTViewData} from './lview_debug';
 
 
 
@@ -536,8 +536,9 @@ export function createDirectivesInstances(
     tView: TView, lView: LView, tNode: TElementNode | TContainerNode | TElementContainerNode) {
   if (!getBindingsEnabled()) return;
   instantiateAllDirectives(tView, lView, tNode);
-  invokeDirectivesHostBindings(tView, lView, tNode);
-  setActiveHostElement(null);
+  if ((tNode.flags & TNodeFlags.hasHostBindings) === TNodeFlags.hasHostBindings) {
+    invokeDirectivesHostBindings(tView, lView, tNode);
+  }
 }
 
 /**
@@ -838,16 +839,21 @@ function initializeInputAndOutputAliases(tView: TView, tNode: TNode): void {
   const end = tNode.directiveEnd;
   const defs = tView.data;
 
+  const tNodeAttrs = tNode.attrs;
+  const inputsFromAttrs: InitialInputData = ngDevMode ? new TNodeInitialInputs() : [];
   let inputsStore: PropertyAliases|null = null;
   let outputsStore: PropertyAliases|null = null;
   for (let i = start; i < end; i++) {
     const directiveDef = defs[i] as DirectiveDef<any>;
-    inputsStore = generatePropertyAliases(directiveDef.inputs, i, inputsStore);
+    const directiveInputs = directiveDef.inputs;
+    inputsFromAttrs.push(
+        tNodeAttrs !== null ? generateInitialInputs(directiveInputs, tNodeAttrs) : null);
+    inputsStore = generatePropertyAliases(directiveInputs, i, inputsStore);
     outputsStore = generatePropertyAliases(directiveDef.outputs, i, outputsStore);
   }
 
   if (inputsStore !== null) {
-    if (inputsStore.hasOwnProperty('class')) {
+    if (inputsStore.hasOwnProperty('class') || inputsStore.hasOwnProperty('className')) {
       tNode.flags |= TNodeFlags.hasClassInput;
     }
     if (inputsStore.hasOwnProperty('style')) {
@@ -855,6 +861,7 @@ function initializeInputAndOutputAliases(tView: TView, tNode: TNode): void {
     }
   }
 
+  tNode.initialInputs = inputsFromAttrs;
   tNode.inputs = inputsStore;
   tNode.outputs = outputsStore;
 }
@@ -1044,7 +1051,7 @@ export function resolveDirectives(
   const directives: DirectiveDef<any>[]|null = findDirectiveMatches(tView, lView, tNode);
   const exportsMap: ({[key: string]: number} | null) = localRefs ? {'': -1} : null;
 
-  if (directives) {
+  if (directives !== null) {
     initNodeFlags(tNode, tView.data.length, directives.length);
     // When the same token is provided by several directives on the same node, some rules apply in
     // the viewEngine:
@@ -1069,9 +1076,8 @@ export function resolveDirectives(
 
       saveNameToExportMap(tView.data !.length - 1, def, exportsMap);
 
-      if (def.contentQueries) {
-        tNode.flags |= TNodeFlags.hasContentQuery;
-      }
+      if (def.contentQueries !== null) tNode.flags |= TNodeFlags.hasContentQuery;
+      if (def.hostBindings !== null) tNode.flags |= TNodeFlags.hasHostBindings;
 
       // Init hooks are queued now so ngOnInit is called in host components before
       // any projected components.
@@ -1091,7 +1097,7 @@ export function resolveDirectives(
 function instantiateAllDirectives(tView: TView, lView: LView, tNode: TNode) {
   const start = tNode.directiveStart;
   const end = tNode.directiveEnd;
-  if (!tView.firstTemplatePass && start < end) {
+  if (!tView.firstTemplatePass) {
     getOrCreateNodeInjectorForNode(
         tNode as TElementNode | TContainerNode | TElementContainerNode, lView);
   }
@@ -1101,7 +1107,7 @@ function instantiateAllDirectives(tView: TView, lView: LView, tNode: TNode) {
       addComponentLogic(lView, tNode, def as ComponentDef<any>);
     }
     const directive = getNodeInjectable(tView.data, lView !, i, tNode as TElementNode);
-    postProcessDirective(lView, tNode, directive, def, i);
+    postProcessDirective(lView, tNode, directive, def, i - start);
   }
 }
 
@@ -1111,7 +1117,6 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
   const expando = tView.expandoInstructions !;
   const firstTemplatePass = tView.firstTemplatePass;
   const elementIndex = tNode.index - HEADER_OFFSET;
-  const selectedIndex = getSelectedIndex();
   try {
     setActiveHostElement(elementIndex);
 
@@ -1128,7 +1133,7 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
       }
     }
   } finally {
-    setActiveHostElement(selectedIndex);
+    setActiveHostElement(null);
   }
 }
 
@@ -1175,7 +1180,7 @@ function postProcessDirective<T>(
     lView: LView, hostTNode: TNode, directive: T, def: DirectiveDef<T>,
     directiveDefIdx: number): void {
   postProcessBaseDirective(lView, hostTNode, directive);
-  if (hostTNode.attrs !== null) {
+  if (hostTNode.initialInputs !== null) {
     setInputsFromAttrs(lView, directiveDefIdx, directive, def, hostTNode);
   }
 
@@ -1361,19 +1366,15 @@ export function elementAttributeInternal(
  */
 function setInputsFromAttrs<T>(
     lView: LView, directiveIndex: number, instance: T, def: DirectiveDef<T>, tNode: TNode): void {
-  let initialInputData = tNode.initialInputs as InitialInputData | undefined;
-  if (initialInputData === undefined || directiveIndex >= initialInputData.length) {
-    initialInputData = generateInitialInputs(directiveIndex, def.inputs, tNode);
-  }
-
-  const initialInputs: InitialInputs|null = initialInputData[directiveIndex];
-  if (initialInputs) {
+  const initialInputData = tNode.initialInputs as InitialInputData;
+  const initialInputs: InitialInputs|null = initialInputData ![directiveIndex];
+  if (initialInputs !== null) {
     const setInput = def.setInput;
     for (let i = 0; i < initialInputs.length;) {
       const publicName = initialInputs[i++];
       const privateName = initialInputs[i++];
       const value = initialInputs[i++];
-      if (setInput) {
+      if (setInput !== null) {
         def.setInput !(instance, value, publicName, privateName);
       } else {
         (instance as any)[privateName] = value;
@@ -1397,20 +1398,12 @@ function setInputsFromAttrs<T>(
  *
  * <my-component name="Bess"></my-component>
  *
- * @param directiveIndex Index to store the initial input data
  * @param inputs The list of inputs from the directive def
- * @param tNode The static data on this node
+ * @param attrs The static attrs on this node
  */
-function generateInitialInputs(
-    directiveIndex: number, inputs: {[key: string]: string}, tNode: TNode): InitialInputData {
-  const initialInputData: InitialInputData =
-      tNode.initialInputs || (tNode.initialInputs = ngDevMode ? new TNodeInitialInputs() : []);
-  // Ensure that we don't create sparse arrays
-  for (let i = initialInputData.length; i <= directiveIndex; i++) {
-    initialInputData.push(null);
-  }
-
-  const attrs = tNode.attrs !;
+function generateInitialInputs(inputs: {[key: string]: string}, attrs: TAttributes): InitialInputs|
+    null {
+  let inputsToStore: InitialInputs|null = null;
   let i = 0;
   while (i < attrs.length) {
     const attrName = attrs[i];
@@ -1427,18 +1420,14 @@ function generateInitialInputs(
     // If we hit any other attribute markers, we're done anyway. None of those are valid inputs.
     if (typeof attrName === 'number') break;
 
-    const minifiedInputName = inputs[attrName as string];
-    const attrValue = attrs[i + 1];
-
-    if (minifiedInputName !== undefined) {
-      const inputsToStore: InitialInputs = initialInputData[directiveIndex] ||
-          (initialInputData[directiveIndex] = ngDevMode ? new TNodeInitialData() : []);
-      inputsToStore.push(attrName as string, minifiedInputName, attrValue as string);
+    if (inputs.hasOwnProperty(attrName as string)) {
+      if (inputsToStore === null) inputsToStore = [];
+      inputsToStore.push(attrName as string, inputs[attrName as string], attrs[i + 1] as string);
     }
 
     i += 2;
   }
-  return initialInputData;
+  return inputsToStore;
 }
 
 //////////////////////////
@@ -1462,8 +1451,8 @@ const LContainerArray: any = ((typeof ngDevMode === 'undefined' || ngDevMode) &&
 export function createLContainer(
     hostNative: RElement | RComment | LView, currentView: LView, native: RComment, tNode: TNode,
     isForViewContainerRef?: boolean): LContainer {
-  ngDevMode && assertDomNode(native);
   ngDevMode && assertLView(currentView);
+  ngDevMode && !isProceduralRenderer(currentView[RENDERER]) && assertDomNode(native);
   // https://jsperf.com/array-literal-vs-new-array-really
   const lContainer: LContainer = new (ngDevMode ? LContainerArray : Array)(
       hostNative,  // host native

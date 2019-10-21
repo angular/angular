@@ -125,7 +125,7 @@ function declareTests(config?: {useJit: boolean}) {
     }
 
     function createComp<T>(compType: Type<T>, moduleType: Type<any>): ComponentFixture<T> {
-      const componentDef = (compType as any).ngComponentDef;
+      const componentDef = (compType as any).ɵcmp;
       if (componentDef) {
         // Since we avoid Components/Directives/Pipes recompiling in case there are no overrides, we
         // may face a problem where previously compiled defs available to a given
@@ -335,14 +335,14 @@ function declareTests(config?: {useJit: boolean}) {
           .it('should register a module even if not importing the .ngfactory file or calling create()',
               () => {
                 class ChildModule {
-                  static ngModuleDef = defineNgModule({
+                  static ɵmod = defineNgModule({
                     type: ChildModule,
                     id: 'child',
                   });
                 }
 
                 class Module {
-                  static ngModuleDef = defineNgModule({
+                  static ɵmod = defineNgModule({
                     type: Module,
                     id: 'test',
                     imports: [ChildModule],
@@ -1387,7 +1387,7 @@ function declareTests(config?: {useJit: boolean}) {
               }
 
               class Bar {
-                static ngInjectableDef: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
+                static ɵprov: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
                   token: Bar,
                   factory: () => new Bar(),
                   providedIn: SomeModule,
@@ -1420,7 +1420,7 @@ function declareTests(config?: {useJit: boolean}) {
               }
 
               class Bar {
-                static ngInjectableDef: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
+                static ɵprov: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
                   token: Bar,
                   factory: () => new Bar(),
                   providedIn: SomeModule,

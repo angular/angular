@@ -21,8 +21,8 @@ describe('outputs', () => {
     change = new EventEmitter();
     resetStream = new EventEmitter();
 
-    static ngFactoryDef = () => buttonToggle = new ButtonToggle();
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵfac = () => buttonToggle = new ButtonToggle();
+    static ɵcmp = ɵɵdefineComponent({
       type: ButtonToggle,
       selectors: [['button-toggle']],
       template: function(rf: RenderFlags, ctx: any) {},
@@ -37,8 +37,8 @@ describe('outputs', () => {
   class OtherDir {
     changeStream = new EventEmitter();
 
-    static ngFactoryDef = () => otherDir = new OtherDir;
-    static ngDirectiveDef = ɵɵdefineDirective(
+    static ɵfac = () => otherDir = new OtherDir;
+    static ɵdir = ɵɵdefineDirective(
         {type: OtherDir, selectors: [['', 'otherDir', '']], outputs: {changeStream: 'change'}});
   }
 

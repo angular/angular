@@ -220,7 +220,7 @@ describe('event listeners', () => {
         count = 0;
         someValue = -1;
 
-        @ViewChild(FooDirective, {static: false}) fooDirective: FooDirective|null = null;
+        @ViewChild(FooDirective) fooDirective: FooDirective|null = null;
 
         fooChange() { this.count++; }
 

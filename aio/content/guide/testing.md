@@ -357,10 +357,14 @@ array of the services that you'll test or mock.
 
 Then inject it inside a test by calling `TestBed.inject()` with the service class as the argument.
 
+<div class="alert is-helpful">
+
 **Note:** We used to have `TestBed.get()` instead of `TestBed.inject()`.
 The `get` method wasn't type safe, it always returned `any`, and this is error prone.
 We decided to migrate to a new function instead of updating the existing one given
 the large scale use that would have an immense amount of breaking changes.
+
+</div>
 
 <code-example
   path="testing/src/app/demo/demo.testbed.spec.ts"
@@ -1065,7 +1069,7 @@ The component injector is a property of the fixture's `DebugElement`.
   header="WelcomeComponent's injector">
 </code-example>
 
-{@a testbed-get}
+{@a testbed-inject}
 
 #### _TestBed.inject()_
 
@@ -3079,8 +3083,8 @@ Here are the most important static methods, in order of likely utility.
 
   <tr>
     <td style="vertical-align: top">
-      {@a testbed-get}
-      <code>get</code>
+      {@a testbed-inject}
+      <code>inject</code>
     </td>
 
     <td>

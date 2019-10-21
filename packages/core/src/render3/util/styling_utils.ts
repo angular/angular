@@ -5,7 +5,7 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
-import {TNode, TNodeFlags} from '../interfaces/node';
+import {PropertyAliases, TNode, TNodeFlags} from '../interfaces/node';
 import {LStylingData, StylingMapArray, StylingMapArrayIndex, TStylingConfig, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from '../interfaces/styling';
 import {NO_CHANGE} from '../tokens';
 
@@ -43,7 +43,7 @@ export const DEFAULT_GUARD_MASK_VALUE = 0b1;
  */
 export function allocTStylingContext(
     initialStyling: StylingMapArray | null, hasDirectives: boolean): TStylingContext {
-  initialStyling = initialStyling || allocStylingMapArray();
+  initialStyling = initialStyling || allocStylingMapArray(null);
   let config = TStylingConfig.Initial;
   if (hasDirectives) {
     config |= TStylingConfig.HasDirectives;
@@ -58,8 +58,8 @@ export function allocTStylingContext(
   ];
 }
 
-export function allocStylingMapArray(): StylingMapArray {
-  return [''];
+export function allocStylingMapArray(value: {} | string | null): StylingMapArray {
+  return [value];
 }
 
 export function getConfig(context: TStylingContext) {
@@ -169,7 +169,7 @@ export function setValue(data: LStylingData, bindingIndex: number, value: any) {
 }
 
 export function getValue<T = any>(data: LStylingData, bindingIndex: number): T|null {
-  return bindingIndex > 0 ? data[bindingIndex] as T : null;
+  return bindingIndex !== 0 ? data[bindingIndex] as T : null;
 }
 
 export function lockContext(context: TStylingContext, hostBindingsMode: boolean): void {
@@ -207,7 +207,7 @@ export function hasValueChanged(
 /**
  * Determines whether the provided styling value is truthy or falsy.
  */
-export function isStylingValueDefined<T extends string|number|{}|null>(value: T):
+export function isStylingValueDefined<T extends string|number|{}|null|undefined>(value: T):
     value is NonNullable<T> {
   // the reason why null is compared against is because
   // a CSS class value that is set to `false` must be
@@ -396,8 +396,9 @@ export function normalizeIntoStylingMap(
     bindingValue: null | StylingMapArray,
     newValues: {[key: string]: any} | string | null | undefined,
     normalizeProps?: boolean): StylingMapArray {
-  const stylingMapArr: StylingMapArray = Array.isArray(bindingValue) ? bindingValue : [null];
-  stylingMapArr[StylingMapArrayIndex.RawValuePosition] = newValues || null;
+  const stylingMapArr: StylingMapArray =
+      Array.isArray(bindingValue) ? bindingValue : allocStylingMapArray(null);
+  stylingMapArr[StylingMapArrayIndex.RawValuePosition] = newValues;
 
   // because the new values may not include all the properties
   // that the old ones had, all values are set to `null` before
@@ -432,4 +433,10 @@ export function normalizeIntoStylingMap(
   }
 
   return stylingMapArr;
+}
+
+// TODO (matsko|AndrewKushnir): refactor this once we figure out how to generate separate
+// `input('class') + classMap()` instructions.
+export function selectClassBasedInputName(inputs: PropertyAliases): string {
+  return inputs.hasOwnProperty('class') ? 'class' : 'className';
 }

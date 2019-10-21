@@ -52,10 +52,11 @@ export class I18nMetaVisitor implements html.Visitor {
       message.id = typeof meta !== 'string' && (meta as i18n.Message).id || decimalDigest(message);
     }
 
-    if (this.i18nLegacyMessageIdFormat === 'xlf') {
+    if (this.i18nLegacyMessageIdFormat === 'xlf' || this.i18nLegacyMessageIdFormat === 'xliff') {
       message.legacyId = computeDigest(message);
     } else if (
-        this.i18nLegacyMessageIdFormat === 'xlf2' || this.i18nLegacyMessageIdFormat === 'xmb') {
+        this.i18nLegacyMessageIdFormat === 'xlf2' || this.i18nLegacyMessageIdFormat === 'xliff2' ||
+        this.i18nLegacyMessageIdFormat === 'xmb') {
       message.legacyId = computeDecimalDigest(message);
     } else if (typeof meta !== 'string') {
       // This occurs if we are doing the 2nd pass after whitespace removal
@@ -110,7 +111,7 @@ export class I18nMetaVisitor implements html.Visitor {
         element.attrs = attrs;
       }
     }
-    html.visitAll(this, element.children);
+    html.visitAll(this, element.children, element.i18n);
     return element;
   }
 
@@ -126,8 +127,10 @@ export class I18nMetaVisitor implements html.Visitor {
       const icu = icuFromI18nMessage(message);
       icu.name = name;
     } else {
-      // when ICU is a root level translation
-      message = this._generateI18nMessage([expansion], meta);
+      // ICU is a top level message, try to use metadata from container element if provided via
+      // `context` argument. Note: context may not be available for standalone ICUs (without
+      // wrapping element), so fallback to ICU metadata in this case.
+      message = this._generateI18nMessage([expansion], context || meta);
     }
     expansion.i18n = message;
     return expansion;

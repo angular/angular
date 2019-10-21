@@ -90,7 +90,7 @@ export abstract class Injector {
   }
 
   /** @nocollapse */
-  static ngInjectableDef = ɵɵdefineInjectable({
+  static ɵprov = ɵɵdefineInjectable({
     token: Injector,
     providedIn: 'any' as any,
     factory: () => ɵɵinject(INJECTOR),
@@ -230,7 +230,7 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
   let scope: string|null = null;
   if (provider) {
     provider = resolveForwardRef(provider);
-    if (provider instanceof Array) {
+    if (Array.isArray(provider)) {
       // if we have an array recurse into the array
       for (let i = 0; i < provider.length; i++) {
         scope = recursivelyProcessProviders(records, provider[i]) || scope;
@@ -359,7 +359,7 @@ function computeDeps(provider: StaticProvider): DependencyRecord[] {
     for (let i = 0; i < providerDeps.length; i++) {
       let options = OptionFlags.Default;
       let token = resolveForwardRef(providerDeps[i]);
-      if (token instanceof Array) {
+      if (Array.isArray(token)) {
         for (let j = 0, annotations = token; j < annotations.length; j++) {
           const annotation = annotations[j];
           if (annotation instanceof Optional || annotation == Optional) {

@@ -9,9 +9,9 @@ This document details the new architecture of the Angular compiler in a post-Ivy
 
 ### The Ivy Compilation Model
 
-Broadly speaking, The Ivy model is that Angular decorators (`@Injectable`, etc) are compiled to static properties on the classes (`ngInjectableDef`). This operation must take place without global program knowledge, and in most cases only with knowledge of that single decorator.
+Broadly speaking, The Ivy model is that Angular decorators (`@Injectable`, etc) are compiled to static properties on the classes (`ɵprov`). This operation must take place without global program knowledge, and in most cases only with knowledge of that single decorator.
 
-The one exception is `@Component`, which requires knowledge of the metadata from the `@NgModule` which declares the component in order to properly generate the `ngComponentDef`. In particular, the selectors which are applicable during compilation of a component template are determined by the module that declares that component, and the transitive closure of the exports of that module's imports.
+The one exception is `@Component`, which requires knowledge of the metadata from the `@NgModule` which declares the component in order to properly generate the component def (`ɵcmp`). In particular, the selectors which are applicable during compilation of a component template are determined by the module that declares that component, and the transitive closure of the exports of that module's imports.
 
 Going forward, this will be the model by which Angular code will be compiled, shipped to NPM, and eventually bundled into applications.
 
@@ -81,7 +81,7 @@ In `ngtsc` this is instead emitted as,
 ```js
 const i0 = require("@angular/core");
 class GreetComponent {}
-GreetComponent.ngComponentDef = i0.ɵɵdefineComponent({
+GreetComponent.ɵcmp = i0.ɵɵdefineComponent({
     type: GreetComponent,
     tag: 'greet',
     factory: () => new GreetComponent(),
@@ -104,7 +104,7 @@ and the `.d.ts` contains:
 ```ts
 import * as i0 from '@angular/core';
 export class GreetComponent {
-  static ngComponentDef: i0.NgComponentDef<
+  static ɵcmp: i0.NgComponentDef<
     GreetComponent,
     'greet',
     {input: 'input'}
@@ -113,7 +113,7 @@ export class GreetComponent {
 ```
 
 The information needed by reference inversion and type-checking is included in
-the type declaration of the `ngComponentDef` in the `.d.ts`.
+the type declaration of the `ɵcmp` in the `.d.ts`.
 
 #### TypeScript architecture
 
@@ -171,7 +171,7 @@ There are also a list of helper decorators that make the `@Component` and `@Dire
 
 Each of the class decorators can be thought of as class transformers that take the declared class and transform it, possibly using information from the helper decorators, to produce an Angular class. The JIT compiler performs this transformation at runtime. The AoT compiler performs this transformation at compile time.
 
-Each of the class decorators' class transformer creates a corresponding static member on the class that describes to the runtime how to use the class. For example, the `@Component` decorator creates an `ngComponentDef` static member, `@Directive` create an `ngDirectiveDef`, etc. Internally, these class transformers are called a "Compiler". Most of the compilers are straight forward translations of the metadata specified in the decorator to the information provided in the corresponding definition and, therefore, do not require anything outside the source file to perform the conversion. However, the component, during production builds and for type checking a template require the module scope of the component which requires information from other files in the program.
+Each of the class decorators' class transformer creates a corresponding static member on the class that describes to the runtime how to use the class. For example, the `@Component` decorator creates a `ɵcmp` static member, `@Directive` create a `ɵdir`, etc. Internally, these class transformers are called a "Compiler". Most of the compilers are straight forward translations of the metadata specified in the decorator to the information provided in the corresponding definition and, therefore, do not require anything outside the source file to perform the conversion. However, the component, during production builds and for type checking a template require the module scope of the component which requires information from other files in the program.
 
 #### Compiler design
 

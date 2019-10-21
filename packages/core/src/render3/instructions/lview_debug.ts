@@ -164,6 +164,7 @@ export const TNodeConstructor = class TNode implements ITNode {
     if (this.flags & TNodeFlags.hasContentQuery) flags.push('TNodeFlags.hasContentQuery');
     if (this.flags & TNodeFlags.hasStyleInput) flags.push('TNodeFlags.hasStyleInput');
     if (this.flags & TNodeFlags.hasInitialStyling) flags.push('TNodeFlags.hasInitialStyling');
+    if (this.flags & TNodeFlags.hasHostBindings) flags.push('TNodeFlags.hasHostBindings');
     if (this.flags & TNodeFlags.isComponentHost) flags.push('TNodeFlags.isComponentHost');
     if (this.flags & TNodeFlags.isDirectiveHost) flags.push('TNodeFlags.isDirectiveHost');
     if (this.flags & TNodeFlags.isDetached) flags.push('TNodeFlags.isDetached');
@@ -374,7 +375,7 @@ export function buildDebugNode(tNode: TNode, lView: LView, nodeIndex: number): D
   const native = unwrapRNode(rawValue);
   const componentLViewDebug = toDebug(readLViewValue(rawValue));
   const styles = isStylingContext(tNode.styles) ?
-      new NodeStylingDebug(tNode.styles as any as TStylingContext, lView) :
+      new NodeStylingDebug(tNode.styles as any as TStylingContext, lView, false) :
       null;
   const classes = isStylingContext(tNode.classes) ?
       new NodeStylingDebug(tNode.classes as any as TStylingContext, lView, true) :

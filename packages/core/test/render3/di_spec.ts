@@ -28,8 +28,8 @@ describe('di', () => {
     class DirB {
       value = 'DirB';
 
-      static ngFactoryDef = () => new DirB();
-      static ngDirectiveDef =
+      static ɵfac = () => new DirB();
+      static ɵdir =
           ɵɵdefineDirective({selectors: [['', 'dirB', '']], type: DirB, inputs: {value: 'value'}});
     }
 
@@ -39,8 +39,8 @@ describe('di', () => {
         // TODO(issue/24571): remove '!'.
         value !: string;
 
-        static ngFactoryDef = () => new DirB();
-        static ngDirectiveDef =
+        static ɵfac = () => new DirB();
+        static ɵdir =
             ɵɵdefineDirective({type: DirB, selectors: [['', 'dirB', '']], inputs: {value: 'dirB'}});
       }
 
@@ -50,13 +50,13 @@ describe('di', () => {
         class DirA {
           constructor(@Optional() public dirB: DirB|null) {}
 
-          static ngFactoryDef =
+          static ɵfac =
               () => {
                 dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Optional));
                 return dirA;
               }
 
-          static ngDirectiveDef = ɵɵdefineDirective({type: DirA, selectors: [['', 'dirA', '']]});
+          static ɵdir = ɵɵdefineDirective({type: DirA, selectors: [['', 'dirA', '']]});
         }
 
         beforeEach(() => dirA = null);
@@ -81,8 +81,8 @@ describe('di', () => {
         class DirA {
           constructor(@Self() public dirB: DirB) {}
 
-          static ngFactoryDef = () => dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Self));
-          static ngDirectiveDef = ɵɵdefineDirective({type: DirA, selectors: [['', 'dirA', '']]});
+          static ɵfac = () => dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Self));
+          static ɵdir = ɵɵdefineDirective({type: DirA, selectors: [['', 'dirA', '']]});
         }
 
         const DirC = createDirective('dirC');
@@ -117,8 +117,8 @@ describe('di', () => {
     class MyComp {
       constructor(public renderer: Renderer2) {}
 
-      static ngFactoryDef = () => new MyComp(ɵɵdirectiveInject(Renderer2 as any));
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new MyComp(ɵɵdirectiveInject(Renderer2 as any));
+      static ɵcmp = ɵɵdefineComponent({
         type: MyComp,
         selectors: [['my-comp']],
         decls: 1,

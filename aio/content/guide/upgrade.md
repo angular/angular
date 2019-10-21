@@ -352,7 +352,7 @@ AngularJS and Angular approaches. Here's what happens:
 </figure>
 
 In practice, you do not need to call `$apply()`,
-regardless of whether it is in AngularJS on Angular. The
+regardless of whether it is in AngularJS or Angular. The
 `UpgradeModule` does it for us. You *can* still call `$apply()` so there
 is no need to remove such calls from existing code. Those calls just trigger
 additional AngularJS change detection checks in a hybrid application.

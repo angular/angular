@@ -29,20 +29,18 @@ v5 - v8
 v6 - v9
 v7 - v10
 v8 - v11
+v9 - v12
 -->
 
 
 | Area | API or Feature | May be removed in |
 | ---- | -------------- | ----------------- |
-| `@angular/common` | [Pipes using Intl API](#i18n-pipes) | <!--v8--> v9 |
 | `@angular/common` | [`ReflectiveInjector`](#reflectiveinjector) | <!--v8--> v9 |
 | `@angular/core` | [`CollectionChangeRecord`](#core) | <!--v7--> v9 |
 | `@angular/core` | [`DefaultIterableDiffer`](#core) | <!--v7--> v9 |
 | `@angular/core` | [`ReflectiveKey`](#core) | <!--v8--> v9 |
 | `@angular/core` | [`RenderComponentType`](#core) | <!--v7--> v9 |
 | `@angular/core` | [`ViewEncapsulation.Native`](#core) | v9 |
-| `@angular/forms` | [`ngForm` element selector](#ngform) | v9 |
-| `@angular/forms` | [`NgFormSelectorWarning`](#forms) | v9 |
 | `@angular/forms` | [`ngModel` with reactive forms](#ngmodel-reactive) | v9 |
 | `@angular/router` | [`preserveQueryParams`](#router) | <!--v7--> v9 |
 | `@angular/upgrade` | [`@angular/upgrade`](#upgrade) | <!--v8--> v9 |
@@ -54,6 +52,7 @@ v8 - v11
 | `@angular/core` | [`defineInjectable`](#core) | v11 |
 | `@angular/router` | [`loadChildren` string syntax](#loadChildren) | v11 |
 | `@angular/router` | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
+| `@angular/core/testing` | [`TestBed.get`](#testing) | v12 |
 
 
 
@@ -68,21 +67,6 @@ This section contains a complete list all of the currently-deprecated APIs, with
 Tip: In the [API reference section](api) of this doc site, deprecated APIs are indicated by ~~strikethrough.~~ You can filter the API list by [**Status: deprecated**](api?status=deprecated).
 
 </div>
-
-
-
-{@a common}
-### @angular/common
-
-
-| API | Replacement | Deprecation announced | Notes |
-| --- | ----------- | --------------------- | ----- |
-| [`DeprecatedI18NPipesModule`](api/common/DeprecatedI18NPipesModule) | [`CommonModule`](api/common/CommonModule#pipes) | v5 | See [Pipes](#i18n-pipes) |
- | [`DeprecatedCurrencyPipe`](api/common/DeprecatedCurrencyPipe) | [`CurrencyPipe`](api/common/CurrencyPipe) | v5  | See [Pipes](#i18n-pipes) |
- | [`DeprecatedDatePipe`](api/common/DeprecatedDatePipe) | [`DatePipe`](api/common/DatePipe) | v5  | See [Pipes](#i18n-pipes) |
- | [`DeprecatedDecimalPipe`](api/common/DeprecatedDecimalPipe) | [`DecimalPipe`](api/common/DecimalPipe) | v5  | See [Pipes](#i18n-pipes) |
- | [`DeprecatedPercentPipe`](api/common/DeprecatedPercentPipe) | [`PercentPipe`](api/common/PercentPipe) | v5 | See [Pipes](#i18n-pipes) |
-
 
 {@a core}
 ### @angular/core
@@ -100,6 +84,16 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | [`wtfStartTimeRange`](api/core/wtfStartTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
 | [`wtfEndTimeRange`](api/core/wtfEndTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
 | [`wtfLeave`](api/core/wtfLeave) | none | v8 | See [Web Tracing Framework](#wtf) |
+| [`entryComponents`](api/core/NgModule#entryComponents) | none | v9 | See [`entryComponents`](#entryComponents) |
+| [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS) | none | v9 | See [`ANALYZE_FOR_ENTRY_COMPONENTS`](#entryComponents) |
+
+
+{@a testing}
+### @angular/core/testing
+
+| API | Replacement | Deprecation announced | Notes |
+| --- | ----------- | --------------------- | ----- |
+| [`TestBed.get`](api/core/testing/TestBed#get) | [`TestBed.inject`](api/core/testing/TestBed#inject) | v9 | Same behavior, but type safe. |
 
 
 {@a forms}
@@ -107,7 +101,6 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
-| [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) | n/a | v6 | See [ngForm](#ngform). |
 
 {@a router}
 ### @angular/router
@@ -176,27 +169,6 @@ The `<template>` tag was deprecated in v4 to avoid colliding with the DOM's elem
 
 
 
-{@a ngform}
-### ngForm element selector
-
-Support for using `ngForm` element selector was deprecated in v6.
-It has been deprecated to be consistent with other core Angular selectors, which are typically written in kebab-case.
-
-Deprecated:
-
-```
-<ngForm #myForm="ngForm">
-```
-
-Replacement:
-
-```
-<ng-form #myForm="ngForm">
-```
-
-The [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) directive is solely used to display warnings when the deprecated `ngForm` selector is used.
-
-
 {@a ngmodel-reactive}
 ### ngModel with reactive forms
 
@@ -221,23 +193,6 @@ After:
 ```
 Injector.create({providers});
 ```
-
-{@a i18n-pipes}
-### Pipes using Intl API
-
-<!--
-From https://blog.angular.io/version-5-0-0-of-angular-now-available-37e414935ced
--->
-
-Angular used to rely on the browser to provide number, date, and currency formatting using browser i18n APIs. This practice meant that most apps needed to use a polyfill, users were seeing inconsistent results across browsers, and common formats (such as the currency pipe) didn’t match developer expectations out of the box.
-
-In version 4.3, Angular introduced new number, date, and currency pipes that increase standardization across browsers and eliminate the need for i18n polyfills. These pipes use the Unicode Common Locale Data Repository (CLDR) instead of the JS Intl API to provide extensive locale support.
-
-In version 5.0.0, Angular updated its standard pipes to use the CLRD implementation.
-At that time, Angular also added [`DeprecatedI18NPipesModule`](api/common/DeprecatedI18NPipesModule) and related APIs to provide limited-time access to the old behavior. If you need to use these `Deprecated*` pipes, see [Angular change log](https://github.com/angular/angular/blob/master/CHANGELOG.md#i18n-pipes) and the [Date Formats mappings](https://docs.google.com/spreadsheets/d/12iygt-_cakNP1VO7MV9g4lq9NsxVWG4tSfc98HpHb0k/edit#gid=0 "Date Formats Google sheet").
-
-Reminder: If you use these `Deprecated*` pipes, you should migrate to the current APIs listed above as soon as possible. These deprecated APIs are candidates for removal in version 9.
-
 
 {@a loadChildren}
 ### loadChildren string syntax
@@ -375,6 +330,10 @@ As of Angular version 8, all  `platform-webworker` APIs are deprecated.
 This includes both packages: `@angular/platform-webworker` and
 `@angular/platform-webworker-dynamic`.
 
+{@a entryComponents}
+### `entryComponents` and `ANALYZE_FOR_ENTRY_COMPONENTS` no longer required
+Previously, the `entryComponents` array in the `NgModule` definition was used to tell the compiler which components would be created and inserted dynamically. With Ivy, this isn't a requirement anymore and the `entryComponents` array can be removed from existing module declarations. The same applies to the `ANALYZE_FOR_ENTRY_COMPONENTS` injection token.
+
 
 ## Angular version 9 schematics
 
@@ -385,12 +344,25 @@ See the [dedicated migration guide for Renderer](guide/migration-renderer).
 
 {@a undecorated-classes}
 ### Migrating undecorated classes
-  See the [dedicated migration guide for undecorated classes](guide/migration-undecorated-classes).
+
+See the [dedicated migration guide for undecorated classes](guide/migration-undecorated-classes).
+
+{@a injectable}
+### Adding missing `@Injectable()` decorators
+
+See the [dedicated migration guide for adding missing `@Injectable` decorators](guide/migration-injectable).
 
 {@a flag-migration}
-### Dynamic queries flag migration
+### Migrating dynamic queries
 
  See the [dedicated migration guide for dynamic queries](guide/migration-dynamic-flag).
+
+{@a localize-migration}
+### Migrating to the new `$localize` i18n support
+
+ See the [dedicated migration guide for `$localize`](guide/migration-localize).
+
+
 
 {@a removed}
 ## Removed APIs
@@ -405,9 +377,17 @@ The following APIs have been removed starting with version 8.0.0:
 | `@angular/core/testing` | [`TestBed.deprecatedOverrideProvider()`](https://v7.angular.io/api/core/testing/TestBed#deprecatedoverrideprovider) | [`TestBed.overrideProvider()`](api/core/testing/TestBed#overrideprovider) | none |
 | `@angular/core/testing` | [`TestBedStatic.deprecatedOverrideProvider()`](https://v7.angular.io/api/core/testing/TestBedStatic#deprecatedoverrideprovider) | [`TestBedStatic.overrideProvider()`](api/core/testing/TestBedStatic#overrideprovider) | none |
 | `@angular/service-worker` | `versionedFiles` | `files` | In the service worker configuration file `ngsw-config.json`, replace `versionedFiles` with `files`. See [Service Worker Configuration](guide/service-worker-config#assetgroups). |
-| `@angular/core` | [`Renderer`](https://v8.angular.io/api/core/Renderer) | [`Renderer2`](https://angular.io/api/core/Renderer2) | [Migration guide.](guide/migration-renderer)
-| `@angular/core` | [`RootRenderer`](https://v8.angular.io/api/core/RootRenderer) | [`RendererFactory2`](https://angular.io/api/core/RendererFactory2) | none
-| `@angular/core` | [`RenderComponentType`](https://v8.angular.io/api/core/RenderComponentType) | [`RendererType2`](https://angular.io/api/core/RendererType2) | none
+
+
+The following APIs have been removed starting with version 9.0.0:
+
+| Package | API            | Replacement | Notes |
+| ------- | -------------- | ----------- | ----- |
+| `@angular/core`  | [`Renderer`](https://v8.angular.io/api/core/Renderer) | [`Renderer2`](https://angular.io/api/core/Renderer2) | [Migration guide.](guide/migration-renderer)
+| `@angular/core`  | [`RootRenderer`](https://v8.angular.io/api/core/RootRenderer) | [`RendererFactory2`](https://angular.io/api/core/RendererFactory2) | none
+| `@angular/core`  | [`RenderComponentType`](https://v8.angular.io/api/core/RenderComponentType) | [`RendererType2`](https://angular.io/api/core/RendererType2) | none
+| `@angular/forms` | [`NgFormSelectorWarning`](https://v8.angular.io/api/forms/NgFormSelectorWarning) | none | none
+| `@angular/forms` | `ngForm` element selector | `ng-form` element selector | none
 
 
 <!-- The following anchor is used by redirects from the removed API pages. Do not change or remove. -->

@@ -265,6 +265,7 @@ export interface NgModule {
    * using one of the imperative techniques, such as `ViewContainerRef.createComponent()`.
    *
    * @see [Entry Components](guide/entry-components)
+   * @deprecated Since 9.0.0. With Ivy, this property is no longer necessary.
    */
   entryComponents?: Array<Type<any>|any[]>;
 
@@ -350,7 +351,7 @@ function preR3NgModuleCompile(moduleType: Type<any>, metadata?: NgModule): void 
     imports = [...imports, metadata.exports];
   }
 
-  (moduleType as InjectorType<any>).ngInjectorDef = ɵɵdefineInjector({
+  (moduleType as InjectorType<any>).ɵinj = ɵɵdefineInjector({
     factory: convertInjectableProviderToFactory(moduleType, {useClass: moduleType}),
     providers: metadata && metadata.providers,
     imports: imports,

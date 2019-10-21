@@ -14,7 +14,7 @@
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/router": "file:../../dist/packages-dist/router",
-    "@types/node": "^9.4.0",
+    "@types/node": "file:../../node_modules/@types/node",
     "rxjs": "file:../../node_modules/rxjs",
     "typescript": "file:../../node_modules/typescript",
     "zone.js": "file:../../node_modules/zone.js"

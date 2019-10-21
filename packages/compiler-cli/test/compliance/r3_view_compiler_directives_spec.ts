@@ -38,7 +38,7 @@ describe('compiler compliance: directives', () => {
 
       // MyComponent definition should be:
       const MyComponentDefinition = `
-            MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+            MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
                 type: MyComponent,
                 selectors: [["my-component"]],
                 decls: 1,
@@ -53,14 +53,14 @@ describe('compiler compliance: directives', () => {
         `;
 
       const MyComponentFactory = `
-        MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
+        MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
       `;
 
       const result = compile(files, angularFiles);
       const source = result.source;
 
-      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ngComponentDef');
-      expectEmit(source, MyComponentFactory, 'Incorrect ChildComponent.ngFactoryDef');
+      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
+      expectEmit(source, MyComponentFactory, 'Incorrect ChildComponent.ɵfac');
     });
 
     it('should not match directives on i18n-prefixed attributes', () => {
@@ -88,7 +88,7 @@ describe('compiler compliance: directives', () => {
 
       // MyComponent definition should be:
       const MyComponentDefinition = `
-            MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+            MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
                 type: MyComponent,
                 selectors: [["my-component"]],
                 decls: 1,
@@ -103,14 +103,14 @@ describe('compiler compliance: directives', () => {
         `;
 
       const MyComponentFactory = `
-        MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
+        MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
       `;
 
       const result = compile(files, angularFiles);
       const source = result.source;
 
-      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ngComponentDef');
-      expectEmit(source, MyComponentFactory, 'Incorrect ChildComponent.ngFactoryDef');
+      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
+      expectEmit(source, MyComponentFactory, 'Incorrect ChildComponent.ɵfac');
     });
 
     it('should match directives on element bindings', () => {
@@ -138,7 +138,7 @@ describe('compiler compliance: directives', () => {
       // MyComponent definition should be:
       const MyComponentDefinition = `
           …
-          MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
               …
               consts: [[${AttributeMarker.Bindings}, "someDirective"]],
               template: function MyComponent_Template(rf, ctx) {
@@ -158,7 +158,7 @@ describe('compiler compliance: directives', () => {
       const result = compile(files, angularFiles);
       const source = result.source;
 
-      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ngComponentDef');
+      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
     });
 
     it('should match directives on ng-templates', () => {
@@ -196,7 +196,7 @@ describe('compiler compliance: directives', () => {
           }
         }
         …
-        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
           …
           consts: [["directiveA", ""]],
           template: function MyComponent_Template(rf, ctx) {
@@ -211,7 +211,7 @@ describe('compiler compliance: directives', () => {
       `;
 
       const result = compile(files, angularFiles);
-      expectEmit(result.source, MyComponentDefinition, 'Incorrect ChildComponent.ngComponentDef');
+      expectEmit(result.source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
     });
 
     it('should match directives on ng-container', () => {
@@ -251,7 +251,7 @@ describe('compiler compliance: directives', () => {
           }
         }
         …
-        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
           …
           consts: [["directiveA", "", ${AttributeMarker.Template}, "ngIf"], ["directiveA", ""]],
           template: function MyComponent_Template(rf, ctx) {
@@ -269,7 +269,7 @@ describe('compiler compliance: directives', () => {
       `;
 
       const result = compile(files, angularFiles);
-      expectEmit(result.source, MyComponentDefinition, 'Incorrect ChildComponent.ngComponentDef');
+      expectEmit(result.source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
     });
 
     it('should match directives on ng-template bindings', () => {
@@ -297,7 +297,7 @@ describe('compiler compliance: directives', () => {
       // MyComponent definition should be:
       const MyComponentDefinition = `
         …
-        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
             …
             consts: [[${AttributeMarker.Bindings}, "someDirective"]],
             template: function MyComponent_Template(rf, ctx) {
@@ -317,7 +317,7 @@ describe('compiler compliance: directives', () => {
       const result = compile(files, angularFiles);
       const source = result.source;
 
-      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ngComponentDef');
+      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
     });
 
     it('should match structural directives', () => {
@@ -344,7 +344,7 @@ describe('compiler compliance: directives', () => {
       // MyComponent definition should be:
       const MyComponentDefinition = `
           …
-          MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
               …
               consts: [[${AttributeMarker.Template}, "someDirective"]],
               template: function MyComponent_Template(rf, ctx) {
@@ -361,7 +361,7 @@ describe('compiler compliance: directives', () => {
       const result = compile(files, angularFiles);
       const source = result.source;
 
-      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ngComponentDef');
+      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
 
     });
 
@@ -392,7 +392,7 @@ describe('compiler compliance: directives', () => {
       // MyComponent definition should be:
       const MyComponentDefinition = `
         …
-        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
             …
             consts: [[${AttributeMarker.Bindings}, "someDirective"]],
             template: function MyComponent_Template(rf, ctx) {
@@ -411,7 +411,7 @@ describe('compiler compliance: directives', () => {
       const result = compile(files, angularFiles);
       const source = result.source;
 
-      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ngComponentDef');
+      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
     });
 
   });

@@ -33,8 +33,8 @@ describe('iv perf test', () => {
 
       it(`${iteration}. create ${count} divs in Render3`, () => {
         class Component {
-          static ngFactoryDef = () => new Component;
-          static ngComponentDef = ɵɵdefineComponent({
+          static ɵfac = () => new Component;
+          static ɵcmp = ɵɵdefineComponent({
             type: Component,
             selectors: [['div']],
             decls: 1,

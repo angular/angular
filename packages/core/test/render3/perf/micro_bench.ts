@@ -7,8 +7,11 @@
  */
 const performance = require('perf_hooks').performance;
 
-const MIN_SAMPLE_COUNT_NO_IMPROVEMENT = 10;
-const MIN_SAMPLE_DURATION = 100;
+// Higher number here makes it more likely that we are more sure of the result.
+const MIN_SAMPLE_COUNT_NO_IMPROVEMENT = 100;
+// A smaller number here means that we are coming too close on timer resultion, but it also means
+// that it is less likely that we will be bothered by GC or preemptive multi tasking.
+const MIN_SAMPLE_DURATION = 10;
 
 const UNITS = ['ms', 'us', 'ns', 'ps'];
 export interface Benchmark {

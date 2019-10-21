@@ -374,8 +374,8 @@ export function createComponent(
     consts: TAttributes[] = []): ComponentType<any> {
   return class Component {
     value: any;
-    static ngFactoryDef = () => new Component;
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵfac = () => new Component;
+    static ɵcmp = ɵɵdefineComponent({
       type: Component,
       selectors: [[name]],
       decls: decls,
@@ -394,8 +394,8 @@ export function createComponent(
 export function createDirective(
     name: string, {exportAs}: {exportAs?: string[]} = {}): DirectiveType<any> {
   return class Directive {
-    static ngFactoryDef = () => new Directive();
-    static ngDirectiveDef = ɵɵdefineDirective({
+    static ɵfac = () => new Directive();
+    static ɵdir = ɵɵdefineDirective({
       type: Directive,
       selectors: [['', name, '']],
       exportAs: exportAs,

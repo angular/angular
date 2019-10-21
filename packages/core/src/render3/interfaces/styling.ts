@@ -522,8 +522,11 @@ export type LStylingData = LView | (string | number | boolean | null)[];
  * of the key/value array that was used to populate the property/
  * value entries that take place in the remainder of the array.
  */
-export interface StylingMapArray extends Array<{}|string|number|null> {
-  [StylingMapArrayIndex.RawValuePosition]: {}|string|null;
+export interface StylingMapArray extends Array<{}|string|number|null|undefined> {
+  /**
+   * The last raw value used to generate the entries in the map.
+   */
+  [StylingMapArrayIndex.RawValuePosition]: {}|string|number|null|undefined;
 }
 
 /**

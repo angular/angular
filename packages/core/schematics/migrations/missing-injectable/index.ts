@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
-import {NgModuleCollector} from './module_collector';
+import {NgDefinitionCollector} from './definition_collector';
 import {MissingInjectableTransform} from './transform';
 import {UpdateRecorder} from './update_recorder';
 
@@ -24,6 +24,10 @@ export default function(): Rule {
     const failures: string[] = [];
 
     ctx.logger.info('------ Missing @Injectable migration ------');
+    ctx.logger.info('In Angular 9, enforcement of @Injectable decorators for DI is a bit ');
+    ctx.logger.info('stricter. Read more about this in the dedicated guide: ');
+    ctx.logger.info('https://v9.angular.io/guide/migration-injectable');
+
     if (!buildPaths.length && !testPaths.length) {
       throw new SchematicsException(
           'Could not find any tsconfig file. Cannot add the "@Injectable" decorator to providers ' +
@@ -53,25 +57,25 @@ function runMissingInjectableMigration(
 
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);
   const typeChecker = program.getTypeChecker();
-  const moduleCollector = new NgModuleCollector(typeChecker);
+  const definitionCollector = new NgDefinitionCollector(typeChecker);
   const sourceFiles = program.getSourceFiles().filter(
       f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
 
-  // Analyze source files by detecting all modules.
-  sourceFiles.forEach(sourceFile => moduleCollector.visitNode(sourceFile));
+  // Analyze source files by detecting all modules, directives and components.
+  sourceFiles.forEach(sourceFile => definitionCollector.visitNode(sourceFile));
 
-  const {resolvedModules} = moduleCollector;
+  const {resolvedModules, resolvedDirectives} = definitionCollector;
   const transformer = new MissingInjectableTransform(typeChecker, getUpdateRecorder);
   const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
 
-  resolvedModules.forEach(module => {
-    transformer.migrateModule(module).forEach(({message, node}) => {
-      const nodeSourceFile = node.getSourceFile();
-      const relativeFilePath = relative(basePath, nodeSourceFile.fileName);
-      const {line, character} =
-          ts.getLineAndCharacterOfPosition(node.getSourceFile(), node.getStart());
-      failures.push(`${relativeFilePath}@${line + 1}:${character + 1}: ${message}`);
-    });
+  [...transformer.migrateModules(resolvedModules),
+   ...transformer.migrateDirectives(resolvedDirectives),
+  ].forEach(({message, node}) => {
+    const nodeSourceFile = node.getSourceFile();
+    const relativeFilePath = relative(basePath, nodeSourceFile.fileName);
+    const {line, character} =
+        ts.getLineAndCharacterOfPosition(node.getSourceFile(), node.getStart());
+    failures.push(`${relativeFilePath}@${line + 1}:${character + 1}: ${message}`);
   });
 
   // Record the changes collected in the import manager and transformer.

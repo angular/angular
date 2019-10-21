@@ -18,7 +18,7 @@ import {DirectiveDef} from '../interfaces/definition';
  * class ComponentWithProviders {
  *   constructor(private greeter: GreeterDE) {}
  *
- *   static ngComponentDef = defineComponent({
+ *   static ɵcmp = defineComponent({
  *     type: ComponentWithProviders,
  *     selectors: [['component-with-providers']],
  *    factory: () => new ComponentWithProviders(directiveInject(GreeterDE as any)),

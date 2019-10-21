@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {absoluteFrom as _} from '../../src/ngtsc/file_system';
+import {absoluteFrom as _, getFileSystem} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
 
@@ -40,23 +40,23 @@ export declare class NgForOfContext<T> {
 export declare class IndexPipe {
   transform<T>(value: T[], index: number): T;
 
-  static ngPipeDef: i0.ɵPipeDefWithMeta<IndexPipe, 'index'>;
+  static ɵpipe: i0.ɵPipeDefWithMeta<IndexPipe, 'index'>;
 }
 
 export declare class NgForOf<T> {
   ngForOf: T[];
   static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T>;
-  static ngDirectiveDef: i0.ɵɵDirectiveDefWithMeta<NgForOf<any>, '[ngFor][ngForOf]', never, {'ngForOf': 'ngForOf'}, {}, never>;
+  static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgForOf<any>, '[ngFor][ngForOf]', never, {'ngForOf': 'ngForOf'}, {}, never>;
 }
 
 export declare class NgIf {
   ngIf: any;
   static ngTemplateGuard_ngIf: 'binding';
-  static ngDirectiveDef: i0.ɵɵDirectiveDefWithMeta<NgForOf<any>, '[ngIf]', never, {'ngIf': 'ngIf'}, {}, never>;
+  static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgForOf<any>, '[ngIf]', never, {'ngIf': 'ngIf'}, {}, never>;
 }
 
 export declare class CommonModule {
-  static ngModuleDef: i0.ɵɵNgModuleDefWithMeta<CommonModule, [typeof NgIf, typeof NgForOf, typeof IndexPipe], never, [typeof NgIf, typeof NgForOf, typeof IndexPipe]>;
+  static ɵmod: i0.ɵɵNgModuleDefWithMeta<CommonModule, [typeof NgIf, typeof NgForOf, typeof IndexPipe], never, [typeof NgIf, typeof NgForOf, typeof IndexPipe]>;
 }
 `);
     });
@@ -78,6 +78,68 @@ export declare class CommonModule {
     `);
 
       env.driveMain();
+    });
+
+    it('should check regular attributes that are directive inputs', () => {
+      env.write('test.ts', `
+        import {Component, Directive, NgModule, Input} from '@angular/core';
+    
+        @Component({
+          selector: 'test',
+          template: '<div dir foo="2"></div>',
+        })
+        class TestCmp {}
+    
+        @Directive({selector: '[dir]'})
+        class TestDir {
+          @Input() foo: number;
+        }
+    
+        @NgModule({
+          declarations: [TestCmp, TestDir],
+        })
+        class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+    });
+
+    it('should check event bindings', () => {
+      env.write('test.ts', `
+        import {Component, Directive, EventEmitter, NgModule, Output} from '@angular/core';
+    
+        @Component({
+          selector: 'test',
+          template: '<div dir (update)="update($event); updated = true" (focus)="update($event); focused = true"></div>',
+        })
+        class TestCmp {
+          update(data: string) {}
+        }
+    
+        @Directive({selector: '[dir]'})
+        class TestDir {
+          @Output() update = new EventEmitter<number>();
+        }
+    
+        @NgModule({
+          declarations: [TestCmp, TestDir],
+        })
+        class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(3);
+      expect(diags[0].messageText)
+          .toEqual(`Argument of type 'number' is not assignable to parameter of type 'string'.`);
+      expect(diags[1].messageText)
+          .toEqual(`Property 'updated' does not exist on type 'TestCmp'. Did you mean 'update'?`);
+      // Disabled because `checkTypeOfDomEvents` is disabled by default
+      // expect(diags[2].messageText)
+      //     .toEqual(
+      //         `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`);
+      expect(diags[2].messageText).toEqual(`Property 'focused' does not exist on type 'TestCmp'.`);
     });
 
     it('should check basic usage of NgIf', () => {
@@ -336,12 +398,10 @@ export declare class CommonModule {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
-      expect(diags[0].messageText)
-          .toBe(`Type 'number' is not assignable to type 'string | undefined'.`);
+      expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
       expect(diags[0].start).toEqual(386);
       expect(diags[0].length).toEqual(14);
-      expect(diags[1].messageText)
-          .toBe(`Type 'number' is not assignable to type 'boolean | undefined'.`);
+      expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
       expect(diags[1].start).toEqual(401);
       expect(diags[1].length).toEqual(15);
     });
@@ -365,7 +425,29 @@ export declare class CommonModule {
       `);
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a valid HTML element.`);
+        expect(diags[0].messageText).toBe(`'foo' is not a known element:
+1. If 'foo' is an Angular component, then verify that it is part of this module.
+2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
+      });
+
+      it('should have a descriptive error for unknown elements that contain a dash', () => {
+        env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<my-foo>test</my-foo>',
+        })
+        export class FooCmp {}
+        @NgModule({
+          declarations: [FooCmp],
+        })
+        export class FooModule {}
+      `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(`'my-foo' is not a known element:
+1. If 'my-foo' is an Angular component, then verify that it is part of this module.
+2. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`);
       });
 
       it('should check for unknown properties', () => {
@@ -383,7 +465,27 @@ export declare class CommonModule {
       `);
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a valid property of <div>.`);
+        expect(diags[0].messageText)
+            .toBe(`Can't bind to 'foo' since it isn't a known property of 'div'.`);
+      });
+
+      it('should have a descriptive error for unknown properties with an "ng-" prefix', () => {
+        env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<div [foo]="1">test</div>',
+        })
+        export class FooCmp {}
+        @NgModule({
+          declarations: [FooCmp],
+        })
+        export class FooModule {}
+      `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(`Can't bind to 'foo' since it isn't a known property of 'div'.`);
       });
 
       it('should convert property names when binding special properties', () => {
@@ -423,8 +525,14 @@ export declare class CommonModule {
       `);
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(2);
-           expect(diags[0].messageText).toBe(`'custom-element' is not a valid HTML element.`);
-           expect(diags[1].messageText).toBe(`'foo' is not a valid property of <custom-element>.`);
+           expect(diags[0].messageText).toBe(`'custom-element' is not a known element:
+1. If 'custom-element' is an Angular component, then verify that it is part of this module.
+2. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`);
+           expect(diags[1].messageText)
+               .toBe(`Can't bind to 'foo' since it isn't a known property of 'custom-element'.
+1. If 'custom-element' is an Angular component and it has 'foo' input, then verify that it is part of this module.
+2. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
          });
 
       it('should not produce diagnostics for custom-elements-style elements when using the CUSTOM_ELEMENTS_SCHEMA',
