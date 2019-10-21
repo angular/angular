@@ -150,7 +150,7 @@ Click on the Orders or Customers button. If you see a chunk appear, everything i
 <figure class="lightbox">
   <div class="card">
     <img src="generated/images/guide/lazy-loading-ngmodules/chunk-arrow.png" width="600" alt="lazy loaded modules diagram">
-  </div`>
+  </div>
 </figure>
 
 

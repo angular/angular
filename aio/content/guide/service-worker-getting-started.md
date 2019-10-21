@@ -76,7 +76,7 @@ To simulate a network issue, disable network interaction for your application. I
 
 <figure class="lightbox">
   <div class="card">
-    <img src="generated/images/guide/service-worker/offline-checkbox.png" alt="The offline checkbox in the Network tab is checked">
+    <img src="generated/images/guide/service-worker/offline-checkbox.png" alt="The offline checkbox in the Network tab pis checked">
   </div>
 </figure>
 

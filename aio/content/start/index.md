@@ -118,7 +118,7 @@ file `product-list.component.html`.
 
     <figure class="lightbox">
       <div class="card">
-      <img src="generated/images/guide/start/template-syntax-product-anchor.png" alt="Product name anchor text is product name property">
+        <img src="generated/images/guide/start/template-syntax-product-anchor.png" alt="Product name anchor text is product name property">
       </div>
     </figure>
 
