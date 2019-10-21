@@ -108,10 +108,9 @@ The following diagram represents the relationship between the
 `root` `ModuleInjector` and its parent injectors as the
 previous paragraphs describe.
 
- <figure class="lightbox">
+<figure class="lightbox">
   <div class="card">
-    <img src="generated/images/guide/dependency-injection/injectors.svg" alt="NullInjector, ModuleInjector, r
-    oot injector">
+      <img src="generated/images/guide/dependency-injection/injectors.svg" alt="NullInjector, ModuleInjector, root injector">
   </div>
 </figure>
 

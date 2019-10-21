@@ -37,9 +37,9 @@ checkout icon&mdash;and the title for a product list.
 <figure class="lightbox">
   <div class="card">
     <img src="generated/images/guide/start/new-app.png" alt="Starter online store app">
+  </div>
 </figure>
 
-</div>
 
 <div class="callout is-helpful">
 <header>StackBlitz tips</header>

@@ -71,7 +71,7 @@ The source of truth provides the value and status of the form element at a given
   <div class="card">
     <img src="generated/images/guide/forms-overview/key-diff-reactive-forms.png" alt="Reactive forms key differences">
   </div>
-  </figure>
+</figure>
 
 With reactive forms, the form model is explicitly defined in the component class. The reactive form directive (in this case, `FormControlDirective`) then links the existing `FormControl` instance to a specific form element in the view using a value accessor (`ControlValueAccessor` instance). 
 

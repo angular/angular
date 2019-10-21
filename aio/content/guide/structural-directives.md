@@ -676,8 +676,7 @@ It renders properly.
 
 <figure class="lightbox">
   <div class="card">
-    <img src='generated/images/guide/structural-directives/good-paragraph.png' alt="ngcontainer paragraph with pro
-    per style">
+    <img src='generated/images/guide/structural-directives/good-paragraph.png' alt="ngcontainer paragraph with proper style">
   </div>
 </figure>
 
@@ -695,8 +694,7 @@ The drop down works properly.
 
 <figure class="lightbox">
   <div class="card">
-    <img src='generated/images/guide/structural-directives/select-ngcontainer-anim.gif' alt="ngcontainer options w
-    ork properly">
+    <img src='generated/images/guide/structural-directives/select-ngcontainer-anim.gif' alt="ngcontainer options work properly">
   </div>
 </figure>
 

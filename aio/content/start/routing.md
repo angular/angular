@@ -57,8 +57,8 @@ The app is already set up to use the Angular router and to use routing to naviga
     <figure class="lightbox">
       <div class="card">
         <img src="generated/images/guide/start/product-details-works.png" alt="Product details page with updated URL">
-      </div></
-    figure>
+      </div>
+    </figure>
 
     
 

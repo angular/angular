@@ -94,6 +94,7 @@ Then go to `localhost:4200` where you should see “customer-app” and three bu
 <figure class="lightbox">
   <div class="card">
     <img src="generated/images/guide/lazy-loading-ngmodules/three-buttons.png" width="300" alt="three buttons in the browser">
+  </div>
 </figure>
 
 These buttons work, because the CLI automatically added the routes to the feature modules to the `routes` array in `app.module.ts`.
@@ -149,6 +150,7 @@ Click on the Orders or Customers button. If you see a chunk appear, everything i
 <figure class="lightbox">
   <div class="card">
     <img src="generated/images/guide/lazy-loading-ngmodules/chunk-arrow.png" width="600" alt="lazy loaded modules diagram">
+  </div`>
 </figure>
 
 
@@ -157,6 +159,7 @@ To see it again, or to test after working in the project, clear everything out b
 <figure class="lightbox">
   <div class="card">
     <img src="generated/images/guide/lazy-loading-ngmodules/clear.gif" width="200" alt="lazy loaded modules diagram">
+  </div>
 </figure>
 
 

@@ -120,7 +120,8 @@ tag but keeps safe content such as the `<b>` element.
 
 <figure class="lightbox">
   <div class="card">
-  <img src='generated/images/guide/security/binding-inner-html.png' alt='A screenshot showing interpolated and bound HTML values'>
+    <img src='generated/images/guide/security/binding-inner-html.png' alt='A screenshot showing interpolated and bound HTML values'>
+  </div>
 </figure>
 
 

@@ -1961,11 +1961,9 @@ it would be nice if the viewed hero was preselected in the list.
 
 
 <figure class="lightbox">
-
   <div class="card">
     <img src='generated/images/guide/router/selected-hero.png' alt="Selected hero">
   </div>
-
 </figure>
 
 

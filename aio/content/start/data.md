@@ -109,13 +109,13 @@ When the "Buy" button is clicked, you'll use the cart service to add the current
     <div class="card">
       <img src='generated/images/guide/start/product-details-buy.png' alt="Display details for selected product with a Buy button">
     </div>
-   </figure>
+  </figure>
 
  1. Click the "Buy" button. The product is added to the stored list of items in the cart, and a message is displayed.
 
     <figure class="lightbox">
       <div class="card">
-      <img src='generated/images/guide/start/buy-alert.png' alt="Display details for selected product with a Buy button">
+        <img src='generated/images/guide/start/buy-alert.png' alt="Display details for selected product with a Buy button">
       </div>
     </figure>
 
