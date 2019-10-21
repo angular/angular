@@ -252,34 +252,47 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Hello injected World a second time!');
   });
 
-  describe('allow override of multi provider', () => {
-    const token = new InjectionToken<string[]>('token');
-    @NgModule({providers: [{provide: token, useValue: 'valueFromModule', multi: true}]})
+  describe('multi providers', () => {
+    const multiToken = new InjectionToken<string[]>('multiToken');
+    const singleToken = new InjectionToken<string>('singleToken');
+    @NgModule({providers: [{provide: multiToken, useValue: 'valueFromModule', multi: true}]})
     class MyModule {
     }
 
-    @NgModule({providers: [{provide: token, useValue: 'valueFromModule2', multi: true}]})
+    @NgModule({
+      providers: [
+        {provide: singleToken, useValue: 't1'},
+        {provide: multiToken, useValue: 'valueFromModule2', multi: true},
+        {provide: multiToken, useValue: 'secondValueFromModule2', multi: true}
+      ]
+    })
     class MyModule2 {
     }
 
     beforeEach(() => { TestBed.configureTestingModule({imports: [MyModule, MyModule2]}); });
 
-    it('with an array', () => {
-      const overrideValue = ['override'];
-      TestBed.overrideProvider(token, { useValue: overrideValue, multi: true } as any);
+    it('is preserved when other provider is overridden', () => {
+      TestBed.overrideProvider(singleToken, {useValue: ''});
+      const value = TestBed.inject(multiToken);
+      expect(value.length).toEqual(3);
+    });
 
-      const value = TestBed.inject(token);
+    it('overridden with an array', () => {
+      const overrideValue = ['override'];
+      TestBed.overrideProvider(multiToken, { useValue: overrideValue, multi: true } as any);
+
+      const value = TestBed.inject(multiToken);
       expect(value.length).toEqual(overrideValue.length);
       expect(value).toEqual(overrideValue);
     });
 
-    it('with a non-array', () => {
+    it('overridden with a non-array', () => {
       // This is actually invalid because multi providers return arrays. We have this here so we can
       // ensure Ivy behaves the same as VE does currently.
       const overrideValue = 'override';
-      TestBed.overrideProvider(token, { useValue: overrideValue, multi: true } as any);
+      TestBed.overrideProvider(multiToken, { useValue: overrideValue, multi: true } as any);
 
-      const value = TestBed.inject(token);
+      const value = TestBed.inject(multiToken);
       expect(value.length).toEqual(overrideValue.length);
       expect(value).toEqual(overrideValue as {} as string[]);
     });
