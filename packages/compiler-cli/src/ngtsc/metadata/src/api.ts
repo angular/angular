@@ -34,7 +34,6 @@ export interface DirectiveMeta extends T2DirectiveMeta {
   queries: string[];
   ngTemplateGuards: TemplateGuardMeta[];
   hasNgTemplateContextGuard: boolean;
-  coercedInputs: Set<string>;
 
   /**
    * A `Reference` to the base class for the directive, if one was detected.

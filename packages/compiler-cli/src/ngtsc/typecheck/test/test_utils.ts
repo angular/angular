@@ -160,14 +160,9 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
-export type TestDirective = Partial<Pick<
-                                TypeCheckableDirectiveMeta,
-                                Exclude<keyof TypeCheckableDirectiveMeta, 'ref'|'coercedInputs'>>>&
-    {
-      selector: string,
-      name: string, file?: AbsoluteFsPath,
-      type: 'directive', coercedInputs?: string[],
-    };
+export type TestDirective =
+    Partial<Pick<TypeCheckableDirectiveMeta, Exclude<keyof TypeCheckableDirectiveMeta, 'ref'>>>&
+    {selector: string, name: string, file?: AbsoluteFsPath, type: 'directive'};
 export type TestPipe = {
   name: string,
   file?: AbsoluteFsPath,
@@ -300,7 +295,6 @@ function prepareDeclarations(
       inputs: decl.inputs || {},
       isComponent: decl.isComponent || false,
       ngTemplateGuards: decl.ngTemplateGuards || [],
-      coercedInputs: new Set<string>(decl.coercedInputs || []),
       outputs: decl.outputs || {},
       queries: decl.queries || [],
     };
