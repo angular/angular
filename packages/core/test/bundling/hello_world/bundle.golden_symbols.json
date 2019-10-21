@@ -393,9 +393,6 @@
     "name": "noSideEffects"
   },
   {
-    "name": "postProcessBaseDirective"
-  },
-  {
     "name": "refreshChildComponents"
   },
   {
