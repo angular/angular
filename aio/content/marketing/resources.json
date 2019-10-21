@@ -414,7 +414,7 @@
             "url": "https://www.jqwidgets.com/angular/"
           },
           "amexio": {
-            "desc": "Amexio (Angular MetaMagic EXtensions for Inputs and Outputs)  is a rich set of Angular components powered by Bootstrap for Responsive Design. UI Components include Standard Form Components, Data Grids, Tree Grids, Tabs etc. Open Source (Apache 2 License) & Free and backed by MetaMagic Global Inc",
+            "desc": "Amexio is a rich set of Angular components powered by HTML5 & CSS3 for Responsive Web Design and 80+ built-in Material Design Themes. Amexio has 3 Editions, Standard, Enterprise and Creative. Std Edition consists of basic UI Components which include Grid, Tabs, Form Inputs etc, while Enterprise Edition consists of components like Calendar, Tree Tabs, Social Media Logins (Facebook, GitHub, Twitter etc) and Creative Edtion is focused building elegant and beautiful websites. With more than 200+ components/features, all the editions are open-sourced and free based on Apache 2 License.",
             "rev": true,
             "title": "Amexio - Angular Extensions",
             "url": "http://www.amexio.tech/",
