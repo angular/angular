@@ -45,7 +45,7 @@ function symbolIterator<T>(this: QueryList<T>): Iterator<T> {
 export class QueryList<T>/* implements Iterable<T> */ {
   public readonly dirty = true;
   private _results: Array<T> = [];
-  public readonly changes: Observable<any> = new EventEmitter();
+  public readonly changes: Observable<QueryList<T>> = new EventEmitter<QueryList<T>>();
 
   readonly length: number = 0;
   // TODO(issue/24571): remove '!'.
@@ -132,14 +132,14 @@ export class QueryList<T>/* implements Iterable<T> */ {
   /**
    * Triggers a change event by emitting on the `changes` {@link EventEmitter}.
    */
-  notifyOnChanges(): void { (this.changes as EventEmitter<any>).emit(this); }
+  notifyOnChanges(): void { (this.changes as EventEmitter<QueryList<T>>).emit(this); }
 
   /** internal */
   setDirty() { (this as{dirty: boolean}).dirty = true; }
 
   /** internal */
   destroy(): void {
-    (this.changes as EventEmitter<any>).complete();
-    (this.changes as EventEmitter<any>).unsubscribe();
+    (this.changes as EventEmitter<QueryList<T>>).complete();
+    (this.changes as EventEmitter<QueryList<T>>).unsubscribe();
   }
 }
