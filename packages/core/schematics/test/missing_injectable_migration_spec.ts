@@ -48,6 +48,10 @@ describe('Missing injectable migration', () => {
     // Switch into the temporary directory path. This allows us to run
     // the schematic against our custom unit test tree.
     shx.cd(tmpDirPath);
+
+    writeFile('/node_modules/@angular/core/index.d.ts', `
+      export declare function forwardRef(fn: Function);
+    `);
   });
 
   afterEach(() => {
@@ -133,6 +137,24 @@ describe('Missing injectable migration', () => {
       expect(tree.readContent('/index.ts')).toMatch(/@Injectable\(\)\s+export class MyService/);
       expect(tree.readContent('/index.ts'))
           .toContain(`{ ${type}, Injectable } from '@angular/core`);
+    });
+
+    it(`should migrate object literal provider with forwardRef in ${type}`, async() => {
+      writeFile('/index.ts', `
+        import {${type}, forwardRef} from '@angular/core';
+                  
+        @${type}({${propName}: [{provide: forwardRef(() => MyService)}]})
+        export class TestClass {}
+
+        export class MyService {}
+      `);
+
+      await runMigration();
+
+      expect(warnOutput.length).toBe(0);
+      expect(tree.readContent('/index.ts')).toMatch(/@Injectable\(\)\s+export class MyService/);
+      expect(tree.readContent('/index.ts'))
+          .toContain(`{ ${type}, forwardRef, Injectable } from '@angular/core`);
     });
 
     it(`should not migrate object literal provider with "useValue" in ${type}`, async() => {
