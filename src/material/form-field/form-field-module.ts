@@ -16,6 +16,7 @@ import {MatLabel} from './label';
 import {MatPlaceholder} from './placeholder';
 import {MatPrefix} from './prefix';
 import {MatSuffix} from './suffix';
+import {MatFormFieldControl} from './form-field-control';
 
 
 @NgModule({
@@ -27,6 +28,10 @@ import {MatSuffix} from './suffix';
     MatPlaceholder,
     MatPrefix,
     MatSuffix,
+
+    // TODO(crisbeto): can be removed once `MatFormFieldControl`
+    // is turned into a selector-less directive.
+    MatFormFieldControl as any,
   ],
   imports: [
     CommonModule,
