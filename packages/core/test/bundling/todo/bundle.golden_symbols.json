@@ -1089,12 +1089,6 @@
     "name": "patchConfig"
   },
   {
-    "name": "postProcessBaseDirective"
-  },
-  {
-    "name": "postProcessDirective"
-  },
-  {
     "name": "readPatchedData"
   },
   {
