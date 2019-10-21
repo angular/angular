@@ -35,7 +35,8 @@ Next, you’ll need a feature module with a component to route to.
 To make one, enter the following command in the terminal, where `customers` is the name of the feature module. The path for loading the `customers` feature modules is also `customers` because it is specified with the `--route` option:
 
 <code-example language="bash">
-ng generate module customers --route customers --module app.module
+ng generate module customers --routing --module app.module
+ng generate component ./customers/customers-list --module ./customers/customers.module
 </code-example>
 
 This creates a `customers` folder with the new lazy-loadable module `CustomersModule` defined in the `customers.module.ts` file. The command automatically declares the `CustomersComponent` inside the new feature module.
@@ -58,7 +59,8 @@ The import path is the relative path to the module.
 Use the same command to create a second lazy-loaded feature module with routing, along with its stub component.
 
 <code-example language="bash">
-ng generate module orders --route orders --module app.module
+ng generate module orders --routing --module app.module
+ng generate component ./orders/order-list --module ./orders/orders.module
 </code-example>
 
 This creates a new folder called `orders` containing the `OrdersModule` and `OrdersRoutingModule`, along with the new `OrdersComponent` source files.
