@@ -1358,6 +1358,7 @@ describe('query', () => {
   describe('queryList', () => {
     it('should be destroyed when the containing view is destroyed', () => {
       let queryInstance: QueryList<any>;
+      let destroySpy;
 
       const SimpleComponentWithQuery = createComponent(
           'some-component-with-query',
@@ -1375,6 +1376,7 @@ describe('query', () => {
               let tmp: any;
               ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                   (ctx.query = queryInstance = tmp as QueryList<any>);
+              destroySpy = spyOn(queryInstance, 'destroy');
             }
           });
 
@@ -1405,12 +1407,12 @@ describe('query', () => {
       const t =
           new TemplateFixture(createTemplate, updateTemplate, 1, 0, [SimpleComponentWithQuery]);
       expect(t.html).toEqual('<some-component-with-query><div></div></some-component-with-query>');
-      expect((queryInstance !.changes as EventEmitter<any>).closed).toBeFalsy();
+      expect(destroySpy).not.toHaveBeenCalled();
 
       condition = false;
       t.update();
       expect(t.html).toEqual('');
-      expect((queryInstance !.changes as EventEmitter<any>).closed).toBeTruthy();
+      expect(destroySpy).toHaveBeenCalled();
     });
   });
 
