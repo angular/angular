@@ -131,7 +131,8 @@
     const out: {[k: string]: any} = {};
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
-        let value = obj[key];
+        // explicit : any due to https://github.com/microsoft/TypeScript/issues/33191
+        let value: any = obj[key];
         switch (typeof value) {
           case 'object':
             const name = value && value.constructor && (<any>value.constructor).name;
