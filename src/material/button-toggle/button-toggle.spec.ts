@@ -1,5 +1,6 @@
 import {dispatchMouseEvent} from '@angular/cdk/testing';
 import {Component, DebugElement, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
@@ -15,10 +16,11 @@ describe('MatButtonToggle with forms', () => {
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
-      imports: [MatButtonToggleModule, FormsModule, ReactiveFormsModule],
+      imports: [MatButtonToggleModule, FormsModule, ReactiveFormsModule, CommonModule],
       declarations: [
         ButtonToggleGroupWithNgModel,
         ButtonToggleGroupWithFormControl,
+        ButtonToggleGroupWithIndirectDescendantToggles,
       ],
     });
 
@@ -232,6 +234,24 @@ describe('MatButtonToggle with forms', () => {
       }));
 
   });
+
+  it('should be able to pick up toggles that are not direct descendants', fakeAsync(() => {
+    const fixture = TestBed.createComponent(ButtonToggleGroupWithIndirectDescendantToggles);
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector('.mat-button-toggle button');
+    const groupDebugElement = fixture.debugElement.query(By.directive(MatButtonToggleGroup))!;
+    const groupInstance =
+        groupDebugElement.injector.get<MatButtonToggleGroup>(MatButtonToggleGroup);
+
+    button.click();
+    fixture.detectChanges();
+    tick();
+
+    expect(groupInstance.value).toBe('red');
+    expect(fixture.componentInstance.control.value).toBe('red');
+    expect(groupInstance._buttonToggles.length).toBe(3);
+  }));
 });
 
 describe('MatButtonToggle without forms', () => {
@@ -963,6 +983,22 @@ class ButtonToggleGroupWithInitialValue {
   `
 })
 class ButtonToggleGroupWithFormControl {
+  control = new FormControl();
+}
+
+@Component({
+  // We need the `ngSwitch` so that there's a directive between the group and the toggles.
+  template: `
+    <mat-button-toggle-group [formControl]="control">
+      <ng-container [ngSwitch]="true">
+        <mat-button-toggle value="red">Value Red</mat-button-toggle>
+        <mat-button-toggle value="green">Value Green</mat-button-toggle>
+        <mat-button-toggle value="blue">Value Blue</mat-button-toggle>
+      </ng-container>
+    </mat-button-toggle-group>
+  `
+})
+class ButtonToggleGroupWithIndirectDescendantToggles {
   control = new FormControl();
 }
 

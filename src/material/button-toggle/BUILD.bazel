@@ -54,6 +54,7 @@ ng_test_library(
     deps = [
         ":button-toggle",
         "//src/cdk/testing",
+        "@npm//@angular/common",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
     ],

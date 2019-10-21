@@ -131,7 +131,11 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
   _onTouched: () => any = () => {};
 
   /** Child button toggle buttons. */
-  @ContentChildren(forwardRef(() => MatButtonToggle)) _buttonToggles: QueryList<MatButtonToggle>;
+  @ContentChildren(forwardRef(() => MatButtonToggle), {
+    // Note that this would technically pick up toggles
+    // from nested groups, but that's not a case that we support.
+    descendants: true
+  }) _buttonToggles: QueryList<MatButtonToggle>;
 
   /** The appearance for all the buttons in the group. */
   @Input() appearance: MatButtonToggleAppearance;
