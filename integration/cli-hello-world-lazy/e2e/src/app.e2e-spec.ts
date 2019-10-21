@@ -1,7 +1,7 @@
 import { AppPage } from './app.po';
 import { browser, logging, element, by } from 'protractor';
 
-describe('workspace-project App', () => {
+describe('cli-hello-world-lazy App', () => {
   let page: AppPage;
 
   beforeEach(() => {
