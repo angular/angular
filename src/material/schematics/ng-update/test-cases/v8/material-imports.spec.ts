@@ -2,7 +2,7 @@ import {createTestCaseSetup, readFileContent} from '@angular/cdk/schematics/test
 import {migrationCollection} from '../index.spec';
 
 describe('v8 material imports', () => {
-  it('should report imports for deleted animation constants', async () => {
+  it('should re-map top-level material imports to the proper entry points', async () => {
     const {runFixers, appTree, writeFile, removeTempDir} = await createTestCaseSetup(
         'migration-v8', migrationCollection, [require.resolve('./material-imports_input.ts')]);
     const materialPath = '/node_modules/@angular/material';
