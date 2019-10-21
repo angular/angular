@@ -66,7 +66,7 @@ export interface HarnessLoader {
 /**
  * Interface used to create asynchronous locator functions used find elements and component
  * harnesses. This interface is used by `ComponentHarness` authors to create locator functions for
- * their `ComponentHarenss` subclass.
+ * their `ComponentHarness` subclass.
  */
 export interface LocatorFactory {
   /** Gets a locator factory rooted at the document root. */
@@ -167,11 +167,17 @@ export interface LocatorFactory {
   harnessLoaderForAll(selector: string): Promise<HarnessLoader[]>;
 
   /**
-   * Flushes change detection and async tasks.
+   * Flushes change detection and async tasks captured in the Angular zone.
    * In most cases it should not be necessary to call this manually. However, there may be some edge
    * cases where it is needed to fully flush animation events.
    */
   forceStabilize(): Promise<void>;
+
+  /**
+   * Waits for all scheduled or running async tasks to complete. This allows harness
+   * authors to wait for async tasks outside of the Angular zone.
+   */
+  waitForTasksOutsideAngular(): Promise<void>;
 }
 
 /**
@@ -277,12 +283,20 @@ export abstract class ComponentHarness {
   }
 
   /**
-   * Flushes change detection and async tasks.
+   * Flushes change detection and async tasks in the Angular zone.
    * In most cases it should not be necessary to call this manually. However, there may be some edge
    * cases where it is needed to fully flush animation events.
    */
   protected async forceStabilize() {
     return this.locatorFactory.forceStabilize();
+  }
+
+  /**
+   * Waits for all scheduled or running async tasks to complete. This allows harness
+   * authors to wait for async tasks outside of the Angular zone.
+   */
+  protected async waitForTasksOutsideAngular() {
+    return this.locatorFactory.waitForTasksOutsideAngular();
   }
 }
 

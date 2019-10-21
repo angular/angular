@@ -12,6 +12,7 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  NgZone,
   OnDestroy,
   ViewChild,
   ViewEncapsulation
@@ -44,6 +45,7 @@ export class TestMainComponent implements OnDestroy {
   relativeY = 0;
 
   @ViewChild('clickTestElement', {static: false}) clickTestElement: ElementRef<HTMLElement>;
+  @ViewChild('taskStateResult', {static: false}) taskStateResultElement: ElementRef<HTMLElement>;
 
   private _fakeOverlayElement: HTMLElement;
 
@@ -55,7 +57,7 @@ export class TestMainComponent implements OnDestroy {
     this._isHovering = false;
   }
 
-  constructor(private _cdr: ChangeDetectorRef) {
+  constructor(private _cdr: ChangeDetectorRef, private _zone: NgZone) {
     this.username = 'Yi';
     this.counter = 0;
     this.asyncCounter = 0;
@@ -98,5 +100,11 @@ export class TestMainComponent implements OnDestroy {
     const {top, left} = this.clickTestElement.nativeElement.getBoundingClientRect();
     this.relativeX = Math.round(event.clientX - left);
     this.relativeY = Math.round(event.clientY - top);
+  }
+
+  runTaskOutsideZone() {
+    this._zone.runOutsideAngular(() => setTimeout(() => {
+      this.taskStateResultElement.nativeElement.textContent = 'result';
+    }, 100));
   }
 }

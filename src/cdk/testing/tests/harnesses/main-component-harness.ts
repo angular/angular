@@ -42,6 +42,9 @@ export class MainComponentHarness extends ComponentHarness {
   readonly optionalSubComponent = this.locatorForOptional(SubComponentHarness);
   readonly errorSubComponent = this.locatorFor(WrongComponentHarness);
 
+  readonly taskStateTestTrigger = this.locatorFor('#task-state-test-trigger');
+  readonly taskStateTestResult = this.locatorFor('#task-state-result');
+
   readonly fourItemLists = this.locatorForAll(SubComponentHarness.with({itemCount: 4}));
   readonly toolsLists = this.locatorForAll(SubComponentHarness.with({title: 'List of test tools'}));
   readonly fourItemToolsLists =
@@ -95,5 +98,13 @@ export class MainComponentHarness extends ComponentHarness {
 
   async sendAltJ(): Promise<void> {
     return (await this.input()).sendKeys({alt: true}, 'j');
+  }
+
+  async getTaskStateResult(): Promise<string> {
+    await (await this.taskStateTestTrigger()).click();
+    // Wait for async tasks to complete since the click caused a
+    // timeout to be scheduled outside of the NgZone.
+    await this.waitForTasksOutsideAngular();
+    return (await this.taskStateTestResult()).text();
   }
 }

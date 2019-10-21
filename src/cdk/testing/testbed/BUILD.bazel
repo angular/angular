@@ -13,6 +13,7 @@ ts_library(
         "//src/cdk/keycodes",
         "//src/cdk/testing",
         "@npm//@angular/core",
+        "@npm//rxjs",
     ],
 )
 

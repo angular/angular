@@ -1,6 +1,6 @@
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {FakeOverlayHarness} from './harnesses/fake-overlay-harness';
 import {MainComponentHarness} from './harnesses/main-component-harness';
 import {SubComponentHarness} from './harnesses/sub-component-harness';
@@ -252,6 +252,21 @@ describe('TestbedHarnessEnvironment', () => {
       const subcomps = await harness.directAncestorSelectorSubcomponent();
       expect(subcomps.length).toBe(2);
     });
+
+    it('should be able to wait for tasks outside of Angular within native async/await',
+        async () => {
+      expect(await harness.getTaskStateResult()).toBe('result');
+    });
+
+    it('should be able to wait for tasks outside of Angular within async test zone',
+        async (() => {
+      harness.getTaskStateResult().then(res => expect(res).toBe('result'));
+    }));
+
+    it('should be able to wait for tasks outside of Angular within fakeAsync test zone',
+        fakeAsync(async () => {
+      expect(await harness.getTaskStateResult()).toBe('result');
+    }));
   });
 
   describe('TestElement', () => {

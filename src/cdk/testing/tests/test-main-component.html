@@ -26,3 +26,10 @@
   <test-sub title="other 1"></test-sub>
   <test-sub title="other 2"></test-sub>
 </div>
+<div class="task-state-tests">
+  <button (click)="runTaskOutsideZone()" id="task-state-test-trigger">
+    Run task outside zone
+  </button>
+  <span id="task-state-result" #taskStateResult></span>
+</div>
+

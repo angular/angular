@@ -130,6 +130,9 @@ export abstract class HarnessEnvironment<E> implements HarnessLoader, LocatorFac
   // Part of LocatorFactory interface, subclasses will implement.
   abstract forceStabilize(): Promise<void>;
 
+  // Part of LocatorFactory interface, subclasses will implement.
+  abstract waitForTasksOutsideAngular(): Promise<void>;
+
   /** Gets the root element for the document. */
   protected abstract getDocumentRoot(): E;
 

@@ -21,8 +21,9 @@ export declare abstract class ComponentHarness {
     protected locatorFor<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T>;
     protected locatorForAll(selector: string): AsyncFactoryFn<TestElement[]>;
     protected locatorForAll<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T[]>;
-    protected locatorForOptional(selector: string): AsyncFactoryFn<TestElement | null>;
     protected locatorForOptional<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T | null>;
+    protected locatorForOptional(selector: string): AsyncFactoryFn<TestElement | null>;
+    protected waitForTasksOutsideAngular(): Promise<void>;
 }
 
 export interface ComponentHarnessConstructor<T extends ComponentHarness> {
@@ -72,6 +73,7 @@ export declare abstract class HarnessEnvironment<E> implements HarnessLoader, Lo
     locatorForAll(selector: string): AsyncFactoryFn<TestElement[]>;
     locatorForOptional<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T | null>;
     locatorForOptional(selector: string): AsyncFactoryFn<TestElement | null>;
+    abstract waitForTasksOutsideAngular(): Promise<void>;
 }
 
 export interface HarnessLoader {
@@ -102,12 +104,13 @@ export interface LocatorFactory {
     harnessLoaderFor(selector: string): Promise<HarnessLoader>;
     harnessLoaderForAll(selector: string): Promise<HarnessLoader[]>;
     harnessLoaderForOptional(selector: string): Promise<HarnessLoader | null>;
-    locatorFor<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T>;
     locatorFor(selector: string): AsyncFactoryFn<TestElement>;
-    locatorForAll<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T[]>;
+    locatorFor<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T>;
     locatorForAll(selector: string): AsyncFactoryFn<TestElement[]>;
-    locatorForOptional(selector: string): AsyncFactoryFn<TestElement | null>;
+    locatorForAll<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T[]>;
     locatorForOptional<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T | null>;
+    locatorForOptional(selector: string): AsyncFactoryFn<TestElement | null>;
+    waitForTasksOutsideAngular(): Promise<void>;
 }
 
 export interface ModifierKeys {

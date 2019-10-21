@@ -7,17 +7,25 @@
  */
 
 import {HarnessEnvironment} from '@angular/cdk/testing';
-import {ComponentFixture} from '@angular/core/testing';
+import {ComponentFixture, flush} from '@angular/core/testing';
+import {Observable} from 'rxjs';
+import {takeWhile} from 'rxjs/operators';
 import {ComponentHarness, ComponentHarnessConstructor, HarnessLoader} from '../component-harness';
 import {TestElement} from '../test-element';
+import {TaskState, TaskStateZoneInterceptor} from './task-state-zone-interceptor';
 import {UnitTestElement} from './unit-test-element';
+
 
 /** A `HarnessEnvironment` implementation for Angular's Testbed. */
 export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
   private _destroyed = false;
 
+  /** Observable that emits whenever the test task state changes. */
+  private _taskState: Observable<TaskState>;
+
   protected constructor(rawRootElement: Element, private _fixture: ComponentFixture<unknown>) {
     super(rawRootElement);
+    this._taskState = TaskStateZoneInterceptor.setup();
     _fixture.componentRef.onDestroy(() => this._destroyed = true);
   }
 
@@ -54,6 +62,24 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
 
     this._fixture.detectChanges();
     await this._fixture.whenStable();
+  }
+
+  async waitForTasksOutsideAngular(): Promise<void> {
+    // If we run in the fake async zone, we run "flush" to run any scheduled tasks. This
+    // ensures that the harnesses behave inside of the FakeAsyncTestZone similar to the
+    // "AsyncTestZone" and the root zone (i.e. neither fakeAsync or async). Note that we
+    // cannot just rely on the task state observable to become stable because the state will
+    // never change. This is because the task queue will be only drained if the fake async
+    // zone is being flushed.
+    if (Zone!.current.get('FakeAsyncTestZoneSpec')) {
+      flush();
+    }
+
+    // Wait until the task queue has been drained and the zone is stable. Note that
+    // we cannot rely on "fixture.whenStable" since it does not catch tasks scheduled
+    // outside of the Angular zone. For test harnesses, we want to ensure that the
+    // app is fully stabilized and therefore need to use our own zone interceptor.
+    await this._taskState.pipe(takeWhile(state => !state.stable)).toPromise();
   }
 
   protected getDocumentRoot(): Element {

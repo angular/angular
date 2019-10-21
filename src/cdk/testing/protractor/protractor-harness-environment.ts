@@ -25,6 +25,11 @@ export class ProtractorHarnessEnvironment extends HarnessEnvironment<ElementFind
 
   async forceStabilize(): Promise<void> {}
 
+  async waitForTasksOutsideAngular(): Promise<void> {
+    // TODO: figure out how we can do this for the protractor environment.
+    // https://github.com/angular/components/issues/17412
+  }
+
   protected getDocumentRoot(): ElementFinder {
     return protractorElement(by.css('body'));
   }
