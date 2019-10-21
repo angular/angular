@@ -139,7 +139,7 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
   for (let i = 0; i < rootDirs.length; i++) {
     const dir = rootDirs[i];
     const rel = path.posix.relative(dir, filePath);
-    if (rel.indexOf('.') != 0) return rel;
+    if (rel.indexOf('.') !== 0) return rel;
   }
   return filePath;
 }

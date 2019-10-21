@@ -572,7 +572,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     const checkBundleIndex = (directory: string): boolean => {
       let result = this.flatModuleIndexCache.get(directory);
       if (result == null) {
-        if (path.basename(directory) == 'node_module') {
+        if (path.basename(directory) === 'node_module') {
           // Don't look outside the node_modules this package is installed in.
           result = false;
         } else {
@@ -605,7 +605,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
               }
             } else {
               const parent = path.dirname(directory);
-              if (parent != directory) {
+              if (parent !== directory) {
                 // Try the parent directory.
                 result = checkBundleIndex(parent);
               } else {

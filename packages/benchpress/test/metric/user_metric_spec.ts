@@ -68,10 +68,10 @@ class MockDriverAdapter extends WebDriverAdapter {
 
   executeScript(script: string): any {
     // Just handles `return window.propName` ignores `delete window.propName`.
-    if (script.indexOf('return window.') == 0) {
+    if (script.indexOf('return window.') === 0) {
       const metricName = script.substring('return window.'.length);
       return Promise.resolve(this.data[metricName]);
-    } else if (script.indexOf('delete window.') == 0) {
+    } else if (script.indexOf('delete window.') === 0) {
       return Promise.resolve(null);
     } else {
       return Promise.reject(`Unexpected syntax: ${script}`);

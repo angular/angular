@@ -1107,7 +1107,7 @@ describe('Collector', () => {
     it('should compose substitution functions', () => {
       const collector = new MetadataCollector({
         substituteExpression: (value, node) => isMetadataGlobalReferenceExpression(value) &&
-                value.name == lambdaTemp ?
+                value.name === lambdaTemp ?
             {__symbolic: 'reference', name: value.name + '2'} :
             value
       });

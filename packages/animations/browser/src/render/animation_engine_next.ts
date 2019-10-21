@@ -75,7 +75,7 @@ export class AnimationEngine {
   }
 
   process(namespaceId: string, element: any, property: string, value: any) {
-    if (property.charAt(0) == '@') {
+    if (property.charAt(0) === '@') {
       const [id, action] = parseTimelineCommand(property);
       const args = value as any[];
       this._timelineEngine.command(id, element, action, args);
@@ -88,7 +88,7 @@ export class AnimationEngine {
       namespaceId: string, element: any, eventName: string, eventPhase: string,
       callback: (event: any) => any): () => any {
     // @@listen
-    if (eventName.charAt(0) == '@') {
+    if (eventName.charAt(0) === '@') {
       const [id, action] = parseTimelineCommand(eventName);
       return this._timelineEngine.listen(id, element, action, callback);
     }

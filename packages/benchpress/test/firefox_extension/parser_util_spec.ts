@@ -9,7 +9,7 @@
 import {convertPerfProfileToEvents} from '../../src/firefox_extension/lib/parser_util';
 
 function assertEventsEqual(actualEvents: any[], expectedEvents: any[]) {
-  expect(actualEvents.length == expectedEvents.length);
+  expect(actualEvents.length === expectedEvents.length);
   for (let i = 0; i < actualEvents.length; ++i) {
     const actualEvent = actualEvents[i];
     const expectedEvent = expectedEvents[i];

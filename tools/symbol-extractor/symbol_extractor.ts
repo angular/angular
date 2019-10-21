@@ -15,7 +15,7 @@ export class SymbolExtractor {
   public actual: Symbol[];
 
   static symbolSort(a: Symbol, b: Symbol): number {
-    return a.name == b.name ? 0 : a.name < b.name ? -1 : 1;
+    return a.name === b.name ? 0 : a.name < b.name ? -1 : 1;
   }
 
   static parse(path: string, contents: string): Symbol[] {
@@ -48,7 +48,7 @@ export class SymbolExtractor {
           if (varDecl.initializer && fnRecurseDepth !== 0) {
             symbols.push({name: stripSuffix(varDecl.name.getText())});
           }
-          if (fnRecurseDepth == 0 && isRollupExportSymbol(varDecl)) {
+          if (fnRecurseDepth === 0 && isRollupExportSymbol(varDecl)) {
             ts.forEachChild(child, visitor);
           }
           break;
@@ -67,7 +67,7 @@ export class SymbolExtractor {
   }
 
   static diff(actual: Symbol[], expected: string|((Symbol | string)[])): {[name: string]: number} {
-    if (typeof expected == 'string') {
+    if (typeof expected === 'string') {
       expected = JSON.parse(expected);
     }
     const diff: {[name: string]: number} = {};
@@ -76,7 +76,7 @@ export class SymbolExtractor {
     // with that name. Once they are matched with symbols in the actual output, the count should
     // even out to 0.
     (expected as(Symbol | string)[]).forEach((nameOrSymbol) => {
-      const symbolName = typeof nameOrSymbol == 'string' ? nameOrSymbol : nameOrSymbol.name;
+      const symbolName = typeof nameOrSymbol === 'string' ? nameOrSymbol : nameOrSymbol.name;
       diff[symbolName] = (diff[symbolName] || 0) + 1;
     });
 
@@ -128,6 +128,6 @@ function stripSuffix(text: string): string {
  * @param child
  */
 function isRollupExportSymbol(decl: ts.VariableDeclaration): boolean {
-  return !!(decl.initializer && decl.initializer.kind == ts.SyntaxKind.CallExpression) &&
+  return !!(decl.initializer && decl.initializer.kind === ts.SyntaxKind.CallExpression) &&
       ts.isIdentifier(decl.name) && decl.name.text === 'bundle';
 }

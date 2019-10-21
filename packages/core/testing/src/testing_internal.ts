@@ -115,7 +115,7 @@ export function beforeEachProviders(fn: Function): void {
 
 
 function _it(jsmFn: Function, testName: string, testFn: TestFn, testTimeout = 0): void {
-  if (runnerStack.length == 0) {
+  if (runnerStack.length === 0) {
     // This left here intentionally, as we should never get here, and it aids debugging.
     // tslint:disable-next-line
     debugger;

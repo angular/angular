@@ -1078,7 +1078,7 @@ import {HostListener} from '../../src/metadata/directives';
           ]);
 
           let elm = player.element;
-          let text = i % 2 == 0 ? `even ${i}` : `odd ${i}`;
+          let text = i % 2 === 0 ? `even ${i}` : `odd ${i}`;
           expect(elm.innerText.trim()).toEqual(text);
         }
 
@@ -1098,7 +1098,7 @@ import {HostListener} from '../../src/metadata/directives';
           ]);
 
           let elm = player.element;
-          let text = i % 2 == 0 ? `even ${i}` : `odd ${i}`;
+          let text = i % 2 === 0 ? `even ${i}` : `odd ${i}`;
           expect(elm.innerText.trim()).toEqual(text);
         }
       });
@@ -2263,7 +2263,7 @@ import {HostListener} from '../../src/metadata/directives';
              public childEvent: any;
 
              animateStart(event: any) {
-               if (event.toState == 'void') {
+               if (event.toState === 'void') {
                  this.childEvent = event;
                }
              }
@@ -2287,7 +2287,7 @@ import {HostListener} from '../../src/metadata/directives';
 
              @HostListener('@child.start', ['$event'])
              animateStart(event: any) {
-               if (event.toState == 'void') {
+               if (event.toState === 'void') {
                  this.childEvent = event;
                }
              }

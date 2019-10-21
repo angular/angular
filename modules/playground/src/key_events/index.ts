@@ -59,7 +59,7 @@ export class KeyEventsApp {
       key = 'dot';  // because '.' is used as a separator in event names
     }
     modifierKeys.forEach(modifierName => {
-      if (modifierName != key) {
+      if (modifierName !== key) {
         const modifierGetter = modifierKeyGetters[modifierName];
         if (modifierGetter(event)) {
           fullKey += modifierName + '.';

@@ -23,7 +23,7 @@ function isMethodCallOf(callExpression: ts.CallExpression, memberName: string): 
   if (expression.kind === ts.SyntaxKind.PropertyAccessExpression) {
     const propertyAccessExpression = <ts.PropertyAccessExpression>expression;
     const name = propertyAccessExpression.name;
-    if (name.kind == ts.SyntaxKind.Identifier) {
+    if (name.kind === ts.SyntaxKind.Identifier) {
       return name.text === memberName;
     }
   }
@@ -89,7 +89,7 @@ export interface ImportMetadata {
 
 
 function getSourceFileOfNode(node: ts.Node | undefined): ts.SourceFile {
-  while (node && node.kind != ts.SyntaxKind.SourceFile) {
+  while (node && node.kind !== ts.SyntaxKind.SourceFile) {
     node = node.parent;
   }
   return <ts.SourceFile>node;
@@ -129,7 +129,7 @@ export class Evaluator {
       private recordExport?: (name: string, value: MetadataValue) => void) {}
 
   nameOf(node: ts.Node|undefined): string|MetadataError {
-    if (node && node.kind == ts.SyntaxKind.Identifier) {
+    if (node && node.kind === ts.SyntaxKind.Identifier) {
       return (<ts.Identifier>node).text;
     }
     const result = node && this.evaluateNode(node);
@@ -257,7 +257,7 @@ export class Evaluator {
     function recordEntry(entry: MetadataValue, node: ts.Node): MetadataValue {
       if (t.options.substituteExpression) {
         const newEntry = t.options.substituteExpression(entry, node);
-        if (t.recordExport && newEntry != entry && isMetadataGlobalReferenceExpression(newEntry)) {
+        if (t.recordExport && newEntry !== entry && isMetadataGlobalReferenceExpression(newEntry)) {
           t.recordExport(newEntry.name, entry);
         }
         entry = newEntry;
@@ -290,7 +290,7 @@ export class Evaluator {
             case ts.SyntaxKind.ShorthandPropertyAssignment:
             case ts.SyntaxKind.PropertyAssignment:
               const assignment = <ts.PropertyAssignment|ts.ShorthandPropertyAssignment>child;
-              if (assignment.name.kind == ts.SyntaxKind.StringLiteral) {
+              if (assignment.name.kind === ts.SyntaxKind.StringLiteral) {
                 const name = (assignment.name as ts.StringLiteral).text;
                 quoted.push(name);
               }
@@ -350,7 +350,7 @@ export class Evaluator {
         if (isCallOf(callExpression, 'forwardRef') &&
             arrayOrEmpty(callExpression.arguments).length === 1) {
           const firstArgument = callExpression.arguments[0];
-          if (firstArgument.kind == ts.SyntaxKind.ArrowFunction) {
+          if (firstArgument.kind === ts.SyntaxKind.ArrowFunction) {
             const arrowFunction = <ts.ArrowFunction>firstArgument;
             return recordEntry(this.evaluateNode(arrowFunction.body), node);
           }
@@ -479,8 +479,8 @@ export class Evaluator {
         // Remove null and undefined from the list of unions.
         const references = unionType.types
                                .filter(
-                                   n => n.kind != ts.SyntaxKind.NullKeyword &&
-                                       n.kind != ts.SyntaxKind.UndefinedKeyword)
+                                   n => n.kind !== ts.SyntaxKind.NullKeyword &&
+                                       n.kind !== ts.SyntaxKind.UndefinedKeyword)
                                .map(n => this.evaluateNode(n));
 
         // The remmaining reference must be the same. If two have type arguments consider them
@@ -490,8 +490,8 @@ export class Evaluator {
           const reference = references[i];
           if (isMetadataSymbolicReferenceExpression(reference)) {
             if (candidate) {
-              if ((reference as any).name == candidate.name &&
-                  (reference as any).module == candidate.module && !(reference as any).arguments) {
+              if ((reference as any).name === candidate.name &&
+                  (reference as any).module === candidate.module && !(reference as any).arguments) {
                 candidate = reference;
               }
             } else {
@@ -591,8 +591,10 @@ export class Evaluator {
               case ts.SyntaxKind.CaretToken:
                 return <any>left ^ <any>right;
               case ts.SyntaxKind.EqualsEqualsToken:
+                // tslint:disable-next-line: triple-equals
                 return <any>left == <any>right;
               case ts.SyntaxKind.ExclamationEqualsToken:
+                // tslint:disable-next-line: triple-equals
                 return <any>left != <any>right;
               case ts.SyntaxKind.EqualsEqualsEqualsToken:
                 return <any>left === <any>right;
@@ -669,7 +671,7 @@ export class Evaluator {
             if (previous !== '') {
               result = {__symbolic: 'binop', operator: '+', left: previous, right: expr};
             }
-            if (literal != '') {
+            if (literal !== '') {
               result = {__symbolic: 'binop', operator: '+', left: result, right: literal};
             }
             return result;
@@ -686,7 +688,7 @@ export class Evaluator {
 }
 
 function isPropertyAssignment(node: ts.Node): node is ts.PropertyAssignment {
-  return node.kind == ts.SyntaxKind.PropertyAssignment;
+  return node.kind === ts.SyntaxKind.PropertyAssignment;
 }
 
 const empty = ts.createNodeArray<any>();

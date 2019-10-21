@@ -160,7 +160,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
       const startTime = context.currentTimeline.currentTime;
       const endTime = this._visitSubInstructions(
           elementInstructions, innerContext, innerContext.options as AnimateChildOptions);
-      if (startTime != endTime) {
+      if (startTime !== endTime) {
         // we do this on the upper context because we created a sub context for
         // the sub child animations
         context.transformIntoNewTimeline(endTime);
@@ -215,7 +215,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
       ctx.transformIntoNewTimeline();
 
       if (options.delay != null) {
-        if (ctx.previousNode.type == AnimationMetadataType.Style) {
+        if (ctx.previousNode.type === AnimationMetadataType.Style) {
           ctx.currentTimeline.snapshotCurrentStyles();
           ctx.previousNode = DEFAULT_NOOP_PREVIOUS_NODE;
         }
@@ -287,7 +287,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
     }
 
     const style = ast.style;
-    if (style.type == AnimationMetadataType.Keyframes) {
+    if (style.type === AnimationMetadataType.Keyframes) {
       this.visitKeyframes(style, context);
     } else {
       context.incrementTime(timings.duration);
@@ -351,8 +351,9 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
     const options = (ast.options || {}) as AnimationQueryOptions;
     const delay = options.delay ? resolveTimingValue(options.delay) : 0;
 
-    if (delay && (context.previousNode.type === AnimationMetadataType.Style ||
-                  (startTime == 0 && context.currentTimeline.getCurrentStyleProperties().length))) {
+    if (delay &&
+        (context.previousNode.type === AnimationMetadataType.Style ||
+         (startTime === 0 && context.currentTimeline.getCurrentStyleProperties().length))) {
       context.currentTimeline.snapshotCurrentStyles();
       context.previousNode = DEFAULT_NOOP_PREVIOUS_NODE;
     }
@@ -566,7 +567,7 @@ export class AnimationTimelineContext {
     if (selector.length > 0) {  // if :self is only used then the selector is empty
       selector = selector.replace(ENTER_TOKEN_REGEX, '.' + this._enterClassName);
       selector = selector.replace(LEAVE_TOKEN_REGEX, '.' + this._leaveClassName);
-      const multi = limit != 1;
+      const multi = limit !== 1;
       let elements = this._driver.query(this.element, selector, multi);
       if (limit !== 0) {
         elements = limit < 0 ? elements.slice(elements.length + limit, elements.length) :
@@ -575,7 +576,7 @@ export class AnimationTimelineContext {
       results.push(...elements);
     }
 
-    if (!optional && results.length == 0) {
+    if (!optional && results.length === 0) {
       errors.push(
           `\`query("${originalSelector}")\` returned zero elements. (Use \`query("${originalSelector}", { optional: true })\` if you wish to allow this.)`);
     }
@@ -634,7 +635,7 @@ export class TimelineBuilder {
     // and that style() step is the very first style() value in the animation
     // then we need to make a copy of the keyframe [0, copy, 1] so that the delay
     // properly applies the style() values to work with the stagger...
-    const hasPreStyleStep = this._keyframes.size == 1 && Object.keys(this._pendingStyles).length;
+    const hasPreStyleStep = this._keyframes.size === 1 && Object.keys(this._pendingStyles).length;
 
     if (this.duration || hasPreStyleStep) {
       this.forwardTime(this.currentTime + delay);
@@ -724,7 +725,7 @@ export class TimelineBuilder {
   applyStylesToKeyframe() {
     const styles = this._pendingStyles;
     const props = Object.keys(styles);
-    if (props.length == 0) return;
+    if (props.length === 0) return;
 
     this._pendingStyles = {};
 
@@ -779,9 +780,9 @@ export class TimelineBuilder {
       const finalKeyframe = copyStyles(keyframe, true);
       Object.keys(finalKeyframe).forEach(prop => {
         const value = finalKeyframe[prop];
-        if (value == PRE_STYLE) {
+        if (value === PRE_STYLE) {
           preStyleProps.add(prop);
-        } else if (value == AUTO_STYLE) {
+        } else if (value === AUTO_STYLE) {
           postStyleProps.add(prop);
         }
       });

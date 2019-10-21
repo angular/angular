@@ -265,7 +265,7 @@ export class MockCompilerHost implements ts.CompilerHost {
       return true;
     }
     const effectiveName = this.getEffectiveName(fileName);
-    if (effectiveName == fileName) {
+    if (effectiveName === fileName) {
       return open(fileName, this.data) != null;
     }
     if (fileName.match(rxjs)) {
@@ -692,7 +692,7 @@ export function expectNoDiagnostics(program: ts.Program) {
   function lineNoOf(offset: number, text: string): number {
     let result = 1;
     for (let i = 0; i < offset; i++) {
-      if (text[i] == '\n') result++;
+      if (text[i] === '\n') result++;
     }
     return result;
   }
@@ -704,9 +704,9 @@ export function expectNoDiagnostics(program: ts.Program) {
       const source = diagnostic.file.text;
       let lineStart = start;
       let lineEnd = end;
-      while (lineStart > 0 && source[lineStart] != '\n') lineStart--;
+      while (lineStart > 0 && source[lineStart] !== '\n') lineStart--;
       if (lineStart < start) lineStart++;
-      while (lineEnd < source.length && source[lineEnd] != '\n') lineEnd++;
+      while (lineEnd < source.length && source[lineEnd] !== '\n') lineEnd++;
       let line = source.substring(lineStart, lineEnd);
       const lineIndex = line.indexOf('/n');
       if (lineIndex > 0) {

@@ -63,7 +63,7 @@ export function prepareSyntheticListenerName(name: string, phase: string) {
 }
 
 export function isSyntheticPropertyOrListener(name: string) {
-  return name.charAt(0) == ANIMATE_SYMBOL_PREFIX;
+  return name.charAt(0) === ANIMATE_SYMBOL_PREFIX;
 }
 
 export function getSyntheticPropertyName(name: string) {

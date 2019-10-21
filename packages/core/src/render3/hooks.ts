@@ -226,7 +226,7 @@ function callHooks(
       const isInitHook = arr[i] < 0;
       if (isInitHook)
         currentView[PREORDER_HOOK_FLAGS] += PreOrderHookFlags.NumberOfInitHooksCalledIncrementer;
-      if (lastNodeIndexFound < nodeIndexLimit || nodeIndexLimit == -1) {
+      if (lastNodeIndexFound < nodeIndexLimit || nodeIndexLimit === -1) {
         callHook(currentView, initPhase, arr, i);
         currentView[PREORDER_HOOK_FLAGS] =
             (currentView[PREORDER_HOOK_FLAGS] & PreOrderHookFlags.NumberOfInitHooksCalledMask) + i +

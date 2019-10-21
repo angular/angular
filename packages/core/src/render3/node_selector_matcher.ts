@@ -116,7 +116,7 @@ export function isNodeMatchingSelector(
       }
 
       const isInlineTemplate =
-          tNode.type == TNodeType.Container && tNode.tagName !== NG_TEMPLATE_SELECTOR;
+          tNode.type === TNodeType.Container && tNode.tagName !== NG_TEMPLATE_SELECTOR;
       const attrName = (mode & SelectorFlags.CLASS) ? 'class' : current;
       const attrIndexInNode =
           findAttrIndexInNode(attrName, nodeAttrs, isInlineTemplate, isProjectionMode);

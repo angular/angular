@@ -317,7 +317,7 @@ import {first, map} from 'rxjs/operators';
       describe('promises', () => {
         function promiseValidator(response: {[key: string]: any}): AsyncValidatorFn {
           return (c: AbstractControl) => {
-            const res = c.value != 'expected' ? response : null;
+            const res = c.value !== 'expected' ? response : null;
             return Promise.resolve(res);
           };
         }
@@ -379,7 +379,7 @@ import {first, map} from 'rxjs/operators';
       describe('observables', () => {
         function observableValidator(response: {[key: string]: any}): AsyncValidatorFn {
           return (c: AbstractControl) => {
-            const res = c.value != 'expected' ? response : null;
+            const res = c.value !== 'expected' ? response : null;
             return of (res);
           };
         }

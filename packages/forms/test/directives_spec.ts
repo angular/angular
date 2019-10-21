@@ -30,8 +30,8 @@ function asyncValidator(expected: any, timeout = 0) {
   return (c: AbstractControl): any => {
     let resolve: (result: any) => void = undefined !;
     const promise = new Promise(res => { resolve = res; });
-    const res = c.value != expected ? {'async': true} : null;
-    if (timeout == 0) {
+    const res = c.value !== expected ? {'async': true} : null;
+    if (timeout === 0) {
       resolve(res);
     } else {
       setTimeout(() => { resolve(res); }, timeout);
@@ -234,7 +234,7 @@ function asyncValidator(expected: any, timeout = 0) {
 
       describe('addFormGroup', () => {
         const matchingPasswordsValidator = (g: FormGroup) => {
-          if (g.controls['password'].value != g.controls['passwordConfirm'].value) {
+          if (g.controls['password'].value !== g.controls['passwordConfirm'].value) {
             return {'differentPasswords': true};
           } else {
             return null;

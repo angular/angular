@@ -97,7 +97,7 @@ function resolveProvider(
       const existingFactoryIndex = indexOf(
           token, tInjectables, isViewProvider ? beginIndex : beginIndex + cptViewProvidersCount,
           endIndex);
-      if (existingFactoryIndex == -1) {
+      if (existingFactoryIndex === -1) {
         diPublicInInjector(
             getOrCreateNodeInjectorForNode(
                 tNode as TElementNode | TContainerNode | TElementContainerNode, lView),

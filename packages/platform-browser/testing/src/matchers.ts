@@ -173,7 +173,7 @@ _global.beforeEach(function() {
         compare: function(actual: any, expectedText: string) {
           const actualText = elementText(actual);
           return {
-            pass: actualText == expectedText,
+            pass: actualText === expectedText,
             get message() { return 'Expected ' + actualText + ' to be equal to ' + expectedText; }
           };
         }
@@ -186,7 +186,7 @@ _global.beforeEach(function() {
       function buildError(isNot: boolean) {
         return function(actual: any, className: string) {
           return {
-            pass: hasClass(actual, className) == !isNot,
+            pass: hasClass(actual, className) === !isNot,
             get message() {
               return `Expected ${actual.outerHTML} ${isNot ? 'not ' : ''}to contain the CSS class "${className}"`;
             }
@@ -242,7 +242,7 @@ _global.beforeEach(function() {
           });
 
           return {
-            pass: missedMethods.length == 0,
+            pass: missedMethods.length === 0,
             get message() {
               return 'Expected ' + actualObject + ' to have the following methods: ' +
                   missedMethods.join(', ');
@@ -291,7 +291,7 @@ function elementText(n: any): string {
     return '';
   }
 
-  if (getDOM().isElementNode(n) && (n as Element).tagName == 'CONTENT') {
+  if (getDOM().isElementNode(n) && (n as Element).tagName === 'CONTENT') {
     return elementText(Array.prototype.slice.apply((<any>n).getDistributedNodes()));
   }
 

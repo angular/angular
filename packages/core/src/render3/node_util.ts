@@ -27,7 +27,7 @@ export function getParentInjectorTNode(
     // view offset is 0
     const injectorIndex = startTNode.parent.injectorIndex;
     let parentTNode = startTNode.parent;
-    while (parentTNode.parent != null && injectorIndex == parentTNode.injectorIndex) {
+    while (parentTNode.parent != null && injectorIndex === parentTNode.injectorIndex) {
       parentTNode = parentTNode.parent;
     }
     return parentTNode;

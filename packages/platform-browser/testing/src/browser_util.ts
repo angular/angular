@@ -29,8 +29,8 @@ export class BrowserDetection {
 
   get isAndroid(): boolean {
     return this._ua.indexOf('Mozilla/5.0') > -1 && this._ua.indexOf('Android') > -1 &&
-        this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') == -1 &&
-        this._ua.indexOf('IEMobile') == -1;
+        this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') === -1 &&
+        this._ua.indexOf('IEMobile') === -1;
   }
 
   get isEdge(): boolean { return this._ua.indexOf('Edge') > -1; }
@@ -38,13 +38,13 @@ export class BrowserDetection {
   get isIE(): boolean { return this._ua.indexOf('Trident') > -1; }
 
   get isWebkit(): boolean {
-    return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1 &&
-        this._ua.indexOf('IEMobile') == -1;
+    return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') === -1 &&
+        this._ua.indexOf('IEMobile') === -1;
   }
 
   get isIOS7(): boolean {
     return (this._ua.indexOf('iPhone OS 7') > -1 || this._ua.indexOf('iPad OS 7') > -1) &&
-        this._ua.indexOf('IEMobile') == -1;
+        this._ua.indexOf('IEMobile') === -1;
   }
 
   get isSlow(): boolean { return this.isAndroid || this.isIE || this.isIOS7; }
@@ -58,15 +58,15 @@ export class BrowserDetection {
   }
 
   get isChromeDesktop(): boolean {
-    return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Mobile Safari') == -1 &&
-        this._ua.indexOf('Edge') == -1;
+    return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Mobile Safari') === -1 &&
+        this._ua.indexOf('Edge') === -1;
   }
 
   // "Old Chrome" means Chrome 3X, where there are some discrepancies in the Intl API.
   // Android 4.4 and 5.X have such browsers by default (respectively 30 and 39).
   get isOldChrome(): boolean {
     return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Chrome/3') > -1 &&
-        this._ua.indexOf('Edge') == -1;
+        this._ua.indexOf('Edge') === -1;
   }
 
   get supportsCustomElements() { return (typeof(<any>global).customElements !== 'undefined'); }
@@ -162,7 +162,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
     }
 
     // Closing tag
-    if (_selfClosingTags.indexOf(tagName) == -1) {
+    if (_selfClosingTags.indexOf(tagName) === -1) {
       result += `</${tagName}>`;
     }
   } else if (isCommentNode(el)) {
@@ -210,7 +210,7 @@ export function supportsWebAnimation(): boolean {
 
 export function hasStyle(element: any, styleName: string, styleValue?: string | null): boolean {
   const value = element.style[styleName] || '';
-  return styleValue ? value == styleValue : value.length > 0;
+  return styleValue ? value === styleValue : value.length > 0;
 }
 
 export function hasClass(element: any, className: string): boolean {

@@ -277,7 +277,7 @@ export class BindingParser {
 
     // Check for special cases (prefix style, attr, class)
     if (parts.length > 1) {
-      if (parts[0] == ATTRIBUTE_PREFIX) {
+      if (parts[0] === ATTRIBUTE_PREFIX) {
         boundPropertyName = parts[1];
         if (!skipValidation) {
           this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, true);
@@ -293,11 +293,11 @@ export class BindingParser {
         }
 
         bindingType = BindingType.Attribute;
-      } else if (parts[0] == CLASS_PREFIX) {
+      } else if (parts[0] === CLASS_PREFIX) {
         boundPropertyName = parts[1];
         bindingType = BindingType.Class;
         securityContexts = [SecurityContext.NONE];
-      } else if (parts[0] == STYLE_PREFIX) {
+      } else if (parts[0] === STYLE_PREFIX) {
         unit = parts.length > 2 ? parts[2] : null;
         boundPropertyName = parts[1];
         bindingType = BindingType.Style;
@@ -460,7 +460,7 @@ export class PipeCollector extends RecursiveAstVisitor {
 }
 
 function isAnimationLabel(name: string): boolean {
-  return name[0] == '@';
+  return name[0] === '@';
 }
 
 export function calcPossibleSecurityContexts(

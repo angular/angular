@@ -69,7 +69,7 @@ function transformSourceFile(
 
   // Visit nodes matching the request and synthetic nodes added by tsickle
   function shouldVisit(pos: number, end: number): boolean {
-    return (pos <= max && end >= min) || pos == -1;
+    return (pos <= max && end >= min) || pos === -1;
   }
 
   function visitSourceFile(sourceFile: ts.SourceFile): ts.SourceFile {
@@ -80,7 +80,7 @@ function transformSourceFile(
         // Get the original node before tsickle
         const {pos, end, kind, parent: originalParent} = ts.getOriginalNode(node);
         const nodeRequest = requests.get(pos);
-        if (nodeRequest && nodeRequest.kind == kind && nodeRequest.end == end) {
+        if (nodeRequest && nodeRequest.kind === kind && nodeRequest.end === end) {
           // This node is requested to be rewritten as a reference to the exported name.
           if (originalParent && originalParent.kind === ts.SyntaxKind.VariableDeclaration) {
             // As the value represents the whole initializer of a variable declaration,
@@ -224,7 +224,7 @@ function isEligibleForLowering(node: ts.Node | undefined): boolean {
         return false;
       case ts.SyntaxKind.VariableDeclaration:
         const isExported = (ts.getCombinedModifierFlags(node as ts.VariableDeclaration) &
-                            ts.ModifierFlags.Export) == 0;
+                            ts.ModifierFlags.Export) === 0;
         // This might be unnecessary, as the variable might be exported and only used as a reference
         // in another expression. However, the variable also might be involved in provider
         // definitions. If that's the case, there is a specific token (`ROUTES`) which the compiler
@@ -251,10 +251,10 @@ function isRewritten(value: any): boolean {
 }
 
 function isLiteralFieldNamed(node: ts.Node, names: Set<string>): boolean {
-  if (node.parent && node.parent.kind == ts.SyntaxKind.PropertyAssignment) {
+  if (node.parent && node.parent.kind === ts.SyntaxKind.PropertyAssignment) {
     const property = node.parent as ts.PropertyAssignment;
-    if (property.parent && property.parent.kind == ts.SyntaxKind.ObjectLiteralExpression &&
-        property.name && property.name.kind == ts.SyntaxKind.Identifier) {
+    if (property.parent && property.parent.kind === ts.SyntaxKind.ObjectLiteralExpression &&
+        property.name && property.name.kind === ts.SyntaxKind.Identifier) {
       const propertyName = property.name as ts.Identifier;
       return names.has(propertyName.text);
     }
@@ -305,7 +305,7 @@ export class LowerMetadataTransform implements RequestsMap, MetadataTransformer 
     const isExportedSymbol = (() => {
       let exportTable: Set<string>;
       return (node: ts.Node) => {
-        if (node.kind == ts.SyntaxKind.Identifier) {
+        if (node.kind === ts.SyntaxKind.Identifier) {
           const ident = node as ts.Identifier;
 
           if (!exportTable) {
@@ -381,7 +381,7 @@ function createExportTableFor(sourceFile: ts.SourceFile): Set<string> {
       case ts.SyntaxKind.ClassDeclaration:
       case ts.SyntaxKind.FunctionDeclaration:
       case ts.SyntaxKind.InterfaceDeclaration:
-        if ((ts.getCombinedModifierFlags(node as ts.Declaration) & ts.ModifierFlags.Export) != 0) {
+        if ((ts.getCombinedModifierFlags(node as ts.Declaration) & ts.ModifierFlags.Export) !== 0) {
           const classDeclaration =
               node as(ts.ClassDeclaration | ts.FunctionDeclaration | ts.InterfaceDeclaration);
           const name = classDeclaration.name;
@@ -396,8 +396,8 @@ function createExportTableFor(sourceFile: ts.SourceFile): Set<string> {
         break;
       case ts.SyntaxKind.VariableDeclaration:
         const variableDeclaration = node as ts.VariableDeclaration;
-        if ((ts.getCombinedModifierFlags(variableDeclaration) & ts.ModifierFlags.Export) != 0 &&
-            variableDeclaration.name.kind == ts.SyntaxKind.Identifier) {
+        if ((ts.getCombinedModifierFlags(variableDeclaration) & ts.ModifierFlags.Export) !== 0 &&
+            variableDeclaration.name.kind === ts.SyntaxKind.Identifier) {
           const name = variableDeclaration.name as ts.Identifier;
           exportTable.add(name.text);
         }

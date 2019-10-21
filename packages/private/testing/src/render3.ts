@@ -61,7 +61,7 @@ let requestAnimationFrameCount = 0;
  * and does not try to load domino in the browser.
  */
 const domino: any = (function(domino) {
-  if (typeof global == 'object' && global.process && typeof require == 'function') {
+  if (typeof global === 'object' && global.process && typeof require === 'function') {
     try {
       return require(domino);
     } catch (e) {
@@ -119,5 +119,5 @@ export function cleanupDocument(): void {
   }
 }
 
-if (typeof beforeEach == 'function') beforeEach(ensureDocument);
-if (typeof afterEach == 'function') beforeEach(cleanupDocument);
+if (typeof beforeEach === 'function') beforeEach(ensureDocument);
+if (typeof afterEach === 'function') beforeEach(cleanupDocument);

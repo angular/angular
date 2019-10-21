@@ -44,7 +44,7 @@ export function throwInvalidProviderError(
     ngModuleType?: InjectorType<any>, providers?: any[], provider?: any) {
   let ngModuleDetail = '';
   if (ngModuleType && providers) {
-    const providerDetail = providers.map(v => v == provider ? '?' + provider + '?' : '...');
+    const providerDetail = providers.map(v => v === provider ? '?' + provider + '?' : '...');
     ngModuleDetail =
         ` - only instances of Provider and Type are allowed, got: [${providerDetail.join(', ')}]`;
   }

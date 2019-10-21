@@ -24,13 +24,13 @@ export interface TagDefinition {
 }
 
 export function splitNsName(elementName: string): [string | null, string] {
-  if (elementName[0] != ':') {
+  if (elementName[0] !== ':') {
     return [null, elementName];
   }
 
   const colonIndex = elementName.indexOf(':', 1);
 
-  if (colonIndex == -1) {
+  if (colonIndex === -1) {
     throw new Error(`Unsupported format "${elementName}" expecting ":namespace:name"`);
   }
 

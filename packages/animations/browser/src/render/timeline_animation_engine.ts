@@ -118,12 +118,12 @@ export class TimelineAnimationEngine {
   }
 
   command(id: string, element: any, command: string, args: any[]): void {
-    if (command == 'register') {
+    if (command === 'register') {
       this.register(id, args[0] as AnimationMetadata | AnimationMetadata[]);
       return;
     }
 
-    if (command == 'create') {
+    if (command === 'create') {
       const options = (args[0] || {}) as AnimationOptions;
       this.create(id, element, options);
       return;

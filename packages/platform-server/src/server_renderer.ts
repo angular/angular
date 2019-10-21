@@ -175,7 +175,7 @@ class DefaultServerRenderer2 implements Renderer2 {
     // Skip `innerhtml` which is conservatively marked as an attribute for security
     // purposes but is not actually an attribute.
     const tagName = (el.tagName as string).toLowerCase();
-    if (value != null && (typeof value === 'number' || typeof value == 'string') &&
+    if (value != null && (typeof value === 'number' || typeof value === 'string') &&
         name.toLowerCase() !== 'innerhtml' && this.schema.hasElement(tagName, EMPTY_ARRAY) &&
         this.schema.hasProperty(tagName, name, EMPTY_ARRAY) &&
         this._isSafeToReflectProperty(tagName, name)) {

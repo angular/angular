@@ -110,7 +110,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     if (types.length) {
       result = types[0];
       for (let i = 1; i < types.length; i++) {
-        if (types[i] != result) {
+        if (types[i] !== result) {
           result = undefined;
           break;
         }
@@ -131,12 +131,12 @@ class TypeScriptSymbolQuery implements SymbolQuery {
   }
 
   getNonNullableType(symbol: Symbol): Symbol {
-    if (symbol instanceof TypeWrapper && (typeof this.checker.getNonNullableType == 'function')) {
+    if (symbol instanceof TypeWrapper && (typeof this.checker.getNonNullableType === 'function')) {
       const tsType = symbol.tsType;
       const nonNullableType = this.checker.getNonNullableType(tsType);
-      if (nonNullableType != tsType) {
+      if (nonNullableType !== tsType) {
         return new TypeWrapper(nonNullableType, symbol.context);
-      } else if (nonNullableType == tsType) {
+      } else if (nonNullableType === tsType) {
         return symbol;
       }
     }
@@ -193,7 +193,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
       const constructorDeclaration = constructor.declarations ![0] as ts.ConstructorTypeNode;
       for (const parameter of constructorDeclaration.parameters) {
         const type = this.checker.getTypeAtLocation(parameter.type !);
-        if (type.symbol !.name == 'TemplateRef' && isReferenceType(type)) {
+        if (type.symbol !.name === 'TemplateRef' && isReferenceType(type)) {
           const typeReference = type as ts.TypeReference;
           if (typeReference.typeArguments && typeReference.typeArguments.length === 1) {
             return typeReference.typeArguments[0].symbol;
@@ -221,7 +221,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
 
 function typeCallable(type: ts.Type): boolean {
   const signatures = type.getCallSignatures();
-  return signatures && signatures.length != 0;
+  return signatures && signatures.length !== 0;
 }
 
 function signaturesOf(type: ts.Type, context: TypeContext): Signature[] {
@@ -260,7 +260,7 @@ class TypeWrapper implements Symbol {
   get callable(): boolean { return typeCallable(this.tsType); }
 
   get nullable(): boolean {
-    return this.context.checker.getNonNullableType(this.tsType) != this.tsType;
+    return this.context.checker.getNonNullableType(this.tsType) !== this.tsType;
   }
 
   get definition(): Definition|undefined {
@@ -316,7 +316,7 @@ class SymbolWrapper implements Symbol {
 
   members(): SymbolTable {
     if (!this._members) {
-      if ((this.symbol.flags & (ts.SymbolFlags.Class | ts.SymbolFlags.Interface)) != 0) {
+      if ((this.symbol.flags & (ts.SymbolFlags.Class | ts.SymbolFlags.Interface)) !== 0) {
         const declaredType = this.context.checker.getDeclaredTypeOfSymbol(this.symbol);
         const typeWrapper = new TypeWrapper(declaredType, this.context);
         this._members = typeWrapper.members();
@@ -516,13 +516,13 @@ class PipesTable implements SymbolTable {
   get size() { return this.pipes.length; }
 
   get(key: string): Symbol|undefined {
-    const pipe = this.pipes.find(pipe => pipe.name == key);
+    const pipe = this.pipes.find(pipe => pipe.name === key);
     if (pipe) {
       return new PipeSymbol(pipe, this.context);
     }
   }
 
-  has(key: string): boolean { return this.pipes.find(pipe => pipe.name == key) != null; }
+  has(key: string): boolean { return this.pipes.find(pipe => pipe.name === key) != null; }
 
   values(): Symbol[] { return this.pipes.map(pipe => new PipeSymbol(pipe, this.context)); }
 }
@@ -557,7 +557,7 @@ class PipeSymbol implements Symbol {
 
   selectSignature(types: Symbol[]): Signature|undefined {
     let signature = selectSignature(this.tsType, this.context, types) !;
-    if (types.length == 1) {
+    if (types.length === 1) {
       const parameterType = types[0];
       if (parameterType instanceof TypeWrapper) {
         let resultType: ts.Type|undefined = undefined;
@@ -634,7 +634,7 @@ function findClassSymbolInContext(type: StaticSymbol, context: TypeContext): ts.
   if (sourceFile) {
     const moduleSymbol = (sourceFile as any).module || (sourceFile as any).symbol;
     const exports = context.checker.getExportsOfModule(moduleSymbol);
-    return (exports || []).find(symbol => symbol.name == type.name);
+    return (exports || []).find(symbol => symbol.name === type.name);
   }
 }
 
@@ -766,7 +766,7 @@ function getContainerOf(symbol: ts.Symbol, context: TypeContext): Symbol|undefin
 }
 
 function getTypeParameterOf(type: ts.Type, name: string): ts.Type|undefined {
-  if (type && type.symbol && type.symbol.name == name) {
+  if (type && type.symbol && type.symbol.name === name) {
     const typeArguments: ts.Type[] = (type as any).typeArguments;
     if (typeArguments && typeArguments.length <= 1) {
       return typeArguments[0];
@@ -794,7 +794,7 @@ function typeKindOf(type: ts.Type | undefined): BuiltinType {
       if (unionType.types.length > 0) {
         candidate = typeKindOf(unionType.types[0]);
         for (const subType of unionType.types) {
-          if (candidate != typeKindOf(subType)) {
+          if (candidate !== typeKindOf(subType)) {
             return BuiltinType.Other;
           }
         }

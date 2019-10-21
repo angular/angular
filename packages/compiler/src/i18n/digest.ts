@@ -165,7 +165,7 @@ export function fingerprint(str: string): [number, number] {
 
   let [hi, lo] = [hash32(utf8, 0), hash32(utf8, 102072)];
 
-  if (hi == 0 && (lo == 0 || lo == 1)) {
+  if (hi === 0 && (lo === 0 || lo === 1)) {
     hi = hi ^ 0x130f9bef;
     lo = lo ^ -0x6b5f56d8;
   }

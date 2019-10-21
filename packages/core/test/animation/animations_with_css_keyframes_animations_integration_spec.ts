@@ -365,7 +365,7 @@ function getPlayer(engine: AnimationEngine, index = 0) {
 function findStyleObjectWithKeyframes(index?: number): any|null {
   const sheetWithKeyframes = document.styleSheets[document.styleSheets.length - (index || 1)];
   const styleElms = Array.from(document.querySelectorAll('head style') as any as any[]);
-  return styleElms.find(elm => elm.sheet == sheetWithKeyframes) || null;
+  return styleElms.find(elm => elm.sheet === sheetWithKeyframes) || null;
 }
 
 function assertEasing(node: any, easing: string) {

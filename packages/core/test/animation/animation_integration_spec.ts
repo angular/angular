@@ -363,7 +363,7 @@ const DEFAULT_COMPONENT_ID = '1';
         let capturedElement: any;
         const transitionFn = (fromState: string, toState: string, element: any) => {
           capturedElement = element;
-          return toState == valueToMatch;
+          return toState === valueToMatch;
         };
 
         @Component({
@@ -408,7 +408,7 @@ const DEFAULT_COMPONENT_ID = '1';
          () => {
            const transitionFn =
                (fromState: string, toState: string, element?: any,
-                params?: {[key: string]: any}) => { return params !['doMatch'] == true; };
+                params?: {[key: string]: any}) => { return params !['doMatch'] === true; };
 
            @Component({
              selector: 'if-cmp',
@@ -502,7 +502,7 @@ const DEFAULT_COMPONENT_ID = '1';
              doneEvent: any;
 
              callback(event: any) {
-               if (event.phaseName == 'done') {
+               if (event.phaseName === 'done') {
                  this.doneEvent = event;
                } else {
                  this.startEvent = event;
@@ -2275,7 +2275,7 @@ const DEFAULT_COMPONENT_ID = '1';
           update() { this.exp = 'go'; }
 
           ngDoCheck() {
-            if (this.exp == 'go') {
+            if (this.exp === 'go') {
               this.inner.update();
             }
           }

@@ -459,7 +459,7 @@ export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
             if (index > 0) return;
             break;
           case '..':
-            if (index > 0 && result.length != 0) result.pop();
+            if (index > 0 && result.length !== 0) result.pop();
             return;
         }
         result.push(part);
@@ -486,7 +486,7 @@ export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
       }
       return baseName + '.d.ts';
     }
-    if (modulePath == 'unresolved') {
+    if (modulePath === 'unresolved') {
       return undefined !;
     }
     return '/tmp/' + modulePath + '.d.ts';

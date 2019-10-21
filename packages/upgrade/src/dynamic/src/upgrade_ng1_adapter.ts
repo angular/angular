@@ -67,7 +67,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
 
     const context = (btcIsObject) ? this.directive !.bindToController : this.directive !.scope;
 
-    if (typeof context == 'object') {
+    if (typeof context === 'object') {
       Object.keys(context).forEach(propName => {
         const definition = context[propName];
         const bindingType = definition.charAt(0);
@@ -200,8 +200,8 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
 
     // Linking
     const link = this.directive.link;
-    const preLink = typeof link == 'object' && link.pre;
-    const postLink = typeof link == 'object' ? link.post : link;
+    const preLink = typeof link === 'object' && link.pre;
+    const postLink = typeof link === 'object' ? link.post : link;
     const attrs: IAttributes = NOT_SUPPORTED;
     const transcludeFn: ITranscludeFunction = NOT_SUPPORTED;
     if (preLink) {

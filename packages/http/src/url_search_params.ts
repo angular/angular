@@ -13,7 +13,7 @@ function paramParser(rawParams: string = ''): Map<string, string[]> {
     params.forEach((param: string) => {
       const eqIdx = param.indexOf('=');
       const [key, val]: string[] =
-          eqIdx == -1 ? [param, ''] : [param.slice(0, eqIdx), param.slice(eqIdx + 1)];
+          eqIdx === -1 ? [param, ''] : [param.slice(0, eqIdx), param.slice(eqIdx + 1)];
       const list = map.get(key) || [];
       list.push(val);
       map.set(key, list);

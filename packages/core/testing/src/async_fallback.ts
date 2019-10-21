@@ -92,7 +92,7 @@ function runInTestZone(
         () => {
           // Need to restore the original zone.
           currentZone.run(() => {
-            if (proxyZoneSpec.getDelegate() == testZoneSpec) {
+            if (proxyZoneSpec.getDelegate() === testZoneSpec) {
               // Only reset the zone spec if it's sill this one. Otherwise, assume it's OK.
               proxyZoneSpec.setDelegate(previousDelegate);
             }
@@ -102,7 +102,7 @@ function runInTestZone(
         (error: any) => {
           // Need to restore the original zone.
           currentZone.run(() => {
-            if (proxyZoneSpec.getDelegate() == testZoneSpec) {
+            if (proxyZoneSpec.getDelegate() === testZoneSpec) {
               // Only reset the zone spec if it's sill this one. Otherwise, assume it's OK.
               proxyZoneSpec.setDelegate(previousDelegate);
             }

@@ -452,7 +452,7 @@ function addEvents(events: ParsedEvent[], boundEvents: t.BoundEvent[]) {
 }
 
 function isEmptyTextNode(node: html.Node): boolean {
-  return node instanceof html.Text && node.value.trim().length == 0;
+  return node instanceof html.Text && node.value.trim().length === 0;
 }
 
 function isCommentNode(node: html.Node): boolean {

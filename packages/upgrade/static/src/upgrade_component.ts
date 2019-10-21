@@ -168,8 +168,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     // Linking
     const link = this.directive.link;
-    const preLink = typeof link == 'object' && link.pre;
-    const postLink = typeof link == 'object' ? link.post : link;
+    const preLink = typeof link === 'object' && link.pre;
+    const postLink = typeof link === 'object' ? link.post : link;
     const attrs: IAttributes = NOT_SUPPORTED;
     const transcludeFn: ITranscludeFunction = NOT_SUPPORTED;
     if (preLink) {
@@ -232,7 +232,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     const context = btcIsObject ? directive.bindToController : directive.scope;
     const bindings = new Bindings();
 
-    if (typeof context == 'object') {
+    if (typeof context === 'object') {
       Object.keys(context).forEach(propName => {
         const definition = context[propName];
         const bindingType = definition.charAt(0);

@@ -188,11 +188,11 @@ export class MetadataBundler {
         if (exportDeclaration.export) {
           // Re-export all the named exports from a module.
           for (const exportItem of exportDeclaration.export) {
-            const name = typeof exportItem == 'string' ? exportItem : exportItem.name;
-            const exportAs = typeof exportItem == 'string' ? exportItem : exportItem.as;
+            const name = typeof exportItem === 'string' ? exportItem : exportItem.name;
+            const exportAs = typeof exportItem === 'string' ? exportItem : exportItem.as;
             const symbol = this.symbolOf(exportFrom, name);
-            if (exportedSymbols && exportedSymbols.length == 1 && exportedSymbols[0].reexport &&
-                exportedSymbols[0].name == '*') {
+            if (exportedSymbols && exportedSymbols.length === 1 && exportedSymbols[0].reexport &&
+                exportedSymbols[0].name === '*') {
               // This is a named export from a module we have no metadata about. Record the named
               // export as a re-export.
               symbol.reexport = true;
@@ -322,7 +322,7 @@ export class MetadataBundler {
         // symbol.declaration is guaranteed to be defined during the phase this method is called.
         const declaration = symbol.declaration !;
         const module = declaration.module;
-        if (declaration !.name == '*') {
+        if (declaration !.name === '*') {
           // Reexport all the symbols.
           exportAlls.add(declaration.module);
         } else {

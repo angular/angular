@@ -51,7 +51,7 @@ export class ConvertActionBindingResult {
      */
     // TODO(misko): remove this hack once we no longer support ViewEngine.
     this.render3Stmts = stmts.map((statement: o.Statement) => {
-      if (statement instanceof o.DeclareVarStmt && statement.name == allowDefault.name &&
+      if (statement instanceof o.DeclareVarStmt && statement.name === allowDefault.name &&
           statement.value instanceof o.BinaryOperatorExpr) {
         const lhs = statement.value.lhs as o.CastExpr;
         return new o.ReturnStatement(lhs.value);
@@ -172,7 +172,7 @@ export function convertPropertyBinding(
     localResolver.notifyImplicitReceiverUse();
   }
 
-  if (visitor.temporaryCount === 0 && form == BindingForm.TrySimple) {
+  if (visitor.temporaryCount === 0 && form === BindingForm.TrySimple) {
     return new ConvertPropertyBindingResult([], outputExpr);
   }
 
@@ -468,9 +468,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   private _getLocal(name: string): o.Expression|null { return this._localResolver.getLocal(name); }
 
   visitMethodCall(ast: cdAst.MethodCall, mode: _Mode): any {
-    if (ast.receiver instanceof cdAst.ImplicitReceiver && ast.name == '$any') {
+    if (ast.receiver instanceof cdAst.ImplicitReceiver && ast.name === '$any') {
       const args = this.visitAll(ast.args, _Mode.Expression) as any[];
-      if (args.length != 1) {
+      if (args.length !== 1) {
         throw new Error(
             `Invalid call to $any, expected 1 argument but received ${args.length || 'none'}`);
       }
@@ -752,7 +752,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
   private releaseTemporary(temporary: o.ReadVarExpr) {
     this._currentTemporary--;
-    if (temporary.name != temporaryName(this.bindingId, this._currentTemporary)) {
+    if (temporary.name !== temporaryName(this.bindingId, this._currentTemporary)) {
       throw new Error(`Temporary ${temporary.name} released out of order`);
     }
   }

@@ -36,7 +36,7 @@ describe('expression diagnostics', () => {
 
   it('should have no diagnostics in default app', () => {
     function messageToString(messageText: string | ts.DiagnosticMessageChain): string {
-      if (typeof messageText == 'string') {
+      if (typeof messageText === 'string') {
         return messageText;
       } else {
         if (messageText.next)

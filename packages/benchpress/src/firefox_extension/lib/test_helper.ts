@@ -15,7 +15,7 @@ const PERF_ADDON_PACKAGE_JSON_DIR = '..';
 
 exports.getAbsolutePath = function(path: string) {
   const normalizedPath = pathUtil.normalize(path);
-  if (pathUtil.resolve(normalizedPath) == normalizedPath) {
+  if (pathUtil.resolve(normalizedPath) === normalizedPath) {
     // Already absolute path
     return normalizedPath;
   } else {

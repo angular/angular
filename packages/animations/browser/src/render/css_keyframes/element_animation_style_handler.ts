@@ -49,7 +49,7 @@ export class ElementAnimationStyleHandler {
     const timestamp = event._ngTestManualTimestamp || Date.now();
     const elapsedTime =
         parseFloat(event.elapsedTime.toFixed(ELAPSED_TIME_MAX_DECIMAL_PLACES)) * ONE_SECOND;
-    if (event.animationName == this._name &&
+    if (event.animationName === this._name &&
         Math.max(timestamp - this._startTime, 0) >= this._delay && elapsedTime >= this._duration) {
       this.finish();
     }

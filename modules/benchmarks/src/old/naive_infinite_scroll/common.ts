@@ -65,7 +65,7 @@ export class RawEntity {
   constructor() { this._data = new Map(); }
 
   get(key: string) {
-    if (key.indexOf('.') == -1) {
+    if (key.indexOf('.') === -1) {
       return this._data[key];
     }
     const pieces = key.split('.');
@@ -79,7 +79,7 @@ export class RawEntity {
   }
 
   set(key: string, value) {
-    if (key.indexOf('.') == -1) {
+    if (key.indexOf('.') === -1) {
       this._data[key] = value;
       return;
     }

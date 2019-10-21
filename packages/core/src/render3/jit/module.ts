@@ -224,7 +224,7 @@ function verifySemanticsOfNgModuleDef(
   function verifyDirectivesHaveSelector(type: Type<any>): void {
     type = resolveForwardRef(type);
     const def = getDirectiveDef(type);
-    if (!getComponentDef(type) && def && def.selectors.length == 0) {
+    if (!getComponentDef(type) && def && def.selectors.length === 0) {
       errors.push(`Directive ${stringifyForError(type)} has no selector, please add it!`);
     }
   }
@@ -325,11 +325,11 @@ function getAnnotation<T>(type: any, name: string): T|null {
       decorator: {type: {prototype: {ngMetadataName: string}, args: any[]}, args: any}): void {
     if (!annotation) {
       const proto = Object.getPrototypeOf(decorator);
-      if (proto.ngMetadataName == name) {
+      if (proto.ngMetadataName === name) {
         annotation = decorator as any;
       } else if (decorator.type) {
         const proto = Object.getPrototypeOf(decorator.type);
-        if (proto.ngMetadataName == name) {
+        if (proto.ngMetadataName === name) {
           annotation = decorator.args[0];
         }
       }

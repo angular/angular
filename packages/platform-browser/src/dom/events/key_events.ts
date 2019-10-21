@@ -127,7 +127,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     });
     fullKey += key;
 
-    if (parts.length != 0 || key.length === 0) {
+    if (parts.length !== 0 || key.length === 0) {
       // returning null instead of throwing to let another plugin process the event
       return null;
     }
@@ -148,7 +148,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
       key = 'dot';  // because '.' is used as a separator in event names
     }
     MODIFIER_KEYS.forEach(modifierName => {
-      if (modifierName != key) {
+      if (modifierName !== key) {
         const modifierGetter = MODIFIER_KEY_GETTERS[modifierName];
         if (modifierGetter(event)) {
           fullKey += modifierName + '.';

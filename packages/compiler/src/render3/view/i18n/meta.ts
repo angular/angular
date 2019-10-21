@@ -234,7 +234,7 @@ export function i18nMetaToDocStmt(meta: I18nMeta): o.JSDocCommentStmt|null {
   if (meta.meaning) {
     tags.push({tagName: o.JSDocTagName.Meaning, text: meta.meaning});
   }
-  return tags.length == 0 ? null : new o.JSDocCommentStmt(tags);
+  return tags.length === 0 ? null : new o.JSDocCommentStmt(tags);
 }
 
 export function escapeStartingColon(str: string): string {

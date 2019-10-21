@@ -114,7 +114,7 @@ export class CssParser {
   _parseStyleSheet(delimiters: number): CssStyleSheetAst {
     const results: CssRuleAst[] = [];
     this._scanner.consumeEmptyStatements();
-    while (this._scanner.peek != chars.$EOF) {
+    while (this._scanner.peek !== chars.$EOF) {
       this._scanner.setMode(CssLexerMode.BLOCK);
       results.push(this._parseRule(delimiters));
     }
@@ -215,7 +215,7 @@ export class CssParser {
 
   /** @internal */
   _parseRule(delimiters: number): CssRuleAst {
-    if (this._scanner.peek == chars.$AT) {
+    if (this._scanner.peek === chars.$AT) {
       return this._parseAtRule(delimiters);
     }
     return this._parseSelectorRule(delimiters);
@@ -230,7 +230,7 @@ export class CssParser {
     const startToken = token;
 
     this._assertCondition(
-        token.type == CssTokenType.AtKeyword,
+        token.type === CssTokenType.AtKeyword,
         `The CSS Rule ${token.strValue} is not a valid [@] rule.`, token);
 
     let block: CssBlockAst;
@@ -311,7 +311,7 @@ export class CssParser {
 
         this._collectUntilDelim(delimiters | LBRACE_DELIM_FLAG | SEMICOLON_DELIM_FLAG)
             .forEach((token) => { listOfTokens.push(token); });
-        if (this._scanner.peek == chars.$LBRACE) {
+        if (this._scanner.peek === chars.$LBRACE) {
           listOfTokens.push(this._consume(CssTokenType.Character, '{'));
           this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG)
               .forEach((token) => { listOfTokens.push(token); });
@@ -426,7 +426,7 @@ export class CssParser {
     delimiters |= LBRACE_DELIM_FLAG;
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       stepTokens.push(this._parseKeyframeLabel(delimiters | COMMA_DELIM_FLAG));
-      if (this._scanner.peek != chars.$LBRACE) {
+      if (this._scanner.peek !== chars.$LBRACE) {
         this._consume(CssTokenType.Character, ',');
       }
     }
@@ -456,7 +456,7 @@ export class CssParser {
     const startToken = this._consume(CssTokenType.Character, ':');
     const tokens = [startToken];
 
-    if (this._scanner.peek == chars.$COLON) {  // ::something
+    if (this._scanner.peek === chars.$COLON) {  // ::something
       tokens.push(this._consume(CssTokenType.Character, ':'));
     }
 
@@ -470,7 +470,7 @@ export class CssParser {
     tokens.push(pseudoSelectorToken);
 
     // host(), lang(), nth-child(), etc...
-    if (this._scanner.peek == chars.$LPAREN) {
+    if (this._scanner.peek === chars.$LPAREN) {
       this._scanner.setMode(CssLexerMode.PSEUDO_SELECTOR_WITH_ARGUMENTS);
 
       const openParenToken = this._consume(CssTokenType.Character, '(');
@@ -479,7 +479,7 @@ export class CssParser {
       // :host(innerSelector(s)), :not(selector), etc...
       if (_pseudoSelectorSupportsInnerSelectors(pseudoSelectorName)) {
         let innerDelims = startingDelims | LPAREN_DELIM_FLAG | RPAREN_DELIM_FLAG;
-        if (pseudoSelectorName == 'not') {
+        if (pseudoSelectorName === 'not') {
           // the inner selector inside of :not(...) can only be one
           // CSS selector (no commas allowed) ... This is according
           // to the CSS specification
@@ -548,7 +548,7 @@ export class CssParser {
           break;
 
         case chars.$RBRACKET:
-          if (this._scanner.getMode() != CssLexerMode.ATTRIBUTE_SELECTOR) {
+          if (this._scanner.getMode() !== CssLexerMode.ATTRIBUTE_SELECTOR) {
             hasAttributeError = true;
           }
           // we set the mode early because attribute mode does not
@@ -573,7 +573,7 @@ export class CssParser {
     }
 
     hasAttributeError =
-        hasAttributeError || this._scanner.getMode() == CssLexerMode.ATTRIBUTE_SELECTOR;
+        hasAttributeError || this._scanner.getMode() === CssLexerMode.ATTRIBUTE_SELECTOR;
     if (hasAttributeError) {
       this._error(
           `Unbalanced CSS attribute selector at column ${previousToken.line}:${previousToken.column}`,
@@ -594,7 +594,7 @@ export class CssParser {
         const tokenOperator = token.strValue;
         operatorScanCount++;
         lastOperatorToken = token;
-        if (tokenOperator != SPACE_OPERATOR) {
+        if (tokenOperator !== SPACE_OPERATOR) {
           switch (tokenOperator) {
             case SLASH_CHARACTER:
               // /deep/ operator
@@ -603,8 +603,8 @@ export class CssParser {
               let index = lastOperatorToken.index;
               let line = lastOperatorToken.line;
               let column = lastOperatorToken.column;
-              if (deepToken != null && deepToken.strValue.toLowerCase() == 'deep' &&
-                  deepSlash.strValue == SLASH_CHARACTER) {
+              if (deepToken != null && deepToken.strValue.toLowerCase() === 'deep' &&
+                  deepSlash.strValue === SLASH_CHARACTER) {
                 token = new CssToken(
                     lastOperatorToken.index, lastOperatorToken.column, lastOperatorToken.line,
                     CssTokenType.Identifier, DEEP_OPERATOR_STR);
@@ -621,7 +621,7 @@ export class CssParser {
 
             case GT_CHARACTER:
               // >>> operator
-              if (this._scanner.peek == chars.$GT && this._scanner.peekPeek == chars.$GT) {
+              if (this._scanner.peek === chars.$GT && this._scanner.peekPeek === chars.$GT) {
                 this._consume(CssTokenType.Character, GT_CHARACTER);
                 this._consume(CssTokenType.Character, GT_CHARACTER);
                 token = new CssToken(
@@ -650,7 +650,7 @@ export class CssParser {
     // if we do come across one or more spaces inside of
     // the operators loop then an empty space is still a
     // valid operator to use if something else was not found
-    if (operator == null && operatorScanCount > 0 && this._scanner.peek != chars.$LBRACE) {
+    if (operator == null && operatorScanCount > 0 && this._scanner.peek !== chars.$LBRACE) {
       operator = lastOperatorToken;
     }
 
@@ -704,8 +704,8 @@ export class CssParser {
     let previous: CssToken = undefined !;
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       let token: CssToken;
-      if (previous != null && previous.type == CssTokenType.Identifier &&
-          this._scanner.peek == chars.$LPAREN) {
+      if (previous != null && previous.type === CssTokenType.Identifier &&
+          this._scanner.peek === chars.$LPAREN) {
         token = this._consume(CssTokenType.Character, '(');
         tokens.push(token);
 
@@ -720,7 +720,7 @@ export class CssParser {
         tokens.push(token);
       } else {
         token = this._scan();
-        if (token.type == CssTokenType.Whitespace) {
+        if (token.type === CssTokenType.Whitespace) {
           wsStr += token.strValue;
         } else {
           wsStr = '';
@@ -734,9 +734,9 @@ export class CssParser {
     this._scanner.consumeWhitespace();
 
     const code = this._scanner.peek;
-    if (code == chars.$SEMICOLON) {
+    if (code === chars.$SEMICOLON) {
       this._consume(CssTokenType.Character, ';');
-    } else if (code != chars.$RBRACE) {
+    } else if (code !== chars.$RBRACE) {
       this._error(
           generateErrorMessage(
               this._getSourceContent(), `The CSS key/value definition did not end with a semicolon`,
@@ -791,7 +791,7 @@ export class CssParser {
     this._scanner.setMode(CssLexerMode.STYLE_BLOCK);
 
     const startToken = this._consume(CssTokenType.Character, '{');
-    if (startToken.numValue != chars.$LBRACE) {
+    if (startToken.numValue !== chars.$LBRACE) {
       return null;
     }
 
@@ -833,7 +833,7 @@ export class CssParser {
 
       default:
         let propStr = [prop.strValue];
-        if (this._scanner.peek != chars.$COLON) {
+        if (this._scanner.peek !== chars.$COLON) {
           // this will throw the error
           const nextValue = this._consume(CssTokenType.Character, ':');
           propStr.push(nextValue.strValue);
@@ -849,7 +849,7 @@ export class CssParser {
         }
 
         // this means we've reached the end of the definition and/or block
-        if (this._scanner.peek == chars.$COLON) {
+        if (this._scanner.peek === chars.$COLON) {
           this._consume(CssTokenType.Character, ':');
           parseValue = true;
         }

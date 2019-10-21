@@ -18,7 +18,7 @@
 
   function benchmarksBootstrap() {
     // check query param
-    const useBundles = location.search.indexOf('bundles=false') == -1;
+    const useBundles = location.search.indexOf('bundles=false') === -1;
     if (useBundles) {
       System.config({
         defaultJSExtensions: true,

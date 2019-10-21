@@ -120,10 +120,10 @@ function extractParts(pattern: string): (string | IcuExpression)[] {
   let match;
   while (match = braces.exec(pattern)) {
     const pos = match.index;
-    if (match[0] == '}') {
+    if (match[0] === '}') {
       braceStack.pop();
 
-      if (braceStack.length == 0) {
+      if (braceStack.length === 0) {
         // End of the block.
         const block = pattern.substring(prevPos, pos);
         if (ICU_BLOCK_REGEXP.test(block)) {
@@ -135,7 +135,7 @@ function extractParts(pattern: string): (string | IcuExpression)[] {
         prevPos = pos + 1;
       }
     } else {
-      if (braceStack.length == 0) {
+      if (braceStack.length === 0) {
         const substring = pattern.substring(prevPos, pos);
         results.push(substring);
         prevPos = pos + 1;
@@ -718,7 +718,7 @@ function readCreateOpCodes(
   const visitedNodes: number[] = [];
   for (let i = 0; i < createOpCodes.length; i++) {
     const opCode = createOpCodes[i];
-    if (typeof opCode == 'string') {
+    if (typeof opCode === 'string') {
       const textRNode = createTextNode(opCode, renderer);
       const textNodeIndex = createOpCodes[++i] as number;
       ngDevMode && ngDevMode.rendererCreateTextNode++;
@@ -727,7 +727,7 @@ function readCreateOpCodes(
           createDynamicNodeAtIndex(lView, textNodeIndex, TNodeType.Element, textRNode, null);
       visitedNodes.push(textNodeIndex);
       setIsNotParent();
-    } else if (typeof opCode == 'number') {
+    } else if (typeof opCode === 'number') {
       switch (opCode & I18nMutateOpCode.MASK_OPCODE) {
         case I18nMutateOpCode.AppendChild:
           const destinationNodeIndex = opCode >>> I18nMutateOpCode.SHIFT_PARENT;
@@ -827,9 +827,9 @@ function readUpdateOpCodes(
       let value = '';
       for (let j = i + 1; j <= (i + skipCodes); j++) {
         const opCode = updateOpCodes[j];
-        if (typeof opCode == 'string') {
+        if (typeof opCode === 'string') {
           value += opCode;
-        } else if (typeof opCode == 'number') {
+        } else if (typeof opCode === 'number') {
           if (opCode < 0) {
             // It's a binding index whose value is negative
             value += renderStringify(viewData[bindingsStartIndex - opCode]);

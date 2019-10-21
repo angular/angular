@@ -201,7 +201,7 @@ function convert(annotatedSource: string) {
     before: [getExpressionLoweringTransformFactory(
         {
           getRequests(sourceFile: ts.SourceFile): RequestLocationMap{
-            if (sourceFile.fileName == moduleSourceFile.fileName) {
+            if (sourceFile.fileName === moduleSourceFile.fileName) {
               return requests;
             } else {return new Map();}
           }
@@ -220,7 +220,7 @@ function convert(annotatedSource: string) {
 
 function findNode(node: ts.Node, start: number, length: number): ts.Node|undefined {
   function find(node: ts.Node): ts.Node|undefined {
-    if (node.getFullStart() == start && node.getEnd() == start + length) {
+    if (node.getFullStart() === start && node.getEnd() === start + length) {
       return node;
     }
     if (node.getFullStart() <= start && node.getEnd() >= start + length) {

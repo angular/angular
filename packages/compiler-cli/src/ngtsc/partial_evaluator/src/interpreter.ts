@@ -53,8 +53,10 @@ const BINARY_OPERATORS = new Map<ts.SyntaxKind, BinaryOperatorDef>([
   [ts.SyntaxKind.LessThanEqualsToken, literalBinaryOp((a, b) => a <= b)],
   [ts.SyntaxKind.GreaterThanToken, literalBinaryOp((a, b) => a > b)],
   [ts.SyntaxKind.GreaterThanEqualsToken, literalBinaryOp((a, b) => a >= b)],
+  // tslint:disable-next-line: triple-equals
   [ts.SyntaxKind.EqualsEqualsToken, literalBinaryOp((a, b) => a == b)],
   [ts.SyntaxKind.EqualsEqualsEqualsToken, literalBinaryOp((a, b) => a === b)],
+  // tslint:disable-next-line: triple-equals
   [ts.SyntaxKind.ExclamationEqualsToken, literalBinaryOp((a, b) => a != b)],
   [ts.SyntaxKind.ExclamationEqualsEqualsToken, literalBinaryOp((a, b) => a !== b)],
   [ts.SyntaxKind.LessThanLessThanToken, literalBinaryOp((a, b) => a << b)],

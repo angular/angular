@@ -210,7 +210,7 @@ function resolveProvider(provider: SupportedProvider): Record {
   } else if ((provider as StaticClassProvider).useClass) {
     useNew = true;
     fn = resolveForwardRef((provider as StaticClassProvider).useClass);
-  } else if (typeof provide == 'function') {
+  } else if (typeof provide === 'function') {
     useNew = true;
     fn = provide;
   } else {
@@ -265,7 +265,7 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
         multiProvider.deps.push({token, options: OptionFlags.Default});
       }
       const record = records.get(token);
-      if (record && record.fn == MULTI_PROVIDER_FN) {
+      if (record && record.fn === MULTI_PROVIDER_FN) {
         throw multiProviderMixError(token);
       }
       if (token === INJECTOR_SCOPE) {
@@ -291,7 +291,7 @@ function tryResolveToken(
     }
     const path: any[] = e[NG_TEMP_TOKEN_PATH] = e[NG_TEMP_TOKEN_PATH] || [];
     path.unshift(token);
-    if (record && record.value == CIRCULAR) {
+    if (record && record.value === CIRCULAR) {
       // Reset the Circular flag.
       record.value = EMPTY;
     }
@@ -307,7 +307,7 @@ function resolveToken(
     // If we don't have a record, this implies that we don't own the provider hence don't know how
     // to resolve it.
     value = record.value;
-    if (value == CIRCULAR) {
+    if (value === CIRCULAR) {
       throw Error(NO_NEW_LINE + 'Circular dependency');
     } else if (value === EMPTY) {
       record.value = CIRCULAR;
@@ -362,11 +362,11 @@ function computeDeps(provider: StaticProvider): DependencyRecord[] {
       if (Array.isArray(token)) {
         for (let j = 0, annotations = token; j < annotations.length; j++) {
           const annotation = annotations[j];
-          if (annotation instanceof Optional || annotation == Optional) {
+          if (annotation instanceof Optional || annotation === Optional) {
             options = options | OptionFlags.Optional;
-          } else if (annotation instanceof SkipSelf || annotation == SkipSelf) {
+          } else if (annotation instanceof SkipSelf || annotation === SkipSelf) {
             options = options & ~OptionFlags.CheckSelf;
-          } else if (annotation instanceof Self || annotation == Self) {
+          } else if (annotation instanceof Self || annotation === Self) {
             options = options & ~OptionFlags.CheckParent;
           } else if (annotation instanceof Inject) {
             token = (annotation as Inject).token;

@@ -539,11 +539,11 @@ export function escapeIdentifier(
     return null;
   }
   const body = input.replace(_SINGLE_QUOTE_ESCAPE_STRING_RE, (...match: string[]) => {
-    if (match[0] == '$') {
+    if (match[0] === '$') {
       return escapeDollar ? '\\$' : '$';
-    } else if (match[0] == '\n') {
+    } else if (match[0] === '\n') {
       return '\\n';
-    } else if (match[0] == '\r') {
+    } else if (match[0] === '\r') {
       return '\\r';
     } else {
       return `\\${match[0]}`;

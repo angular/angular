@@ -107,7 +107,7 @@ export class NgTools_InternalApi_NG_2 {
     lazyRoutes.forEach(lazyRoute => {
       const route = lazyRoute.route;
       const referencedFilePath = lazyRoute.referencedModule.filePath;
-      if (result[route] && result[route] != referencedFilePath) {
+      if (result[route] && result[route] !== referencedFilePath) {
         throw new Error(
             `Duplicated path in loadChildren detected: "${route}" is used in 2 loadChildren, ` +
             `but they point to different modules "(${result[route]} and ` +

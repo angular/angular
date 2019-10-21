@@ -496,13 +496,13 @@ export function registerInitialStylingOnTNode(
   let mode = -1;
   for (let i = startIndex; i < attrs.length; i++) {
     const attr = attrs[i] as string;
-    if (typeof attr == 'number') {
+    if (typeof attr === 'number') {
       mode = attr;
-    } else if (mode == AttributeMarker.Classes) {
+    } else if (mode === AttributeMarker.Classes) {
       classes = classes || allocStylingMapArray(null);
       addItemToStylingMap(classes, attr, true);
       hasAdditionalInitialStyling = true;
-    } else if (mode == AttributeMarker.Styles) {
+    } else if (mode === AttributeMarker.Styles) {
       const value = attrs[++i] as string | null;
       styles = styles || allocStylingMapArray(null);
       addItemToStylingMap(styles, attr, value);

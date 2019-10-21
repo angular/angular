@@ -53,7 +53,7 @@ class _I18nVisitor implements html.Visitor {
   public toI18nMessage(
       nodes: html.Node[], meaning: string, description: string, id: string,
       visitNodeFn?: VisitNodeFn): i18n.Message {
-    this._isIcu = nodes.length == 1 && nodes[0] instanceof html.Expansion;
+    this._isIcu = nodes.length === 1 && nodes[0] instanceof html.Expansion;
     this._icuDepth = 0;
     this._placeholderRegistry = new PlaceholderRegistry();
     this._placeholderToContent = {};

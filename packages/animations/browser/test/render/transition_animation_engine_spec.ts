@@ -677,7 +677,7 @@ class ExactCssValueNormalizer extends AnimationStyleNormalizer {
       userProvidedProperty: string, normalizedProperty: string, value: string|number,
       errors: string[]): string {
     const expectedValue = this._allowedValues[userProvidedProperty];
-    if (expectedValue != value) {
+    if (expectedValue !== value) {
       errors.push(`The CSS property \`${userProvidedProperty}\` is not allowed to be \`${value}\``);
     }
     return expectedValue;

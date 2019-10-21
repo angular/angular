@@ -296,7 +296,7 @@ class XmlToI18n implements ml.Visitor {
     const xmlIcu = new XmlParser().parse(message, url, {tokenizeExpansionForms: true});
     this._errors = xmlIcu.errors;
 
-    const i18nNodes = this._errors.length > 0 || xmlIcu.rootNodes.length == 0 ?
+    const i18nNodes = this._errors.length > 0 || xmlIcu.rootNodes.length === 0 ?
         [] :
         [].concat(...ml.visitAll(this, xmlIcu.rootNodes));
 

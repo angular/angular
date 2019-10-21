@@ -49,7 +49,7 @@ import {createConnectedMessageBus} from './message_bus_util';
          const emitHandler = (message: any) => {
            expect(message).toEqual(MESSAGE);
            callCount++;
-           if (callCount == NUM_LISTENERS) {
+           if (callCount === NUM_LISTENERS) {
              async.done();
            }
          };
@@ -78,7 +78,7 @@ import {createConnectedMessageBus} from './message_bus_util';
            next: (message: any) => {
              expect(message).toEqual(MESSAGE_ONE);
              callCount++;
-             if (callCount == 2) {
+             if (callCount === 2) {
                async.done();
              }
            }
@@ -88,7 +88,7 @@ import {createConnectedMessageBus} from './message_bus_util';
            next: (message: any) => {
              expect(message).toEqual(MESSAGE_TWO);
              callCount++;
-             if (callCount == 2) {
+             if (callCount === 2) {
                async.done();
              }
            }

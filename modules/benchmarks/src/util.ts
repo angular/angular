@@ -21,7 +21,7 @@ export function getStringParameter(name: string) {
   for (let i = 0; i < els.length; i++) {
     el = els[i];
     const type = el.type;
-    if ((type != 'radio' && type != 'checkbox') || el.checked) {
+    if ((type !== 'radio' && type !== 'checkbox') || el.checked) {
       value = el.value;
       break;
     }

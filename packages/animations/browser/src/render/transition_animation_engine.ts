@@ -127,7 +127,7 @@ export class AnimationTransitionNamespace {
           phase}" because the animation trigger "${name}" doesn\'t exist!`);
     }
 
-    if (phase == null || phase.length == 0) {
+    if (phase == null || phase.length === 0) {
       throw new Error(`Unable to listen on the animation trigger "${
           name}" because the provided event is undefined!`);
     }
@@ -243,7 +243,7 @@ export class AnimationTransitionNamespace {
       // we only also deal with queued players here because if the animation has
       // started then we want to keep the player alive until the flush happens
       // (which is where the previousPlayers are passed into the new palyer)
-      if (player.namespaceId == this.id && player.triggerName == triggerName && player.queued) {
+      if (player.namespaceId === this.id && player.triggerName === triggerName && player.queued) {
         player.destroy();
       }
     });
@@ -294,7 +294,7 @@ export class AnimationTransitionNamespace {
 
     this._elementListeners.forEach((listeners, element) => {
       this._elementListeners.set(
-          element, listeners.filter(entry => { return entry.name != name; }));
+          element, listeners.filter(entry => { return entry.name !== name; }));
     });
   }
 
@@ -450,7 +450,7 @@ export class AnimationTransitionNamespace {
       const listeners = this._elementListeners.get(element);
       if (listeners) {
         listeners.forEach((listener: TriggerListener) => {
-          if (listener.name == entry.triggerName) {
+          if (listener.name === entry.triggerName) {
             const baseEvent = makeAnimationEvent(
                 element, entry.triggerName, entry.fromState.value, entry.toState.value);
             (baseEvent as any)['_data'] = microtaskId;
@@ -477,7 +477,7 @@ export class AnimationTransitionNamespace {
       // otherwise if a contains b then move back
       const d0 = a.transition.ast.depCount;
       const d1 = b.transition.ast.depCount;
-      if (d0 == 0 || d1 == 0) {
+      if (d0 === 0 || d1 === 0) {
         return d0 - d1;
       }
       return this._engine.driver.containsElement(a.element, b.element) ? 1 : -1;
@@ -758,7 +758,7 @@ export class TransitionAnimationEngine {
     let elements = this.driver.query(containerElement, NG_TRIGGER_SELECTOR, true);
     elements.forEach(element => this.destroyActiveAnimationsForElement(element));
 
-    if (this.playersByQueriedElement.size == 0) return;
+    if (this.playersByQueriedElement.size === 0) return;
 
     elements = this.driver.query(containerElement, NG_ANIMATING_SELECTOR, true);
     elements.forEach(element => this.finishActiveQueriedAnimationOnElement(element));
@@ -1280,18 +1280,18 @@ export class TransitionAnimationEngine {
     } else {
       const elementPlayers = this.playersByElement.get(element);
       if (elementPlayers) {
-        const isRemovalAnimation = !toStateValue || toStateValue == VOID_VALUE;
+        const isRemovalAnimation = !toStateValue || toStateValue === VOID_VALUE;
         elementPlayers.forEach(player => {
           if (player.queued) return;
-          if (!isRemovalAnimation && player.triggerName != triggerName) return;
+          if (!isRemovalAnimation && player.triggerName !== triggerName) return;
           players.push(player);
         });
       }
     }
     if (namespaceId || triggerName) {
       players = players.filter(player => {
-        if (namespaceId && namespaceId != player.namespaceId) return false;
-        if (triggerName && triggerName != player.triggerName) return false;
+        if (namespaceId && namespaceId !== player.namespaceId) return false;
+        if (triggerName && triggerName !== player.triggerName) return false;
         return true;
       });
     }
@@ -1538,7 +1538,7 @@ function deleteOrUnsetInMap(map: Map<any, any[]>| {[key: string]: any}, key: any
         const index = currentValues.indexOf(value);
         currentValues.splice(index, 1);
       }
-      if (currentValues.length == 0) {
+      if (currentValues.length === 0) {
         map.delete(key);
       }
     }
@@ -1549,7 +1549,7 @@ function deleteOrUnsetInMap(map: Map<any, any[]>| {[key: string]: any}, key: any
         const index = currentValues.indexOf(value);
         currentValues.splice(index, 1);
       }
-      if (currentValues.length == 0) {
+      if (currentValues.length === 0) {
         delete map[key];
       }
     }
@@ -1569,7 +1569,7 @@ function isElementNode(node: any) {
 }
 
 function isTriggerEventValid(eventName: string): boolean {
-  return eventName == 'start' || eventName == 'done';
+  return eventName === 'start' || eventName === 'done';
 }
 
 function cloakElement(element: any, value?: string) {
@@ -1593,7 +1593,7 @@ function cloakAndComputeStyles(
 
       // there is no easy way to detect this because a sub element could be removed
       // by a parent animation element being detached.
-      if (!value || value.length == 0) {
+      if (!value || value.length === 0) {
         element[REMOVAL_FLAG] = NULL_REMOVED_QUERIED_STATE;
         failedElements.push(element);
       }
@@ -1623,7 +1623,7 @@ function buildRootMap(roots: any[], nodes: any[]): Map<any, any[]> {
   const rootMap = new Map<any, any[]>();
   roots.forEach(root => rootMap.set(root, []));
 
-  if (nodes.length == 0) return rootMap;
+  if (nodes.length === 0) return rootMap;
 
   const NULL_NODE = 1;
   const nodeSet = new Set(nodes);
@@ -1716,7 +1716,7 @@ function _flattenGroupPlayersRecur(players: AnimationPlayer[], finalPlayers: Ani
 function objEquals(a: {[key: string]: any}, b: {[key: string]: any}): boolean {
   const k1 = Object.keys(a);
   const k2 = Object.keys(b);
-  if (k1.length != k2.length) return false;
+  if (k1.length !== k2.length) return false;
   for (let i = 0; i < k1.length; i++) {
     const prop = k1[i];
     if (!b.hasOwnProperty(prop) || a[prop] !== b[prop]) return false;

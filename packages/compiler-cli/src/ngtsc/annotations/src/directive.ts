@@ -507,7 +507,7 @@ export function extractHostBindings(
             `Decorator host metadata must be a string -> string object, but found unparseable key ${key}`);
       }
 
-      if (typeof value == 'string') {
+      if (typeof value === 'string') {
         hostMetadata[key] = value;
       } else if (value instanceof DynamicValue) {
         hostMetadata[key] = new WrappedNodeExpr(value.node as ts.Expression);

@@ -81,7 +81,7 @@ export function setup(
 
   function write(fileName: string, content: string) {
     const dir = path.dirname(fileName);
-    if (dir != '.') {
+    if (dir !== '.') {
       const newDir = path.resolve(basePath, dir);
       if (!fs.existsSync(newDir)) mkdirp(newDir);
     }

@@ -12,7 +12,7 @@ export declare type TransitionMatcherFn =
 export function parseTransitionExpr(
     transitionValue: string | TransitionMatcherFn, errors: string[]): TransitionMatcherFn[] {
   const expressions: TransitionMatcherFn[] = [];
-  if (typeof transitionValue == 'string') {
+  if (typeof transitionValue === 'string') {
     transitionValue.split(/\s*,\s*/).forEach(
         str => parseInnerTransitionStr(str, expressions, errors));
   } else {
@@ -23,9 +23,9 @@ export function parseTransitionExpr(
 
 function parseInnerTransitionStr(
     eventStr: string, expressions: TransitionMatcherFn[], errors: string[]) {
-  if (eventStr[0] == ':') {
+  if (eventStr[0] === ':') {
     const result = parseAnimationAlias(eventStr, errors);
-    if (typeof result == 'function') {
+    if (typeof result === 'function') {
       expressions.push(result);
       return;
     }
@@ -43,8 +43,8 @@ function parseInnerTransitionStr(
   const toState = match[3];
   expressions.push(makeLambdaFromStates(fromState, toState));
 
-  const isFullAnyStateExpr = fromState == ANY_STATE && toState == ANY_STATE;
-  if (separator[0] == '<' && !isFullAnyStateExpr) {
+  const isFullAnyStateExpr = fromState === ANY_STATE && toState === ANY_STATE;
+  if (separator[0] === '<' && !isFullAnyStateExpr) {
     expressions.push(makeLambdaFromStates(toState, fromState));
   }
 }
@@ -77,8 +77,8 @@ function makeLambdaFromStates(lhs: string, rhs: string): TransitionMatcherFn {
   const RHS_MATCH_BOOLEAN = TRUE_BOOLEAN_VALUES.has(rhs) || FALSE_BOOLEAN_VALUES.has(rhs);
 
   return (fromState: any, toState: any): boolean => {
-    let lhsMatch = lhs == ANY_STATE || lhs == fromState;
-    let rhsMatch = rhs == ANY_STATE || rhs == toState;
+    let lhsMatch = lhs === ANY_STATE || lhs === fromState;
+    let rhsMatch = rhs === ANY_STATE || rhs === toState;
 
     if (!lhsMatch && LHS_MATCH_BOOLEAN && typeof fromState === 'boolean') {
       lhsMatch = fromState ? TRUE_BOOLEAN_VALUES.has(lhs) : FALSE_BOOLEAN_VALUES.has(lhs);

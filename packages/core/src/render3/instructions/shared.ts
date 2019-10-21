@@ -1625,7 +1625,7 @@ export function scheduleTick(rootContext: RootContext, flags: RootContextFlags) 
   const nothingScheduled = rootContext.flags === RootContextFlags.Empty;
   rootContext.flags |= flags;
 
-  if (nothingScheduled && rootContext.clean == _CLEAN_PROMISE) {
+  if (nothingScheduled && rootContext.clean === _CLEAN_PROMISE) {
     let res: null|((val: null) => void);
     rootContext.clean = new Promise<null>((r) => res = r);
     rootContext.scheduler(() => {

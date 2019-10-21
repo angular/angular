@@ -225,7 +225,7 @@ export abstract class AbstractControl {
    * @returns True if this control is in the process of conducting a validation check,
    * false otherwise.
    */
-  get pending(): boolean { return this.status == PENDING; }
+  get pending(): boolean { return this.status === PENDING; }
 
   /**
    * A control is `disabled` when its `status` is `DISABLED`.

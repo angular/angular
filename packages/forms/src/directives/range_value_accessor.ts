@@ -82,7 +82,7 @@ export class RangeValueAccessor implements ControlValueAccessor {
    * @param fn The callback function
    */
   registerOnChange(fn: (_: number|null) => void): void {
-    this.onChange = (value) => { fn(value == '' ? null : parseFloat(value)); };
+    this.onChange = (value) => { fn(value === '' ? null : parseFloat(value)); };
   }
 
   /**

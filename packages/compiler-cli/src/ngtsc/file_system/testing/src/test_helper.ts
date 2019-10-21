@@ -111,7 +111,7 @@ function monkeyPatchTypeScript(os: string, fs: MockFileSystem) {
     const absPath = fs.resolve(path);
     const entries = fs.readdir(absPath);
     for (const entry of entries) {
-      if (entry == '.' || entry === '..') {
+      if (entry === '.' || entry === '..') {
         continue;
       }
       const absPath = fs.resolve(path, entry);

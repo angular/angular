@@ -98,11 +98,11 @@ export function parse(value: string): string[] {
 export function stripUnnecessaryQuotes(value: string): string {
   const qS = value.charCodeAt(0);
   const qE = value.charCodeAt(value.length - 1);
-  if (qS == qE && (qS == Char.QuoteSingle || qS == Char.QuoteDouble)) {
+  if (qS === qE && (qS === Char.QuoteSingle || qS === Char.QuoteDouble)) {
     const tempValue = value.substring(1, value.length - 1);
     // special case to avoid using a multi-quoted string that was just chomped
     // (e.g. `font-family: "Verdana", "sans-serif"`)
-    if (tempValue.indexOf('\'') == -1 && tempValue.indexOf('"') == -1) {
+    if (tempValue.indexOf('\'') === -1 && tempValue.indexOf('"') === -1) {
       value = tempValue;
     }
   }

@@ -51,7 +51,7 @@ export class NgDefinitionCollector {
 
     const ngDecorators = getAngularDecorators(this.typeChecker, node.decorators);
     const directiveDecorator =
-        ngDecorators.find(({name}) => name === 'Component' || name == 'Directive');
+        ngDecorators.find(({name}) => name === 'Component' || name === 'Directive');
     const ngModuleDecorator = ngDecorators.find(({name}) => name === 'NgModule');
 
     if (ngModuleDecorator) {

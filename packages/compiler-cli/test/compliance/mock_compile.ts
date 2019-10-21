@@ -105,7 +105,7 @@ export function expectEmit(
     for (let i = 1; i < pieces.length; i++) {
       const {regexp} = buildMatcher(pieces.slice(0, i));
       const m = source.match(regexp);
-      const expectedPiece = pieces[i - 1] == IDENTIFIER ? '<IDENT>' : pieces[i - 1];
+      const expectedPiece = pieces[i - 1] === IDENTIFIER ? '<IDENT>' : pieces[i - 1];
       if (!m) {
         // display at most `contextLength` characters of the line preceding the error location
         const contextLength = 50;

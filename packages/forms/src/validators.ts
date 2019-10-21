@@ -414,7 +414,7 @@ export class Validators {
   static compose(validators: (ValidatorFn|null|undefined)[]|null): ValidatorFn|null {
     if (!validators) return null;
     const presentValidators: ValidatorFn[] = validators.filter(isPresent) as any;
-    if (presentValidators.length == 0) return null;
+    if (presentValidators.length === 0) return null;
 
     return function(control: AbstractControl) {
       return _mergeErrors(_executeValidators(control, presentValidators));
@@ -435,7 +435,7 @@ export class Validators {
   static composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
     if (!validators) return null;
     const presentValidators: AsyncValidatorFn[] = validators.filter(isPresent) as any;
-    if (presentValidators.length == 0) return null;
+    if (presentValidators.length === 0) return null;
 
     return function(control: AbstractControl) {
       const observables = _executeAsyncValidators(control, presentValidators).map(toObservable);

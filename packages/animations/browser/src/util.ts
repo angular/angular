@@ -24,7 +24,7 @@ export const NG_ANIMATING_CLASSNAME = 'ng-animating';
 export const NG_ANIMATING_SELECTOR = '.ng-animating';
 
 export function resolveTimingValue(value: string | number) {
-  if (typeof value == 'number') return value;
+  if (typeof value === 'number') return value;
 
   const matches = value.match(/^(-?[\.\d]+)(m?s)/);
   if (!matches || matches.length < 2) return 0;
@@ -189,7 +189,7 @@ export function eraseStyles(element: any, styles: ɵStyleData) {
 export function normalizeAnimationEntry(steps: AnimationMetadata | AnimationMetadata[]):
     AnimationMetadata {
   if (Array.isArray(steps)) {
-    if (steps.length == 1) return steps[0];
+    if (steps.length === 1) return steps[0];
     return sequence(steps);
   }
   return steps as AnimationMetadata;
@@ -237,7 +237,7 @@ export function interpolateParams(
   });
 
   // we do this to assert that numeric values stay as they are
-  return str == original ? value : str;
+  return str === original ? value : str;
 }
 
 export function iteratorToArray(iterator: any): any[] {

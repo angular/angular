@@ -168,7 +168,7 @@ export class DebugElement__PRE_R3__ extends DebugNode__PRE_R3__ implements Debug
 
   triggerEventHandler(eventName: string, eventObj: any) {
     this.listeners.forEach((listener) => {
-      if (listener.name == eventName) {
+      if (listener.name === eventName) {
         listener.callback(eventObj);
       }
     });
@@ -244,7 +244,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
   }
 
   get nativeElement(): Element|null {
-    return this.nativeNode.nodeType == Node.ELEMENT_NODE ? this.nativeNode as Element : null;
+    return this.nativeNode.nodeType === Node.ELEMENT_NODE ? this.nativeNode as Element : null;
   }
 
   get name(): string {
@@ -707,7 +707,7 @@ export function getDebugNode__POST_R3__(nativeNode: null): null;
 export function getDebugNode__POST_R3__(nativeNode: any): DebugNode|null {
   if (nativeNode instanceof Node) {
     if (!(nativeNode.hasOwnProperty(NG_DEBUG_PROPERTY))) {
-      (nativeNode as any)[NG_DEBUG_PROPERTY] = nativeNode.nodeType == Node.ELEMENT_NODE ?
+      (nativeNode as any)[NG_DEBUG_PROPERTY] = nativeNode.nodeType === Node.ELEMENT_NODE ?
           new DebugElement__POST_R3__(nativeNode as Element) :
           new DebugNode__POST_R3__(nativeNode);
     }

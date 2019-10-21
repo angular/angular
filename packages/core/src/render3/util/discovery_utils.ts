@@ -322,7 +322,7 @@ export function getListeners(element: Element): Listener[] {
         const useCapture = typeof useCaptureOrIndx === 'boolean' ?
             useCaptureOrIndx :
             (useCaptureOrIndx >= 0 ? false : null);
-        if (element == listenerElement) {
+        if (element === listenerElement) {
           listeners.push({element, name, callback, useCapture});
         }
       }
@@ -333,7 +333,7 @@ export function getListeners(element: Element): Listener[] {
 }
 
 function sortListeners(a: Listener, b: Listener) {
-  if (a.name == b.name) return 0;
+  if (a.name === b.name) return 0;
   return a.name < b.name ? -1 : 1;
 }
 

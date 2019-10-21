@@ -284,7 +284,7 @@ class ThrowingVisitor implements TemplateAstVisitor {
 
 class FooAstTransformer extends ThrowingVisitor {
   visitElement(ast: ElementAst, context: any): any {
-    if (ast.name != 'div') return ast;
+    if (ast.name !== 'div') return ast;
     return new ElementAst(
         'foo', [], [], [], [], [], [], false, [], [], ast.ngContentIndex, ast.sourceSpan,
         ast.endSourceSpan);
@@ -293,7 +293,7 @@ class FooAstTransformer extends ThrowingVisitor {
 
 class BarAstTransformer extends FooAstTransformer {
   visitElement(ast: ElementAst, context: any): any {
-    if (ast.name != 'foo') return ast;
+    if (ast.name !== 'foo') return ast;
     return new ElementAst(
         'bar', [], [], [], [], [], [], false, [], [], ast.ngContentIndex, ast.sourceSpan,
         ast.endSourceSpan);

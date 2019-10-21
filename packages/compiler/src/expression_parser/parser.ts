@@ -92,7 +92,7 @@ export class Parser {
   private _parseQuote(input: string|null, location: any, absoluteOffset: number): AST|null {
     if (input == null) return null;
     const prefixSeparatorIndex = input.indexOf(':');
-    if (prefixSeparatorIndex == -1) return null;
+    if (prefixSeparatorIndex === -1) return null;
     const prefix = input.substring(0, prefixSeparatorIndex).trim();
     if (!isIdentifier(prefix)) return null;
     const uninterpretedExpression = input.substring(prefixSeparatorIndex + 1);
@@ -188,7 +188,7 @@ export class Parser {
       const char = input.charCodeAt(i);
       const nextChar = input.charCodeAt(i + 1);
 
-      if (char === chars.$SLASH && nextChar == chars.$SLASH && outerQuote == null) return i;
+      if (char === chars.$SLASH && nextChar === chars.$SLASH && outerQuote == null) return i;
 
       if (outerQuote === char) {
         outerQuote = null;
@@ -335,8 +335,8 @@ export class _ParseAST {
         this.error(`Unexpected token '${this.next}'`);
       }
     }
-    if (exprs.length == 0) return new EmptyExpr(this.span(start), this.sourceSpan(start));
-    if (exprs.length == 1) return exprs[0];
+    if (exprs.length === 0) return new EmptyExpr(this.span(start), this.sourceSpan(start));
+    if (exprs.length === 1) return exprs[0];
     return new Chain(this.span(start), this.sourceSpan(start), exprs);
   }
 
@@ -409,7 +409,7 @@ export class _ParseAST {
   parseEquality(): AST {
     // '==','!=','===','!=='
     let result = this.parseRelational();
-    while (this.next.type == TokenType.Operator) {
+    while (this.next.type === TokenType.Operator) {
       const operator = this.next.strValue;
       switch (operator) {
         case '==':
@@ -430,7 +430,7 @@ export class _ParseAST {
   parseRelational(): AST {
     // '<', '>', '<=', '>='
     let result = this.parseAdditive();
-    while (this.next.type == TokenType.Operator) {
+    while (this.next.type === TokenType.Operator) {
       const operator = this.next.strValue;
       switch (operator) {
         case '<':
@@ -451,7 +451,7 @@ export class _ParseAST {
   parseAdditive(): AST {
     // '+', '-'
     let result = this.parseMultiplicative();
-    while (this.next.type == TokenType.Operator) {
+    while (this.next.type === TokenType.Operator) {
       const operator = this.next.strValue;
       switch (operator) {
         case '+':
@@ -470,7 +470,7 @@ export class _ParseAST {
   parseMultiplicative(): AST {
     // '*', '%', '/'
     let result = this.parsePrefix();
-    while (this.next.type == TokenType.Operator) {
+    while (this.next.type === TokenType.Operator) {
       const operator = this.next.strValue;
       switch (operator) {
         case '*':
@@ -488,7 +488,7 @@ export class _ParseAST {
   }
 
   parsePrefix(): AST {
-    if (this.next.type == TokenType.Operator) {
+    if (this.next.type === TokenType.Operator) {
       const start = this.inputIndex;
       const operator = this.next.strValue;
       const literalSpan = new ParseSpan(start, start);

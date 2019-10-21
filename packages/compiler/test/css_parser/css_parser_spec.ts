@@ -14,7 +14,7 @@ import {ParseLocation} from '../../src/parse_util';
 
 export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
   for (let i = 0; i < tokens.length; i++) {
-    expect(tokens[i].strValue == valuesArr[i]);
+    expect(tokens[i].strValue === valuesArr[i]);
   }
 }
 

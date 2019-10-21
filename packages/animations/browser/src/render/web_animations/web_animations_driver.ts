@@ -46,7 +46,7 @@ export class WebAnimationsDriver implements AnimationDriver {
           element, keyframes, duration, delay, easing, previousPlayers);
     }
 
-    const fill = delay == 0 ? 'both' : 'forwards';
+    const fill = delay === 0 ? 'both' : 'forwards';
     const playerOptions: {[key: string]: string | number} = {duration, delay, fill};
     // we check for this to avoid having a null|undefined value be present
     // for the easing (which results in an error for certain browsers #9752)

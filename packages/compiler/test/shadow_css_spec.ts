@@ -96,8 +96,8 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       expect(s('one ~ two {}', 'contenta')).toEqual('one[contenta] ~ two[contenta] {}');
       const res = s('.one.two > three {}', 'contenta');  // IE swap classes
       expect(
-          res == '.one.two[contenta] > three[contenta] {}' ||
-          res == '.two.one[contenta] > three[contenta] {}')
+          res === '.one.two[contenta] > three[contenta] {}' ||
+          res === '.two.one[contenta] > three[contenta] {}')
           .toEqual(true);
       expect(s('one[attr="value"] {}', 'contenta')).toEqual('one[attr="value"][contenta] {}');
       expect(s('one[attr=value] {}', 'contenta')).toEqual('one[attr="value"][contenta] {}');

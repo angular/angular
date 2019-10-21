@@ -234,7 +234,7 @@ export class CompileTemplateMetadata {
     this.externalStylesheets = _normalizeArray(externalStylesheets);
     this.animations = animations ? flatten(animations) : [];
     this.ngContentSelectors = ngContentSelectors || [];
-    if (interpolation && interpolation.length != 2) {
+    if (interpolation && interpolation.length !== 2) {
       throw new Error(`'interpolation' should have a start and an end symbol.`);
     }
     this.interpolation = interpolation;

@@ -99,17 +99,17 @@ export function defaultComparator<K, V>(
   // make sure that nulls are at the end of the sort.
   if (a === null) return 1;
   if (b === null) return -1;
-  if (typeof a == 'string' && typeof b == 'string') {
+  if (typeof a === 'string' && typeof b === 'string') {
     return a < b ? -1 : 1;
   }
-  if (typeof a == 'number' && typeof b == 'number') {
+  if (typeof a === 'number' && typeof b === 'number') {
     return a - b;
   }
-  if (typeof a == 'boolean' && typeof b == 'boolean') {
+  if (typeof a === 'boolean' && typeof b === 'boolean') {
     return a < b ? -1 : 1;
   }
   // `a` and `b` are of different types. Compare their string values.
   const aString = String(a);
   const bString = String(b);
-  return aString == bString ? 0 : aString < bString ? -1 : 1;
+  return aString === bString ? 0 : aString < bString ? -1 : 1;
 }

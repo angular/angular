@@ -33,7 +33,7 @@ export function getExportSymbolsOfFile(
         visitNode(decl);
       }
     } else if (ts.isVariableDeclaration(node)) {
-      if ((ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) != 0 &&
+      if ((ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) !== 0 &&
           ts.isIdentifier(node.name)) {
         exports.push({exportName: node.name.text, identifier: node.name});
       }

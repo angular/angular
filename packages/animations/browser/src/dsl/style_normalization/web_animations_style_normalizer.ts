@@ -25,7 +25,7 @@ export class WebAnimationsStyleNormalizer extends AnimationStyleNormalizer {
         unit = 'px';
       } else {
         const valAndSuffixMatch = value.match(/^[+-]?[\d\.]+([a-z]*)$/);
-        if (valAndSuffixMatch && valAndSuffixMatch[1].length == 0) {
+        if (valAndSuffixMatch && valAndSuffixMatch[1].length === 0) {
           errors.push(`Please provide a CSS unit value for ${userProvidedProperty}:${value}`);
         }
       }

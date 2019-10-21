@@ -197,11 +197,11 @@ export class ComponentFixture<T> extends BaseFixture {
 // Fixtures above are preferred way of testing Components and Templates
 ///////////////////////////////////////////////////////////////////////////////////
 
-export const document = ((typeof global == 'object' && global || window) as any).document;
+export const document = ((typeof global === 'object' && global || window) as any).document;
 export let containerEl: HTMLElement = null !;
 let hostView: LView|null;
 const isRenderer2 =
-    typeof process == 'object' && process.argv[3] && process.argv[3] === '--r=renderer2';
+    typeof process === 'object' && process.argv[3] && process.argv[3] === '--r=renderer2';
 // tslint:disable-next-line:no-console
 console.log(`Running tests with ${!isRenderer2 ? 'document' : 'Renderer2'} renderer...`);
 const testRendererFactory: RendererFactory3 =
@@ -309,7 +309,7 @@ function toDefs(
     types: Type<any>[] | (() => Type<any>[]) | undefined | null,
     mapFn: (type: Type<any>) => PipeDef<any>| DirectiveDef<any>): any {
   if (!types) return null;
-  if (typeof types == 'function') {
+  if (typeof types === 'function') {
     types = types();
   }
   return types.map(mapFn);

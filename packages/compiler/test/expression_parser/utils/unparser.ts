@@ -45,7 +45,7 @@ class Unparser implements AstVisitor {
     const len = ast.expressions.length;
     for (let i = 0; i < len; i++) {
       this._visit(ast.expressions[i]);
-      this._expression += i == len - 1 ? ';' : '; ';
+      this._expression += i === len - 1 ? ';' : '; ';
     }
   }
 

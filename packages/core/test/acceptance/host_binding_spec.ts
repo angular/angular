@@ -1056,7 +1056,7 @@ describe('host bindings', () => {
           expect(() => fixture.detectChanges()).toThrowError(/Required a safe URL, got a \w+/);
         } else {
           fixture.detectChanges();
-          expect(current()).toEqual(bypassFn == identity ? expectedSanitizedValue : value);
+          expect(current()).toEqual(bypassFn === identity ? expectedSanitizedValue : value);
         }
       });
     }

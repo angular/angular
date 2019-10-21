@@ -373,7 +373,7 @@ class _Tokenizer {
       const isHex = this._attemptCharCode(chars.$x) || this._attemptCharCode(chars.$X);
       const codeStart = this._cursor.clone();
       this._attemptCharCodeUntilFn(isDigitEntityEnd);
-      if (this._cursor.peek() != chars.$SEMICOLON) {
+      if (this._cursor.peek() !== chars.$SEMICOLON) {
         throw this._createError(
             _unexpectedCharacterErrorMsg(this._cursor.peek()), this._cursor.getSpan());
       }
@@ -389,7 +389,7 @@ class _Tokenizer {
     } else {
       const nameStart = this._cursor.clone();
       this._attemptCharCodeUntilFn(isNamedEntityEnd);
-      if (this._cursor.peek() != chars.$SEMICOLON) {
+      if (this._cursor.peek() !== chars.$SEMICOLON) {
         this._cursor = nameStart;
         return '&';
       }
@@ -731,11 +731,11 @@ function isPrefixEnd(code: number): boolean {
 }
 
 function isDigitEntityEnd(code: number): boolean {
-  return code == chars.$SEMICOLON || code == chars.$EOF || !chars.isAsciiHexDigit(code);
+  return code === chars.$SEMICOLON || code === chars.$EOF || !chars.isAsciiHexDigit(code);
 }
 
 function isNamedEntityEnd(code: number): boolean {
-  return code == chars.$SEMICOLON || code == chars.$EOF || !chars.isAsciiLetter(code);
+  return code === chars.$SEMICOLON || code === chars.$EOF || !chars.isAsciiLetter(code);
 }
 
 function isExpansionCaseStart(peek: number): boolean {
@@ -743,7 +743,7 @@ function isExpansionCaseStart(peek: number): boolean {
 }
 
 function compareCharCodeCaseInsensitive(code1: number, code2: number): boolean {
-  return toUpperCaseCharCode(code1) == toUpperCaseCharCode(code2);
+  return toUpperCaseCharCode(code1) === toUpperCaseCharCode(code2);
 }
 
 function toUpperCaseCharCode(code: number): number {
@@ -755,7 +755,7 @@ function mergeTextTokens(srcTokens: Token[]): Token[] {
   let lastDstToken: Token|undefined = undefined;
   for (let i = 0; i < srcTokens.length; i++) {
     const token = srcTokens[i];
-    if (lastDstToken && lastDstToken.type == TokenType.TEXT && token.type == TokenType.TEXT) {
+    if (lastDstToken && lastDstToken.type === TokenType.TEXT && token.type === TokenType.TEXT) {
       lastDstToken.parts[0] ! += token.parts[0];
       lastDstToken.sourceSpan.end = token.sourceSpan.end;
     } else {

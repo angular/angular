@@ -174,7 +174,7 @@ class ExampleVisitor implements xml.IVisitor {
 
   visitTag(tag: xml.Tag): void {
     if (tag.name === _PLACEHOLDER_TAG) {
-      if (!tag.children || tag.children.length == 0) {
+      if (!tag.children || tag.children.length === 0) {
         const exText = new xml.Text(tag.attrs['name'] || '...');
         tag.children = [new xml.Tag(_EXAMPLE_TAG, {}, [exText])];
       }

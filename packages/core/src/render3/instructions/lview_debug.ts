@@ -178,7 +178,7 @@ export const TNodeConstructor = class TNode implements ITNode {
     if (this.attrs) {
       for (let i = 0; i < this.attrs.length;) {
         const attrName = this.attrs[i++];
-        if (typeof attrName == 'number') {
+        if (typeof attrName === 'number') {
           break;
         }
         const attrValue = this.attrs[i++];
@@ -554,7 +554,7 @@ export class I18nUpdateOpCodesDebug implements I18nOpCodesDebug {
         const opCode = __raw_opCodes[j];
         if (typeof opCode === 'string') {
           value += opCode;
-        } else if (typeof opCode == 'number') {
+        } else if (typeof opCode === 'number') {
           if (opCode < 0) {
             // It's a binding index whose value is negative
             // We cannot know the value of the binding so we only show the index

@@ -1647,7 +1647,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           const ctx = initialize(options);
 
 
-          const throws = options.childThrows != LifetimeMethods.None;
+          const throws = options.childThrows !== LifetimeMethods.None;
           if (throws) {
             log(`<CYCLE 0 START>`);
             expect(() => {
@@ -1881,7 +1881,7 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
 
   ngOnInit() {
     this.log.add(this.name, 'ngOnInit');
-    if (this.throwOn == 'ngOnInit') {
+    if (this.throwOn === 'ngOnInit') {
       throw new Error('Boom!');
     }
   }
@@ -1889,42 +1889,42 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
   ngOnChanges(changes: SimpleChanges) {
     this.log.add(this.name, 'ngOnChanges');
     this.changes = changes;
-    if (this.throwOn == 'ngOnChanges') {
+    if (this.throwOn === 'ngOnChanges') {
       throw new Error('Boom!');
     }
   }
 
   ngAfterContentInit() {
     this.log.add(this.name, 'ngAfterContentInit');
-    if (this.throwOn == 'ngAfterContentInit') {
+    if (this.throwOn === 'ngAfterContentInit') {
       throw new Error('Boom!');
     }
   }
 
   ngAfterContentChecked() {
     this.log.add(this.name, 'ngAfterContentChecked');
-    if (this.throwOn == 'ngAfterContentChecked') {
+    if (this.throwOn === 'ngAfterContentChecked') {
       throw new Error('Boom!');
     }
   }
 
   ngAfterViewInit() {
     this.log.add(this.name, 'ngAfterViewInit');
-    if (this.throwOn == 'ngAfterViewInit') {
+    if (this.throwOn === 'ngAfterViewInit') {
       throw new Error('Boom!');
     }
   }
 
   ngAfterViewChecked() {
     this.log.add(this.name, 'ngAfterViewChecked');
-    if (this.throwOn == 'ngAfterViewChecked') {
+    if (this.throwOn === 'ngAfterViewChecked') {
       throw new Error('Boom!');
     }
   }
 
   ngOnDestroy() {
     this.log.add(this.name, 'ngOnDestroy');
-    if (this.throwOn == 'ngOnDestroy') {
+    if (this.throwOn === 'ngOnDestroy') {
       throw new Error('Boom!');
     }
   }

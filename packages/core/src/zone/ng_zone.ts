@@ -116,7 +116,7 @@ export class NgZone {
   readonly onError: EventEmitter<any> = new EventEmitter(false);
 
   constructor({enableLongStackTrace = false}) {
-    if (typeof Zone == 'undefined') {
+    if (typeof Zone === 'undefined') {
       throw new Error(`In this configuration Angular requires Zone.js`);
     }
 
@@ -234,7 +234,7 @@ interface NgZonePrivate extends NgZone {
 }
 
 function checkStable(zone: NgZonePrivate) {
-  if (zone._nesting == 0 && !zone.hasPendingMicrotasks && !zone.isStable) {
+  if (zone._nesting === 0 && !zone.hasPendingMicrotasks && !zone.isStable) {
     try {
       zone._nesting++;
       zone.onMicrotaskEmpty.emit(null);
@@ -282,10 +282,10 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
           if (current === target) {
             // We are only interested in hasTask events which originate from our zone
             // (A child hasTask event is not interesting to us)
-            if (hasTaskState.change == 'microTask') {
+            if (hasTaskState.change === 'microTask') {
               zone.hasPendingMicrotasks = hasTaskState.microTask;
               checkStable(zone);
-            } else if (hasTaskState.change == 'macroTask') {
+            } else if (hasTaskState.change === 'macroTask') {
               zone.hasPendingMacrotasks = hasTaskState.macroTask;
             }
           }

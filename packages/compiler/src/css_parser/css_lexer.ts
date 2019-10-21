@@ -138,7 +138,7 @@ export class CssScanner {
   getMode(): CssLexerMode { return this._currentMode; }
 
   setMode(mode: CssLexerMode) {
-    if (this._currentMode != mode) {
+    if (this._currentMode !== mode) {
       if (_trackWhitespace(this._currentMode) && !_trackWhitespace(mode)) {
         this.consumeWhitespace();
       }
@@ -165,7 +165,7 @@ export class CssScanner {
 
   consumeEmptyStatements(): void {
     this.consumeWhitespace();
-    while (this.peek == chars.$SEMICOLON) {
+    while (this.peek === chars.$SEMICOLON) {
       this.advance();
       this.consumeWhitespace();
     }
@@ -178,7 +178,7 @@ export class CssScanner {
         this.advance();  // /
         this.advance();  // *
         while (!isCommentEnd(this.peek, this.peekPeek)) {
-          if (this.peek == chars.$EOF) {
+          if (this.peek === chars.$EOF) {
             this.error('Unterminated comment');
           }
           this.advance();
@@ -215,11 +215,11 @@ export class CssScanner {
     }
 
     let isMatchingType: boolean = false;
-    if (type == CssTokenType.IdentifierOrNumber) {
+    if (type === CssTokenType.IdentifierOrNumber) {
       // TODO (matsko): implement array traversal for lookup here
-      isMatchingType = next.type == CssTokenType.Number || next.type == CssTokenType.Identifier;
+      isMatchingType = next.type === CssTokenType.Number || next.type === CssTokenType.Identifier;
     } else {
-      isMatchingType = next.type == type;
+      isMatchingType = next.type === type;
     }
 
     // before throwing the error we need to bring back the former
@@ -227,7 +227,7 @@ export class CssScanner {
     this.setMode(mode);
 
     let error: Error|null = null;
-    if (!isMatchingType || (value != null && value != next.strValue)) {
+    if (!isMatchingType || (value != null && value !== next.strValue)) {
       let errorMessage =
           CssTokenType[next.type] + ' does not match expected ' + CssTokenType[type] + ' value';
 
@@ -247,7 +247,7 @@ export class CssScanner {
 
   scan(): LexedCssResult|null {
     const trackWS = _trackWhitespace(this._currentMode);
-    if (this.index == 0 && !trackWS) {  // first scan
+    if (this.index === 0 && !trackWS) {  // first scan
       this.consumeWhitespace();
     }
 
@@ -267,7 +267,7 @@ export class CssScanner {
   _scan(): CssToken|null {
     let peek = this.peek;
     let peekPeek = this.peekPeek;
-    if (peek == chars.$EOF) return null;
+    if (peek === chars.$EOF) return null;
 
     if (isCommentStart(peek, peekPeek)) {
       // even if comments are not tracked we still lex the
@@ -284,26 +284,26 @@ export class CssScanner {
 
     peek = this.peek;
     peekPeek = this.peekPeek;
-    if (peek == chars.$EOF) return null;
+    if (peek === chars.$EOF) return null;
 
     if (isStringStart(peek, peekPeek)) {
       return this.scanString();
     }
 
     // something like url(cool)
-    if (this._currentMode == CssLexerMode.STYLE_VALUE_FUNCTION) {
+    if (this._currentMode === CssLexerMode.STYLE_VALUE_FUNCTION) {
       return this.scanCssValueFunction();
     }
 
-    const isModifier = peek == chars.$PLUS || peek == chars.$MINUS;
+    const isModifier = peek === chars.$PLUS || peek === chars.$MINUS;
     const digitA = isModifier ? false : chars.isDigit(peek);
     const digitB = chars.isDigit(peekPeek);
-    if (digitA || (isModifier && (peekPeek == chars.$PERIOD || digitB)) ||
-        (peek == chars.$PERIOD && digitB)) {
+    if (digitA || (isModifier && (peekPeek === chars.$PERIOD || digitB)) ||
+        (peek === chars.$PERIOD && digitB)) {
       return this.scanNumber();
     }
 
-    if (peek == chars.$AT) {
+    if (peek === chars.$AT) {
       return this.scanAtExpression();
     }
 
@@ -332,7 +332,7 @@ export class CssScanner {
     this.advance();  // *
 
     while (!isCommentEnd(this.peek, this.peekPeek)) {
-      if (this.peek == chars.$EOF) {
+      if (this.peek === chars.$EOF) {
         this.error('Unterminated comment');
       }
       this.advance();
@@ -349,7 +349,7 @@ export class CssScanner {
     const start = this.index;
     const startingColumn = this.column;
     const startingLine = this.line;
-    while (chars.isWhitespace(this.peek) && this.peek != chars.$EOF) {
+    while (chars.isWhitespace(this.peek) && this.peek !== chars.$EOF) {
       this.advance();
     }
     const str = this.input.substring(start, this.index);
@@ -370,14 +370,14 @@ export class CssScanner {
     this.advance();
 
     while (!isCharMatch(target, previous, this.peek)) {
-      if (this.peek == chars.$EOF || isNewline(this.peek)) {
+      if (this.peek === chars.$EOF || isNewline(this.peek)) {
         this.error('Unterminated quote');
       }
       previous = this.peek;
       this.advance();
     }
 
-    if (this.assertCondition(this.peek == target, 'Unterminated quote')) {
+    if (this.assertCondition(this.peek === target, 'Unterminated quote')) {
       return null;
     }
     this.advance();
@@ -389,12 +389,12 @@ export class CssScanner {
   scanNumber(): CssToken {
     const start = this.index;
     const startingColumn = this.column;
-    if (this.peek == chars.$PLUS || this.peek == chars.$MINUS) {
+    if (this.peek === chars.$PLUS || this.peek === chars.$MINUS) {
       this.advance();
     }
     let periodUsed = false;
-    while (chars.isDigit(this.peek) || this.peek == chars.$PERIOD) {
-      if (this.peek == chars.$PERIOD) {
+    while (chars.isDigit(this.peek) || this.peek === chars.$PERIOD) {
+      if (this.peek === chars.$PERIOD) {
         if (periodUsed) {
           this.error('Unexpected use of a second period value');
         }
@@ -425,11 +425,11 @@ export class CssScanner {
     const start = this.index;
     const startingColumn = this.column;
     let parenBalance = 1;
-    while (this.peek != chars.$EOF && parenBalance > 0) {
+    while (this.peek !== chars.$EOF && parenBalance > 0) {
       this.advance();
-      if (this.peek == chars.$LPAREN) {
+      if (this.peek === chars.$LPAREN) {
         parenBalance++;
-      } else if (this.peek == chars.$RPAREN) {
+      } else if (this.peek === chars.$RPAREN) {
         parenBalance--;
       }
     }
@@ -453,7 +453,7 @@ export class CssScanner {
   }
 
   scanAtExpression(): CssToken|null {
-    if (this.assertCondition(this.peek == chars.$AT, 'Expected @ value')) {
+    if (this.assertCondition(this.peek === chars.$AT, 'Expected @ value')) {
       return null;
     }
 
@@ -495,38 +495,38 @@ export class CssScanner {
 }
 
 function isCharMatch(target: number, previous: number, code: number): boolean {
-  return code == target && previous != chars.$BACKSLASH;
+  return code === target && previous !== chars.$BACKSLASH;
 }
 
 function isCommentStart(code: number, next: number): boolean {
-  return code == chars.$SLASH && next == chars.$STAR;
+  return code === chars.$SLASH && next === chars.$STAR;
 }
 
 function isCommentEnd(code: number, next: number): boolean {
-  return code == chars.$STAR && next == chars.$SLASH;
+  return code === chars.$STAR && next === chars.$SLASH;
 }
 
 function isStringStart(code: number, next: number): boolean {
   let target = code;
-  if (target == chars.$BACKSLASH) {
+  if (target === chars.$BACKSLASH) {
     target = next;
   }
-  return target == chars.$DQ || target == chars.$SQ;
+  return target === chars.$DQ || target === chars.$SQ;
 }
 
 function isIdentifierStart(code: number, next: number): boolean {
   let target = code;
-  if (target == chars.$MINUS) {
+  if (target === chars.$MINUS) {
     target = next;
   }
 
-  return chars.isAsciiLetter(target) || target == chars.$BACKSLASH || target == chars.$MINUS ||
-      target == chars.$_;
+  return chars.isAsciiLetter(target) || target === chars.$BACKSLASH || target === chars.$MINUS ||
+      target === chars.$_;
 }
 
 function isIdentifierPart(target: number): boolean {
-  return chars.isAsciiLetter(target) || target == chars.$BACKSLASH || target == chars.$MINUS ||
-      target == chars.$_ || chars.isDigit(target);
+  return chars.isAsciiLetter(target) || target === chars.$BACKSLASH || target === chars.$MINUS ||
+      target === chars.$_ || chars.isDigit(target);
 }
 
 function isValidPseudoSelectorCharacter(code: number): boolean {
@@ -540,7 +540,7 @@ function isValidPseudoSelectorCharacter(code: number): boolean {
 }
 
 function isValidKeyframeBlockCharacter(code: number): boolean {
-  return code == chars.$PERCENT;
+  return code === chars.$PERCENT;
 }
 
 function isValidAttributeSelectorCharacter(code: number): boolean {
@@ -658,7 +658,7 @@ function isValidStyleFunctionCharacter(code: number): boolean {
 function isValidBlockCharacter(code: number): boolean {
   // @something { }
   // IDENT
-  return code == chars.$AT;
+  return code === chars.$AT;
 }
 
 function isValidCssCharacter(code: number, mode: CssLexerMode): boolean {

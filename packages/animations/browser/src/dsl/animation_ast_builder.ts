@@ -86,14 +86,14 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     let depCount = context.depCount = 0;
     const states: StateAst[] = [];
     const transitions: TransitionAst[] = [];
-    if (metadata.name.charAt(0) == '@') {
+    if (metadata.name.charAt(0) === '@') {
       context.errors.push(
           'animation triggers cannot be prefixed with an `@` sign (e.g. trigger(\'@foo\', [...]))');
     }
 
     metadata.definitions.forEach(def => {
       this._resetContextStyleTimingState(context);
-      if (def.type == AnimationMetadataType.State) {
+      if (def.type === AnimationMetadataType.State) {
         const stateDef = def as AnimationStateMetadata;
         const name = stateDef.name;
         name.toString().split(/\s*,\s*/).forEach(n => {
@@ -101,7 +101,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
           states.push(this.visitState(stateDef, context));
         });
         stateDef.name = name;
-      } else if (def.type == AnimationMetadataType.Transition) {
+      } else if (def.type === AnimationMetadataType.Transition) {
         const transition = this.visitTransition(def as AnimationTransitionMetadata, context);
         queryCount += transition.queryCount;
         depCount += transition.depCount;
@@ -203,7 +203,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
 
     let styleAst: StyleAst|KeyframesAst;
     let styleMetadata: AnimationMetadata = metadata.styles ? metadata.styles : style({});
-    if (styleMetadata.type == AnimationMetadataType.Keyframes) {
+    if (styleMetadata.type === AnimationMetadataType.Keyframes) {
       styleAst = this.visitKeyframes(styleMetadata as AnimationKeyframesSequenceMetadata, context);
     } else {
       let styleMetadata = metadata.styles as AnimationStyleMetadata;
@@ -242,8 +242,8 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     const styles: (ɵStyleData | string)[] = [];
     if (Array.isArray(metadata.styles)) {
       (metadata.styles as(ɵStyleData | string)[]).forEach(styleTuple => {
-        if (typeof styleTuple == 'string') {
-          if (styleTuple == AUTO_STYLE) {
+        if (typeof styleTuple === 'string') {
+          if (styleTuple === AUTO_STYLE) {
             styles.push(styleTuple);
           } else {
             context.errors.push(`The provided style string value ${styleTuple} is not allowed.`);
@@ -296,7 +296,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     }
 
     ast.styles.forEach(tuple => {
-      if (typeof tuple == 'string') return;
+      if (typeof tuple === 'string') return;
 
       Object.keys(tuple).forEach(prop => {
         if (!this._driver.validateStyleProperty(prop)) {
@@ -309,7 +309,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
         const collectedEntry = collectedStyles[prop];
         let updateCollectedStyle = true;
         if (collectedEntry) {
-          if (startTime != endTime && startTime >= collectedEntry.startTime &&
+          if (startTime !== endTime && startTime >= collectedEntry.startTime &&
               endTime <= collectedEntry.endTime) {
             context.errors.push(
                 `The CSS property "${prop}" that exists between the times of "${collectedEntry.startTime}ms" and "${collectedEntry.endTime}ms" is also being animated in a parallel animation between the times of "${startTime}ms" and "${endTime}ms"`);
@@ -377,7 +377,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     let generatedOffset = 0;
     if (totalKeyframesWithOffsets > 0 && totalKeyframesWithOffsets < length) {
       context.errors.push(`Not all style() steps within the declared keyframes() contain offsets`);
-    } else if (totalKeyframesWithOffsets == 0) {
+    } else if (totalKeyframesWithOffsets === 0) {
       generatedOffset = MAX_KEYFRAME_OFFSET / (length - 1);
     }
 
@@ -386,7 +386,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     const currentAnimateTimings = context.currentAnimateTimings !;
     const animateDuration = currentAnimateTimings.duration;
     keyframes.forEach((kf, i) => {
-      const offset = generatedOffset > 0 ? (i == limit ? 1 : (generatedOffset * i)) : offsets[i];
+      const offset = generatedOffset > 0 ? (i === limit ? 1 : (generatedOffset * i)) : offsets[i];
       const durationUpToThisFrame = offset * animateDuration;
       context.currentTime = currentTime + currentAnimateTimings.delay + durationUpToThisFrame;
       currentAnimateTimings.duration = durationUpToThisFrame;
@@ -469,7 +469,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
 }
 
 function normalizeSelector(selector: string): [string, boolean] {
-  const hasAmpersand = selector.split(/\s*,\s*/).find(token => token == SELF_TOKEN) ? true : false;
+  const hasAmpersand = selector.split(/\s*,\s*/).find(token => token === SELF_TOKEN) ? true : false;
   if (hasAmpersand) {
     selector = selector.replace(SELF_TOKEN_REGEX, '');
   }
@@ -505,7 +505,7 @@ export class AnimationAstBuilderContext {
 }
 
 function consumeOffset(styles: ɵStyleData | string | (ɵStyleData | string)[]): number|null {
-  if (typeof styles == 'string') return null;
+  if (typeof styles === 'string') return null;
 
   let offset: number|null = null;
 
@@ -526,20 +526,20 @@ function consumeOffset(styles: ɵStyleData | string | (ɵStyleData | string)[]):
 }
 
 function isObject(value: any): boolean {
-  return !Array.isArray(value) && typeof value == 'object';
+  return !Array.isArray(value) && typeof value === 'object';
 }
 
 function constructTimingAst(value: string | number | AnimateTimings, errors: any[]) {
   let timings: AnimateTimings|null = null;
   if (value.hasOwnProperty('duration')) {
     timings = value as AnimateTimings;
-  } else if (typeof value == 'number') {
+  } else if (typeof value === 'number') {
     const duration = resolveTiming(value, errors).duration;
     return makeTimingAst(duration, 0, '');
   }
 
   const strValue = value as string;
-  const isDynamic = strValue.split(/\s+/).some(v => v.charAt(0) == '{' && v.charAt(1) == '{');
+  const isDynamic = strValue.split(/\s+/).some(v => v.charAt(0) === '{' && v.charAt(1) === '{');
   if (isDynamic) {
     const ast = makeTimingAst(0, 0, '') as any;
     ast.dynamic = true;

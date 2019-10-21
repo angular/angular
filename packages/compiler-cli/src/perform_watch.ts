@@ -223,7 +223,7 @@ export function performWatchCompilation(host: PerformWatchHost):
       host.reportDiagnostics([totalCompilationTimeDiagnostic(endTime - startTime)]);
     }
     const exitCode = exitCodeFromResult(compileResult.diagnostics);
-    if (exitCode == 0) {
+    if (exitCode === 0) {
       cachedProgram = compileResult.program;
       host.reportDiagnostics(
           [createMessageDiagnostic('Compilation complete. Watching for file changes.')]);

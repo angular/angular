@@ -81,7 +81,7 @@ export class MockResourceLoader extends ResourceLoader {
 
     if (this._expectations.length > 0) {
       const expectation = this._expectations[0];
-      if (expectation.url == url) {
+      if (expectation.url === url) {
         remove(this._expectations, expectation);
         request.complete(expectation.response);
         return;

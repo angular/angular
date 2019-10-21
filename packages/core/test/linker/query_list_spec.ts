@@ -21,7 +21,9 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
       log = '';
     });
 
-    function logAppend(item: any /** TODO #9100 */) { log += (log.length == 0 ? '' : ', ') + item; }
+    function logAppend(item: any /** TODO #9100 */) {
+      log += (log.length === 0 ? '' : ', ') + item;
+    }
 
     describe('dirty and reset', () => {
 
@@ -77,22 +79,22 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
 
     it('should support filter', () => {
       queryList.reset(['one', 'two']);
-      expect(queryList.filter((x: string) => x == 'one')).toEqual(['one']);
+      expect(queryList.filter((x: string) => x === 'one')).toEqual(['one']);
     });
 
     it('should support filter with index', () => {
       queryList.reset(['one', 'two']);
-      expect(queryList.filter((x: string, i: number) => i == 0)).toEqual(['one']);
+      expect(queryList.filter((x: string, i: number) => i === 0)).toEqual(['one']);
     });
 
     it('should support find', () => {
       queryList.reset(['one', 'two']);
-      expect(queryList.find((x: string) => x == 'two')).toEqual('two');
+      expect(queryList.find((x: string) => x === 'two')).toEqual('two');
     });
 
     it('should support find with index', () => {
       queryList.reset(['one', 'two']);
-      expect(queryList.find((x: string, i: number) => i == 1)).toEqual('two');
+      expect(queryList.find((x: string, i: number) => i === 1)).toEqual('two');
     });
 
     it('should support reduce', () => {
@@ -119,8 +121,8 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
     it('should support toString', () => {
       queryList.reset(['one', 'two']);
       const listString = queryList.toString();
-      expect(listString.indexOf('one') != -1).toBeTruthy();
-      expect(listString.indexOf('two') != -1).toBeTruthy();
+      expect(listString.indexOf('one') !== -1).toBeTruthy();
+      expect(listString.indexOf('two') !== -1).toBeTruthy();
     });
 
     it('should support first and last', () => {

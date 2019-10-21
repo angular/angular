@@ -134,7 +134,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
       if (frameCount > 1) {
         throw new Error('multi-frame render stats not supported');
       }
-      if (frameCount == 1) {
+      if (frameCount === 1) {
         return normalizeEvent(event, {'name': 'frame'});
       }
     } else if (

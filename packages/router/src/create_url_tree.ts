@@ -82,7 +82,7 @@ class Navigation {
   }
 
   public toRoot(): boolean {
-    return this.isAbsolute && this.commands.length === 1 && this.commands[0] == '/';
+    return this.isAbsolute && this.commands.length === 1 && this.commands[0] === '/';
   }
 }
 
@@ -116,13 +116,13 @@ function computeNavigation(commands: any[]): Navigation {
 
     if (cmdIdx === 0) {
       cmd.split('/').forEach((urlPart, partIndex) => {
-        if (partIndex == 0 && urlPart === '.') {
+        if (partIndex === 0 && urlPart === '.') {
           // skip './a'
-        } else if (partIndex == 0 && urlPart === '') {  //  '/a'
+        } else if (partIndex === 0 && urlPart === '') {  //  '/a'
           isAbsolute = true;
         } else if (urlPart === '..') {  //  '../a'
           numberOfDoubleDots++;
-        } else if (urlPart != '') {
+        } else if (urlPart !== '') {
           res.push(urlPart);
         }
       });
@@ -312,5 +312,5 @@ function stringify(params: {[key: string]: any}): {[key: string]: string} {
 }
 
 function compare(path: string, params: {[key: string]: any}, segment: UrlSegment): boolean {
-  return path == segment.path && shallowEqual(params, segment.parameters);
+  return path === segment.path && shallowEqual(params, segment.parameters);
 }

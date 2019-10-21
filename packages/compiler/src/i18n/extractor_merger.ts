@@ -206,7 +206,7 @@ class _Visitor implements html.Visitor {
         }
       } else {
         if (isClosing) {
-          if (this._depth == this._blockStartDepth) {
+          if (this._depth === this._blockStartDepth) {
             this._closeTranslatableSection(comment, this._blockChildren);
             this._inI18nBlock = false;
             const message = this._addMessage(this._blockChildren, this._blockMeaningAndDesc) !;
@@ -254,7 +254,7 @@ class _Visitor implements html.Visitor {
         translatedChildNodes = this._translateMessage(el, message);
       }
 
-      if (this._mode == _VisitorMode.Extract) {
+      if (this._mode === _VisitorMode.Extract) {
         const isTranslatable = i18nAttr || isTopLevelImplicit;
         if (isTranslatable) this._openTranslatableSection(el);
         html.visitAll(this, el.children);
@@ -266,7 +266,7 @@ class _Visitor implements html.Visitor {
             el, 'Could not mark an element as translatable inside a translatable section');
       }
 
-      if (this._mode == _VisitorMode.Extract) {
+      if (this._mode === _VisitorMode.Extract) {
         // Descend into child nodes for extraction
         html.visitAll(this, el.children);
       }
@@ -337,8 +337,8 @@ class _Visitor implements html.Visitor {
 
   // add a translatable message
   private _addMessage(ast: html.Node[], msgMeta?: string): i18n.Message|null {
-    if (ast.length == 0 ||
-        ast.length == 1 && ast[0] instanceof html.Attribute && !(<html.Attribute>ast[0]).value) {
+    if (ast.length === 0 ||
+        ast.length === 1 && ast[0] instanceof html.Attribute && !(<html.Attribute>ast[0]).value) {
       // Do not create empty messages
       return null;
     }
@@ -388,12 +388,12 @@ class _Visitor implements html.Visitor {
         return;
       }
 
-      if (attr.value && attr.value != '' && i18nParsedMessageMeta.hasOwnProperty(attr.name)) {
+      if (attr.value && attr.value !== '' && i18nParsedMessageMeta.hasOwnProperty(attr.name)) {
         const {meaning, description, id} = i18nParsedMessageMeta[attr.name];
         const message: i18n.Message = this._createI18nMessage([attr], meaning, description, id);
         const nodes = this._translations.get(message);
         if (nodes) {
-          if (nodes.length == 0) {
+          if (nodes.length === 0) {
             translatedAttributes.push(new html.Attribute(attr.name, '', attr.sourceSpan));
           } else if (nodes[0] instanceof html.Text) {
             const value = (nodes[0] as html.Text).value;
@@ -424,7 +424,7 @@ class _Visitor implements html.Visitor {
    * - the node is a "direct child" of the block
    */
   private _mayBeAddBlockChildren(node: html.Node): void {
-    if (this._inI18nBlock && !this._inIcu && this._depth == this._blockStartDepth) {
+    if (this._inI18nBlock && !this._inIcu && this._depth === this._blockStartDepth) {
       this._blockChildren.push(node);
     }
   }
@@ -476,10 +476,10 @@ class _Visitor implements html.Visitor {
         (count: number, node: html.Node): number => count + (node instanceof html.Comment ? 0 : 1),
         0);
 
-    if (significantChildren == 1) {
+    if (significantChildren === 1) {
       for (let i = this._messages.length - 1; i >= startIndex !; i--) {
         const ast = this._messages[i].nodes;
-        if (!(ast.length == 1 && ast[0] instanceof i18n.Text)) {
+        if (!(ast.length === 1 && ast[0] instanceof i18n.Text)) {
           this._messages.splice(i, 1);
           break;
         }

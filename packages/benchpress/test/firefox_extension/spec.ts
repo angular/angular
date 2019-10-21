@@ -12,7 +12,7 @@ import {browser} from 'protractor';
 const assertEventsContainsName = function(events: any[], eventName: string) {
   let found = false;
   for (let i = 0; i < events.length; ++i) {
-    if (events[i].name == eventName) {
+    if (events[i].name === eventName) {
       found = true;
       break;
     }

@@ -183,7 +183,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
         const {stmts, currValExpr} = convertPropertyBinding(
             nameResolver, o.variable(this.getOutputVar(context)), value, bindingId,
             BindingForm.TrySimple);
-        if (stmts.length == 0) {
+        if (stmts.length === 0) {
           const guardClause =
               guard.useIf ? currValExpr : this.ctx.importExpr(guard.guard).callFn([currValExpr]);
           guardExpression = guardExpression ? guardExpression.and(guardClause) : guardClause;
@@ -287,7 +287,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
 
   notifyImplicitReceiverUse(): void {}
   getLocal(name: string): o.Expression|null {
-    if (name == EventHandlerVars.event.name) {
+    if (name === EventHandlerVars.event.name) {
       return o.variable(this.getOutputVar(o.BuiltinTypeName.Dynamic));
     }
     for (let currBuilder: ViewBuilder|null = this; currBuilder; currBuilder = currBuilder.parent) {

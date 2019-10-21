@@ -180,15 +180,19 @@ describe('StaticReflector', () => {
 
   it('should simplify ==', () => {
     expect(simplify(noContext, ({__symbolic: 'binop', operator: '==', left: 0x22, right: 0x22})))
+        // tslint:disable-next-line: triple-equals
         .toBe(0x22 == 0x22);
     expect(simplify(noContext, ({__symbolic: 'binop', operator: '==', left: 0x22, right: 0xF0})))
+        // tslint:disable-next-line: triple-equals
         .toBe(0x22 as any == 0xF0);
   });
 
   it('should simplify !=', () => {
     expect(simplify(noContext, ({__symbolic: 'binop', operator: '!=', left: 0x22, right: 0x22})))
+        // tslint:disable-next-line: triple-equals
         .toBe(0x22 != 0x22);
     expect(simplify(noContext, ({__symbolic: 'binop', operator: '!=', left: 0x22, right: 0xF0})))
+        // tslint:disable-next-line: triple-equals
         .toBe(0x22 as any != 0xF0);
   });
 

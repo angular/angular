@@ -68,7 +68,7 @@ function paramParser(rawParams: string, codec: HttpParameterCodec): Map<string, 
     const params: string[] = rawParams.split('&');
     params.forEach((param: string) => {
       const eqIdx = param.indexOf('=');
-      const [key, val]: string[] = eqIdx == -1 ?
+      const [key, val]: string[] = eqIdx === -1 ?
           [codec.decodeKey(param), ''] :
           [codec.decodeKey(param.slice(0, eqIdx)), codec.decodeValue(param.slice(eqIdx + 1))];
       const list = map.get(key) || [];

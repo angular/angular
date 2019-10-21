@@ -38,10 +38,10 @@ const MISSING_FROM_CHROME: {[el: string]: string[]} = {
   ':svg:cursor^:svg:': [],
 };
 
-const _G: any = typeof window != 'undefined' && window || typeof global != 'undefined' && global ||
-    typeof self != 'undefined' && self;
+const _G: any = typeof window !== 'undefined' && window ||
+    typeof global !== 'undefined' && global || typeof self !== 'undefined' && self;
 
-const document: any = typeof _G['document'] == 'object' ? _G['document'] : null;
+const document: any = typeof _G['document'] === 'object' ? _G['document'] : null;
 
 export function extractSchema(): Map<string, string[]>|null {
   if (!document) return null;
@@ -116,7 +116,7 @@ function assertNoMissingTags(descMap: Map<string, string[]>): void {
     extractedTags.push(...key.split('|')[0].split('^')[0].split(','));
   });
 
-  const missingTags = ALL_HTML_TAGS.split(',').filter(tag => extractedTags.indexOf(tag) == -1);
+  const missingTags = ALL_HTML_TAGS.split(',').filter(tag => extractedTags.indexOf(tag) === -1);
 
   if (missingTags.length) {
     throw new Error(`DOM schema misses tags: ${missingTags.join(',')}`);
@@ -201,7 +201,7 @@ function extractProperties(
   });
 
   // There is no point in using `Node.nodeValue`, filter it out
-  descMap.set(fullName, type === Node ? props.filter(p => p != '%nodeValue') : props);
+  descMap.set(fullName, type === Node ? props.filter(p => p !== '%nodeValue') : props);
 }
 
 function extractName(type: Function): string|null {

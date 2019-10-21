@@ -347,7 +347,7 @@ export function getOrCreateInjectable<T>(
       } finally {
         setTNodeAndViewData(savePreviousOrParentTNode, saveLView);
       }
-    } else if (typeof bloomHash == 'number') {
+    } else if (typeof bloomHash === 'number') {
       if (bloomHash === -1) {
         // `-1` is a special value used to identify `Injector` types.
         return new NodeInjector(tNode, lView) as any;
@@ -466,7 +466,7 @@ function searchTokensOnInjector<T>(
       // - AND the parent TNode is an Element.
       // This means that we just came from the Component's View and therefore are allowed to see
       // into the ViewProviders.
-      (previousTView != currentTView && (tNode.type === TNodeType.Element));
+      (previousTView !== currentTView && (tNode.type === TNodeType.Element));
 
   // This special case happens when there is a @host on the inject and when we are searching
   // on the host element node.

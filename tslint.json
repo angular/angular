@@ -35,6 +35,10 @@
     "semicolon": [
       true
     ],
+    "triple-equals": [
+      true,
+      "allow-null-check"
+    ],
     "variable-name": [
       true,
       "ban-keywords"

@@ -186,7 +186,7 @@ function _normalizeProviders(
     if (b instanceof Type) {
       res.push({ provide: b, useClass: b } as NormalizedProvider);
 
-    } else if (b && typeof b == 'object' && (b as any).provide !== undefined) {
+    } else if (b && typeof b === 'object' && (b as any).provide !== undefined) {
       res.push(b as NormalizedProvider);
 
     } else if (Array.isArray(b)) {

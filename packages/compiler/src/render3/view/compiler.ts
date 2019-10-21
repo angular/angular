@@ -278,7 +278,7 @@ export function compileComponentFromMetadata(
 
   // e.g. `styles: [str1, str2]`
   if (meta.styles && meta.styles.length) {
-    const styleValues = meta.encapsulation == core.ViewEncapsulation.Emulated ?
+    const styleValues = meta.encapsulation === core.ViewEncapsulation.Emulated ?
         compileStyles(meta.styles, CONTENT_ATTR, HOST_ATTR) :
         meta.styles;
     const strings = styleValues.map(str => o.literal(str));
@@ -433,7 +433,7 @@ function queriesFromGlobalMetadata(
  */
 function selectorsFromGlobalMetadata(
     selectors: CompileTokenMetadata[], outputCtx: OutputContext): o.Expression|string[] {
-  if (selectors.length > 1 || (selectors.length == 1 && selectors[0].value)) {
+  if (selectors.length > 1 || (selectors.length === 1 && selectors[0].value)) {
     const selectorStrings = selectors.map(value => value.value as string);
     selectorStrings.some(value => !value) &&
         error('Found a type among the string selectors expected');
@@ -441,7 +441,7 @@ function selectorsFromGlobalMetadata(
         o.literalArr(selectorStrings.map(value => o.literal(value))));
   }
 
-  if (selectors.length == 1) {
+  if (selectors.length === 1) {
     const first = selectors[0];
     if (first.identifier) {
       return outputCtx.importExpr(first.identifier.reference);
@@ -800,8 +800,9 @@ function createHostListeners(eventBindings: ParsedEvent[], name?: string): o.Sta
         bindingName;
     const handlerName = name && bindingName ? `${name}_${bindingFnName}_HostBindingHandler` : null;
     const params = prepareEventListenerParameters(BoundEvent.fromParsedEvent(binding), handlerName);
-    const instruction =
-        binding.type == ParsedEventType.Animation ? R3.componentHostSyntheticListener : R3.listener;
+    const instruction = binding.type === ParsedEventType.Animation ?
+        R3.componentHostSyntheticListener :
+        R3.listener;
     return o.importExpr(instruction).callFn(params).toStmt();
   });
 }

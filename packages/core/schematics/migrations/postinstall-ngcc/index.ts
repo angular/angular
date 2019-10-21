@@ -35,7 +35,7 @@ function addPackageJsonScript(tree: Tree, scriptName: string, script: string): v
   const content = buffer.toString();
 
   const packageJsonAst = parseJsonAst(content, JsonParseMode.Strict);
-  if (packageJsonAst.kind != 'object') {
+  if (packageJsonAst.kind !== 'object') {
     throw new SchematicsException('Invalid package.json. Was expecting an object.');
   }
 
@@ -60,7 +60,7 @@ function addPackageJsonScript(tree: Tree, scriptName: string, script: string): v
     } else {
       // Script found, prepend the new script with &&.
       const currentScript = scriptNode.value;
-      if (typeof currentScript == 'string') {
+      if (typeof currentScript === 'string') {
         // Only add script if there's no ngcc call there already.
         if (!currentScript.includes('ngcc')) {
           const {start, end} = scriptNode;

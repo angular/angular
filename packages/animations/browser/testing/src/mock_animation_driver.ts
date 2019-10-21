@@ -110,7 +110,7 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
       // {other styles within keyframes, ... previousStyles }
       this.keyframes.forEach(kf => {
         Object.keys(kf).forEach(prop => {
-          if (prop != 'offset') {
+          if (prop !== 'offset') {
             captures[prop] = this.__finished ? kf[prop] : AUTO_STYLE;
           }
         });

@@ -32,7 +32,7 @@ export class BrowserGetTestability implements GetTestability {
       const decrement = function(didWork_: any /** TODO #9100 */) {
         didWork = didWork || didWork_;
         count--;
-        if (count == 0) {
+        if (count === 0) {
           callback(didWork);
         }
       };

@@ -61,7 +61,7 @@ withEachNg1Version(() => {
            ngOnChanges(changes: SimpleChanges) {
              const assert = (prop: string, value: any) => {
                const propVal = (this as any)[prop];
-               if (propVal != value) {
+               if (propVal !== value) {
                  throw new Error(`Expected: '${prop}' to be '${value}' but was '${propVal}'`);
                }
              };
@@ -72,7 +72,7 @@ withEachNg1Version(() => {
                  throw new Error(`Changes record for '${prop}' not found.`);
                }
                const actualValue = changes[prop].currentValue;
-               if (actualValue != value) {
+               if (actualValue !== value) {
                  throw new Error(
                      `Expected changes record for'${prop}' to be '${value}' but was '${actualValue}'`);
                }

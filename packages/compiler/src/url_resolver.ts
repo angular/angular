@@ -56,7 +56,7 @@ export const UrlResolver: UrlResolverCtor = class UrlResolverImpl {
     const resolvedParts = _split(resolvedUrl);
     let prefix = this._packagePrefix;
     if (prefix != null && resolvedParts != null &&
-        resolvedParts[_ComponentIndex.Scheme] == 'package') {
+        resolvedParts[_ComponentIndex.Scheme] === 'package') {
       let path = resolvedParts[_ComponentIndex.Path];
       prefix = prefix.replace(/\/+$/, '');
       path = path.replace(/^\/+/, '');
@@ -253,9 +253,9 @@ function _split(uri: string): Array<string|any> {
   * @return Path component with removed dot segments.
   */
 function _removeDotSegments(path: string): string {
-  if (path == '/') return '/';
+  if (path === '/') return '/';
 
-  const leadingSlash = path[0] == '/' ? '/' : '';
+  const leadingSlash = path[0] === '/' ? '/' : '';
   const trailingSlash = path[path.length - 1] === '/' ? '/' : '';
   const segments = path.split('/');
 
@@ -279,7 +279,7 @@ function _removeDotSegments(path: string): string {
     }
   }
 
-  if (leadingSlash == '') {
+  if (leadingSlash === '') {
     while (up-- > 0) {
       out.unshift('..');
     }
@@ -326,7 +326,7 @@ function _resolveUrl(base: string, url: string): string {
     }
   }
 
-  if (parts[_ComponentIndex.Path][0] == '/') {
+  if (parts[_ComponentIndex.Path][0] === '/') {
     return _joinAndCanonicalizePath(parts);
   }
 

@@ -513,7 +513,7 @@ function makeRecord<T>(
 }
 
 function isValueProvider(value: SingleProvider): value is ValueProvider {
-  return value !== null && typeof value == 'object' && USE_VALUE in value;
+  return value !== null && typeof value === 'object' && USE_VALUE in value;
 }
 
 function isExistingProvider(value: SingleProvider): value is ExistingProvider {

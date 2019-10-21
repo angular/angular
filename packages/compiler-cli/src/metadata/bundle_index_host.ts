@@ -25,17 +25,17 @@ function createSyntheticIndexHost<H extends ts.CompilerHost>(
 
   const newHost = Object.create(delegate);
   newHost.fileExists = (fileName: string): boolean => {
-    return path.normalize(fileName) == normalSyntheticIndexName || delegate.fileExists(fileName);
+    return path.normalize(fileName) === normalSyntheticIndexName || delegate.fileExists(fileName);
   };
 
   newHost.readFile = (fileName: string) => {
-    return path.normalize(fileName) == normalSyntheticIndexName ? syntheticIndex.content :
-                                                                  delegate.readFile(fileName);
+    return path.normalize(fileName) === normalSyntheticIndexName ? syntheticIndex.content :
+                                                                   delegate.readFile(fileName);
   };
 
   newHost.getSourceFile =
       (fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void) => {
-        if (path.normalize(fileName) == normalSyntheticIndexName) {
+        if (path.normalize(fileName) === normalSyntheticIndexName) {
           const sf = ts.createSourceFile(fileName, syntheticIndex.content, languageVersion, true);
           if ((delegate as any).fileNameToModuleName) {
             sf.moduleName = (delegate as any).fileNameToModuleName(fileName);
@@ -50,7 +50,7 @@ function createSyntheticIndexHost<H extends ts.CompilerHost>(
        onError: ((message: string) => void) | undefined,
        sourceFiles: Readonly<ts.SourceFile>[]) => {
         delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
-        if (fileName.match(DTS) && sourceFiles && sourceFiles.length == 1 &&
+        if (fileName.match(DTS) && sourceFiles && sourceFiles.length === 1 &&
             path.normalize(sourceFiles[0].fileName) === normalSyntheticIndexName) {
           // If we are writing the synthetic index, write the metadata along side.
           const metadataName = fileName.replace(DTS, '.metadata.json');

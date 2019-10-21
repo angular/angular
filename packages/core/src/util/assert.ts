@@ -13,18 +13,20 @@
 import {stringify} from './stringify';
 
 export function assertNumber(actual: any, msg: string) {
-  if (typeof actual != 'number') {
+  if (typeof actual !== 'number') {
     throwError(msg);
   }
 }
 
 export function assertEqual<T>(actual: T, expected: T, msg: string) {
+  // tslint:disable-next-line: triple-equals
   if (actual != expected) {
     throwError(msg);
   }
 }
 
 export function assertNotEqual<T>(actual: T, expected: T, msg: string) {
+  // tslint:disable-next-line: triple-equals
   if (actual == expected) {
     throwError(msg);
   }

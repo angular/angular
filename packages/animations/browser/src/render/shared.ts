@@ -44,7 +44,7 @@ export function normalizeKeyframes(
   let previousKeyframe: ɵStyleData|null = null;
   keyframes.forEach(kf => {
     const offset = kf['offset'] as number;
-    const isSameOffset = offset == previousOffset;
+    const isSameOffset = offset === previousOffset;
     const normalizedKeyframe: ɵStyleData = (isSameOffset && previousKeyframe) || {};
     Object.keys(kf).forEach(prop => {
       let normalizedProp = prop;
@@ -105,7 +105,7 @@ export function copyAnimationEvent(
   const disabled = (player as any).disabled ? true : false;
   const event = makeAnimationEvent(
       e.element, e.triggerName, e.fromState, e.toState, phaseName || e.phaseName,
-      totalTime == undefined ? e.totalTime : totalTime, disabled);
+      totalTime == null ? e.totalTime : totalTime, disabled);
   const data = (e as any)['_data'];
   if (data != null) {
     (event as any)['_data'] = data;
@@ -190,7 +190,7 @@ if (_isNode || typeof Element !== 'undefined') {
 function containsVendorPrefix(prop: string): boolean {
   // Webkit is the only real popular vendor prefix nowadays
   // cc: http://shouldiprefix.com/
-  return prop.substring(1, 6) == 'ebkit';  // webkit or Webkit
+  return prop.substring(1, 6) === 'ebkit';  // webkit or Webkit
 }
 
 let _CACHED_BODY: {style: any}|null = null;
@@ -214,7 +214,7 @@ export function validateStyleProperty(prop: string): boolean {
 }
 
 export function getBodyNode(): any|null {
-  if (typeof document != 'undefined') {
+  if (typeof document !== 'undefined') {
     return document.body;
   }
   return null;

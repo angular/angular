@@ -91,7 +91,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
           if (!moveOffsets) moveOffsets = [];
           const localMovePreviousIndex = adjPreviousIndex - addRemoveOffset;
           const localCurrentIndex = currentIndex ! - addRemoveOffset;
-          if (localMovePreviousIndex != localCurrentIndex) {
+          if (localMovePreviousIndex !== localCurrentIndex) {
             for (let i = 0; i < localMovePreviousIndex; i++) {
               const offset = i < moveOffsets.length ? moveOffsets[i] : (moveOffsets[i] = 0);
               const index = offset + i;
@@ -339,7 +339,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
         this._unlinkedRecords === null ? null : this._unlinkedRecords.get(itemTrackBy, null);
     if (reinsertRecord !== null) {
       record = this._reinsertAfter(reinsertRecord, record._prev !, index);
-    } else if (record.currentIndex != index) {
+    } else if (record.currentIndex !== index) {
       record.currentIndex = index;
       this._addToMoves(record, index);
     }

@@ -18,9 +18,9 @@ import {of } from 'rxjs';
       let resolve: (result: any) => void = undefined !;
       const promise = new Promise<ValidationErrors|null>(res => { resolve = res; });
       const t = (timeouts as any)[c.value] != null ? (timeouts as any)[c.value] : 0;
-      const res = c.value != expected ? {'async': true} : null;
+      const res = c.value !== expected ? {'async': true} : null;
 
-      if (t == 0) {
+      if (t === 0) {
         resolve(res);
       } else {
         setTimeout(() => { resolve(res); }, t);
@@ -623,7 +623,7 @@ import {of } from 'rxjs';
     describe('errors', () => {
       it('should run the validator when the value changes', () => {
         const simpleValidator = (c: FormArray) =>
-            c.controls[0].value != 'correct' ? {'broken': true} : null;
+            c.controls[0].value !== 'correct' ? {'broken': true} : null;
 
         const c = new FormControl(null);
         const g = new FormArray([c], simpleValidator as ValidatorFn);

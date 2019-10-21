@@ -325,7 +325,7 @@ export class ShadowCss {
     return processRules(cssText, (rule: CssRule) => {
       let selector = rule.selector;
       let content = rule.content;
-      if (rule.selector[0] != '@') {
+      if (rule.selector[0] !== '@') {
         selector =
             this._scopeSelector(rule.selector, scopeSelector, hostSelector, this.strictStyling);
       } else if (
@@ -592,7 +592,7 @@ function escapeBlocks(input: string): StringWithEscapedBlocks {
   let currentBlockParts: string[] = [];
   for (let partIndex = 0; partIndex < inputParts.length; partIndex++) {
     const part = inputParts[partIndex];
-    if (part == CLOSE_CURLY) {
+    if (part === CLOSE_CURLY) {
       bracketCount--;
     }
     if (bracketCount > 0) {
@@ -605,7 +605,7 @@ function escapeBlocks(input: string): StringWithEscapedBlocks {
       }
       resultParts.push(part);
     }
-    if (part == OPEN_CURLY) {
+    if (part === OPEN_CURLY) {
       bracketCount++;
     }
   }

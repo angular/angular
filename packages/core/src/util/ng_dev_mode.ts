@@ -68,7 +68,7 @@ declare global {
 export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
   const locationString = typeof location !== 'undefined' ? location.toString() : '';
   const newCounters: NgDevModePerfCounters = {
-    namedConstructors: locationString.indexOf('ngDevMode=namedConstructors') != -1,
+    namedConstructors: locationString.indexOf('ngDevMode=namedConstructors') !== -1,
     firstTemplatePass: 0,
     tNode: 0,
     tView: 0,

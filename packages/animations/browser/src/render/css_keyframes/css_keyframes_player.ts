@@ -135,7 +135,7 @@ export class CssKeyframesPlayer implements AnimationPlayer {
 
   /** @internal */
   triggerCallback(phaseName: string): void {
-    const methods = phaseName == 'start' ? this._onStartFns : this._onDoneFns;
+    const methods = phaseName === 'start' ? this._onStartFns : this._onDoneFns;
     methods.forEach(fn => fn());
     methods.length = 0;
   }
@@ -146,7 +146,7 @@ export class CssKeyframesPlayer implements AnimationPlayer {
     if (this.hasStarted()) {
       const finished = this._state >= AnimatorControlState.FINISHED;
       Object.keys(this._finalStyles).forEach(prop => {
-        if (prop != 'offset') {
+        if (prop !== 'offset') {
           styles[prop] = finished ? this._finalStyles[prop] : computeStyle(this.element, prop);
         }
       });

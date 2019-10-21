@@ -116,7 +116,7 @@ export enum BinaryOperator {
 export function nullSafeIsEquivalent<T extends{isEquivalent(other: T): boolean}>(
     base: T | null, other: T | null) {
   if (base == null || other == null) {
-    return base == other;
+    return base === other;
   }
   return base.isEquivalent(other);
 }

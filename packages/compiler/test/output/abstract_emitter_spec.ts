@@ -38,6 +38,6 @@ export function stripSourceMapAndNewLine(source: string): string {
     source = source.substring(0, source.length - 1);
   }
   const smi = source.lastIndexOf('\n//#');
-  if (smi == -1) return source;
+  if (smi === -1) return source;
   return source.slice(0, smi);
 }

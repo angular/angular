@@ -61,7 +61,7 @@ export class InjectionToken<T> {
     factory: () => T
   }) {
     this.ɵprov = undefined;
-    if (typeof options == 'number') {
+    if (typeof options === 'number') {
       // This is a special hack to assign __NG_ELEMENT_ID__ to this instance.
       // __NG_ELEMENT_ID__ is Used by Ivy to determine bloom filter id.
       // We are using it to assign `-1` which is used to identify `Injector`.

@@ -17,7 +17,7 @@ class _Visitor implements IVisitor {
   visitTag(tag: Tag): string {
     const strAttrs = this._serializeAttributes(tag.attrs);
 
-    if (tag.children.length == 0) {
+    if (tag.children.length === 0) {
       return `<${tag.name}${strAttrs}/>`;
     }
 

@@ -655,7 +655,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   }
 
   getLocal(name: string): o.Expression|null {
-    if (name == EventHandlerVars.event.name) {
+    if (name === EventHandlerVars.event.name) {
       return EventHandlerVars.event;
     }
     let currViewExpr: o.Expression = VIEW_VAR;
@@ -990,7 +990,7 @@ function fixedAttrsDef(elementAst: ElementAst): o.Expression {
 }
 
 function mergeAttributeValue(attrName: string, attrValue1: string, attrValue2: string): string {
-  if (attrName == CLASS_ATTR || attrName == STYLE_ATTR) {
+  if (attrName === CLASS_ATTR || attrName === STYLE_ATTR) {
     return `${attrValue1} ${attrValue2}`;
   } else {
     return attrValue2;

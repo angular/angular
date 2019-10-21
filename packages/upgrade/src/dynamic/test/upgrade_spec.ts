@@ -396,7 +396,7 @@ withEachNg1Version(() => {
              twoWayBEmitter = new EventEmitter();
              ngOnChanges(changes: SimpleChanges) {
                const assert = (prop: string, value: any) => {
-                 if ((this as any)[prop] != value) {
+                 if ((this as any)[prop] !== value) {
                    throw new Error(
                        `Expected: '${prop}' to be '${value}' but was '${(this as any)[prop]}'`);
                  }
@@ -408,7 +408,7 @@ withEachNg1Version(() => {
                    throw new Error(`Changes record for '${prop}' not found.`);
                  }
                  const actValue = changes[prop].currentValue;
-                 if (actValue != value) {
+                 if (actValue !== value) {
                    throw new Error(
                        `Expected changes record for'${prop}' to be '${value}' but was '${actValue}'`);
                  }
@@ -1102,7 +1102,7 @@ withEachNg1Version(() => {
                scope: {fullName: '@', modelA: '=dataA', modelB: '=dataB', modelC: '=', event: '&'},
                link: function(scope: any) {
                  scope.$watch('modelB', (v: string) => {
-                   if (v == 'Savkin') {
+                   if (v === 'Savkin') {
                      scope.modelB = 'SAVKIN';
                      scope.event('WORKS');
 
@@ -1434,11 +1434,11 @@ withEachNg1Version(() => {
                  scope: any; hasElement: string; $element: any; isClass: any;
                  constructor($scope: any, $element: any) {
                    this.verifyIAmAClass();
-                   this.scope = $scope.$parent.$parent == $scope.$root ? 'scope' : 'wrong-scope';
+                   this.scope = $scope.$parent.$parent === $scope.$root ? 'scope' : 'wrong-scope';
                    this.hasElement = $element[0].nodeName;
                    this.$element = $element;
                  } verifyIAmAClass() { this.isClass = 'isClass'; } isPublished() {
-                   return this.$element.controller('ng1') == this ? 'published' : 'not-published';
+                   return this.$element.controller('ng1') === this ? 'published' : 'not-published';
                  }
                }
              };

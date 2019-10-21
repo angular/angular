@@ -14,7 +14,7 @@ import {BlockType, CssParseError, CssParser, CssToken} from '../../src/css_parse
 function _assertTokens(tokens: CssToken[], valuesArr: string[]): void {
   expect(tokens.length).toEqual(valuesArr.length);
   for (let i = 0; i < tokens.length; i++) {
-    expect(tokens[i].strValue == valuesArr[i]);
+    expect(tokens[i].strValue === valuesArr[i]);
   }
 }
 

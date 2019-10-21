@@ -109,7 +109,7 @@ export class Location {
    * otherwise.
    */
   isCurrentPathEqualTo(path: string, query: string = ''): boolean {
-    return this.path() == this.normalize(path + normalizeQueryParams(query));
+    return this.path() === this.normalize(path + normalizeQueryParams(query));
   }
 
   /**

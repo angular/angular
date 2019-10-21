@@ -33,7 +33,7 @@ const TYPEGUARD_POSTFIX = 'TypeGuard';
 const USE_IF = 'UseIf';
 
 function shouldIgnore(value: any): boolean {
-  return value && value.__symbolic == 'ignore';
+  return value && value.__symbolic === 'ignore';
 }
 
 /**
@@ -229,7 +229,7 @@ export class StaticReflector implements CompileReflector {
       Object.keys(members).forEach((propName) => {
         const propData = members[propName];
         const prop = (<any[]>propData)
-                         .find(a => a['__symbolic'] == 'property' || a['__symbolic'] == 'method');
+                         .find(a => a['__symbolic'] === 'property' || a['__symbolic'] === 'method');
         const decorators: any[] = [];
         if (propMetadata ![propName]) {
           decorators.push(...propMetadata ![propName]);
@@ -259,7 +259,7 @@ export class StaticReflector implements CompileReflector {
         const members = classMetadata ? classMetadata['members'] : null;
         const ctorData = members ? members['__ctor__'] : null;
         if (ctorData) {
-          const ctor = (<any[]>ctorData).find(a => a['__symbolic'] == 'constructor');
+          const ctor = (<any[]>ctorData).find(a => a['__symbolic'] === 'constructor');
           const rawParameterTypes = <any[]>ctor['parameters'] || [];
           const parameterDecorators = <any[]>this.simplify(type, ctor['parameterDecorators'] || []);
           parameters = [];
@@ -304,7 +304,7 @@ export class StaticReflector implements CompileReflector {
       const members = classMetadata['members'] || {};
       Object.keys(members).forEach((propName) => {
         const propData = members[propName];
-        const isMethod = (<any[]>propData).some(a => a['__symbolic'] == 'method');
+        const isMethod = (<any[]>propData).some(a => a['__symbolic'] === 'method');
         methodNames ![propName] = methodNames ![propName] || isMethod;
       });
       this.methodCache.set(type, methodNames);
@@ -507,7 +507,7 @@ export class StaticReflector implements CompileReflector {
 
       function simplifyCall(
           functionSymbol: StaticSymbol, targetFunction: any, args: any[], targetExpression: any) {
-        if (targetFunction && targetFunction['__symbolic'] == 'function') {
+        if (targetFunction && targetFunction['__symbolic'] === 'function') {
           if (calling.get(functionSymbol)) {
             self.error(
                 {
@@ -519,7 +519,7 @@ export class StaticReflector implements CompileReflector {
           }
           try {
             const value = targetFunction['value'];
-            if (value && (depth != 0 || value.__symbolic != 'error')) {
+            if (value && (depth !== 0 || value.__symbolic !== 'error')) {
               const parameters: string[] = targetFunction['parameters'];
               const defaults: any[] = targetFunction.defaults;
               args = args.map(arg => simplifyNested(context, arg))
@@ -554,7 +554,7 @@ export class StaticReflector implements CompileReflector {
           return IGNORE;
         }
         let position: Position|undefined = undefined;
-        if (targetExpression && targetExpression.__symbolic == 'resolved') {
+        if (targetExpression && targetExpression.__symbolic === 'resolved') {
           const line = targetExpression.line;
           const character = targetExpression.character;
           const fileName = targetExpression.fileName;
@@ -635,9 +635,9 @@ export class StaticReflector implements CompileReflector {
                   case '&':
                     return left & right;
                   case '==':
-                    return left == right;
+                    return left === right;
                   case '!=':
-                    return left != right;
+                    return left !== right;
                   case '===':
                     return left === right;
                   case '!==':
@@ -713,7 +713,7 @@ export class StaticReflector implements CompileReflector {
                 // in the StaticSymbolResolver.
                 const name: string = expression['name'];
                 const localValue = scope.resolve(name);
-                if (localValue != BindingScope.missing) {
+                if (localValue !== BindingScope.missing) {
                   return localValue;
                 }
                 break;
@@ -796,7 +796,7 @@ export class StaticReflector implements CompileReflector {
                 // If this is a provider expression, check for special tokens that need the value
                 // during analysis.
                 const provide = simplify(expression.provide);
-                if (provide === self.ROUTES || provide == self.ANALYZE_FOR_ENTRY_COMPONENTS) {
+                if (provide === self.ROUTES || provide === self.ANALYZE_FOR_ENTRY_COMPONENTS) {
                   return simplify(value);
                 }
               }

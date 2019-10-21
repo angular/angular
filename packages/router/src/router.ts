@@ -1083,14 +1083,14 @@ export class Router {
     // Because of a bug in IE and Edge, the location class fires two events (popstate and
     // hashchange) every single time. The second one should be ignored. Otherwise, the URL will
     // flicker. Handles the case when a popstate was emitted first.
-    if (lastNavigation && source == 'hashchange' && lastNavigation.source === 'popstate' &&
+    if (lastNavigation && source === 'hashchange' && lastNavigation.source === 'popstate' &&
         lastNavigation.rawUrl.toString() === rawUrl.toString()) {
       return Promise.resolve(true);  // return value is not used
     }
     // Because of a bug in IE and Edge, the location class fires two events (popstate and
     // hashchange) every single time. The second one should be ignored. Otherwise, the URL will
     // flicker. Handles the case when a hashchange was emitted first.
-    if (lastNavigation && source == 'popstate' && lastNavigation.source === 'hashchange' &&
+    if (lastNavigation && source === 'popstate' && lastNavigation.source === 'hashchange' &&
         lastNavigation.rawUrl.toString() === rawUrl.toString()) {
       return Promise.resolve(true);  // return value is not used
     }

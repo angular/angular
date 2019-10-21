@@ -180,9 +180,9 @@ export class TransformVisitor implements Visitor<Node> {
     const newOutputs = transformAll(this, element.outputs);
     const newChildren = transformAll(this, element.children);
     const newReferences = transformAll(this, element.references);
-    if (newAttributes != element.attributes || newInputs != element.inputs ||
-        newOutputs != element.outputs || newChildren != element.children ||
-        newReferences != element.references) {
+    if (newAttributes !== element.attributes || newInputs !== element.inputs ||
+        newOutputs !== element.outputs || newChildren !== element.children ||
+        newReferences !== element.references) {
       return new Element(
           element.name, newAttributes, newInputs, newOutputs, newChildren, newReferences,
           element.sourceSpan, element.startSourceSpan, element.endSourceSpan);
@@ -198,10 +198,10 @@ export class TransformVisitor implements Visitor<Node> {
     const newChildren = transformAll(this, template.children);
     const newReferences = transformAll(this, template.references);
     const newVariables = transformAll(this, template.variables);
-    if (newAttributes != template.attributes || newInputs != template.inputs ||
-        newOutputs != template.outputs || newTemplateAttrs != template.templateAttrs ||
-        newChildren != template.children || newReferences != template.references ||
-        newVariables != template.variables) {
+    if (newAttributes !== template.attributes || newInputs !== template.inputs ||
+        newOutputs !== template.outputs || newTemplateAttrs !== template.templateAttrs ||
+        newChildren !== template.children || newReferences !== template.references ||
+        newVariables !== template.variables) {
       return new Template(
           template.tagName, newAttributes, newInputs, newOutputs, newTemplateAttrs, newChildren,
           newReferences, newVariables, template.sourceSpan, template.startSourceSpan,
@@ -248,7 +248,7 @@ export function transformAll<Result extends Node>(
     if (newNode) {
       result.push(newNode as Result);
     }
-    changed = changed || newNode != node;
+    changed = changed || newNode !== node;
   }
   return changed ? result : nodes;
 }

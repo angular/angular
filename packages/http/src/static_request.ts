@@ -87,8 +87,8 @@ export class Request extends Body {
       }
       if (params.length > 0) {
         let prefix = '?';
-        if (this.url.indexOf('?') != -1) {
-          prefix = (this.url[this.url.length - 1] == '&') ? '' : '&';
+        if (this.url.indexOf('?') !== -1) {
+          prefix = (this.url[this.url.length - 1] === '&') ? '' : '&';
         }
         // TODO: just delete search-query-looking string in url?
         this.url = url + prefix + params;
@@ -184,7 +184,7 @@ function urlEncodeParams(params: {[key: string]: any}): URLSearchParams {
 }
 
 const noop = function() {};
-const w = typeof window == 'object' ? window : noop;
+const w = typeof window === 'object' ? window : noop;
 const FormData = (() => (w as any /** TODO #9100 */)['FormData'] || noop)();
 const Blob = (() => (w as any /** TODO #9100 */)['Blob'] || noop)();
 export const ArrayBuffer: ArrayBufferConstructor =

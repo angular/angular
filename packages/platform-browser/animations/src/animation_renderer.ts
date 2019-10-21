@@ -94,7 +94,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
       return;
     }
 
-    if (this._animationCallbacksBuffer.length == 0) {
+    if (this._animationCallbacksBuffer.length === 0) {
       Promise.resolve(null).then(() => {
         this._zone.run(() => {
           this._animationCallbacksBuffer.forEach(tuple => {
@@ -114,7 +114,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
 
     // this is to prevent animations from running twice when an inner
     // component does CD when a parent component instead has inserted it
-    if (this._cdRecurDepth == 0) {
+    if (this._cdRecurDepth === 0) {
       this._zone.runOutsideAngular(() => {
         this._scheduleCountTask();
         this.engine.flush(this._microtaskId);
@@ -194,7 +194,7 @@ export class BaseAnimationRenderer implements Renderer2 {
   }
 
   setProperty(el: any, name: string, value: any): void {
-    if (name.charAt(0) == ANIMATION_PREFIX && name == DISABLE_ANIMATIONS_FLAG) {
+    if (name.charAt(0) === ANIMATION_PREFIX && name === DISABLE_ANIMATIONS_FLAG) {
       this.disableAnimations(el, !!value);
     } else {
       this.delegate.setProperty(el, name, value);
@@ -221,8 +221,8 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
   }
 
   setProperty(el: any, name: string, value: any): void {
-    if (name.charAt(0) == ANIMATION_PREFIX) {
-      if (name.charAt(1) == '.' && name == DISABLE_ANIMATIONS_FLAG) {
+    if (name.charAt(0) === ANIMATION_PREFIX) {
+      if (name.charAt(1) === '.' && name === DISABLE_ANIMATIONS_FLAG) {
         value = value === undefined ? true : !!value;
         this.disableAnimations(el, value as boolean);
       } else {
@@ -235,13 +235,13 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
 
   listen(target: 'window'|'document'|'body'|any, eventName: string, callback: (event: any) => any):
       () => void {
-    if (eventName.charAt(0) == ANIMATION_PREFIX) {
+    if (eventName.charAt(0) === ANIMATION_PREFIX) {
       const element = resolveElementFromTarget(target);
       let name = eventName.substr(1);
       let phase = '';
       // @listener.phase is for trigger animation callbacks
       // @@listener is for animation builder callbacks
-      if (name.charAt(0) != ANIMATION_PREFIX) {
+      if (name.charAt(0) !== ANIMATION_PREFIX) {
         [name, phase] = parseTriggerCallbackName(name);
       }
       return this.engine.listen(this.namespaceId, element, name, phase, event => {

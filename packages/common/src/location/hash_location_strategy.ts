@@ -66,7 +66,7 @@ export class HashLocationStrategy extends LocationStrategy {
 
   pushState(state: any, title: string, path: string, queryParams: string) {
     let url: string|null = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
-    if (url.length == 0) {
+    if (url.length === 0) {
       url = this._platformLocation.pathname;
     }
     this._platformLocation.pushState(state, title, url);
@@ -74,7 +74,7 @@ export class HashLocationStrategy extends LocationStrategy {
 
   replaceState(state: any, title: string, path: string, queryParams: string) {
     let url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
-    if (url.length == 0) {
+    if (url.length === 0) {
       url = this._platformLocation.pathname;
     }
     this._platformLocation.replaceState(state, title, url);

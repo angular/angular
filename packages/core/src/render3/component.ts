@@ -118,7 +118,7 @@ export function renderComponent<T>(
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
   const componentDef = getComponentDef<T>(componentType) !;
-  if (componentDef.type != componentType) componentDef.type = componentType;
+  if (componentDef.type !== componentType) componentDef.type = componentType;
 
   // The first index of the first selector is the tag name.
   const componentTag = componentDef.selectors ![0] ![0] as string;

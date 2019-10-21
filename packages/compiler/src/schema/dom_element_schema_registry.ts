@@ -393,7 +393,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
         unit = 'px';
       } else {
         const valAndSuffixMatch = val.match(/^[+-]?[\d\.]+([a-z]*)$/);
-        if (valAndSuffixMatch && valAndSuffixMatch[1].length == 0) {
+        if (valAndSuffixMatch && valAndSuffixMatch[1].length === 0) {
           errorMsg = `Please provide a CSS unit value for ${userProvidedProp}:${val}`;
         }
       }

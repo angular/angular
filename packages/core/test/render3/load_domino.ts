@@ -13,7 +13,7 @@ import '@angular/compiler'; // For JIT mode. Must be in front of any other @angu
 import {DominoAdapter} from '@angular/platform-server/src/domino_adapter';
 import {ɵgetDOM as getDOM} from '@angular/common';
 
-if (typeof window == 'undefined') {
+if (typeof window === 'undefined') {
   const domino = require('domino');
 
   DominoAdapter.makeCurrent();

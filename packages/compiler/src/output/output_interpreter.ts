@@ -274,10 +274,12 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
 
     switch (ast.operator) {
       case o.BinaryOperator.Equals:
+        // tslint:disable-next-line: triple-equals
         return lhs() == rhs();
       case o.BinaryOperator.Identical:
         return lhs() === rhs();
       case o.BinaryOperator.NotEquals:
+        // tslint:disable-next-line: triple-equals
         return lhs() != rhs();
       case o.BinaryOperator.NotIdentical:
         return lhs() !== rhs();

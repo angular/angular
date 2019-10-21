@@ -149,7 +149,7 @@ export function html(html: string): Element {
 }
 
 export function multiTrim(text: string | null | undefined, allSpace = false): string {
-  if (typeof text == 'string') {
+  if (typeof text === 'string') {
     const repl = allSpace ? '' : ' ';
     return text.replace(/\n/g, '').replace(/\s+/g, repl).trim();
   }

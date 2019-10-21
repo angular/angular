@@ -98,7 +98,7 @@ export class CssKeyframesDriver implements AnimationDriver {
     // styles and waiting for an event to get fired. This causes lag.
     // It's better to just directly apply the styles to the element
     // via the direct styling animation player.
-    if (duration == 0) {
+    if (duration === 0) {
       return new DirectStylePlayer(element, finalStyles);
     }
 
@@ -131,7 +131,7 @@ function flattenKeyframesIntoStyles(
     const kfs = Array.isArray(keyframes) ? keyframes : [keyframes];
     kfs.forEach(kf => {
       Object.keys(kf).forEach(prop => {
-        if (prop == 'offset' || prop == 'easing') return;
+        if (prop === 'offset' || prop === 'easing') return;
         flatKeyframes[prop] = kf[prop];
       });
     });

@@ -253,7 +253,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       return true;
     }
 
-    if (typeof this.target === 'string' && this.target != '_self') {
+    if (typeof this.target === 'string' && this.target !== '_self') {
       return true;
     }
 

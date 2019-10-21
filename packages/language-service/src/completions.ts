@@ -382,7 +382,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
         let keys: string[] = [];
         if (selector) {
           const attrNames = selector.attrs.filter((_, i) => i % 2 === 0);
-          keys = attrNames.filter(name => name.startsWith(key) && name != key)
+          keys = attrNames.filter(name => name.startsWith(key) && name !== key)
                      .map(name => lowerName(name.substr(key.length)));
         }
         keys.push('let');

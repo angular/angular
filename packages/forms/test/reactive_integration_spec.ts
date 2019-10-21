@@ -2427,7 +2427,7 @@ function uniqLoginAsyncValidator(expectedValue: string, timeout: number = 0) {
   return (c: AbstractControl) => {
     let resolve: (result: any) => void;
     const promise = new Promise<any>(res => { resolve = res; });
-    const res = (c.value == expectedValue) ? null : {'uniqLogin': true};
+    const res = (c.value === expectedValue) ? null : {'uniqLogin': true};
     setTimeout(() => resolve(res), timeout);
     return promise;
   };
@@ -2440,7 +2440,7 @@ function observableValidator(resultArr: number[]): AsyncValidatorFn {
 }
 
 function loginIsEmptyGroupValidator(c: FormGroup) {
-  return c.controls['login'].value == '' ? {'loginIsEmpty': true} : null;
+  return c.controls['login'].value === '' ? {'loginIsEmpty': true} : null;
 }
 
 @Directive({

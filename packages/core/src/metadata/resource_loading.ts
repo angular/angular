@@ -73,7 +73,7 @@ export function resolveComponentResources(
       promises.push(cachedResourceResolve(styleUrl).then((style) => {
         styles[styleOffset + index] = style;
         styleUrls.splice(styleUrls.indexOf(styleUrl), 1);
-        if (styleUrls.length == 0) {
+        if (styleUrls.length === 0) {
           component.styleUrls = undefined;
         }
       }));
@@ -123,7 +123,7 @@ export function isComponentResourceResolutionQueueEmpty() {
 }
 
 function unwrapResponse(response: string | {text(): Promise<string>}): string|Promise<string> {
-  return typeof response == 'string' ? response : response.text();
+  return typeof response === 'string' ? response : response.text();
 }
 
 function componentDefResolved(type: Type<any>): void {

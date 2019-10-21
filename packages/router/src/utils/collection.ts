@@ -27,7 +27,7 @@ export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): bool
   // logic is correct for when this edge case is hit.
   const k1 = Object.keys(a) as string[] | undefined;
   const k2 = Object.keys(b) as string[] | undefined;
-  if (!k1 || !k2 || k1.length != k2.length) {
+  if (!k1 || !k2 || k1.length !== k2.length) {
     return false;
   }
   let key: string;

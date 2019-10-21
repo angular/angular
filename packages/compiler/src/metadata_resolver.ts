@@ -1017,9 +1017,9 @@ export class CompileMetadataResolver {
                       (soFar: string[], seenProvider: any, seenProviderIdx: number) => {
                         if (seenProviderIdx < providerIdx) {
                           soFar.push(`${stringifyType(seenProvider)}`);
-                        } else if (seenProviderIdx == providerIdx) {
+                        } else if (seenProviderIdx === providerIdx) {
                           soFar.push(`?${stringifyType(seenProvider)}?`);
-                        } else if (seenProviderIdx == providerIdx + 1) {
+                        } else if (seenProviderIdx === providerIdx + 1) {
                           soFar.push('...');
                         }
                         return soFar;

@@ -27,15 +27,15 @@ export function preparseElement(ast: html.Element): PreparsedElement {
   let projectAs = '';
   ast.attrs.forEach(attr => {
     const lcAttrName = attr.name.toLowerCase();
-    if (lcAttrName == NG_CONTENT_SELECT_ATTR) {
+    if (lcAttrName === NG_CONTENT_SELECT_ATTR) {
       selectAttr = attr.value;
-    } else if (lcAttrName == LINK_STYLE_HREF_ATTR) {
+    } else if (lcAttrName === LINK_STYLE_HREF_ATTR) {
       hrefAttr = attr.value;
-    } else if (lcAttrName == LINK_STYLE_REL_ATTR) {
+    } else if (lcAttrName === LINK_STYLE_REL_ATTR) {
       relAttr = attr.value;
-    } else if (attr.name == NG_NON_BINDABLE_ATTR) {
+    } else if (attr.name === NG_NON_BINDABLE_ATTR) {
       nonBindable = true;
-    } else if (attr.name == NG_PROJECT_AS) {
+    } else if (attr.name === NG_PROJECT_AS) {
       if (attr.value.length > 0) {
         projectAs = attr.value;
       }
@@ -46,11 +46,11 @@ export function preparseElement(ast: html.Element): PreparsedElement {
   let type = PreparsedElementType.OTHER;
   if (isNgContent(nodeName)) {
     type = PreparsedElementType.NG_CONTENT;
-  } else if (nodeName == STYLE_ELEMENT) {
+  } else if (nodeName === STYLE_ELEMENT) {
     type = PreparsedElementType.STYLE;
-  } else if (nodeName == SCRIPT_ELEMENT) {
+  } else if (nodeName === SCRIPT_ELEMENT) {
     type = PreparsedElementType.SCRIPT;
-  } else if (nodeName == LINK_ELEMENT && relAttr == LINK_STYLE_REL_VALUE) {
+  } else if (nodeName === LINK_ELEMENT && relAttr === LINK_STYLE_REL_VALUE) {
     type = PreparsedElementType.STYLESHEET;
   }
   return new PreparsedElement(type, selectAttr, hrefAttr, nonBindable, projectAs);

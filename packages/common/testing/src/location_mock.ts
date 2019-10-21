@@ -44,7 +44,7 @@ export class SpyLocation implements Location {
     const currPath =
         this.path().endsWith('/') ? this.path().substring(0, this.path().length - 1) : this.path();
 
-    return currPath == givenPath + (query.length > 0 ? ('?' + query) : '');
+    return currPath === givenPath + (query.length > 0 ? ('?' + query) : '');
   }
 
   simulateUrlPop(pathname: string) {
@@ -75,7 +75,7 @@ export class SpyLocation implements Location {
     this._historyIndex = this._history.length - 1;
 
     const locationState = this._history[this._historyIndex - 1];
-    if (locationState.path == path && locationState.query == query) {
+    if (locationState.path === path && locationState.query === query) {
       return;
     }
 
@@ -88,7 +88,7 @@ export class SpyLocation implements Location {
     path = this.prepareExternalUrl(path);
 
     const history = this._history[this._historyIndex];
-    if (history.path == path && history.query == query) {
+    if (history.path === path && history.query === query) {
       return;
     }
 

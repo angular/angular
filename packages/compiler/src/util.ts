@@ -27,7 +27,7 @@ export function splitAtPeriod(input: string, defaultValues: string[]): string[] 
 
 function _splitAt(input: string, character: string, defaultValues: string[]): string[] {
   const characterIndex = input.indexOf(character);
-  if (characterIndex == -1) return defaultValues;
+  if (characterIndex === -1) return defaultValues;
   return [input.slice(0, characterIndex).trim(), input.slice(characterIndex + 1).trim()];
 }
 
@@ -40,8 +40,8 @@ export function visitValue(value: any, visitor: ValueVisitor, context: any): any
     return visitor.visitStringMap(<{[key: string]: any}>value, context);
   }
 
-  if (value == null || typeof value == 'string' || typeof value == 'number' ||
-      typeof value == 'boolean') {
+  if (value == null || typeof value === 'string' || typeof value === 'number' ||
+      typeof value === 'boolean') {
     return visitor.visitPrimitive(value, context);
   }
 

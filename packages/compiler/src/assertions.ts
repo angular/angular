@@ -29,7 +29,7 @@ const UNUSABLE_INTERPOLATION_REGEXPS = [
 ];
 
 export function assertInterpolationSymbols(identifier: string, value: any): void {
-  if (value != null && !(Array.isArray(value) && value.length == 2)) {
+  if (value != null && !(Array.isArray(value) && value.length === 2)) {
     throw new Error(`Expected '${identifier}' to be an array, [start, end].`);
   } else if (value != null) {
     const start = value[0] as string;

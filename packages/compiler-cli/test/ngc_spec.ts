@@ -1558,7 +1558,7 @@ describe('ngc transformer command-line', () => {
         return timerToken;
       });
       spyOn(ts.sys, 'clearTimeout').and.callFake((token: number) => {
-        if (token == timerToken) {
+        if (token === timerToken) {
           timer = undefined;
         }
       });

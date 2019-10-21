@@ -54,7 +54,7 @@ describe('ng type checker', () => {
       throw new Error('Expected a diagnostic error message');
     } else {
       const matches: (d: ng.Diagnostic | ts.Diagnostic) => boolean = typeof message === 'string' ?
-          d => ng.isNgDiagnostic(d)&& d.messageText == message :
+          d => ng.isNgDiagnostic(d)&& d.messageText === message :
           d => ng.isNgDiagnostic(d) && message.test(d.messageText);
       const matchingDiagnostics = diagnostics.filter(matches) as ng.Diagnostic[];
       if (!matchingDiagnostics || !matchingDiagnostics.length) {

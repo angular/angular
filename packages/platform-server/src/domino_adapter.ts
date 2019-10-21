@@ -72,7 +72,7 @@ export class DominoAdapter extends BrowserDomAdapter {
   isElementNode(node: any): boolean {
     return node ? node.nodeType === DominoAdapter.defaultDoc.ELEMENT_NODE : false;
   }
-  isShadowRoot(node: any): boolean { return node.shadowRoot == node; }
+  isShadowRoot(node: any): boolean { return node.shadowRoot === node; }
 
   getProperty(el: Element, name: string): any {
     if (name === 'href') {

@@ -37,7 +37,7 @@ describe('Evaluator', () => {
     expectNoDiagnostics(service.getCompilerOptionsDiagnostics());
     for (const sourceFile of program.getSourceFiles()) {
       expectNoDiagnostics(service.getSyntacticDiagnostics(sourceFile.fileName));
-      if (sourceFile.fileName != 'errors.ts') {
+      if (sourceFile.fileName !== 'errors.ts') {
         // Skip errors.ts because we it has intentional semantic errors that we are testing for.
         expectNoDiagnostics(service.getSemanticDiagnostics(sourceFile.fileName));
       }
@@ -101,8 +101,10 @@ describe('Evaluator', () => {
     expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bBAnd'))).toEqual(0x11 & 0x03);
     expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bXor'))).toEqual(0x11 ^ 0x21);
     expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bEqual')))
+        // tslint:disable-next-line: triple-equals
         .toEqual(1 == <any>'1');
     expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bNotEqual')))
+        // tslint:disable-next-line: triple-equals
         .toEqual(1 != <any>'1');
     expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bIdentical')))
         .toEqual(1 === <any>'1');
@@ -230,7 +232,7 @@ describe('Evaluator', () => {
     beforeEach(() => {
       evaluator = new Evaluator(symbols, new Map(), {
         substituteExpression: (value, node) => {
-          if (node.kind == ts.SyntaxKind.ArrowFunction) {
+          if (node.kind === ts.SyntaxKind.ArrowFunction) {
             return {__symbolic: 'reference', name: lambdaTemp};
           }
           return value;

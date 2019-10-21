@@ -150,7 +150,7 @@ export const inject = ɵɵinject;
 export function injectRootLimpMode<T>(
     token: Type<T>| InjectionToken<T>, notFoundValue: T | undefined, flags: InjectFlags): T|null {
   const injectableDef: ɵɵInjectableDef<T>|null = getInjectableDef(token);
-  if (injectableDef && injectableDef.providedIn == 'root') {
+  if (injectableDef && injectableDef.providedIn === 'root') {
     return injectableDef.value === undefined ? injectableDef.value = injectableDef.factory() :
                                                injectableDef.value;
   }
@@ -225,7 +225,7 @@ export function catchInjectorError(
 
 export function formatError(
     text: string, obj: any, injectorErrorName: string, source: string | null = null): string {
-  text = text && text.charAt(0) === '\n' && text.charAt(1) == NO_NEW_LINE ? text.substr(2) : text;
+  text = text && text.charAt(0) === '\n' && text.charAt(1) === NO_NEW_LINE ? text.substr(2) : text;
   let context = stringify(obj);
   if (Array.isArray(obj)) {
     context = obj.map(stringify).join(' -> ');

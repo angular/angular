@@ -16,7 +16,7 @@ import {assertElementExistsInDom, createElement, findKeyframeDefinition, forceRe
 const CSS_KEYFRAME_RULE_TYPE = 7;
 
 describe('CssKeyframesDriver tests', () => {
-  if (isNode || typeof(window as any)['AnimationEvent'] == 'undefined') return;
+  if (isNode || typeof(window as any)['AnimationEvent'] === 'undefined') return;
 
   describe('building keyframes', () => {
     it('should build CSS keyframe style object containing the keyframe styles', () => {
@@ -379,7 +379,7 @@ function assertExistingAnimationDuration(element: any, duration: number) {
 function findStyleObjectWithKeyframes(): any|null {
   const sheetWithKeyframes = document.styleSheets[document.styleSheets.length - 1];
   const styleElms = Array.from(document.querySelectorAll('head style') as any as any[]);
-  return styleElms.find(elm => elm.sheet == sheetWithKeyframes) || null;
+  return styleElms.find(elm => elm.sheet === sheetWithKeyframes) || null;
 }
 
 function parseElementAnimationStyle(element: any):

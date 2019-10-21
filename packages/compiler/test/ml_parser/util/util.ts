@@ -35,7 +35,7 @@ class _SerializerVisitor implements html.Visitor {
   }
 
   private _visitAll(nodes: html.Node[], join: string = ''): string {
-    if (nodes.length == 0) {
+    if (nodes.length === 0) {
       return '';
     }
     return join + nodes.map(a => a.visit(this, null)).join(join);

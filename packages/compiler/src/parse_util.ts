@@ -28,7 +28,7 @@ export class ParseLocation {
       offset--;
       delta++;
       const ch = source.charCodeAt(offset);
-      if (ch == chars.$LF) {
+      if (ch === chars.$LF) {
         line--;
         const priorLine = source.substr(0, offset - 1).lastIndexOf(String.fromCharCode(chars.$LF));
         col = priorLine > 0 ? offset - priorLine : offset;
@@ -40,7 +40,7 @@ export class ParseLocation {
       const ch = source.charCodeAt(offset);
       offset++;
       delta--;
-      if (ch == chars.$LF) {
+      if (ch === chars.$LF) {
         line++;
         col = 0;
       } else {
@@ -67,8 +67,8 @@ export class ParseLocation {
       while (ctxChars < maxChars && startOffset > 0) {
         startOffset--;
         ctxChars++;
-        if (content[startOffset] == '\n') {
-          if (++ctxLines == maxLines) {
+        if (content[startOffset] === '\n') {
+          if (++ctxLines === maxLines) {
             break;
           }
         }
@@ -79,8 +79,8 @@ export class ParseLocation {
       while (ctxChars < maxChars && endOffset < content.length - 1) {
         endOffset++;
         ctxChars++;
-        if (content[endOffset] == '\n') {
-          if (++ctxLines == maxLines) {
+        if (content[endOffset] === '\n') {
+          if (++ctxLines === maxLines) {
             break;
           }
         }
