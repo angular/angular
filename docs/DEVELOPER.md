@@ -154,12 +154,29 @@ The script will publish the build snapshot to a branch with the same name as you
 and create it if it doesn't exist.
 
 ## Bazel support
-### VS Code
+### IDEs
+#### VS Code
 
 1. Install [Bazel](https://marketplace.visualstudio.com/items?itemName=DevonDCarew.bazel-code) extension for VS Code.
 
-### WebStorm / IntelliJ
+#### WebStorm / IntelliJ
 1. Install the [Bazel](https://plugins.jetbrains.com/plugin/8609-bazel) plugin
 1. You can find the settings under `Preferences->Other Settings->Bazel Settings`
 
 It will automatically recognize `*.bazel` and `*.bzl` files.
+
+
+### Remote Build Execution and Remote Caching
+Bazel builds in the Angular repository use a shared http cache.  When a build occurs a hash of the inputs is computed
+and checked against available outputs in the shared http cache.  If an output is found, it is used as the output for the
+build action rather than performing the build locally.
+
+> Remote Build Execution and uploading to the Remote Cache requires authentication as a google.com or angular.io account.
+
+### --config=remote-http-caching flag
+The `--config=remote-http-caching` flag can be added to enable uploading of build results to the shared http cache.  This flag
+can be added to the `.bazelrc.user` file using the script at `scripts/local-dev/setup-rbe.sh`.
+
+### --config=remote flag
+The `--config=remote` flag can be added to enable remote execution of builds.  This flag can be added to 
+the `.bazelrc.user` file using the script at `scripts/local-dev/setup-rbe.sh`.
