@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {forwardRefResolver} from '@angular/compiler-cli/src/ngtsc/annotations/src/util';
 import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
 import {DynamicValue, PartialEvaluator, ResolvedValue} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
@@ -67,7 +68,7 @@ export class MissingInjectableTransform {
       return [];
     }
 
-    const evaluatedExpr = this.partialEvaluator.evaluate(module.providersExpr);
+    const evaluatedExpr = this._evaluateExpression(module.providersExpr);
 
     if (!Array.isArray(evaluatedExpr)) {
       return [{
@@ -89,7 +90,7 @@ export class MissingInjectableTransform {
 
     // Migrate "providers" on directives and components if defined.
     if (directive.providersExpr) {
-      const evaluatedExpr = this.partialEvaluator.evaluate(directive.providersExpr);
+      const evaluatedExpr = this._evaluateExpression(directive.providersExpr);
       if (!Array.isArray(evaluatedExpr)) {
         return [
           {node: directive.providersExpr, message: `Providers are not statically analyzable.`}
@@ -100,7 +101,7 @@ export class MissingInjectableTransform {
 
     // Migrate "viewProviders" on components if defined.
     if (directive.viewProvidersExpr) {
-      const evaluatedExpr = this.partialEvaluator.evaluate(directive.viewProvidersExpr);
+      const evaluatedExpr = this._evaluateExpression(directive.viewProvidersExpr);
       if (!Array.isArray(evaluatedExpr)) {
         return [
           {node: directive.viewProvidersExpr, message: `Providers are not statically analyzable.`}
@@ -148,6 +149,14 @@ export class MissingInjectableTransform {
     } else {
       updateRecorder.addClassDecorator(node, newDecoratorText, context.name);
     }
+  }
+
+  /**
+   * Evaluates the given TypeScript expression using the partial evaluator with
+   * the foreign function resolver for handling "forwardRef" calls.
+   */
+  private _evaluateExpression(expr: ts.Expression): ResolvedValue {
+    return this.partialEvaluator.evaluate(expr, forwardRefResolver);
   }
 
   /**
