@@ -44,6 +44,9 @@ const setI18nRefs: VisitNodeFn = (htmlNode, i18nNode) => {
  * stored with other element's and attribute's information.
  */
 export class I18nMetaVisitor implements html.Visitor {
+  // whether visited nodes contain i18n information
+  public hasI18nMeta: boolean = false;
+
   // i18n message generation factory
   private _createI18nMessage = createI18nMessageFactory(this.interpolationConfig);
 
@@ -63,6 +66,7 @@ export class I18nMetaVisitor implements html.Visitor {
 
   visitElement(element: html.Element): any {
     if (hasI18nAttrs(element)) {
+      this.hasI18nMeta = true;
       const attrs: html.Attribute[] = [];
       const attrsMeta: {[key: string]: string} = {};
 
@@ -111,6 +115,7 @@ export class I18nMetaVisitor implements html.Visitor {
   visitExpansion(expansion: html.Expansion, currentMessage: i18n.Message|undefined): any {
     let message;
     const meta = expansion.i18n;
+    this.hasI18nMeta = true;
     if (meta instanceof i18n.IcuPlaceholder) {
       // set ICU placeholder name (e.g. "ICU_1"),
       // generated while processing root element contents,
