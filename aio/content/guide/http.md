@@ -608,7 +608,7 @@ TypeScript will prevent you from setting `HttpRequest` readonly properties.
 
 ```javascript
 // Typescript disallows the following assignment because req.url is readonly
-req.url = req.url.replace('http://", "https://');
+req.url = req.url.replace('http://', 'https://');
 ```
 
 To alter the request, clone it first and modify the clone before passing it to `next.handle()`.
