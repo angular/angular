@@ -366,6 +366,11 @@ See the [dedicated migration guide for adding missing `@Injectable` decorators](
 ### Migrating `ModuleWithProviders`
 
  See the [dedicated migration guide for `ModuleWithProviders`](guide/migration-module-with-providers).
+{@a ngcc-migration}
+### Migrating to `ngcc` npm `postinstall` script
+
+ See the [dedicated migration guide for `ngcc` npm `postinstall` script](guide/migration-ngcc).
+
 
 
 {@a removed}
