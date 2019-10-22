@@ -51,7 +51,8 @@ export class I18nContext {
 
   constructor(
       readonly index: number, readonly ref: o.ReadVarExpr, readonly level: number = 0,
-      readonly templateIndex: number|null = null, readonly meta: i18n.AST, private registry?: any) {
+      readonly templateIndex: number|null = null, readonly meta: i18n.I18nMeta,
+      private registry?: any) {
     this._registry = registry || setupRegistry();
     this.id = this._registry.getUniqueId();
   }
@@ -81,21 +82,21 @@ export class I18nContext {
   appendIcu(name: string, ref: o.Expression) {
     updatePlaceholderMap(this._registry.icus, name, ref);
   }
-  appendBoundText(node: i18n.AST) {
+  appendBoundText(node: i18n.I18nMeta) {
     const phs = assembleBoundTextPlaceholders(node, this.bindings.size, this.id);
     phs.forEach((values, key) => updatePlaceholderMap(this.placeholders, key, ...values));
   }
-  appendTemplate(node: i18n.AST, index: number) {
+  appendTemplate(node: i18n.I18nMeta, index: number) {
     // add open and close tags at the same time,
     // since we process nested templates separately
     this.appendTag(TagType.TEMPLATE, node as i18n.TagPlaceholder, index, false);
     this.appendTag(TagType.TEMPLATE, node as i18n.TagPlaceholder, index, true);
     this._unresolvedCtxCount++;
   }
-  appendElement(node: i18n.AST, index: number, closed?: boolean) {
+  appendElement(node: i18n.I18nMeta, index: number, closed?: boolean) {
     this.appendTag(TagType.ELEMENT, node as i18n.TagPlaceholder, index, closed);
   }
-  appendProjection(node: i18n.AST, index: number) {
+  appendProjection(node: i18n.I18nMeta, index: number) {
     // add open and close tags at the same time,
     // since we process projected content separately
     this.appendTag(TagType.PROJECTION, node as i18n.TagPlaceholder, index, false);
@@ -112,7 +113,7 @@ export class I18nContext {
    *
    * @returns I18nContext instance
    */
-  forkChildContext(index: number, templateIndex: number, meta: i18n.AST) {
+  forkChildContext(index: number, templateIndex: number, meta: i18n.I18nMeta) {
     return new I18nContext(index, this.ref, this.level + 1, templateIndex, meta, this._registry);
   }
 

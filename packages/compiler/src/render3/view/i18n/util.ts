@@ -33,11 +33,11 @@ export function isI18nAttribute(name: string): boolean {
   return name === I18N_ATTR || name.startsWith(I18N_ATTR_PREFIX);
 }
 
-export function isI18nRootNode(meta?: i18n.AST): meta is i18n.Message {
+export function isI18nRootNode(meta?: i18n.I18nMeta): meta is i18n.Message {
   return meta instanceof i18n.Message;
 }
 
-export function isSingleI18nIcu(meta?: i18n.AST): boolean {
+export function isSingleI18nIcu(meta?: i18n.I18nMeta): boolean {
   return isI18nRootNode(meta) && meta.nodes.length === 1 && meta.nodes[0] instanceof i18n.Icu;
 }
 
@@ -87,7 +87,7 @@ export function updatePlaceholderMap(map: Map<string, any[]>, name: string, ...v
 }
 
 export function assembleBoundTextPlaceholders(
-    meta: i18n.AST, bindingStartIndex: number = 0, contextId: number = 0): Map<string, any[]> {
+    meta: i18n.I18nMeta, bindingStartIndex: number = 0, contextId: number = 0): Map<string, any[]> {
   const startIdx = bindingStartIndex;
   const placeholders = new Map<string, any>();
   const node =
