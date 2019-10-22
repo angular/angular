@@ -534,12 +534,6 @@
     "name": "objectToClassName"
   },
   {
-    "name": "postProcessBaseDirective"
-  },
-  {
-    "name": "postProcessDirective"
-  },
-  {
     "name": "refreshChildComponents"
   },
   {

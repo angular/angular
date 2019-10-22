@@ -1103,6 +1103,7 @@ function instantiateAllDirectives(
 
   attachPatchData(native, lView);
 
+  const initialInputs = tNode.initialInputs;
   for (let i = start; i < end; i++) {
     const def = tView.data[i] as DirectiveDef<any>;
     const isComponent = isComponentDef(def);
@@ -1115,8 +1116,8 @@ function instantiateAllDirectives(
     const directive = getNodeInjectable(tView.data, lView, i, tNode);
     attachPatchData(directive, lView);
 
-    if (tNode.initialInputs !== null) {
-      setInputsFromAttrs(lView, i - start, directive, def, tNode);
+    if (initialInputs !== null) {
+      setInputsFromAttrs(lView, i - start, directive, def, tNode, initialInputs !);
     }
 
     if (isComponent) {
@@ -1348,8 +1349,8 @@ export function elementAttributeInternal(
  * @param tNode The static data for this node
  */
 function setInputsFromAttrs<T>(
-    lView: LView, directiveIndex: number, instance: T, def: DirectiveDef<T>, tNode: TNode): void {
-  const initialInputData = tNode.initialInputs as InitialInputData;
+    lView: LView, directiveIndex: number, instance: T, def: DirectiveDef<T>, tNode: TNode,
+    initialInputData: InitialInputData): void {
   const initialInputs: InitialInputs|null = initialInputData ![directiveIndex];
   if (initialInputs !== null) {
     const setInput = def.setInput;
