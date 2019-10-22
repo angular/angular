@@ -433,14 +433,14 @@ export function normalizeIntoStylingMap(
   return stylingMapArr;
 }
 
-function splitOnWhitespace(text: string): string[]|null {
+export function splitOnWhitespace(text: string): string[]|null {
   let array: string[]|null = null;
   let length = text.length;
   let start = 0;
   let foundChar = false;
   for (let i = 0; i < length; i++) {
     const char = text.charCodeAt(i);
-    if (char === 32 /*' '*/) {
+    if (char <= 32 /*' '*/) {
       if (foundChar) {
         if (array === null) array = [];
         array.push(text.substring(start, i));
@@ -448,7 +448,7 @@ function splitOnWhitespace(text: string): string[]|null {
       }
       start = i + 1;
     } else {
-      foundChar = true
+      foundChar = true;
     }
   }
   if (foundChar) {
