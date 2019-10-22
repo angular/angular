@@ -24,7 +24,7 @@ export class InputAccessibilityDemo {
   email: string;
   usd: number;
   comment: string;
-  commentMax = 200;
+  commentMax = '200';
 
   get passwordType() { return this.showPassword ? 'text' : 'password'; }
 

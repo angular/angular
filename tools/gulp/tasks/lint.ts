@@ -21,7 +21,7 @@ task('lint', ['tslint', 'stylelint', 'ownerslint']);
 
 /** Task to lint Angular Material's scss stylesheets. */
 task('stylelint', execNodeTask(
-  'stylelint', [styleGlob, '--config', 'stylelint-config.json', '--syntax', 'scss']
+  'stylelint', [styleGlob, '--config', '.stylelintrc.json', '--syntax', 'scss']
 ));
 
 /** Task to run TSLint against the e2e/ and src/ directories. */

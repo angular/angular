@@ -177,7 +177,7 @@ jobs:
     - *yarn_install
     - *setup_bazel_binary
 
-    - run: bazel test tools/public_api_guard/...
+    - run: bazel test tools/public_api_guard/... --define=compile=legacy
 
   # -----------------------------------------------------------------
   # Job that runs the e2e tests with Protractor and Chromium headless
@@ -406,10 +406,6 @@ jobs:
       # Setup ngcc to make the Angular packages compatible with ngtsc (i.e. creating
       # directive and component definitions as static class members).
       - run: node ./scripts/circleci/setup-ivy-ngcc.js
-      # Disable type checking when building with Ivy. This is necessary because
-      # type checking is not complete yet and can incorrectly break compilation.
-      # Issue is tracked with FW-1004.
-      - run: sed -i "s/\(_ENABLE_NG_TYPE_CHECKING = \)True/\1False/g" tools/defaults.bzl
       # Run project tests with ngtsc and the Ivy Angular packages.
       - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --define=compile=aot
       - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --define=compile=aot
@@ -433,10 +429,6 @@ jobs:
 
       # Setup Angular ivy snapshots built with ngtsc.
       - run: node ./scripts/circleci/setup-angular-snapshots.js --tag master-ivy-aot
-      # Disable type checking when building with Ivy. This is necessary because
-      # type checking is not complete yet and can incorrectly break compilation.
-      # Issue is tracked with FW-1004.
-      - run: sed -i "s/\(_ENABLE_NG_TYPE_CHECKING = \)True/\1False/g" tools/defaults.bzl
       # Run project tests with ngtsc and the Ivy Angular packages.
       - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --define=compile=aot
       - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --define=compile=aot

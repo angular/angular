@@ -1,4 +1,4 @@
-.demo-options {
+.demo-options-connected-overlay {
   display: flex;
   margin: 20px;
 
@@ -12,7 +12,7 @@
   }
 }
 
-.demo-overlay {
+.demo-overlay-connected-overlay {
   display: block;
 
   background: lightblue;
@@ -23,9 +23,13 @@
   overflow: auto;
 }
 
-.demo-trigger {
+.demo-trigger-connected-overlay {
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 10px;
+}
+
+.cdk-overlay-connected-position-bounding-box.demo-bounding-box-visible {
+  background: rgb(255, 69, 0, 0.2);
 }

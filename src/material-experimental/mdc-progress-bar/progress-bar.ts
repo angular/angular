@@ -38,7 +38,7 @@ class MatProgressBarBase {
 const _MatProgressBarMixinBase: CanColorCtor & typeof MatProgressBarBase =
     mixinColor(MatProgressBarBase, 'primary');
 
-type ProgressBarMode = 'determinate' | 'indeterminate' | 'buffer' | 'query';
+export type ProgressBarMode = 'determinate' | 'indeterminate' | 'buffer' | 'query';
 
 @Component({
   moduleId: module.id,

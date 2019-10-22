@@ -1,4 +1,6 @@
 import {Component} from '@angular/core';
+import {ThemePalette} from '@angular/material/core';
+import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
 
 /**
  * @title Configurable progress spinner
@@ -9,7 +11,7 @@ import {Component} from '@angular/core';
   styleUrls: ['progress-spinner-configurable-example.css'],
 })
 export class ProgressSpinnerConfigurableExample {
-  color = 'primary';
-  mode = 'determinate';
+  color: ThemePalette = 'primary';
+  mode: ProgressSpinnerMode = 'determinate';
   value = 50;
 }

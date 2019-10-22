@@ -64,6 +64,9 @@ export function throwMatDuplicatedDrawerError(position: string) {
 /** Result of the toggle promise that indicates the state of the drawer. */
 export type MatDrawerToggleResult = 'open' | 'close';
 
+/** Drawer and SideNav display modes. */
+export type MatDrawerMode = 'over' | 'push' | 'side';
+
 /** Configures whether drawers should use auto sizing by default. */
 export const MAT_DRAWER_DEFAULT_AUTOSIZE =
     new InjectionToken<boolean>('MAT_DRAWER_DEFAULT_AUTOSIZE', {
@@ -158,13 +161,13 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
 
   /** Mode of the drawer; one of 'over', 'push' or 'side'. */
   @Input()
-  get mode(): 'over' | 'push' | 'side' { return this._mode; }
-  set mode(value: 'over' | 'push' | 'side') {
+  get mode(): MatDrawerMode { return this._mode; }
+  set mode(value: MatDrawerMode) {
     this._mode = value;
     this._updateFocusTrapState();
     this._modeChanged.next();
   }
-  private _mode: 'over' | 'push' | 'side' = 'over';
+  private _mode: MatDrawerMode = 'over';
 
   /** Whether the drawer can be closed with the escape key or by clicking on the backdrop. */
   @Input()

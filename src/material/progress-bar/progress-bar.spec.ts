@@ -77,16 +77,16 @@ describe('MatProgressBar', () => {
         const progressComponent = progressElement.componentInstance;
 
         expect(progressComponent._primaryTransform()).toEqual({transform: 'scaleX(0)'});
-        expect(progressComponent._bufferTransform()).toBe(undefined);
+        expect(progressComponent._bufferTransform()).toBe(null);
 
         progressComponent.value = 40;
         expect(progressComponent._primaryTransform()).toEqual({transform: 'scaleX(0.4)'});
-        expect(progressComponent._bufferTransform()).toBe(undefined);
+        expect(progressComponent._bufferTransform()).toBe(null);
 
         progressComponent.value = 35;
         progressComponent.bufferValue = 55;
         expect(progressComponent._primaryTransform()).toEqual({transform: 'scaleX(0.35)'});
-        expect(progressComponent._bufferTransform()).toBe(undefined);
+        expect(progressComponent._bufferTransform()).toBe(null);
 
         progressComponent.mode = 'buffer';
         expect(progressComponent._primaryTransform()).toEqual({transform: 'scaleX(0.35)'});

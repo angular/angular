@@ -8,8 +8,8 @@
   <tbody mat-calendar-body
          [label]="_monthLabel"
          [rows]="_weeks"
-         [todayValue]="_todayDate"
-         [selectedValue]="_selectedDate"
+         [todayValue]="_todayDate!"
+         [selectedValue]="_selectedDate!"
          [labelMinRequiredCells]="3"
          [activeCell]="_dateAdapter.getDate(activeDate) - 1"
          (selectedValueChange)="_dateSelected($event)"

@@ -15,7 +15,7 @@ export declare class MatDrawer implements AfterContentInit, AfterContentChecked,
     autoFocus: boolean;
     readonly closedStart: Observable<void>;
     disableClose: boolean;
-    mode: 'over' | 'push' | 'side';
+    mode: MatDrawerMode;
     onPositionChanged: EventEmitter<void>;
     opened: boolean;
     readonly openedChange: EventEmitter<boolean>;
@@ -74,6 +74,8 @@ export declare class MatDrawerContent extends CdkScrollable implements AfterCont
     constructor(_changeDetectorRef: ChangeDetectorRef, _container: MatDrawerContainer, elementRef: ElementRef<HTMLElement>, scrollDispatcher: ScrollDispatcher, ngZone: NgZone);
     ngAfterContentInit(): void;
 }
+
+export declare type MatDrawerMode = 'over' | 'push' | 'side';
 
 export declare type MatDrawerToggleResult = 'open' | 'close';
 

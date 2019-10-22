@@ -1,11 +1,11 @@
 <mat-tab-header #tabHeader
-               [selectedIndex]="selectedIndex"
+               [selectedIndex]="selectedIndex || 0"
                [disableRipple]="disableRipple"
                [disablePagination]="disablePagination"
                (indexFocused)="_focusChanged($event)"
                (selectFocusedIndex)="selectedIndex = $event">
   <div class="mat-tab-label" role="tab" matTabLabelWrapper mat-ripple cdkMonitorElementFocus
-       *ngFor="let tab of _tabs; let i = index"
+       *ngFor="let tab of _tabsArray; let i = index"
        [id]="_getTabLabelId(i)"
        [attr.tabIndex]="_getTabIndex(tab, i)"
        [attr.aria-posinset]="i + 1"
@@ -37,12 +37,12 @@
   [class._mat-animation-noopable]="_animationMode === 'NoopAnimations'"
   #tabBodyWrapper>
   <mat-tab-body role="tabpanel"
-               *ngFor="let tab of _tabs; let i = index"
+               *ngFor="let tab of _tabsArray; let i = index"
                [id]="_getTabContentId(i)"
                [attr.aria-labelledby]="_getTabLabelId(i)"
                [class.mat-tab-body-active]="selectedIndex == i"
-               [content]="tab.content"
-               [position]="tab.position"
+               [content]="tab.content!"
+               [position]="tab.position!"
                [origin]="tab.origin"
                [animationDuration]="animationDuration"
                (_onCentered)="_removeTabBodyWrapperHeight()"

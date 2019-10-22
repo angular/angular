@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
-import {ErrorStateMatcher} from '@angular/material/core';
+import {ErrorStateMatcher, ThemePalette, FloatLabelType} from '@angular/material/core';
 import {MatSelectChange} from '@angular/material/select';
 
 /** Error any time control is invalid */
@@ -41,12 +41,12 @@ export class SelectDemo {
   currentDigimon: string;
   currentAppearanceValue: string | null;
   latestChangeEvent: MatSelectChange;
-  floatLabel = 'auto';
+  floatLabel: FloatLabelType = 'auto';
   drinksWidth = 'default';
   foodControl = new FormControl('pizza-1');
   topHeightCtrl = new FormControl(0);
-  drinksTheme = 'primary';
-  pokemonTheme = 'primary';
+  drinksTheme: ThemePalette = 'primary';
+  pokemonTheme: ThemePalette = 'primary';
   compareByValue = true;
   selectFormControl = new FormControl('', Validators.required);
 
@@ -58,15 +58,19 @@ export class SelectDemo {
   ];
 
   drinks = [
-    {value: 'coke-0', viewValue: 'Coke'},
-    {value: 'long-name-1', viewValue: 'Decaf Chocolate Brownie Vanilla Gingerbread Frappuccino'},
-    {value: 'water-2', viewValue: 'Water'},
-    {value: 'pepper-3', viewValue: 'Dr. Pepper'},
-    {value: 'coffee-4', viewValue: 'Coffee'},
-    {value: 'tea-5', viewValue: 'Tea'},
-    {value: 'juice-6', viewValue: 'Orange juice'},
-    {value: 'wine-7', viewValue: 'Wine'},
-    {value: 'milk-8', viewValue: 'Milk'},
+    {value: 'coke-0', viewValue: 'Coke', disabled: false},
+    {
+      value: 'long-name-1',
+      viewValue: 'Decaf Chocolate Brownie Vanilla Gingerbread Frappuccino',
+      disabled: false
+    },
+    {value: 'water-2', viewValue: 'Water', disabled: false},
+    {value: 'pepper-3', viewValue: 'Dr. Pepper', disabled: false},
+    {value: 'coffee-4', viewValue: 'Coffee', disabled: false},
+    {value: 'tea-5', viewValue: 'Tea', disabled: false},
+    {value: 'juice-6', viewValue: 'Orange juice', disabled: false},
+    {value: 'wine-7', viewValue: 'Wine', disabled: false},
+    {value: 'milk-8', viewValue: 'Milk', disabled: true},
   ];
 
   pokemon = [

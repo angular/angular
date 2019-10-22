@@ -13,11 +13,6 @@ load("//tools/markdown-to-html:index.bzl", _markdown_to_html = "markdown_to_html
 _DEFAULT_TSCONFIG_BUILD = "//src:bazel-tsconfig-build.json"
 _DEFAULT_TSCONFIG_TEST = "//src:tsconfig-test"
 
-# Whether Angular type checking should be enabled or not. Enabled by
-# default but will be overwritten when running snapshots tests with Ivy
-# since type-checking is not complete yet. See FW-1004.
-_ENABLE_NG_TYPE_CHECKING = True
-
 # Re-exports to simplify build file load statements
 markdown_to_html = _markdown_to_html
 
@@ -97,7 +92,6 @@ def ng_module(
 
     _ng_module(
         srcs = srcs,
-        type_check = _ENABLE_NG_TYPE_CHECKING,
         module_name = module_name,
         flat_module_out_file = flat_module_out_file,
         deps = local_deps,

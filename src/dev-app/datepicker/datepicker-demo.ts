@@ -42,15 +42,20 @@ export class DatepickerDemo {
   minDate: Date;
   maxDate: Date;
   startAt: Date;
-  date: Date;
+  date: any;
   lastDateInput: Date | null;
   lastDateChange: Date | null;
   color: ThemePalette;
 
   dateCtrl = new FormControl();
 
-  dateFilter =
-      (date: Date) => !(date.getFullYear() % 2) && (date.getMonth() % 2) && !(date.getDate() % 2)
+  dateFilter: (date: Date | null) => boolean =
+    (date: Date | null) => {
+      if (date === null) {
+        return true;
+      }
+      return !(date.getFullYear() % 2) && Boolean(date.getMonth() % 2) && !(date.getDate() % 2);
+    }
 
   onDateInput = (e: MatDatepickerInputEvent<Date>) => this.lastDateInput = e.value;
   onDateChange = (e: MatDatepickerInputEvent<Date>) => this.lastDateChange = e.value;

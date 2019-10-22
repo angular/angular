@@ -50,12 +50,18 @@ export class CheckboxAccessibilityDemo {
     return task.completed || (subtasks != null && subtasks.every(t => t.completed));
   }
 
-  someComplete(tasks: Task[]): boolean {
+  someComplete(tasks: Task[] | undefined | null): boolean {
+    if (tasks == null) {
+      return false;
+    }
     const numComplete = tasks.filter(t => t.completed).length;
     return numComplete > 0 && numComplete < tasks.length;
   }
 
-  setAllCompleted(tasks: Task[], completed: boolean) {
+  setAllCompleted(tasks: Task[] | undefined | null, completed: boolean): void {
+    if (tasks == null) {
+      return;
+    }
     tasks.forEach(t => t.completed = completed);
   }
 }

@@ -7,7 +7,7 @@
  */
 import {Injectable} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {CollectionViewer, SelectionChange} from '@angular/cdk/collections';
+import {CollectionViewer, DataSource, SelectionChange} from '@angular/cdk/collections';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -54,7 +54,7 @@ export class DynamicDatabase {
  * the output is a list of `FileNode`-s with a nested structure.
  */
 @Injectable()
-export class DynamicDataSource {
+export class DynamicDataSource implements DataSource<DynamicFlatNode> {
 
   dataChange: BehaviorSubject<DynamicFlatNode[]> = new BehaviorSubject<DynamicFlatNode[]>([]);
 
@@ -76,6 +76,8 @@ export class DynamicDataSource {
 
     return merge(collectionViewer.viewChange, this.dataChange).pipe(map(() => this.data));
   }
+
+  disconnect(collectionViewer: CollectionViewer): void {}
 
   /** Handle expand/collapse behaviors */
   handleTreeControl(change: SelectionChange<DynamicFlatNode>) {

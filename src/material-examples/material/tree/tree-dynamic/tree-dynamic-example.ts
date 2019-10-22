@@ -1,4 +1,4 @@
-import {CollectionViewer, SelectionChange} from '@angular/cdk/collections';
+import {CollectionViewer, SelectionChange, DataSource} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {Component, Injectable} from '@angular/core';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
@@ -45,7 +45,7 @@ export class DynamicDatabase {
  * structure.
  */
 @Injectable()
-export class DynamicDataSource {
+export class DynamicDataSource implements DataSource<DynamicFlatNode> {
 
   dataChange = new BehaviorSubject<DynamicFlatNode[]>([]);
 
@@ -68,6 +68,8 @@ export class DynamicDataSource {
 
     return merge(collectionViewer.viewChange, this.dataChange).pipe(map(() => this.data));
   }
+
+  disconnect(collectionViewer: CollectionViewer): void {}
 
   /** Handle expand/collapse behaviors */
   handleTreeControl(change: SelectionChange<DynamicFlatNode>) {

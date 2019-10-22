@@ -1,6 +1,6 @@
 <div style="height: 500px"></div>
 
-<div class="demo-options mat-typography">
+<div class="demo-options-connected-overlay mat-typography">
   <div>
     <h2>Origin X</h2>
     <mat-radio-group [(ngModel)]="originX">
@@ -81,8 +81,8 @@
     </div>
 
     <div>
-      <mat-checkbox [checked]="showBoundingBox" [disabled]="!overlayRef"
-          (click)="toggleShowBoundingBox()">
+      <mat-checkbox [(ngModel)]="isBoundingBoxVisible" [disabled]="!overlayRef"
+                    (click)="showBoundingBox(!isBoundingBoxVisible)">
         Show bounding box
       </mat-checkbox>
     </div>
@@ -93,18 +93,18 @@
   </div>
 </div>
 
-<div class="demo-trigger">
+<div class="demo-trigger-connected-overlay">
   <button mat-raised-button
       cdkOverlayOrigin
       type="button"
-      [disabled]="overlayRef"
+      [disabled]="!!overlayRef"
       (click)="openWithConfig()">Open</button>
 </div>
 
 <div style="height: 500px"></div>
 
 <ng-template #overlay>
-  <div class="demo-overlay">
+  <div class="demo-overlay-connected-overlay">
     <div style="overflow: auto;">
       <ul><li *ngFor="let item of itemArray; index as i">{{itemText}} {{i}}</li></ul>
     </div>

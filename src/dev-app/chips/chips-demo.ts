@@ -30,7 +30,7 @@ export interface DemoColor {
 export class ChipsDemo {
   tabIndex = 0;
   visible = true;
-  color = '';
+  color: ThemePalette;
   selectable = true;
   removable = true;
   addOnBlur = true;

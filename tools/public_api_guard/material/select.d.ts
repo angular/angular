@@ -18,12 +18,7 @@ export declare class MatSelect extends _MatSelectMixinBase implements AfterConte
     readonly _openedStream: Observable<void>;
     _optionIds: string;
     _panelDoneAnimatingStream: Subject<string>;
-    _positions: {
-        originX: string;
-        originY: string;
-        overlayX: string;
-        overlayY: string;
-    }[];
+    _positions: ConnectedPosition[];
     _scrollStrategy: ScrollStrategy;
     _selectionModel: SelectionModel<MatOption>;
     _transformOrigin: string;

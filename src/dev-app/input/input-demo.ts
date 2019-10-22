@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
-import {ErrorStateMatcher} from '@angular/material/core';
+import {ErrorStateMatcher, FloatLabelType} from '@angular/material/core';
 
 
 let max = 5;
@@ -23,7 +23,7 @@ const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA
   styleUrls: ['input-demo.css'],
 })
 export class InputDemo {
-  floatingLabel = 'auto';
+  floatingLabel: FloatLabelType = 'auto';
   color: boolean;
   requiredField: boolean;
   hideRequiredMarker: boolean;
@@ -91,5 +91,9 @@ export class InputDemo {
     this.placeholderTestControl.touched ?
       this.placeholderTestControl.markAsUntouched() :
       this.placeholderTestControl.markAsTouched();
+  }
+
+  parseNumber(value: string): number {
+    return Number(value);
   }
 }

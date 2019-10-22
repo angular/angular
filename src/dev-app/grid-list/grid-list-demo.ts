@@ -35,7 +35,7 @@ export class GridListDemo {
   basicRowHeight = 80;
   fixedCols = 4;
   fixedRowHeight = 100;
-  ratioGutter = 1;
+  ratioGutter = '1px';
   fitListHeight = '400px';
   ratio = '4:1';
 

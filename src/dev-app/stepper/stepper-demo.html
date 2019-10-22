@@ -5,7 +5,7 @@
 <form [formGroup]="formGroup">
   <mat-vertical-stepper #linearVerticalStepper="matVerticalStepper" formArrayName="formArray"
                         [linear]="!isNonLinear" [disableRipple]="disableRipple">
-    <mat-step formGroupName="0" [stepControl]="formArray?.get([0])">
+    <mat-step formGroupName="0" [stepControl]="formArray?.get([0]) === null ? undefined : formArray?.get([0])!">
       <ng-template matStepLabel>Fill out your name</ng-template>
       <mat-form-field>
         <mat-label>First name</mat-label>
@@ -23,7 +23,8 @@
       </div>
     </mat-step>
 
-    <mat-step formGroupName="1" [stepControl]="formArray?.get([1])" optional>
+    <mat-step formGroupName="1" [stepControl]="formArray?.get([1]) === null ? undefined : formArray?.get([1])!"
+              optional>
       <ng-template matStepLabel>
         <div>Fill out your email address</div>
       </ng-template>

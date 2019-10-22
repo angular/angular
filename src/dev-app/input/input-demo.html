@@ -362,7 +362,7 @@
       Both:
       <mat-form-field class="demo-text-align-end">
         <mat-label>Email address</mat-label>
-        <input matInput #email value="angular-core">
+        <input matInput #email="matInput" value="angular-core">
         <span matPrefix><mat-icon [class.primary]="email.focused">email</mat-icon>&nbsp;</span>
         <span matSuffix [class.primary]="email.focused">&nbsp;@gmail.com</span>
       </mat-form-field>
@@ -550,9 +550,9 @@
     </div>
     <textarea class="demo-textarea"
         cdkTextareaAutosize
-        [cdkAutosizeMinRows]="minRows.value"
-        [cdkAutosizeMaxRows]="maxRows.value"></textarea>
-    <button type="button" (click)="minRows.value = minRows.value - 1">Decrement minRows</button>
+        [cdkAutosizeMinRows]="parseNumber(minRows.value)"
+        [cdkAutosizeMaxRows]="parseNumber(maxRows.value)"></textarea>
+    <button type="button" (click)="minRows.value = parseNumber(minRows.value) - 1">Decrement minRows</button>
 
     <h3>&lt;textarea&gt; with mat-form-field</h3>
     <div>

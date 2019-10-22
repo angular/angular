@@ -139,7 +139,7 @@ export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
   @Input('content') _content: TemplatePortal;
 
   /** Position that will be used when the tab is immediately becoming visible after creation. */
-  @Input() origin: number;
+  @Input() origin: number | null;
 
   // Note that the default value will always be overwritten by `MatTabBody`, but we need one
   // anyway to prevent the animations module from throwing an error if the body is used on its own.
@@ -186,7 +186,7 @@ export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
    */
   ngOnInit() {
     if (this._position == 'center' && this.origin != null) {
-      this._position = this._computePositionFromOrigin();
+      this._position = this._computePositionFromOrigin(this.origin);
     }
   }
 
@@ -230,10 +230,10 @@ export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
    * Computes the position state based on the specified origin position. This is used if the
    * tab is becoming visible immediately after creation.
    */
-  private _computePositionFromOrigin(): MatTabBodyPositionState {
+  private _computePositionFromOrigin(origin: number): MatTabBodyPositionState {
     const dir = this._getLayoutDirection();
 
-    if ((dir == 'ltr' && this.origin <= 0) || (dir == 'rtl' && this.origin > 0)) {
+    if ((dir == 'ltr' && origin <= 0) || (dir == 'rtl' && origin > 0)) {
       return 'left-origin-center';
     }
 

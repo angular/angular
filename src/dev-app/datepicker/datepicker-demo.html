@@ -51,7 +51,7 @@
            [(ngModel)]="date"
            [min]="minDate"
            [max]="maxDate"
-           [matDatepickerFilter]="filterOdd ? dateFilter : null"
+           [matDatepickerFilter]="filterOdd ? dateFilter : undefined"
            [disabled]="inputDisabled"
            (dateInput)="onDateInput($event)"
            (dateChange)="onDateChange($event)">
@@ -81,7 +81,7 @@
          [min]="minDate"
          [max]="maxDate"
          [disabled]="inputDisabled"
-         [matDatepickerFilter]="filterOdd ? dateFilter : null"
+         [matDatepickerFilter]="filterOdd ? dateFilter : undefined"
          placeholder="Pick a date">
   <mat-datepicker-toggle [for]="resultPicker2"></mat-datepicker-toggle>
   <mat-datepicker
@@ -99,7 +99,7 @@
   <mat-form-field>
     <mat-label>Input disabled</mat-label>
     <input matInput [matDatepicker]="datePicker1" [(ngModel)]="date" [min]="minDate" [max]="maxDate"
-           [matDatepickerFilter]="filterOdd ? dateFilter : null" disabled>
+           [matDatepickerFilter]="filterOdd ? dateFilter : undefined" disabled>
     <mat-datepicker #datePicker1 [touchUi]="touch" [startAt]="startAt"
                     [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>
@@ -111,7 +111,7 @@
   <mat-form-field>
     <mat-label>FormControl disabled</mat-label>
     <input matInput [matDatepicker]="datePicker2" [formControl]="dateCtrl" [min]="minDate"
-           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : null">
+           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : undefined">
     <mat-datepicker #datePicker2 [touchUi]="touch" [startAt]="startAt"
                     [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>
@@ -127,7 +127,7 @@
   <mat-form-field>
     <mat-label>Input disabled, datepicker enabled</mat-label>
     <input matInput disabled [matDatepicker]="datePicker3" [(ngModel)]="date" [min]="minDate"
-           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : null">
+           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : undefined">
     <mat-datepicker #datePicker3 [touchUi]="touch" [disabled]="false" [startAt]="startAt"
                     [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>
@@ -138,8 +138,13 @@
   <mat-datepicker-toggle [for]="datePicker4"></mat-datepicker-toggle>
   <mat-form-field>
     <mat-label>Value binding</mat-label>
+    <!--  TODO Angular sets the inputs for both directives on the input element here.
+          e.g. [value] is set for MatInput and MatDatepicker.
+          MatInput#value expects a string whereas MatDatepicker#value expects a Date.
+          This breaks strict template type checking. What should we do here?
+    -->
     <input matInput [matDatepicker]="datePicker4" [value]="date" [min]="minDate"
-           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : null">
+           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : undefined">
     <mat-datepicker #datePicker4 [touchUi]="touch" [startAt]="startAt"
                     [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>

@@ -7,6 +7,7 @@
  */
 
 import {Component} from '@angular/core';
+import {ThemePalette} from '@angular/material/core';
 
 
 @Component({
@@ -17,11 +18,10 @@ import {Component} from '@angular/core';
 })
 export class ProgressSpinnerDemo {
   progressValue = 60;
-  color = 'primary';
+  color: ThemePalette = 'primary';
   isDeterminate = true;
 
   step(val: number) {
     this.progressValue = Math.max(0, Math.min(100, val + this.progressValue));
   }
-
 }

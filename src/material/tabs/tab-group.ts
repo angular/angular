@@ -107,6 +107,12 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
   /** All of the tabs that belong to the group. */
   _tabs: QueryList<MatTab> = new QueryList<MatTab>();
 
+  /**
+   * We need to store the tabs in an Iterable due to strict template type checking with *ngFor and
+   * https://github.com/angular/angular/issues/29842.
+   */
+  _tabsArray: MatTab[] = [];
+
   /** The tab index that should be selected after the content has been checked. */
   private _indexToSelect: number | null = 0;
 
@@ -246,19 +252,20 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
   ngAfterContentInit() {
     this._subscribeToAllTabChanges();
     this._subscribeToTabLabels();
+    this._tabsArray = this._tabs.toArray();
 
     // Subscribe to changes in the amount of tabs, in order to be
     // able to re-render the content as new tabs are added or removed.
     this._tabsSubscription = this._tabs.changes.subscribe(() => {
       const indexToSelect = this._clampTabIndex(this._indexToSelect);
+      this._tabsArray = this._tabs.toArray();
 
       // Maintain the previously-selected tab if a new tab is added or removed and there is no
       // explicit change that selects a different tab.
       if (indexToSelect === this._selectedIndex) {
-        const tabs = this._tabs.toArray();
 
-        for (let i = 0; i < tabs.length; i++) {
-          if (tabs[i].isActive) {
+        for (let i = 0; i < this._tabsArray.length; i++) {
+          if (this._tabsArray[i].isActive) {
             // Assign both to the `_indexToSelect` and `_selectedIndex` so we don't fire a changed
             // event, otherwise the consumer may end up in an infinite loop in some edge cases like
             // adding a tab within the `selectedIndexChange` event.

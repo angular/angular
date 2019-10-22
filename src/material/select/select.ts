@@ -22,7 +22,12 @@ import {
   UP_ARROW,
   hasModifierKey,
 } from '@angular/cdk/keycodes';
-import {CdkConnectedOverlay, Overlay, ScrollStrategy} from '@angular/cdk/overlay';
+import {
+  CdkConnectedOverlay,
+  Overlay,
+  ScrollStrategy,
+  ConnectedPosition,
+} from '@angular/cdk/overlay';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
   AfterContentInit,
@@ -299,7 +304,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
    * the trigger completely). If the panel cannot fit below the trigger, it
    * will fall back to a position above the trigger.
    */
-  _positions = [
+  _positions: ConnectedPosition[] = [
     {
       originX: 'start',
       originY: 'top',

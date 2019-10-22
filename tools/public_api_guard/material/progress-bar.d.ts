@@ -10,14 +10,14 @@ export declare class MatProgressBar extends _MatProgressBarMixinBase implements 
     _rectangleFillValue: string;
     animationEnd: EventEmitter<ProgressAnimationEnd>;
     bufferValue: number;
-    mode: 'determinate' | 'indeterminate' | 'buffer' | 'query';
+    mode: ProgressBarMode;
     progressbarId: string;
     value: number;
     constructor(_elementRef: ElementRef, _ngZone: NgZone, _animationMode?: string | undefined,
     location?: MatProgressBarLocation);
     _bufferTransform(): {
         transform: string;
-    } | undefined;
+    } | null;
     _primaryTransform(): {
         transform: string;
     };
@@ -35,3 +35,5 @@ export declare class MatProgressBarModule {
 export interface ProgressAnimationEnd {
     value: number;
 }
+
+export declare type ProgressBarMode = 'determinate' | 'indeterminate' | 'buffer' | 'query';

@@ -17,7 +17,7 @@ export declare abstract class _MatTabBodyBase implements OnInit, OnDestroy {
     _position: MatTabBodyPositionState;
     _translateTabComplete: Subject<AnimationEvent>;
     animationDuration: string;
-    origin: number;
+    origin: number | null;
     position: number;
     constructor(_elementRef: ElementRef<HTMLElement>, _dir: Directionality, changeDetectorRef: ChangeDetectorRef);
     _getLayoutDirection(): Direction;
@@ -33,6 +33,7 @@ export declare abstract class _MatTabGroupBase extends _MatTabGroupMixinBase imp
     abstract _tabBodyWrapper: ElementRef;
     abstract _tabHeader: MatTabGroupBaseHeader;
     _tabs: QueryList<MatTab>;
+    _tabsArray: MatTab[];
     readonly animationDone: EventEmitter<void>;
     animationDuration: string;
     backgroundColor: ThemePalette;

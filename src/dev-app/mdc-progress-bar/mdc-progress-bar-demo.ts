@@ -7,6 +7,7 @@
  */
 
 import {Component} from '@angular/core';
+import {ThemePalette} from '@angular/material/core';
 
 @Component({
   moduleId: module.id,
@@ -15,7 +16,7 @@ import {Component} from '@angular/core';
   styleUrls: ['mdc-progress-bar-demo.css'],
 })
 export class MdcProgressBarDemo {
-  color: string = 'primary';
+  color: ThemePalette = 'primary';
   determinateProgressValue: number = 30;
   determinateAnimationEndValue: number;
   bufferAnimationEndValue: number;

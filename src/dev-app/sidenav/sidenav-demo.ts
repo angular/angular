@@ -7,6 +7,7 @@
  */
 
 import {Component} from '@angular/core';
+import {MatDrawerMode} from '@angular/material/sidenav';
 
 
 @Component({
@@ -25,7 +26,9 @@ export class SidenavDemo {
   showFooter = false;
   modeIndex = 0;
   hasBackdrop: boolean;
-  get mode() { return ['side', 'over', 'push'][this.modeIndex]; }
+  get mode(): MatDrawerMode {
+    return (['side', 'over', 'push'] as MatDrawerMode[])[this.modeIndex];
+  }
   get fixedTop() { return this.fixed && this.showHeader && !this.coverHeader ? 64 : 0; }
   get fixedBottom() { return this.fixed && this.showFooter && !this.coverHeader ? 64 : 0; }
 }

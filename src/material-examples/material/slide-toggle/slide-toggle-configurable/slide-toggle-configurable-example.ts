@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {ThemePalette} from '@angular/material/core';
 
 /**
  * @title Configurable slide-toggle
@@ -9,7 +10,7 @@ import {Component} from '@angular/core';
   styleUrls: ['slide-toggle-configurable-example.css'],
 })
 export class SlideToggleConfigurableExample {
-  color = 'accent';
+  color: ThemePalette = 'accent';
   checked = false;
   disabled = false;
 }

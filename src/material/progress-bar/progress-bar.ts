@@ -75,6 +75,7 @@ export function MAT_PROGRESS_BAR_LOCATION_FACTORY(): MatProgressBarLocation {
   };
 }
 
+export type ProgressBarMode = 'determinate' | 'indeterminate' | 'buffer' | 'query';
 
 /** Counter used to generate unique IDs for progress bars. */
 let progressbarId = 0;
@@ -165,7 +166,7 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
    * 'determinate'.
    * Mirrored to mode attribute.
    */
-  @Input() mode: 'determinate' | 'indeterminate' | 'buffer' | 'query' = 'determinate';
+  @Input() mode: ProgressBarMode = 'determinate';
 
   /** ID of the progress bar. */
   progressbarId = `mat-progress-bar-${progressbarId++}`;
@@ -188,7 +189,7 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
       const scale = this.bufferValue / 100;
       return {transform: `scaleX(${scale})`};
     }
-    return undefined;
+    return null;
   }
 
   ngAfterViewInit() {

@@ -1,4 +1,4 @@
-<div class="mat-step" *ngFor="let step of steps; let i = index; let isLast = last">
+<div class="mat-step" *ngFor="let step of _stepsArray; let i = index; let isLast = last">
   <mat-step-header class="mat-vertical-stepper-header"
                    (click)="step.select()"
                    (keydown)="_onKeydown($event)"

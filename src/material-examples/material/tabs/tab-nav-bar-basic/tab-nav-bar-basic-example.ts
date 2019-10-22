@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {ThemePalette} from '@angular/material/core';
 
 /**
  * @title Basic use of the tab nav bar
@@ -11,10 +12,10 @@ import {Component} from '@angular/core';
 export class TabNavBarBasicExample {
   links = ['First', 'Second', 'Third'];
   activeLink = this.links[0];
-  background = '';
+  background: ThemePalette = undefined;
 
   toggleBackground() {
-    this.background = this.background ? '' : 'primary';
+    this.background = this.background ? undefined : 'primary';
   }
 
   addLink() {

@@ -1,5 +1,5 @@
 <div class="mat-horizontal-stepper-header-container">
-  <ng-container *ngFor="let step of steps; let i = index; let isLast = last">
+  <ng-container *ngFor="let step of _stepsArray; let i = index; let isLast = last">
     <mat-step-header class="mat-horizontal-stepper-header"
                      (click)="step.select()"
                      (keydown)="_onKeydown($event)"
@@ -26,7 +26,7 @@
 </div>
 
 <div class="mat-horizontal-content-container">
-  <div *ngFor="let step of steps; let i = index"
+  <div *ngFor="let step of _stepsArray; let i = index"
        [attr.tabindex]="selectedIndex === i ? 0 : null"
        class="mat-horizontal-stepper-content" role="tabpanel"
        [@stepTransition]="_getAnimationDirection(i)"
