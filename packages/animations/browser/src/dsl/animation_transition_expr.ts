@@ -16,7 +16,7 @@ export function parseTransitionExpr(
     transitionValue.split(/\s*,\s*/).forEach(
         str => parseInnerTransitionStr(str, expressions, errors));
   } else {
-    expressions.push(<TransitionMatcherFn>transitionValue);
+    expressions.push(transitionValue);
   }
   return expressions;
 }
@@ -77,8 +77,10 @@ function makeLambdaFromStates(lhs: string, rhs: string): TransitionMatcherFn {
   const RHS_MATCH_BOOLEAN = TRUE_BOOLEAN_VALUES.has(rhs) || FALSE_BOOLEAN_VALUES.has(rhs);
 
   return (fromState: any, toState: any): boolean => {
-    let lhsMatch = lhs === ANY_STATE || lhs === fromState;
-    let rhsMatch = rhs === ANY_STATE || rhs === toState;
+    // tslint:disable-next-line: triple-equals
+    let lhsMatch = lhs === ANY_STATE || lhs == fromState;
+    // tslint:disable-next-line: triple-equals
+    let rhsMatch = rhs === ANY_STATE || rhs == toState;
 
     if (!lhsMatch && LHS_MATCH_BOOLEAN && typeof fromState === 'boolean') {
       lhsMatch = fromState ? TRUE_BOOLEAN_VALUES.has(lhs) : FALSE_BOOLEAN_VALUES.has(lhs);
