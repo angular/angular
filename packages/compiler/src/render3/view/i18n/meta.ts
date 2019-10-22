@@ -8,7 +8,7 @@
 
 import {computeDecimalDigest, computeDigest, decimalDigest} from '../../../i18n/digest';
 import * as i18n from '../../../i18n/i18n_ast';
-import {createI18nMessageFactory} from '../../../i18n/i18n_parser';
+import {VisitNodeFn, createI18nMessageFactory} from '../../../i18n/i18n_parser';
 import * as html from '../../../ml_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../ml_parser/interpolation_config';
 import * as o from '../../../output/output_ast';
@@ -23,8 +23,9 @@ export type I18nMeta = {
   meaning?: string
 };
 
-function setI18nRefs(html: html.Node & {i18n?: i18n.AST}, i18n: i18n.Node) {
+function setI18nRefs(html: html.Node & {i18n?: i18n.AST}, i18n: i18n.Node): i18n.Node {
   html.i18n = i18n;
+  return i18n;
 }
 
 /**
@@ -41,8 +42,7 @@ export class I18nMetaVisitor implements html.Visitor {
       private keepI18nAttrs: boolean = false, private i18nLegacyMessageIdFormat: string = '') {}
 
   private _generateI18nMessage(
-      nodes: html.Node[], meta: string|i18n.AST = '',
-      visitNodeFn?: (html: html.Node, i18n: i18n.Node) => void): i18n.Message {
+      nodes: html.Node[], meta: string|i18n.AST = '', visitNodeFn?: VisitNodeFn): i18n.Message {
     const parsed: I18nMeta =
         typeof meta === 'string' ? parseI18nMeta(meta) : metaFromI18nMessage(meta as i18n.Message);
     const message = this._createI18nMessage(
