@@ -21,6 +21,7 @@ describe('Undecorated classes with DI migration', () => {
   let previousWorkingDir: string;
   let warnOutput: string[];
   let errorOutput: string[];
+  let infoOutput: string[];
 
   beforeEach(() => {
     runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
@@ -39,11 +40,14 @@ describe('Undecorated classes with DI migration', () => {
 
     warnOutput = [];
     errorOutput = [];
+    infoOutput = [];
     runner.logger.subscribe(logEntry => {
       if (logEntry.level === 'warn') {
         warnOutput.push(logEntry.message);
       } else if (logEntry.level === 'error') {
         errorOutput.push(logEntry.message);
+      } else if (logEntry.level === 'info') {
+        infoOutput.push(logEntry.message);
       }
     });
 
@@ -112,6 +116,10 @@ describe('Undecorated classes with DI migration', () => {
     expect(errorOutput.length).toBe(0);
     expect(warnOutput.length).toBe(1);
     expect(warnOutput[0]).toMatch(/Class needs to declare an explicit constructor./);
+    expect(infoOutput.join(' '))
+        .toContain(
+            'Could not migrate all undecorated classes that use ' +
+            'dependency injection. Please manually fix the following failures');
   });
 
   it('should add @Directive() decorator to extended base class', async() => {
@@ -1442,6 +1450,10 @@ describe('Undecorated classes with DI migration', () => {
               /ensure there are no AOT compilation errors and rerun the migration.*project failed: tsconfig\.json/);
       expect(errorOutput.length).toBe(1);
       expect(errorOutput[0]).toMatch(/Cannot determine the module for class TestComp/);
+      expect(infoOutput.join(' '))
+          .toContain(
+              'Some project targets could not be analyzed due to ' +
+              'TypeScript program failures');
     });
 
     it('should gracefully exit migration if project fails with syntactical diagnostic', async() => {
@@ -1456,6 +1468,10 @@ describe('Undecorated classes with DI migration', () => {
           .toMatch(/project "tsconfig.json" has syntactical errors which could cause/);
       expect(errorOutput.length).toBe(1);
       expect(errorOutput[0]).toMatch(/error TS1005: 'from' expected/);
+      expect(infoOutput.join(' '))
+          .toContain(
+              'Some project targets could not be analyzed due to ' +
+              'TypeScript program failures');
     });
 
     it('should not throw if resources could not be read', async() => {
