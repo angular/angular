@@ -247,7 +247,7 @@ You get the best of both worlds: the property name you want and the binding synt
 <code-example path="attribute-directives/src/app/app.component.html" header="src/app/app.component.html (color)" region="color"></code-example>
 
 Now that you're binding via the alias to the `highlightColor`, modify the `onMouseEnter()` method to use that property.
-If someone neglects to bind to `appHighlightColor`, highlight the host element in red:
+If someone neglects to bind to `appHighlight`, highlight the host element in red:
 
 <code-example path="attribute-directives/src/app/highlight.directive.3.ts" header="src/app/highlight.directive.ts (mouse enter)" region="mouse-enter"></code-example>
 
