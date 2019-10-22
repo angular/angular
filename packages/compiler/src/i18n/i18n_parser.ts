@@ -21,8 +21,8 @@ const _expParser = new ExpressionParser(new ExpressionLexer());
 export type VisitNodeFn = (html: html.Node, i18n: i18n.Node) => i18n.Node;
 
 export interface I18nMessageFactory {
-  (nodes: html.Node[], meaning: string, description: string, customId: string,
-   visitNodeFn?: VisitNodeFn): i18n.Message;
+  (nodes: html.Node[], meaning: string|undefined, description: string|undefined,
+   customId: string|undefined, visitNodeFn?: VisitNodeFn): i18n.Message;
 }
 
 /**
@@ -54,7 +54,7 @@ class _I18nVisitor implements html.Visitor {
       private _interpolationConfig: InterpolationConfig) {}
 
   public toI18nMessage(
-      nodes: html.Node[], meaning: string, description: string, customId: string,
+      nodes: html.Node[], meaning = '', description = '', customId = '',
       visitNodeFn: VisitNodeFn|undefined): i18n.Message {
     const context: I18nMessageVisitorContext = {
       isIcu: nodes.length == 1 && nodes[0] instanceof html.Expansion,

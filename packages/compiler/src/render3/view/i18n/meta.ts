@@ -23,10 +23,20 @@ export type I18nMeta = {
   meaning?: string
 };
 
-function setI18nRefs(html: html.Node & {i18n?: i18n.I18nMeta}, i18n: i18n.Node): i18n.Node {
-  html.i18n = i18n;
-  return i18n;
-}
+
+const setI18nRefs: VisitNodeFn = (htmlNode, i18nNode) => {
+  if (htmlNode instanceof html.NodeWithI18n) {
+    if (i18nNode instanceof i18n.IcuPlaceholder && htmlNode.i18n instanceof i18n.Message) {
+      // This html node represents an ICU but this is a second processing pass, and the legacy id
+      // was computed in the previous pass and stored in the `i18n` property as a message.
+      // We are about to wipe out that property so capture the previous message to be reused when
+      // generating the message for this ICU later. See `_generateI18nMessage()`.
+      i18nNode.previousMessage = htmlNode.i18n;
+    }
+    htmlNode.i18n = i18nNode;
+  }
+  return i18nNode;
+};
 
 /**
  * This visitor walks over HTML parse tree and converts information stored in
@@ -44,28 +54,10 @@ export class I18nMetaVisitor implements html.Visitor {
   private _generateI18nMessage(
       nodes: html.Node[], meta: string|i18n.I18nMeta = '',
       visitNodeFn?: VisitNodeFn): i18n.Message {
-    const parsed: I18nMeta =
-        typeof meta === 'string' ? parseI18nMeta(meta) : metaFromI18nMessage(meta as i18n.Message);
-    const message = this._createI18nMessage(
-        nodes, parsed.meaning || '', parsed.description || '', parsed.customId || '', visitNodeFn);
-    if (!message.id) {
-      // generate (or restore) message id if not specified in template
-      message.id = typeof meta !== 'string' && (meta as i18n.Message).id || decimalDigest(message);
-    }
-
-    if (this.i18nLegacyMessageIdFormat === 'xlf' || this.i18nLegacyMessageIdFormat === 'xliff') {
-      message.legacyId = computeDigest(message);
-    } else if (
-        this.i18nLegacyMessageIdFormat === 'xlf2' || this.i18nLegacyMessageIdFormat === 'xliff2' ||
-        this.i18nLegacyMessageIdFormat === 'xmb') {
-      message.legacyId = computeDecimalDigest(message);
-    } else if (typeof meta !== 'string') {
-      // This occurs if we are doing the 2nd pass after whitespace removal
-      // In that case we want to reuse the legacy message generated in the 1st pass
-      // See `parseTemplate()` in `packages/compiler/src/render3/view/template.ts`
-      message.legacyId = (meta as i18n.Message).legacyId;
-    }
-
+    const {meaning, description, customId} = this._parseMetadata(meta);
+    const message = this._createI18nMessage(nodes, meaning, description, customId, visitNodeFn);
+    this._setMessageId(message, meta);
+    this._setLegacyId(message, meta);
     return message;
   }
 
@@ -141,6 +133,57 @@ export class I18nMetaVisitor implements html.Visitor {
   visitAttribute(attribute: html.Attribute): any { return attribute; }
   visitComment(comment: html.Comment): any { return comment; }
   visitExpansionCase(expansionCase: html.ExpansionCase): any { return expansionCase; }
+
+  /**
+   * Parse the general form `meta` passed into extract the explicit metadata needed to create a
+   * `Message`.
+   *
+   * There are three possibilities for the `meta` variable
+   * 1) a string from an `i18n` template attribute: parse it to extract the metadata values.
+   * 2) a `Message` from a previous processing pass: reuse the metadata values in the message.
+   * 4) other: ignore this and just process the message metadata as normal
+   *
+   * @param meta the bucket that holds information about the message
+   * @returns the parsed metadata.
+   */
+  private _parseMetadata(meta: string|i18n.I18nMeta): I18nMeta {
+    return typeof meta === 'string' ? parseI18nMeta(meta) :
+                                      meta instanceof i18n.Message ? metaFromI18nMessage(meta) : {};
+  }
+
+  /**
+   * Generate (or restore) message id if not specified already.
+   */
+  private _setMessageId(message: i18n.Message, meta: string|i18n.I18nMeta): void {
+    if (!message.id) {
+      message.id = meta instanceof i18n.Message && meta.id || decimalDigest(message);
+    }
+  }
+
+  /**
+   * Update the `message` with a `legacyId` if necessary.
+   *
+   * @param message the message whose legacy id should be set
+   * @param meta information about the message being processed
+   */
+  private _setLegacyId(message: i18n.Message, meta: string|i18n.I18nMeta): void {
+    if (this.i18nLegacyMessageIdFormat === 'xlf' || this.i18nLegacyMessageIdFormat === 'xliff') {
+      message.legacyId = computeDigest(message);
+    } else if (
+        this.i18nLegacyMessageIdFormat === 'xlf2' || this.i18nLegacyMessageIdFormat === 'xliff2' ||
+        this.i18nLegacyMessageIdFormat === 'xmb') {
+      message.legacyId = computeDecimalDigest(message);
+    } else if (typeof meta !== 'string') {
+      // This occurs if we are doing the 2nd pass after whitespace removal (see `parseTemplate()` in
+      // `packages/compiler/src/render3/view/template.ts`).
+      // In that case we want to reuse the legacy message generated in the 1st pass (see
+      // `setI18nRefs()`).
+      const previousMessage = meta instanceof i18n.Message ?
+          meta :
+          meta instanceof i18n.IcuPlaceholder ? meta.previousMessage : undefined;
+      message.legacyId = previousMessage && previousMessage.legacyId;
+    }
+  }
 }
 
 export function metaFromI18nMessage(message: i18n.Message, id: string | null = null): I18nMeta {
