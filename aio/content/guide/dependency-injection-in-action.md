@@ -229,8 +229,7 @@ Here's `HeroBiosAndContactsComponent` in action.
 
 <figure class="lightbox">
   <div class="card">
-      <img src="generated/images/guide/dependency-injection-in-action/hero-bios-and-contacts.png" alt="Bios with cont
-    act into">
+      <img src="generated/images/guide/dependency-injection-in-action/hero-bios-and-contacts.png" alt="Bios with contact into">
   </div>
 </figure>
 
@@ -477,8 +476,7 @@ The `HeroOfTheMonthComponent` constructor's `logger` parameter is typed as `Mini
 
 <figure class="lightbox">
   <div class="card">
-      <img src="generated/images/guide/dependency-injection-in-action/minimal-logger-intellisense.png" alt="MinimalLog
-    ger restricted API">
+      <img src="generated/images/guide/dependency-injection-in-action/minimal-logger-intellisense.png" alt="MinimalLogger restricted API">
     </div>
 </figure>
 

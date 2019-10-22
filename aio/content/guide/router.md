@@ -2148,11 +2148,9 @@ Add some styles to apply when the list item is selected.
 When the user navigates from the heroes list to the "Magneta" hero and back, "Magneta" appears selected:
 
 <figure class="lightbox">
-
   <div class="card">
     <img src='generated/images/guide/router/selected-hero.png' alt="Selected List">
   </div>
-  
 </figure>
 
 

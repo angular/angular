@@ -110,7 +110,7 @@ previous paragraphs describe.
 
 <figure class="lightbox">
   <div class="card">
-      <img src="generated/images/guide/dependency-injection/injectors.svg" alt="NullInjector, ModuleInjector, root injector">
+    <img src="generated/images/guide/dependency-injection/injectors.svg" alt="NullInjector, ModuleInjector, root injector">
   </div>
 </figure>
 

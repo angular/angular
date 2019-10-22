@@ -88,7 +88,7 @@ In template-driven forms, the source of truth is the template.
   <div class="card">
     <img src="generated/images/guide/forms-overview/key-diff-td-forms.png" alt="Template-driven forms key differences">
   </div>
-  </figure>
+</figure>
 
 The abstraction of the form model promotes simplicity over structure. The template-driven form directive `NgModel` is responsible for creating and managing the `FormControl` instance for a given form element. It's less explicit, but you no longer have direct control over the form model. 
 

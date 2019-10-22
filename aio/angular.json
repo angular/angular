@@ -5,8 +5,7 @@
     "packageManager": "yarn",
     "warnings": {
       "typescriptMismatch": false
-    },
-    "analytics": false
+    }
   },
   "newProjectRoot": "projects",
   "projects": {
