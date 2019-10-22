@@ -35,6 +35,7 @@ export default function(): Rule {
     const {buildPaths} = getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const failures: string[] = [];
+    let programError = false;
 
     if (!buildPaths.length) {
       throw new SchematicsException(
@@ -43,10 +44,23 @@ export default function(): Rule {
     }
 
     for (const tsconfigPath of buildPaths) {
-      failures.push(...runUndecoratedClassesMigration(tree, tsconfigPath, basePath, ctx.logger));
+      const result = runUndecoratedClassesMigration(tree, tsconfigPath, basePath, ctx.logger);
+      failures.push(...result.failures);
+      programError = programError || !!result.programError;
     }
 
-    if (failures.length) {
+    if (programError) {
+      ctx.logger.info('Could not migrate all undecorated classes that use dependency');
+      ctx.logger.info('injection. Some project targets could not be analyzed due to');
+      ctx.logger.info('TypeScript program failures.\n');
+      ctx.logger.info(`${MIGRATION_RERUN_MESSAGE}\n`);
+
+      if (failures.length) {
+        ctx.logger.info('Please manually fix the following failures and re-run the');
+        ctx.logger.info('migration once the TypeScript program failures are resolved.');
+        failures.forEach(message => ctx.logger.warn(`⮑   ${message}`));
+      }
+    } else if (failures.length) {
       ctx.logger.info('Could not migrate all undecorated classes that use dependency');
       ctx.logger.info('injection. Please manually fix the following failures:');
       failures.forEach(message => ctx.logger.warn(`⮑   ${message}`));
@@ -55,13 +69,14 @@ export default function(): Rule {
 }
 
 function runUndecoratedClassesMigration(
-    tree: Tree, tsconfigPath: string, basePath: string, logger: logging.LoggerApi): string[] {
+    tree: Tree, tsconfigPath: string, basePath: string,
+    logger: logging.LoggerApi): {failures: string[], programError?: boolean} {
   const failures: string[] = [];
   const programData = gracefullyCreateProgram(tree, basePath, tsconfigPath, logger);
 
   // Gracefully exit if the program could not be created.
   if (programData === null) {
-    return [];
+    return {failures: [], programError: true};
   }
 
   const {program, compiler} = programData;
@@ -101,7 +116,7 @@ function runUndecoratedClassesMigration(
   // file in order to avoid shifted character offsets.
   updateRecorders.forEach(recorder => recorder.commitUpdate());
 
-  return failures;
+  return {failures};
 
   /** Gets the update recorder for the specified source file. */
   function getUpdateRecorder(sourceFile: ts.SourceFile): UpdateRecorder {
@@ -153,7 +168,6 @@ function gracefullyCreateProgram(
           `\nTypeScript project "${tsconfigPath}" has syntactical errors which could cause ` +
           `an incomplete migration. Please fix the following failures and rerun the migration:`);
       logger.error(ts.formatDiagnostics(syntacticDiagnostics, host));
-      logger.info(MIGRATION_RERUN_MESSAGE);
       return null;
     }
 
@@ -165,7 +179,6 @@ function gracefullyCreateProgram(
   } catch (e) {
     logger.warn(`\n${MIGRATION_AOT_FAILURE}. The following project failed: ${tsconfigPath}\n`);
     logger.error(`${e.toString()}\n`);
-    logger.info(MIGRATION_RERUN_MESSAGE);
     return null;
   }
 }
