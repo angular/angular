@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Input, ModuleWithProviders, NgModule, Optional, Pipe, getModuleFactory, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
+import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Input, ModuleWithProviders, NgModule, Optional, Pipe, getModuleFactory, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
 import {registerModuleFactory} from '@angular/core/src/linker/ng_module_factory_registration';
 import {NgModuleFactory} from '@angular/core/src/render3';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
-import {RouterModule} from '@angular/router';
 
 const NAME = new InjectionToken<string>('name');
 
@@ -273,7 +272,6 @@ describe('TestBed', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         imports: [MyModule, MyModule2],
-        providers: [{provide: multiToken, useValue: ['override'], multi: true}]
       });
     });
 
@@ -304,24 +302,41 @@ describe('TestBed', () => {
     });
   });
 
-  it('overrides multi provider in forRoot', () => {
+  describe('overrides providers in ModuleWithProviders', () => {
     const TOKEN = new InjectionToken<string[]>('token');
     @NgModule()
     class MyMod {
+      static multi = false;
+
       static forRoot() {
         return {
           ngModule: MyMod,
-          providers: [[{provide: TOKEN, multi: true, useValue: 'forRootValue'}]]
+          providers: [{provide: TOKEN, multi: MyMod.multi, useValue: 'forRootValue'}]
         };
       }
     }
-    @NgModule({imports: [MyMod.forRoot()]})
-    class MyMod2 {
-    }
 
-    TestBed.configureTestingModule({imports: [MyMod2]});
-    TestBed.overrideProvider(TOKEN, { useValue: ['override'], multi: true } as any);
-    expect(TestBed.inject(TOKEN)).toEqual(['override']);
+    beforeEach(() => MyMod.multi = false);
+
+    it('when provider is a "regular" provider', () => {
+      MyMod.multi = false;
+      @NgModule({imports: [MyMod.forRoot()]})
+      class MyMod2 {
+      }
+      TestBed.configureTestingModule({imports: [MyMod2]});
+      TestBed.overrideProvider(TOKEN, {useValue: ['override']});
+      expect(TestBed.inject(TOKEN)).toEqual(['override']);
+    });
+
+    it('when provider is multi', () => {
+      MyMod.multi = true;
+      @NgModule({imports: [MyMod.forRoot()]})
+      class MyMod2 {
+      }
+      TestBed.configureTestingModule({imports: [MyMod2]});
+      TestBed.overrideProvider(TOKEN, {useValue: ['override']});
+      expect(TestBed.inject(TOKEN)).toEqual(['override']);
+    });
   });
 
   it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.overrideProvider)',

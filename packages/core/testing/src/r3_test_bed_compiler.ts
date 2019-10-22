@@ -381,8 +381,15 @@ export class R3TestBedCompiler {
 
       // Apply provider overrides to imported modules recursively
       const moduleDef: any = (moduleType as any)[NG_MOD_DEF];
-      for (const importType of moduleDef.imports) {
-        this.applyProviderOverridesToModule(importType);
+      for (const importedModule of moduleDef.imports) {
+        this.applyProviderOverridesToModule(importedModule);
+      }
+      // Also override the providers on any ModuleWithProviders imports since those don't appear in
+      // the moduleDef.
+      for (const importedModule of flatten(injectorDef.imports)) {
+        if (isModuleWithProviders(importedModule)) {
+          importedModule.providers = this.getOverriddenProviders(importedModule.providers);
+        }
       }
     }
   }
