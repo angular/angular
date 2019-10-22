@@ -123,6 +123,14 @@ export class MissingInjectableTransform {
     this.visitedProviderClasses.add(node);
 
     const sourceFile = node.getSourceFile();
+
+    // We cannot migrate provider classes outside of source files. This is because the
+    // migration for third-party library files should happen in "ngcc", and in general
+    // would also involve metadata parsing.
+    if (sourceFile.isDeclarationFile) {
+      return;
+    }
+
     const ngDecorators =
         node.decorators ? getAngularDecorators(this.typeChecker, node.decorators) : null;
 
