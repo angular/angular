@@ -49,6 +49,9 @@ export class NoopRenderer implements ProceduralRenderer3 {
 
 export class NoopRendererFactory implements RendererFactory3 {
   createRenderer(hostElement: RElement|null, rendererType: null): Renderer3 {
+    if (typeof global !== 'undefined') {
+      (global as any).Node = WebWorkerRenderNode;
+    }
     return new NoopRenderer();
   }
 }

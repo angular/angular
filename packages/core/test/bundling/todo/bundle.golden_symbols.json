@@ -609,6 +609,9 @@
     "name": "getActiveDirectiveId"
   },
   {
+    "name": "getAndIncrementBindingIndex"
+  },
+  {
     "name": "getBeforeNodeForView"
   },
   {

@@ -35,7 +35,7 @@ export const ngStyleDirectiveDef__POST_R3__ = ɵɵdefineDirective({
   selectors: null as any,
   hostBindings: function(rf: ɵRenderFlags, ctx: any, elIndex: number) {
     if (rf & ɵRenderFlags.Create) {
-      ɵɵallocHostVars(1);
+      ɵɵallocHostVars(2);
     }
     if (rf & ɵRenderFlags.Update) {
       ɵɵstyleMap(ctx.getValue());

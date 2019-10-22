@@ -436,7 +436,7 @@ describe('compiler compliance: styling', () => {
          const template = `
         …
           decls: 1,
-          vars: 2,
+          vars: 3,
           template: function MyComponentWithInterpolation_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵɵelement(0, "div");
@@ -447,7 +447,7 @@ describe('compiler compliance: styling', () => {
           }
         …
           decls: 1,
-          vars: 3,
+          vars: 4,
           template: function MyComponentWithMuchosInterpolation_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵɵelement(0, "div");
@@ -458,7 +458,7 @@ describe('compiler compliance: styling', () => {
           }
         …
           decls: 1,
-          vars: 1,
+          vars: 2,
           template: function MyComponentWithoutInterpolation_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵɵelement(0, "div");
@@ -506,7 +506,7 @@ describe('compiler compliance: styling', () => {
               type: MyComponent,
               selectors:[["my-component"]],
               decls: 1,
-              vars: 4,
+              vars: 5,
               consts: [[${AttributeMarker.Styles}, "opacity", "1"]],
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
@@ -700,7 +700,7 @@ describe('compiler compliance: styling', () => {
               type: MyComponent,
               selectors:[["my-component"]],
               decls: 1,
-              vars: 4,
+              vars: 5,
               consts: [[${AttributeMarker.Classes}, "grape"]],
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
@@ -863,8 +863,8 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-              $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind1(1, 2, $ctx$.myStyleExp));
-              $r3$.ɵɵclassMap($r3$.ɵɵpipeBind1(2, 4, $ctx$.myClassExp));
+              $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind1(1, 4, $ctx$.myStyleExp));
+              $r3$.ɵɵclassMap($r3$.ɵɵpipeBind1(2, 6, $ctx$.myClassExp));
             }
           }
           `;
@@ -916,11 +916,11 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-              $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind2(1, 6, $ctx$.myStyleExp, 1000));
+              $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind2(1, 8, $ctx$.myStyleExp, 1000));
               $r3$.ɵɵclassMap($e2_styling$);
-              $r3$.ɵɵstyleProp("bar", $r3$.ɵɵpipeBind2(2, 9, $ctx$.barExp, 3000));
-              $r3$.ɵɵstyleProp("baz", $r3$.ɵɵpipeBind2(3, 12, $ctx$.bazExp, 4000));
-              $r3$.ɵɵclassProp("foo", $r3$.ɵɵpipeBind2(4, 15, $ctx$.fooExp, 2000));
+              $r3$.ɵɵstyleProp("bar", $r3$.ɵɵpipeBind2(2, 11, $ctx$.barExp, 3000));
+              $r3$.ɵɵstyleProp("baz", $r3$.ɵɵpipeBind2(3, 14, $ctx$.bazExp, 4000));
+              $r3$.ɵɵclassProp("foo", $r3$.ɵɵpipeBind2(4, 17, $ctx$.fooExp, 2000));
               $r3$.ɵɵadvance(5);
              $r3$.ɵɵtextInterpolate1(" ", $ctx$.item, "");
             }
@@ -1018,7 +1018,7 @@ describe('compiler compliance: styling', () => {
       const template = `
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵallocHostVars(4);
+              $r3$.ɵɵallocHostVars(6);
               $r3$.ɵɵelementHostAttrs($e0_attrs$);
             }
             if (rf & 2) {
@@ -1077,7 +1077,7 @@ describe('compiler compliance: styling', () => {
       const template = `
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵallocHostVars(6);
+              $r3$.ɵɵallocHostVars(8);
             }
             if (rf & 2) {
               $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
@@ -1152,7 +1152,7 @@ describe('compiler compliance: styling', () => {
          const hostBindings = `
             hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
               if (rf & 1) {
-                $r3$.ɵɵallocHostVars(4);
+                $r3$.ɵɵallocHostVars(6);
               }
               if (rf & 2) {
                 $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
@@ -1218,7 +1218,7 @@ describe('compiler compliance: styling', () => {
          const template = `
           function ClassDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵallocHostVars(1);
+              $r3$.ɵɵallocHostVars(2);
             }
             if (rf & 2) {
               $r3$.ɵɵclassMap(ctx.myClassMap);
@@ -1506,7 +1506,7 @@ describe('compiler compliance: styling', () => {
       …
       hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
         if (rf & 1) {
-          $r3$.ɵɵallocHostVars(4);
+          $r3$.ɵɵallocHostVars(6);
           $r3$.ɵɵelementHostAttrs($_c0$);
         }
         if (rf & 2) {
