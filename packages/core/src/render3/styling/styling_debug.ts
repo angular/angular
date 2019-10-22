@@ -5,12 +5,13 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {createProxy} from '../../debug/proxy';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {RElement} from '../interfaces/renderer';
 import {ApplyStylingFn, LStylingData, TStylingConfig, TStylingContext, TStylingContextIndex} from '../interfaces/styling';
 import {getCurrentStyleSanitizer} from '../state';
 import {attachDebugObject} from '../util/debug_utils';
-import {MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, allowDirectStyling as _allowDirectStyling, getBindingValue, getDefaultValue, getGuardMask, getProp, getPropValuesStartPosition, getValuesCount, hasConfig, isContextLocked, isSanitizationRequired, isStylingContext} from '../util/styling_utils';
+import {MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, allowDirectStyling as _allowDirectStyling, getBindingValue, getDefaultValue, getGuardMask, getProp, getPropValuesStartPosition, getValue, getValuesCount, hasConfig, isContextLocked, isSanitizationRequired, isStylingContext, normalizeIntoStylingMap, setValue} from '../util/styling_utils';
 
 import {applyStylingViaContext} from './bindings';
 import {activateStylingMapFeature} from './map_based_bindings';
@@ -374,10 +375,52 @@ export class NodeStylingDebug implements DebugNodeStyling {
    */
   get summary(): {[key: string]: DebugNodeStylingEntry} {
     const entries: {[key: string]: DebugNodeStylingEntry} = {};
-    this._mapValues((prop: string, value: any, bindingIndex: number | null) => {
+    const config = this.config;
+    const isClassBased = this._isClassBased;
+
+    let data = this._data;
+
+    // the direct pass code doesn't convert [style] or [class] values
+    // into StylingMapArray instances. For this reason, the values
+    // need to be converted ahead of time since the styling debug
+    // relies on context resolution to figure out what styling
+    // values have been added/removed on the element.
+    if (config.allowDirectStyling && config.hasMapBindings) {
+      data = data.concat([]);  // make a copy
+      this._convertMapBindingsToStylingMapArrays(data);
+    }
+
+    this._mapValues(data, (prop: string, value: any, bindingIndex: number | null) => {
       entries[prop] = {prop, value, bindingIndex};
     });
-    return entries;
+
+    // because the styling algorithm runs into two different
+    // modes: direct and context-resolution, the output of the entries
+    // object is different because the removed values are not
+    // saved between updates. For this reason a proxy is created
+    // so that the behavior is the same when examining values
+    // that are no longer active on the element.
+    return createProxy({
+      get(target: {}, prop: string): DebugNodeStylingEntry{
+        let value: DebugNodeStylingEntry = entries[prop]; if (!value) {
+          value = {
+            prop,
+            value: isClassBased ? false : null,
+            bindingIndex: null,
+          };
+        } return value;
+      },
+      set(target: {}, prop: string, value: any) { return false; },
+      ownKeys() { return Object.keys(entries); },
+      getOwnPropertyDescriptor(k: any) {
+        // we use a special property descriptor here so that enumeration operations
+        // such as `Object.keys` will work on this proxy.
+        return {
+          enumerable: true,
+          configurable: true,
+        };
+      },
+    });
   }
 
   get config() { return buildConfig(this.context.context); }
@@ -387,11 +430,41 @@ export class NodeStylingDebug implements DebugNodeStyling {
    */
   get values(): {[key: string]: any} {
     const entries: {[key: string]: any} = {};
-    this._mapValues((prop: string, value: any) => { entries[prop] = value; });
+    const config = this.config;
+    let data = this._data;
+
+    // the direct pass code doesn't convert [style] or [class] values
+    // into StylingMapArray instances. For this reason, the values
+    // need to be converted ahead of time since the styling debug
+    // relies on context resolution to figure out what styling
+    // values have been added/removed on the element.
+    if (config.allowDirectStyling && config.hasMapBindings) {
+      data = data.concat([]);  // make a copy
+      this._convertMapBindingsToStylingMapArrays(data);
+    }
+
+    this._mapValues(data, (prop: string, value: any) => { entries[prop] = value; });
     return entries;
   }
 
-  private _mapValues(fn: (prop: string, value: string|null, bindingIndex: number|null) => any) {
+  private _convertMapBindingsToStylingMapArrays(data: LStylingData) {
+    const context = this.context.context;
+    const limit = getPropValuesStartPosition(context);
+    for (let i =
+             TStylingContextIndex.ValuesStartPosition + TStylingContextIndex.BindingsStartOffset;
+         i < limit; i++) {
+      const bindingIndex = context[i] as number;
+      const bindingValue = bindingIndex !== 0 ? getValue(data, bindingIndex) : null;
+      if (bindingValue && !Array.isArray(bindingValue)) {
+        const stylingMapArray = normalizeIntoStylingMap(null, bindingValue, !this._isClassBased);
+        setValue(data, bindingIndex, stylingMapArray);
+      }
+    }
+  }
+
+  private _mapValues(
+      data: LStylingData,
+      fn: (prop: string, value: string|null, bindingIndex: number|null) => any) {
     // there is no need to store/track an element instance. The
     // element is only used when the styling algorithm attempts to
     // style the value (and we mock out the stylingApplyFn anyway).
@@ -409,11 +482,11 @@ export class NodeStylingDebug implements DebugNodeStyling {
 
     // run the template bindings
     applyStylingViaContext(
-        this.context.context, null, mockElement, this._data, true, mapFn, sanitizer, false);
+        this.context.context, null, mockElement, data, true, mapFn, sanitizer, false);
 
     // and also the host bindings
     applyStylingViaContext(
-        this.context.context, null, mockElement, this._data, true, mapFn, sanitizer, true);
+        this.context.context, null, mockElement, data, true, mapFn, sanitizer, true);
   }
 }
 
