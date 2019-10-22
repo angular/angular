@@ -25,9 +25,7 @@ export function checkReleaseBundle(bundlePath: string): string[] {
   const failures: string[] = [];
 
   if (inlineStylesSourcemapRegex.exec(bundleContent) !== null) {
-    // TODO(devversion): check if we can omit the invalid source-map references
-    // for built components. For now this check is temporarily disabled.
-    // failures.push('Found sourcemap references in component styles.');
+    failures.push('Found sourcemap references in component styles.');
   }
 
   if (externalReferencesRegex.exec(bundleContent) !== null) {
