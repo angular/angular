@@ -603,7 +603,7 @@ export interface TProjectionNode extends TNode {
 }
 
 /**
- * An union type representing all TNode types that can host a directive.
+ * A union type representing all TNode types that can host a directive.
  */
 export type TDirectiveHostNode = TElementNode | TContainerNode | TElementContainerNode;
 
