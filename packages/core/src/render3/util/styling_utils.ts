@@ -295,13 +295,15 @@ export function forceClassesAsString(classes: string | {[key: string]: any} | nu
   return (classes as string) || '';
 }
 
-export function forceStylesAsString(styles: {[key: string]: any} | null | undefined): string {
+export function forceStylesAsString(
+    styles: {[key: string]: any} | null | undefined, hyphenateProps: boolean): string {
   let str = '';
   if (styles) {
     const props = Object.keys(styles);
     for (let i = 0; i < props.length; i++) {
       const prop = props[i];
-      str = concatString(str, `${prop}:${styles[prop]}`, ';');
+      const propLabel = hyphenateProps ? hyphenate(prop) : prop;
+      str = concatString(str, `${propLabel}:${styles[prop]}`, ';');
     }
   }
   return str;
