@@ -2179,6 +2179,23 @@ runInEachFileSystem(os => {
       expect(jsContents).not.toContain(':Some text');
     });
 
+    it('should also render legacy id for ICUs when normal messages are using legacy ids', () => {
+      env.tsconfig({i18nInFormat: 'xliff'});
+      env.write(`test.ts`, `
+     import {Component} from '@angular/core';
+     @Component({
+       selector: 'test',
+       template: '<div i18n="@@custom">Some text {age, plural, 10 {ten} other {other}}</div>'
+     })
+     class FooCmp {}`);
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents)
+          .toContain(
+              ':@@720ba589d043a0497ac721ff972f41db0c919efb:{VAR_PLURAL, plural, 10 {ten} other {other}}');
+      expect(jsContents).toContain(':@@custom:Some text');
+    });
+
     it('@Component\'s `interpolation` should override default interpolation config', () => {
       env.write(`test.ts`, `
       import {Component} from '@angular/core';

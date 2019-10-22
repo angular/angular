@@ -21,7 +21,7 @@ import {formatI18nPlaceholderName} from '../../../src/render3/view/i18n/util';
 import {parseR3 as parse} from './util';
 
 const expressionParser = new Parser(new Lexer());
-const i18nOf = (element: t.Node & {i18n?: i18n.AST}) => element.i18n !;
+const i18nOf = (element: t.Node & {i18n?: i18n.I18nMeta}) => element.i18n !;
 
 describe('I18nContext', () => {
   it('should support i18n content collection', () => {
