@@ -69,7 +69,9 @@ export class EventBinding {
 }
 
 @Component({
-  template: '<h1 [(model)]="~{two-way-binding-model}test"></h1>',
+  template: `
+    <h1 [(model)]="~{two-way-binding-model}test"></h1>
+    <input ~{two-way-binding-input}></input>`,
 })
 export class TwoWayBinding {
   test: string = 'test';
@@ -80,7 +82,7 @@ export class TwoWayBinding {
 })
 export class StringModel {
   @Input() model: string = 'model';
-  @Output() modelChanged: EventEmitter<string> = new EventEmitter();
+  @Output() modelChange: EventEmitter<string> = new EventEmitter();
 }
 
 @Directive({
@@ -88,7 +90,7 @@ export class StringModel {
 })
 export class NumberModel {
   @Input('inputAlias') model: number = 0;
-  @Output('outputAlias') modelChanged: EventEmitter<number> = new EventEmitter();
+  @Output('outputAlias') modelChange: EventEmitter<number> = new EventEmitter();
 }
 
 @Component({
