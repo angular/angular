@@ -380,7 +380,6 @@ describe('Missing injectable migration', () => {
           .toContain(`{ ${type}, Injectable } from '@angular/core`);
     });
 
-
     it(`should migrate multiple nested providers in same ${type}`, async() => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
@@ -688,6 +687,25 @@ describe('Missing injectable migration', () => {
       // if the import is unused or not. We leave this up to the developers.
       expect(tree.readContent('/service.ts'))
           .toMatch(/import { Inject, Injectable } from '@angular\/core';/);
+    });
+
+    it('should not migrate provider classes in library type definitions', async() => {
+      writeFile('/node_modules/my-lib/index.d.ts', `
+        export declare class MyService {}
+      `);
+
+      writeFile('/index.ts', `
+        import {MyService} from 'my-lib';
+        import {Pipe, ${type}} from '@angular/core';
+                  
+        @${type}({${propName}: [MyService]})
+        export class TestClass {}
+      `);
+
+      await runMigration();
+
+      expect(warnOutput.length).toBe(0);
+      expect(tree.readContent('/node_modules/my-lib/index.d.ts')).not.toContain('@Injectable');
     });
   }
 });
