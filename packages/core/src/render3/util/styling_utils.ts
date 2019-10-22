@@ -414,10 +414,8 @@ export function normalizeIntoStylingMap(
   let map: {[key: string]: any}|undefined|null;
   let allValuesTrue = false;
   if (typeof newValues === 'string') {  // [class] bindings allow string values
-    if (newValues.length) {
-      props = newValues.split(/\s+/);
-      allValuesTrue = true;
-    }
+    props = splitOnWhitespace(newValues);
+    allValuesTrue = props !== null;
   } else {
     props = newValues ? Object.keys(newValues) : null;
     map = newValues;
@@ -433,6 +431,32 @@ export function normalizeIntoStylingMap(
   }
 
   return stylingMapArr;
+}
+
+function splitOnWhitespace(text: string): string[]|null {
+  let array: string[]|null = null;
+  let length = text.length;
+  let start = 0;
+  let foundChar = false;
+  for (let i = 0; i < length; i++) {
+    const char = text.charCodeAt(i);
+    if (char === 32 /*' '*/) {
+      if (foundChar) {
+        if (array === null) array = [];
+        array.push(text.substring(start, i));
+        foundChar = false;
+      }
+      start = i + 1;
+    } else {
+      foundChar = true
+    }
+  }
+  if (foundChar) {
+    if (array === null) array = [];
+    array.push(text.substring(start, length));
+    foundChar = false;
+  }
+  return array;
 }
 
 // TODO (matsko|AndrewKushnir): refactor this once we figure out how to generate separate
