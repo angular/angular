@@ -1931,6 +1931,20 @@ runInEachFileSystem(() => {
         expect(classDecoratorsSecondary.length).toEqual(1);
         expect(classDecoratorsSecondary[0] !.map(d => d.name)).toEqual(['Directive']);
       });
+
+      it('should return a cloned array on each invocation', () => {
+        loadTestFiles(DECORATED_FILES);
+        const {program} = makeTestBundleProgram(getRootFiles(DECORATED_FILES)[0]);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classDecl =
+            getDeclaration(program, DECORATED_FILES[0].name, 'A', ts.isClassDeclaration) !;
+        const classSymbol = host.getClassSymbol(classDecl) !;
+
+        const firstResult = host.getDecoratorsOfSymbol(classSymbol);
+        const secondResult = host.getDecoratorsOfSymbol(classSymbol);
+
+        expect(firstResult).not.toBe(secondResult);
+      });
     });
 
     describe('getDtsDeclarationsOfClass()', () => {

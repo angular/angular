@@ -344,10 +344,18 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     return superDeclaration;
   }
 
-  /** Gets all decorators of the given class symbol. */
+  /**
+   * Gets all decorators of the given class symbol. Any decorator that have been synthetically
+   * injected by a migration will not be present in the returned collection.
+   */
   getDecoratorsOfSymbol(symbol: NgccClassSymbol): Decorator[]|null {
     const {classDecorators} = this.acquireDecoratorInfo(symbol);
-    return classDecorators;
+    if (classDecorators === null) {
+      return null;
+    }
+
+    // Return a clone of the array to prevent consumers from mutating the cache.
+    return Array.from(classDecorators);
   }
 
   /**
