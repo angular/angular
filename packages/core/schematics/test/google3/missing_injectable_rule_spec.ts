@@ -151,7 +151,7 @@ describe('Google3 missing injectable tslint rule', () => {
       expect(getFile('/index.ts')).toMatch(/@Injectable\(\)\s+export class MyServiceB/);
       expect(getFile('/index.ts')).toMatch(/@Injectable\(\)\s+export class MyServiceC/);
       expect(getFile('/index.ts')).toMatch(/@Injectable\(\)\s+export class MyServiceD/);
-      expect(getFile('/index.ts')).toMatch(/@Injectable\(\)\s+export class MyServiceE/);
+      expect(getFile('/index.ts')).toMatch(/MyServiceD {}\s+export class MyServiceE/);
       expect(getFile('/index.ts')).toMatch(/MyServiceE {}\s+export class MyServiceF/);
       expect(getFile('/index.ts')).toMatch(/MyServiceF {}\s+export class MyServiceG/);
     });
