@@ -1268,7 +1268,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.innerHTML)
         .toEqual(
-            `<div test="" title="début 2 milieu 1 fin" class="foo"> traduction: un <i>email</i><!--ICU 20--> ` +
+            `<div test="" title="début 2 milieu 1 fin" class="foo"> traduction: un <i>email</i><!--ICU 21--> ` +
             `</div><div test="" class="foo"></div>`);
 
     directiveInstances.forEach(instance => instance.klass = 'bar');
@@ -1277,7 +1277,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.innerHTML)
         .toEqual(
-            `<div test="" title="début 3 milieu 2 fin" class="bar"> traduction: 2 emails<!--ICU 20--> ` +
+            `<div test="" title="début 3 milieu 2 fin" class="bar"> traduction: 2 emails<!--ICU 21--> ` +
             `</div><div test="" class="bar"></div>`);
   });
 

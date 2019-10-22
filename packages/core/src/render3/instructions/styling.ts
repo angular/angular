@@ -96,7 +96,7 @@ export function stylePropInternal(
   // in this case we do not need to do anything, but the binding index
   // still needs to be incremented because all styling binding values
   // are stored inside of the lView.
-  const bindingIndex = lView[BINDING_INDEX]++;
+  const bindingIndex = getAndIncrementBindingIndex(lView, false);
 
   const updated =
       stylingProp(elementIndex, bindingIndex, prop, resolveStylePropValue(value, suffix), false);
@@ -130,7 +130,7 @@ export function ɵɵclassProp(className: string, value: boolean | null): void {
   // in this case we do not need to do anything, but the binding index
   // still needs to be incremented because all styling binding values
   // are stored inside of the lView.
-  const bindingIndex = lView[BINDING_INDEX]++;
+  const bindingIndex = getAndIncrementBindingIndex(lView, false);
 
   const updated = stylingProp(getSelectedIndex(), bindingIndex, className, value, true);
   if (ngDevMode) {
@@ -189,8 +189,7 @@ function stylingProp(
     const sanitizerToUse = isClassBased ? null : sanitizer;
     const renderer = getRenderer(tNode, lView);
     updated = applyStylingValueDirectly(
-        renderer, context, native, lView, bindingIndex, prop, value, isClassBased,
-        isClassBased ? setClass : setStyle, sanitizerToUse);
+        renderer, context, native, lView, bindingIndex, prop, value, isClassBased, sanitizerToUse);
 
     if (sanitizerToUse) {
       // it's important we remove the current style sanitizer once the
@@ -243,28 +242,23 @@ export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | nu
   const lView = getLView();
   const tNode = getTNode(index, lView);
   const context = getStylesContext(tNode);
+  const hasDirectiveInput = hasStyleInput(tNode);
 
   // if a value is interpolated then it may render a `NO_CHANGE` value.
   // in this case we do not need to do anything, but the binding index
   // still needs to be incremented because all styling binding values
   // are stored inside of the lView.
-  const bindingIndex = lView[BINDING_INDEX]++;
+  const bindingIndex = getAndIncrementBindingIndex(lView, true);
 
   // inputs are only evaluated from a template binding into a directive, therefore,
   // there should not be a situation where a directive host bindings function
   // evaluates the inputs (this should only happen in the template function)
-  if (!isHostStyling() && hasStyleInput(tNode) && styles !== NO_CHANGE) {
+  if (!isHostStyling() && hasDirectiveInput && styles !== NO_CHANGE) {
     updateDirectiveInputValue(context, lView, tNode, bindingIndex, styles, false);
     styles = NO_CHANGE;
   }
 
-  const updated = stylingMap(index, context, bindingIndex, styles, false);
-  if (ngDevMode) {
-    ngDevMode.styleMap++;
-    if (updated) {
-      ngDevMode.styleMapCacheMiss++;
-    }
-  }
+  stylingMap(context, tNode, lView, bindingIndex, styles, false, hasDirectiveInput);
 }
 
 /**
@@ -300,28 +294,23 @@ export function classMapInternal(
   const lView = getLView();
   const tNode = getTNode(elementIndex, lView);
   const context = getClassesContext(tNode);
+  const hasDirectiveInput = hasClassInput(tNode);
 
   // if a value is interpolated then it may render a `NO_CHANGE` value.
   // in this case we do not need to do anything, but the binding index
   // still needs to be incremented because all styling binding values
   // are stored inside of the lView.
-  const bindingIndex = lView[BINDING_INDEX]++;
+  const bindingIndex = getAndIncrementBindingIndex(lView, true);
 
   // inputs are only evaluated from a template binding into a directive, therefore,
   // there should not be a situation where a directive host bindings function
   // evaluates the inputs (this should only happen in the template function)
-  if (!isHostStyling() && hasClassInput(tNode) && classes !== NO_CHANGE) {
+  if (!isHostStyling() && hasDirectiveInput && classes !== NO_CHANGE) {
     updateDirectiveInputValue(context, lView, tNode, bindingIndex, classes, true);
     classes = NO_CHANGE;
   }
 
-  const updated = stylingMap(elementIndex, context, bindingIndex, classes, true);
-  if (ngDevMode) {
-    ngDevMode.classMap++;
-    if (updated) {
-      ngDevMode.classMapCacheMiss++;
-    }
-  }
+  stylingMap(context, tNode, lView, bindingIndex, classes, true, hasDirectiveInput);
 }
 
 /**
@@ -331,13 +320,10 @@ export function classMapInternal(
  * `[class]` bindings in Angular.
  */
 function stylingMap(
-    elementIndex: number, context: TStylingContext, bindingIndex: number,
-    value: {[key: string]: any} | string | null, isClassBased: boolean): boolean {
-  let updated = false;
-
-  const lView = getLView();
+    context: TStylingContext, tNode: TNode, lView: LView, bindingIndex: number,
+    value: {[key: string]: any} | string | null, isClassBased: boolean,
+    hasDirectiveInput: boolean): void {
   const directiveIndex = getActiveDirectiveId();
-  const tNode = getTNode(elementIndex, lView);
   const native = getNativeByTNode(tNode, lView) as RElement;
   const oldValue = getValue(lView, bindingIndex);
   const hostBindingsMode = isHostStyling();
@@ -359,17 +345,14 @@ function stylingMap(
     patchConfig(context, TStylingConfig.HasMapBindings);
   }
 
-  const stylingMapArr =
-      value === NO_CHANGE ? NO_CHANGE : normalizeIntoStylingMap(oldValue, value, !isClassBased);
-
   // Direct Apply Case: bypass context resolution and apply the
   // style/class map values directly to the element
   if (allowDirectStyling(context, hostBindingsMode)) {
     const sanitizerToUse = isClassBased ? null : sanitizer;
     const renderer = getRenderer(tNode, lView);
-    updated = applyStylingMapDirectly(
-        renderer, context, native, lView, bindingIndex, stylingMapArr as StylingMapArray,
-        isClassBased, isClassBased ? setClass : setStyle, sanitizerToUse, valueHasChanged);
+    applyStylingMapDirectly(
+        renderer, context, native, lView, bindingIndex, value, isClassBased, sanitizerToUse,
+        valueHasChanged, hasDirectiveInput);
     if (sanitizerToUse) {
       // it's important we remove the current style sanitizer once the
       // element exits, otherwise it will be used by the next styling
@@ -377,7 +360,9 @@ function stylingMap(
       setElementExitFn(stylingApply);
     }
   } else {
-    updated = valueHasChanged;
+    const stylingMapArr =
+        value === NO_CHANGE ? NO_CHANGE : normalizeIntoStylingMap(oldValue, value, !isClassBased);
+
     activateStylingMapFeature();
 
     // Context Resolution (or first update) Case: save the map value
@@ -396,7 +381,12 @@ function stylingMap(
     setElementExitFn(stylingApply);
   }
 
-  return updated;
+  if (ngDevMode) {
+    isClassBased ? ngDevMode.classMap : ngDevMode.styleMap++;
+    if (valueHasChanged) {
+      isClassBased ? ngDevMode.classMapCacheMiss : ngDevMode.styleMapCacheMiss++;
+    }
+  }
 }
 
 /**
@@ -452,8 +442,8 @@ function normalizeStylingDirectiveInputValue(
       value = concatString(initialValue, forceClassesAsString(bindingValue));
     } else {
       value = concatString(
-          initialValue, forceStylesAsString(bindingValue as{[key: string]: any} | null | undefined),
-          ';');
+          initialValue,
+          forceStylesAsString(bindingValue as{[key: string]: any} | null | undefined, true), ';');
     }
   }
   return value;
@@ -593,4 +583,12 @@ function resolveStylePropValue(
  */
 function isHostStyling(): boolean {
   return isHostStylingActive(getActiveDirectiveId());
+}
+
+function getAndIncrementBindingIndex(lView: LView, isMapBased: boolean): number {
+  // map-based bindings use two slots because the previously constructed
+  // className / style value must be compared against.
+  const index = lView[BINDING_INDEX];
+  lView[BINDING_INDEX] += isMapBased ? 2 : 1;
+  return index;
 }

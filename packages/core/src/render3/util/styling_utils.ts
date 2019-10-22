@@ -247,7 +247,7 @@ export function isStylingContext(value: any): boolean {
       typeof value[1] !== 'string';
 }
 
-export function isStylingMapArray(value: TStylingContext | StylingMapArray | null): boolean {
+export function isStylingMapArray(value: any): boolean {
   // the StylingMapArray is in the format of [initial, prop, string, prop, string]
   // and this is the defining value to distinguish between arrays
   return Array.isArray(value) &&
@@ -295,13 +295,18 @@ export function forceClassesAsString(classes: string | {[key: string]: any} | nu
   return (classes as string) || '';
 }
 
-export function forceStylesAsString(styles: {[key: string]: any} | null | undefined): string {
+export function forceStylesAsString(
+    styles: {[key: string]: any} | null | undefined, hyphenateProps: boolean): string {
   let str = '';
   if (styles) {
     const props = Object.keys(styles);
     for (let i = 0; i < props.length; i++) {
       const prop = props[i];
-      str = concatString(str, `${prop}:${styles[prop]}`, ';');
+      const propLabel = hyphenateProps ? hyphenate(prop) : prop;
+      const value = styles[prop];
+      if (value !== null) {
+        str = concatString(str, `${propLabel}:${value}`, ';');
+      }
     }
   }
   return str;
