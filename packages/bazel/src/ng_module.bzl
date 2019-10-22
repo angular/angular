@@ -619,6 +619,8 @@ def _ng_module_impl(ctx):
     ts_providers = ng_module_impl(ctx, compile_ts)
 
     # Add in new JS providers
+    # See design doc https://docs.google.com/document/d/1ggkY5RqUkVL4aQLYm7esRW978LgX3GUCnQirrk5E1C0/edit#
+    # and issue https://github.com/bazelbuild/rules_nodejs/issues/57 for more details.
     ts_providers["providers"].extend([
         js_named_module_info(
             sources = ts_providers["typescript"]["es5_sources"],
@@ -628,6 +630,9 @@ def _ng_module_impl(ctx):
             sources = ts_providers["typescript"]["es6_sources"],
             deps = ctx.attr.deps,
         ),
+        # TODO: Add remaining shared JS providers from design doc
+        # (JSModuleInfo) and remove legacy "typescript" provider
+        # once it is no longer needed.
     ])
 
     return ts_providers_dict_to_struct(ts_providers)
