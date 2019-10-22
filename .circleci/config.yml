@@ -554,6 +554,26 @@ jobs:
       # amount of container nodes for this job is controlled by the "parallelism" option.
       - run: ./integration/run_tests.sh ${CIRCLE_NODE_INDEX} ${CIRCLE_NODE_TOTAL}
 
+  # This job creates compressed tarballs (`.tgz` files) for all Angular packages and stores them as
+  # build artifacts. This makes it easy to try out changes from a PR build for testing purposes.
+  # More info CircleCI build artifacts: https://circleci.com/docs/2.0/artifacts
+  #
+  # NOTE: Currently, this job only runs for PR builds. See `publish_snapshot` for non-PR builds.
+  publish_packages_as_artifacts:
+    executor: default-executor
+    environment:
+      NG_PACKAGES_DIR: &ng_packages_dir 'dist/packages-dist'
+      NG_PACKAGES_ARCHIVES_DIR: &ng_packages_archives_dir 'dist/packages-dist-archives'
+    steps:
+      - custom_attach_workspace
+      - init_environment
+      - run:
+          name: Create artifacts
+          command: ./scripts/ci/create-package-archives.sh $CI_PULL_REQUEST $CI_COMMIT $NG_PACKAGES_DIR $NG_PACKAGES_ARCHIVES_DIR
+      - store_artifacts:
+          path: *ng_packages_archives_dir
+          destination: angular
+
   # This job updates the content of repos like github.com/angular/core-builds
   # for every green build on angular/angular.
   publish_snapshot:
@@ -816,6 +836,11 @@ workflows:
           requires:
             - aio_preview
       - integration_test:
+          requires:
+            - build-npm-packages
+      - publish_packages_as_artifacts:
+          # Only run on PR builds. (For non-PR builds, the `publish_snapshot` job.)
+          <<: *only_on_pull_requests
           requires:
             - build-npm-packages
       - publish_snapshot:
