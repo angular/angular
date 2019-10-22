@@ -19,6 +19,7 @@
     @media (max-width: 1300px) {
       max-width: 100%;
       height: auto;
+      margin: auto;
     }
 
     @media (max-width: 600px) {
@@ -41,7 +42,8 @@
     border: 1px solid $lightgray;
     padding: 32px;
     box-sizing: border-box;
-    display: inline-block;
+    display: flex;
+    justify-content: center;
     box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, .2);
     margin: 16px 0;
 
