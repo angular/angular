@@ -13,7 +13,7 @@ import {AstResult, AttrInfo} from './common';
 import {getExpressionCompletions} from './expressions';
 import {attributeNames, elementNames, eventNames, propertyNames} from './html_info';
 import {CompletionKind, Span, Symbol, SymbolTable, TemplateSource} from './types';
-import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, flatten, getSelectors, hasTemplateReference, inSpan, removeSuffix, spanOf} from './utils';
+import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getSelectors, hasTemplateReference, inSpan, spanOf} from './utils';
 
 const TEMPLATE_ATTR_PREFIX = '*';
 
@@ -101,98 +101,46 @@ export function getTemplateCompletions(
 function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ts.CompletionEntry[] {
   const item = path.tail instanceof Element ? path.tail : path.parentOf(path.tail);
   if (item instanceof Element) {
-    return attributeCompletionsForElement(info, item.name, item);
+    return attributeCompletionsForElement(info, item.name);
   }
   return [];
 }
 
 function attributeCompletionsForElement(
-    info: AstResult, elementName: string, element?: Element): ts.CompletionEntry[] {
-  const attributes = getAttributeInfosForElement(info, elementName, element);
-
-  // Map all the attributes to a completion
-  return attributes.map(attr => {
-    const kind = attr.fromHtml ? CompletionKind.HTML_ATTRIBUTE : CompletionKind.ATTRIBUTE;
-    return {
-      name: nameOfAttr(attr),
-      // Need to cast to unknown because Angular's CompletionKind includes HTML
-      // entites.
-      kind: kind as unknown as ts.ScriptElementKind,
-      sortText: attr.name,
-    };
-  });
-}
-
-function getAttributeInfosForElement(
-    info: AstResult, elementName: string, element?: Element): AttrInfo[] {
-  const attributes: AttrInfo[] = [];
+    info: AstResult, elementName: string): ts.CompletionEntry[] {
+  const results: ts.CompletionEntry[] = [];
 
   // Add html attributes
-  const htmlAttributes = attributeNames(elementName) || [];
-  if (htmlAttributes) {
-    attributes.push(...htmlAttributes.map<AttrInfo>(name => ({name, fromHtml: true})));
+  for (const name of attributeNames(elementName)) {
+    results.push({
+      name,
+      kind: CompletionKind.HTML_ATTRIBUTE as unknown as ts.ScriptElementKind,
+      sortText: name,
+    });
   }
 
   // Add html properties
-  const htmlProperties = propertyNames(elementName);
-  if (htmlProperties) {
-    attributes.push(...htmlProperties.map<AttrInfo>(name => ({name, input: true})));
+  for (const name of propertyNames(elementName)) {
+    results.push({
+      name: `[${name}]`,
+      kind: CompletionKind.ATTRIBUTE as unknown as ts.ScriptElementKind,
+      sortText: name,
+    });
   }
 
   // Add html events
-  const htmlEvents = eventNames(elementName);
-  if (htmlEvents) {
-    attributes.push(...htmlEvents.map<AttrInfo>(name => ({name, output: true})));
+  for (const name of eventNames(elementName)) {
+    results.push({
+      name: `(${name})`,
+      kind: CompletionKind.ATTRIBUTE as unknown as ts.ScriptElementKind,
+      sortText: name,
+    });
   }
 
-  const {selectors, map: selectorMap} = getSelectors(info);
-  if (selectors && selectors.length) {
-    // All the attributes that are selectable should be shown.
-    const applicableSelectors =
-        selectors.filter(selector => !selector.element || selector.element === elementName);
-    const selectorAndAttributeNames =
-        applicableSelectors.map(selector => ({selector, attrs: selector.attrs.filter(a => !!a)}));
-    let attrs = flatten(selectorAndAttributeNames.map<AttrInfo[]>(selectorAndAttr => {
-      const directive = selectorMap.get(selectorAndAttr.selector) !;
-      const result = selectorAndAttr.attrs.map<AttrInfo>(
-          name => ({name, input: name in directive.inputs, output: name in directive.outputs}));
-      return result;
-    }));
+  // Add Angular attributes
+  results.push(...angularAttributes(info, elementName));
 
-    // Add template attribute if a directive contains a template reference
-    selectorAndAttributeNames.forEach(selectorAndAttr => {
-      const selector = selectorAndAttr.selector;
-      const directive = selectorMap.get(selector);
-      if (directive && hasTemplateReference(directive.type) && selector.attrs.length &&
-          selector.attrs[0]) {
-        attrs.push({name: selector.attrs[0], template: true});
-      }
-    });
-
-    // All input and output properties of the matching directives should be added.
-    const elementSelector = element ?
-        createElementCssSelector(element) :
-        createElementCssSelector(new Element(elementName, [], [], null !, null, null));
-
-    const matcher = new SelectorMatcher();
-    matcher.addSelectables(selectors);
-    matcher.match(elementSelector, selector => {
-      const directive = selectorMap.get(selector);
-      if (directive) {
-        const {inputs, outputs} = directive;
-        attrs.push(...Object.keys(inputs).map(name => ({name: inputs[name], input: true})));
-        attrs.push(...Object.keys(outputs).map(name => ({name: outputs[name], output: true})));
-      }
-    });
-
-    // If a name shows up twice, fold it into a single value.
-    attrs = foldAttrs(attrs);
-
-    // Now expand them back out to ensure that input/output shows up as well as input and
-    // output.
-    attributes.push(...flatten(attrs.map(expandedAttr)));
-  }
-  return attributes;
+  return results;
 }
 
 function attributeValueCompletions(
@@ -482,27 +430,6 @@ function getSourceText(template: TemplateSource, span: Span): string {
   return template.source.substring(span.start, span.end);
 }
 
-function nameOfAttr(attr: AttrInfo): string {
-  let name = attr.name;
-  if (attr.output) {
-    name = removeSuffix(name, 'Events');
-    name = removeSuffix(name, 'Changed');
-  }
-  const result = [name];
-  if (attr.input) {
-    result.unshift('[');
-    result.push(']');
-  }
-  if (attr.output) {
-    result.unshift('(');
-    result.push(')');
-  }
-  if (attr.template) {
-    result.unshift('*');
-  }
-  return result.join('');
-}
-
 const templateAttr = /^(\w+:)?(template$|^\*)/;
 function createElementCssSelector(element: Element): CssSelector {
   const cssSelector = new CssSelector();
@@ -523,48 +450,75 @@ function createElementCssSelector(element: Element): CssSelector {
   return cssSelector;
 }
 
-function foldAttrs(attrs: AttrInfo[]): AttrInfo[] {
-  const inputOutput = new Map<string, AttrInfo>();
-  const templates = new Map<string, AttrInfo>();
-  const result: AttrInfo[] = [];
-  attrs.forEach(attr => {
-    if (attr.fromHtml) {
-      return attr;
-    }
-    if (attr.template) {
-      const duplicate = templates.get(attr.name);
-      if (!duplicate) {
-        result.push({name: attr.name, template: true});
-        templates.set(attr.name, attr);
-      }
-    }
-    if (attr.input || attr.output) {
-      const duplicate = inputOutput.get(attr.name);
-      if (duplicate) {
-        duplicate.input = duplicate.input || attr.input;
-        duplicate.output = duplicate.output || attr.output;
-      } else {
-        const cloneAttr: AttrInfo = {name: attr.name};
-        if (attr.input) cloneAttr.input = true;
-        if (attr.output) cloneAttr.output = true;
-        result.push(cloneAttr);
-        inputOutput.set(attr.name, cloneAttr);
-      }
-    }
-  });
-  return result;
-}
-
-function expandedAttr(attr: AttrInfo): AttrInfo[] {
-  if (attr.input && attr.output) {
-    return [
-      attr, {name: attr.name, input: true, output: false},
-      {name: attr.name, input: false, output: true}
-    ];
-  }
-  return [attr];
-}
-
 function lowerName(name: string): string {
   return name && (name[0].toLowerCase() + name.substr(1));
+}
+
+function angularAttributes(info: AstResult, elementName: string): ts.CompletionEntry[] {
+  const {selectors, map: selectorMap} = getSelectors(info);
+  const templateRefs = new Set<string>();
+  const inputs = new Set<string>();
+  const outputs = new Set<string>();
+  const others = new Set<string>();
+  for (const selector of selectors) {
+    if (selector.element && selector.element !== elementName) {
+      continue;
+    }
+    const summary = selectorMap.get(selector) !;
+    for (const attr of selector.attrs) {
+      if (attr) {
+        if (hasTemplateReference(summary.type)) {
+          templateRefs.add(attr);
+        } else {
+          others.add(attr);
+        }
+      }
+    }
+    for (const input of Object.values(summary.inputs)) {
+      inputs.add(input);
+    }
+    for (const output of Object.values(summary.outputs)) {
+      outputs.add(output);
+    }
+  }
+
+  const results: ts.CompletionEntry[] = [];
+  for (const name of templateRefs) {
+    results.push({
+      name: `*${name}`,
+      kind: CompletionKind.ATTRIBUTE as unknown as ts.ScriptElementKind,
+      sortText: name,
+    });
+  }
+  for (const name of inputs) {
+    results.push({
+      name: `[${name}]`,
+      kind: CompletionKind.ATTRIBUTE as unknown as ts.ScriptElementKind,
+      sortText: name,
+    });
+    // Add banana-in-a-box syntax
+    // https://angular.io/guide/template-syntax#two-way-binding-
+    if (outputs.has(`${name}Change`)) {
+      results.push({
+        name: `[(${name})]`,
+        kind: CompletionKind.ATTRIBUTE as unknown as ts.ScriptElementKind,
+        sortText: name,
+      });
+    }
+  }
+  for (const name of outputs) {
+    results.push({
+      name: `(${name})`,
+      kind: CompletionKind.ATTRIBUTE as unknown as ts.ScriptElementKind,
+      sortText: name,
+    });
+  }
+  for (const name of others) {
+    results.push({
+      name,
+      kind: CompletionKind.ATTRIBUTE as unknown as ts.ScriptElementKind,
+      sortText: name,
+    });
+  }
+  return results;
 }
