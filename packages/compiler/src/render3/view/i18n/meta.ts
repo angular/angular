@@ -68,7 +68,7 @@ export class I18nMetaVisitor implements html.Visitor {
     return message;
   }
 
-  visitElement(element: html.Element, context: any): any {
+  visitElement(element: html.Element): any {
     if (hasI18nAttrs(element)) {
       const attrs: html.Attribute[] = [];
       const attrsMeta: {[key: string]: string} = {};
@@ -115,7 +115,7 @@ export class I18nMetaVisitor implements html.Visitor {
     return element;
   }
 
-  visitExpansion(expansion: html.Expansion, context: any): any {
+  visitExpansion(expansion: html.Expansion, currentMessage: i18n.Message|undefined): any {
     let message;
     const meta = expansion.i18n;
     if (meta instanceof i18n.IcuPlaceholder) {
@@ -130,16 +130,16 @@ export class I18nMetaVisitor implements html.Visitor {
       // ICU is a top level message, try to use metadata from container element if provided via
       // `context` argument. Note: context may not be available for standalone ICUs (without
       // wrapping element), so fallback to ICU metadata in this case.
-      message = this._generateI18nMessage([expansion], context || meta);
+      message = this._generateI18nMessage([expansion], currentMessage || meta);
     }
     expansion.i18n = message;
     return expansion;
   }
 
-  visitText(text: html.Text, context: any): any { return text; }
-  visitAttribute(attribute: html.Attribute, context: any): any { return attribute; }
-  visitComment(comment: html.Comment, context: any): any { return comment; }
-  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return expansionCase; }
+  visitText(text: html.Text): any { return text; }
+  visitAttribute(attribute: html.Attribute): any { return attribute; }
+  visitComment(comment: html.Comment): any { return comment; }
+  visitExpansionCase(expansionCase: html.ExpansionCase): any { return expansionCase; }
 }
 
 export function metaFromI18nMessage(message: i18n.Message, id: string | null = null): I18nMeta {
