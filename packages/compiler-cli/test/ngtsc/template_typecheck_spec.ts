@@ -86,6 +86,8 @@ export declare class AnimationEvent {
     });
 
     it('should check regular attributes that are directive inputs', () => {
+      env.tsconfig(
+          {fullTemplateTypeCheck: true, strictInputTypes: true, strictAttributeTypes: true});
       env.write('test.ts', `
         import {Component, Directive, NgModule, Input} from '@angular/core';
     
@@ -112,6 +114,7 @@ export declare class AnimationEvent {
     });
 
     it('should check event bindings', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
       env.write('test.ts', `
         import {Component, Directive, EventEmitter, NgModule, Output} from '@angular/core';
     
@@ -216,7 +219,8 @@ export declare class AnimationEvent {
       });
 
       it('should check expressions and their nullability when enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictNullInputTypes: true});
+        env.tsconfig(
+            {fullTemplateTypeCheck: true, strictInputTypes: true, strictNullInputTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -227,7 +231,8 @@ export declare class AnimationEvent {
       });
 
       it('should check expressions but not their nullability when disabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictNullInputTypes: false});
+        env.tsconfig(
+            {fullTemplateTypeCheck: true, strictInputTypes: true, strictNullInputTypes: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -262,7 +267,12 @@ export declare class AnimationEvent {
       });
 
       it('should infer result type for safe navigation expressions when enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictSafeNavigationTypes: true});
+        env.tsconfig({
+          fullTemplateTypeCheck: true,
+          strictInputTypes: true,
+          strictNullInputTypes: true,
+          strictSafeNavigationTypes: true
+        });
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -273,7 +283,11 @@ export declare class AnimationEvent {
       });
 
       it('should not infer result type for safe navigation expressions when disabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictSafeNavigationTypes: false});
+        env.tsconfig({
+          fullTemplateTypeCheck: true,
+          strictInputTypes: true,
+          strictSafeNavigationTypes: false
+        });
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -328,7 +342,7 @@ export declare class AnimationEvent {
       });
     });
 
-    describe('strictAnimationEventTypes', () => {
+    describe('strictOutputEventTypes and animation event bindings', () => {
       beforeEach(() => {
         env.write('test.ts', `
           import {Component, NgModule} from '@angular/core';
@@ -349,7 +363,7 @@ export declare class AnimationEvent {
       });
 
       it('should check expressions and let $event be of type AnimationEvent when enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictAnimationEventTypes: true});
+        env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -361,7 +375,7 @@ export declare class AnimationEvent {
       });
 
       it('should check expressions and let $event be of type any when disabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictAnimationEventTypes: false});
+        env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -430,7 +444,8 @@ export declare class AnimationEvent {
       });
 
       it('should produce an error for text attributes when enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictAttributeTypes: true});
+        env.tsconfig(
+            {fullTemplateTypeCheck: true, strictInputTypes: true, strictAttributeTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -439,7 +454,8 @@ export declare class AnimationEvent {
       });
 
       it('should not produce an error for text attributes when disabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictAttributeTypes: false});
+        env.tsconfig(
+            {fullTemplateTypeCheck: true, strictInputTypes: true, strictAttributeTypes: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
@@ -558,6 +574,7 @@ export declare class AnimationEvent {
     });
 
     it('should report an error inside the NgFor template', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
       env.write('test.ts', `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
@@ -661,6 +678,7 @@ export declare class AnimationEvent {
     });
 
     it('should constrain types using type parameter bounds', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
       env.write('test.ts', `
     import {CommonModule} from '@angular/common';
     import {Component, Input, NgModule} from '@angular/core';
@@ -713,6 +731,7 @@ export declare class AnimationEvent {
        });
 
     it('should properly type-check inherited directives', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
       env.write('test.ts', `
     import {Component, Directive, Input, NgModule} from '@angular/core';
 

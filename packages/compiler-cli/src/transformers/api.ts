@@ -121,7 +121,9 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * directive or component is receiving the binding. If set to `true`, both sides of the assignment
    * are checked.
    *
-   * Defaults to `true` if "fullTemplateTypeCheck" is set, `false` otherwise.
+   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   *
+   * @deprecated
    */
   strictInputTypes?: boolean;
 
@@ -134,8 +136,10 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * binding expressions are wrapped in a non-null assertion operator to effectively disable strict
    * null checks.
    *
-   * Defaults to `true` if "fullTemplateTypeCheck" is set, `false` otherwise. Note that if
-   * `strictInputTypes` is set to `false`, this flag has no effect.
+   * Defaults to `false`, even if "fullTemplateTypeCheck" is set. Note that if `strictInputTypes` is
+   * not set, or set to `false`, this flag has no effect.
+   *
+   * @deprecated
    */
   strictNullInputTypes?: boolean;
 
@@ -143,12 +147,15 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * Whether to check text attributes that happen to be consumed by a directive or component.
    *
    * For example, in a template containing `<input matInput disabled>` the `disabled` attribute ends
-   * up being consumed as an input with type `boolean` by the `matInput` directive. At runtime the
-   * input will be set to the attribute's string value, which is the empty string for attributes
-   * without a value, so with this flag set to `true` an error would be reported. If set to `false`,
-   * text attributes will never report an error.
+   * up being consumed as an input with type `boolean` by the `matInput` directive. At runtime, the
+   * input will be set to the attribute's string value, which is an empty string for attributes
+   * without a value, so with this flag set to `true`, an error would be reported. If set to
+   * `false`, text attributes will never report an error.
    *
-   * Note that if `strictInputTypes` is set to `false`, this flag has no effect.
+   * Defaults to `false`, even if "fullTemplateTypeCheck" is set. Note that if `strictInputTypes` is
+   * not set, or set to `false`, this flag has no effect.
+   *
+   * @deprecated
    */
   strictAttributeTypes?: boolean;
 
@@ -159,7 +166,9 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * then the return type of `a?.b` for example will be the same as the type of the ternary
    * expression `a != null ? a.b : a`.
    *
-   * Defaults to `true` if "fullTemplateTypeCheck" is set, `false` otherwise.
+   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   *
+   * @deprecated
    */
   strictSafeNavigationTypes?: boolean;
 
@@ -170,7 +179,9 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * referenced entity (either a directive or a DOM element). If set to `false`, the type of `ref`
    * will be `any`.
    *
-   * Defaults to `true` if "fullTemplateTypeCheck" is set, `false` otherwise.
+   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   *
+   * @deprecated
    */
   strictLocalRefTypes?: boolean;
 
@@ -181,19 +192,11 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * `EventEmitter`/`Subject` of the output. If set to `false`, the `$event` variable will be of
    * type `any`.
    *
-   * Defaults to `true` if "fullTemplateTypeCheck" is set, `false` otherwise.
+   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   *
+   * @deprecated
    */
   strictOutputEventTypes?: boolean;
-
-  /**
-   * Whether to infer the type of the `$event` variable in event bindings for animations.
-   *
-   * If this is `true`, the type of `$event` will be `AnimationEvent` from `@angular/animations`.
-   * If set to `false`, the `$event` variable will be of type `any`.
-   *
-   * Defaults to `true` if "fullTemplateTypeCheck" is set, `false` otherwise.
-   */
-  strictAnimationEventTypes?: boolean;
 
   /**
    * Whether to infer the type of the `$event` variable in event bindings to DOM events.
@@ -202,7 +205,9 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * `HTMLElementEventMap`, with a fallback to the native `Event` type. If set to `false`, the
    * `$event` variable will be of type `any`.
    *
-   * Defaults to `false`.
+   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   *
+   * @deprecated
    */
   strictDomEventTypes?: boolean;
 

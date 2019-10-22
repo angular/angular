@@ -424,19 +424,19 @@ export class NgtscProgram implements api.Program {
         applyTemplateContextGuards: true,
         checkQueries: false,
         checkTemplateBodies: true,
-        checkTypeOfInputBindings: true,
-        strictNullInputBindings: true,
-        checkTypeOfAttributes: true,
+        checkTypeOfInputBindings: false,
+        strictNullInputBindings: false,
+        checkTypeOfAttributes: false,
         // Even in full template type-checking mode, DOM binding checks are not quite ready yet.
         checkTypeOfDomBindings: false,
-        checkTypeOfOutputEvents: true,
-        checkTypeOfAnimationEvents: true,
+        checkTypeOfOutputEvents: false,
+        checkTypeOfAnimationEvents: false,
         // Checking of DOM events currently has an adverse effect on developer experience,
         // e.g. for `<input (blur)="update($event.target.value)">` enabling this check results in:
         // - error TS2531: Object is possibly 'null'.
         // - error TS2339: Property 'value' does not exist on type 'EventTarget'.
         checkTypeOfDomEvents: false,
-        checkTypeOfReferences: true,
+        checkTypeOfReferences: false,
         checkTypeOfPipes: true,
         strictSafeNavigationTypes: true,
       };
@@ -468,9 +468,7 @@ export class NgtscProgram implements api.Program {
     }
     if (this.options.strictOutputEventTypes !== undefined) {
       typeCheckingConfig.checkTypeOfOutputEvents = this.options.strictOutputEventTypes;
-    }
-    if (this.options.strictAnimationEventTypes !== undefined) {
-      typeCheckingConfig.checkTypeOfAnimationEvents = this.options.strictAnimationEventTypes;
+      typeCheckingConfig.checkTypeOfAnimationEvents = this.options.strictOutputEventTypes;
     }
     if (this.options.strictDomEventTypes !== undefined) {
       typeCheckingConfig.checkTypeOfDomEvents = this.options.strictDomEventTypes;
