@@ -139,8 +139,58 @@ automatically publishes build artifacts to repositories in the Angular org, eg. 
 package is published to https://github.com/angular/core-builds.
 
 You may find that your un-merged change needs some validation from external participants.
-Rather than requiring them to pull your Pull Request and build Angular locally, you can publish the
-`*-builds` snapshots just like our CircleCI build does.
+Rather than requiring them to pull your Pull Request and build Angular locally, they can depend on
+snapshots of the Angular packages created based on the code in the Pull Request.
+
+### Getting Packages from Build Artifacts
+Each CI run for a Pull Request stores the built Angular packages as
+[build artifacts](https://circleci.com/docs/2.0/artifacts). The artifacts are not guaranteed to be
+available as a long-term distribution mechanism, but they are guaranteed to be available around the
+time of the build.
+
+You can access the artifacts for a specific CI run by going to the workflow page, clicking on the
+`publish_packages_as_artifacts` job and then switching to the "Artifacts" tab.
+(If you happen to know the build number of the job, the URL will be something like:
+https://circleci.com/gh/angular/angular/<build-number>#artifacts)
+
+#### Archives for each Package
+On the "Artifacts" tab, there is a list of links to compressed archives for Angular packages. The
+archive names are of the format `<package-name>-pr<pr-number>-<sha>.tgz` (for example
+`core-pr12345-a1b2c3d.tgz`).
+
+One can use the URL to the `.tgz` file for each package to install them as dependencies in a
+project they need to test the Pull Request changes against. Both
+[npm](https://docs.npmjs.com/cli/install.html) and [yarn](https://yarnpkg.com/lang/en/docs/cli/add)
+support installing dependencies from URLs to `.tgz` files, for example by updating the dependencies
+in `package.json` to point to the artifact URLs and then running `npm/yarn install`:
+
+```json
+"dependencies": {
+  "@angular/common": "https://<...>.circle-artifacts.com/0/angular/common-pr12345-a1b2c3d.tgz",
+  "@angular/core": "https://<...>.circle-artifacts.com/0/angular/core-pr12345-a1b2c3d.tgz",
+  "...": "..."
+}
+```
+
+#### Download all Packages
+In addition to the individual package archives, a `.tgz` file including all packages is also
+available (named `all-pr<pr-number>-<sha>.tgz`). This can be used if one prefers to download all
+packages locally and test them by either of the following ways:
+
+1. Update the dependencies in `package.json` to point to the local uncompressed package directories.
+
+2. Directly copy the local uncompressed package directories into the `node_modules/` directory of a
+   project.
+
+Note that (while faster) the second approach has limitations. For example:
+a. Any transitive dependencies of the copied packages will not be automatically updated.
+b. The packages need to be copied over every time `npm/yarn install` is run.
+c. Some package managers (such as `pnpm` or `yarn pnp`) might not work correctly.
+
+### Publishing to GitHub repos
+You can also manually publish `*-builds` snapshots just like our CircleCI build does for upstream
+builds. Before being able to publish the packages, you need to build them locally by running the
+`./scripts/build-packages-dist.sh` script.
 
 First time, you need to create the GitHub repositories:
 
