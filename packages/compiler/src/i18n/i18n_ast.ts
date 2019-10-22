@@ -93,6 +93,8 @@ export class Placeholder implements Node {
 }
 
 export class IcuPlaceholder implements Node {
+  /** Used to capture a message computed from a previous processing pass (see `setI18nRefs()`). */
+  previousMessage?: Message;
   constructor(public value: Icu, public name: string, public sourceSpan: ParseSourceSpan) {}
 
   visit(visitor: Visitor, context?: any): any { return visitor.visitIcuPlaceholder(this, context); }
