@@ -7,14 +7,7 @@
  */
 
 import {Platform} from '@angular/cdk/platform';
-import {
-  ElementRef,
-  Injectable,
-  NgZone,
-  OnDestroy,
-  Optional,
-  SkipSelf,
-} from '@angular/core';
+import {ElementRef, Injectable, NgZone, OnDestroy} from '@angular/core';
 import {fromEvent, of as observableOf, Subject, Subscription, Observable, Observer} from 'rxjs';
 import {auditTime, filter} from 'rxjs/operators';
 import {CdkScrollable} from './scrollable';
@@ -172,18 +165,3 @@ export class ScrollDispatcher implements OnDestroy {
     }
   }
 }
-
-
-/** @docs-private @deprecated @breaking-change 8.0.0 */
-export function SCROLL_DISPATCHER_PROVIDER_FACTORY(
-    parentDispatcher: ScrollDispatcher, ngZone: NgZone, platform: Platform) {
-  return parentDispatcher || new ScrollDispatcher(ngZone, platform);
-}
-
-/** @docs-private @deprecated @breaking-change 8.0.0 */
-export const SCROLL_DISPATCHER_PROVIDER = {
-  // If there is already a ScrollDispatcher available, use that. Otherwise, provide a new one.
-  provide: ScrollDispatcher,
-  deps: [[new Optional(), new SkipSelf(), ScrollDispatcher], NgZone, Platform],
-  useFactory: SCROLL_DISPATCHER_PROVIDER_FACTORY
-};

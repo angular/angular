@@ -8,7 +8,7 @@
 
 import {BidiModule} from '@angular/cdk/bidi';
 import {PortalModule} from '@angular/cdk/portal';
-import {ScrollingModule, VIEWPORT_RULER_PROVIDER} from '@angular/cdk/scrolling';
+import {ScrollingModule} from '@angular/cdk/scrolling';
 import {NgModule, Provider} from '@angular/core';
 import {OVERLAY_KEYBOARD_DISPATCHER_PROVIDER} from './keyboard/overlay-keyboard-dispatcher';
 import {Overlay} from './overlay';
@@ -42,7 +42,6 @@ export const OVERLAY_PROVIDERS: Provider[] = [
   Overlay,
   OverlayPositionBuilder,
   OVERLAY_KEYBOARD_DISPATCHER_PROVIDER,
-  VIEWPORT_RULER_PROVIDER,
   OVERLAY_CONTAINER_PROVIDER,
   CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER,
 ];

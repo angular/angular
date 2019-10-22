@@ -135,14 +135,6 @@ export declare class FixedSizeVirtualScrollStrategy implements VirtualScrollStra
     updateItemAndBufferSize(itemSize: number, minBufferPx: number, maxBufferPx: number): void;
 }
 
-export declare const SCROLL_DISPATCHER_PROVIDER: {
-    provide: typeof ScrollDispatcher;
-    deps: (Optional[] | typeof NgZone | typeof Platform)[];
-    useFactory: typeof SCROLL_DISPATCHER_PROVIDER_FACTORY;
-};
-
-export declare function SCROLL_DISPATCHER_PROVIDER_FACTORY(parentDispatcher: ScrollDispatcher, ngZone: NgZone, platform: Platform): ScrollDispatcher;
-
 export declare class ScrollDispatcher implements OnDestroy {
     _globalSubscription: Subscription | null;
     scrollContainers: Map<CdkScrollable, Subscription>;
@@ -155,19 +147,8 @@ export declare class ScrollDispatcher implements OnDestroy {
     scrolled(auditTimeInMs?: number): Observable<CdkScrollable | void>;
 }
 
-export declare class ScrollDispatchModule {
-}
-
 export declare class ScrollingModule {
 }
-
-export declare const VIEWPORT_RULER_PROVIDER: {
-    provide: typeof ViewportRuler;
-    deps: (Optional[] | typeof NgZone | typeof Platform)[];
-    useFactory: typeof VIEWPORT_RULER_PROVIDER_FACTORY;
-};
-
-export declare function VIEWPORT_RULER_PROVIDER_FACTORY(parentRuler: ViewportRuler, platform: Platform, ngZone: NgZone): ViewportRuler;
 
 export declare class ViewportRuler implements OnDestroy {
     constructor(_platform: Platform, ngZone: NgZone);

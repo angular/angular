@@ -7,7 +7,7 @@
  */
 
 import {Platform} from '@angular/cdk/platform';
-import {Injectable, NgZone, OnDestroy, Optional, SkipSelf} from '@angular/core';
+import {Injectable, NgZone, OnDestroy} from '@angular/core';
 import {merge, of as observableOf, fromEvent, Observable, Subscription} from 'rxjs';
 import {auditTime} from 'rxjs/operators';
 
@@ -132,19 +132,3 @@ export class ViewportRuler implements OnDestroy {
         {width: 0, height: 0};
   }
 }
-
-
-/** @docs-private @deprecated @breaking-change 8.0.0 */
-export function VIEWPORT_RULER_PROVIDER_FACTORY(parentRuler: ViewportRuler,
-                                                platform: Platform,
-                                                ngZone: NgZone) {
-  return parentRuler || new ViewportRuler(platform, ngZone);
-}
-
-/** @docs-private @deprecated @breaking-change 8.0.0 */
-export const VIEWPORT_RULER_PROVIDER = {
-  // If there is already a ViewportRuler available, use that. Otherwise, provide a new one.
-  provide: ViewportRuler,
-  deps: [[new Optional(), new SkipSelf(), ViewportRuler], Platform, NgZone],
-  useFactory: VIEWPORT_RULER_PROVIDER_FACTORY
-};
