@@ -169,12 +169,11 @@ export class MissingInjectableTransform {
     if (value instanceof Reference && ts.isClassDeclaration(value.node)) {
       this.migrateProviderClass(value.node, module);
     } else if (value instanceof Map) {
-      if (!value.has('provide') || value.has('useValue') || value.has('useFactory')) {
+      if (!value.has('provide') || value.has('useValue') || value.has('useFactory') ||
+          value.has('useExisting')) {
         return [];
       }
-      if (value.has('useExisting')) {
-        return this._visitProviderResolvedValue(value.get('useExisting') !, module);
-      } else if (value.has('useClass')) {
+      if (value.has('useClass')) {
         return this._visitProviderResolvedValue(value.get('useClass') !, module);
       } else {
         return this._visitProviderResolvedValue(value.get('provide') !, module);

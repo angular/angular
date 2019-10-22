@@ -8,7 +8,7 @@ export class ComponentProvider2 {}
 @Component({
   template: '',
   viewProviders: [ComponentTypeProvider, [
-    {provide: ComponentDontNeedCase, useExisting: ComponentProvider}]
+    {provide: ComponentDontNeedCase, useClass: ComponentProvider}]
   ],
   providers: [ComponentProvider2]
 })
@@ -21,7 +21,7 @@ export class DirectiveProvider {}
 @Directive({
   selector: 'test-dir',
   providers: [DirectiveTypeProvider, [
-    {provide: DirectiveDontNeedCase, useExisting: DirectiveProvider}]
+    {provide: DirectiveDontNeedCase, useClass: DirectiveProvider}]
   ],
 })
 export class ProvidersTestDirective {}

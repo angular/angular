@@ -189,24 +189,24 @@ describe('Missing injectable migration', () => {
       expect(tree.readContent('/index.ts')).not.toContain('@Injectable');
     });
 
-    it(`should migrate object literal provider with "useExisting" in ${type}`, async() => {
+    it(`should not migrate object literal provider with "useExisting" in ${type}`, async() => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
       
         export class MyService {}
         export class MyToken {}
             
-        @${type}({${propName}: [{provide: MyToken, useExisting: MyService}]})
+        @${type}({${propName}: [
+          {provide: MyService: useValue: null},
+          {provide: MyToken, useExisting: MyService},
+        ]})
         export class TestClass {}
       `);
 
       await runMigration();
 
       expect(warnOutput.length).toBe(0);
-      expect(tree.readContent('/index.ts')).toMatch(/@Injectable\(\)\s+export class MyService/);
-      expect(tree.readContent('/index.ts')).toMatch(/MyService {}\s+export class MyToken/);
-      expect(tree.readContent('/index.ts'))
-          .toContain(`{ ${type}, Injectable } from '@angular/core`);
+      expect(tree.readContent('/index.ts')).not.toContain('@Injectable');
     });
 
     it(`should migrate object literal provider with "useClass" in ${type}`, async() => {
@@ -228,6 +228,41 @@ describe('Missing injectable migration', () => {
       expect(tree.readContent('/index.ts'))
           .toContain(`{ ${type}, Injectable } from '@angular/core`);
     });
+
+    it(`should not migrate references for providers with "useExisting" in ${type}, but migrate ` +
+           `existing token if declared in other ${type}`,
+       async() => {
+         writeFile('/index.ts', `
+        import {${type}} from '@angular/core';
+      
+        export class MyService {}
+        export class MyToken {}
+            
+        @${type}({
+          ${propName}: [
+            {provide: MyToken, useExisting: MyService},
+          ],
+        })
+        export class TestClass {}
+      `);
+
+         writeFile('/other.ts', `
+        import {${type} from '@angular/core';
+        import {MyService} from './index';
+        
+        export @${type}({
+          ${propName}: [{provide: MyService}],
+        })
+        export class OtherClass {}
+      `);
+
+         await runMigration();
+
+         expect(warnOutput.length).toBe(0);
+         expect(tree.readContent('/index.ts'))
+             .toMatch(/@angular\/core';\s+@Injectable\(\)\s+export class MyService/);
+         expect(tree.readContent('/index.ts')).toMatch(/MyService {}\s+export class MyToken/);
+       });
 
     it('should not migrate provider which is already decorated with @Injectable', async() => {
       writeFile('/index.ts', `
