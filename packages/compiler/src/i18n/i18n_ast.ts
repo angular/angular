@@ -98,7 +98,13 @@ export class IcuPlaceholder implements Node {
   visit(visitor: Visitor, context?: any): any { return visitor.visitIcuPlaceholder(this, context); }
 }
 
-export type AST = Message | Node;
+/**
+ * Each HTML node that is affect by an i18n tag will also have an `i18n` property that is of type
+ * `I18nMeta`.
+ * This information is either a `Message`, which indicates it is the root of an i18n message, or a
+ * `Node`, which indicates is it part of a containing `Message`.
+ */
+export type I18nMeta = Message | Node;
 
 export interface Visitor {
   visitText(text: Text, context?: any): any;
