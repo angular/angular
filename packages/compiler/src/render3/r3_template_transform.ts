@@ -109,7 +109,7 @@ class HtmlAstToIvyAst implements html.Visitor {
     const variables: t.Variable[] = [];
     const references: t.Reference[] = [];
     const attributes: t.TextAttribute[] = [];
-    const i18nAttrsMeta: {[key: string]: i18n.AST} = {};
+    const i18nAttrsMeta: {[key: string]: i18n.I18nMeta} = {};
 
     const templateParsedProperties: ParsedProperty[] = [];
     const templateVariables: t.Variable[] = [];
@@ -263,7 +263,8 @@ class HtmlAstToIvyAst implements html.Visitor {
 
   // convert view engine `ParsedProperty` to a format suitable for IVY
   private extractAttributes(
-      elementName: string, properties: ParsedProperty[], i18nPropsMeta: {[key: string]: i18n.AST}):
+      elementName: string, properties: ParsedProperty[],
+      i18nPropsMeta: {[key: string]: i18n.I18nMeta}):
       {bound: t.BoundAttribute[], literal: t.TextAttribute[]} {
     const bound: t.BoundAttribute[] = [];
     const literal: t.TextAttribute[] = [];
@@ -364,8 +365,8 @@ class HtmlAstToIvyAst implements html.Visitor {
     return hasBinding;
   }
 
-  private _visitTextWithInterpolation(value: string, sourceSpan: ParseSourceSpan, i18n?: i18n.AST):
-      t.Text|t.BoundText {
+  private _visitTextWithInterpolation(
+      value: string, sourceSpan: ParseSourceSpan, i18n?: i18n.I18nMeta): t.Text|t.BoundText {
     const valueNoNgsp = replaceNgsp(value);
     const expr = this.bindingParser.parseInterpolation(valueNoNgsp, sourceSpan);
     return expr ? new t.BoundText(expr, sourceSpan, i18n) : new t.Text(valueNoNgsp, sourceSpan);

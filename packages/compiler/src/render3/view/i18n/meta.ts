@@ -23,7 +23,7 @@ export type I18nMeta = {
   meaning?: string
 };
 
-function setI18nRefs(html: html.Node & {i18n?: i18n.AST}, i18n: i18n.Node): i18n.Node {
+function setI18nRefs(html: html.Node & {i18n?: i18n.I18nMeta}, i18n: i18n.Node): i18n.Node {
   html.i18n = i18n;
   return i18n;
 }
@@ -42,7 +42,8 @@ export class I18nMetaVisitor implements html.Visitor {
       private keepI18nAttrs: boolean = false, private i18nLegacyMessageIdFormat: string = '') {}
 
   private _generateI18nMessage(
-      nodes: html.Node[], meta: string|i18n.AST = '', visitNodeFn?: VisitNodeFn): i18n.Message {
+      nodes: html.Node[], meta: string|i18n.I18nMeta = '',
+      visitNodeFn?: VisitNodeFn): i18n.Message {
     const parsed: I18nMeta =
         typeof meta === 'string' ? parseI18nMeta(meta) : metaFromI18nMessage(meta as i18n.Message);
     const message = this._createI18nMessage(

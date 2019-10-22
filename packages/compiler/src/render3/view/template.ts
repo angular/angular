@@ -188,7 +188,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   buildTemplateFunction(
       nodes: t.Node[], variables: t.Variable[], ngContentSelectorsOffset: number = 0,
-      i18n?: i18n.AST): o.FunctionExpr {
+      i18n?: i18n.I18nMeta): o.FunctionExpr {
     this._ngContentSelectorsOffset = ngContentSelectorsOffset;
 
     if (this._namespace !== R3.namespaceHTML) {
@@ -415,7 +415,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
   }
 
-  private i18nStart(span: ParseSourceSpan|null = null, meta: i18n.AST, selfClosing?: boolean):
+  private i18nStart(span: ParseSourceSpan|null = null, meta: i18n.I18nMeta, selfClosing?: boolean):
       void {
     const index = this.allocateDataSlot();
     if (this.i18nContext) {

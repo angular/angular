@@ -8,7 +8,7 @@
 
 import {SecurityContext} from '../core';
 import {AST, BindingType, BoundElementProperty, ParsedEvent, ParsedEventType} from '../expression_parser/ast';
-import {AST as I18nAST} from '../i18n/i18n_ast';
+import {I18nMeta} from '../i18n/i18n_ast';
 import {ParseSourceSpan} from '../parse_util';
 
 export interface Node {
@@ -22,14 +22,14 @@ export class Text implements Node {
 }
 
 export class BoundText implements Node {
-  constructor(public value: AST, public sourceSpan: ParseSourceSpan, public i18n?: I18nAST) {}
+  constructor(public value: AST, public sourceSpan: ParseSourceSpan, public i18n?: I18nMeta) {}
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitBoundText(this); }
 }
 
 export class TextAttribute implements Node {
   constructor(
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan, public i18n?: I18nAST) {}
+      public valueSpan?: ParseSourceSpan, public i18n?: I18nMeta) {}
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitTextAttribute(this); }
 }
 
@@ -37,9 +37,9 @@ export class BoundAttribute implements Node {
   constructor(
       public name: string, public type: BindingType, public securityContext: SecurityContext,
       public value: AST, public unit: string|null, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan, public i18n?: I18nAST) {}
+      public valueSpan?: ParseSourceSpan, public i18n?: I18nMeta) {}
 
-  static fromBoundElementProperty(prop: BoundElementProperty, i18n?: I18nAST) {
+  static fromBoundElementProperty(prop: BoundElementProperty, i18n?: I18nMeta) {
     return new BoundAttribute(
         prop.name, prop.type, prop.securityContext, prop.value, prop.unit, prop.sourceSpan,
         prop.valueSpan, i18n);
@@ -70,7 +70,7 @@ export class Element implements Node {
       public name: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
       public outputs: BoundEvent[], public children: Node[], public references: Reference[],
       public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
-      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nAST) {
+      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nMeta) {
     // If the element is empty then the source span should include any closing tag
     if (children.length === 0 && startSourceSpan && endSourceSpan) {
       this.sourceSpan = new ParseSourceSpan(sourceSpan.start, endSourceSpan.end);
@@ -85,14 +85,14 @@ export class Template implements Node {
       public outputs: BoundEvent[], public templateAttrs: (BoundAttribute|TextAttribute)[],
       public children: Node[], public references: Reference[], public variables: Variable[],
       public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
-      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nAST) {}
+      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nMeta) {}
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitTemplate(this); }
 }
 
 export class Content implements Node {
   constructor(
       public selector: string, public attributes: TextAttribute[],
-      public sourceSpan: ParseSourceSpan, public i18n?: I18nAST) {}
+      public sourceSpan: ParseSourceSpan, public i18n?: I18nMeta) {}
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitContent(this); }
 }
 
@@ -114,7 +114,7 @@ export class Icu implements Node {
   constructor(
       public vars: {[name: string]: BoundText},
       public placeholders: {[name: string]: Text | BoundText}, public sourceSpan: ParseSourceSpan,
-      public i18n?: I18nAST) {}
+      public i18n?: I18nMeta) {}
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitIcu(this); }
 }
 
