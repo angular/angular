@@ -10,7 +10,7 @@ import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
-import {TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
+import {TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {StylingMapArray, TStylingContext} from '../interfaces/styling';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
@@ -22,7 +22,7 @@ import {setUpAttributes} from '../util/attrs_utils';
 import {getInitialStylingValue, hasClassInput, hasStyleInput, selectClassBasedInputName} from '../util/styling_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
 
-import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, renderInitialStyling, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';
+import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, matchingSchemas, renderInitialStyling, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';
 import {registerInitialStylingOnTNode} from './styling';
 
 
@@ -84,7 +84,8 @@ export function ɵɵelementStart(
   // and `[class]` bindings work for multiple directives.)
   if (tView.firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
-    resolveDirectives(tView, lView, tNode, localRefs || null);
+    const hasDirectives = resolveDirectives(tView, lView, tNode, localRefs || null);
+    ngDevMode && validateElement(lView, native, tNode, hasDirectives);
 
     if (tView.queries !== null) {
       tView.queries.elementStart(tView, tNode);
@@ -240,4 +241,26 @@ function setDirectiveStylingInput(
   // is applied during creation mode. This is a deviation from VE and should
   // be (Jira Issue = FW-1467).
   setInputsForProperty(lView, stylingInputs, value);
+}
+
+function validateElement(
+    hostView: LView, element: RElement, tNode: TNode, hasDirectives: boolean): void {
+  const tagName = tNode.tagName;
+
+  // The element is considered valid if it matches the schema or it matches at
+  // least one directive, it's not an HTMLUnknownElement and we are in a browser context.
+  if (!hasDirectives && typeof HTMLUnknownElement === 'function' &&
+      element instanceof HTMLUnknownElement && !matchingSchemas(hostView, tagName)) {
+    let errorMessage = `'${tagName}' is not a known element:\n`;
+    errorMessage +=
+        `1. If '${tagName}' is an Angular component, then verify that it is part of this module.\n`;
+    if (tagName && tagName.indexOf('-') > -1) {
+      errorMessage +=
+          `2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
+    } else {
+      errorMessage +=
+          `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+    }
+    throw new Error(errorMessage);
+  }
 }

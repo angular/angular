@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, NO_ERRORS_SCHEMA, NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, Component, NO_ERRORS_SCHEMA, NgModule} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
@@ -164,6 +164,71 @@ describe('NgModule', () => {
         fixture.detectChanges();
       }).not.toThrow();
     });
-  });
 
+    it('should throw unknown element error without CUSTOM_ELEMENTS_SCHEMA', () => {
+      @Component({template: `<custom></custom>`})
+      class MyComp {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComp]});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+      }).toThrowError(/'custom' is not a known element/);
+    });
+
+    it('should not throw unknown element error with CUSTOM_ELEMENTS_SCHEMA', () => {
+      @Component({template: `<custom></custom>`})
+      class MyComp {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [MyComp],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      });
+
+      expect(() => {
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
+
+    it('should not throw unknown element error with NO_ERRORS_SCHEMA', () => {
+      @Component({template: `<custom></custom>`})
+      class MyComp {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [MyComp],
+        schemas: [NO_ERRORS_SCHEMA],
+      });
+
+      expect(() => {
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
+
+    it('should not throw unknown element error if element matches a directive', () => {
+      @Component({
+        selector: 'custom',
+        template: '',
+      })
+      class CustomEl {
+      }
+
+      @Component({template: `<custom></custom>`})
+      class MyComp {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComp, CustomEl]});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
+
+  });
 });

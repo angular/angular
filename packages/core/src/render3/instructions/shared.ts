@@ -993,7 +993,7 @@ function validateProperty(
       isAnimationProp(propName) || typeof Node !== 'function' || !(element instanceof Node);
 }
 
-function matchingSchemas(hostView: LView, tagName: string | null): boolean {
+export function matchingSchemas(hostView: LView, tagName: string | null): boolean {
   const schemas = hostView[TVIEW].schemas;
 
   if (schemas !== null) {
@@ -1041,17 +1041,19 @@ export function instantiateRootComponent<T>(
  */
 export function resolveDirectives(
     tView: TView, lView: LView, tNode: TElementNode | TContainerNode | TElementContainerNode,
-    localRefs: string[] | null): void {
+    localRefs: string[] | null): boolean {
   // Please make sure to have explicit type for `exportsMap`. Inferred type triggers bug in
   // tsickle.
   ngDevMode && assertFirstTemplatePass(tView);
 
-  if (!getBindingsEnabled()) return;
+  if (!getBindingsEnabled()) return false;
 
   const directives: DirectiveDef<any>[]|null = findDirectiveMatches(tView, lView, tNode);
   const exportsMap: ({[key: string]: number} | null) = localRefs ? {'': -1} : null;
+  let hasDirectives = false;
 
   if (directives !== null) {
+    hasDirectives = true;
     initNodeFlags(tNode, tView.data.length, directives.length);
     // When the same token is provided by several directives on the same node, some rules apply in
     // the viewEngine:
@@ -1089,6 +1091,7 @@ export function resolveDirectives(
     initializeInputAndOutputAliases(tView, tNode);
   }
   if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
+  return hasDirectives;
 }
 
 /**
