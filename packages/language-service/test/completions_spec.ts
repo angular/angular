@@ -40,7 +40,7 @@ describe('completions', () => {
     }
   });
 
-  it('should be able to return element directives', () => {
+  it('should be able to return component directives', () => {
     const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'empty');
     const completions = ngLS.getCompletionsAt(APP_COMPONENT, marker.start);
     expectContain(completions, CompletionKind.COMPONENT, [
@@ -49,6 +49,12 @@ describe('completions', () => {
       'ng-component',
       'test-comp',
     ]);
+  });
+
+  it('should be able to return attribute directives', () => {
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'h1-after-space');
+    const completions = ngLS.getCompletionsAt(APP_COMPONENT, marker.start);
+    expectContain(completions, CompletionKind.ATTRIBUTE, ['string-model', 'number-model']);
   });
 
   it('should be able to return angular pseudo elements', () => {
@@ -279,7 +285,18 @@ describe('completions', () => {
       expectContain(completions, CompletionKind.METHOD, ['modelChanged']);
     });
 
-    it('should be able to complete a two-way binding', () => {
+    it('should be able to complete a the LHS of a two-way binding', () => {
+      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'two-way-binding-input');
+      const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
+      expectContain(completions, CompletionKind.ATTRIBUTE, [
+        'ngModel',
+        '[ngModel]',
+        '(ngModelChange)',
+        '[(ngModel)]',
+      ]);
+    });
+
+    it('should be able to complete a the RHS of a two-way binding', () => {
       const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'two-way-binding-model');
       const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
       expectContain(completions, CompletionKind.PROPERTY, ['test']);
@@ -288,7 +305,7 @@ describe('completions', () => {
     it('should work with input and output', () => {
       const m1 = mockHost.getLocationMarkerFor(PARSING_CASES, 'string-marker');
       const c1 = ngLS.getCompletionsAt(PARSING_CASES, m1.start);
-      expectContain(c1, CompletionKind.ATTRIBUTE, ['[model]', '(model)']);
+      expectContain(c1, CompletionKind.ATTRIBUTE, ['[model]', '(modelChange)', '[(model)]']);
 
       const m2 = mockHost.getLocationMarkerFor(PARSING_CASES, 'number-marker');
       const c2 = ngLS.getCompletionsAt(PARSING_CASES, m2.start);
@@ -347,7 +364,7 @@ describe('completions', () => {
 function expectContain(
     completions: ts.CompletionInfo | undefined, kind: CompletionKind, names: string[]) {
   expect(completions).toBeDefined();
-  expect(completions !.entries).toEqual(jasmine.arrayContaining(names.map(name => {
-    return jasmine.objectContaining({name, kind});
-  }) as any));
+  for (const name of names) {
+    expect(completions !.entries).toContain(jasmine.objectContaining({ name, kind } as any));
+  }
 }

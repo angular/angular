@@ -69,21 +69,15 @@ export function hasTemplateReference(type: CompileTypeMetadata): boolean {
 
 export function getSelectors(info: AstResult): SelectorInfo {
   const map = new Map<CssSelector, CompileDirectiveSummary>();
-  const selectors: CssSelector[] = flatten(info.directives.map(directive => {
+  const results: CssSelector[] = [];
+  for (const directive of info.directives) {
     const selectors: CssSelector[] = CssSelector.parse(directive.selector !);
-    selectors.forEach(selector => map.set(selector, directive));
-    return selectors;
-  }));
-  return {selectors, map};
-}
-
-export function flatten<T>(a: T[][]) {
-  return (<T[]>[]).concat(...a);
-}
-
-export function removeSuffix(value: string, suffix: string) {
-  if (value.endsWith(suffix)) return value.substring(0, value.length - suffix.length);
-  return value;
+    for (const selector of selectors) {
+      results.push(selector);
+      map.set(selector, directive);
+    }
+  }
+  return {selectors: results, map};
 }
 
 export function isTypescriptVersion(low: string, high?: string) {
