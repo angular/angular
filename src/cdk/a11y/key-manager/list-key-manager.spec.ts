@@ -1,5 +1,5 @@
 import {DOWN_ARROW, LEFT_ARROW, RIGHT_ARROW, TAB, UP_ARROW} from '@angular/cdk/keycodes';
-import {createKeyboardEvent} from '@angular/cdk/testing';
+import {createKeyboardEvent} from '@angular/cdk/testing/private';
 import {QueryList} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs';

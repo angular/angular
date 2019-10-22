@@ -2,7 +2,11 @@ import {Directionality} from '@angular/cdk/bidi';
 import {A, ESCAPE} from '@angular/cdk/keycodes';
 import {OverlayContainer, ScrollStrategy} from '@angular/cdk/overlay';
 import {ViewportRuler} from '@angular/cdk/scrolling';
-import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
+import {
+  dispatchKeyboardEvent,
+  createKeyboardEvent,
+  dispatchEvent,
+} from '@angular/cdk/testing/private';
 import {Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
 import {

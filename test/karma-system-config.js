@@ -76,7 +76,7 @@ System.config({
     '@angular/cdk/coercion': 'dist/packages/cdk/coercion/index.js',
     '@angular/cdk/collections': 'dist/packages/cdk/collections/index.js',
     '@angular/cdk/drag-drop': 'dist/packages/cdk/drag-drop/index.js',
-    '@angular/cdk/private/testing': 'dist/packages/cdk/private/testing/index.js',
+    '@angular/cdk/testing/private': 'dist/packages/cdk/testing/private/index.js',
     '@angular/cdk/keycodes': 'dist/packages/cdk/keycodes/index.js',
     '@angular/cdk/layout': 'dist/packages/cdk/layout/index.js',
     '@angular/cdk/observers': 'dist/packages/cdk/observers/index.js',
@@ -202,6 +202,9 @@ System.config({
     // Thirdparty barrels.
     'rxjs': {main: 'index'},
     'rxjs/operators': {main: 'index'},
+
+    // Needed for relative imports inside the testing package to work.
+    'dist/packages/cdk/testing/fake-events': {main: 'index'},
 
     // Set the default extension for the root package, because otherwise the tests can't
     // be built within the production mode. Due to missing file extensions.

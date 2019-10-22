@@ -1,10 +1,12 @@
 import {
   ComponentHarness,
-  createFakeEvent,
-  dispatchFakeEvent,
   HarnessLoader,
   HarnessPredicate
 } from '@angular/cdk/testing';
+import {
+  createFakeEvent,
+  dispatchFakeEvent,
+} from '@angular/cdk/testing/private';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';

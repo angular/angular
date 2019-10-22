@@ -50,7 +50,7 @@ ng_test_library(
         "//src/cdk/keycodes",
         "//src/cdk/observers",
         "//src/cdk/platform",
-        "//src/cdk/testing",
+        "//src/cdk/testing/private",
         "@npm//@angular/platform-browser",
         "@npm//rxjs",
     ],

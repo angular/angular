@@ -10,8 +10,7 @@ import {
   NgZone,
 } from '@angular/core';
 import {Direction, Directionality} from '@angular/cdk/bidi';
-import {MockNgZone} from '@angular/cdk/private/testing';
-import {dispatchFakeEvent} from '@angular/cdk/testing';
+import {MockNgZone, dispatchFakeEvent} from '@angular/cdk/testing/private';
 import {
   ComponentPortal,
   PortalModule,

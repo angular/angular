@@ -15,8 +15,8 @@ import {ModifierKeys} from './event-objects';
  * @docs-private
  */
 export function isTextInput(element: Element): element is HTMLInputElement | HTMLTextAreaElement {
-  return element.nodeName.toLowerCase() === 'input' ||
-      element.nodeName.toLowerCase() === 'textarea' ;
+  const nodeName = element.nodeName.toLowerCase();
+  return nodeName === 'input' || nodeName === 'textarea' ;
 }
 
 /**

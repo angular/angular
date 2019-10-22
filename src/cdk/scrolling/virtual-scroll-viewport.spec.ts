@@ -5,7 +5,7 @@ import {
   ScrollDispatcher,
   ScrollingModule
 } from '@angular/cdk/scrolling';
-import {dispatchFakeEvent} from '@angular/cdk/testing';
+import {dispatchFakeEvent} from '@angular/cdk/testing/private';
 import {
   Component,
   Input,

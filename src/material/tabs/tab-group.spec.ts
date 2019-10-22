@@ -1,5 +1,5 @@
 import {LEFT_ARROW} from '@angular/cdk/keycodes';
-import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing/private';
 import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';

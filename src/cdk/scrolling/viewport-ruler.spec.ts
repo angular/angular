@@ -1,7 +1,7 @@
 import {TestBed, inject, fakeAsync, tick} from '@angular/core/testing';
 import {ScrollingModule} from './public-api';
 import {ViewportRuler} from './viewport-ruler';
-import {dispatchFakeEvent} from '@angular/cdk/testing';
+import {dispatchFakeEvent} from '@angular/cdk/testing/private';
 import {NgZone} from '@angular/core';
 
 // For all tests, we assume the browser window is 1024x786 (outerWidth x outerHeight).

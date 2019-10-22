@@ -2,7 +2,7 @@ import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/t
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {dispatchFakeEvent} from '@angular/cdk/testing';
+import {dispatchFakeEvent} from '@angular/cdk/testing/private';
 
 import {MAT_RADIO_DEFAULT_OPTIONS} from './radio';
 import {MatRadioButton, MatRadioChange, MatRadioGroup, MatRadioModule} from './index';

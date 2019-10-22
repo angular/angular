@@ -3,15 +3,15 @@ import {DOWN_ARROW, ENTER, ESCAPE, SPACE, TAB, UP_ARROW} from '@angular/cdk/keyc
 import {Overlay, OverlayContainer} from '@angular/cdk/overlay';
 import {_supportsShadowDom} from '@angular/cdk/platform';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
-import {MockNgZone} from '@angular/cdk/private/testing';
 import {
+  MockNgZone,
   clearElement,
   createKeyboardEvent,
   dispatchEvent,
   dispatchFakeEvent,
   dispatchKeyboardEvent,
   typeInElement,
-} from '@angular/cdk/testing';
+} from '@angular/cdk/testing/private';
 import {
   ChangeDetectionStrategy,
   Component,

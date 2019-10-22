@@ -9,7 +9,6 @@ import {
   SPACE,
   TAB
 } from '@angular/cdk/keycodes';
-import {MockNgZone} from '@angular/cdk/private/testing';
 import {
   createFakeEvent,
   createKeyboardEvent,
@@ -17,7 +16,8 @@ import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,
   typeInElement,
-} from '@angular/cdk/testing';
+  MockNgZone,
+} from '@angular/cdk/testing/private';
 import {
   Component,
   DebugElement,

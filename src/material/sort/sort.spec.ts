@@ -1,11 +1,11 @@
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {CdkTableModule} from '@angular/cdk/table';
-import {wrappedErrorMessage} from '@angular/cdk/private/testing';
 import {
   createFakeEvent,
   createMouseEvent,
   dispatchMouseEvent,
-} from '@angular/cdk/testing';
+  wrappedErrorMessage,
+} from '@angular/cdk/testing/private';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {async, ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';

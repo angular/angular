@@ -9,8 +9,6 @@ export interface BaseHarnessFilters {
     selector?: string;
 }
 
-export declare function clearElement(element: HTMLInputElement | HTMLTextAreaElement): void;
-
 export declare abstract class ComponentHarness {
     protected readonly locatorFactory: LocatorFactory;
     constructor(locatorFactory: LocatorFactory);
@@ -30,24 +28,6 @@ export interface ComponentHarnessConstructor<T extends ComponentHarness> {
     hostSelector: string;
     new (locatorFactory: LocatorFactory): T;
 }
-
-export declare function createFakeEvent(type: string, canBubble?: boolean, cancelable?: boolean): Event;
-
-export declare function createKeyboardEvent(type: string, keyCode?: number, key?: string, target?: Element, modifiers?: ModifierKeys): any;
-
-export declare function createMouseEvent(type: string, x?: number, y?: number, button?: number): MouseEvent;
-
-export declare function createTouchEvent(type: string, pageX?: number, pageY?: number): UIEvent;
-
-export declare function dispatchEvent(node: Node | Window, event: Event): Event;
-
-export declare function dispatchFakeEvent(node: Node | Window, type: string, canBubble?: boolean): Event;
-
-export declare function dispatchKeyboardEvent(node: Node, type: string, keyCode?: number, key?: string, target?: Element, modifiers?: ModifierKeys): KeyboardEvent;
-
-export declare function dispatchMouseEvent(node: Node, type: string, x?: number, y?: number, event?: MouseEvent): MouseEvent;
-
-export declare function dispatchTouchEvent(node: Node, type: string, x?: number, y?: number): Event;
 
 export declare abstract class HarnessEnvironment<E> implements HarnessLoader, LocatorFactory {
     protected rawRootElement: E;
@@ -95,8 +75,6 @@ export declare class HarnessPredicate<T extends ComponentHarness> {
     static stringMatches(s: string | Promise<string>, pattern: string | RegExp): Promise<boolean>;
 }
 
-export declare function isTextInput(element: Element): element is HTMLInputElement | HTMLTextAreaElement;
-
 export interface LocatorFactory {
     rootElement: TestElement;
     documentRootLocatorFactory(): LocatorFactory;
@@ -112,15 +90,6 @@ export interface LocatorFactory {
     locatorForOptional(selector: string): AsyncFactoryFn<TestElement | null>;
     waitForTasksOutsideAngular(): Promise<void>;
 }
-
-export interface ModifierKeys {
-    alt?: boolean;
-    control?: boolean;
-    meta?: boolean;
-    shift?: boolean;
-}
-
-export declare function patchElementFocus(element: HTMLElement): void;
 
 export interface TestElement {
     blur(): Promise<void>;
@@ -171,16 +140,3 @@ export declare enum TestKey {
     F12 = 28,
     META = 29
 }
-
-export declare function triggerBlur(element: HTMLElement): void;
-
-export declare function triggerFocus(element: HTMLElement): void;
-
-export declare function typeInElement(element: HTMLElement, ...keys: (string | {
-    keyCode?: number;
-    key?: string;
-})[]): void;
-export declare function typeInElement(element: HTMLElement, modifiers: ModifierKeys, ...keys: (string | {
-    keyCode?: number;
-    key?: string;
-})[]): void;

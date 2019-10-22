@@ -23,6 +23,7 @@ ng_test_library(
     deps = [
         ":testing",
         "//src/cdk/testing",
+        "//src/cdk/testing/private",
         "//src/cdk/testing/testbed",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",

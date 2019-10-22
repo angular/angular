@@ -1,5 +1,5 @@
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
-import {dedent} from '@angular/cdk/private/testing';
+import {dedent} from '@angular/cdk/testing/private';
 import {addPackageToPackageJson} from '@angular/cdk/schematics/ng-add/package-config';
 import {createTestCaseSetup} from '@angular/cdk/schematics/testing';
 import {readFileSync} from 'fs';
@@ -398,7 +398,7 @@ describe('v9 HammerJS removal', () => {
     it('should create gesture config file if used in inline template', async () => {
       writeFile('/projects/cdk-testing/src/app/test.component.ts', `
         import {Component} from '@angular/core';
-        
+
         @Component({
           template: \`<span (slide)="onSlide()"></span>\`
         })
@@ -708,7 +708,7 @@ describe('v9 HammerJS removal', () => {
        // something we avoid by just ignoring test target compilation scopes.
        writeFile('/projects/cdk-testing/src/app/test.component.ts', `
           import {Component} from '@angular/core';
-          
+
           @Component({
             template: \`<span (slide)="onSlide()"></span>\`
           })

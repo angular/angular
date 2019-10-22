@@ -28,7 +28,7 @@ import {MatDialogContainer} from './dialog-container';
 import {OverlayContainer, ScrollStrategy, Overlay} from '@angular/cdk/overlay';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {A, ESCAPE} from '@angular/cdk/keycodes';
-import {dispatchKeyboardEvent, createKeyboardEvent} from '@angular/cdk/testing';
+import {dispatchKeyboardEvent, createKeyboardEvent} from '@angular/cdk/testing/private';
 import {
   MAT_DIALOG_DATA,
   MatDialog,

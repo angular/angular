@@ -3,7 +3,6 @@ import {Direction, Directionality} from '@angular/cdk/bidi';
 import {DOWN_ARROW, END, ESCAPE, HOME, LEFT_ARROW, RIGHT_ARROW, TAB} from '@angular/cdk/keycodes';
 import {Overlay, OverlayContainer} from '@angular/cdk/overlay';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
-import {MockNgZone} from '@angular/cdk/private/testing';
 import {
   createKeyboardEvent,
   createMouseEvent,
@@ -12,7 +11,8 @@ import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,
   patchElementFocus,
-} from '@angular/cdk/testing';
+  MockNgZone,
+} from '@angular/cdk/testing/private';
 import {
   ChangeDetectionStrategy,
   Component,

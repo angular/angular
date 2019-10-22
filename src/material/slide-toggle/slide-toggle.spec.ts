@@ -1,6 +1,6 @@
 import {BidiModule, Direction} from '@angular/cdk/bidi';
 import {MutationObserverFactory} from '@angular/cdk/observers';
-import {dispatchFakeEvent} from '@angular/cdk/testing';
+import {dispatchFakeEvent} from '@angular/cdk/testing/private';
 import {Component} from '@angular/core';
 import {
   ComponentFixture,

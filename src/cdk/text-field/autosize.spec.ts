@@ -1,4 +1,4 @@
-import {dispatchFakeEvent} from '@angular/cdk/testing';
+import {dispatchFakeEvent} from '@angular/cdk/testing/private';
 import {Component, ViewChild} from '@angular/core';
 import {async, ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';

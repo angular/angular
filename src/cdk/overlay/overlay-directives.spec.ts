@@ -2,7 +2,11 @@ import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {ComponentFixture, TestBed, async, inject, fakeAsync, tick} from '@angular/core/testing';
 import {Directionality} from '@angular/cdk/bidi';
-import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
+import {
+  dispatchKeyboardEvent,
+  createKeyboardEvent,
+  dispatchEvent,
+} from '@angular/cdk/testing/private';
 import {ESCAPE, A} from '@angular/cdk/keycodes';
 import {CdkConnectedOverlay, OverlayModule, CdkOverlayOrigin} from './index';
 import {OverlayContainer} from './overlay-container';

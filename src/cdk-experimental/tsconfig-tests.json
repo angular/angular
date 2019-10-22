@@ -9,7 +9,7 @@
     "target": "es5",
     "types": ["jasmine"],
     "paths": {
-      "@angular/cdk/*": ["../../dist/packages/cdk/*/public-api"],
+      "@angular/cdk/*": ["../../dist/packages/cdk/*"],
       "@angular/cdk-experimental/*": ["./*"]
     }
   },

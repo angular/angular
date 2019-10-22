@@ -8,7 +8,11 @@ import {
   MatExpansionPanel,
   MatExpansionPanelHeader,
 } from './index';
-import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
+import {
+  dispatchKeyboardEvent,
+  createKeyboardEvent,
+  dispatchEvent,
+} from '@angular/cdk/testing/private';
 import {DOWN_ARROW, UP_ARROW, HOME, END} from '@angular/cdk/keycodes';
 import {FocusMonitor} from '@angular/cdk/a11y';
 

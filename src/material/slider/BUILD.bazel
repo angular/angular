@@ -59,7 +59,7 @@ ng_test_library(
         ":slider",
         "//src/cdk/bidi",
         "//src/cdk/keycodes",
-        "//src/cdk/testing",
+        "//src/cdk/testing/private",
         "//src/material/testing",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",

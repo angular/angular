@@ -12,6 +12,7 @@ ts_library(
     deps = [
         "//src/cdk/keycodes",
         "//src/cdk/testing",
+        "//src/cdk/testing/private",
         "@npm//@angular/core",
         "@npm//rxjs",
     ],

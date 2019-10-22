@@ -5,7 +5,7 @@ import {
   expectLocation,
   expectToExist,
   pressKeys,
-} from '@angular/cdk/private/testing/e2e';
+} from '@angular/cdk/testing/private/e2e';
 
 const presenceOf = ExpectedConditions.presenceOf;
 const not = ExpectedConditions.not;

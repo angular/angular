@@ -5,7 +5,7 @@ import {
   dispatchEvent,
   dispatchKeyboardEvent,
   dispatchMouseEvent,
-} from '@angular/cdk/testing';
+} from '@angular/cdk/testing/private';
 import {
   Component,
   DebugElement,

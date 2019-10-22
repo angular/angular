@@ -1,9 +1,10 @@
 import {Platform, PlatformModule, _supportsShadowDom} from '@angular/cdk/platform';
-import {wrappedErrorMessage, MockNgZone} from '@angular/cdk/private/testing';
 import {
   createFakeEvent,
   dispatchFakeEvent,
-} from '@angular/cdk/testing';
+  wrappedErrorMessage,
+  MockNgZone,
+} from '@angular/cdk/testing/private';
 import {
   ChangeDetectionStrategy,
   Component,

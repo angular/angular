@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ModifierKeys} from '@angular/cdk/testing';
 import {browser, ElementFinder, Key} from 'protractor';
 import {ElementDimensions} from '../element-dimensions';
 import {TestElement, TestKey} from '../test-element';
+import {ModifierKeys} from '../fake-events';
 
 /** Maps the `TestKey` constants to Protractor's `Key` constants. */
 const keyMap = {

@@ -26,7 +26,11 @@ import {Directionality} from '@angular/cdk/bidi';
 import {CdkDialogContainer} from './dialog-container';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {A, ESCAPE} from '@angular/cdk/keycodes';
-import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
+import {
+  dispatchKeyboardEvent,
+  createKeyboardEvent,
+  dispatchEvent,
+} from '@angular/cdk/testing/private';
 import {DIALOG_DATA, Dialog, DialogModule, DialogRef} from './index';
 
 describe('Dialog', () => {

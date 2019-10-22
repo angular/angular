@@ -7,9 +7,5 @@
  */
 
 export * from './component-harness';
-export * from './dispatch-events';
-export * from './element-focus';
-export * from './event-objects';
 export * from './harness-environment';
 export * from './test-element';
-export * from './type-in-element';

@@ -4,7 +4,7 @@ import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,
   patchElementFocus,
-} from '@angular/cdk/testing';
+} from '@angular/cdk/testing/private';
 import {Component, NgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';

@@ -1,7 +1,7 @@
 import {DataSource} from '@angular/cdk/collections';
 import {LEFT_ARROW, UP_ARROW, RIGHT_ARROW, DOWN_ARROW, TAB} from '@angular/cdk/keycodes';
 import {MatTableModule} from '@angular/material/table';
-import {dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {dispatchKeyboardEvent} from '@angular/cdk/testing/private';
 import {CommonModule} from '@angular/common';
 import {Component, Directive, ElementRef, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed, tick, inject} from '@angular/core/testing';

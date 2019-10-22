@@ -17,7 +17,7 @@ import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,
   createKeyboardEvent,
-} from '@angular/cdk/testing';
+} from '@angular/cdk/testing/private';
 import {Component, DebugElement, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';

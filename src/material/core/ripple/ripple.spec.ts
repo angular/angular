@@ -7,7 +7,7 @@ import {
   dispatchMouseEvent,
   dispatchTouchEvent,
   createMouseEvent,
-} from '@angular/cdk/testing';
+} from '@angular/cdk/testing/private';
 import {defaultRippleAnimationConfig, RippleAnimationConfig} from './ripple-renderer';
 import {
   MatRipple, MatRippleModule, MAT_RIPPLE_GLOBAL_OPTIONS, RippleState, RippleGlobalOptions

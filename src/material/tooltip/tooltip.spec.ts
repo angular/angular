@@ -29,7 +29,7 @@ import {
   dispatchMouseEvent,
   createKeyboardEvent,
   dispatchEvent,
-} from '@angular/cdk/testing';
+} from '@angular/cdk/testing/private';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {

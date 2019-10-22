@@ -7,17 +7,17 @@
  */
 
 import * as keyCodes from '@angular/cdk/keycodes';
-import {
-  clearElement,
-  dispatchMouseEvent,
-  isTextInput,
-  ModifierKeys,
-  triggerBlur,
-  triggerFocus,
-  typeInElement
-} from '@angular/cdk/testing';
 import {TestElement, TestKey} from '../test-element';
 import {ElementDimensions} from '../element-dimensions';
+import {
+  ModifierKeys,
+  dispatchMouseEvent,
+  triggerBlur,
+  triggerFocus,
+  isTextInput,
+  clearElement,
+  typeInElement,
+} from '../fake-events';
 
 /** Maps `TestKey` constants to the `keyCode` and `key` values used by native browser events. */
 const keyMap = {

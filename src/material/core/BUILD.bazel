@@ -118,7 +118,7 @@ ng_test_library(
         ":core",
         "//src/cdk/keycodes",
         "//src/cdk/platform",
-        "//src/cdk/testing",
+        "//src/cdk/testing/private",
         "//src/material/testing",
         "@npm//@angular/platform-browser",
     ],

@@ -48,9 +48,8 @@ ng_test_library(
     deps = [
         ":sort",
         "//src/cdk/collections",
-        "//src/cdk/private/testing",
         "//src/cdk/table",
-        "//src/cdk/testing",
+        "//src/cdk/testing/private",
         "//src/material/table",
         "@npm//@angular/platform-browser",
         "@npm//rxjs",

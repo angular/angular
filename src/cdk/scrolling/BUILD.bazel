@@ -43,7 +43,7 @@ ng_test_library(
         ":scrolling",
         "//src/cdk/bidi",
         "//src/cdk/collections",
-        "//src/cdk/testing",
+        "//src/cdk/testing/private",
         "@npm//rxjs",
     ],
 )

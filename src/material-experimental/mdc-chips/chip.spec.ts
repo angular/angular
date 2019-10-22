@@ -1,5 +1,5 @@
 import {Directionality} from '@angular/cdk/bidi';
-import {createFakeEvent} from '@angular/cdk/testing';
+import {createFakeEvent} from '@angular/cdk/testing/private';
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MAT_RIPPLE_GLOBAL_OPTIONS, RippleGlobalOptions} from '@angular/material/core';

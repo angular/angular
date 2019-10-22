@@ -7,7 +7,7 @@ import {
   dispatchKeyboardEvent,
   createKeyboardEvent,
   dispatchEvent,
-} from '@angular/cdk/testing';
+} from '@angular/cdk/testing/private';
 import {CommonModule} from '@angular/common';
 import {Component, ViewChild} from '@angular/core';
 import {

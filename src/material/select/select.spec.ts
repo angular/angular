@@ -14,13 +14,13 @@ import {
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {Platform} from '@angular/cdk/platform';
 import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
-import {wrappedErrorMessage} from '@angular/cdk/private/testing';
 import {
   createKeyboardEvent,
   dispatchEvent,
   dispatchFakeEvent,
   dispatchKeyboardEvent,
-} from '@angular/cdk/testing';
+  wrappedErrorMessage,
+} from '@angular/cdk/testing/private';
 import {
   ChangeDetectionStrategy,
   Component,

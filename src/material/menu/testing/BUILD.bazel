@@ -26,8 +26,8 @@ ng_test_library(
     deps = [
         ":testing",
         "//src/cdk/overlay",
-        "//src/cdk/private/testing",
         "//src/cdk/testing",
+        "//src/cdk/testing/private",
         "//src/cdk/testing/testbed",
         "//src/material/menu",
         "@npm//@angular/platform-browser",

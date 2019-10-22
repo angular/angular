@@ -159,8 +159,8 @@ export const rollupGlobals = {
   '@angular/material-experimental/form-field/testing/control':
       'ng.materialExperimental.formField.testing.control',
 
-  '@angular/cdk/private/testing': 'ng.cdk.private.testing',
-  '@angular/cdk/private/testing/e2e': 'ng.cdk.private.testing.e2e',
+  '@angular/cdk/testing/private': 'ng.cdk.testing.private',
+  '@angular/cdk/testing/private/e2e': 'ng.cdk.testing.private.e2e',
 
   'rxjs': 'rxjs',
   'rxjs/operators': 'rxjs.operators',

@@ -15,7 +15,11 @@ import {
   STEP_STATE,
   CdkStep
 } from '@angular/cdk/stepper';
-import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
+import {
+  dispatchKeyboardEvent,
+  createKeyboardEvent,
+  dispatchEvent,
+} from '@angular/cdk/testing/private';
 import {Component, DebugElement, EventEmitter, OnInit, Type, Provider} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
 import {

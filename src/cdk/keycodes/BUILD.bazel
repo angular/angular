@@ -24,7 +24,7 @@ ts_library(
     ),
     deps = [
         ":keycodes",
-        "//src/cdk/testing",
+        "//src/cdk/testing/private",
         "@npm//@types/jasmine",
     ],
 )

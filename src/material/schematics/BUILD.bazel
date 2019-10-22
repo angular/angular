@@ -70,9 +70,9 @@ ts_library(
     tsconfig = ":tsconfig.json",
     deps = [
         ":schematics",
-        "//src/cdk/private/testing",
         "//src/cdk/schematics",
         "//src/cdk/schematics/testing",
+        "//src/cdk/testing/private",
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
         "@npm//@schematics/angular",

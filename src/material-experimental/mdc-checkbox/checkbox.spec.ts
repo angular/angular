@@ -1,4 +1,4 @@
-import {dispatchFakeEvent} from '@angular/cdk/testing';
+import {dispatchFakeEvent} from '@angular/cdk/testing/private';
 import {ChangeDetectionStrategy, Component, DebugElement, Type} from '@angular/core';
 import {
   ComponentFixture,

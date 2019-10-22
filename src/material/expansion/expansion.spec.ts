@@ -9,7 +9,11 @@ import {
   MAT_EXPANSION_PANEL_DEFAULT_OPTIONS,
 } from './index';
 import {SPACE, ENTER} from '@angular/cdk/keycodes';
-import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
+import {
+  dispatchKeyboardEvent,
+  createKeyboardEvent,
+  dispatchEvent,
+} from '@angular/cdk/testing/private';
 
 
 describe('MatExpansionPanel', () => {

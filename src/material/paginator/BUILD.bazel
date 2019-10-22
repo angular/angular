@@ -50,7 +50,7 @@ ng_test_library(
     ),
     deps = [
         ":paginator",
-        "//src/cdk/testing",
+        "//src/cdk/testing/private",
         "//src/material/core",
         "//src/material/select",
         "@npm//@angular/platform-browser",

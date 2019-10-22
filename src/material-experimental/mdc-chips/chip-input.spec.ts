@@ -1,7 +1,11 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {ENTER, COMMA, TAB} from '@angular/cdk/keycodes';
 import {PlatformModule} from '@angular/cdk/platform';
-import {createKeyboardEvent, dispatchKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
+import {
+  createKeyboardEvent,
+  dispatchKeyboardEvent,
+  dispatchEvent,
+} from '@angular/cdk/testing/private';
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {async, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';

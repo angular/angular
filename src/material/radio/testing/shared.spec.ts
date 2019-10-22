@@ -1,5 +1,5 @@
 import {Platform} from '@angular/cdk/platform';
-import {expectAsyncError} from '@angular/cdk/private/testing';
+import {expectAsyncError} from '@angular/cdk/testing/private';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';

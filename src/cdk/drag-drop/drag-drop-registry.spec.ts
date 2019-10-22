@@ -6,7 +6,7 @@ import {
   createTouchEvent,
   dispatchTouchEvent,
   dispatchFakeEvent,
-} from '@angular/cdk/testing';
+} from '@angular/cdk/testing/private';
 import {DragDropRegistry} from './drag-drop-registry';
 import {DragDropModule} from './drag-drop-module';
 import {CdkDrag} from './directives/drag';

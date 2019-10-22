@@ -1,4 +1,4 @@
-import {dispatchMouseEvent} from '@angular/cdk/testing';
+import {dispatchMouseEvent} from '@angular/cdk/testing/private';
 import {Component, DebugElement, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';

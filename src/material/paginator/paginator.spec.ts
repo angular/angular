@@ -1,7 +1,7 @@
 import {async, ComponentFixture, TestBed, inject, tick, fakeAsync} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {dispatchMouseEvent} from '@angular/cdk/testing';
+import {dispatchMouseEvent} from '@angular/cdk/testing/private';
 import {ThemePalette} from '@angular/material/core';
 import {MatSelect} from '@angular/material/select';
 import {By} from '@angular/platform-browser';

@@ -1,4 +1,4 @@
-import {createFakeEvent} from '@angular/cdk/testing';
+import {createFakeEvent} from '@angular/cdk/testing/private';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
