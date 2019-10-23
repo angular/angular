@@ -5,7 +5,10 @@ translation scenarios, but they are all built with IVY enabled.
 
 ### runtime
 
-Translations are provided at runtime by calling `loadTranslations()` in the polyfill.ts
+A new `polyfills.ts` file is provided (`polyfills-runtime.ts`) which is swapped in by a file
+replacement in the `angular.json` configuration. In this new file:
+ * Runtime translations are provided (`loadTranslations()`).
+ * The current locale is set (`$localize.locale = 'fr'`) and loaded (`registerLocaleData(localeFr);`)
 
 ### de and fr
 

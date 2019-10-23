@@ -41,9 +41,11 @@
  *
  * The following flags will work for all browsers.
  *
- * (window as any).__Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
+ * (window as any).__Zone_disable_requestAnimationFrame = true; // disable patch
+ * requestAnimationFrame
  * (window as any).__Zone_disable_on_property = true; // disable patch onProperty such as onclick
- * (window as any).__zone_symbol__UNPATCHED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
+ * (window as any).__zone_symbol__UNPATCHED_EVENTS = ['scroll', 'mousemove']; // disable patch
+ * specified eventNames
  *
  *  in IE/Edge developer tools, the addEventListener will also be wrapped by zone.js
  *  with the following flag, it will bypass `zone.js` patch for IE/Edge
@@ -62,6 +64,22 @@ import 'zone.js/dist/zone'; // Included with Angular CLI.
  */
 import '@angular/localize/init';
 
+// Note that `computeMsgId` is a private API at this stage. It will probably be exported directly
+// from `@angular/localize` at some point.
+import {computeMsgId} from '@angular/compiler';
+import {loadTranslations} from '@angular/localize';
+
+// Load some runtime translations!
+loadTranslations({
+  [computeMsgId(' Hello {$INTERPOLATION}! ')]: 'Bonjour {$INTERPOLATION}!',
+  [computeMsgId('Welcome to the i18n app.')]: 'Bienvenue sur l\'application i18n.',
+});
+
+// Set up the locale for the runtime inlining (EXPERIMENTAL)
+$localize.locale = 'fr';
+import {registerLocaleData} from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
+registerLocaleData(localeFr);
 
 /***************************************************************************************************
  * APPLICATION IMPORTS

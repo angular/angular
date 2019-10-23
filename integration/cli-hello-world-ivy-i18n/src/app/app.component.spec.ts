@@ -27,6 +27,6 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     const compiled = fixture.debugElement.nativeElement;
     expect(compiled.querySelector('h1').textContent)
-        .toContain('Bonjour cli-hello-world-ivy-compat!');
+        .toContain('Hello cli-hello-world-ivy-compat!');
   });
 });
