@@ -756,6 +756,8 @@ export declare function ɵɵcontainerRefreshStart(index: number): void;
 
 export declare function ɵɵcontentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read?: any): void;
 
+export declare function ɵɵCopyDefinitionFeature(definition: DirectiveDef<any> | ComponentDef<any>): void;
+
 export declare const ɵɵdefaultStyleSanitizer: StyleSanitizeFn;
 
 export declare function ɵɵdefineBase<T>(baseDefinition: {
