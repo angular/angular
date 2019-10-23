@@ -20,6 +20,13 @@ then connect with a debugger (the `--inspect-brk` option will make sure that ben
 
 The actual benchmark code has calls that will start (`console.profile`) and stop (`console.profileEnd`) a profiling session.
 
+## Deoptigate
+
+```
+yarn add deoptigate
+yarn deoptigate dist/bin/packages/core/test/render3/perf/${BENCHMARK}.min_debug.es2015.js
+```
+
 ### Run All
 
 To run all of the benchmarks use the `profile_all.js` script:
