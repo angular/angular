@@ -8,6 +8,10 @@ It also explains the basic mechanics of using `git`, `node`, and `yarn`.
 * [Installing NPM Modules](#installing-npm-modules)
 * [Building](#building)
 * [Running Tests Locally](#running-tests-locally)
+* [Formatting your Source Code](#formatting-your-source-code)
+* [Linting/verifying your Source Code](#lintingverifying-your-source-code)
+* [Publishing Snapshot Builds](#publishing-snapshot-builds)
+* [Bazel Support](#bazel-support)
 
 See the [contribution guidelines](https://github.com/angular/angular/blob/master/CONTRIBUTING.md)
 if you'd like to contribute to Angular.
@@ -50,6 +54,7 @@ cd angular
 # Add the main Angular repository as an upstream remote to your repository:
 git remote add upstream https://github.com/angular/angular.git
 ```
+
 ## Installing NPM Modules
 
 Next, install the JavaScript modules needed to build and test Angular:
@@ -73,18 +78,19 @@ To build Angular run:
 
 Bazel is used as the primary tool for building and testing Angular. Building and testing is
 incremental with Bazel, and it's possible to only run tests for an individual package instead
-of for all packages. Read more about this in the [BAZEL.md](./BAZEL.md) document. 
+of for all packages. Read more about this in the [BAZEL.md](./BAZEL.md) document.
 
 You should execute all test suites before submitting a PR to GitHub:
 - `yarn bazel test packages/...`
 
 **Note**: The first test run will be much slower than future runs. This is because future runs will
-benefit from Bazel's capability to do incremental builds. 
+benefit from Bazel's capability to do incremental builds.
 
 All the tests are executed on our Continuous Integration infrastructure. PRs can only be
 merged if the code is formatted properly and all tests are passing.
 
-## <a name="clang-format"></a> Formatting your source code
+<a name="clang-format"></a>
+## Formatting your source code
 
 Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code.
 If the source code is not properly formatted, the CI will fail and the PR cannot be merged.
@@ -118,7 +124,7 @@ let g:clang_format#command = '$ANGULAR_PATH/node_modules/.bin/clang-format'
 
 where `$ANGULAR_PATH` is an environment variable of the absolute path of your Angular directory.
 
-## Linting/verifying your source code
+## Linting/verifying your Source Code
 
 You can check that your code is properly formatted and adheres to coding style by running:
 
@@ -126,16 +132,15 @@ You can check that your code is properly formatted and adheres to coding style b
 $ yarn gulp lint
 ```
 
-## Publishing snapshot builds
+## Publishing Snapshot Builds
 
-When a build of any branch on the upstream fork angular/angular is green on CircleCI,
-it automatically publishes build artifacts
-to repositories in the Angular org, eg. the `@angular/core` package is published to
-http://github.com/angular/core-builds.
+When a build of any branch on the upstream fork angular/angular is green on CircleCI, it
+automatically publishes build artifacts to repositories in the Angular org, eg. the `@angular/core`
+package is published to https://github.com/angular/core-builds.
 
 You may find that your un-merged change needs some validation from external participants.
-Rather than requiring them to pull your Pull Request and build Angular locally, you can
-publish the `*-builds` snapshots just like our CircleCI build does.
+Rather than requiring them to pull your Pull Request and build Angular locally, you can publish the
+`*-builds` snapshots just like our CircleCI build does.
 
 First time, you need to create the GitHub repositories:
 
@@ -144,7 +149,7 @@ $ export TOKEN=[get one from https://github.com/settings/tokens]
 $ CREATE_REPOS=1 ./scripts/ci/publish-build-artifacts.sh [GitHub username]
 ```
 
-For subsequent snapshots, just run
+For subsequent snapshots, just run:
 
 ``` shell
 $ ./scripts/ci/publish-build-artifacts.sh [GitHub username]
@@ -153,8 +158,10 @@ $ ./scripts/ci/publish-build-artifacts.sh [GitHub username]
 The script will publish the build snapshot to a branch with the same name as your current branch,
 and create it if it doesn't exist.
 
-## Bazel support
+## Bazel Support
+
 ### IDEs
+
 #### VS Code
 
 1. Install [Bazel](https://marketplace.visualstudio.com/items?itemName=DevonDCarew.bazel-code) extension for VS Code.
@@ -173,10 +180,10 @@ build action rather than performing the build locally.
 
 > Remote Build Execution and uploading to the Remote Cache requires authentication as a google.com or angular.io account.
 
-### --config=remote-http-caching flag
+#### --config=remote-http-caching flag
 The `--config=remote-http-caching` flag can be added to enable uploading of build results to the shared http cache.  This flag
 can be added to the `.bazelrc.user` file using the script at `scripts/local-dev/setup-rbe.sh`.
 
-### --config=remote flag
-The `--config=remote` flag can be added to enable remote execution of builds.  This flag can be added to 
+#### --config=remote flag
+The `--config=remote` flag can be added to enable remote execution of builds.  This flag can be added to
 the `.bazelrc.user` file using the script at `scripts/local-dev/setup-rbe.sh`.
