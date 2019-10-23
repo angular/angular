@@ -31,10 +31,11 @@ import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIE
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {ActiveElementFlags, enterView, executeElementExitFn, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, hasActiveElementFlag, incrementActiveDirectiveId, leaveView, leaveViewProcessExit, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
-import {renderStylingMap} from '../styling/bindings';
+import {renderStylingMap, writeStylingValueDirectly} from '../styling/bindings';
 import {NO_CHANGE} from '../tokens';
 import {isAnimationProp} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
+import {getInitialStylingValue} from '../util/styling_utils';
 import {getLViewParent} from '../util/view_traversal_utils';
 import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
 
@@ -1832,7 +1833,22 @@ export function textBindingInternal(lView: LView, index: number, value: string):
  * applied once the element is instantiated. This function applies each of the static
  * style and class entries to the element.
  */
-export function renderInitialStyling(renderer: Renderer3, native: RElement, tNode: TNode) {
-  renderStylingMap(renderer, native, tNode.classes, true);
-  renderStylingMap(renderer, native, tNode.styles, false);
+export function renderInitialStyling(
+    renderer: Renderer3, native: RElement, tNode: TNode, append: boolean) {
+  if (tNode.classes !== null) {
+    if (append) {
+      renderStylingMap(renderer, native, tNode.classes, true);
+    } else {
+      const classes = getInitialStylingValue(tNode.classes);
+      writeStylingValueDirectly(renderer, native, classes, true, null);
+    }
+  }
+  if (tNode.styles !== null) {
+    if (append) {
+      renderStylingMap(renderer, native, tNode.styles, false);
+    } else {
+      const styles = getInitialStylingValue(tNode.styles);
+      writeStylingValueDirectly(renderer, native, styles, false, null);
+    }
+  }
 }
