@@ -73,6 +73,9 @@ loadTranslations({
   [computeMsgId('Welcome to the i18n app.')]: 'Bienvenue sur l\'application i18n.',
 });
 
+// Set the locale for the runtime inlining (EXPERIMENTAL)
+$localize.locale = 'fr';
+
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */

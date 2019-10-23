@@ -12,4 +12,11 @@ describe('cli-hello-world-ivy App', () => {
 
   it('should display welcome message',
      () => { expect(page.getParagraph('message')).toEqual('Welcome to the i18n app.'); });
+
+  it('should display the locale', () => { expect(page.getParagraph('locale')).toEqual('en-US'); });
+
+  it('the date pipe should show the localized month', () => {
+    page.navigateTo();
+    expect(page.getParagraph('date')).toEqual('January');
+  });
 });

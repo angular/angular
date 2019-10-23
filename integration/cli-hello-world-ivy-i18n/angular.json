@@ -4,6 +4,13 @@
   "newProjectRoot": "projects",
   "projects": {
     "cli-hello-world-ivy-i18n": {
+      "i18n": {
+        "locales": {
+          "fr": "src/locales/messages.fr.json",
+          "de": "src/locales/messages.de.json"
+        },
+        "sourceLocale": "en"
+      },
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -33,6 +40,7 @@
               "tsConfig": "tsconfig.view-engine.json"
             },
             "production": {
+              "localize": false, // TODO: enable when CLI supports inlining the locale
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

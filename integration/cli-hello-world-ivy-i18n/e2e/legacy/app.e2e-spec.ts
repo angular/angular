@@ -15,4 +15,6 @@ describe('cli-hello-world-ivy App', () => {
     // See "translated:legacy:extract-and-update" in package.json.
     expect(page.getParagraph('message')).toEqual('Welcome to the i18n app.');
   });
+
+  it('should display the locale', () => { expect(page.getParagraph('locale')).toEqual('fr'); });
 });
