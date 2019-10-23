@@ -313,15 +313,10 @@ export function isWrappedTsNodeExpr(expr: Expression): expr is WrappedNodeExpr<t
 export function readBaseClass(
     node: ClassDeclaration, reflector: ReflectionHost,
     evaluator: PartialEvaluator): Reference<ClassDeclaration>|'dynamic'|null {
-  if (!isNamedClassDeclaration(node)) {
-    // If the node isn't a ts.ClassDeclaration, consider any base class to be dynamic for now.
-    return reflector.hasBaseClass(node) ? 'dynamic' : null;
-  }
-
   const baseExpression = reflector.getBaseClassExpression(node);
   if (baseExpression !== null) {
     const baseClass = evaluator.evaluate(baseExpression);
-    if (baseClass instanceof Reference && isNamedClassDeclaration(baseClass.node)) {
+    if (baseClass instanceof Reference && reflector.isClass(baseClass.node)) {
       return baseClass as Reference<ClassDeclaration>;
     } else {
       return 'dynamic';

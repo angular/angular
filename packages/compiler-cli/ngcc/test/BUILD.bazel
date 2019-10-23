@@ -56,6 +56,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/test/helpers",
         "@npm//rxjs",
+        "@npm//typescript",
     ],
 )
 

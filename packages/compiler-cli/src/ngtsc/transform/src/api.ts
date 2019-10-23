@@ -37,6 +37,27 @@ export enum HandlerPrecedence {
   WEAK,
 }
 
+/**
+ * A set of options which can be passed to a `DecoratorHandler` by a consumer, to tailor the output
+ * of compilation beyond the decorators themselves.
+ */
+export enum HandlerFlags {
+  /**
+   * No flags set.
+   */
+  NONE = 0x0,
+
+  /**
+   * Indicates that this decorator is fully inherited from its parent at runtime. In addition to
+   * normally inherited aspects such as inputs and queries, full inheritance applies to every aspect
+   * of the component or directive, such as the template function itself.
+   *
+   * Its primary effect is to cause the `CopyDefinitionFeature` to be applied to the definition
+   * being compiled. See that class for more information.
+   */
+  FULL_INHERITANCE = 0x00000001,
+}
+
 
 /**
  * Provides the interface between a decorator compiler from @angular/compiler and the Typescript
@@ -75,7 +96,7 @@ export interface DecoratorHandler<A, M> {
    * if successful, or an array of diagnostic messages if the analysis fails or the decorator
    * isn't valid.
    */
-  analyze(node: ClassDeclaration, metadata: M): AnalysisOutput<A>;
+  analyze(node: ClassDeclaration, metadata: M, handlerFlags?: HandlerFlags): AnalysisOutput<A>;
 
   /**
    * Registers information about the decorator for the indexing phase in a
