@@ -881,22 +881,18 @@ export function analyzeFile(
       if (symbolMeta.__symbolic === 'class') {
         if (metadataResolver.isDirective(symbol)) {
           isNgSymbol = true;
-          if (!isDeclarationFile) {
-            // This directive either has a selector or doesn't. Selector-less directives get tracked
-            // in abstractDirectives, not directives. The compiler doesn't deal with selector-less
-            // directives at all, really, other than to persist their metadata. This is done so that
-            // apps will have an easier time migrating to Ivy, which requires the selector-less
-            // annotations to be applied.
-            if (!metadataResolver.isAbstractDirective(symbol)) {
-              // The directive is an ordinary directive.
-              directives.push(symbol);
-            } else {
-              // The directive has no selector and is an "abstract" directive, so track it
-              // accordingly.
-              abstractDirectives.push(symbol);
-            }
-          } else {
+          // This directive either has a selector or doesn't. Selector-less directives get tracked
+          // in abstractDirectives, not directives. The compiler doesn't deal with selector-less
+          // directives at all, really, other than to persist their metadata. This is done so that
+          // apps will have an easier time migrating to Ivy, which requires the selector-less
+          // annotations to be applied.
+          if (!metadataResolver.isAbstractDirective(symbol)) {
+            // The directive is an ordinary directive.
             directives.push(symbol);
+          } else {
+            // The directive has no selector and is an "abstract" directive, so track it
+            // accordingly.
+            abstractDirectives.push(symbol);
           }
         } else if (metadataResolver.isPipe(symbol)) {
           isNgSymbol = true;
