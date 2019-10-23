@@ -100,7 +100,7 @@ describe('site App', function() {
     it('should scroll to the top when navigating to another page', () => {
       page.navigateTo('guide/security');
 
-      page.scrollToBottom();
+      page.scrollTo('bottom');
       expect(page.getScrollTop()).toBeGreaterThan(0);
 
       page.click(page.getNavItem(/api/i));
@@ -111,7 +111,7 @@ describe('site App', function() {
     it('should scroll to the top when navigating to the same page', () => {
       page.navigateTo('guide/security');
 
-      page.scrollToBottom();
+      page.scrollTo('bottom');
       expect(page.getScrollTop()).toBeGreaterThan(0);
 
       page.click(page.getNavItem(/security/i));

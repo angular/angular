@@ -58,6 +58,10 @@ export class ScrollService implements OnDestroy {
         .pipe(debounceTime(250), takeUntil(this.onDestroy))
         .subscribe(() => this.updateScrollPositionInHistory());
 
+    fromEvent(window, 'beforeunload')
+        .pipe(takeUntil(this.onDestroy))
+        .subscribe(() => this.updateScrollLocationHref());
+
     // Change scroll restoration strategy to `manual` if it's supported
     if (this.supportManualScrollRestoration) {
       history.scrollRestoration = 'manual';
@@ -70,12 +74,17 @@ export class ScrollService implements OnDestroy {
         } else {
           // Navigating with the forward/back button, we have to remove the position from the
           // session storage in order to avoid a race-condition.
-          this.removeStoredScrollPosition();
+          this.removeStoredScrollInfo();
           // The `popstate` event is always triggered by a browser action such as clicking the
           // forward/back button. It can be followed by a `hashchange` event.
           this.poppedStateScrollPosition = event.state ? event.state.scrollPosition : null;
         }
       });
+    }
+
+    // If this was not a reload, discard the stored scroll info.
+    if (window.location.href !== this.getStoredScrollLocationHref()) {
+      this.removeStoredScrollInfo();
     }
   }
 
@@ -170,6 +179,10 @@ export class ScrollService implements OnDestroy {
     }
   }
 
+  updateScrollLocationHref(): void {
+    window.sessionStorage.setItem('scrollLocationHref', window.location.href);
+  }
+
   /**
    * Update the state with scroll position into history.
    */
@@ -181,6 +194,11 @@ export class ScrollService implements OnDestroy {
     }
   }
 
+  getStoredScrollLocationHref(): string | null {
+    const href = window.sessionStorage.getItem('scrollLocationHref');
+    return href || null;
+  }
+
   getStoredScrollPosition(): ScrollPosition | null {
     const position = window.sessionStorage.getItem('scrollPosition');
     if (!position) { return null; }
@@ -189,7 +207,8 @@ export class ScrollService implements OnDestroy {
     return [+x, +y];
   }
 
-  removeStoredScrollPosition() {
+  removeStoredScrollInfo() {
+    window.sessionStorage.removeItem('scrollLocationHref');
     window.sessionStorage.removeItem('scrollPosition');
   }
 
