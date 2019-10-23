@@ -284,6 +284,9 @@ export class Identifiers {
   static InheritDefinitionFeature:
       o.ExternalReference = {name: 'ɵɵInheritDefinitionFeature', moduleName: CORE};
 
+  static CopyDefinitionFeature:
+      o.ExternalReference = {name: 'ɵɵCopyDefinitionFeature', moduleName: CORE};
+
   static ProvidersFeature: o.ExternalReference = {name: 'ɵɵProvidersFeature', moduleName: CORE};
 
   static listener: o.ExternalReference = {name: 'ɵɵlistener', moduleName: CORE};
