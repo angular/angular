@@ -40,28 +40,28 @@ v9 - v12
 | `@angular/core`               | [`DefaultIterableDiffer`](#core)                                              | <!--v7--> v10 |
 | `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v10 |
 | `@angular/core`               | [`RenderComponentType`](#core)                                                | <!--v7--> v10 |
-| `@angular/core`               | [`ViewEncapsulation.Native`](#core)                                           | v10 |
-| `@angular/core`               | [`WtfScopeFn`](api/core/WtfScopeFn)                                           | v10 |
-| `@angular/core`               | [`wtfCreateScope`](api/core/wtfCreateScope)                                   | v10 |
-| `@angular/core`               | [`wtfStartTimeRange`](api/core/wtfStartTimeRange)                             | v10 |       
-| `@angular/core`               | [`wtfEndTimeRange`](api/core/wtfEndTimeRange)                                 | v10 |   
-| `@angular/core`               | [`wtfLeave`](api/core/wtfLeave)                                               | v10 |
-| `@angular/core`               | [`ModuleWithProviders` without a generic](#moduleWithProviders)               | v10 |
-| `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | v10 |
+| `@angular/core`               | [`ViewEncapsulation.Native`](#core)                                           | <!--v6--> v10 |
+| `@angular/core`               | [`WtfScopeFn`](api/core/WtfScopeFn)                                           | <!--v8--> v10 |
+| `@angular/core`               | [`wtfCreateScope`](api/core/wtfCreateScope)                                   | <!--v8--> v10 |
+| `@angular/core`               | [`wtfStartTimeRange`](api/core/wtfStartTimeRange)                             | <!--v8--> v10 |       
+| `@angular/core`               | [`wtfEndTimeRange`](api/core/wtfEndTimeRange)                                 | <!--v8--> v10 |   
+| `@angular/core`               | [`wtfLeave`](api/core/wtfLeave)                                               | <!--v8--> v10 |
+| `@angular/core`               | [`ModuleWithProviders` without a generic](#moduleWithProviders)               | <!--v9--> v10 |
+| `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | <!--v6--> v10 |
 | `@angular/router`             | [`preserveQueryParams`](#router)                                              | <!--v7--> v10 |
 | `@angular/upgrade`            | [`@angular/upgrade`](#upgrade)                                                | <!--v8--> v10 |
 | `@angular/upgrade`            | [`getAngularLib`](#upgrade-static)                                            | <!--v8--> v10 |
 | `@angular/upgrade`            | [`setAngularLib`](#upgrade-static)                                            | <!--v8--> v10 |
-| `@angular/platform-webworker` | [All entry points](api/platform-webworker)                                    | v10 |
-| template syntax               | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)            | <!--v7--> unspecified |
+| `@angular/platform-webworker` | [All entry points](api/platform-webworker)                                    | <!--v8--> v10 |
 | template syntax               | [`<template`>](#template-tag)                                                 | <!--v7--> v10 |
 | polyfills                     | [reflect-metadata](#reflect-metadata)                                         | <!--v8--> v10 |
-| `@angular/core`               | [`defineInjectable`](#core)                                                   | v11 |
-| `@angular/core`               | [`entryComponents`](api/core/NgModule#entryComponents)                        | v11 | 
-| `@angular/core`               | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS)       | v11 | 
-| `@angular/router`             | [`loadChildren` string syntax](#loadChildren)                                 | v11 |
+| `@angular/core`               | [`defineInjectable`](#core)                                                   | <!--v8--> v11 |
+| `@angular/core`               | [`entryComponents`](api/core/NgModule#entryComponents)                        | <!--v9--> v11 | 
+| `@angular/core`               | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS)       | <!--v9--> v11 | 
+| `@angular/router`             | [`loadChildren` string syntax](#loadChildren)                                 | <!--v9--> v11 |
+| `@angular/core/testing`       | [`TestBed.get`](#testing)                                                     | <!--v9--> v12 |
 | `@angular/router`             | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
-| `@angular/core/testing`       | [`TestBed.get`](#testing)                                                     | v12 |
+| template syntax               | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)            | <!--v7--> unspecified |
 
 
 
