@@ -393,45 +393,6 @@ export class MyModule {
 }
 ```
 
-
-## Angular version 9 schematics
-
-{@a renderer-to-renderer2}
-### Migrating from `Renderer` to `Renderer2`
-
-See the [dedicated migration guide for Renderer](guide/migration-renderer).
-
-{@a undecorated-classes}
-### Migrating undecorated classes
-
-See the [dedicated migration guide for undecorated classes](guide/migration-undecorated-classes).
-
-{@a injectable}
-### Adding missing `@Injectable()` decorators
-
-See the [dedicated migration guide for adding missing `@Injectable` decorators](guide/migration-injectable).
-
-{@a flag-migration}
-### Migrating dynamic queries
-
- See the [dedicated migration guide for dynamic queries](guide/migration-dynamic-flag).
-
-{@a localize-migration}
-### Migrating to the new `$localize` i18n support
-
- See the [dedicated migration guide for `$localize`](guide/migration-localize).
-
-{@a module-with-providers}
-### Migrating `ModuleWithProviders`
-
- See the [dedicated migration guide for `ModuleWithProviders`](guide/migration-module-with-providers).
-{@a ngcc-migration}
-### Migrating to `ngcc` npm `postinstall` script
-
- See the [dedicated migration guide for `ngcc` npm `postinstall` script](guide/migration-ngcc).
-
-
-
 {@a removed}
 ## Removed APIs
 
