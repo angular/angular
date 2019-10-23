@@ -170,8 +170,8 @@
     "vrsource-tslint-rules": "5.1.1",
     "webpack": "1.12.9"
   },
-  "// 4": "natives is needed for gulp to work with node >= 10.13, see #28213",
+  "// 4": "Overwrite graceful-fs to a version that does not rely on the 'natives' package. This fixes gulp for >= 10.13, more information: #28213",
   "resolutions": {
-    "natives": "1.1.6"
+    "**/graceful-fs": "4.2.2"
   }
 }
