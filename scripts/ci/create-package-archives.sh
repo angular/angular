@@ -8,22 +8,30 @@ readonly inputDir="$PROJECT_ROOT/$3"
 readonly outputDir="$PROJECT_ROOT/$4"
 readonly fileSuffix="-pr$prNumber-$prLastSha.tgz"
 
+echo "Creating compressed archives for packages in '$inputDir'."
+
 # Create or clean-up the output directory.
+echo "  Preparing output directory: $outputDir"
 rm -rf "$outputDir"
 mkdir -p "$outputDir"
 
 # Create a compressed archive containing all packages.
 # (This is useful for copying all packages into `node_modules/` (without changing `package.json`).)
-tar --create --gzip --directory "$inputDir" --file "$outputDir/all$fileSuffix" --transform s/^\./packages/ .
+outputFileName=all$fileSuffix
+echo "  Creating archive with all packages --> '$outputFileName'..."
+tar --create --gzip --directory "$inputDir" --file "$outputDir/$outputFileName" --transform s/^\./packages/ .
 
 # Create a compressed archive for each package.
 # (This is useful for referencing the path/URL to the resulting archive in `package.json`.)
 for dir in $inputDir/*
 do
   packageName=`basename "$dir"`
-  outputFile="$outputDir/$packageName$fileSuffix"
+  outputFileName="$packageName$fileSuffix"
+  outputFilePath="$outputDir/$outputFileName"
 
-  echo "Processing package '$packageName'..."
+  echo "  Processing package '$packageName' --> '$outputFileName'..."
 
-  tar --create --gzip --directory "$dir" --file "$outputFile" --transform s/^\./package/ .
+  tar --create --gzip --directory "$dir" --file "$outputFilePath" --transform s/^\./package/ .
 done
+
+echo "Done creating compressed archives."

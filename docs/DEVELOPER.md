@@ -139,8 +139,8 @@ automatically publishes build artifacts to repositories in the Angular org, eg. 
 package is published to https://github.com/angular/core-builds.
 
 You may find that your un-merged change needs some validation from external participants.
-Rather than requiring them to pull your Pull Request and build Angular locally, you can publish
-snapshots of the Angular packages.
+Rather than requiring them to pull your Pull Request and build Angular locally, they can depend on
+snapshots of the Angular packages created based on the code in the Pull Request.
 
 ### Getting Packages from Build Artifacts
 Each CI run for a Pull Request stores the built Angular packages as
@@ -188,7 +188,10 @@ b. The packages need to be copied over every time `npm/yarn install` is run.
 c. Some package managers (such as `pnpm` or `yarn pnp`) might not work correctly.
 
 ### Publishing to GitHub repos
-You can also publish `*-builds` snapshots just like our CircleCI build does for upstream builds.
+You can also manually publish `*-builds` snapshots just like our CircleCI build does for upstream
+builds. Before being able to publish the packages, you need to build them locally by running the
+`./scripts/build-packages-dist.sh` script.
+
 First time, you need to create the GitHub repositories:
 
 ``` shell
