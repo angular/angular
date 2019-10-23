@@ -21,6 +21,7 @@ import {CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '
 import {NgccClassSymbol, NgccReflectionHost} from '../host/ngcc_host';
 import {Migration} from '../migrations/migration';
 import {MissingInjectableMigration} from '../migrations/missing_injectable_migration';
+import {UndecoratedChildMigration} from '../migrations/undecorated_child_migration';
 import {UndecoratedParentMigration} from '../migrations/undecorated_parent_migration';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {isDefined} from '../utils';
@@ -28,6 +29,7 @@ import {isDefined} from '../utils';
 import {DefaultMigrationHost} from './migration_host';
 import {AnalyzedClass, AnalyzedFile, CompiledClass, CompiledFile, DecorationAnalyses} from './types';
 import {analyzeDecorators, isWithinPackage} from './util';
+
 
 /**
  * Simple class that resolves and loads files directly from the filesystem.
@@ -104,7 +106,11 @@ export class DecorationAnalyzer {
         this.reflectionHost, this.evaluator, this.metaRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
         this.isCore),
   ];
-  migrations: Migration[] = [new UndecoratedParentMigration(), new MissingInjectableMigration()];
+  migrations: Migration[] = [
+    new UndecoratedParentMigration(),
+    new UndecoratedChildMigration(),
+    new MissingInjectableMigration(),
+  ];
 
   constructor(
       private fs: FileSystem, private bundle: EntryPointBundle,

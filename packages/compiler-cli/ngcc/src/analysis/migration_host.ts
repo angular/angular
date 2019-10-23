@@ -12,7 +12,7 @@ import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {MetadataReader} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
-import {DecoratorHandler} from '../../../src/ngtsc/transform';
+import {DecoratorHandler, HandlerFlags} from '../../../src/ngtsc/transform';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {MigrationHost} from '../migrations/migration';
 
@@ -29,9 +29,10 @@ export class DefaultMigrationHost implements MigrationHost {
       readonly evaluator: PartialEvaluator, private handlers: DecoratorHandler<any, any>[],
       private entryPointPath: AbsoluteFsPath, private analyzedFiles: AnalyzedFile[]) {}
 
-  injectSyntheticDecorator(clazz: ClassDeclaration, decorator: Decorator): void {
+  injectSyntheticDecorator(clazz: ClassDeclaration, decorator: Decorator, flags?: HandlerFlags):
+      void {
     const classSymbol = this.reflectionHost.getClassSymbol(clazz) !;
-    const newAnalyzedClass = analyzeDecorators(classSymbol, [decorator], this.handlers);
+    const newAnalyzedClass = analyzeDecorators(classSymbol, [decorator], this.handlers, flags);
     if (newAnalyzedClass === null) {
       return;
     }

@@ -6,10 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
+
 import {MetadataReader} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
+import {HandlerFlags} from '../../../src/ngtsc/transform';
 import {NgccReflectionHost} from '../host/ngcc_host';
+
 
 /**
  * Implement this interface and add it to the `DecorationAnalyzer.migrations` collection to get ngcc
@@ -41,7 +44,8 @@ export interface MigrationHost {
    * @param clazz the class to receive the new decorator.
    * @param decorator the decorator to inject.
    */
-  injectSyntheticDecorator(clazz: ClassDeclaration, decorator: Decorator): void;
+  injectSyntheticDecorator(clazz: ClassDeclaration, decorator: Decorator, flags?: HandlerFlags):
+      void;
 
   /**
    * Retrieves all decorators that are associated with the class, including synthetic decorators
