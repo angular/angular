@@ -22,7 +22,7 @@
       <img *ngSwitchCase="true" src="assets/images/logos/angular/logo-nav@2x.png" width="150" height="40" title="Home" alt="Home">
       <img *ngSwitchDefault src="assets/images/logos/angular/shield-large.svg" width="37" height="40" title="Home" alt="Home">
     </a>
-    <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
+    <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes" [currentNode]="currentNodes?.TopBar"></aio-top-menu>
     <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
     <div class="toolbar-external-icons-container">
       <a href="https://twitter.com/angular" title="Twitter" aria-label="Angular on twitter">
