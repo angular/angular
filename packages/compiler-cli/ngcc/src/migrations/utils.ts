@@ -24,6 +24,14 @@ export function hasDirectiveDecorator(host: MigrationHost, clazz: ClassDeclarati
 }
 
 /**
+ * Returns true if the `clazz` is decorated as a `Pipe`.
+ */
+export function hasPipeDecorator(host: MigrationHost, clazz: ClassDeclaration): boolean {
+  const ref = new Reference(clazz);
+  return host.metadata.getPipeMetadata(ref) !== null;
+}
+
+/**
  * Returns true if the `clazz` has its own constructor function.
  */
 export function hasConstructor(host: MigrationHost, clazz: ClassDeclaration): boolean {
@@ -33,14 +41,53 @@ export function hasConstructor(host: MigrationHost, clazz: ClassDeclaration): bo
 /**
  * Create an empty `Directive` decorator that will be associated with the `clazz`.
  */
-export function createDirectiveDecorator(clazz: ClassDeclaration): Decorator {
+export function createDirectiveDecorator(
+    clazz: ClassDeclaration,
+    metadata?: {selector: string | null, exportAs: string[] | null}): Decorator {
+  const args: ts.Expression[] = [];
+  if (metadata !== undefined) {
+    const metaArgs: ts.PropertyAssignment[] = [];
+    if (metadata.selector !== null) {
+      metaArgs.push(property('selector', metadata.selector));
+    }
+    if (metadata.exportAs !== null) {
+      metaArgs.push(property('exportAs', metadata.exportAs));
+    }
+    args.push(reifySourceFile(ts.createObjectLiteral(metaArgs)));
+  }
   return {
     name: 'Directive',
     identifier: null,
     import: {name: 'Directive', from: '@angular/core'},
     node: null,
+    synthesizedFor: clazz.name, args,
+  };
+}
+
+/**
+ * Create an empty `Component` decorator that will be associated with the `clazz`.
+ */
+export function createComponentDecorator(
+    clazz: ClassDeclaration,
+    metadata: {selector: string | null, exportAs: string[] | null}): Decorator {
+  const metaArgs: ts.PropertyAssignment[] = [
+    property('template', ''),
+  ];
+  if (metadata.selector !== null) {
+    metaArgs.push(property('selector', metadata.selector));
+  }
+  if (metadata.exportAs !== null) {
+    metaArgs.push(property('exportAs', metadata.exportAs));
+  }
+  return {
+    name: 'Component',
+    identifier: null,
+    import: {name: 'Component', from: '@angular/core'},
+    node: null,
     synthesizedFor: clazz.name,
-    args: [],
+    args: [
+      reifySourceFile(ts.createObjectLiteral(metaArgs)),
+    ],
   };
 }
 
@@ -56,6 +103,15 @@ export function createInjectableDecorator(clazz: ClassDeclaration): Decorator {
     synthesizedFor: clazz.name,
     args: [],
   };
+}
+
+function property(name: string, value: string | string[]): ts.PropertyAssignment {
+  if (typeof value === 'string') {
+    return ts.createPropertyAssignment(name, ts.createStringLiteral(value));
+  } else {
+    return ts.createPropertyAssignment(
+        name, ts.createArrayLiteral(value.map(v => ts.createStringLiteral(v))));
+  }
 }
 
 const EMPTY_SF = ts.createSourceFile('(empty)', '', ts.ScriptTarget.Latest);
