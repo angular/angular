@@ -33,6 +33,7 @@
               "tsConfig": "tsconfig.view-engine.json"
             },
             "production": {
+              "localize": false, // TODO: enable when CLI supports inlining the locale
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -58,6 +59,14 @@
                   "type": "anyComponentStyle",
                   "maximumWarning": "6kb",
                   "maximumError": "10kb"
+                }
+              ]
+            },
+            "runtime-translations": {
+              "fileReplacements": [
+                {
+                  "replace": "src/polyfills.ts",
+                  "with": "src/polyfills-runtime.ts"
                 }
               ]
             },
@@ -89,6 +98,10 @@
             },
             "ci-production": {
               "browserTarget": "cli-hello-world-ivy-i18n:build:production",
+              "progress": false
+            },
+            "runtime-translations": {
+              "browserTarget": "cli-hello-world-ivy-i18n:build:runtime-translations",
               "progress": false
             }
           }
@@ -136,7 +149,7 @@
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
-            "protractorConfig": "e2e/runtime/protractor.conf.js",
+            "protractorConfig": "e2e/en/protractor.conf.js",
             "devServerTarget": "cli-hello-world-ivy-i18n:serve",
             "webdriverUpdate": false
           },
@@ -148,7 +161,11 @@
               "devServerTarget": "cli-hello-world-ivy-i18n:serve:ci"
             },
             "ci-production": {
-              "devServerTarget": "cli-hello-world-ivy-i18n:serve:ci-production"
+              "devServerTarget": "cli-hello-world-ivy-i18n:serve:ci-production",
+            },
+            "runtime-translations": {
+              "devServerTarget": "cli-hello-world-ivy-i18n:serve:runtime-translations",
+              "protractorConfig": "e2e/fr/protractor.conf.js"
             },
             "translated-legacy": {
               "devServerTarget": "",
