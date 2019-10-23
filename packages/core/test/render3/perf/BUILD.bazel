@@ -14,6 +14,14 @@ ts_library(
 )
 
 ng_rollup_bundle(
+    name = "class_binding",
+    entry_point = ":class_binding/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_rollup_bundle(
     name = "directive_instantiate",
     entry_point = ":directive_instantiate/index.ts",
     deps = [
