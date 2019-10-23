@@ -251,7 +251,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
           }),
           // Listen if the state of any of the handles changes.
           switchMap((handles: QueryList<CdkDragHandle>) => {
-            return merge(...handles.map(item => item._stateChanges));
+            return merge(...handles.map(item => item._stateChanges)) as Observable<CdkDragHandle>;
           }),
           takeUntil(this._destroyed)
         ).subscribe(handleInstance => {

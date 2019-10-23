@@ -237,7 +237,7 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
    * @deprecated Switch to `closed` instead
    * @breaking-change 8.0.0
    */
-  @Output() close = this.closed;
+  @Output() close: EventEmitter<void | 'click' | 'keydown' | 'tab'> = this.closed;
 
   readonly panelId = `mat-menu-panel-${menuPanelUid++}`;
 
@@ -269,7 +269,7 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
     return itemChanges.pipe(
       startWith(this._directDescendantItems),
       switchMap(items => merge(...items.map((item: MatMenuItem) => item._hovered)))
-    );
+    ) as Observable<MatMenuItem>;
   }
 
   /*

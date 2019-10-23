@@ -109,7 +109,7 @@ export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, Ca
     // attributes, add the correct corresponding MDC classes.
     for (const pair of HOST_SELECTOR_MDC_CLASS_PAIR) {
       if (this._hasHostAttributes(pair.selector)) {
-        pair.mdcClasses.forEach(className => {
+        pair.mdcClasses.forEach((className: string) => {
           classList.add(className);
         });
       }

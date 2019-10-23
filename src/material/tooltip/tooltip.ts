@@ -174,10 +174,10 @@ export class MatTooltip implements OnDestroy, OnInit {
   }
 
   /** The default delay in ms before showing the tooltip after show is called */
-  @Input('matTooltipShowDelay') showDelay = this._defaultOptions.showDelay;
+  @Input('matTooltipShowDelay') showDelay: number = this._defaultOptions.showDelay;
 
   /** The default delay in ms before hiding the tooltip after hide is called */
-  @Input('matTooltipHideDelay') hideDelay = this._defaultOptions.hideDelay;
+  @Input('matTooltipHideDelay') hideDelay: number = this._defaultOptions.hideDelay;
 
   /**
    * How touch gestures should be handled by the tooltip. On touch devices the tooltip directive

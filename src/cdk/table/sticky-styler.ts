@@ -219,7 +219,10 @@ export class StickyStyler {
     };
 
     let zIndex = 0;
-    for (const dir of STICKY_DIRECTIONS) {
+    // Use `Iterable` instead of `Array` because TypeScript, as of 3.6.3,
+    // loses the array generic type in the `for of`. But we *also* have to use `Array` because
+    // typescript won't iterate over an `Iterable` unless you compile with `--downlevelIteration`
+    for (const dir of STICKY_DIRECTIONS as Iterable<StickyDirection> & Array<StickyDirection>) {
       if (element.style[dir]) {
         zIndex += zIndexIncrements[dir];
       }

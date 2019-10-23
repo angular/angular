@@ -1071,8 +1071,8 @@ describe('MatMenu', () => {
       // In "before" position, the right sides of the overlay and the origin are aligned.
       // To find the overlay left, subtract the menu width from the origin's right side.
       const expectedLeft = triggerRect.right - overlayRect.width;
-      expect(Math.floor(overlayRect.left))
-          .toBe(Math.floor(expectedLeft),
+      expect(Math.abs(Math.floor(overlayRect.left) - Math.floor(expectedLeft)))
+          .toBeLessThanOrEqual(1,
               `Expected menu to open in "before" position if "after" position wouldn't fit.`);
 
       // The y-position of the overlay should be unaffected, as it can already fit vertically
@@ -1126,8 +1126,8 @@ describe('MatMenu', () => {
 
       const expectedLeft = triggerRect.right - overlayRect.width;
 
-      expect(Math.floor(overlayRect.left))
-          .toBe(Math.floor(expectedLeft),
+      expect(Math.abs(Math.floor(overlayRect.left) - Math.floor(expectedLeft)))
+          .toBeLessThanOrEqual(1,
               `Expected menu to open in "before" position if "after" position wouldn't fit.`);
 
       expect(Math.floor(overlayRect.bottom))

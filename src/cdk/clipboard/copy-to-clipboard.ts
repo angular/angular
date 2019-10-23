@@ -26,7 +26,7 @@ import {Clipboard} from './clipboard';
 })
 export class CdkCopyToClipboard {
   /** Content to be copied. */
-  @Input('cdkCopyToClipboard') text = '';
+  @Input('cdkCopyToClipboard') text: string = '';
 
   /**
    * Emits when some text is copied to the clipboard. The

@@ -1,7 +1,7 @@
 /**
  * Script that sets up Ivy ngcc to postprocess installed node modules. The script achieves
  * this by updating the "postinstall" script in the "package.json". This is necessary because
- * Bazel manages its own version of the node modules and needs to run ivy-ngcc on its own when
+ * Bazel manages its own version of the node modules and needs to run ngcc on its own when
  * installing dependencies.
  */
 
@@ -13,7 +13,7 @@ const projectDir = join(__dirname, '../../');
 const packageJsonPath = join(projectDir, 'package.json');
 const packageJson = require(packageJsonPath);
 
-const postInstallCommand = `ivy-ngcc --properties main module`;
+const postInstallCommand = `ngcc --properties main module`;
 
 if (!packageJson['scripts']) {
   packageJson['scripts'] = {};

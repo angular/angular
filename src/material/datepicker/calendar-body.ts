@@ -73,16 +73,16 @@ export class MatCalendarBody implements OnChanges {
   @Input() labelMinRequiredCells: number;
 
   /** The number of columns in the table. */
-  @Input() numCols = 7;
+  @Input() numCols: number = 7;
 
   /** The cell number of the active cell in the table. */
-  @Input() activeCell = 0;
+  @Input() activeCell: number = 0;
 
   /**
    * The aspect ratio (width / height) to use for the cells in the table. This aspect ratio will be
    * maintained even as the table resizes.
    */
-  @Input() cellAspectRatio = 1;
+  @Input() cellAspectRatio: number = 1;
 
   /** Emits when a new value is selected. */
   @Output() readonly selectedValueChange: EventEmitter<number> = new EventEmitter<number>();

@@ -73,7 +73,7 @@ export function throwDialogContentAlreadyAttachedError() {
   },
 })
 export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
-  private _document: Document;
+  private readonly _document: Document;
 
   /** State of the dialog animation. */
   _state: 'void' | 'enter' | 'exit' = 'enter';
@@ -95,7 +95,7 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
 
   @HostBinding('attr.role') get _role() { return this._config.role; }
 
-  @HostBinding('attr.aria-modal') _ariaModal = true;
+  @HostBinding('attr.aria-modal') _ariaModal: boolean = true;
 
   @HostBinding('attr.tabindex') get _tabindex() { return -1; }
   // tslint:disable:no-host-decorator-in-concrete

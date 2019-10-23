@@ -1,7 +1,8 @@
 import {DOCUMENT} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
+import {Clipboard} from './clipboard';
+import {PendingCopy} from './pending-copy';
 
-import {Clipboard, PendingCopy} from './clipboard';
 
 const COPY_CONTENT = 'copy content';
 

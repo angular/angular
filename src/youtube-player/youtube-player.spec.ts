@@ -36,7 +36,7 @@ describe('YoutubePlayer', () => {
     });
 
     afterEach(() => {
-      window.YT = undefined;
+      delete window.YT;
     });
 
     it('initializes a youtube player', () => {
@@ -280,7 +280,7 @@ describe('YoutubePlayer', () => {
 
     beforeEach(() => {
       api = window.YT;
-      window.YT = undefined;
+      delete window.YT;
 
       fixture = TestBed.createComponent(TestApp);
       testComponent = fixture.debugElement.componentInstance;
@@ -288,13 +288,13 @@ describe('YoutubePlayer', () => {
     });
 
     afterEach(() => {
-      window.YT = undefined;
+      delete window.YT;
     });
 
     it('waits until the api is ready before initializing', () => {
       expect(playerCtorSpy).not.toHaveBeenCalled();
 
-      window.YT = api;
+      window.YT = api!;
       window.onYouTubeIframeAPIReady!();
 
       let containerElement = fixture.nativeElement.querySelector('div');

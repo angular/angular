@@ -12,7 +12,7 @@ export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatM
     _panelAnimationState: 'void' | 'enter';
     backdropClass: string;
     classList: string;
-    close: EventEmitter<void | "click" | "keydown" | "tab">;
+    close: EventEmitter<void | 'click' | 'keydown' | 'tab'>;
     readonly closed: EventEmitter<void | 'click' | 'keydown' | 'tab'>;
     direction: Direction;
     hasBackdrop: boolean | undefined;

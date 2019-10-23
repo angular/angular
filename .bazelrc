@@ -38,11 +38,10 @@ test --test_output=errors
 build:release --workspace_status_command="node ./tools/bazel-stamp-vars.js"
 
 ################################
-# Settings for Ivy             #
+# View Engine / Ivy toggle     #
 ################################
 
-# We want to compile with Ivy and with "ngtsc".
-# To build for ViewEngine, use --define=compile=legacy.
+# Use "legacy" for ViewEngine and "aot" for Ivy
 build --define=compile=aot
 
 #######################
