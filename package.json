@@ -25,6 +25,7 @@
     "check-env": "gulp check-env",
     "commitmsg": "node ./scripts/git/commit-msg.js",
     "test-ivy-aot": "bazel test --define=compile=aot --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot",
+    "test-non-ivy": "bazel test --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only",
     "test-fixme-ivy-aot": "bazel test --define=compile=aot --build_tag_filters=-no-ivy-aot --test_tag_filters=-no-ivy-aot",
     "list-fixme-ivy-targets": "bazel query --output=label 'attr(\"tags\", \"\\[.*fixme-ivy.*\\]\", //...) except kind(\"sh_binary\", //...) except kind(\"devmode_js_sources\", //...)' | sort",
     "bazel": "bazel",
