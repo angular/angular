@@ -2308,5 +2308,32 @@ describe('ngc transformer command-line', () => {
       let exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
       expect(exitCode).toEqual(0);
     });
+
+    it('should be able to use abstract directive in other compilation units', () => {
+      writeConfig();
+      write('lib1/tsconfig.json', JSON.stringify({
+        extends: '../tsconfig-base.json',
+        compilerOptions: {rootDir: '.', outDir: '../node_modules/lib1_built'},
+      }));
+      write('lib1/index.ts', `
+        import {Directive} from '@angular/core';
+        
+        @Directive()
+        export class BaseClass {}
+      `);
+      write('index.ts', `
+        import {NgModule, Directive} from '@angular/core';
+        import {BaseClass} from 'lib1_built';
+        
+        @Directive({selector: 'my-dir'})
+        export class MyDirective extends BaseClass {}
+        
+        @NgModule({declarations: [MyDirective]})
+        export class AppModule {}
+      `);
+
+      expect(main(['-p', path.join(basePath, 'lib1/tsconfig.json')], errorSpy)).toBe(0);
+      expect(main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy)).toBe(0);
+    });
   });
 });
