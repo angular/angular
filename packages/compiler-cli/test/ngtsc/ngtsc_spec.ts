@@ -1051,6 +1051,36 @@ runInEachFileSystem(os => {
         expect(errors.length).toBe(0);
       });
 
+      it('should be able to use abstract directive in other compilation units', () => {
+        env.write('tsconfig.json', JSON.stringify({
+          extends: './tsconfig-base.json',
+          angularCompilerOptions: {enableIvy: true},
+          compilerOptions: {rootDir: '.', outDir: '../node_modules/lib1_built'},
+        }));
+        env.write('index.ts', `
+          import {Directive} from '@angular/core';
+          
+          @Directive()
+          export class BaseClass {}
+        `);
+
+        expect(env.driveDiagnostics().length).toBe(0);
+
+        env.tsconfig();
+        env.write('index.ts', `
+          import {NgModule, Directive} from '@angular/core';
+          import {BaseClass} from 'lib1_built';
+          
+          @Directive({selector: 'my-dir'})
+          export class MyDirective extends BaseClass {}
+          
+          @NgModule({declarations: [MyDirective]})
+          export class AppModule {}
+        `);
+
+        expect(env.driveDiagnostics().length).toBe(0);
+      });
+
       it('should not allow directives with no selector that are in NgModules', () => {
         env.write('main.ts', `
           import {Directive, NgModule} from '@angular/core';
