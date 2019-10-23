@@ -33,27 +33,36 @@ v9 - v12
 -->
 
 
-| Area | API or Feature | May be removed in |
-| ---- | -------------- | ----------------- |
-| `@angular/common` | [`ReflectiveInjector`](#reflectiveinjector) | <!--v8--> v9 |
-| `@angular/core` | [`CollectionChangeRecord`](#core) | <!--v7--> v9 |
-| `@angular/core` | [`DefaultIterableDiffer`](#core) | <!--v7--> v9 |
-| `@angular/core` | [`ModuleWithProviders` without a generic](#moduleWithProviders) | v10 |
-| `@angular/core` | [`ReflectiveKey`](#core) | <!--v8--> v9 |
-| `@angular/core` | [`RenderComponentType`](#core) | <!--v7--> v9 |
-| `@angular/core` | [`ViewEncapsulation.Native`](#core) | v9 |
-| `@angular/forms` | [`ngModel` with reactive forms](#ngmodel-reactive) | v9 |
-| `@angular/router` | [`preserveQueryParams`](#router) | <!--v7--> v9 |
-| `@angular/upgrade` | [`@angular/upgrade`](#upgrade) | <!--v8--> v9 |
-| `@angular/upgrade` | [`getAngularLib`](#upgrade-static) | <!--v8--> v9 |
-| `@angular/upgrade` | [`setAngularLib`](#upgrade-static) | <!--v8--> v9 |
-| template syntax | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector) | <!--v7--> unspecified |
-| template syntax | [`<template`>](#template-tag) | <!--v7--> v9 |
-| polyfills | [reflect-metadata](#reflect-metadata) | <!--v8--> v9 |
-| `@angular/core` | [`defineInjectable`](#core) | v11 |
-| `@angular/router` | [`loadChildren` string syntax](#loadChildren) | v11 |
-| `@angular/router` | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
-| `@angular/core/testing` | [`TestBed.get`](#testing) | v12 |
+| Area                          | API or Feature                                                                | May be removed in |
+| ----------------------------- | ---------------------------------------------------------------------------   | ----------------- |
+| `@angular/common`             | [`ReflectiveInjector`](#reflectiveinjector)                                   | <!--v8--> v10 |
+| `@angular/core`               | [`CollectionChangeRecord`](#core)                                             | <!--v7--> v10 |
+| `@angular/core`               | [`DefaultIterableDiffer`](#core)                                              | <!--v7--> v10 |
+| `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v10 |
+| `@angular/core`               | [`RenderComponentType`](#core)                                                | <!--v7--> v10 |
+| `@angular/core`               | [`ViewEncapsulation.Native`](#core)                                           | <!--v6--> v10 |
+| `@angular/core`               | [`WtfScopeFn`](api/core/WtfScopeFn)                                           | <!--v8--> v10 |
+| `@angular/core`               | [`wtfCreateScope`](api/core/wtfCreateScope)                                   | <!--v8--> v10 |
+| `@angular/core`               | [`wtfStartTimeRange`](api/core/wtfStartTimeRange)                             | <!--v8--> v10 |       
+| `@angular/core`               | [`wtfEndTimeRange`](api/core/wtfEndTimeRange)                                 | <!--v8--> v10 |   
+| `@angular/core`               | [`wtfLeave`](api/core/wtfLeave)                                               | <!--v8--> v10 |
+| `@angular/core`               | [`ModuleWithProviders` without a generic](#moduleWithProviders)               | <!--v9--> v10 |
+| `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | <!--v6--> v10 |
+| `@angular/router`             | [`preserveQueryParams`](#router)                                              | <!--v7--> v10 |
+| `@angular/upgrade`            | [`@angular/upgrade`](#upgrade)                                                | <!--v8--> v10 |
+| `@angular/upgrade`            | [`getAngularLib`](#upgrade-static)                                            | <!--v8--> v10 |
+| `@angular/upgrade`            | [`setAngularLib`](#upgrade-static)                                            | <!--v8--> v10 |
+| `@angular/platform-webworker` | [All entry points](api/platform-webworker)                                    | <!--v8--> v10 |
+| template syntax               | [`<template`>](#template-tag)                                                 | <!--v7--> v10 |
+| polyfills                     | [reflect-metadata](#reflect-metadata)                                         | <!--v8--> v10 |
+| `@angular/core`               | [`defineInjectable`](#core)                                                   | <!--v8--> v11 |
+| `@angular/core`               | [`entryComponents`](api/core/NgModule#entryComponents)                        | <!--v9--> v11 | 
+| `@angular/core`               | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS)       | <!--v9--> v11 | 
+| `@angular/router`             | [`loadChildren` string syntax](#loadChildren)                                 | <!--v9--> v11 |
+| `@angular/core/testing`       | [`TestBed.get`](#testing)                                                     | <!--v9--> v12 |
+| `@angular/router`             | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
+| template syntax               | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)            | <!--v7--> unspecified |
+
 
 
 
@@ -75,10 +84,10 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | --- | ----------- | --------------------- | ----- |
 | [`CollectionChangeRecord`](api/core/CollectionChangeRecord) | [`IterableChangeRecord`](api/core/IterableChangeRecord) | v4 | none |
 | [`DefaultIterableDiffer`](api/core/DefaultIterableDiffer) | n/a | v4 | Not part of public API. |
-| [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | Used only in generated code. No source code should depend on this API. |
 | [`ReflectiveInjector`](api/core/ReflectiveInjector) | [`Injector.create`](api/core/Injector#create)  | v5 | See [`ReflectiveInjector`](#reflectiveinjector) |
 | [`ReflectiveKey`](api/core/ReflectiveKey) | none | v5 | none |
 | [`ViewEncapsulation.Native`](api/core/ViewEncapsulation#Native) | [`ViewEncapsulation.ShadowDom`](api/core/ViewEncapsulation#ShadowDom) | v6 | Use the native encapsulation mechanism of the renderer. See [view.ts](https://github.com/angular/angular/blob/3e992e18ebf51d6036818f26c3d77b52d3ec48eb/packages/core/src/metadata/view.ts#L32).
+| [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | Used only in generated code. No source code should depend on this API. |
 | [`WtfScopeFn`](api/core/WtfScopeFn) | none | v8 | See [Web Tracing Framework](#wtf) |
 | [`wtfCreateScope`](api/core/wtfCreateScope) | none | v8 | See [Web Tracing Framework](#wtf) |
 | [`wtfStartTimeRange`](api/core/wtfStartTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
@@ -86,6 +95,9 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | [`wtfLeave`](api/core/wtfLeave) | none | v8 | See [Web Tracing Framework](#wtf) |
 | [`entryComponents`](api/core/NgModule#entryComponents) | none | v9 | See [`entryComponents`](#entryComponents) |
 | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS) | none | v9 | See [`ANALYZE_FOR_ENTRY_COMPONENTS`](#entryComponents) |
+| `ModuleWithProviders` without a generic |  `ModuleWithProviders` with a generic             | v9 | See [`ModuleWithProviders` section](#moduleWithProviders) |
+
+
 
 
 
@@ -103,6 +115,7 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
+| [`ngModel` with reactive forms](#ngmodel-reactive) | See [FormControlDirective usage notes](api/forms/FormControlDirective#use-with-ngmodel) | v6 | none |
 
 {@a router}
 ### @angular/router
@@ -422,27 +435,22 @@ See the [dedicated migration guide for adding missing `@Injectable` decorators](
 {@a removed}
 ## Removed APIs
 
-The following APIs have been removed starting with version 8.0.0:
+The following APIs have been removed starting with version 9.0.0*:
 
-| Package | API            | Replacement | Notes |
-| ------- | -------------- | ----------- | ----- |
-| [`@angular/http`](https://v7.angular.io/api/http) | All exports | [`@angular/common/http`](api/common/http) | See [below](#http). |
-[`@angular/http/testing`](https://v7.angular.io/api/http/testing) | All exports | [`@angular/common/http/testing`](api/common/http/testing) | See [below](#http). |
-| `@angular/platform-browser` | [`DOCUMENT`](https://v7.angular.io/api/platform-browser/DOCUMENT) | [`DOCUMENT` in `@angular/common`](api/common/DOCUMENT) | Updating to version 8 with [`ng update`](cli/update) changes this automatically.  |
-| `@angular/core/testing` | [`TestBed.deprecatedOverrideProvider()`](https://v7.angular.io/api/core/testing/TestBed#deprecatedoverrideprovider) | [`TestBed.overrideProvider()`](api/core/testing/TestBed#overrideprovider) | none |
-| `@angular/core/testing` | [`TestBedStatic.deprecatedOverrideProvider()`](https://v7.angular.io/api/core/testing/TestBedStatic#deprecatedoverrideprovider) | [`TestBedStatic.overrideProvider()`](api/core/testing/TestBedStatic#overrideprovider) | none |
-| `@angular/service-worker` | `versionedFiles` | `files` | In the service worker configuration file `ngsw-config.json`, replace `versionedFiles` with `files`. See [Service Worker Configuration](guide/service-worker-config#assetgroups). |
+| Package          | API            | Replacement | Notes |
+| ---------------- | -------------- | ----------- | ----- |
+| `@angular/core`  | [`Renderer`](https://v8.angular.io/api/core/Renderer) | [`Renderer2`](https://angular.io/api/core/Renderer2) | [Migration guide](guide/migration-renderer) |
+| `@angular/core`  | [`RootRenderer`](https://v8.angular.io/api/core/RootRenderer) | [`RendererFactory2`](https://angular.io/api/core/RendererFactory2) | none |
+| `@angular/core`  | [`RenderComponentType`](https://v8.angular.io/api/core/RenderComponentType) | [`RendererType2`](https://angular.io/api/core/RendererType2) | none |
+| `@angular/common` | `DeprecatedI18NPipesModule` | [`CommonModule`](api/common/CommonModule#pipes) | none |
+| `@angular/common` | `DeprecatedCurrencyPipe` | [`CurrencyPipe`](api/common/CurrencyPipe) | none |
+| `@angular/common` | `DeprecatedDatePipe`     | [`DatePipe`](api/common/DatePipe) | none |
+| `@angular/common` | `DeprecatedDecimalPipe` | [`DecimalPipe`](api/common/DecimalPipe) | none |
+| `@angular/common` | `DeprecatedPercentPipe` | [`PercentPipe`](api/common/PercentPipe) | none |
+| `@angular/forms` | [`NgFormSelectorWarning`](https://v8.angular.io/api/forms/NgFormSelectorWarning) | none | none |
+| `@angular/forms` | `ngForm` element selector | `ng-form` element selector | none |
 
-
-The following APIs have been removed starting with version 9.0.0:
-
-| Package | API            | Replacement | Notes |
-| ------- | -------------- | ----------- | ----- |
-| `@angular/core`  | [`Renderer`](https://v8.angular.io/api/core/Renderer) | [`Renderer2`](https://angular.io/api/core/Renderer2) | [Migration guide.](guide/migration-renderer)
-| `@angular/core`  | [`RootRenderer`](https://v8.angular.io/api/core/RootRenderer) | [`RendererFactory2`](https://angular.io/api/core/RendererFactory2) | none
-| `@angular/core`  | [`RenderComponentType`](https://v8.angular.io/api/core/RenderComponentType) | [`RendererType2`](https://angular.io/api/core/RendererType2) | none
-| `@angular/forms` | [`NgFormSelectorWarning`](https://v8.angular.io/api/forms/NgFormSelectorWarning) | none | none
-| `@angular/forms` | `ngForm` element selector | `ng-form` element selector | none
+*To see APIs removed in version 8, check out this guide on the [version 8 docs site](https://v8.angular.io/guide/deprecations#removed).
 
 
 <!-- The following anchor is used by redirects from the removed API pages. Do not change or remove. -->
