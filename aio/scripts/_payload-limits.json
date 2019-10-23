@@ -2,11 +2,8 @@
   "aio": {
     "master": {
       "uncompressed": {
-        "runtime-es5": 2981,
         "runtime-es2015": 2987,
-        "main-es5": 545369,
         "main-es2015": 460590,
-        "polyfills-es5": 143165,
         "polyfills-es2015": 52503
       }
     }
@@ -14,11 +11,8 @@
   "aio-local": {
     "master": {
       "uncompressed": {
-        "runtime-es5": 2981,
         "runtime-es2015": 2987,
-        "main-es5": 545899,
         "main-es2015": 461159,
-        "polyfills-es5": 143165,
         "polyfills-es2015": 52503
       }
     }
@@ -26,11 +20,8 @@
   "aio-local-viewengine": {
     "master": {
       "uncompressed": {
-        "runtime-es5": 3091,
         "runtime-es2015": 3097,
-        "main-es5": 521188,
         "main-es2015": 436779,
-        "polyfills-es5": 143165,
         "polyfills-es2015": 52503
       }
     }
