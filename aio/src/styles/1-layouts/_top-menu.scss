@@ -149,41 +149,47 @@ aio-top-menu {
       &:focus {
         outline: none;
       }
-    }
 
-    a.nav-link {
-      margin: 0 4px;
-      padding: 0px;
-      cursor: pointer;
+      a.nav-link {
+        margin: 0 4px;
+        padding: 0px;
+        cursor: pointer;
 
-      .nav-link-inner {
-        padding: 8px 16px;
-
-        &:hover {
-          background: rgba($white, 0.15);
+        .nav-link-inner {
           border-radius: 4px;
+          padding: 8px 16px;
+
+          &:hover {
+            background: rgba($white, 0.15);
+          }
+        }
+
+        &:focus {
+          outline: none;
+
+          .nav-link-inner {
+            background: rgba($white, 0.15);
+            border-radius: 1px;
+            box-shadow: 0 0 1px 2px $focus-outline-ondark;
+          }
+        }
+
+        &:active {
+          .nav-link-inner {
+            background: rgba($white, 0.15);
+          }
         }
       }
 
-      &:focus {
-        outline: none;
-
-        .nav-link-inner {
-          background: rgba($white, 0.15);
-          border-radius: 1px;
-          box-shadow: 0 0 1px 2px $focus-outline-ondark;
-        }
-      }
-
-      &:active {
-        .nav-link-inner {
-          background: rgba($white, 0.15);
-          border-radius: 4px;
+      &.selected {
+        a.nav-link {
+          .nav-link-inner {
+            background: rgba($white, 0.15);
+          }
         }
       }
     }
   }
-
 }
 
 // SEARCH BOX
