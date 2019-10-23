@@ -30,8 +30,11 @@ export function setupRootViewWithEmbeddedViews(
 }
 
 export interface TestHarness {
-  hostLView: LView, hostTView: TView, embeddedTView: TView, createEmbeddedLView(): LView,
-      detectChanges(): void;
+  hostLView: LView;
+  hostTView: TView;
+  embeddedTView: TView;
+  createEmbeddedLView(): LView;
+  detectChanges(): void;
 }
 
 export function setupTestHarness(

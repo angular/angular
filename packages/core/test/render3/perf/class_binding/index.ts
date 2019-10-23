@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵɵproperty} from '@angular/core/src/core';
-import {AttributeMarker, TAttributes, TNodeType, TViewNode} from '@angular/core/src/render3/interfaces/node';
-
-import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
-import {createLView, createTNode, createTView, refreshView} from '../../../../src/render3/instructions/shared';
+import {AttributeMarker, TAttributes} from '@angular/core/src/render3/interfaces/node';
+import {ɵɵelement} from '../../../../src/render3/instructions/element';
 import {ɵɵclassMap, ɵɵclassProp} from '../../../../src/render3/instructions/styling';
 import {ComponentTemplate, RenderFlags} from '../../../../src/render3/interfaces/definition';
-import {HOST, LViewFlags, TVIEW} from '../../../../src/render3/interfaces/view';
 import {createBenchmark} from '../micro_bench';
-import {setupRootViewWithEmbeddedViews, setupTestHarness} from '../setup';
+import {setupTestHarness} from '../setup';
+
 
 const CLASSES_1_A = 'one';
 const CLASSES_1_B = CLASSES_1_A.toUpperCase();
@@ -58,8 +56,8 @@ function benchmark(name: string, template: ComponentTemplate<any>) {
   console.profileEnd();
 }
 
-
-benchmark(`[class]=" '1' "`, function(rf: RenderFlags, ctx: any) {
+`<div [class]="toggleClasses ? CLASSES_1_A : CLASSES_1_B">`;
+benchmark(`[class]="CLASSES_1"`, function(rf: RenderFlags, ctx: any) {
   if (rf & 1) {
     ɵɵelement(0, 'div');
   }
@@ -69,7 +67,8 @@ benchmark(`[class]=" '1' "`, function(rf: RenderFlags, ctx: any) {
 });
 
 
-benchmark(`[class]=" '1 2' "`, function(rf: RenderFlags, ctx: any) {
+`<div [class]="toggleClasses ? CLASSES_2_A : CLASSES_2_B">`;
+benchmark(`[class]="CLASSES_2"`, function(rf: RenderFlags, ctx: any) {
   if (rf & 1) {
     ɵɵelement(0, 'div');
   }
@@ -79,7 +78,8 @@ benchmark(`[class]=" '1 2' "`, function(rf: RenderFlags, ctx: any) {
 });
 
 
-benchmark(`[class]=" '1 2 3 4 5 6 7 8 9 0' "`, function(rf: RenderFlags, ctx: any) {
+`<div [class]="toggleClasses ? CLASSES_10_A : CLASSES_10_B">`;
+benchmark(`[class]="CLASSES_10"`, function(rf: RenderFlags, ctx: any) {
   if (rf & 1) {
     ɵɵelement(0, 'div');
   }
@@ -89,6 +89,7 @@ benchmark(`[class]=" '1 2 3 4 5 6 7 8 9 0' "`, function(rf: RenderFlags, ctx: an
 });
 
 
+`<div class="A B">`;
 benchmark(`class="A B"`, function(rf: RenderFlags, ctx: any) {
   if (rf & 1) {
     ɵɵelement(0, 'div', 0);
@@ -98,7 +99,9 @@ benchmark(`class="A B"`, function(rf: RenderFlags, ctx: any) {
 });
 
 
-benchmark(`class="A B" [class]=" '1' "`, function(rf: RenderFlags, ctx: any) {
+`<div class="A B" 
+      [class]="toggleClasses ? CLASSES_1_A : CLASSES_1_B">`;
+benchmark(`class="A B" [class]="CLASSES_1"`, function(rf: RenderFlags, ctx: any) {
   if (rf & 1) {
     ɵɵelement(0, 'div', 0);
   }
@@ -108,7 +111,9 @@ benchmark(`class="A B" [class]=" '1' "`, function(rf: RenderFlags, ctx: any) {
 });
 
 
-benchmark(`class="A B" [class]=" '1 2 3 4 5 6 7 8 9 0' "`, function(rf: RenderFlags, ctx: any) {
+`<div class="A B" 
+      [class]="toggleClasses ? CLASSES_10_A : CLASSES_10_B">`;
+benchmark(`class="A B" [class]="CLASSES_10"`, function(rf: RenderFlags, ctx: any) {
   if (rf & 1) {
     ɵɵelement(0, 'div', 0);
   }
@@ -117,8 +122,10 @@ benchmark(`class="A B" [class]=" '1 2 3 4 5 6 7 8 9 0' "`, function(rf: RenderFl
   }
 });
 
-
-benchmark(`class="A B" [class]=" '1' " [class.foo]="exp"`, function(rf: RenderFlags, ctx: any) {
+`<div class="A B" 
+      [class]="toggleClasses ? CLASSES_1_A : CLASSES_1_B"
+      [class.foo]="toggleClasses">`;
+benchmark(`class="A B" [class]="CLASSES_1" [class.foo]="exp"`, function(rf: RenderFlags, ctx: any) {
   if (rf & 1) {
     ɵɵelement(0, 'div', 0);
   }
@@ -128,10 +135,11 @@ benchmark(`class="A B" [class]=" '1' " [class.foo]="exp"`, function(rf: RenderFl
   }
 });
 
-
+`<div class="A B" 
+      [class]="toggleClasses ? CLASSES_10_A : CLASSES_10_B"
+      [class.foo]="toggleClasses">`;
 benchmark(
-    `class="A B" [class]=" '1 2 3 4 5 6 7 8 9 0' " [class.foo]="exp"`,
-    function(rf: RenderFlags, ctx: any) {
+    `class="A B" [class]="CLASSES_10" [class.foo]="exp"`, function(rf: RenderFlags, ctx: any) {
       if (rf & 1) {
         ɵɵelement(0, 'div', 0);
       }
@@ -142,6 +150,7 @@ benchmark(
     });
 
 
+`<div [className]="toggleClasses ? CLASSES_10_A : CLASSES_10_B">`;
 benchmark(`[element.class]="exp"`, function(rf: RenderFlags, ctx: any) {
   if (rf & 1) {
     ɵɵelement(0, 'div');
