@@ -14,7 +14,7 @@ import {isComponentDef} from '../interfaces/type_checks';
 
 import {ɵɵNgOnChangesFeature} from './ng_onchanges_feature';
 
-function getSuperType(type: Type<any>): Type<any>&
+export function getSuperType(type: Type<any>): Type<any>&
     {ɵcmp?: ComponentDef<any>, ɵdir?: DirectiveDef<any>} {
   return Object.getPrototypeOf(type.prototype).constructor;
 }

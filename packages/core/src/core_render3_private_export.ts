@@ -40,6 +40,7 @@ export {
   ɵɵsetNgModuleScope,
   ɵɵtemplateRefExtractor,
   ɵɵProvidersFeature,
+  ɵɵCopyDefinitionFeature,
   ɵɵInheritDefinitionFeature,
   ɵɵNgOnChangesFeature,
   LifecycleHooksFeature as ɵLifecycleHooksFeature,
