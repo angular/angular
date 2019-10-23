@@ -49,7 +49,7 @@ export class LocationService {
     } else if (this.swUpdateActivated) {
       // (Do a "full page navigation" if a ServiceWorker update has been activated)
       // We need to remove stored Position in order to be sure to scroll to the Top position
-      this.scrollService.removeStoredScrollPosition();
+      this.scrollService.removeStoredScrollInfo();
       this.goExternal(url);
     } else {
       this.location.go(url);
