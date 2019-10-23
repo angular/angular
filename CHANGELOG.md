@@ -1,3 +1,41 @@
+<a name="9.0.0-next.13"></a>
+# [9.0.0-next.13](https://github.com/angular/angular/compare/9.0.0-next.12...9.0.0-next.13) (2019-10-23)
+
+
+### Bug Fixes
+
+* **bazel:** remove deprecated ng_setup_workspace() function ([#33330](https://github.com/angular/angular/issues/33330)) ([8bc5fb2](https://github.com/angular/angular/commit/8bc5fb2))
+* **compiler:** do not throw when using abstract directive from other compilation unit ([#33347](https://github.com/angular/angular/issues/33347)) ([355e54a](https://github.com/angular/angular/commit/355e54a))
+* **compiler:** ensure that legacy ids are rendered for ICUs ([#33318](https://github.com/angular/angular/issues/33318)) ([5d86e4a](https://github.com/angular/angular/commit/5d86e4a))
+* **ivy:** align VE + Ivy #ref types in fullTemplateTypeCheck: false ([#33261](https://github.com/angular/angular/issues/33261)) ([77240e1](https://github.com/angular/angular/commit/77240e1))
+* **ivy:** handle method calls of local variables in template type checker ([#33132](https://github.com/angular/angular/issues/33132)) ([e2211ed](https://github.com/angular/angular/commit/e2211ed)), closes [#32900](https://github.com/angular/angular/issues/32900)
+* **language-service:** Add directive selectors & banana-in-a-box to completions ([#33311](https://github.com/angular/angular/issues/33311)) ([49eec5d](https://github.com/angular/angular/commit/49eec5d))
+* **language-service:** Add global symbol for $any() ([#33245](https://github.com/angular/angular/issues/33245)) ([3f257e9](https://github.com/angular/angular/commit/3f257e9))
+* **language-service:** Preserve CRLF in templates for language-service ([#33241](https://github.com/angular/angular/issues/33241)) ([65a0d2b](https://github.com/angular/angular/commit/65a0d2b))
+* **ngcc:** do not fail when multiple workers try to create the same directory ([#33237](https://github.com/angular/angular/issues/33237)) ([8017229](https://github.com/angular/angular/commit/8017229)), closes [/github.com/angular/angular/pull/33049#issuecomment-540485703](https://github.com//github.com/angular/angular/pull/33049/issues/issuecomment-540485703)
+
+
+### Features
+
+* **core:** add ModuleWithProviders generic type migration ([#33217](https://github.com/angular/angular/issues/33217)) ([56731f6](https://github.com/angular/angular/commit/56731f6))
+* **ivy:** enable re-export of the compilation scope of NgModules privately ([#33177](https://github.com/angular/angular/issues/33177)) ([c4733c1](https://github.com/angular/angular/commit/c4733c1)), closes [#29361](https://github.com/angular/angular/issues/29361)
+* **ivy:** give shim generation its own compiler options ([#33256](https://github.com/angular/angular/issues/33256)) ([d4db746](https://github.com/angular/angular/commit/d4db746))
+* **ngcc:** enable private NgModule re-exports in ngcc on request ([#33177](https://github.com/angular/angular/issues/33177)) ([e030375](https://github.com/angular/angular/commit/e030375))
+
+
+### Performance Improvements
+
+* **ivy:** avoid unnecessary i18n pass while processing a template ([#33284](https://github.com/angular/angular/issues/33284)) ([7f7dc7c](https://github.com/angular/angular/commit/7f7dc7c))
+
+
+### BREAKING CHANGES
+
+* **bazel:** @angular/bazel ng_setup_workspace() is no longer needed and has been removed.
+We assume you will fetch rules_nodejs in your WORKSPACE file, and no other dependencies remain here.
+Simply remove any calls to this function and the corresponding load statement.
+
+
+
 <a name="8.2.12"></a>
 ## [8.2.12](https://github.com/angular/angular/compare/8.2.11...8.2.12) (2019-10-23)
 
