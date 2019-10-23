@@ -464,14 +464,14 @@ describe('AppComponent', () => {
       let scrollSpy: jasmine.Spy;
       let scrollToTopSpy: jasmine.Spy;
       let scrollAfterRenderSpy: jasmine.Spy;
-      let removeStoredScrollPositionSpy: jasmine.Spy;
+      let removeStoredScrollInfoSpy: jasmine.Spy;
 
       beforeEach(() => {
         scrollService = fixture.debugElement.injector.get<ScrollService>(ScrollService);
         scrollSpy = spyOn(scrollService, 'scroll');
         scrollToTopSpy = spyOn(scrollService, 'scrollToTop');
         scrollAfterRenderSpy = spyOn(scrollService, 'scrollAfterRender');
-        removeStoredScrollPositionSpy = spyOn(scrollService, 'removeStoredScrollPosition');
+        removeStoredScrollInfoSpy = spyOn(scrollService, 'removeStoredScrollInfo');
       });
 
       it('should not scroll immediately when the docId (path) changes', () => {
@@ -516,9 +516,9 @@ describe('AppComponent', () => {
         expect(scrollSpy).toHaveBeenCalledTimes(1);
       });
 
-      it('should call `removeStoredScrollPosition` when call `onDocRemoved` directly', () => {
+      it('should call `removeStoredScrollInfo` when call `onDocRemoved` directly', () => {
         component.onDocRemoved();
-        expect(removeStoredScrollPositionSpy).toHaveBeenCalled();
+        expect(removeStoredScrollInfoSpy).toHaveBeenCalled();
       });
 
       it('should call `scrollAfterRender` when call `onDocInserted` directly', (() => {
