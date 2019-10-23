@@ -88,6 +88,29 @@ describe('SourceFileTranslationHandler', () => {
              .toHaveBeenCalledWith('/translations/en-US/relative/path.js', output);
        });
 
+    it('should transform `$localize.locale` identifiers', () => {
+      const diagnostics = new Diagnostics();
+      const handler = new SourceFileTranslationHandler();
+      const translations: TranslationBundle[] = [
+        {locale: 'fr', translations: {}},
+      ];
+      const contents = Buffer.from(
+          'const x = $localize.locale;\n' +
+          'const y = typeof $localize !== "undefined" && $localize.locale;\n' +
+          'const z = "undefined" !== typeof $localize && $localize.locale || "default";');
+      const getOutput = (locale: string) =>
+          `const x="${locale}";const y="${locale}";const z="${locale}"||"default";`;
+
+      handler.translate(
+          diagnostics, '/root/path', 'relative/path.js', contents, mockOutputPathFn, translations,
+          'en-US');
+
+      expect(FileUtils.writeFile)
+          .toHaveBeenCalledWith('/translations/fr/relative/path.js', getOutput('fr'));
+      expect(FileUtils.writeFile)
+          .toHaveBeenCalledWith('/translations/en-US/relative/path.js', getOutput('en-US'));
+    });
+
     it('should error if the file is not valid JS', () => {
       const diagnostics = new Diagnostics();
       const handler = new SourceFileTranslationHandler();
