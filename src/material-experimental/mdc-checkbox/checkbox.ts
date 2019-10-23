@@ -60,6 +60,7 @@ export class MatCheckboxChange {
     '[class.mat-accent]': 'color == "accent"',
     '[class.mat-warn]': 'color == "warn"',
     '[class._mat-animation-noopable]': `_animationMode === 'NoopAnimations'`,
+    '[class.mdc-checkbox--disabled]': 'disabled',
     '[id]': 'id',
   },
   providers: [MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR],
