@@ -704,6 +704,11 @@
           "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
         },
         {
+          "url": "guide/updating-to-version-9",
+          "title": "Updating to Version 9",
+          "tooltip": "Support for updating your application from version 8 to 9."
+        },
+        {
           "url": "guide/deprecations",
           "title": "Deprecations",
           "tooltip": "Summary of Angular APIs and features that are deprecated."
