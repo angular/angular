@@ -17,7 +17,9 @@ import {TranslationBundle, TranslationHandler} from '../translator';
 
 import {makeEs2015TranslatePlugin} from './es2015_translate_plugin';
 import {makeEs5TranslatePlugin} from './es5_translate_plugin';
+import {makeLocalePlugin} from './locale_plugin';
 import {TranslatePluginOptions} from './source_file_utils';
+
 
 
 /**
@@ -76,6 +78,7 @@ export class SourceFileTranslationHandler implements TranslationHandler {
       compact: true,
       generatorOpts: {minified: true},
       plugins: [
+        makeLocalePlugin(translationBundle.locale),
         makeEs2015TranslatePlugin(diagnostics, translationBundle.translations, options),
         makeEs5TranslatePlugin(diagnostics, translationBundle.translations, options),
       ],
