@@ -136,7 +136,14 @@ export class DirectPackageJsonUpdater implements PackageJsonUpdater {
     // Ensure the containing directory exists (in case this is a synthesized `package.json` due to a
     // custom configuration) and write the updated content to disk.
     this.fs.ensureDir(dirname(packageJsonPath));
-    this.fs.writeFile(packageJsonPath, `${JSON.stringify(parsedJson, null, 2)}\n`);
+    try {
+      this.fs.writeFile(packageJsonPath, JSON.stringify(parsedJson, null, 2) + '\n');
+    } catch (e) {
+      // Under Bazel, the input filesystem is readonly
+      if (e.code === 'EROFS') {
+        console.error('[ivy-ngcc] Readonly filesystem: Cannot write changes to', packageJsonPath);
+      }
+    }
   }
 }
 
