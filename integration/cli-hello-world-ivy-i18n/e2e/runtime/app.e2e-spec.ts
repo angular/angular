@@ -19,4 +19,11 @@ describe('cli-hello-world-ivy App', () => {
     page.navigateTo();
     expect(page.getParagraph('pipe')).toEqual('100 % awesome');
   });
+
+  it('should display the locale', () => { expect(page.getParagraph('locale')).toEqual('fr'); });
+
+  it('the date pipe should show the localized month', () => {
+    page.navigateTo();
+    expect(page.getParagraph('date')).toEqual('janvier');
+  });
 });
