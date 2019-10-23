@@ -1,6 +1,6 @@
 import * as OctokitApi from '@octokit/rest';
 import chalk from 'chalk';
-import {readFileSync, writeFileSync} from 'fs';
+import {existsSync, readFileSync, writeFileSync} from 'fs';
 import {join} from 'path';
 import {BaseReleaseTask} from './base-release-task';
 import {promptAndGenerateChangelog} from './changelog';
@@ -11,6 +11,9 @@ import {parseVersionName, Version} from './version-name/parse-version';
 
 /** Default filename for the changelog. */
 export const CHANGELOG_FILE_NAME = 'CHANGELOG.md';
+
+/** Path to the Bazel file that configures the release output. */
+const BAZEL_RELEASE_CONFIG_PATH = './packages.bzl';
 
 /**
  * Class that can be instantiated in order to stage a new release. The tasks requires user
@@ -89,6 +92,7 @@ class StageReleaseTask extends BaseReleaseTask {
     const publishBranch = this.switchToPublishBranch(newVersion);
 
     this.verifyLocalCommitsMatchUpstream(publishBranch);
+    this._verifyAngularPeerDependencyVersion(newVersion);
     await this._verifyPassingGithubStatus(publishBranch);
 
     if (!this.git.checkoutNewBranch(stagingBranch)) {
@@ -145,6 +149,52 @@ class StageReleaseTask extends BaseReleaseTask {
   private _updatePackageJsonVersion(newVersionName: string) {
     const newPackageJson = {...this.packageJson, version: newVersionName};
     writeFileSync(this.packageJsonPath, JSON.stringify(newPackageJson, null, 2) + '\n');
+  }
+
+  /**
+   * Ensures that the Angular version placeholder has been correctly updated to support
+   * given Angular versions. The following rules apply:
+   *   `N.x.x` requires Angular `^N.0.0 || (N+1).0.0-0`
+   *   `N.0.0-x` requires Angular `^N.0.0-0 || (N+1).0.0-0`
+   */
+  private _verifyAngularPeerDependencyVersion(newVersion: Version) {
+    const currentVersionRange = this._getAngularVersionPlaceholderOrExit();
+    const isMajorWithPrerelease = newVersion.minor === 0 && newVersion.patch === 0 &&
+        newVersion.prereleaseLabel !== null;
+    const requiredRange = isMajorWithPrerelease ?
+      `^${newVersion.major}.0.0-0 || ^${newVersion.major + 1}.0.0-0` :
+      `^${newVersion.major}.0.0 || ^${newVersion.major + 1}.0.0-0`;
+
+    if (requiredRange !== currentVersionRange) {
+      console.error(chalk.red(`  ✘   Cannot stage release. The required Angular version range ` +
+        `is invalid. The version range should be: ${requiredRange}`));
+      console.error(chalk.red(`      Please manually update the version range ` +
+        `in: ${BAZEL_RELEASE_CONFIG_PATH}`));
+      return process.exit(1);
+    }
+  }
+
+  /**
+   * Gets the Angular version placeholder from the bazel release config. If
+   * the placeholder could not be found, the process will be terminated.
+   */
+  private _getAngularVersionPlaceholderOrExit(): string {
+    const bzlConfigPath = join(this.projectDir, BAZEL_RELEASE_CONFIG_PATH);
+    if (!existsSync(bzlConfigPath)) {
+      console.error(chalk.red(`  ✘   Cannot stage release. Could not find the file which sets ` +
+        `the Angular peerDependency placeholder value. Looked for: ${bzlConfigPath}`));
+      return process.exit(1);
+    }
+
+    const configFileContent = readFileSync(bzlConfigPath, 'utf8');
+    const matches = configFileContent.match(/ANGULAR_PACKAGE_VERSION = ["']([^"']+)/);
+    if (!matches || !matches[1]) {
+      console.error(chalk.red(`  ✘   Cannot stage release. Could not find the ` +
+        `"ANGULAR_PACKAGE_VERSION" variable. Please ensure this variable exists. ` +
+        `Looked in: ${bzlConfigPath}`));
+      return process.exit(1);
+    }
+    return matches[1];
   }
 
   /** Verifies that the latest commit of the current branch is passing all Github statuses. */
