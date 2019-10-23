@@ -43,8 +43,8 @@ v9 - v12
 | `@angular/core`               | [`ViewEncapsulation.Native`](#core)                                           | <!--v6--> v10 |
 | `@angular/core`               | [`WtfScopeFn`](api/core/WtfScopeFn)                                           | <!--v8--> v10 |
 | `@angular/core`               | [`wtfCreateScope`](api/core/wtfCreateScope)                                   | <!--v8--> v10 |
-| `@angular/core`               | [`wtfStartTimeRange`](api/core/wtfStartTimeRange)                             | <!--v8--> v10 |       
-| `@angular/core`               | [`wtfEndTimeRange`](api/core/wtfEndTimeRange)                                 | <!--v8--> v10 |   
+| `@angular/core`               | [`wtfStartTimeRange`](api/core/wtfStartTimeRange)                             | <!--v8--> v10 |
+| `@angular/core`               | [`wtfEndTimeRange`](api/core/wtfEndTimeRange)                                 | <!--v8--> v10 |
 | `@angular/core`               | [`wtfLeave`](api/core/wtfLeave)                                               | <!--v8--> v10 |
 | `@angular/core`               | [`ModuleWithProviders` without a generic](#moduleWithProviders)               | <!--v9--> v10 |
 | `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | <!--v6--> v10 |
@@ -55,9 +55,10 @@ v9 - v12
 | `@angular/platform-webworker` | [All entry points](api/platform-webworker)                                    | <!--v8--> v10 |
 | template syntax               | [`<template`>](#template-tag)                                                 | <!--v7--> v10 |
 | polyfills                     | [reflect-metadata](#reflect-metadata)                                         | <!--v8--> v10 |
+| npm package format            | [`esm5` and `fesm5` entry-points in @angular/* npm packages](guide/deprecations#esm5-fesm5) | <!-- v9 --> v10 |
 | `@angular/core`               | [`defineInjectable`](#core)                                                   | <!--v8--> v11 |
-| `@angular/core`               | [`entryComponents`](api/core/NgModule#entryComponents)                        | <!--v9--> v11 | 
-| `@angular/core`               | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS)       | <!--v9--> v11 | 
+| `@angular/core`               | [`entryComponents`](api/core/NgModule#entryComponents)                        | <!--v9--> v11 |
+| `@angular/core`               | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS)       | <!--v9--> v11 |
 | `@angular/router`             | [`loadChildren` string syntax](#loadChildren)                                 | <!--v9--> v11 |
 | `@angular/core/testing`       | [`TestBed.get`](#testing)                                                     | <!--v9--> v12 |
 | `@angular/router`             | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
@@ -392,6 +393,56 @@ export class MyModule {
   }
 }
 ```
+
+{@a esm5-fesm5}
+### `esm5` and `fesm5` code formats in @angular/* npm packages
+
+As of Angular v8, the CLI primarily consumes the `fesm2015` variant of the code distributed via `@angular/*` npm packages.
+This renders the `esm5` and `fesm5` distributions obsolete and unnecessary, adding bloat to the package size and slowing down npm installations.
+
+The future removal of this distribution will have no impact on CLI users, unless they modified their build configuration to explicitly consume these code distributions.
+
+Any application still relying on the `esm5` and `fesm5` as the input to its build system will need to ensure that the build pipeline is capable of accepting JavaScript code conforming to ECMAScript 2015 (ES2015) language specification.
+
+Note that this change doesn't make existing libraries distributed in this format incompatible with the Angular CLI.
+The CLI will fall back and consume libraries in less desirable formats if others are not available.
+However, we do recommend that libraries ship their code in ES2015 format in order to make builds faster and build output smaller.
+
+In practical terms, the `package.json` of all `@angular` packages will change in the following way:
+
+**Before**:
+```
+{
+  "name": "@angular/core",
+  "version": "9.0.0",
+  "main": "./bundles/core.umd.js",
+  "module": "./fesm5/core.js",
+  "es2015": "./fesm2015/core.js",
+  "esm5": "./esm5/core.js",
+  "esm2015": "./esm2015/core.js",
+  "fesm5": "./fesm5/core.js",
+  "fesm2015": "./fesm2015/core.js",
+  ...
+}
+```
+
+**After**:
+```
+{
+  "name": "@angular/core",
+  "version": "10.0.0",
+  "main": "./bundles/core.umd.js",
+  "module": "./fesm2015/core.js",
+  "es2015": "./fesm2015/core.js",
+  "esm2015": "./esm2015/core.js",
+  "fesm2015": "./fesm2015/core.js",
+  ...
+}
+```
+
+For more information about the npm package format, see the [Angular Package Format spec](https://goo.gl/jB3GVv).
+
+
 
 {@a removed}
 ## Removed APIs
