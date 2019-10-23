@@ -700,20 +700,10 @@ export function applyStylingMapDirectly(
     }
 
     if (writeToAttrDirectly) {
-      let valueToApply: string;
-      if (isClassBased) {
-        valueToApply = typeof value === 'string' ? value : objectToClassName(value);
-        if (initialValue !== null) {
-          valueToApply = concatString(initialValue, valueToApply, ' ');
-        }
-        setClassName(renderer, element, valueToApply);
-      } else {
-        valueToApply = forceStylesAsString(value as{[key: string]: any}, true);
-        if (initialValue !== null) {
-          valueToApply = initialValue + ';' + valueToApply;
-        }
-        setStyleAttr(renderer, element, valueToApply);
-      }
+      const initialValue =
+          hasInitial && !bindingValueContainsInitial ? getInitialStylingValue(context) : null;
+      const valueToApply =
+          writeStylingValueDirectly(renderer, element, value, isClassBased, initialValue);
       setValue(data, cachedValueIndex, valueToApply || null);
     } else {
       const applyFn = isClassBased ? setClass : setStyle;
@@ -749,6 +739,26 @@ export function applyStylingMapDirectly(
       }
     }
   }
+}
+
+export function writeStylingValueDirectly(
+    renderer: any, element: RElement, value: {[key: string]: any} | string | null,
+    isClassBased: boolean, initialValue: string | null): string {
+  let valueToApply: string;
+  if (isClassBased) {
+    valueToApply = typeof value === 'string' ? value : objectToClassName(value);
+    if (initialValue !== null) {
+      valueToApply = concatString(initialValue, valueToApply, ' ');
+    }
+    setClassName(renderer, element, valueToApply);
+  } else {
+    valueToApply = forceStylesAsString(value, true);
+    if (initialValue !== null) {
+      valueToApply = initialValue + ';' + valueToApply;
+    }
+    setStyleAttr(renderer, element, valueToApply);
+  }
+  return valueToApply;
 }
 
 /**

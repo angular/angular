@@ -296,7 +296,8 @@ export function forceClassesAsString(classes: string | {[key: string]: any} | nu
 }
 
 export function forceStylesAsString(
-    styles: {[key: string]: any} | null | undefined, hyphenateProps: boolean): string {
+    styles: {[key: string]: any} | string | null | undefined, hyphenateProps: boolean): string {
+  if (typeof styles == 'string') return styles;
   let str = '';
   if (styles) {
     const props = Object.keys(styles);

@@ -270,6 +270,9 @@
     "name": "findDirectiveMatches"
   },
   {
+    "name": "forceStylesAsString"
+  },
+  {
     "name": "generateExpandoInstructionBlock"
   },
   {
@@ -405,6 +408,9 @@
     "name": "hasTagAndTypeMatch"
   },
   {
+    "name": "hyphenate"
+  },
+  {
     "name": "includeViewProviders"
   },
   {
@@ -528,6 +534,9 @@
     "name": "noSideEffects"
   },
   {
+    "name": "objectToClassName"
+  },
+  {
     "name": "postProcessBaseDirective"
   },
   {
@@ -606,6 +615,9 @@
     "name": "setClass"
   },
   {
+    "name": "setClassName"
+  },
+  {
     "name": "setCurrentDirectiveDef"
   },
   {
@@ -645,6 +657,9 @@
     "name": "setStyle"
   },
   {
+    "name": "setStyleAttr"
+  },
+  {
     "name": "setUpAttributes"
   },
   {
@@ -667,6 +682,9 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "writeStylingValueDirectly"
   },
   {
     "name": "ɵɵdefineComponent"
