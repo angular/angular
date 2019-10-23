@@ -1,0 +1,14 @@
+<html>
+  <script>
+   let BASE = location.toString().split('packages/core/test/render3/perf')[0]
+   let BENCHMARK = location.search.split('=')[1];
+   document.writeln('<' + 'script src="' + BASE + '/dist/bin/packages/core/test/render3/perf/' + BENCHMARK + '.min_debug.es2015.js"></' + 'script>');
+  </script>
+  <body>
+    <ol>
+      <li>Build the benchmark using <tt>yarn bazel build //packages/core/test/render3/perf:${BENCHMARK}.min_debug.es2015.js --define=compile=aot</tt></li>
+      <li>Open this file using the <tt>file://</tt> protocol and add <tt>?benchmark=BENCHMARK</tt> to the URL.</li>
+      <li>Open debug console for details</li>
+    </ol>
+  </body>
+</html>
