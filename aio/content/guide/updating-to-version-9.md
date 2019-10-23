@@ -1,10 +1,10 @@
-# Migrating to Angular Version 9 
+# Updating to Angular Version 9 
 
-This guide contains everything you need to know about migrating to the next Angular version.
+This guide contains everything you need to know about updating to the next Angular version.
 
 ## Version 9 Schematics
 
-If your application uses the CLI, you can upgrade to version 9 automatically with the help of the `ng update` script. 
+If your application uses the CLI, you can update to version 9 automatically with the help of the `ng update` script. 
 The script will run a series of small migrations that will transform the code of your application to be compatible with version 9.
  
 If you're curious about the specific migrations being run (e.g. what code is changing and why), the guides below provide more context on each change and contain FAQs for common questions.
