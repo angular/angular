@@ -105,13 +105,13 @@ When the "Buy" button is clicked, you'll use the cart service to add the current
 
 1. To see the new "Buy" button, refresh the application and click on a product's name to display its details.
 
-   <figure class="lightbox">
-    <div class="card">
-      <img src='generated/images/guide/start/product-details-buy.png' alt="Display details for selected product with a Buy button">
-    </div>
-  </figure>
+    <figure class="lightbox">
+      <div class="card">
+        <img src='generated/images/guide/start/product-details-buy.png' alt="Display details for selected product with a Buy button">
+      </div>
+    </figure>
 
- 1. Click the "Buy" button. The product is added to the stored list of items in the cart, and a message is displayed.
+1. Click the "Buy" button. The product is added to the stored list of items in the cart, and a message is displayed.
 
     <figure class="lightbox">
       <div class="card">
@@ -156,7 +156,7 @@ We'll create the cart page in two steps:
 
     <figure class="lightbox">
       <div class="card">
-      <img src='generated/images/guide/start/cart-works.png' alt="Display cart page before customizing">
+        <img src='generated/images/guide/start/cart-works.png' alt="Display cart page before customizing">
       </div>
     </figure>
 
@@ -212,7 +212,7 @@ Services can be used to share data across components:
 
     <figure class="lightbox">
       <div class="card">
-      <img src='generated/images/guide/start/cart-page-full.png' alt="Cart page with products added">
+        <img src='generated/images/guide/start/cart-page-full.png' alt="Cart page with products added">
       </div>
     </figure>
 
@@ -373,7 +373,7 @@ Now that your app can retrieve shipping data, you'll create a shipping component
 
     <figure class="lightbox">
       <div class="card">
-      <img src='generated/images/guide/start/cart-empty-with-shipping-prices.png' alt="Cart with link to shipping prices">
+        <img src='generated/images/guide/start/cart-empty-with-shipping-prices.png' alt="Cart with link to shipping prices">
       </div>
     </figure>
 
@@ -381,7 +381,7 @@ Now that your app can retrieve shipping data, you'll create a shipping component
 
     <figure class="lightbox">
       <div class="card">
-      <img src='generated/images/guide/start/shipping-prices.png' alt="Display shipping prices">
+        <img src='generated/images/guide/start/shipping-prices.png' alt="Display shipping prices">
       </div>
     </figure>
 
