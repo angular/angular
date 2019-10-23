@@ -65,7 +65,7 @@ export function ɵɵelementStart(
   }
 
   if ((tNode.flags & TNodeFlags.hasInitialStyling) === TNodeFlags.hasInitialStyling) {
-    renderInitialStyling(renderer, native, tNode);
+    renderInitialStyling(renderer, native, tNode, false);
   }
 
   appendChild(native, tNode, lView);
@@ -222,7 +222,7 @@ export function ɵɵelementHostAttrs(attrs: TAttributes) {
       // attribute values to the element.
       if (stylingNeedsToBeRendered) {
         const renderer = lView[RENDERER];
-        renderInitialStyling(renderer, native, tNode);
+        renderInitialStyling(renderer, native, tNode, true);
       }
     }
   }
