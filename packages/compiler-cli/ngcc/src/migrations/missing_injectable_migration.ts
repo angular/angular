@@ -17,10 +17,13 @@ import {createInjectableDecorator, isClassDeclaration} from './utils';
 
 /**
  * Ensures that classes that are provided as an Angular service in either `NgModule.providers` or
- * `Directive.providers`/`Component.viewProviders` also have an `@Injectable()` decorator. This
- * decorator is now mandatory, as otherwise the compiler would not compile an injectable definition
- * for the service. This is unlike View Engine, where having just an unrelated decorator may have
- * been sufficient for the service to become injectable.
+ * `Directive.providers`/`Component.viewProviders` are decorated with one of the `@Injectable`,
+ * `@Directive`, `@Component` or `@Pipe` decorators, adding an `@Injectable()` decorator when none
+ * are present.
+ *
+ * At least one decorator is now mandatory, as otherwise the compiler would not compile an
+ * injectable definition for the service. This is unlike View Engine, where having just an unrelated
+ * decorator may have been sufficient for the service to become injectable.
  *
  * In essence, this migration operates on classes that are themselves an NgModule, Directive or
  * Component. Their metadata is statically evaluated so that their "providers"/"viewProviders"
