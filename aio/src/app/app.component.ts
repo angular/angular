@@ -202,7 +202,7 @@ export class AppComponent implements OnInit {
   }
 
   onDocRemoved() {
-    this.scrollService.removeStoredScrollPosition();
+    this.scrollService.removeStoredScrollInfo();
   }
 
   onDocInserted() {
