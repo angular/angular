@@ -1,3 +1,13 @@
+<a name="8.2.12"></a>
+## [8.2.12](https://github.com/angular/angular/compare/8.2.11...8.2.12) (2019-10-23)
+
+
+### Bug Fixes
+
+* **upgrade:** remove unused version export ([#33180](https://github.com/angular/angular/issues/33180)) ([37cbcfa](https://github.com/angular/angular/commit/37cbcfa))
+
+
+
 <a name="8.2.11"></a>
 ## [8.2.11](https://github.com/angular/angular/compare/8.2.10...8.2.11) (2019-10-15)
 
