@@ -29,7 +29,7 @@ const NG_IF_CASES = '/app/ng-if-cases.ts';
 const TEST_TEMPLATE = '/app/test.ng';
 
 describe('diagnostics', () => {
-  const mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
+  const mockHost = new MockTypescriptHost(['/app/main.ts']);
   const tsLS = ts.createLanguageService(mockHost);
   const ngHost = new TypeScriptServiceHost(mockHost, tsLS);
   const ngLS = createLanguageService(ngHost);
@@ -45,6 +45,7 @@ describe('diagnostics', () => {
     const files = [
       '/app/app.component.ts',
       '/app/main.ts',
+      '/app/parsing-cases.ts',
     ];
     for (const file of files) {
       const syntaxDiags = tsLS.getSyntacticDiagnostics(file);

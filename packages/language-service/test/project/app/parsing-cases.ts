@@ -20,13 +20,13 @@ export class CaseIncompleteOpen {
 }
 
 @Component({
-  template: '<h1>Some <a> ~{missing-closing} text</h1>',
+  template: '<h1>Some <a> ~{missing-closing} text</a></h1>',
 })
 export class CaseMissingClosing {
 }
 
 @Component({
-  template: '<h1>Some <unknown ~{unknown-element}> text</h1>',
+  template: '<h1>Some <unknown ~{unknown-element}> text</unknown></h1>',
 })
 export class CaseUnknown {
 }
@@ -53,7 +53,7 @@ export class AttributeBinding {
 }
 
 @Component({
-  template: '<h1 [model]="~{property-binding-model}test"></h1>',
+  template: '<h1 [class]="~{property-binding-model}test"></h1>',
 })
 export class PropertyBinding {
   test: string = 'test';
@@ -70,8 +70,8 @@ export class EventBinding {
 
 @Component({
   template: `
-    <h1 [(model)]="~{two-way-binding-model}test"></h1>
-    <input ~{two-way-binding-input}></input>`,
+    <h1 [(id)]="~{two-way-binding-model}test"></h1>
+    <input ~{two-way-binding-input}/>`,
 })
 export class TwoWayBinding {
   test: string = 'test';
@@ -118,13 +118,13 @@ export class ForOfEmpty {
 }
 
 @Component({
-  template: '<div *ngFor="let ~{for-let-empty}"></div>',
+  template: '<div *ngFor="let ~{for-let-empty}i = index"></div>',
 })
 export class ForOfLetEmpty {
 }
 
 @Component({
-  template: '<div *ngFor="let i = ~{for-let-i-equal}"></div>',
+  template: '<div *ngFor="let i = ~{for-let-i-equal}index"></div>',
 })
 export class ForLetIEqual {
 }
@@ -163,14 +163,15 @@ export class AsyncForUsingComponent {
   template: `
     <div #div>
       <test-comp #test1>
-        {{~{test-comp-content}}}
+        {{~{test-comp-content}title}}
         {{test1.~{test-comp-after-test}name}}
-        {{div.~{test-comp-after-div}.innerText}}
+        {{div.~{test-comp-after-div}innerText}}
       </test-comp>
     </div>
     <test-comp #test2></test-comp>`,
 })
 export class References {
+  title = 'hello world';
 }
 
 /*BeginTestComponent*/ @Component({
@@ -193,7 +194,7 @@ export class TemplateReference {
 }
 
 @Component({
-  template: '{{~{empty-interpolation}}}',
+  template: '{{~{empty-interpolation}title}}',
 })
 export class EmptyInterpolation {
   title = 'Some title';
