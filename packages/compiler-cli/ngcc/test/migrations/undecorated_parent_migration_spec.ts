@@ -148,13 +148,22 @@ runInEachFileSystem(() => {
          const file = analysis.get(program.getSourceFile(INDEX_FILENAME) !) !;
          expect(file.compiledClasses.find(c => c.name === 'DerivedClass')).toBeDefined();
          expect(file.compiledClasses.find(c => c.name === 'RealBaseClass')).toBeUndefined();
+
+         const intermediateClass = file.compiledClasses.find(c => c.name === 'IntermediateClass') !;
+         expect(intermediateClass.decorators !.length).toEqual(1);
+         const intermediateDecorator = intermediateClass.decorators ![0];
+         expect(intermediateDecorator.name).toEqual('Directive');
+         expect(intermediateDecorator.identifier).toBeNull('The decorator must be synthesized');
+         expect(intermediateDecorator.import).toEqual({from: '@angular/core', name: 'Directive'});
+         expect(intermediateDecorator.args !.length).toEqual(0);
+
          const baseClass = file.compiledClasses.find(c => c.name === 'BaseClass') !;
          expect(baseClass.decorators !.length).toEqual(1);
-         const decorator = baseClass.decorators ![0];
-         expect(decorator.name).toEqual('Directive');
-         expect(decorator.identifier).toBeNull('The decorator must be synthesized');
-         expect(decorator.import).toEqual({from: '@angular/core', name: 'Directive'});
-         expect(decorator.args !.length).toEqual(0);
+         const baseDecorator = baseClass.decorators ![0];
+         expect(baseDecorator.name).toEqual('Directive');
+         expect(baseDecorator.identifier).toBeNull('The decorator must be synthesized');
+         expect(baseDecorator.import).toEqual({from: '@angular/core', name: 'Directive'});
+         expect(baseDecorator.args !.length).toEqual(0);
        });
 
     it('should handle the base class being in a different file (same package) as the derived class',
