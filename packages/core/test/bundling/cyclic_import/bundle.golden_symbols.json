@@ -108,9 +108,6 @@
     "name": "RENDERER_FACTORY"
   },
   {
-    "name": "RendererStyleFlags3"
-  },
-  {
     "name": "SANITIZER"
   },
   {
@@ -270,6 +267,9 @@
     "name": "findDirectiveMatches"
   },
   {
+    "name": "forceStylesAsString"
+  },
+  {
     "name": "generateExpandoInstructionBlock"
   },
   {
@@ -405,6 +405,9 @@
     "name": "hasTagAndTypeMatch"
   },
   {
+    "name": "hyphenate"
+  },
+  {
     "name": "includeViewProviders"
   },
   {
@@ -528,6 +531,9 @@
     "name": "noSideEffects"
   },
   {
+    "name": "objectToClassName"
+  },
+  {
     "name": "postProcessBaseDirective"
   },
   {
@@ -573,9 +579,6 @@
     "name": "renderStringify"
   },
   {
-    "name": "renderStylingMap"
-  },
-  {
     "name": "renderView"
   },
   {
@@ -603,7 +606,7 @@
     "name": "setBindingRoot"
   },
   {
-    "name": "setClass"
+    "name": "setClassName"
   },
   {
     "name": "setCurrentDirectiveDef"
@@ -642,7 +645,7 @@
     "name": "setSelectedIndex"
   },
   {
-    "name": "setStyle"
+    "name": "setStyleAttr"
   },
   {
     "name": "setUpAttributes"
@@ -667,6 +670,9 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "writeStylingValueDirectly"
   },
   {
     "name": "ɵɵdefineComponent"
