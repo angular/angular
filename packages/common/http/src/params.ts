@@ -78,17 +78,22 @@ function paramParser(rawParams: string, codec: HttpParameterCodec): Map<string, 
   }
   return map;
 }
+/**
+ * Encode input string with standard encodeURIComponent and then un-encode specific characters.
+ */
 function standardEncoding(v: string): string {
-  return encodeURIComponent(v)
-      .replace(/%40/gi, '@')
-      .replace(/%3A/gi, ':')
-      .replace(/%24/gi, '$')
-      .replace(/%2C/gi, ',')
-      .replace(/%3B/gi, ';')
-      .replace(/%2B/gi, '+')
-      .replace(/%3D/gi, '=')
-      .replace(/%3F/gi, '?')
-      .replace(/%2F/gi, '/');
+  const tmap = new Map<string, string>([
+    ['40', '@'],
+    ['3A', ':'],
+    ['24', '$'],
+    ['2C', ','],
+    ['3B', ';'],
+    ['2B', '+'],
+    ['3D', '='],
+    ['3F', '?'],
+    ['2F', '/'],
+  ]);
+  return encodeURIComponent(v).replace(/%(\d[a-z0-9])/gi, (_, t) => tmap.get(t) || `%${t}`);
 }
 
 interface Update {
