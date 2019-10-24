@@ -370,7 +370,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
                                    new PropertyRead(
                                        span, span.toAbsolute(offset),
                                        new ImplicitReceiver(span, span.toAbsolute(offset)), ''),
-              valueRelativePosition);
+              this.position);
         } else {
           keyCompletions();
         }
@@ -379,10 +379,9 @@ class ExpressionVisitor extends NullTemplateVisitor {
   }
 
   visitBoundText(ast: BoundTextAst) {
-    const expressionPosition = this.position - ast.sourceSpan.start.offset;
-    if (inSpan(expressionPosition, ast.value.span)) {
+    if (inSpan(this.position, ast.value.sourceSpan)) {
       const completions = getExpressionCompletions(
-          this.getExpressionScope(), ast.value, expressionPosition, this.info.template.query);
+          this.getExpressionScope(), ast.value, this.position, this.info.template.query);
       if (completions) {
         this.result = this.symbolsToCompletions(completions);
       }
@@ -410,7 +409,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
 
   private get attributeValuePosition() {
     if (this.attr && this.attr.valueSpan) {
-      return this.position - this.attr.valueSpan.start.offset;
+      return this.position;
     }
     return 0;
   }
