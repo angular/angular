@@ -70,7 +70,8 @@ class LanguageServiceImpl implements LanguageService {
       isGlobalCompletion: false,
       isMemberCompletion: false,
       isNewIdentifierLocation: false,
-      entries: results,
+      // Cast CompletionEntry.kind from ng.CompletionKind to ts.ScriptElementKind
+      entries: results as unknown as ts.CompletionEntry[],
     };
   }
 
