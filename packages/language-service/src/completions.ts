@@ -12,7 +12,7 @@ import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
 import {AstResult, AttrInfo} from './common';
 import {getExpressionCompletions} from './expressions';
 import {attributeNames, elementNames, eventNames, propertyNames} from './html_info';
-import {CompletionKind, Span, Symbol, SymbolTable, TemplateSource} from './types';
+import * as ng from './types';
 import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getSelectors, hasTemplateReference, inSpan, spanOf} from './utils';
 
 const TEMPLATE_ATTR_PREFIX = '*';
@@ -31,8 +31,8 @@ const hiddenHtmlElements = {
 const ANGULAR_ELEMENTS: ReadonlyArray<string> = ['ng-container', 'ng-content', 'ng-template'];
 
 export function getTemplateCompletions(
-    templateInfo: AstResult, position: number): ts.CompletionEntry[] {
-  let result: ts.CompletionEntry[] = [];
+    templateInfo: AstResult, position: number): ng.CompletionEntry[] {
+  let result: ng.CompletionEntry[] = [];
   const {htmlAst, template} = templateInfo;
   // The templateNode starts at the delimiter character so we add 1 to skip it.
   const templatePosition = position - template.span.start;
@@ -98,7 +98,7 @@ export function getTemplateCompletions(
   return result;
 }
 
-function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ts.CompletionEntry[] {
+function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ng.CompletionEntry[] {
   const item = path.tail instanceof Element ? path.tail : path.parentOf(path.tail);
   if (item instanceof Element) {
     return attributeCompletionsForElement(info, item.name);
@@ -107,14 +107,14 @@ function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ts.Compl
 }
 
 function attributeCompletionsForElement(
-    info: AstResult, elementName: string): ts.CompletionEntry[] {
-  const results: ts.CompletionEntry[] = [];
+    info: AstResult, elementName: string): ng.CompletionEntry[] {
+  const results: ng.CompletionEntry[] = [];
 
   // Add html attributes
   for (const name of attributeNames(elementName)) {
     results.push({
       name,
-      kind: CompletionKind.HTML_ATTRIBUTE as unknown as ts.ScriptElementKind,
+      kind: ng.CompletionKind.HTML_ATTRIBUTE,
       sortText: name,
     });
   }
@@ -123,7 +123,7 @@ function attributeCompletionsForElement(
   for (const name of propertyNames(elementName)) {
     results.push({
       name: `[${name}]`,
-      kind: CompletionKind.ATTRIBUTE as unknown as ts.ScriptElementKind,
+      kind: ng.CompletionKind.ATTRIBUTE,
       sortText: name,
     });
   }
@@ -132,7 +132,7 @@ function attributeCompletionsForElement(
   for (const name of eventNames(elementName)) {
     results.push({
       name: `(${name})`,
-      kind: CompletionKind.ATTRIBUTE as unknown as ts.ScriptElementKind,
+      kind: ng.CompletionKind.ATTRIBUTE,
       sortText: name,
     });
   }
@@ -144,7 +144,7 @@ function attributeCompletionsForElement(
 }
 
 function attributeValueCompletions(
-    info: AstResult, position: number, attr: Attribute): ts.CompletionEntry[] {
+    info: AstResult, position: number, attr: Attribute): ng.CompletionEntry[] {
   const path = findTemplateAstAt(info.templateAst, position);
   if (!path.tail) {
     return [];
@@ -166,7 +166,7 @@ function attributeValueCompletions(
   return visitor.result || [];
 }
 
-function elementCompletions(info: AstResult, path: AstPath<HtmlAst>): ts.CompletionEntry[] {
+function elementCompletions(info: AstResult, path: AstPath<HtmlAst>): ng.CompletionEntry[] {
   const htmlNames = elementNames().filter(name => !(name in hiddenHtmlElements));
 
   // Collect the elements referenced by the selectors
@@ -177,27 +177,21 @@ function elementCompletions(info: AstResult, path: AstPath<HtmlAst>): ts.Complet
   const components = directiveElements.map(name => {
     return {
       name,
-      // Need to cast to unknown because Angular's CompletionKind includes HTML
-      // entites.
-      kind: CompletionKind.COMPONENT as unknown as ts.ScriptElementKind,
+      kind: ng.CompletionKind.COMPONENT,
       sortText: name,
     };
   });
   const htmlElements = htmlNames.map(name => {
     return {
       name,
-      // Need to cast to unknown because Angular's CompletionKind includes HTML
-      // entites.
-      kind: CompletionKind.ELEMENT as unknown as ts.ScriptElementKind,
+      kind: ng.CompletionKind.ELEMENT,
       sortText: name,
     };
   });
   const angularElements = ANGULAR_ELEMENTS.map(name => {
     return {
       name,
-      // Need to cast to unknown because Angular's CompletionKind includes HTML
-      // entites.
-      kind: CompletionKind.ANGULAR_ELEMENT as unknown as ts.ScriptElementKind,
+      kind: ng.CompletionKind.ANGULAR_ELEMENT,
       sortText: name,
     };
   });
@@ -210,7 +204,7 @@ function elementCompletions(info: AstResult, path: AstPath<HtmlAst>): ts.Complet
  * Filter the specified `entries` by unique name.
  * @param entries Completion Entries
  */
-function uniqueByName(entries: ts.CompletionEntry[]) {
+function uniqueByName(entries: ng.CompletionEntry[]) {
   const results = [];
   const set = new Set();
   for (const entry of entries) {
@@ -222,20 +216,18 @@ function uniqueByName(entries: ts.CompletionEntry[]) {
   return results;
 }
 
-function entityCompletions(value: string, position: number): ts.CompletionEntry[] {
+function entityCompletions(value: string, position: number): ng.CompletionEntry[] {
   // Look for entity completions
   const re = /&[A-Za-z]*;?(?!\d)/g;
   let found: RegExpExecArray|null;
-  let result: ts.CompletionEntry[] = [];
+  let result: ng.CompletionEntry[] = [];
   while (found = re.exec(value)) {
     let len = found[0].length;
     if (position >= found.index && position < (found.index + len)) {
       result = Object.keys(NAMED_ENTITIES).map(name => {
         return {
           name: `&${name};`,
-          // Need to cast to unknown because Angular's CompletionKind includes
-          // HTML entites.
-          kind: CompletionKind.ENTITY as unknown as ts.ScriptElementKind,
+          kind: ng.CompletionKind.ENTITY,
           sortText: name,
         };
       });
@@ -245,7 +237,7 @@ function entityCompletions(value: string, position: number): ts.CompletionEntry[
   return result;
 }
 
-function interpolationCompletions(info: AstResult, position: number): ts.CompletionEntry[] {
+function interpolationCompletions(info: AstResult, position: number): ng.CompletionEntry[] {
   // Look for an interpolation in at the position.
   const templatePath = findTemplateAstAt(info.templateAst, position);
   if (!templatePath.tail) {
@@ -265,7 +257,7 @@ function interpolationCompletions(info: AstResult, position: number): ts.Complet
 // code checks for this case and returns element completions if it is detected or undefined
 // if it is not.
 function voidElementAttributeCompletions(
-    info: AstResult, path: AstPath<HtmlAst>): ts.CompletionEntry[] {
+    info: AstResult, path: AstPath<HtmlAst>): ng.CompletionEntry[] {
   const tail = path.tail;
   if (tail instanceof Text) {
     const match = tail.value.match(/<(\w(\w|\d|-)*:)?(\w(\w|\d|-)*)\s/);
@@ -280,12 +272,12 @@ function voidElementAttributeCompletions(
 }
 
 class ExpressionVisitor extends NullTemplateVisitor {
-  private getExpressionScope: () => SymbolTable;
-  result: ts.CompletionEntry[]|undefined;
+  private getExpressionScope: () => ng.SymbolTable;
+  result: ng.CompletionEntry[]|undefined;
 
   constructor(
       private info: AstResult, private position: number, private attr?: Attribute,
-      getExpressionScope?: () => SymbolTable) {
+      getExpressionScope?: () => ng.SymbolTable) {
     super();
     this.getExpressionScope = getExpressionScope || (() => info.template.members);
   }
@@ -337,9 +329,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
         this.result = keys.map(key => {
           return {
             name: key,
-            // Need to cast to unknown because Angular's CompletionKind includes
-            // HTML entites.
-            kind: CompletionKind.KEY as unknown as ts.ScriptElementKind,
+            kind: ng.CompletionKind.KEY,
             sortText: key,
           };
         });
@@ -408,11 +398,11 @@ class ExpressionVisitor extends NullTemplateVisitor {
     }
   }
 
-  private symbolsToCompletions(symbols: Symbol[]): ts.CompletionEntry[] {
+  private symbolsToCompletions(symbols: ng.Symbol[]): ng.CompletionEntry[] {
     return symbols.filter(s => !s.name.startsWith('__') && s.public).map(symbol => {
       return {
         name: symbol.name,
-        kind: symbol.kind as ts.ScriptElementKind,
+        kind: symbol.kind as ng.CompletionKind,
         sortText: symbol.name,
       };
     });
@@ -426,7 +416,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
   }
 }
 
-function getSourceText(template: TemplateSource, span: Span): string {
+function getSourceText(template: ng.TemplateSource, span: ng.Span): string {
   return template.source.substring(span.start, span.end);
 }
 
@@ -454,7 +444,7 @@ function lowerName(name: string): string {
   return name && (name[0].toLowerCase() + name.substr(1));
 }
 
-function angularAttributes(info: AstResult, elementName: string): ts.CompletionEntry[] {
+function angularAttributes(info: AstResult, elementName: string): ng.CompletionEntry[] {
   const {selectors, map: selectorMap} = getSelectors(info);
   const templateRefs = new Set<string>();
   const inputs = new Set<string>();
@@ -482,18 +472,18 @@ function angularAttributes(info: AstResult, elementName: string): ts.CompletionE
     }
   }
 
-  const results: ts.CompletionEntry[] = [];
+  const results: ng.CompletionEntry[] = [];
   for (const name of templateRefs) {
     results.push({
       name: `*${name}`,
-      kind: CompletionKind.ATTRIBUTE as unknown as ts.ScriptElementKind,
+      kind: ng.CompletionKind.ATTRIBUTE,
       sortText: name,
     });
   }
   for (const name of inputs) {
     results.push({
       name: `[${name}]`,
-      kind: CompletionKind.ATTRIBUTE as unknown as ts.ScriptElementKind,
+      kind: ng.CompletionKind.ATTRIBUTE,
       sortText: name,
     });
     // Add banana-in-a-box syntax
@@ -501,7 +491,7 @@ function angularAttributes(info: AstResult, elementName: string): ts.CompletionE
     if (outputs.has(`${name}Change`)) {
       results.push({
         name: `[(${name})]`,
-        kind: CompletionKind.ATTRIBUTE as unknown as ts.ScriptElementKind,
+        kind: ng.CompletionKind.ATTRIBUTE,
         sortText: name,
       });
     }
@@ -509,14 +499,14 @@ function angularAttributes(info: AstResult, elementName: string): ts.CompletionE
   for (const name of outputs) {
     results.push({
       name: `(${name})`,
-      kind: CompletionKind.ATTRIBUTE as unknown as ts.ScriptElementKind,
+      kind: ng.CompletionKind.ATTRIBUTE,
       sortText: name,
     });
   }
   for (const name of others) {
     results.push({
       name,
-      kind: CompletionKind.ATTRIBUTE as unknown as ts.ScriptElementKind,
+      kind: ng.CompletionKind.ATTRIBUTE,
       sortText: name,
     });
   }
