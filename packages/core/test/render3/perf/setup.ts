@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {addToViewTree, createLContainer, createLView, createTNode, createTView, getOrCreateTNode, renderView} from '../../../src/render3/instructions/shared';
+import {addToViewTree, createLContainer, createLView, createTNode, createTView, getOrCreateTNode, refreshView, renderView} from '../../../src/render3/instructions/shared';
 import {ComponentTemplate} from '../../../src/render3/interfaces/definition';
 import {TAttributes, TNodeType, TViewNode} from '../../../src/render3/interfaces/node';
 import {RComment} from '../../../src/render3/interfaces/renderer';
@@ -50,6 +50,8 @@ export function setupTestHarness(
   const lContainer = createLContainer(
       mockRNode as RComment, hostLView, mockRNode as RComment, tContainerNode, true);
   addToViewTree(hostLView, lContainer);
+  // run in the host view in creation mode to initialize TNode structures (first template pass)
+  renderView(hostLView, hostTView, null);
 
 
   // create test embedded views
@@ -62,19 +64,18 @@ export function setupTestHarness(
     const embeddedLView = createLView(
         hostLView, embeddedTView, embeddedViewContext, LViewFlags.CheckAlways, null, viewTNode,
         rendererFactory, renderer);
-    renderView(embeddedLView, embeddedTView, null);
+    renderView(embeddedLView, embeddedTView, embeddedViewContext);
     return embeddedLView;
   }
 
-  function detectChanges(): void { renderView(hostLView, hostTView, null); }
+  function detectChanges(): void {
+    refreshView(hostLView, hostTView, hostTView.template, embeddedViewContext);
+  }
 
   // create embedded views and add them to the container
   for (let i = 0; i < noOfViews; i++) {
     insertView(createEmbeddedLView(), lContainer, i);
   }
-
-  // run in the creation mode to set flags etc.
-  detectChanges();
 
   return {
     hostLView: hostLView,

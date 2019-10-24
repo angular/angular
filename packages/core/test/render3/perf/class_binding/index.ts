@@ -151,7 +151,7 @@ benchmark(
 
 
 `<div [className]="toggleClasses ? CLASSES_10_A : CLASSES_10_B">`;
-benchmark(`[element.class]="exp"`, function(rf: RenderFlags, ctx: any) {
+benchmark(`[className]="CLASSES_10"`, function(rf: RenderFlags, ctx: any) {
   if (rf & 1) {
     ɵɵelement(0, 'div');
   }
