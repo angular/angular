@@ -21,14 +21,6 @@ export interface AstResult {
   template: TemplateSource;
 }
 
-export interface AttrInfo {
-  name: string;
-  input?: boolean;
-  output?: boolean;
-  template?: boolean;
-  fromHtml?: boolean;
-}
-
 export type SelectorInfo = {
   selectors: CssSelector[],
   map: Map<CssSelector, CompileDirectiveSummary>
