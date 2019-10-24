@@ -21,6 +21,7 @@
        [class.mdc-tab--active]="selectedIndex == i"
        [disabled]="tab.disabled"
        (click)="_handleClick(tab, tabHeader, i)">
+    <span class="mdc-tab__ripple"></span>
 
     <!-- Needs to be a separate element, because we can't put
          `overflow: hidden` on tab due to the ink bar. -->

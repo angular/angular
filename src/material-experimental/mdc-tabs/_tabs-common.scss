@@ -24,7 +24,7 @@ $mat-tab-animation-duration: 500ms !default;
 
   // Used to render out the background tint when hovered/focused. Usually this is done by
   // MDC's ripple styles, however we're using our own ripples due to size concerns.
-  &::before {
+  .mdc-tab__ripple::before {
     content: '';
     display: block;
     position: absolute;
@@ -37,13 +37,13 @@ $mat-tab-animation-duration: 500ms !default;
   }
 
   // We need to handle the hover and focus indication ourselves, because we don't use MDC's ripple.
-  &:hover::before {
+  &:hover .mdc-tab__ripple::before {
     opacity: map-get($mdc-ripple-dark-ink-opacities, hover);
   }
 
   &.cdk-program-focused,
   &.cdk-keyboard-focused {
-    &::before {
+    .mdc-tab__ripple::before {
       opacity: map-get($mdc-ripple-dark-ink-opacities, focus);
     }
   }

@@ -62,7 +62,7 @@
     @include mdc-theme-prop(color, $foreground-color);
   }
 
-  .mat-ripple-element, .mat-mdc-tab::before {
+  .mat-ripple-element, .mdc-tab__ripple::before {
     @include mdc-theme-prop(background-color, $foreground-color);
   }
 
@@ -76,8 +76,7 @@
   @include mdc-tab-indicator-underline-color($color, $query: $mat-theme-styles-query);
   @include mdc-tab-indicator-icon-color($color, $query: $mat-theme-styles-query);
 
-  .mat-mdc-tab::before,
-  .mat-mdc-tab-link::before,
+  .mdc-tab__ripple::before,
   .mat-mdc-tab .mat-ripple-element,
   .mat-mdc-tab-header-pagination .mat-ripple-element,
   .mat-mdc-tab-link .mat-ripple-element {
