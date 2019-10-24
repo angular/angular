@@ -29,9 +29,9 @@ def rules_angular_dev_dependencies():
     _maybe(
         http_archive,
         name = "bazel_toolchains",
-        sha256 = "dcb58e7e5f0b4da54c6c5f8ebc65e63fcfb37414466010cf82ceff912162296e",
-        strip_prefix = "bazel-toolchains-0.28.2",
-        url = "https://github.com/bazelbuild/bazel-toolchains/archive/0.28.2.tar.gz",
+        sha256 = "0b36eef8a66f39c8dbae88e522d5bbbef49d5e66e834a982402c79962281be10",
+        strip_prefix = "bazel-toolchains-1.0.1",
+        url = "https://github.com/bazelbuild/bazel-toolchains/archive/1.0.1.tar.gz",
     )
 
     #############################################
