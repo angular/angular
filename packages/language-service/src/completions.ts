@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, SelectorMatcher, TagContentType, Text, findNode, getHtmlTagDefinition, splitNsName} from '@angular/compiler';
+import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, Text, findNode, getHtmlTagDefinition} from '@angular/compiler';
 import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
 
 import {AstResult} from './common';
@@ -421,24 +421,6 @@ function getSourceText(template: ng.TemplateSource, span: ng.Span): string {
 }
 
 const templateAttr = /^(\w+:)?(template$|^\*)/;
-function createElementCssSelector(element: Element): CssSelector {
-  const cssSelector = new CssSelector();
-  const elNameNoNs = splitNsName(element.name)[1];
-
-  cssSelector.setElement(elNameNoNs);
-
-  for (const attr of element.attrs) {
-    if (!attr.name.match(templateAttr)) {
-      const [_, attrNameNoNs] = splitNsName(attr.name);
-      cssSelector.addAttribute(attrNameNoNs, attr.value);
-      if (attr.name.toLowerCase() === 'class') {
-        const classes = attr.value.split(/s+/g);
-        classes.forEach(className => cssSelector.addClassName(className));
-      }
-    }
-  }
-  return cssSelector;
-}
 
 function lowerName(name: string): string {
   return name && (name[0].toLowerCase() + name.substr(1));
