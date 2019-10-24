@@ -9,11 +9,10 @@ import {Element, Node, XmlParser, visitAll} from '@angular/compiler';
 import {ɵMessageId, ɵParsedTranslation} from '@angular/localize';
 import {extname} from 'path';
 import {TargetMessageRenderer} from '../../../message_renderers/target_message_renderer';
-import {TranslationBundle} from '../../../translator';
 import {BaseVisitor} from '../base_visitor';
 import {TranslationParseError} from '../translation_parse_error';
-import {TranslationParser} from '../translation_parser';
-import {getAttrOrThrow, parseInnerRange} from '../translation_utils';
+import {ParsedTranslationBundle, TranslationParser} from '../translation_parser';
+import {getAttrOrThrow, getAttribute, parseInnerRange} from '../translation_utils';
 import {Xliff2MessageSerializer} from './xliff2_message_serializer';
 
 const XLIFF_2_0_NS_REGEX = /xmlns="urn:oasis:names:tc:xliff:document:2.0"/;
@@ -29,7 +28,7 @@ export class Xliff2TranslationParser implements TranslationParser {
     return (extname(filePath) === '.xlf') && XLIFF_2_0_NS_REGEX.test(contents);
   }
 
-  parse(filePath: string, contents: string): TranslationBundle {
+  parse(filePath: string, contents: string): ParsedTranslationBundle {
     const xmlParser = new XmlParser();
     const xml = xmlParser.parse(contents, filePath);
     const bundle = Xliff2TranslationBundleVisitor.extractBundle(xml.rootNodes);
@@ -40,27 +39,30 @@ export class Xliff2TranslationParser implements TranslationParser {
   }
 }
 
-class Xliff2TranslationBundleVisitor extends BaseVisitor {
-  private locale: string|undefined;
-  private bundle: TranslationBundle|undefined;
+interface BundleVisitorContext {
+  parsedLocale?: string;
+}
 
-  static extractBundle(xliff: Node[]): TranslationBundle|undefined {
+class Xliff2TranslationBundleVisitor extends BaseVisitor {
+  private bundle: ParsedTranslationBundle|undefined;
+
+  static extractBundle(xliff: Node[]): ParsedTranslationBundle|undefined {
     const visitor = new this();
-    visitAll(visitor, xliff);
+    visitAll(visitor, xliff, {});
     return visitor.bundle;
   }
 
-  visitElement(element: Element): any {
+  visitElement(element: Element, {parsedLocale}: BundleVisitorContext): any {
     if (element.name === 'xliff') {
-      this.locale = getAttrOrThrow(element, 'trgLang');
-      return visitAll(this, element.children);
+      parsedLocale = getAttribute(element, 'trgLang');
+      return visitAll(this, element.children, {parsedLocale});
     } else if (element.name === 'file') {
       this.bundle = {
-        locale: this.locale !,
+        locale: parsedLocale,
         translations: Xliff2TranslationVisitor.extractTranslations(element)
       };
     } else {
-      return visitAll(this, element.children);
+      return visitAll(this, element.children, {parsedLocale});
     }
   }
 }
