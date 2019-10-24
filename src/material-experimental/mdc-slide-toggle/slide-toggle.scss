@@ -1,9 +1,11 @@
 @import '@material/switch/functions';
 @import '@material/switch/mixins';
+@import '@material/switch/variables';
 @import '@material/form-field/mixins';
 @import '@material/ripple/variables';
 @import '../mdc-helpers/mdc-helpers';
 @import '../../material/core/style/layout-common';
+@import '../../cdk/a11y/a11y';
 
 @include mdc-switch-without-ripple($query: $mat-base-styles-query);
 @include mdc-form-field-core-styles($query: $mat-base-styles-query);
@@ -48,6 +50,18 @@
     .mdc-switch__thumb-underlay,
     .mdc-switch__thumb-underlay::before {
       transition: none;
+    }
+  }
+}
+
+
+@include cdk-high-contrast {
+  .mat-mdc-slide-toggle-focused {
+    .mdc-switch__track {
+      // Usually 1px would be enough, but MDC reduces the opacity on the
+      // element so we need to make this a bit more prominent.
+      outline: solid 2px;
+      outline-offset: $mdc-switch-track-height / 2;
     }
   }
 }
