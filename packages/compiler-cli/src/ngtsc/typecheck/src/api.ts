@@ -155,13 +155,23 @@ export interface TypeCheckingConfig {
   checkTypeOfDomEvents: boolean;
 
   /**
+   * Whether to infer the type of local references to DOM elements.
+   *
+   * If this is `true`, the type of a `#ref` variable on a DOM node in the template will be
+   * determined by the type of `document.createElement` for the given DOM node type. If set to
+   * `false`, the type of `ref` for DOM nodes will be `any`.
+   */
+  checkTypeOfDomReferences: boolean;
+
+
+  /**
    * Whether to infer the type of local references.
    *
-   * If this is `true`, the type of any `#ref` variable in the template will be determined by the
-   * referenced entity (either a directive or a DOM element). If set to `false`, the type of `ref`
-   * will be `any`.
+   * If this is `true`, the type of a `#ref` variable that points to a directive or `TemplateRef` in
+   * the template will be inferred correctly. If set to `false`, the type of `ref` for will be
+   * `any`.
    */
-  checkTypeOfReferences: boolean;
+  checkTypeOfNonDomReferences: boolean;
 
   /**
    * Whether to include type information from pipes in the type-checking operation.
