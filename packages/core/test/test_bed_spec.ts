@@ -316,7 +316,7 @@ describe('TestBed', () => {
       }
     }
 
-    beforeEach(() => MyMod.multi = false);
+    beforeEach(() => MyMod.multi = true);
 
     it('when provider is a "regular" provider', () => {
       MyMod.multi = false;
@@ -329,13 +329,25 @@ describe('TestBed', () => {
     });
 
     it('when provider is multi', () => {
-      MyMod.multi = true;
       @NgModule({imports: [MyMod.forRoot()]})
       class MyMod2 {
       }
       TestBed.configureTestingModule({imports: [MyMod2]});
       TestBed.overrideProvider(TOKEN, {useValue: ['override']});
       expect(TestBed.inject(TOKEN)).toEqual(['override']);
+    });
+
+    it('restores the original value', () => {
+      @NgModule({imports: [MyMod.forRoot()]})
+      class MyMod2 {
+      }
+      TestBed.configureTestingModule({imports: [MyMod2]});
+      TestBed.overrideProvider(TOKEN, {useValue: ['override']});
+      expect(TestBed.inject(TOKEN)).toEqual(['override']);
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({imports: [MyMod2]});
+      expect(TestBed.inject(TOKEN)).toEqual(['forRootValue']);
     });
   });
 

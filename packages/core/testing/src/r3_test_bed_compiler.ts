@@ -35,9 +35,9 @@ type Resolvers = {
 };
 
 interface CleanupOperation {
-  field: string;
-  def: any;
-  original: unknown;
+  fieldName: string;
+  object: any;
+  originalValue: unknown;
 }
 
 export class R3TestBedCompiler {
@@ -388,6 +388,11 @@ export class R3TestBedCompiler {
       // the moduleDef.
       for (const importedModule of flatten(injectorDef.imports)) {
         if (isModuleWithProviders(importedModule)) {
+          this.defCleanupOps.push({
+            object: importedModule,
+            fieldName: 'providers',
+            originalValue: importedModule.providers
+          });
           importedModule.providers = this.getOverriddenProviders(importedModule.providers);
         }
       }
@@ -492,10 +497,10 @@ export class R3TestBedCompiler {
     }
   }
 
-  private storeFieldOfDefOnType(type: Type<any>, defField: string, field: string): void {
+  private storeFieldOfDefOnType(type: Type<any>, defField: string, fieldName: string): void {
     const def: any = (type as any)[defField];
-    const original: any = def[field];
-    this.defCleanupOps.push({field, def, original});
+    const originalValue: any = def[fieldName];
+    this.defCleanupOps.push({object: def, fieldName, originalValue});
   }
 
   /**
@@ -526,7 +531,9 @@ export class R3TestBedCompiler {
   restoreOriginalState(): void {
     // Process cleanup ops in reverse order so the field's original value is restored correctly (in
     // case there were multiple overrides for the same field).
-    forEachRight(this.defCleanupOps, (op: CleanupOperation) => { op.def[op.field] = op.original; });
+    forEachRight(this.defCleanupOps, (op: CleanupOperation) => {
+      op.object[op.fieldName] = op.originalValue;
+    });
     // Restore initial component/directive/pipe defs
     this.initialNgDefs.forEach(
         (value: [string, PropertyDescriptor | undefined], type: Type<any>) => {
