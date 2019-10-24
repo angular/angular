@@ -202,6 +202,36 @@ modified to serve `index.html`:
   ```
 
 
+* [Golang](https://golang.org/): create a Golang server using ([gorilla/mux](https://github.com/gorilla/mux)) with a basic Golang file that configures the server `main.go`:
+
+  ``` go
+  package main
+  
+  import (
+  	"net/http"
+  	"os"
+  	"github.com/gorilla/mux"
+  )
+  var httpPort = "80"
+  var folderDist = "./dist" // ng build output folder
+
+  func serverHandler(w http.ResponseWriter, r *http.Request) {
+  	if _, err := os.Stat(folderDist + r.URL.Path); err != nil {
+  		http.ServeFile(w, r, folderDist+"/index.html")
+  		return
+  	}
+  	http.ServeFile(w, r, folderDist+r.URL.Path)
+  }
+
+  func main() {
+  	r := mux.NewRouter()
+  	r.NotFoundHandler = r.NewRoute().HandlerFunc(serverHandler).GetHandler()
+  	http.Handle("/", r)
+  	http.ListenAndServe(":"+httpPort, nil)
+  }
+  ```
+
+
 * [IIS](https://www.iis.net/): add a rewrite rule to `web.config`, similar to the one shown
 [here](http://stackoverflow.com/a/26152011/2116927):
 
