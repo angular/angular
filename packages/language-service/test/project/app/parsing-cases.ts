@@ -188,6 +188,7 @@ export class TestComponent {
 export class TemplateReference {
   title = 'Some title';
   hero: Hero = {id: 1, name: 'Windstorm'};
+  heroes: Hero[] = [this.hero];
   anyValue: any;
   myClick(event: any) {}
 }
