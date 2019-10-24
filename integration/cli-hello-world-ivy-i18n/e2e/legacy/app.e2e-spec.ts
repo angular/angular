@@ -16,5 +16,5 @@ describe('cli-hello-world-ivy App', () => {
     expect(page.getParagraph('message')).toEqual('Welcome to the i18n app.');
   });
 
-  it('should display the locale', () => { expect(page.getParagraph('locale')).toEqual('fr'); });
+  it('should display the locale', () => { expect(page.getParagraph('locale')).toEqual('legacy'); });
 });
