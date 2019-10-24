@@ -5,7 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {TranslationBundle} from '../../translator';
+import {ɵMessageId, ɵParsedTranslation} from '@angular/localize/private';
+
+/**
+* An object that holds translations that have been parsed from a translation file.
+*/
+export interface ParsedTranslationBundle {
+  locale: string|undefined;
+  translations: Record<ɵMessageId, ɵParsedTranslation>;
+}
 
 /**
  * Implement this interface to provide a class that can parse the contents of a translation file.
@@ -25,5 +33,5 @@ export interface TranslationParser {
    * @param filePath The absolute path to the translation file.
    * @param contents The contents of the translation file.
    */
-  parse(filePath: string, contents: string): TranslationBundle;
+  parse(filePath: string, contents: string): ParsedTranslationBundle;
 }
