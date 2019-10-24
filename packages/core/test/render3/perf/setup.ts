@@ -8,28 +8,20 @@
 import {addToViewTree, createLContainer, createLView, createTNode, createTView, getOrCreateTNode, refreshView, renderView} from '../../../src/render3/instructions/shared';
 import {ComponentTemplate} from '../../../src/render3/interfaces/definition';
 import {TAttributes, TNodeType, TViewNode} from '../../../src/render3/interfaces/node';
-import {RComment, RElement, RendererFactory3, domRendererFactory3} from '../../../src/render3/interfaces/renderer';
-import {LView, LViewFlags, RENDERER, RENDERER_FACTORY, TView} from '../../../src/render3/interfaces/view';
+import {RendererFactory3, domRendererFactory3} from '../../../src/render3/interfaces/renderer';
+import {LView, LViewFlags, TView} from '../../../src/render3/interfaces/view';
 import {insertView} from '../../../src/render3/node_manipulation';
 
-import {NoopRenderer, NoopRendererFactory, WebWorkerRenderNode} from './noop_renderer';
+import {NoopRendererFactory} from './noop_renderer';
 
 const isBrowser = typeof process === 'undefined';
-const DomOrMockDivNode =
-    (isBrowser ?  // In browser testing use real DOM
-         function() { return document.createElement('div'); } as unknown :
-         WebWorkerRenderNode) as{new (): RElement};
-const DomOrMockCommentNode =
-    (isBrowser ?  // In browser testing use real DOM
-         Comment :
-         WebWorkerRenderNode) as{new (): RComment};
 const rendererFactory: RendererFactory3 = isBrowser ? domRendererFactory3 : new NoopRendererFactory;
+const renderer = rendererFactory.createRenderer(null, null);
 
 export function createAndRenderLView(
     parentLView: LView | null, tView: TView, hostTNode: TViewNode) {
   const embeddedLView = createLView(
-      parentLView, tView, {}, LViewFlags.CheckAlways, null, hostTNode, new NoopRendererFactory(),
-      new NoopRenderer());
+      parentLView, tView, {}, LViewFlags.CheckAlways, null, hostTNode, rendererFactory, renderer);
   renderView(embeddedLView, tView, null);
 }
 
@@ -54,12 +46,11 @@ export function setupTestHarness(
   // Create a root view with a container
   const hostTView = createTView(-1, null, 1, 0, null, null, null, null, consts);
   const tContainerNode = getOrCreateTNode(hostTView, null, 0, TNodeType.Container, null, null);
-  const hostNode = new DomOrMockDivNode();
-  const renderer = rendererFactory.createRenderer(hostNode, null);
+  const hostNode = renderer.createElement('div');
   const hostLView = createLView(
       null, hostTView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, hostNode, null,
       rendererFactory, renderer);
-  const mockRCommentNode = new DomOrMockCommentNode();
+  const mockRCommentNode = renderer.createComment('');
   const lContainer =
       createLContainer(mockRCommentNode, hostLView, mockRCommentNode, tContainerNode, true);
   addToViewTree(hostLView, lContainer);
