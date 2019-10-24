@@ -39,6 +39,17 @@ describe('Xliff2TranslationParser', () => {
       expect(result.locale).toEqual('fr');
     });
 
+    it('should return undefined locale if there is no locale in the file', () => {
+      const XLIFF = `
+      <xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en">
+        <file original="ng.template" id="ngi18n">
+        </file>
+      </xliff>`;
+      const parser = new Xliff2TranslationParser();
+      const result = parser.parse('/some/file.xlf', XLIFF);
+      expect(result.locale).toBeUndefined();
+    });
+
     it('should extract basic messages', () => {
       /**
        * Source HTML:
