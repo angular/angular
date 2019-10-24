@@ -46,19 +46,27 @@ export function _localeFactory(locale?: string): string {
  * Work out the locale from the potential global properties.
  *
  * * Closure Compiler: use `goog.LOCALE`.
- *   Note: default `goog.LOCALE` value is `en`, while Angular used `en-US`.
- *   In order to preserve backwards compatibility, we use Angular default value over Closure
- *   Compiler's one.
  * * Ivy enabled: use `$localize.locale`
- *   Note: During compile time inlining of translations `$localize.locale` will be replaced with a
- *   string literal that is the current locale.
- *   In runtime translation evaluation, the developer is required to set `$localize.locale` if
- *   required, or just to provide their own `LOCALE_ID` provider.
  */
 export function getGlobalLocale(): string {
-  return (ngI18nClosureMode && typeof goog !== 'undefined' && goog.LOCALE !== 'en') ?
-      goog.LOCALE :
-      ((ivyEnabled && typeof $localize !== 'undefined' && $localize.locale) || DEFAULT_LOCALE_ID);
+  if (ngI18nClosureMode && typeof goog !== 'undefined' && goog.LOCALE !== 'en') {
+    // * The default `goog.LOCALE` value is `en`, while Angular used `en-US`.
+    // * In order to preserve backwards compatibility, we use Angular default value over
+    //   Closure Compiler's one.
+    return goog.LOCALE;
+  } else {
+    // KEEP `typeof $localize !== 'undefined' && $localize.locale` IN SYNC WITH THE LOCALIZE
+    // COMPILE-TIME INLINER.
+    //
+    // * During compile time inlining of translations the expression will be replaced
+    //   with a string literal that is the current locale. Other forms of this expression are not
+    //   guaranteed to be replaced.
+    //
+    // * During runtime translation evaluation, the developer is required to set `$localize.locale`
+    //   if required, or just to provide their own `LOCALE_ID` provider.
+    return (ivyEnabled && typeof $localize !== 'undefined' && $localize.locale) ||
+        DEFAULT_LOCALE_ID;
+  }
 }
 
 /**
