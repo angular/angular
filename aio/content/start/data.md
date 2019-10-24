@@ -89,7 +89,7 @@ When the "Buy" button is clicked, you'll use the cart service to add the current
 
     The `addToCart()` method:
     * Receives the current `product`
-    * Uses the cart service's `#addToCart()` method to add the product the cart
+    * Uses the cart service's `#addToCart()` method to add the product to the cart
     * Displays a message that the product has been added to the cart
 
     <code-example path="getting-started/src/app/product-details/product-details.component.ts" region="add-to-cart"></code-example>
