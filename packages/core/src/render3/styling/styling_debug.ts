@@ -430,7 +430,20 @@ export class NodeStylingDebug implements DebugNodeStyling {
    */
   get values(): {[key: string]: any} {
     const entries: {[key: string]: any} = {};
-    this._mapValues(this._data, (prop: string, value: any) => { entries[prop] = value; });
+    const config = this.config;
+    let data = this._data;
+
+    // the direct pass code doesn't convert [style] or [class] values
+    // into StylingMapArray instances. For this reason, the values
+    // need to be converted ahead of time since the styling debug
+    // relies on context resolution to figure out what styling
+    // values have been added/removed on the element.
+    if (config.allowDirectStyling && config.hasMapBindings) {
+      data = data.concat([]);  // make a copy
+      this._convertMapBindingsToStylingMapArrays(data);
+    }
+
+    this._mapValues(data, (prop: string, value: any) => { entries[prop] = value; });
     return entries;
   }
 

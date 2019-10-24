@@ -588,5 +588,7 @@ function isHostStyling(): boolean {
 function getAndIncrementBindingIndex(lView: LView, isMapBased: boolean): number {
   // map-based bindings use two slots because the previously constructed
   // className / style value must be compared against.
-  return lView[BINDING_INDEX] += isMapBased ? 2 : 1;
+  const index = lView[BINDING_INDEX];
+  lView[BINDING_INDEX] += isMapBased ? 2 : 1;
+  return index;
 }
