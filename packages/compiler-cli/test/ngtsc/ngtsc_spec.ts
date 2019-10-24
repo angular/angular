@@ -13,6 +13,7 @@ import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {LazyRoute} from '../../src/ngtsc/routing';
+import {restoreTypeScriptVersionForTesting, setTypeScriptVersionForTesting} from '../../src/typescript_support';
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
 
 import {NgtscTestEnvironment} from './env';
@@ -4763,6 +4764,48 @@ export const Foo = Foo__PRE_R3__;
         expect(jsContents)
             .toContain(
                 'export { TestDir as \u0275ng$root$other___test$$TestDir } from "root/other._$test";');
+      });
+    });
+
+    describe('disableTypeScriptVersionCheck', () => {
+      afterEach(() => restoreTypeScriptVersionForTesting());
+
+      it('produces an error when not supported and version check is enabled', () => {
+        setTypeScriptVersionForTesting('3.4.0');
+        env.tsconfig({disableTypeScriptVersionCheck: false});
+        env.write('empty.ts', '');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain('but 3.4.0 was found instead');
+      });
+
+      it('does not produce an error when supported and version check is enabled', () => {
+        env.tsconfig({disableTypeScriptVersionCheck: false});
+        env.write('empty.ts', '');
+
+        // The TypeScript version is not overwritten, so the version
+        // that is actually used should be supported
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('does not produce an error when not supported but version check is disabled', () => {
+        setTypeScriptVersionForTesting('3.4.0');
+        env.tsconfig({disableTypeScriptVersionCheck: true});
+        env.write('empty.ts', '');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('produces an error when not supported using default configuration', () => {
+        setTypeScriptVersionForTesting('3.4.0');
+        env.write('empty.ts', '');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain('but 3.4.0 was found instead');
       });
     });
 
