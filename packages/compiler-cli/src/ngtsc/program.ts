@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import * as api from '../transformers/api';
 import {nocollapseHack} from '../transformers/nocollapse_hack';
+import {verifySupportedTypeScriptVersion} from '../typescript_support';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from './annotations';
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
@@ -74,6 +75,10 @@ export class NgtscProgram implements api.Program {
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
       private host: api.CompilerHost, oldProgram?: NgtscProgram) {
+    if (!options.disableTypeScriptVersionCheck) {
+      verifySupportedTypeScriptVersion();
+    }
+
     if (shouldEnablePerfTracing(options)) {
       this.perfTracker = PerfTracker.zeroedToNow();
       this.perfRecorder = this.perfTracker;
