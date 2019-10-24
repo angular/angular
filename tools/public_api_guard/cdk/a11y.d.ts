@@ -54,13 +54,13 @@ export declare class FocusKeyManager<T> extends ListKeyManager<FocusableOption &
 export declare class FocusMonitor implements OnDestroy {
     constructor(_ngZone: NgZone, _platform: Platform);
     _onBlur(event: FocusEvent, element: HTMLElement): void;
-    focusVia(element: ElementRef<HTMLElement>, origin: FocusOrigin, options?: FocusOptions): void;
     focusVia(element: HTMLElement, origin: FocusOrigin, options?: FocusOptions): void;
-    monitor(element: ElementRef<HTMLElement>, checkChildren?: boolean): Observable<FocusOrigin>;
+    focusVia(element: ElementRef<HTMLElement>, origin: FocusOrigin, options?: FocusOptions): void;
     monitor(element: HTMLElement, checkChildren?: boolean): Observable<FocusOrigin>;
+    monitor(element: ElementRef<HTMLElement>, checkChildren?: boolean): Observable<FocusOrigin>;
     ngOnDestroy(): void;
-    stopMonitoring(element: ElementRef<HTMLElement>): void;
     stopMonitoring(element: HTMLElement): void;
+    stopMonitoring(element: ElementRef<HTMLElement>): void;
 }
 
 export interface FocusOptions {
@@ -119,8 +119,8 @@ export declare class ListKeyManager<T extends ListKeyManagerOption> {
     setNextItemActive(): void;
     setPreviousItemActive(): void;
     skipPredicate(predicate: (item: T) => boolean): this;
-    updateActiveItem(item: T): void;
     updateActiveItem(index: number): void;
+    updateActiveItem(item: T): void;
     withAllowedModifierKeys(keys: ListKeyManagerModifierKey[]): this;
     withHorizontalOrientation(direction: 'ltr' | 'rtl' | null): this;
     withTypeAhead(debounceInterval?: number): this;
@@ -143,10 +143,10 @@ export declare function LIVE_ANNOUNCER_ELEMENT_TOKEN_FACTORY(): null;
 
 export declare class LiveAnnouncer implements OnDestroy {
     constructor(elementToken: any, _ngZone: NgZone, _document: any, _defaultOptions?: LiveAnnouncerDefaultOptions | undefined);
+    announce(message: string): Promise<void>;
     announce(message: string, politeness?: AriaLivePoliteness): Promise<void>;
     announce(message: string, duration?: number): Promise<void>;
     announce(message: string, politeness?: AriaLivePoliteness, duration?: number): Promise<void>;
-    announce(message: string): Promise<void>;
     clear(): void;
     ngOnDestroy(): void;
 }

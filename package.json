@@ -9,8 +9,8 @@
   },
   "license": "MIT",
   "engines": {
-    "node": "^10.13.0",
-    "yarn": ">= 1.17.3"
+    "node": "^12.0.0",
+    "yarn": ">= 1.19.1"
   },
   "scripts": {
     "postinstall": "node --preserve-symlinks --preserve-symlinks-main tools/bazel/postinstall-patches.js && ngcc --properties main --create-ivy-entry-points",
@@ -134,7 +134,7 @@
     "minimist": "^1.2.0",
     "mock-fs": "^4.7.0",
     "moment": "^2.18.1",
-    "node-sass": "^4.11.0",
+    "node-sass": "^4.12.0",
     "parse5": "^5.0.0",
     "protractor": "^5.4.2",
     "resolve-bin": "^0.4.0",
@@ -158,6 +158,7 @@
     "vrsource-tslint-rules": "5.1.1"
   },
   "resolutions": {
-    "dgeni-packages/typescript": "3.6.4"
+    "dgeni-packages/typescript": "3.6.4",
+    "**/graceful-fs": "4.2.2"
   }
 }
