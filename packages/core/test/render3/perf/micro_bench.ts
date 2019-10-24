@@ -15,7 +15,6 @@ const MIN_SAMPLE_COUNT_NO_IMPROVEMENT = 500;
 // that it is less likely that we will be bothered by GC or preemptive multi tasking.
 const MIN_SAMPLE_DURATION = 3;
 
-const UNITS = ['ms', 'us', 'ns', 'ps'];
 export interface Benchmark {
   (versionName: string): Profile;
   report(fn?: (report: string) => void): void;
@@ -43,7 +42,8 @@ export function createBenchmark(benchmarkName: string): Benchmark {
           // this is the first time we are executing
           iterationCounter = profile.iterationCount;
           runAgain = true;
-          // console.log('profiling', profileName, '...');
+          // tslint:disable-next-line:no-console
+          console.log(profileName, '...');
         } else {
           profile.sampleCount++;
           // we came to an end of a sample, compute the time.
@@ -63,8 +63,9 @@ export function createBenchmark(benchmarkName: string): Benchmark {
             runAgain = true;
           }
           if (!runAgain) {
-            // console.log('   Sample count:', profile.sampleCount, 'iterations',
-            // profile.iterationCount, 'time (ms):',  iterationTime_ms);
+            // tslint:disable-next-line:no-console
+            console.log(
+                `  ${formatTime(iterationTime_ms)} (count: ${profile.sampleCount}, iterations: ${profile.iterationCount})`);
           }
         }
         iterationCounter = profile.iterationCount;
@@ -89,18 +90,40 @@ export function createBenchmark(benchmarkName: string): Benchmark {
     const fastest = profiles.reduce((previous: Profile, current: Profile) => {
       return (previous.bestTime < current.bestTime) ? previous : current;
     });
-    let unitOffset = 0;
-    let time = fastest.bestTime;
-    while (time < 1 && time !== 0) {
-      time = time * 1000;
-      unitOffset++;
-    }
-    let unit: string = UNITS[unitOffset];
-    (fn || console.log)(`Benchmark: ${benchmarkName}\n${profiles.map((profile: Profile) => {
-      const time = (profile.bestTime * Math.pow(1000, unitOffset)).toFixed(3);
-      const percent = (100 - profile.bestTime / fastest.bestTime * 100).toFixed(0);
-      return '  ' + profile.profileName + ': ' + time + ' ' +unit + '(' + percent + '%)';
+    const unitOffset = findUnit(fastest.bestTime);
+    (fn || console.log)(`\nBenchmark: ${benchmarkName}\n${profiles.map((profile: Profile) => {
+      const time = formatTime(profile.bestTime, unitOffset);
+      const percent = formatPercent(1 - profile.bestTime / fastest.bestTime);
+      return ` ${profile.profileName}: ${time}(${percent}) `;
     }).join('\n')}`);
   };
   return benchmark;
+}
+
+enum UNITS {
+  ms = 0,
+  us = 1,
+  ns = 2,
+  ps = 3,
+}
+
+function findUnit(time_ms: number): UNITS {
+  let unitOffset = UNITS.ms;
+  while (time_ms < 1 && time_ms !== 0) {
+    time_ms = time_ms * 1000;
+    unitOffset++;
+  }
+  return unitOffset;
+}
+
+function formatTime(value: number, unitOffset?: number): string {
+  if (unitOffset === undefined) {
+    unitOffset = findUnit(value);
+  }
+  const time = (value * Math.pow(1000, unitOffset)).toFixed(3);
+  return time + ' ' + UNITS[unitOffset];
+}
+
+function formatPercent(value: number): string {
+  return (value * 100).toFixed(0) + '%';
 }
