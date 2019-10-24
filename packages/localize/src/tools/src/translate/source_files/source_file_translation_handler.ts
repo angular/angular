@@ -5,22 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵMessageId, ɵParsedTranslation} from '@angular/localize/private';
 import {parseSync, transformFromAstSync} from '@babel/core';
 import {File, Program} from '@babel/types';
 import {extname, join} from 'path';
-
 import {Diagnostics} from '../../diagnostics';
 import {FileUtils} from '../../file_utils';
 import {OutputPathFn} from '../output_path';
 import {TranslationBundle, TranslationHandler} from '../translator';
-
 import {makeEs2015TranslatePlugin} from './es2015_translate_plugin';
 import {makeEs5TranslatePlugin} from './es5_translate_plugin';
 import {makeLocalePlugin} from './locale_plugin';
 import {TranslatePluginOptions} from './source_file_utils';
-
-
 
 /**
  * Translate a file by inlining all messages tagged by `$localize` with the appropriate translated

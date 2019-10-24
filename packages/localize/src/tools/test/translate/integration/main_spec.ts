@@ -30,7 +30,7 @@ describe('translateFiles()', () => {
       outputPathFn,
       translationFilePaths: resolveAll(
           __dirname + '/locales', ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf']),
-      diagnostics,
+      translationFileLocales: [], diagnostics,
       missingTranslation: 'error'
     });
 
@@ -58,7 +58,7 @@ describe('translateFiles()', () => {
       sourceFilePaths: resolveAll(__dirname + '/test_files', ['test.js']), outputPathFn,
       translationFilePaths: resolveAll(
           __dirname + '/locales', ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf']),
-      diagnostics,
+      translationFileLocales: [], diagnostics,
       missingTranslation: 'error',
     });
 
@@ -72,6 +72,33 @@ describe('translateFiles()', () => {
         .toEqual(`var name="World";var message="Hola, "+name+"!";`);
   });
 
+  it('should translate and copy source-code files overriding the locales', () => {
+    const diagnostics = new Diagnostics();
+    const outputPathFn = getOutputPathFn(resolve(testDir, '{{LOCALE}}'));
+    translateFiles({
+      sourceRootPath: resolve(__dirname, 'test_files'),
+      sourceFilePaths: resolveAll(__dirname + '/test_files', ['test.js']), outputPathFn,
+      translationFilePaths: resolveAll(
+          __dirname + '/locales', ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf']),
+      translationFileLocales: ['xde', undefined, 'fr'], diagnostics,
+      missingTranslation: 'error',
+    });
+
+    expect(diagnostics.messages.length).toEqual(1);
+    expect(diagnostics.messages).toContain({
+      type: 'warning',
+      message:
+          `The provided locale "xde" does not match the target locale "de" found in the translation file "${resolve(__dirname, 'locales', 'messages.de.json')}".`
+    });
+
+    expect(FileUtils.readFile(resolve(testDir, 'xde', 'test.js')))
+        .toEqual(`var name="World";var message="Guten Tag, "+name+"!";`);
+    expect(FileUtils.readFile(resolve(testDir, 'es', 'test.js')))
+        .toEqual(`var name="World";var message="Hola, "+name+"!";`);
+    expect(FileUtils.readFile(resolve(testDir, 'fr', 'test.js')))
+        .toEqual(`var name="World";var message="Bonjour, "+name+"!";`);
+  });
+
   it('should transform and/or copy files to the destination folders', () => {
     const diagnostics = new Diagnostics();
     const outputPathFn = getOutputPathFn(resolve(testDir, '{{LOCALE}}'));
@@ -82,7 +109,7 @@ describe('translateFiles()', () => {
       outputPathFn,
       translationFilePaths: resolveAll(
           __dirname + '/locales', ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf']),
-      diagnostics,
+      translationFileLocales: [], diagnostics,
       missingTranslation: 'error',
     });
 
