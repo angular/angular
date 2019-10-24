@@ -1,14 +1,20 @@
 import {Component} from '@angular/core';
 import {TestBed, async, ComponentFixture, fakeAsync, flush} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {CommonModule} from '@angular/common';
 import {MatToolbarModule} from './index';
 
 describe('MatToolbar', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MatToolbarModule],
-      declarations: [ToolbarSingleRow, ToolbarMultipleRows, ToolbarMixedRowModes],
+      imports: [MatToolbarModule, CommonModule],
+      declarations: [
+        ToolbarSingleRow,
+        ToolbarMultipleRows,
+        ToolbarMixedRowModes,
+        ToolbarMultipleIndirectRows,
+      ],
     });
 
     TestBed.compileComponents();
@@ -84,6 +90,15 @@ describe('MatToolbar', () => {
         }
       }).toThrowError(/attempting to combine different/i);
     }));
+
+    it('should pick up indirect descendant rows', () => {
+      const fixture = TestBed.createComponent(ToolbarMultipleIndirectRows);
+      fixture.detectChanges();
+      const toolbar = fixture.nativeElement.querySelector('.mat-toolbar');
+
+      expect(toolbar.classList).toContain('mat-toolbar-multiple-rows');
+    });
+
   });
 
 });
@@ -121,3 +136,17 @@ class ToolbarMultipleRows {}
 class ToolbarMixedRowModes {
   showToolbarRow: boolean = true;
 }
+
+
+@Component({
+  // The ng-container is there so we have a node with a directive between the toolbar and the rows.
+  template: `
+    <mat-toolbar>
+      <ng-container [ngSwitch]="true">
+        <mat-toolbar-row>First Row</mat-toolbar-row>
+        <mat-toolbar-row>Second Row</mat-toolbar-row>
+      </ng-container>
+    </mat-toolbar>
+  `
+})
+class ToolbarMultipleIndirectRows {}

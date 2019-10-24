@@ -51,6 +51,7 @@ ng_test_library(
     ),
     deps = [
         ":toolbar",
+        "@npm//@angular/common",
         "@npm//@angular/platform-browser",
     ],
 )
