@@ -58,7 +58,7 @@ import {MatStepperIcon, MatStepperIconContext} from './stepper-icon';
 })
 export class MatStep extends CdkStep implements ErrorStateMatcher {
   /** Content for step label given by `<ng-template matStepLabel>`. */
-  @ContentChild(MatStepLabel, {static: false}) stepLabel: MatStepLabel;
+  @ContentChild(MatStepLabel) stepLabel: MatStepLabel;
 
   /** @breaking-change 8.0.0 remove the `?` after `stepperOptions` */
   constructor(@Inject(forwardRef(() => MatStepper)) stepper: MatStepper,

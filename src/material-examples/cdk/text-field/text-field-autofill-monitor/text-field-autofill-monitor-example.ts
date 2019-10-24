@@ -8,8 +8,8 @@ import {AfterViewInit, Component, ElementRef, OnDestroy, ViewChild} from '@angul
   styleUrls: ['./text-field-autofill-monitor-example.css'],
 })
 export class TextFieldAutofillMonitorExample implements AfterViewInit, OnDestroy {
-  @ViewChild('first', { read: ElementRef, static: false }) firstName: ElementRef<HTMLElement>;
-  @ViewChild('last', { read: ElementRef, static: false }) lastName: ElementRef<HTMLElement>;
+  @ViewChild('first', {read: ElementRef}) firstName: ElementRef<HTMLElement>;
+  @ViewChild('last', {read: ElementRef}) lastName: ElementRef<HTMLElement>;
   firstNameAutofilled: boolean;
   lastNameAutofilled: boolean;
 

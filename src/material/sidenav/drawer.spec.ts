@@ -865,7 +865,7 @@ class DrawerContainerNoDrawerTestApp { }
     </mat-drawer-container>`,
 })
 class DrawerContainerTwoDrawerTestApp {
-  @ViewChild(MatDrawerContainer, {static: false}) drawerContainer: MatDrawerContainer;
+  @ViewChild(MatDrawerContainer) drawerContainer: MatDrawerContainer;
 }
 
 /** Test component that contains an MatDrawerContainer and one MatDrawer. */
@@ -891,10 +891,10 @@ class BasicTestApp {
   backdropClickedCount = 0;
   hasBackdrop: boolean | null = null;
 
-  @ViewChild('drawer', {static: false}) drawer: MatDrawer;
-  @ViewChild('drawerButton', {static: false}) drawerButton: ElementRef<HTMLButtonElement>;
-  @ViewChild('openButton', {static: false}) openButton: ElementRef<HTMLButtonElement>;
-  @ViewChild('closeButton', {static: false}) closeButton: ElementRef<HTMLButtonElement>;
+  @ViewChild('drawer') drawer: MatDrawer;
+  @ViewChild('drawerButton') drawerButton: ElementRef<HTMLButtonElement>;
+  @ViewChild('openButton') openButton: ElementRef<HTMLButtonElement>;
+  @ViewChild('closeButton') closeButton: ElementRef<HTMLButtonElement>;
 
   open() {
     this.openCount++;
@@ -997,7 +997,7 @@ class DrawerWithoutFocusableElements {}
   `,
 })
 class DrawerDelayed {
-  @ViewChild(MatDrawer, {static: false}) drawer: MatDrawer;
+  @ViewChild(MatDrawer) drawer: MatDrawer;
   showDrawer = false;
 }
 
@@ -1009,8 +1009,8 @@ class DrawerDelayed {
     </mat-drawer-container>`,
 })
 class DrawerContainerStateChangesTestApp {
-  @ViewChild(MatDrawer, {static: false}) drawer: MatDrawer;
-  @ViewChild(MatDrawerContainer, {static: false}) drawerContainer: MatDrawerContainer;
+  @ViewChild(MatDrawer) drawer: MatDrawer;
+  @ViewChild(MatDrawerContainer) drawerContainer: MatDrawerContainer;
 
   direction: Direction = 'ltr';
   mode = 'side';
@@ -1028,8 +1028,8 @@ class DrawerContainerStateChangesTestApp {
     </mat-drawer-container>`,
 })
 class AutosizeDrawer {
-  @ViewChild(MatDrawer, {static: false}) drawer: MatDrawer;
-  @ViewChild(MatDrawerContainer, {static: false}) drawerContainer: MatDrawerContainer;
+  @ViewChild(MatDrawer) drawer: MatDrawer;
+  @ViewChild(MatDrawerContainer) drawerContainer: MatDrawerContainer;
   fillerWidth = 0;
 }
 
@@ -1043,7 +1043,7 @@ class AutosizeDrawer {
   `,
 })
 class DrawerContainerWithContent {
-  @ViewChild(MatDrawerContainer, {static: false}) drawerContainer: MatDrawerContainer;
+  @ViewChild(MatDrawerContainer) drawerContainer: MatDrawerContainer;
 }
 
 
@@ -1058,8 +1058,8 @@ class DrawerContainerWithContent {
     </mat-drawer-container>`,
 })
 class IndirectDescendantDrawer {
-  @ViewChild('container', {static: false}) container: MatDrawerContainer;
-  @ViewChild('drawer', {static: false}) drawer: MatDrawer;
+  @ViewChild('container') container: MatDrawerContainer;
+  @ViewChild('drawer') drawer: MatDrawer;
 }
 
 @Component({
@@ -1075,8 +1075,8 @@ class IndirectDescendantDrawer {
   `,
 })
 class NestedDrawerContainers {
-  @ViewChild('outerContainer', {static: false}) outerContainer: MatDrawerContainer;
-  @ViewChild('outerDrawer', {static: false}) outerDrawer: MatDrawer;
-  @ViewChild('innerContainer', {static: false}) innerContainer: MatDrawerContainer;
-  @ViewChild('innerDrawer', {static: false}) innerDrawer: MatDrawer;
+  @ViewChild('outerContainer') outerContainer: MatDrawerContainer;
+  @ViewChild('outerDrawer') outerDrawer: MatDrawer;
+  @ViewChild('innerContainer') innerContainer: MatDrawerContainer;
+  @ViewChild('innerDrawer') innerDrawer: MatDrawer;
 }

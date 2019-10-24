@@ -327,7 +327,7 @@ class StandardYearView {
   selected = new Date(2017, MAR, 10);
   selectedMonth: Date;
 
-  @ViewChild(MatYearView, {static: false}) yearView: MatYearView<Date>;
+  @ViewChild(MatYearView) yearView: MatYearView<Date>;
 }
 
 

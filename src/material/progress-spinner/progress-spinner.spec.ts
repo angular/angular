@@ -488,7 +488,7 @@ class IndeterminateSpinnerInShadowDom {
   encapsulation: ViewEncapsulation.ShadowDom,
 })
 class IndeterminateSpinnerInShadowDomWithNgIf {
-  @ViewChild(MatProgressSpinner, {read: ElementRef, static: false})
+  @ViewChild(MatProgressSpinner, {read: ElementRef})
   spinner: ElementRef<HTMLElement>;
 
   diameter: number;

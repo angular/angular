@@ -260,7 +260,7 @@ describe('MatChipInput', () => {
   `
 })
 class TestChipInput {
-  @ViewChild(MatChipGrid, {static: false}) chipGridInstance: MatChipGrid;
+  @ViewChild(MatChipGrid) chipGridInstance: MatChipGrid;
   addOnBlur: boolean = false;
   placeholder = '';
 

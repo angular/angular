@@ -980,7 +980,7 @@ class PizzaMsg { }
 /** Test-bed component that contains a TempatePortal and an ElementRef. */
 @Component({template: `<ng-template cdk-portal>Cake</ng-template>`})
 class TestComponentWithTemplatePortals {
-  @ViewChild(CdkPortal, {static: false}) templatePortal: CdkPortal;
+  @ViewChild(CdkPortal) templatePortal: CdkPortal;
 
   constructor(public viewContainerRef: ViewContainerRef) { }
 }

@@ -200,7 +200,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   get inputId(): string { return `${this.id || this._uniqueId}-input`; }
 
   /** Reference to the underlying input element. */
-  @ViewChild('input', {static: false}) _inputElement: ElementRef<HTMLInputElement>;
+  @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
 
   constructor(private _changeDetectorRef: ChangeDetectorRef,
               @Attribute('tabindex') tabIndex: string,

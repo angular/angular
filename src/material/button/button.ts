@@ -87,7 +87,7 @@ export class MatButton extends _MatButtonMixinBase
   readonly isIconButton: boolean = this._hasHostAttributes('mat-icon-button');
 
   /** Reference to the MatRipple instance of the button. */
-  @ViewChild(MatRipple, {static: false}) ripple: MatRipple;
+  @ViewChild(MatRipple) ripple: MatRipple;
 
   constructor(elementRef: ElementRef,
               private _focusMonitor: FocusMonitor,

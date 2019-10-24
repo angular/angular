@@ -120,8 +120,8 @@ class SidenavWithFixedPosition {
     </mat-sidenav-container>`,
 })
 class IndirectDescendantSidenav {
-  @ViewChild('container', {static: false}) container: MatSidenavContainer;
-  @ViewChild('sidenav', {static: false}) sidenav: MatSidenav;
+  @ViewChild('container') container: MatSidenavContainer;
+  @ViewChild('sidenav') sidenav: MatSidenav;
 }
 
 @Component({
@@ -137,8 +137,8 @@ class IndirectDescendantSidenav {
   `,
 })
 class NestedSidenavContainers {
-  @ViewChild('outerContainer', {static: false}) outerContainer: MatSidenavContainer;
-  @ViewChild('outerSidenav', {static: false}) outerSidenav: MatSidenav;
-  @ViewChild('innerContainer', {static: false}) innerContainer: MatSidenavContainer;
-  @ViewChild('innerSidenav', {static: false}) innerSidenav: MatSidenav;
+  @ViewChild('outerContainer') outerContainer: MatSidenavContainer;
+  @ViewChild('outerSidenav') outerSidenav: MatSidenav;
+  @ViewChild('innerContainer') innerContainer: MatSidenavContainer;
+  @ViewChild('innerSidenav') innerSidenav: MatSidenav;
 }

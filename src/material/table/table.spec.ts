@@ -644,7 +644,7 @@ class MatTableWithWhenRowApp {
   dataSource: FakeDataSource | null = new FakeDataSource();
   isFourthRow = (i: number, _rowData: TestData) => i == 3;
 
-  @ViewChild(MatTable, {static: false}) table: MatTable<TestData>;
+  @ViewChild(MatTable) table: MatTable<TestData>;
 }
 
 
@@ -685,7 +685,7 @@ class ArrayDataSourceMatTableApp implements AfterViewInit {
   @ViewChild(MatTable, {static: true}) table: MatTable<TestData>;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
-  @ViewChild(MatSortHeader, {static: false}) sortHeader: MatSortHeader;
+  @ViewChild(MatSortHeader) sortHeader: MatSortHeader;
 
   constructor() {
     this.underlyingDataSource.data = [];

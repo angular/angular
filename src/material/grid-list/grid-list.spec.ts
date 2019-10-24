@@ -616,7 +616,7 @@ class GridListWithTooWideColspan { }
 
 @Component({template: '<mat-grid-list [cols]="cols"></mat-grid-list>'})
 class GridListWithDynamicCols {
-  @ViewChild(MatGridList, {static: false}) gridList: MatGridList;
+  @ViewChild(MatGridList) gridList: MatGridList;
   cols = 2;
 }
 

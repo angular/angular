@@ -109,7 +109,7 @@ export class MatDatepickerContent<D> extends _MatDatepickerContentMixinBase
   implements AfterViewInit, CanColor {
 
   /** Reference to the internal calendar component. */
-  @ViewChild(MatCalendar, {static: false}) _calendar: MatCalendar<D>;
+  @ViewChild(MatCalendar) _calendar: MatCalendar<D>;
 
   /** Reference to the datepicker that created the overlay. */
   datepicker: MatDatepicker<D>;

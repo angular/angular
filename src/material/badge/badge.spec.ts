@@ -232,7 +232,7 @@ describe('MatBadge', () => {
   `
 })
 class BadgeTestApp {
-  @ViewChild(MatBadge, {static: false}) badgeInstance: MatBadge;
+  @ViewChild(MatBadge) badgeInstance: MatBadge;
   badgeColor: ThemePalette;
   badgeContent: string | number = '1';
   badgeDirection = 'above after';

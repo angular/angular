@@ -54,8 +54,8 @@ import {MatTabHeader} from './tab-header';
 })
 export class MatTabGroup extends _MatTabGroupBase {
   @ContentChildren(MatTab, {descendants: true}) _allTabs: QueryList<MatTab>;
-  @ViewChild('tabBodyWrapper', {static: false}) _tabBodyWrapper: ElementRef;
-  @ViewChild('tabHeader', {static: false}) _tabHeader: MatTabHeader;
+  @ViewChild('tabBodyWrapper') _tabBodyWrapper: ElementRef;
+  @ViewChild('tabHeader') _tabHeader: MatTabHeader;
 
   constructor(elementRef: ElementRef,
               changeDetectorRef: ChangeDetectorRef,

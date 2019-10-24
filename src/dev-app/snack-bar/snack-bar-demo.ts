@@ -23,7 +23,7 @@ import {
   templateUrl: 'snack-bar-demo.html',
 })
 export class SnackBarDemo {
-  @ViewChild('template', {static: false}) template: TemplateRef<any>;
+  @ViewChild('template') template: TemplateRef<any>;
   message = 'Snack Bar opened.';
   actionButtonLabel = 'Retry';
   action = false;

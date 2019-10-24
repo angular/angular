@@ -256,7 +256,7 @@ describe('MatChipInput', () => {
   `
 })
 class TestChipInput {
-  @ViewChild(MatChipList, {static: false}) chipListInstance: MatChipList;
+  @ViewChild(MatChipList) chipListInstance: MatChipList;
   addOnBlur: boolean = false;
   placeholder = '';
 

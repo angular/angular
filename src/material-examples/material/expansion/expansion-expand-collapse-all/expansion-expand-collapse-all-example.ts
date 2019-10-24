@@ -10,5 +10,5 @@ import {MatAccordion} from '@angular/material/expansion';
   styleUrls: ['expansion-expand-collapse-all-example.css'],
 })
 export class ExpansionExpandCollapseAllExample {
-  @ViewChild(MatAccordion, {static: false}) accordion: MatAccordion;
+  @ViewChild(MatAccordion) accordion: MatAccordion;
 }

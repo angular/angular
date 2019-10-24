@@ -493,11 +493,11 @@ class SimpleMatSortApp {
   disabledColumnSort = false;
   disableAllSort = false;
 
-  @ViewChild(MatSort, {static: false}) matSort: MatSort;
-  @ViewChild('defaultA', {static: false}) defaultA: MatSortHeader;
-  @ViewChild('defaultB', {static: false}) defaultB: MatSortHeader;
-  @ViewChild('overrideStart', {static: false}) overrideStart: MatSortHeader;
-  @ViewChild('overrideDisableClear', {static: false}) overrideDisableClear: MatSortHeader;
+  @ViewChild(MatSort) matSort: MatSort;
+  @ViewChild('defaultA') defaultA: MatSortHeader;
+  @ViewChild('defaultB') defaultB: MatSortHeader;
+  @ViewChild('overrideStart') overrideStart: MatSortHeader;
+  @ViewChild('overrideDisableClear') overrideDisableClear: MatSortHeader;
 
   constructor (public elementRef: ElementRef<HTMLElement>) { }
 
@@ -563,7 +563,7 @@ class FakeDataSource extends DataSource<any> {
   `
 })
 class CdkTableMatSortApp {
-  @ViewChild(MatSort, {static: false}) matSort: MatSort;
+  @ViewChild(MatSort) matSort: MatSort;
 
   dataSource = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
@@ -593,7 +593,7 @@ class CdkTableMatSortApp {
   `
 })
 class MatTableMatSortApp {
-  @ViewChild(MatSort, {static: false}) matSort: MatSort;
+  @ViewChild(MatSort) matSort: MatSort;
 
   dataSource = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];

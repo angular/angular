@@ -19,7 +19,7 @@ import {
   templateUrl: 'expansion-demo.html',
 })
 export class ExpansionDemo {
-  @ViewChild(MatAccordion, {static: false}) accordion: MatAccordion;
+  @ViewChild(MatAccordion) accordion: MatAccordion;
 
   displayMode: MatAccordionDisplayMode = 'default';
   multi = false;

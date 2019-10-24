@@ -95,7 +95,7 @@ export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, Ca
   _isRippleCentered = false;
 
   /** Reference to the MatRipple instance of the button. */
-  @ViewChild(MatRipple, {static: false}) ripple: MatRipple;
+  @ViewChild(MatRipple) ripple: MatRipple;
 
   constructor(
       elementRef: ElementRef, public _platform: Platform, public _ngZone: NgZone,

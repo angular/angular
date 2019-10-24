@@ -223,13 +223,13 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   }
 
   /** The chip's leading icon. */
-  @ContentChild(MatChipAvatar, {static: false}) leadingIcon: MatChipAvatar;
+  @ContentChild(MatChipAvatar) leadingIcon: MatChipAvatar;
 
   /** The chip's trailing icon. */
-  @ContentChild(MatChipTrailingIcon, {static: false}) trailingIcon: MatChipTrailingIcon;
+  @ContentChild(MatChipTrailingIcon) trailingIcon: MatChipTrailingIcon;
 
   /** The chip's trailing remove icon. */
-  @ContentChild(MatChipRemove, {static: false}) removeIcon: MatChipRemove;
+  @ContentChild(MatChipRemove) removeIcon: MatChipRemove;
 
  /**
   * Implementation of the MDC chip adapter interface.

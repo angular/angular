@@ -161,13 +161,13 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
   @Output() readonly indeterminateChange: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   /** The root element for the `MDCCheckbox`. */
-  @ViewChild('checkbox', {static: false}) _checkbox: ElementRef<HTMLElement>;
+  @ViewChild('checkbox') _checkbox: ElementRef<HTMLElement>;
 
   /** The native input element. */
-  @ViewChild('nativeCheckbox', {static: false}) _nativeCheckbox: ElementRef<HTMLInputElement>;
+  @ViewChild('nativeCheckbox') _nativeCheckbox: ElementRef<HTMLInputElement>;
 
   /** The native label element. */
-  @ViewChild('label', {static: false}) _label: ElementRef<HTMLElement>;
+  @ViewChild('label') _label: ElementRef<HTMLElement>;
 
   /** Returns the unique id for the visual hidden input. */
   get inputId(): string {

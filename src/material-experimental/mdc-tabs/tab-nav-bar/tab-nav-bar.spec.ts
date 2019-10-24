@@ -339,7 +339,7 @@ describe('MatTabNavBar', () => {
   `
 })
 class SimpleTabNavBarTestApp {
-  @ViewChild(MatTabNav, {static: false}) tabNavBar: MatTabNav;
+  @ViewChild(MatTabNav) tabNavBar: MatTabNav;
   @ViewChildren(MatTabLink) tabLinks: QueryList<MatTabLink>;
 
   label = '';

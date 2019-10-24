@@ -457,7 +457,7 @@ class MatPaginatorApp {
   pageEvent = jasmine.createSpy('page event');
   color: ThemePalette;
 
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   goToLastPage() {
     this.pageIndex = Math.ceil(this.length / this.pageSize) - 1;
@@ -470,7 +470,7 @@ class MatPaginatorApp {
   `,
 })
 class MatPaginatorWithoutInputsApp {
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 }
 
 @Component({
@@ -479,7 +479,7 @@ class MatPaginatorWithoutInputsApp {
   `,
 })
 class MatPaginatorWithoutPageSizeApp {
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 }
 
 @Component({
@@ -488,7 +488,7 @@ class MatPaginatorWithoutPageSizeApp {
   `,
 })
 class MatPaginatorWithoutOptionsApp {
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 }
 
 @Component({
@@ -501,5 +501,5 @@ class MatPaginatorWithoutOptionsApp {
   `
   })
 class MatPaginatorWithStringValues {
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 }

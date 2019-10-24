@@ -66,7 +66,7 @@ interface PeriodicElement {
   selector: 'do-not-use-abstract-cdk-popover-edit-base-test-component'
 })
 abstract class BaseTestComponent {
-  @ViewChild('table', {static: false}) table: ElementRef;
+  @ViewChild('table') table: ElementRef;
 
   preservedValues = new FormValueContainer<PeriodicElement, {'name': string}>();
 

@@ -16,7 +16,7 @@ import {MapInfoWindow, MapMarker} from '@angular/google-maps';
   templateUrl: 'google-map-demo.html',
 })
 export class GoogleMapDemo {
-  @ViewChild(MapInfoWindow, {static: false}) infoWindow: MapInfoWindow;
+  @ViewChild(MapInfoWindow) infoWindow: MapInfoWindow;
 
   center = {lat: 24, lng: 12};
   markerOptions = {draggable: false};

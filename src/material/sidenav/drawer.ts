@@ -491,8 +491,8 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
   /** Drawers that belong to this container. */
   _drawers = new QueryList<MatDrawer>();
 
-  @ContentChild(MatDrawerContent, {static: false}) _content: MatDrawerContent;
-  @ViewChild(MatDrawerContent, {static: false}) _userContent: MatDrawerContent;
+  @ContentChild(MatDrawerContent) _content: MatDrawerContent;
+  @ViewChild(MatDrawerContent) _userContent: MatDrawerContent;
 
   /** The drawer child with the `start` position. */
   get start(): MatDrawer | null { return this._start; }

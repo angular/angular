@@ -172,8 +172,8 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
   private _destroyed = new Subject<void>();
 
   @ContentChildren(MatLine, {descendants: true}) _lines: QueryList<MatLine>;
-  @ContentChild(MatListAvatarCssMatStyler, {static: false}) _avatar: MatListAvatarCssMatStyler;
-  @ContentChild(MatListIconCssMatStyler, {static: false}) _icon: MatListIconCssMatStyler;
+  @ContentChild(MatListAvatarCssMatStyler) _avatar: MatListAvatarCssMatStyler;
+  @ContentChild(MatListIconCssMatStyler) _icon: MatListIconCssMatStyler;
 
   constructor(private _element: ElementRef<HTMLElement>,
               _changeDetectorRef: ChangeDetectorRef,

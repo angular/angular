@@ -112,7 +112,7 @@ export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterC
   @ViewChild(TemplateRef, {static: true}) template: TemplateRef<any>;
 
   /** Element for the panel containing the autocomplete options. */
-  @ViewChild('panel', {static: false}) panel: ElementRef;
+  @ViewChild('panel') panel: ElementRef;
 
   /** @docs-private */
   @ContentChildren(MatOption, {descendants: true}) options: QueryList<MatOption>;

@@ -61,7 +61,7 @@ export class MatTabBodyPortal extends BaseMatTabBodyPortal {
   },
 })
 export class MatTabBody extends _MatTabBodyBase {
-  @ViewChild(PortalHostDirective, {static: false}) _portalHost: PortalHostDirective;
+  @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
 
   constructor(elementRef: ElementRef<HTMLElement>,
     @Optional() dir: Directionality,

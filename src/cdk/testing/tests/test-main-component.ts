@@ -44,8 +44,8 @@ export class TestMainComponent implements OnDestroy {
   relativeX = 0;
   relativeY = 0;
 
-  @ViewChild('clickTestElement', {static: false}) clickTestElement: ElementRef<HTMLElement>;
-  @ViewChild('taskStateResult', {static: false}) taskStateResultElement: ElementRef<HTMLElement>;
+  @ViewChild('clickTestElement') clickTestElement: ElementRef<HTMLElement>;
+  @ViewChild('taskStateResult') taskStateResultElement: ElementRef<HTMLElement>;
 
   private _fakeOverlayElement: HTMLElement;
 

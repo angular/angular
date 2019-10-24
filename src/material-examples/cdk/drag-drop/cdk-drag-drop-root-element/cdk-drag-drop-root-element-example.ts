@@ -18,7 +18,7 @@ import {TemplatePortal} from '@angular/cdk/portal';
   styleUrls: ['cdk-drag-drop-root-element-example.css'],
 })
 export class CdkDragDropRootElementExample implements AfterViewInit, OnDestroy {
-  @ViewChild(TemplateRef, {static: false}) _dialogTemplate: TemplateRef<any>;
+  @ViewChild(TemplateRef) _dialogTemplate: TemplateRef<any>;
   private _overlayRef: OverlayRef;
   private _portal: TemplatePortal;
 

@@ -158,7 +158,7 @@ describe('Directionality', () => {
   `
 })
 class ElementWithDir {
-  @ViewChild(Dir, {static: false}) dir: Dir;
+  @ViewChild(Dir) dir: Dir;
   direction = 'rtl';
   changeCount = 0;
 }
@@ -167,14 +167,14 @@ class ElementWithDir {
   template: '<div dir="auto"></div>'
 })
 class ElementWithPredefinedAutoDir {
-  @ViewChild(Dir, {static: false}) dir: Dir;
+  @ViewChild(Dir) dir: Dir;
 }
 
 @Component({
   template: '<div dir="RTL"></div>'
 })
 class ElementWithPredefinedUppercaseDir {
-  @ViewChild(Dir, {static: false}) dir: Dir;
+  @ViewChild(Dir) dir: Dir;
 }
 
 

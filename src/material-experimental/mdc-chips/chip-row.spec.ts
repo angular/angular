@@ -234,7 +234,7 @@ describe('Row Chips', () => {
     </mat-chip-grid>`
 })
 class SingleChip {
-  @ViewChild(MatChipGrid, {static: false}) chipList: MatChipGrid;
+  @ViewChild(MatChipGrid) chipList: MatChipGrid;
   disabled: boolean = false;
   name: string = 'Test';
   color: string = 'primary';

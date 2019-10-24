@@ -313,10 +313,10 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
   /** Function that marks the slider as touched. Registered via "registerOnTouch". */
   _markAsTouched: () => any = () => {};
 
-  @ViewChild('thumbContainer', {static: false}) _thumbContainer: ElementRef<HTMLElement>;
-  @ViewChild('track', {static: false}) _track: ElementRef<HTMLElement>;
-  @ViewChild('pinValueMarker', {static: false}) _pinValueMarker: ElementRef<HTMLElement>;
-  @ViewChild('trackMarker', {static: false}) _trackMarker: ElementRef<HTMLElement>;
+  @ViewChild('thumbContainer') _thumbContainer: ElementRef<HTMLElement>;
+  @ViewChild('track') _track: ElementRef<HTMLElement>;
+  @ViewChild('pinValueMarker') _pinValueMarker: ElementRef<HTMLElement>;
+  @ViewChild('trackMarker') _trackMarker: ElementRef<HTMLElement>;
 
   constructor(
       private _elementRef: ElementRef<HTMLElement>,

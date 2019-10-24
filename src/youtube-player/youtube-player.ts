@@ -156,7 +156,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   @Output() playbackRateChange = new EventEmitter<YT.OnPlaybackRateChangeEvent>();
 
   /** The element that will be replaced by the iframe. */
-  @ViewChild('youtubeContainer', {static: false})
+  @ViewChild('youtubeContainer')
   youtubeContainer: ElementRef<HTMLElement>;
 
   private _youtubeContainer = new EventEmitter<HTMLElement>();

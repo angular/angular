@@ -8,7 +8,7 @@ import {MatSidenav} from '@angular/material/sidenav';
   styleUrls: ['sidenav-disable-close-example.css'],
 })
 export class SidenavDisableCloseExample {
-  @ViewChild('sidenav', {static: false}) sidenav: MatSidenav;
+  @ViewChild('sidenav') sidenav: MatSidenav;
 
   reason = '';
 

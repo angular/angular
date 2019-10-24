@@ -292,7 +292,7 @@ describe('Option Chips', () => {
     </mat-chip-listbox>`
 })
 class SingleChip {
-  @ViewChild(MatChipListbox, {static: false}) chipList: MatChipListbox;
+  @ViewChild(MatChipListbox) chipList: MatChipListbox;
   disabled: boolean = false;
   name: string = 'Test';
   color: string = 'primary';

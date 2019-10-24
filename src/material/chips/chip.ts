@@ -152,13 +152,13 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   _chipListMultiple: boolean = false;
 
   /** The chip avatar */
-  @ContentChild(MatChipAvatar, {static: false}) avatar: MatChipAvatar;
+  @ContentChild(MatChipAvatar) avatar: MatChipAvatar;
 
   /** The chip's trailing icon. */
-  @ContentChild(MatChipTrailingIcon, {static: false}) trailingIcon: MatChipTrailingIcon;
+  @ContentChild(MatChipTrailingIcon) trailingIcon: MatChipTrailingIcon;
 
   /** The chip's remove toggler. */
-  @ContentChild(forwardRef(() => MatChipRemove), {static: false}) removeIcon: MatChipRemove;
+  @ContentChild(forwardRef(() => MatChipRemove)) removeIcon: MatChipRemove;
 
   /** Whether the chip is selected. */
   @Input()

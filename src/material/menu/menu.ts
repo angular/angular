@@ -158,7 +158,7 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   }
 
   /** @docs-private */
-  @ViewChild(TemplateRef, {static: false}) templateRef: TemplateRef<any>;
+  @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
 
   /**
    * List of the items inside of a menu.
@@ -171,7 +171,7 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
    * Menu content that will be rendered lazily.
    * @docs-private
    */
-  @ContentChild(MatMenuContent, {static: false}) lazyContent: MatMenuContent;
+  @ContentChild(MatMenuContent) lazyContent: MatMenuContent;
 
   /** Whether the menu should overlap its trigger. */
   @Input()

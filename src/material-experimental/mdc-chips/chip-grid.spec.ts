@@ -1034,7 +1034,7 @@ class InputChipGrid {
     }
   }
 
-  @ViewChild(MatChipGrid, {static: false}) chipGrid: MatChipGrid;
+  @ViewChild(MatChipGrid) chipGrid: MatChipGrid;
   @ViewChildren(MatChipRow) chips: QueryList<MatChipRow>;
 }
 
@@ -1062,7 +1062,7 @@ class ChipGridWithFormErrorMessages {
   ];
   @ViewChildren(MatChipRow) chips: QueryList<MatChipRow>;
 
-  @ViewChild('form', {static: false}) form: NgForm;
+  @ViewChild('form') form: NgForm;
   formControl = new FormControl('', Validators.required);
 }
 

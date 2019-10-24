@@ -54,7 +54,7 @@ export const MAT_TAB_GROUP = new InjectionToken<any>('MAT_TAB_GROUP');
 })
 export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnChanges, OnDestroy {
   /** Content for the tab label given by `<ng-template mat-tab-label>`. */
-  @ContentChild(MatTabLabel, {static: false})
+  @ContentChild(MatTabLabel)
   get templateLabel(): MatTabLabel { return this._templateLabel; }
   set templateLabel(value: MatTabLabel) {
     // Only update the templateLabel via query if there is actually

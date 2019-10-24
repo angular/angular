@@ -339,5 +339,5 @@ class TestApp {
   onPlaybackRateChange = jasmine.createSpy('onPlaybackRateChange');
   onError = jasmine.createSpy('onError');
   onApiChange = jasmine.createSpy('onApiChange');
-  @ViewChild('player', {static: false}) youtubePlayer: YouTubePlayer;
+  @ViewChild('player') youtubePlayer: YouTubePlayer;
 }

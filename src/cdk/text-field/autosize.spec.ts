@@ -295,7 +295,7 @@ const textareaStyleReset = `
   styles: [textareaStyleReset],
 })
 class AutosizeTextAreaWithContent {
-  @ViewChild('autosize', {static: false}) autosize: CdkTextareaAutosize;
+  @ViewChild('autosize') autosize: CdkTextareaAutosize;
   minRows: number | null = null;
   maxRows: number | null = null;
   content: string = '';

@@ -938,7 +938,7 @@ class RadioGroupWithNgModel {
   template: `<mat-radio-button>One</mat-radio-button>`
 })
 class DisableableRadioButton {
-  @ViewChild(MatRadioButton, {static: false}) matRadioButton: MatRadioButton;
+  @ViewChild(MatRadioButton) matRadioButton: MatRadioButton;
 
   set disabled(value: boolean) {
     this.matRadioButton.disabled = value;

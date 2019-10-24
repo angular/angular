@@ -423,8 +423,8 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
 })
 export class MatTabGroup extends _MatTabGroupBase {
   @ContentChildren(MatTab, {descendants: true}) _allTabs: QueryList<MatTab>;
-  @ViewChild('tabBodyWrapper', {static: false}) _tabBodyWrapper: ElementRef;
-  @ViewChild('tabHeader', {static: false}) _tabHeader: MatTabGroupBaseHeader;
+  @ViewChild('tabBodyWrapper') _tabBodyWrapper: ElementRef;
+  @ViewChild('tabHeader') _tabHeader: MatTabGroupBaseHeader;
 
   constructor(elementRef: ElementRef,
               changeDetectorRef: ChangeDetectorRef,

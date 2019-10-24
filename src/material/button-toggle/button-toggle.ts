@@ -420,7 +420,7 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
   /** Type of the button toggle. Either 'radio' or 'checkbox'. */
   _type: ToggleType;
 
-  @ViewChild('button', {static: false}) _buttonElement: ElementRef<HTMLButtonElement>;
+  @ViewChild('button') _buttonElement: ElementRef<HTMLButtonElement>;
 
   /** The parent button toggle group (exclusive selection). Optional. */
   buttonToggleGroup: MatButtonToggleGroup;

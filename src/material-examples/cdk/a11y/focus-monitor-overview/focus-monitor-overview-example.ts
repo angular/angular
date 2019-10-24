@@ -16,8 +16,8 @@ import {
   styleUrls: ['focus-monitor-overview-example.css']
 })
 export class FocusMonitorOverviewExample implements OnDestroy, AfterViewInit {
-  @ViewChild('element', {static: false}) element: ElementRef<HTMLElement>;
-  @ViewChild('subtree', {static: false}) subtree: ElementRef<HTMLElement>;
+  @ViewChild('element') element: ElementRef<HTMLElement>;
+  @ViewChild('subtree') subtree: ElementRef<HTMLElement>;
 
   elementOrigin = this.formatOrigin(null);
   subtreeOrigin = this.formatOrigin(null);

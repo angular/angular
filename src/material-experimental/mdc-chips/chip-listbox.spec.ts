@@ -844,7 +844,7 @@ class BasicChipListbox {
   tabIndexOverride: number;
   selectable: boolean;
 
-  @ViewChild(MatChipListbox, {static: false}) chipListbox: MatChipListbox;
+  @ViewChild(MatChipListbox) chipListbox: MatChipListbox;
   @ViewChildren(MatChipOption) chips: QueryList<MatChipOption>;
 }
 
@@ -875,7 +875,7 @@ class MultiSelectionChipListbox {
   tabIndexOverride: number;
   selectable: boolean;
 
-  @ViewChild(MatChipListbox, {static: false}) chipListbox: MatChipListbox;
+  @ViewChild(MatChipListbox) chipListbox: MatChipListbox;
   @ViewChildren(MatChipOption) chips: QueryList<MatChipOption>;
 }
 

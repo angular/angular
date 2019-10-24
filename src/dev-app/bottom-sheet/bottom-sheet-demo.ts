@@ -30,7 +30,7 @@ export class BottomSheetDemo {
     direction: 'ltr'
   };
 
-  @ViewChild(TemplateRef, {static: false}) template: TemplateRef<any>;
+  @ViewChild(TemplateRef) template: TemplateRef<any>;
 
   constructor(private _bottomSheet: MatBottomSheet) {}
 

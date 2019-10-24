@@ -340,7 +340,7 @@ class StandardMultiYearView {
   selected = new Date(2020, JAN, 1);
   selectedYear: Date;
 
-  @ViewChild(MatMultiYearView, {static: false}) multiYearView: MatMultiYearView<Date>;
+  @ViewChild(MatMultiYearView) multiYearView: MatMultiYearView<Date>;
 }
 
 @Component({

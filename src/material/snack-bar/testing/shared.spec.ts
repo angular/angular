@@ -146,7 +146,7 @@ export function runHarnessTests(
   `
 })
 class SnackbarHarnessTest {
-  @ViewChild(TemplateRef, {static: false}) customTmpl: TemplateRef<any>;
+  @ViewChild(TemplateRef) customTmpl: TemplateRef<any>;
 
   constructor(readonly snackBar: MatSnackBar) {}
 

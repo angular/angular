@@ -1237,7 +1237,7 @@ class CheckboxWithTabIndex {
     <mat-checkbox></mat-checkbox>`,
 })
 class CheckboxUsingViewChild {
-  @ViewChild(MatCheckbox, {static: false}) checkbox: MatCheckbox;
+  @ViewChild(MatCheckbox) checkbox: MatCheckbox;
 
   set isDisabled(value: boolean) {
     this.checkbox.disabled = value;

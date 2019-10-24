@@ -245,13 +245,13 @@ export class MatFormField extends _MatFormFieldMixinBase
    * @deprecated
    * @breaking-change 8.0.0
    */
-  @ViewChild('underline', {static: false}) underlineRef: ElementRef;
+  @ViewChild('underline') underlineRef: ElementRef;
 
   @ViewChild('connectionContainer', {static: true}) _connectionContainerRef: ElementRef;
-  @ViewChild('inputContainer', {static: false}) _inputContainerRef: ElementRef;
-  @ViewChild('label', {static: false}) private _label: ElementRef;
+  @ViewChild('inputContainer') _inputContainerRef: ElementRef;
+  @ViewChild('label') private _label: ElementRef;
 
-  @ContentChild(MatFormFieldControl, {static: false}) _controlNonStatic: MatFormFieldControl<any>;
+  @ContentChild(MatFormFieldControl) _controlNonStatic: MatFormFieldControl<any>;
   @ContentChild(MatFormFieldControl, {static: true}) _controlStatic: MatFormFieldControl<any>;
   get _control() {
     // TODO(crisbeto): we need this hacky workaround in order to support both Ivy
@@ -263,13 +263,13 @@ export class MatFormField extends _MatFormFieldMixinBase
   }
   private _explicitFormFieldControl: MatFormFieldControl<any>;
 
-  @ContentChild(MatLabel, {static: false}) _labelChildNonStatic: MatLabel;
+  @ContentChild(MatLabel) _labelChildNonStatic: MatLabel;
   @ContentChild(MatLabel, {static: true}) _labelChildStatic: MatLabel;
   get _labelChild() {
     return this._labelChildNonStatic || this._labelChildStatic;
   }
 
-  @ContentChild(MatPlaceholder, {static: false}) _placeholderChild: MatPlaceholder;
+  @ContentChild(MatPlaceholder) _placeholderChild: MatPlaceholder;
   @ContentChildren(MatError, {descendants: true}) _errorChildren: QueryList<MatError>;
   @ContentChildren(MatHint, {descendants: true}) _hintChildren: QueryList<MatHint>;
   @ContentChildren(MatPrefix, {descendants: true}) _prefixChildren: QueryList<MatPrefix>;

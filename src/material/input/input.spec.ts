@@ -1869,7 +1869,7 @@ class MatInputMissingMatInputTestController {}
   `
 })
 class MatInputWithFormErrorMessages {
-  @ViewChild('form', {static: false}) form: NgForm;
+  @ViewChild('form') form: NgForm;
   formControl = new FormControl('', Validators.required);
   renderError = true;
 }
@@ -1911,7 +1911,7 @@ class MatInputWithCustomErrorStateMatcher {
   `
 })
 class MatInputWithFormGroupErrorMessages {
-  @ViewChild(FormGroupDirective, {static: false}) formGroupDirective: FormGroupDirective;
+  @ViewChild(FormGroupDirective) formGroupDirective: FormGroupDirective;
   formGroup = new FormGroup({
     name: new FormControl('', Validators.required)
   });
@@ -1992,7 +1992,7 @@ class MatInputWithLabelAndPlaceholder {
   `
 })
 class MatInputWithAppearance {
-  @ViewChild(MatFormField, {static: false}) formField: MatFormField;
+  @ViewChild(MatFormField) formField: MatFormField;
   appearance: MatFormFieldAppearance;
 }
 
@@ -2006,7 +2006,7 @@ class MatInputWithAppearance {
   `
 })
 class MatInputWithAppearanceAndLabel {
-  @ViewChild(MatFormField, {static: false}) formField: MatFormField;
+  @ViewChild(MatFormField) formField: MatFormField;
   appearance: MatFormFieldAppearance;
   showPrefix: boolean;
   labelContent = 'Label';
@@ -2042,7 +2042,7 @@ class MatInputWithOutlineInsideInvisibleElement {}
   encapsulation: ViewEncapsulation.ShadowDom
 })
 class MatInputWithOutlineAppearanceInShadowDOM {
-  @ViewChild('formField', {read: ElementRef, static: false}) formField: ElementRef<HTMLElement>;
+  @ViewChild('formField', {read: ElementRef}) formField: ElementRef<HTMLElement>;
 }
 
 
@@ -2063,7 +2063,7 @@ const textareaStyleReset = `
 })
 class AutosizeTextareaWithLongPlaceholder {
   placeholder = 'Long Long Long Long Long Long Long Long Placeholder';
-  @ViewChild(MatTextareaAutosize, {static: false}) autosize: MatTextareaAutosize;
+  @ViewChild(MatTextareaAutosize) autosize: MatTextareaAutosize;
 }
 
 @Component({

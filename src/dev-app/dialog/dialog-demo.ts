@@ -47,7 +47,7 @@ export class DialogDemo {
   };
   numTemplateOpens = 0;
 
-  @ViewChild(TemplateRef, {static: false}) template: TemplateRef<any>;
+  @ViewChild(TemplateRef) template: TemplateRef<any>;
 
   constructor(public dialog: MatDialog, @Inject(DOCUMENT) doc: any) {
     // Possible useful example for the open and closeAll events.

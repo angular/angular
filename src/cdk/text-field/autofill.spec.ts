@@ -227,5 +227,5 @@ class Inputs {
 })
 class InputWithCdkAutofilled {
   // Cast to `any` so we can stub out some methods in the tests.
-  @ViewChild('input', {static: false}) input: ElementRef<any>;
+  @ViewChild('input') input: ElementRef<any>;
 }

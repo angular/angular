@@ -118,7 +118,7 @@ export class CdkStep implements OnChanges {
   _displayDefaultIndicatorType: boolean;
 
   /** Template for step label if it exists. */
-  @ContentChild(CdkStepLabel, {static: false}) stepLabel: CdkStepLabel;
+  @ContentChild(CdkStepLabel) stepLabel: CdkStepLabel;
 
   /** Template for step content. */
   @ViewChild(TemplateRef, {static: true}) content: TemplateRef<any>;

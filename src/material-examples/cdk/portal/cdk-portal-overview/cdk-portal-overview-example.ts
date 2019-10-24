@@ -10,7 +10,7 @@ import {ComponentPortal, Portal, TemplatePortal} from '@angular/cdk/portal';
   styleUrls: ['cdk-portal-overview-example.css'],
 })
 export class CdkPortalOverviewExample implements AfterViewInit {
-  @ViewChild('templatePortalContent', {static: false}) templatePortalContent: TemplateRef<any>;
+  @ViewChild('templatePortalContent') templatePortalContent: TemplateRef<any>;
   selectedPortal: Portal<any>;
   componentPortal: ComponentPortal<ComponentPortalExample>;
   templatePortal: TemplatePortal<any>;

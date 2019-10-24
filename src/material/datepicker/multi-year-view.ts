@@ -106,7 +106,7 @@ export class MatMultiYearView<D> implements AfterContentInit {
   @Output() readonly activeDateChange: EventEmitter<D> = new EventEmitter<D>();
 
   /** The body of calendar table */
-  @ViewChild(MatCalendarBody, {static: false}) _matCalendarBody: MatCalendarBody;
+  @ViewChild(MatCalendarBody) _matCalendarBody: MatCalendarBody;
 
   /** Grid of calendar cells representing the currently displayed years. */
   _years: MatCalendarCell[][];

@@ -836,7 +836,7 @@ class AsyncTabsTestApp implements OnInit {
 class TabGroupWithSimpleApi {
   otherLabel = 'Fruit';
   otherContent = 'Apples, grapes';
-  @ViewChild('legumes', {static: false}) legumes: any;
+  @ViewChild('legumes') legumes: any;
 }
 
 
@@ -926,5 +926,5 @@ class TabsWithCustomAnimationDuration {}
   `,
 })
 class TabGroupWithIndirectDescendantTabs {
-  @ViewChild(MatTabGroup, {static: false}) tabGroup: MatTabGroup;
+  @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
 }

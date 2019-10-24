@@ -32,8 +32,8 @@ import {
   encapsulation: ViewEncapsulation.None
 })
 export class ConnectedOverlayDemo {
-  @ViewChild(CdkOverlayOrigin, {static: false}) _overlayOrigin: CdkOverlayOrigin;
-  @ViewChild('overlay', {static: false}) overlayTemplate: TemplateRef<any>;
+  @ViewChild(CdkOverlayOrigin) _overlayOrigin: CdkOverlayOrigin;
+  @ViewChild('overlay') overlayTemplate: TemplateRef<any>;
 
   originX: HorizontalConnectionPos = 'start';
   originY: VerticalConnectionPos = 'bottom';

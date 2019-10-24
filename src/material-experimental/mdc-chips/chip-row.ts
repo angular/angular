@@ -58,7 +58,7 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
    * The focusable wrapper element in the first gridcell, which contains all
    * chip content other than the remove icon.
    */
-  @ViewChild('chipContent', {static: false}) chipContent: ElementRef;
+  @ViewChild('chipContent') chipContent: ElementRef;
 
   /** The focusable grid cells for this row. Implemented as part of GridKeyManagerRow. */
   cells!: HTMLElement[];

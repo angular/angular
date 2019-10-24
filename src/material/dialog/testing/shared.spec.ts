@@ -125,7 +125,7 @@ export function runHarnessTests(
   `
 })
 class DialogHarnessTest {
-  @ViewChild(TemplateRef, {static: false}) dialogTmpl: TemplateRef<any>;
+  @ViewChild(TemplateRef) dialogTmpl: TemplateRef<any>;
 
   constructor(readonly dialog: MatDialog) {}
 
