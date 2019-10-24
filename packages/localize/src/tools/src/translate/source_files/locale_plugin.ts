@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {NodePath, PluginObj} from '@babel/core';
-import {LogicalExpression, MemberExpression, stringLiteral} from '@babel/types';
+import {MemberExpression, stringLiteral} from '@babel/types';
 
 import {TranslatePluginOptions, isLocalize} from './source_file_utils';
 
@@ -35,6 +35,10 @@ export function makeLocalePlugin(
         if (!property.isIdentifier({name: 'locale'})) {
           return;
         }
+        if (expression.parentPath.isAssignmentExpression() &&
+            expression.parentPath.get('left') === expression) {
+          return;
+        }
         // Check for the `$localize.locale` being guarded by a check on the existence of
         // `$localize`.
         const parent = expression.parentPath;
@@ -53,7 +57,6 @@ export function makeLocalePlugin(
             left.replaceWith(left.get('left'));
           }
         }
-
         // Replace the `$localize.locale` with the string literal
         expression.replaceWith(stringLiteral(locale));
       }

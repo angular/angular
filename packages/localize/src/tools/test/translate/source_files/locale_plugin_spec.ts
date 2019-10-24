@@ -83,4 +83,16 @@ describe('makeLocalePlugin', () => {
     const output = transformSync(input, {plugins: [makeLocalePlugin('fr')]}) !;
     expect(output.code).toEqual('const {\n  locale\n} = $localize;\nconst a = locale;');
   });
+
+  it('should ignore `$localize.locale` on LHS of an assignment', () => {
+    const input = 'let a;\na = $localize.locale = "de";';
+    const output = transformSync(input, {plugins: [makeLocalePlugin('fr')]}) !;
+    expect(output.code).toEqual('let a;\na = $localize.locale = "de";');
+  });
+
+  it('should handle `$localize.locale on RHS of an assignment', () => {
+    const input = 'let a;\na = $localize.locale;';
+    const output = transformSync(input, {plugins: [makeLocalePlugin('fr')]}) !;
+    expect(output.code).toEqual('let a;\na = "fr";');
+  });
 });
