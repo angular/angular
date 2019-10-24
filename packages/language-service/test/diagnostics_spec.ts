@@ -76,6 +76,26 @@ describe('diagnostics', () => {
     }
   });
 
+  it('should not produce diagnostics for slice pipe with arguments', () => {
+    mockHost.override(TEST_TEMPLATE, `
+      <div *ngFor="let h of heroes | slice:0:1">
+        {{h.name}}
+      </div>`);
+    const diags = ngLS.getDiagnostics(TEST_TEMPLATE);
+    expect(diags).toEqual([]);
+  });
+
+  it('should produce diagnostics for slice pipe with args when member is invalid', () => {
+    mockHost.override(TEST_TEMPLATE, `
+      <div *ngFor="let h of heroes | slice:0:1">
+        {{h.age}}
+      </div>`);
+    const diags = ngLS.getDiagnostics(TEST_TEMPLATE);
+    expect(diags.length).toBe(1);
+    expect(diags[0].messageText)
+        .toBe(`Identifier 'age' is not defined. 'Hero' does not contain such a member`);
+  });
+
   describe('in expression-cases.ts', () => {
     it('should report access to an unknown field', () => {
       const diags = ngLS.getDiagnostics(EXPRESSION_CASES).map(d => d.messageText);
