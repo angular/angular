@@ -268,6 +268,7 @@ export enum CompletionKind {
   ELEMENT = 'element',
   ENTITY = 'entity',
   HTML_ATTRIBUTE = 'html attribute',
+  HTML_ELEMENT = 'html element',
   KEY = 'key',
   METHOD = 'method',
   PIPE = 'pipe',

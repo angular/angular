@@ -36,7 +36,7 @@ describe('completions', () => {
     for (const location of locations) {
       const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, location);
       const completions = ngLS.getCompletionsAt(APP_COMPONENT, marker.start);
-      expectContain(completions, CompletionKind.ELEMENT, ['div', 'h1', 'h2', 'span']);
+      expectContain(completions, CompletionKind.HTML_ELEMENT, ['div', 'h1', 'h2', 'span']);
     }
   });
 
@@ -124,11 +124,11 @@ describe('completions', () => {
   it('should be able to return attributes of an incomplete element', () => {
     const m1 = mockHost.getLocationMarkerFor(PARSING_CASES, 'incomplete-open-lt');
     const c1 = ngLS.getCompletionsAt(PARSING_CASES, m1.start);
-    expectContain(c1, CompletionKind.ELEMENT, ['a', 'div', 'p', 'span']);
+    expectContain(c1, CompletionKind.HTML_ELEMENT, ['a', 'div', 'p', 'span']);
 
     const m2 = mockHost.getLocationMarkerFor(PARSING_CASES, 'incomplete-open-a');
     const c2 = ngLS.getCompletionsAt(PARSING_CASES, m2.start);
-    expectContain(c2, CompletionKind.ELEMENT, ['a', 'div', 'p', 'span']);
+    expectContain(c2, CompletionKind.HTML_ELEMENT, ['a', 'div', 'p', 'span']);
 
     const m3 = mockHost.getLocationMarkerFor(PARSING_CASES, 'incomplete-open-attr');
     const c3 = ngLS.getCompletionsAt(PARSING_CASES, m3.start);
@@ -138,7 +138,7 @@ describe('completions', () => {
   it('should be able to return completions with a missing closing tag', () => {
     const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'missing-closing');
     const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
-    expectContain(completions, CompletionKind.ELEMENT, ['a', 'div', 'p', 'span', 'h1', 'h2']);
+    expectContain(completions, CompletionKind.HTML_ELEMENT, ['a', 'div', 'p', 'span', 'h1', 'h2']);
   });
 
   it('should be able to return common attributes of an unknown tag', () => {
@@ -166,16 +166,21 @@ describe('completions', () => {
       expectContain(completions, CompletionKind.ENTITY, ['&amp;', '&gt;', '&lt;', '&iota;']);
     });
 
-    it('should be able to return html elements', () => {
+    it('should not return html elements', () => {
       const locations = ['empty', 'start-tag-h1', 'h1-content', 'start-tag', 'start-tag-after-h'];
       for (const location of locations) {
         const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, location);
         const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
-        expectContain(completions, CompletionKind.ELEMENT, ['div', 'h1', 'h2', 'span']);
+        expect(completions).toBeDefined();
+        const {entries} = completions !;
+        expect(entries).not.toContain(jasmine.objectContaining({name: 'div'}));
+        expect(entries).not.toContain(jasmine.objectContaining({name: 'h1'}));
+        expect(entries).not.toContain(jasmine.objectContaining({name: 'h2'}));
+        expect(entries).not.toContain(jasmine.objectContaining({name: 'span'}));
       }
     });
 
-    it('should be able to return element diretives', () => {
+    it('should be able to return element directives', () => {
       const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'empty');
       const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
       expectContain(completions, CompletionKind.COMPONENT, [
@@ -186,15 +191,15 @@ describe('completions', () => {
       ]);
     });
 
-    it('should be able to return h1 attributes', () => {
+    it('should not return html attributes', () => {
       const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'h1-after-space');
       const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
-      expectContain(completions, CompletionKind.HTML_ATTRIBUTE, [
-        'class',
-        'id',
-        'onclick',
-        'onmouseup',
-      ]);
+      expect(completions).toBeDefined();
+      const {entries} = completions !;
+      expect(entries).not.toContain(jasmine.objectContaining({name: 'class'}));
+      expect(entries).not.toContain(jasmine.objectContaining({name: 'id'}));
+      expect(entries).not.toContain(jasmine.objectContaining({name: 'onclick'}));
+      expect(entries).not.toContain(jasmine.objectContaining({name: 'onmouseup'}));
     });
 
     it('should be able to find common angular attributes', () => {
