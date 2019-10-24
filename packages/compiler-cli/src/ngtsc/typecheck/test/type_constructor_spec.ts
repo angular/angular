@@ -159,7 +159,7 @@ TestClass.ngTypeCtor({value: 'test'});
         const TestClassWithCtor =
             getDeclaration(res.program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         const typeCtor = TestClassWithCtor.members.find(isTypeCtor) !;
-        const ctorText = typeCtor.getText().replace(/[ \n]+/g, ' ');
+        const ctorText = typeCtor.getText().replace(/[ \r\n]+/g, ' ');
         expect(ctorText).toContain(
             'init: Pick<TestClass, "foo"> | { bar: typeof TestClass.ngAcceptInputType_bar; }');
       });
