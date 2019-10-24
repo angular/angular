@@ -298,7 +298,8 @@ describe('type check blocks', () => {
       checkTypeOfOutputEvents: true,
       checkTypeOfAnimationEvents: true,
       checkTypeOfDomEvents: true,
-      checkTypeOfReferences: true,
+      checkTypeOfDomReferences: true,
+      checkTypeOfNonDomReferences: true,
       checkTypeOfPipes: true,
       strictSafeNavigationTypes: true,
     };
@@ -424,7 +425,7 @@ describe('type check blocks', () => {
       });
     });
 
-    describe('config.checkTypeOfReferences', () => {
+    describe('config.checkTypeOfDomReferences', () => {
       const TEMPLATE = `<input #ref>{{ref.value}}`;
 
       it('should trace references when enabled', () => {
@@ -433,8 +434,40 @@ describe('type check blocks', () => {
       });
 
       it('should use any for reference types when disabled', () => {
-        const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfReferences: false};
+        const DISABLED_CONFIG:
+            TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfDomReferences: false};
         const block = tcb(TEMPLATE, [], DISABLED_CONFIG);
+        expect(block).toContain('(null as any).value');
+      });
+    });
+
+    describe('config.checkTypeOfNonDomReferences', () => {
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        exportAs: ['dir'],
+        inputs: {'dirInput': 'dirInput'},
+        outputs: {'outputField': 'dirOutput'},
+        hasNgTemplateContextGuard: true,
+      }];
+      const TEMPLATE =
+          `<div dir #ref="dir">{{ref.value}}</div><ng-template #ref2></ng-template>{{ref2.value2}}`;
+
+      it('should trace references to a directive when enabled', () => {
+        const block = tcb(TEMPLATE, DIRECTIVES);
+        expect(block).toContain('(_t2).value');
+      });
+
+      it('should trace references to an <ng-template> when enabled', () => {
+        const block = tcb(TEMPLATE, DIRECTIVES);
+        expect(block).toContain('((null as any as core.TemplateRef<any>)).value2');
+      });
+
+      it('should use any for reference types when disabled', () => {
+        const DISABLED_CONFIG:
+            TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfNonDomReferences: false};
+        const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).toContain('(null as any).value');
       });
     });
