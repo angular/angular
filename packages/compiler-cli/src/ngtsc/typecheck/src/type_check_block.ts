@@ -1023,11 +1023,6 @@ class TcbExpressionTranslator {
       addParseSpanInfo(expr, toAbsoluteSpan(ast.span, this.sourceSpan));
       return expr;
     } else if (binding instanceof TmplAstReference) {
-      if (!this.tcb.env.config.checkTypeOfReferences) {
-        // References are pinned to 'any'.
-        return NULL_AS_ANY;
-      }
-
       const target = this.tcb.boundTarget.getReferenceTarget(binding);
       if (target === null) {
         throw new Error(`Unbound reference? ${binding.name}`);
@@ -1037,10 +1032,20 @@ class TcbExpressionTranslator {
       // element or template.
 
       if (target instanceof TmplAstElement) {
+        if (!this.tcb.env.config.checkTypeOfDomReferences) {
+          // References to DOM nodes are pinned to 'any'.
+          return NULL_AS_ANY;
+        }
+
         const expr = ts.getMutableClone(this.scope.resolve(target));
         addParseSpanInfo(expr, toAbsoluteSpan(ast.span, this.sourceSpan));
         return expr;
       } else if (target instanceof TmplAstTemplate) {
+        if (!this.tcb.env.config.checkTypeOfNonDomReferences) {
+          // References to `TemplateRef`s pinned to 'any'.
+          return NULL_AS_ANY;
+        }
+
         // Direct references to an <ng-template> node simply require a value of type
         // `TemplateRef<any>`. To get this, an expression of the form
         // `(null as any as TemplateRef<any>)` is constructed.
@@ -1053,6 +1058,11 @@ class TcbExpressionTranslator {
         addParseSpanInfo(value, toAbsoluteSpan(ast.span, this.sourceSpan));
         return value;
       } else {
+        if (!this.tcb.env.config.checkTypeOfNonDomReferences) {
+          // References to directives are pinned to 'any'.
+          return NULL_AS_ANY;
+        }
+
         const expr = ts.getMutableClone(this.scope.resolve(target.node, target.directive));
         addParseSpanInfo(expr, toAbsoluteSpan(ast.span, this.sourceSpan));
         return expr;
