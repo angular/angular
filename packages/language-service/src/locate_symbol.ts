@@ -39,11 +39,10 @@ export function locateSymbol(info: AstResult, position: number): SymbolInfo|unde
           const dinfo = diagnosticInfoFromTemplateInfo(info);
           const scope = getExpressionScope(dinfo, path, inEvent);
           if (attribute.valueSpan) {
-            const expressionOffset = attribute.valueSpan.start.offset;
-            const result = getExpressionSymbol(
-                scope, ast, templatePosition - expressionOffset, info.template.query);
+            const result = getExpressionSymbol(scope, ast, templatePosition, info.template.query);
             if (result) {
               symbol = result.symbol;
+              const expressionOffset = attribute.valueSpan.start.offset;
               span = offsetSpan(result.span, expressionOffset);
             }
           }
@@ -116,7 +115,7 @@ export function locateSymbol(info: AstResult, position: number): SymbolInfo|unde
               const dinfo = diagnosticInfoFromTemplateInfo(info);
               const scope = getExpressionScope(dinfo, path, /* includeEvent */ false);
               const result =
-                  getExpressionSymbol(scope, ast.value, expressionPosition, info.template.query);
+                  getExpressionSymbol(scope, ast.value, templatePosition, info.template.query);
               if (result) {
                 symbol = result.symbol;
                 span = offsetSpan(result.span, ast.sourceSpan.start.offset);
