@@ -92,6 +92,12 @@ sass_binary(
     ],
 )
 
+genrule(
+    name = "setup_compile_mode_script",
+    outs = ["setup_compile_mode.js"],
+    cmd = "echo window.bazelCompileMode = \"'$(compile)'\"\; > $@",
+)
+
 dev_server(
     name = "devserver",
     srcs = [
@@ -99,6 +105,7 @@ dev_server(
         "index.html",
         "system-config.js",
         "system-rxjs-operators.js",
+        ":setup_compile_mode_script",
         ":theme",
         "//src/dev-app/icon:icon_demo_assets",
         "@npm//:node_modules/@material/animation/dist/mdc.animation.js",

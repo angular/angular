@@ -13,3 +13,10 @@ platform(
       }
     """,
 )
+
+config_setting(
+    name = "view_engine_mode",
+    values = {
+        "define": "compile=legacy",
+    },
+)

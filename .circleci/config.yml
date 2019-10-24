@@ -105,7 +105,6 @@ var_15: &ignore_presubmit_branch_filter
   branches:
     ignore:
       - "_presubmit"
-      - "ivy-2019"
 
 # Runs a script that sets up the Bazel remote execution. This will be used by jobs that run
 # Bazel primarily and should benefit from remote caching and execution.
@@ -386,10 +385,10 @@ jobs:
     - run: bazel test src/... --build_tag_filters=-e2e --test_tag_filters=-e2e
 
   # ----------------------------------------------------------------------------
-  # Job that runs all Bazel tests against Ivy with the current Angular version
+  # Job that runs all Bazel tests against View Engine with the current Angular version
   # specified in the project dev dependencies.
   # ----------------------------------------------------------------------------
-  ivy_test:
+  view_engine_test:
     <<: *job_defaults
     resource_class: xlarge
     environment:
@@ -403,17 +402,14 @@ jobs:
       - *yarn_install
       - *setup_bazel_binary
 
-      # Setup ngcc to make the Angular packages compatible with ngtsc (i.e. creating
-      # directive and component definitions as static class members).
-      - run: node ./scripts/circleci/setup-ivy-ngcc.js
-      # Run project tests with ngtsc and the Ivy Angular packages.
-      - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --define=compile=aot
-      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --define=compile=aot
+      # Run project tests with NGC and View Engine.
+      - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --define=compile=legacy
+      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --define=compile=legacy
 
   # ----------------------------------------------------------------------------
-  # Job that runs all Bazel tests against Ivy from angular/angular#master.
+  # Job that runs all Bazel tests against View Engine from angular/angular#master.
   # ----------------------------------------------------------------------------
-  ivy_snapshot_test_cronjob:
+  view_engine_snapshot_test_cronjob:
     <<: *job_defaults
     resource_class: xlarge
     environment:
@@ -427,11 +423,11 @@ jobs:
       - *yarn_install
       - *setup_bazel_binary
 
-      # Setup Angular ivy snapshots built with ngtsc.
-      - run: node ./scripts/circleci/setup-angular-snapshots.js --tag master-ivy-aot
-      # Run project tests with ngtsc and the Ivy Angular packages.
-      - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --define=compile=aot
-      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --define=compile=aot
+      # Setup Angular snapshots by installing the artifacts from the Github repositories.
+      - run: node ./scripts/circleci/setup-angular-snapshots.js --tag master
+      # Run project tests with NGC and View Engine.
+      - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --define=compile=legacy
+      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --define=compile=legacy
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel tests against material-components-web#master.
@@ -494,7 +490,7 @@ workflows:
     jobs:
       - bazel_build:
           filters: *ignore_presubmit_branch_filter
-      - ivy_test:
+      - view_engine_test:
           filters: *ignore_presubmit_branch_filter
       - api_golden_checks:
           filters: *ignore_presubmit_branch_filter
@@ -536,7 +532,7 @@ workflows:
       # is no easy way to detect whether a job runs inside of a cronjob or specific
       # workflow. See: https://circleci.com/ideas/?idea=CCI-I-295
       - snapshot_tests_local_browsers
-      - ivy_snapshot_test_cronjob
+      - view_engine_snapshot_test_cronjob
       - mdc_snapshot_test_cronjob
     triggers:
       - schedule:

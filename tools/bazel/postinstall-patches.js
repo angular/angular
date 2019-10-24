@@ -99,6 +99,12 @@ searchAndReplace(
 // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1208.
 shelljs.cat(path.join(__dirname, './manifest_externs_hermeticity.patch')).exec('patch -p0');
 
+// Workaround for using Ngcc with "--create-ivy-entry-points". This is a special
+// issue for our repository since we want to run Ivy by default in the module resolution,
+// but still have the option to opt-out by not using the compiled ngcc entry-points.
+searchAndReplace(`[formatProperty + "_ivy_ngcc"]`, '[formatProperty]',
+  'node_modules/@angular/compiler-cli/ngcc/src/writing/new_entry_point_file_writer.js');
+
 /**
  * Reads the specified file and replaces matches of the search expression
  * with the given replacement. Throws if no changes were made.

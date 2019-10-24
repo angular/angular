@@ -80,6 +80,11 @@ var pathMapping = {};
 /** Package configurations that will be used in SystemJS. */
 var packagesConfig = {};
 
+// The "bazelCompileMode" property will be set globally by the "setup-compile-mode.js"
+// script. This allows us to switch between Ivy and View Engine UMD bundles automatically.
+/** Whether the dev-app is served with Ivy enabled. */
+var isRunningWithIvy = window.bazelCompileMode === 'aot';
+
 // Configure all primary entry-points.
 configureEntryPoint('cdk');
 configureEntryPoint('cdk-experimental');
@@ -113,6 +118,18 @@ function configureEntryPoint(pkgName, entryPoint) {
   pathMapping['@angular/' + examplesName] = srcRunfilePath + '/' + examplesName;
   packagesConfig[srcRunfilePath + '/' + name] =
       packagesConfig[srcRunfilePath + '/' + examplesName] = {main: 'index.js'};
+}
+
+/**
+ * Gets the path to the given bundle. Respects processing done by ngcc when
+ * running with Ivy enabled.
+ */
+function getBundlePath(bundleName, basePath) {
+  var relativeBundlePath = 'bundles/' + bundleName;
+  if (isRunningWithIvy) {
+    relativeBundlePath = '__ivy_ngcc__/' + relativeBundlePath;
+  }
+  return (basePath || '') + '/' + relativeBundlePath ;
 }
 
 var map = Object.assign({
@@ -162,18 +179,22 @@ var packages = Object.assign({
   '.': {defaultExtension: 'js'},
 
   // Angular specific mappings.
-  '@angular/core': {main: 'bundles/core.umd.js'},
-  '@angular/common': {main: 'bundles/common.umd.js'},
-  '@angular/common/http': {main: '../bundles/common-http.umd.js'},
-  '@angular/compiler': {main: 'bundles/compiler.umd.js'},
-  '@angular/forms': {main: 'bundles/forms.umd.js'},
-  '@angular/animations': {main: 'bundles/animations.umd.js'},
-  '@angular/elements': {main: 'bundles/elements.umd.js'},
-  '@angular/router': {main: 'bundles/router.umd.js'},
-  '@angular/animations/browser': {main: '../bundles/animations-browser.umd.js'},
-  '@angular/platform-browser/animations': {main: '../bundles/platform-browser-animations.umd'},
-  '@angular/platform-browser': {main: 'bundles/platform-browser.umd.js'},
-  '@angular/platform-browser-dynamic': {main: 'bundles/platform-browser-dynamic.umd.js'},
+  '@angular/core': {main: getBundlePath('core.umd.js')},
+  '@angular/common': {main: getBundlePath('common.umd.js')},
+  '@angular/common/http': {main: getBundlePath('common-http.umd.js', '../')},
+  '@angular/compiler': {main: getBundlePath('compiler.umd.js')},
+  '@angular/forms': {main: getBundlePath('forms.umd.js')},
+  '@angular/animations': {main: getBundlePath('animations.umd.js')},
+  '@angular/elements': {main: getBundlePath('elements.umd.js')},
+  '@angular/router': {main: getBundlePath('router.umd.js')},
+  '@angular/animations/browser': {
+    main: getBundlePath('animations-browser.umd.js', '../')
+  },
+  '@angular/platform-browser/animations': {
+    main: getBundlePath('platform-browser-animations.umd.js', '../')
+  },
+  '@angular/platform-browser': {main: getBundlePath('platform-browser.umd.js')},
+  '@angular/platform-browser-dynamic': {main: getBundlePath('platform-browser-dynamic.umd.js')},
 }, packagesConfig);
 
 // Configure the base path and map the different node packages.

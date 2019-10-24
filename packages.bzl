@@ -8,24 +8,42 @@ VERSION_PLACEHOLDER_REPLACEMENTS = {
     "0.0.0-NG": ANGULAR_PACKAGE_VERSION,
 }
 
-# UMD bundles for Angular packages and subpackages we depend on for development and testing.
-ANGULAR_LIBRARY_UMDS = [
-    "@npm//:node_modules/@angular/animations/bundles/animations-browser.umd.js",
-    "@npm//:node_modules/@angular/animations/bundles/animations.umd.js",
-    "@npm//:node_modules/@angular/common/bundles/common-http-testing.umd.js",
-    "@npm//:node_modules/@angular/common/bundles/common-http.umd.js",
-    "@npm//:node_modules/@angular/common/bundles/common-testing.umd.js",
-    "@npm//:node_modules/@angular/common/bundles/common.umd.js",
-    "@npm//:node_modules/@angular/compiler/bundles/compiler-testing.umd.js",
+# List of default Angular library UMD bundles which are not processed by ngcc.
+ANGULAR_NO_NGCC_BUNDLES = [
     "@npm//:node_modules/@angular/compiler/bundles/compiler.umd.js",
-    "@npm//:node_modules/@angular/core/bundles/core-testing.umd.js",
-    "@npm//:node_modules/@angular/core/bundles/core.umd.js",
-    "@npm//:node_modules/@angular/elements/bundles/elements.umd.js",
-    "@npm//:node_modules/@angular/forms/bundles/forms.umd.js",
-    "@npm//:node_modules/@angular/platform-browser-dynamic/bundles/platform-browser-dynamic-testing.umd.js",
-    "@npm//:node_modules/@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js",
-    "@npm//:node_modules/@angular/platform-browser/bundles/platform-browser-animations.umd.js",
-    "@npm//:node_modules/@angular/platform-browser/bundles/platform-browser-testing.umd.js",
-    "@npm//:node_modules/@angular/platform-browser/bundles/platform-browser.umd.js",
-    "@npm//:node_modules/@angular/router/bundles/router.umd.js",
 ]
+
+# List of Angular library UMD bundles which will are processed by ngcc.
+ANGULAR_NGCC_BUNDLES = [
+    ("@angular/animations", ["animations-browser.umd.js", "animations.umd.js"]),
+    ("@angular/common", ["common-http-testing.umd.js", "common-http.umd.js", "common-testing.umd.js", "common.umd.js"]),
+    ("@angular/compiler", ["compiler-testing.umd.js"]),
+    ("@angular/core", ["core-testing.umd.js", "core.umd.js"]),
+    ("@angular/elements", ["elements.umd.js"]),
+    ("@angular/forms", ["forms.umd.js"]),
+    ("@angular/platform-browser-dynamic", ["platform-browser-dynamic-testing.umd.js", "platform-browser-dynamic.umd.js"]),
+    ("@angular/platform-browser", ["platform-browser.umd.js", "platform-browser-testing.umd.js", "platform-browser-animations.umd.js"]),
+    ("@angular/router", ["router.umd.js"]),
+]
+
+ANGULAR_LIBRARY_VIEW_ENGINE_UMDS = ANGULAR_NO_NGCC_BUNDLES + [
+    "@npm//:node_modules/%s/bundles/%s" % (pkgName, bundleName)
+    for pkgName, bundleNames in ANGULAR_NGCC_BUNDLES
+    for bundleName in bundleNames
+]
+ANGULAR_LIBRARY_IVY_UMDS = ANGULAR_NO_NGCC_BUNDLES + [
+    "@npm//:node_modules/%s/__ivy_ngcc__/bundles/%s" % (pkgName, bundleName)
+    for pkgName, bundleNames in ANGULAR_NGCC_BUNDLES
+    for bundleName in bundleNames
+]
+
+"""
+  Gets the list of targets for the Angular library UMD bundles. Conditionally
+  switches between View Engine or Ivy UMD bundles based on the "--define=compile" flag.
+"""
+
+def getAngularUmdTargets():
+    return select({
+        "//tools:view_engine_mode": ANGULAR_LIBRARY_VIEW_ENGINE_UMDS,
+        "//conditions:default": ANGULAR_LIBRARY_IVY_UMDS,
+    })
