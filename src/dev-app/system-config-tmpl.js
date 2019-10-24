@@ -6,70 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Note that this file isn't being transpiled so we need to keep it in ES5.
+// Note that this file isn't being transpiled so we need to keep it in ES5. Also
+// identifiers of the format "$NAME_TMPL" will be replaced by the Bazel rule that
+// converts this template file into the actual SystemJS configuration file.
 
-var CDK_PACKAGES = [
-  'a11y',
-  'accordion',
-  'bidi',
-  'clipboard',
-  'coercion',
-  'collections',
-  'drag-drop',
-  'keycodes',
-  'layout',
-  'observers',
-  'overlay',
-  'platform',
-  'portal',
-  'scrolling',
-  'stepper',
-  'table',
-  'text-field',
-  'tree',
-];
+var CDK_PACKAGES = $CDK_ENTRYPOINTS_TMPL;
+var CDK_EXPERIMENTAL_PACKAGES = $CDK_EXPERIMENTAL_ENTRYPOINTS_TMPL;
+var MATERIAL_PACKAGES = $MATERIAL_ENTRYPOINTS_TMPL;
+var MATERIAL_EXPERIMENTAL_PACKAGES = $MATERIAL_EXPERIMENTAL_ENTRYPOINTS_TMPL;
 
-var CDK_EXPERIMENTAL_PACKAGES = [
-  'dialog',
-  'popover-edit',
-  'scrolling',
-];
-
-var MATERIAL_PACKAGES = [
-  'autocomplete',  'badge',
-  'bottom-sheet',  'button',
-  'button-toggle', 'card',
-  'checkbox',      'chips',
-  'core',          'datepicker',
-  'dialog',        'divider',
-  'expansion',     'form-field',
-  'grid-list',     'icon',
-  'input',         'list',
-  'menu',          'paginator',
-  'progress-bar',  'progress-spinner',
-  'radio',         'select',
-  'sidenav',       'slide-toggle',
-  'slider',        'snack-bar',
-  'sort',          'stepper',
-  'table',         'tabs',
-  'toolbar',       'tooltip',
-  'tree',
-];
-
-var MATERIAL_EXPERIMENTAL_PACKAGES = [
-  'mdc-button',
-  'mdc-card',
-  'mdc-checkbox',
-  'mdc-chips',
-  'mdc-tabs',
-  'mdc-helpers',
-  'mdc-menu',
-  'mdc-radio',
-  'mdc-progress-bar',
-  'mdc-slide-toggle',
-  'mdc-slider',
-  'popover-edit',
-];
+/** Whether the dev-app is served with Ivy enabled. */
+var isRunningWithIvy = '$COMPILE_TMPL' === 'aot';
 
 /** Bazel runfile path referring to the "src/" folder of the project. */
 var srcRunfilePath = 'angular_material/src';
@@ -80,10 +27,7 @@ var pathMapping = {};
 /** Package configurations that will be used in SystemJS. */
 var packagesConfig = {};
 
-// The "bazelCompileMode" property will be set globally by the "setup-compile-mode.js"
-// script. This allows us to switch between Ivy and View Engine UMD bundles automatically.
-/** Whether the dev-app is served with Ivy enabled. */
-var isRunningWithIvy = window.bazelCompileMode === 'aot';
+
 
 // Configure all primary entry-points.
 configureEntryPoint('cdk');

@@ -1,6 +1,11 @@
 package(default_visibility = ["//visibility:public"])
 
+load("//src/cdk:config.bzl", "CDK_ENTRYPOINTS")
+load("//src/cdk-experimental:config.bzl", "CDK_EXPERIMENTAL_ENTRYPOINTS")
+load("//src/material:config.bzl", "MATERIAL_ENTRYPOINTS")
+load("//src/material-experimental:config.bzl", "MATERIAL_EXPERIMENTAL_ENTRYPOINTS")
 load("//tools:defaults.bzl", "ng_module", "sass_binary")
+load("//tools/bazel:expand_template.bzl", "expand_template")
 load("//tools/dev-server:index.bzl", "dev_server")
 
 ng_module(
@@ -92,10 +97,17 @@ sass_binary(
     ],
 )
 
-genrule(
-    name = "setup_compile_mode_script",
-    outs = ["setup_compile_mode.js"],
-    cmd = "echo window.bazelCompileMode = \"'$(compile)'\"\; > $@",
+expand_template(
+    name = "system-config",
+    configuration_env_vars = ["compile"],
+    output_name = "system-config.js",
+    substitutions = {
+        "$CDK_ENTRYPOINTS_TMPL": str(CDK_ENTRYPOINTS),
+        "$CDK_EXPERIMENTAL_ENTRYPOINTS_TMPL": str(CDK_EXPERIMENTAL_ENTRYPOINTS),
+        "$MATERIAL_ENTRYPOINTS_TMPL": str(MATERIAL_ENTRYPOINTS),
+        "$MATERIAL_EXPERIMENTAL_ENTRYPOINTS_TMPL": str(MATERIAL_EXPERIMENTAL_ENTRYPOINTS),
+    },
+    template = "system-config-tmpl.js",
 )
 
 dev_server(
@@ -103,9 +115,8 @@ dev_server(
     srcs = [
         "favicon.ico",
         "index.html",
-        "system-config.js",
         "system-rxjs-operators.js",
-        ":setup_compile_mode_script",
+        ":system-config",
         ":theme",
         "//src/dev-app/icon:icon_demo_assets",
         "@npm//:node_modules/@material/animation/dist/mdc.animation.js",
