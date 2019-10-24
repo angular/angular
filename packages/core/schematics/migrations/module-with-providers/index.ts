@@ -30,6 +30,10 @@ export default function(): Rule {
     const failures: string[] = [];
 
     ctx.logger.info('------ ModuleWithProviders migration ------');
+    ctx.logger.info('In Angular 9, the ModuleWithProviders type without a ');
+    ctx.logger.info('generic has been deprecated. This migration adds the ');
+    ctx.logger.info('generic where it is missing. See more info here:');
+    ctx.logger.info('https://v9.angular.io/guide/migration-module-with-providers');
 
     if (!allPaths.length) {
       throw new SchematicsException(
