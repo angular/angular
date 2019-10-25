@@ -27,8 +27,9 @@ build --incompatible_bzl_disallow_load_after_statement=false
 
 test --test_output=errors
 
-# Use the Angular 6 compiler
-build --define=compile=legacy
+# Use the Angular Ivy compiler
+# See https://github.com/angular/angular/blob/master/docs/BAZEL.md#various-flags-used-for-tests
+build --define=compile=aot
 
 # Temporary define while angular depends on the legacy rollup_bundle rule.
 # TODO: remove this setting after https://github.com/angular/angular/pull/33201 lands.

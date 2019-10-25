@@ -32,7 +32,6 @@ function testBazel() {
   rm -rf demo
   # Create project
   ng new demo --collection=@angular/bazel --routing --skip-git --skip-install --style=scss
-  node ./disable-ivy.js
   cd demo
   installLocalPackages
   ng generate component widget --style=css
