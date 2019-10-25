@@ -36,7 +36,7 @@ http_archive(
 ####################################
 # Load and install our dependencies downloaded above.
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories",
+load("@build_bazel_rules_nodejs//:index.bzl", "check_bazel_version", "node_repositories",
     "yarn_install")
 check_bazel_version(
     message = """

@@ -1,6 +1,6 @@
 package(default_visibility = ["//packages:__subpackages__"])
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
 # BEGIN-DEV-ONLY
 load("//tools:defaults.bzl", "ts_library")

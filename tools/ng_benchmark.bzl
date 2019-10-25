@@ -4,7 +4,7 @@
 # found in the LICENSE file at https://angular.io/license
 """Bazel macro for running Angular benchmarks"""
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
 def ng_benchmark(name, bundle):
     """

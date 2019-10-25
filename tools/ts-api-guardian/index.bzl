@@ -15,7 +15,7 @@
 """Runs ts_api_guardian
 """
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "nodejs_test")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "nodejs_test")
 
 COMMON_MODULE_IDENTIFIERS = ["angular", "jasmine", "protractor"]
 
