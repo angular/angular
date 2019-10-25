@@ -327,7 +327,6 @@ function stylingMap(
   const native = getNativeByTNode(tNode, lView) as RElement;
   const oldValue = getValue(lView, bindingIndex);
   const hostBindingsMode = isHostStyling();
-  const sanitizer = getCurrentStyleSanitizer();
   const valueHasChanged = hasValueChanged(oldValue, value);
 
   // [style] and [class] bindings do not use `bind()` and will therefore
@@ -348,12 +347,12 @@ function stylingMap(
   // Direct Apply Case: bypass context resolution and apply the
   // style/class map values directly to the element
   if (allowDirectStyling(context, hostBindingsMode)) {
-    const sanitizerToUse = isClassBased ? null : sanitizer;
+    const sanitizerToUse = isClassBased ? null : getCurrentStyleSanitizer();
     const renderer = getRenderer(tNode, lView);
     applyStylingMapDirectly(
         renderer, context, native, lView, bindingIndex, value, isClassBased, sanitizerToUse,
         valueHasChanged, hasDirectiveInput);
-    if (sanitizerToUse) {
+    if (sanitizerToUse !== null) {
       // it's important we remove the current style sanitizer once the
       // element exits, otherwise it will be used by the next styling
       // instructions for the next element.
@@ -374,7 +373,7 @@ function stylingMap(
           valueHasChanged);
     } else {
       updateStyleViaContext(
-          context, lView, native, directiveIndex, null, bindingIndex, stylingMapArr, sanitizer,
+          context, lView, native, directiveIndex, null, bindingIndex, stylingMapArr, getCurrentStyleSanitizer(),
           valueHasChanged);
     }
 
