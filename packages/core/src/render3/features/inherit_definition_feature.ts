@@ -12,8 +12,6 @@ import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, HostBindingsFunction, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {isComponentDef} from '../interfaces/type_checks';
 
-import {ɵɵNgOnChangesFeature} from './ng_onchanges_feature';
-
 export function getSuperType(type: Type<any>): Type<any>&
     {ɵcmp?: ComponentDef<any>, ɵdir?: DirectiveDef<any>} {
   return Object.getPrototypeOf(type.prototype).constructor;
@@ -41,30 +39,14 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
       superDef = superType.ɵdir;
     }
 
-    const baseDef = (superType as any).ngBaseDef;
-
-    // Some fields in the definition may be empty, if there were no values to put in them that
-    // would've justified object creation. Unwrap them if necessary.
-    if (baseDef || superDef) {
+    if (superDef) {
+      // Some fields in the definition may be empty, if there were no values to put in them that
+      // would've justified object creation. Unwrap them if necessary.
       const writeableDef = definition as any;
       writeableDef.inputs = maybeUnwrapEmpty(definition.inputs);
       writeableDef.declaredInputs = maybeUnwrapEmpty(definition.declaredInputs);
       writeableDef.outputs = maybeUnwrapEmpty(definition.outputs);
-    }
 
-    if (baseDef) {
-      const baseViewQuery = baseDef.viewQuery;
-      const baseContentQueries = baseDef.contentQueries;
-      const baseHostBindings = baseDef.hostBindings;
-      baseHostBindings && inheritHostBindings(definition, baseHostBindings);
-      baseViewQuery && inheritViewQuery(definition, baseViewQuery);
-      baseContentQueries && inheritContentQueries(definition, baseContentQueries);
-      fillProperties(definition.inputs, baseDef.inputs);
-      fillProperties(definition.declaredInputs, baseDef.declaredInputs);
-      fillProperties(definition.outputs, baseDef.outputs);
-    }
-
-    if (superDef) {
       // Merge hostBindings
       const superHostBindings = superDef.hostBindings;
       superHostBindings && inheritHostBindings(definition, superHostBindings);
@@ -99,25 +81,6 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
           if (feature && feature.ngInherit) {
             (feature as DirectiveDefFeature)(definition);
           }
-        }
-      }
-    } else {
-      // Even if we don't have a definition, check the type for the hooks and use those if need be
-      const superPrototype = superType.prototype;
-      if (superPrototype) {
-        definition.afterContentChecked =
-            definition.afterContentChecked || superPrototype.ngAfterContentChecked;
-        definition.afterContentInit =
-            definition.afterContentInit || superPrototype.ngAfterContentInit;
-        definition.afterViewChecked =
-            definition.afterViewChecked || superPrototype.ngAfterViewChecked;
-        definition.afterViewInit = definition.afterViewInit || superPrototype.ngAfterViewInit;
-        definition.doCheck = definition.doCheck || superPrototype.ngDoCheck;
-        definition.onDestroy = definition.onDestroy || superPrototype.ngOnDestroy;
-        definition.onInit = definition.onInit || superPrototype.ngOnInit;
-
-        if (superPrototype.ngOnChanges) {
-          ɵɵNgOnChangesFeature()(definition);
         }
       }
     }

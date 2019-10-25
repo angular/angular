@@ -2973,7 +2973,7 @@ describe('compiler compliance', () => {
       `
     };
 
-    it('should add ngBaseDef if one or more @Input is present', () => {
+    it('should add an abstract directive if one or more @Input is present', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -3002,7 +3002,9 @@ describe('compiler compliance', () => {
       };
       const expectedOutput = `
       // ...
-      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
+        type: BaseClass,
+        selectors: [],
         inputs: {
           input1: "input1",
           input2: ["alias2", "input2"]
@@ -3014,7 +3016,7 @@ describe('compiler compliance', () => {
       expectEmit(result.source, expectedOutput, 'Invalid base definition');
     });
 
-    it('should add ngBaseDef if one or more @Output is present', () => {
+    it('should add an abstract directive if one or more @Output is present', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -3048,7 +3050,9 @@ describe('compiler compliance', () => {
       };
       const expectedOutput = `
       // ...
-      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
+        type: BaseClass,
+        selectors: [],
         outputs: {
           output1: "output1",
           output2: "output2"
@@ -3060,10 +3064,11 @@ describe('compiler compliance', () => {
       expectEmit(result.source, expectedOutput, 'Invalid base definition');
     });
 
-    it('should add ngBaseDef if a mixture of @Input and @Output props are present', () => {
-      const files = {
-        app: {
-          'spec.ts': `
+    it('should add an abstract directive if a mixture of @Input and @Output props are present',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
             import {Component, NgModule, Input, Output, EventEmitter} from '@angular/core';
             export class BaseClass {
               @Output()
@@ -3096,11 +3101,13 @@ describe('compiler compliance', () => {
             })
             export class MyModule {}
           `
-        }
-      };
-      const expectedOutput = `
+           }
+         };
+         const expectedOutput = `
       // ...
-      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
+        type: BaseClass,
+        selectors: [],
         inputs: {
           input1: "input1",
           input2: ["whatever", "input2"]
@@ -3112,11 +3119,11 @@ describe('compiler compliance', () => {
       });
       // ...
       `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid base definition');
-    });
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, expectedOutput, 'Invalid base definition');
+       });
 
-    it('should add ngBaseDef if a ViewChild query is present', () => {
+    it('should add an abstract directive if a ViewChild query is present', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -3142,8 +3149,10 @@ describe('compiler compliance', () => {
       const expectedOutput = `
       const $e0_attrs$ = ["something"];
       // ...
-      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
-        viewQuery: function (rf, ctx) {
+      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
+        type: BaseClass,
+        selectors: [],
+        viewQuery: function BaseClass_Query(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵviewQuery($e0_attrs$, true);
           }
@@ -3159,7 +3168,7 @@ describe('compiler compliance', () => {
       expectEmit(result.source, expectedOutput, 'Invalid base definition');
     });
 
-    it('should add ngBaseDef if a ViewChildren query is present', () => {
+    it('should add an abstract directive if a ViewChildren query is present', () => {
       const files = {
         app: {
           ...directive,
@@ -3187,8 +3196,10 @@ describe('compiler compliance', () => {
       };
       const expectedOutput = `
       // ...
-      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
-        viewQuery: function (rf, ctx) {
+      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
+        type: BaseClass,
+        selectors: [],
+        viewQuery: function BaseClass_Query(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵviewQuery(SomeDirective, true);
           }
@@ -3204,7 +3215,7 @@ describe('compiler compliance', () => {
       expectEmit(result.source, expectedOutput, 'Invalid base definition');
     });
 
-    it('should add ngBaseDef if a ContentChild query is present', () => {
+    it('should add an abstract directive if a ContentChild query is present', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -3230,8 +3241,10 @@ describe('compiler compliance', () => {
       const expectedOutput = `
       const $e0_attrs$ = ["something"];
       // ...
-      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
-        contentQueries: function (rf, ctx, dirIndex) {
+      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
+        type: BaseClass,
+        selectors: [],
+        contentQueries: function BaseClass_ContentQueries(rf, ctx, dirIndex) {
           if (rf & 1) {
             $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, true);
           }
@@ -3247,7 +3260,7 @@ describe('compiler compliance', () => {
       expectEmit(result.source, expectedOutput, 'Invalid base definition');
     });
 
-    it('should add ngBaseDef if a ContentChildren query is present', () => {
+    it('should add an abstract directive if a ContentChildren query is present', () => {
       const files = {
         app: {
           ...directive,
@@ -3275,8 +3288,10 @@ describe('compiler compliance', () => {
       };
       const expectedOutput = `
       // ...
-      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
-        contentQueries: function (rf, ctx, dirIndex) {
+      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
+        type: BaseClass,
+        selectors: [],
+        contentQueries: function BaseClass_ContentQueries(rf, ctx, dirIndex) {
           if (rf & 1) {
             $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false);
           }
@@ -3292,7 +3307,7 @@ describe('compiler compliance', () => {
       expectEmit(result.source, expectedOutput, 'Invalid base definition');
     });
 
-    it('should add ngBaseDef if a host binding is present', () => {
+    it('should add an abstract directive if a host binding is present', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -3318,8 +3333,10 @@ describe('compiler compliance', () => {
       };
       const expectedOutput = `
       // ...
-      BaseClass.ngBaseDef = $r3$.ɵɵdefineBase({
-        hostBindings: function (rf, ctx, elIndex) {
+      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
+        type: BaseClass,
+        selectors: [],
+        hostBindings: function BaseClass_HostBindings(rf, ctx, elIndex) {
           if (rf & 1) {
             $r3$.ɵɵallocHostVars(1);
           }
@@ -3334,7 +3351,7 @@ describe('compiler compliance', () => {
       expectEmit(result.source, expectedOutput, 'Invalid base definition');
     });
 
-    it('should add ngBaseDef if a host listener is present', () => {
+    it('should add an abstract directive if a host listener is present', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -3360,10 +3377,12 @@ describe('compiler compliance', () => {
       };
       const expectedOutput = `
       // ...
-      BaseClass.ngBaseDef = $r3$.ɵɵdefineBase({
-        hostBindings: function (rf, ctx, elIndex) {
+      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
+        type: BaseClass,
+        selectors: [],
+        hostBindings: function BaseClass_HostBindings(rf, ctx, elIndex) {
           if (rf & 1) {
-            $r3$.ɵɵlistener("mousedown", function ($event) {
+            $r3$.ɵɵlistener("mousedown", function BaseClass_mousedown_HostBindingHandler($event) {
               return ctx.handleMousedown($event);
             });
           }
@@ -3375,7 +3394,79 @@ describe('compiler compliance', () => {
       expectEmit(result.source, expectedOutput, 'Invalid base definition');
     });
 
-    it('should NOT add ngBaseDef if @Component is present', () => {
+    it('should add an abstract directive when using any lifecycle hook', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, Input} from '@angular/core';
+            export class BaseClass {
+              ngAfterContentChecked() {}
+            }
+
+            @Component({
+              selector: 'my-component',
+              template: \`<div>{{input1}} {{input2}}</div>\`
+            })
+            export class MyComponent extends BaseClass {
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+      const expectedOutput = `
+      // ...
+      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
+        type: BaseClass,
+        selectors: []
+      });
+      // ...
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+    });
+
+
+    it('should add an abstract directive when using ngOnChanges', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, Input} from '@angular/core';
+            export class BaseClass {
+              ngOnChanges() {}
+            }
+
+            @Component({
+              selector: 'my-component',
+              template: \`<div>{{input1}} {{input2}}</div>\`
+            })
+            export class MyComponent extends BaseClass {
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+      const expectedOutput = `
+      // ...
+      BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
+        type: BaseClass,
+        selectors: [],
+        features: [$r3$.ɵɵNgOnChangesFeature()]
+      });
+      // ...
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+    });
+
+    it('should NOT add an abstract directive if @Component is present', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -3411,10 +3502,10 @@ describe('compiler compliance', () => {
         }
       };
       const result = compile(files, angularFiles);
-      expect(result.source).not.toContain('ngBaseDef');
+      expect(result.source).not.toContain('ɵdir');
     });
 
-    it('should NOT add ngBaseDef if @Directive is present', () => {
+    it('should NOT add an abstract directive if @Directive is present', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -3449,7 +3540,7 @@ describe('compiler compliance', () => {
         }
       };
       const result = compile(files, angularFiles);
-      expect(result.source).not.toContain('ngBaseDef');
+      expect(result.source.match(/ɵdir/g) !.length).toBe(1);
     });
   });
 });

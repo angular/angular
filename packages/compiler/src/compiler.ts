@@ -101,7 +101,7 @@ export {compileInjector, compileNgModule, R3InjectorMetadata, R3NgModuleMetadata
 export {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 export {makeBindingParser, parseTemplate, ParseTemplateOptions} from './render3/view/template';
 export {R3Reference} from './render3/util';
-export {compileBaseDefFromMetadata, R3BaseRefMetaData, compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, ParsedHostBindings, verifyHostBindings} from './render3/view/compiler';
+export {compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, ParsedHostBindings, verifyHostBindings} from './render3/view/compiler';
 export {publishFacade} from './jit_compiler_facade';
 // This file only reexports content of the `src` folder. Keep it that way.
 

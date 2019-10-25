@@ -416,7 +416,7 @@ runInEachFileSystem(os => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('TestBase.ngBaseDef = i0.ɵɵdefineBase');
+      expect(jsContents).toContain('TestBase.ɵdir = i0.ɵɵdefineDirective');
       expect(jsContents).toContain('TestComponent.ɵcmp = i0.ɵɵdefineComponent');
       expect(jsContents).toContain('TestDirective.ɵdir = i0.ɵɵdefineDirective');
       expect(jsContents).toContain('TestPipe.ɵpipe = i0.ɵɵdefinePipe');
@@ -503,7 +503,7 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('background-color: blue');
     });
 
-    it('should include generic type for ngBaseDef declarations', () => {
+    it('should include generic type for undecorated class declarations', () => {
       env.write('test.ts', `
         import {Component, Input, NgModule} from '@angular/core';
 
@@ -515,10 +515,14 @@ runInEachFileSystem(os => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('i0.ɵɵdefineBase({ inputs: { input: "input" } });');
+      expect(jsContents)
+          .toContain(
+              'i0.ɵɵdefineDirective({ type: TestBase, selectors: [], inputs: { input: "input" } });');
 
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ngBaseDef: i0.ɵɵBaseDef<TestBase>');
+      expect(dtsContents)
+          .toContain(
+              `static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestBase, never, never, { 'input': "input" }, {}, never>;`);
     });
 
     it('should compile NgModules without errors', () => {
@@ -1104,7 +1108,7 @@ runInEachFileSystem(os => {
         }));
         env.write('index.ts', `
           import {Directive} from '@angular/core';
-          
+
           @Directive()
           export class BaseClass {}
         `);
@@ -1115,10 +1119,10 @@ runInEachFileSystem(os => {
         env.write('index.ts', `
           import {NgModule, Directive} from '@angular/core';
           import {BaseClass} from 'lib1_built';
-          
+
           @Directive({selector: 'my-dir'})
           export class MyDirective extends BaseClass {}
-          
+
           @NgModule({declarations: [MyDirective]})
           export class AppModule {}
         `);
@@ -2615,7 +2619,7 @@ runInEachFileSystem(os => {
 
         env.write('test.ts', `/** I am a top-level comment. */
           import {NgModule} from '@angular/core';
-  
+
           @NgModule({})
           export class TestModule {}
       `);
@@ -2634,7 +2638,7 @@ runInEachFileSystem(os => {
 
         env.write('my-module.ts', `
           import {NgModule} from '@angular/core';
-  
+
           @NgModule({})
           export class MyModule {}
       `);
@@ -2647,7 +2651,7 @@ runInEachFileSystem(os => {
 
         env.write('test.ts', `
           import {NgModule} from '@angular/core';
-  
+
           @NgModule({})
           export class TestModule {}
       `);
@@ -2673,9 +2677,9 @@ runInEachFileSystem(os => {
       it('should generate a summary stub for decorated classes in the input file only', () => {
         env.write('test.ts', `
           import {Injectable, NgModule} from '@angular/core';
-  
+
           export class NotAModule {}
-  
+
           @NgModule({})
           export class TestModule {}
       `);
@@ -2689,10 +2693,10 @@ runInEachFileSystem(os => {
       it('should generate a summary stub for classes exported via exports', () => {
         env.write('test.ts', `
           import {Injectable, NgModule} from '@angular/core';
-  
+
           @NgModule({})
           class NotDirectlyExported {}
-  
+
           export {NotDirectlyExported};
       `);
 
@@ -3597,7 +3601,7 @@ runInEachFileSystem(os => {
       it('should not re-export a directive that\'s not exported from the NgModule', () => {
         env.write('dir.ts', `
              import {Directive} from '@angular/core';
-   
+
              @Directive({
                selector: 'dir',
              })
@@ -3606,7 +3610,7 @@ runInEachFileSystem(os => {
         env.write('module.ts', `
              import {NgModule} from '@angular/core';
              import {Dir} from './dir';
-   
+
              @NgModule({
                declarations: [Dir],
                exports: [],
@@ -3655,11 +3659,11 @@ runInEachFileSystem(os => {
       it('should not re-export a directive from an exported, external NgModule', () => {
         env.write(`node_modules/external/index.d.ts`, `
           import {ɵɵDirectiveDefWithMeta, ɵɵNgModuleDefWithMeta} from '@angular/core';
-  
+
           export declare class ExternalDir {
             static ɵdir: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
           }
-  
+
           export declare class ExternalModule {
             static ɵmod: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
           }
@@ -3719,7 +3723,7 @@ runInEachFileSystem(os => {
          () => {
            env.write('dir.ts', `
              import {Directive} from '@angular/core';
-   
+
              @Directive({
                selector: 'dir',
              })
@@ -3727,7 +3731,7 @@ runInEachFileSystem(os => {
            `);
            env.write('dir2.ts', `
              import {Directive} from '@angular/core';
-   
+
              @Directive({
                selector: 'dir',
              })
@@ -3737,7 +3741,7 @@ runInEachFileSystem(os => {
              import {NgModule} from '@angular/core';
              import {Dir} from './dir';
              import {Dir as Dir2} from './dir2';
-   
+
              @NgModule({
                declarations: [Dir, Dir2],
                exports: [Dir, Dir2],
@@ -3755,7 +3759,7 @@ runInEachFileSystem(os => {
       it('should choose a re-exported symbol if one is present', () => {
         env.write(`node_modules/external/dir.d.ts`, `
           import {ɵɵDirectiveDefWithMeta} from '@angular/core';
-  
+
           export declare class ExternalDir {
             static ɵdir: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
           }
@@ -3763,23 +3767,23 @@ runInEachFileSystem(os => {
         env.write('node_modules/external/module.d.ts', `
           import {ɵɵNgModuleDefWithMeta} from '@angular/core';
           import {ExternalDir} from './dir';
-  
+
           export declare class ExternalModule {
             static ɵmod: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
           }
-  
+
           export {ExternalDir as ɵngExportɵExternalModuleɵExternalDir};
         `);
         env.write('test.ts', `
           import {Component, Directive, NgModule} from '@angular/core';
           import {ExternalModule} from 'external/module';
-  
+
           @Component({
             selector: 'test-cmp',
             template: '<div test></div>',
           })
           class Cmp {}
-  
+
           @NgModule({
             declarations: [Cmp],
             imports: [ExternalModule],

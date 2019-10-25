@@ -7,7 +7,7 @@
  */
 
 import {R3DirectiveMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
-import {R3BaseMetadataFacade, R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
+import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {getReflect, reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
@@ -16,9 +16,9 @@ import {Component, Directive, Input} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
 import {ViewEncapsulation} from '../../metadata/view';
 import {initNgDevMode} from '../../util/ng_dev_mode';
-import {getBaseDef, getComponentDef, getDirectiveDef} from '../definition';
+import {getComponentDef, getDirectiveDef} from '../definition';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
-import {NG_BASE_DEF, NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF} from '../fields';
+import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF} from '../fields';
 import {ComponentType} from '../interfaces/definition';
 import {stringifyForError} from '../util/misc_utils';
 
@@ -84,7 +84,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           viewProviders: metadata.viewProviders || null,
         };
         if (meta.usesInheritance) {
-          addBaseDefToUndecoratedParents(type);
+          addDirectiveDefToUndecoratedParents(type);
         }
 
         ngComponentDef = compiler.compileComponent(angularCoreEnv, templateUrl, meta);
@@ -153,7 +153,7 @@ function getDirectiveMetadata(type: Type<any>, metadata: Directive) {
   const facade = directiveMetadata(type as ComponentType<any>, metadata);
   facade.typeSourceSpan = compiler.createParseSourceSpan('Directive', name, sourceMapUrl);
   if (facade.usesInheritance) {
-    addBaseDefToUndecoratedParents(type);
+    addDirectiveDefToUndecoratedParents(type);
   }
   return {metadata: facade, sourceMapUrl};
 }
@@ -202,7 +202,7 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     inputs: metadata.inputs || EMPTY_ARRAY,
     outputs: metadata.outputs || EMPTY_ARRAY,
     queries: extractQueriesMetadata(type, propMetadata, isContentQuery),
-    lifecycle: {usesOnChanges: type.prototype.hasOwnProperty('ngOnChanges')},
+    lifecycle: {usesOnChanges: usesLifecycleHook(type, 'ngOnChanges')},
     typeSourceSpan: null !,
     usesInheritance: !extendsDirectlyFromObject(type),
     exportAs: extractExportAs(metadata.exportAs),
@@ -212,74 +212,22 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
 }
 
 /**
- * Adds an `ngBaseDef` to all parent classes of a type that don't have an Angular decorator.
+ * Adds a directive definition to all parent classes of a type that don't have an Angular decorator.
  */
-function addBaseDefToUndecoratedParents(type: Type<any>) {
+function addDirectiveDefToUndecoratedParents(type: Type<any>) {
   const objPrototype = Object.prototype;
   let parent = Object.getPrototypeOf(type);
 
   // Go up the prototype until we hit `Object`.
   while (parent && parent !== objPrototype) {
     // Since inheritance works if the class was annotated already, we only need to add
-    // the base def if there are no annotations and the base def hasn't been created already.
-    if (!getDirectiveDef(parent) && !getComponentDef(parent) && !getBaseDef(parent)) {
-      const facade = extractBaseDefMetadata(parent);
-      facade && compileBase(parent, facade);
+    // the def if there are no annotations and the def hasn't been created already.
+    if (!getDirectiveDef(parent) && !getComponentDef(parent) &&
+        shouldAddAbstractDirective(parent)) {
+      compileDirective(parent, null);
     }
     parent = Object.getPrototypeOf(parent);
   }
-}
-
-/** Compiles the base metadata into a base definition. */
-function compileBase(type: Type<any>, facade: R3BaseMetadataFacade): void {
-  let ngBaseDef: any = null;
-  Object.defineProperty(type, NG_BASE_DEF, {
-    get: () => {
-      if (ngBaseDef === null) {
-        const name = type && type.name;
-        const sourceMapUrl = `ng://${name}/ngBaseDef.js`;
-        const compiler = getCompilerFacade();
-        ngBaseDef = compiler.compileBase(angularCoreEnv, sourceMapUrl, facade);
-      }
-      return ngBaseDef;
-    },
-    // Make the property configurable in dev mode to allow overriding in tests
-    configurable: !!ngDevMode,
-  });
-}
-
-/** Extracts the metadata necessary to construct an `ngBaseDef` from a class. */
-function extractBaseDefMetadata(type: Type<any>): R3BaseMetadataFacade|null {
-  const propMetadata = getReflect().ownPropMetadata(type);
-  const viewQueries = extractQueriesMetadata(type, propMetadata, isViewQuery);
-  const queries = extractQueriesMetadata(type, propMetadata, isContentQuery);
-  let inputs: {[key: string]: string | [string, string]}|undefined;
-  let outputs: {[key: string]: string}|undefined;
-  // We only need to know whether there are any HostListener or HostBinding
-  // decorators present, the parsing logic is in the compiler already.
-  let hasHostDecorators = false;
-
-  for (const field in propMetadata) {
-    propMetadata[field].forEach(ann => {
-      const metadataName = ann.ngMetadataName;
-      if (metadataName === 'Input') {
-        inputs = inputs || {};
-        inputs[field] = ann.bindingPropertyName ? [ann.bindingPropertyName, field] : field;
-      } else if (metadataName === 'Output') {
-        outputs = outputs || {};
-        outputs[field] = ann.bindingPropertyName || field;
-      } else if (metadataName === 'HostBinding' || metadataName === 'HostListener') {
-        hasHostDecorators = true;
-      }
-    });
-  }
-
-  // Only generate the base def if there's any info inside it.
-  if (inputs || outputs || viewQueries.length || queries.length || hasHostDecorators) {
-    return {name: type.name, type, inputs, outputs, viewQueries, queries, propMetadata};
-  }
-
-  return null;
 }
 
 function convertToR3QueryPredicate(selector: any): any|string[] {
@@ -310,7 +258,7 @@ function extractQueriesMetadata(
                 `Can't construct a query for the property "${field}" of ` +
                 `"${stringifyForError(type)}" since the query selector wasn't defined.`);
           }
-          if (annotations.some(isInputAnn)) {
+          if (annotations.some(isInputAnnotation)) {
             throw new Error(`Cannot combine @Input decorators with query decorators`);
           }
           queriesMeta.push(convertToR3QueryMetadata(field, ann));
@@ -322,11 +270,7 @@ function extractQueriesMetadata(
 }
 
 function extractExportAs(exportAs: string | undefined): string[]|null {
-  if (exportAs === undefined) {
-    return null;
-  }
-
-  return exportAs.split(',').map(part => part.trim());
+  return exportAs === undefined ? null : splitByComma(exportAs);
 }
 
 function isContentQuery(value: any): value is Query {
@@ -339,10 +283,45 @@ function isViewQuery(value: any): value is Query {
   return name === 'ViewChild' || name === 'ViewChildren';
 }
 
-function isInputAnn(value: any): value is Input {
+function isInputAnnotation(value: any): value is Input {
   return value.ngMetadataName === 'Input';
 }
 
 function splitByComma(value: string): string[] {
   return value.split(',').map(piece => piece.trim());
+}
+
+function usesLifecycleHook(type: Type<any>, name: string): boolean {
+  const prototype = type.prototype;
+  return prototype && prototype.hasOwnProperty(name);
+}
+
+const LIFECYCLE_HOOKS = [
+  'ngOnChanges', 'ngOnInit', 'ngOnDestroy', 'ngDoCheck', 'ngAfterViewInit', 'ngAfterViewChecked',
+  'ngAfterContentInit', 'ngAfterContentChecked'
+];
+
+function shouldAddAbstractDirective(type: Type<any>): boolean {
+  if (LIFECYCLE_HOOKS.some(hookName => usesLifecycleHook(type, hookName))) {
+    return true;
+  }
+
+  const propMetadata = getReflect().ownPropMetadata(type);
+
+  for (const field in propMetadata) {
+    const annotations = propMetadata[field];
+
+    for (let i = 0; i < annotations.length; i++) {
+      const current = annotations[i];
+      const metadataName = current.ngMetadataName;
+
+      if (isInputAnnotation(current) || isContentQuery(current) || isViewQuery(current) ||
+          metadataName === 'Output' || metadataName === 'HostBinding' ||
+          metadataName === 'HostListener') {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }

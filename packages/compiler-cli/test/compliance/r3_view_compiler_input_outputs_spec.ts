@@ -16,7 +16,7 @@ describe('compiler compliance: listen()', () => {
     compileAnimations: false,
   });
 
-  it('should create declare inputs/outputs', () => {
+  it('should declare inputs/outputs', () => {
     const files = {
       app: {
         'spec.ts': `
