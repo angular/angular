@@ -6,6 +6,7 @@ load("@npm_bazel_karma//:index.bzl", _karma_web_test = "karma_web_test", _karma_
 load("@npm_bazel_typescript//:index.bzl", _ts_library = "ts_library")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//packages/bazel/src:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
+load("//tools:ng_benchmark.bzl", _ng_benchmark = "ng_benchmark")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_API_EXTRACTOR = "//packages/bazel/src/api-extractor:api_extractor"
@@ -270,6 +271,10 @@ def karma_web_test_suite(bootstrap = [], deps = [], **kwargs):
         tags = tags,
         **kwargs
     )
+
+def ng_benchmark(**kwargs):
+    """Default values for ng_benchmark"""
+    _ng_benchmark(**kwargs)
 
 def nodejs_binary(data = [], **kwargs):
     """Default values for nodejs_binary"""
