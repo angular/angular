@@ -127,6 +127,50 @@ describe('change detection', () => {
       fixture.detectChanges(false);
       expect(fixture.nativeElement).toHaveText('1|dynamic');
     });
+
+    it('should support re-enterant change detection', () => {
+      @Component({
+        selector: 'has-host-binding',
+        template: '..',
+        host: {
+          '[class.x]': 'x',
+        }
+      })
+      class HasHostBinding {
+        x = true;
+      }
+
+      @Component({
+        selector: 'child',
+        template: '<has-host-binding></has-host-binding>',
+        inputs: ['input'],
+      })
+      class Child {
+        _input !: number;
+
+        constructor(private cdr: ChangeDetectorRef) {}
+
+        get input() { return this._input; }
+
+        set input(value: number) {
+          this._input = value;
+          this.cdr.detectChanges();
+        }
+      }
+
+      @Component({
+        selector: 'root',
+        template: '<child [input]="3"></child>',
+      })
+      class Root {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Root, Child, HasHostBinding],
+      });
+
+      TestBed.createComponent(Root).detectChanges();
+    });
   });
 
   describe('OnPush', () => {
