@@ -129,61 +129,6 @@ export function compileDirectiveFromMetadata(
   return {expression, type};
 }
 
-export interface R3BaseRefMetaData {
-  name: string;
-  type: o.Expression;
-  typeSourceSpan: ParseSourceSpan;
-  inputs?: {[key: string]: string | [string, string]};
-  outputs?: {[key: string]: string};
-  viewQueries?: R3QueryMetadata[];
-  queries?: R3QueryMetadata[];
-  host?: R3HostMetadata;
-}
-
-/**
- * Compile a base definition for the render3 runtime as defined by {@link R3BaseRefMetadata}
- * @param meta the metadata used for compilation.
- */
-export function compileBaseDefFromMetadata(
-    meta: R3BaseRefMetaData, constantPool: ConstantPool, bindingParser: BindingParser) {
-  const definitionMap = new DefinitionMap();
-  if (meta.inputs) {
-    const inputs = meta.inputs;
-    const inputsMap = Object.keys(inputs).map(key => {
-      const v = inputs[key];
-      const value = Array.isArray(v) ? o.literalArr(v.map(vx => o.literal(vx))) : o.literal(v);
-      return {key, value, quoted: false};
-    });
-    definitionMap.set('inputs', o.literalMap(inputsMap));
-  }
-  if (meta.outputs) {
-    const outputs = meta.outputs;
-    const outputsMap = Object.keys(outputs).map(key => {
-      const value = o.literal(outputs[key]);
-      return {key, value, quoted: false};
-    });
-    definitionMap.set('outputs', o.literalMap(outputsMap));
-  }
-  if (meta.viewQueries && meta.viewQueries.length > 0) {
-    definitionMap.set('viewQuery', createViewQueriesFunction(meta.viewQueries, constantPool));
-  }
-  if (meta.queries && meta.queries.length > 0) {
-    definitionMap.set('contentQueries', createContentQueriesFunction(meta.queries, constantPool));
-  }
-  if (meta.host) {
-    definitionMap.set(
-        'hostBindings',
-        createHostBindingsFunction(
-            meta.host, meta.typeSourceSpan, bindingParser, constantPool, meta.name));
-  }
-
-  const expression = o.importExpr(R3.defineBase).callFn([definitionMap.toLiteralMap()]);
-  const type = new o.ExpressionType(
-      o.importExpr(R3.BaseDef), /* modifiers */ null, [o.expressionType(meta.type)]);
-
-  return {expression, type};
-}
-
 /**
  * Compile a component for the render3 runtime as defined by the `R3ComponentMetadata`.
  */

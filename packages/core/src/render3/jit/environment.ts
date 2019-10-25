@@ -30,7 +30,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵattributeInterpolate7': r3.ɵɵattributeInterpolate7,
        'ɵɵattributeInterpolate8': r3.ɵɵattributeInterpolate8,
        'ɵɵattributeInterpolateV': r3.ɵɵattributeInterpolateV,
-       'ɵɵdefineBase': r3.ɵɵdefineBase,
        'ɵɵdefineComponent': r3.ɵɵdefineComponent,
        'ɵɵdefineDirective': r3.ɵɵdefineDirective,
        'ɵɵdefineInjectable': ɵɵdefineInjectable,

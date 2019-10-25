@@ -701,21 +701,6 @@ export declare function ɵɵattributeInterpolate8(attrName: string, prefix: stri
 
 export declare function ɵɵattributeInterpolateV(attrName: string, values: any[], sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009;
 
-export interface ɵɵBaseDef<T> {
-    contentQueries: ContentQueriesFunction<T> | null;
-    /** @deprecated */ readonly declaredInputs: {
-        [P in keyof T]: string;
-    };
-    hostBindings: HostBindingsFunction<T> | null;
-    readonly inputs: {
-        [P in keyof T]: string;
-    };
-    readonly outputs: {
-        [P in keyof T]: string;
-    };
-    viewQuery: ViewQueriesFunction<T> | null;
-}
-
 export declare function ɵɵclassMap(classes: {
     [className: string]: any;
 } | NO_CHANGE | string | null): void;
@@ -759,18 +744,6 @@ export declare function ɵɵcontentQuery<T>(directiveIndex: number, predicate: T
 export declare function ɵɵCopyDefinitionFeature(definition: DirectiveDef<any> | ComponentDef<any>): void;
 
 export declare const ɵɵdefaultStyleSanitizer: StyleSanitizeFn;
-
-export declare function ɵɵdefineBase<T>(baseDefinition: {
-    inputs?: {
-        [P in keyof T]?: string | [string, string];
-    };
-    outputs?: {
-        [P in keyof T]?: string;
-    };
-    contentQueries?: ContentQueriesFunction<T> | null;
-    viewQuery?: ViewQueriesFunction<T> | null;
-    hostBindings?: HostBindingsFunction<T>;
-}): ɵɵBaseDef<T>;
 
 export declare function ɵɵdefineComponent<T>(componentDefinition: {
     type: Type<T>;
