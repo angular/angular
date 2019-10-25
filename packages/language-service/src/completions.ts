@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, Text, findNode, getHtmlTagDefinition} from '@angular/compiler';
+import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, Text, findNode, getHtmlTagDefinition} from '@angular/compiler';
 import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
 
 import {AstResult} from './common';
@@ -168,19 +168,21 @@ function attributeValueCompletions(
   }
   const dinfo = diagnosticInfoFromTemplateInfo(info);
   const visitor =
-      new ExpressionVisitor(info, position, attr, () => getExpressionScope(dinfo, path, false));
+      new ExpressionVisitor(info, position, () => getExpressionScope(dinfo, path, false), attr);
   path.tail.visit(visitor, null);
-  if (!visitor.result || !visitor.result.length) {
-    // Try allwoing widening the path
-    const widerPath = findTemplateAstAt(info.templateAst, position, /* allowWidening */ true);
-    if (widerPath.tail) {
-      const widerVisitor = new ExpressionVisitor(
-          info, position, attr, () => getExpressionScope(dinfo, widerPath, false));
-      widerPath.tail.visit(widerVisitor, null);
-      return widerVisitor.result || [];
-    }
+  const {results} = visitor;
+  if (results.length) {
+    return results;
   }
-  return visitor.result || [];
+  // Try allowing widening the path
+  const widerPath = findTemplateAstAt(info.templateAst, position, /* allowWidening */ true);
+  if (widerPath.tail) {
+    const widerVisitor = new ExpressionVisitor(
+        info, position, () => getExpressionScope(dinfo, widerPath, false), attr);
+    widerPath.tail.visit(widerVisitor, null);
+    return widerVisitor.results;
+  }
+  return results;
 }
 
 function elementCompletions(info: AstResult): ng.CompletionEntry[] {
@@ -205,22 +207,6 @@ function elementCompletions(info: AstResult): ng.CompletionEntry[] {
     }
   }
 
-  return results;
-}
-
-/**
- * Filter the specified `entries` by unique name.
- * @param entries Completion Entries
- */
-function uniqueByName(entries: ng.CompletionEntry[]) {
-  const results = [];
-  const set = new Set();
-  for (const entry of entries) {
-    if (!set.has(entry.name)) {
-      set.add(entry.name);
-      results.push(entry);
-    }
-  }
   return results;
 }
 
@@ -252,10 +238,10 @@ function interpolationCompletions(info: AstResult, position: number): ng.Complet
     return [];
   }
   const visitor = new ExpressionVisitor(
-      info, position, undefined,
+      info, position,
       () => getExpressionScope(diagnosticInfoFromTemplateInfo(info), templatePath, false));
   templatePath.tail.visit(visitor, null);
-  return uniqueByName(visitor.result || []);
+  return visitor.results;
 }
 
 // There is a special case of HTML where text that contains a unclosed tag is treated as
@@ -280,76 +266,58 @@ function voidElementAttributeCompletions(
 }
 
 class ExpressionVisitor extends NullTemplateVisitor {
-  private getExpressionScope: () => ng.SymbolTable;
-  result: ng.CompletionEntry[]|undefined;
+  private readonly completions = new Map<string, ng.CompletionEntry>();
 
   constructor(
-      private info: AstResult, private position: number, private attr?: Attribute,
-      getExpressionScope?: () => ng.SymbolTable) {
+      private readonly info: AstResult, private readonly position: number,
+      private readonly getExpressionScope: () => ng.SymbolTable,
+      private readonly attr?: Attribute) {
     super();
-    this.getExpressionScope = getExpressionScope || (() => info.template.members);
   }
 
+  get results(): ng.CompletionEntry[] { return Array.from(this.completions.values()); }
+
   visitDirectiveProperty(ast: BoundDirectivePropertyAst): void {
-    this.attributeValueCompletions(ast.value);
+    this.addAttributeValuesToCompletions(ast.value);
   }
 
   visitElementProperty(ast: BoundElementPropertyAst): void {
-    this.attributeValueCompletions(ast.value);
+    this.addAttributeValuesToCompletions(ast.value);
   }
 
-  visitEvent(ast: BoundEventAst): void { this.attributeValueCompletions(ast.handler); }
+  visitEvent(ast: BoundEventAst): void { this.addAttributeValuesToCompletions(ast.handler); }
 
   visitElement(ast: ElementAst): void {
-    if (this.attr && getSelectors(this.info) && this.attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
-      // The value is a template expression but the expression AST was not produced when the
-      // TemplateAst was produce so
-      // do that now.
+    if (!this.attr || !this.attr.valueSpan || !this.attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
+      return;
+    }
 
-      const key = this.attr.name.substr(TEMPLATE_ATTR_PREFIX.length);
+    // The value is a template expression but the expression AST was not produced when the
+    // TemplateAst was produce so do that now.
+    const key = this.attr.name.substr(TEMPLATE_ATTR_PREFIX.length);
+    // Find the selector
+    const selectorInfo = getSelectors(this.info);
+    const selectors = selectorInfo.selectors;
+    const selector =
+        selectors.filter(s => s.attrs.some((attr, i) => i % 2 === 0 && attr === key))[0];
+    if (!selector) {
+      return;
+    }
 
-      // Find the selector
-      const selectorInfo = getSelectors(this.info);
-      const selectors = selectorInfo.selectors;
-      const selector =
-          selectors.filter(s => s.attrs.some((attr, i) => i % 2 === 0 && attr === key))[0];
+    const templateBindingResult =
+        this.info.expressionParser.parseTemplateBindings(key, this.attr.value, null, 0);
 
-      const templateBindingResult =
-          this.info.expressionParser.parseTemplateBindings(key, this.attr.value, null, 0);
+    // find the template binding that contains the position
+    const valueRelativePosition = this.position - this.attr.valueSpan.start.offset;
+    const bindings = templateBindingResult.templateBindings;
+    const binding =
+        bindings.find(
+            binding => inSpan(valueRelativePosition, binding.span, /* exclusive */ true)) ||
+        bindings.find(binding => inSpan(valueRelativePosition, binding.span));
 
-      // find the template binding that contains the position
-      if (!this.attr.valueSpan) return;
-      const valueRelativePosition = this.position - this.attr.valueSpan.start.offset;
-      const bindings = templateBindingResult.templateBindings;
-      const binding =
-          bindings.find(
-              binding => inSpan(valueRelativePosition, binding.span, /* exclusive */ true)) ||
-          bindings.find(binding => inSpan(valueRelativePosition, binding.span));
-
-      const keyCompletions = () => {
-        let keys: string[] = [];
-        if (selector) {
-          const attrNames = selector.attrs.filter((_, i) => i % 2 === 0);
-          keys = attrNames.filter(name => name.startsWith(key) && name != key)
-                     .map(name => lowerName(name.substr(key.length)));
-        }
-        keys.push('let');
-        this.result = keys.map(key => {
-          return {
-            name: key,
-            kind: ng.CompletionKind.KEY,
-            sortText: key,
-          };
-        });
-      };
-
-      if (!binding || (binding.key === key && !binding.expression)) {
-        // We are in the root binding. We should return `let` and keys that are left in the
-        // selector.
-        keyCompletions();
-      } else if (binding.keyIsVar) {
+    if (binding) {
+      if (binding.keyIsVar) {
         const equalLocation = this.attr.value.indexOf('=');
-        this.result = [];
         if (equalLocation >= 0 && valueRelativePosition >= equalLocation) {
           // We are after the '=' in a let clause. The valid values here are the members of the
           // template reference's type parameter.
@@ -358,32 +326,31 @@ class ExpressionVisitor extends NullTemplateVisitor {
             const contextTable =
                 this.info.template.query.getTemplateContext(directiveMetadata.type.reference);
             if (contextTable) {
-              this.result = this.symbolsToCompletions(contextTable.values());
+              this.addSymbolsToCompletions(contextTable.values());
+              return;
             }
           }
-        } else if (binding.key && valueRelativePosition <= (binding.key.length - key.length)) {
-          keyCompletions();
-        }
-      } else {
-        // If the position is in the expression or after the key or there is no key, return the
-        // expression completions
-        if ((binding.expression && inSpan(valueRelativePosition, binding.expression.ast.span)) ||
-            (binding.key &&
-             valueRelativePosition > binding.span.start + (binding.key.length - key.length)) ||
-            !binding.key) {
-          const span = new ParseSpan(0, this.attr.value.length);
-          const offset = ast.sourceSpan.start.offset;
-          this.attributeValueCompletions(
-              binding.expression ? binding.expression.ast :
-                                   new PropertyRead(
-                                       span, span.toAbsolute(offset),
-                                       new ImplicitReceiver(span, span.toAbsolute(offset)), ''),
-              this.position);
-        } else {
-          keyCompletions();
         }
       }
+      if ((binding.expression && inSpan(valueRelativePosition, binding.expression.ast.span)) ||
+          // If the position is in the expression or after the key or there is no key, return the
+          // expression completions
+          valueRelativePosition > binding.span.start + binding.key.length - key.length) {
+        const span = new ParseSpan(0, this.attr.value.length);
+        const offset = ast.sourceSpan.start.offset;
+        let expressionAst: AST;
+        if (binding.expression) {
+          expressionAst = binding.expression.ast;
+        } else {
+          const receiver = new ImplicitReceiver(span, span.toAbsolute(offset));
+          expressionAst = new PropertyRead(span, span.toAbsolute(offset), receiver, '');
+        }
+        this.addAttributeValuesToCompletions(expressionAst, this.position);
+        return;
+      }
     }
+
+    this.addKeysToCompletions(selector, key);
   }
 
   visitBoundText(ast: BoundTextAst) {
@@ -391,28 +358,49 @@ class ExpressionVisitor extends NullTemplateVisitor {
       const completions = getExpressionCompletions(
           this.getExpressionScope(), ast.value, this.position, this.info.template.query);
       if (completions) {
-        this.result = this.symbolsToCompletions(completions);
+        this.addSymbolsToCompletions(completions);
       }
     }
   }
 
-  private attributeValueCompletions(value: AST, position?: number) {
+  private addAttributeValuesToCompletions(value: AST, position?: number) {
     const symbols = getExpressionCompletions(
         this.getExpressionScope(), value,
         position === undefined ? this.attributeValuePosition : position, this.info.template.query);
     if (symbols) {
-      this.result = this.symbolsToCompletions(symbols);
+      this.addSymbolsToCompletions(symbols);
     }
   }
 
-  private symbolsToCompletions(symbols: ng.Symbol[]): ng.CompletionEntry[] {
-    return symbols.filter(s => !s.name.startsWith('__') && s.public).map(symbol => {
-      return {
-        name: symbol.name,
-        kind: symbol.kind as ng.CompletionKind,
-        sortText: symbol.name,
-      };
+  private addKeysToCompletions(selector: CssSelector, key: string) {
+    if (key !== 'ngFor') {
+      return;
+    }
+    this.completions.set('let', {
+      name: 'let',
+      kind: ng.CompletionKind.KEY,
+      sortText: 'let',
     });
+    if (selector.attrs.some(attr => attr === 'ngForOf')) {
+      this.completions.set('of', {
+        name: 'of',
+        kind: ng.CompletionKind.KEY,
+        sortText: 'of',
+      });
+    }
+  }
+
+  private addSymbolsToCompletions(symbols: ng.Symbol[]) {
+    for (const s of symbols) {
+      if (s.name.startsWith('__') || !s.public || this.completions.has(s.name)) {
+        continue;
+      }
+      this.completions.set(s.name, {
+        name: s.name,
+        kind: s.kind as ng.CompletionKind,
+        sortText: s.name,
+      });
+    }
   }
 
   private get attributeValuePosition() {
@@ -425,10 +413,6 @@ class ExpressionVisitor extends NullTemplateVisitor {
 
 function getSourceText(template: ng.TemplateSource, span: ng.Span): string {
   return template.source.substring(span.start, span.end);
-}
-
-function lowerName(name: string): string {
-  return name && (name[0].toLowerCase() + name.substr(1));
 }
 
 function angularAttributes(info: AstResult, elementName: string): ng.CompletionEntry[] {
