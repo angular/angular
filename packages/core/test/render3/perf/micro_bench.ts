@@ -43,7 +43,7 @@ export function createBenchmark(benchmarkName: string): Benchmark {
           iterationCounter = profile.iterationCount;
           runAgain = true;
           // tslint:disable-next-line:no-console
-          console.log(profileName, '...');
+          console.log(benchmarkName, profileName, '...');
         } else {
           profile.sampleCount++;
           // we came to an end of a sample, compute the time.
