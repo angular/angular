@@ -26,7 +26,7 @@ http_archive(
 )
 
 # Check the bazel version and download npm dependencies
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "check_rules_nodejs_version", "node_repositories", "yarn_install")
+load("@build_bazel_rules_nodejs//:index.bzl", "check_bazel_version", "check_rules_nodejs_version", "node_repositories", "yarn_install")
 
 # Bazel version must be at least the following version because:
 #   - 0.26.0 managed_directories feature added which is required for nodejs rules 0.30.0
