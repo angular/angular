@@ -11,8 +11,9 @@ test --test_output=errors
 # https://circleci.com/docs/2.0/configuration-reference/#resource_class
 build --local_resources=14336,8.0,1.0
 
-# Use the Angular 6 compiler
-build --define=compile=legacy
+# Use the Angular Ivy compiler
+# See https://github.com/angular/angular/blob/master/docs/BAZEL.md#various-flags-used-for-tests
+build --define=compile=aot
 
 # Temporary define while angular depends on the legacy rollup_bundle rule.
 # TODO: remove this setting after https://github.com/angular/angular/pull/33201 lands.
