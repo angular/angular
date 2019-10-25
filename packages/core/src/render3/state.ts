@@ -68,20 +68,37 @@ interface LFrame {
   bindingIndex: number;
 
   /**
-   * The last viewData retrieved by nextContext().
-   * Allows building nextContext() and reference() calls.
-   *
-   * e.g. const inner = x().$implicit; const outer = x().$implicit;
-   */
-  contextLView: LView;
-
-  /**
    * Store the element depth count. This is used to identify the root elements of the template
    * so that we can then attach patch data `LView` to only those elements. We know that those
    * are the only places where the patch data could change, this way we will save on number
    * of places where tha patching occurs.
    */
   elementDepthCount: number;
+
+  expando: LFrameExpando|null;
+}
+
+/**
+ * Stores values which are not often used.
+ *
+ * For performance reasons we would like to keep the `LFrame` as small as possible.
+ * However, there are many properties which are used only rarely by the instructions but still need
+ * to be tracked. These are attached lazily to the `LFrame` through the `LFrameExpando`.
+ */
+interface LFrameExpando {
+  /**
+   * To relieve memory presure the `LFrameExpando`s are kept in linked list for reuse.
+   */
+  parent: LFrameExpando|null;
+  child: LFrameExpando|null;
+
+  /**
+   * The last viewData retrieved by nextContext().
+   * Allows building nextContext() and reference() calls.
+   *
+   * e.g. const inner = x().$implicit; const outer = x().$implicit;
+   */
+  contextLView: LView;
 
   /**
    * Current namespace to be used when creating elements
@@ -92,7 +109,6 @@ interface LFrame {
    * Current sanitizer
    */
   currentSanitizer: StyleSanitizeFn|null;
-
 
   /**
    * Used when processing host bindings.
@@ -140,6 +156,11 @@ interface InstructionState {
   lFrame: LFrame;
 
   /**
+   * Pointer to the next available expando for caching purposes.
+   */
+  nextExpando: LFrameExpando;
+
+  /**
    * Stores whether directives should be matched to elements.
    *
    * When template contains `ngNonBindable` then we need to prevent the runtime from matching
@@ -176,6 +197,7 @@ interface InstructionState {
 
 export const instructionState: InstructionState = {
   lFrame: createLFrame(null),
+  nextExpando: createExpando(null),
   bindingsEnabled: true,
   elementExitFn: null,
   checkNoChangesMode: false,
@@ -195,11 +217,13 @@ export function decreaseElementDepthCount() {
 }
 
 export function getCurrentDirectiveDef(): DirectiveDef<any>|ComponentDef<any>|null {
-  return instructionState.lFrame.currentDirectiveDef;
+  const expando = instructionState.lFrame.expando;
+  return expando === null ? null : expando.currentDirectiveDef;
 }
 
 export function setCurrentDirectiveDef(def: DirectiveDef<any>| ComponentDef<any>| null): void {
-  instructionState.lFrame.currentDirectiveDef = def;
+  const expando = shouldAssignToExpando(def, null);
+  if (expando) expando.currentDirectiveDef = def;
 }
 
 export function getBindingsEnabled(): boolean {
@@ -307,7 +331,8 @@ export function setActiveHostElement(elementIndex: number | null = null) {
     executeElementExitFn();
   }
   setSelectedIndex(elementIndex === null ? -1 : elementIndex);
-  instructionState.lFrame.activeDirectiveId = 0;
+  const expando = shouldAssignToExpando(0, 0);
+  if (expando) expando.activeDirectiveId = 0;
 }
 
 export function executeElementExitFn() {
@@ -353,7 +378,8 @@ export function setElementExitFn(fn: () => void): void {
  * different set of directives).
  */
 export function getActiveDirectiveId() {
-  return instructionState.lFrame.activeDirectiveId;
+  const expando = instructionState.lFrame.expando;
+  return expando === null ? 0 : expando.activeDirectiveId;
 }
 
 /**
@@ -382,7 +408,8 @@ export function incrementActiveDirectiveId() {
   // directive uniqueId is not set anywhere--it is just incremented between
   // each hostBindings call and is useful for helping instruction code
   // uniquely determine which directive is currently active when executed.
-  instructionState.lFrame.activeDirectiveId += 1;
+  const expando = shouldAssignToExpando(1, 0);
+  if (expando) expando.activeDirectiveId++;
 }
 
 /**
@@ -397,7 +424,68 @@ export function incrementActiveDirectiveId() {
  * @codeGenApi
  */
 export function ɵɵrestoreView(viewToRestore: OpaqueViewState) {
-  instructionState.lFrame.contextLView = viewToRestore as any as LView;
+  const restoreLView = viewToRestore as unknown as LView;
+  const lFrame = instructionState.lFrame;
+  const expando = lFrame.expando;
+  if (expando === null) {
+    if (lFrame.lView !== restoreLView) {
+      // only create one if it is different.
+      allocateExpando(lFrame).contextLView = restoreLView;
+    }
+  } else {
+    expando.contextLView = restoreLView;
+  };
+}
+
+function allocateExpando(lFrame: LFrame): LFrameExpando {
+  const nextExpando = lFrame.expando = instructionState.nextExpando;
+  instructionState.nextExpando =
+      nextExpando.child || (nextExpando.child = createExpando(nextExpando));
+
+  // Reset the expando
+  nextExpando.contextLView == null !;
+  nextExpando.currentNamespace = null;
+  nextExpando.currentSanitizer = null;
+  nextExpando.currentDirectiveDef = null;
+  nextExpando.activeDirectiveId = 0;
+  nextExpando.bindingRootIndex = -1;
+  nextExpando.currentQueryIndex = 0;
+  return nextExpando;
+}
+
+function createExpando(parent: LFrameExpando | null): LFrameExpando {
+  return {
+    parent: parent,             //
+    child: null,                //
+    contextLView: null !,       //
+    currentNamespace: null,     //
+    currentSanitizer: null,     //
+    currentDirectiveDef: null,  //
+    activeDirectiveId: 0,       //
+    bindingRootIndex: -1,       //
+    currentQueryIndex: 0,       //
+  };
+}
+
+/**
+ * Determines if the `LFrameExpando` should be allocated.
+ *
+ * Expando is only allocated if the value which we want to store is different from the default
+ * value.
+ *
+ * @param value value to store
+ * @param defaultValue expected default Value.
+ */
+function shouldAssignToExpando<T>(value: T, defaultValue: T): LFrameExpando|null {
+  const lFrame = instructionState.lFrame;
+  const expando = lFrame.expando;
+  return expando !== null ? expando :  // if we have expando return it
+      (value !== defaultValue ?        //
+           allocateExpando(lFrame) :   // if we are setting something other than default than
+                                       // allocate a new expando
+           null                        // if we are setting same as default no need to create a new
+                                       // expando, just rely on default behavior
+       );
 }
 
 export function getPreviousOrParentTNode(): TNode {
@@ -421,7 +509,9 @@ export function setIsParent(): void {
 }
 
 export function getContextLView(): LView {
-  return instructionState.lFrame.contextLView;
+  const lFrame = instructionState.lFrame;
+  const expando = lFrame.expando;
+  return expando === null ? lFrame.lView : expando.contextLView;
 }
 
 export function getCheckNoChangesMode(): boolean {
@@ -435,10 +525,11 @@ export function setCheckNoChangesMode(mode: boolean): void {
 // top level variables should not be exported for performance reasons (PERF_NOTES.md)
 export function getBindingRoot() {
   const lFrame = instructionState.lFrame;
-  let index = lFrame.bindingRootIndex;
+  const expando = instructionState.lFrame.expando || allocateExpando(lFrame);
+  let index = expando.bindingRootIndex;
   if (index === -1) {
     const lView = lFrame.lView;
-    index = lFrame.bindingRootIndex = lView[TVIEW].bindingStartIndex;
+    index = expando.bindingRootIndex = lView[TVIEW].bindingStartIndex;
   }
   return index;
 }
@@ -475,15 +566,18 @@ export function incrementBindingIndex(count: number): number {
  * @param value
  */
 export function setBindingRoot(value: number) {
-  instructionState.lFrame.bindingRootIndex = value;
+  const expando = shouldAssignToExpando(value, -1);
+  if (expando !== null) expando.bindingRootIndex = value;
 }
 
 export function getCurrentQueryIndex(): number {
-  return instructionState.lFrame.currentQueryIndex;
+  const expando = instructionState.lFrame.expando;
+  return expando === null ? 0 : expando.currentQueryIndex;
 }
 
 export function setCurrentQueryIndex(value: number): void {
-  instructionState.lFrame.currentQueryIndex = value;
+  const expando = shouldAssignToExpando(value, 0);
+  if (expando !== null) expando.currentQueryIndex = value;
 }
 
 /**
@@ -501,14 +595,7 @@ export function enterDI(newView: LView, tNode: TNode) {
     // resetting for safety in dev mode only.
     newLFrame.isParent = DEV_MODE_VALUE;
     newLFrame.selectedIndex = DEV_MODE_VALUE;
-    newLFrame.contextLView = DEV_MODE_VALUE;
     newLFrame.elementDepthCount = DEV_MODE_VALUE;
-    newLFrame.currentNamespace = DEV_MODE_VALUE;
-    newLFrame.currentSanitizer = DEV_MODE_VALUE;
-    newLFrame.currentDirectiveDef = DEV_MODE_VALUE;
-    newLFrame.activeDirectiveId = DEV_MODE_VALUE;
-    newLFrame.bindingRootIndex = DEV_MODE_VALUE;
-    newLFrame.currentQueryIndex = DEV_MODE_VALUE;
   }
 }
 
@@ -542,15 +629,9 @@ export function enterView(newView: LView, tNode: TNode | null): void {
   newLFrame.isParent = true;
   newLFrame.lView = newView;
   newLFrame.selectedIndex = 0;
-  newLFrame.contextLView = newView !;
+  newLFrame.expando = null;
   newLFrame.elementDepthCount = 0;
-  newLFrame.currentNamespace = null;
-  newLFrame.currentSanitizer = null;
-  newLFrame.currentDirectiveDef = null;
-  newLFrame.activeDirectiveId = 0;
-  newLFrame.bindingRootIndex = -1;
   newLFrame.bindingIndex = newView === null ? -1 : newView[TVIEW].bindingStartIndex;
-  newLFrame.currentQueryIndex = 0;
 }
 
 /**
@@ -569,15 +650,9 @@ function createLFrame(parent: LFrame | null): LFrame {
     isParent: true,                 //
     lView: null !,                  //
     selectedIndex: 0,               //
-    contextLView: null !,           //
     elementDepthCount: 0,           //
-    currentNamespace: null,         //
-    currentSanitizer: null,         //
-    currentDirectiveDef: null,      //
-    activeDirectiveId: 0,           //
-    bindingRootIndex: -1,           //
+    expando: null,                  //
     bindingIndex: -1,               //
-    currentQueryIndex: 0,           //
     parent: parent !,               //
     child: null,                    //
   };
@@ -593,12 +668,19 @@ export function leaveViewProcessExit() {
 }
 
 export function leaveView() {
-  instructionState.lFrame = instructionState.lFrame.parent;
+  const lFrame = instructionState.lFrame;
+  instructionState.lFrame = lFrame.parent;
+  const expando = lFrame.expando;
+  if (expando !== null) {
+    lFrame.expando = null;
+    instructionState.nextExpando = expando;
+  }
 }
 
 export function nextContextImpl<T = any>(level: number = 1): T {
-  instructionState.lFrame.contextLView = walkUpViews(level, instructionState.lFrame.contextLView !);
-  return instructionState.lFrame.contextLView[CONTEXT] as T;
+  const newLView = walkUpViews(level, getContextLView());
+  ɵɵrestoreView(newLView as unknown as OpaqueViewState);
+  return newLView[CONTEXT] as T;
 }
 
 function walkUpViews(nestingLevel: number, currentView: LView): LView {
@@ -642,7 +724,7 @@ export function setSelectedIndex(index: number) {
  * @codeGenApi
  */
 export function ɵɵnamespaceSVG() {
-  instructionState.lFrame.currentNamespace = 'http://www.w3.org/2000/svg';
+  setCurrentNamespace('http://www.w3.org/2000/svg');
 }
 
 /**
@@ -651,7 +733,7 @@ export function ɵɵnamespaceSVG() {
  * @codeGenApi
  */
 export function ɵɵnamespaceMathML() {
-  instructionState.lFrame.currentNamespace = 'http://www.w3.org/1998/MathML/';
+  setCurrentNamespace('http://www.w3.org/1998/MathML/');
 }
 
 /**
@@ -669,15 +751,22 @@ export function ɵɵnamespaceHTML() {
  * `createElement` rather than `createElementNS`.
  */
 export function namespaceHTMLInternal() {
-  instructionState.lFrame.currentNamespace = null;
+  setCurrentNamespace(null);
+}
+
+function setCurrentNamespace(namespace: string | null) {
+  const expando = shouldAssignToExpando(namespace, null);
+  if (expando !== null) expando.currentNamespace = namespace;
 }
 
 export function getNamespace(): string|null {
-  return instructionState.lFrame.currentNamespace;
+  const expando = instructionState.lFrame.expando;
+  return expando === null ? null : expando.currentNamespace;
 }
 
 export function setCurrentStyleSanitizer(sanitizer: StyleSanitizeFn | null) {
-  instructionState.lFrame.currentSanitizer = sanitizer;
+  const expando = shouldAssignToExpando(sanitizer, null);
+  if (expando !== null) expando.currentSanitizer = sanitizer;
 }
 
 export function resetCurrentStyleSanitizer() {
@@ -685,8 +774,10 @@ export function resetCurrentStyleSanitizer() {
 }
 
 export function getCurrentStyleSanitizer() {
+  const lFrame = instructionState.lFrame;
   // TODO(misko): This should throw when there is no LView, but it turns out we can get here from
   // `NodeStyleDebug` hence we return `null`. This should be fixed
-  const lFrame = instructionState.lFrame;
-  return lFrame === null ? null : lFrame.currentSanitizer;
+  if (lFrame === null) return null;
+  const expando = lFrame.expando;
+  return expando === null ? null : expando.currentSanitizer;
 }
