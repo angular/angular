@@ -12,7 +12,7 @@
     "start": "ng serve",
     "pretest": "ng version",
     "test": "ng test && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production && yarn translated:test && yarn translated:legacy:test",
-    "translate": "localize-translate -r \"dist/\" -s \"**/*\" -l \"en-US\" -t \"src/locales/messages.*\" -o \"../tmp/translations/{{LOCALE}}\"",
+    "translate": "localize-translate -r \"dist/\" -s \"**/*\" -l \"en-US\" -t \"src/locales/messages.de.json\" \"src/locales/messages.fr.json\" -o \"../tmp/translations/{{LOCALE}}\"",
     "translated:test": "yarn build && yarn translate && yarn translated:fr:e2e && yarn translated:de:e2e && yarn translated:en:e2e",
     "translated:fr:serve": "serve ../tmp/translations/fr --listen 4200",
     "translated:fr:e2e": "npm-run-all -p -r translated:fr:serve \"ng e2e --configuration=translated-fr\"",
