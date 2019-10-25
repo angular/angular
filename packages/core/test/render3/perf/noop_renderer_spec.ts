@@ -17,7 +17,7 @@ describe('MicroBenchmarkRenderNode', () => {
     it('should be available in global space', () => {
       expect(Node).toBeDefined();
       const node: any = new MicroBenchmarkRenderNode();
-      expect(node instanceof Node).toBeTruthy()
+      expect(node instanceof Node).toBeTruthy();
     });
 
     it('should emulate className', () => {
