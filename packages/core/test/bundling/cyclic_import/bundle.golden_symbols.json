@@ -108,6 +108,9 @@
     "name": "RENDERER_FACTORY"
   },
   {
+    "name": "RendererStyleFlags3"
+  },
+  {
     "name": "SANITIZER"
   },
   {
@@ -579,6 +582,9 @@
     "name": "renderStringify"
   },
   {
+    "name": "renderStylingMap"
+  },
+  {
     "name": "renderView"
   },
   {
@@ -604,6 +610,9 @@
   },
   {
     "name": "setBindingRoot"
+  },
+  {
+    "name": "setClass"
   },
   {
     "name": "setClassName"
@@ -643,6 +652,9 @@
   },
   {
     "name": "setSelectedIndex"
+  },
+  {
+    "name": "setStyle"
   },
   {
     "name": "setStyleAttr"

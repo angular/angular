@@ -1164,6 +1164,9 @@
     "name": "renderStringify"
   },
   {
+    "name": "renderStylingMap"
+  },
+  {
     "name": "renderView"
   },
   {
