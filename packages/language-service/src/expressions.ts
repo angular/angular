@@ -14,7 +14,7 @@ import {inSpan} from './utils';
 
 type AstPath = AstPathBase<AST>;
 
-function findAstAt(ast: AST, position: number, excludeEmpty: boolean = false): AstPath {
+export function findAstAt(ast: AST, position: number, excludeEmpty: boolean = false): AstPath {
   const path: AST[] = [];
   const visitor = new class extends NullAstVisitor {
     visit(ast: AST) {
