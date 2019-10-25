@@ -1,25 +1,18 @@
 # Ivy Compatibility Guide
 
-The Angular team has worked hard to ensure Ivy is mostly backwards-compatible with the previous rendering engine ("View Engine"). 
-However, in rare cases, minor changes were necessary to ensure that the Angular API stayed fast and behaved predictably.
-In order to smooth the transition, we have provided schematics wherever possible so your application code is migrated automatically by the CLI.
-That said, medium to large applications will likely need to apply some manual updates.
+The Angular team has worked hard to ensure Ivy is as backwards-compatible with the previous rendering engine ("View Engine") as possible. 
+However, in rare cases, minor changes were necessary to ensure that the Angular's behavior was predictable and consistent, correcting issues in the View Engine implementation.
+In order to smooth the transition, we have provided automated migrations wherever possible so your application and library code is migrated automatically by the CLI.
+That said, some applications will likely need to apply some manual updates.
 
 {@a debugging}
 ## How to Debug Errors with Ivy
 
 In version 9, [a few deprecated APIs have been removed](guide/updating-to-version-9#removals) and there are a [few breaking changes](guide/updating-to-version-9#breaking-changes) unrelated to Ivy. 
-If you're seeing errors after updating to version 9, you'll first want to rule those changes out. To do so, temporarily turn off Ivy in your `tsconfig.json` and re-start your app:
+If you're seeing errors after updating to version 9, you'll first want to rule those changes out. 
 
- ```
- {
- "compilerOptions": { ... },
- "angularCompilerOptions": {
-    "enableIvy": false
- }
- }
- ```
- 
+To do so, temporarily [turn off Ivy in your `tsconfig.json`](guide/ivy#opting-out-of-angular-ivy) and re-start your app.
+
 If you're still seeing the errors, they are not specific to Ivy. In this case, you may want to consult the [general version 9 guide](guide/updating-to-version-9).
  
 If the errors are gone, switch back to Ivy by removing the changes to the `tsconfig.json` and review the list of expected changes below.  
@@ -58,12 +51,12 @@ The following changes will be visible more rarely, as they mostly deal in edge c
 
 - Foreign functions or foreign constants in decorator metadata aren't statically resolvable (previously, you could import a constant or function from another compilation unit, like a library, and use that constant/function in your `@NgModule` definition).
 
-- Forward references to directive inputs accessed through local refs is no longer supported by default.
+- Forward references to directive inputs accessed through local refs are no longer supported by default.
 
-- If there is both an unbound class attribute and a [class] binding, the classes in the unbound attribute will also be added (previously, the class binding would overwrite classes in the unbound attribute).
+- If there is both an unbound class attribute and a `[class]` binding, the classes in the unbound attribute will also be added (previously, the class binding would overwrite classes in the unbound attribute).
 
-- It's not possible to assign values to template-only variables like `item` in `ngFor="let item of items"` (previously, the compiler would ignore these assignments).
+- It is now an error to assign values to template-only variables like `item` in `ngFor="let item of items"` (previously, the compiler would ignore these assignments).
 
-- It's no longer possible to switch out lifecycle hooks on specific directive instances for testing (instead, modify the lifecycle hook on the directive type). 
+- It's no longer possible to overwrite lifecycle hooks with mocks on directive instances for testing (instead, modify the lifecycle hook on the directive type itself). 
 
-- Special injection tokens (e.g. `TemplateRef` or `ViewContainerRef`) return a new instance whenever they are requested (previously, instances of special tokens were shared if requested on the same node). This primarily affects testing.
+- Special injection tokens (e.g. `TemplateRef` or `ViewContainerRef`) return a new instance whenever they are requested (previously, instances of special tokens were shared if requested on the same node). This primarily affects tests that do identity comparison of these objects.
