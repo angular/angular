@@ -47,8 +47,17 @@ if (require.main === module) {
           .option('t', {
             alias: 'translations',
             required: true,
+            array: true,
             describe:
-                'A glob pattern indicating what translation files to load, either absolute or relative to the current working directory. E.g. `my_proj/src/locale/messages.*.xlf.',
+                'A list of paths to the translation files to load, either absolute or relative to the current working directory.\n' +
+                'E.g. "-t src/locale/messages.en.xlf src/locale/messages.fr.xlf src/locale/messages.de.xlf".',
+          })
+
+          .option('target-locales', {
+            array: true,
+            describe:
+                'A list of target locales for the translation files, which will override any target locale parsed from the translation file.\n' +
+                'E.g. "-t en fr de".',
           })
 
           .option('o', {
@@ -71,14 +80,12 @@ if (require.main === module) {
   const sourceRootPath = options['r'];
   const sourceFilePaths =
       glob.sync(options['s'], {absolute: true, cwd: sourceRootPath, nodir: true});
-  const translationFilePaths = glob.sync(options['t'], {absolute: true, nodir: true});
+  const translationFilePaths: string[] = options['t'];
   const outputPathFn = getOutputPathFn(options['o']);
   const diagnostics = new Diagnostics();
   const missingTranslation: MissingTranslationStrategy = options['m'];
   const sourceLocale: string|undefined = options['l'];
-  // For CLI we do not have a way to specify the locale of the translation files
-  // It must be extracted from the file itself.
-  const translationFileLocales: string[] = [];
+  const translationFileLocales: string[] = options['target-locales'] || [];
 
   translateFiles({sourceRootPath, sourceFilePaths, translationFilePaths, translationFileLocales,
                   outputPathFn, diagnostics, missingTranslation, sourceLocale});
