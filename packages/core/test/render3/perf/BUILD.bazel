@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:private"])
 
-load("//tools:defaults.bzl", "ng_rollup_bundle", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "ng_rollup_bundle", "ts_library")
 
 ts_library(
     name = "perf_lib",
@@ -9,7 +9,15 @@ ts_library(
     ),
     deps = [
         "//packages/core",
+        "@npm//@types/jasmine",
         "@npm//@types/node",
+    ],
+)
+
+jasmine_node_test(
+    name = "perf",
+    deps = [
+        ":perf_lib",
     ],
 )
 
