@@ -117,6 +117,11 @@ Since Protractor does not deal with fixtures, the API in this environment is sim
 `HarnessLoader` returned by the `loader()` method should be sufficient for loading all necessary
 `ComponentHarness` instances.
 
+Please note that harnesses may not behave _exactly_ the same in all environments. There will always
+be some difference between the real browser-generated event sequence when a user clicks or types in
+an element, versus the simulated event sequence generated in unit tests. Instead, the CDK makes a
+best effort to normalize the behavior and simulate the most important events in the sequence.
+
 #### Creating harnesses with `HarnessLoader`
 
 Instances of this class correspond to a specific DOM element (the "root element" of the loader) and
