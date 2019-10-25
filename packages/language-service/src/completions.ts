@@ -8,6 +8,7 @@
 
 import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, Text, findNode, getHtmlTagDefinition} from '@angular/compiler';
 import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
+import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {AstResult} from './common';
 import {getExpressionCompletions} from './expressions';
@@ -44,6 +45,76 @@ const ANGULAR_ELEMENTS: ReadonlyArray<ng.CompletionEntry> = [
     sortText: 'ng-template',
   },
 ];
+
+function isIdentifierPart(code: number) {
+  // Identifiers consist of alphanumeric characters, '_', or '$'.
+  return isAsciiLetter(code) || isDigit(code) || code == $$ || code == $_;
+}
+
+/**
+ * Gets the span of word in a template that surrounds `position`. If there is no word around
+ * `position`, nothing is returned.
+ */
+function getBoundedWordSpan(templateInfo: AstResult, position: number): ts.TextSpan|undefined {
+  const {template} = templateInfo;
+  const templateSrc = template.source;
+
+  if (!templateSrc) return;
+
+  // TODO(ayazhafiz): A solution based on word expansion will always be expensive compared to one
+  // based on ASTs. Whatever penalty we incur is probably manageable for small-length (i.e. the
+  // majority of) identifiers, but the current solution involes a number of branchings and we can't
+  // control potentially very long identifiers. Consider moving to an AST-based solution once
+  // existing difficulties with AST spans are more clearly resolved (see #31898 for discussion of
+  // known problems, and #33091 for how they affect text replacement).
+  //
+  // `templatePosition` represents the right-bound location of a cursor in the template.
+  //    key.ent|ry
+  //           ^---- cursor, at position `r` is at.
+  // A cursor is not itself a character in the template; it has a left (lower) and right (upper)
+  // index bound that hugs the cursor itself.
+  let templatePosition = position - template.span.start;
+  // To perform word expansion, we want to determine the left and right indices that hug the cursor.
+  // There are three cases here.
+  let left, right;
+  if (templatePosition === 0) {
+    // 1. Case like
+    //      |rest of template
+    //    the cursor is at the start of the template, hugged only by the right side (0-index).
+    left = right = 0;
+  } else if (templatePosition === templateSrc.length) {
+    // 2. Case like
+    //      rest of template|
+    //    the cursor is at the end of the template, hugged only by the left side (last-index).
+    left = right = templateSrc.length - 1;
+  } else {
+    // 3. Case like
+    //      wo|rd
+    //    there is a clear left and right index.
+    left = templatePosition - 1;
+    right = templatePosition;
+  }
+
+  if (!isIdentifierPart(templateSrc.charCodeAt(left)) &&
+      !isIdentifierPart(templateSrc.charCodeAt(right))) {
+    // Case like
+    //         .|.
+    // left ---^ ^--- right
+    // There is no word here.
+    return;
+  }
+
+  // Expand on the left and right side until a word boundary is hit. Back up one expansion on both
+  // side to stay inside the word.
+  while (left >= 0 && isIdentifierPart(templateSrc.charCodeAt(left))) --left;
+  ++left;
+  while (right < templateSrc.length && isIdentifierPart(templateSrc.charCodeAt(right))) ++right;
+  --right;
+
+  const absoluteStartPosition = position - (templatePosition - left);
+  const length = right - left + 1;
+  return {start: absoluteStartPosition, length};
+}
 
 export function getTemplateCompletions(
     templateInfo: AstResult, position: number): ng.CompletionEntry[] {
@@ -110,7 +181,13 @@ export function getTemplateCompletions(
         },
         null);
   }
-  return result;
+
+  const replacementSpan = getBoundedWordSpan(templateInfo, position);
+  return result.map(entry => {
+    return {
+        ...entry, replacementSpan,
+    };
+  });
 }
 
 function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ng.CompletionEntry[] {

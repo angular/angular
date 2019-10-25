@@ -127,6 +127,7 @@ describe('plugin', () => {
         name: 'children',
         kind: CompletionKind.PROPERTY as any,
         sortText: 'children',
+        replacementSpan: {start: 182, length: 8},
       },
     ]);
   });
