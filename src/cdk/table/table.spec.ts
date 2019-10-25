@@ -541,6 +541,10 @@ describe('CdkTable', () => {
         .toThrowError(getTableUnknownColumnError('column_a').message);
   });
 
+  it('should pick up columns that are indirect descendants', () => {
+    expect(() => createComponent(TableWithIndirectDescendantDefs).detectChanges()).not.toThrow();
+  });
+
   it('should throw an error if a column definition is requested but not defined after render',
      fakeAsync(() => {
        const columnDefinitionMissingAfterRenderFixture =
@@ -2320,6 +2324,26 @@ class NativeHtmlTableWithCaptionApp {
   columnsToRender = ['column_a'];
 
   @ViewChild(CdkTable) table: CdkTable<TestData>;
+}
+
+@Component({
+  // Note that we need the `ngSwitch` below in order to surface the issue we're testing for.
+  template: `
+    <cdk-table [dataSource]="dataSource">
+      <ng-container [ngSwitch]="true">
+        <ng-container cdkColumnDef="column_a">
+          <cdk-header-cell *cdkHeaderCellDef> Column A</cdk-header-cell>
+          <cdk-cell *cdkCellDef="let row"> {{row.a}}</cdk-cell>
+        </ng-container>
+      </ng-container>
+
+      <cdk-header-row *cdkHeaderRowDef="['column_a']"></cdk-header-row>
+      <cdk-row *cdkRowDef="let row; columns: ['column_a']"></cdk-row>
+    </cdk-table>
+  `
+})
+class TableWithIndirectDescendantDefs {
+  dataSource = new FakeDataSource();
 }
 
 function getElements(element: Element, query: string): Element[] {
