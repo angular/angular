@@ -19,16 +19,24 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFl
 
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getConstructorDependencies, readBaseClass, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies} from './util';
+import {findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
+const FIELD_DECORATORS = [
+  'Input', 'Output', 'ViewChild', 'ViewChildren', 'ContentChild', 'ContentChildren', 'HostBinding',
+  'HostListener'
+];
+const LIFECYCLE_HOOKS = new Set([
+  'ngOnChanges', 'ngOnInit', 'ngOnDestroy', 'ngDoCheck', 'ngAfterViewInit', 'ngAfterViewChecked',
+  'ngAfterContentInit', 'ngAfterContentChecked'
+]);
 
 export interface DirectiveHandlerData {
   meta: R3DirectiveMetadata;
   metadataStmt: Statement|null;
 }
 export class DirectiveDecoratorHandler implements
-    DecoratorHandler<DirectiveHandlerData, Decorator> {
+    DecoratorHandler<DirectiveHandlerData, Decorator|null> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private defaultImportRecorder: DefaultImportRecorder,
@@ -36,27 +44,41 @@ export class DirectiveDecoratorHandler implements
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
-  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
-    if (!decorators) {
+  detect(node: ClassDeclaration, decorators: Decorator[]|null):
+      DetectResult<Decorator|null>|undefined {
+    // Compiling declaration files is invalid.
+    if (node.getSourceFile().isDeclarationFile) {
       return undefined;
     }
-    const decorator = findAngularDecorator(decorators, 'Directive', this.isCore);
-    if (decorator !== undefined) {
-      return {
-        trigger: decorator.node,
-        metadata: decorator,
-      };
+    // If the class is undecorated, check if any of the fields have Angular decorators or lifecycle
+    // hooks, and if they do, label the class as an abstract directive.
+    if (!decorators) {
+      const angularField = this.reflector.getMembersOfClass(node).find(member => {
+        if (!member.isStatic && member.kind === ClassMemberKind.Method &&
+            LIFECYCLE_HOOKS.has(member.name)) {
+          return true;
+        }
+        if (member.decorators) {
+          return member.decorators.some(
+              decorator => FIELD_DECORATORS.some(
+                  decoratorName => isAngularDecorator(decorator, decoratorName, this.isCore)));
+        }
+        return false;
+      });
+      return angularField ? {trigger: angularField.node, metadata: null} : undefined;
     } else {
-      return undefined;
+      const decorator = findAngularDecorator(decorators, 'Directive', this.isCore);
+      return decorator ? {trigger: decorator.node, metadata: decorator} : undefined;
     }
   }
 
-  analyze(node: ClassDeclaration, decorator: Decorator, flags = HandlerFlags.NONE):
+  analyze(node: ClassDeclaration, decorator: Decorator|null, flags = HandlerFlags.NONE):
       AnalysisOutput<DirectiveHandlerData> {
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.defaultImportRecorder, this.isCore,
         flags);
     const analysis = directiveResult && directiveResult.metadata;
+
     if (analysis === undefined) {
       return {};
     }
@@ -112,15 +134,14 @@ export class DirectiveDecoratorHandler implements
  * the module.
  */
 export function extractDirectiveMetadata(
-    clazz: ClassDeclaration, decorator: Decorator, reflector: ReflectionHost,
+    clazz: ClassDeclaration, decorator: Decorator | null, reflector: ReflectionHost,
     evaluator: PartialEvaluator, defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
     flags: HandlerFlags, defaultSelector: string | null = null): {
   decorator: Map<string, ts.Expression>,
   metadata: R3DirectiveMetadata,
-  decoratedElements: ClassMember[],
 }|undefined {
   let directive: Map<string, ts.Expression>;
-  if (decorator.args === null || decorator.args.length === 0) {
+  if (decorator === null || decorator.args === null || decorator.args.length === 0) {
     directive = new Map<string, ts.Expression>();
   } else if (decorator.args.length !== 1) {
     throw new FatalDiagnosticError(
@@ -256,7 +277,7 @@ export function extractDirectiveMetadata(
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
     typeSourceSpan: EMPTY_SOURCE_SPAN, usesInheritance, exportAs, providers
   };
-  return {decoratedElements, decorator: directive, metadata};
+  return {decorator: directive, metadata};
 }
 
 export function extractQueryMetadata(

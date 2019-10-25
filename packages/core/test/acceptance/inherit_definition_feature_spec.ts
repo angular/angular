@@ -214,6 +214,37 @@ describe('inheritance', () => {
 
       expect(log).toEqual(['on changes!']);
     });
+
+    it('should be inherited from undecorated super class which inherits from decorated one', () => {
+      let changes = 0;
+
+      abstract class Base {
+        // Add an Input so that we have at least one Angular decorator on a class field.
+        @Input() inputBase: any;
+        abstract input: any;
+      }
+
+      abstract class UndecoratedBase extends Base {
+        abstract input: any;
+        ngOnChanges() { changes++; }
+      }
+
+      @Component({selector: 'my-comp', template: ''})
+      class MyComp extends UndecoratedBase {
+        @Input() input: any;
+      }
+
+      @Component({template: '<my-comp [input]="value"></my-comp>'})
+      class App {
+        value = 'hello';
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComp, App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(changes).toBe(1);
+    });
   });
 
   describe('of bare super class by a directive', () => {

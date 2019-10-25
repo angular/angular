@@ -284,7 +284,7 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });
               .toBeGreaterThan(ngInjectorDef, 'setClassMetadata should follow ɵinj');
         });
 
-        it('should render classes without decorators if handler matches', () => {
+        it('should render classes without decorators if class fields are decorated', () => {
           const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
                  testFormatter} =
               createTestRenderer('test-package', [{
@@ -309,7 +309,8 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
           expect(addDefinitionsSpy.calls.first().args[2])
               .toEqual(
-                  `UndecoratedBase.ngBaseDef = ɵngcc0.ɵɵdefineBase({ viewQuery: function (rf, ctx) { if (rf & 1) {
+                  `UndecoratedBase.ɵfac = function UndecoratedBase_Factory(t) { return new (t || UndecoratedBase)(); };
+UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, selectors: [], viewQuery: function UndecoratedBase_Query(rf, ctx) { if (rf & 1) {
         ɵngcc0.ɵɵstaticViewQuery(_c0, true);
     } if (rf & 2) {
         var _t;

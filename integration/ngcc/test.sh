@@ -95,12 +95,12 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   assertSucceeded "Expected 'ngcc' to generate a base factory for 'MatTable' in '@angular/material' (esm5)."
 
 
-# Did it generate a base definition for undecorated classes with inputs and view queries?
-  grep "_MatMenuBase.ngBaseDef = ɵngcc0.ɵɵdefineBase({ inputs: {" node_modules/@angular/material/esm2015/menu.js
-  assertSucceeded "Expected 'ngcc' to generate a base definition for 'MatMenuBase' in '@angular/material' (esm2015)."
+# Did it generate an abstract directive definition for undecorated classes with inputs and view queries?
+  grep "_MatMenuBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: _MatMenuBase" node_modules/@angular/material/esm2015/menu.js
+  assertSucceeded "Expected 'ngcc' to generate an abstract directive definition for 'MatMenuBase' in '@angular/material' (esm2015)."
 
-  grep "_MatMenuBase.ngBaseDef = ɵngcc0.ɵɵdefineBase({ inputs: {" node_modules/@angular/material/esm5/menu.es5.js
-  assertSucceeded "Expected 'ngcc' to generate a base definition for 'MatMenuBase' in '@angular/material' (esm5)."
+  grep "_MatMenuBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: _MatMenuBase" node_modules/@angular/material/esm5/menu.es5.js
+  assertSucceeded "Expected 'ngcc' to generate an abstract directive definition for 'MatMenuBase' in '@angular/material' (esm5)."
 
 
 # Did it handle namespace imported decorators in UMD using `__decorate` syntax?

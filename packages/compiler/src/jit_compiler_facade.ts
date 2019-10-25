@@ -7,7 +7,7 @@
  */
 
 
-import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, R3BaseMetadataFacade, R3ComponentMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
+import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, R3ComponentMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
 import {HostBinding, HostListener, Input, Output, Type} from './core';
 import {Identifiers} from './identifiers';
@@ -22,7 +22,7 @@ import {R3InjectorMetadata, R3NgModuleMetadata, compileInjector, compileNgModule
 import {compilePipeFromMetadata} from './render3/r3_pipe_compiler';
 import {R3Reference} from './render3/util';
 import {R3DirectiveMetadata, R3QueryMetadata} from './render3/view/api';
-import {ParsedHostBindings, compileBaseDefFromMetadata, compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
+import {ParsedHostBindings, compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
@@ -167,24 +167,6 @@ export class CompilerFacadeImpl implements CompilerFacade {
     });
     return this.jitExpression(
         factoryRes.factory, angularCoreEnv, sourceMapUrl, factoryRes.statements);
-  }
-
-  compileBase(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, facade: R3BaseMetadataFacade):
-      any {
-    const constantPool = new ConstantPool();
-    const typeSourceSpan =
-        this.createParseSourceSpan('Base', facade.name, `ng:///${facade.name}.js`);
-    const meta = {
-      ...facade,
-      typeSourceSpan,
-      viewQueries: facade.viewQueries ? facade.viewQueries.map(convertToR3QueryMetadata) :
-                                        facade.viewQueries,
-      queries: facade.queries ? facade.queries.map(convertToR3QueryMetadata) : facade.queries,
-      host: extractHostBindings(facade.propMetadata, typeSourceSpan)
-    };
-    const res = compileBaseDefFromMetadata(meta, constantPool, makeBindingParser());
-    return this.jitExpression(
-        res.expression, angularCoreEnv, sourceMapUrl, constantPool.statements);
   }
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan {

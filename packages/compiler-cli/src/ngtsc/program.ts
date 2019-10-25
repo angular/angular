@@ -14,7 +14,6 @@ import {nocollapseHack} from '../transformers/nocollapse_hack';
 import {verifySupportedTypeScriptVersion} from '../typescript_support';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from './annotations';
-import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {CycleAnalyzer, ImportGraph} from './cycles';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
@@ -587,7 +586,6 @@ export class NgtscProgram implements api.Program {
 
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers = [
-      new BaseDefDecoratorHandler(this.reflector, evaluator, this.isCore),
       new ComponentDecoratorHandler(
           this.reflector, evaluator, metaRegistry, this.metaReader !, scopeReader, scopeRegistry,
           this.isCore, this.resourceManager, this.rootDirs,

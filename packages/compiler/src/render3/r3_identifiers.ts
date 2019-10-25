@@ -220,13 +220,6 @@ export class Identifiers {
   static resolveDocument: o.ExternalReference = {name: 'ɵɵresolveDocument', moduleName: CORE};
   static resolveBody: o.ExternalReference = {name: 'ɵɵresolveBody', moduleName: CORE};
 
-  static defineBase: o.ExternalReference = {name: 'ɵɵdefineBase', moduleName: CORE};
-
-  static BaseDef: o.ExternalReference = {
-    name: 'ɵɵBaseDef',
-    moduleName: CORE,
-  };
-
   static defineComponent: o.ExternalReference = {name: 'ɵɵdefineComponent', moduleName: CORE};
 
   static setComponentScope: o.ExternalReference = {name: 'ɵɵsetComponentScope', moduleName: CORE};
