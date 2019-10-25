@@ -84,15 +84,6 @@ export class MatDialog implements OnDestroy {
     return this._parentDialog ? this._parentDialog.afterOpened : this._afterOpenedAtThisLevel;
   }
 
-  /**
-   * Stream that emits when a dialog has been opened.
-   * @deprecated Use `afterOpened` instead.
-   * @breaking-change 8.0.0
-   */
-  get afterOpen(): Subject<MatDialogRef<any>> {
-    return this.afterOpened;
-  }
-
   get _afterAllClosed(): Subject<void> {
     const parent = this._parentDialog;
     return parent ? parent._afterAllClosed : this._afterAllClosedAtThisLevel;
@@ -110,7 +101,11 @@ export class MatDialog implements OnDestroy {
   constructor(
       private _overlay: Overlay,
       private _injector: Injector,
-      @Optional() private _location: Location,
+      /**
+       * @deprecated `_location` parameter to be removed.
+       * @breaking-change 10.0.0
+       */
+      @Optional() _location: Location,
       @Optional() @Inject(MAT_DIALOG_DEFAULT_OPTIONS) private _defaultOptions: MatDialogConfig,
       @Inject(MAT_DIALOG_SCROLL_STRATEGY) scrollStrategy: any,
       @Optional() @SkipSelf() private _parentDialog: MatDialog,
@@ -248,7 +243,7 @@ export class MatDialog implements OnDestroy {
     // Create a reference to the dialog we're creating in order to give the user a handle
     // to modify and close it.
     const dialogRef =
-        new MatDialogRef<T, R>(overlayRef, dialogContainer, this._location, config.id);
+        new MatDialogRef<T, R>(overlayRef, dialogContainer, config.id);
 
     // When the dialog backdrop is clicked, we want to close it.
     if (config.hasBackdrop) {

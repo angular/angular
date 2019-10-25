@@ -18,6 +18,10 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
     {
       pr: 'https://github.com/angular/components/pull/17230',
       changes: ['MatSelect']
+    },
+    {
+      pr: 'https://github.com/angular/components/pull/17333',
+      changes: ['MatDialogRef']
     }
   ],
   [TargetVersion.V8]: [

@@ -8,7 +8,6 @@
 
 import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
 import {GlobalPositionStrategy, OverlayRef} from '@angular/cdk/overlay';
-import {Location} from '@angular/common';
 import {Observable, Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 import {DialogPosition} from './dialog-config';
@@ -54,8 +53,6 @@ export class MatDialogRef<T, R = any> {
   constructor(
     private _overlayRef: OverlayRef,
     public _containerInstance: MatDialogContainer,
-    // @breaking-change 8.0.0 `_location` parameter to be removed.
-    _location?: Location,
     readonly id: string = `mat-dialog-${uniqueId++}`) {
 
     // Pass the id along to the container.
@@ -211,24 +208,6 @@ export class MatDialogRef<T, R = any> {
   removePanelClass(classes: string | string[]): this {
     this._overlayRef.removePanelClass(classes);
     return this;
-  }
-
-  /**
-   * Gets an observable that is notified when the dialog is finished opening.
-   * @deprecated Use `afterOpened` instead.
-   * @breaking-change 8.0.0
-   */
-  afterOpen(): Observable<void> {
-    return this.afterOpened();
-  }
-
-  /**
-   * Gets an observable that is notified when the dialog has started closing.
-   * @deprecated Use `beforeClosed` instead.
-   * @breaking-change 8.0.0
-   */
-  beforeClose(): Observable<R | undefined> {
-    return this.beforeClosed();
   }
 
   /** Gets the current state of the dialog's lifecycle. */

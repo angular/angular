@@ -207,23 +207,23 @@ describe('MatDialog', () => {
     expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeNull();
   }));
 
-  it('should dispatch the beforeClose and afterClose events when the ' +
+  it('should dispatch the beforeClosed and afterClosed events when the ' +
     'overlay is detached externally', fakeAsync(inject([Overlay], (overlay: Overlay) => {
       const dialogRef = dialog.open(PizzaMsg, {
         viewContainerRef: testViewContainerRef,
         scrollStrategy: overlay.scrollStrategies.close()
       });
-      const beforeCloseCallback = jasmine.createSpy('beforeClosed callback');
+      const beforeClosedCallback = jasmine.createSpy('beforeClosed callback');
       const afterCloseCallback = jasmine.createSpy('afterClosed callback');
 
-      dialogRef.beforeClose().subscribe(beforeCloseCallback);
+      dialogRef.beforeClosed().subscribe(beforeClosedCallback);
       dialogRef.afterClosed().subscribe(afterCloseCallback);
 
       scrolledSubject.next();
       viewContainerFixture.detectChanges();
       flush();
 
-      expect(beforeCloseCallback).toHaveBeenCalledTimes(1);
+      expect(beforeClosedCallback).toHaveBeenCalledTimes(1);
       expect(afterCloseCallback).toHaveBeenCalledTimes(1);
     })));
 

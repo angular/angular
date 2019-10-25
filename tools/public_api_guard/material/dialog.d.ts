@@ -26,10 +26,10 @@ export declare function MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Ove
 export declare class MatDialog implements OnDestroy {
     readonly _afterAllClosed: Subject<void>;
     readonly afterAllClosed: Observable<void>;
-    readonly afterOpen: Subject<MatDialogRef<any>>;
     readonly afterOpened: Subject<MatDialogRef<any>>;
     readonly openDialogs: MatDialogRef<any>[];
-    constructor(_overlay: Overlay, _injector: Injector, _location: Location, _defaultOptions: MatDialogConfig, scrollStrategy: any, _parentDialog: MatDialog, _overlayContainer: OverlayContainer);
+    constructor(_overlay: Overlay, _injector: Injector,
+    _location: Location, _defaultOptions: MatDialogConfig, scrollStrategy: any, _parentDialog: MatDialog, _overlayContainer: OverlayContainer);
     closeAll(): void;
     getDialogById(id: string): MatDialogRef<any> | undefined;
     ngOnDestroy(): void;
@@ -41,7 +41,6 @@ export declare class MatDialogActions {
 
 export declare const matDialogAnimations: {
     readonly dialogContainer: AnimationTriggerMetadata;
-    readonly slideDialog: AnimationTriggerMetadata;
 };
 
 export declare class MatDialogClose implements OnInit, OnChanges {
@@ -109,13 +108,11 @@ export declare class MatDialogRef<T, R = any> {
     componentInstance: T;
     disableClose: boolean | undefined;
     readonly id: string;
-    constructor(_overlayRef: OverlayRef, _containerInstance: MatDialogContainer, _location?: Location, id?: string);
+    constructor(_overlayRef: OverlayRef, _containerInstance: MatDialogContainer, id?: string);
     addPanelClass(classes: string | string[]): this;
     afterClosed(): Observable<R | undefined>;
-    afterOpen(): Observable<void>;
     afterOpened(): Observable<void>;
     backdropClick(): Observable<MouseEvent>;
-    beforeClose(): Observable<R | undefined>;
     beforeClosed(): Observable<R | undefined>;
     close(dialogResult?: R): void;
     getState(): MatDialogState;

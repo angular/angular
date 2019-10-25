@@ -9,6 +9,28 @@
 import {PropertyNameUpgradeData, TargetVersion, VersionChanges} from '@angular/cdk/schematics';
 
 export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
+  [TargetVersion.V9]: [
+    {
+      pr: 'https://github.com/angular/components/pull/17333',
+      changes: [
+        {
+          replace: 'afterOpen',
+          replaceWith: 'afterOpened',
+          whitelist: {classes: ['MatDialogRef']}
+        },
+        {
+          replace: 'beforeClose',
+          replaceWith: 'beforeClosed',
+          whitelist: {classes: ['MatDialogRef']}
+        },
+        {
+          replace: 'afterOpen',
+          replaceWith: 'afterOpened',
+          whitelist: {classes: ['MatDialog']}
+        }
+      ]
+    }
+  ],
   [TargetVersion.V6]: [
     {
       pr: 'https://github.com/angular/components/pull/10163',
