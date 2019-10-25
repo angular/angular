@@ -146,7 +146,10 @@ describe('change detection', () => {
         inputs: ['input'],
       })
       class Child {
-        _input !: number;
+        /**
+         * @internal
+         */
+        private _input !: number;
 
         constructor(private cdr: ChangeDetectorRef) {}
 
