@@ -77,7 +77,6 @@ const enum Code {
 }
 
 function remove(text: string, key: string): string {
-  debugger;
   let wasLastWhitespace = true;
   for (let i = 0; i < text.length; i++) {
     if (wasLastWhitespace) {
