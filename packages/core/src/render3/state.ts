@@ -455,15 +455,11 @@ export function nextBindingIndex(): number {
   return instructionState.lFrame.bindingIndex++;
 }
 
-export function nextBindingIndex2(): number {
+export function incrementBindingIndex(count: number): number {
   const lFrame = instructionState.lFrame;
   const index = lFrame.bindingIndex;
-  lFrame.bindingIndex = lFrame.bindingIndex + 2;
+  lFrame.bindingIndex = lFrame.bindingIndex + count;
   return index;
-}
-
-export function incrementBindingIndex(count: number): number {
-  return instructionState.lFrame.bindingIndex += count;
 }
 
 /**
