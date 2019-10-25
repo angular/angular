@@ -287,6 +287,43 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     expect(instance.clicks).toBe(1);
   });
 
+  it('should support local refs inside i18n block', () => {
+    loadTranslations({
+      [computeMsgId(
+          '{$START_TAG_NG_CONTAINER} One {$CLOSE_TAG_NG_CONTAINER}' +
+          '{$START_TAG_DIV} Two {$CLOSE_TAG_DIV}' +
+          '{$START_TAG_SPAN} Three {$CLOSE_TAG_SPAN}')]:
+          '{$START_TAG_NG_CONTAINER} Une {$CLOSE_TAG_NG_CONTAINER}' +
+          '{$START_TAG_DIV} Deux {$CLOSE_TAG_DIV}' +
+          '{$START_TAG_SPAN} Trois {$CLOSE_TAG_SPAN}'
+    });
+    const fixture = initWithTemplate(AppComp, `
+      <div i18n>
+        <ng-container #localRefA> One </ng-container>
+        <div #localRefB> Two </div>
+        <span #localRefC> Three </span>
+      </div>
+    `);
+    expect(fixture.nativeElement.textContent).toBe(' Une  Deux  Trois ');
+  });
+
+  it('should handle local refs correctly in case an element is removed in translation', () => {
+    loadTranslations({
+      [computeMsgId(
+          '{$START_TAG_NG_CONTAINER} One {$CLOSE_TAG_NG_CONTAINER}' +
+          '{$START_TAG_DIV} Two {$CLOSE_TAG_DIV}' +
+          '{$START_TAG_SPAN} Three {$CLOSE_TAG_SPAN}')]: '{$START_TAG_DIV} Deux {$CLOSE_TAG_DIV}'
+    });
+    const fixture = initWithTemplate(AppComp, `
+      <div i18n>
+        <ng-container #localRefA> One </ng-container>
+        <div #localRefB> Two </div>
+        <span #localRefC> Three </span>
+      </div>
+    `);
+    expect(fixture.nativeElement.textContent).toBe(' Deux ');
+  });
+
   describe('ng-container and ng-template support', () => {
     it('should support ng-container', () => {
       loadTranslations({[computeMsgId('text')]: 'texte'});
