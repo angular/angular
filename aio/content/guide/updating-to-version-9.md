@@ -61,6 +61,8 @@ If you're curious about the specific migrations being run (e.g. what code is cha
 
 In Version 9, Angular Ivy is the default rendering engine. If you haven't heard of Ivy, you can read more about it in the [Angular Ivy guide](guide/ivy).
 
+For guidance on debugging and a list of minor changes associated with Ivy, please see our [compatibility guide](guide/ivy-compatibility).
+
 For help with opting out of Ivy, please see the instructions [here](guide/ivy#opting-out-of-angular-ivy).
 
 
