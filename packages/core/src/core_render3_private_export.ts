@@ -18,7 +18,6 @@ export {
   ɵɵattributeInterpolate7,
   ɵɵattributeInterpolate8,
   ɵɵattributeInterpolateV,
-  ɵɵdefineBase,
   ɵɵdefineComponent,
   ɵɵdefineDirective,
   ɵɵdefinePipe,
@@ -153,7 +152,6 @@ export {
   ɵɵembeddedViewEnd,
   store as ɵstore,
   ɵɵpipe,
-  ɵɵBaseDef,
   ComponentDef as ɵComponentDef,
   ɵɵComponentDefWithMeta,
   ɵɵFactoryDef,
@@ -227,7 +225,6 @@ export {
   NG_DIR_DEF as ɵNG_DIR_DEF,
   NG_PIPE_DEF as ɵNG_PIPE_DEF,
   NG_MOD_DEF as ɵNG_MOD_DEF,
-  NG_BASE_DEF as ɵNG_BASE_DEF
 } from './render3/fields';
 
 export {

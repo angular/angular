@@ -37,8 +37,6 @@ export interface CompilerFacade {
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3DirectiveMetadataFacade): any;
   compileComponent(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3ComponentMetadataFacade): any;
-  compileBase(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3BaseMetadataFacade):
-      any;
   compileFactory(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3FactoryDefMetadataFacade): any;
 
@@ -158,16 +156,6 @@ export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
   viewProviders: Provider[]|null;
   interpolation?: [string, string];
   changeDetection?: ChangeDetectionStrategy;
-}
-
-export interface R3BaseMetadataFacade {
-  name: string;
-  type: any;
-  propMetadata: {[key: string]: any[]};
-  inputs?: {[key: string]: string | [string, string]};
-  outputs?: {[key: string]: string};
-  queries?: R3QueryMetadataFacade[];
-  viewQueries?: R3QueryMetadataFacade[];
 }
 
 export interface R3FactoryDefMetadataFacade {
