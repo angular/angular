@@ -461,6 +461,7 @@ The following APIs have been removed starting with version 9.0.0*:
 | `@angular/common` | `DeprecatedPercentPipe` | [`PercentPipe`](api/common/PercentPipe) | none |
 | `@angular/forms` | [`NgFormSelectorWarning`](https://v8.angular.io/api/forms/NgFormSelectorWarning) | none | none |
 | `@angular/forms` | `ngForm` element selector | `ng-form` element selector | none |
+| `@angular/service-worker` | `versionedFiles` | `files` | In the service worker configuration file `ngsw-config.json`, replace `versionedFiles` with `files`. See [Service Worker Configuration](guide/service-worker-config#assetgroups). |
 
 *To see APIs removed in version 8, check out this guide on the [version 8 docs site](https://v8.angular.io/guide/deprecations#removed).
 
