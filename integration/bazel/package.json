@@ -25,13 +25,20 @@
     "@bazel/bazel": "file:../../node_modules/@bazel/bazel",
     "@bazel/karma": "0.39.0",
     "@bazel/protractor": "0.39.0",
+    "@bazel/rollup": "0.39.0",
+    "@bazel/terser": "0.39.0",
     "@bazel/typescript": "0.39.0",
     "@types/jasmine": "2.8.8",
     "http-server": "^0.11.1",
+    "rollup": "^1.21.4",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-sourcemaps": "^0.4.2",
+    "terser": "4.3.1",
     "typescript": "3.6.4"
   },
   "scripts": {
     "test": "bazel build ... --noshow_progress && bazel test ...",
-    "postinstall": "ngc -p ./angular-metadata.tsconfig.json"
+    "postinstall": "ngcc"
   }
 }
