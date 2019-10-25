@@ -14,7 +14,7 @@ import {RElement} from '../interfaces/renderer';
 import {StylingMapArray, StylingMapArrayIndex, TStylingConfig, TStylingContext} from '../interfaces/styling';
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {LView, RENDERER} from '../interfaces/view';
-import {getActiveDirectiveId, getCheckNoChangesMode, getCurrentStyleSanitizer, getLView, getSelectedIndex, incrementBindingIndex, nextBindingIndex, nextBindingIndex2, resetCurrentStyleSanitizer, setCurrentStyleSanitizer, setElementExitFn} from '../state';
+import {getActiveDirectiveId, getCheckNoChangesMode, getCurrentStyleSanitizer, getLView, getSelectedIndex, incrementBindingIndex, nextBindingIndex, resetCurrentStyleSanitizer, setCurrentStyleSanitizer, setElementExitFn} from '../state';
 import {applyStylingMapDirectly, applyStylingValueDirectly, flushStyling, setClass, setStyle, updateClassViaContext, updateStyleViaContext} from '../styling/bindings';
 import {activateStylingMapFeature} from '../styling/map_based_bindings';
 import {attachStylingDebugObject} from '../styling/styling_debug';
