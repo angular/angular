@@ -73,7 +73,7 @@ Now you'll find new files in the Angular workspace:
 * `/WORKSPACE` tells Bazel how to download external dependencies.
 * `/BUILD.bazel` and `/src/BUILD.bazel` tell Bazel about your source code.
 
-You can find a full-featured example with custom Bazel configurations at http://github.com/angular/angular-bazel-example.
+You can find a full-featured example with custom Bazel configurations at https://github.com/bazelbuild/rules_nodejs/tree/master/examples/angular.
 
 Documentation for using Bazel for frontend projects is linked from https://docs.bazel.build/versions/master/bazel-and-javascript.html.
 
