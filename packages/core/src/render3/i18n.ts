@@ -683,10 +683,21 @@ function i18nEndFirstPass(lView: LView, tView: TView) {
   const visitedNodes = readCreateOpCodes(rootIndex, tI18n.create, lView);
 
   // Remove deleted nodes
-  for (let i = rootIndex + 1; i <= lastCreatedNode.index - HEADER_OFFSET; i++) {
-    if (visitedNodes.indexOf(i) === -1) {
-      removeNode(i, lView, /* markAsDetached */ true);
+  let index = rootIndex + 1;
+  while (index <= lastCreatedNode.index - HEADER_OFFSET) {
+    if (visitedNodes.indexOf(index) === -1) {
+      removeNode(index, lView, /* markAsDetached */ true);
     }
+    // Check if an element has any local refs and skip them
+    const tNode = getTNode(index, lView);
+    if (tNode && (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) &&
+        tNode.localNames !== null) {
+      // Divide by 2 to get the number of local refs,
+      // since they are stored as an array that also includes directive indexes,
+      // i.e. ["localRef", directiveIndex, ...]
+      index += tNode.localNames.length >> 1;
+    }
+    index++;
   }
 }
 
