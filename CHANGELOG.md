@@ -1,3 +1,83 @@
+# 9.0.0-next.1 "helium-barbell" (2019-10-25)
+
+### cdk
+
+# Highlights
+* New `cdk/clipboard` subpackage containing helpers for working with the clipboard.
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **scrolling:** expand type for "cdkVirtualForOf" input to allow null ([#17421](https://github.com/angular/components/issues/17421)) ([3e5e9db](https://github.com/angular/components/commit/3e5e9db)), closes [#17411](https://github.com/angular/components/issues/17411) |
+| feature |  **testing:** add method to wait for async tasks outside the angular zone ([#17408](https://github.com/angular/components/issues/17408)) ([c50aa21](https://github.com/angular/components/commit/c50aa21)) |
+| feature |  **clipboard:** new clipboard module ([#17272](https://github.com/angular/components/issues/17272)) ([473d4c6](https://github.com/angular/components/commit/473d4c6)) |
+| feature |  change tslib from direct dependency to peerDependency ([#17393](https://github.com/angular/components/issues/17393)) ([41166b7](https://github.com/angular/components/commit/41166b7)) |
+
+### material
+
+_Breaking changes:_
+
+* We no longer have a direct depedency on `tslib`. Instead it is now listed a
+  `peerDependency`. This matches Angular framework.
+
+Users not using the Angular CLI will need to manually install `tslib` via;
+```
+yarn add tslib
+```
+or
+```
+npm install tslib --save
+```
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **button-toggle:** indirect descendant buttons not picked up… ([#17451](https://github.com/angular/components/issues/17451)) ([67b009f](https://github.com/angular/components/commit/67b009f)) |
+| bug fix |  **chips:** don't set aria-required when element doesn't have… ([#17425](https://github.com/angular/components/issues/17425)) ([939c18d](https://github.com/angular/components/commit/939c18d)), closes [#17397](https://github.com/angular/components/issues/17397) |
+| bug fix |  **dialog:** don't move focus if it was moved during close ani… ([#17300](https://github.com/angular/components/issues/17300)) ([3476f51](https://github.com/angular/components/commit/3476f51)), closes [#17296](https://github.com/angular/components/issues/17296) |
+| bug fix |  **drag-drop:** global resize subscription not cleared ([#17257](https://github.com/angular/components/issues/17257)) ([f10b222](https://github.com/angular/components/commit/f10b222)), closes [#17255](https://github.com/angular/components/issues/17255) |
+| bug fix |  **drag-drop:** not picking up indirect descendant items ([#17226](https://github.com/angular/components/issues/17226)) ([ef92091](https://github.com/angular/components/commit/ef92091)), closes [#17047](https://github.com/angular/components/issues/17047) |
+| bug fix |  **drag-drop:** only call enterPredicate when pointer is inside drop list ([#17310](https://github.com/angular/components/issues/17310)) ([9fe32c0](https://github.com/angular/components/commit/9fe32c0)), closes [#17266](https://github.com/angular/components/issues/17266) |
+| bug fix |  **drag-drop:** unable to drop into connected list inside shad… ([#17424](https://github.com/angular/components/issues/17424)) ([593a06c](https://github.com/angular/components/commit/593a06c)), closes [#16899](https://github.com/angular/components/issues/16899) [#17422](https://github.com/angular/components/issues/17422) |
+| bug fix |  **form-field:** annotate base class with Directive for Ivy ([#17457](https://github.com/angular/components/issues/17457)) ([4663d8f](https://github.com/angular/components/commit/4663d8f)), closes [#17022](https://github.com/angular/components/issues/17022) |
+| bug fix |  **form-field:** ensure that descendants are picked up in Ivy ([#17439](https://github.com/angular/components/issues/17439)) ([1d40ec9](https://github.com/angular/components/commit/1d40ec9)) |
+| bug fix |  **form-field:** outline gap no calculated in shadow dom ([#17303](https://github.com/angular/components/issues/17303)) ([1b94295](https://github.com/angular/components/commit/1b94295)), closes [#17262](https://github.com/angular/components/issues/17262) |
+| bug fix |  **menu:** trigger should aria-controls panel ([#17365](https://github.com/angular/components/issues/17365)) ([405f5d0](https://github.com/angular/components/commit/405f5d0)) |
+| bug fix |  **schematics:** secondary entry point migration not working against v9 ([#17452](https://github.com/angular/components/issues/17452)) ([5e10833](https://github.com/angular/components/commit/5e10833)), closes [#17433](https://github.com/angular/components/issues/17433) |
+| bug fix |  **select:** not picking up indirect descendant option groups ([#17458](https://github.com/angular/components/issues/17458)) ([d773cce](https://github.com/angular/components/commit/d773cce)) |
+| bug fix |  **sidenav:** container not picking up indirect descendant sid… ([#17453](https://github.com/angular/components/issues/17453)) ([9933479](https://github.com/angular/components/commit/9933479)) |
+| bug fix |  **snack-bar:** handle large numbers passed in as duration ([#17239](https://github.com/angular/components/issues/17239)) ([86a8fee](https://github.com/angular/components/commit/86a8fee)), closes [#17234](https://github.com/angular/components/issues/17234) |
+| bug fix |  **tabs:** no longer use OnPush ([#16529](https://github.com/angular/components/issues/16529)) ([35b3226](https://github.com/angular/components/commit/35b3226)), closes [#15440](https://github.com/angular/components/issues/15440) |
+| bug fix |  **tabs:** not picking up indirect descendant tabs in ivy ([#17346](https://github.com/angular/components/issues/17346)) ([ed0067e](https://github.com/angular/components/commit/ed0067e)), closes [#17336](https://github.com/angular/components/issues/17336) |
+| bug fix |  **toolbar:** not picking up indirect descendant rows ([#17469](https://github.com/angular/components/issues/17469)) ([646d47f](https://github.com/angular/components/commit/646d47f)) |
+| feature |  **autocomplete/testing:** polish harness API ([#17350](https://github.com/angular/components/issues/17350)) ([7a748fc](https://github.com/angular/components/commit/7a748fc)) |
+| feature |  **drag-drop:** allow drag start delay to be configured based… ([#17301](https://github.com/angular/components/issues/17301)) ([43c7a7d](https://github.com/angular/components/commit/43c7a7d)), closes [#17260](https://github.com/angular/components/issues/17260) |
+| feature |  **drag-drop:** allow for custom class to be set on preview ([#17304](https://github.com/angular/components/issues/17304)) ([34e848f](https://github.com/angular/components/commit/34e848f)), closes [#17089](https://github.com/angular/components/issues/17089) |
+| feature |  **menu/testing:** finish implementing harness ([#17379](https://github.com/angular/components/issues/17379)) ([aa2cbf7](https://github.com/angular/components/commit/aa2cbf7)) |
+| feature |  **ng-update:** add migration for hammerjs in version 9 ([#17369](https://github.com/angular/components/issues/17369)) ([f065977](https://github.com/angular/components/commit/f065977)) |
+| feature |  **radio/testing:** polish harness API ([#17414](https://github.com/angular/components/issues/17414)) ([36d34a6](https://github.com/angular/components/commit/36d34a6)) |
+| feature |  **sidenav/testing:** polish harness API ([#17415](https://github.com/angular/components/issues/17415)) ([9e79940](https://github.com/angular/components/commit/9e79940)) |
+| feature |  **slide-toggle/testing:** polish harness API ([#17416](https://github.com/angular/components/issues/17416)) ([db999ff](https://github.com/angular/components/commit/db999ff)) |
+| feature |  **tabs:** add input to opt out of pagination ([#17409](https://github.com/angular/components/issues/17409)) ([bb9a3a8](https://github.com/angular/components/commit/bb9a3a8)), closes [#17317](https://github.com/angular/components/issues/17317) |
+| feature |  **tabs/testing:** polish harness API ([#17417](https://github.com/angular/components/issues/17417)) ([05600a2](https://github.com/angular/components/commit/05600a2)) |
+| feature |  change tslib from direct dependency to peerDependency ([#17393](https://github.com/angular/components/issues/17393)) ([41166b7](https://github.com/angular/components/commit/41166b7)) |
+| performance |  **tooltip:** avoid triggering change detection for all keydown events ([#17331](https://github.com/angular/components/issues/17331)) ([493c32d](https://github.com/angular/components/commit/493c32d)) |
+
+### cdk-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **dialog:** don't move focus if it was moved during close animation ([#17320](https://github.com/angular/components/issues/17320)) ([442ec30](https://github.com/angular/components/commit/442ec30)), closes [#17300](https://github.com/angular/components/issues/17300) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** elevate z-index of content ([#17349](https://github.com/angular/components/issues/17349)) ([230403e](https://github.com/angular/components/commit/230403e)) |
+| bug fix |  **mdc-slide-toggle:** missing focus indication in high contrast mode ([#17471](https://github.com/angular/components/issues/17471)) ([3de0b08](https://github.com/angular/components/commit/3de0b08)) |
+| bug fix |  **mdc-slider:** remove theme import from all-theme ([#17348](https://github.com/angular/components/issues/17348)) ([40665e9](https://github.com/angular/components/commit/40665e9)) |
+| bug fix |  **mdc-tabs:** add `.mdc-tab__ripple` container ([#17498](https://github.com/angular/components/issues/17498)) ([409e656](https://github.com/angular/components/commit/409e656)) |
+| bug fix |  **mdc-progress-bar:** server-side rendering error ([#17359](https://github.com/angular/components/issues/17359)) ([b30aedd](https://github.com/angular/components/commit/b30aedd)) |
+
+
 ## 8.2.3 "tinsel-pretzel" (2019-10-08)
 
 ### cdk

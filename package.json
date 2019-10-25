@@ -37,7 +37,7 @@
     "cherry-pick-patch": "ts-node --project tools/cherry-pick-patch/ tools/cherry-pick-patch/cherry-pick-patch.ts",
     "check-rollup-globals": "ts-node --project scripts/ scripts/check-rollup-globals.ts"
   },
-  "version": "9.0.0-next.0",
+  "version": "9.0.0-next.1",
   "requiredAngularVersion": "^9.0.0-0 || ^10.0.0-0",
   "requiredMDCVersion": "^4.0.0-canary.062ade5c0.0",
   "dependencies": {
