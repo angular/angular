@@ -752,7 +752,7 @@ export function writeStylingValueDirectly(
     }
     setClassName(renderer, element, valueToApply);
   } else {
-    valueToApply = forceStylesAsString(value as{[key: string]: any}, true);
+    valueToApply = forceStylesAsString(value, true);
     if (initialValue !== null) {
       valueToApply = initialValue + ';' + valueToApply;
     }

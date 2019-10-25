@@ -441,9 +441,7 @@ function normalizeStylingDirectiveInputValue(
     if (isClassBased) {
       value = concatString(initialValue, forceClassesAsString(bindingValue));
     } else {
-      value = concatString(
-          initialValue,
-          forceStylesAsString(bindingValue as{[key: string]: any} | null | undefined, true), ';');
+      value = concatString(initialValue, forceStylesAsString(bindingValue, true), ';');
     }
   }
   return value;
