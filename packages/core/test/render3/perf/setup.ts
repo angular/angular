@@ -12,10 +12,11 @@ import {RendererFactory3, domRendererFactory3} from '../../../src/render3/interf
 import {LView, LViewFlags, TView} from '../../../src/render3/interfaces/view';
 import {insertView} from '../../../src/render3/node_manipulation';
 
-import {NoopRendererFactory} from './noop_renderer';
+import {MicroBenchmarkRendererFactory} from './noop_renderer';
 
 const isBrowser = typeof process === 'undefined';
-const rendererFactory: RendererFactory3 = isBrowser ? domRendererFactory3 : new NoopRendererFactory;
+const rendererFactory: RendererFactory3 =
+    isBrowser ? domRendererFactory3 : new MicroBenchmarkRendererFactory;
 const renderer = rendererFactory.createRenderer(null, null);
 
 export function createAndRenderLView(
