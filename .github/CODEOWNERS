@@ -447,6 +447,7 @@
 /aio/content/guide/angular-compiler-options.md                  @angular/fw-compiler @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/aot-compiler.md                              @angular/fw-compiler @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/aot-metadata-errors.md                       @angular/fw-compiler @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/template-typecheck.md                       @angular/fw-compiler @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
 
