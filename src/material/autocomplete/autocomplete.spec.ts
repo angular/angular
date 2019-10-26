@@ -1253,26 +1253,24 @@ describe('MatAutocomplete', () => {
   });
 
   describe('option groups', () => {
-    let fixture: ComponentFixture<AutocompleteWithGroups>;
     let DOWN_ARROW_EVENT: KeyboardEvent;
     let UP_ARROW_EVENT: KeyboardEvent;
-    let container: HTMLElement;
 
-    beforeEach(fakeAsync(() => {
-      fixture = createComponent(AutocompleteWithGroups);
-      fixture.detectChanges();
-
+    beforeEach(() => {
       DOWN_ARROW_EVENT = createKeyboardEvent('keydown', DOWN_ARROW);
       UP_ARROW_EVENT = createKeyboardEvent('keydown', UP_ARROW);
+    });
+
+    it('should scroll to active options below the fold', fakeAsync(() => {
+      const fixture = createComponent(AutocompleteWithGroups);
+      fixture.detectChanges();
 
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
       tick();
       fixture.detectChanges();
-      container = document.querySelector('.mat-autocomplete-panel') as HTMLElement;
-    }));
+      const container = document.querySelector('.mat-autocomplete-panel') as HTMLElement;
 
-    it('should scroll to active options below the fold', fakeAsync(() => {
       fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       tick();
       fixture.detectChanges();
@@ -1291,6 +1289,15 @@ describe('MatAutocomplete', () => {
     }));
 
     it('should scroll to active options on UP arrow', fakeAsync(() => {
+      const fixture = createComponent(AutocompleteWithGroups);
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+      const container = document.querySelector('.mat-autocomplete-panel') as HTMLElement;
+
       fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
       tick();
       fixture.detectChanges();
@@ -1301,6 +1308,15 @@ describe('MatAutocomplete', () => {
     }));
 
     it('should scroll to active options that are above the panel', fakeAsync(() => {
+      const fixture = createComponent(AutocompleteWithGroups);
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+      const container = document.querySelector('.mat-autocomplete-panel') as HTMLElement;
+
       fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       tick();
       fixture.detectChanges();
@@ -1326,6 +1342,15 @@ describe('MatAutocomplete', () => {
 
     it('should scroll back to the top when reaching the first option with preceding group label',
       fakeAsync(() => {
+        const fixture = createComponent(AutocompleteWithGroups);
+        fixture.detectChanges();
+
+        fixture.componentInstance.trigger.openPanel();
+        fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
+        const container = document.querySelector('.mat-autocomplete-panel') as HTMLElement;
+
         fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
         tick();
         fixture.detectChanges();
@@ -1344,6 +1369,33 @@ describe('MatAutocomplete', () => {
         });
 
         expect(container.scrollTop).toBe(0, 'Expected panel to be scrolled to the top.');
+      }));
+
+      it('should scroll to active option when group is indirect descendant', fakeAsync(() => {
+        const fixture = createComponent(AutocompleteWithIndirectGroups);
+        fixture.detectChanges();
+
+        fixture.componentInstance.trigger.openPanel();
+        fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
+        const container = document.querySelector('.mat-autocomplete-panel') as HTMLElement;
+
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+        tick();
+        fixture.detectChanges();
+        expect(container.scrollTop).toBe(0, 'Expected the panel not to scroll.');
+
+        // Press the down arrow five times.
+        [1, 2, 3, 4, 5].forEach(() => {
+          fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+          tick();
+        });
+
+        // <option bottom> - <panel height> + <2x group labels> = 128
+        // 288 - 256 + 96 = 128
+        expect(container.scrollTop)
+            .toBe(128, 'Expected panel to reveal the sixth option.');
       }));
   });
 
@@ -2807,6 +2859,25 @@ class AutocompleteWithGroups {
     }
   ];
 }
+
+@Component({
+  template: `
+    <mat-form-field>
+      <input matInput placeholder="State" [matAutocomplete]="auto" [(ngModel)]="selectedState">
+    </mat-form-field>
+
+    <mat-autocomplete #auto="matAutocomplete">
+      <ng-container [ngSwitch]="true">
+        <mat-optgroup *ngFor="let group of stateGroups" [label]="group.label">
+          <mat-option *ngFor="let state of group.states" [value]="state">
+            <span>{{ state }}</span>
+          </mat-option>
+        </mat-optgroup>
+      </ng-container>
+    </mat-autocomplete>
+  `
+})
+class AutocompleteWithIndirectGroups extends AutocompleteWithGroups {}
 
 @Component({
   template: `

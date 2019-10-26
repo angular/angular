@@ -118,7 +118,7 @@ export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterC
   @ContentChildren(MatOption, {descendants: true}) options: QueryList<MatOption>;
 
   /** @docs-private */
-  @ContentChildren(MatOptgroup) optionGroups: QueryList<MatOptgroup>;
+  @ContentChildren(MatOptgroup, {descendants: true}) optionGroups: QueryList<MatOptgroup>;
 
   /** Function that maps an option's control value to its display value in the trigger. */
   @Input() displayWith: ((value: any) => string) | null = null;
