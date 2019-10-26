@@ -50,9 +50,9 @@ function addDevDependenciesToPackageJson(options: Schema) {
       '@angular/bazel': angularCoreVersion,
       '@bazel/bazel': '^0.28.1',
       '@bazel/ibazel': '^0.10.2',
-      '@bazel/karma': '0.38.3',
-      '@bazel/protractor': '0.38.3',
-      '@bazel/typescript': '0.38.3',
+      '@bazel/karma': '0.39.0',
+      '@bazel/protractor': '0.39.0',
+      '@bazel/typescript': '0.39.0',
       'history-server': '^1.3.1',
     };
 
