@@ -50,7 +50,8 @@ const ANGULAR_ELEMENTS: ReadonlyArray<ng.CompletionEntry> = [
  * `position`, nothing is returned.
  */
 function getBoundedWordSpan(templateInfo: AstResult, position: number): ts.TextSpan|undefined {
-  const WORD_PART = /[0-9a-zA-Z_]/;
+  // Identifiers consist of alphanumeric characters, '_', or '$'.
+  const IDENTIFIER_PART = /[0-9a-zA-Z_$]/;
 
   const {template} = templateInfo;
   const templateSrc = template.source;
@@ -88,7 +89,7 @@ function getBoundedWordSpan(templateInfo: AstResult, position: number): ts.TextS
     left = right = templateSrc.length - 1;
   }
 
-  if (!templateSrc[left].match(WORD_PART) && !templateSrc[right].match(WORD_PART)) {
+  if (!templateSrc[left].match(IDENTIFIER_PART) && !templateSrc[right].match(IDENTIFIER_PART)) {
     // Case like
     //         .|.
     // left ---^ ^--- right
@@ -98,9 +99,9 @@ function getBoundedWordSpan(templateInfo: AstResult, position: number): ts.TextS
 
   // Expand on the left and right side until a word boundary is hit. Back up one expansion on both
   // side to stay inside the word.
-  while (left >= 0 && templateSrc[left].match(WORD_PART)) --left;
+  while (left >= 0 && templateSrc[left].match(IDENTIFIER_PART)) --left;
   ++left;
-  while (right < templateSrc.length && templateSrc[right].match(WORD_PART)) ++right;
+  while (right < templateSrc.length && templateSrc[right].match(IDENTIFIER_PART)) ++right;
   --right;
 
   const absoluteStartPosition = position - (templatePosition - left);
