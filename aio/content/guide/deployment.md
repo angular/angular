@@ -230,6 +230,24 @@ modified to serve `index.html`:
   	http.ListenAndServe(":"+httpPort, nil)
   }
   ```
+  
+* [Ruby](https://www.ruby-lang.org/): create a Ruby server using ([sinatra](http://sinatrarb.com/)) with a basic Ruby file that configures the server `server.rb`:
+
+  ``` ruby
+  require 'sinatra'
+
+  # Folder structure
+  # .
+  # -- server.rb
+  # -- public
+  #    |-- dist
+  #        |-- index.html
+
+  get '/' do
+      folderDir = settings.public_folder + '/dist'  # ng build output folder
+      send_file File.join(folderDir, 'index.html')
+  end
+  ```
 
 
 * [IIS](https://www.iis.net/): add a rewrite rule to `web.config`, similar to the one shown
