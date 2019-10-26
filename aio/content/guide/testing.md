@@ -2972,7 +2972,7 @@ appropriate to the method, that is, the parameter of an `@NgModule`,
 {@a testbed-methods}
 {@a testbed-api-summary}
 
-The `TestBed` API consists of static class methods that either update or reference a _global_ instance of the`TestBed`.
+The `TestBed` API consists of static class methods that either update or reference a _global_ instance of the `TestBed`.
 
 Internally, all static methods cover methods of the current runtime `TestBed` instance,
 which is also returned by the `getTestBed()` function.

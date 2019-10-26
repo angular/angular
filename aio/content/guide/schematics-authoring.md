@@ -30,7 +30,7 @@ The context also defines a *merge strategy* that determines how changes are merg
 ### Defining rules and actions
 
 When you create a new blank schematic with the [Schematics CLI](#cli), the generated entry function is a *rule factory*.
-A `RuleFactory`object defines a higher-order function that creates a `Rule`.
+A `RuleFactory` object defines a higher-order function that creates a `Rule`.
 
 <code-example language="TypeScript" header="index.ts">
 import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';

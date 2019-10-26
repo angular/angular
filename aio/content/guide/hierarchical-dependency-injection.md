@@ -564,7 +564,7 @@ The next step is to add a binding to the `ChildComponent` template.
 </code-example>
 
 To render the new values, add `<app-child>` to the bottom of
-the`AppComponent` template so the view also displays the sunflower:
+the `AppComponent` template so the view also displays the sunflower:
 
 ```
 Child Component

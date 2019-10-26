@@ -315,7 +315,7 @@ Angular app. The setup for a hybrid app is mostly the same as described in the
 `main-aot.ts`.
 
 AOT needs to load any AngularJS files that are in the `<script>` tags in the AngularJS `index.html`.
-An easy way to copy them is to add each to the `copy-dist-files.js`file.
+An easy way to copy them is to add each to the `copy-dist-files.js` file.
 
 You also need to pass the generated `MainAngularModuleFactory` to `downgradeModule()` instead of the
 custom bootstrap function:
