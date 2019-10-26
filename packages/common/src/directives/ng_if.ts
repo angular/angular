@@ -130,7 +130,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  * the content of this unlabeled `<ng-template>` tag.
  *
  * ```
- * <ng-template [ngIf]="hero-list" [ngIfElse]="loading">
+ * <ng-template [ngIf]="heroes" [ngIfElse]="loading">
  *  <div class="hero-list">
  *   ...
  *  </div>
