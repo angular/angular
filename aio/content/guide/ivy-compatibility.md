@@ -27,7 +27,7 @@ Below are a few breaking changes that are more likely than others to be visible 
 
 - All classes that use Angular DI must have an Angular decorator like `@Directive()` or `@Injectable` (previously, undecorated classes were allowed if an ancestor class or subclass had a decorator).
 
-- Unbound inputs for directives (e.g.  name in `<my-comp name="">`) are now set upon creation of the view, before change detection runs (previously, all inputs were set during change detection).
+- Unbound inputs for directives (e.g. name in `<my-comp name="">`) are now set upon creation of the view, before change detection runs (previously, all inputs were set during change detection).
 
 
 {@a less-common-changes}

@@ -350,7 +350,7 @@ To learn more, see [Browser Support](guide/browser-support).
 ## element
 
 Angular defines an `ElementRef` class to wrap render-specific native UI elements.
-In most cases, this allows you to use Angular templates and  data binding to access DOM elements
+In most cases, this allows you to use Angular templates and data binding to access DOM elements
 without reference to the native element.
 
 The documentation generally refers to *elements* (`ElementRef` instances), as distinct from  *DOM elements*
@@ -938,7 +938,7 @@ View hierarchies can be loaded and unloaded dynamically as the user navigates th
 
 ## view hierarchy
 
-A tree of related views that can be acted on as a unit. The root view is a component's *host view*.  A host view can be the root of a tree of *embedded views*, collected in a *view container* (`ViewContainerRef`) attached to an anchor element in the hosting component. The view hierarchy is a key part of Angular change detection.
+A tree of related views that can be acted on as a unit. The root view is a component's *host view*. A host view can be the root of a tree of *embedded views*, collected in a *view container* (`ViewContainerRef`) attached to an anchor element in the hosting component. The view hierarchy is a key part of Angular change detection.
 
 The view hierarchy doesn't imply a component hierarchy. Views that are embedded in the context of a particular hierarchy can be host views of other components. Those components can be in the same NgModule as the hosting component, or belong to other NgModules.
 

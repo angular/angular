@@ -300,7 +300,7 @@ Notice how a hero is added:
 
 
 
-You add the hero into the `heroes` array.  The reference to the array hasn't changed.
+You add the hero into the `heroes` array. The reference to the array hasn't changed.
 It's the same array. That's all Angular cares about. From its perspective, *same array, no change, no display update*.
 
 To fix that, create an array with the new hero appended and assign that to `heroes`.

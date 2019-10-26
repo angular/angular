@@ -938,7 +938,7 @@ followed by a dot (`.`) and the name of a CSS style property: `[style.style-prop
 <code-example path="attribute-binding/src/app/app.component.html" region="style-binding" header="src/app/app.component.html"></code-example>
 
 Some style binding styles have a unit extension.
-The following example conditionally sets the font size in  “em” and “%” units .
+The following example conditionally sets the font size in  “em” and “%” units.
 
 <code-example path="attribute-binding/src/app/app.component.html" region="style-binding-condition" header="src/app/app.component.html"></code-example>
 

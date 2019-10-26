@@ -26,8 +26,8 @@ Observables are often compared to promises. Here are some key differences:
 new Observable((observer) => { subscriber_fn });
 // initiate execution
 observable.subscribe(() => {
-      // observer handles notifications
-    });
+  // observer handles notifications
+});
 </code-example>
 
 * Promises execute immediately, and just once. The computation of the result is initiated when the promise is created. There is no way to restart work. All `then` clauses (subscriptions) share the same computation.
@@ -37,8 +37,8 @@ observable.subscribe(() => {
 new Promise((resolve, reject) => { executer_fn });
 // handle return value
 promise.then((value) => {
-      // handle result here
-    });
+  // handle result here
+});
 </code-example>
 
 ### Chaining
@@ -80,7 +80,7 @@ obs.subscribe(() => {
 
 <code-example hideCopy>
 promise.then(() => {
-      throw Error('my error');
+  throw Error('my error');
 });
 </code-example>
 
@@ -314,6 +314,3 @@ An observable produces values over time. An array is created as a static set of 
     </td>
   </tr>
 </table>
-
-
-

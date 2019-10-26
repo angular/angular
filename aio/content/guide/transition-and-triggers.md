@@ -127,7 +127,7 @@ The `transition()` function takes additional selector values, `:increment` and `
 
 <div class="alert is-helpful">
 
-**Note:** The following example uses `query()` and `stagger()` methods, which is discussed  in the [complex sequences](guide/complex-animation-sequences#complex-sequence) page.
+**Note:** The following example uses `query()` and `stagger()` methods, which is discussed in the [complex sequences](guide/complex-animation-sequences#complex-sequence) page.
 
 </div>
 

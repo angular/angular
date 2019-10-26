@@ -44,7 +44,7 @@ Replace it with the following:
 <code-example path="toh-pt5/src/app/app-routing.module.1.ts" header="src/app/app-routing.module.ts (updated)">
 </code-example>
 
-First, `AppRoutingModule` imports `RouterModule` and `Routes` so the app can have routing functionality. The next import, `HeroesComponent`, will give the Router somewhere to go once you  configure the routes.
+First, `AppRoutingModule` imports `RouterModule` and `Routes` so the app can have routing functionality. The next import, `HeroesComponent`, will give the Router somewhere to go once you configure the routes.
 
 Notice that the `CommonModule` references and `declarations` array are unnecessary, so are no
 longer part of `AppRoutingModule`. The following sections explain the rest of the `AppRoutingModule` in more detail.
