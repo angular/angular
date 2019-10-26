@@ -120,7 +120,6 @@ describe('plugin', () => {
       expect(semanticDiags).toEqual([]);
     }
     const marker = mockHost.getLocationMarkerFor(MY_COMPONENT, 'tree');
-    debugger;
     const completions = plugin.getCompletionsAtPosition(MY_COMPONENT, marker.start, undefined);
     expect(completions).toBeDefined();
     expect(completions !.entries).toEqual([

@@ -67,9 +67,10 @@ function getBoundedWordSpan(templateInfo: AstResult, position: number): ts.TextS
   //           ^---- cursor, at position `r` is at.
   // A cursor is not itself a character in the template; it has a left (lower) and right (upper)
   // index bound that hugs the cursor itself.
+  let templatePosition = position - template.span.start;
   // To perform word expansion, we want to determine the left and right indeces that hug the cursor.
   // There are three cases here.
-  let templatePosition = position - template.span.start;
+  //
   // 1. Case like
   //      wo|rd
   //    there is a clear left and right index.
