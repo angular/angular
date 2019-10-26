@@ -144,7 +144,7 @@ describes the JSON format as a collection of TypeScript interfaces.
 {@a expression-syntax}
 ### Expression syntax limitations
 
-The  AOT collector only understands a subset of JavaScript.
+The AOT collector only understands a subset of JavaScript.
 Define metadata objects with the following limited syntax:
 
 <style>

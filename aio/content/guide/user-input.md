@@ -69,7 +69,7 @@ In this case, `target` refers to the [`<input>` element](https://developer.mozil
 `event.target.value` returns the current contents of that element.
 
 After each call, the `onKey()` method appends the contents of the input box value to the list
-in the component's `values` property, followed by a  separator character (|).
+in the component's `values` property, followed by a separator character (|).
 The [interpolation](guide/template-syntax#interpolation)
 displays the accumulating input box changes from the `values` property.
 
@@ -276,7 +276,7 @@ get the input box value and pass *that* to `addHero`.
 
 * **Keep template statements simple** &mdash;
 The `(blur)` event is bound to two JavaScript statements.
-The first statement calls `addHero`.  The second statement, `newHero.value=''`,
+The first statement calls `addHero`. The second statement, `newHero.value=''`,
 clears the input box after a new hero is added to the list.
 
 

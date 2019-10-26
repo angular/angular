@@ -411,7 +411,7 @@ Proxy log levels are `info` (the default), `debug`, `warn`, `error`, and `silent
 
 ### Proxy multiple entries
 
-You can  proxy multiple entries to the same target by defining the configuration in JavaScript.
+You can proxy multiple entries to the same target by defining the configuration in JavaScript.
 
 Set the proxy configuration file to `proxy.conf.js` (instead of `proxy.conf.json`), and specify configuration files as in the following example.
 

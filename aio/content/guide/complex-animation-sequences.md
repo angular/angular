@@ -2,7 +2,7 @@
 
 #### Prerequisites
 
-A basic understanding of the  following concepts:
+A basic understanding of the following concepts:
 
 * [Introduction to Angular animations](guide/animations)
 * [Transition and triggers](guide/transition-and-triggers)

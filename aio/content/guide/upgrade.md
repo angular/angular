@@ -968,7 +968,7 @@ Once you introduce the Angular Router, using the Angular Router triggers navigat
 
 You can take advantage of Ahead-of-time (AOT) compilation on hybrid apps just like on any other
 Angular application.
-The setup for an hybrid app is mostly the same as described in
+The setup for a hybrid app is mostly the same as described in
 [the Ahead-of-time Compilation chapter](guide/aot-compiler)
 save for differences in `index.html` and `main-aot.ts`
 
@@ -1506,7 +1506,7 @@ This is something you'll do to all components as you upgrade them. Simultaneousl
 with the AngularJS to Angular upgrade you're also migrating code from scripts to modules.
 
 At this point, you can switch the two components to use the new service
-instead of the old one.  While you `$inject` it as the downgraded `phone` factory,
+instead of the old one. While you `$inject` it as the downgraded `phone` factory,
 it's really an instance of the `Phone` class and you annotate its type accordingly:
 
 <code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.component.ajs.ts" header="app/phone-list/phone-list.component.ts">

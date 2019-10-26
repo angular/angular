@@ -4,7 +4,7 @@ An entry component is any component that Angular loads imperatively, (which mean
 
 <div class="alert is-helpful">
 
-To contrast the two types of components, there are components which are included in the template, which are declarative.  Additionally, there are  components which you load imperatively; that is, entry components.
+To contrast the two types of components, there are components which are included in the template, which are declarative. Additionally, there are components which you load imperatively; that is, entry components.
 
 </div>
 

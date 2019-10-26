@@ -206,7 +206,7 @@ modified to serve `index.html`:
 
   ``` go
   package main
-  
+
   import (
   	"net/http"
   	"os"
@@ -457,7 +457,7 @@ Even as JavaScript continues to evolve, with new features being introduced, not 
 
 The code you write in development using TypeScript is compiled and bundled into ES2015, the JavaScript syntax that is compatible with most browsers.
 All modern browsers support ES2015 and beyond, but in most cases, you still have to account for users accessing your application from a browser that doesn't.
-When targeting older browsers, [polyfills](guide/browser-support#polyfills) can bridge the gap by providing functionality that  doesn't exist in the older versions of JavaScript supported by those browsers.
+When targeting older browsers, [polyfills](guide/browser-support#polyfills) can bridge the gap by providing functionality that doesn't exist in the older versions of JavaScript supported by those browsers.
 
 To maximize compatibility, you could ship a single bundle that includes all your compiled code, plus any polyfills that may be needed.
 Users with modern browsers, however, shouldn't have to pay the price of increased bundle size that comes with polyfills they don't need.

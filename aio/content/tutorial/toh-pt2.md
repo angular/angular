@@ -208,7 +208,7 @@ You just have to apply the `.selected` class to the `<li>` when the user clicks 
 The Angular [class binding](guide/template-syntax#class-binding) makes it easy to add and remove a CSS class conditionally.
 Just add `[class.some-css-class]="some-condition"` to the element you want to style.
 
-Add the following `[class.selected]` binding to  the `<li>` in the `HeroesComponent` template:
+Add the following `[class.selected]` binding to the `<li>` in the `HeroesComponent` template:
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="class-selected" header="heroes.component.html (toggle the 'selected' CSS class)"></code-example>
 

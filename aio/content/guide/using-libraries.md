@@ -121,7 +121,7 @@ Some scripts extend other libraries; for instance with JQuery plugins:
 $('.test').myPlugin();
 ```
 
-In this case, the installed `@types/jquery` doesn't include `myPlugin`, so you need to add an interface  in `src/typings.d.ts`. For example:
+In this case, the installed `@types/jquery` doesn't include `myPlugin`, so you need to add an interface in `src/typings.d.ts`. For example:
 
 ```
 interface JQuery {

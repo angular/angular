@@ -129,7 +129,7 @@ Detect and act upon changes to input property values with the `ngOnChanges()` me
 
 You may prefer this approach to the property setter when watching multiple, interacting input properties.
 
-Learn about `ngOnChanges()` in the [LifeCycle Hooks](guide/lifecycle-hooks) chapter.
+Learn about `ngOnChanges()` in the [Lifecycle Hooks](guide/lifecycle-hooks) chapter.
 
 </div>
 
