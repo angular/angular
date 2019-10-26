@@ -611,7 +611,12 @@
               "url": "guide/aot-metadata-errors",
               "title": "AoT Metadata Errors",
               "tooltip": "Troubleshooting AoT compilation."
-           }
+           },
+           {
+            "url": "guide/template-typecheck",
+            "title": "Template Type-checking",
+            "tooltip": "Template type-checking in Angular."
+         }
         ]
       },
         {

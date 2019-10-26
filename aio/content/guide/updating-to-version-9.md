@@ -24,7 +24,7 @@ If you're curious about the specific migrations being run (e.g. what code is cha
 ## Changes and Deprecations in Version 9
 
 {@a breaking-changes}
-### New Breaking Changes 
+### New Breaking Changes
 
 - Angular now compiles with Ivy by default. See [Ivy compatibility section](#ivy).
 
@@ -61,6 +61,12 @@ If you're curious about the specific migrations being run (e.g. what code is cha
 | `@angular/forms` | `ngForm` element selector | `ng-form` element selector | none |
 | `@angular/service-worker` | `versionedFiles` | `files` | In the service worker configuration file `ngsw-config.json`, replace `versionedFiles` with `files`. See [Service Worker Configuration](guide/service-worker-config#assetgroups). |
 
+
+
+{@a ivy-features}
+## Ivy Features
+
+Angular version 9 introduces more comprehensive type-checking. For details, see [Template Type-checking](guide/template-typecheck).
 
 
 {@a ivy}
