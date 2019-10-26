@@ -180,7 +180,7 @@ export function getTemplateCompletions(
     return {
         ...entry, replacementSpan,
     };
-  })
+  });
 }
 
 function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ng.CompletionEntry[] {
