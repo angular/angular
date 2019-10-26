@@ -10,14 +10,14 @@ import {FocusableOption, FocusKeyManager} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
 import {
-  SPACE,
-  ENTER,
-  HOME,
-  END,
-  UP_ARROW,
-  DOWN_ARROW,
   A,
+  DOWN_ARROW,
+  END,
+  ENTER,
   hasModifierKey,
+  HOME,
+  SPACE,
+  UP_ARROW,
 } from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
@@ -32,25 +32,27 @@ import {
   forwardRef,
   Inject,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
   QueryList,
+  SimpleChanges,
   ViewChild,
   ViewEncapsulation,
-  SimpleChanges,
-  OnChanges,
 } from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
-  CanDisableRipple, CanDisableRippleCtor,
+  CanDisableRipple,
+  CanDisableRippleCtor,
   MatLine,
-  setLines,
   mixinDisableRipple,
+  setLines,
   ThemePalette,
 } from '@angular/material/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+
 import {MatListAvatarCssMatStyler, MatListIconCssMatStyler} from './list';
 
 
@@ -114,9 +116,9 @@ export class MatSelectionListChange {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatListOption extends _MatListOptionMixinBase
-    implements AfterContentInit, OnDestroy, OnInit, FocusableOption, CanDisableRipple {
-
+export class MatListOption extends _MatListOptionMixinBase implements AfterContentInit, OnDestroy,
+                                                                      OnInit, FocusableOption,
+                                                                      CanDisableRipple {
   private _selected = false;
   private _disabled = false;
   private _hasFocus = false;
@@ -137,11 +139,16 @@ export class MatListOption extends _MatListOptionMixinBase
   set color(newValue: ThemePalette) { this._color = newValue; }
   private _color: ThemePalette;
 
+  /**
+   * This is set to true after the first OnChanges cycle so we don't clear the value of `selected`
+   * in the first cycle.
+   */
+  private _inputsInitialized = false;
   /** Value of the option */
   @Input()
   get value(): any { return this._value; }
   set value(newValue: any) {
-    if (this.selected && newValue !== this.value) {
+    if (this.selected && newValue !== this.value && this._inputsInitialized) {
       this.selected = false;
     }
 
@@ -200,6 +207,7 @@ export class MatListOption extends _MatListOptionMixinBase
         this._changeDetector.markForCheck();
       }
     });
+    this._inputsInitialized = true;
   }
 
   ngAfterContentInit() {

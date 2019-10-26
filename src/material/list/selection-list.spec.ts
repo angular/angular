@@ -39,6 +39,7 @@ describe('MatSelectionList without forms', () => {
           SelectionListWithListDisabled,
           SelectionListWithOnlyOneOption,
           SelectionListWithIndirectChildOptions,
+          SelectionListWithSelectedOptionAndValue,
         ],
       });
 
@@ -593,6 +594,14 @@ describe('MatSelectionList without forms', () => {
         expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
             .toBe(0, 'Expected no ripples after list ripples are disabled.');
       }));
+
+    it('can bind both selected and value at the same time', () => {
+      const componentFixture = TestBed.createComponent(SelectionListWithSelectedOptionAndValue);
+      componentFixture.detectChanges();
+      const listItemEl = componentFixture.debugElement.query(By.directive(MatListOption))!;
+      expect(listItemEl.componentInstance.selected).toBe(true);
+      expect(listItemEl.componentInstance.value).toBe(componentFixture.componentInstance.itemValue);
+    });
 
   });
 
@@ -1275,6 +1284,16 @@ class SelectionListWithDisabledOption {
     <mat-list-option [selected]="true">Item</mat-list-option>
   </mat-selection-list>`})
 class SelectionListWithSelectedOption {
+}
+
+@Component({
+  template: `
+  <mat-selection-list>
+    <mat-list-option [selected]="true" [value]="itemValue">Item</mat-list-option>
+  </mat-selection-list>`
+})
+class SelectionListWithSelectedOptionAndValue {
+  itemValue = 'item1';
 }
 
 @Component({template: `
