@@ -252,7 +252,7 @@ function declareTests(config?: {useJit: boolean}) {
 
       onlyInIvy('Unknown property warning logged, instead of throwing an error')
           .it('should error on unknown bound properties on custom elements by default', () => {
-            @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+            @Component({template: '<div [someUnknownProp]="true"></div>'})
             class ComponentUsingInvalidProperty {
             }
 
