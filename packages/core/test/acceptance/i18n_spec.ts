@@ -10,7 +10,7 @@
 import '@angular/localize/init';
 import {registerLocaleData} from '@angular/common';
 import localeRo from '@angular/common/locales/ro';
-import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, Pipe, PipeTransform} from '@angular/core';
+import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, Pipe, PipeTransform, NO_ERRORS_SCHEMA} from '@angular/core';
 import {setDelayProjection} from '@angular/core/src/render3/instructions/projection';
 import {TestBed} from '@angular/core/testing';
 import {loadTranslations, clearTranslations} from '@angular/localize';
@@ -22,7 +22,13 @@ import {computeMsgId} from '@angular/compiler';
 
 onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({declarations: [AppComp, DirectiveWithTplRef, UppercasePipe]});
+    TestBed.configureTestingModule({
+      declarations: [AppComp, DirectiveWithTplRef, UppercasePipe],
+      // In some of the tests we use made-up tag names for better readability, however they'll
+      // cause validation errors. Add the `NO_ERRORS_SCHEMA` so that we don't have to declare
+      // dummy components for each one of them.
+      schemas: [NO_ERRORS_SCHEMA],
+    });
   });
 
   afterEach(() => {
