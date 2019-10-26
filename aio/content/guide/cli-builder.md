@@ -30,7 +30,7 @@ This object contains a Boolean `success` field and an optional `error` field tha
 
 Angular provides some builders that are used by the CLI for commands such as `ng build`, `ng test`, and `ng lint`.
 Default target configurations for these and other built-in CLI builders can be found (and customized) in the "architect" section of the [workspace configuration file](guide/workspace-config), `angular.json`.
-You can also extend and customize Angular by creating your own builders, which you can run  using the [`ng run` CLI command](cli/run).
+You can also extend and customize Angular by creating your own builders, which you can run using the [`ng run` CLI command](cli/run).
 
 ### Builder project structure
 
@@ -144,7 +144,7 @@ You can see an [example](https://github.com/angular/angular-cli/blob/ba21c855c0c
 
 In our example, the shell command either finishes or is still executing, so there’s no need for a progress report, but we can report status so that a parent builder that called our builder would know what’s going on.
 Use the `BuilderContext.reportStatus()` method to generate a status string of any length.
-(Note that there’s no guarantee that a long string will be shown entirely; it could be cut to fit the  UI that displays it.)
+(Note that there’s no guarantee that a long string will be shown entirely; it could be cut to fit the UI that displays it.)
 Pass an empty string to remove the status.
 
 <code-example language="typescript" header="/command/index.ts">
@@ -253,7 +253,7 @@ In the `package.json` file, add a `builders` key that tells the Architect tool w
 </code-example>
 
 The official name of our builder is now ` @example/command-runner:command`.
-The first part  of this is the package name (resolved using node resolution), and the second part is the builder name (resolved using the `builders.json` file).
+The first part of this is the package name (resolved using node resolution), and the second part is the builder name (resolved using the `builders.json` file).
 
 Using one of our `options` is very straightforward, we did this in the previous section when we accessed `options.command`.
 
@@ -311,7 +311,7 @@ You might also add more alternative configurations to the `build` target, to def
 
 #### Target strings
 
-The  generic `ng run` CLI command takes as its first argument a target string of the form *project:target[:configuration]*.
+The generic `ng run` CLI command takes as its first argument a target string of the form *project:target[:configuration]*.
 
 * *project*: The name of the Angular CLI project that the target is associated with.
 
