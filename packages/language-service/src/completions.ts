@@ -55,6 +55,13 @@ function getBoundedWordSpan(templateInfo: AstResult, position: number): ts.TextS
   const {template} = templateInfo;
   const templateSrc = template.source;
 
+  // TODO(ayazhafiz): A solution based on word expansion will always be expensive compared to one
+  // based on ASTs. Whatever penalty we incur is probably manageable for small-length (i.e. the
+  // majority of) identifiers, but the current solution involes a number of branchings and we can't
+  // control potentially very long identifiers. Consider moving to an AST-based solution once
+  // existing difficulties with AST spans are more clearly resolved (see #31898 for discussion of
+  // known problems, and #33091 for how they affect text replacement).
+  //
   // `templatePosition` represents the right-bound location of a cursor in the template.
   //    key.ent|ry
   //           ^---- cursor, at position `r` is at.
