@@ -272,7 +272,7 @@ That header is in the `httpOptions` constant defined in the `HeroService`. Add t
 </code-example>
 
 Refresh the browser, change a hero name and save your change. The `save()`
-method in `HeroDetailComponent`navigates to the previous view.
+method in `HeroDetailComponent` navigates to the previous view.
 The hero now appears in the list with the changed name.
 
 
