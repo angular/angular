@@ -82,5 +82,4 @@ However, as noted above, classes that already have another class decorator like 
 
 ## Should I update my library?
 
-Yes, if your library has any tokens that are meant to be injected, they should be updated with the `@Injectable()` decorator.  In a future version of Angular, a missing `@Injectable()` decorator will always throw an error.
-
+Yes, if your library has any tokens that are meant to be injected, they should be updated with the `@Injectable()` decorator. In a future version of Angular, a missing `@Injectable()` decorator will always throw an error.
