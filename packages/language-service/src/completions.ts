@@ -175,10 +175,10 @@ export function getTemplateCompletions(
         null);
   }
 
+  const replacementSpan = getBoundedWordSpan(templateInfo, position);
   return result.map(entry => {
     return {
-      ...entry,
-      replacementSpan: getBoundedWordSpan(templateInfo, position),
+        ...entry, replacementSpan,
     };
   })
 }
