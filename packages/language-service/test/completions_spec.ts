@@ -383,7 +383,7 @@ describe('replace completions correctly', () => {
     ngLS = createLanguageService(ngHost);
   });
 
-  it('should work for zero-length replacements', () => {
+  it('should not generate replacement entries for zero-length replacements', () => {
     const fileName = mockHost.addCode(`
           @Component({
             selector: 'foo-component',
@@ -396,11 +396,48 @@ describe('replace completions correctly', () => {
           }
         `);
     const location = mockHost.getLocationMarkerFor(fileName, 'key');
+    debugger;
     const completions = ngLS.getCompletionsAt(fileName, location.start) !;
     expect(completions).toBeDefined();
     const completion = completions.entries.find(entry => entry.name === 'key') !;
     expect(completion).toBeDefined();
-    expect(completion.replacementSpan).toEqual({start: location.start, length: 0});
+    expect(completion.replacementSpan).toBeUndefined();
+  });
+
+  it('should work for start of template', () => {
+    const fileName = mockHost.addCode(`
+          @Component({
+            selector: 'foo-component',
+            template: \`~{start}abc\`,
+          })
+          export class FooComponent {
+            handleClick() {}
+          }
+        `);
+    const location = mockHost.getLocationMarkerFor(fileName, 'start');
+    const completions = ngLS.getCompletionsAt(fileName, location.start) !;
+    expect(completions).toBeDefined();
+    const completion = completions.entries.find(entry => entry.name === 'a') !;
+    expect(completion).toBeDefined();
+    expect(completion.replacementSpan).toEqual({start: location.start, length: 3});
+  });
+
+  it('should work for end of template', () => {
+    const fileName = mockHost.addCode(`
+          @Component({
+            selector: 'foo-component',
+            template: \`acro~{end}\`,
+          })
+          export class FooComponent {
+            handleClick() {}
+          }
+        `);
+    const location = mockHost.getLocationMarkerFor(fileName, 'end');
+    const completions = ngLS.getCompletionsAt(fileName, location.start) !;
+    expect(completions).toBeDefined();
+    const completion = completions.entries.find(entry => entry.name === 'acronym') !;
+    expect(completion).toBeDefined();
+    expect(completion.replacementSpan).toEqual({start: location.start - 4, length: 4});
   });
 
   it('should work for post-word replacements', () => {
@@ -414,8 +451,9 @@ describe('replace completions correctly', () => {
           export class FooComponent {
             obj: {key: 'value'};
           }
-        `);
+        ~{a}`);
     const location = mockHost.getLocationMarkerFor(fileName, 'key');
+    const loca = mockHost.getLocationMarkerFor(fileName, 'a');
     const completions = ngLS.getCompletionsAt(fileName, location.start) !;
     expect(completions).toBeDefined();
     const completion = completions.entries.find(entry => entry.name === 'key') !;

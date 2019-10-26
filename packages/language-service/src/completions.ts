@@ -45,67 +45,59 @@ const ANGULAR_ELEMENTS: ReadonlyArray<ng.CompletionEntry> = [
   },
 ];
 
-function getClosestTextStartOffset(templateInfo: AstResult, position: number): number {
-  const {htmlAst, templateAst, template} = templateInfo;
-  const templatePosition = position - template.span.start;
-  const templatePath = findTemplateAstAt(templateInfo.templateAst, templatePosition);
-  // Closest HTML template AST node to the queried template position, like an element or attribute.
-  const templateAstTail = templatePath.tail;
-  if (!templateAstTail) {
-    return 0;
+/**
+ * Gets the span of word in a template that surrounds `position`. If there is no word around
+ * `position`, nothing is returned.
+ */
+function getBoundedWordSpan(templateInfo: AstResult, position: number): ts.TextSpan|undefined {
+  const WORD_PART = /[0-9a-zA-Z_]/;
+
+  const {template} = templateInfo;
+  const templateSrc = template.source;
+
+  // `templatePosition` represents the right-bound location of a cursor in the template.
+  //    key.ent|ry
+  //           ^---- cursor, at position `r` is at.
+  // A cursor is not itself a character in the template; it has a left (lower) and right (upper)
+  // index bound that hugs the cursor itself.
+  // To perform word expansion, we want to determine the left and right indeces that hug the cursor.
+  // There are three cases here.
+  let templatePosition = position - template.span.start;
+  // 1. Case like
+  //      wo|rd
+  //    there is a clear left and right index.
+  let left = templatePosition - 1, right = templatePosition;
+  // 2. Case like
+  //      |rest of template
+  //    the cursor is at the start of the template, hugged only by the right side (0-index).
+  if (templatePosition === 0) {
+    left = right = 0;
+  }
+  // 2. Case like
+  //      rest of template|
+  //    the cursor is at the end of the template, hugged only by the left side (last-index).
+  if (templatePosition === templateSrc.length) {
+    left = right = templateSrc.length - 1;
   }
 
-  // If the closest HTML template node has a Angular template syntax AST inside it, extract it.
-  // Otherwise, get the text of the HTML template node, which is the closest starting text offset.
-  const ast: AST|string = templateAstTail.visit(
-      {
-        visitNgContent: () => '',
-        visitEmbeddedTemplate: () => '',
-        visitElement: ast => ast.name,
-        visitReference: ast => ast.name,
-        visitVariable: ast => ast.name,
-        visitEvent: ast => ast.handler,
-        visitElementProperty: ast => ast.value,
-        visitAttr: ast => ast.name,
-        visitBoundText: ast => ast.value,
-        visitText: ast => ast.value,
-        visitDirective: ast => '',
-        visitDirectiveProperty: ast => ast.value,
-      },
-      null);
-  if (!(ast instanceof AST)) {
-    return ast.length;  // offset of HTML template node text
+  if (!templateSrc[left].match(WORD_PART) && !templateSrc[right].match(WORD_PART)) {
+    // Case like
+    //         .|.
+    // left ---^ ^--- right
+    // There is no word here.
+    return;
   }
 
-  // Find the Angular template syntax AST closest to queried template position.
-  const closestAst = findAstAt(ast, templatePosition);
-  const closestTail = closestAst.tail;
-  if (!closestTail) return 0;
+  // Expand on the left and right side until a word boundary is hit. Back up one expansion on both
+  // side to stay inside the word.
+  while (left >= 0 && templateSrc[left].match(WORD_PART)) --left;
+  ++left;
+  while (right < templateSrc.length && templateSrc[right].match(WORD_PART)) ++right;
+  --right;
 
-  // Return the closest starting text offset in the template syntax AST, which is either the value
-  // of the AST or nothing at all.
-  return closestTail.visit({
-    visitBinary: ast => 0,
-    visitChain: ast => 0,
-    visitConditional: ast => 0,
-    visitFunctionCall: ast => 0,
-    visitImplicitReceiver: ast => 0,
-    visitInterpolation: ast => 0,
-    visitKeyedRead: ast => 0,
-    visitKeyedWrite: ast => 0,
-    visitLiteralArray: ast => 0,
-    visitLiteralMap: ast => 0,
-    visitLiteralPrimitive: ast => 0,
-    visitMethodCall: ast => 0,
-    visitPipe: ast => ast.name.length,
-    visitPrefixNot: ast => 0,
-    visitNonNullAssert: ast => 0,
-    visitPropertyRead: ast => ast.name.length,
-    visitPropertyWrite: ast => ast.name.length,
-    visitQuote: ast => ast.uninterpretedExpression.length,
-    visitSafeMethodCall: ast => ast.name.length,
-    visitSafePropertyRead: ast => ast.name.length,
-  });
+  const absoluteStartPosition = position - (templatePosition - left);
+  const length = right - left + 1;
+  return {start: absoluteStartPosition, length};
 }
 
 export function getTemplateCompletions(
@@ -174,13 +166,10 @@ export function getTemplateCompletions(
         null);
   }
 
-  // Define the span of the partial word the completion query was called on, which will be replaced
-  // by a selected completion.
-  const offset = getClosestTextStartOffset(templateInfo, position);
   return result.map(entry => {
     return {
       ...entry,
-      replacementSpan: {start: position - offset, length: offset},
+      replacementSpan: getBoundedWordSpan(templateInfo, position),
     };
   })
 }

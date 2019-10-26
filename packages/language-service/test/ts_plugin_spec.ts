@@ -120,6 +120,7 @@ describe('plugin', () => {
       expect(semanticDiags).toEqual([]);
     }
     const marker = mockHost.getLocationMarkerFor(MY_COMPONENT, 'tree');
+    debugger;
     const completions = plugin.getCompletionsAtPosition(MY_COMPONENT, marker.start, undefined);
     expect(completions).toBeDefined();
     expect(completions !.entries).toEqual([
@@ -127,7 +128,7 @@ describe('plugin', () => {
         name: 'children',
         kind: CompletionKind.PROPERTY as any,
         sortText: 'children',
-        replacementSpan: {start: 174, length: 8},
+        replacementSpan: {start: 182, length: 8},
       },
     ]);
   });
