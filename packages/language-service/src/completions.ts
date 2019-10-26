@@ -10,7 +10,7 @@ import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementProperty
 import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
 
 import {AstResult} from './common';
-import {findAstAt, getExpressionCompletions} from './expressions';
+import {getExpressionCompletions} from './expressions';
 import {attributeNames, elementNames, eventNames, propertyNames} from './html_info';
 import {InlineTemplate} from './template';
 import * as ng from './types';
