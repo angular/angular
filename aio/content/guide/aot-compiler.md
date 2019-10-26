@@ -659,7 +659,7 @@ There is no convenient way to describe this constraint to TypeScript and the tem
 
 The non-null assertion operator should be used sparingly as refactoring of the component might break this constraint.
 
-In this example it is recommended to include the checking of `address` in the `*ngIf`as shown below:
+In this example it is recommended to include the checking of `address` in the `*ngIf` as shown below:
 
 ```typescript
   @Component({
