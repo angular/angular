@@ -1,19 +1,44 @@
-load("//tools/ng_rollup_bundle:ng_rollup_bundle.bzl", "ls_rollup_bundle")
+load("@npm_bazel_rollup//:index.bzl", "rollup_bundle")
+load("@npm//@babel/cli:index.bzl", "babel")
 
-ls_rollup_bundle(
-    name = "language-service",
+rollup_bundle(
+    name = "language-service.es2015",
     entry_point = "//packages/language-service:index.ts",
-    globals = {
-        "fs": "fs",
-        "path": "path",
-        "typescript": "ts",
-        "typescript/lib/tsserverlibrary": "tss",
-    },
-    license_banner = "banner.js.txt",
+    config_file = ":rollup.config.js",
+    format = "amd",
     visibility = ["//packages/language-service:__pkg__"],
     deps = [
         "//packages/language-service",
+        "@npm//rollup-plugin-commonjs",
+        "@npm//rollup-plugin-node-resolve",
         "@npm//rxjs",
         "@npm//tslib",
     ],
+)
+
+# Note: the output file is called "umd.js" because of historical reasons.
+# The format is actually AMD and not UMD, but we are afraid to rename
+# the file because that would likely break the IDE and other integrations that
+# have the path hardcoded in them.
+babel(
+    name = "language-service",
+    outs = [
+        "language-service.umd.js",
+    ],
+    args = [
+        "$(location :language-service.es2015.js)",
+        "--no-babelrc",
+        "--compact",
+        "false",
+        # "--source-maps",
+        # "inline",
+        "--presets=@babel/preset-env",
+        "--out-file",
+        "$(location :language-service.umd.js)",
+    ],
+    data = [
+        "language-service.es2015.js",
+        "@npm//@babel/preset-env",
+    ],
+    visibility = ["//packages/language-service:__pkg__"],
 )
