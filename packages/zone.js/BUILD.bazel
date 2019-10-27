@@ -3,6 +3,8 @@ load("//packages/zone.js:bundles.bzl", "ES2015_BUNDLES", "ES5_BUNDLES", "ES5_GLO
 
 exports_files([
     "tsconfig.json",
+    "rollup-es5.config.js",
+    "rollup-es5_global-es2015.config.js",
 ])
 
 genrule(
