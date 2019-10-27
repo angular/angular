@@ -21,13 +21,12 @@ genrule(
 [
     rollup_bundle(
         name = b[0].replace("-", "_") + "_rollup",
+        config_file = "//packages/zone.js:rollup-es5.config.js",
         entry_point = b[1] + ".ts",
-        globals = {
-            "electron": "electron",
-        },
-        license_banner = "//packages:license-banner.txt",
         deps = [
             "//packages/zone.js/lib",
+            "@npm//rollup-plugin-commonjs",
+            "@npm//rollup-plugin-node-resolve",
         ],
     )
     for b in ES5_BUNDLES.items()
@@ -36,54 +35,15 @@ genrule(
 [
     rollup_bundle(
         name = b[0].replace("-", "_") + "_rollup",
+        config_file = "//packages/zone.js:rollup-es5_global-es2015.config.js",
         entry_point = b[1] + ".ts",
-        global_name = "Zone",
-        license_banner = "//packages:license-banner.txt",
         deps = [
             "//packages/zone.js/lib",
+            "@npm//rollup-plugin-commonjs",
+            "@npm//rollup-plugin-node-resolve",
         ],
     )
     for b in ES5_GLOBAL_BUNDLES.items() + ES2015_BUNDLES.items()
-]
-
-# the es5 filegroups
-[
-    filegroup(
-        name = b[0] + ".es5",
-        srcs = [":" + b[0].replace("-", "_") + "_rollup"],
-        output_group = "es5_umd",
-    )
-    for b in ES5_BUNDLES.items() + ES5_GLOBAL_BUNDLES.items()
-]
-
-# the es5.min filegroups
-[
-    filegroup(
-        name = b[0] + ".es5.min",
-        srcs = [":" + b[0].replace("-", "_") + "_rollup"],
-        output_group = "es5_umd_min",
-    )
-    for b in ES5_BUNDLES.items() + ES5_GLOBAL_BUNDLES.items()
-]
-
-# the es2015 filegroups
-[
-    filegroup(
-        name = b[0] + ".umd",
-        srcs = [":" + b[0].replace("-", "_") + "_rollup"],
-        output_group = "umd",
-    )
-    for b in ES2015_BUNDLES.items()
-]
-
-# the es2015.min filegroups
-[
-    filegroup(
-        name = b[0] + ".umd.min",
-        srcs = [":" + b[0].replace("-", "_") + "_rollup"],
-        output_group = "umd_min",
-    )
-    for b in ES2015_BUNDLES.items()
 ]
 
 # Extract and rename each es5 bundle to a .js and .min.js in the dist/ dir
@@ -91,8 +51,8 @@ genrule(
     genrule(
         name = b[0] + "-dist",
         srcs = [
-            b[0] + ".es5",
-            b[0] + ".es5.min",
+            b[0].replace("-", "_") + "_rollup.es5umd.js",
+            b[0].replace("-", "_") + "_rollup.min.es5umd.js",
         ],
         outs = [
             b[0] + ".js",
@@ -114,7 +74,7 @@ genrule(
     genrule(
         name = b[0] + "-dist-dev-test",
         srcs = [
-            b[0] + ".es5",
+            b[0].replace("-", "_") + "_rollup.es5umd.js",
         ],
         outs = [
             b[0] + ".dev.test.js",
@@ -131,7 +91,7 @@ genrule(
     genrule(
         name = b + "-dist-dev-test",
         srcs = [
-            b + ".umd",
+            b.replace("-", "_") + "_rollup.umd.js",
         ],
         outs = [
             b + ".dev.test.js",
@@ -149,7 +109,7 @@ genrule(
     genrule(
         name = b[0] + "-dist-test",
         srcs = [
-            b[0] + ".es5.min",
+            b[0].replace("-", "_") + "_rollup.min.es5umd.js",
         ],
         outs = [
             b[0] + ".test.min.js",
@@ -167,8 +127,8 @@ genrule(
     genrule(
         name = b + "-dist",
         srcs = [
-            b + ".umd",
-            b + ".umd.min",
+            b.replace("-", "_") + "_rollup.umd.js",
+            b.replace("-", "_") + "_rollup.min.umd.js",
         ],
         outs = [
             b + ".js",
@@ -190,7 +150,7 @@ genrule(
     genrule(
         name = b + "-dist-test",
         srcs = [
-            b + ".umd.min",
+            b.replace("-", "_") + "_rollup.min.umd.js",
         ],
         outs = [
             b + ".test.min.js",
