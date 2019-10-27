@@ -48,7 +48,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
   type: Type<T>;
 
   /** The selectors that will be used to match nodes to this component. */
-  selectors: CssSelectorList;
+  selectors?: CssSelectorList;
 
   /**
    * The number of nodes, local refs, and pipes in this component template.
@@ -275,7 +275,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
     directiveDefs: null !,  // assigned in noSideEffects
     pipeDefs: null !,       // assigned in noSideEffects
-    selectors: componentDefinition.selectors,
+    selectors: componentDefinition.selectors || EMPTY_ARRAY,
     viewQuery: componentDefinition.viewQuery || null,
     features: componentDefinition.features as DirectiveDefFeature[] || null,
     data: componentDefinition.data || {},
@@ -507,7 +507,7 @@ export const ɵɵdefineDirective = ɵɵdefineComponent as any as<T>(directiveDef
   type: Type<T>;
 
   /** The selectors that will be used to match nodes to this directive. */
-  selectors: CssSelectorList;
+  selectors?: CssSelectorList;
 
   /**
    * A map of input names.

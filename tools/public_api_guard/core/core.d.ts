@@ -747,7 +747,7 @@ export declare const ɵɵdefaultStyleSanitizer: StyleSanitizeFn;
 
 export declare function ɵɵdefineComponent<T>(componentDefinition: {
     type: Type<T>;
-    selectors: CssSelectorList;
+    selectors?: CssSelectorList;
     decls: number;
     vars: number;
     inputs?: {
@@ -777,7 +777,7 @@ export declare function ɵɵdefineComponent<T>(componentDefinition: {
 
 export declare const ɵɵdefineDirective: <T>(directiveDefinition: {
     type: Type<T>;
-    selectors: (string | SelectorFlags)[][];
+    selectors?: (string | SelectorFlags)[][] | undefined;
     inputs?: { [P in keyof T]?: string | [string, string] | undefined; } | undefined;
     outputs?: { [P_1 in keyof T]?: string | undefined; } | undefined;
     features?: DirectiveDefFeature[] | undefined;
