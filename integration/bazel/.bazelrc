@@ -14,6 +14,10 @@ build --local_resources=14336,8.0,1.0
 # Use the Angular 6 compiler
 build --define=compile=legacy
 
+# Temporary define while angular depends on the legacy rollup_bundle rule.
+# TODO: remove this setting after https://github.com/angular/angular/pull/33201 lands.
+build --define=enable_legacy_rollup_rule=1
+
 # Don't create symlinks
 build --symlink_prefix=/
 
