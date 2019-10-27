@@ -71,6 +71,13 @@ test --test_output=errors
 # any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
 build --define=compile=legacy
 
+################################
+# Settings for rules_nodejs    #
+################################
+# Temporary define while angular depends on the legacy rollup_bundle rule.
+# TODO: remove this setting after https://github.com/angular/angular/pull/33201 lands.
+build --define=enable_legacy_rollup_rule=1
+
 #######################
 # Remote HTTP Caching #
 #######################
