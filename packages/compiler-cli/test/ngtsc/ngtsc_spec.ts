@@ -516,8 +516,7 @@ runInEachFileSystem(os => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents)
-          .toContain(
-              'i0.ɵɵdefineDirective({ type: TestBase, selectors: [], inputs: { input: "input" } });');
+          .toContain('i0.ɵɵdefineDirective({ type: TestBase, inputs: { input: "input" } });');
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)

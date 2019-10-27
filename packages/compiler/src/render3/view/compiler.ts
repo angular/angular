@@ -38,20 +38,19 @@ const EMPTY_ARRAY: any[] = [];
 // If there is a match, the first matching group will contain the attribute name to bind.
 const ATTR_REGEX = /attr\.([^\]]+)/;
 
-function getStylingPrefix(name: string): string {
-  return name.substring(0, 5);  // style or class
-}
-
 function baseDirectiveFields(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): DefinitionMap {
   const definitionMap = new DefinitionMap();
+  const selectors = core.parseSelectorToR3Selector(meta.selector);
 
   // e.g. `type: MyDirective`
   definitionMap.set('type', meta.type);
 
   // e.g. `selectors: [['', 'someDir', '']]`
-  definitionMap.set('selectors', createDirectiveSelector(meta.selector));
+  if (selectors.length > 0) {
+    definitionMap.set('selectors', asLiteral(selectors));
+  }
 
   if (meta.queries.length > 0) {
     // e.g. `contentQueries: (rf, ctx, dirIndex) => { ... }
@@ -404,11 +403,6 @@ function prepareQueryParams(query: R3QueryMetadata, constantPool: ConstantPool):
     parameters.push(query.read);
   }
   return parameters;
-}
-
-// Turn a directive selector into an R3-compatible selector for directive def
-function createDirectiveSelector(selector: string | null): o.Expression {
-  return asLiteral(core.parseSelectorToR3Selector(selector));
 }
 
 function convertAttributesToExpressions(attributes: {[name: string]: o.Expression}):

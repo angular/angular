@@ -261,7 +261,6 @@ export function renderTemplate<T>(
     enterView(hostLView, null);
 
     const def: ComponentDef<any> = ɵɵdefineComponent({
-      selectors: [],
       type: Object,
       template: templateFn,
       decls: decls,
