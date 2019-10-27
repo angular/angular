@@ -310,7 +310,7 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });
           expect(addDefinitionsSpy.calls.first().args[2])
               .toEqual(
                   `UndecoratedBase.ɵfac = function UndecoratedBase_Factory(t) { return new (t || UndecoratedBase)(); };
-UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, selectors: [], viewQuery: function UndecoratedBase_Query(rf, ctx) { if (rf & 1) {
+UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, viewQuery: function UndecoratedBase_Query(rf, ctx) { if (rf & 1) {
         ɵngcc0.ɵɵstaticViewQuery(_c0, true);
     } if (rf & 2) {
         var _t;
