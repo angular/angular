@@ -2050,8 +2050,12 @@ A consistent class and file name convention make these modules easy to spot and 
 -->
 <a href="#toc">맨 위로</a>
 
+<!--
 ## Application structure and NgModules
+-->
+## 애플리케이션 구조와 NgModule
 
+<!--
 Have a near-term view of implementation and a long-term vision. Start small but keep in mind where the app is heading down the road.
 
 All of the app's code goes in a folder named `src`.
@@ -2061,21 +2065,45 @@ All content is one asset per file. Each component, service, and pipe is in its o
 All third party vendor scripts are stored in another folder and not in the `src` folder.
 You didn't write them and you don't want them cluttering `src`.
 Use the naming conventions for files in this guide.
+-->
+애플리케이션을 개발할 때는 단기 계획과 장기 계획이 필요합니다. 그리고 시작은 작게 하지만 애플리케이션이 나아가야 할 방향은 항상 염두에 두어야 합니다.
+
+애플리케이션 코드는 모두 `src` 폴더에 둡니다.
+이 중에서 특정 기능은 따로 모아 별개의 폴더에 둘 수 있으며, 이 때 NgModule도 함께 생성합니다.
+
+파일 하나에는 구성요소 하나만 선언하는 것이 좋습니다. 컴포넌트, 서비스, 파이프 등 어떤 구성요소라도 한 파일에 함께 있지 말고 개별 파일로 있는 것이 좋습니다.
+서드 파티 스크립트 파일은 `src` 폴더가 아니라 다른 폴더에 위치합니다.
+이 코드는 개발자가 직접 수정하지 않기 때문에 `src` 폴더에 함께 있을 필요가 없습니다.
+파일 명명 규칙은 [이 섹션](/guide/styleguide#명명-규칙)을 참고하세요.
+
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 04-01}
 
 ### _LIFT_
 
+<!--
 #### Style 04-01
+-->
+#### 스타일 04-01
 
 <div class="s-rule do">
 
-
+<!--
 **Do** structure the app such that you can **L**ocate code quickly,
 **I**dentify the code at a glance,
 keep the **F**lattest structure you can, and
 **T**ry to be DRY.
+-->
+다음과 같은 LIFT 규칙을 따르는 것이 좋습니다.
+
+**L**ocate: 코드는 개발자가 찾기 쉬운 곳에 두세요.
+**I**dentify: 파일을 봤을 때 이 파일이 무엇인지 한 눈에 알아볼 수 있도록 하세요.
+**F**lattest: 최대한 단순한 폴더 구조를 유지하세요.
+**T**: 반복된 부분은 최대한 묶으세요. (Try to be DRY, DRY: Don't Repeat Yourself)
 
 </div>
 
@@ -2083,7 +2111,10 @@ keep the **F**lattest structure you can, and
 
 <div class="s-rule do">
 
+<!--
 **Do** define the structure to follow these four basic guidelines, listed in order of importance.
+-->
+이 규칙은 먼저 언급한 순서대로 중요합니다.
 
 </div>
 
@@ -2091,9 +2122,14 @@ keep the **F**lattest structure you can, and
 
 <div class="s-why-last">
 
+<!--
 **Why?** LIFT Provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly.
 To confirm your intuition about a particular structure, ask:
 _can I quickly open and start work in all of the related files for this feature_?
+-->
+**왜?** LIFT 규칙을 따르면 애플리케이션 구조를 모듈 단위로 일관성있게 확장할 수 있기 때문에 개발자가 원하는 코드를 빠르게 찾을 수 있습니다.
+이런 상황을 항상 생각해 보세요:
+_이 기능을 수정하려면 어디에 있는 파일을 열어야 원하는 코드를 찾을 수 있을까_?
 
 </div>
 
@@ -2106,13 +2142,17 @@ _can I quickly open and start work in all of the related files for this feature_
 
 ### Locate
 
+<!--
 #### Style 04-02
-
+-->
+#### 스타일 04-02
 
 <div class="s-rule do">
 
-
+<!--
 **Do** make locating code intuitive, simple and fast.
+-->
+코드는 직관적으로 떠오르는 위치에 두세요. 그게 간단하고 빠릅니다.
 
 </div>
 
@@ -2120,27 +2160,39 @@ _can I quickly open and start work in all of the related files for this feature_
 
 <div class="s-why-last">
 
-
+<!--
 **Why?** To work efficiently you must be able to find files quickly,
 especially when you do not know (or do not remember) the file _names_.
 Keeping related files near each other in an intuitive location saves time.
 A descriptive folder structure makes a world of difference to you and the people who come after you.
+-->
+**왜?** 개발효율을 높이려면 원하는 파일을 빠르게 찾아야 하는데, 이 때 파일의 _이름_ 을 기억하고 있는지는 중요하지 않습니다.
+관련된 파일은 서로 비슷한 위치에 두어야 시간을 절약할 수 있습니다.
+폴더 이름과 구조만 봐도 어떤 의미인지 알 수 있다면 당신과 당신의 후임이 만나는 세상은 조금 더 행복해질 것입니다.
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 04-03}
 
 ### Identify
 
+<!--
 #### Style 04-03
+-->
+#### 스타일 04-03
 
 
 <div class="s-rule do">
 
-
+<!--
 **Do** name the file such that you instantly know what it contains and represents.
+-->
+파일 이름은 그 파일의 내용물을 보고 바로 생각나는 것으로 지으세요.
 
 </div>
 
@@ -2148,8 +2200,10 @@ A descriptive folder structure makes a world of difference to you and the people
 
 <div class="s-rule do">
 
-
+<!--
 **Do** be descriptive with file names and keep the contents of the file to exactly one component.
+-->
+파일 이름은 파일의 내용과 관련된 것으로 짓고 그 파일은 그 용도로만 사용하세요.
 
 </div>
 
@@ -2157,8 +2211,10 @@ A descriptive folder structure makes a world of difference to you and the people
 
 <div class="s-rule avoid">
 
-
+<!--
 **Avoid** files with multiple components, multiple services, or a mixture.
+-->
+파일 하나에 컴포넌트나 서비스 여러개를 선언하지 마세요.
 
 </div>
 
@@ -2166,9 +2222,12 @@ A descriptive folder structure makes a world of difference to you and the people
 
 <div class="s-why-last">
 
-
+<!--
 **Why?** Spend less time hunting and pecking for code, and become more efficient.
 Longer file names are far better than _short-but-obscure_ abbreviated names.
+-->
+**왜?** 코드가 어디있는지 오래 찾아다닐수록 개발 효율은 떨어집니다.
+그래서 _애매한 의미로 짧께_ 줄인 파일 이름보다는 조금 길더라도 파일 내용을 잘 설명하는 이름이 더 좋습니다.
 
 </div>
 
@@ -2176,9 +2235,14 @@ Longer file names are far better than _short-but-obscure_ abbreviated names.
 
 <div class="alert is-helpful">
 
+<!--
 It may be advantageous to deviate from the _one-thing-per-file_ rule when
 you have a set of small, closely-related features that are better discovered and understood
 in a single file than as multiple files. Be wary of this loophole.
+-->
+때로는 _한 파일에 하나만 정의하라는_ 규칙을 지키지 않는 것이 나을 때도 있습니다.
+서로 긴밀하게 연관된 코드이고 이 코드가 아주 짧은 경우라면 여러 파일에 나눠서 선언하는 것보다 한 파일에 두는 것이 좋습니다.
+하지만 이런 경우를 제외한다면 _한 파일에 하나만 정의한다는 원칙_ 은 항상 지키는 것이 좋습니다.
 
 
 </div>
