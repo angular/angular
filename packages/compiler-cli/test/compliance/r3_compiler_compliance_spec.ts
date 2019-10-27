@@ -2958,6 +2958,28 @@ describe('compiler compliance', () => {
       expect(() => compile(files, angularFiles)).not.toThrow();
     });
 
+    it('should not generate a selectors array if the directive does not have a selector', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Directive} from '@angular/core';
+
+            @Directive()
+            export class AbstractDirective {
+            }
+          `
+        }
+      };
+      const expectedOutput = `
+      // ...
+      AbstractDirective.ɵdir = $r3$.ɵɵdefineDirective({
+        type: AbstractDirective
+      });
+      // ...
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
+    });
 
   });
 
@@ -3004,7 +3026,6 @@ describe('compiler compliance', () => {
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
-        selectors: [],
         inputs: {
           input1: "input1",
           input2: ["alias2", "input2"]
@@ -3013,7 +3034,7 @@ describe('compiler compliance', () => {
       // ...
       `;
       const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
     });
 
     it('should add an abstract directive if one or more @Output is present', () => {
@@ -3052,7 +3073,6 @@ describe('compiler compliance', () => {
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
-        selectors: [],
         outputs: {
           output1: "output1",
           output2: "output2"
@@ -3061,7 +3081,7 @@ describe('compiler compliance', () => {
       // ...
       `;
       const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
     });
 
     it('should add an abstract directive if a mixture of @Input and @Output props are present',
@@ -3107,7 +3127,6 @@ describe('compiler compliance', () => {
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
-        selectors: [],
         inputs: {
           input1: "input1",
           input2: ["whatever", "input2"]
@@ -3120,7 +3139,7 @@ describe('compiler compliance', () => {
       // ...
       `;
          const result = compile(files, angularFiles);
-         expectEmit(result.source, expectedOutput, 'Invalid base definition');
+         expectEmit(result.source, expectedOutput, 'Invalid directive definition');
        });
 
     it('should add an abstract directive if a ViewChild query is present', () => {
@@ -3151,7 +3170,6 @@ describe('compiler compliance', () => {
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
-        selectors: [],
         viewQuery: function BaseClass_Query(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵviewQuery($e0_attrs$, true);
@@ -3165,7 +3183,7 @@ describe('compiler compliance', () => {
       // ...
       `;
       const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
     });
 
     it('should add an abstract directive if a ViewChildren query is present', () => {
@@ -3198,7 +3216,6 @@ describe('compiler compliance', () => {
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
-        selectors: [],
         viewQuery: function BaseClass_Query(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵviewQuery(SomeDirective, true);
@@ -3212,7 +3229,7 @@ describe('compiler compliance', () => {
       // ...
       `;
       const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
     });
 
     it('should add an abstract directive if a ContentChild query is present', () => {
@@ -3243,7 +3260,6 @@ describe('compiler compliance', () => {
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
-        selectors: [],
         contentQueries: function BaseClass_ContentQueries(rf, ctx, dirIndex) {
           if (rf & 1) {
             $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, true);
@@ -3257,7 +3273,7 @@ describe('compiler compliance', () => {
       // ...
       `;
       const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
     });
 
     it('should add an abstract directive if a ContentChildren query is present', () => {
@@ -3290,7 +3306,6 @@ describe('compiler compliance', () => {
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
-        selectors: [],
         contentQueries: function BaseClass_ContentQueries(rf, ctx, dirIndex) {
           if (rf & 1) {
             $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false);
@@ -3304,7 +3319,7 @@ describe('compiler compliance', () => {
       // ...
       `;
       const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
     });
 
     it('should add an abstract directive if a host binding is present', () => {
@@ -3335,7 +3350,6 @@ describe('compiler compliance', () => {
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
-        selectors: [],
         hostBindings: function BaseClass_HostBindings(rf, ctx, elIndex) {
           if (rf & 1) {
             $r3$.ɵɵallocHostVars(1);
@@ -3348,7 +3362,7 @@ describe('compiler compliance', () => {
       // ...
       `;
       const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
     });
 
     it('should add an abstract directive if a host listener is present', () => {
@@ -3379,7 +3393,6 @@ describe('compiler compliance', () => {
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
-        selectors: [],
         hostBindings: function BaseClass_HostBindings(rf, ctx, elIndex) {
           if (rf & 1) {
             $r3$.ɵɵlistener("mousedown", function BaseClass_mousedown_HostBindingHandler($event) {
@@ -3391,7 +3404,7 @@ describe('compiler compliance', () => {
       // ...
       `;
       const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
     });
 
     it('should add an abstract directive when using any lifecycle hook', () => {
@@ -3420,13 +3433,12 @@ describe('compiler compliance', () => {
       const expectedOutput = `
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
-        type: BaseClass,
-        selectors: []
+        type: BaseClass
       });
       // ...
       `;
       const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
     });
 
 
@@ -3457,13 +3469,12 @@ describe('compiler compliance', () => {
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
-        selectors: [],
         features: [$r3$.ɵɵNgOnChangesFeature()]
       });
       // ...
       `;
       const result = compile(files, angularFiles);
-      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
     });
 
     it('should NOT add an abstract directive if @Component is present', () => {
