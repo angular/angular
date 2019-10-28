@@ -55,12 +55,6 @@ async function runMigration(tree: Tree, context: SchematicContext) {
   const basePath = process.cwd();
   const logger = context.logger;
 
-  logger.info('------ Static Query Migration ------');
-  logger.info('With Angular version 8, developers need to');
-  logger.info('explicitly specify the timing of ViewChild and');
-  logger.info('ContentChild queries. Read more about this here:');
-  logger.info('https://v8.angular.io/guide/static-query-migration');
-
   if (!buildPaths.length && !testPaths.length) {
     throw new SchematicsException(
         'Could not find any tsconfig file. Cannot migrate queries ' +
@@ -105,8 +99,6 @@ async function runMigration(tree: Tree, context: SchematicContext) {
     logger.info('https://v8.angular.io/guide/static-query-migration');
     failures.forEach(failure => logger.warn(`⮑   ${failure}`));
   }
-
-  logger.info('------------------------------------------------');
 }
 
 /**

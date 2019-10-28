@@ -29,12 +29,6 @@ export default function(): Rule {
     const allPaths = [...buildPaths, ...testPaths];
     const failures: string[] = [];
 
-    ctx.logger.info('------ ModuleWithProviders migration ------');
-    ctx.logger.info('In Angular 9, the ModuleWithProviders type without a ');
-    ctx.logger.info('generic has been deprecated. This migration adds the ');
-    ctx.logger.info('generic where it is missing. See more info here:');
-    ctx.logger.info('https://v9.angular.io/guide/migration-module-with-providers');
-
     if (!allPaths.length) {
       throw new SchematicsException(
           'Could not find any tsconfig file. Cannot migrate ModuleWithProviders.');
@@ -48,11 +42,7 @@ export default function(): Rule {
       ctx.logger.info('Could not migrate all instances of ModuleWithProviders');
       ctx.logger.info('Please manually fix the following failures:');
       failures.forEach(message => ctx.logger.warn(`⮑   ${message}`));
-    } else {
-      ctx.logger.info('Successfully migrated all found ModuleWithProviders.');
     }
-
-    ctx.logger.info('----------------------------------------------');
   };
 }
 

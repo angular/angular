@@ -24,15 +24,6 @@ export default function(): Rule {
     const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
-    const logger = context.logger;
-
-    logger.info('------ Undecorated classes with decorated fields migration ------');
-    logger.info(
-        'As of Angular 9, it is no longer supported to have Angular field ' +
-        'decorators on a class that does not have an Angular decorator.');
-    logger.info('Read more about this in the dedicated guide: ');
-    logger.info('https://v9.angular.io/guide/migration-undecorated-classes');
-
 
     if (!allPaths.length) {
       throw new SchematicsException(
