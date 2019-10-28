@@ -8,12 +8,14 @@
 import {Element, Node, XmlParser, visitAll} from '@angular/compiler';
 import {ɵMessageId, ɵParsedTranslation} from '@angular/localize';
 import {extname} from 'path';
-import {TargetMessageRenderer} from '../../../message_renderers/target_message_renderer';
+
 import {BaseVisitor} from '../base_visitor';
-import {TranslationParseError} from '../translation_parse_error';
-import {ParsedTranslationBundle, TranslationParser} from '../translation_parser';
-import {getAttrOrThrow, getAttribute, parseInnerRange} from '../translation_utils';
-import {Xliff2MessageSerializer} from './xliff2_message_serializer';
+import {MessageSerializer} from '../message_serialization/message_serializer';
+import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
+
+import {TranslationParseError} from './translation_parse_error';
+import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
+import {getAttrOrThrow, getAttribute, parseInnerRange} from './translation_utils';
 
 const XLIFF_2_0_NS_REGEX = /xmlns="urn:oasis:names:tc:xliff:document:2.0"/;
 
@@ -105,7 +107,12 @@ function assertTranslationUnit(segment: Element, context: any) {
 }
 
 function serializeTargetMessage(source: Element): ɵParsedTranslation {
-  const serializer = new Xliff2MessageSerializer(new TargetMessageRenderer());
+  const serializer = new MessageSerializer(new TargetMessageRenderer(), {
+    inlineElements: ['cp', 'sc', 'ec', 'mrk', 'sm', 'em'],
+    placeholder: {elementName: 'ph', nameAttribute: 'equiv', bodyAttribute: 'disp'},
+    placeholderContainer:
+        {elementName: 'pc', startAttribute: 'equivStart', endAttribute: 'equivEnd'}
+  });
   return serializer.serialize(parseInnerRange(source));
 }
 
