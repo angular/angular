@@ -25,6 +25,7 @@ const _MARKER_TAG = 'mrk';
 const _FILE_TAG = 'file';
 const _SOURCE_TAG = 'source';
 const _SEGMENT_SOURCE_TAG = 'seg-source';
+const _ALT_TRANS_TAG = 'alt-trans';
 const _TARGET_TAG = 'target';
 const _UNIT_TAG = 'trans-unit';
 const _CONTEXT_GROUP_TAG = 'context-group';
@@ -222,6 +223,7 @@ class XliffParser implements ml.Visitor {
       // ignore those tags
       case _SOURCE_TAG:
       case _SEGMENT_SOURCE_TAG:
+      case _ALT_TRANS_TAG:
         break;
 
       case _TARGET_TAG:
