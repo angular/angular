@@ -5,6 +5,10 @@ export declare const MAT_CHECKBOX_CLICK_ACTION: InjectionToken<MatCheckboxClickA
 
 export declare const MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR: any;
 
+export declare const MAT_CHECKBOX_DEFAULT_OPTIONS: InjectionToken<MatCheckboxDefaultOptions>;
+
+export declare function MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY(): MatCheckboxDefaultOptions;
+
 export declare const MAT_CHECKBOX_REQUIRED_VALIDATOR: Provider;
 
 export declare class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAccessor, AfterViewChecked, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple, FocusableOption {
@@ -25,7 +29,8 @@ export declare class MatCheckbox extends _MatCheckboxMixinBase implements Contro
     required: boolean;
     ripple: MatRipple;
     value: string;
-    constructor(elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _focusMonitor: FocusMonitor, _ngZone: NgZone, tabIndex: string, _clickAction: MatCheckboxClickAction, _animationMode?: string | undefined);
+    constructor(elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _focusMonitor: FocusMonitor, _ngZone: NgZone, tabIndex: string,
+    _clickAction: MatCheckboxClickAction, _animationMode?: string | undefined, _options?: MatCheckboxDefaultOptions | undefined);
     _getAriaChecked(): 'true' | 'false' | 'mixed';
     _isRippleDisabled(): any;
     _onInputClick(event: Event): void;
@@ -47,6 +52,11 @@ export declare class MatCheckboxChange {
 }
 
 export declare type MatCheckboxClickAction = 'noop' | 'check' | 'check-indeterminate' | undefined;
+
+export interface MatCheckboxDefaultOptions {
+    clickAction?: MatCheckboxClickAction;
+    color?: ThemePalette;
+}
 
 export declare class MatCheckboxModule {
 }

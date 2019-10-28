@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusMonitor, FocusableOption, FocusOrigin} from '@angular/cdk/a11y';
+import {FocusableOption, FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
+  AfterViewChecked,
   Attribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -24,7 +25,6 @@ import {
   Output,
   ViewChild,
   ViewEncapsulation,
-  AfterViewChecked,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
@@ -43,7 +43,12 @@ import {
   mixinTabIndex,
 } from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {MAT_CHECKBOX_CLICK_ACTION, MatCheckboxClickAction} from './checkbox-config';
+import {
+  MAT_CHECKBOX_CLICK_ACTION,
+  MAT_CHECKBOX_DEFAULT_OPTIONS,
+  MatCheckboxClickAction,
+  MatCheckboxDefaultOptions
+} from './checkbox-config';
 
 
 // Increasing integer for generating unique ids for checkbox components.
@@ -94,7 +99,7 @@ const _MatCheckboxMixinBase:
     CanDisableRippleCtor &
     CanDisableCtor &
     typeof MatCheckboxBase =
-        mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MatCheckboxBase)), 'accent'));
+        mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MatCheckboxBase))));
 
 
 /**
@@ -194,10 +199,22 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
               private _focusMonitor: FocusMonitor,
               private _ngZone: NgZone,
               @Attribute('tabindex') tabIndex: string,
+              /**
+               * @deprecated `_clickAction` parameter to be removed, use
+               * `MAT_CHECKBOX_DEFAULT_OPTIONS`
+               * @breaking-change 10.0.0
+               */
               @Optional() @Inject(MAT_CHECKBOX_CLICK_ACTION)
                   private _clickAction: MatCheckboxClickAction,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
+              @Optional() @Inject(MAT_CHECKBOX_DEFAULT_OPTIONS)
+                  private _options?: MatCheckboxDefaultOptions) {
     super(elementRef);
+    this._options = this._options || {};
+
+    if (this._options.color) {
+      this.color = this._options.color;
+    }
 
     this.tabIndex = parseInt(tabIndex) || 0;
 
@@ -214,6 +231,9 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
         });
       }
     });
+
+    // TODO: Remove this after the `_clickAction` parameter is removed as an injection parameter.
+    this._clickAction = this._clickAction || this._options.clickAction;
   }
 
   // TODO: Delete next major revision.

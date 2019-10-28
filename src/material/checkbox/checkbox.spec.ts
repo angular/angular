@@ -9,9 +9,15 @@ import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/f
 import {Component, DebugElement, ViewChild, Type, ChangeDetectionStrategy} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '@angular/cdk/testing/private';
-import {MatCheckbox, MatCheckboxChange, MatCheckboxModule} from './index';
+import {
+  MAT_CHECKBOX_DEFAULT_OPTIONS,
+  MatCheckbox,
+  MatCheckboxChange,
+  MatCheckboxModule
+} from './index';
 import {MAT_CHECKBOX_CLICK_ACTION} from './checkbox-config';
 import {MutationObserverFactory} from '@angular/cdk/observers';
+import {ThemePalette} from '@angular/material/core';
 
 
 describe('MatCheckbox', () => {
@@ -533,6 +539,39 @@ describe('MatCheckbox', () => {
       }));
     });
 
+    describe(`when MAT_CHECKBOX_CLICK_ACTION is set`, () => {
+      beforeEach(() => {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({
+          imports: [MatCheckboxModule, FormsModule, ReactiveFormsModule],
+          declarations: [SingleCheckbox],
+          providers: [
+            {provide: MAT_CHECKBOX_CLICK_ACTION, useValue: 'check'},
+            {provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'noop'}}
+          ]
+        });
+
+        fixture = createComponent(SingleCheckbox);
+        fixture.detectChanges();
+
+        checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
+        checkboxNativeElement = checkboxDebugElement.nativeElement;
+        testComponent = fixture.debugElement.componentInstance;
+
+        inputElement = checkboxNativeElement.querySelector('input') as HTMLInputElement;
+      });
+
+      it('should override the value set in the default options', fakeAsync(() => {
+        testComponent.isIndeterminate = true;
+        inputElement.click();
+        fixture.detectChanges();
+        flush();
+
+        expect(inputElement.checked).toBe(true);
+        expect(inputElement.indeterminate).toBe(true);
+      }));
+    });
+
     describe(`when MAT_CHECKBOX_CLICK_ACTION is 'check'`, () => {
       beforeEach(() => {
         TestBed.resetTestingModule();
@@ -540,7 +579,7 @@ describe('MatCheckbox', () => {
           imports: [MatCheckboxModule, FormsModule, ReactiveFormsModule],
           declarations: [SingleCheckbox],
           providers: [
-            {provide: MAT_CHECKBOX_CLICK_ACTION, useValue: 'check'}
+            {provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'check'}}
           ]
         });
 
@@ -577,7 +616,7 @@ describe('MatCheckbox', () => {
           imports: [MatCheckboxModule, FormsModule, ReactiveFormsModule],
           declarations: [SingleCheckbox],
           providers: [
-            {provide: MAT_CHECKBOX_CLICK_ACTION, useValue: 'noop'}
+            {provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'noop'}}
           ]
         });
 
@@ -1155,6 +1194,50 @@ describe('MatCheckbox', () => {
   });
 });
 
+describe('MatCheckboxDefaultOptions', () => {
+  describe('when MAT_CHECKBOX_DEFAULT_OPTIONS overridden', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [MatCheckboxModule, FormsModule],
+        declarations: [SingleCheckbox, SimpleCheckbox],
+        providers: [{
+          provide: MAT_CHECKBOX_DEFAULT_OPTIONS,
+          useValue: {color: 'primary'},
+        }],
+      });
+
+      TestBed.compileComponents();
+    });
+
+    it('should override default color in Component', () => {
+      const fixture: ComponentFixture<SimpleCheckbox> =
+          TestBed.createComponent(SimpleCheckbox);
+      fixture.detectChanges();
+      const checkboxDebugElement: DebugElement =
+          fixture.debugElement.query(By.directive(MatCheckbox))!;
+      expect(
+          checkboxDebugElement.nativeElement.classList
+      ).toContain('mat-primary');
+    });
+
+    it('should not override explicit input bindings', () => {
+      const fixture: ComponentFixture<SingleCheckbox> =
+          TestBed.createComponent(SingleCheckbox);
+      fixture.componentInstance.checkboxColor = 'warn';
+      fixture.detectChanges();
+      const checkboxDebugElement: DebugElement =
+          fixture.debugElement.query(By.directive(MatCheckbox))!;
+      expect(
+          checkboxDebugElement.nativeElement.classList
+      ).not.toContain('mat-primary');
+      expect(
+          checkboxDebugElement.nativeElement.classList
+      ).toContain('mat-warn');
+      expect(checkboxDebugElement.nativeElement.classList).toContain('mat-warn');
+    });
+  });
+});
+
 /** Simple component for testing a single checkbox. */
 @Component({
   template: `
@@ -1185,7 +1268,7 @@ class SingleCheckbox {
   parentElementClicked: boolean = false;
   parentElementKeyedUp: boolean = false;
   checkboxId: string | null = 'simple-check';
-  checkboxColor: string = 'primary';
+  checkboxColor: ThemePalette = 'primary';
   checkboxValue: string = 'single_checkbox';
 
   onCheckboxClick: (event?: Event) => void = () => {};
@@ -1305,4 +1388,9 @@ class CheckboxWithProjectedLabel {}
 })
 class TextBindingComponent {
   text: string = 'Some text';
+}
+
+/** Test component with a simple checkbox with no inputs. */
+@Component({template: `<mat-checkbox></mat-checkbox>`})
+class SimpleCheckbox {
 }

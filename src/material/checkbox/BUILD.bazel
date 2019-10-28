@@ -61,6 +61,7 @@ ng_test_library(
         ":checkbox",
         "//src/cdk/observers",
         "//src/cdk/testing/private",
+        "//src/material/core",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
     ],
