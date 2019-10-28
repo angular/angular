@@ -87,6 +87,5 @@ function runTemplateVariableAssignmentCheck(
     logger.info('');
     logger.info('The following template assignments were found:');
     collectedFailures.forEach(failure => logger.warn(`⮑   ${failure}`));
-    logger.info('------------------------------------------------');
   }
 }

@@ -2,52 +2,52 @@
   "schematics": {
     "migration-v8-move-document": {
       "version": "8.0.0-beta",
-      "description": "Migrates DOCUMENT Injection token from platform-browser imports to common import",
+      "description": "@DOCUMENT migration. Migrates DOCUMENT Injection token from platform-browser imports to common import.",
       "factory": "./migrations/move-document/index"
     },
     "migration-v8-static-queries": {
       "version": "8.0.0-beta",
-      "description": "Migrates ViewChild and ContentChild to explicit query timing",
+      "description": "ViewChild and ContentChild to explicit query timing migration. In Angular version 8, developers need to explicitly specify the timing of ViewChild and ContentChild queries. Read more about this here: https://v8.angular.io/guide/static-query-migration",
       "factory": "./migrations/static-queries/index"
     },
     "migration-v8-template-local-variables": {
       "version": "8.0.0-beta",
-      "description": "Warns developers if values are assigned to template variables",
+      "description": "Template Variable Assignment migration. Warns developers if values are assigned to template variables.",
       "factory": "./migrations/template-var-assignment/index"
     },
     "migration-v9-renderer-to-renderer2": {
       "version": "9.0.0-beta",
-      "description": "The Renderer class has been marked as deprecated since Angular version 4. This migration converts usage of Renderer to Renderer2. For additional information please see: https://v9.angular.io/guide/migration-renderer",
+      "description": "Renderer to Renderer2 migration. As of Angular 9, the Renderer class is no longer available. Renderer2 should be used instead. Read more about this here: https://v9.angular.io/guide/migration-renderer",
       "factory": "./migrations/renderer-to-renderer2/index"
     },
     "migration-v9-missing-injectable": {
       "version": "9.0.0-beta",
-      "description": "Decorates all declared undecorated provider classes with @Injectable.",
+      "description": "Missing @Injectable migration. In Angular 9, enforcement of @Injectable decorators for DI is a bit stricter. Read more about this here: https://v9.angular.io/guide/migration-injectable",
       "factory": "./migrations/missing-injectable/index"
     },
     "migration-v9-undecorated-classes-with-di": {
       "version": "9.0.0-beta",
-      "description": "Adds an Angular decorator to undecorated base classes of directives/components that use dependency injection. Copies metadata from base classes to derived directives/components/pipes that are not decorated. For additional information please see: https://v9.angular.io/guide/migration-undecorated-classes",
+      "description": "Undecorated classes with DI migration. As of Angular 9, it is no longer supported to use Angular DI on a class that does not have an Angular decorator. Read more about this here: https://v9.angular.io/guide/migration-undecorated-classes",
       "factory": "./migrations/undecorated-classes-with-di/index"
     },
     "migration-v9-undecorated-classes-with-decorated-fields": {
       "version": "9.0.0-beta",
-      "description": "Adds an Angular decorator to undecorated classes that have decorated fields.",
+      "description": "Undecorated classes with decorated fields migration. As of Angular 9, it is no longer supported to have Angular field decorators on a class that does not have an Angular decorator. Read more about this here: https://v9.angular.io/guide/migration-undecorated-classes",
       "factory": "./migrations/undecorated-classes-with-decorated-fields/index"
     },
     "migration-v9-dynamic-queries": {
       "version": "9-beta",
-      "description": "Removes the `static` flag from dynamic queries.",
+      "description": "Static flag migration. Removes the `static` flag from dynamic queries. As of Angular 9, the \"static\" flag defaults to false and is no longer required for your view and content queries. Read more about this here: https://v9.angular.io/guide/migration-dynamic-flag",
       "factory": "./migrations/dynamic-queries/index"
     },
     "migration-v9-postinstall-ngcc": {
       "version": "9-beta",
-      "description": "Adds an ngcc call as a postinstall hook in package.json",
+      "description": "NGCC postinstall migration. Adds an ngcc invocation to npm/yarn's postinstall script. Read more about this here: https://v9.angular.io/guide/migration-ngcc",
       "factory": "./migrations/postinstall-ngcc/index"
     },
     "migration-v9-module-with-providers": {
       "version": "9.0.0-beta",
-      "description": "Adds explicit typing to `ModuleWithProviders`",
+      "description": "ModuleWithProviders migration. In Angular 9, the ModuleWithProviders type without a generic has been deprecated. This migration adds the generic where it is missing. Read more about this here: https://v9.angular.io/guide/migration-module-with-providers",
       "factory": "./migrations/module-with-providers/index"
     }
   }
