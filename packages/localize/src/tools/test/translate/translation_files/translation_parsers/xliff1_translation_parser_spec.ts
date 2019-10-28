@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵcomputeMsgId, ɵmakeParsedTranslation} from '@angular/localize';
-import {Xliff1TranslationParser} from '../../../../../src/translate/translation_files/translation_parsers/xliff1/xliff1_translation_parser';
+import {Xliff1TranslationParser} from '../../../../src/translate/translation_files/translation_parsers/xliff1_translation_parser';
 
 describe('Xliff1TranslationParser', () => {
   describe('canParse()', () => {

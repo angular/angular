@@ -6,15 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Element, Expansion, ExpansionCase, Node, Text, visitAll} from '@angular/compiler';
-import {MessageRenderer} from '../../../message_renderers/message_renderer';
+
 import {BaseVisitor} from '../base_visitor';
-import {TranslationParseError} from '../translation_parse_error';
-import {getAttrOrThrow, getAttribute} from '../translation_utils';
+import {TranslationParseError} from '../translation_parsers/translation_parse_error';
+import {getAttrOrThrow, getAttribute} from '../translation_parsers/translation_utils';
 
-const INLINE_ELEMENTS = ['cp', 'sc', 'ec', 'mrk', 'sm', 'em'];
+import {MessageRenderer} from './message_renderer';
 
-export class Xliff2MessageSerializer<T> extends BaseVisitor {
-  constructor(private renderer: MessageRenderer<T>) { super(); }
+interface MessageSerializerConfig {
+  inlineElements: string[];
+  placeholder?: {elementName: string; nameAttribute: string; bodyAttribute?: string;};
+  placeholderContainer?: {elementName: string; startAttribute: string; endAttribute: string;};
+}
+
+/**
+ * This visitor will walk over a set of XML nodes, which represent an i18n message, and serialize
+ * them into a message object of type `T`.
+ * The type of the serialized message is controlled by the
+ */
+export class MessageSerializer<T> extends BaseVisitor {
+  constructor(private renderer: MessageRenderer<T>, private config: MessageSerializerConfig) {
+    super();
+  }
 
   serialize(nodes: Node[]): T {
     this.renderer.startRender();
@@ -24,13 +37,18 @@ export class Xliff2MessageSerializer<T> extends BaseVisitor {
   }
 
   visitElement(element: Element): void {
-    if (element.name === 'ph') {
-      this.visitPlaceholder(getAttrOrThrow(element, 'equiv'), getAttribute(element, 'disp'));
-    } else if (element.name === 'pc') {
-      this.visitPlaceholderContainer(
-          getAttrOrThrow(element, 'equivStart'), element.children,
-          getAttrOrThrow(element, 'equivEnd'));
-    } else if (INLINE_ELEMENTS.indexOf(element.name) !== -1) {
+    if (this.config.placeholder && element.name === this.config.placeholder.elementName) {
+      const name = getAttrOrThrow(element, this.config.placeholder.nameAttribute);
+      const body = this.config.placeholder.bodyAttribute &&
+          getAttribute(element, this.config.placeholder.bodyAttribute);
+      this.visitPlaceholder(name, body);
+    } else if (
+        this.config.placeholderContainer &&
+        element.name === this.config.placeholderContainer.elementName) {
+      const start = getAttrOrThrow(element, this.config.placeholderContainer.startAttribute);
+      const end = getAttrOrThrow(element, this.config.placeholderContainer.endAttribute);
+      this.visitPlaceholderContainer(start, element.children, end);
+    } else if (this.config.inlineElements.indexOf(element.name) !== -1) {
       visitAll(this, element.children);
     } else {
       throw new TranslationParseError(element.sourceSpan, `Invalid element found in message.`);
@@ -58,11 +76,11 @@ export class Xliff2MessageSerializer<T> extends BaseVisitor {
     const length = nodes.length;
     let index = 0;
     while (index < length) {
-      if (!isPlaceholderContainer(nodes[index])) {
+      if (!this.isPlaceholderContainer(nodes[index])) {
         const startOfContainedNodes = index;
         while (index < length - 1) {
           index++;
-          if (isPlaceholderContainer(nodes[index])) {
+          if (this.isPlaceholderContainer(nodes[index])) {
             break;
           }
         }
@@ -89,8 +107,8 @@ export class Xliff2MessageSerializer<T> extends BaseVisitor {
     this.visitContainedNodes(children);
     this.renderer.closePlaceholder(closeName);
   }
-}
 
-function isPlaceholderContainer(node: Node): boolean {
-  return node instanceof Element && node.name === 'pc';
+  private isPlaceholderContainer(node: Node): boolean {
+    return node instanceof Element && node.name === this.config.placeholderContainer !.elementName;
+  }
 }
