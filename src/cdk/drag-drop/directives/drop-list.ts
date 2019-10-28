@@ -106,11 +106,7 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
 
   /** Whether sorting within this drop list is disabled. */
   @Input('cdkDropListSortingDisabled')
-  get sortingDisabled(): boolean { return this._sortingDisabled; }
-  set sortingDisabled(value: boolean) {
-    this._sortingDisabled = coerceBooleanProperty(value);
-  }
-  private _sortingDisabled = false;
+  sortingDisabled: boolean = false;
 
   /**
    * Function that is used to determine whether an item
@@ -276,8 +272,8 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
 
       ref.disabled = this.disabled;
       ref.lockAxis = this.lockAxis;
-      ref.sortingDisabled = this.sortingDisabled;
-      ref.autoScrollDisabled = this.autoScrollDisabled;
+      ref.sortingDisabled = coerceBooleanProperty(this.sortingDisabled);
+      ref.autoScrollDisabled = coerceBooleanProperty(this.autoScrollDisabled);
       ref
         .connectedTo(siblings.filter(drop => drop && drop !== this).map(list => list._dropListRef))
         .withOrientation(this.orientation);
