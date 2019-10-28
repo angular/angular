@@ -3137,6 +3137,24 @@ runInEachFileSystem(os => {
       });
     });
 
+    describe('local refs', () => {
+      it('should not generate an error when a local ref is unresolved' +
+             ' (outside of template type-checking)',
+         () => {
+
+           env.write('test.ts', `
+          import {Component} from '@angular/core';
+  
+          @Component({
+            template: '<div #ref="unknownTarget"></div>',
+          })
+          export class TestCmp {}
+        `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+    });
+
     describe('multiple local refs', () => {
       const getComponentScript = (template: string): string => `
       import {Component, Directive, NgModule} from '@angular/core';
