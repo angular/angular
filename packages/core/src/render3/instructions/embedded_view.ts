@@ -11,7 +11,7 @@ import {assertLContainerOrUndefined} from '../assert';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {RenderFlags} from '../interfaces/definition';
 import {TContainerNode, TNodeType} from '../interfaces/node';
-import {CONTEXT, LView, LViewFlags, PARENT, TVIEW, TView, T_HOST} from '../interfaces/view';
+import {CONTEXT, LView, LViewFlags, PARENT, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {insertView, removeView} from '../node_manipulation';
 import {enterView, getIsParent, getLView, getPreviousOrParentTNode, leaveViewProcessExit, setIsParent, setPreviousOrParentTNode} from '../state';
@@ -87,8 +87,8 @@ function getOrCreateEmbeddedTView(
   ngDevMode && assertEqual(Array.isArray(containerTViews), true, 'TViews should be in an array');
   if (viewIndex >= containerTViews.length || containerTViews[viewIndex] == null) {
     containerTViews[viewIndex] = createTView(
-        viewIndex, null, decls, vars, tView.directiveRegistry, tView.pipeRegistry, null, null,
-        tView.consts);
+        TViewType.Embedded, viewIndex, null, decls, vars, tView.directiveRegistry,
+        tView.pipeRegistry, null, null, tView.consts);
   }
   return containerTViews[viewIndex];
 }
