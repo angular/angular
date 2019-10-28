@@ -18,6 +18,7 @@ import {TranslationLoader} from './translation_files/translation_loader';
 import {SimpleJsonTranslationParser} from './translation_files/translation_parsers/simple_json_translation_parser';
 import {Xliff1TranslationParser} from './translation_files/translation_parsers/xliff1_translation_parser';
 import {Xliff2TranslationParser} from './translation_files/translation_parsers/xliff2_translation_parser';
+import {XtbTranslationParser} from './translation_files/translation_parsers/xtb_translation_parser';
 import {Translator} from './translator';
 import {Diagnostics} from '../diagnostics';
 
@@ -141,6 +142,7 @@ export function translateFiles({sourceRootPath, sourceFilePaths, translationFile
       [
         new Xliff2TranslationParser(),
         new Xliff1TranslationParser(),
+        new XtbTranslationParser(diagnostics),
         new SimpleJsonTranslationParser(),
       ],
       diagnostics);
