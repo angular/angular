@@ -7,7 +7,7 @@
  */
 import {ɵMessageId, ɵParsedTranslation, ɵparseTranslation} from '@angular/localize';
 import {extname} from 'path';
-import {ParsedTranslationBundle, TranslationParser} from '../translation_parser';
+import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
 
 /**
  * A translation parser that can parse JSON that has the form:
