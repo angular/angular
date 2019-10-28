@@ -37,7 +37,7 @@
     },
     "migration-v9-dynamic-queries": {
       "version": "9-beta",
-      "description": "Removes the `static` flag from dynamic queries. As of Angular 9, the \"static\" flag defaults to false and is no longer required for your view and content queries. Read more about this here: https://v9.angular.io/guide/migration-dynamic-flag",
+      "description": "Static flag migration. Removes the `static` flag from dynamic queries. As of Angular 9, the \"static\" flag defaults to false and is no longer required for your view and content queries. Read more about this here: https://v9.angular.io/guide/migration-dynamic-flag",
       "factory": "./migrations/dynamic-queries/index"
     },
     "migration-v9-postinstall-ngcc": {
