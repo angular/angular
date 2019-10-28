@@ -43,7 +43,7 @@
   </p>
 
   {%- if doc.services.length -%}
-    <h3 id="services" class="docs-header-link docs-api-h3">
+    <h3 id="{$ doc.name $}-services" class="docs-header-link docs-api-h3">
       <span header-link="services"></span>
       Services
     </h3>
@@ -54,7 +54,7 @@
 
 
   {%- if doc.directives.length -%}
-    <h3 id="directives" class="docs-header-link docs-api-h3">
+    <h3 id="{$ doc.name $}-directives" class="docs-header-link docs-api-h3">
       <span header-link="directives"></span>
       Directives
     </h3>
@@ -64,7 +64,7 @@
   {%- endif -%}
 
   {%- if doc.classes.length -%}
-    <h3 id="classes" class="docs-header-link docs-api-h3">
+    <h3 id="{$ doc.name $}-classes" class="docs-header-link docs-api-h3">
       <span header-link="classes"></span>
       Classes
     </h3>
@@ -74,7 +74,7 @@
   {%- endif -%}
 
   {%- if doc.interfaces.length -%}
-    <h3 id="interfaces" class="docs-header-link docs-api-h3">
+    <h3 id="{$ doc.name $}-interfaces" class="docs-header-link docs-api-h3">
       <span header-link="interfaces"></span>
       Interfaces
     </h3>
@@ -84,7 +84,7 @@
   {%- endif -%}
 
   {%- if doc.functions.length -%}
-    <h3 id="functions" class="docs-header-link docs-api-h3">
+    <h3 id="{$ doc.name $}-functions" class="docs-header-link docs-api-h3">
       <span header-link="functions"></span>
       Functions
     </h3>
@@ -98,7 +98,7 @@
   {%- endif -%}
 
   {%- if doc.typeAliases.length -%}
-    <h3 id="type_aliases" class="docs-header-link docs-api-h3">
+    <h3 id="{$ doc.name $}-type_aliases" class="docs-header-link docs-api-h3">
       <span header-link="type_aliases"></span>
       Type aliases
     </h3>
@@ -108,7 +108,7 @@
   {%- endif -%}
 
   {%- if doc.constants.length -%}
-    <h3 id="constants" class="docs-header-link docs-api-h3">
+    <h3 id="{$ doc.name $}-constants" class="docs-header-link docs-api-h3">
       <span header-link="constants"></span>
       Constants
     </h3>
