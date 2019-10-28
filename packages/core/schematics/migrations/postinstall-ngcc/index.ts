@@ -17,11 +17,6 @@ import {appendPropertyInAstObject, findPropertyInAstObject, insertPropertyInAstO
  */
 export default function(): Rule {
   return (tree: Tree, context: SchematicContext) => {
-    context.logger.info('------ ngcc postinstall migration ------');
-    context.logger.info('This migration adds an ngcc invocation to npm/yarn\'s ');
-    context.logger.info('postinstall script. See more info here: ');
-    context.logger.info('https://v9.angular.io/guide/migration-ngcc');
-
     addPackageJsonScript(
         tree, 'postinstall',
         'ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points');
