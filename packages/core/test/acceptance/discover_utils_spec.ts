@@ -7,11 +7,13 @@
  */
 import {CommonModule} from '@angular/common';
 import {Component, Directive, HostBinding, InjectionToken, ViewChild} from '@angular/core';
+import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
+import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {onlyInIvy} from '@angular/private/testing';
 
 import {getHostElement, markDirty} from '../../src/render3/index';
-import {getComponent, getContext, getDebugNode, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getRootComponents, getViewComponent, loadLContext} from '../../src/render3/util/discovery_utils';
+import {getComponent, getComponentLView, getContext, getDebugNode, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getRootComponents, getViewComponent, loadLContext} from '../../src/render3/util/discovery_utils';
 
 onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
   let fixture: ComponentFixture<MyApp>;
@@ -84,6 +86,20 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
       expect(getComponent<MyApp>(fixture.nativeElement)).toEqual(myApp);
       expect(getComponent<Child>(child[0])).toEqual(childComponent[0]);
       expect(getComponent<Child>(child[1])).toEqual(childComponent[1]);
+    });
+  });
+
+  describe('getComponentLView', () => {
+    it('should retrieve component LView from element', () => {
+      const childLView = getComponentLView(child[0]);
+      expect(isLView(childLView)).toBe(true);
+      expect(childLView[CONTEXT] instanceof Child).toBe(true);
+    });
+
+    it('should retrieve component LView from component instance', () => {
+      const childLView = getComponentLView(childComponent[0]);
+      expect(isLView(childLView)).toBe(true);
+      expect(childLView[CONTEXT] instanceof Child).toBe(true);
     });
   });
 
