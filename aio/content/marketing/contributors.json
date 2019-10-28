@@ -831,5 +831,13 @@
     "website": "https://github.com/Brocco",
     "bio": "Mike (aka Brocco) is a Google Developer Expert in Web Technologies and Angular. He is passionate about teaching and helping others. You can find him online as half of the ngBS live stream and also as a panelist on the Angular Air video broadcast.",
     "groups": ["GDE"]
+  },
+"webdave": {
+    "name": "David Muellerchen",
+    "picture": "webdave.jpg",
+    "twitter": "webdave_de",
+    "website": "https://github.com/web-dave",
+    "bio": "David is an Angular consultant who offers support for your Angular applications and projects. He’s also a trainer at angular.de, angular-college and swissangular. He loves to speak and teach at meetups and conferences. David also writes his own blog and reviews upcoming books and articles. During leisure time he jumps arround with his 3 boys and his wife. He is an organizer of Angular Hamburg and ng-de.",
+    "groups": ["GDE"]
   }
 }
