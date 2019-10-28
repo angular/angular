@@ -13,7 +13,7 @@ import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/c
 import {ComponentTemplate} from '../interfaces/definition';
 import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType, TViewNode} from '../interfaces/node';
 import {isDirectiveHost} from '../interfaces/type_checks';
-import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
+import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TVIEW, TViewType, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild, removeView} from '../node_manipulation';
 import {getBindingIndex, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
@@ -81,8 +81,8 @@ export function ɵɵtemplate(
     registerPostOrderHooks(tView, tContainerNode);
 
     const embeddedTView = tContainerNode.tViews = createTView(
-        -1, templateFn, decls, vars, tView.directiveRegistry, tView.pipeRegistry, null,
-        tView.schemas, tViewConsts);
+        TViewType.Embedded, -1, templateFn, decls, vars, tView.directiveRegistry,
+        tView.pipeRegistry, null, tView.schemas, tViewConsts);
     const embeddedTViewNode = createTNode(tView, null, TNodeType.View, -1, null, null) as TViewNode;
     embeddedTViewNode.injectorIndex = tContainerNode.injectorIndex;
     embeddedTView.node = embeddedTViewNode;
