@@ -151,6 +151,11 @@ runInEachFileSystem(() => {
     it('array access works',
        () => { expect(evaluate(`const a = [1, 2, 3];`, 'a[1] + a[0]')).toEqual(3); });
 
+    it('array access out of bounds is `undefined`', () => {
+      expect(evaluate(`const a = [1, 2, 3];`, 'a[-1]')).toEqual(undefined);
+      expect(evaluate(`const a = [1, 2, 3];`, 'a[3]')).toEqual(undefined);
+    });
+
     it('array `length` property access works',
        () => { expect(evaluate(`const a = [1, 2, 3];`, 'a[\'length\'] + 1')).toEqual(4); });
 
@@ -181,6 +186,97 @@ runInEachFileSystem(() => {
        () => { expect(evaluate('const a = undefined;', 'a')).toEqual(undefined); });
 
     it('supports null', () => { expect(evaluate('const a = null;', 'a')).toEqual(null); });
+
+    it('resolves unknown binary operators as dynamic value', () => {
+      const value = evaluate('declare const window: any;', '"location" in window');
+      if (!(value instanceof DynamicValue)) {
+        return fail(`Should have resolved to a DynamicValue`);
+      }
+      expect(value.node.getText()).toEqual('"location" in window');
+      expect(value.isFromUnsupportedSyntax()).toBe(true);
+    });
+
+    it('resolves unknown unary operators as dynamic value', () => {
+      const value = evaluate('let index = 0;', '++index');
+      if (!(value instanceof DynamicValue)) {
+        return fail(`Should have resolved to a DynamicValue`);
+      }
+      expect(value.node.getText()).toEqual('++index');
+      expect(value.isFromUnsupportedSyntax()).toBe(true);
+    });
+
+    it('resolves invalid element accesses as dynamic value', () => {
+      const value = evaluate('const a = {}; const index: any = true;', 'a[index]');
+      if (!(value instanceof DynamicValue)) {
+        return fail(`Should have resolved to a DynamicValue`);
+      }
+      expect(value.node.getText()).toEqual('a[index]');
+      if (!value.isFromInvalidExpressionType()) {
+        return fail('Should have an invalid expression type as reason');
+      }
+      expect(value.reason).toEqual(true);
+    });
+
+    it('resolves invalid array accesses as dynamic value', () => {
+      const value = evaluate('const a = []; const index = 1.5;', 'a[index]');
+      if (!(value instanceof DynamicValue)) {
+        return fail(`Should have resolved to a DynamicValue`);
+      }
+      expect(value.node.getText()).toEqual('a[index]');
+      if (!value.isFromInvalidExpressionType()) {
+        return fail('Should have an invalid expression type as reason');
+      }
+      expect(value.reason).toEqual(1.5);
+    });
+
+    it('resolves binary operator on non-literals as dynamic value', () => {
+      const value = evaluate('const a: any = []; const b: any = [];', 'a + b');
+      if (!(value instanceof DynamicValue)) {
+        return fail(`Should have resolved to a DynamicValue`);
+      }
+      expect(value.node.getText()).toEqual('a + b');
+      if (!(value.reason instanceof DynamicValue)) {
+        return fail(`Should have a DynamicValue as reason`);
+      }
+      if (!value.reason.isFromInvalidExpressionType()) {
+        return fail('Should have an invalid expression type as reason');
+      }
+      expect(value.reason.node.getText()).toEqual('a');
+      expect(value.reason.reason).toEqual([]);
+    });
+
+    it('resolves invalid spreads in array literals as dynamic value', () => {
+      const array = evaluate('const a: any = true;', '[1, ...a]');
+      if (!Array.isArray(array)) {
+        return fail(`Should have resolved to an array`);
+      }
+      expect(array[0]).toBe(1);
+      const value = array[1];
+      if (!(value instanceof DynamicValue)) {
+        return fail(`Should have resolved to a DynamicValue`);
+      }
+      expect(value.node.getText()).toEqual('...a');
+      if (!value.isFromInvalidExpressionType()) {
+        return fail('Should have an invalid spread element as reason');
+      }
+      expect(value.reason).toEqual(true);
+    });
+
+    it('resolves invalid spreads in object literals as dynamic value', () => {
+      const value = evaluate('const a: any = true;', '{b: true, ...a}');
+      if (!(value instanceof DynamicValue)) {
+        return fail(`Should have resolved to a DynamicValue`);
+      }
+      expect(value.node.getText()).toEqual('{b: true, ...a}');
+      if (!value.isFromDynamicInput()) {
+        return fail('Should have a dynamic input as reason');
+      }
+      expect(value.reason.node.getText()).toEqual('...a');
+      if (!value.reason.isFromInvalidExpressionType()) {
+        return fail('Should have an invalid spread element as reason');
+      }
+      expect(value.reason.reason).toEqual(true);
+    });
 
     it('resolves access from external variable declarations as dynamic value', () => {
       const value = evaluate('declare const window: any;', 'window.location');

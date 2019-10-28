@@ -138,7 +138,7 @@ export class StaticInterpreter {
     } else if (this.host.isClass(node)) {
       result = this.visitDeclaration(node, context);
     } else {
-      return DynamicValue.fromUnknownExpressionType(node);
+      return DynamicValue.fromUnsupportedSyntax(node);
     }
     if (result instanceof DynamicValue && result.node !== node) {
       return DynamicValue.fromDynamicInput(node, result);
@@ -184,7 +184,8 @@ export class StaticInterpreter {
         if (spread instanceof DynamicValue) {
           return DynamicValue.fromDynamicInput(node, spread);
         } else if (!(spread instanceof Map)) {
-          throw new Error(`Unexpected value in spread assignment: ${spread}`);
+          return DynamicValue.fromDynamicInput(
+              node, DynamicValue.fromInvalidExpressionType(property, spread));
         }
         spread.forEach((value, key) => map.set(key, value));
       } else {
@@ -292,9 +293,6 @@ export class StaticInterpreter {
   private visitElementAccessExpression(node: ts.ElementAccessExpression, context: Context):
       ResolvedValue {
     const lhs = this.visitExpression(node.expression, context);
-    if (node.argumentExpression === undefined) {
-      throw new Error(`Expected argument in ElementAccessExpression`);
-    }
     if (lhs instanceof DynamicValue) {
       return DynamicValue.fromDynamicInput(node, lhs);
     }
@@ -303,8 +301,7 @@ export class StaticInterpreter {
       return DynamicValue.fromDynamicInput(node, rhs);
     }
     if (typeof rhs !== 'string' && typeof rhs !== 'number') {
-      throw new Error(
-          `ElementAccessExpression index should be string or number, got ${typeof rhs}: ${rhs}`);
+      return DynamicValue.fromInvalidExpressionType(node, rhs);
     }
 
     return this.accessHelper(node, lhs, rhs, context);
@@ -360,10 +357,7 @@ export class StaticInterpreter {
         return new ArrayConcatBuiltinFn(node, lhs);
       }
       if (typeof rhs !== 'number' || !Number.isInteger(rhs)) {
-        return DynamicValue.fromUnknown(node);
-      }
-      if (rhs < 0 || rhs >= lhs.length) {
-        throw new Error(`Index out of bounds: ${rhs} vs ${lhs.length}`);
+        return DynamicValue.fromInvalidExpressionType(node, rhs);
       }
       return lhs[rhs];
     } else if (lhs instanceof Reference) {
@@ -498,7 +492,7 @@ export class StaticInterpreter {
       ResolvedValue {
     const operatorKind = node.operator;
     if (!UNARY_OPERATORS.has(operatorKind)) {
-      throw new Error(`Unsupported prefix unary operator: ${ts.SyntaxKind[operatorKind]}`);
+      return DynamicValue.fromUnsupportedSyntax(node);
     }
 
     const op = UNARY_OPERATORS.get(operatorKind) !;
@@ -513,14 +507,14 @@ export class StaticInterpreter {
   private visitBinaryExpression(node: ts.BinaryExpression, context: Context): ResolvedValue {
     const tokenKind = node.operatorToken.kind;
     if (!BINARY_OPERATORS.has(tokenKind)) {
-      throw new Error(`Unsupported binary operator: ${ts.SyntaxKind[tokenKind]}`);
+      return DynamicValue.fromUnsupportedSyntax(node);
     }
 
     const opRecord = BINARY_OPERATORS.get(tokenKind) !;
     let lhs: ResolvedValue, rhs: ResolvedValue;
     if (opRecord.literal) {
-      lhs = literal(this.visitExpression(node.left, context));
-      rhs = literal(this.visitExpression(node.right, context));
+      lhs = literal(this.visitExpression(node.left, context), node.left);
+      rhs = literal(this.visitExpression(node.right, context), node.right);
     } else {
       lhs = this.visitExpression(node.left, context);
       rhs = this.visitExpression(node.right, context);
@@ -554,9 +548,9 @@ export class StaticInterpreter {
   private visitSpreadElement(node: ts.SpreadElement, context: Context): ResolvedValueArray {
     const spread = this.visitExpression(node.expression, context);
     if (spread instanceof DynamicValue) {
-      return [DynamicValue.fromDynamicInput(node.expression, spread)];
+      return [DynamicValue.fromDynamicInput(node, spread)];
     } else if (!Array.isArray(spread)) {
-      throw new Error(`Unexpected value in spread expression: ${spread}`);
+      return [DynamicValue.fromInvalidExpressionType(node, spread)];
     } else {
       return spread;
     }
@@ -582,12 +576,12 @@ function isFunctionOrMethodReference(ref: Reference<ts.Node>):
       ts.isFunctionExpression(ref.node);
 }
 
-function literal(value: ResolvedValue): any {
+function literal(value: ResolvedValue, node: ts.Node): any {
   if (value instanceof DynamicValue || value === null || value === undefined ||
       typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
     return value;
   }
-  throw new Error(`Value ${value} is not literal and cannot be used in this context.`);
+  return DynamicValue.fromInvalidExpressionType(node, value);
 }
 
 function isVariableDeclarationDeclared(node: ts.VariableDeclaration): boolean {
