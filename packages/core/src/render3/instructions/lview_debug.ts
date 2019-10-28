@@ -7,7 +7,7 @@
  */
 
 import {AttributeMarker, ComponentTemplate} from '..';
-import {SchemaMetadata} from '../../core';
+import {SchemaMetadata, Type} from '../../core';
 import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
@@ -19,7 +19,7 @@ import {SelectorFlags} from '../interfaces/projection';
 import {TQueries} from '../interfaces/query';
 import {RComment, RElement, RNode} from '../interfaces/renderer';
 import {TStylingContext} from '../interfaces/styling';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, T_HOST} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, TViewType, T_HOST} from '../interfaces/view';
 import {DebugNodeStyling, NodeStylingDebug} from '../styling/styling_debug';
 import {attachDebugObject} from '../util/debug_utils';
 import {isStylingContext} from '../util/styling_utils';
@@ -56,25 +56,64 @@ const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNg
  * ```
  */
 
-export const LViewArray = NG_DEV_MODE && createNamedArrayType('LView') || null !as ArrayConstructor;
-let LVIEW_EMPTY: unknown[];  // can't initialize here or it will not be tree shaken, because `LView`
-                             // constructor could have side-effects.
+let LVIEW_COMPONENT_CACHE !: Map<string|null, Array<any>>;
+let LVIEW_EMBEDDED_CACHE !: Map<string|null, Array<any>>;
+let LVIEW_ROOT !: Array<any>;
+
+interface TViewDebug extends ITView {
+  type: TViewType;
+}
+
 /**
  * This function clones a blueprint and creates LView.
  *
  * Simple slice will keep the same type, and we need it to be LView
  */
-export function cloneToLView(list: any[]): LView {
-  if (LVIEW_EMPTY === undefined) LVIEW_EMPTY = new LViewArray();
-  return LVIEW_EMPTY.concat(list) as any;
+export function cloneToLViewFromTViewBlueprint(tView: TView): LView {
+  const debugTView = tView as TViewDebug;
+  const lView = getLViewToClone(debugTView.type, tView.template && tView.template.name);
+  return lView.concat(tView.blueprint) as any;
+}
+
+function getLViewToClone(type: TViewType, name: string | null): Array<any> {
+  switch (type) {
+    case TViewType.Root:
+      if (LVIEW_ROOT === undefined) LVIEW_ROOT = new (createNamedArrayType('LRootView'))();
+      return LVIEW_ROOT;
+    case TViewType.Component:
+      if (LVIEW_COMPONENT_CACHE === undefined) LVIEW_COMPONENT_CACHE = new Map();
+      let componentArray = LVIEW_COMPONENT_CACHE.get(name);
+      if (componentArray === undefined) {
+        componentArray = new (createNamedArrayType('LComponentView' + nameSuffix(name)))();
+        LVIEW_COMPONENT_CACHE.set(name, componentArray);
+      }
+      return componentArray;
+    case TViewType.Embedded:
+      if (LVIEW_EMBEDDED_CACHE === undefined) LVIEW_EMBEDDED_CACHE = new Map();
+      let embeddedArray = LVIEW_EMBEDDED_CACHE.get(name);
+      if (embeddedArray === undefined) {
+        embeddedArray = new (createNamedArrayType('LEmbeddedView' + nameSuffix(name)))();
+        LVIEW_EMBEDDED_CACHE.set(name, embeddedArray);
+      }
+      return embeddedArray;
+  }
+  throw new Error('unreachable code');
+}
+
+function nameSuffix(text: string | null | undefined): string {
+  if (text == null) return '';
+  const index = text.lastIndexOf('_Template');
+  return '_' + (index === -1 ? text : text.substr(0, index));
 }
 
 /**
- * This class is a debug version of Object literal so that we can have constructor name show up in
+ * This class is a debug version of Object literal so that we can have constructor name show up
+ * in
  * debug tools in ngDevMode.
  */
 export const TViewConstructor = class TView implements ITView {
   constructor(
+      public type: TViewType,                                //
       public id: number,                                     //
       public blueprint: LView,                               //
       public template: ComponentTemplate<{}>|null,           //
@@ -259,8 +298,10 @@ export function toDebug(obj: any): any {
  * reading.
  *
  * @param value possibly wrapped native DOM node.
- * @param includeChildren If `true` then the serialized HTML form will include child elements (same
- * as `outerHTML`). If `false` then the serialized HTML form will only contain the element itself
+ * @param includeChildren If `true` then the serialized HTML form will include child elements
+ * (same
+ * as `outerHTML`). If `false` then the serialized HTML form will only contain the element
+ * itself
  * (will not serialize child elements).
  */
 function toHtml(value: any, includeChildren: boolean = false): string|null {
@@ -305,7 +346,8 @@ export class LViewDebug {
   get html(): string { return (this.nodes || []).map(node => toHtml(node.native, true)).join(''); }
   get context(): {}|null { return this._raw_lView[CONTEXT]; }
   /**
-   * The tree of nodes associated with the current `LView`. The nodes have been normalized into a
+   * The tree of nodes associated with the current `LView`. The nodes have been normalized into
+   * a
    * tree structure with relevant details pulled out for readability.
    */
   get nodes(): DebugNode[]|null {

@@ -28,7 +28,7 @@ import {assignTViewNodeToLView, createLView, createTView, elementCreate, locateH
 import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode} from './interfaces/node';
 import {RNode, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
-import {LView, LViewFlags, TVIEW} from './interfaces/view';
+import {LView, LViewFlags, TVIEW, TViewType} from './interfaces/view';
 import {enterView, leaveView} from './state';
 import {defaultScheduler} from './util/misc_utils';
 import {getTNode} from './util/view_utils';
@@ -158,7 +158,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     }
 
     // Create the root view. Uses empty TView and ContentTemplate.
-    const rootTView = createTView(-1, null, 1, 0, null, null, null, null, null);
+    const rootTView = createTView(TViewType.Root, -1, null, 1, 0, null, null, null, null, null);
     const rootLView = createLView(
         null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, sanitizer,
         rootViewInjector);
