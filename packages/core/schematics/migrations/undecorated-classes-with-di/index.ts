@@ -9,7 +9,6 @@
 import {logging} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {AotCompiler} from '@angular/compiler';
-import {createCompilerHost} from '@angular/compiler-cli';
 import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {relative} from 'path';
@@ -37,14 +36,6 @@ export default function(): Rule {
     const basePath = process.cwd();
     const failures: string[] = [];
 
-    ctx.logger.info('------ Undecorated classes with DI migration ------');
-    ctx.logger.info(
-        'As of Angular 9, it is no longer supported to use Angular DI ' +
-        'on a class that does not have an Angular decorator. ');
-    ctx.logger.info('Read more about this in the dedicated guide: ');
-    ctx.logger.info('https://v9.angular.io/guide/migration-undecorated-classes');
-
-
     if (!buildPaths.length) {
       throw new SchematicsException(
           'Could not find any tsconfig file. Cannot migrate undecorated derived classes and ' +
@@ -59,12 +50,7 @@ export default function(): Rule {
       ctx.logger.info('Could not migrate all undecorated classes that use dependency');
       ctx.logger.info('injection. Please manually fix the following failures:');
       failures.forEach(message => ctx.logger.warn(`⮑   ${message}`));
-    } else {
-      ctx.logger.info('Successfully migrated all found undecorated classes');
-      ctx.logger.info('that use dependency injection.');
     }
-
-    ctx.logger.info('----------------------------------------------');
   };
 }
 
