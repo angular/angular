@@ -589,9 +589,9 @@ export class Context {
    */
   allocateId(): ts.Identifier { return ts.createIdentifier(`_t${this.nextId++}`); }
 
-  getPipeByName(name: string): ts.Expression {
+  getPipeByName(name: string): ts.Expression|null {
     if (!this.pipes.has(name)) {
-      throw new Error(`Missing pipe: ${name}`);
+      return null;
     }
     return this.env.pipeInst(this.pipes.get(name) !);
   }
@@ -988,9 +988,17 @@ class TcbExpressionTranslator {
       return ts.createIdentifier('ctx');
     } else if (ast instanceof BindingPipe) {
       const expr = this.translate(ast.exp);
-      let pipe: ts.Expression;
+      let pipe: ts.Expression|null;
       if (this.tcb.env.config.checkTypeOfPipes) {
         pipe = this.tcb.getPipeByName(ast.name);
+        if (pipe === null) {
+          // No pipe by that name exists in scope. Record this as an error.
+          const nameAbsoluteSpan = toAbsoluteSpan(ast.nameSpan, this.sourceSpan);
+          this.tcb.oobRecorder.missingPipe(this.tcb.id, ast, nameAbsoluteSpan);
+
+          // Return an 'any' value to at least allow the rest of the expression to be checked.
+          pipe = NULL_AS_ANY;
+        }
       } else {
         pipe = ts.createParen(ts.createAsExpression(
             ts.createNull(), ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)));

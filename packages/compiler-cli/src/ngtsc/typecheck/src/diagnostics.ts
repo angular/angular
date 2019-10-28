@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ParseSourceSpan, ParseSpan, Position} from '@angular/compiler';
+import {AbsoluteSourceSpan, ParseSourceSpan, ParseSpan, Position} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {getTokenAtPosition} from '../../util/src/typescript';
@@ -53,6 +53,11 @@ export interface AbsoluteSpan {
 export function toAbsoluteSpan(span: ParseSpan, sourceSpan: ParseSourceSpan): AbsoluteSpan {
   const offset = sourceSpan.start.offset;
   return <AbsoluteSpan>{start: span.start + offset, end: span.end + offset};
+}
+
+export function absoluteSourceSpanToSourceLocation(
+    id: string, span: AbsoluteSourceSpan): SourceLocation {
+  return {id, ...span};
 }
 
 /**
