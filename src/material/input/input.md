@@ -81,7 +81,7 @@ available in the CDK.
 ### Responding to changes in the autofill state of an `<input>`
 
 The CDK provides
-[utilities](https://material.angular.io/cdk/text-field/overview#monitoring-the-autofill-state-of-an-input)
+[utilities](https://material.angular.io/cdk/text-field/overview#monitoring-the-autofill-state-of-an-code-lt-input-gt-code-)
 for detecting when an input becomes autofilled and changing the appearance of the autofilled state.
 
 ### Accessibility

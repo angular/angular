@@ -1,7 +1,7 @@
 The `text-field` package provides useful utilities for working with text input fields such as
 `<input>` and `<textarea>`.
 
-## Automatically resizing a `<textarea>`
+### Automatically resizing a `<textarea>`
 
 The `cdkTextareaAutosize` directive can be applied to any `<textarea>` to make it automatically
 resize to fit its content. The minimum and maximum number of rows to expand to can be set via the
@@ -14,7 +14,7 @@ affecting the `<textarea>` have changed.
 
 <!-- example(text-field-autosize-textarea) -->
 
-## Monitoring the autofill state of an `<input>`
+### Monitoring the autofill state of an `<input>`
 
 The `AutofillMonitor` is an injectable service that allows the user to monitor the autofill state of
 an `<input>`. It has a `monitor` method that takes an element to monitor and returns an
@@ -40,7 +40,7 @@ using Angular Material, you should include this CSS with the `cdk-text-field` mi
 @include cdk-text-field();
 ```
 
-## Styling the autofill state of an `<input>`
+### Styling the autofill state of an `<input>`
 
 It can be difficult to override the browser default `background` and `color` properties on an
 autofilled `<input>`. To make this simpler, the CDK includes a mixin `cdk-text-field-autofill-color`
