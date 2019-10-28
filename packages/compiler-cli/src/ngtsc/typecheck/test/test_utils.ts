@@ -387,4 +387,5 @@ export class NoopSchemaChecker implements DomSchemaChecker {
 export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   get diagnostics(): ReadonlyArray<ts.Diagnostic> { return []; }
   missingReferenceTarget(): void {}
+  missingPipe(): void {}
 }

@@ -735,6 +735,29 @@ export declare class AnimationEvent {
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('unknownTarget');
     });
 
+    it('should report an error with an unknown pipe', () => {
+      env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '{{expr | unknown}}',
+        })
+        class TestCmp {
+          expr = 3;
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+        })
+        class Module {}
+      `);
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(`No pipe found with name 'unknown'.`);
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('unknown');
+    });
+
     it('should report an error with pipe bindings', () => {
       env.write('test.ts', `
     import {CommonModule} from '@angular/common';
