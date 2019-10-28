@@ -8,7 +8,7 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {computeMsgId} from '@angular/compiler';
-import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, NO_ERRORS_SCHEMA, NgModule, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, NO_ERRORS_SCHEMA, NgModule, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ViewRef} from '@angular/core';
 import {Input} from '@angular/core/src/metadata';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed, TestComponentRenderer} from '@angular/core/testing';
@@ -870,6 +870,60 @@ describe('ViewContainerRef', () => {
       expect(getElementHtml(fixture.nativeElement))
           .toEqual(
               '<child vcref="">**A**</child><child>**C**</child><child>**C**</child><child>**B**</child>');
+    });
+
+    it('should recurs into child views when computing rootNodes elements', () => {
+      class MyDirEmbedded {
+        // This is a marker for easier debugging.
+      }
+
+      @Directive({selector: '[dir]'})
+      class MyDir {
+        viewRef: EmbeddedViewRef<{}>|null = null;
+
+        @Input() dir: any;
+
+        constructor(public template: TemplateRef<{}>, public viewContainerRef: ViewContainerRef) {
+          this.viewRef =
+              this.viewContainerRef.createEmbeddedView(this.template, new MyDirEmbedded());
+          this.viewRef.detectChanges();
+        }
+      }
+
+      @Component({
+        selector: 'edit-form',
+        template: `
+          <ng-template [dir]="true">
+            <div *ngIf="true">Text</div>
+          </ng-template>
+        `,
+      })
+      class MyComp {
+        @ViewChild(MyDir, {static: true}) dir !: MyDir;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [MyComp, MyDir],
+        imports: [CommonModule],
+      });
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const dirRef = fixture.componentInstance.dir;
+
+      // Expecting:
+      //   - One comment node for ngIf anchor.
+      //   - One <div>Text</div> node for the ngIf content.
+      //   - VE ONLY: Extra comment node It is unclear why the VE adds the last one.
+      const rootNodes = dirRef.viewRef !.rootNodes;
+      expect(rootNodes.length).toBe(ivyEnabled ? 2 : 3);
+      expect(rootNodes[0].outerHTML).toBe('<!--bindings={\n  "ng-reflect-ng-if": "true"\n}-->');
+      expect(rootNodes[1].outerHTML).toBe('<div>Text</div>');
+      if (!ivyEnabled) {
+        expect(rootNodes[2].outerHTML)
+            .toBe('<!---->');  // It is unclear why the VE adds the last one.
+      }
     });
 
   });
