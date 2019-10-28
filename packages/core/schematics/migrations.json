@@ -17,37 +17,37 @@
     },
     "migration-v9-renderer-to-renderer2": {
       "version": "9.0.0-beta",
-      "description": "Renderer to Renderer2 migration. As of Angular 9, the Renderer class is no longer available. Renderer2 should be used instead. Read more about this in the dedicated guide: https://v9.angular.io/guide/migration-renderer",
+      "description": "Renderer to Renderer2 migration. As of Angular 9, the Renderer class is no longer available. Renderer2 should be used instead. Read more about this here: https://v9.angular.io/guide/migration-renderer",
       "factory": "./migrations/renderer-to-renderer2/index"
     },
     "migration-v9-missing-injectable": {
       "version": "9.0.0-beta",
-      "description": "Missing @Injectable migration. In Angular 9, enforcement of @Injectable decorators for DI is a bit stricter. Read more about this in the dedicated guide: https://v9.angular.io/guide/migration-injectable",
+      "description": "Missing @Injectable migration. In Angular 9, enforcement of @Injectable decorators for DI is a bit stricter. Read more about this here: https://v9.angular.io/guide/migration-injectable",
       "factory": "./migrations/missing-injectable/index"
     },
     "migration-v9-undecorated-classes-with-di": {
       "version": "9.0.0-beta",
-      "description": "Undecorated classes with DI migration. As of Angular 9, it is no longer supported to use Angular DI on a class that does not have an Angular decorator. Read more about this in the dedicated guide: https://v9.angular.io/guide/migration-undecorated-classes",
+      "description": "Undecorated classes with DI migration. As of Angular 9, it is no longer supported to use Angular DI on a class that does not have an Angular decorator. Read more about this here: https://v9.angular.io/guide/migration-undecorated-classes",
       "factory": "./migrations/undecorated-classes-with-di/index"
     },
     "migration-v9-undecorated-classes-with-decorated-fields": {
       "version": "9.0.0-beta",
-      "description": "Undecorated classes with decorated fields migration. As of Angular 9, it is no longer supported to have Angular field decorators on a class that does not have an Angular decorator. Read more about this in the dedicated guide: https://v9.angular.io/guide/migration-undecorated-classes",
+      "description": "Undecorated classes with decorated fields migration. As of Angular 9, it is no longer supported to have Angular field decorators on a class that does not have an Angular decorator. Read more about this here: https://v9.angular.io/guide/migration-undecorated-classes",
       "factory": "./migrations/undecorated-classes-with-decorated-fields/index"
     },
     "migration-v9-dynamic-queries": {
       "version": "9-beta",
-      "description": "Removes the `static` flag from dynamic queries. As of Angular 9, the \"static\" flag defaults to false and is no longer required for your view and content queries. Read more about this in the dedicated guide: https://v9.angular.io/guide/migration-dynamic-flag",
+      "description": "Removes the `static` flag from dynamic queries. As of Angular 9, the \"static\" flag defaults to false and is no longer required for your view and content queries. Read more about this here: https://v9.angular.io/guide/migration-dynamic-flag",
       "factory": "./migrations/dynamic-queries/index"
     },
     "migration-v9-postinstall-ngcc": {
       "version": "9-beta",
-      "description": "NGCC postinstall migration. Adds an ngcc invocation to npm/yarn's postinstall script. See more info here: https://v9.angular.io/guide/migration-ngcc",
+      "description": "NGCC postinstall migration. Adds an ngcc invocation to npm/yarn's postinstall script. Read more about this here: https://v9.angular.io/guide/migration-ngcc",
       "factory": "./migrations/postinstall-ngcc/index"
     },
     "migration-v9-module-with-providers": {
       "version": "9.0.0-beta",
-      "description": "ModuleWithProviders migration. In Angular 9, the ModuleWithProviders type without a generic has been deprecated. This migration adds the generic where it is missing. See more info here: https://v9.angular.io/guide/migration-module-with-providers",
+      "description": "ModuleWithProviders migration. In Angular 9, the ModuleWithProviders type without a generic has been deprecated. This migration adds the generic where it is missing. Read more about this here: https://v9.angular.io/guide/migration-module-with-providers",
       "factory": "./migrations/module-with-providers/index"
     }
   }
