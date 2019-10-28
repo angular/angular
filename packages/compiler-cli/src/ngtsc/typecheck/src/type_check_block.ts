@@ -17,6 +17,7 @@ import {addParseSpanInfo, addSourceId, toAbsoluteSpan, wrapForDiagnostics} from 
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {NULL_AS_ANY, astToTypescript} from './expression';
+import {OutOfBandDiagnosticRecorder} from './oob';
 import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateVariable, tsDeclareVariable} from './ts_util';
 
 
@@ -28,15 +29,27 @@ import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsC
  * When passed through TypeScript's TypeChecker, type errors that arise within the type check block
  * function indicate issues in the template itself.
  *
- * @param node the TypeScript node for the component class.
+ * As a side effect of generating a TCB for the component, `ts.Diagnostic`s may also be produced
+ * directly for issues within the template which are identified during generation. These issues are
+ * recorded in either the `domSchemaChecker` (which checks usage of DOM elements and bindings) as
+ * well as the `oobRecorder` (which records errors when the type-checking code generator is unable
+ * to sufficiently understand a template).
+ *
+ * @param env an `Environment` into which type-checking code will be generated.
+ * @param ref a `Reference` to the component class which should be type-checked.
+ * @param name a `ts.Identifier` to use for the generated `ts.FunctionDeclaration`.
  * @param meta metadata about the component's template and the function being generated.
- * @param importManager an `ImportManager` for the file into which the TCB will be written.
+ * @param domSchemaChecker used to check and record errors regarding improper usage of DOM elements
+ * and bindings.
+ * @param oobRecorder used to record errors regarding template elements which could not be correctly
+ * translated into types during TCB generation.
  */
 export function generateTypeCheckBlock(
     env: Environment, ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, name: ts.Identifier,
-    meta: TypeCheckBlockMetadata, domSchemaChecker: DomSchemaChecker): ts.FunctionDeclaration {
-  const tcb =
-      new Context(env, domSchemaChecker, meta.id, meta.boundTarget, meta.pipes, meta.schemas);
+    meta: TypeCheckBlockMetadata, domSchemaChecker: DomSchemaChecker,
+    oobRecorder: OutOfBandDiagnosticRecorder): ts.FunctionDeclaration {
+  const tcb = new Context(
+      env, domSchemaChecker, oobRecorder, meta.id, meta.boundTarget, meta.pipes, meta.schemas);
   const scope = Scope.forNodes(tcb, null, tcb.boundTarget.target.template !);
   const ctxRawType = env.referenceType(ref);
   if (!ts.isTypeReferenceNode(ctxRawType)) {
@@ -562,7 +575,8 @@ export class Context {
   private nextId = 1;
 
   constructor(
-      readonly env: Environment, readonly domSchemaChecker: DomSchemaChecker, readonly id: string,
+      readonly env: Environment, readonly domSchemaChecker: DomSchemaChecker,
+      readonly oobRecorder: OutOfBandDiagnosticRecorder, readonly id: string,
       readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
       private pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
       readonly schemas: SchemaMetadata[]) {}
@@ -797,6 +811,7 @@ class Scope {
       for (const child of node.children) {
         this.appendNode(child);
       }
+      this.checkReferencesOfNode(node);
     } else if (node instanceof TmplAstTemplate) {
       // Template children are rendered in a child scope.
       this.appendDirectivesAndInputsOfNode(node);
@@ -806,8 +821,17 @@ class Scope {
         this.templateCtxOpMap.set(node, ctxIndex);
         this.opQueue.push(new TcbTemplateBodyOp(this.tcb, this, node));
       }
+      this.checkReferencesOfNode(node);
     } else if (node instanceof TmplAstBoundText) {
       this.opQueue.push(new TcbTextInterpolationOp(this.tcb, this, node));
+    }
+  }
+
+  private checkReferencesOfNode(node: TmplAstElement|TmplAstTemplate): void {
+    for (const ref of node.references) {
+      if (this.tcb.boundTarget.getReferenceTarget(ref) === null) {
+        this.tcb.oobRecorder.missingReferenceTarget(this.tcb.id, ref);
+      }
     }
   }
 
@@ -1025,7 +1049,10 @@ class TcbExpressionTranslator {
     } else if (binding instanceof TmplAstReference) {
       const target = this.tcb.boundTarget.getReferenceTarget(binding);
       if (target === null) {
-        throw new Error(`Unbound reference? ${binding.name}`);
+        // This reference is unbound. Traversal of the `TmplAstReference` itself should have
+        // recorded the error in the `OutOfBandDiagnosticRecorder`.
+        // Still check the rest of the expression if possible by using an `any` value.
+        return NULL_AS_ANY;
       }
 
       // The reference is either to an element, an <ng-template> node, or to a directive on an
