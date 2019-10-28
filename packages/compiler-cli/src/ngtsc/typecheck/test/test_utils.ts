@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssSelector, ParseSourceFile, ParseSourceSpan, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, Type, parseTemplate} from '@angular/compiler';
+import {CssSelector, ParseSourceFile, ParseSourceSpan, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, TmplAstReference, Type, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from '../../file_system';
@@ -19,6 +19,7 @@ import {TemplateSourceMapping, TypeCheckBlockMetadata, TypeCheckableDirectiveMet
 import {TypeCheckContext} from '../src/context';
 import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
+import {OutOfBandDiagnosticRecorder} from '../src/oob';
 import {generateTypeCheckBlock} from '../src/type_check_block';
 
 export function typescriptLibDts(): TestFile {
@@ -220,7 +221,7 @@ export function tcb(
 
   const tcb = generateTypeCheckBlock(
       FakeEnvironment.newFake(config), new Reference(clazz), ts.createIdentifier('Test_TCB'), meta,
-      new NoopSchemaChecker());
+      new NoopSchemaChecker(), new NoopOobRecorder());
 
   const removeComments = !options.emitSpans;
   const res = ts.createPrinter({removeComments}).printNode(ts.EmitHint.Unspecified, tcb, sf);
@@ -381,4 +382,9 @@ export class NoopSchemaChecker implements DomSchemaChecker {
   checkProperty(
       id: string, element: TmplAstElement, name: string, span: ParseSourceSpan,
       schemas: SchemaMetadata[]): void {}
+}
+
+export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
+  get diagnostics(): ReadonlyArray<ts.Diagnostic> { return []; }
+  missingReferenceTarget(): void {}
 }
