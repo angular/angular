@@ -145,7 +145,7 @@ export class KeyedWrite extends AST {
 export class BindingPipe extends AST {
   constructor(
       span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public exp: AST, public name: string,
-      public args: any[]) {
+      public args: any[], public nameSpan: ParseSpan) {
     super(span, sourceSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any { return visitor.visitPipe(this, context); }
@@ -484,7 +484,8 @@ export class AstTransformer implements AstVisitor {
 
   visitPipe(ast: BindingPipe, context: any): AST {
     return new BindingPipe(
-        ast.span, ast.sourceSpan, ast.exp.visit(this), ast.name, this.visitAll(ast.args));
+        ast.span, ast.sourceSpan, ast.exp.visit(this), ast.name, this.visitAll(ast.args),
+        ast.nameSpan);
   }
 
   visitKeyedRead(ast: KeyedRead, context: any): AST {
@@ -635,7 +636,7 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     const exp = ast.exp.visit(this);
     const args = this.visitAll(ast.args);
     if (exp !== ast.exp || args !== ast.args) {
-      return new BindingPipe(ast.span, ast.sourceSpan, exp, ast.name, args);
+      return new BindingPipe(ast.span, ast.sourceSpan, exp, ast.name, args, ast.nameSpan);
     }
     return ast;
   }

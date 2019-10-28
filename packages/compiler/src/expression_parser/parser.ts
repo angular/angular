@@ -348,13 +348,16 @@ export class _ParseAST {
       }
 
       do {
+        const nameStart = this.inputIndex;
         const name = this.expectIdentifierOrKeyword();
+        const nameSpan = this.span(nameStart);
         const args: AST[] = [];
         while (this.optionalCharacter(chars.$COLON)) {
           args.push(this.parseExpression());
         }
         const {start} = result.span;
-        result = new BindingPipe(this.span(start), this.sourceSpan(start), result, name, args);
+        result =
+            new BindingPipe(this.span(start), this.sourceSpan(start), result, name, args, nameSpan);
       } while (this.optionalOperator('|'));
     }
 
