@@ -823,5 +823,13 @@
     "picture": "hafiz.jpg",
     "website": "https://github.com/ayazhafiz",
     "bio": "Ayaz is an undergraduate student with interests in free software."
+  },
+  "FabianGosebrink": {
+    "name": "Fabian Gosebrink",
+    "picture": "fabiangosebrink.jpg",
+    "twitter": "FabianGosebrink",
+    "website": "https://fabian-gosebrink.com",
+    "bio": "Fabian Gosebrink is Google Developer Expert for Angular and Web Technologies, Microsoft MVP and Web Developer for ASP.NET Core and Angular. As a professional software engineer, consultant and trainer, he advises and supports customers in the implementation of web applications in the front- and backend up to the mobile area.",
+    "groups": ["GDE"]
   }
 }
