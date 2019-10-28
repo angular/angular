@@ -29,7 +29,8 @@ describe('translateFiles()', () => {
       sourceFilePaths: resolveAll(__dirname + '/test_files', ['test-1.txt', 'test-2.txt']),
       outputPathFn,
       translationFilePaths: resolveAll(
-          __dirname + '/locales', ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf']),
+          __dirname + '/locales',
+          ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf', 'messages.it.xtb']),
       translationFileLocales: [], diagnostics,
       missingTranslation: 'error'
     });
@@ -48,6 +49,10 @@ describe('translateFiles()', () => {
         .toEqual('Contents of test-1.txt');
     expect(FileUtils.readFile(resolve(testDir, 'es', 'test-2.txt')))
         .toEqual('Contents of test-2.txt');
+    expect(FileUtils.readFile(resolve(testDir, 'it', 'test-1.txt')))
+        .toEqual('Contents of test-1.txt');
+    expect(FileUtils.readFile(resolve(testDir, 'it', 'test-2.txt')))
+        .toEqual('Contents of test-2.txt');
   });
 
   it('should translate and copy source-code files to the destination folders', () => {
@@ -57,7 +62,8 @@ describe('translateFiles()', () => {
       sourceRootPath: resolve(__dirname, 'test_files'),
       sourceFilePaths: resolveAll(__dirname + '/test_files', ['test.js']), outputPathFn,
       translationFilePaths: resolveAll(
-          __dirname + '/locales', ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf']),
+          __dirname + '/locales',
+          ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf', 'messages.it.xtb']),
       translationFileLocales: [], diagnostics,
       missingTranslation: 'error',
     });
@@ -70,6 +76,8 @@ describe('translateFiles()', () => {
         .toEqual(`var name="World";var message="Guten Tag, "+name+"!";`);
     expect(FileUtils.readFile(resolve(testDir, 'es', 'test.js')))
         .toEqual(`var name="World";var message="Hola, "+name+"!";`);
+    expect(FileUtils.readFile(resolve(testDir, 'it', 'test.js')))
+        .toEqual(`var name="World";var message="Ciao, "+name+"!";`);
   });
 
   it('should translate and copy source-code files overriding the locales', () => {
@@ -79,7 +87,8 @@ describe('translateFiles()', () => {
       sourceRootPath: resolve(__dirname, 'test_files'),
       sourceFilePaths: resolveAll(__dirname + '/test_files', ['test.js']), outputPathFn,
       translationFilePaths: resolveAll(
-          __dirname + '/locales', ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf']),
+          __dirname + '/locales',
+          ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf', 'messages.it.xtb']),
       translationFileLocales: ['xde', undefined, 'fr'], diagnostics,
       missingTranslation: 'error',
     });
@@ -97,6 +106,8 @@ describe('translateFiles()', () => {
         .toEqual(`var name="World";var message="Hola, "+name+"!";`);
     expect(FileUtils.readFile(resolve(testDir, 'fr', 'test.js')))
         .toEqual(`var name="World";var message="Bonjour, "+name+"!";`);
+    expect(FileUtils.readFile(resolve(testDir, 'it', 'test.js')))
+        .toEqual(`var name="World";var message="Ciao, "+name+"!";`);
   });
 
   it('should transform and/or copy files to the destination folders', () => {
@@ -108,7 +119,8 @@ describe('translateFiles()', () => {
           resolveAll(__dirname + '/test_files', ['test-1.txt', 'test-2.txt', 'test.js']),
       outputPathFn,
       translationFilePaths: resolveAll(
-          __dirname + '/locales', ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf']),
+          __dirname + '/locales',
+          ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf', 'messages.it.xtb']),
       translationFileLocales: [], diagnostics,
       missingTranslation: 'error',
     });
@@ -127,6 +139,10 @@ describe('translateFiles()', () => {
         .toEqual('Contents of test-1.txt');
     expect(FileUtils.readFile(resolve(testDir, 'es', 'test-2.txt')))
         .toEqual('Contents of test-2.txt');
+    expect(FileUtils.readFile(resolve(testDir, 'it', 'test-1.txt')))
+        .toEqual('Contents of test-1.txt');
+    expect(FileUtils.readFile(resolve(testDir, 'it', 'test-2.txt')))
+        .toEqual('Contents of test-2.txt');
 
     expect(FileUtils.readFile(resolve(testDir, 'fr', 'test.js')))
         .toEqual(`var name="World";var message="Bonjour, "+name+"!";`);
@@ -134,6 +150,8 @@ describe('translateFiles()', () => {
         .toEqual(`var name="World";var message="Guten Tag, "+name+"!";`);
     expect(FileUtils.readFile(resolve(testDir, 'es', 'test.js')))
         .toEqual(`var name="World";var message="Hola, "+name+"!";`);
+    expect(FileUtils.readFile(resolve(testDir, 'it', 'test.js')))
+        .toEqual(`var name="World";var message="Ciao, "+name+"!";`);
   });
 });
 
