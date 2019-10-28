@@ -370,3 +370,20 @@ export function getDebugNode(element: Node): DebugNode|null {
 
   return debugNode;
 }
+
+/**
+ * Retrieve the component `LView` from component/element.
+ *
+ * NOTE: `LView` is a private and should not be leaked outside.
+ *       Don't export this method to `ng.*` on window.
+ *
+ * @param target Component or Element instance.
+ */
+export function getComponentLView(target: any): LView {
+  const lContext = loadLContext(target);
+  const nodeIndx = lContext.nodeIndex;
+  const lView = lContext.lView;
+  const componentLView = lView[nodeIndx];
+  ngDevMode && assertLView(componentLView);
+  return componentLView;
+}

@@ -8,11 +8,12 @@
 
 import {createLContainer, createLView, createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
 import {isLContainer, isLView} from '@angular/core/src/render3/interfaces/type_checks';
+import {TViewType} from '@angular/core/src/render3/interfaces/view';
 
 describe('view_utils', () => {
   it('should verify unwrap methods', () => {
     const div = document.createElement('div');
-    const tView = createTView(0, null, 0, 0, null, null, null, null, null);
+    const tView = createTView(TViewType.Root, 0, null, 0, 0, null, null, null, null, null);
     const lView = createLView(null, tView, {}, 0, div, null, {} as any, {} as any, null, null);
     const tNode = createTNode(null !, null, 3, 0, 'div', []);
     const lContainer = createLContainer(lView, lView, div, tNode, true);

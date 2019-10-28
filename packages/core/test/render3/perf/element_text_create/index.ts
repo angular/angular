@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {TViewType} from '@angular/core/src/render3/interfaces/view';
 import {ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
 import {createTNode, createTView} from '../../../../src/render3/instructions/shared';
 import {ɵɵtext} from '../../../../src/render3/instructions/text';
@@ -64,9 +65,10 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 }
 
 const viewTNode = createTNode(null !, null, TNodeType.View, -1, null, null) as TViewNode;
-const embeddedTView = createTView(-1, testTemplate, 21, 0, null, null, null, null, [
-  ['name1', 'value1', 'name2', 'value2', 'name3', 'value3', 'name4', 'value4', 'name5', 'value5']
-]);
+const embeddedTView = createTView(
+    TViewType.Embedded, -1, testTemplate, 21, 0, null, null, null, null, [[
+      'name1', 'value1', 'name2', 'value2', 'name3', 'value3', 'name4', 'value4', 'name5', 'value5'
+    ]]);
 
 // create view once so we don't profile first template pass
 createAndRenderLView(null, embeddedTView, viewTNode);
