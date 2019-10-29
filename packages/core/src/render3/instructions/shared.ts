@@ -8,6 +8,7 @@
 import {Injector} from '../../di';
 import {ErrorHandler} from '../../error_handler';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
+import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertNotEqual, assertNotSame} from '../../util/assert';
@@ -678,32 +679,50 @@ function createViewBlueprint(bindingStartIndex: number, initialViewLength: numbe
   return blueprint as LView;
 }
 
-export function createError(text: string, token: any) {
+function createError(text: string, token: any) {
   return new Error(`Renderer: ${text} [${stringifyForError(token)}]`);
 }
 
-
-/**
- * Locates the host native element, used for bootstrapping existing nodes into rendering pipeline.
- *
- * @param elementOrSelector Render element or CSS selector to locate the element.
- */
-export function locateHostElement(
-    factory: RendererFactory3, elementOrSelector: RElement | string): RElement|null {
-  const defaultRenderer = factory.createRenderer(null, null);
-  const rNode = typeof elementOrSelector === 'string' ?
-      (isProceduralRenderer(defaultRenderer) ?
-           defaultRenderer.selectRootElement(elementOrSelector) :
-           defaultRenderer.querySelector(elementOrSelector)) :
-      elementOrSelector;
-  if (ngDevMode && !rNode) {
+function assertHostNodeExists(rElement: RElement, elementOrSelector: RElement | string) {
+  if (!rElement) {
     if (typeof elementOrSelector === 'string') {
       throw createError('Host node with selector not found:', elementOrSelector);
     } else {
       throw createError('Host node is required:', elementOrSelector);
     }
   }
-  return rNode;
+}
+
+/**
+ * Locates the host native element, used for bootstrapping existing nodes into rendering pipeline.
+ *
+ * @param rendererFactory Factory function to create renderer instance.
+ * @param elementOrSelector Render element or CSS selector to locate the element.
+ * @param encapsulation View Encapsulation defined for component that requests host element.
+ */
+export function locateHostElement(
+    rendererFactory: RendererFactory3, elementOrSelector: RElement | string,
+    encapsulation: ViewEncapsulation): RElement {
+  const renderer = rendererFactory.createRenderer(null, null);
+
+  if (isProceduralRenderer(renderer)) {
+    // When using native Shadow DOM, do not clear host element to allow native slot projection
+    const preserveContent = encapsulation === ViewEncapsulation.ShadowDom;
+    return renderer.selectRootElement(elementOrSelector, preserveContent);
+  }
+
+  let rElement = typeof elementOrSelector === 'string' ?
+      renderer.querySelector(elementOrSelector) ! :
+      elementOrSelector;
+  ngDevMode && assertHostNodeExists(rElement, elementOrSelector);
+
+  // Always clear host element's content when Renderer3 is in use. For procedural renderer case we
+  // make it conditionally and depend on whether ShadowDom encapsulation is used (in which case the
+  // content should be preserved to allow native slot projection). ShadowDom encapsulation requires
+  // procedural renderer, and procedural renderer case is handled above.
+  rElement.textContent = '';
+
+  return rElement;
 }
 
 /**

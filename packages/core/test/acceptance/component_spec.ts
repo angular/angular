@@ -6,9 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, Type, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, RendererFactory2, Type, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {onlyInIvy} from '@angular/private/testing';
+
+import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
 
 
 describe('component', () => {
@@ -335,4 +340,70 @@ describe('component', () => {
     expect(log).toEqual(['CompB:ngDoCheck']);
   });
 
+  describe('should clear host element if provided in ComponentFactory.create', () => {
+    function runTestWithRenderer(rendererProviders: any[]) {
+      @Component({
+        selector: 'dynamic-comp',
+        template: 'DynamicComponent Content',
+      })
+      class DynamicComponent {
+      }
+
+      @Component({
+        selector: 'app',
+        template: `
+        <div id="dynamic-comp-root-a">Existing content in slot A</div>
+        <div id="dynamic-comp-root-b">Existing content in slot B</div>
+      `,
+      })
+      class App {
+        constructor(public injector: Injector, public cfr: ComponentFactoryResolver) {}
+
+        createDynamicComponent(target: any) {
+          const dynamicCompFactory = this.cfr.resolveComponentFactory(DynamicComponent);
+          dynamicCompFactory.create(this.injector, [], target);
+        }
+      }
+
+      // View Engine requires DynamicComponent to be in entryComponents.
+      @NgModule({
+        declarations: [App, DynamicComponent],
+        entryComponents: [App, DynamicComponent],
+      })
+      class AppModule {
+      }
+
+      TestBed.configureTestingModule({
+        imports: [AppModule],
+        providers: [
+          {provide: DOCUMENT, useValue: document},
+          rendererProviders,
+        ],
+      });
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      // Create an instance of DynamicComponent and provide host element *reference*
+      let targetEl = document.getElementById('dynamic-comp-root-a') !;
+      fixture.componentInstance.createDynamicComponent(targetEl);
+      fixture.detectChanges();
+      expect(targetEl.innerHTML).not.toContain('Existing content in slot A');
+      expect(targetEl.innerHTML).toContain('DynamicComponent Content');
+
+      // Create an instance of DynamicComponent and provide host element *selector*
+      targetEl = document.getElementById('dynamic-comp-root-b') !;
+      fixture.componentInstance.createDynamicComponent('#dynamic-comp-root-b');
+      fixture.detectChanges();
+      expect(targetEl.innerHTML).not.toContain('Existing content in slot B');
+      expect(targetEl.innerHTML).toContain('DynamicComponent Content');
+    }
+
+    it('with Renderer2',
+       () => runTestWithRenderer([{provide: RendererFactory2, useClass: DomRendererFactory2}]));
+
+    onlyInIvy('Renderer3 is supported only in Ivy')
+        .it('with Renderer3', () => runTestWithRenderer(
+                                  [{provide: RendererFactory2, useValue: domRendererFactory3}]));
+  });
 });
