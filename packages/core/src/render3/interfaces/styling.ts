@@ -341,7 +341,7 @@ export const enum TStylingConfig {
   /**
    * The initial state of the styling context config.
    */
-  Initial = 0b00000000,
+  Initial = 0b000000,
 
   /**
    * Whether or not there are any directives on this element.
@@ -359,7 +359,7 @@ export const enum TStylingConfig {
    * 3. `<comp>`
    * 4. `<comp dir-one>`
    */
-  HasDirectives = 0b00000001,
+  HasDirectives = 0b000001,
 
   /**
    * Whether or not there are prop-based bindings present.
@@ -370,7 +370,7 @@ export const enum TStylingConfig {
    * 3. `@HostBinding('style.prop') x`
    * 4. `@HostBinding('class.prop') x`
    */
-  HasPropBindings = 0b00000010,
+  HasPropBindings = 0b000010,
 
   /**
    * Whether or not there are map-based bindings present.
@@ -381,7 +381,7 @@ export const enum TStylingConfig {
    * 3. `@HostBinding('style') x`
    * 4. `@HostBinding('class') x`
    */
-  HasMapBindings = 0b00000100,
+  HasMapBindings = 0b000100,
 
   /**
    * Whether or not there are map-based and prop-based bindings present.
@@ -402,7 +402,7 @@ export const enum TStylingConfig {
    * 2. map + prop: `<div [style]="x" [style.prop]>`
    * 3. map + map: `<div [style]="x" dir-that-sets-style>`
    */
-  HasCollisions = 0b00001000,
+  HasCollisions = 0b001000,
 
   /**
    * Whether or not the context contains initial styling values.
@@ -413,7 +413,7 @@ export const enum TStylingConfig {
    * 3. `@Directive({ host: { 'style': 'width:200px' } })`
    * 4. `@Directive({ host: { 'class': 'one two three' } })`
    */
-  HasInitialStyling = 0b000010000,
+  HasInitialStyling = 0b0010000,
 
   /**
    * Whether or not the context contains one or more template bindings.
@@ -424,7 +424,7 @@ export const enum TStylingConfig {
    * 3. `<div [class]="x">`
    * 4. `<div [class.name]="x">`
    */
-  HasTemplateBindings = 0b000100000,
+  HasTemplateBindings = 0b0100000,
 
   /**
    * Whether or not the context contains one or more host bindings.
@@ -435,35 +435,13 @@ export const enum TStylingConfig {
    * 3. `@HostBinding('class') x`
    * 4. `@HostBinding('class.name') x`
    */
-  HasHostBindings = 0b001000000,
-
-  /**
-   * Whether or not the template bindings are allowed to be registered in the context.
-   *
-   * This flag is after one or more template-based style/class bindings were
-   * set and processed for an element. Once the bindings are processed then a call
-   * to stylingApply is issued and the lock will be put into place.
-   *
-   * Note that this is only set once.
-   */
-  TemplateBindingsLocked = 0b010000000,
-
-  /**
-   * Whether or not the host bindings are allowed to be registered in the context.
-   *
-   * This flag is after one or more host-based style/class bindings were
-   * set and processed for an element. Once the bindings are processed then a call
-   * to stylingApply is issued and the lock will be put into place.
-   *
-   * Note that this is only set once.
-   */
-  HostBindingsLocked = 0b100000000,
+  HasHostBindings = 0b1000000,
 
   /** A Mask of all the configurations */
-  Mask = 0b111111111,
+  Mask = 0b1111111,
 
   /** Total amount of configuration bits used */
-  TotalBits = 9,
+  TotalBits = 7,
 }
 
 /**

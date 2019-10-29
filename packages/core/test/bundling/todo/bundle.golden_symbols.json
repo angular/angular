@@ -699,9 +699,6 @@
     "name": "getLViewParent"
   },
   {
-    "name": "getLockedConfig"
-  },
-  {
     "name": "getMapProp"
   },
   {
@@ -924,9 +921,6 @@
     "name": "isContentQueryHost"
   },
   {
-    "name": "isContextLocked"
-  },
-  {
     "name": "isCreationMode"
   },
   {
@@ -943,9 +937,6 @@
   },
   {
     "name": "isForwardRef"
-  },
-  {
-    "name": "isHostStyling"
   },
   {
     "name": "isHostStylingActive"
@@ -1012,12 +1003,6 @@
   },
   {
     "name": "locateHostElement"
-  },
-  {
-    "name": "lockAndFinalizeContext"
-  },
-  {
-    "name": "lockContext"
   },
   {
     "name": "looseIdentical"
@@ -1309,6 +1294,9 @@
   },
   {
     "name": "stylingProp"
+  },
+  {
+    "name": "syncContextInitialStyling"
   },
   {
     "name": "syncViewWithBlueprint"

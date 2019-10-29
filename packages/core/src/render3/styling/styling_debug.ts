@@ -11,7 +11,7 @@ import {RElement} from '../interfaces/renderer';
 import {ApplyStylingFn, LStylingData, TStylingConfig, TStylingContext, TStylingContextIndex} from '../interfaces/styling';
 import {getCurrentStyleSanitizer} from '../state';
 import {attachDebugObject} from '../util/debug_utils';
-import {MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, allowDirectStyling as _allowDirectStyling, getBindingValue, getDefaultValue, getGuardMask, getProp, getPropValuesStartPosition, getValue, getValuesCount, hasConfig, isContextLocked, isSanitizationRequired, isStylingContext, normalizeIntoStylingMap, setValue} from '../util/styling_utils';
+import {MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, allowDirectStyling as _allowDirectStyling, getBindingValue, getDefaultValue, getGuardMask, getProp, getPropValuesStartPosition, getValue, getValuesCount, hasConfig, isSanitizationRequired, isStylingContext, normalizeIntoStylingMap, setValue} from '../util/styling_utils';
 
 import {applyStylingViaContext} from './bindings';
 import {activateStylingMapFeature} from './map_based_bindings';
@@ -55,14 +55,12 @@ export interface DebugStylingContext {
  * A debug/testing-oriented summary of `TStylingConfig`.
  */
 export interface DebugStylingConfig {
-  hasMapBindings: boolean;          //
-  hasPropBindings: boolean;         //
-  hasCollisions: boolean;           //
-  hasTemplateBindings: boolean;     //
-  hasHostBindings: boolean;         //
-  templateBindingsLocked: boolean;  //
-  hostBindingsLocked: boolean;      //
-  allowDirectStyling: boolean;      //
+  hasMapBindings: boolean;       //
+  hasPropBindings: boolean;      //
+  hasCollisions: boolean;        //
+  hasTemplateBindings: boolean;  //
+  hasHostBindings: boolean;      //
+  allowDirectStyling: boolean;   //
 }
 
 
@@ -496,19 +494,13 @@ function buildConfig(context: TStylingContext) {
   const hasCollisions = hasConfig(context, TStylingConfig.HasCollisions);
   const hasTemplateBindings = hasConfig(context, TStylingConfig.HasTemplateBindings);
   const hasHostBindings = hasConfig(context, TStylingConfig.HasHostBindings);
-  const templateBindingsLocked = hasConfig(context, TStylingConfig.TemplateBindingsLocked);
-  const hostBindingsLocked = hasConfig(context, TStylingConfig.HostBindingsLocked);
-  const allowDirectStyling =
-      _allowDirectStyling(context, false) || _allowDirectStyling(context, true);
-
+  const allowDirectStyling = _allowDirectStyling(context, false);
   return {
-      hasMapBindings,          //
-      hasPropBindings,         //
-      hasCollisions,           //
-      hasTemplateBindings,     //
-      hasHostBindings,         //
-      templateBindingsLocked,  //
-      hostBindingsLocked,      //
-      allowDirectStyling,      //
+      hasMapBindings,       //
+      hasPropBindings,      //
+      hasCollisions,        //
+      hasTemplateBindings,  //
+      hasHostBindings,      //
+      allowDirectStyling,   //
   };
 }
