@@ -695,7 +695,7 @@ function i18nEndFirstPass(lView: LView, tView: TView) {
       // Divide by 2 to get the number of local refs,
       // since they are stored as an array that also includes directive indexes,
       // i.e. ["localRef", directiveIndex, ...]
-      index += tNode.localNames.length / 2;
+      index += tNode.localNames.length >> 1;
     }
     index++;
   }
