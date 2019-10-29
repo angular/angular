@@ -4,7 +4,6 @@ skylark_doc(
     name = "docs",
     srcs = [
         "//packages/bazel/src:ng_module.bzl",
-        "//packages/bazel/src:ng_rollup_bundle.bzl",
         "//packages/bazel/src/ng_package:ng_package.bzl",
     ],
     format = "html",

@@ -140,20 +140,28 @@ function main(args: string[]): number {
 
   /**
    * Relativize the path where a file is written.
-   * @param file a path containing a re-rooted segment like .esm5 or .es6
+   * @param file a path containing a re-rooted segment like .esm5
    * @param suffix the re-rooted directory
    * @param outDir path where we copy the file, relative to the out
    */
   function writeEsmFile(file: string, suffix: string, outDir: string) {
-    // Note that the specified file path is always using the posix path delimiter.
-    const root = file.substr(0, file.lastIndexOf(`${suffix}/`) + suffix.length + 1);
-    const rel = path.dirname(path.relative(path.join(root, srcDir), file));
+    function relPath(file: string, suffix: string) {
+      if (suffix) {
+        // Note that the specified file path is always using the posix path delimiter.
+        const root =
+            suffix ? file.substr(0, file.lastIndexOf(`${suffix}/`) + suffix.length + 1) : binDir;
+        return path.dirname(path.relative(path.join(root, srcDir), file));
+      } else {
+        return path.dirname(path.relative(binDir, file));
+      }
+    }
+    const rel = relPath(file, suffix);
     if (!rel.startsWith('..')) {
       copyFile(file, path.join(out, outDir), rel);
     }
   }
 
-  esm2015.forEach(file => writeEsmFile(file, '.es6', 'esm2015'));
+  esm2015.forEach(file => writeEsmFile(file, '', 'esm2015'));
   esm5.forEach(file => writeEsmFile(file, '.esm5', 'esm5'));
 
   bundles.forEach(bundle => { copyFile(bundle, out, 'bundles'); });
@@ -276,19 +284,22 @@ function main(args: string[]): number {
 
   function copyFile(file: string, baseDir: string, relative = '.') {
     const dir = path.join(baseDir, relative);
+    // output file is .js if the input file is .mjs
+    const outFile = path.posix.join(
+        dir, path.basename(file.endsWith('.mjs') ? file.replace(/\.mjs$/, '.js') : file));
     shx.mkdir('-p', dir);
-    shx.cp(file, dir);
+    shx.cp(file, outFile);
     // Double-underscore is used to escape forward slash in FESM filenames.
     // See ng_package.bzl:
     //   fesm_output_filename = entry_point.replace("/", "__")
     // We need to unescape these.
-    if (file.indexOf('__') >= 0) {
-      const outputPath = path.join(dir, ...path.basename(file).split('__'));
+    if (outFile.indexOf('__') >= 0) {
+      const outputPath = path.join(dir, ...path.basename(outFile).split('__'));
       shx.mkdir('-p', path.dirname(outputPath));
       shx.mv(path.join(dir, path.basename(file)), outputPath);
 
       // if we are renaming the .js file, we'll also need to update the sourceMappingURL in the file
-      if (file.endsWith('.js')) {
+      if (outFile.endsWith('.js')) {
         shx.chmod('+w', outputPath);
         shx.sed('-i', `${path.basename(file)}.map`, `${path.basename(outputPath)}.map`, outputPath);
       }
