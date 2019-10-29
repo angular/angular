@@ -7,6 +7,9 @@
  */
 import {CommonModule} from '@angular/common';
 import {Component, ContentChild, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgModule, OnInit, Output, Pipe, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {TVIEW} from '@angular/core/src/render3/interfaces/view';
+import {getLView} from '@angular/core/src/render3/state';
+import {loadLContext} from '@angular/core/src/render3/util/discovery_utils';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -1876,5 +1879,98 @@ describe('acceptance integration tests', () => {
     });
     const fixture = TestBed.createComponent(Cmp);
     expect(() => fixture.detectChanges()).toThrowError('this error is expected');
+  });
+
+  describe('tView.firstUpdatePass', () => {
+    function isFirstUpdatePass() {
+      const lView = getLView();
+      const tView = lView[TVIEW];
+      return tView.firstUpdatePass;
+    }
+
+    function assertAttrValues(element: Element, value: string) {
+      expect(element.getAttribute('data-comp')).toEqual(value);
+      expect(element.getAttribute('data-dir')).toEqual(value);
+    }
+
+    onlyInIvy('tView instances are ivy-specific')
+        .it('should be marked with `firstUpdatePass` up until the template and host bindings are evaluated',
+            () => {
+              @Directive({
+                selector: '[dir]',
+              })
+              class Dir {
+                @HostBinding('attr.data-dir')
+                get text() {
+                  return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+                }
+              }
+
+              @Component({
+                template: '<div [attr.data-comp]="text" dir></div>',
+              })
+              class Cmp {
+                get text() {
+                  return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+                }
+              }
+
+              TestBed.configureTestingModule({
+                declarations: [Cmp, Dir],
+              });
+              const fixture = TestBed.createComponent(Cmp);
+              fixture.detectChanges(false);
+              const element = fixture.nativeElement.querySelector('div') !;
+
+              assertAttrValues(element, 'first-update-pass');
+
+              fixture.detectChanges(false);
+
+              assertAttrValues(element, 'post-update-pass');
+            });
+
+    onlyInIvy('tView instances are ivy-specific')
+        .it('tView.firstUpdatePass should be applied immediately after the first embedded view is processed',
+            () => {
+              @Directive({
+                selector: '[dir]',
+              })
+              class Dir {
+                @HostBinding('attr.data-dir')
+                get text() {
+                  return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+                }
+              }
+
+              @Component({
+                template: `
+          <div *ngFor="let item of items" dir [attr.data-comp]="text">
+            ...
+          </div>
+        `
+              })
+              class Cmp {
+                items = [1, 2, 3];
+                get text() {
+                  return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+                }
+              }
+
+              TestBed.configureTestingModule({
+                declarations: [Cmp, Dir],
+              });
+              const fixture = TestBed.createComponent(Cmp);
+              fixture.detectChanges(false);
+
+              const elements = fixture.nativeElement.querySelectorAll('div');
+              assertAttrValues(elements[0], 'first-update-pass');
+              assertAttrValues(elements[1], 'post-update-pass');
+              assertAttrValues(elements[2], 'post-update-pass');
+
+              fixture.detectChanges(false);
+              assertAttrValues(elements[0], 'post-update-pass');
+              assertAttrValues(elements[1], 'post-update-pass');
+              assertAttrValues(elements[2], 'post-update-pass');
+            });
   });
 });
