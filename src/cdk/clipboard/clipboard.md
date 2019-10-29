@@ -1,10 +1,9 @@
 The clipboard package provides helpers for working with the system clipboard.
 
-## `cdkCopyToClipboard` directive
+### Click an element to copy
 
-The `cdkCopyToClipboard` directive can be used to easily add copy-on-click
-functionality to an existing element. The directive selector doubles as an
-`@Input()` for the text to be copied.
+The `cdkCopyToClipboard` directive can be used to easily add copy-on-click functionality to an
+existing element. The directive selector doubles as an `@Input()` for the text to be copied.
 
 ```html
 <img src="avatar.jpg" alt="Hero avatar" [cdkCopyToClipboard]="getShortBio()">
@@ -12,12 +11,11 @@ functionality to an existing element. The directive selector doubles as an
 
 <!-- example(cdk-clipboard-overview) -->
 
-## `Clipboard` service
+### Programmatically copy a string
 
-The `Clipboard` service copies text to the
-user's clipboard. It has two methods: `copy` and `beginCopy`. For cases where
-you are copying a relatively small amount of text, you can call `copy` directly
-to place it on the clipboard.
+The `Clipboard` service copies text to the user's clipboard. It has two methods: `copy` and
+`beginCopy`. For cases where you are copying a relatively small amount of text, you can call `copy`
+directly to place it on the clipboard.
 
 ```typescript
 class HeroProfile {
@@ -29,13 +27,11 @@ class HeroProfile {
 }
 ```
 
-However, for longer text the browser needs time to fill an intermediate
-textarea element and copy the content. Directly calling `copy` may fail
-in this case, so you can pre-load the text by calling `beginCopy`. This method
-returns a `PendingCopy` object that has a `copy` method to finish copying the
-text that was buffered. Please note, if you call `beginCopy`, you must
-clean up the `PendingCopy` object by calling `destroy` on it after you are
-finished.
+However, for longer text the browser needs time to fill an intermediate textarea element and copy
+the content. Directly calling `copy` may fail in this case, so you can pre-load the text by calling
+`beginCopy`. This method returns a `PendingCopy` object that has a `copy` method to finish copying
+the text that was buffered. Please note, if you call `beginCopy`, you must clean up the
+`PendingCopy` object by calling `destroy` on it after you are finished.
 
 ```typescript
 class HeroProfile {
@@ -54,7 +50,7 @@ class HeroProfile {
         // Remember to destroy when you're done!
         pending.destroy();
       }
-    }
+    };
     setTimeout(attempt);
   }
 }
