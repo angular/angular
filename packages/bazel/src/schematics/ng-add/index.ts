@@ -48,7 +48,7 @@ function addDevDependenciesToPackageJson(options: Schema) {
 
     const devDependencies: {[k: string]: string} = {
       '@angular/bazel': angularCoreVersion,
-      '@bazel/bazel': '^0.28.1',
+      '@bazel/bazel': '1.0.0',
       '@bazel/ibazel': '^0.10.2',
       '@bazel/karma': '0.39.1',
       '@bazel/protractor': '0.39.1',
