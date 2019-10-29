@@ -373,11 +373,11 @@ describe('completions', () => {
 });
 
 describe('replace completions correctly', () => {
-  let mockHost: MockTypescriptHost;
+  const mockHost = new MockTypescriptHost(['/app/main.ts']);
   let ngLS: LanguageService;
 
   beforeEach(() => {
-    mockHost = new MockTypescriptHost(['/app/main.ts']);
+    mockHost.reset();
     const tsLS = ts.createLanguageService(mockHost);
     const ngHost = new TypeScriptServiceHost(mockHost, tsLS);
     ngLS = createLanguageService(ngHost);
@@ -400,6 +400,7 @@ describe('replace completions correctly', () => {
     expect(completions).toBeDefined();
     const completion = completions.entries.find(entry => entry.name === 'key') !;
     expect(completion).toBeDefined();
+    expect(completion.kind).toBe('property');
     expect(completion.replacementSpan).toBeUndefined();
   });
 
@@ -414,8 +415,9 @@ describe('replace completions correctly', () => {
     const location = mockHost.getLocationMarkerFor(fileName, 'start');
     const completions = ngLS.getCompletionsAt(fileName, location.start) !;
     expect(completions).toBeDefined();
-    const completion = completions.entries.find(entry => entry.name === 'a') !;
+    const completion = completions.entries.find(entry => entry.name === 'acronym') !;
     expect(completion).toBeDefined();
+    expect(completion.kind).toBe('html element');
     expect(completion.replacementSpan).toEqual({start: location.start, length: 3});
   });
 
@@ -432,6 +434,7 @@ describe('replace completions correctly', () => {
     expect(completions).toBeDefined();
     const completion = completions.entries.find(entry => entry.name === 'acronym') !;
     expect(completion).toBeDefined();
+    expect(completion.kind).toBe('html element');
     expect(completion.replacementSpan).toEqual({start: location.start - 4, length: 4});
   });
 
@@ -452,6 +455,7 @@ describe('replace completions correctly', () => {
     expect(completions).toBeDefined();
     const completion = completions.entries.find(entry => entry.name === 'key') !;
     expect(completion).toBeDefined();
+    expect(completion.kind).toBe('property');
     expect(completion.replacementSpan).toEqual({start: location.start - 2, length: 5});
   });
 
@@ -472,6 +476,7 @@ describe('replace completions correctly', () => {
     expect(completions).toBeDefined();
     const completion = completions.entries.find(entry => entry.name === '$title_1') !;
     expect(completion).toBeDefined();
+    expect(completion.kind).toBe('property');
     expect(completion.replacementSpan).toEqual({start: location.start, length: 8});
   });
 
@@ -490,6 +495,7 @@ describe('replace completions correctly', () => {
     expect(completions).toBeDefined();
     const completion = completions.entries.find(entry => entry.name === '(click)') !;
     expect(completion).toBeDefined();
+    expect(completion.kind).toBe('attribute');
     expect(completion.replacementSpan).toEqual({start: location.start - 2, length: 2});
   });
 
@@ -510,6 +516,7 @@ describe('replace completions correctly', () => {
     expect(completions).toBeDefined();
     const completion = completions.entries.find(entry => entry.name === 'handleClick') !;
     expect(completion).toBeDefined();
+    expect(completion.kind).toBe('method');
     expect(completion.replacementSpan).toEqual({start: location.start - 3, length: 3});
   });
 
@@ -528,6 +535,7 @@ describe('replace completions correctly', () => {
     expect(completions).toBeDefined();
     const completion = completions.entries.find(entry => entry.name === 'div') !;
     expect(completion).toBeDefined();
+    expect(completion.kind).toBe('html element');
     expect(completion.replacementSpan).toEqual({start: location.start - 2, length: 2});
   });
 
@@ -546,6 +554,7 @@ describe('replace completions correctly', () => {
     expect(completions).toBeDefined();
     const completion = completions.entries.find(entry => entry.name === '[(ngModel)]') !;
     expect(completion).toBeDefined();
+    expect(completion.kind).toBe('attribute');
     expect(completion.replacementSpan).toEqual({start: location.start - 5, length: 5});
   });
 });

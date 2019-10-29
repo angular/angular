@@ -8,6 +8,7 @@
 
 import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, Text, findNode, getHtmlTagDefinition} from '@angular/compiler';
 import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
+import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {AstResult} from './common';
 import {getExpressionCompletions} from './expressions';
@@ -45,16 +46,20 @@ const ANGULAR_ELEMENTS: ReadonlyArray<ng.CompletionEntry> = [
   },
 ];
 
+function isIdentifierPart(code: number) {
+  // Identifiers consist of alphanumeric characters, '_', or '$'.
+  return isAsciiLetter(code) || isDigit(code) || code == $$ || code == $_;
+}
+
 /**
  * Gets the span of word in a template that surrounds `position`. If there is no word around
  * `position`, nothing is returned.
  */
 function getBoundedWordSpan(templateInfo: AstResult, position: number): ts.TextSpan|undefined {
-  // Identifiers consist of alphanumeric characters, '_', or '$'.
-  const IDENTIFIER_PART = /[0-9a-zA-Z_$]/;
-
   const {template} = templateInfo;
   const templateSrc = template.source;
+
+  if (!templateSrc) return;
 
   // TODO(ayazhafiz): A solution based on word expansion will always be expensive compared to one
   // based on ASTs. Whatever penalty we incur is probably manageable for small-length (i.e. the
@@ -69,27 +74,29 @@ function getBoundedWordSpan(templateInfo: AstResult, position: number): ts.TextS
   // A cursor is not itself a character in the template; it has a left (lower) and right (upper)
   // index bound that hugs the cursor itself.
   let templatePosition = position - template.span.start;
-  // To perform word expansion, we want to determine the left and right indeces that hug the cursor.
+  // To perform word expansion, we want to determine the left and right indices that hug the cursor.
   // There are three cases here.
-  //
-  // 1. Case like
-  //      wo|rd
-  //    there is a clear left and right index.
-  let left = templatePosition - 1, right = templatePosition;
-  // 2. Case like
-  //      |rest of template
-  //    the cursor is at the start of the template, hugged only by the right side (0-index).
+  let left, right;
   if (templatePosition === 0) {
+    // 1. Case like
+    //      |rest of template
+    //    the cursor is at the start of the template, hugged only by the right side (0-index).
     left = right = 0;
-  }
-  // 2. Case like
-  //      rest of template|
-  //    the cursor is at the end of the template, hugged only by the left side (last-index).
-  if (templatePosition === templateSrc.length) {
+  } else if (templatePosition === templateSrc.length) {
+    // 2. Case like
+    //      rest of template|
+    //    the cursor is at the end of the template, hugged only by the left side (last-index).
     left = right = templateSrc.length - 1;
+  } else {
+    // 3. Case like
+    //      wo|rd
+    //    there is a clear left and right index.
+    left = templatePosition - 1;
+    right = templatePosition;
   }
 
-  if (!templateSrc[left].match(IDENTIFIER_PART) && !templateSrc[right].match(IDENTIFIER_PART)) {
+  if (!isIdentifierPart(templateSrc.charCodeAt(left)) &&
+      !isIdentifierPart(templateSrc.charCodeAt(right))) {
     // Case like
     //         .|.
     // left ---^ ^--- right
@@ -99,9 +106,9 @@ function getBoundedWordSpan(templateInfo: AstResult, position: number): ts.TextS
 
   // Expand on the left and right side until a word boundary is hit. Back up one expansion on both
   // side to stay inside the word.
-  while (left >= 0 && templateSrc[left].match(IDENTIFIER_PART)) --left;
+  while (left >= 0 && isIdentifierPart(templateSrc.charCodeAt(left))) --left;
   ++left;
-  while (right < templateSrc.length && templateSrc[right].match(IDENTIFIER_PART)) ++right;
+  while (right < templateSrc.length && isIdentifierPart(templateSrc.charCodeAt(right))) ++right;
   --right;
 
   const absoluteStartPosition = position - (templatePosition - left);
