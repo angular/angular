@@ -18,7 +18,7 @@ import {stringify} from '../util/stringify';
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_LOC_ID_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction} from './interfaces/definition';
-import {TAttributes} from './interfaces/node';
+import {TConstants} from './interfaces/node';
 // while SelectorFlags is unused here, it's required so that types don't get resolved lazily
 // see: https://github.com/Microsoft/web-build-tools/issues/1050
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
@@ -172,8 +172,11 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
    */
   template: ComponentTemplate<T>;
 
-  /** Constants for the nodes in the component's view. */
-  consts?: TAttributes[];
+  /**
+   * Constants for the nodes in the component's view.
+   * Includes attribute arrays, local definition arrays etc.
+   */
+  consts?: TConstants;
 
   /**
    * An array of `ngContent[selector]` values that were found in the template.

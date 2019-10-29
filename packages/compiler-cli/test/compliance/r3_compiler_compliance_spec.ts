@@ -796,7 +796,6 @@ describe('compiler compliance', () => {
           `IfDirective.ɵfac = function IfDirective_Factory(t) { return new (t || IfDirective)($r3$.ɵɵdirectiveInject($i$.TemplateRef)); };`;
 
       const MyComponentDefinition = `
-        const $c1$ = ["foo", ""];
         function MyComponent_li_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "li");
@@ -816,16 +815,16 @@ describe('compiler compliance', () => {
           selectors: [["my-component"]],
           decls: 3,
           vars: 0,
-          consts: [[${AttributeMarker.Template}, "if"]],
+          consts: [["foo", ""], [${AttributeMarker.Template}, "if"]],
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelementStart(0, "ul", null, $c1$);
-              $r3$.ɵɵtemplate(2, MyComponent_li_2_Template, 2, 2, "li", 0);
+              $r3$.ɵɵelementStart(0, "ul", null, 0);
+              $r3$.ɵɵtemplate(2, MyComponent_li_2_Template, 2, 2, "li", 1);
               $r3$.ɵɵelementEnd();
             }
           },
-          directives:[IfDirective],
-           encapsulation: 2
+          directives: [IfDirective],
+          encapsulation: 2
         });`;
 
       const MyComponentFactory =
@@ -2231,16 +2230,16 @@ describe('compiler compliance', () => {
       };
 
       const MyComponentDefinition = `
-        const $c1$ = ["user", ""];
         …
         MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
           decls: 3,
           vars: 1,
+          consts: [["user", ""]],
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelement(0, "input", null, $c1$);
+              $r3$.ɵɵelement(0, "input", null, 0);
               $r3$.ɵɵtext(2);
             }
             if (rf & 2) {
@@ -2292,9 +2291,6 @@ describe('compiler compliance', () => {
       };
 
       const MyComponentDefinition = `
-        const $c1$ = ["foo", ""];
-        const $c3$ = ["baz", ""];
-        const $c4$ = ["bar", ""];
         function MyComponent_div_3_span_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "span");
@@ -2315,8 +2311,8 @@ describe('compiler compliance', () => {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵtext(1);
-            $r3$.ɵɵtemplate(2, MyComponent_div_3_span_2_Template, 2, 3, "span", 0);
-            $r3$.ɵɵelement(3, "span", null, $c4$);
+            $r3$.ɵɵtemplate(2, MyComponent_div_3_span_2_Template, 2, 3, "span", 1);
+            $r3$.ɵɵelement(3, "span", null, 3);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -2333,13 +2329,13 @@ describe('compiler compliance', () => {
           selectors: [["my-component"]],
           decls: 6,
           vars: 1,
-          consts: [[${AttributeMarker.Template}, "if"]],
+          consts: [["foo", ""], [${AttributeMarker.Template}, "if"], ["baz", ""], ["bar", ""]],
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelement(0, "div", null, $c1$);
+              $r3$.ɵɵelement(0, "div", null, 0);
               $r3$.ɵɵtext(2);
-              $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 5, 2, "div", 0);
-              $r3$.ɵɵelement(4, "div", null, $c3$);
+              $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 5, 2, "div", 1);
+              $r3$.ɵɵelement(4, "div", null, 2);
             }
             if (rf & 2) {
               const $foo$ = $r3$.ɵɵreference(1);
@@ -2381,8 +2377,6 @@ describe('compiler compliance', () => {
       };
 
       const template = `
-      const $c1$ = ["foo", ""];
-
       function MyComponent_div_0_span_3_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵɵelementStart(0, "span");
@@ -2400,8 +2394,8 @@ describe('compiler compliance', () => {
       function MyComponent_div_0_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵɵelementStart(0, "div");
-          $i0$.ɵɵelement(1, "div", null, $c1$);
-          $i0$.ɵɵtemplate(3, MyComponent_div_0_span_3_Template, 2, 2, "span", 1);
+          $i0$.ɵɵelement(1, "div", null, 1);
+          $i0$.ɵɵtemplate(3, MyComponent_div_0_span_3_Template, 2, 2, "span", 2);
           $i0$.ɵɵelementEnd();
         }
         if (rf & 2) {
@@ -2412,7 +2406,7 @@ describe('compiler compliance', () => {
       }
 
       // ...
-      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Template}, "ngIf"]],
+      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], ["foo", ""], [${AttributeMarker.Template}, "ngIf"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 1, "div", 0);

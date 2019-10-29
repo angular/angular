@@ -606,10 +606,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // add attributes for directive and projection matching purposes
     attributes.push(...this.prepareNonRenderAttrs(
         allOtherInputs, element.outputs, stylingBuilder, [], i18nAttrs, ngProjectAsAttr));
-    parameters.push(this.addConstants(attributes));
+    parameters.push(this.addAttrsToConsts(attributes));
 
     // local refs (ex.: <div #foo #bar="baz">)
-    parameters.push(this.prepareRefsParameter(element.references));
+    const refs = this.prepareRefsArray(element.references);
+    parameters.push(this.addToConsts(refs));
 
     const wasInNamespace = this._namespace;
     const currentNamespace = this.getNamespaceInstruction(namespaceKey);
@@ -869,11 +870,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         (a: t.TextAttribute) => { attrsExprs.push(asLiteral(a.name), asLiteral(a.value)); });
     attrsExprs.push(...this.prepareNonRenderAttrs(
         template.inputs, template.outputs, undefined, template.templateAttrs));
-    parameters.push(this.addConstants(attrsExprs));
+    parameters.push(this.addAttrsToConsts(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)
     if (template.references && template.references.length) {
-      parameters.push(this.prepareRefsParameter(template.references));
+      const refs = this.prepareRefsArray(template.references);
+      parameters.push(this.addToConsts(refs));
       parameters.push(o.importExpr(R3.templateRefExtractor));
     }
 
@@ -1294,24 +1296,26 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return attrExprs;
   }
 
-  private addConstants(constExprs: o.Expression[]): o.LiteralExpr {
-    if (constExprs.length > 0) {
-      const literal = o.literalArr(constExprs);
-
-      // Try to reuse a literal that's already in the array, if possible.
-      for (let i = 0; i < this._constants.length; i++) {
-        if (this._constants[i].isEquivalent(literal)) {
-          return o.literal(i);
-        }
-      }
-
-      return o.literal(this._constants.push(literal) - 1);
+  private addToConsts(expression: o.Expression): o.LiteralExpr {
+    if (o.isNull(expression)) {
+      return o.TYPED_NULL_EXPR;
     }
 
-    return o.TYPED_NULL_EXPR;
+    // Try to reuse a literal that's already in the array, if possible.
+    for (let i = 0; i < this._constants.length; i++) {
+      if (this._constants[i].isEquivalent(expression)) {
+        return o.literal(i);
+      }
+    }
+
+    return o.literal(this._constants.push(expression) - 1);
   }
 
-  private prepareRefsParameter(references: t.Reference[]): o.Expression {
+  private addAttrsToConsts(attrs: o.Expression[]): o.LiteralExpr {
+    return attrs.length > 0 ? this.addToConsts(o.literalArr(attrs)) : o.TYPED_NULL_EXPR;
+  }
+
+  private prepareRefsArray(references: t.Reference[]): o.Expression {
     if (!references || references.length === 0) {
       return o.TYPED_NULL_EXPR;
     }
@@ -1336,7 +1340,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       return [reference.name, reference.value];
     }));
 
-    return this.constantPool.getConstLiteral(asLiteral(refsParam), true);
+    return asLiteral(refsParam);
   }
 
   private prepareListenerParameter(tagName: string, outputAst: t.BoundEvent, index: number):

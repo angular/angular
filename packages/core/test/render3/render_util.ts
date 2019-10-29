@@ -13,7 +13,7 @@ import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {Renderer2} from '@angular/core/src/render/api';
 import {createLView, createTView, getOrCreateTNode, getOrCreateTView, renderComponentOrTemplate} from '@angular/core/src/render3/instructions/shared';
-import {TAttributes, TNodeType} from '@angular/core/src/render3/interfaces/node';
+import {TAttributes, TConstants, TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {enterView, getLView} from '@angular/core/src/render3/state';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
@@ -103,7 +103,7 @@ export class TemplateFixture extends BaseFixture {
       private createBlock: () => void, private updateBlock: () => void = noop, decls: number = 0,
       private vars: number = 0, directives?: DirectiveTypesOrFactory|null,
       pipes?: PipeTypesOrFactory|null, sanitizer?: Sanitizer|null,
-      rendererFactory?: RendererFactory3, private _consts?: TAttributes[]) {
+      rendererFactory?: RendererFactory3, private _consts?: TConstants) {
     super();
     this._directiveDefs = toDefs(directives, extractDirectiveDef);
     this._pipeDefs = toDefs(pipes, extractPipeDef);
@@ -249,7 +249,7 @@ export function renderTemplate<T>(
     hostNode: RElement, templateFn: ComponentTemplate<T>, decls: number, vars: number, context: T,
     providedRendererFactory: RendererFactory3, componentView: LView | null,
     directives?: DirectiveDefListOrFactory | null, pipes?: PipeDefListOrFactory | null,
-    sanitizer?: Sanitizer | null, consts?: TAttributes[]): LView {
+    sanitizer?: Sanitizer | null, consts?: TConstants): LView {
   if (componentView === null) {
     const renderer = providedRendererFactory.createRenderer(null, null);
 
@@ -288,8 +288,7 @@ export function renderTemplate<T>(
 export function renderToHtml(
     template: ComponentTemplate<any>, ctx: any, decls: number = 0, vars: number = 0,
     directives?: DirectiveTypesOrFactory | null, pipes?: PipeTypesOrFactory | null,
-    providedRendererFactory?: RendererFactory3 | null, keepNgReflect = false,
-    consts?: TAttributes[]) {
+    providedRendererFactory?: RendererFactory3 | null, keepNgReflect = false, consts?: TConstants) {
   hostView = renderTemplate(
       containerEl, template, decls, vars, ctx, providedRendererFactory || testRendererFactory,
       hostView, toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef), null,
@@ -369,7 +368,7 @@ export function createComponent(
     directives: DirectiveTypesOrFactory = [], pipes: PipeTypesOrFactory = [],
     viewQuery: ComponentTemplate<any>| null = null, providers: Provider[] = [],
     viewProviders: Provider[] = [], hostBindings?: HostBindingsFunction<any>,
-    consts: TAttributes[] = []): ComponentType<any> {
+    consts: TConstants = []): ComponentType<any> {
   return class Component {
     value: any;
     static ɵfac = () => new Component;

@@ -315,12 +315,6 @@
     "name": "_activeStylingMapApplyFn"
   },
   {
-    "name": "_c0"
-  },
-  {
-    "name": "_c1"
-  },
-  {
     "name": "_currentInjector"
   },
   {
@@ -640,6 +634,9 @@
   },
   {
     "name": "getConfig"
+  },
+  {
+    "name": "getConstant"
   },
   {
     "name": "getContainerRenderParent"

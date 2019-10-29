@@ -760,7 +760,7 @@ export declare function ɵɵdefineComponent<T>(componentDefinition: {
     contentQueries?: ContentQueriesFunction<T>;
     exportAs?: string[];
     template: ComponentTemplate<T>;
-    consts?: TAttributes[];
+    consts?: TConstants;
     ngContentSelectors?: string[];
     viewQuery?: ViewQueriesFunction<T> | null;
     features?: ComponentDefFeature[];
@@ -826,19 +826,19 @@ export declare function ɵɵdirectiveInject<T>(token: Type<T> | InjectionToken<T
 
 export declare function ɵɵdisableBindings(): void;
 
-export declare function ɵɵelement(index: number, name: string, constsIndex?: number | null, localRefs?: string[] | null): void;
+export declare function ɵɵelement(index: number, name: string, attrsIndex?: number | null, localRefsIndex?: number): void;
 
-export declare function ɵɵelementContainer(index: number, constsIndex?: number | null, localRefs?: string[] | null): void;
+export declare function ɵɵelementContainer(index: number, attrsIndex?: number | null, localRefsIndex?: number): void;
 
 export declare function ɵɵelementContainerEnd(): void;
 
-export declare function ɵɵelementContainerStart(index: number, constsIndex?: number | null, localRefs?: string[] | null): void;
+export declare function ɵɵelementContainerStart(index: number, attrsIndex?: number | null, localRefsIndex?: number): void;
 
 export declare function ɵɵelementEnd(): void;
 
 export declare function ɵɵelementHostAttrs(attrs: TAttributes): void;
 
-export declare function ɵɵelementStart(index: number, name: string, constsIndex?: number | null, localRefs?: string[] | null): void;
+export declare function ɵɵelementStart(index: number, name: string, attrsIndex?: number | null, localRefsIndex?: number): void;
 
 export declare function ɵɵembeddedViewEnd(): void;
 
@@ -1054,7 +1054,7 @@ export declare function ɵɵstylePropInterpolateV(prop: string, values: any[], v
 
 export declare function ɵɵstyleSanitizer(sanitizer: StyleSanitizeFn | null): void;
 
-export declare function ɵɵtemplate(index: number, templateFn: ComponentTemplate<any> | null, decls: number, vars: number, tagName?: string | null, constsIndex?: number | null, localRefs?: string[] | null, localRefExtractor?: LocalRefExtractor): void;
+export declare function ɵɵtemplate(index: number, templateFn: ComponentTemplate<any> | null, decls: number, vars: number, tagName?: string | null, attrsIndex?: number | null, localRefsIndex?: number | null, localRefExtractor?: LocalRefExtractor): void;
 
 export declare function ɵɵtemplateRefExtractor(tNode: TNode, currentView: LView): ViewEngine_TemplateRef<unknown> | null;
 

@@ -10,7 +10,7 @@ import {assertDataInRange, assertDefined, assertDomNode, assertGreaterThan, asse
 import {assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from '../interfaces/context';
-import {TNode} from '../interfaces/node';
+import {TConstants, TNode} from '../interfaces/node';
 import {RNode, isProceduralRenderer} from '../interfaces/renderer';
 import {isLContainer, isLView} from '../interfaces/type_checks';
 import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, RENDERER, TData, TVIEW} from '../interfaces/view';
@@ -173,6 +173,11 @@ export function viewAttachedToChangeDetector(view: LView): boolean {
 /** Returns a boolean for whether the view is attached to a container. */
 export function viewAttachedToContainer(view: LView): boolean {
   return isLContainer(view[PARENT]);
+}
+
+/** Returns a constant from `TConstants` instance. */
+export function getConstant(consts: TConstants | null, index: number | null | undefined) {
+  return consts === null || index == null ? null : consts[index];
 }
 
 /**

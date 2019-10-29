@@ -15,6 +15,7 @@ import {HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {getBindingIndex, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {getConstant} from '../util/view_utils';
 
 import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 import {registerInitialStylingOnTNode} from './styling';
@@ -26,8 +27,8 @@ import {registerInitialStylingOnTNode} from './styling';
  * The instruction must later be followed by `elementContainerEnd()` call.
  *
  * @param index Index of the element in the LView array
- * @param constsIndex Index of the container in the `consts` array.
- * @param localRefs A set of local reference bindings on the element.
+ * @param attrsIndex Index of the container attributes in the `consts` array.
+ * @param localRefsIndex Index of the container's local references in the `consts` array.
  *
  * Even if this instruction accepts a set of attributes no actual attribute values are propagated to
  * the DOM (as a comment node can't have attributes). Attributes are here only for directive
@@ -36,13 +37,14 @@ import {registerInitialStylingOnTNode} from './styling';
  * @codeGenApi
  */
 export function ɵɵelementContainerStart(
-    index: number, constsIndex?: number | null, localRefs?: string[] | null): void {
+    index: number, attrsIndex?: number | null, localRefsIndex?: number): void {
   const lView = getLView();
   const tView = lView[TVIEW];
   const renderer = lView[RENDERER];
   const tagName = 'ng-container';
   const tViewConsts = tView.consts;
-  const consts = tViewConsts === null || constsIndex == null ? null : tViewConsts[constsIndex];
+  const attrs = getConstant(tViewConsts, attrsIndex) as TAttributes;
+  const localRefs = getConstant(tViewConsts, localRefsIndex) as string[];
   ngDevMode && assertEqual(
                    getBindingIndex(), tView.bindingStartIndex,
                    'element containers should be created before any bindings');
@@ -53,12 +55,12 @@ export function ɵɵelementContainerStart(
 
   ngDevMode && assertDataInRange(lView, index - 1);
   const tNode =
-      getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.ElementContainer, tagName, consts);
+      getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.ElementContainer, tagName, attrs);
 
-  if (consts && tView.firstTemplatePass) {
+  if (attrs && tView.firstTemplatePass) {
     // While ng-container doesn't necessarily support styling, we use the style context to identify
     // and execute directives on the ng-container.
-    registerInitialStylingOnTNode(tNode, consts as TAttributes, 0);
+    registerInitialStylingOnTNode(tNode, attrs, 0);
   }
 
   appendChild(native, tNode, lView);
@@ -66,7 +68,7 @@ export function ɵɵelementContainerStart(
 
   if (tView.firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
-    resolveDirectives(tView, lView, tNode, localRefs || null);
+    resolveDirectives(tView, lView, tNode, localRefs);
     if (tView.queries) {
       tView.queries.elementStart(tView, tNode);
     }
@@ -114,13 +116,13 @@ export function ɵɵelementContainerEnd(): void {
  * and {@link elementContainerEnd}
  *
  * @param index Index of the element in the LView array
- * @param constsIndex Index of the container in the `consts` array.
- * @param localRefs A set of local reference bindings on the element.
+ * @param attrsIndex Index of the container attributes in the `consts` array.
+ * @param localRefsIndex Index of the container's local references in the `consts` array.
  *
  * @codeGenApi
  */
 export function ɵɵelementContainer(
-    index: number, constsIndex?: number | null, localRefs?: string[] | null): void {
-  ɵɵelementContainerStart(index, constsIndex, localRefs);
+    index: number, attrsIndex?: number | null, localRefsIndex?: number): void {
+  ɵɵelementContainerStart(index, attrsIndex, localRefsIndex);
   ɵɵelementContainerEnd();
 }
