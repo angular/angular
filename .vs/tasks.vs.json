@@ -1,0 +1,40 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskName": "task-angular",
+      "appliesTo": "/",
+      "type": "launch"
+    },
+    {
+      "taskName": "task-",
+      "appliesTo": ".circleci/",
+      "type": "launch"
+    },
+    {
+      "taskName": "task-",
+      "appliesTo": ".devcontainer/",
+      "type": "launch"
+    },
+    {
+      "taskName": "task-angular-robot",
+      "appliesTo": ".github/angular-robot.yml",
+      "type": "launch"
+    },
+    {
+      "taskName": "task-third_party",
+      "appliesTo": "third_party/",
+      "type": "launch"
+    },
+    {
+      "taskName": "task-scripts",
+      "appliesTo": "scripts/",
+      "type": "launch"
+    },
+    {
+      "taskName": "task-aio",
+      "appliesTo": "aio/",
+      "type": "launch"
+    }
+  ]
+}
