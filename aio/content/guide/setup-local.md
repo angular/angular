@@ -62,7 +62,7 @@ This setup guide uses the [npm client](https://docs.npmjs.com/cli/install) comma
 
 To check that you have the npm client installed, run `npm -v` in a terminal/console window.
 -->
-Angular와 Angular CLI, Angular로 동작하는 애배은 모두 [npm 패키지](https://docs.npmjs.com/getting-started/what-is-npm) 형태로 제공되는 라이브러리를 사용해서 동작합니다. 그리고 npm 패키지는 npm 패키지 매니저를 사용해서 설치합니다.
+Angular와 Angular CLI, Angular로 동작하는 예제는 모두 [npm 패키지](https://docs.npmjs.com/getting-started/what-is-npm) 형태로 제공되는 라이브러리를 사용해서 동작합니다. 그리고 npm 패키지는 npm 패키지 매니저를 사용해서 설치합니다.
 
 이 문서는 `Node.js`를 설치할 때 기본으로 설치되는 [npm 클라이언트](https://docs.npmjs.com/cli/install)를 기준으로 설명합니다.
 
