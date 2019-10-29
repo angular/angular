@@ -1,5 +1,5 @@
 /**
- * @license
+ * @license.
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
