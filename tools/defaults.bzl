@@ -5,14 +5,17 @@ load("@npm_bazel_jasmine//:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm_bazel_karma//:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite", _ts_web_test = "ts_web_test", _ts_web_test_suite = "ts_web_test_suite")
 load("@npm_bazel_typescript//:index.bzl", _ts_library = "ts_library")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
-load("//packages/bazel/src:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
+load("//tools/ng_rollup_bundle:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 load("//tools:ng_benchmark.bzl", _ng_benchmark = "ng_benchmark")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_API_EXTRACTOR = "//packages/bazel/src/api-extractor:api_extractor"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
 _INTERNAL_NG_MODULE_XI18N = "//packages/bazel/src/ngc-wrapped:xi18n"
-_INTERNAL_NG_PACKAGER_PACKAGER = "//packages/bazel/src/ng_package:packager"
+_INTERNAL_NG_PACKAGE_PACKAGER = "//packages/bazel/src/ng_package:packager"
+_INTERNAL_NG_PACKAGE_DEFALUT_TERSER_CONFIG_FILE = "//packages/bazel/src/ng_package:terser_config.default.json"
+_INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL = "//packages/bazel/src/ng_package:rollup.config.js"
+_INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP = "//packages/bazel/src/ng_package:rollup_for_ng_package"
 
 # Packages which are versioned together on npm
 ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
@@ -145,7 +148,10 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
         readme_md = readme_md,
         license_banner = license_banner,
         replacements = PKG_GROUP_REPLACEMENTS,
-        ng_packager = _INTERNAL_NG_PACKAGER_PACKAGER,
+        ng_packager = _INTERNAL_NG_PACKAGE_PACKAGER,
+        terser_config_file = _INTERNAL_NG_PACKAGE_DEFALUT_TERSER_CONFIG_FILE,
+        rollup_config_tmpl = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL,
+        rollup = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP,
         **kwargs
     )
 
