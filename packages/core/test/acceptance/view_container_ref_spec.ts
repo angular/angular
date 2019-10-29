@@ -895,6 +895,9 @@ describe('ViewContainerRef', () => {
         template: `
           <ng-template [dir]="true">
             <div *ngIf="true">Text</div>
+            <ng-container>container-content</ng-container>
+            <div i18n>assert TNodeType.IcuContainer is never a root node</div>
+            <ng-container i18n>assert TNodeType.IcuContainer is never a root node</ng-container>
           </ng-template>
         `,
       })
@@ -917,13 +920,15 @@ describe('ViewContainerRef', () => {
       //   - One <div>Text</div> node for the ngIf content.
       //   - VE ONLY: Extra comment node It is unclear why the VE adds the last one.
       const rootNodes = dirRef.viewRef !.rootNodes;
-      expect(rootNodes.length).toBe(ivyEnabled ? 2 : 3);
+      expect(rootNodes.length).toBe(7);
       expect(rootNodes[0].textContent).toBe('bindings={\n  "ng-reflect-ng-if": "true"\n}');
       expect(rootNodes[1].outerHTML).toBe('<div>Text</div>');
-      if (!ivyEnabled) {
-        expect(rootNodes[2].outerHTML)
-            .toBe('<!---->');  // It is unclear why the VE adds the last one.
-      }
+      expect(rootNodes[2].textContent).toBe(ivyEnabled ? 'ng-container' : '');
+      expect(rootNodes[3].outerHTML).toBe('container-content');
+      expect(rootNodes[4].outerHTML)
+          .toBe('<div>assert TNodeType.IcuContainer is never a root node</div>');
+      expect(rootNodes[5].textContent).toBe(ivyEnabled ? 'ng-container' : '');
+      expect(rootNodes[6].textContent).toBe('assert TNodeType.IcuContainer is never a root node');
     });
 
   });

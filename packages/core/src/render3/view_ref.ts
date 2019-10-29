@@ -11,10 +11,12 @@ import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detec
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 import {assertDefined} from '../util/assert';
+
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
 import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {CONTEXT, FLAGS, HOST, LView, LViewFlags, TView, T_HOST} from './interfaces/view';
+import {assertNodeOfPossibleTypes} from './node_assert';
 import {destroyLView, renderDetachView} from './node_manipulation';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
 import {getNativeByTNode, getNativeByTNodeOrNull} from './util/view_utils';
@@ -302,8 +304,12 @@ export class RootViewRef<T> extends ViewRef<T> {
 
 function collectNativeNodes(lView: LView, tNode: TNode | null, result: any[]): any[] {
   while (tNode) {
+    ngDevMode && assertNodeOfPossibleTypes(
+                     tNode, TNodeType.Element, TNodeType.Container, TNodeType.Projection,
+                     TNodeType.ElementContainer);
     const nativeNode = getNativeByTNodeOrNull(tNode, lView);
     nativeNode && result.push(nativeNode);
+
     if (tNode.type === TNodeType.ElementContainer) {
       collectNativeNodes(lView, tNode.child, result);
     } else if (tNode.type === TNodeType.Container) {
