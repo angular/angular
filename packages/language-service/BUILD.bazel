@@ -31,6 +31,7 @@ npm_package(
     visibility = ["//visibility:private"],
     deps = [
         ":language-service",
-        "//packages/language-service/bundles:language-service",
+        # min bundle is not used at the moment; omit from package to speed up build
+        "//packages/language-service/bundles:language-service.umd.js",
     ],
 )
