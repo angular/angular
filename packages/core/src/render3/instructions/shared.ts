@@ -463,6 +463,9 @@ export function refreshView<T>(
     }
 
   } finally {
+    if (tView.firstUpdatePass === true) {
+      tView.firstUpdatePass = false;
+    }
     lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
     leaveViewProcessExit();
   }
@@ -609,6 +612,7 @@ export function createTView(
              initialViewLength,  // expandoStartIndex: number,
              null,               // expandoInstructions: ExpandoInstructions|null,
              true,               // firstTemplatePass: boolean,
+             true,               // firstUpdatePass: boolean,
              false,              // staticViewQueries: boolean,
              false,              // staticContentQueries: boolean,
              null,               // preOrderHooks: HookData|null,
@@ -640,6 +644,7 @@ export function createTView(
         expandoStartIndex: initialViewLength,
         expandoInstructions: null,
         firstTemplatePass: true,
+        firstUpdatePass: true,
         staticViewQueries: false,
         staticContentQueries: false,
         preOrderHooks: null,
