@@ -177,7 +177,7 @@
             },
             "runtime-translations": {
               "devServerTarget": "cli-hello-world-ivy-i18n:serve:runtime-translations",
-              "protractorConfig": "e2e/fr/protractor.conf.js"
+              "protractorConfig": "e2e/runtime/protractor.conf.js"
             },
             "translated-legacy": {
               "devServerTarget": "",
