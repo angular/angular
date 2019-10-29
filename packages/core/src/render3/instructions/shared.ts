@@ -1654,6 +1654,9 @@ export function tickRootContext(rootContext: RootContext) {
 }
 
 export function detectChangesInternal<T>(view: LView, context: T) {
+  // triggering change detection when a view is in creation mode should be noop
+  if (isCreationMode(view)) return;
+
   const rendererFactory = view[RENDERER_FACTORY];
   if (rendererFactory.begin) rendererFactory.begin();
   try {
