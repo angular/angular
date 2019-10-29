@@ -134,7 +134,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
     const hostRNode = rootSelectorOrNode ?
-        locateHostElement(rendererFactory, rootSelectorOrNode) :
+        locateHostElement(rendererFactory, rootSelectorOrNode, this.componentDef.encapsulation) :
         elementCreate(this.selector, rendererFactory.createRenderer(null, this.componentDef), null);
 
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :

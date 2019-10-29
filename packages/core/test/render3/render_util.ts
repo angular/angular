@@ -465,7 +465,8 @@ class MockRenderer implements ProceduralRenderer3 {
   }
   removeChild(parent: RElement, oldChild: RNode): void { parent.removeChild(oldChild); }
   selectRootElement(selectorOrNode: string|any): RElement {
-    return ({} as any);
+    return typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
+                                                selectorOrNode;
   }
   parentNode(node: RNode): RElement|null { return node.parentNode as RElement; }
   nextSibling(node: RNode): RNode|null { return node.nextSibling; }
