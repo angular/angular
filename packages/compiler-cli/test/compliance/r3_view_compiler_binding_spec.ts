@@ -1251,12 +1251,11 @@ describe('compiler compliance: bindings', () => {
       `);
 
       const template = `
-        const $_c1$ = ["myRef", ""];
         …
-        consts: [["id", "my-id"]],
+        consts: [["id", "my-id"], ["myRef", ""]],
         template:function MyComponent_Template(rf, $ctx$){
           if (rf & 1) {
-            $i0$.ɵɵelementStart(0, "b", 0, $_c1$);
+            $i0$.ɵɵelementStart(0, "b", 0, 1);
             $i0$.ɵɵdisableBindings();
             $i0$.ɵɵelementStart(2, "i");
             $i0$.ɵɵtext(3, "Hello {{ name }}!");

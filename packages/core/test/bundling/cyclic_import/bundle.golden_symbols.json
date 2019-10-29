@@ -297,6 +297,9 @@
     "name": "getComponentLViewByIndex"
   },
   {
+    "name": "getConstant"
+  },
+  {
     "name": "getContainerRenderParent"
   },
   {
