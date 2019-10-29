@@ -128,52 +128,6 @@ describe('change detection', () => {
       expect(fixture.nativeElement).toHaveText('1|dynamic');
     });
 
-    it('should support re-enterant change detection', () => {
-      @Component({
-        selector: 'has-host-binding',
-        template: '..',
-        host: {
-          '[class.x]': 'x',
-        }
-      })
-      class HasHostBinding {
-        x = true;
-      }
-
-      @Component({
-        selector: 'child',
-        template: '<has-host-binding></has-host-binding>',
-        inputs: ['input'],
-      })
-      class Child {
-        /**
-         * @internal
-         */
-        private _input !: number;
-
-        constructor(private cdr: ChangeDetectorRef) {}
-
-        get input() { return this._input; }
-
-        set input(value: number) {
-          this._input = value;
-          this.cdr.detectChanges();
-        }
-      }
-
-      @Component({
-        selector: 'root',
-        template: '<child [input]="3"></child>',
-      })
-      class Root {
-      }
-
-      TestBed.configureTestingModule({
-        declarations: [Root, Child, HasHostBinding],
-      });
-
-      TestBed.createComponent(Root).detectChanges();
-    });
   });
 
   describe('OnPush', () => {
@@ -629,6 +583,112 @@ describe('change detection', () => {
         fixture.componentInstance.visible = true;
         fixture.detectChanges();
         expect(fixture.nativeElement.textContent).toBe('');
+      });
+
+      it('should support call in an @Input setter invoker from a binding', () => {
+        @Component({
+          selector: 'has-host-binding',
+          template: '..',
+          host: {
+            '[class.x]': 'x',
+          }
+        })
+        class HasHostBinding {
+          x = true;
+        }
+
+        @Component({
+          selector: 'child',
+          template: '<has-host-binding></has-host-binding>',
+          inputs: ['input'],
+        })
+        class Child {
+          /**
+           * @internal
+           */
+          private _input !: number;
+
+          constructor(private cdr: ChangeDetectorRef) {}
+
+          get input() { return this._input; }
+
+          set input(value: number) {
+            this._input = value;
+            this.cdr.detectChanges();
+          }
+        }
+
+        @Component({
+          selector: 'root',
+          template: '<child [input]="3"></child>',
+        })
+        class Root {
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Root, Child, HasHostBinding],
+        });
+
+        TestBed.createComponent(Root).detectChanges();
+      });
+
+      it('should support call in an @Input setter invoker from a static attribute', () => {
+        @Component({
+          selector: 'child',
+          template: 'child',
+          inputs: ['input'],
+        })
+        class Child {
+          /**
+           * @internal
+           */
+          private _input !: number;
+
+          constructor(private cdr: ChangeDetectorRef) {}
+
+          get input() { return this._input; }
+
+          set input(value: number) {
+            this._input = value;
+            this.cdr.detectChanges();
+          }
+        }
+
+        @Component({
+          selector: 'root',
+          template: '<child input="3"></child>',
+        })
+        class Root {
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Root, Child],
+        });
+
+        TestBed.createComponent(Root).detectChanges();
+      });
+
+      it('should support call in a directive constructor', () => {
+        @Component({
+          selector: 'child',
+          template: 'child',
+        })
+        class Child {
+          constructor(cdr: ChangeDetectorRef) { cdr.detectChanges(); }
+        }
+
+        @Component({
+          selector: 'root',
+          template: '<child></child>',
+        })
+        class Root {
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Root, Child],
+        });
+
+        TestBed.createComponent(Root).detectChanges();
       });
 
       describe('dynamic views', () => {
