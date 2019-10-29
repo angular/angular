@@ -918,7 +918,7 @@ describe('ViewContainerRef', () => {
       //   - VE ONLY: Extra comment node It is unclear why the VE adds the last one.
       const rootNodes = dirRef.viewRef !.rootNodes;
       expect(rootNodes.length).toBe(ivyEnabled ? 2 : 3);
-      expect(rootNodes[0].outerHTML).toBe('<!--bindings={\n  "ng-reflect-ng-if": "true"\n}-->');
+      expect(rootNodes[0].textContent).toBe('bindings={\n  "ng-reflect-ng-if": "true"\n}');
       expect(rootNodes[1].outerHTML).toBe('<div>Text</div>');
       if (!ivyEnabled) {
         expect(rootNodes[2].outerHTML)
