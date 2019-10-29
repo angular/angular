@@ -7,11 +7,14 @@ This guide contains everything you need to know about updating to the next Angul
 If your application uses the CLI, you can update to version 9 automatically with the help of the `ng update` script:
 
 ```
-ng update @angular/cli@next @angular/core@next
+npm install --no-save @angular/cli@8.3.15
+ng update @angular/cli @angular/core --next
 ```
 
 <div class="alert is-important">
-During the RC period, the `@next` tag is required. This flag will no longer be necessary once version 9 final is released.
+In order to improve the updating experience, we strongly suggest that you update your local `@angular/cli` to version 8.3.15 or later 8.x version before updating.
+
+Additionally, during the RC period, the `--next` command line flag is required. This flag will no longer be necessary once version 9 final is released.
 </div>
 
 The script will run a series of small migrations that will transform the code of your application to be compatible with version 9.
