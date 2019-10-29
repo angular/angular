@@ -20,6 +20,7 @@
        [attr.aria-labelledby]="(!tab.ariaLabel && tab.ariaLabelledby) ? tab.ariaLabelledby : null"
        [class.mdc-tab--active]="selectedIndex == i"
        [disabled]="tab.disabled"
+       [fitInkBarToContent]="fitInkBarToContent"
        (click)="_handleClick(tab, tabHeader, i)">
     <span class="mdc-tab__ripple"></span>
 

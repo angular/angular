@@ -8,25 +8,27 @@
 
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ContentChildren,
   ElementRef,
+  Inject,
+  Input,
+  Optional,
   QueryList,
   ViewChild,
   ViewEncapsulation,
-  ChangeDetectorRef,
-  Inject,
-  Optional,
 } from '@angular/core';
 import {
   _MatTabGroupBase,
+  MAT_TAB_GROUP,
   MAT_TABS_CONFIG,
   MatTabsConfig,
-  MAT_TAB_GROUP,
 } from '@angular/material/tabs';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MatTab} from './tab';
 import {MatTabHeader} from './tab-header';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 
 /**
  * Material design tab-group component. Supports basic tab pairs (label + content) and includes
@@ -56,6 +58,12 @@ export class MatTabGroup extends _MatTabGroupBase {
   @ContentChildren(MatTab, {descendants: true}) _allTabs: QueryList<MatTab>;
   @ViewChild('tabBodyWrapper') _tabBodyWrapper: ElementRef;
   @ViewChild('tabHeader') _tabHeader: MatTabHeader;
+
+  /** Whether the ink bar should fit its width to the size of the tab label content. */
+  @Input()
+  get fitInkBarToContent(): boolean { return this._fitInkBarToContent; }
+  set fitInkBarToContent(v: boolean) { this._fitInkBarToContent = coerceBooleanProperty(v); }
+  private _fitInkBarToContent = false;
 
   constructor(elementRef: ElementRef,
               changeDetectorRef: ChangeDetectorRef,

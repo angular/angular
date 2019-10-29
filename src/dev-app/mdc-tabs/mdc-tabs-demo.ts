@@ -15,6 +15,7 @@ import {Component} from '@angular/core';
   styleUrls: ['mdc-tabs-demo.css'],
 })
 export class MdcTabsDemo {
+  fitInkBarToContent = true;
   links = ['First', 'Second', 'Third'];
   lotsOfTabs = new Array(30).fill(0).map((_, index) => `Tab ${index}`);
   activeLink = this.links[0];

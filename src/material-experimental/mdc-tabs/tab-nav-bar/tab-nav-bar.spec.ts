@@ -1,5 +1,5 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Component, ViewChild, ViewChildren, QueryList} from '@angular/core';
+import {Component, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {MAT_RIPPLE_GLOBAL_OPTIONS, RippleGlobalOptions} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent, dispatchMouseEvent} from '@angular/cdk/testing/private';
@@ -321,12 +321,46 @@ describe('MatTabNavBar', () => {
         .toBe(true, 'Expected every tab link to have ripples disabled');
     });
   });
+
+  describe('with the ink bar fit to content', () => {
+    let fixture: ComponentFixture<SimpleTabNavBarTestApp>;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SimpleTabNavBarTestApp);
+      fixture.componentInstance.fitInkBarToContent = true;
+      fixture.detectChanges();
+    });
+
+    it('should properly nest the ink bar when fit to content', () => {
+      const tabElement = fixture.nativeElement.querySelector('.mdc-tab');
+      const contentElement = tabElement.querySelector('.mdc-tab__content');
+      const indicatorElement = tabElement.querySelector('.mdc-tab-indicator');
+      expect(indicatorElement.parentElement).toBe(contentElement);
+    });
+
+    it('should be able to move the ink bar between content and full', () => {
+      fixture.componentInstance.fitInkBarToContent = false;
+      fixture.detectChanges();
+
+      const tabElement = fixture.nativeElement.querySelector('.mdc-tab');
+      const indicatorElement = tabElement.querySelector('.mdc-tab-indicator');
+      expect(indicatorElement.parentElement).toBe(tabElement);
+
+      fixture.componentInstance.fitInkBarToContent = true;
+      fixture.detectChanges();
+
+      const contentElement = tabElement.querySelector('.mdc-tab__content');
+      expect(indicatorElement.parentElement).toBe(contentElement);
+    });
+  });
 });
 
 @Component({
   selector: 'test-app',
   template: `
-    <nav mat-tab-nav-bar [disableRipple]="disableRippleOnBar">
+    <nav mat-tab-nav-bar
+         [disableRipple]="disableRippleOnBar"
+         [fitInkBarToContent]="fitInkBarToContent">
       <a mat-tab-link
          *ngFor="let tab of tabs; let index = index"
          [active]="activeIndex === index"
@@ -347,6 +381,7 @@ class SimpleTabNavBarTestApp {
   disableRippleOnBar = false;
   disableRippleOnLink = false;
   tabs = [0, 1, 2];
+  fitInkBarToContent = false;
 
   activeIndex = 0;
 }

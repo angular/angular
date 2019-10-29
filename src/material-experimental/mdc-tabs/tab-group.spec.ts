@@ -677,6 +677,47 @@ describe('nested MatTabGroup with enabled animations', () => {
 });
 
 
+describe('MatTabGroup with ink bar fit to content', () => {
+  let fixture: ComponentFixture<TabGroupWithInkBarFitToContent>;
+
+  beforeEach(fakeAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatTabsModule, BrowserAnimationsModule],
+      declarations: [TabGroupWithInkBarFitToContent]
+    });
+
+    TestBed.compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(TabGroupWithInkBarFitToContent);
+    fixture.detectChanges();
+  });
+
+  it('should properly nest the ink bar when fit to content', () => {
+    const tabElement = fixture.nativeElement.querySelector('.mdc-tab');
+    const contentElement = tabElement.querySelector('.mdc-tab__content');
+    const indicatorElement = tabElement.querySelector('.mdc-tab-indicator');
+    expect(indicatorElement.parentElement).toBe(contentElement);
+  });
+
+  it('should be able to move the ink bar between content and full', () => {
+    fixture.componentInstance.fitInkBarToContent = false;
+    fixture.detectChanges();
+
+    const tabElement = fixture.nativeElement.querySelector('.mdc-tab');
+    const indicatorElement = tabElement.querySelector('.mdc-tab-indicator');
+    expect(indicatorElement.parentElement).toBe(tabElement);
+
+    fixture.componentInstance.fitInkBarToContent = true;
+    fixture.detectChanges();
+
+    const contentElement = tabElement.querySelector('.mdc-tab__content');
+    expect(indicatorElement.parentElement).toBe(contentElement);
+  });
+});
+
+
 @Component({
   template: `
     <mat-tab-group class="tab-group"
@@ -927,4 +968,17 @@ class TabsWithCustomAnimationDuration {}
 })
 class TabGroupWithIndirectDescendantTabs {
   @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
+}
+
+
+@Component({
+  template: `
+    <mat-tab-group [fitInkBarToContent]="fitInkBarToContent">
+      <mat-tab label="One">Tab one content</mat-tab>
+      <mat-tab label="Two">Tab two content</mat-tab>
+    </mat-tab-group>
+  `,
+})
+class TabGroupWithInkBarFitToContent {
+  fitInkBarToContent = true;
 }
