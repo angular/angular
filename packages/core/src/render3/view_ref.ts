@@ -11,12 +11,11 @@ import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detec
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 import {assertDefined} from '../util/assert';
-
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
 import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {CONTEXT, FLAGS, HOST, LView, LViewFlags, TView, T_HOST} from './interfaces/view';
-import {destroyLView, getLContainer, renderDetachView} from './node_manipulation';
+import {destroyLView, renderDetachView} from './node_manipulation';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
 import {getNativeByTNode, getNativeByTNodeOrNull} from './util/view_utils';
 
@@ -312,7 +311,7 @@ function collectNativeNodes(lView: LView, tNode: TNode | null, result: any[]): a
       const containerTView = tNode.tViews !as TView;
       ngDevMode && assertDefined(containerTView, 'TView expected');
       const containerFirstChildTNode = containerTView.firstChild !;
-      if (containerFirstChildTNode) {
+      if (containerFirstChildTNode !== null) {
         for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
           collectNativeNodes(lContainer[i], containerFirstChildTNode, result);
         }
