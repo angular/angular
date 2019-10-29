@@ -831,5 +831,13 @@
     "picture": "hafiz.jpg",
     "website": "https://github.com/ayazhafiz",
     "bio": "Ayaz is an undergraduate student with interests in free software."
+  },
+  "brocco": {
+    "name": "Mike Brocchi",
+    "picture": "mike-brocchi.jpg",
+    "twitter": "brocco",
+    "website": "https://github.com/Brocco",
+    "bio": "Mike (aka Brocco) is a Google Developer Expert in Web Technologies and Angular. He is passionate about teaching and helping others. You can find him online as half of the ngBS live stream and also as a panelist on the Angular Air video broadcast.",
+    "groups": ["GDE"]
   }
 }
