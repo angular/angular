@@ -81,6 +81,18 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true
+            },
+            "translated-legacy-xmb": {
+              "tsConfig": "tsconfig.legacy-xmb.json",
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
             }
           }
         },
@@ -161,7 +173,7 @@
               "devServerTarget": "cli-hello-world-ivy-i18n:serve:ci"
             },
             "ci-production": {
-              "devServerTarget": "cli-hello-world-ivy-i18n:serve:ci-production",
+              "devServerTarget": "cli-hello-world-ivy-i18n:serve:ci-production"
             },
             "runtime-translations": {
               "devServerTarget": "cli-hello-world-ivy-i18n:serve:runtime-translations",
