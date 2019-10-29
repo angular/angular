@@ -20,7 +20,7 @@ import {appendChild} from '../node_manipulation';
 import {decreaseElementDepthCount, getBindingIndex, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {setUpAttributes} from '../util/attrs_utils';
 import {getInitialStylingValue, hasClassInput, hasStyleInput, selectClassBasedInputName} from '../util/styling_utils';
-import {getNativeByTNode, getTNode} from '../util/view_utils';
+import {getConstant, getNativeByTNode, getTNode} from '../util/view_utils';
 
 import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, matchingSchemas, renderInitialStyling, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';
 import {registerInitialStylingOnTNode} from './styling';
@@ -32,8 +32,8 @@ import {registerInitialStylingOnTNode} from './styling';
  *
  * @param index Index of the element in the LView array
  * @param name Name of the DOM Node
- * @param constsIndex Index of the element in the `consts` array.
- * @param localRefs A set of local reference bindings on the element.
+ * @param attrsIndex Index of the element's attributes in the `consts` array.
+ * @param localRefsIndex Index of the element's local references in the `consts` array.
  *
  * Attributes and localRefs are passed as an array of strings where elements with an even index
  * hold an attribute name and elements with an odd index hold an attribute value, ex.:
@@ -42,25 +42,25 @@ import {registerInitialStylingOnTNode} from './styling';
  * @codeGenApi
  */
 export function ɵɵelementStart(
-    index: number, name: string, constsIndex?: number | null, localRefs?: string[] | null): void {
+    index: number, name: string, attrsIndex?: number | null, localRefsIndex?: number): void {
   const lView = getLView();
   const tView = lView[TVIEW];
   const tViewConsts = tView.consts;
-  const consts = tViewConsts === null || constsIndex == null ? null : tViewConsts[constsIndex];
+  const attrs = getConstant(tViewConsts, attrsIndex) as TAttributes;
+  const localRefs = getConstant(tViewConsts, localRefsIndex) as string[];
   ngDevMode && assertEqual(
                    getBindingIndex(), tView.bindingStartIndex,
                    'elements should be created before any bindings');
-
   ngDevMode && ngDevMode.rendererCreateElement++;
   ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
   const renderer = lView[RENDERER];
   const native = lView[index + HEADER_OFFSET] = elementCreate(name, renderer, getNamespace());
-  const tNode = getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, name, consts);
+  const tNode = getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, name, attrs);
 
-  if (consts != null) {
-    const lastAttrIndex = setUpAttributes(renderer, native, consts);
+  if (attrs != null) {
+    const lastAttrIndex = setUpAttributes(renderer, native, attrs);
     if (tView.firstTemplatePass) {
-      registerInitialStylingOnTNode(tNode, consts, lastAttrIndex);
+      registerInitialStylingOnTNode(tNode, attrs, lastAttrIndex);
     }
   }
 
@@ -84,7 +84,7 @@ export function ɵɵelementStart(
   // and `[class]` bindings work for multiple directives.)
   if (tView.firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
-    const hasDirectives = resolveDirectives(tView, lView, tNode, localRefs || null);
+    const hasDirectives = resolveDirectives(tView, lView, tNode, localRefs);
     ngDevMode && validateElement(lView, native, tNode, hasDirectives);
 
     if (tView.queries !== null) {
@@ -148,14 +148,14 @@ export function ɵɵelementEnd(): void {
  *
  * @param index Index of the element in the data array
  * @param name Name of the DOM Node
- * @param constsIndex Index of the element in the `consts` array.
- * @param localRefs A set of local reference bindings on the element.
+ * @param attrsIndex Index of the element's attributes in the `consts` array.
+ * @param localRefsIndex Index of the element's local references in the `consts` array.
  *
  * @codeGenApi
  */
 export function ɵɵelement(
-    index: number, name: string, constsIndex?: number | null, localRefs?: string[] | null): void {
-  ɵɵelementStart(index, name, constsIndex, localRefs);
+    index: number, name: string, attrsIndex?: number | null, localRefsIndex?: number): void {
+  ɵɵelementStart(index, name, attrsIndex, localRefsIndex);
   ɵɵelementEnd();
 }
 

@@ -491,8 +491,6 @@ describe('compiler compliance: template', () => {
     };
 
     const template = `
-      const $t0_refs$ = ["foo", ""];
-
       function MyComponent_ng_template_0_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵɵtext(0, "some-content");
@@ -500,10 +498,10 @@ describe('compiler compliance: template', () => {
       }
 
       // ...
-
+      consts: [["foo", ""]],
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template", null, $t0_refs$, $i0$.ɵɵtemplateRefExtractor);
+          $i0$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template", null, 0, $i0$.ɵɵtemplateRefExtractor);
         }
       }`;
 

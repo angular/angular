@@ -193,14 +193,13 @@ describe('compiler compliance: listen()', () => {
     };
 
     const MyComponentDefinition = `
-        const $e2_refs$ = ["user", ""];
         …
         MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
           decls: 4,
           vars: 0,
-          consts: [[${AttributeMarker.Bindings}, "click"]],
+          consts: [[${AttributeMarker.Bindings}, "click"], ["user", ""]],
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               const $s$ = $r3$.ɵɵgetCurrentView();
@@ -212,7 +211,7 @@ describe('compiler compliance: listen()', () => {
                 });
                 $r3$.ɵɵtext(1, "Save");
               $r3$.ɵɵelementEnd();
-              $r3$.ɵɵelement(2, "input", null, $e2_refs$);
+              $r3$.ɵɵelement(2, "input", null, 1);
             }
           },
           encapsulation: 2

@@ -441,10 +441,10 @@ describe('ViewContainerRef', () => {
           selectors: [['dynamic-cmpt-with-view-queries']],
           decls: 2,
           vars: 0,
-          consts: [['bar', '']],
+          consts: [['foo', ''], ['bar', '']],
           template: (rf: RenderFlags, ctx: DynamicCompWithViewQueries) => {
             if (rf & RenderFlags.Create) {
-              ɵɵelement(0, 'div', 0, ['foo', '']);
+              ɵɵelement(0, 'div', 1, 0);
             }
             // testing only
             fooEl = getNativeByIndex(0, getLView()) as RElement;

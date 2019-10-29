@@ -917,10 +917,11 @@ describe('event listeners', () => {
         selectors: [['app']],
         decls: 3,
         vars: 0,
+        consts: [['comp', '']],
         template: (rf: RenderFlags, ctx: App) => {
           if (rf & RenderFlags.Create) {
             const state = ɵɵgetCurrentView();
-            ɵɵelement(0, 'comp', null, ['comp', '']);
+            ɵɵelement(0, 'comp', null, 0);
             ɵɵelementStart(2, 'button');
             {
               ɵɵlistener('click', function() {
