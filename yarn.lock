@@ -281,19 +281,19 @@
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.10.3.tgz#2e2b8a1d3e885946eac41db2b1aa6801fb319887"
   integrity sha512-v1nXbMTHVlMM4z4uWp6XiRoHAyUlYggF1SOboLLWRp0+D22kWixqArWqnozLw2mOtnxr97BdLjluWiho6A8Hjg==
 
-"@bazel/jasmine@0.39.0":
-  version "0.39.0"
-  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-0.39.0.tgz#a567ceabd6caf3e8b14b92d4c28a2535f3a13dd7"
-  integrity sha512-wGEsXtS8NmnOObbouEKDj1awgpbrg/e+K1LKLaX6zhn37gozUfc+LZdgWhMiY3hLVm22ofdz8qhjIe9nz7uN7w==
+"@bazel/jasmine@0.39.1":
+  version "0.39.1"
+  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-0.39.1.tgz#fd78c8dbe2d927ca358df506e181a07d5c0cbb9d"
+  integrity sha512-l+IerE7rKuHYShkWk7L71x65X1mlrNFrAPk/EGlyRpuY+lDDP6P8ElHBV4e+32s0Yt5Ewi46BvGMYkOWHdbzgA==
   dependencies:
     jasmine "~3.4.0"
     jasmine-core "~3.4.0"
     v8-coverage "1.0.9"
 
-"@bazel/karma@0.39.0":
-  version "0.39.0"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.39.0.tgz#1e37cf8364f0be0967b9d93f32659ebcb2015e6d"
-  integrity sha512-tbVl4hZhKm4z99GolgvkZNzcK3Th5XpfCIoC2Ygn+WLD+Z5cKEyFp5F/ga2MY1QVPtChY6EKFWkFvxTIxwehFg==
+"@bazel/karma@0.39.1":
+  version "0.39.1"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.39.1.tgz#23898875444a5ef1fd9ac0dbaebcdd05b90d51f8"
+  integrity sha512-P4LNCeopKGmhwRJrA6qtMLAvMgIalq5I9XYlaPOLjkoYKcjwAReBKyWY9VYhDEYld2P/P1YJmx/+nQDZAowocA==
   dependencies:
     jasmine-core "2.8.0"
     karma "~4.1.0"
@@ -307,17 +307,17 @@
     semver "5.6.0"
     tmp "0.0.33"
 
-"@bazel/protractor@0.39.0":
-  version "0.39.0"
-  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-0.39.0.tgz#ac84a6e6e40c67cdf7e3cee77fc607d5c21503d2"
-  integrity sha512-mEzaR1YUH9YPSCILWNjaeki2Uen9XCKBEZowXmeeoyMK6/v4kOb/BgM+VWZHZS1t4J7g/nD48EQ3Wgs5FjTllA==
+"@bazel/protractor@0.39.1":
+  version "0.39.1"
+  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-0.39.1.tgz#24988e12eaa3efbcdbb7e80dba20105e379e4016"
+  integrity sha512-zVbCrK8Uyfd2D93laHYp+YLvoR2Pfov/i13b6MTDkgDkzWd0NoPIlPqLAXuKhOUi5rYUcbp+DoY9A+HA2Rfy1g==
   dependencies:
     protractor "^5.4.2"
 
-"@bazel/typescript@0.39.0":
-  version "0.39.0"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.39.0.tgz#9e4feef3038c94419b15fbe88eef467f0f076056"
-  integrity sha512-CVzfPXNKVSlxKEo8RyEAGSLf8UHJwpkcNy+Yntpr+TlxLDgMEiXRRoqSf6r3woTbsDDiNW9o6//BK1z+sZYR/Q==
+"@bazel/typescript@0.39.1":
+  version "0.39.1"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.39.1.tgz#fbe3f9e287aa294935987bbbd9f2dce5341a9b02"
+  integrity sha512-n4P6VKir1L3+rM/DgHa5mnlCfT7Wo0ra+TnkbTuZ08SeN/r8HTmClK6YADoDc5ORMQhzq8eXuVuLWeUUsFJyHQ==
   dependencies:
     protobufjs "6.8.8"
     semver "5.6.0"
