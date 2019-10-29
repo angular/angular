@@ -924,7 +924,7 @@ describe('ViewContainerRef', () => {
       expect(rootNodes[0].textContent).toBe('bindings={\n  "ng-reflect-ng-if": "true"\n}');
       expect(rootNodes[1].outerHTML).toBe('<div>Text</div>');
       expect(rootNodes[2].textContent).toBe(ivyEnabled ? 'ng-container' : '');
-      expect(rootNodes[3].outerHTML).toBe('container-content');
+      expect(rootNodes[3].textContent).toBe('container-content');
       expect(rootNodes[4].outerHTML)
           .toBe('<div>assert TNodeType.IcuContainer is never a root node</div>');
       expect(rootNodes[5].textContent).toBe(ivyEnabled ? 'ng-container' : '');
