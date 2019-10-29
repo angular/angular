@@ -79,10 +79,9 @@ export function hasConfig(context: TStylingContext, flag: TStylingConfig) {
  * 3. There are no collisions (i.e. properties with more than one binding) across multiple
  *    sources (i.e. template + directive, directive + directive, directive + component)
  */
-export function allowDirectStyling(context: TStylingContext, hostBindingsMode: boolean): boolean {
+export function allowDirectStyling(context: TStylingContext, firstUpdatePass: boolean): boolean {
   let allow = false;
   const config = getConfig(context);
-  const contextIsLocked = (config & getLockedConfig(hostBindingsMode)) !== 0;
   const hasNoDirectives = (config & TStylingConfig.HasDirectives) === 0;
 
   // if no directives are present then we do not need populate a context at all. This
@@ -93,8 +92,8 @@ export function allowDirectStyling(context: TStylingContext, hostBindingsMode: b
     // `ngDevMode` is required to be checked here because tests/debugging rely on the context being
     // populated. If things are in production mode then there is no need to build a context
     // therefore the direct apply can be allowed (even on the first update).
-    allow = ngDevMode ? contextIsLocked : true;
-  } else if (contextIsLocked) {
+    allow = ngDevMode ? !firstUpdatePass : true;
+  } else if (!firstUpdatePass) {
     const hasNoCollisions = (config & TStylingConfig.HasCollisions) === 0;
     const hasOnlyMapsOrOnlyProps =
         (config & TStylingConfig.HasPropAndMapBindings) !== TStylingConfig.HasPropAndMapBindings;
@@ -170,19 +169,6 @@ export function setValue(data: LStylingData, bindingIndex: number, value: any) {
 
 export function getValue<T = any>(data: LStylingData, bindingIndex: number): T|null {
   return bindingIndex !== 0 ? data[bindingIndex] as T : null;
-}
-
-export function lockContext(context: TStylingContext, hostBindingsMode: boolean): void {
-  patchConfig(context, getLockedConfig(hostBindingsMode));
-}
-
-export function isContextLocked(context: TStylingContext, hostBindingsMode: boolean): boolean {
-  return hasConfig(context, getLockedConfig(hostBindingsMode));
-}
-
-export function getLockedConfig(hostBindingsMode: boolean) {
-  return hostBindingsMode ? TStylingConfig.HostBindingsLocked :
-                            TStylingConfig.TemplateBindingsLocked;
 }
 
 export function getPropValuesStartPosition(context: TStylingContext) {
