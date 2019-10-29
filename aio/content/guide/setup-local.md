@@ -150,7 +150,7 @@ The Angular CLI includes a server, so that you can easily build and serve your a
 -->
 Angular CLI는 간단한 서버 기능을 제공하기 때문에 로컬 개발환경에서 빌드한 앱을 간단하게 호스팅할 수 있습니다.
 
-1. 워크프레이스 폴더로 이동합니다. (이 경우에는 `my-app`)
+1. 워크스페이스 폴더로 이동합니다. (이 경우에는 `my-app`)
 
 1. Angular CLI 명령 `ng serve` 명령을 실행하면 서버를 띄울 수 있습니다. 이 때 `--open` 옵션도 함께 사용해 봅시다.
 
