@@ -167,7 +167,12 @@ export interface R3FactoryDefMetadataFacade {
   target: R3FactoryTarget;
 }
 
-export type ViewEncapsulation = number;
+export enum ViewEncapsulation {
+  Emulated = 0,
+  Native = 1,
+  None = 2,
+  ShadowDom = 3
+}
 
 export type ChangeDetectionStrategy = number;
 
