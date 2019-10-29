@@ -92,10 +92,10 @@
   resolved "https://registry.yarnpkg.com/@bazel/hide-bazel-files/-/hide-bazel-files-0.38.3.tgz#e98231d3d360d51860d9c1a7c3345b40dab4cf81"
   integrity sha512-o+dNkfDm3qxWQ8h/04cWuTcjR7qnjZi3pQGv4aklVb16oPWx2jF8BzbkwvWuIkdbOl9VnqYP0vaHzwQVJRRcIA==
 
-"@bazel/karma@0.39.0":
-  version "0.39.0"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.39.0.tgz#1e37cf8364f0be0967b9d93f32659ebcb2015e6d"
-  integrity sha512-tbVl4hZhKm4z99GolgvkZNzcK3Th5XpfCIoC2Ygn+WLD+Z5cKEyFp5F/ga2MY1QVPtChY6EKFWkFvxTIxwehFg==
+"@bazel/karma@0.39.1":
+  version "0.39.1"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.39.1.tgz#23898875444a5ef1fd9ac0dbaebcdd05b90d51f8"
+  integrity sha512-P4LNCeopKGmhwRJrA6qtMLAvMgIalq5I9XYlaPOLjkoYKcjwAReBKyWY9VYhDEYld2P/P1YJmx/+nQDZAowocA==
   dependencies:
     jasmine-core "2.8.0"
     karma "~4.1.0"
@@ -109,27 +109,27 @@
     semver "5.6.0"
     tmp "0.0.33"
 
-"@bazel/protractor@0.39.0":
-  version "0.39.0"
-  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-0.39.0.tgz#ac84a6e6e40c67cdf7e3cee77fc607d5c21503d2"
-  integrity sha512-mEzaR1YUH9YPSCILWNjaeki2Uen9XCKBEZowXmeeoyMK6/v4kOb/BgM+VWZHZS1t4J7g/nD48EQ3Wgs5FjTllA==
+"@bazel/protractor@0.39.1":
+  version "0.39.1"
+  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-0.39.1.tgz#24988e12eaa3efbcdbb7e80dba20105e379e4016"
+  integrity sha512-zVbCrK8Uyfd2D93laHYp+YLvoR2Pfov/i13b6MTDkgDkzWd0NoPIlPqLAXuKhOUi5rYUcbp+DoY9A+HA2Rfy1g==
   dependencies:
     protractor "^5.4.2"
 
-"@bazel/rollup@0.39.0":
-  version "0.39.0"
-  resolved "https://registry.yarnpkg.com/@bazel/rollup/-/rollup-0.39.0.tgz#b2c20a1436486020fc9dd86792799cfdabb6dd18"
-  integrity sha512-yMIPphGs7VzXVBhSW3petF3gVM/hQ1RajhwdnT69BCM9AOv3fEMJ8hjtBn43M8bQI8HbTQBFYdsaa4PT2z5GKg==
+"@bazel/rollup@0.39.1":
+  version "0.39.1"
+  resolved "https://registry.yarnpkg.com/@bazel/rollup/-/rollup-0.39.1.tgz#9c7ca1fef256743353b8acb7944ca2f9723d83a1"
+  integrity sha512-5EqAgupj8NHQ2p3GgtuOZ8O0qM6S0NfDj8OgROuSF0sJFH9ojQkXBZowHfZfWT3Xt6Igi3dw55bZS964havh8Q==
 
-"@bazel/terser@0.39.0":
-  version "0.39.0"
-  resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-0.39.0.tgz#be543284b9dc04063761765357dd189c7a95e6ae"
-  integrity sha512-ztXdxP5eAXdJXHbklLHqnFds3mVxbOXFJ66LHqY2lLDgSgucK5rMpkHgn7Ngtg69FnU0/iIcf2v74vGxrE0Lpg==
+"@bazel/terser@0.39.1":
+  version "0.39.1"
+  resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-0.39.1.tgz#fa8ad78502d6e953a953dc6ef4e135e6a50aaf3e"
+  integrity sha512-YIfs7uoEQU2xnpfY3bF7GjCaaHTE6e5gUIy0Ua9V1qeLZECUmVQgIfmSEV/JTykzIQpO+l3dX3IcIzkYZGlF/A==
 
-"@bazel/typescript@0.39.0":
-  version "0.39.0"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.39.0.tgz#9e4feef3038c94419b15fbe88eef467f0f076056"
-  integrity sha512-CVzfPXNKVSlxKEo8RyEAGSLf8UHJwpkcNy+Yntpr+TlxLDgMEiXRRoqSf6r3woTbsDDiNW9o6//BK1z+sZYR/Q==
+"@bazel/typescript@0.39.1":
+  version "0.39.1"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.39.1.tgz#fbe3f9e287aa294935987bbbd9f2dce5341a9b02"
+  integrity sha512-n4P6VKir1L3+rM/DgHa5mnlCfT7Wo0ra+TnkbTuZ08SeN/r8HTmClK6YADoDc5ORMQhzq8eXuVuLWeUUsFJyHQ==
   dependencies:
     protobufjs "6.8.8"
     semver "5.6.0"
