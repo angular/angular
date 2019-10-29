@@ -11,7 +11,7 @@ import {global} from '../../util/global';
 import {ProceduralRenderer3, RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 import {ApplyStylingFn, LStylingData, StylingMapArray, StylingMapArrayIndex, StylingMapsSyncMode, SyncStylingMapsFn, TStylingConfig, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from '../interfaces/styling';
 import {NO_CHANGE} from '../tokens';
-import {DEFAULT_BINDING_INDEX, DEFAULT_BINDING_VALUE, DEFAULT_GUARD_MASK_VALUE, MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, concatString, forceStylesAsString, getBindingValue, getConfig, getDefaultValue, getGuardMask, getInitialStylingValue, getMapProp, getMapValue, getProp, getPropValuesStartPosition, getStylingMapArray, getTotalSources, getValue, getValuesCount, hasConfig, hasValueChanged, isContextLocked, isHostStylingActive, isSanitizationRequired, isStylingMapArray, isStylingValueDefined, lockContext, normalizeIntoStylingMap, patchConfig, setDefaultValue, setGuardMask, setMapAsDirty, setValue} from '../util/styling_utils';
+import {DEFAULT_BINDING_INDEX, DEFAULT_BINDING_VALUE, DEFAULT_GUARD_MASK_VALUE, MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, concatString, forceStylesAsString, getBindingValue, getConfig, getDefaultValue, getGuardMask, getInitialStylingValue, getMapProp, getMapValue, getProp, getPropValuesStartPosition, getStylingMapArray, getTotalSources, getValue, getValuesCount, hasConfig, hasValueChanged, isHostStylingActive, isSanitizationRequired, isStylingMapArray, isStylingValueDefined, normalizeIntoStylingMap, patchConfig, setDefaultValue, setGuardMask, setMapAsDirty, setValue} from '../util/styling_utils';
 
 import {getStylingState, resetStylingState} from './state';
 
@@ -56,20 +56,19 @@ const STYLING_INDEX_FOR_MAP_BINDING = 0;
 export function updateClassViaContext(
     context: TStylingContext, data: LStylingData, element: RElement, directiveIndex: number,
     prop: string | null, bindingIndex: number,
-    value: boolean | string | null | undefined | StylingMapArray | NO_CHANGE,
-    forceUpdate?: boolean): boolean {
+    value: boolean | string | null | undefined | StylingMapArray | NO_CHANGE, forceUpdate: boolean,
+    firstUpdatePass: boolean): boolean {
   const isMapBased = !prop;
   const state = getStylingState(element, directiveIndex);
   const countIndex = isMapBased ? STYLING_INDEX_FOR_MAP_BINDING : state.classesIndex++;
-  const hostBindingsMode = isHostStylingActive(state.sourceIndex);
 
   // even if the initial value is a `NO_CHANGE` value (e.g. interpolation or [ngClass])
   // then we still need to register the binding within the context so that the context
-  // is aware of the binding before it gets locked.
-  if (!isContextLocked(context, hostBindingsMode) || value !== NO_CHANGE) {
+  // is aware of the binding even if things change after the first update pass.
+  if (firstUpdatePass || value !== NO_CHANGE) {
     const updated = updateBindingData(
-        context, data, countIndex, state.sourceIndex, prop, bindingIndex, value, forceUpdate,
-        false);
+        context, data, countIndex, state.sourceIndex, prop, bindingIndex, value, forceUpdate, false,
+        firstUpdatePass);
     if (updated || forceUpdate) {
       // We flip the bit in the bitMask to reflect that the binding
       // at the `index` slot has changed. This identifies to the flushing
@@ -97,22 +96,21 @@ export function updateStyleViaContext(
     context: TStylingContext, data: LStylingData, element: RElement, directiveIndex: number,
     prop: string | null, bindingIndex: number,
     value: string | number | SafeValue | null | undefined | StylingMapArray | NO_CHANGE,
-    sanitizer: StyleSanitizeFn | null, forceUpdate?: boolean): boolean {
+    sanitizer: StyleSanitizeFn | null, forceUpdate: boolean, firstUpdatePass: boolean): boolean {
   const isMapBased = !prop;
   const state = getStylingState(element, directiveIndex);
   const countIndex = isMapBased ? STYLING_INDEX_FOR_MAP_BINDING : state.stylesIndex++;
-  const hostBindingsMode = isHostStylingActive(state.sourceIndex);
 
   // even if the initial value is a `NO_CHANGE` value (e.g. interpolation or [ngStyle])
   // then we still need to register the binding within the context so that the context
-  // is aware of the binding before it gets locked.
-  if (!isContextLocked(context, hostBindingsMode) || value !== NO_CHANGE) {
+  // is aware of the binding even if things change after the first update pass.
+  if (firstUpdatePass || value !== NO_CHANGE) {
     const sanitizationRequired = isMapBased ?
         true :
         (sanitizer ? sanitizer(prop !, null, StyleSanitizeMode.ValidateProperty) : false);
     const updated = updateBindingData(
         context, data, countIndex, state.sourceIndex, prop, bindingIndex, value, forceUpdate,
-        sanitizationRequired);
+        sanitizationRequired, firstUpdatePass);
     if (updated || forceUpdate) {
       // We flip the bit in the bitMask to reflect that the binding
       // at the `index` slot has changed. This identifies to the flushing
@@ -141,9 +139,9 @@ function updateBindingData(
     context: TStylingContext, data: LStylingData, counterIndex: number, sourceIndex: number,
     prop: string | null, bindingIndex: number,
     value: string | SafeValue | number | boolean | null | undefined | StylingMapArray,
-    forceUpdate?: boolean, sanitizationRequired?: boolean): boolean {
+    forceUpdate: boolean, sanitizationRequired: boolean, firstUpdatePass: boolean): boolean {
   const hostBindingsMode = isHostStylingActive(sourceIndex);
-  if (!isContextLocked(context, hostBindingsMode)) {
+  if (firstUpdatePass) {
     // this will only happen during the first update pass of the
     // context. The reason why we can't use `tView.firstCreatePass`
     // here is because its not guaranteed to be true when the first
@@ -409,16 +407,16 @@ function addNewSourceColumn(context: TStylingContext): void {
 export function flushStyling(
     renderer: Renderer3 | ProceduralRenderer3 | null, data: LStylingData,
     classesContext: TStylingContext | null, stylesContext: TStylingContext | null,
-    element: RElement, directiveIndex: number, styleSanitizer: StyleSanitizeFn | null): void {
+    element: RElement, directiveIndex: number, styleSanitizer: StyleSanitizeFn | null,
+    firstUpdatePass: boolean): void {
   ngDevMode && ngDevMode.flushStyling++;
 
   const state = getStylingState(element, directiveIndex);
   const hostBindingsMode = isHostStylingActive(state.sourceIndex);
 
   if (stylesContext) {
-    if (!isContextLocked(stylesContext, hostBindingsMode)) {
-      lockAndFinalizeContext(stylesContext, hostBindingsMode);
-    }
+    firstUpdatePass && syncContextInitialStyling(stylesContext);
+
     if (state.stylesBitMask !== 0) {
       applyStylingViaContext(
           stylesContext, renderer, element, data, state.stylesBitMask, setStyle, styleSanitizer,
@@ -427,9 +425,8 @@ export function flushStyling(
   }
 
   if (classesContext) {
-    if (!isContextLocked(classesContext, hostBindingsMode)) {
-      lockAndFinalizeContext(classesContext, hostBindingsMode);
-    }
+    firstUpdatePass && syncContextInitialStyling(classesContext);
+
     if (state.classesBitMask !== 0) {
       applyStylingViaContext(
           classesContext, renderer, element, data, state.classesBitMask, setClass, null,
@@ -441,35 +438,64 @@ export function flushStyling(
 }
 
 /**
- * Locks the context (so no more bindings can be added) and also copies over initial class/style
- * values into their binding areas.
+ * Registers all static styling values into the context as default values.
  *
- * There are two main actions that take place in this function:
+ * Static styles are stored on the `tNode.styles` and `tNode.classes`
+ * properties as instances of `StylingMapArray`. When an instance of
+ * `TStylingContext` is assigned to `tNode.styles` and `tNode.classes`
+ * then the existing initial styling values are copied into the the
+ * `InitialStylingValuePosition` slot.
  *
- * - Locking the context:
- *   Locking the context is required so that the style/class instructions know NOT to
- *   register a binding again after the first update pass has run. If a locking bit was
- *   not used then it would need to scan over the context each time an instruction is run
- *   (which is expensive).
+ * Because all static styles/classes are collected and registered on
+ * the initial styling array each time a directive is instantiated,
+ * the context may not yet know about the static values. When this
+ * function is called it will copy over all the static style/class
+ * values from the initial styling array into the context as default
+ * values for each of the matching entries in the context.
  *
- * - Patching initial values:
- *   Directives and component host bindings may include static class/style values which are
- *   bound to the host element. When this happens, the styling context will need to be informed
- *   so it can use these static styling values as defaults when a matching binding is falsy.
- *   These initial styling values are read from the initial styling values slot within the
- *   provided `TStylingContext` (which is an instance of a `StylingMapArray`). This inner map will
- *   be updated each time a host binding applies its static styling values (via `elementHostAttrs`)
- *   so these values are only read at this point because this is the very last point before the
- *   first style/class values are flushed to the element.
+ * Let's imagine the following example:
  *
- * Note that the `TStylingContext` styling context contains two locks: one for template bindings
- * and another for host bindings. Either one of these locks will be set when styling is applied
- * during the template binding flush and/or during the host bindings flush.
+ * ```html
+ * <div style="color:red"
+ *     [style.color]="myColor"
+ *     dir-that-has-static-height>
+ *   ...
+ * </div>
+ * ```
+ *
+ * When the code above is processed, the underlying element/styling
+ * instructions will create an instance of `TStylingContext` for
+ * the `tNode.styles` property. Here's what that looks like:
+ *
+ * ```typescript
+ * tNode.styles = [
+ *   // ...
+ *   // initial styles
+ *   ['color:red; height:200px', 'color', 'red', 'height', '200px'],
+ *
+ *   0, 0b1, 0b0, 'color', 20, null, // [style.color] binding
+ * ]
+ * ```
+ *
+ * After this function is called it will balance out the context with
+ * the static `color` and `height` values and set them as defaults within
+ * the context:
+ *
+ * ```typescript
+ * tNode.styles = [
+ *   // ...
+ *   // initial styles
+ *   ['color:red; height:200px', 'color', 'red', 'height', '200px'],
+ *
+ *   0, 0b1, 0b0, 'color', 20, 'red',
+ *   0, 0b0, 0b0, 'height', 0, '200px',
+ * ]
+ * ```
  */
-function lockAndFinalizeContext(context: TStylingContext, hostBindingsMode: boolean): void {
-  const initialValues = getStylingMapArray(context) !;
-  updateInitialStylingOnContext(context, initialValues);
-  lockContext(context, hostBindingsMode);
+function syncContextInitialStyling(context: TStylingContext): void {
+  // the TStylingContext always has initial style/class values which are
+  // stored in styling array format.
+  updateInitialStylingOnContext(context, getStylingMapArray(context) !);
 }
 
 /**
