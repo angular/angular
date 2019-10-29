@@ -33,10 +33,11 @@
   "peerDependencies": {
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
     "@bazel/typescript": "0.*",
-    "typescript": ">=3.6 <3.7"
-  },
-  "devDependencies": {
-
+    "typescript": ">=3.6 <3.7",
+    "rollup": ">=1.20.0",
+    "rollup-plugin-commonjs": ">=9.0.0",
+    "rollup-plugin-node-resolve": ">=4.2.0",
+    "rollup-plugin-sourcemaps": ">=0.4.0"
   },
   "repository": {
     "type": "git",

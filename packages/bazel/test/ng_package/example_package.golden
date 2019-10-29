@@ -96,7 +96,7 @@ Hello
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
     typeof define === 'function' && define.amd ? define('example/secondary', ['exports', '@angular/core'], factory) :
     (global = global || self, factory((global.example = global.example || {}, global.example.secondary = {}), global.ng.core));
-}(this, function (exports, core) { 'use strict';
+}(this, (function (exports, core) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -329,7 +329,7 @@ Hello
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
 //# sourceMappingURL=waffels-secondary.umd.js.map
 
 
@@ -340,7 +340,7 @@ Hello
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example/secondary",["exports","@angular/core"],t):t(((e=e||self).example=e.example||{},e.example.secondary={}),e.ng.core)}(this,function(e,t){"use strict";
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example/secondary",["exports","@angular/core"],t):t(((e=e||self).example=e.example||{},e.example.secondary={}),e.ng.core)}(this,(function(e,t){"use strict";
 /**
      * @license
      * Copyright Google Inc. All Rights Reserved.
@@ -348,7 +348,7 @@ Hello
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-var o=function(){return function o(e,t,n,r){var c,f=arguments.length,l=f<3?t:null===r?r=Object.getOwnPropertyDescriptor(t,n):r;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)l=Reflect.decorate(e,t,n,r);else for(var u=e.length-1;u>=0;u--)(c=e[u])&&(l=(f<3?c(l):f>3?c(t,n,l):c(t,n))||l);return f>3&&l&&Object.defineProperty(t,n,l),l}([t.NgModule({})],function e(){})}();
+var o=function n(e,t,o,r){var c,f=arguments.length,l=f<3?t:null===r?r=Object.getOwnPropertyDescriptor(t,o):r;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)l=Reflect.decorate(e,t,o,r);else for(var a=e.length-1;a>=0;a--)(c=e[a])&&(l=(f<3?c(l):f>3?c(t,o,l):c(t,o))||l);return f>3&&l&&Object.defineProperty(t,o,l),l}([t.NgModule({})],(function o(){}));
 /**
      * @license
      * Copyright Google Inc. All Rights Reserved.
@@ -356,7 +356,7 @@ var o=function(){return function o(e,t,n,r){var c,f=arguments.length,l=f<3?t:nul
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-e.SecondaryModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})});
+e.SecondaryModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 --- bundles/waffels.umd.js ---
 
@@ -370,7 +370,7 @@ e.SecondaryModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})});
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
     typeof define === 'function' && define.amd ? define('example', ['exports', '@angular/core'], factory) :
     (global = global || self, factory(global.example = {}, global.ng.core));
-}(this, function (exports, core) { 'use strict';
+}(this, (function (exports, core) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -601,7 +601,7 @@ e.SecondaryModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})});
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
 //# sourceMappingURL=waffels.umd.js.map
 
 
@@ -612,7 +612,7 @@ e.SecondaryModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})});
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example",["exports","@angular/core"],t):t((e=e||self).example={},e.ng.core)}(this,function(e,t){"use strict";
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example",["exports","@angular/core"],t):t((e=e||self).example={},e.ng.core)}(this,(function(e,t){"use strict";
 /**
      * @license
      * Copyright Google Inc. All Rights Reserved.
@@ -620,14 +620,14 @@ e.SecondaryModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})});
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-var o=function(){return function o(e,t,n,r){var f,c=arguments.length,u=c<3?t:null===r?r=Object.getOwnPropertyDescriptor(t,n):r;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)u=Reflect.decorate(e,t,n,r);else for(var i=e.length-1;i>=0;i--)(f=e[i])&&(u=(c<3?f(u):c>3?f(t,n,u):f(t,n))||u);return c>3&&u&&Object.defineProperty(t,n,u),u}([t.NgModule({})],function e(){})}();
+var o=function n(e,t,o,r){var f,c=arguments.length,l=c<3?t:null===r?r=Object.getOwnPropertyDescriptor(t,o):r;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)l=Reflect.decorate(e,t,o,r);else for(var u=e.length-1;u>=0;u--)(f=e[u])&&(l=(c<3?f(l):c>3?f(t,o,l):f(t,o))||l);return c>3&&l&&Object.defineProperty(t,o,l),l}([t.NgModule({})],(function o(){}));
 /**
      * @license
      * Copyright Google Inc. All Rights Reserved.
      *
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
-     */e.MyModule=o,Object.defineProperty(e,"__esModule",{value:!0})});
+     */e.MyModule=o,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 --- esm2015/example.externs.js ---
 
