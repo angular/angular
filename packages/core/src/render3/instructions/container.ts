@@ -17,7 +17,7 @@ import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TVIEW
 import {assertNodeType} from '../node_assert';
 import {appendChild, removeView} from '../node_manipulation';
 import {getBindingIndex, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
-import {load} from '../util/view_utils';
+import {getConstant, load} from '../util/view_utils';
 
 import {addToViewTree, createDirectivesInstances, createLContainer, createTNode, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
@@ -56,8 +56,8 @@ export function ɵɵcontainer(index: number): void {
  * @param decls The number of nodes, local refs, and pipes for this template
  * @param vars The number of bindings for this template
  * @param tagName The name of the container element, if applicable
- * @param constsIndex Index of template in the `consts` array.
- * @param localRefs A set of local reference bindings on the element.
+ * @param attrsIndex Index of template attributes in the `consts` array.
+ * @param localRefs Index of the local references in the `consts` array.
  * @param localRefExtractor A function which extracts local-refs values from the template.
  *        Defaults to the current element associated with the local-ref.
  *
@@ -65,7 +65,7 @@ export function ɵɵcontainer(index: number): void {
  */
 export function ɵɵtemplate(
     index: number, templateFn: ComponentTemplate<any>| null, decls: number, vars: number,
-    tagName?: string | null, constsIndex?: number | null, localRefs?: string[] | null,
+    tagName?: string | null, attrsIndex?: number | null, localRefsIndex?: number | null,
     localRefExtractor?: LocalRefExtractor) {
   const lView = getLView();
   const tView = lView[TVIEW];
@@ -73,11 +73,11 @@ export function ɵɵtemplate(
 
   // TODO: consider a separate node type for templates
   const tContainerNode = containerInternal(
-      lView, index, tagName || null,
-      tViewConsts === null || constsIndex == null ? null : tViewConsts[constsIndex]);
+      lView, index, tagName || null, getConstant(tViewConsts, attrsIndex) as TAttributes);
+  const localRefs = getConstant(tViewConsts, localRefsIndex) as string[];
   if (tView.firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
-    resolveDirectives(tView, lView, tContainerNode, localRefs || null);
+    resolveDirectives(tView, lView, tContainerNode, localRefs);
     registerPostOrderHooks(tView, tContainerNode);
 
     const embeddedTView = tContainerNode.tViews = createTView(
