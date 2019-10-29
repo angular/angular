@@ -86,6 +86,7 @@ export const TViewConstructor = class TView implements ITView {
       public expandoStartIndex: number,                      //
       public expandoInstructions: ExpandoInstructions|null,  //
       public firstTemplatePass: boolean,                     //
+      public firstUpdatePass: boolean,                       //
       public staticViewQueries: boolean,                     //
       public staticContentQueries: boolean,                  //
       public preOrderHooks: HookData|null,                   //

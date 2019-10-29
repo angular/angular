@@ -372,6 +372,17 @@ export function renderView<T>(lView: LView, tView: TView, context: T): void {
  */
 export function refreshView<T>(
     lView: LView, tView: TView, templateFn: ComponentTemplate<{}>| null, context: T) {
+  refreshViewInternal(lView, tView, templateFn, context);
+  setFirstUpdatePassAsFalse(tView);
+}
+
+/**
+ * Implementation version of `refreshView`
+ *
+ * This function doesn't update the lastUpdatePass flag upon completion.
+ */
+function refreshViewInternal<T>(
+    lView: LView, tView: TView, templateFn: ComponentTemplate<{}>| null, context: T) {
   ngDevMode && assertEqual(isCreationMode(lView), false, 'Should be run in update mode');
   enterView(lView, lView[T_HOST]);
   const flags = lView[FLAGS];
@@ -609,6 +620,7 @@ export function createTView(
              initialViewLength,  // expandoStartIndex: number,
              null,               // expandoInstructions: ExpandoInstructions|null,
              true,               // firstTemplatePass: boolean,
+             true,               // firstUpdatePass: boolean,
              false,              // staticViewQueries: boolean,
              false,              // staticContentQueries: boolean,
              null,               // preOrderHooks: HookData|null,
@@ -640,6 +652,7 @@ export function createTView(
         expandoStartIndex: initialViewLength,
         expandoInstructions: null,
         firstTemplatePass: true,
+        firstUpdatePass: true,
         staticViewQueries: false,
         staticContentQueries: false,
         preOrderHooks: null,
@@ -1476,12 +1489,19 @@ function refreshDynamicEmbeddedViews(lView: LView) {
     // Note: viewOrContainer can be an LView or an LContainer instance, but here we are only
     // interested in LContainer
     if (isLContainer(viewOrContainer) && viewOrContainer[ACTIVE_INDEX] === -1) {
+      let lastTView: TView|null = null;
       for (let i = CONTAINER_HEADER_OFFSET; i < viewOrContainer.length; i++) {
         const embeddedLView = viewOrContainer[i];
         const embeddedTView = embeddedLView[TVIEW];
         ngDevMode && assertDefined(embeddedTView, 'TView must be allocated');
-        refreshView(embeddedLView, embeddedTView, embeddedTView.template, embeddedLView[CONTEXT] !);
+        refreshViewInternal(
+            embeddedLView, embeddedTView, embeddedTView.template, embeddedLView[CONTEXT] !);
+        if (lastTView !== embeddedTView) {
+          lastTView !== null && setFirstUpdatePassAsFalse(lastTView);
+          lastTView = embeddedTView;
+        }
       }
+      lastTView !== null && setFirstUpdatePassAsFalse(lastTView);
     }
     viewOrContainer = viewOrContainer[NEXT];
   }
@@ -1849,5 +1869,11 @@ export function renderInitialStyling(
       const styles = getInitialStylingValue(tNode.styles);
       writeStylingValueDirectly(renderer, native, styles, false, null);
     }
+  }
+}
+
+function setFirstUpdatePassAsFalse(tView: TView) {
+  if (tView.firstUpdatePass === true) {
+    tView.firstUpdatePass = false;
   }
 }

@@ -7,6 +7,8 @@
  */
 import {CommonModule} from '@angular/common';
 import {Component, ContentChild, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgModule, OnInit, Output, Pipe, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {TVIEW} from '@angular/core/src/render3/interfaces/view';
+import {loadLContext} from '@angular/core/src/render3/util/discovery_utils';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -1876,5 +1878,93 @@ describe('acceptance integration tests', () => {
     });
     const fixture = TestBed.createComponent(Cmp);
     expect(() => fixture.detectChanges()).toThrowError('this error is expected');
+  });
+
+  describe('tNode.firstUpdatePass', () => {
+    function isFirstUpdatePass(target: any) {
+      const lContext = loadLContext(target);
+      const lView = lContext.lView;
+      const tView = lView[TVIEW];
+      return tView.firstUpdatePass;
+    }
+
+    onlyInIvy('tNode instances are ivy-specific')
+        .it('should be marked with `firstUpdatePass` up until the template and host bindings are evaluated',
+            () => {
+              @Directive({
+                selector: '[dir]',
+              })
+              class Dir {
+                @HostBinding('attr.data-dir')
+                get text() { return isFirstUpdatePass(this) ? 'update' : 'post-update'; }
+              }
+
+              @Component({
+                template: '<div [attr.data-comp]="text" dir></div>',
+              })
+              class Cmp {
+                get text() { return isFirstUpdatePass(this) ? 'update' : 'post-update'; }
+              }
+
+              TestBed.configureTestingModule({
+                declarations: [Cmp, Dir],
+              });
+              const fixture = TestBed.createComponent(Cmp);
+              fixture.detectChanges(false);
+              const element = fixture.nativeElement.querySelector('div') !;
+
+              expect(element.getAttribute('data-comp')).toEqual('update');
+              expect(element.getAttribute('data-dir')).toEqual('update');
+
+              fixture.detectChanges(false);
+
+              expect(element.getAttribute('data-comp')).toEqual('post-update');
+              expect(element.getAttribute('data-dir')).toEqual('post-update');
+            });
+
+    onlyInIvy('tNode instances are ivy-specific')
+        .it('tNode.firstUpdatePass should exist for embedded nodes', () => {
+          @Directive({
+            selector: '[dir]',
+          })
+          class Dir {
+            @HostBinding('attr.data-dir')
+            get text() { return isFirstUpdatePass(this) ? 'update' : 'post-update'; }
+          }
+
+          @Component({
+            template: `
+          <div *ngFor="let item of items" dir [attr.data-comp]="text">
+            ...
+          </div>
+        `
+          })
+          class Cmp {
+            items = [1, 2, 3, 4, 5];
+
+            get text() { return isFirstUpdatePass(this) ? 'update' : 'post-update'; }
+          }
+
+          TestBed.configureTestingModule({
+            declarations: [Cmp, Dir],
+          });
+          const fixture = TestBed.createComponent(Cmp);
+          fixture.detectChanges(false);
+          const elements = fixture.nativeElement.querySelectorAll('div');
+
+          for (let i = 0; i < 5; i++) {
+            const element = elements[i];
+            expect(element.getAttribute('data-comp')).toEqual('update');
+            expect(element.getAttribute('data-dir')).toEqual('update');
+          }
+
+          fixture.detectChanges(false);
+
+          for (let i = 0; i < 5; i++) {
+            const element = elements[i];
+            expect(element.getAttribute('data-comp')).toEqual('post-update');
+            expect(element.getAttribute('data-dir')).toEqual('post-update');
+          }
+        });
   });
 });

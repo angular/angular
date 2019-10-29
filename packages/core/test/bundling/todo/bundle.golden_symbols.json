@@ -1116,6 +1116,9 @@
     "name": "refreshView"
   },
   {
+    "name": "refreshViewInternal"
+  },
+  {
     "name": "registerBinding"
   },
   {
@@ -1237,6 +1240,9 @@
   },
   {
     "name": "setElementExitFn"
+  },
+  {
+    "name": "setFirstUpdatePassAsFalse"
   },
   {
     "name": "setGuardMask"

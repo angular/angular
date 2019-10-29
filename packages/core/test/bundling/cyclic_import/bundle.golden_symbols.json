@@ -555,6 +555,9 @@
     "name": "refreshView"
   },
   {
+    "name": "refreshViewInternal"
+  },
+  {
     "name": "registerInitialStylingOnTNode"
   },
   {
@@ -625,6 +628,9 @@
   },
   {
     "name": "setDirectiveStylingInput"
+  },
+  {
+    "name": "setFirstUpdatePassAsFalse"
   },
   {
     "name": "setHostBindings"

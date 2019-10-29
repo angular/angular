@@ -411,6 +411,9 @@
     "name": "refreshView"
   },
   {
+    "name": "refreshViewInternal"
+  },
+  {
     "name": "renderChildComponents"
   },
   {
@@ -445,6 +448,9 @@
   },
   {
     "name": "setCurrentQueryIndex"
+  },
+  {
+    "name": "setFirstUpdatePassAsFalse"
   },
   {
     "name": "setHostBindings"
