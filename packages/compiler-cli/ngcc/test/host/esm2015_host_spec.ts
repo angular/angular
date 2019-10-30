@@ -1558,7 +1558,7 @@ runInEachFileSystem(() => {
         const actualDeclaration = host.getDeclarationOfIdentifier(identifier);
         expect(actualDeclaration).not.toBe(null);
         expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
-        expect(actualDeclaration !.viaModule).toBe(null);
+        expect(actualDeclaration !.viaModule).toBe('@angular/core');
       });
 
       it('should return the original declaration of an aliased class', () => {

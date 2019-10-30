@@ -1737,6 +1737,41 @@ runInEachFileSystem(os => {
                 'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.InternalRouterModule], never>');
       });
 
+      it('should extract the generic type if it is provided as qualified type name from another package',
+         () => {
+           env.write(`test.ts`, `
+            import {NgModule} from '@angular/core';
+            import {RouterModule} from 'router';
+
+            @NgModule({imports: [RouterModule.forRoot()]})
+            export class TestModule {}`);
+
+           env.write('node_modules/router/index.d.ts', `
+            import {ModuleWithProviders} from '@angular/core';
+            import * as router2 from 'router2';
+
+            declare export class RouterModule {
+              static forRoot(): ModuleWithProviders<router2.Router2Module>;
+            }`);
+
+           env.write('node_modules/router2/index.d.ts', `
+            import {ɵɵNgModuleDefWithMeta} from '@angular/core';
+            export declare class Router2Module {
+              static ɵmod: ɵɵNgModuleDefWithMeta<Router2Module, never, never, never>;
+            }`);
+
+           env.driveMain();
+
+           const jsContents = env.getContents('test.js');
+           expect(jsContents).toContain('imports: [[RouterModule.forRoot()]]');
+
+           const dtsContents = env.getContents('test.d.ts');
+           expect(dtsContents).toContain(`import * as i1 from "router2";`);
+           expect(dtsContents)
+               .toContain(
+                   'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.Router2Module], never>');
+         });
+
       it('should not reference a constant with a ModuleWithProviders value in module def imports',
          () => {
            env.write('dep.d.ts', `
