@@ -255,7 +255,7 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
    * @deprecated use `steps` instead
    * @breaking-change 9.0.0 remove this property
    */
-  @ContentChildren(CdkStep) _steps: QueryList<CdkStep>;
+  @ContentChildren(CdkStep, {descendants: true}) _steps: QueryList<CdkStep>;
 
   /**
    * We need to store the steps in an Iterable due to strict template type checking with *ngFor and
@@ -273,7 +273,7 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
    * @deprecated Type to be changed to `QueryList<CdkStepHeader>`.
    * @breaking-change 8.0.0
    */
-  @ContentChildren(CdkStepHeader) _stepHeader: QueryList<FocusableOption>;
+  @ContentChildren(CdkStepHeader, {descendants: true}) _stepHeader: QueryList<FocusableOption>;
 
   /** Whether the validity of previous steps should be checked or not. */
   @Input()

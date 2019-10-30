@@ -1102,6 +1102,79 @@ describe('MatStepper', () => {
       expect(stepper._getIndicatorType(1)).toBe(STEP_STATE.EDIT);
     });
   });
+
+  describe('indirect descendants', () => {
+    it('should be able to change steps when steps are indirect descendants', () => {
+      const fixture = createComponent(StepperWithIndirectDescendantSteps);
+      fixture.detectChanges();
+
+      const stepHeaders = fixture.debugElement.queryAll(By.css('.mat-vertical-stepper-header'));
+      const stepperComponent =
+          fixture.debugElement.query(By.directive(MatStepper))!.componentInstance;
+
+      expect(stepperComponent.selectedIndex).toBe(0);
+      expect(stepperComponent.selected instanceof MatStep).toBe(true);
+
+      // select the second step
+      let stepHeaderEl = stepHeaders[1].nativeElement;
+      stepHeaderEl.click();
+      fixture.detectChanges();
+
+      expect(stepperComponent.selectedIndex).toBe(1);
+      expect(stepperComponent.selected instanceof MatStep).toBe(true);
+
+      // select the third step
+      stepHeaderEl = stepHeaders[2].nativeElement;
+      stepHeaderEl.click();
+      fixture.detectChanges();
+
+      expect(stepperComponent.selectedIndex).toBe(2);
+      expect(stepperComponent.selected instanceof MatStep).toBe(true);
+    });
+
+    it('should allow for the `edit` icon to be overridden', () => {
+      const fixture = createComponent(IndirectDescendantIconOverridesStepper);
+      fixture.detectChanges();
+
+      const stepperDebugElement = fixture.debugElement.query(By.directive(MatStepper))!;
+      const stepperComponent: MatStepper = stepperDebugElement.componentInstance;
+
+      stepperComponent.steps.toArray()[0].editable = true;
+      stepperComponent.next();
+      fixture.detectChanges();
+
+      const header = stepperDebugElement.nativeElement.querySelector('mat-step-header');
+
+      expect(header.textContent).toContain('Custom edit');
+    });
+
+    it('should allow for the `done` icon to be overridden', () => {
+      const fixture = createComponent(IndirectDescendantIconOverridesStepper);
+      fixture.detectChanges();
+
+      const stepperDebugElement = fixture.debugElement.query(By.directive(MatStepper))!;
+      const stepperComponent: MatStepper = stepperDebugElement.componentInstance;
+
+      stepperComponent.steps.toArray()[0].editable = false;
+      stepperComponent.next();
+      fixture.detectChanges();
+
+      const header = stepperDebugElement.nativeElement.querySelector('mat-step-header');
+
+      expect(header.textContent).toContain('Custom done');
+    });
+
+    it('should allow for the `number` icon to be overridden with context', () => {
+      const fixture = createComponent(IndirectDescendantIconOverridesStepper);
+      fixture.detectChanges();
+
+      const stepperDebugElement = fixture.debugElement.query(By.directive(MatStepper))!;
+      const headers = stepperDebugElement.nativeElement.querySelectorAll('mat-step-header');
+
+      expect(headers[2].textContent).toContain('III');
+    });
+
+  });
 });
 
 /** Asserts that keyboard interaction works correctly. */
@@ -1512,6 +1585,26 @@ class IconOverridesStepper {
 
 @Component({
   template: `
+    <mat-horizontal-stepper>
+      <ng-container [ngSwitch]="true">
+        <ng-template matStepperIcon="edit">Custom edit</ng-template>
+        <ng-template matStepperIcon="done">Custom done</ng-template>
+        <ng-template matStepperIcon="number" let-index="index">
+          {{getRomanNumeral(index + 1)}}
+        </ng-template>
+      </ng-container>
+
+      <mat-step>Content 1</mat-step>
+      <mat-step>Content 2</mat-step>
+      <mat-step>Content 3</mat-step>
+    </mat-horizontal-stepper>
+`
+})
+class IndirectDescendantIconOverridesStepper extends IconOverridesStepper {
+}
+
+@Component({
+  template: `
     <mat-horizontal-stepper linear>
       <mat-step label="Step 1" [stepControl]="controls[0]"></mat-step>
       <mat-step label="Step 2" [stepControl]="controls[1]" [optional]="step2Optional"></mat-step>
@@ -1535,4 +1628,19 @@ class LinearStepperWithValidOptionalStep {
 class StepperWithAriaInputs {
   ariaLabel: string;
   ariaLabelledby: string;
+}
+
+
+@Component({
+  template: `
+    <mat-vertical-stepper>
+      <ng-container [ngSwitch]="true">
+        <mat-step label="Step 1">Content 1</mat-step>
+        <mat-step label="Step 2">Content 2</mat-step>
+        <mat-step label="Step 3">Content 3</mat-step>
+      </ng-container>
+    </mat-vertical-stepper>
+  `
+})
+class StepperWithIndirectDescendantSteps {
 }

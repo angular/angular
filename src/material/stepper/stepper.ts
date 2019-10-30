@@ -87,10 +87,10 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
   @ViewChildren(MatStepHeader) _stepHeader: QueryList<MatStepHeader>;
 
   /** Steps that the stepper holds. */
-  @ContentChildren(MatStep) _steps: QueryList<MatStep>;
+  @ContentChildren(MatStep, {descendants: true}) _steps: QueryList<MatStep>;
 
   /** Custom icon overrides passed in by the consumer. */
-  @ContentChildren(MatStepperIcon) _icons: QueryList<MatStepperIcon>;
+  @ContentChildren(MatStepperIcon, {descendants: true}) _icons: QueryList<MatStepperIcon>;
 
   /** Event emitted when the current step is done transitioning in. */
   @Output() readonly animationDone: EventEmitter<void> = new EventEmitter<void>();
