@@ -64,6 +64,23 @@ runInEachFileSystem(() => {
       expect(res).toContain(`{ foo: [{ type: Input }], bar: [{ type: Input, args: ['value'] }] })`);
     });
 
+    it('should convert decorated field getter/setter metadata', () => {
+      const res = compileAndPrint(`
+    import {Component, Input} from '@angular/core';
+
+    @Component('metadata') class Target {
+      @Input() get foo() { return this._foo; }
+      set foo(value: string) { this._foo = value; }
+      private _foo: string;
+
+      get bar() { return this._bar; }
+      @Input('value') set bar(value: string) { this._bar = value; }
+      private _bar: string;
+    }
+    `);
+      expect(res).toContain(`{ foo: [{ type: Input }], bar: [{ type: Input, args: ['value'] }] })`);
+    });
+
     it('should not convert non-angular decorators to metadata', () => {
       const res = compileAndPrint(`
     declare function NotAComponent(...args: any[]): any;
@@ -86,12 +103,14 @@ runInEachFileSystem(() => {
     `
     };
 
-    const {program} = makeProgram([
-      CORE, {
-        name: _('/index.ts'),
-        contents,
-      }
-    ]);
+    const {program} = makeProgram(
+        [
+          CORE, {
+            name: _('/index.ts'),
+            contents,
+          }
+        ],
+        {target: ts.ScriptTarget.ES2015});
     const host = new TypeScriptReflectionHost(program.getTypeChecker());
     const target = getDeclaration(program, _('/index.ts'), 'Target', ts.isClassDeclaration);
     const call = generateSetClassMetadataCall(target, host, NOOP_DEFAULT_IMPORT_RECORDER, false);
