@@ -231,7 +231,7 @@ export class HttpParams {
   }
 
   private clone(update: Update): HttpParams {
-    const clone = new HttpParams({ encoder: this.encoder });
+    const clone = new HttpParams({encoder: this.encoder});
     clone.cloneFrom = this.cloneFrom || this;
     clone.updates = (this.updates || []).concat([update]);
     return clone;
