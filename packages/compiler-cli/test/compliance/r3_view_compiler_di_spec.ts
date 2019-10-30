@@ -183,9 +183,9 @@ describe('compiler compliance: dependency injection', () => {
             factory: function MyService_Factory(t) {
               var r = null;
               if (t) {
-                (r = new t());
+                r = new t();
               } else {
-                (r = (() => new MyAlternateFactory())($r3$.ɵɵinject(SomeDep)));
+                r = (() => new MyAlternateFactory())($r3$.ɵɵinject(SomeDep));
               }
               return r;
             },
@@ -258,9 +258,9 @@ describe('compiler compliance: dependency injection', () => {
             factory: function MyService_Factory(t) {
               var r = null;
               if (t) {
-                (r = new t());
+                r = new t();
               } else {
-                (r = new MyAlternateService($r3$.ɵɵinject(SomeDep)));
+                r = new MyAlternateService($r3$.ɵɵinject(SomeDep));
               }
               return r;
             },

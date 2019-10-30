@@ -167,7 +167,7 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
       expect(jsContents).toContain('return new (t || Service)(i0.ɵɵinject(Dep));');
       expect(jsContents)
-          .toContain('(r = (function (dep) { return new Service(dep); })(i0.ɵɵinject(Dep)));');
+          .toContain('r = (function (dep) { return new Service(dep); })(i0.ɵɵinject(Dep));');
       expect(jsContents).toContain('return r; }, providedIn: \'root\' });');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
