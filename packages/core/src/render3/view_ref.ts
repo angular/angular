@@ -13,14 +13,13 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEn
 
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
-import {LContainer} from './interfaces/container';
 import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {isLContainer} from './interfaces/type_checks';
 import {CONTEXT, FLAGS, HOST, LView, LViewFlags, TVIEW, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {destroyLView, renderDetachView} from './node_manipulation';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode, getNativeByTNodeOrNull} from './util/view_utils';
+import {getNativeByTNode, unwrapRNode} from './util/view_utils';
 
 
 
@@ -303,29 +302,32 @@ export class RootViewRef<T> extends ViewRef<T> {
   get context(): T { return null !; }
 }
 
-function collectNativeNodesFromAContainer(lContainer: LContainer, result: any[]) {
-  for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
-    const lViewInAContainer = lContainer[i];
-    const lViewFirstChildTNode = lViewInAContainer[TVIEW].firstChild;
-    if (lViewFirstChildTNode !== null) {
-      collectNativeNodes(lViewInAContainer, lViewFirstChildTNode, result);
-    }
-  }
-}
-
 function collectNativeNodes(lView: LView, tNode: TNode | null, result: any[]): any[] {
   while (tNode !== null) {
     ngDevMode && assertNodeOfPossibleTypes(
                      tNode, TNodeType.Element, TNodeType.Container, TNodeType.Projection,
                      TNodeType.ElementContainer);
-    const nativeNode = getNativeByTNodeOrNull(tNode, lView);
-    nativeNode && result.push(nativeNode);
-    if (tNode.type === TNodeType.Element && isLContainer(lView[tNode.index])) {
-      collectNativeNodesFromAContainer(lView[tNode.index], result);
-    } else if (tNode.type === TNodeType.ElementContainer) {
+
+    const lNode = lView[tNode.index];
+    if (lNode !== null) {
+      result.push(unwrapRNode(lNode));
+    }
+
+    // A given lNode can represent either a native node or a LContainer (when it is a host of a
+    // ViewContainerRef). When we find a LContainer we need to descend into it to collect root nodes
+    // from the views in this container.
+    if (isLContainer(lNode)) {
+      for (let i = CONTAINER_HEADER_OFFSET; i < lNode.length; i++) {
+        const lViewInAContainer = lNode[i];
+        const lViewFirstChildTNode = lViewInAContainer[TVIEW].firstChild;
+        if (lViewFirstChildTNode !== null) {
+          collectNativeNodes(lViewInAContainer, lViewFirstChildTNode, result);
+        }
+      }
+    }
+
+    if (tNode.type === TNodeType.ElementContainer) {
       collectNativeNodes(lView, tNode.child, result);
-    } else if (tNode.type === TNodeType.Container) {
-      collectNativeNodesFromAContainer(lView[tNode.index], result);
     } else if (tNode.type === TNodeType.Projection) {
       const componentView = findComponentView(lView);
       const componentHost = componentView[T_HOST] as TElementNode;
