@@ -35,7 +35,10 @@
     "format:bazel": "yarn -s bazel:buildifier --lint=fix --mode=fix",
     "format": "yarn -s format:ts && yarn -s format:bazel",
     "cherry-pick-patch": "ts-node --project tools/cherry-pick-patch/ tools/cherry-pick-patch/cherry-pick-patch.ts",
-    "check-rollup-globals": "ts-node --project scripts/ scripts/check-rollup-globals.ts"
+    "check-rollup-globals": "ts-node --project scripts/ scripts/check-rollup-globals.ts",
+    "ownerslint": "ts-node --project scripts/ scripts/ownerslint.ts",
+    "tslint": "tslint -c tslint.json --project ./tsconfig.json",
+    "stylelint": "stylelint \"src/**/*.+(css|scss)\" --config .stylelintrc.json --syntax scss"
   },
   "version": "9.0.0-next.1",
   "requiredAngularVersion": "^9.0.0-0 || ^10.0.0-0",

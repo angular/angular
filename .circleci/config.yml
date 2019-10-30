@@ -252,7 +252,7 @@ jobs:
     - run: ./scripts/circleci/run-saucelabs-tests.sh
 
   # ----------------------------------
-  # Lint job. Runs the gulp lint task.
+  # Lint job.
   # ----------------------------------
   lint:
     <<: *job_defaults
@@ -271,7 +271,9 @@ jobs:
             yarn check-rollup-globals $(bazel info bazel-bin)/rollup_globals.json
 
       - run: ./scripts/circleci/lint-bazel-files.sh
-      - run: yarn gulp ci:lint
+      - run: yarn ownerslint
+      - run: yarn stylelint
+      - run: yarn tslint
 
       - *save_cache
 

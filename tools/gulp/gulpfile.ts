@@ -25,7 +25,6 @@ import './tasks/ci';
 import './tasks/clean';
 import './tasks/default';
 import './tasks/example-module';
-import './tasks/lint';
 import './tasks/material-release';
 import './tasks/unit-test';
 

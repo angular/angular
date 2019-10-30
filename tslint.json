@@ -1,6 +1,7 @@
 {
   "rulesDirectory": [
     "./tools/tslint-rules/",
+    "node_modules/vrsource-tslint-rules/rules",
     "node_modules/codelyzer"
   ],
   "rules": {
