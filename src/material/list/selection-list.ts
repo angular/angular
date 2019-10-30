@@ -125,7 +125,7 @@ export class MatListOption extends _MatListOptionMixinBase implements AfterConte
 
   @ContentChild(MatListAvatarCssMatStyler) _avatar: MatListAvatarCssMatStyler;
   @ContentChild(MatListIconCssMatStyler) _icon: MatListIconCssMatStyler;
-  @ContentChildren(MatLine) _lines: QueryList<MatLine>;
+  @ContentChildren(MatLine, {descendants: true}) _lines: QueryList<MatLine>;
 
   /** DOM element containing the item's text. */
   @ViewChild('text') _text: ElementRef;
