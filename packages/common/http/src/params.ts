@@ -129,7 +129,7 @@ export class HttpParams {
   private updates: Update[]|null = null;
   private cloneFrom: HttpParams|null = null;
 
-  constructor(options: HttpParamsOptions = {} as HttpParamsOptions) {
+  constructor(options: HttpParamsOptions = {}) {
     this.encoder = options.encoder || new HttpUrlEncodingCodec();
     if (!!options.fromString) {
       if (!!options.fromObject) {
@@ -231,7 +231,7 @@ export class HttpParams {
   }
 
   private clone(update: Update): HttpParams {
-    const clone = new HttpParams({ encoder: this.encoder } as HttpParamsOptions);
+    const clone = new HttpParams({ encoder: this.encoder });
     clone.cloneFrom = this.cloneFrom || this;
     clone.updates = (this.updates || []).concat([update]);
     return clone;
