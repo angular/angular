@@ -1,3 +1,13 @@
+<a name="8.2.13"></a>
+## [8.2.13](https://github.com/angular/angular/compare/8.2.12...8.2.13) (2019-10-30)
+
+
+### Bug Fixes
+
+* **compiler:** i18n - ignore `alt-trans` tags in XLIFF 1.2 ([#33464](https://github.com/angular/angular/issues/33464)) ([f97c464](https://github.com/angular/angular/commit/f97c464)), closes [#33161](https://github.com/angular/angular/issues/33161)
+
+
+
 <a name="9.0.0-next.14"></a>
 # [9.0.0-next.14](https://github.com/angular/angular/compare/9.0.0-next.13...9.0.0-next.14) (2019-10-25)
 
