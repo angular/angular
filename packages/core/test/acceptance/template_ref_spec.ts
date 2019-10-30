@@ -13,29 +13,33 @@ import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('TemplateRef', () => {
   describe('rootNodes', () => {
-    it('should return root render nodes for an embedded view instance', () => {
-      @Component({
-        template: `
-          <ng-template #templateRef>
-            <div></div>
-            some text
-            <span></span>
-          </ng-template>
-        `
-      })
-      class App {
-        @ViewChild('templateRef', {static: true})
-        templateRef !: TemplateRef<any>;
-      }
 
+    @Component({template: `<ng-template #templateRef></ng-template>`})
+    class App {
+      @ViewChild('templateRef', {static: true})
+      templateRef !: TemplateRef<any>;
+      minutes = 0;
+    }
+
+    function getRootNodes(template: string): any[] {
       TestBed.configureTestingModule({
         declarations: [App],
       });
+      TestBed.overrideTemplate(App, template);
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
       const embeddedView = fixture.componentInstance.templateRef.createEmbeddedView({});
-      expect(embeddedView.rootNodes.length).toBe(3);
+      embeddedView.detectChanges();
+
+      return embeddedView.rootNodes;
+    }
+
+
+    it('should return root render nodes for an embedded view instance', () => {
+      const rootNodes =
+          getRootNodes(`<ng-template #templateRef><div></div>some text<span></span></ng-template>`);
+      expect(rootNodes.length).toBe(3);
     });
 
     /**
@@ -47,24 +51,8 @@ describe('TemplateRef', () => {
      */
     onlyInIvy('Fixed: Ivy no longer adds a comment node in this case.')
         .it('should return an empty array for embedded view with no nodes', () => {
-          @Component({
-            template: `
-              <ng-template #templateRef></ng-template>
-            `
-          })
-          class App {
-            @ViewChild('templateRef', {static: true})
-            templateRef !: TemplateRef<any>;
-          }
-
-          TestBed.configureTestingModule({
-            declarations: [App],
-          });
-          const fixture = TestBed.createComponent(App);
-          fixture.detectChanges();
-
-          const embeddedView = fixture.componentInstance.templateRef.createEmbeddedView({});
-          expect(embeddedView.rootNodes.length).toBe(0);
+          const rootNodes = getRootNodes('<ng-template #templateRef></ng-template>');
+          expect(rootNodes.length).toBe(0);
         });
 
     it('should include projected nodes', () => {
@@ -114,29 +102,15 @@ describe('TemplateRef', () => {
        * additional `<!---->` comment, thus being slightly different than Ivy.
        * (resulting in 1 root node in Ivy and 2 in VE).
        */
-      @Component({
-        template: `
-          <ng-template #templateRef><ng-template [ngIf]="true">text|</ng-template>SUFFIX</ng-template>
-        `
-      })
-      class App {
-        @ViewChild('templateRef', {static: true})
-        templateRef !: TemplateRef<any>;
-      }
+      const rootNodes = getRootNodes(`
+      <ng-template #templateRef>
+        <ng-template [ngIf]="true">text|</ng-template>SUFFIX
+      </ng-template>`);
 
-      TestBed.configureTestingModule({
-        declarations: [App],
-      });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      const embeddedView = fixture.componentInstance.templateRef.createEmbeddedView({});
-      embeddedView.detectChanges();
-
-      expect(embeddedView.rootNodes.length).toBe(3);
-      expect(embeddedView.rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
-      expect(embeddedView.rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
-      expect(embeddedView.rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes.length).toBe(3);
+      expect(rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
+      expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
     });
 
     it('should descend into view containers on an element', () => {
@@ -145,30 +119,17 @@ describe('TemplateRef', () => {
        * additional `<!---->` comment, thus being slightly different than Ivy.
        * (resulting in 1 root node in Ivy and 2 in VE).
        */
-      @Component({
-        template: `
-          <ng-template #dynamicTpl>text</ng-template>
-          <ng-template #templateRef><div [ngTemplateOutlet]="dynamicTpl"></div>SUFFIX</ng-template>
-        `
-      })
-      class App {
-        @ViewChild('templateRef', {static: true})
-        templateRef !: TemplateRef<any>;
-      }
+      const rootNodes = getRootNodes(`
+      <ng-template #dynamicTpl>text</ng-template>
+      <ng-template #templateRef>
+        <div [ngTemplateOutlet]="dynamicTpl"></div>SUFFIX
+      </ng-template>
+    `);
 
-      TestBed.configureTestingModule({
-        declarations: [App],
-      });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      const embeddedView = fixture.componentInstance.templateRef.createEmbeddedView({});
-      embeddedView.detectChanges();
-
-      expect(embeddedView.rootNodes.length).toBe(3);
-      expect(embeddedView.rootNodes[0].nodeType).toBe(Node.ELEMENT_NODE);
-      expect(embeddedView.rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
-      expect(embeddedView.rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes.length).toBe(3);
+      expect(rootNodes[0].nodeType).toBe(Node.ELEMENT_NODE);
+      expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
     });
 
     it('should descend into view containers on ng-container', () => {
@@ -177,92 +138,46 @@ describe('TemplateRef', () => {
        * additional `<!---->` comment, thus being slightly different than Ivy.
        * (resulting in 1 root node in Ivy and 2 in VE).
        */
-      @Component({
-        template: `
+      const rootNodes = getRootNodes(`
           <ng-template #dynamicTpl>text</ng-template>
           <ng-template #templateRef><ng-container [ngTemplateOutlet]="dynamicTpl"></ng-container>SUFFIX</ng-template>
-        `
-      })
-      class App {
-        @ViewChild('templateRef', {static: true})
-        templateRef !: TemplateRef<any>;
-      }
+        `);
 
-      TestBed.configureTestingModule({
-        declarations: [App],
-      });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      const embeddedView = fixture.componentInstance.templateRef.createEmbeddedView({});
-      embeddedView.detectChanges();
-
-      expect(embeddedView.rootNodes.length).toBe(3);
-      expect(embeddedView.rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
-      expect(embeddedView.rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
-      expect(embeddedView.rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes.length).toBe(3);
+      expect(rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
+      expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
     });
 
     it('should descend into element containers', () => {
-      @Component({
-        template: `
+      const rootNodes = getRootNodes(`
           <ng-template #templateRef>
             <ng-container>text</ng-container>
           </ng-template>
-        `
-      })
-      class App {
-        @ViewChild('templateRef', {static: true})
-        templateRef !: TemplateRef<any>;
-      }
+        `);
 
-      TestBed.configureTestingModule({
-        declarations: [App],
-      });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      const embeddedView = fixture.componentInstance.templateRef.createEmbeddedView({});
-      embeddedView.detectChanges();
-
-      expect(embeddedView.rootNodes.length).toBe(2);
-      expect(embeddedView.rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
-      expect(embeddedView.rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes.length).toBe(2);
+      expect(rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
+      expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
     });
 
     it('should descend into ICU containers', () => {
-      @Component({
-        template: `
+      const rootNodes = getRootNodes(`
           <ng-template #templateRef>
-            <ng-container i18n>Updated {minutes, plural, =0 {just now} =1 {one minute ago} other {several minutes ago}}</ng-container>
+            <ng-container i18n>Updated {minutes, select, =0 {just now} other {some time ago}}</ng-container>
           </ng-template>
-        `
-      })
-      class App {
-        @ViewChild('templateRef', {static: true})
-        templateRef !: TemplateRef<any>;
-        minutes = 0;
-      }
-
-      TestBed.configureTestingModule({
-        declarations: [App],
-      });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      const embeddedView = fixture.componentInstance.templateRef.createEmbeddedView({});
-      embeddedView.detectChanges();
+        `);
 
       if (ivyEnabled) {
-        expect(embeddedView.rootNodes.length).toBe(4);
-        expect(embeddedView.rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);  // ng-container
-        expect(embeddedView.rootNodes[1].nodeType).toBe(Node.TEXT_NODE);     // "Updated " text
-        expect(embeddedView.rootNodes[2].nodeType).toBe(Node.COMMENT_NODE);  // ICU container
-        expect(embeddedView.rootNodes[3].nodeType).toBe(Node.TEXT_NODE);  // "one minute ago" text
+        expect(rootNodes.length).toBe(4);
+        expect(rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);  // ng-container
+        expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE);     // "Updated " text
+        expect(rootNodes[2].nodeType).toBe(Node.COMMENT_NODE);  // ICU container
+        expect(rootNodes[3].nodeType).toBe(Node.TEXT_NODE);     // "one minute ago" text
       } else {
         // ViewEngine seems to produce very different DOM structure as compared to ivy
         // when it comes to ICU containers - this needs more investigation / fix.
-        expect(embeddedView.rootNodes.length).toBe(8);
+        expect(rootNodes.length).toBe(7);
       }
     });
   });
