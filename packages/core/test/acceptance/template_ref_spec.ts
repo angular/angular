@@ -139,6 +139,38 @@ describe('TemplateRef', () => {
       expect(embeddedView.rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
     });
 
+    it('should descend into view containers on an element', () => {
+      /**
+       * NOTE: In VE, if `SUFFIX` text node below is _not_ present, VE will add an
+       * additional `<!---->` comment, thus being slightly different than Ivy.
+       * (resulting in 1 root node in Ivy and 2 in VE).
+       */
+      @Component({
+        template: `
+          <ng-template #dynamicTpl>text</ng-template>
+          <ng-template #templateRef><div [ngTemplateOutlet]="dynamicTpl"></div>SUFFIX</ng-template>
+        `
+      })
+      class App {
+        @ViewChild('templateRef', {static: true})
+        templateRef !: TemplateRef<any>;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const embeddedView = fixture.componentInstance.templateRef.createEmbeddedView({});
+      embeddedView.detectChanges();
+
+      expect(embeddedView.rootNodes.length).toBe(3);
+      expect(embeddedView.rootNodes[0].nodeType).toBe(Node.ELEMENT_NODE);
+      expect(embeddedView.rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
+      expect(embeddedView.rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
+    });
+
     it('should descend into element containers when retrieving root nodes', () => {
       @Component({
         template: `
