@@ -816,7 +816,7 @@ import {HttpParams} from "@angular/common/http";
 If there is a search term, the code constructs an options object with an HTML URL-encoded search parameter.
 If the term were "foo", the GET request URL would be `api/heroes?name=foo`.
 
-The `HttpParams` are immutable so you'll have to save the returned value of the `.set()` method in order  to update the options.
+The `HttpParams` are immutable so you'll have to save the returned value of the `.set()` method in order to update the options.
 
 #### Use `fromString` to create HttpParams
 
@@ -988,7 +988,7 @@ use `HttpClientXsrfModule.withOptions()` to override the defaults.
 ## Testing HTTP requests
 
 As for any external dependency, you must mock the HTTP backend so your tests can simulate interaction with a remote server.
-The `@angular/common/http/testing` library makes it straightforward to set up such mocking .
+The `@angular/common/http/testing` library makes it straightforward to set up such mocking.
 
 Angular's HTTP testing library is designed for a pattern of testing in which the app executes code and makes requests first.
 The test then expects that certain requests have or have not been made,

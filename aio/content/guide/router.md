@@ -1278,7 +1278,7 @@ The **Routing Module** has several characteristics:
 
 The sample routing application does not include routing by default.
 When you use the [Angular CLI](cli) to create a project that will use routing, set the `--routing` option for the project or app, and for each NgModule.
-When you create or initialize a new project (using the CLI [`ng new`](cli/new) command) or a new app (using the [`ng generate app`](cli/generate) command), specify the `--routing` option.  This tells the CLI to include the `@angular/router` npm package and create a file named `app-routing.module.ts`.
+When you create or initialize a new project (using the CLI [`ng new`](cli/new) command) or a new app (using the [`ng generate app`](cli/generate) command), specify the `--routing` option. This tells the CLI to include the `@angular/router` npm package and create a file named `app-routing.module.ts`.
 You can then use routing in any NgModule that you add to the project or app.
 
 For example, the following command generates an NgModule that can use routing.
@@ -3650,7 +3650,7 @@ The `CrisisDetailResolverService` doesn't inherit from a base class.
 The router looks for that method and calls it if found.
 
 1. Rely on the router to call the resolver.
-Don't worry about all the ways that the user  could navigate away.
+Don't worry about all the ways that the user could navigate away.
 That's the router's job. Write this class and let the router take it from there.
 
 The relevant *Crisis Center* code for this milestone follows.
@@ -3885,7 +3885,7 @@ and remove the `AdminModule` from the NgModule's `imports` array.
 
 You're already protecting the `AdminModule` with a `CanActivate` guard that prevents unauthorized users from
 accessing the admin feature area.
-It redirects to the  login page if the user is not authorized.
+It redirects to the login page if the user is not authorized.
 
 But the router is still loading the `AdminModule` even if the user can't visit any of its components.
 Ideally, you'd only load the `AdminModule` if the user is logged in.
@@ -4309,7 +4309,7 @@ Here's the *Crisis Center* URL in this "HTML5 pushState" style:
 Older browsers send page requests to the server when the location URL changes
 _unless_ the change occurs after a "#" (called the "hash").
 Routers can take advantage of this exception by composing in-application route
-URLs with hashes.  Here's a "hash URL" that routes to the *Crisis Center*.
+URLs with hashes. Here's a "hash URL" that routes to the *Crisis Center*.
 
 
 <code-example format="nocode">
