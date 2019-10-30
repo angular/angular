@@ -10,10 +10,13 @@ import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
+import {assertDefined} from '../util/assert';
 
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn} from './instructions/shared';
+import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
 import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
-import {CONTEXT, FLAGS, HOST, LView, LViewFlags, T_HOST} from './interfaces/view';
+import {CONTEXT, FLAGS, HOST, LView, LViewFlags, TView, T_HOST} from './interfaces/view';
+import {assertNodeOfPossibleTypes} from './node_assert';
 import {destroyLView, renderDetachView} from './node_manipulation';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
 import {getNativeByTNode, getNativeByTNodeOrNull} from './util/view_utils';
@@ -38,7 +41,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   get rootNodes(): any[] {
     if (this._lView[HOST] == null) {
       const tView = this._lView[T_HOST] as TViewNode;
-      return collectNativeNodes(this._lView, tView, []);
+      return collectNativeNodes(this._lView, tView.child, []);
     }
     return [];
   }
@@ -299,27 +302,38 @@ export class RootViewRef<T> extends ViewRef<T> {
   get context(): T { return null !; }
 }
 
-function collectNativeNodes(lView: LView, parentTNode: TNode, result: any[]): any[] {
-  let tNodeChild = parentTNode.child;
-
-  while (tNodeChild) {
-    const nativeNode = getNativeByTNodeOrNull(tNodeChild, lView);
+function collectNativeNodes(lView: LView, tNode: TNode | null, result: any[]): any[] {
+  while (tNode !== null) {
+    ngDevMode && assertNodeOfPossibleTypes(
+                     tNode, TNodeType.Element, TNodeType.Container, TNodeType.Projection,
+                     TNodeType.ElementContainer);
+    const nativeNode = getNativeByTNodeOrNull(tNode, lView);
     nativeNode && result.push(nativeNode);
-    if (tNodeChild.type === TNodeType.ElementContainer) {
-      collectNativeNodes(lView, tNodeChild, result);
-    } else if (tNodeChild.type === TNodeType.Projection) {
+    if (tNode.type === TNodeType.ElementContainer) {
+      collectNativeNodes(lView, tNode.child, result);
+    } else if (tNode.type === TNodeType.Container) {
+      const lContainer = lView[tNode.index];
+      const containerTView = tNode.tViews !as TView;
+      ngDevMode && assertDefined(containerTView, 'TView expected');
+      const containerFirstChildTNode = containerTView.firstChild !;
+      if (containerFirstChildTNode !== null) {
+        for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
+          collectNativeNodes(lContainer[i], containerFirstChildTNode, result);
+        }
+      }
+    } else if (tNode.type === TNodeType.Projection) {
       const componentView = findComponentView(lView);
       const componentHost = componentView[T_HOST] as TElementNode;
       const parentView = getLViewParent(componentView);
       let currentProjectedNode: TNode|null =
-          (componentHost.projection as(TNode | null)[])[tNodeChild.projection as number];
+          (componentHost.projection as(TNode | null)[])[tNode.projection as number];
 
       while (currentProjectedNode && parentView) {
         result.push(getNativeByTNode(currentProjectedNode, parentView));
         currentProjectedNode = currentProjectedNode.next;
       }
     }
-    tNodeChild = tNodeChild.next;
+    tNode = tNode.next;
   }
 
   return result;
