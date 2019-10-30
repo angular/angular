@@ -70,7 +70,7 @@ export class MatGridTile {
   encapsulation: ViewEncapsulation.None,
 })
 export class MatGridTileText implements AfterContentInit {
-  @ContentChildren(MatLine) _lines: QueryList<MatLine>;
+  @ContentChildren(MatLine, {descendants: true}) _lines: QueryList<MatLine>;
 
   constructor(private _element: ElementRef<HTMLElement>) {}
 

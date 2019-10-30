@@ -475,6 +475,14 @@ describe('MatGridList', () => {
     expect(footer.nativeElement.classList.contains('mat-2-line')).toBe(true);
   });
 
+  it('should add class to footers with two indirect descendant lines', () => {
+    const fixture = createComponent(GridListWithFooterContainingTwoIndirectDescendantLines);
+    fixture.detectChanges();
+
+    const footer = fixture.debugElement.query(By.directive(MatGridTileText))!;
+    expect(footer.nativeElement.classList).toContain('mat-2-line');
+  });
+
   it('should not use calc() that evaluates to 0', () => {
     const fixture = createComponent(GirdListWithRowHeightRatio);
 
@@ -783,6 +791,19 @@ class GridListWithFootersWithoutLines { }
       </mat-grid-tile>
     </mat-grid-list>`})
 class GridListWithFooterContainingTwoLines { }
+
+@Component({template: `
+    <mat-grid-list cols="1">
+      <mat-grid-tile>
+        <mat-grid-tile-footer>
+          <ng-container [ngSwitch]="true">
+            <h3 mat-line>First line</h3>
+            <span mat-line>Second line</span>
+          </ng-container>
+        </mat-grid-tile-footer>
+      </mat-grid-tile>
+    </mat-grid-list>`})
+class GridListWithFooterContainingTwoIndirectDescendantLines { }
 
 @Component({template: `
   <mat-grid-list cols="5">
