@@ -35,7 +35,7 @@ Here's an example of basic metadata for `HeroListComponent`.
 
 This example shows some of the most useful `@Component` configuration options:
 
-* `selector`: A CSS selector that tells Angular to create and insert an instance of this component wherever it finds the corresponding tag in template HTML. For example, if an app's  HTML contains `<app-hero-list></app-hero-list>`, then
+* `selector`: A CSS selector that tells Angular to create and insert an instance of this component wherever it finds the corresponding tag in template HTML. For example, if an app's HTML contains `<app-hero-list></app-hero-list>`, then
 Angular inserts an instance of the `HeroListComponent` view between those tags.
 
 * `templateUrl`: The module-relative address of this component's HTML template. Alternatively, you can provide the HTML template inline, as the value of the `template` property. This template defines the component's *host view*.
@@ -54,7 +54,7 @@ Views are typically arranged hierarchically, allowing you to modify or show and 
 <figure class="lightbox">
   <div class="card">
     <img src="generated/images/guide/architecture/component-tree.png" alt="Component tree" class="left">
-  </div>  
+  </div>
 </figure>
 
 A view hierarchy can include views from components in the same NgModule, but it also can (and often does) include views from components that are defined in different NgModules.

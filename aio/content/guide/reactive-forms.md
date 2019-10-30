@@ -392,7 +392,7 @@ The aliases control in the form group instance is now populated with a single co
 
 A getter provides easy access to the aliases in the form array instance compared to repeating the `profileForm.get()` method to get each instance. The form array instance represents an undefined number of controls in an array. It's convenient to access a control through a getter, and this approach is easy to repeat for additional controls.
 
-Use the getter syntax to create an `aliases` class property to retrieve the alias's form array  control from the parent form group.
+Use the getter syntax to create an `aliases` class property to retrieve the alias's form array control from the parent form group.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="aliases-getter" header="src/app/profile-editor/profile-editor.component.ts (aliases getter)">
 

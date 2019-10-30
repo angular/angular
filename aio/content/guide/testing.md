@@ -188,7 +188,7 @@ When the CLI commands `ng test` and `ng e2e` are generally running the CI tests 
 
 There are configuration files for both the [Karma JavaScript test runner](https://karma-runner.github.io/latest/config/configuration-file.html)
 and [Protractor](https://www.protractortest.org/#/api-overview) end-to-end testing tool,
-which  you must adjust to start Chrome without sandboxing.
+which you must adjust to start Chrome without sandboxing.
 
 We'll be using [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome#cli) in these examples.
 
@@ -235,7 +235,7 @@ Now you can run the following commands to use the `--no-sandbox` flag:
 ## Enable code coverage reports
 
 The CLI can run unit tests and create code coverage reports.
-Code coverage reports show you  any parts of our code base that may not be properly tested by your unit tests.
+Code coverage reports show you any parts of our code base that may not be properly tested by your unit tests.
 
 To generate a coverage report run the following command in the root of your project.
 
@@ -243,7 +243,7 @@ To generate a coverage report run the following command in the root of your proj
   ng test --no-watch --code-coverage
 </code-example>
 
-When  the tests are complete, the command creates a new `/coverage` folder in the project. Open the `index.html` file to see a report with your source code and code coverage values.
+When the tests are complete, the command creates a new `/coverage` folder in the project. Open the `index.html` file to see a report with your source code and code coverage values.
 
 If you want to create code-coverage reports every time you test, you can set the following option in the CLI configuration file, `angular.json`:
 

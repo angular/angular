@@ -366,7 +366,7 @@ templates in separate files. For the purposes of understanding
 how the injection system works, it is useful to look at them
 from the point of view of a combined logical tree. The term
 logical distinguishes it from the render tree (your application
-DOM tree). To mark the locations of  where the component
+DOM tree). To mark the locations of where the component
 templates are located, this guide uses the `<#VIEW>`
 pseudo element, which doesn't actually exist in the render tree
 and is present for mental model purposes only.
@@ -517,7 +517,7 @@ In the logical tree, this would be represented as follows:
 </app-root>
 ```
 
-When `<app-root>` requests the `FlowerService`, it is  the injector's job
+When `<app-root>` requests the `FlowerService`, it is the injector's job
 to resolve the `FlowerService` token. The resolution of the token happens
 in two phases:
 
