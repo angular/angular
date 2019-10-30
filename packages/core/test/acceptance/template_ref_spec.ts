@@ -9,7 +9,7 @@
 import {Component, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy} from '@angular/private/testing';
+import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('TemplateRef', () => {
   describe('rootNodes', () => {
@@ -203,7 +203,7 @@ describe('TemplateRef', () => {
       expect(embeddedView.rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
     });
 
-    it('should descend into element containers when retrieving root nodes', () => {
+    it('should descend into element containers', () => {
       @Component({
         template: `
           <ng-template #templateRef>
@@ -223,10 +223,47 @@ describe('TemplateRef', () => {
       fixture.detectChanges();
 
       const embeddedView = fixture.componentInstance.templateRef.createEmbeddedView({});
+      embeddedView.detectChanges();
 
       expect(embeddedView.rootNodes.length).toBe(2);
       expect(embeddedView.rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
       expect(embeddedView.rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
+    });
+
+    it('should descend into ICU containers', () => {
+      @Component({
+        template: `
+          <ng-template #templateRef>
+            <ng-container i18n>Updated {minutes, plural, =0 {just now} =1 {one minute ago} other {several minutes ago}}</ng-container>
+          </ng-template>
+        `
+      })
+      class App {
+        @ViewChild('templateRef', {static: true})
+        templateRef !: TemplateRef<any>;
+        minutes = 0;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const embeddedView = fixture.componentInstance.templateRef.createEmbeddedView({});
+      embeddedView.detectChanges();
+
+      if (ivyEnabled) {
+        expect(embeddedView.rootNodes.length).toBe(4);
+        expect(embeddedView.rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);  // ng-container
+        expect(embeddedView.rootNodes[1].nodeType).toBe(Node.TEXT_NODE);     // "Updated " text
+        expect(embeddedView.rootNodes[2].nodeType).toBe(Node.COMMENT_NODE);  // ICU container
+        expect(embeddedView.rootNodes[3].nodeType).toBe(Node.TEXT_NODE);  // "one minute ago" text
+      } else {
+        // ViewEngine seems to produce very different DOM structure as compared to ivy
+        // when it comes to ICU containers - this needs more investigation / fix.
+        expect(embeddedView.rootNodes.length).toBe(8);
+      }
     });
   });
 });
