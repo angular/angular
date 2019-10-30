@@ -56,10 +56,20 @@ export function generateSetClassMetadataCall(
 
   // Do the same for property decorators.
   let metaPropDecorators: ts.Expression = ts.createNull();
+  const classMembers = reflection.getMembersOfClass(clazz).filter(
+      member => !member.isStatic && member.decorators !== null && member.decorators.length > 0);
+  const duplicateDecoratedMemberNames =
+      classMembers.map(member => member.name).filter((name, i, arr) => arr.indexOf(name) < i);
+  if (duplicateDecoratedMemberNames.length > 0) {
+    // This should theoretically never happen, because the only way to have duplicate instance
+    // member names is getter/setter pairs and decorators cannot appear in both a getter and the
+    // corresponding setter.
+    throw new Error(
+        `Duplicate decorated properties found on class '${clazz.name.text}': ` +
+        duplicateDecoratedMemberNames.join(', '));
+  }
   const decoratedMembers =
-      reflection.getMembersOfClass(clazz)
-          .filter(member => !member.isStatic && member.decorators !== null)
-          .map(member => classMemberToMetadata(member.name, member.decorators !, isCore));
+      classMembers.map(member => classMemberToMetadata(member.name, member.decorators !, isCore));
   if (decoratedMembers.length > 0) {
     metaPropDecorators = ts.createObjectLiteral(decoratedMembers);
   }
