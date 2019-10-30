@@ -13,47 +13,6 @@ import {onlyInIvy} from '@angular/private/testing';
 
 describe('TemplateRef', () => {
   describe('rootNodes', () => {
-    it('should include projected nodes in rootNodes', () => {
-      @Component({
-        selector: 'menu-content',
-        template: `
-          <ng-template>
-            Header
-            <ng-content></ng-content>
-          </ng-template>
-        `,
-        exportAs: 'menuContent'
-      })
-      class MenuContent {
-        @ViewChild(TemplateRef, {static: true}) template !: TemplateRef<any>;
-      }
-
-      @Component({
-        template: `
-          <menu-content #menu="menuContent">
-            <button>Item one</button>
-            <button>Item two</button>
-          </menu-content>
-        `
-      })
-      class App {
-        @ViewChild(MenuContent) content !: MenuContent;
-
-        constructor(public viewContainerRef: ViewContainerRef) {}
-      }
-
-      TestBed.configureTestingModule({declarations: [MenuContent, App]});
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      const instance = fixture.componentInstance;
-      const viewRef = instance.viewContainerRef.createEmbeddedView(instance.content.template);
-      const rootNodeTextContent = viewRef.rootNodes.map(node => node && node.textContent.trim())
-                                      .filter(text => text !== '');
-
-      expect(rootNodeTextContent).toEqual(['Header', 'Item one', 'Item two']);
-    });
-
     it('should return root render nodes for an embedded view instance', () => {
       @Component({
         template: `
@@ -108,7 +67,48 @@ describe('TemplateRef', () => {
           expect(embeddedView.rootNodes.length).toBe(0);
         });
 
-    it('should not descend into containers when retrieving root nodes', () => {
+    it('should include projected nodes', () => {
+      @Component({
+        selector: 'menu-content',
+        template: `
+              <ng-template>
+                Header
+                <ng-content></ng-content>
+              </ng-template>
+            `,
+        exportAs: 'menuContent'
+      })
+      class MenuContent {
+        @ViewChild(TemplateRef, {static: true}) template !: TemplateRef<any>;
+      }
+
+      @Component({
+        template: `
+              <menu-content #menu="menuContent">
+                <button>Item one</button>
+                <button>Item two</button>
+              </menu-content>
+            `
+      })
+      class App {
+        @ViewChild(MenuContent) content !: MenuContent;
+
+        constructor(public viewContainerRef: ViewContainerRef) {}
+      }
+
+      TestBed.configureTestingModule({declarations: [MenuContent, App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const instance = fixture.componentInstance;
+      const viewRef = instance.viewContainerRef.createEmbeddedView(instance.content.template);
+      const rootNodeTextContent = viewRef.rootNodes.map(node => node && node.textContent.trim())
+                                      .filter(text => text !== '');
+
+      expect(rootNodeTextContent).toEqual(['Header', 'Item one', 'Item two']);
+    });
+
+    it('should descend into view containers on ng-template', () => {
       /**
        * NOTE: In VE, if `SUFFIX` text node below is _not_ present, VE will add an
        * additional `<!---->` comment, thus being slightly different than Ivy.
@@ -116,7 +116,7 @@ describe('TemplateRef', () => {
        */
       @Component({
         template: `
-          <ng-template #templateRef><ng-template [ngIf]="true">text</ng-template>SUFFIX</ng-template>
+          <ng-template #templateRef><ng-template [ngIf]="true">text|</ng-template>SUFFIX</ng-template>
         `
       })
       class App {
@@ -131,15 +131,14 @@ describe('TemplateRef', () => {
       fixture.detectChanges();
 
       const embeddedView = fixture.componentInstance.templateRef.createEmbeddedView({});
-      expect(embeddedView.rootNodes.length).toBe(2);
+      embeddedView.detectChanges();
+
+      expect(embeddedView.rootNodes.length).toBe(3);
       expect(embeddedView.rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
       expect(embeddedView.rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
+      expect(embeddedView.rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
     });
 
-    /**
-     * Contrary to containers (<ng-template>) we _do_ descend into element containers
-     * (<ng-container>)
-     */
     it('should descend into element containers when retrieving root nodes', () => {
       @Component({
         template: `
