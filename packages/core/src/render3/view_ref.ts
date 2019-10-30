@@ -306,7 +306,7 @@ function collectNativeNodes(lView: LView, tNode: TNode | null, result: any[]): a
   while (tNode !== null) {
     ngDevMode && assertNodeOfPossibleTypes(
                      tNode, TNodeType.Element, TNodeType.Container, TNodeType.Projection,
-                     TNodeType.ElementContainer);
+                     TNodeType.ElementContainer, TNodeType.IcuContainer);
 
     const lNode = lView[tNode.index];
     if (lNode !== null) {
@@ -326,9 +326,10 @@ function collectNativeNodes(lView: LView, tNode: TNode | null, result: any[]): a
       }
     }
 
-    if (tNode.type === TNodeType.ElementContainer) {
+    const tNodeType = tNode.type;
+    if (tNodeType === TNodeType.ElementContainer || tNodeType === TNodeType.IcuContainer) {
       collectNativeNodes(lView, tNode.child, result);
-    } else if (tNode.type === TNodeType.Projection) {
+    } else if (tNodeType === TNodeType.Projection) {
       const componentView = findComponentView(lView);
       const componentHost = componentView[T_HOST] as TElementNode;
       const parentView = getLViewParent(componentView);
