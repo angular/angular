@@ -30,6 +30,8 @@ const BOILERPLATE_PATHS = {
 // This maps the CLI files that exists in a parent folder
 const cliRelativePath = BOILERPLATE_PATHS.cli.map(file => `../cli/${file}`);
 
+BOILERPLATE_PATHS.elements = [...cliRelativePath, 'package.json'];
+
 BOILERPLATE_PATHS.i18n = [...cliRelativePath, 'angular.json', 'package.json'];
 
 BOILERPLATE_PATHS['service-worker'] = [...cliRelativePath, 'angular.json', 'package.json'];
