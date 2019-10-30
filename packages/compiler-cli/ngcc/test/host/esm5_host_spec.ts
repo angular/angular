@@ -1788,7 +1788,7 @@ runInEachFileSystem(() => {
         const actualDeclaration = host.getDeclarationOfIdentifier(identifier);
         expect(actualDeclaration).not.toBe(null);
         expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
-        expect(actualDeclaration !.viaModule).toBe(null);
+        expect(actualDeclaration !.viaModule).toBe('@angular/core');
       });
 
       it('should return the correct declaration for an inner function identifier inside an ES5 IIFE',
