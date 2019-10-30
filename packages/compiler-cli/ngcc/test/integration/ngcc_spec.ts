@@ -112,6 +112,41 @@ runInEachFileSystem(() => {
       expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toBeUndefined();
     });
 
+    it('should generate correct metadata for decorated getter/setter properties', () => {
+      genNodeModules({
+        'test-package': {
+          '/index.ts': `
+            import {Directive, Input, NgModule} from '@angular/core';
+
+            @Directive({selector: '[foo]'})
+            export class FooDirective {
+              @Input() get bar() { return 'bar'; }
+              set bar(value: string) {}
+            }
+
+            @NgModule({
+              declarations: [FooDirective],
+            })
+            export class FooModule {}
+          `,
+        },
+      });
+
+      mainNgcc({
+        basePath: '/node_modules',
+        targetEntryPointPath: 'test-package',
+        propertiesToConsider: ['main'],
+      });
+
+      const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`)).replace(/\s+/g, ' ');
+      expect(jsContents)
+          .toContain(
+              '/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(FooDirective, ' +
+              '[{ type: Directive, args: [{ selector: \'[foo]\' }] }], ' +
+              'function () { return []; }, ' +
+              '{ bar: [{ type: Input }] });');
+    });
+
     describe('in async mode', () => {
       it('should run ngcc without errors for fesm2015', async() => {
         const promise = mainNgcc({
