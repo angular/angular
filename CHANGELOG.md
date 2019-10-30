@@ -1,3 +1,35 @@
+<a name="9.0.0-next.15"></a>
+# [9.0.0-next.15](https://github.com/angular/angular/compare/9.0.0-next.14...9.0.0-next.15) (2019-10-30)
+
+
+### Bug Fixes
+
+* **compiler:** i18n - ignore `alt-trans` tags in XLIFF 1.2 ([#33450](https://github.com/angular/angular/issues/33450)) ([936700a](https://github.com/angular/angular/commit/936700a)), closes [#33161](https://github.com/angular/angular/issues/33161)
+* **ivy:** descend into ICU containers when collecting rootNodes ([#33493](https://github.com/angular/angular/issues/33493)) ([563a507](https://github.com/angular/angular/commit/563a507))
+* **ivy:** descend into view containers on elements when collecting rootNodes ([#33493](https://github.com/angular/angular/issues/33493)) ([87743f1](https://github.com/angular/angular/commit/87743f1))
+* **ivy:** descend into view containers on ng-container when collecting rootNodes ([#33493](https://github.com/angular/angular/issues/33493)) ([a5167bd](https://github.com/angular/angular/commit/a5167bd))
+* **ivy:** descend into view containers on ng-template when collecting rootNodes ([#33493](https://github.com/angular/angular/issues/33493)) ([502fb7e](https://github.com/angular/angular/commit/502fb7e))
+* **ivy:** ensure overrides for 'multi: true' only appear once in final providers ([#33104](https://github.com/angular/angular/issues/33104)) ([e483aca](https://github.com/angular/angular/commit/e483aca))
+* **ivy:** handle elements with local refs in i18n blocks ([#33415](https://github.com/angular/angular/issues/33415)) ([bd40c89](https://github.com/angular/angular/commit/bd40c89))
+* **ivy:** i18n - support setting locales for each translation file ([#33381](https://github.com/angular/angular/issues/33381)) ([62b2840](https://github.com/angular/angular/commit/62b2840)), closes [#33323](https://github.com/angular/angular/issues/33323)
+* **ivy:** i18n - update `localize-translate` to accept target-locales ([#33381](https://github.com/angular/angular/issues/33381)) ([41979d6](https://github.com/angular/angular/commit/41979d6))
+* **language-service:** Improve signature selection for pipes with args ([#33456](https://github.com/angular/angular/issues/33456)) ([1de7579](https://github.com/angular/angular/commit/1de7579))
+
+
+### Features
+
+* **bazel:** update [@bazel](https://github.com/bazel)/schematics to Bazel 1.0.0 ([#33476](https://github.com/angular/angular/issues/33476)) ([540d104](https://github.com/angular/angular/commit/540d104)), closes [/github.com/angular/angular/pull/33367#issuecomment-547643246](https://github.com//github.com/angular/angular/pull/33367/issues/issuecomment-547643246)
+* **bazel:** update bazel-schematics to use Ivy and new rollup_bundle ([#33435](https://github.com/angular/angular/issues/33435)) ([bf913cc](https://github.com/angular/angular/commit/bf913cc))
+* **ivy:** i18n - support inlining of XTB formatted translation files ([#33444](https://github.com/angular/angular/issues/33444)) ([2c623fd](https://github.com/angular/angular/commit/2c623fd))
+* **language-service:** add support for text replacement ([#33091](https://github.com/angular/angular/issues/33091)) ([da4eb91](https://github.com/angular/angular/commit/da4eb91))
+
+
+### Performance Improvements
+
+* **ivy:** avoid generating selectors array for directives without a selector ([#33431](https://github.com/angular/angular/issues/33431)) ([c3e9356](https://github.com/angular/angular/commit/c3e9356))
+
+
+
 <a name="8.2.13"></a>
 ## [8.2.13](https://github.com/angular/angular/compare/8.2.12...8.2.13) (2019-10-30)
 
