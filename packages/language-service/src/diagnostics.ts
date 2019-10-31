@@ -21,26 +21,23 @@ import {findPropertyValueOfType, findTightestNode, offsetSpan, spanOf} from './u
  * @param ast contains HTML and template AST
  */
 export function getTemplateDiagnostics(ast: AstResult): ng.Diagnostic[] {
-  const results: ng.Diagnostic[] = [];
   const {parseErrors, templateAst, htmlAst, template} = ast;
-  if (parseErrors) {
-    results.push(...parseErrors.map(e => {
+  if (parseErrors && parseErrors.length) {
+    return parseErrors.map(e => {
       return {
         kind: ng.DiagnosticKind.Error,
         span: offsetSpan(spanOf(e.span), template.span.start),
         message: e.msg,
       };
-    }));
+    });
   }
-  const expressionDiagnostics = getTemplateExpressionDiagnostics({
+  return getTemplateExpressionDiagnostics({
     templateAst: templateAst,
     htmlAst: htmlAst,
     offset: template.span.start,
     query: template.query,
     members: template.members,
   });
-  results.push(...expressionDiagnostics);
-  return results;
 }
 
 /**
