@@ -56,6 +56,19 @@ describe('diagnostics', () => {
     }
   });
 
+  it('should report error for unexpected end of expression', () => {
+    const content = mockHost.override(TEST_TEMPLATE, `{{ 5 / }}`);
+    const diags = ngLS.getDiagnostics(TEST_TEMPLATE);
+    expect(diags.length).toBe(1);
+    const {messageText, start, length} = diags[0];
+    expect(messageText)
+        .toBe(
+            'Parser Error: Unexpected end of expression: {{ 5 / }} ' +
+            'at the end of the expression [{{ 5 / }}] in /app/test.ng@0:0');
+    expect(start).toBe(0);
+    expect(length).toBe(content.length);
+  });
+
   // https://github.com/angular/vscode-ng-language-service/issues/242
   it('should support $any() type cast function', () => {
     mockHost.override(TEST_TEMPLATE, `<div>{{$any(title).xyz}}</div>`);
