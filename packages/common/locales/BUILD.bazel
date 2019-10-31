@@ -18,6 +18,7 @@ npm_package(
         # Workaround for `.d.ts`` containing `/// <amd-module .../>`
         # which are generated in TypeScript v2.9, but not before.
         "/// <amd-module name=.*/>": "",
+
         # Workaround for https://github.com/angular/angular/issues/23217
         # Webpack will detect that the UMD outputs from TypeScript pass the
         # `require` function into the module, and cannot accurately track
@@ -25,6 +26,12 @@ npm_package(
         # We don't actually import anything in the locale code so we can
         # null out the require reference passed into the module.
         "factory\(require, exports\)": "factory(null, exports)",
+
+        # Attach the locale to the global scope at `ng.common.locale...` if not UMD or CommonJS
+        "\(function \(factory\) {": "(function (root, factory) {",
+        "}\)\(function \(require, exports\) {": "})(typeof globalThis !== \"undefined\" && globalThis || typeof global !== \"undefined\" && global || typeof window !== \"undefined\" && window || this, function (require, exports) {",
+        #11111111111111111111111111111111111111111111111111111111222221111111111111111111111111111111111333333331111111111111111111111111111111111111111111114444411
+        "(if \(typeof define === \"function\" && define.amd\) {\n(\s*)define\(\"@angular/common/locales/([^\"]+)\", \[\"require\", \"exports\"], factory\);\n(\s*)})": "$1 else {\n$2if (typeof root.ng === \"undefined\") root.ng = {};if (typeof root.ng.common === \"undefined\") root.ng.common = {};if (typeof root.ng.common.locale === \"undefined\") root.ng.common.locale = {};var container = {};factory(null, container);root.ng.common.locale[\"$3\"] = container.default;\n$4}",
     },
     deps = [":locales"],
 )
