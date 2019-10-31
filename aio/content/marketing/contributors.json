@@ -847,5 +847,14 @@
     "website": "https://fabian-gosebrink.com",
     "bio": "Fabian Gosebrink is a Google Developer Expert for Angular and Web Technologies, Microsoft MVP and Web Developer for ASP.NET Core and Angular. As a professional software engineer, consultant and trainer, he advises and supports customers in the implementation of frontend, backend, and mobile development of web applications.",
     "groups": ["GDE"]
+  },
+  "dgp1130": {
+    "name": "Doug Parker",
+    "picture": "dgp1130.jpg",
+    "twitter": "develwoutacause",
+    "website": "https://github.com/dgp1130",
+    "bio": "Doug is an overly-opinionated software developer with a passion for making awesome developer tools. He is motivated primarily by his selfish desire to make his own life easier, but loves to share his tools and workflows with others to make everyone's lives easier.",
+    "groups": ["Angular"],
+    "lead": "igorminar"
   }
 }
