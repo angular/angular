@@ -22,6 +22,7 @@ ng_package(
     srcs = ["package.json"],
     entry_point = ":public-api.ts",
     entry_point_name = "google-maps",
+    tags = ["release-package"],
     deps = [":google-maps"],
 )
 
