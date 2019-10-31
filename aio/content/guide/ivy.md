@@ -52,7 +52,7 @@ When you use the tools integrated into the Angular CLI or `ng-packagr`, your lib
 In version 9, Ivy is the default.
 For compatibility with current workflows during the update process, you can choose to opt out of Ivy and continue using the previous compiler, View Engine.
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
 Before disabling Ivy, check out the debugging recommendations in the [Ivy Compatibility Guide](guide/ivy-compatibility#debugging).
 
