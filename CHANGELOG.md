@@ -1,3 +1,29 @@
+# 9.0.0-next.2 "pumice-pinecone" (2019-10-31)
+
+### material
+
+_Breaking changes:_
+
+* **checkbox:** MAT_CHECKBOX_CLICK_ACTION is deprecated, use MAT_CHECKBOX_DEFAULT_OPTIONS
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **autocomplete:** not picking up indirect descendant option g… ([#17510](https://github.com/angular/components/issues/17510)) ([f0df308](https://github.com/angular/components/commit/f0df308)) |
+| bug fix |  **drag-drop:** coerce drop list autoScrollDisabled input ([#17480](https://github.com/angular/components/issues/17480)) ([e2de5e6](https://github.com/angular/components/commit/e2de5e6)), closes [#17475](https://github.com/angular/components/issues/17475) |
+| bug fix |  **grid-list:** not picking up indirect descendant lines ([#17530](https://github.com/angular/components/issues/17530)) ([044a360](https://github.com/angular/components/commit/044a360)) |
+| bug fix |  **list:** Do not rely on input binding order ([#17501](https://github.com/angular/components/issues/17501)) ([4301fb0](https://github.com/angular/components/commit/4301fb0)), closes [#17500](https://github.com/angular/components/issues/17500) |
+| bug fix |  **list:** selection list option not picking up indirect desce… ([#17514](https://github.com/angular/components/issues/17514)) ([ee863b2](https://github.com/angular/components/commit/ee863b2)) |
+| bug fix |  **stepper:** not picking up indirect descendant elements ([#17529](https://github.com/angular/components/issues/17529)) ([5f0f2dc](https://github.com/angular/components/commit/5f0f2dc)) |
+| bug fix |  **tree:** not picking up indirect descendant node definitions ([#17522](https://github.com/angular/components/issues/17522)) ([7f1c2ca](https://github.com/angular/components/commit/7f1c2ca)) |
+| feature |  **checkbox:** add options defaults config ([#17473](https://github.com/angular/components/issues/17473)) ([3fdab10](https://github.com/angular/components/commit/3fdab10)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  **mdc-tabs:** add option to fit ink bar to content ([#17507](https://github.com/angular/components/issues/17507)) ([77d51ca](https://github.com/angular/components/commit/77d51ca)) |
+
+
 # 9.0.0-next.1 "helium-barbell" (2019-10-25)
 
 ### cdk
