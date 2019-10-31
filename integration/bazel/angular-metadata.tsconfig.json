@@ -19,6 +19,7 @@
     "node_modules/@angular/**/*"
   ],
   "exclude": [
+    "node_modules/@angular/cli/**",
     "node_modules/@angular/bazel/**",
     "node_modules/@angular/**/testing/**",
     "node_modules/@angular/**/schematics/**",
