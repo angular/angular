@@ -21,7 +21,7 @@ If the errors are gone, switch back to Ivy by removing the changes to the `tscon
 {@a common-changes}
 ### Changes You May See
 
-- By default, `@ContentChildren` queries will only search direct child nodes in the DOM hierarchy (previously, they would search any nesting level in the DOM as long as another directive wasn't matched above it). ([details](guide/ivy-detailed-examples#content-children-descendants))
+- By default, `@ContentChildren` queries will only search direct child nodes in the DOM hierarchy (previously, they would search any nesting level in the DOM as long as another directive wasn't matched above it). ([details](guide/ivy-compatibility-examples#content-children-descendants))
 
 - All classes that use Angular DI must have an Angular decorator like `@Directive()` or `@Injectable` (previously, undecorated classes were allowed if an ancestor class or subclass had a decorator).
 

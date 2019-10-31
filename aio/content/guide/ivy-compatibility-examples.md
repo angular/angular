@@ -1,4 +1,4 @@
-# Appendix: Detailed Ivy Examples
+# Appendix: Ivy Compatibility Examples
 
 This appendix is intended to provide more background on Ivy changes. Many of these examples list error messages you may see, so searching by error message might be a good idea if you are debugging.
 
