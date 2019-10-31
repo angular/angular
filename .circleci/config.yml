@@ -848,8 +848,6 @@ workflows:
           requires:
             - build-npm-packages
       - publish_packages_as_artifacts:
-          # Only run on PR builds. (For non-PR builds, the `publish_snapshot` job.)
-          <<: *only_on_pull_requests
           requires:
             - build-npm-packages
       - publish_snapshot:
