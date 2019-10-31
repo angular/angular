@@ -1,3 +1,10 @@
+<a name="9.0.0-rc.0"></a>
+# [9.0.0-rc.0](https://github.com/angular/angular/compare/9.0.0-next.15...9.0.0-rc.0) (2019-10-31)
+
+Please see the [v9 update guide](https://v9.angular.io/guide/updating-to-version-9) for more information.
+
+
+
 <a name="9.0.0-next.15"></a>
 # [9.0.0-next.15](https://github.com/angular/angular/compare/9.0.0-next.14...9.0.0-next.15) (2019-10-30)
 
