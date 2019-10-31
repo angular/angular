@@ -5,18 +5,23 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {findLocaleData, registerLocaleData, unregisterLocaleData} from '../../src/i18n/locale_data_api';
+import {findLocaleData, registerLocaleData, unregisterAllLocaleData} from '../../src/i18n/locale_data_api';
+import {global} from '../../src/util/global';
 
 {
   describe('locale data api', () => {
     const localeCaESVALENCIA: any[] = ['ca-ES-VALENCIA'];
+    const localeDe: any[] = ['de'];
+    const localeDeCH: any[] = ['de-CH'];
     const localeEn: any[] = ['en'];
     const localeFr: any[] = ['fr'];
     const localeFrCA: any[] = ['fr-CA'];
     const localeZh: any[] = ['zh'];
     const localeEnAU: any[] = ['en-AU'];
+    const fakeGlobalFr: any[] = ['fr'];
 
     beforeAll(() => {
+      // Sumulate manually registering some locale data
       registerLocaleData(localeCaESVALENCIA);
       registerLocaleData(localeEn);
       registerLocaleData(localeFr);
@@ -25,9 +30,20 @@ import {findLocaleData, registerLocaleData, unregisterLocaleData} from '../../sr
       registerLocaleData(localeFrCA, 'fake_Id2');
       registerLocaleData(localeZh);
       registerLocaleData(localeEnAU);
+
+      // Simulate some locale data existing on the global already
+      global.ng = global.ng || {};
+      global.ng.common = global.ng.common || {locales: {}};
+      global.ng.common.locales = global.ng.common.locales || {};
+      global.ng.common.locales['fr'] = fakeGlobalFr;
+      global.ng.common.locales['de'] = localeDe;
+      global.ng.common.locales['de-ch'] = localeDeCH;
     });
 
-    afterAll(() => unregisterLocaleData());
+    afterAll(() => {
+      unregisterAllLocaleData();
+      global.ng.common.locales = undefined;
+    });
 
     describe('findLocaleData', () => {
       it('should throw if the LOCALE_DATA for the chosen locale or its parent locale is not available',
@@ -55,6 +71,15 @@ import {findLocaleData, registerLocaleData, unregisterLocaleData} from '../../sr
         expect(findLocaleData('fake_iD')).toEqual(localeFr);
         expect(findLocaleData('fake-id2')).toEqual(localeFrCA);
       });
+
+      it('should find the exact LOCALE_DATA if the locale is on the global object',
+         () => { expect(findLocaleData('de-CH')).toEqual(localeDeCH); });
+
+      it('should find the parent LOCALE_DATA if the exact locale is not available and the parent locale is on the global object',
+         () => { expect(findLocaleData('de-BE')).toEqual(localeDe); });
+
+      it('should find the registered LOCALE_DATA even if the same locale is on the global object',
+         () => { expect(findLocaleData('fr')).not.toBe(fakeGlobalFr); });
     });
   });
 }

@@ -5,9 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {LOCALE_DATA, LocaleDataIndex} from './locale_data';
 import localeEn from './locale_en';
+import {global} from '../util/global';
+
+/**
+ * This const is used to store the locale data registered with `registerLocaleData`
+ */
+let LOCALE_DATA: {[localeId: string]: any} = {};
 
 /**
  * Register locale data to be used internally by Angular. See the
@@ -75,18 +79,63 @@ export function getLocalePluralCase(locale: string): (value: number) => number {
 
 
 /**
- * Helper function to get the given `normalizedLocale` from `LOCALE_DATA`.
+ * Helper function to get the given `normalizedLocale` from `LOCALE_DATA`
+ * or from the global `ng.common.locale`.
  */
 export function getLocaleData(normalizedLocale: string): any {
+  if (!(normalizedLocale in LOCALE_DATA)) {
+    LOCALE_DATA[normalizedLocale] = global.ng && global.ng.common && global.ng.common.locales &&
+        global.ng.common.locales[normalizedLocale];
+  }
   return LOCALE_DATA[normalizedLocale];
 }
 
 /**
  * Helper function to remove all the locale data from `LOCALE_DATA`.
  */
-export function unregisterLocaleData() {
-  Object.keys(LOCALE_DATA).forEach(key => delete LOCALE_DATA[key]);
+export function unregisterAllLocaleData() {
+  LOCALE_DATA = {};
 }
+
+/**
+ * Index of each type of locale data from the locale data array
+ */
+export enum LocaleDataIndex {
+  LocaleId = 0,
+  DayPeriodsFormat,
+  DayPeriodsStandalone,
+  DaysFormat,
+  DaysStandalone,
+  MonthsFormat,
+  MonthsStandalone,
+  Eras,
+  FirstDayOfWeek,
+  WeekendRange,
+  DateFormat,
+  TimeFormat,
+  DateTimeFormat,
+  NumberSymbols,
+  NumberFormats,
+  CurrencySymbol,
+  CurrencyName,
+  Currencies,
+  PluralCase,
+  ExtraData
+}
+
+/**
+ * Index of each type of locale data from the extra locale data array
+ */
+export const enum ExtraLocaleDataIndex {
+  ExtraDayPeriodFormats = 0,
+  ExtraDayPeriodStandalone,
+  ExtraDayPeriodsRules
+}
+
+/**
+ * Index of each value in currency data (used to describe CURRENCIES_EN in currencies.ts)
+ */
+export const enum CurrencyIndex {Symbol = 0, SymbolNarrow, NbOfDigits}
 
 /**
  * Returns the canonical form of a locale name - lowercase with `_` replaced with `-`.
