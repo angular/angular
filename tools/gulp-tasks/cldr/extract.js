@@ -20,13 +20,15 @@ const I18N_FOLDER = `${COMMON_PACKAGE}/src/i18n`;
 const I18N_CORE_FOLDER = `${CORE_PACKAGE}/src/i18n`;
 const I18N_DATA_FOLDER = `${COMMON_PACKAGE}/locales`;
 const I18N_DATA_EXTRA_FOLDER = `${I18N_DATA_FOLDER}/extra`;
+const I18N_GLOBAL_FOLDER = `${I18N_DATA_FOLDER}/global`;
 const RELATIVE_I18N_FOLDER = path.resolve(__dirname, `../../../${I18N_FOLDER}`);
 const RELATIVE_I18N_CORE_FOLDER = path.resolve(__dirname, `../../../${I18N_CORE_FOLDER}`);
 const RELATIVE_I18N_DATA_FOLDER = path.resolve(__dirname, `../../../${I18N_DATA_FOLDER}`);
 const RELATIVE_I18N_DATA_EXTRA_FOLDER =
     path.resolve(__dirname, `../../../${I18N_DATA_EXTRA_FOLDER}`);
-const DEFAULT_RULE = 'function anonymous(n\n/*``*/) {\nreturn"other"\n}';
-const EMPTY_RULE = 'function anonymous(n\n/*``*/) {\n\n}';
+const RELATIVE_I18N_GLOBAL_FOLDER = path.resolve(__dirname, `../../../${I18N_GLOBAL_FOLDER}`);
+const DEFAULT_RULE = 'function anonymous(n) {\nreturn"other"\n}';
+const EMPTY_RULE = 'function anonymous(n) {\n\n}';
 const WEEK_DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 const HEADER = `/**
  * @license
@@ -58,6 +60,9 @@ module.exports = (gulp, done) => {
   if (!fs.existsSync(RELATIVE_I18N_DATA_EXTRA_FOLDER)) {
     fs.mkdirSync(RELATIVE_I18N_DATA_EXTRA_FOLDER);
   }
+  if (!fs.existsSync(RELATIVE_I18N_GLOBAL_FOLDER)) {
+    fs.mkdirSync(RELATIVE_I18N_GLOBAL_FOLDER);
+  }
 
   console.log(`Writing file ${I18N_FOLDER}/currencies.ts`);
   fs.writeFileSync(`${RELATIVE_I18N_FOLDER}/currencies.ts`, generateCurrenciesFile());
@@ -79,6 +84,12 @@ module.exports = (gulp, done) => {
     console.log(`\t${I18N_DATA_EXTRA_FOLDER}/${locale}.ts`);
     fs.writeFileSync(
         `${RELATIVE_I18N_DATA_EXTRA_FOLDER}/${locale}.ts`, generateLocaleExtra(locale, localeData));
+    console.log(`\t${I18N_GLOBAL_FOLDER}/${locale}.ts`);
+    fs.writeFileSync(
+        `${RELATIVE_I18N_GLOBAL_FOLDER}/${locale}.js`,
+        generateGlobalLocale(
+            locale, locale === 'en' ? new cldrJs('en') : localeData, baseCurrencies));
+
   });
   console.log(`${LOCALES.length} locale files generated.`);
 
@@ -88,8 +99,10 @@ module.exports = (gulp, done) => {
   return gulp
       .src(
           [
-            `${I18N_DATA_FOLDER}/**/*.ts`, `${I18N_FOLDER}/currencies.ts`,
-            `${I18N_CORE_FOLDER}/locale_en.ts`
+            `${I18N_DATA_FOLDER}/**/*.ts`,
+            `${I18N_FOLDER}/currencies.ts`,
+            `${I18N_CORE_FOLDER}/locale_en.ts`,
+            `${I18N_GLOBAL_FOLDER}/*.js`,
           ],
           {base: '.'})
       .pipe(format.format('file', clangFormat))
@@ -97,10 +110,52 @@ module.exports = (gulp, done) => {
 };
 
 /**
- * Generate file that contains basic locale data
+ * Generate contents for the basic locale data file
  */
 function generateLocale(locale, localeData, baseCurrencies) {
-  // [ localeId, dateTime, number, currency, pluralCase ]
+  return `${HEADER}
+const u = undefined;
+
+${getPluralFunction(locale)}
+
+export default ${generateBasicLocaleString(locale, localeData, baseCurrencies)};
+`;
+}
+
+/**
+ * Generate the contents for the extra data file
+ */
+function generateLocaleExtra(locale, localeData) {
+  return `${HEADER}
+const u = undefined;
+
+export default ${generateDayPeriodsSupplementalString(locale, localeData)};
+`;
+}
+
+/**
+ * Generated the contents for the global locale file
+ */
+function generateGlobalLocale(locale, localeData, baseCurrencies) {
+  const basicLocaleData = generateBasicLocaleString(locale, localeData, baseCurrencies);
+  const extraLocaleData = generateDayPeriodsSupplementalString(locale, localeData);
+  const data = basicLocaleData.replace(/\]$/, `, ${extraLocaleData}]`);
+  return `${HEADER}
+(function(global) {
+  global.ng = global.ng || {};
+  global.ng.common = global.ng.common || {};
+  global.ng.common.locales = global.ng.common.locales || {};
+  const u = undefined;
+  ${getPluralFunction(locale, false)}
+  root.ng.common.locales['${normalizeLocale(locale)}'] = ${data};
+})(typeof globalThis !== 'undefined' && globalThis || typeof global !== 'undefined' && global || typeof window !== 'undefined' && window);
+  `;
+}
+
+/**
+ * Collect up the basic locale data [ localeId, dateTime, number, currency, pluralCase ].
+ */
+function generateBasicLocaleString(locale, localeData, baseCurrencies) {
   let data =
       stringify(
           [
@@ -113,27 +168,18 @@ function generateLocale(locale, localeData, baseCurrencies) {
           .replace(/undefined/g, 'u');
 
   // adding plural function after, because we don't want it as a string
-  data = data.substring(0, data.lastIndexOf(']')) + `, plural]`;
-
-  return `${HEADER}
-const u = undefined;
-
-${getPluralFunction(locale)}
-
-export default ${data};
-`;
+  data = data.replace(/\]$/, ', plural]');
+  return data;
 }
 
 /**
- * Generate a file that contains extra data
- * (for now: day period rules, and extended day period data)
+ * Collect up the day period rules, and extended day period data.
  */
-function generateLocaleExtra(locale, localeData) {
+function generateDayPeriodsSupplementalString(locale, localeData) {
   const dayPeriods = getDayPeriodsNoAmPm(localeData);
   const dayPeriodRules = getDayPeriodRules(localeData);
 
   let dayPeriodsSupplemental = [];
-
   if (Object.keys(dayPeriods.format.narrow).length) {
     const keys = Object.keys(dayPeriods.format.narrow);
 
@@ -153,15 +199,9 @@ function generateLocaleExtra(locale, localeData) {
     ]);
 
     const rules = keys.map(key => dayPeriodRules[key]);
-
     dayPeriodsSupplemental = [...removeDuplicates([dayPeriodsFormat, dayPeriodsStandalone]), rules];
   }
-
-  return `${HEADER}
-const u = undefined;
-
-export default ${stringify(dayPeriodsSupplemental).replace(/undefined/g, 'u')};
-`;
+  return stringify(dayPeriodsSupplemental).replace(/undefined/g, 'u');
 }
 
 /**
@@ -512,16 +552,15 @@ function toRegExp(s) {
  * todo(ocombe): replace "cldr" extractPluralRuleFunction with our own extraction using "CldrJS"
  * because the 2 libs can become out of sync if they use different versions of the cldr database
  */
-function getPluralFunction(locale) {
+function getPluralFunction(locale, withTypes = true) {
   let fn = cldr.extractPluralRuleFunction(locale).toString();
 
   if (fn === EMPTY_RULE) {
     fn = DEFAULT_RULE;
   }
 
-  fn = fn.replace(
-             toRegExp('function anonymous(n\n/*``*/) {\n'),
-             'function plural(n: number): number {\n  ')
+  const numberType = withTypes ? ': number' : '';
+  fn = fn.replace(/function anonymous\(n[^}]+{/g, `function plural(n${numberType})${numberType} {`)
            .replace(toRegExp('var'), 'let')
            .replace(toRegExp('if(typeof n==="string")n=parseInt(n,10);'), '')
            .replace(toRegExp('\n}'), ';\n}');
@@ -570,6 +609,13 @@ function removeDuplicates(data) {
     }
   }
   return dedup;
+}
+
+/**
+ * In Angular the locale is referenced by a "normalized" form.
+ */
+function normalizeLocale(locale) {
+  return locale.toLowerCase().replace(/_/g, '-');
 }
 
 module.exports.I18N_FOLDER = I18N_FOLDER;
