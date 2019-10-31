@@ -1,3 +1,27 @@
+# 9.0.0-rc.0 "pearl-lullaby" (2019-10-31)
+
+# Highlights
+
+#### New `@angular/google-maps` package!
+Earlier this year, we changed the name of this repo to "angular/components" to emphasize our goal
+to provide more than Material Design components. The 9.0.0 release includes one of the next new
+features in that regard- a new package that wraps the
+[Google Maps JavaScript API](https://developers.google.com/maps/documentation/javascript/tutorial)
+in an easy-to-use Angular component.
+
+You can see the
+[documentation on GitHub](https://github.com/angular/components/blob/master/src/google-maps/README.md)
+for the time being.
+
+Big thanks to @mbehrlich for contributing this!
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  expand input types with coercion to work with ngtsc input type checking ([#17528](https://github.com/angular/components/issues/17528)) ([8da64f4](https://github.com/angular/components/commit/8da64f4)) |
+
+
 # 9.0.0-next.2 "pumice-pinecone" (2019-10-31)
 
 ### material
@@ -271,7 +295,7 @@ Use the individual secondary entry-points, such as `@angular/material/button`.
 ### Highlights
 
 #### New `@angular/youtube-player` package!
-Earlier this year, we changed the name of this repo to "angular/components" to emphasisze our goal
+Earlier this year, we changed the name of this repo to "angular/components" to emphasize our goal
 to provide more than only Material Design components. The 8.2.0 release includes one of the next new
 features in that regard- a new package that wraps the
 [YouTube Player API for iframe Embeds](https://developers.google.com/youtube/iframe_api_reference)
