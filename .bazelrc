@@ -19,6 +19,7 @@ test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test
 build --symlink_prefix=dist/
 
 # Turn off legacy external runfiles
+build --nolegacy_external_runfiles
 run --nolegacy_external_runfiles
 test --nolegacy_external_runfiles
 
