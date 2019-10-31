@@ -37,6 +37,10 @@ export declare class MatSlideToggle extends _MatSlideToggleMixinBase implements 
     setDisabledState(isDisabled: boolean): void;
     toggle(): void;
     writeValue(value: any): void;
+    static ngAcceptInputType_checked: boolean | string;
+    static ngAcceptInputType_disableRipple: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_required: boolean | string;
 }
 
 export declare class MatSlideToggleChange {

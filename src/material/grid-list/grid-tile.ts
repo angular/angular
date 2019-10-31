@@ -60,6 +60,9 @@ export class MatGridTile {
   _setStyle(property: string, value: any): void {
     (this._element.nativeElement.style as any)[property] = value;
   }
+
+  static ngAcceptInputType_rowspan: number | string;
+  static ngAcceptInputType_colspan: number | string;
 }
 
 @Component({

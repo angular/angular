@@ -119,6 +119,7 @@ export declare class MatTab extends _MatTabMixinBase implements OnInit, CanDisab
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export declare class MatTabBody extends _MatTabBodyBase {
@@ -151,6 +152,10 @@ export declare class MatTabGroup extends _MatTabGroupBase {
     _tabBodyWrapper: ElementRef;
     _tabHeader: MatTabGroupBaseHeader;
     constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, defaultConfig?: MatTabsConfig, animationMode?: string);
+    static ngAcceptInputType_animationDuration: number | string;
+    static ngAcceptInputType_disableRipple: boolean | string;
+    static ngAcceptInputType_dynamicHeight: boolean | string;
+    static ngAcceptInputType_selectedIndex: number | string;
 }
 
 export declare class MatTabHeader extends _MatTabHeaderBase {
@@ -161,6 +166,8 @@ export declare class MatTabHeader extends _MatTabHeaderBase {
     _tabList: ElementRef;
     _tabListContainer: ElementRef;
     constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler, dir: Directionality, ngZone: NgZone, platform: Platform, animationMode?: string);
+    static ngAcceptInputType_disableRipple: boolean | string;
+    static ngAcceptInputType_selectedIndex: number | string;
 }
 
 export declare type MatTabHeaderPosition = 'above' | 'below';
@@ -174,11 +181,14 @@ export declare class MatTabLabelWrapper extends _MatTabLabelWrapperMixinBase imp
     focus(): void;
     getOffsetLeft(): number;
     getOffsetWidth(): number;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export declare class MatTabLink extends _MatTabLinkBase implements OnDestroy {
     constructor(tabNavBar: MatTabNav, elementRef: ElementRef, ngZone: NgZone, platform: Platform, globalRippleOptions: RippleGlobalOptions | null, tabIndex: string, focusMonitor: FocusMonitor, animationMode?: string);
     ngOnDestroy(): void;
+    static ngAcceptInputType_disableRipple: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export declare class MatTabNav extends _MatTabNavBase {
@@ -190,6 +200,8 @@ export declare class MatTabNav extends _MatTabNavBase {
     _tabListContainer: ElementRef;
     constructor(elementRef: ElementRef, dir: Directionality, ngZone: NgZone, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler,
     platform?: Platform, animationMode?: string);
+    static ngAcceptInputType_disableRipple: boolean | string;
+    static ngAcceptInputType_selectedIndex: number | string;
 }
 
 export declare const matTabsAnimations: {

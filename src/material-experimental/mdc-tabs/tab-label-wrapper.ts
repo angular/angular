@@ -53,4 +53,7 @@ export class MatTabLabelWrapper extends BaseMatTabLabelWrapper
   focus(): void {
     this.elementRef.nativeElement.focus();
   }
+
+  static ngAcceptInputType_fitInkBarToContent: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string;
 }

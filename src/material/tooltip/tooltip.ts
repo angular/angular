@@ -603,6 +603,10 @@ export class MatTooltip implements OnDestroy, OnInit {
       style.webkitTapHighlightColor = 'transparent';
     }
   }
+
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_hideDelay: number | string;
+  static ngAcceptInputType_showDelay: number | string;
 }
 
 /**

@@ -20,7 +20,6 @@
   "angularCompilerOptions": {
     "enableIvy": false,
     "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true,
     "flatModuleOutFile": "index.js",
     "flatModuleId": "@angular/youtube-player",
     "skipTemplateCodegen": true,

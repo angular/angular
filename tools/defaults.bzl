@@ -97,8 +97,6 @@ def ng_module(
         deps = local_deps,
         tsconfig = tsconfig,
         testonly = testonly,
-        # TODO(jelbourn): re-enable type checking after granular flags land in Angular.
-        type_check = False,
         **kwargs
     )
 

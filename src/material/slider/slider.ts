@@ -849,6 +849,16 @@ export class MatSlider extends _MatSliderMixinBase
   setDisabledState(isDisabled: boolean) {
     this.disabled = isDisabled;
   }
+
+  static ngAcceptInputType_invert: boolean | string;
+  static ngAcceptInputType_max: number | string;
+  static ngAcceptInputType_min: number | string;
+  static ngAcceptInputType_step: number | string;
+  static ngAcceptInputType_thumbLabel: boolean | string;
+  static ngAcceptInputType_tickInterval: number | string;
+  static ngAcceptInputType_value: number | string | null;
+  static ngAcceptInputType_vertical: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string;
 }
 
 /** Returns whether an event is a touch event. */

@@ -105,6 +105,13 @@ shelljs.cat(path.join(__dirname, './manifest_externs_hermeticity.patch')).exec('
 searchAndReplace(`[formatProperty + "_ivy_ngcc"]`, '[formatProperty]',
   'node_modules/@angular/compiler-cli/ngcc/src/writing/new_entry_point_file_writer.js');
 
+// Workaround for https://github.com/angular/angular/issues/33452:
+searchAndReplace(/angular_compiler_options = {/, `$&
+        "strictTemplates": True,
+        "strictDomLocalRefTypes ": False,
+        "strictAttributeTypes": False,
+        "strictDomEventTypes": False,`, 'node_modules/@angular/bazel/src/ng_module.bzl');
+
 /**
  * Reads the specified file and replaces matches of the search expression
  * with the given replacement. Throws if no changes were made.

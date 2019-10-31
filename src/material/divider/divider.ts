@@ -37,4 +37,7 @@ export class MatDivider {
   get inset(): boolean { return this._inset; }
   set inset(value: boolean) { this._inset = coerceBooleanProperty(value); }
   private _inset: boolean = false;
+
+  static ngAcceptInputType_vertical: boolean | string;
+  static ngAcceptInputType_inset: boolean | string;
 }

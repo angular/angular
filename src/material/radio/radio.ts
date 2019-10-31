@@ -306,6 +306,9 @@ export class MatRadioGroup implements AfterContentInit, ControlValueAccessor {
     this.disabled = isDisabled;
     this._changeDetector.markForCheck();
   }
+
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_required: boolean | string;
 }
 
 // Boilerplate for applying mixins to MatRadioButton.
@@ -595,4 +598,8 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
     }
   }
 
+  static ngAcceptInputType_checked: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_required: boolean | string;
+  static ngAcceptInputType_disableRipple: boolean | string;
 }

@@ -34,7 +34,7 @@ export class MatCalendarCell {
               public displayValue: string,
               public ariaLabel: string,
               public enabled: boolean,
-              public cssClasses?: MatCalendarCellCssClasses) {}
+              public cssClasses: MatCalendarCellCssClasses = {}) {}
 }
 
 

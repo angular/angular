@@ -531,4 +531,12 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
     this.value = value;
     this._syncValue();
   }
+
+  static ngAcceptInputType_min: number | string;
+  static ngAcceptInputType_max: number | string;
+  static ngAcceptInputType_value: number | string;
+  static ngAcceptInputType_step: number | string;
+  static ngAcceptInputType_tickInterval: number | string;
+  static ngAcceptInputType_thumbLabel: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string;
 }

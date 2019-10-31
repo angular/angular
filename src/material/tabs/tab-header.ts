@@ -109,4 +109,7 @@ export class MatTabHeader extends _MatTabHeaderBase {
               @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(elementRef, changeDetectorRef, viewportRuler, dir, ngZone, platform, animationMode);
   }
+
+  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_selectedIndex: number | string;
 }

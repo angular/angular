@@ -520,4 +520,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
 
     return false;
   }
+
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_required: boolean | string;
 }

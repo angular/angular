@@ -28,6 +28,8 @@ export declare class MatSort extends _MatSortMixinBase implements CanDisable, Ha
     ngOnInit(): void;
     register(sortable: MatSortable): void;
     sort(sortable: MatSortable): void;
+    static ngAcceptInputType_disableClear: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export interface MatSortable {
@@ -70,6 +72,8 @@ export declare class MatSortHeader extends _MatSortHeaderMixinBase implements Ca
     _updateArrowDirection(): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
+    static ngAcceptInputType_disableClear: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export declare class MatSortHeaderIntl {

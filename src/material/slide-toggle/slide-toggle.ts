@@ -294,4 +294,9 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
     // we only trigger an explicit change detection for the slide-toggle view and its children.
     this._changeDetectorRef.detectChanges();
   }
+
+  static ngAcceptInputType_required: boolean | string;
+  static ngAcceptInputType_checked: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_disableRipple: boolean | string;
 }

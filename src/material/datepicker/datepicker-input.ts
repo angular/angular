@@ -366,4 +366,10 @@ export class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, V
   private _getValidDateOrNull(obj: any): D | null {
     return (this._dateAdapter.isDateInstance(obj) && this._dateAdapter.isValid(obj)) ? obj : null;
   }
+
+  static ngAcceptInputType_disabled: boolean | string;
+
+  // Accept `any` to avoid conflicts with other directives on `<input>` that
+  // may accept different types.
+  static ngAcceptInputType_value: any;
 }

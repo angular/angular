@@ -170,6 +170,8 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
 
     return viewRef;
   }
+
+  static ngAcceptInputType_portal: Portal<any> | null | undefined | '';
 }
 
 /**

@@ -19,6 +19,10 @@ export declare class CdkStep implements OnChanges {
     ngOnChanges(): void;
     reset(): void;
     select(): void;
+    static ngAcceptInputType_completed: boolean | string;
+    static ngAcceptInputType_editable: boolean | string;
+    static ngAcceptInputType_hasError: boolean | string;
+    static ngAcceptInputType_optional: boolean | string;
 }
 
 export declare class CdkStepHeader implements FocusableOption {
@@ -57,6 +61,12 @@ export declare class CdkStepper implements AfterViewInit, OnDestroy {
     ngOnDestroy(): void;
     previous(): void;
     reset(): void;
+    static ngAcceptInputType_completed: boolean | string;
+    static ngAcceptInputType_editable: boolean | string;
+    static ngAcceptInputType_hasError: boolean | string;
+    static ngAcceptInputType_linear: boolean | string;
+    static ngAcceptInputType_optional: boolean | string;
+    static ngAcceptInputType_selectedIndex: number | string;
 }
 
 export declare class CdkStepperModule {

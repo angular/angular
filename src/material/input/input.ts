@@ -416,4 +416,12 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
       this.focus();
     }
   }
+
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_readonly: boolean | string;
+  static ngAcceptInputType_required: boolean | string;
+
+  // Accept `any` to avoid conflicts with other directives on `<input>` that may
+  // accept different types.
+  static ngAcceptInputType_value: any;
 }

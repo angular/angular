@@ -39,4 +39,6 @@ export class MatTab extends BaseMatTab {
 
   /** Content for the tab label given by `<ng-template mat-tab-label>`. */
   @ContentChild(MatTabLabel) templateLabel: MatTabLabel;
+
+  static ngAcceptInputType_disabled: boolean | string;
 }

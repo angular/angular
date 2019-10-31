@@ -34,7 +34,12 @@ class MatBadgeBase {}
 const _MatBadgeMixinBase:
     CanDisableCtor & typeof MatBadgeBase = mixinDisabled(MatBadgeBase);
 
-export type MatBadgePosition = 'above after' | 'above before' | 'below before' | 'below after';
+/** Allowed position options for matBadgePosition */
+export type MatBadgePosition =
+    'above after' | 'above before' | 'below before' | 'below after' |
+    'before' | 'after' | 'above' | 'below';
+
+/** Allowed size options for matBadgeSize */
 export type MatBadgeSize = 'small' | 'medium' | 'large';
 
 /** Directive to display a text badge. */
@@ -264,4 +269,8 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, OnChanges
       }
     }
   }
+
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_hidden: boolean | string;
+  static ngAcceptInputType_overlap: boolean | string;
 }

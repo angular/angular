@@ -8,6 +8,7 @@ export declare class MatNestedTreeNode<T> extends CdkNestedTreeNode<T> implement
     constructor(_elementRef: ElementRef<HTMLElement>, _tree: CdkTree<T>, _differs: IterableDiffers, tabIndex: string);
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export declare class MatTree<T> extends CdkTree<T> {
@@ -51,6 +52,7 @@ export declare class MatTreeNode<T> extends _MatTreeNodeMixinBase<T> implements 
     protected _tree: CdkTree<T>;
     role: 'treeitem' | 'group';
     constructor(_elementRef: ElementRef<HTMLElement>, _tree: CdkTree<T>, tabIndex: string);
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export declare class MatTreeNodeDef<T> extends CdkTreeNodeDef<T> {
@@ -66,8 +68,10 @@ export declare class MatTreeNodeOutlet implements CdkTreeNodeOutlet {
 export declare class MatTreeNodePadding<T> extends CdkTreeNodePadding<T> {
     indent: number;
     level: number;
+    static ngAcceptInputType_level: number | string;
 }
 
 export declare class MatTreeNodeToggle<T> extends CdkTreeNodeToggle<T> {
     recursive: boolean;
+    static ngAcceptInputType_recursive: boolean | string;
 }

@@ -30,4 +30,6 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
 export class MatTable<T> extends CdkTable<T> {
   /** Overrides the sticky CSS class set by the `CdkTable`. */
   protected stickyCssClass = 'mat-table-sticky';
+
+  static ngAcceptInputType_multiTemplateDataRows: boolean | string;
 }

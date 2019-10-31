@@ -12,6 +12,8 @@ export declare class MatAccordion extends CdkAccordion implements MatAccordionBa
     _handleHeaderFocus(header: MatExpansionPanelHeader): void;
     _handleHeaderKeydown(event: KeyboardEvent): void;
     ngAfterContentInit(): void;
+    static ngAcceptInputType_hideToggle: boolean | string;
+    static ngAcceptInputType_multi: boolean | string;
 }
 
 export interface MatAccordionBase extends CdkAccordion {
@@ -55,6 +57,9 @@ export declare class MatExpansionPanel extends CdkAccordionItem implements After
     ngAfterContentInit(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_expanded: boolean | string;
+    static ngAcceptInputType_hideToggle: boolean | string;
 }
 
 export declare class MatExpansionPanelActionRow {

@@ -132,4 +132,6 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
       datepickerToggled
     ).subscribe(() => this._changeDetectorRef.markForCheck());
   }
+
+  static ngAcceptInputType_disabled: boolean | string;
 }

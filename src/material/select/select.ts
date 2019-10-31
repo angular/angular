@@ -8,25 +8,25 @@
 
 import {ActiveDescendantKeyManager, LiveAnnouncer} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
 import {
   A,
   DOWN_ARROW,
   END,
   ENTER,
+  hasModifierKey,
   HOME,
   LEFT_ARROW,
   RIGHT_ARROW,
   SPACE,
   UP_ARROW,
-  hasModifierKey,
 } from '@angular/cdk/keycodes';
 import {
   CdkConnectedOverlay,
+  ConnectedPosition,
   Overlay,
   ScrollStrategy,
-  ConnectedPosition,
 } from '@angular/cdk/overlay';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
@@ -425,7 +425,12 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   @Input() errorStateMatcher: ErrorStateMatcher;
 
   /** Time to wait in milliseconds after the last keystroke before moving focus to an item. */
-  @Input() typeaheadDebounceInterval: number;
+  @Input()
+  get typeaheadDebounceInterval(): number { return this._typeaheadDebounceInterval; }
+  set typeaheadDebounceInterval(value: number) {
+    this._typeaheadDebounceInterval = coerceNumberProperty(value);
+  }
+  private _typeaheadDebounceInterval: number;
 
   /**
    * Function used to sort the values in a select in multiple mode.
@@ -569,7 +574,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     }
 
     if (changes['typeaheadDebounceInterval'] && this._keyManager) {
-      this._keyManager.withTypeAhead(this.typeaheadDebounceInterval);
+      this._keyManager.withTypeAhead(this._typeaheadDebounceInterval);
     }
   }
 
@@ -889,7 +894,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** Sets up a key manager to listen to keyboard events on the overlay panel. */
   private _initKeyManager() {
     this._keyManager = new ActiveDescendantKeyManager<MatOption>(this.options)
-      .withTypeAhead(this.typeaheadDebounceInterval)
+      .withTypeAhead(this._typeaheadDebounceInterval)
       .withVerticalOrientation()
       .withHorizontalOrientation(this._isRtl() ? 'rtl' : 'ltr')
       .withAllowedModifierKeys(['shiftKey']);
@@ -1334,4 +1339,11 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   get shouldLabelFloat(): boolean {
     return this._panelOpen || !this.empty;
   }
+
+  static ngAcceptInputType_required: boolean | string;
+  static ngAcceptInputType_multiple: boolean | string;
+  static ngAcceptInputType_disableOptionCentering: boolean | string;
+  static ngAcceptInputType_typeaheadDebounceInterval: number | string;
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_disableRipple: boolean | string;
 }

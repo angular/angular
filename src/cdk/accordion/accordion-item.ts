@@ -152,4 +152,7 @@ export class CdkAccordionItem implements OnDestroy {
       }
     });
   }
+
+  static ngAcceptInputType_expanded: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string;
 }

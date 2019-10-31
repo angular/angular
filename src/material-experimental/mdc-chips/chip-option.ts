@@ -226,4 +226,11 @@ export class MatChipOption extends MatChip {
         this._handleInteraction(event);
     }
   }
+
+  static ngAcceptInputType_selectable: boolean | string;
+  static ngAcceptInputType_selected: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_removable: boolean | string;
+  static ngAcceptInputType_highlighted: boolean | string;
+  static ngAcceptInputType_disableRipple: boolean | string;
 }

@@ -42,6 +42,9 @@ export declare class MatTooltip implements OnDestroy, OnInit {
     ngOnInit(): void;
     show(delay?: number): void;
     toggle(): void;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_hideDelay: number | string;
+    static ngAcceptInputType_showDelay: number | string;
 }
 
 export declare const matTooltipAnimations: {

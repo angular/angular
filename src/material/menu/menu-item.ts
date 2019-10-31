@@ -174,4 +174,6 @@ export class MatMenuItem extends _MatMenuItemMixinBase
     return output.trim();
   }
 
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_disableRipple: boolean | string;
 }

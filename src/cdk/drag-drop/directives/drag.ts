@@ -408,6 +408,8 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
       });
     });
   }
+
+  static ngAcceptInputType_disabled: boolean | string;
 }
 
 /** Gets the closest ancestor of an element that matches a selector. */

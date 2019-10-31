@@ -1077,6 +1077,8 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
           this.updateStickyColumnStyles();
         });
   }
+
+  static ngAcceptInputType_multiTemplateDataRows: boolean | string;
 }
 
 /** Utility function that gets a merged list of the entries in a QueryList and values of a Set. */

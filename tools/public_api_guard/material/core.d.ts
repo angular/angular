@@ -230,6 +230,7 @@ export declare class MatNativeDateModule {
 export declare class MatOptgroup extends _MatOptgroupMixinBase implements CanDisable {
     _labelId: string;
     label: string;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export declare class MatOption implements FocusableOption, AfterViewChecked, OnDestroy {
@@ -258,6 +259,7 @@ export declare class MatOption implements FocusableOption, AfterViewChecked, OnD
     select(): void;
     setActiveStyles(): void;
     setInactiveStyles(): void;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export declare class MatOptionModule {

@@ -109,4 +109,6 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
       this._currentPadding = padding;
     }
   }
+
+  static ngAcceptInputType_level: number | string;
 }

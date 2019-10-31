@@ -175,7 +175,7 @@ export class JazzDialog {
 
       <button
         mat-button
-        color="secondary"
+        color="accent"
         (click)="showInStackedDialog()">
         Show in Dialog</button>
     </mat-dialog-actions>

@@ -23,6 +23,11 @@ export declare class MatButtonToggle extends _MatButtonToggleMixinBase implement
     focus(options?: FocusOptions): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
+    static ngAcceptInputType_checked: boolean | string;
+    static ngAcceptInputType_disableRipple: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_multiple: boolean | string;
+    static ngAcceptInputType_vertical: boolean | string;
 }
 
 export declare type MatButtonToggleAppearance = 'legacy' | 'standard';
@@ -63,6 +68,9 @@ export declare class MatButtonToggleGroup implements ControlValueAccessor, OnIni
     registerOnTouched(fn: any): void;
     setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_multiple: boolean | string;
+    static ngAcceptInputType_vertical: boolean | string;
 }
 
 export declare class MatButtonToggleGroupMultiple {

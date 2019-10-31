@@ -42,4 +42,8 @@ export class MatTextareaAutosize extends CdkTextareaAutosize {
   @Input()
   get matTextareaAutosize(): boolean { return this.enabled; }
   set matTextareaAutosize(value: boolean) { this.enabled = value; }
+
+  static ngAcceptInputType_minRows: number | string;
+  static ngAcceptInputType_maxRows: number | string;
+  static ngAcceptInputType_enabled: boolean | string;
 }

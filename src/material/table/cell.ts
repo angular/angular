@@ -51,6 +51,7 @@ export class MatFooterCellDef extends CdkFooterCellDef {}
  */
 @Directive({
   selector: '[matColumnDef]',
+  inputs: ['sticky'],
   providers: [
     {provide: CdkColumnDef, useExisting: MatColumnDef},
     {provide: 'MAT_SORT_HEADER_COLUMN_DEF', useExisting: MatColumnDef}
@@ -60,11 +61,8 @@ export class MatColumnDef extends CdkColumnDef {
   /** Unique name for this column. */
   @Input('matColumnDef') name: string;
 
-  /** Whether this column should be sticky positioned at the start of the row */
-  @Input() sticky: boolean;
-
-  /** Whether this column should be sticky positioned on the end of the row */
-  @Input() stickyEnd: boolean;
+  static ngAcceptInputType_sticky: boolean | string;
+  static ngAcceptInputType_stickyEnd: boolean | string;
 }
 
 /** Header cell template container that adds the right classes and role. */

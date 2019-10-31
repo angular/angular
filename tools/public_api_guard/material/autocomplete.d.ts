@@ -46,6 +46,8 @@ export declare class MatAutocomplete extends _MatAutocompleteMixinBase implement
     _setScrollTop(scrollTop: number): void;
     _setVisibility(): void;
     ngAfterContentInit(): void;
+    static ngAcceptInputType_autoActiveFirstOption: boolean | string;
+    static ngAcceptInputType_disableRipple: boolean | string;
 }
 
 export interface MatAutocompleteDefaultOptions {
@@ -95,4 +97,5 @@ export declare class MatAutocompleteTrigger implements ControlValueAccessor, Aft
     setDisabledState(isDisabled: boolean): void;
     updatePosition(): void;
     writeValue(value: any): void;
+    static ngAcceptInputType_autocompleteDisabled: boolean | string;
 }

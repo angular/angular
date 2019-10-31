@@ -552,7 +552,7 @@
         cdkTextareaAutosize
         [cdkAutosizeMinRows]="parseNumber(minRows.value)"
         [cdkAutosizeMaxRows]="parseNumber(maxRows.value)"></textarea>
-    <button type="button" (click)="minRows.value = parseNumber(minRows.value) - 1">Decrement minRows</button>
+    <button type="button" (click)="minRows.value = (parseNumber(minRows.value) - 1) + ''">Decrement minRows</button>
 
     <h3>&lt;textarea&gt; with mat-form-field</h3>
     <div>

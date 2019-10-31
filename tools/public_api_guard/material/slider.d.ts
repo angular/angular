@@ -52,6 +52,15 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     registerOnTouched(fn: any): void;
     setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_invert: boolean | string;
+    static ngAcceptInputType_max: number | string;
+    static ngAcceptInputType_min: number | string;
+    static ngAcceptInputType_step: number | string;
+    static ngAcceptInputType_thumbLabel: boolean | string;
+    static ngAcceptInputType_tickInterval: number | string;
+    static ngAcceptInputType_value: number | string | null;
+    static ngAcceptInputType_vertical: boolean | string;
 }
 
 export declare class MatSliderChange {

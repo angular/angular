@@ -598,4 +598,6 @@ export class MatFormField extends _MatFormFieldMixinBase
     // shadow DOM, however browser that support shadow DOM should support `getRootNode` as well.
     return document.documentElement!.contains(element);
   }
+
+  static ngAcceptInputType_hideRequiredMarker: boolean | string;
 }

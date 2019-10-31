@@ -7,8 +7,8 @@ export declare class MatCellDef extends CdkCellDef {
 
 export declare class MatColumnDef extends CdkColumnDef {
     name: string;
-    sticky: boolean;
-    stickyEnd: boolean;
+    static ngAcceptInputType_sticky: boolean | string;
+    static ngAcceptInputType_stickyEnd: boolean | string;
 }
 
 export declare class MatFooterCell extends CdkFooterCell {
@@ -22,6 +22,7 @@ export declare class MatFooterRow extends CdkFooterRow {
 }
 
 export declare class MatFooterRowDef extends CdkFooterRowDef {
+    static ngAcceptInputType_sticky: boolean | string;
 }
 
 export declare class MatHeaderCell extends CdkHeaderCell {
@@ -35,6 +36,7 @@ export declare class MatHeaderRow extends CdkHeaderRow {
 }
 
 export declare class MatHeaderRowDef extends CdkHeaderRowDef {
+    static ngAcceptInputType_sticky: boolean | string;
 }
 
 export declare class MatRow extends CdkRow {
@@ -45,6 +47,7 @@ export declare class MatRowDef<T> extends CdkRowDef<T> {
 
 export declare class MatTable<T> extends CdkTable<T> {
     protected stickyCssClass: string;
+    static ngAcceptInputType_multiTemplateDataRows: boolean | string;
 }
 
 export declare class MatTableDataSource<T> extends DataSource<T> {

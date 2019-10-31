@@ -38,4 +38,6 @@ export class CdkTreeNodeToggle<T> {
 
     event.stopPropagation();
   }
+
+  static ngAcceptInputType_recursive: boolean | string;
 }

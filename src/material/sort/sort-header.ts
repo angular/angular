@@ -293,4 +293,7 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
   _renderArrow() {
     return !this._isDisabled() || this._isSorted();
   }
+
+  static ngAcceptInputType_disableClear: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string;
 }

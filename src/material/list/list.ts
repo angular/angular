@@ -69,6 +69,8 @@ export class MatNavList extends _MatListMixinBase implements CanDisableRipple, O
   ngOnDestroy() {
     this._stateChanges.complete();
   }
+
+  static ngAcceptInputType_disableRipple: boolean | string;
 }
 
 @Component({
@@ -117,6 +119,8 @@ export class MatList extends _MatListMixinBase implements CanDisableRipple, OnCh
   ngOnDestroy() {
     this._stateChanges.complete();
   }
+
+  static ngAcceptInputType_disableRipple: boolean | string;
 }
 
 /**
@@ -219,4 +223,6 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
   _getHostElement(): HTMLElement {
     return this._element.nativeElement;
   }
+
+  static ngAcceptInputType_disableRipple: boolean | string;
 }

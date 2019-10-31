@@ -368,6 +368,10 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
     // it is used by Angular to sync up the two-way data binding.
     this.valueChange.emit(this.value);
   }
+
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_multiple: boolean | string;
+  static ngAcceptInputType_vertical: boolean | string;
 }
 
 // Boilerplate for applying mixins to the MatButtonToggle class.
@@ -556,4 +560,10 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
     // Use `markForCheck` to explicit update button toggle's status.
     this._changeDetectorRef.markForCheck();
   }
+
+  static ngAcceptInputType_checked: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_vertical: boolean | string;
+  static ngAcceptInputType_multiple: boolean | string;
+  static ngAcceptInputType_disableRipple: boolean | string;
 }

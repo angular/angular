@@ -231,6 +231,11 @@ export class CdkStep implements OnChanges {
     // underlying MatStepHeader, we have to make sure that change detection runs correctly.
     this._stepper._stateChanged();
   }
+
+  static ngAcceptInputType_editable: boolean | string;
+  static ngAcceptInputType_hasError: boolean | string;
+  static ngAcceptInputType_optional: boolean | string;
+  static ngAcceptInputType_completed: boolean | string;
 }
 
 @Directive({
@@ -519,6 +524,13 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
     const focusedElement = this._document.activeElement;
     return stepperElement === focusedElement || stepperElement.contains(focusedElement);
   }
+
+  static ngAcceptInputType_editable: boolean | string;
+  static ngAcceptInputType_optional: boolean | string;
+  static ngAcceptInputType_completed: boolean | string;
+  static ngAcceptInputType_hasError: boolean | string;
+  static ngAcceptInputType_linear: boolean | string;
+  static ngAcceptInputType_selectedIndex: number | string;
 }
 
 

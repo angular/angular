@@ -10,6 +10,7 @@ export declare class MatGridList implements MatGridListBase, OnInit, AfterConten
     _setListStyle(style: [string, string | null] | null): void;
     ngAfterContentChecked(): void;
     ngOnInit(): void;
+    static ngAcceptInputType_cols: number | string;
 }
 
 export declare class MatGridListModule {
@@ -23,6 +24,8 @@ export declare class MatGridTile {
     rowspan: number;
     constructor(_element: ElementRef<HTMLElement>, _gridList?: MatGridListBase | undefined);
     _setStyle(property: string, value: any): void;
+    static ngAcceptInputType_colspan: number | string;
+    static ngAcceptInputType_rowspan: number | string;
 }
 
 export declare class MatGridTileFooterCssMatStyler {

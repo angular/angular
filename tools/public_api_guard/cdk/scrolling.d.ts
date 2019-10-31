@@ -43,6 +43,9 @@ export declare class CdkFixedSizeVirtualScroll implements OnChanges {
     maxBufferPx: number;
     minBufferPx: number;
     ngOnChanges(): void;
+    static ngAcceptInputType_itemSize: string | number;
+    static ngAcceptInputType_maxBufferPx: string | number;
+    static ngAcceptInputType_minBufferPx: string | number;
 }
 
 export declare class CdkScrollable implements OnInit, OnDestroy {

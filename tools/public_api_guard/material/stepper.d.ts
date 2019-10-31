@@ -8,12 +8,22 @@ export declare function MAT_STEPPER_INTL_PROVIDER_FACTORY(parentIntl: MatStepper
 
 export declare class MatHorizontalStepper extends MatStepper {
     labelPosition: 'bottom' | 'end';
+    static ngAcceptInputType_completed: boolean | string;
+    static ngAcceptInputType_editable: boolean | string;
+    static ngAcceptInputType_hasError: boolean | string;
+    static ngAcceptInputType_linear: boolean | string;
+    static ngAcceptInputType_optional: boolean | string;
+    static ngAcceptInputType_selectedIndex: number | string;
 }
 
 export declare class MatStep extends CdkStep implements ErrorStateMatcher {
     stepLabel: MatStepLabel;
     constructor(stepper: MatStepper, _errorStateMatcher: ErrorStateMatcher, stepperOptions?: StepperOptions);
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean;
+    static ngAcceptInputType_completed: boolean | string;
+    static ngAcceptInputType_editable: boolean | string;
+    static ngAcceptInputType_hasError: boolean | string;
+    static ngAcceptInputType_optional: boolean | string;
 }
 
 export declare class MatStepHeader extends CdkStepHeader implements OnDestroy {
@@ -53,6 +63,12 @@ export declare class MatStepper extends CdkStepper implements AfterContentInit {
     readonly animationDone: EventEmitter<void>;
     disableRipple: boolean;
     ngAfterContentInit(): void;
+    static ngAcceptInputType_completed: boolean | string;
+    static ngAcceptInputType_editable: boolean | string;
+    static ngAcceptInputType_hasError: boolean | string;
+    static ngAcceptInputType_linear: boolean | string;
+    static ngAcceptInputType_optional: boolean | string;
+    static ngAcceptInputType_selectedIndex: number | string;
 }
 
 export declare const matStepperAnimations: {
@@ -88,4 +104,10 @@ export declare class MatStepperPrevious extends CdkStepperPrevious {
 
 export declare class MatVerticalStepper extends MatStepper {
     constructor(dir: Directionality, changeDetectorRef: ChangeDetectorRef, elementRef?: ElementRef<HTMLElement>, _document?: any);
+    static ngAcceptInputType_completed: boolean | string;
+    static ngAcceptInputType_editable: boolean | string;
+    static ngAcceptInputType_hasError: boolean | string;
+    static ngAcceptInputType_linear: boolean | string;
+    static ngAcceptInputType_optional: boolean | string;
+    static ngAcceptInputType_selectedIndex: number | string;
 }

@@ -496,4 +496,7 @@ export class _MatMenu extends MatMenu {
       @Inject(MAT_MENU_DEFAULT_OPTIONS) defaultOptions: MatMenuDefaultOptions) {
     super(elementRef, ngZone, defaultOptions);
   }
+
+  static ngAcceptInputType_overlapTrigger: boolean | string;
+  static ngAcceptInputType_hasBackdrop: boolean | string;
 }

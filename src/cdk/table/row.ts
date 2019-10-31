@@ -99,6 +99,8 @@ export class CdkHeaderRowDef extends _CdkHeaderRowDefBase implements CanStick, O
   ngOnChanges(changes: SimpleChanges): void {
     super.ngOnChanges(changes);
   }
+
+  static ngAcceptInputType_sticky: boolean | string;
 }
 
 // Boilerplate for applying mixins to CdkFooterRowDef.
@@ -125,6 +127,8 @@ export class CdkFooterRowDef extends _CdkFooterRowDefBase implements CanStick, O
   ngOnChanges(changes: SimpleChanges): void {
     super.ngOnChanges(changes);
   }
+
+  static ngAcceptInputType_sticky: boolean | string;
 }
 
 /**

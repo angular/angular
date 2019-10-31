@@ -27,6 +27,7 @@ import {ChangeDetectionStrategy, Component, Directive, ViewEncapsulation} from '
   inputs: ['columns: matHeaderRowDef', 'sticky: matHeaderRowDefSticky'],
 })
 export class MatHeaderRowDef extends CdkHeaderRowDef {
+  static ngAcceptInputType_sticky: boolean | string;
 }
 
 /**
@@ -39,6 +40,7 @@ export class MatHeaderRowDef extends CdkHeaderRowDef {
   inputs: ['columns: matFooterRowDef', 'sticky: matFooterRowDefSticky'],
 })
 export class MatFooterRowDef extends CdkFooterRowDef {
+  static ngAcceptInputType_sticky: boolean | string;
 }
 
 /**

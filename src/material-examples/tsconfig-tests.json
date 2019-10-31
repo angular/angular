@@ -10,7 +10,6 @@
     "types": ["jasmine"]
   },
   "angularCompilerOptions": {
-    "strictMetadataEmit": true,
     "skipTemplateCodegen": true,
     "emitDecoratorMetadata": true,
     "fullTemplateTypeCheck": true,

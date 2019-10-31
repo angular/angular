@@ -73,6 +73,8 @@ export declare class CdkColumnDef extends _CdkColumnDefBase implements CanStick 
     headerCell: CdkHeaderCellDef;
     name: string;
     stickyEnd: boolean;
+    static ngAcceptInputType_sticky: boolean | string;
+    static ngAcceptInputType_stickyEnd: boolean | string;
 }
 
 export declare class CdkFooterCell extends BaseCdkCell {
@@ -90,6 +92,7 @@ export declare class CdkFooterRow {
 export declare class CdkFooterRowDef extends _CdkFooterRowDefBase implements CanStick, OnChanges {
     constructor(template: TemplateRef<any>, _differs: IterableDiffers);
     ngOnChanges(changes: SimpleChanges): void;
+    static ngAcceptInputType_sticky: boolean | string;
 }
 
 export declare class CdkHeaderCell extends BaseCdkCell {
@@ -107,6 +110,7 @@ export declare class CdkHeaderRow {
 export declare class CdkHeaderRowDef extends _CdkHeaderRowDefBase implements CanStick, OnChanges {
     constructor(template: TemplateRef<any>, _differs: IterableDiffers);
     ngOnChanges(changes: SimpleChanges): void;
+    static ngAcceptInputType_sticky: boolean | string;
 }
 
 export declare class CdkRow {
@@ -159,6 +163,7 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     updateStickyColumnStyles(): void;
     updateStickyFooterRowStyles(): void;
     updateStickyHeaderRowStyles(): void;
+    static ngAcceptInputType_multiTemplateDataRows: boolean | string;
 }
 
 export declare class CdkTableModule {

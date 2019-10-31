@@ -5,6 +5,8 @@ export declare class CdkObserveContent implements AfterContentInit, OnDestroy {
     constructor(_contentObserver: ContentObserver, _elementRef: ElementRef<HTMLElement>, _ngZone: NgZone);
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
+    static ngAcceptInputType_debounce: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export declare class ContentObserver implements OnDestroy {

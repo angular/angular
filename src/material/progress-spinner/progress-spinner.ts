@@ -295,6 +295,10 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
         .replace(/END_VALUE/g, `${0.2 * this._strokeCircumference}`)
         .replace(/DIAMETER/g, `${this.diameter}`);
   }
+
+  static ngAcceptInputType_diameter: number | string;
+  static ngAcceptInputType_strokeWidth: number | string;
+  static ngAcceptInputType_value: number | string;
 }
 
 
@@ -330,6 +334,10 @@ export class MatSpinner extends MatProgressSpinner {
     super(elementRef, platform, document, animationMode, defaults);
     this.mode = 'indeterminate';
   }
+
+  static ngAcceptInputType_diameter: number | string;
+  static ngAcceptInputType_strokeWidth: number | string;
+  static ngAcceptInputType_value: number | string;
 }
 
 

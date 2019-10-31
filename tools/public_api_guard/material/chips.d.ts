@@ -37,6 +37,11 @@ export declare class MatChip extends _MatChipMixinBase implements FocusableOptio
     select(): void;
     selectViaInteraction(): void;
     toggleSelected(isUserInput?: boolean): boolean;
+    static ngAcceptInputType_disableRipple: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_removable: boolean | string;
+    static ngAcceptInputType_selectable: boolean | string;
+    static ngAcceptInputType_selected: boolean | string;
 }
 
 export declare class MatChipAvatar {
@@ -68,6 +73,8 @@ export declare class MatChipInput implements MatChipTextControl, OnChanges {
     _onInput(): void;
     focus(options?: FocusOptions): void;
     ngOnChanges(): void;
+    static ngAcceptInputType_addOnBlur: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export interface MatChipInputEvent {
@@ -138,6 +145,10 @@ export declare class MatChipList extends _MatChipListMixinBase implements MatFor
     setDescribedByIds(ids: string[]): void;
     setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_multiple: boolean | string;
+    static ngAcceptInputType_required: boolean | string;
+    static ngAcceptInputType_selectable: boolean | string;
 }
 
 export declare class MatChipListChange {

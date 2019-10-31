@@ -33,7 +33,7 @@ export declare class MatCalendar<D> implements AfterContentInit, AfterViewChecke
     readonly yearSelected: EventEmitter<D>;
     yearView: MatYearView<D>;
     constructor(_intl: MatDatepickerIntl, _dateAdapter: DateAdapter<D>, _dateFormats: MatDateFormats, _changeDetectorRef: ChangeDetectorRef);
-    _dateSelected(date: D): void;
+    _dateSelected(date: D | null): void;
     _goToDateInView(date: D, view: 'month' | 'year' | 'multi-year'): void;
     _monthSelectedInYearView(normalizedMonth: D): void;
     _userSelected(): void;
@@ -68,15 +68,11 @@ export declare class MatCalendarBody implements OnChanges {
 
 export declare class MatCalendarCell {
     ariaLabel: string;
-    cssClasses?: string | Set<string> | {
-        [key: string]: any;
-    } | string[] | undefined;
+    cssClasses: MatCalendarCellCssClasses;
     displayValue: string;
     enabled: boolean;
     value: number;
-    constructor(value: number, displayValue: string, ariaLabel: string, enabled: boolean, cssClasses?: string | Set<string> | {
-        [key: string]: any;
-    } | string[] | undefined);
+    constructor(value: number, displayValue: string, ariaLabel: string, enabled: boolean, cssClasses?: MatCalendarCellCssClasses);
 }
 
 export declare type MatCalendarCellCssClasses = string | string[] | Set<string> | {
@@ -131,6 +127,8 @@ export declare class MatDatepicker<D> implements OnDestroy, CanColor {
     ngOnDestroy(): void;
     open(): void;
     select(date: D): void;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_touchUi: boolean | string;
 }
 
 export declare const matDatepickerAnimations: {
@@ -176,6 +174,8 @@ export declare class MatDatepickerInput<D> implements ControlValueAccessor, OnDe
     setDisabledState(isDisabled: boolean): void;
     validate(c: AbstractControl): ValidationErrors | null;
     writeValue(value: D): void;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_value: any;
 }
 
 export declare class MatDatepickerInputEvent<D> {
@@ -218,6 +218,7 @@ export declare class MatDatepickerToggle<D> implements AfterContentInit, OnChang
     ngAfterContentInit(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export declare class MatDatepickerToggleIcon {

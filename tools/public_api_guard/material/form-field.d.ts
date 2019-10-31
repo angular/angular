@@ -53,6 +53,7 @@ export declare class MatFormField extends _MatFormFieldMixinBase implements Afte
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
     updateOutlineGap(): void;
+    static ngAcceptInputType_hideRequiredMarker: boolean | string;
 }
 
 export declare const matFormFieldAnimations: {

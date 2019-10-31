@@ -33,6 +33,7 @@ export declare class MatIcon extends _MatIconMixinBase implements OnChanges, OnI
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
+    static ngAcceptInputType_inline: boolean | string;
 }
 
 export interface MatIconLocation {

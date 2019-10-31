@@ -221,5 +221,8 @@ export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterC
     classList['mat-autocomplete-visible'] = this.showPanel;
     classList['mat-autocomplete-hidden'] = !this.showPanel;
   }
+
+  static ngAcceptInputType_autoActiveFirstOption: boolean | string;
+  static ngAcceptInputType_disableRipple: boolean | string;
 }
 

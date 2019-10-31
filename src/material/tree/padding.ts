@@ -22,4 +22,6 @@ export class MatTreeNodePadding<T> extends CdkTreeNodePadding<T> {
 
   /** The indent for each level. Default number 40px from material design menu sub-menu spec. */
   @Input('matTreeNodePaddingIndent') indent: number;
+
+  static ngAcceptInputType_level: number | string;
 }

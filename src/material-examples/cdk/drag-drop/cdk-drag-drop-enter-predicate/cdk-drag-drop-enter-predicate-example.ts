@@ -13,7 +13,7 @@ export class CdkDragDropEnterPredicateExample {
   all = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   even = [10];
 
-  drop(event: CdkDragDrop<string[]>) {
+  drop(event: CdkDragDrop<number[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {

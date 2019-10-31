@@ -300,5 +300,7 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
 
     return false;
   }
+
+  static ngAcceptInputType_disabled: boolean | string;
 }
 

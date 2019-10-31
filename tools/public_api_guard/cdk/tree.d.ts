@@ -101,6 +101,7 @@ export declare class CdkTreeNodePadding<T> implements OnDestroy {
     _paddingIndent(): string | null;
     _setPadding(forceChange?: boolean): void;
     ngOnDestroy(): void;
+    static ngAcceptInputType_level: number | string;
 }
 
 export declare class CdkTreeNodeToggle<T> {
@@ -110,6 +111,7 @@ export declare class CdkTreeNodeToggle<T> {
     recursive: boolean;
     constructor(_tree: CdkTree<T>, _treeNode: CdkTreeNode<T>);
     _toggle(event: Event): void;
+    static ngAcceptInputType_recursive: boolean | string;
 }
 
 export declare class FlatTreeControl<T> extends BaseTreeControl<T> {

@@ -73,4 +73,7 @@ export class MatTabHeader extends _MatTabHeaderBase implements AfterContentInit 
     this._inkBar = new MatInkBar(this._items);
     super.ngAfterContentInit();
   }
+
+  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_selectedIndex: number | string;
 }

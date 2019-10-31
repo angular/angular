@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {
   Directive,
   ElementRef,
@@ -56,7 +56,7 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   @Input('cdkAutosizeMinRows')
   get minRows(): number { return this._minRows; }
   set minRows(value: number) {
-    this._minRows = value;
+    this._minRows = coerceNumberProperty(value);
     this._setMinHeight();
   }
 
@@ -64,7 +64,7 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   @Input('cdkAutosizeMaxRows')
   get maxRows(): number { return this._maxRows; }
   set maxRows(value: number) {
-    this._maxRows = value;
+    this._maxRows = coerceNumberProperty(value);
     this._setMaxHeight();
   }
 
@@ -272,4 +272,8 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
       textarea.setSelectionRange(selectionStart, selectionEnd);
     }
   }
+
+  static ngAcceptInputType_minRows: number | string;
+  static ngAcceptInputType_maxRows: number | string;
+  static ngAcceptInputType_enabled: boolean | string;
 }

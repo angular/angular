@@ -32,6 +32,9 @@ export declare class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDe
     ngOnDestroy(): void;
     reset(): void;
     resizeToFitContent(force?: boolean): void;
+    static ngAcceptInputType_enabled: boolean | string;
+    static ngAcceptInputType_maxRows: number | string;
+    static ngAcceptInputType_minRows: number | string;
 }
 
 export declare class TextFieldModule {

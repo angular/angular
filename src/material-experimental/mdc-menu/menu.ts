@@ -71,4 +71,7 @@ export class MatMenu extends BaseMatMenu {
     // - should update the elevation when the same menu is opened at a different depth
     // - should not increase the elevation if the user specified a custom one
   }
+
+  static ngAcceptInputType_overlapTrigger: boolean | string;
+  static ngAcceptInputType_hasBackdrop: boolean | string;
 }

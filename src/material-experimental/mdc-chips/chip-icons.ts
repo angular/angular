@@ -120,4 +120,6 @@ export class MatChipRemove extends _MatChipRemoveMixinBase implements CanDisable
   constructor(_elementRef: ElementRef) {
     super(_elementRef);
   }
+
+  static ngAcceptInputType_disabled: boolean | string;
 }

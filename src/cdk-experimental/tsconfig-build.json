@@ -24,7 +24,6 @@
   "angularCompilerOptions": {
     "enableIvy": false,
     "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true,
     "flatModuleOutFile": "index.js",
     "flatModuleId": "@angular/cdk-experimental",
     "skipTemplateCodegen": true,

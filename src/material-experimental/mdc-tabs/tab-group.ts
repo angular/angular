@@ -71,4 +71,10 @@ export class MatTabGroup extends _MatTabGroupBase {
               @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(elementRef, changeDetectorRef, defaultConfig, animationMode);
   }
+
+  static ngAcceptInputType_fitInkBarToContent: boolean | string;
+  static ngAcceptInputType_dynamicHeight: boolean | string;
+  static ngAcceptInputType_animationDuration: number | string;
+  static ngAcceptInputType_selectedIndex: number | string;
+  static ngAcceptInputType_disableRipple: boolean | string;
 }

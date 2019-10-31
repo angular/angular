@@ -810,4 +810,9 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
       });
     }
   }
+
+  static ngAcceptInputType_multiple: boolean | string;
+  static ngAcceptInputType_required: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_selectable: boolean | string;
 }

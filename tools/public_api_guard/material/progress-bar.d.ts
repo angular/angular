@@ -23,6 +23,7 @@ export declare class MatProgressBar extends _MatProgressBarMixinBase implements 
     };
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
+    static ngAcceptInputType_value: number | string;
 }
 
 export interface MatProgressBarLocation {

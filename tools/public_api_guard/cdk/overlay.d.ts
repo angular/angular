@@ -34,6 +34,11 @@ export declare class CdkConnectedOverlay implements OnDestroy, OnChanges {
     constructor(_overlay: Overlay, templateRef: TemplateRef<any>, viewContainerRef: ViewContainerRef, scrollStrategyFactory: any, _dir: Directionality);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
+    static ngAcceptInputType_flexibleDimensions: boolean | string;
+    static ngAcceptInputType_growAfterOpen: boolean | string;
+    static ngAcceptInputType_hasBackdrop: boolean | string;
+    static ngAcceptInputType_lockPosition: boolean | string;
+    static ngAcceptInputType_push: boolean | string;
 }
 
 export declare class CdkOverlayOrigin {

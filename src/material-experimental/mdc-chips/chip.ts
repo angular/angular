@@ -389,4 +389,9 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
       this._chipFoundation.handleInteraction(event);
     }
   }
+
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_removable: boolean | string;
+  static ngAcceptInputType_highlighted: boolean | string;
+  static ngAcceptInputType_disableRipple: boolean | string;
 }

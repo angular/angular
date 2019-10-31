@@ -48,6 +48,10 @@ export declare class MatInput extends _MatInputMixinBase implements MatFormField
     ngOnInit(): void;
     onContainerClick(): void;
     setDescribedByIds(ids: string[]): void;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_readonly: boolean | string;
+    static ngAcceptInputType_required: boolean | string;
+    static ngAcceptInputType_value: any;
 }
 
 export declare class MatInputModule {
@@ -58,4 +62,7 @@ export declare class MatTextareaAutosize extends CdkTextareaAutosize {
     matAutosizeMaxRows: number;
     matAutosizeMinRows: number;
     matTextareaAutosize: boolean;
+    static ngAcceptInputType_enabled: boolean | string;
+    static ngAcceptInputType_maxRows: number | string;
+    static ngAcceptInputType_minRows: number | string;
 }

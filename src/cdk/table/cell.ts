@@ -107,6 +107,9 @@ export class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
    * do not match are replaced by the '-' character.
    */
   cssClassFriendlyName: string;
+
+  static ngAcceptInputType_sticky: boolean | string;
+  static ngAcceptInputType_stickyEnd: boolean | string;
 }
 
 /** Base class for the cells. Adds a CSS classname that identifies the column it renders in. */

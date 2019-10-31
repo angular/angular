@@ -6,6 +6,7 @@ export declare class MatList extends _MatListMixinBase implements CanDisableRipp
     _getListType(): 'list' | 'action-list' | null;
     ngOnChanges(): void;
     ngOnDestroy(): void;
+    static ngAcceptInputType_disableRipple: boolean | string;
 }
 
 export declare class MatListAvatarCssMatStyler {
@@ -23,6 +24,7 @@ export declare class MatListItem extends _MatListItemMixinBase implements AfterC
     _isRippleDisabled(): boolean;
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
+    static ngAcceptInputType_disableRipple: boolean | string;
 }
 
 export declare class MatListModule {
@@ -54,6 +56,9 @@ export declare class MatListOption extends _MatListOptionMixinBase implements Af
     ngOnDestroy(): void;
     ngOnInit(): void;
     toggle(): void;
+    static ngAcceptInputType_disableRipple: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_selected: boolean | string;
 }
 
 export declare class MatListSubheaderCssMatStyler {
@@ -63,6 +68,7 @@ export declare class MatNavList extends _MatListMixinBase implements CanDisableR
     _stateChanges: Subject<void>;
     ngOnChanges(): void;
     ngOnDestroy(): void;
+    static ngAcceptInputType_disableRipple: boolean | string;
 }
 
 export declare class MatSelectionList extends _MatSelectionListMixinBase implements CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy, OnChanges {
@@ -92,6 +98,8 @@ export declare class MatSelectionList extends _MatSelectionListMixinBase impleme
     selectAll(): void;
     setDisabledState(isDisabled: boolean): void;
     writeValue(values: string[]): void;
+    static ngAcceptInputType_disableRipple: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export declare class MatSelectionListChange {

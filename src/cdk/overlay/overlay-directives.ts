@@ -383,6 +383,12 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
 
     this._backdropSubscription.unsubscribe();
   }
+
+  static ngAcceptInputType_hasBackdrop: boolean | string;
+  static ngAcceptInputType_lockPosition: boolean | string;
+  static ngAcceptInputType_flexibleDimensions: boolean | string;
+  static ngAcceptInputType_growAfterOpen: boolean | string;
+  static ngAcceptInputType_push: boolean | string;
 }
 
 

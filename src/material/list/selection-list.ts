@@ -305,6 +305,10 @@ export class MatListOption extends _MatListOptionMixinBase implements AfterConte
   _markForCheck() {
     this._changeDetector.markForCheck();
   }
+
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_selected: boolean | string;
+  static ngAcceptInputType_disableRipple: boolean | string;
 }
 
 
@@ -637,4 +641,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
       this.options.forEach(option => option._markForCheck());
     }
   }
+
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_disableRipple: boolean | string;
 }

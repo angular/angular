@@ -31,6 +31,9 @@ export declare class MatDrawer implements AfterContentInit, AfterContentChecked,
     ngOnDestroy(): void;
     open(openedVia?: FocusOrigin): Promise<MatDrawerToggleResult>;
     toggle(isOpen?: boolean, openedVia?: FocusOrigin): Promise<MatDrawerToggleResult>;
+    static ngAcceptInputType_autoFocus: boolean | string;
+    static ngAcceptInputType_disableClose: boolean | string;
+    static ngAcceptInputType_opened: boolean | string;
 }
 
 export declare const matDrawerAnimations: {
@@ -67,6 +70,8 @@ export declare class MatDrawerContainer implements AfterContentInit, DoCheck, On
     ngOnDestroy(): void;
     open(): void;
     updateContentMargins(): void;
+    static ngAcceptInputType_autosize: boolean | string;
+    static ngAcceptInputType_hasBackdrop: boolean | string;
 }
 
 export declare class MatDrawerContent extends CdkScrollable implements AfterContentInit {
@@ -83,11 +88,19 @@ export declare class MatSidenav extends MatDrawer {
     fixedBottomGap: number;
     fixedInViewport: boolean;
     fixedTopGap: number;
+    static ngAcceptInputType_autoFocus: boolean | string;
+    static ngAcceptInputType_disableClose: boolean | string;
+    static ngAcceptInputType_fixedBottomGap: number | string;
+    static ngAcceptInputType_fixedInViewport: boolean | string;
+    static ngAcceptInputType_fixedTopGap: number | string;
+    static ngAcceptInputType_opened: boolean | string;
 }
 
 export declare class MatSidenavContainer extends MatDrawerContainer {
     _allDrawers: QueryList<MatSidenav>;
     _content: MatSidenavContent;
+    static ngAcceptInputType_autosize: boolean | string;
+    static ngAcceptInputType_hasBackdrop: boolean | string;
 }
 
 export declare class MatSidenavContent extends MatDrawerContent {

@@ -7,6 +7,7 @@ export declare class CdkAccordion implements OnDestroy, OnChanges {
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     openAll(): void;
+    static ngAcceptInputType_multi: boolean | string;
 }
 
 export declare class CdkAccordionItem implements OnDestroy {
@@ -24,6 +25,8 @@ export declare class CdkAccordionItem implements OnDestroy {
     ngOnDestroy(): void;
     open(): void;
     toggle(): void;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_expanded: boolean | string;
 }
 
 export declare class CdkAccordionModule {

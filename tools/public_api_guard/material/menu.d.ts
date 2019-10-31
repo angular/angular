@@ -1,5 +1,7 @@
 export declare class _MatMenu extends MatMenu {
     constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone, defaultOptions: MatMenuDefaultOptions);
+    static ngAcceptInputType_hasBackdrop: boolean | string;
+    static ngAcceptInputType_overlapTrigger: boolean | string;
 }
 
 export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnInit, OnDestroy {
@@ -92,6 +94,8 @@ export declare class MatMenuItem extends _MatMenuItemMixinBase implements Focusa
     focus(origin?: FocusOrigin, options?: FocusOptions): void;
     getLabel(): string;
     ngOnDestroy(): void;
+    static ngAcceptInputType_disableRipple: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export declare class MatMenuModule {

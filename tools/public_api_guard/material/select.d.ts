@@ -83,6 +83,12 @@ export declare class MatSelect extends _MatSelectMixinBase implements AfterConte
     setDisabledState(isDisabled: boolean): void;
     toggle(): void;
     writeValue(value: any): void;
+    static ngAcceptInputType_disableOptionCentering: boolean | string;
+    static ngAcceptInputType_disableRipple: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_multiple: boolean | string;
+    static ngAcceptInputType_required: boolean | string;
+    static ngAcceptInputType_typeaheadDebounceInterval: number | string;
 }
 
 export declare const matSelectAnimations: {

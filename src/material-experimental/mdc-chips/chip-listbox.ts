@@ -554,5 +554,10 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
 
     this._lastDestroyedChipIndex = null;
   }
+
+  static ngAcceptInputType_multiple: boolean | string;
+  static ngAcceptInputType_selectable: boolean | string;
+  static ngAcceptInputType_required: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string;
 }
 

@@ -46,4 +46,6 @@ export class CdkDragHandle implements OnDestroy {
   ngOnDestroy() {
     this._stateChanges.complete();
   }
+
+  static ngAcceptInputType_disabled: boolean | string;
 }

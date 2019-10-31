@@ -349,4 +349,10 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
     this._classes[cssClass] = active;
     this._changeDetectorRef.markForCheck();
   }
+
+  static ngAcceptInputType_checked: boolean | string;
+  static ngAcceptInputType_indeterminate: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_required: boolean | string;
+  static ngAcceptInputType_disableRipple: boolean | string;
 }

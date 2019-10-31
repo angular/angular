@@ -26,7 +26,6 @@
   "angularCompilerOptions": {
     "enableIvy": false,
     "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true,
     "flatModuleOutFile": "index.js",
     "flatModuleId": "@angular/material-experimental",
     "skipTemplateCodegen": true,

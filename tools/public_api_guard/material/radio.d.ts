@@ -30,6 +30,10 @@ export declare class MatRadioButton extends _MatRadioButtonMixinBase implements 
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
+    static ngAcceptInputType_checked: boolean | string;
+    static ngAcceptInputType_disableRipple: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_required: boolean | string;
 }
 
 export declare class MatRadioChange {
@@ -66,6 +70,8 @@ export declare class MatRadioGroup implements AfterContentInit, ControlValueAcce
     registerOnTouched(fn: any): void;
     setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_required: boolean | string;
 }
 
 export declare class MatRadioModule {

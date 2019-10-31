@@ -46,6 +46,7 @@ export declare class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDes
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     reset(): void;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export interface CdkDragDrop<T, O = T> {
@@ -87,6 +88,7 @@ export declare class CdkDragHandle implements OnDestroy {
     element: ElementRef<HTMLElement>;
     constructor(element: ElementRef<HTMLElement>, parentDrag?: any);
     ngOnDestroy(): void;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export interface CdkDragMove<T = any> {
@@ -159,12 +161,16 @@ export declare class CdkDropList<T = any> implements AfterContentInit, OnDestroy
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
     start(): void;
+    static ngAcceptInputType_autoScrollDisabled: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_sortingDisabled: boolean | string;
 }
 
 export declare class CdkDropListGroup<T> implements OnDestroy {
     readonly _items: Set<T>;
     disabled: boolean;
     ngOnDestroy(): void;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export declare function copyArrayItem<T = any>(currentArray: T[], targetArray: T[], currentIndex: number, targetIndex: number): void;

@@ -14,11 +14,14 @@ export declare class MatBadge extends _MatBadgeMixinBase implements OnDestroy, O
     isAfter(): boolean;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
+    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_hidden: boolean | string;
+    static ngAcceptInputType_overlap: boolean | string;
 }
 
 export declare class MatBadgeModule {
 }
 
-export declare type MatBadgePosition = 'above after' | 'above before' | 'below before' | 'below after';
+export declare type MatBadgePosition = 'above after' | 'above before' | 'below before' | 'below after' | 'before' | 'after' | 'above' | 'below';
 
 export declare type MatBadgeSize = 'small' | 'medium' | 'large';
