@@ -19,11 +19,9 @@ If the errors are gone, switch back to Ivy by removing the changes to the `tscon
 
 
 {@a common-changes}
-## Changes You May See
+### Changes You May See
 
-Below are a few breaking changes that are more likely than others to be visible as applications are transitioning to Ivy.
-
-- By default, `@ContentChildren` queries will only search direct child nodes in the DOM hierarchy (previously, they would search any nesting level in the DOM as long as another directive wasn't matched above it).
+- By default, `@ContentChildren` queries will only search direct child nodes in the DOM hierarchy (previously, they would search any nesting level in the DOM as long as another directive wasn't matched above it). ([details](guide/ivy-compatibility-examples#content-children-descendants))
 
 - All classes that use Angular DI must have an Angular decorator like `@Directive()` or `@Injectable` (previously, undecorated classes were allowed if an ancestor class or subclass had a decorator).
 
@@ -31,9 +29,7 @@ Below are a few breaking changes that are more likely than others to be visible 
 
 
 {@a less-common-changes}
-## Less Common Changes
-
-The following changes will be visible more rarely, as they mostly deal in edge cases or unspecified behavior that is not part of our public API.
+### Less Common Changes 
 
 - Properties like `host` inside `@Component` and `@Directive` decorators can be inherited (previously, only properties with explicit field decorators like `@HostBinding` would be inherited).
 
