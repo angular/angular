@@ -69,6 +69,13 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
     metadata.fileDependencies.add(dep);
   }
 
+  trackFileDependencies(deps: ts.SourceFile[], src: ts.SourceFile) {
+    const metadata = this.ensureMetadata(src);
+    for (const dep of deps) {
+      metadata.fileDependencies.add(dep);
+    }
+  }
+
   getFileDependencies(file: ts.SourceFile): ts.SourceFile[] {
     if (!this.metadata.has(file)) {
       return [];
