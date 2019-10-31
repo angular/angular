@@ -307,13 +307,37 @@ export class IvyCompilation {
     const recordSpan = this.perf.start('recordDependencies');
     this.scopeRegistry !.getCompilationScopes().forEach(scope => {
       const file = scope.declaration.getSourceFile();
-      // Register the file containing the NgModule where the declaration is declared.
-      this.incrementalState.trackFileDependency(scope.ngModule.getSourceFile(), file);
-      scope.directives.forEach(
-          directive =>
-              this.incrementalState.trackFileDependency(directive.ref.node.getSourceFile(), file));
-      scope.pipes.forEach(
-          pipe => this.incrementalState.trackFileDependency(pipe.ref.node.getSourceFile(), file));
+      const ngModuleFile = scope.ngModule.getSourceFile();
+
+      // A change to any dependency of the declaration causes the declaration to be invalidated,
+      // which requires the NgModule to be invalidated as well.
+      const deps = this.incrementalState.getFileDependencies(file);
+      this.incrementalState.trackFileDependencies(deps, ngModuleFile);
+
+      // A change to the NgModule file should cause the declaration itself to be invalidated.
+      this.incrementalState.trackFileDependency(ngModuleFile, file);
+
+      // A change to any directive/pipe in the compilation scope should cause the declaration to be
+      // invalidated.
+      scope.directives.forEach(directive => {
+        const dirSf = directive.ref.node.getSourceFile();
+
+        // When a directive in scope is updated, the declaration needs to be recompiled as e.g.
+        // a selector may have changed.
+        this.incrementalState.trackFileDependency(dirSf, file);
+
+        // When any of the dependencies of the declaration changes, the NgModule scope may be
+        // affected so a component within scope must be recompiled. Only components need to be
+        // recompiled, as directives are not dependent upon the compilation scope.
+        if (directive.isComponent) {
+          this.incrementalState.trackFileDependencies(deps, dirSf);
+        }
+      });
+      scope.pipes.forEach(pipe => {
+        // When a pipe in scope is updated, the declaration needs to be recompiled as e.g.
+        // the pipe's name may have changed.
+        this.incrementalState.trackFileDependency(pipe.ref.node.getSourceFile(), file);
+      });
     });
     this.perf.stop(recordSpan);
   }
