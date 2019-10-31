@@ -25,5 +25,8 @@
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "sideEffects": false
+  "sideEffects": [
+    "**/global/*.js",
+    "**/closure-locale.*"
+  ]
 }
