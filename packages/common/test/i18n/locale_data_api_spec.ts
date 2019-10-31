@@ -6,18 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵfindLocaleData as findLocaleData} from '@angular/core';
+import {ɵLOCALE_DATA, ɵLocaleDataIndex, ɵfindLocaleData as findLocaleData, ɵglobal} from '@angular/core';
 import localeCaESVALENCIA from '@angular/common/locales/ca-ES-VALENCIA';
 import localeEn from '@angular/common/locales/en';
 import localeFr from '@angular/common/locales/fr';
 import localeZh from '@angular/common/locales/zh';
 import localeFrCA from '@angular/common/locales/fr-CA';
 import localeEnAU from '@angular/common/locales/en-AU';
+import localeDe from '@angular/common/locales/de';
+import localeDeCH from '@angular/common/locales/de-CH';
+import localeDeExtra from '@angular/common/locales/extra/de';
 import {registerLocaleData} from '../../src/i18n/locale_data';
 import {getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNumberOfCurrencyDigits} from '../../src/i18n/locale_data_api';
 
 {
   describe('locale data api', () => {
+    const fakeGlobalFr: any[] = [];
     beforeAll(() => {
       registerLocaleData(localeCaESVALENCIA);
       registerLocaleData(localeEn);
@@ -27,6 +31,19 @@ import {getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNumberOfCurrency
       registerLocaleData(localeFrCA, 'fake_Id2');
       registerLocaleData(localeZh);
       registerLocaleData(localeEnAU);
+      ɵglobal.ng = {common: {locale: {}}};
+      ɵglobal.ng.common.locale['fr'] = fakeGlobalFr;
+      ɵglobal.ng.common.locale['de'] = localeDe;
+      ɵglobal.ng.common.locale['de-CH'] = localeDeCH;
+      ɵglobal.ng.common.locale['extra/de'] = localeDeExtra;
+    });
+
+    afterAll(() => {
+      // Clear out the loaded locales
+      delete ɵglobal.ng.common.locale;
+      for (const key in ɵLOCALE_DATA) {
+        delete ɵLOCALE_DATA[key];
+      }
     });
 
     describe('findLocaleData', () => {
@@ -55,6 +72,23 @@ import {getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNumberOfCurrency
         expect(findLocaleData('fake_iD')).toEqual(localeFr);
         expect(findLocaleData('fake-id2')).toEqual(localeFrCA);
       });
+
+      it('should find the exact LOCALE_DATA if the locale is on the global object',
+         () => { expect(findLocaleData('de-CH')).toEqual(localeDeCH); });
+
+      it('should find the parent LOCALE_DATA if the exact locale is not available and the parent locale is on the global object',
+         () => { expect(findLocaleData('de-BE')).toEqual(localeDe); });
+
+      it('should add the extra LOCALE_DATA if the locale and the extra locale are on the global object',
+         () => {
+           expect(findLocaleData('de')[ɵLocaleDataIndex.ExtraData]).toEqual(localeDeExtra);
+         });
+
+      it('should not add the parent extra LOCALE_DATA if the exact extra locale is not the global object',
+         () => { expect(findLocaleData('de-CH')[ɵLocaleDataIndex.ExtraData]).toBeUndefined(); });
+
+      it('should find the registered LOCALE_DATA even if the same locale is on the global object',
+         () => { expect(findLocaleData('fr')).not.toBe(fakeGlobalFr); });
     });
 
     describe('getting currency symbol', () => {

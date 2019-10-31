@@ -13,6 +13,7 @@ import localeAr from '@angular/common/locales/ar';
 import localeDeAt from '@angular/common/locales/de-AT';
 import {registerLocaleData, CurrencyPipe, DecimalPipe, PercentPipe, formatNumber} from '@angular/common';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
+import {ɵLOCALE_DATA} from '@angular/core';
 
 {
   describe('Number pipes', () => {
@@ -22,6 +23,13 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
       registerLocaleData(localeFr);
       registerLocaleData(localeAr);
       registerLocaleData(localeDeAt);
+    });
+
+    afterAll(() => {
+      // Clear out the loaded locales
+      for (const key in ɵLOCALE_DATA) {
+        delete ɵLOCALE_DATA[key];
+      }
     });
 
     describe('DecimalPipe', () => {

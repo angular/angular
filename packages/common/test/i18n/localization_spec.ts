@@ -10,7 +10,7 @@ import localeRo from '@angular/common/locales/ro';
 import localeSr from '@angular/common/locales/sr';
 import localeZgh from '@angular/common/locales/zgh';
 import localeFr from '@angular/common/locales/fr';
-import {LOCALE_ID} from '@angular/core';
+import {LOCALE_ID, ɵLOCALE_DATA} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
 import {NgLocaleLocalization, NgLocalization, getPluralCategory} from '@angular/common/src/i18n/localization';
 import {registerLocaleData} from '../../src/i18n/locale_data';
@@ -22,6 +22,13 @@ import {registerLocaleData} from '../../src/i18n/locale_data';
       registerLocaleData(localeSr);
       registerLocaleData(localeZgh);
       registerLocaleData(localeFr);
+    });
+
+    afterAll(() => {
+      // Clear out the loaded locales
+      for (const key in ɵLOCALE_DATA) {
+        delete ɵLOCALE_DATA[key];
+      }
     });
 
     describe('NgLocalization', () => {
