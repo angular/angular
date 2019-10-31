@@ -17,7 +17,7 @@ import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TVIEW
 import {assertNodeType} from '../node_assert';
 import {appendChild, removeView} from '../node_manipulation';
 import {getBindingIndex, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
-import {getNativeByTNode, load} from '../util/view_utils';
+import {load} from '../util/view_utils';
 
 import {addToViewTree, createDirectivesInstances, createLContainer, createTNode, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
@@ -185,7 +185,7 @@ function containerInternal(
   const lContainer = lView[adjustedIndex] = createLContainer(comment, lView, comment, tNode);
 
   appendChild(comment, tNode, lView);
-  attachPatchData(getNativeByTNode(tNode, lView), lView);
+  attachPatchData(comment, lView);
 
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.
