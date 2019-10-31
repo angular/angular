@@ -7,7 +7,7 @@ This guide contains everything you need to know about updating to the next Angul
 If your application uses the CLI, you can update to version 9 automatically with the help of the `ng update` script:
 
 ```
-npm install --no-save @angular/cli@8.3.15
+npm install --no-save @angular/cli@^8.3.15
 ng update @angular/cli @angular/core --next
 ```
 
