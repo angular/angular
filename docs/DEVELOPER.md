@@ -32,6 +32,7 @@ following products on your development machine:
 
 * [Java Development Kit](https://www.oracle.com/technetwork/java/javase/downloads/index.html) which is used
   to execute the selenium standalone server for e2e testing.
+* [XCode](https://developer.apple.com/xcode/) (if developing on Mac) which provides compilers/toochains/SDKs for the build system.
 
 ## Getting the Sources
 
