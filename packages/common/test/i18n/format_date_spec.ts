@@ -15,7 +15,7 @@ import localeHu from '@angular/common/locales/hu';
 import localeSr from '@angular/common/locales/sr';
 import localeTh from '@angular/common/locales/th';
 import {isDate, toDate, formatDate} from '@angular/common/src/i18n/format_date';
-import {ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
+import {ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵLOCALE_DATA} from '@angular/core';
 
 describe('Format date', () => {
   describe('toDate', () => {
@@ -62,6 +62,13 @@ describe('Format date', () => {
       registerLocaleData(localeSr);
       registerLocaleData(localeTh);
       registerLocaleData(localeAr);
+    });
+
+    afterAll(() => {
+      // Clear out the loaded locales
+      for (const key in ɵLOCALE_DATA) {
+        delete ɵLOCALE_DATA[key];
+      }
     });
 
     beforeEach(() => { date = new Date(2015, 5, 15, 9, 3, 1, 550); });

@@ -11,6 +11,7 @@ import localeEn from '@angular/common/locales/en';
 import localeEnExtra from '@angular/common/locales/extra/en';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
+import {ɵLOCALE_DATA} from '@angular/core';
 
 {
   let date: Date;
@@ -24,6 +25,13 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
     }
 
     beforeAll(() => { registerLocaleData(localeEn, localeEnExtra); });
+
+    afterAll(() => {
+      // Clear out the loaded locales
+      for (const key in ɵLOCALE_DATA) {
+        delete ɵLOCALE_DATA[key];
+      }
+    });
 
     beforeEach(() => {
       date = new Date(2015, 5, 15, 9, 3, 1, 550);

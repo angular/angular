@@ -12,7 +12,7 @@ import localeFr from '@angular/common/locales/fr';
 import localeAr from '@angular/common/locales/ar';
 import {formatCurrency, formatNumber, formatPercent, registerLocaleData} from '@angular/common';
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
-import {ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
+import {ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵLOCALE_DATA} from '@angular/core';
 
 describe('Format number', () => {
   beforeAll(() => {
@@ -20,6 +20,13 @@ describe('Format number', () => {
     registerLocaleData(localeEsUS);
     registerLocaleData(localeFr);
     registerLocaleData(localeAr);
+  });
+
+  afterAll(() => {
+    // Clear out the loaded locales
+    for (const key in ɵLOCALE_DATA) {
+      delete ɵLOCALE_DATA[key];
+    }
   });
 
   describe('Number', () => {
