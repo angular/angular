@@ -20,6 +20,7 @@ import {Logger} from '../logging/logger';
 import {FileToWrite, getImportRewriter, stripExtension} from './utils';
 import {RenderingFormatter, RedundantDecoratorMap} from './rendering_formatter';
 import {extractSourceMap, renderSourceAndMap} from './source_maps';
+import {NgccReflectionHost} from '../host/ngcc_host';
 
 /**
  * A base-class for rendering an `AnalyzedFile`.
@@ -29,8 +30,8 @@ import {extractSourceMap, renderSourceAndMap} from './source_maps';
  */
 export class Renderer {
   constructor(
-      private srcFormatter: RenderingFormatter, private fs: FileSystem, private logger: Logger,
-      private bundle: EntryPointBundle) {}
+      private host: NgccReflectionHost, private srcFormatter: RenderingFormatter,
+      private fs: FileSystem, private logger: Logger, private bundle: EntryPointBundle) {}
 
   renderProgram(
       decorationAnalyses: DecorationAnalyses, switchMarkerAnalyses: SwitchMarkerAnalyses,
@@ -81,7 +82,8 @@ export class Renderer {
       this.srcFormatter.removeDecorators(outputText, decoratorsToRemove);
 
       compiledFile.compiledClasses.forEach(clazz => {
-        const renderedDefinition = renderDefinitions(compiledFile.sourceFile, clazz, importManager);
+        const renderedDefinition =
+            this.renderDefinitions(compiledFile.sourceFile, clazz, importManager);
         this.srcFormatter.addDefinitions(outputText, clazz, renderedDefinition);
 
         if (!isEntryPoint && clazz.reexports.length > 0) {
@@ -143,6 +145,30 @@ export class Renderer {
     });
     return decoratorsToRemove;
   }
+
+  /**
+ * Render the definitions as source code for the given class.
+ * @param sourceFile The file containing the class to process.
+ * @param clazz The class whose definitions are to be rendered.
+ * @param compilation The results of analyzing the class - this is used to generate the rendered
+ * definitions.
+ * @param imports An object that tracks the imports that are needed by the rendered definitions.
+ */
+  private renderDefinitions(
+      sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: ImportManager): string {
+    const printer = createPrinter();
+    const name = this.host.getInternalNameOfClass(compiledClass.declaration);
+    const translate = (stmt: Statement) =>
+        translateStatement(stmt, imports, NOOP_DEFAULT_IMPORT_RECORDER);
+    const print = (stmt: Statement) =>
+        printer.printNode(ts.EmitHint.Unspecified, translate(stmt), sourceFile);
+    const statements: Statement[] = compiledClass.compilation.map(
+        c => { return createAssignmentStatement(name, c.name, c.initializer); });
+    for (const c of compiledClass.compilation) {
+      statements.push(...c.statements);
+    }
+    return statements.map(print).join('\n');
+  }
 }
 
 /**
@@ -155,30 +181,6 @@ export function renderConstantPool(
       .map(stmt => translateStatement(stmt, imports, NOOP_DEFAULT_IMPORT_RECORDER))
       .map(stmt => printer.printNode(ts.EmitHint.Unspecified, stmt, sourceFile))
       .join('\n');
-}
-
-/**
- * Render the definitions as source code for the given class.
- * @param sourceFile The file containing the class to process.
- * @param clazz The class whose definitions are to be rendered.
- * @param compilation The results of analyzing the class - this is used to generate the rendered
- * definitions.
- * @param imports An object that tracks the imports that are needed by the rendered definitions.
- */
-export function renderDefinitions(
-    sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: ImportManager): string {
-  const printer = createPrinter();
-  const name = compiledClass.declaration.name;
-  const translate = (stmt: Statement) =>
-      translateStatement(stmt, imports, NOOP_DEFAULT_IMPORT_RECORDER);
-  const print = (stmt: Statement) =>
-      printer.printNode(ts.EmitHint.Unspecified, translate(stmt), sourceFile);
-  const statements: Statement[] =
-      compiledClass.compilation.map(c => createAssignmentStatement(name, c.name, c.initializer));
-  for (const c of compiledClass.compilation) {
-    statements.push(...c.statements);
-  }
-  return statements.map(print).join('\n');
 }
 
 /**
