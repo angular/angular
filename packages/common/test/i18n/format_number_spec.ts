@@ -10,17 +10,19 @@ import localeEn from '@angular/common/locales/en';
 import localeEsUS from '@angular/common/locales/es-US';
 import localeFr from '@angular/common/locales/fr';
 import localeAr from '@angular/common/locales/ar';
-import {formatCurrency, formatNumber, formatPercent, registerLocaleData} from '@angular/common';
+import {formatCurrency, formatNumber, formatPercent} from '@angular/common';
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
-import {ɵDEFAULT_LOCALE_ID} from '@angular/core';
+import {ɵDEFAULT_LOCALE_ID, ɵunregisterLocaleData, ɵregisterLocaleData} from '@angular/core';
 
 describe('Format number', () => {
   beforeAll(() => {
-    registerLocaleData(localeEn);
-    registerLocaleData(localeEsUS);
-    registerLocaleData(localeFr);
-    registerLocaleData(localeAr);
+    ɵregisterLocaleData(localeEn);
+    ɵregisterLocaleData(localeEsUS);
+    ɵregisterLocaleData(localeFr);
+    ɵregisterLocaleData(localeAr);
   });
+
+  afterAll(() => ɵunregisterLocaleData());
 
   describe('Number', () => {
     describe('transform', () => {
