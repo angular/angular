@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ts_library")
-load("@npm_bazel_protractor//:index.bzl", "protractor_web_test_suite")
+load("//tools:defaults.bzl", "ng_module", "protractor_web_test_suite", "ts_library")
 load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
 
 """
