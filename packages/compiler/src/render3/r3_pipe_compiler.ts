@@ -28,6 +28,15 @@ export interface R3PipeMetadata {
   type: o.Expression;
 
   /**
+   * An expression representing the pipe being compiled, intended for use within a class definition
+   * itself.
+   *
+   * This can differ from the outer `type` if the class is being compiled by ngcc and is inside an
+   * IIFE structure that uses a different name internally.
+   */
+  internalType: o.Expression;
+
+  /**
    * Number of generic type parameters of the type itself.
    */
   typeArgumentCount: number;
@@ -80,10 +89,12 @@ export function compilePipeFromRender2(
     return error(`Cannot resolve the name of ${pipe.type}`);
   }
 
+  const type = outputCtx.importExpr(pipe.type.reference);
   const metadata: R3PipeMetadata = {
     name,
+    type,
+    internalType: type,
     pipeName: pipe.name,
-    type: outputCtx.importExpr(pipe.type.reference),
     typeArgumentCount: 0,
     deps: dependenciesFromGlobalMetadata(pipe.type, outputCtx, reflector),
     pure: pipe.pure,

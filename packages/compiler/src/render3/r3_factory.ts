@@ -30,13 +30,18 @@ export interface R3ConstructorFactoryMetadata {
   name: string;
 
   /**
-   * An expression representing the function (or constructor) which will instantiate the requested
-   * type.
-   *
-   * This could be a reference to a constructor type, or to a user-defined factory function. The
-   * `useNew` property determines whether it will be called as a constructor or not.
+   * An expression representing the interface type being constructed.
    */
   type: o.Expression;
+
+  /**
+   * An expression representing the constructor type, intended for use within a class definition
+   * itself.
+   *
+   * This can differ from the outer `type` if the class is being compiled by ngcc and is inside
+   * an IIFE structure that uses a different name internally.
+   */
+  internalType: o.Expression;
 
   /** Number of arguments for the `type`. */
   typeArgumentCount: number;
@@ -176,8 +181,9 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3FactoryFn {
   // parameter provided by the user (t) if specified, or the current type if not. If there is a
   // delegated factory (which is used to create the current type) then this is only the type-to-
   // create parameter (t).
-  const typeForCtor =
-      !isDelegatedMetadata(meta) ? new o.BinaryOperatorExpr(o.BinaryOperator.Or, t, meta.type) : t;
+  const typeForCtor = !isDelegatedMetadata(meta) ?
+      new o.BinaryOperatorExpr(o.BinaryOperator.Or, t, meta.internalType) :
+      t;
 
   let ctorExpr: o.Expression|null = null;
   if (meta.deps !== null) {
@@ -191,9 +197,8 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3FactoryFn {
     const baseFactory = o.variable(`ɵ${meta.name}_BaseFactory`);
     const getInheritedFactory = o.importExpr(R3.getInheritedFactory);
     const baseFactoryStmt =
-        baseFactory.set(getInheritedFactory.callFn([meta.type])).toDeclStmt(o.INFERRED_TYPE, [
-          o.StmtModifier.Exported, o.StmtModifier.Final
-        ]);
+        baseFactory.set(getInheritedFactory.callFn([meta.internalType]))
+            .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Exported, o.StmtModifier.Final]);
     statements.push(baseFactoryStmt);
 
     // There is no constructor, use the base class' factory to construct typeForCtor.
@@ -220,7 +225,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3FactoryFn {
   if (isDelegatedMetadata(meta) && meta.delegateType === R3FactoryDelegateType.Factory) {
     const delegateFactory = o.variable(`ɵ${meta.name}_BaseFactory`);
     const getFactoryOf = o.importExpr(R3.getFactoryOf);
-    if (meta.delegate.isEquivalent(meta.type)) {
+    if (meta.delegate.isEquivalent(meta.internalType)) {
       throw new Error(`Illegal state: compiling factory that delegates to itself`);
     }
     const delegateFactoryStmt =

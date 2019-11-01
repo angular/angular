@@ -8,7 +8,7 @@
 
 import {Identifiers} from './identifiers';
 import * as o from './output/output_ast';
-import {R3DependencyMetadata, R3FactoryDelegateType, R3FactoryTarget, compileFactoryFunction} from './render3/r3_factory';
+import {R3DependencyMetadata, R3FactoryDelegateType, R3FactoryMetadata, R3FactoryTarget, compileFactoryFunction} from './render3/r3_factory';
 import {mapToMapExpression, typeWithParameters} from './render3/util';
 
 export interface InjectableDef {
@@ -20,6 +20,7 @@ export interface InjectableDef {
 export interface R3InjectableMetadata {
   name: string;
   type: o.Expression;
+  internalType: o.Expression;
   typeArgumentCount: number;
   providedIn: o.Expression;
   useClass?: o.Expression;
@@ -32,9 +33,10 @@ export interface R3InjectableMetadata {
 export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
   let result: {factory: o.Expression, statements: o.Statement[]}|null = null;
 
-  const factoryMeta = {
+  const factoryMeta: R3FactoryMetadata = {
     name: meta.name,
     type: meta.type,
+    internalType: meta.internalType,
     typeArgumentCount: meta.typeArgumentCount,
     deps: [],
     injectFn: Identifiers.inject,
@@ -49,7 +51,7 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
     // A special case exists for useClass: Type where Type is the injectable type itself and no
     // deps are specified, in which case 'useClass' is effectively ignored.
 
-    const useClassOnSelf = meta.useClass.isEquivalent(meta.type);
+    const useClassOnSelf = meta.useClass.isEquivalent(meta.internalType);
     let deps: R3DependencyMetadata[]|undefined = undefined;
     if (meta.userDeps !== undefined) {
       deps = meta.userDeps;
@@ -97,10 +99,10 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
       expression: o.importExpr(Identifiers.inject).callFn([meta.useExisting]),
     });
   } else {
-    result = delegateToFactory(meta.type);
+    result = delegateToFactory(meta.internalType);
   }
 
-  const token = meta.type;
+  const token = meta.internalType;
   const providedIn = meta.providedIn;
 
   const expression = o.importExpr(Identifiers.ɵɵdefineInjectable).callFn([mapToMapExpression(
@@ -118,7 +120,7 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
 function delegateToFactory(type: o.Expression) {
   return {
     statements: [],
-    // () => meta.type.ɵfac(t)
+    // () => type.ɵfac(t)
     factory: o.fn([new o.FnParam('t', o.DYNAMIC_TYPE)], [new o.ReturnStatement(type.callMethod(
                                                             'ɵfac', [o.variable('t')]))])
   };

@@ -182,6 +182,9 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
   getDtsDeclaration(_: ts.Declaration): ts.Declaration|null { return null; }
 
+  getInternalNameOfClass(clazz: ClassDeclaration): ts.Identifier { return clazz.name; }
+
+  getAdjacentNameOfClass(clazz: ClassDeclaration): ts.Identifier { return clazz.name; }
 
   protected getDirectImportOfIdentifier(id: ts.Identifier): Import|null {
     const symbol = this.checker.getSymbolAtLocation(id);
