@@ -29,6 +29,15 @@ export interface R3DirectiveMetadata {
   type: o.Expression;
 
   /**
+   * An expression representing a reference to the directive being compiled, intended for use within
+   * a class definition itself.
+   *
+   * This can differ from the outer `type` if the class is being compiled by ngcc and is inside
+   * an IIFE structure that uses a different name internally.
+   */
+  internalType: o.Expression;
+
+  /**
    * Number of generic type parameters of the type itself.
    */
   typeArgumentCount: number;
