@@ -96,7 +96,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
     if (!classSymbol) {
       throw new Error(`Compiled class does not have a valid symbol: ${compiledClass.name}`);
     }
-    const insertionPoint = classSymbol.declaration.valueDeclaration !.getEnd();
+    const insertionPoint = classSymbol.declaration.valueDeclaration.getEnd();
     output.appendLeft(insertionPoint, '\n' + definitions);
   }
 
