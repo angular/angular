@@ -2088,6 +2088,28 @@ runInEachFileSystem(() => {
          });
     });
 
+    describe('getInternalNameOfClass()', () => {
+      it('should return the name of the class (there is no separate inner class in ES2015)', () => {
+        loadTestFiles([SIMPLE_CLASS_FILE]);
+        const {program} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const node =
+            getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
+        expect(host.getInternalNameOfClass(node).text).toEqual('EmptyClass');
+      });
+    });
+
+    describe('getAdjacentNameOfClass()', () => {
+      it('should return the name of the class (there is no separate inner class in ES2015)', () => {
+        loadTestFiles([SIMPLE_CLASS_FILE]);
+        const {program} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const node =
+            getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
+        expect(host.getAdjacentNameOfClass(node).text).toEqual('EmptyClass');
+      });
+    });
+
     describe('getModuleWithProvidersFunctions()', () => {
       it('should find every exported function that returns an object that looks like a ModuleWithProviders object',
          () => {
