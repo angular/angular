@@ -6,7 +6,7 @@ import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {CommonModule} from '@angular/common';
 import {Observable} from 'rxjs';
-import {MatTab, MatTabGroup, MatTabHeaderPosition, MatTabsModule} from './index';
+import {MAT_TABS_CONFIG, MatTab, MatTabGroup, MatTabHeaderPosition, MatTabsModule} from './index';
 
 
 describe('MatTabGroup', () => {
@@ -698,6 +698,7 @@ describe('MatTabGroup with ink bar fit to content', () => {
     const tabElement = fixture.nativeElement.querySelector('.mdc-tab');
     const contentElement = tabElement.querySelector('.mdc-tab__content');
     const indicatorElement = tabElement.querySelector('.mdc-tab-indicator');
+    expect(indicatorElement.parentElement).toBeTruthy();
     expect(indicatorElement.parentElement).toBe(contentElement);
   });
 
@@ -707,12 +708,44 @@ describe('MatTabGroup with ink bar fit to content', () => {
 
     const tabElement = fixture.nativeElement.querySelector('.mdc-tab');
     const indicatorElement = tabElement.querySelector('.mdc-tab-indicator');
+    expect(indicatorElement.parentElement).toBeTruthy();
     expect(indicatorElement.parentElement).toBe(tabElement);
 
     fixture.componentInstance.fitInkBarToContent = true;
     fixture.detectChanges();
 
     const contentElement = tabElement.querySelector('.mdc-tab__content');
+    expect(indicatorElement.parentElement).toBeTruthy();
+    expect(indicatorElement.parentElement).toBe(contentElement);
+  });
+});
+
+
+describe('MatTabNavBar with a default config', () => {
+  let fixture: ComponentFixture<SimpleTabsTestApp>;
+
+  beforeEach(fakeAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatTabsModule, BrowserAnimationsModule],
+      declarations: [SimpleTabsTestApp],
+      providers: [
+        {provide: MAT_TABS_CONFIG, useValue: {fitInkBarToContent: true}}
+      ]
+    });
+
+    TestBed.compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(SimpleTabsTestApp);
+    fixture.detectChanges();
+  });
+
+  it('should set whether the ink bar fits to content', () => {
+    const tabElement = fixture.nativeElement.querySelector('.mdc-tab');
+    const contentElement = tabElement.querySelector('.mdc-tab__content');
+    const indicatorElement = tabElement.querySelector('.mdc-tab-indicator');
+    expect(indicatorElement.parentElement).toBeTruthy();
     expect(indicatorElement.parentElement).toBe(contentElement);
   });
 });

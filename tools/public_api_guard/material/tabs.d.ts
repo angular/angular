@@ -211,6 +211,7 @@ export declare const matTabsAnimations: {
 export interface MatTabsConfig {
     animationDuration?: string;
     disablePagination?: boolean;
+    fitInkBarToContent?: boolean;
 }
 
 export declare class MatTabsModule {

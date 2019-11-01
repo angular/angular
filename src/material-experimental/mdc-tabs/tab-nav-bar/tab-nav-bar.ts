@@ -25,7 +25,12 @@ import {
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MAT_RIPPLE_GLOBAL_OPTIONS, RippleGlobalOptions} from '@angular/material/core';
 import {FocusMonitor} from '@angular/cdk/a11y';
-import {_MatTabNavBase, _MatTabLinkBase} from '@angular/material/tabs';
+import {
+  _MatTabNavBase,
+  _MatTabLinkBase,
+  MAT_TABS_CONFIG,
+  MatTabsConfig
+} from '@angular/material/tabs';
 import {DOCUMENT} from '@angular/common';
 import {Directionality} from '@angular/cdk/bidi';
 import {ViewportRuler} from '@angular/cdk/scrolling';
@@ -81,8 +86,13 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
                * @deprecated @breaking-change 9.0.0 `platform` parameter to become required.
                */
               @Optional() platform?: Platform,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+              @Optional() @Inject(MAT_TABS_CONFIG) defaultConfig?: MatTabsConfig) {
     super(elementRef, dir, ngZone, changeDetectorRef, viewportRuler, platform, animationMode);
+    this.disablePagination = defaultConfig && defaultConfig.disablePagination != null ?
+        defaultConfig.disablePagination : false;
+    this.fitInkBarToContent = defaultConfig && defaultConfig.fitInkBarToContent != null ?
+        defaultConfig.fitInkBarToContent : false;
   }
 
   ngAfterContentInit() {

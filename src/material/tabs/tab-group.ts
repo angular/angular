@@ -14,18 +14,17 @@ import {
   ChangeDetectorRef,
   Component,
   ContentChildren,
+  Directive,
   ElementRef,
   EventEmitter,
+  Inject,
   Input,
   OnDestroy,
+  Optional,
   Output,
   QueryList,
   ViewChild,
   ViewEncapsulation,
-  Optional,
-  Inject,
-  InjectionToken,
-  Directive,
 } from '@angular/core';
 import {
   CanColor,
@@ -39,7 +38,8 @@ import {
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {merge, Subscription} from 'rxjs';
 import {startWith} from 'rxjs/operators';
-import {MatTab, MAT_TAB_GROUP} from './tab';
+import {MAT_TAB_GROUP, MatTab} from './tab';
+import {MAT_TABS_CONFIG, MatTabsConfig} from './tab-config';
 
 
 /** Used to generate unique ID's for each tab component */
@@ -55,21 +55,6 @@ export class MatTabChangeEvent {
 
 /** Possible positions for the tab header. */
 export type MatTabHeaderPosition = 'above' | 'below';
-
-/** Object that can be used to configure the default options for the tabs module. */
-export interface MatTabsConfig {
-  /** Duration for the tab animation. Must be a valid CSS value (e.g. 600ms). */
-  animationDuration?: string;
-
-  /**
-   * Whether pagination should be disabled. This can be used to avoid unnecessary
-   * layout recalculations if it's known that pagination won't be required.
-   */
-  disablePagination?: boolean;
-}
-
-/** Injection token that can be used to provide the default options the tabs module. */
-export const MAT_TABS_CONFIG = new InjectionToken<MatTabsConfig>('MAT_TABS_CONFIG');
 
 // Boilerplate for applying mixins to MatTabGroup.
 /** @docs-private */

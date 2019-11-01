@@ -24,3 +24,4 @@ export {MatTabNav, MatTabLink, _MatTabNavBase, _MatTabLinkBase} from './tab-nav-
 export {MatTabContent} from './tab-content';
 export {ScrollDirection} from './paginated-tab-header';
 export * from './tabs-animations';
+export {MAT_TABS_CONFIG, MatTabsConfig} from './tab-config';
