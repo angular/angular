@@ -57,7 +57,7 @@ export function ɵɵelementContainerStart(
   const tNode =
       getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.ElementContainer, tagName, attrs);
 
-  if (attrs && tView.firstTemplatePass) {
+  if (attrs && tView.firstCreatePass) {
     // While ng-container doesn't necessarily support styling, we use the style context to identify
     // and execute directives on the ng-container.
     registerInitialStylingOnTNode(tNode, attrs, 0);
@@ -66,8 +66,8 @@ export function ɵɵelementContainerStart(
   appendChild(native, tNode, lView);
   attachPatchData(native, lView);
 
-  if (tView.firstTemplatePass) {
-    ngDevMode && ngDevMode.firstTemplatePass++;
+  if (tView.firstCreatePass) {
+    ngDevMode && ngDevMode.firstCreatePass++;
     resolveDirectives(tView, lView, tNode, localRefs);
     if (tView.queries) {
       tView.queries.elementStart(tView, tNode);
@@ -103,7 +103,7 @@ export function ɵɵelementContainerEnd(): void {
 
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.ElementContainer);
 
-  if (tView.firstTemplatePass) {
+  if (tView.firstCreatePass) {
     registerPostOrderHooks(tView, previousOrParentTNode);
     if (isContentQueryHost(previousOrParentTNode)) {
       tView.queries !.elementEnd(previousOrParentTNode);

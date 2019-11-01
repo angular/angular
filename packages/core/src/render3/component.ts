@@ -174,7 +174,7 @@ export function createRootComponentView(
       rootView, getOrCreateTView(def), null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
       rootView[HEADER_OFFSET], tNode, rendererFactory, renderer, sanitizer);
 
-  if (tView.firstTemplatePass) {
+  if (tView.firstCreatePass) {
     diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), tView, def.type);
     markAsComponentHost(tView, tNode);
     initNodeFlags(tNode, rootView.length, 1);
@@ -209,14 +209,14 @@ export function createRootComponent<T>(
   }
 
   const rootTNode = getPreviousOrParentTNode();
-  if (tView.firstTemplatePass && componentDef.hostBindings) {
+  if (tView.firstCreatePass && componentDef.hostBindings) {
     const elementIndex = rootTNode.index - HEADER_OFFSET;
     setActiveHostElement(elementIndex);
     incrementActiveDirectiveId();
 
     const expando = tView.expandoInstructions !;
     invokeHostBindingsInCreationMode(
-        componentDef, expando, component, rootTNode, tView.firstTemplatePass);
+        componentDef, expando, component, rootTNode, tView.firstCreatePass);
 
     setActiveHostElement(null);
   }

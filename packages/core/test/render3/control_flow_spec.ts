@@ -691,7 +691,7 @@ describe('JS control flow', () => {
     let log: string[] = [];
 
     // Intentionally duplicating the templates in test below so we are
-    // testing the behavior on firstTemplatePass for each of these tests
+    // testing the behavior on firstCreatePass for each of these tests
     class Comp {
       static ɵfac =
           () => {
@@ -761,7 +761,7 @@ describe('JS control flow', () => {
     let log: string[] = [];
 
     // Intentionally duplicating the templates from above so we are
-    // testing the behavior on firstTemplatePass for each of these tests
+    // testing the behavior on firstCreatePass for each of these tests
     class Comp {
       static ɵfac =
           () => {

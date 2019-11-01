@@ -366,7 +366,7 @@ export function ɵɵi18nStart(index: number, message: string, subTemplateIndex?:
   i18nIndexStack[++i18nIndexStackPointer] = index;
   // We need to delay projections until `i18nEnd`
   setDelayProjection(true);
-  if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
+  if (tView.firstCreatePass && tView.data[index + HEADER_OFFSET] === null) {
     i18nStartFirstPass(lView, tView, index, message, subTemplateIndex);
   }
 }
@@ -1006,7 +1006,7 @@ function i18nAttributesFirstPass(lView: LView, tView: TView, index: number, valu
         // Even indexes are text (including bindings)
         const hasBinding = !!value.match(BINDING_REGEXP);
         if (hasBinding) {
-          if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
+          if (tView.firstCreatePass && tView.data[index + HEADER_OFFSET] === null) {
             addAllToArray(
                 generateBindingUpdateOpCodes(value, previousElementIndex, attrName), updateOpCodes);
           }
@@ -1027,7 +1027,7 @@ function i18nAttributesFirstPass(lView: LView, tView: TView, index: number, valu
     }
   }
 
-  if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
+  if (tView.firstCreatePass && tView.data[index + HEADER_OFFSET] === null) {
     tView.data[index + HEADER_OFFSET] = updateOpCodes;
   }
 }
