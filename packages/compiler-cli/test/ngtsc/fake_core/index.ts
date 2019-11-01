@@ -85,3 +85,7 @@ export const NO_ERRORS_SCHEMA: any = false;
 export class EventEmitter<T> {
   subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown { return null; }
 }
+
+export interface QueryList<T>/* implements Iterable<T> */ { [Symbol.iterator]: () => Iterator<T>; }
+
+export type NgIterable<T> = Array<T>| Iterable<T>;

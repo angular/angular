@@ -135,6 +135,22 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
       expect(queryList.some(item => item === 'four')).toEqual(false);
     });
 
+    it('should be iterable', () => {
+      const data = ['one', 'two', 'three'];
+      queryList.reset([...data]);
+
+      // The type here is load-bearing: it asserts that queryList is considered assignable to
+      // Iterable<string> in TypeScript. This is important for template type-checking of *ngFor
+      // when looping over query results.
+      const queryListAsIterable: Iterable<string> = queryList;
+
+      // For loops use the iteration protocol.
+      for (const value of queryListAsIterable) {
+        expect(value).toBe(data.shift() !);
+      }
+      expect(data.length).toBe(0);
+    });
+
     if (getDOM().supportsDOMEvents()) {
       describe('simple observable interface', () => {
         it('should fire callbacks on change', fakeAsync(() => {
