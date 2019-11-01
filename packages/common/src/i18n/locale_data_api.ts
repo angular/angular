@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵLocaleDataIndex, ɵfindLocaleData, ɵgetLocalePluralCase} from '@angular/core';
+import {ɵCurrencyIndex, ɵExtraLocaleDataIndex, ɵLocaleDataIndex, ɵfindLocaleData, ɵgetLocalePluralCase} from '@angular/core';
 import {CURRENCIES_EN, CurrenciesSymbols} from './currencies';
-import {CurrencyIndex, ExtraLocaleDataIndex} from './locale_data';
 
 /**
  * Format styles that can be used to represent numbers.
@@ -524,7 +523,7 @@ function checkFullData(data: any) {
 export function getLocaleExtraDayPeriodRules(locale: string): (Time | [Time, Time])[] {
   const data = ɵfindLocaleData(locale);
   checkFullData(data);
-  const rules = data[ɵLocaleDataIndex.ExtraData][ExtraLocaleDataIndex.ExtraDayPeriodsRules] || [];
+  const rules = data[ɵLocaleDataIndex.ExtraData][ɵExtraLocaleDataIndex.ExtraDayPeriodsRules] || [];
   return rules.map((rule: string | [string, string]) => {
     if (typeof rule === 'string') {
       return extractTime(rule);
@@ -555,8 +554,8 @@ export function getLocaleExtraDayPeriods(
   const data = ɵfindLocaleData(locale);
   checkFullData(data);
   const dayPeriodsData = <string[][][]>[
-    data[ɵLocaleDataIndex.ExtraData][ExtraLocaleDataIndex.ExtraDayPeriodFormats],
-    data[ɵLocaleDataIndex.ExtraData][ExtraLocaleDataIndex.ExtraDayPeriodStandalone]
+      data[ɵLocaleDataIndex.ExtraData][ɵExtraLocaleDataIndex.ExtraDayPeriodFormats],
+      data[ɵLocaleDataIndex.ExtraData][ɵExtraLocaleDataIndex.ExtraDayPeriodStandalone]
   ];
   const dayPeriods = getLastDefinedValue(dayPeriodsData, formStyle) || [];
   return getLastDefinedValue(dayPeriods, width) || [];
@@ -621,13 +620,13 @@ function extractTime(time: string): Time {
  */
 export function getCurrencySymbol(code: string, format: 'wide' | 'narrow', locale = 'en'): string {
   const currency = getLocaleCurrencies(locale)[code] || CURRENCIES_EN[code] || [];
-  const symbolNarrow = currency[CurrencyIndex.SymbolNarrow];
+  const symbolNarrow = currency[ɵCurrencyIndex.SymbolNarrow];
 
   if (format === 'narrow' && typeof symbolNarrow === 'string') {
     return symbolNarrow;
   }
 
-  return currency[CurrencyIndex.Symbol] || code;
+  return currency[ɵCurrencyIndex.Symbol] || code;
 }
 
 // Most currencies have cents, that's why the default is 2
@@ -647,7 +646,7 @@ export function getNumberOfCurrencyDigits(code: string): number {
   let digits;
   const currency = CURRENCIES_EN[code];
   if (currency) {
-    digits = currency[CurrencyIndex.NbOfDigits];
+    digits = currency[ɵCurrencyIndex.NbOfDigits];
   }
   return typeof digits === 'number' ? digits : DEFAULT_NB_OF_CURRENCY_DIGITS;
 }
