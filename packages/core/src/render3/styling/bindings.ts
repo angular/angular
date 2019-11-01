@@ -8,10 +8,11 @@
 import {SafeValue, unwrapSafeValue} from '../../sanitization/bypass';
 import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
 import {global} from '../../util/global';
+import {TNodeFlags} from '../interfaces/node';
 import {ProceduralRenderer3, RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
-import {ApplyStylingFn, LStylingData, StylingMapArray, StylingMapArrayIndex, StylingMapsSyncMode, SyncStylingMapsFn, TStylingConfig, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from '../interfaces/styling';
+import {ApplyStylingFn, LStylingData, StylingMapArray, StylingMapArrayIndex, StylingMapsSyncMode, SyncStylingMapsFn, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags, TStylingNode} from '../interfaces/styling';
 import {NO_CHANGE} from '../tokens';
-import {DEFAULT_BINDING_INDEX, DEFAULT_BINDING_VALUE, DEFAULT_GUARD_MASK_VALUE, MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, concatString, forceStylesAsString, getBindingValue, getConfig, getDefaultValue, getGuardMask, getInitialStylingValue, getMapProp, getMapValue, getProp, getPropValuesStartPosition, getStylingMapArray, getTotalSources, getValue, getValuesCount, hasConfig, hasValueChanged, isHostStylingActive, isSanitizationRequired, isStylingMapArray, isStylingValueDefined, normalizeIntoStylingMap, patchConfig, setDefaultValue, setGuardMask, setMapAsDirty, setValue} from '../util/styling_utils';
+import {DEFAULT_BINDING_INDEX, DEFAULT_BINDING_VALUE, DEFAULT_GUARD_MASK_VALUE, MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, concatString, forceStylesAsString, getBindingValue, getDefaultValue, getGuardMask, getInitialStylingValue, getMapProp, getMapValue, getProp, getPropValuesStartPosition, getStylingMapArray, getTotalSources, getValue, getValuesCount, hasConfig, hasValueChanged, isHostStylingActive, isSanitizationRequired, isStylingMapArray, isStylingValueDefined, normalizeIntoStylingMap, patchConfig, setDefaultValue, setGuardMask, setMapAsDirty, setValue} from '../util/styling_utils';
 
 import {getStylingState, resetStylingState} from './state';
 
@@ -27,7 +28,7 @@ const VALUE_IS_EXTERNALLY_MODIFIED = {};
  *
  * When a binding is encountered (e.g. `<div [style.width]="w">`) then
  * the binding data will be populated into a `TStylingContext` data-structure.
- * There is only one `TStylingContext` per `TNode` and each element instance
+ * There is only one `TStylingContext` per `TStylingNode` and each element instance
  * will update its style/class binding values in concert with the styling
  * context.
  *
@@ -54,8 +55,8 @@ const STYLING_INDEX_FOR_MAP_BINDING = 0;
  * and the bit mask values to be in sync).
  */
 export function updateClassViaContext(
-    context: TStylingContext, data: LStylingData, element: RElement, directiveIndex: number,
-    prop: string | null, bindingIndex: number,
+    context: TStylingContext, tNode: TStylingNode, data: LStylingData, element: RElement,
+    directiveIndex: number, prop: string | null, bindingIndex: number,
     value: boolean | string | null | undefined | StylingMapArray | NO_CHANGE, forceUpdate: boolean,
     firstUpdatePass: boolean): boolean {
   const isMapBased = !prop;
@@ -67,8 +68,8 @@ export function updateClassViaContext(
   // is aware of the binding even if things change after the first update pass.
   if (firstUpdatePass || value !== NO_CHANGE) {
     const updated = updateBindingData(
-        context, data, countIndex, state.sourceIndex, prop, bindingIndex, value, forceUpdate, false,
-        firstUpdatePass);
+        context, tNode, data, countIndex, state.sourceIndex, prop, bindingIndex, value, forceUpdate,
+        false, firstUpdatePass, true);
     if (updated || forceUpdate) {
       // We flip the bit in the bitMask to reflect that the binding
       // at the `index` slot has changed. This identifies to the flushing
@@ -93,8 +94,8 @@ export function updateClassViaContext(
  * and the bit mask values to be in sync).
  */
 export function updateStyleViaContext(
-    context: TStylingContext, data: LStylingData, element: RElement, directiveIndex: number,
-    prop: string | null, bindingIndex: number,
+    context: TStylingContext, tNode: TStylingNode, data: LStylingData, element: RElement,
+    directiveIndex: number, prop: string | null, bindingIndex: number,
     value: string | number | SafeValue | null | undefined | StylingMapArray | NO_CHANGE,
     sanitizer: StyleSanitizeFn | null, forceUpdate: boolean, firstUpdatePass: boolean): boolean {
   const isMapBased = !prop;
@@ -109,8 +110,8 @@ export function updateStyleViaContext(
         true :
         (sanitizer ? sanitizer(prop !, null, StyleSanitizeMode.ValidateProperty) : false);
     const updated = updateBindingData(
-        context, data, countIndex, state.sourceIndex, prop, bindingIndex, value, forceUpdate,
-        sanitizationRequired, firstUpdatePass);
+        context, tNode, data, countIndex, state.sourceIndex, prop, bindingIndex, value, forceUpdate,
+        sanitizationRequired, firstUpdatePass, false);
     if (updated || forceUpdate) {
       // We flip the bit in the bitMask to reflect that the binding
       // at the `index` slot has changed. This identifies to the flushing
@@ -136,11 +137,14 @@ export function updateStyleViaContext(
  * @returns whether or not the binding value was updated in the `LStylingData`.
  */
 function updateBindingData(
-    context: TStylingContext, data: LStylingData, counterIndex: number, sourceIndex: number,
-    prop: string | null, bindingIndex: number,
+    context: TStylingContext, tNode: TStylingNode, data: LStylingData, counterIndex: number,
+    sourceIndex: number, prop: string | null, bindingIndex: number,
     value: string | SafeValue | number | boolean | null | undefined | StylingMapArray,
-    forceUpdate: boolean, sanitizationRequired: boolean, firstUpdatePass: boolean): boolean {
+    forceUpdate: boolean, sanitizationRequired: boolean, firstUpdatePass: boolean,
+    isClassBased: boolean): boolean {
   const hostBindingsMode = isHostStylingActive(sourceIndex);
+  const hostBindingsFlag =
+      isClassBased ? TNodeFlags.hasHostClassBindings : TNodeFlags.hasHostStyleBindings;
   if (firstUpdatePass) {
     // this will only happen during the first update pass of the
     // context. The reason why we can't use `tView.firstCreatePass`
@@ -148,19 +152,18 @@ function updateBindingData(
     // update pass is executed (remember that all styling instructions
     // are run in the update phase, and, as a result, are no more
     // styling instructions that are run in the creation phase).
-    registerBinding(context, counterIndex, sourceIndex, prop, bindingIndex, sanitizationRequired);
-    patchConfig(
-        context,
-        hostBindingsMode ? TStylingConfig.HasHostBindings : TStylingConfig.HasTemplateBindings);
+    registerBinding(
+        context, tNode, counterIndex, sourceIndex, prop, bindingIndex, sanitizationRequired,
+        isClassBased);
   }
 
   const changed = forceUpdate || hasValueChanged(data[bindingIndex], value);
   if (changed) {
     setValue(data, bindingIndex, value);
-    const doSetValuesAsStale = (getConfig(context) & TStylingConfig.HasHostBindings) &&
-        !hostBindingsMode && (prop ? !value : true);
+    const doSetValuesAsStale =
+        hasConfig(tNode, hostBindingsFlag) && !hostBindingsMode && (prop ? !value : true);
     if (doSetValuesAsStale) {
-      renderHostBindingsAsStale(context, data, prop);
+      renderHostBindingsAsStale(context, tNode, data, prop, isClassBased);
     }
   }
   return changed;
@@ -178,10 +181,13 @@ function updateBindingData(
  * binding changes.
  */
 function renderHostBindingsAsStale(
-    context: TStylingContext, data: LStylingData, prop: string | null): void {
+    context: TStylingContext, tNode: TStylingNode, data: LStylingData, prop: string | null,
+    isClassBased: boolean): void {
   const valuesCount = getValuesCount(context);
 
-  if (prop !== null && hasConfig(context, TStylingConfig.HasPropBindings)) {
+  const hostBindingsFlag =
+      isClassBased ? TNodeFlags.hasHostClassBindings : TNodeFlags.hasHostStyleBindings;
+  if (prop !== null && hasConfig(tNode, hostBindingsFlag)) {
     const itemsPerRow = TStylingContextIndex.BindingsStartOffset + valuesCount;
 
     let i = TStylingContextIndex.ValuesStartPosition;
@@ -208,7 +214,9 @@ function renderHostBindingsAsStale(
     }
   }
 
-  if (hasConfig(context, TStylingConfig.HasMapBindings)) {
+  const mapBindingsFlag =
+      isClassBased ? TNodeFlags.hasClassMapBindings : TNodeFlags.hasStyleMapBindings;
+  if (hasConfig(tNode, mapBindingsFlag)) {
     const bindingsStart =
         TStylingContextIndex.ValuesStartPosition + TStylingContextIndex.BindingsStartOffset;
     const valuesStart = bindingsStart + 1;  // the first column is template bindings
@@ -253,8 +261,9 @@ function renderHostBindingsAsStale(
  * much the same as prop-based bindings, but, their property name value is set as `[MAP]`.
  */
 export function registerBinding(
-    context: TStylingContext, countId: number, sourceIndex: number, prop: string | null,
-    bindingValue: number | null | string | boolean, sanitizationRequired?: boolean): void {
+    context: TStylingContext, tNode: TStylingNode, countId: number, sourceIndex: number,
+    prop: string | null, bindingValue: number | null | string | boolean,
+    sanitizationRequired: boolean, isClassBased: boolean): void {
   let found = false;
   prop = prop || MAP_BASED_ENTRY_PROP_NAME;
 
@@ -268,6 +277,8 @@ export function registerBinding(
     totalSources++;
   }
 
+  const collisionFlag =
+      isClassBased ? TNodeFlags.hasDuplicateClassBindings : TNodeFlags.hasDuplicateStyleBindings;
   const isBindingIndexValue = typeof bindingValue === 'number';
   const entriesPerRow = TStylingContextIndex.BindingsStartOffset + getValuesCount(context);
   let i = TStylingContextIndex.ValuesStartPosition;
@@ -279,7 +290,7 @@ export function registerBinding(
       if (prop < p) {
         allocateNewContextEntry(context, i, prop, sanitizationRequired);
       } else if (isBindingIndexValue) {
-        patchConfig(context, TStylingConfig.HasCollisions);
+        patchConfig(tNode, collisionFlag);
       }
       addBindingIntoContext(context, i, bindingValue, countId, sourceIndex);
       found = true;
@@ -405,7 +416,7 @@ function addNewSourceColumn(context: TStylingContext): void {
  * (i.e. the `bitMask` and `counter` values for styles and classes will be cleared).
  */
 export function flushStyling(
-    renderer: Renderer3 | ProceduralRenderer3 | null, data: LStylingData,
+    renderer: Renderer3 | ProceduralRenderer3 | null, data: LStylingData, tNode: TStylingNode,
     classesContext: TStylingContext | null, stylesContext: TStylingContext | null,
     element: RElement, directiveIndex: number, styleSanitizer: StyleSanitizeFn | null,
     firstUpdatePass: boolean): void {
@@ -415,22 +426,22 @@ export function flushStyling(
   const hostBindingsMode = isHostStylingActive(state.sourceIndex);
 
   if (stylesContext) {
-    firstUpdatePass && syncContextInitialStyling(stylesContext);
+    firstUpdatePass && syncContextInitialStyling(stylesContext, tNode, false);
 
     if (state.stylesBitMask !== 0) {
       applyStylingViaContext(
-          stylesContext, renderer, element, data, state.stylesBitMask, setStyle, styleSanitizer,
-          hostBindingsMode);
+          stylesContext, tNode, renderer, element, data, state.stylesBitMask, setStyle,
+          styleSanitizer, hostBindingsMode, false);
     }
   }
 
   if (classesContext) {
-    firstUpdatePass && syncContextInitialStyling(classesContext);
+    firstUpdatePass && syncContextInitialStyling(classesContext, tNode, true);
 
     if (state.classesBitMask !== 0) {
       applyStylingViaContext(
-          classesContext, renderer, element, data, state.classesBitMask, setClass, null,
-          hostBindingsMode);
+          classesContext, tNode, renderer, element, data, state.classesBitMask, setClass, null,
+          hostBindingsMode, true);
     }
   }
 
@@ -492,10 +503,11 @@ export function flushStyling(
  * ]
  * ```
  */
-function syncContextInitialStyling(context: TStylingContext): void {
+function syncContextInitialStyling(
+    context: TStylingContext, tNode: TStylingNode, isClassBased: boolean): void {
   // the TStylingContext always has initial style/class values which are
   // stored in styling array format.
-  updateInitialStylingOnContext(context, getStylingMapArray(context) !);
+  updateInitialStylingOnContext(context, tNode, getStylingMapArray(context) !, isClassBased);
 }
 
 /**
@@ -513,7 +525,8 @@ function syncContextInitialStyling(context: TStylingContext): void {
  * update itself with the complete initial styling for the element.
  */
 function updateInitialStylingOnContext(
-    context: TStylingContext, initialStyling: StylingMapArray): void {
+    context: TStylingContext, tNode: TStylingNode, initialStyling: StylingMapArray,
+    isClassBased: boolean): void {
   // `-1` is used here because all initial styling data is not a apart
   // of a binding (since it's static)
   const COUNT_ID_FOR_STYLING = -1;
@@ -524,13 +537,13 @@ function updateInitialStylingOnContext(
     const value = getMapValue(initialStyling, i);
     if (value) {
       const prop = getMapProp(initialStyling, i);
-      registerBinding(context, COUNT_ID_FOR_STYLING, 0, prop, value, false);
+      registerBinding(context, tNode, COUNT_ID_FOR_STYLING, 0, prop, value, false, isClassBased);
       hasInitialStyling = true;
     }
   }
 
   if (hasInitialStyling) {
-    patchConfig(context, TStylingConfig.HasInitialStyling);
+    patchConfig(tNode, TNodeFlags.hasInitialStyling);
   }
 }
 
@@ -562,14 +575,17 @@ function updateInitialStylingOnContext(
  * the styles and classes contexts).
  */
 export function applyStylingViaContext(
-    context: TStylingContext, renderer: Renderer3 | ProceduralRenderer3 | null, element: RElement,
-    bindingData: LStylingData, bitMaskValue: number | boolean, applyStylingFn: ApplyStylingFn,
-    sanitizer: StyleSanitizeFn | null, hostBindingsMode: boolean): void {
+    context: TStylingContext, tNode: TStylingNode, renderer: Renderer3 | ProceduralRenderer3 | null,
+    element: RElement, bindingData: LStylingData, bitMaskValue: number | boolean,
+    applyStylingFn: ApplyStylingFn, sanitizer: StyleSanitizeFn | null, hostBindingsMode: boolean,
+    isClassBased: boolean): void {
   const bitMask = normalizeBitMaskValue(bitMaskValue);
 
   let stylingMapsSyncFn: SyncStylingMapsFn|null = null;
   let applyAllValues = false;
-  if (hasConfig(context, TStylingConfig.HasMapBindings)) {
+  const mapBindingsFlag =
+      isClassBased ? TNodeFlags.hasClassMapBindings : TNodeFlags.hasStyleMapBindings;
+  if (hasConfig(tNode, mapBindingsFlag)) {
     stylingMapsSyncFn = getStylingMapsSyncFn();
     const mapsGuardMask =
         getGuardMask(context, TStylingContextIndex.ValuesStartPosition, hostBindingsMode);
@@ -585,7 +601,7 @@ export function applyStylingViaContext(
     totalBindingsToVisit = valuesCount - 1;
   }
 
-  let i = getPropValuesStartPosition(context);
+  let i = getPropValuesStartPosition(context, tNode, isClassBased);
   while (i < context.length) {
     const guardMask = getGuardMask(context, i, hostBindingsMode);
     if (bitMask & guardMask) {
@@ -681,14 +697,13 @@ export function applyStylingViaContext(
  * @returns whether or not the styling map was applied to the element.
  */
 export function applyStylingMapDirectly(
-    renderer: any, context: TStylingContext, element: RElement, data: LStylingData,
-    bindingIndex: number, value: {[key: string]: any} | string | null, isClassBased: boolean,
-    sanitizer?: StyleSanitizeFn | null, forceUpdate?: boolean,
-    bindingValueContainsInitial?: boolean): void {
+    renderer: any, context: TStylingContext, tNode: TStylingNode, element: RElement,
+    data: LStylingData, bindingIndex: number, value: {[key: string]: any} | string | null,
+    isClassBased: boolean, sanitizer: StyleSanitizeFn | null, forceUpdate: boolean,
+    bindingValueContainsInitial: boolean): void {
   const oldValue = getValue(data, bindingIndex);
   if (forceUpdate || hasValueChanged(oldValue, value)) {
-    const config = getConfig(context);
-    const hasInitial = config & TStylingConfig.HasInitialStyling;
+    const hasInitial = hasConfig(tNode, TNodeFlags.hasInitialStyling);
     const initialValue =
         hasInitial && !bindingValueContainsInitial ? getInitialStylingValue(context) : null;
     setValue(data, bindingIndex, value);
@@ -707,7 +722,9 @@ export function applyStylingMapDirectly(
     // fast pass cannot guarantee that the external values are retained.
     // When this happens, the algorithm will bail out and not write to
     // the style or className attribute directly.
-    let writeToAttrDirectly = !(config & TStylingConfig.HasPropBindings);
+    const propBindingsFlag =
+        isClassBased ? TNodeFlags.hasClassPropBindings : TNodeFlags.hasStylePropBindings;
+    let writeToAttrDirectly = !hasConfig(tNode, propBindingsFlag);
     if (writeToAttrDirectly &&
         checkIfExternallyModified(element as HTMLElement, cachedValue, isClassBased)) {
       writeToAttrDirectly = false;
@@ -818,8 +835,8 @@ export function writeStylingValueDirectly(
  * @returns whether or not the prop/value styling was applied to the element.
  */
 export function applyStylingValueDirectly(
-    renderer: any, context: TStylingContext, element: RElement, data: LStylingData,
-    bindingIndex: number, prop: string, value: any, isClassBased: boolean,
+    renderer: any, context: TStylingContext, tNode: TStylingNode, element: RElement,
+    data: LStylingData, bindingIndex: number, prop: string, value: any, isClassBased: boolean,
     sanitizer?: StyleSanitizeFn | null): boolean {
   let applied = false;
   if (hasValueChanged(data[bindingIndex], value)) {
@@ -830,7 +847,9 @@ export function applyStylingValueDirectly(
     applied = applyStylingValue(renderer, element, prop, value, applyFn, bindingIndex, sanitizer);
 
     // case 2: find the matching property in a styling map and apply the detected value
-    if (!applied && hasConfig(context, TStylingConfig.HasMapBindings)) {
+    const mapBindingsFlag =
+        isClassBased ? TNodeFlags.hasClassMapBindings : TNodeFlags.hasStyleMapBindings;
+    if (!applied && hasConfig(tNode, mapBindingsFlag)) {
       const state = getStylingState(element, TEMPLATE_DIRECTIVE_INDEX);
       const map = isClassBased ? state.lastDirectClassMap : state.lastDirectStyleMap;
       applied = map ?
@@ -839,7 +858,7 @@ export function applyStylingValueDirectly(
     }
 
     // case 3: apply the initial value (if it exists)
-    if (!applied && hasConfig(context, TStylingConfig.HasInitialStyling)) {
+    if (!applied && hasConfig(tNode, TNodeFlags.hasInitialStyling)) {
       const map = getStylingMapArray(context);
       applied =
           map ? findAndApplyMapValue(renderer, element, applyFn, map, prop, bindingIndex) : false;
