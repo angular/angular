@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {TStylingNode} from '@angular/core/src/render3/interfaces/styling';
 import {registerBinding} from '@angular/core/src/render3/styling/bindings';
 import {NodeStylingDebug, attachStylingDebugObject} from '@angular/core/src/render3/styling/styling_debug';
 import {allocTStylingContext} from '@angular/core/src/render3/util/styling_utils';
@@ -15,12 +16,14 @@ describe('styling debugging tools', () => {
        () => {
          if (isIE()) return;
 
-         const debug = makeContextWithDebug(false);
-         const context = debug.context;
-         const data: any[] = [];
-         const d = new NodeStylingDebug(context, data, false);
+         const values = makeContextWithDebug(false);
+         const context = values.context;
+         const tNode = values.tNode;
 
-         registerBinding(context, 0, 0, 'width', null);
+         const data: any[] = [];
+         const d = new NodeStylingDebug(context, tNode, data, false);
+
+         registerBinding(context, tNode, 0, 0, 'width', null, false, false);
          expect(d.summary).toEqual({
            width: {
              prop: 'width',
@@ -29,7 +32,7 @@ describe('styling debugging tools', () => {
            },
          });
 
-         registerBinding(context, 0, 0, 'width', '100px');
+         registerBinding(context, tNode, 0, 0, 'width', '100px', false, false);
          expect(d.summary).toEqual({
            width: {
              prop: 'width',
@@ -41,7 +44,7 @@ describe('styling debugging tools', () => {
          const someBindingIndex1 = 1;
          data[someBindingIndex1] = '200px';
 
-         registerBinding(context, 0, 0, 'width', someBindingIndex1);
+         registerBinding(context, tNode, 0, 0, 'width', someBindingIndex1, false, false);
          expect(d.summary).toEqual({
            width: {
              prop: 'width',
@@ -53,7 +56,7 @@ describe('styling debugging tools', () => {
          const someBindingIndex2 = 2;
          data[someBindingIndex2] = '500px';
 
-         registerBinding(context, 0, 1, 'width', someBindingIndex2);
+         registerBinding(context, tNode, 0, 1, 'width', someBindingIndex2, false, false);
          expect(d.summary).toEqual({
            width: {
              prop: 'width',
@@ -66,8 +69,14 @@ describe('styling debugging tools', () => {
 });
 
 function makeContextWithDebug(isClassBased: boolean) {
-  const ctx = allocTStylingContext(null, false);
-  return attachStylingDebugObject(ctx, isClassBased);
+  const context = allocTStylingContext(null, false);
+  const tNode = createTStylingNode();
+  attachStylingDebugObject(context, tNode, isClassBased);
+  return {context, tNode};
+}
+
+function createTStylingNode(): TStylingNode {
+  return {flags: 0};
 }
 
 function isIE() {

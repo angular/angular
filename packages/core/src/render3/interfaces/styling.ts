@@ -6,8 +6,11 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
+
+import {TNodeFlags} from './node';
 import {ProceduralRenderer3, RElement, Renderer3} from './renderer';
 import {LView} from './view';
+
 
 /**
  * --------
@@ -75,7 +78,6 @@ import {LView} from './view';
  * //  ...
  * // </div>
  * tNode.styles = [
- *   0,         // the context config value (see `TStylingContextConfig`)
  *   1,         // the total amount of sources present (only `1` b/c there are only template
  * bindings)
  *   [null],    // initial values array (an instance of `StylingMapArray`)
@@ -323,9 +325,6 @@ import {LView} from './view';
  */
 export interface TStylingContext extends
     Array<number|string|number|boolean|null|StylingMapArray|{}> {
-  /** Configuration data for the context */
-  [TStylingContextIndex.ConfigPosition]: TStylingConfig;
-
   /** The total amount of sources present in the context */
   [TStylingContextIndex.TotalSourcesPosition]: number;
 
@@ -334,124 +333,12 @@ export interface TStylingContext extends
 }
 
 /**
- * A series of flags used to configure the config value present within an instance of
- * `TStylingContext`.
- */
-export const enum TStylingConfig {
-  /**
-   * The initial state of the styling context config.
-   */
-  Initial = 0b000000,
-
-  /**
-   * Whether or not there are any directives on this element.
-   *
-   * This is used so that certain performance optimizations can
-   * take place (e.g. direct style/class binding application).
-   *
-   * Note that the presence of this flag doesn't guarantee the
-   * presence of host-level style or class bindings within any
-   * of the active directives on the element.
-   *
-   * Examples include:
-   * 1. `<div dir-one>`
-   * 2. `<div dir-one [dir-two]="x">`
-   * 3. `<comp>`
-   * 4. `<comp dir-one>`
-   */
-  HasDirectives = 0b000001,
-
-  /**
-   * Whether or not there are prop-based bindings present.
-   *
-   * Examples include:
-   * 1. `<div [style.prop]="x">`
-   * 2. `<div [class.prop]="x">`
-   * 3. `@HostBinding('style.prop') x`
-   * 4. `@HostBinding('class.prop') x`
-   */
-  HasPropBindings = 0b000010,
-
-  /**
-   * Whether or not there are map-based bindings present.
-   *
-   * Examples include:
-   * 1. `<div [style]="x">`
-   * 2. `<div [class]="x">`
-   * 3. `@HostBinding('style') x`
-   * 4. `@HostBinding('class') x`
-   */
-  HasMapBindings = 0b000100,
-
-  /**
-   * Whether or not there are map-based and prop-based bindings present.
-   *
-   * Examples include:
-   * 1. `<div [style]="x" [style.prop]="y">`
-   * 2. `<div [class]="x" [style.prop]="y">`
-   * 3. `<div [style]="x" dir-that-sets-some-prop>`
-   * 4. `<div [class]="x" dir-that-sets-some-class>`
-   */
-  HasPropAndMapBindings = HasPropBindings | HasMapBindings,
-
-  /**
-   * Whether or not there are two or more sources for a single property in the context.
-   *
-   * Examples include:
-   * 1. prop + prop: `<div [style.width]="x" dir-that-sets-width>`
-   * 2. map + prop: `<div [style]="x" [style.prop]>`
-   * 3. map + map: `<div [style]="x" dir-that-sets-style>`
-   */
-  HasCollisions = 0b001000,
-
-  /**
-   * Whether or not the context contains initial styling values.
-   *
-   * Examples include:
-   * 1. `<div style="width:200px">`
-   * 2. `<div class="one two three">`
-   * 3. `@Directive({ host: { 'style': 'width:200px' } })`
-   * 4. `@Directive({ host: { 'class': 'one two three' } })`
-   */
-  HasInitialStyling = 0b0010000,
-
-  /**
-   * Whether or not the context contains one or more template bindings.
-   *
-   * Examples include:
-   * 1. `<div [style]="x">`
-   * 2. `<div [style.width]="x">`
-   * 3. `<div [class]="x">`
-   * 4. `<div [class.name]="x">`
-   */
-  HasTemplateBindings = 0b0100000,
-
-  /**
-   * Whether or not the context contains one or more host bindings.
-   *
-   * Examples include:
-   * 1. `@HostBinding('style') x`
-   * 2. `@HostBinding('style.width') x`
-   * 3. `@HostBinding('class') x`
-   * 4. `@HostBinding('class.name') x`
-   */
-  HasHostBindings = 0b1000000,
-
-  /** A Mask of all the configurations */
-  Mask = 0b1111111,
-
-  /** Total amount of configuration bits used */
-  TotalBits = 7,
-}
-
-/**
  * An index of position and offset values used to navigate the `TStylingContext`.
  */
 export const enum TStylingContextIndex {
-  ConfigPosition = 0,
-  TotalSourcesPosition = 1,
-  InitialStylingValuePosition = 2,
-  ValuesStartPosition = 3,
+  TotalSourcesPosition = 0,
+  InitialStylingValuePosition = 1,
+  ValuesStartPosition = 2,
 
   // each tuple entry in the context
   // (config, templateBitGuard, hostBindingBitGuard, prop, ...bindings||default-value)
@@ -577,3 +464,10 @@ export const enum StylingMapsSyncMode {
   /** Only check to see if a value was set somewhere in each map */
   CheckValuesOnly = 0b10000,
 }
+
+/**
+ * Simplified `TNode` interface for styling-related code.
+ *
+ * The styling algorithm code only needs access to `flags`.
+ */
+export interface TStylingNode { flags: TNodeFlags; }

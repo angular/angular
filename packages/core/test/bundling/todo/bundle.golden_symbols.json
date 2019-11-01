@@ -633,9 +633,6 @@
     "name": "getComponentViewByInstance"
   },
   {
-    "name": "getConfig"
-  },
-  {
     "name": "getConstant"
   },
   {
@@ -933,6 +930,9 @@
     "name": "isForwardRef"
   },
   {
+    "name": "isHostStyling"
+  },
+  {
     "name": "isHostStylingActive"
   },
   {
@@ -1066,6 +1066,9 @@
   },
   {
     "name": "patchConfig"
+  },
+  {
+    "name": "patchHostStylingFlag"
   },
   {
     "name": "readPatchedData"

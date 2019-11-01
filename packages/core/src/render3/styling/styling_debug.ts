@@ -7,8 +7,9 @@
 */
 import {createProxy} from '../../debug/proxy';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
+import {TNodeFlags} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
-import {ApplyStylingFn, LStylingData, TStylingConfig, TStylingContext, TStylingContextIndex} from '../interfaces/styling';
+import {ApplyStylingFn, LStylingData, TStylingContext, TStylingContextIndex, TStylingNode} from '../interfaces/styling';
 import {getCurrentStyleSanitizer} from '../state';
 import {attachDebugObject} from '../util/debug_utils';
 import {MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, allowDirectStyling as _allowDirectStyling, getBindingValue, getDefaultValue, getGuardMask, getProp, getPropValuesStartPosition, getValue, getValuesCount, hasConfig, isSanitizationRequired, isStylingContext, normalizeIntoStylingMap, setValue} from '../util/styling_utils';
@@ -52,7 +53,7 @@ export interface DebugStylingContext {
 
 
 /**
- * A debug/testing-oriented summary of `TStylingConfig`.
+ * A debug/testing-oriented summary of all styling information in `TNode.flags`.
  */
 export interface DebugStylingConfig {
   hasMapBindings: boolean;       //
@@ -150,8 +151,9 @@ export interface DebugNodeStylingEntry {
 /**
  * Instantiates and attaches an instance of `TStylingContextDebug` to the provided context
  */
-export function attachStylingDebugObject(context: TStylingContext, isClassBased: boolean) {
-  const debug = new TStylingContextDebug(context, isClassBased);
+export function attachStylingDebugObject(
+    context: TStylingContext, tNode: TStylingNode, isClassBased: boolean) {
+  const debug = new TStylingContextDebug(context, tNode, isClassBased);
   attachDebugObject(context, debug);
   return debug;
 }
@@ -163,9 +165,11 @@ export function attachStylingDebugObject(context: TStylingContext, isClassBased:
  * application has `ngDevMode` activated.
  */
 class TStylingContextDebug implements DebugStylingContext {
-  constructor(public readonly context: TStylingContext, private _isClassBased: boolean) {}
+  constructor(
+      public readonly context: TStylingContext, private _tNode: TStylingNode,
+      private _isClassBased: boolean) {}
 
-  get config(): DebugStylingConfig { return buildConfig(this.context); }
+  get config(): DebugStylingConfig { return buildConfig(this._tNode, this._isClassBased); }
 
   /**
    * Returns a detailed summary of each styling entry in the context.
@@ -176,7 +180,7 @@ class TStylingContextDebug implements DebugStylingContext {
     const context = this.context;
     const totalColumns = getValuesCount(context);
     const entries: {[prop: string]: DebugStylingContextEntry} = {};
-    const start = getPropValuesStartPosition(context);
+    const start = getPropValuesStartPosition(context, this._tNode, this._isClassBased);
     let i = start;
     while (i < context.length) {
       const prop = getProp(context, i);
@@ -351,10 +355,10 @@ export class NodeStylingDebug implements DebugNodeStyling {
   private _debugContext: DebugStylingContext;
 
   constructor(
-      context: TStylingContext|DebugStylingContext, private _data: LStylingData,
-      private _isClassBased: boolean) {
+      context: TStylingContext|DebugStylingContext, private _tNode: TStylingNode,
+      private _data: LStylingData, private _isClassBased: boolean) {
     this._debugContext = isStylingContext(context) ?
-        new TStylingContextDebug(context as TStylingContext, _isClassBased) :
+        new TStylingContextDebug(context as TStylingContext, _tNode, _isClassBased) :
         (context as DebugStylingContext);
   }
 
@@ -421,7 +425,7 @@ export class NodeStylingDebug implements DebugNodeStyling {
     });
   }
 
-  get config() { return buildConfig(this.context.context); }
+  get config() { return buildConfig(this._tNode, this._isClassBased); }
 
   /**
    * Returns a key/value map of all the styles/classes that were last applied to the element.
@@ -447,7 +451,7 @@ export class NodeStylingDebug implements DebugNodeStyling {
 
   private _convertMapBindingsToStylingMapArrays(data: LStylingData) {
     const context = this.context.context;
-    const limit = getPropValuesStartPosition(context);
+    const limit = getPropValuesStartPosition(context, this._tNode, this._isClassBased);
     for (let i =
              TStylingContextIndex.ValuesStartPosition + TStylingContextIndex.BindingsStartOffset;
          i < limit; i++) {
@@ -467,7 +471,9 @@ export class NodeStylingDebug implements DebugNodeStyling {
     // element is only used when the styling algorithm attempts to
     // style the value (and we mock out the stylingApplyFn anyway).
     const mockElement = {} as any;
-    const hasMaps = hasConfig(this.context.context, TStylingConfig.HasMapBindings);
+    const mapBindingsFlag =
+        this._isClassBased ? TNodeFlags.hasClassMapBindings : TNodeFlags.hasStyleMapBindings;
+    const hasMaps = hasConfig(this._tNode, mapBindingsFlag);
     if (hasMaps) {
       activateStylingMapFeature();
     }
@@ -480,25 +486,34 @@ export class NodeStylingDebug implements DebugNodeStyling {
 
     // run the template bindings
     applyStylingViaContext(
-        this.context.context, null, mockElement, data, true, mapFn, sanitizer, false);
+        this.context.context, this._tNode, null, mockElement, data, true, mapFn, sanitizer, false,
+        this._isClassBased);
 
     // and also the host bindings
     applyStylingViaContext(
-        this.context.context, null, mockElement, data, true, mapFn, sanitizer, true);
+        this.context.context, this._tNode, null, mockElement, data, true, mapFn, sanitizer, true,
+        this._isClassBased);
   }
 }
 
-function buildConfig(context: TStylingContext) {
-  const hasMapBindings = hasConfig(context, TStylingConfig.HasMapBindings);
-  const hasPropBindings = hasConfig(context, TStylingConfig.HasPropBindings);
-  const hasCollisions = hasConfig(context, TStylingConfig.HasCollisions);
-  const hasTemplateBindings = hasConfig(context, TStylingConfig.HasTemplateBindings);
-  const hasHostBindings = hasConfig(context, TStylingConfig.HasHostBindings);
+function buildConfig(tNode: TStylingNode, isClassBased: boolean): DebugStylingConfig {
+  const hasMapBindings = hasConfig(
+      tNode, isClassBased ? TNodeFlags.hasClassMapBindings : TNodeFlags.hasStyleMapBindings);
+  const hasPropBindings = hasConfig(
+      tNode, isClassBased ? TNodeFlags.hasClassPropBindings : TNodeFlags.hasStylePropBindings);
+  const hasCollisions = hasConfig(
+      tNode,
+      isClassBased ? TNodeFlags.hasDuplicateClassBindings : TNodeFlags.hasDuplicateStyleBindings);
+  const hasTemplateBindings = hasConfig(
+      tNode,
+      isClassBased ? TNodeFlags.hasTemplateClassBindings : TNodeFlags.hasTemplateStyleBindings);
+  const hasHostBindings = hasConfig(
+      tNode, isClassBased ? TNodeFlags.hasHostClassBindings : TNodeFlags.hasHostStyleBindings);
 
   // `firstTemplatePass` here is false because the context has already been constructed
   // directly within the behavior of the debugging tools (outside of style/class debugging,
   // the context is constructed during the first template pass).
-  const allowDirectStyling = _allowDirectStyling(context, false);
+  const allowDirectStyling = _allowDirectStyling(tNode, isClassBased, false);
   return {
       hasMapBindings,       //
       hasPropBindings,      //
