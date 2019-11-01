@@ -81,6 +81,7 @@ export class InjectableDecoratorHandler implements
       const factoryRes = compileNgFactoryDefField({
         name: meta.name,
         type: meta.type,
+        internalType: meta.internalType,
         typeArgumentCount: meta.typeArgumentCount,
         deps: analysis.ctorDeps,
         injectFn: Identifiers.inject,
@@ -114,6 +115,7 @@ function extractInjectableMetadata(
     reflector: ReflectionHost): R3InjectableMetadata {
   const name = clazz.name.text;
   const type = new WrappedNodeExpr(clazz.name);
+  const internalType = new WrappedNodeExpr(reflector.getInternalNameOfClass(clazz));
   const typeArgumentCount = reflector.getGenericArityOfClass(clazz) || 0;
   if (decorator.args === null) {
     throw new FatalDiagnosticError(
@@ -125,6 +127,7 @@ function extractInjectableMetadata(
       name,
       type,
       typeArgumentCount,
+      internalType,
       providedIn: new LiteralExpr(null),
     };
   } else if (decorator.args.length === 1) {
@@ -159,6 +162,7 @@ function extractInjectableMetadata(
         name,
         type,
         typeArgumentCount,
+        internalType,
         providedIn,
         useValue: new WrappedNodeExpr(unwrapForwardRef(meta.get('useValue') !, reflector)),
       };
@@ -167,6 +171,7 @@ function extractInjectableMetadata(
         name,
         type,
         typeArgumentCount,
+        internalType,
         providedIn,
         useExisting: new WrappedNodeExpr(unwrapForwardRef(meta.get('useExisting') !, reflector)),
       };
@@ -175,6 +180,7 @@ function extractInjectableMetadata(
         name,
         type,
         typeArgumentCount,
+        internalType,
         providedIn,
         useClass: new WrappedNodeExpr(unwrapForwardRef(meta.get('useClass') !, reflector)),
         userDeps,
@@ -186,11 +192,12 @@ function extractInjectableMetadata(
         name,
         type,
         typeArgumentCount,
+        internalType,
         providedIn,
         useFactory: factory, userDeps,
       };
     } else {
-      return {name, type, typeArgumentCount, providedIn};
+      return {name, type, typeArgumentCount, internalType, providedIn};
     }
   } else {
     throw new FatalDiagnosticError(
