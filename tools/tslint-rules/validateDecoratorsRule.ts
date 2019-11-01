@@ -114,7 +114,8 @@ class Walker extends Lint.RuleWalker {
 
     if (missing.length) {
       // Exit early if any of the properties are missing.
-      this.addFailureAtNode(decorator.parent, 'Missing required properties: ' + missing.join(', '));
+      this.addFailureAtNode(decorator.expression,
+          'Missing required properties: ' + missing.join(', '));
     } else {
       // If all the necessary properties are defined, ensure that
       // they match the pattern and aren't in the forbidden list.
