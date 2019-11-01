@@ -5,8 +5,8 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
-import {PropertyAliases, TNode, TNodeFlags} from '../interfaces/node';
-import {LStylingData, StylingMapArray, StylingMapArrayIndex, TStylingConfig, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from '../interfaces/styling';
+import {PropertyAliases, TNodeFlags} from '../interfaces/node';
+import {LStylingData, StylingMapArray, StylingMapArrayIndex, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags, TStylingNode} from '../interfaces/styling';
 import {NO_CHANGE} from '../tokens';
 
 export const MAP_BASED_ENTRY_PROP_NAME = '[MAP]';
@@ -44,17 +44,9 @@ export const DEFAULT_GUARD_MASK_VALUE = 0b1;
 export function allocTStylingContext(
     initialStyling: StylingMapArray | null, hasDirectives: boolean): TStylingContext {
   initialStyling = initialStyling || allocStylingMapArray(null);
-  let config = TStylingConfig.Initial;
-  if (hasDirectives) {
-    config |= TStylingConfig.HasDirectives;
-  }
-  if (initialStyling.length > StylingMapArrayIndex.ValuesStartPosition) {
-    config |= TStylingConfig.HasInitialStyling;
-  }
   return [
-    config,                 // 1) config for the styling context
-    DEFAULT_TOTAL_SOURCES,  // 2) total amount of styling sources (template, directives, etc...)
-    initialStyling,         // 3) initial styling values
+    DEFAULT_TOTAL_SOURCES,  // 1) total amount of styling sources (template, directives, etc...)
+    initialStyling,         // 2) initial styling values
   ];
 }
 
@@ -62,12 +54,8 @@ export function allocStylingMapArray(value: {} | string | null): StylingMapArray
   return [value];
 }
 
-export function getConfig(context: TStylingContext) {
-  return context[TStylingContextIndex.ConfigPosition];
-}
-
-export function hasConfig(context: TStylingContext, flag: TStylingConfig) {
-  return (getConfig(context) & flag) !== 0;
+export function hasConfig(tNode: TStylingNode, flag: TNodeFlags) {
+  return (tNode.flags & flag) !== 0;
 }
 
 /**
@@ -81,36 +69,35 @@ export function hasConfig(context: TStylingContext, flag: TStylingConfig) {
  * 3. There are no collisions (i.e. properties with more than one binding) across multiple
  *    sources (i.e. template + directive, directive + directive, directive + component)
  */
-export function allowDirectStyling(context: TStylingContext, firstUpdatePass: boolean): boolean {
+export function allowDirectStyling(
+    tNode: TStylingNode, isClassBased: boolean, firstUpdatePass: boolean): boolean {
   let allow = false;
-  const config = getConfig(context);
-  const hasNoDirectives = (config & TStylingConfig.HasDirectives) === 0;
 
   // if no directives are present then we do not need populate a context at all. This
   // is because duplicate prop bindings cannot be registered through the template. If
   // and when this happens we can safely apply the value directly without context
   // resolution...
-  if (hasNoDirectives) {
+  const hasDirectives = hasConfig(tNode, TNodeFlags.hasHostBindings);
+  if (!hasDirectives) {
     // `ngDevMode` is required to be checked here because tests/debugging rely on the context being
     // populated. If things are in production mode then there is no need to build a context
     // therefore the direct apply can be allowed (even on the first update).
     allow = ngDevMode ? !firstUpdatePass : true;
   } else if (!firstUpdatePass) {
-    const hasNoCollisions = (config & TStylingConfig.HasCollisions) === 0;
-    const hasOnlyMapsOrOnlyProps =
-        (config & TStylingConfig.HasPropAndMapBindings) !== TStylingConfig.HasPropAndMapBindings;
-    allow = hasNoCollisions && hasOnlyMapsOrOnlyProps;
+    const duplicateStylingFlag =
+        isClassBased ? TNodeFlags.hasDuplicateClassBindings : TNodeFlags.hasDuplicateStyleBindings;
+    const hasDuplicates = hasConfig(tNode, duplicateStylingFlag);
+    const hasOnlyMapOrPropsFlag = isClassBased ? TNodeFlags.hasClassPropAndMapBindings :
+                                                 TNodeFlags.hasStylePropAndMapBindings;
+    const hasOnlyMapsOrOnlyProps = (tNode.flags & hasOnlyMapOrPropsFlag) !== hasOnlyMapOrPropsFlag;
+    allow = !hasDuplicates && hasOnlyMapsOrOnlyProps;
   }
 
   return allow;
 }
 
-export function setConfig(context: TStylingContext, value: TStylingConfig): void {
-  context[TStylingContextIndex.ConfigPosition] = value;
-}
-
-export function patchConfig(context: TStylingContext, flag: TStylingConfig): void {
-  context[TStylingContextIndex.ConfigPosition] |= flag;
+export function patchConfig(tNode: TStylingNode, flag: TNodeFlags): void {
+  tNode.flags |= flag;
 }
 
 export function getProp(context: TStylingContext, index: number): string {
@@ -173,9 +160,11 @@ export function getValue<T = any>(data: LStylingData, bindingIndex: number): T|n
   return bindingIndex !== 0 ? data[bindingIndex] as T : null;
 }
 
-export function getPropValuesStartPosition(context: TStylingContext) {
+export function getPropValuesStartPosition(
+    context: TStylingContext, tNode: TStylingNode, isClassBased: boolean) {
   let startPosition = TStylingContextIndex.ValuesStartPosition;
-  if (hasConfig(context, TStylingConfig.HasMapBindings)) {
+  const flag = isClassBased ? TNodeFlags.hasClassMapBindings : TNodeFlags.hasStyleMapBindings;
+  if (hasConfig(tNode, flag)) {
     startPosition += TStylingContextIndex.BindingsStartOffset + getValuesCount(context);
   }
   return startPosition;
@@ -247,11 +236,11 @@ export function getInitialStylingValue(context: TStylingContext | StylingMapArra
   return map && (map[StylingMapArrayIndex.RawValuePosition] as string | null) || '';
 }
 
-export function hasClassInput(tNode: TNode) {
+export function hasClassInput(tNode: TStylingNode) {
   return (tNode.flags & TNodeFlags.hasClassInput) !== 0;
 }
 
-export function hasStyleInput(tNode: TNode) {
+export function hasStyleInput(tNode: TStylingNode) {
   return (tNode.flags & TNodeFlags.hasStyleInput) !== 0;
 }
 
