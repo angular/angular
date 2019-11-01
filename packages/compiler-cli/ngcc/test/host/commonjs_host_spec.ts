@@ -147,6 +147,24 @@ var NoDecoratorConstructorClass = (function() {
   }
   return NoDecoratorConstructorClass;
 }());
+var OuterClass1 = (function() {
+  function InnerClass1() {
+  }
+  return InnerClass1;
+}());
+var OuterClass2 = (function() {
+  function InnerClass2() {
+  }
+  InnerClass2_1 = InnerClass12
+  var InnerClass2_1;
+  return InnerClass2;
+}());
+var SuperClass = (function() { function SuperClass() {} return SuperClass; }());
+var ChildClass = /** @class */ (function (_super) {
+  __extends(ChildClass, _super);
+  function InnerChildClass() {}
+  return InnerChildClass;
+}(SuperClass);
 exports.EmptyClass = EmptyClass;
 exports.NoDecoratorConstructorClass = NoDecoratorConstructorClass;
 `,
@@ -2210,6 +2228,54 @@ exports.ExternalModule = ExternalModule;
              expect(internalClass2DtsDeclaration !.getSourceFile().fileName)
                  .toEqual(_('/typings/class2.d.ts'));
            });
+      });
+
+      describe('getInternalNameOfClass()', () => {
+        it('should return the name of the inner class declaration', () => {
+          loadTestFiles([SIMPLE_CLASS_FILE]);
+          const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+
+          const emptyClass = getDeclaration(
+              program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+          expect(host.getInternalNameOfClass(emptyClass).text).toEqual('EmptyClass');
+
+          const class1 = getDeclaration(
+              program, SIMPLE_CLASS_FILE.name, 'OuterClass1', isNamedVariableDeclaration);
+          expect(host.getInternalNameOfClass(class1).text).toEqual('InnerClass1');
+
+          const class2 = getDeclaration(
+              program, SIMPLE_CLASS_FILE.name, 'OuterClass2', isNamedVariableDeclaration);
+          expect(host.getInternalNameOfClass(class2).text).toEqual('InnerClass2');
+
+          const childClass = getDeclaration(
+              program, SIMPLE_CLASS_FILE.name, 'ChildClass', isNamedVariableDeclaration);
+          expect(host.getInternalNameOfClass(childClass).text).toEqual('InnerChildClass');
+        });
+      });
+
+      describe('getAdjacentNameOfClass()', () => {
+        it('should return the name of the inner class declaration', () => {
+          loadTestFiles([SIMPLE_CLASS_FILE]);
+          const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+
+          const emptyClass = getDeclaration(
+              program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+          expect(host.getAdjacentNameOfClass(emptyClass).text).toEqual('EmptyClass');
+
+          const class1 = getDeclaration(
+              program, SIMPLE_CLASS_FILE.name, 'OuterClass1', isNamedVariableDeclaration);
+          expect(host.getAdjacentNameOfClass(class1).text).toEqual('InnerClass1');
+
+          const class2 = getDeclaration(
+              program, SIMPLE_CLASS_FILE.name, 'OuterClass2', isNamedVariableDeclaration);
+          expect(host.getAdjacentNameOfClass(class2).text).toEqual('InnerClass2');
+
+          const childClass = getDeclaration(
+              program, SIMPLE_CLASS_FILE.name, 'ChildClass', isNamedVariableDeclaration);
+          expect(host.getAdjacentNameOfClass(childClass).text).toEqual('InnerChildClass');
+        });
       });
 
       describe('getModuleWithProvidersFunctions', () => {
