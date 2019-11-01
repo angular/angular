@@ -18,7 +18,6 @@ export class ChipsAutocompleteExample {
   visible = true;
   selectable = true;
   removable = true;
-  addOnBlur = true;
   separatorKeysCodes: number[] = [ENTER, COMMA];
   fruitCtrl = new FormControl();
   filteredFruits: Observable<string[]>;
@@ -35,24 +34,20 @@ export class ChipsAutocompleteExample {
   }
 
   add(event: MatChipInputEvent): void {
-    // Add fruit only when MatAutocomplete is not open
-    // To make sure this does not conflict with OptionSelected Event
-    if (!this.matAutocomplete.isOpen) {
-      const input = event.input;
-      const value = event.value;
+    const input = event.input;
+    const value = event.value;
 
-      // Add our fruit
-      if ((value || '').trim()) {
-        this.fruits.push(value.trim());
-      }
-
-      // Reset the input value
-      if (input) {
-        input.value = '';
-      }
-
-      this.fruitCtrl.setValue(null);
+    // Add our fruit
+    if ((value || '').trim()) {
+      this.fruits.push(value.trim());
     }
+
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+
+    this.fruitCtrl.setValue(null);
   }
 
   remove(fruit: string): void {
