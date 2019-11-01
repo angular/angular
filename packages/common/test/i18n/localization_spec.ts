@@ -10,19 +10,20 @@ import localeRo from '@angular/common/locales/ro';
 import localeSr from '@angular/common/locales/sr';
 import localeZgh from '@angular/common/locales/zgh';
 import localeFr from '@angular/common/locales/fr';
-import {LOCALE_ID} from '@angular/core';
+import {LOCALE_ID, ɵunregisterLocaleData, ɵregisterLocaleData} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
 import {NgLocaleLocalization, NgLocalization, getPluralCategory} from '@angular/common/src/i18n/localization';
-import {registerLocaleData} from '../../src/i18n/locale_data';
 
 {
   describe('l10n', () => {
     beforeAll(() => {
-      registerLocaleData(localeRo);
-      registerLocaleData(localeSr);
-      registerLocaleData(localeZgh);
-      registerLocaleData(localeFr);
+      ɵregisterLocaleData(localeRo);
+      ɵregisterLocaleData(localeSr);
+      ɵregisterLocaleData(localeZgh);
+      ɵregisterLocaleData(localeFr);
     });
+
+    afterAll(() => ɵunregisterLocaleData());
 
     describe('NgLocalization', () => {
       function roTests() {
