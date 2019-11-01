@@ -29,7 +29,7 @@ declare global {
   const ngDevMode: null|NgDevModePerfCounters;
   interface NgDevModePerfCounters {
     namedConstructors: boolean;
-    firstTemplatePass: number;
+    firstCreatePass: number;
     tNode: number;
     tView: number;
     rendererCreateTextNode: number;
@@ -69,7 +69,7 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
   const locationString = typeof location !== 'undefined' ? location.toString() : '';
   const newCounters: NgDevModePerfCounters = {
     namedConstructors: locationString.indexOf('ngDevMode=namedConstructors') != -1,
-    firstTemplatePass: 0,
+    firstCreatePass: 0,
     tNode: 0,
     tView: 0,
     rendererCreateTextNode: 0,

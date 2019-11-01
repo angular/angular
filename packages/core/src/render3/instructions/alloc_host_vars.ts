@@ -22,7 +22,7 @@ import {NO_CHANGE} from '../tokens';
 export function ɵɵallocHostVars(count: number): void {
   const lView = getLView();
   const tView = lView[TVIEW];
-  if (!tView.firstTemplatePass) return;
+  if (!tView.firstCreatePass) return;
   queueHostBindingForCheck(tView, getCurrentDirectiveDef() !, count);
   prefillHostVars(tView, lView, count);
 }
@@ -34,7 +34,7 @@ export function ɵɵallocHostVars(count: number): void {
 function queueHostBindingForCheck(
     tView: TView, def: DirectiveDef<any>| ComponentDef<any>, hostVars: number): void {
   ngDevMode &&
-      assertEqual(tView.firstTemplatePass, true, 'Should only be called in first template pass.');
+      assertEqual(tView.firstCreatePass, true, 'Should only be called in first create pass.');
   const expando = tView.expandoInstructions !;
   const length = expando.length;
   // Check whether a given `hostBindings` function already exists in expandoInstructions,
@@ -56,7 +56,7 @@ function queueHostBindingForCheck(
  */
 function prefillHostVars(tView: TView, lView: LView, totalHostVars: number): void {
   ngDevMode &&
-      assertEqual(tView.firstTemplatePass, true, 'Should only be called in first template pass.');
+      assertEqual(tView.firstCreatePass, true, 'Should only be called in first create pass.');
   for (let i = 0; i < totalHostVars; i++) {
     lView.push(NO_CHANGE);
     tView.blueprint.push(NO_CHANGE);

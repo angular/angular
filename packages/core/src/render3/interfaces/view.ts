@@ -360,10 +360,10 @@ export interface TView {
    */
   node: TViewNode|TElementNode|null;
 
-  /** Whether or not this template has been processed. */
-  firstTemplatePass: boolean;
+  /** Whether or not this template has been processed in creation mode. */
+  firstCreatePass: boolean;
 
-  /** Whether or not the first update for this element has been processed. */
+  /** Whether or not the first update for this template has been processed. */
   firstUpdatePass: boolean;
 
   /** Static data equivalent of LView.data[]. Contains TNodes, PipeDefInternal or TI18n. */

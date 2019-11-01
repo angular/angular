@@ -34,7 +34,7 @@ export function ɵɵpipe(index: number, pipeName: string): any {
   let pipeDef: PipeDef<any>;
   const adjustedIndex = index + HEADER_OFFSET;
 
-  if (tView.firstTemplatePass) {
+  if (tView.firstCreatePass) {
     pipeDef = getPipeDef(pipeName, tView.pipeRegistry);
     tView.data[adjustedIndex] = pipeDef;
     if (pipeDef.onDestroy) {

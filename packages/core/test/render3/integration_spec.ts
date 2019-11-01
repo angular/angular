@@ -34,7 +34,7 @@ describe('render3 integration test', () => {
         expect(renderToHtml(Template, 'once', 1, 1)).toEqual('once');
         expect(renderToHtml(Template, 'twice', 1, 1)).toEqual('once');
         expect(ngDevMode).toHaveProperties({
-          firstTemplatePass: 0,
+          firstCreatePass: 0,
           tNode: 2,
           tView: 2,  // 1 for root view, 1 for template
           rendererSetText: 1,

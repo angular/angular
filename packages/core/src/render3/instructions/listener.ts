@@ -114,8 +114,8 @@ function listenerInternal(
     eventTargetResolver?: GlobalTargetResolver): void {
   const tView = lView[TVIEW];
   const isTNodeDirectiveHost = isDirectiveHost(tNode);
-  const firstTemplatePass = tView.firstTemplatePass;
-  const tCleanup: false|any[] = firstTemplatePass && (tView.cleanup || (tView.cleanup = []));
+  const firstCreatePass = tView.firstCreatePass;
+  const tCleanup: false|any[] = firstCreatePass && (tView.cleanup || (tView.cleanup = []));
 
   ngDevMode && assertNodeOfPossibleTypes(
                    tNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer);

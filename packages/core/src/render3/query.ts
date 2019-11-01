@@ -17,7 +17,7 @@ import {ViewContainerRef} from '../linker/view_container_ref';
 import {assertDataInRange, assertDefined, throwError} from '../util/assert';
 import {stringify} from '../util/stringify';
 
-import {assertFirstTemplatePass, assertLContainer} from './assert';
+import {assertFirstCreatePass, assertLContainer} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';
 import {storeCleanupWithContext} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS} from './interfaces/container';
@@ -89,7 +89,7 @@ class TQueries_ implements TQueries {
   constructor(private queries: TQuery[] = []) {}
 
   elementStart(tView: TView, tNode: TNode): void {
-    ngDevMode && assertFirstTemplatePass(
+    ngDevMode && assertFirstCreatePass(
                      tView, 'Queries should collect results on the first template pass only');
     for (let i = 0; i < this.queries.length; i++) {
       this.queries[i].elementStart(tView, tNode);
@@ -121,7 +121,7 @@ class TQueries_ implements TQueries {
   }
 
   template(tView: TView, tNode: TNode): void {
-    ngDevMode && assertFirstTemplatePass(
+    ngDevMode && assertFirstCreatePass(
                      tView, 'Queries should collect results on the first template pass only');
     for (let i = 0; i < this.queries.length; i++) {
       this.queries[i].template(tView, tNode);
@@ -439,7 +439,7 @@ function viewQueryInternal<T>(
     lView: LView, predicate: Type<any>| string[], descend: boolean, read: any,
     isStatic: boolean): void {
   const tView = lView[TVIEW];
-  if (tView.firstTemplatePass) {
+  if (tView.firstCreatePass) {
     createTQuery(tView, new TQueryMetadata_(predicate, descend, isStatic, read), -1);
     if (isStatic) {
       tView.staticViewQueries = true;
@@ -488,7 +488,7 @@ function contentQueryInternal<T>(
     lView: LView, predicate: Type<any>| string[], descend: boolean, read: any, isStatic: boolean,
     tNode: TNode, directiveIndex: number): void {
   const tView = lView[TVIEW];
-  if (tView.firstTemplatePass) {
+  if (tView.firstCreatePass) {
     createTQuery(tView, new TQueryMetadata_(predicate, descend, isStatic, read), tNode.index);
     saveContentQueryAndDirectiveIndex(tView, directiveIndex);
     if (isStatic) {

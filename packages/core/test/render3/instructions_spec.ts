@@ -45,7 +45,7 @@ describe('instructions', () => {
       t.update(() => { ɵɵproperty('title', 'World'); });
       expect(t.html).toEqual('<a title="World"></a>');
       expect(ngDevMode).toHaveProperties({
-        firstTemplatePass: 1,
+        firstCreatePass: 1,
         tNode: 2,  // 1 for hostElement + 1 for the template under test
         tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
@@ -64,7 +64,7 @@ describe('instructions', () => {
          t.update();
          expect(t.html).toEqual('<a title="Hello"></a>');
          expect(ngDevMode).toHaveProperties({
-           firstTemplatePass: 1,
+           firstCreatePass: 1,
            tNode: 2,  // 1 for hostElement + 1 for the template under test
            tView: 2,  // 1 for rootView + 1 for the template view
            rendererCreateElement: 1,
@@ -83,7 +83,7 @@ describe('instructions', () => {
       expect(div.id).toEqual('test');
       expect(div.title).toEqual('Hello');
       expect(ngDevMode).toHaveProperties({
-        firstTemplatePass: 1,
+        firstCreatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
         tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
@@ -103,7 +103,7 @@ describe('instructions', () => {
       });
       expect(t.html).toEqual('<div title="javascript:true"></div>');
       expect(ngDevMode).toHaveProperties({
-        firstTemplatePass: 1,
+        firstCreatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
         tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
@@ -126,7 +126,7 @@ describe('instructions', () => {
       t.update(() => { ɵɵproperty('title', 'two')('accessKey', 'B'); });
       expect(t.html).toEqual('<div accesskey="B" title="two"></div>');
       expect(ngDevMode).toHaveProperties({
-        firstTemplatePass: 1,
+        firstCreatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
         tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,

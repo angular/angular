@@ -97,7 +97,7 @@ let nextNgElementId = 0;
  */
 export function bloomAdd(
     injectorIndex: number, tView: TView, type: Type<any>| InjectionToken<any>| string): void {
-  ngDevMode && assertEqual(tView.firstTemplatePass, true, 'expected firstTemplatePass to be true');
+  ngDevMode && assertEqual(tView.firstCreatePass, true, 'expected firstCreatePass to be true');
   let id: number|undefined =
       typeof type !== 'string' ? (type as any)[NG_ELEMENT_ID] : type.charCodeAt(0) || 0;
 
@@ -147,7 +147,7 @@ export function getOrCreateNodeInjectorForNode(
   }
 
   const tView = hostView[TVIEW];
-  if (tView.firstTemplatePass) {
+  if (tView.firstCreatePass) {
     tNode.injectorIndex = hostView.length;
     insertBloom(tView.data, tNode);  // foundation for node bloom
     insertBloom(hostView, null);     // foundation for cumulative bloom

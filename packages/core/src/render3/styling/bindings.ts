@@ -145,7 +145,7 @@ function updateBindingData(
   const hostBindingsMode = isHostStylingActive(sourceIndex);
   if (!isContextLocked(context, hostBindingsMode)) {
     // this will only happen during the first update pass of the
-    // context. The reason why we can't use `tNode.firstTemplatePass`
+    // context. The reason why we can't use `tView.firstCreatePass`
     // here is because its not guaranteed to be true when the first
     // update pass is executed (remember that all styling instructions
     // are run in the update phase, and, as a result, are no more

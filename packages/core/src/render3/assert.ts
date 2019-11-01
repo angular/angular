@@ -68,7 +68,7 @@ export function assertLView(value: any) {
   assertEqual(isLView(value), true, 'Expecting LView');
 }
 
-export function assertFirstTemplatePass(tView: TView, errMessage?: string) {
+export function assertFirstCreatePass(tView: TView, errMessage?: string) {
   assertEqual(
-      tView.firstTemplatePass, true, errMessage || 'Should only be called in first template pass.');
+      tView.firstCreatePass, true, errMessage || 'Should only be called in first create pass.');
 }

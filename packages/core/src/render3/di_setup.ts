@@ -44,7 +44,7 @@ export function providersResolver<T>(
     def: DirectiveDef<T>, providers: Provider[], viewProviders: Provider[]): void {
   const lView = getLView();
   const tView: TView = lView[TVIEW];
-  if (tView.firstTemplatePass) {
+  if (tView.firstCreatePass) {
     const isComponent = isComponentDef(def);
 
     // The list of view providers is processed first, and the flags are updated
