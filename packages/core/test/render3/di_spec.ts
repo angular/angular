@@ -145,7 +145,7 @@ describe('di', () => {
     describe('bloom filter', () => {
       let mockTView: any;
       beforeEach(() => {
-        mockTView = {data: [0, 0, 0, 0, 0, 0, 0, 0, null], firstTemplatePass: true};
+        mockTView = {data: [0, 0, 0, 0, 0, 0, 0, 0, null], firstCreatePass: true};
       });
 
       function bloomState() { return mockTView.data.slice(0, TNODE).reverse(); }

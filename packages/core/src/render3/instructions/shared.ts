@@ -14,7 +14,7 @@ import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGrea
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
-import {assertFirstTemplatePass, assertLView} from '../assert';
+import {assertFirstCreatePass, assertLView} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {getFactoryDef} from '../definition';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
@@ -279,7 +279,7 @@ export function allocExpando(view: LView, numSlotsToAlloc: number) {
                    numSlotsToAlloc, 0, 'The number of slots to alloc should be greater than 0');
   if (numSlotsToAlloc > 0) {
     const tView = view[TVIEW];
-    if (tView.firstTemplatePass) {
+    if (tView.firstCreatePass) {
       for (let i = 0; i < numSlotsToAlloc; i++) {
         tView.blueprint.push(null);
         tView.data.push(null);
@@ -330,10 +330,10 @@ export function renderView<T>(lView: LView, tView: TView, context: T): void {
     // This needs to be set before children are processed to support recursive components.
     // This must be set to false immediately after the first creation run because in an
     // ngFor loop, all the views will be created together before update mode runs and turns
-    // off firstTemplatePass. If we don't set it here, instances will perform directive
+    // off firstCreatePass. If we don't set it here, instances will perform directive
     // matching, etc again and again.
-    if (tView.firstTemplatePass) {
-      tView.firstTemplatePass = false;
+    if (tView.firstCreatePass) {
+      tView.firstCreatePass = false;
     }
 
     // We resolve content queries specifically marked as `static` in creation mode. Dynamic
@@ -611,7 +611,7 @@ export function createTView(
              bindingStartIndex,  // bindingStartIndex: number,
              initialViewLength,  // expandoStartIndex: number,
              null,               // expandoInstructions: ExpandoInstructions|null,
-             true,               // firstTemplatePass: boolean,
+             true,               // firstCreatePass: boolean,
              true,               // firstUpdatePass: boolean,
              false,              // staticViewQueries: boolean,
              false,              // staticContentQueries: boolean,
@@ -643,7 +643,7 @@ export function createTView(
         bindingStartIndex: bindingStartIndex,
         expandoStartIndex: initialViewLength,
         expandoInstructions: null,
-        firstTemplatePass: true,
+        firstCreatePass: true,
         firstUpdatePass: true,
         staticViewQueries: false,
         staticContentQueries: false,
@@ -714,7 +714,7 @@ export function storeCleanupWithContext(lView: LView, context: any, cleanupFn: F
   const lCleanup = getCleanup(lView);
   lCleanup.push(context);
 
-  if (lView[TVIEW].firstTemplatePass) {
+  if (lView[TVIEW].firstCreatePass) {
     getTViewCleanup(lView).push(cleanupFn, lCleanup.length - 1);
   }
 }
@@ -730,7 +730,7 @@ export function storeCleanupWithContext(lView: LView, context: any, cleanupFn: F
 export function storeCleanupFn(view: LView, cleanupFn: Function): void {
   getCleanup(view).push(cleanupFn);
 
-  if (view[TVIEW].firstTemplatePass) {
+  if (view[TVIEW].firstCreatePass) {
     getTViewCleanup(view).push(view[CLEANUP] !.length - 1, null);
   }
 }
@@ -834,7 +834,7 @@ function generatePropertyAliases(
  * Initialization is done for all directives matched on a given TNode.
  */
 function initializeInputAndOutputAliases(tView: TView, tNode: TNode): void {
-  ngDevMode && assertFirstTemplatePass(tView);
+  ngDevMode && assertFirstCreatePass(tView);
 
   const start = tNode.directiveStart;
   const end = tNode.directiveEnd;
@@ -1025,7 +1025,7 @@ function warnAboutUnknownProperty(propName: string, tNode: TNode): void {
  */
 export function instantiateRootComponent<T>(tView: TView, lView: LView, def: ComponentDef<T>): T {
   const rootTNode = getPreviousOrParentTNode();
-  if (tView.firstTemplatePass) {
+  if (tView.firstCreatePass) {
     if (def.providersResolver) def.providersResolver(def);
     generateExpandoInstructionBlock(tView, rootTNode, 1);
     baseResolveDirective(tView, lView, def);
@@ -1048,7 +1048,7 @@ export function resolveDirectives(
     localRefs: string[] | null): boolean {
   // Please make sure to have explicit type for `exportsMap`. Inferred type triggers bug in
   // tsickle.
-  ngDevMode && assertFirstTemplatePass(tView);
+  ngDevMode && assertFirstCreatePass(tView);
 
   if (!getBindingsEnabled()) return false;
 
@@ -1105,7 +1105,7 @@ function instantiateAllDirectives(
     tView: TView, lView: LView, tNode: TDirectiveHostNode, native: RNode) {
   const start = tNode.directiveStart;
   const end = tNode.directiveEnd;
-  if (!tView.firstTemplatePass) {
+  if (!tView.firstCreatePass) {
     getOrCreateNodeInjectorForNode(tNode, lView);
   }
 
@@ -1139,7 +1139,7 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
   const start = tNode.directiveStart;
   const end = tNode.directiveEnd;
   const expando = tView.expandoInstructions !;
-  const firstTemplatePass = tView.firstTemplatePass;
+  const firstCreatePass = tView.firstCreatePass;
   const elementIndex = tNode.index - HEADER_OFFSET;
   try {
     setActiveHostElement(elementIndex);
@@ -1151,8 +1151,8 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
         // It is important that this be called first before the actual instructions
         // are run because this way the first directive ID value is not zero.
         incrementActiveDirectiveId();
-        invokeHostBindingsInCreationMode(def, expando, directive, tNode, firstTemplatePass);
-      } else if (firstTemplatePass) {
+        invokeHostBindingsInCreationMode(def, expando, directive, tNode, firstCreatePass);
+      } else if (firstCreatePass) {
         expando.push(null);
       }
     }
@@ -1163,7 +1163,7 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
 
 export function invokeHostBindingsInCreationMode(
     def: DirectiveDef<any>, expando: ExpandoInstructions, directive: any, tNode: TNode,
-    firstTemplatePass: boolean) {
+    firstCreatePass: boolean) {
   const previousExpandoLength = expando.length;
   setCurrentDirectiveDef(def);
   const elementIndex = tNode.index - HEADER_OFFSET;
@@ -1173,7 +1173,7 @@ export function invokeHostBindingsInCreationMode(
   // (e.g. it may not if it only contains host listeners), so we need to check whether
   // `expandoInstructions` has changed and if not - we still push `hostBindings` to
   // expando block, to make sure we execute it for DI cycle
-  if (previousExpandoLength === expando.length && firstTemplatePass) {
+  if (previousExpandoLength === expando.length && firstCreatePass) {
     expando.push(def.hostBindings);
   }
 }
@@ -1187,8 +1187,8 @@ export function invokeHostBindingsInCreationMode(
 export function generateExpandoInstructionBlock(
     tView: TView, tNode: TNode, directiveCount: number): void {
   ngDevMode && assertEqual(
-                   tView.firstTemplatePass, true,
-                   'Expando block should only be generated on first template pass.');
+                   tView.firstCreatePass, true,
+                   'Expando block should only be generated on first create pass.');
 
   const elementIndex = -(tNode.index - HEADER_OFFSET);
   const providerStartIndex = tNode.providerIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
@@ -1204,7 +1204,7 @@ export function generateExpandoInstructionBlock(
 function findDirectiveMatches(
     tView: TView, viewData: LView,
     tNode: TElementNode | TContainerNode | TElementContainerNode): DirectiveDef<any>[]|null {
-  ngDevMode && assertFirstTemplatePass(tView);
+  ngDevMode && assertFirstCreatePass(tView);
   ngDevMode && assertNodeOfPossibleTypes(
                    tNode, TNodeType.Element, TNodeType.ElementContainer, TNodeType.Container);
   const registry = tView.directiveRegistry;
@@ -1236,7 +1236,7 @@ function findDirectiveMatches(
  * - storing index of component's host element so it will be queued for view refresh during CD.
 */
 export function markAsComponentHost(tView: TView, hostTNode: TNode): void {
-  ngDevMode && assertFirstTemplatePass(tView);
+  ngDevMode && assertFirstCreatePass(tView);
   hostTNode.flags |= TNodeFlags.isComponentHost;
   (tView.components || (tView.components = ngDevMode ? new TViewComponents() : [
    ])).push(hostTNode.index);
