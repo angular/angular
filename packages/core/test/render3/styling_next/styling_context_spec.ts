@@ -5,10 +5,21 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {registerBinding} from '@angular/core/src/render3/styling/bindings';
+import {TStylingContext, TStylingNode} from '@angular/core/src/render3/interfaces/styling';
+import {registerBinding as _registerBinding} from '@angular/core/src/render3/styling/bindings';
 import {attachStylingDebugObject} from '@angular/core/src/render3/styling/styling_debug';
 
 import {DEFAULT_GUARD_MASK_VALUE, allocTStylingContext} from '../../../src/render3/util/styling_utils';
+
+function registerBinding(
+    context: TStylingContext, countId: number, sourceIndex: number, prop: string | null,
+    value: any) {
+  let tNode: TStylingNode = (context as any).tNode;
+  if (!tNode) {
+    tNode = (context as any).tNode = {flags: 0};
+  }
+  _registerBinding(context, tNode, countId, sourceIndex, prop, value, false, false);
+}
 
 describe('styling context', () => {
   it('should register a series of entries into the context', () => {
@@ -111,7 +122,9 @@ describe('styling context', () => {
 
 function makeContextWithDebug(isClassBased: boolean) {
   const ctx = allocTStylingContext(null, false);
-  return attachStylingDebugObject(ctx, isClassBased);
+  const tNode: TStylingNode = {flags: 0};
+  (ctx as any).tNode = ctx;
+  return attachStylingDebugObject(ctx, tNode, isClassBased);
 }
 
 function buildGuardMask(...bindingIndices: number[]) {
