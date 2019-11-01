@@ -38,7 +38,7 @@ export function ɵɵcontainer(index: number): void {
   const lView = getLView();
   const tNode = containerInternal(lView, index, null, null);
 
-  if (lView[TVIEW].firstTemplatePass) {
+  if (lView[TVIEW].firstCreatePass) {
     tNode.tViews = [];
   }
   setIsNotParent();
@@ -75,8 +75,8 @@ export function ɵɵtemplate(
   const tContainerNode = containerInternal(
       lView, index, tagName || null, getConstant(tViewConsts, attrsIndex) as TAttributes);
   const localRefs = getConstant(tViewConsts, localRefsIndex) as string[];
-  if (tView.firstTemplatePass) {
-    ngDevMode && ngDevMode.firstTemplatePass++;
+  if (tView.firstCreatePass) {
+    ngDevMode && ngDevMode.firstCreatePass++;
     resolveDirectives(tView, lView, tContainerNode, localRefs);
     registerPostOrderHooks(tView, tContainerNode);
 
