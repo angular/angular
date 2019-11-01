@@ -274,6 +274,7 @@ export function extractDirectiveMetadata(
     outputs: {...outputsFromMeta, ...outputsFromFields}, queries, viewQueries, selector,
     fullInheritance: !!(flags & HandlerFlags.FULL_INHERITANCE),
     type: new WrappedNodeExpr(clazz.name),
+    internalType: new WrappedNodeExpr(reflector.getInternalNameOfClass(clazz)),
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
     typeSourceSpan: EMPTY_SOURCE_SPAN, usesInheritance, exportAs, providers
   };

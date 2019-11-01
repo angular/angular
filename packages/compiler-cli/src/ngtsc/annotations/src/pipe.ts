@@ -51,6 +51,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
   analyze(clazz: ClassDeclaration, decorator: Decorator): AnalysisOutput<PipeHandlerData> {
     const name = clazz.name.text;
     const type = new WrappedNodeExpr(clazz.name);
+    const internalType = new WrappedNodeExpr(this.reflector.getInternalNameOfClass(clazz));
     if (decorator.args === null) {
       throw new FatalDiagnosticError(
           ErrorCode.DECORATOR_NOT_CALLED, Decorator.nodeForError(decorator),
@@ -97,6 +98,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
         meta: {
           name,
           type,
+          internalType,
           typeArgumentCount: this.reflector.getGenericArityOfClass(clazz) || 0, pipeName,
           deps: getValidConstructorDependencies(
               clazz, this.reflector, this.defaultImportRecorder, this.isCore),
