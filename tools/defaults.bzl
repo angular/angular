@@ -4,6 +4,7 @@ load("@build_bazel_rules_nodejs//:index.bzl", _nodejs_binary = "nodejs_binary", 
 load("@npm_bazel_jasmine//:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm_bazel_karma//:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm_bazel_typescript//:index.bzl", _ts_library = "ts_library")
+load("@npm_bazel_protractor//:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//tools/ng_rollup_bundle:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 load("//tools:ng_benchmark.bzl", _ng_benchmark = "ng_benchmark")
@@ -203,28 +204,19 @@ def karma_web_test_suite(bootstrap = [], deps = [], runtime_deps = [], **kwargs)
         "//tools/testing:browser",
     ] + runtime_deps
 
-    tags = kwargs.pop("tags", [])
-
-    # rules_webtesting has a required_tag "native" for `chromium-local` browser
-    if not "native" in tags:
-        tags = tags + ["native"]
-
     _karma_web_test_suite(
         runtime_deps = local_runtime_deps,
         bootstrap = bootstrap,
         deps = local_deps,
-        # Run unit tests on local Chromium by default.
-        # You can exclude tests based on tags, e.g. to skip Firefox testing,
-        #   `yarn bazel test --test_tag_filters=-browser:firefox-local [targets]`
-        browsers = [
-            "@io_bazel_rules_webtesting//browsers:chromium-local",
-            # Don't test on local Firefox by default, for faster builds.
-            # We think that bugs in Angular tend to be caught the same in any
-            # evergreen browser.
-            # "@io_bazel_rules_webtesting//browsers:firefox-local",
-            # TODO(alexeagle): add remote browsers on SauceLabs
-        ],
-        tags = tags,
+        browsers = ["//tools/browsers:chromium"],
+        **kwargs
+    )
+
+def protractor_web_test_suite(**kwargs):
+    """Default values for protractor_web_test_suite"""
+
+    _protractor_web_test_suite(
+        browsers = ["//tools/browsers:chromium"],
         **kwargs
     )
 
