@@ -47,7 +47,9 @@ export function runHarnessTests(
   });
 
   it('should be able to check whether a select is in multi-selection mode', async () => {
-    const singleSelection = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
+    const singleSelection = await loader.getHarness(selectHarness.with({
+      selector: '#single-selection'
+    }));
     const multipleSelection =
         await loader.getHarness(selectHarness.with({selector: '#multiple-selection'}));
 
@@ -56,7 +58,9 @@ export function runHarnessTests(
   });
 
   it('should get disabled state', async () => {
-    const singleSelection = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
+    const singleSelection = await loader.getHarness(selectHarness.with({
+      selector: '#single-selection'
+    }));
     const multipleSelection =
         await loader.getHarness(selectHarness.with({selector: '#multiple-selection'}));
 
@@ -71,7 +75,9 @@ export function runHarnessTests(
   });
 
   it('should get required state', async () => {
-    const singleSelection = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
+    const singleSelection = await loader.getHarness(selectHarness.with({
+      selector: '#single-selection'
+    }));
     const multipleSelection =
         await loader.getHarness(selectHarness.with({selector: '#multiple-selection'}));
 
@@ -86,8 +92,12 @@ export function runHarnessTests(
   });
 
   it('should get valid state', async () => {
-    const singleSelection = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
-    const withFormControl = await loader.getHarness(selectHarness.with({selector: '#with-form-control'}));
+    const singleSelection = await loader.getHarness(selectHarness.with({
+      selector: '#single-selection'
+    }));
+    const withFormControl = await loader.getHarness(selectHarness.with({
+      selector: '#with-form-control'
+    }));
 
     expect(await singleSelection.isValid()).toBe(true);
     expect(await withFormControl.isValid()).toBe(false);

@@ -5,7 +5,12 @@
     "node_modules/codelyzer"
   ],
   "rules": {
-    "max-line-length": [true, 100],
+    "max-line-length": [true, {
+        "limit": 100,
+        "check-strings": true,
+        "check-regex": true
+      }
+    ],
     // Disable this flag because of SHA tslint#48b0c597f9257712c7d1f04b55ed0aa60e333f6a
     // TSLint now shows warnings if types for properties are inferred. This rule needs to be
     // disabled because all properties need to have explicit types set to work for Dgeni.

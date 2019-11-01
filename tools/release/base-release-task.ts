@@ -57,8 +57,8 @@ export class BaseReleaseTask {
 
     // Check if the current branch is in sync with the remote branch.
     if (upstreamCommitSha !== localCommitSha) {
-      console.error(chalk.red(`  ✘ The current branch is not in sync with the remote branch. Please ` +
-        `make sure your local branch "${chalk.italic(publishBranch)}" is up to date.`));
+      console.error(chalk.red(`  ✘ The current branch is not in sync with the remote branch. ` +
+        `Please make sure your local branch "${chalk.italic(publishBranch)}" is up to date.`));
       process.exit(1);
     }
   }
