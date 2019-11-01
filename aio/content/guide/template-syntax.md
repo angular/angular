@@ -910,7 +910,7 @@ You can replace that with a binding to a string of the desired class names; this
 
  <code-example path="attribute-binding/src/app/app.component.html" region="class-override" header="src/app/app.component.html"></code-example>
 
-You can also add append a class to an element without overwriting the classes already on the element:
+You can also add a class to an element without overwriting the classes already on the element:
 
  <code-example path="attribute-binding/src/app/app.component.html" region="add-class" header="src/app/app.component.html"></code-example>
 
