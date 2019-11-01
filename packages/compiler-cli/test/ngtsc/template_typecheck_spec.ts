@@ -28,7 +28,7 @@ import * as i0 from '@angular/core';
 
 export declare class NgForOfContext<T> {
   $implicit: T;
-  ngForOf: T[];
+  ngForOf: i0.NgIterable<T>;
   index: number;
   count: number;
   readonly first: boolean;
@@ -44,7 +44,7 @@ export declare class IndexPipe {
 }
 
 export declare class NgForOf<T> {
-  ngForOf: T[];
+  ngForOf: i0.NgIterable<T>;
   static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T>;
   static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgForOf<any>, '[ngFor][ngForOf]', never, {'ngForOf': 'ngForOf'}, {}, never>;
 }
@@ -709,6 +709,30 @@ export declare class AnimationEvent {
       imports: [CommonModule],
     })
     export class Module {}
+    `);
+
+      env.driveMain();
+    });
+
+    it('should accept NgFor iteration over a QueryList', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+      env.write('test.ts', `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule, QueryList} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<div *ngFor="let user of users">{{user.name}}</div>',
+        })
+        class TestCmp {
+          users!: QueryList<{name: string}>;
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [CommonModule],
+        })
+        class Module {}
     `);
 
       env.driveMain();

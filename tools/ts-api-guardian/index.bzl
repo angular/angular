@@ -17,7 +17,7 @@
 
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "nodejs_test")
 
-COMMON_MODULE_IDENTIFIERS = ["angular", "jasmine", "protractor"]
+COMMON_MODULE_IDENTIFIERS = ["angular", "jasmine", "protractor", "Symbol"]
 
 def ts_api_guardian_test(
         name,

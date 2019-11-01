@@ -1136,7 +1136,8 @@ export interface Query {
 export declare abstract class Query {
 }
 
-export declare class QueryList<T> {
+export declare class QueryList<T> implements Iterable<T> {
+    [Symbol.iterator]: () => Iterator<T>;
     readonly changes: Observable<any>;
     readonly dirty = true;
     readonly first: T;
