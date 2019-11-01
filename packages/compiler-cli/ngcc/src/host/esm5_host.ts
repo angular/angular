@@ -86,6 +86,23 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     return iife.parent.arguments[0];
   }
 
+  getInternalNameOfClass(clazz: ClassDeclaration): ts.Identifier {
+    const innerClass = this.getInnerFunctionDeclarationFromClassDeclaration(clazz);
+    if (innerClass === undefined) {
+      throw new Error(
+          `getInternalNameOfClass() called on a non-ES5 class: expected ${clazz.name.text} to have an inner class declaration`);
+    }
+    if (innerClass.name === undefined) {
+      throw new Error(
+          `getInternalNameOfClass() called on a class with an anonymous inner declaration: expected a name on:\n${innerClass.getText()}`);
+    }
+    return innerClass.name;
+  }
+
+  getAdjacentNameOfClass(clazz: ClassDeclaration): ts.Identifier {
+    return this.getInternalNameOfClass(clazz);
+  }
+
   /**
    * In ES5, the implementation of a class is a function expression that is hidden inside an IIFE,
    * whose value is assigned to a variable (which represents the class to the rest of the program).
