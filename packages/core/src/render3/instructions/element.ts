@@ -59,7 +59,7 @@ export function ɵɵelementStart(
 
   if (attrs != null) {
     const lastAttrIndex = setUpAttributes(renderer, native, attrs);
-    if (tView.firstTemplatePass) {
+    if (tView.firstCreatePass) {
       registerInitialStylingOnTNode(tNode, attrs, lastAttrIndex);
     }
   }
@@ -82,8 +82,8 @@ export function ɵɵelementStart(
   // flow through that (except for `[class.prop]` bindings). This also includes initial
   // static class values as well. (Note that this will be fixed once map-based `[style]`
   // and `[class]` bindings work for multiple directives.)
-  if (tView.firstTemplatePass) {
-    ngDevMode && ngDevMode.firstTemplatePass++;
+  if (tView.firstCreatePass) {
+    ngDevMode && ngDevMode.firstCreatePass++;
     const hasDirectives = resolveDirectives(tView, lView, tNode, localRefs);
     ngDevMode && validateElement(lView, native, tNode, hasDirectives);
 
@@ -125,7 +125,7 @@ export function ɵɵelementEnd(): void {
 
   decreaseElementDepthCount();
 
-  if (tView.firstTemplatePass) {
+  if (tView.firstCreatePass) {
     registerPostOrderHooks(tView, previousOrParentTNode);
     if (isContentQueryHost(previousOrParentTNode)) {
       tView.queries !.elementEnd(previousOrParentTNode);
@@ -210,7 +210,7 @@ export function ɵɵelementHostAttrs(attrs: TAttributes) {
   if (tNode.type === TNodeType.Element) {
     const native = getNativeByTNode(tNode, lView) as RElement;
     const lastAttrIndex = setUpAttributes(lView[RENDERER], native, attrs);
-    if (tView.firstTemplatePass) {
+    if (tView.firstCreatePass) {
       const stylingNeedsToBeRendered = registerInitialStylingOnTNode(tNode, attrs, lastAttrIndex);
 
       // this is only called during the first template pass in the
