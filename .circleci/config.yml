@@ -29,8 +29,8 @@ var_4_win: &cache_key_win_fallback v5-angular-win-node-12.0-
 
 # Cache key for the Material unit tests job. **Note** when updating the SHA in the cache keys,
 # also update the SHA for the "MATERIAL_REPO_COMMIT" environment variable.
-var_5: &material_unit_tests_cache_key v4-angular-material-818a8c7d6bb3f25d0637e5d6462cf9a84403b78f
-var_6: &material_unit_tests_cache_key_fallback v4-angular-material-
+var_5: &material_unit_tests_cache_key v5-angular-material-50514b2358f394f1f6d634fa181b563b7edd738b
+var_6: &material_unit_tests_cache_key_fallback v5-angular-material-
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages` and
 # `build-ivy-npm-packages`.
@@ -708,7 +708,11 @@ jobs:
       - run:
           # Run yarn install to fetch the Bazel binaries as used in the Material repo.
           name: Installing Material dependencies.
-          command: yarn --cwd ${MATERIAL_REPO_TMP_DIR} install --frozen-lockfile --non-interactive
+          # TODO: remove this once the repo has been updated to use NodeJS v12 and Yarn 1.19.1.
+          # We temporarily ignore the "engines" because the Angular components repository has
+          # minimum dependency on NodeJS v12 and Yarn 1.19.1, but the framework repository uses
+          # older versions.
+          command: yarn --ignore-engines --cwd ${MATERIAL_REPO_TMP_DIR} install --frozen-lockfile --non-interactive
       - save_cache:
           key: *material_unit_tests_cache_key
           paths:
@@ -869,10 +873,9 @@ workflows:
             - build-ivy-npm-packages
             - legacy-unit-tests-saucelabs
             - legacy-misc-tests
-      # FIXME: temporarily disabled until the components repo updates to typescript 3.6
-      #- material-unit-tests:
-      #    requires:
-      #      - build-ivy-npm-packages
+      - material-unit-tests:
+          requires:
+            - build-npm-packages
       - test_zonejs:
           requires:
             - setup
