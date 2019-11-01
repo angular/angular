@@ -423,7 +423,7 @@ export class NgtscProgram implements api.Program {
     if (this.options.fullTemplateTypeCheck) {
       const strictTemplates = !!this.options.strictTemplates;
       typeCheckingConfig = {
-        applyTemplateContextGuards: true,
+        applyTemplateContextGuards: strictTemplates,
         checkQueries: false,
         checkTemplateBodies: true,
         checkTypeOfInputBindings: strictTemplates,
@@ -468,6 +468,7 @@ export class NgtscProgram implements api.Program {
     // based on "fullTemplateTypeCheck".
     if (this.options.strictInputTypes !== undefined) {
       typeCheckingConfig.checkTypeOfInputBindings = this.options.strictInputTypes;
+      typeCheckingConfig.applyTemplateContextGuards = this.options.strictInputTypes;
     }
     if (this.options.strictNullInputTypes !== undefined) {
       typeCheckingConfig.strictNullInputBindings = this.options.strictNullInputTypes;

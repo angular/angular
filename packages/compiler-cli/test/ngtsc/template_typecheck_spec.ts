@@ -43,6 +43,16 @@ export declare class IndexPipe {
   static ɵpipe: i0.ɵPipeDefWithMeta<IndexPipe, 'index'>;
 }
 
+export declare class SlicePipe {
+  transform<T>(value: ReadonlyArray<T>, start: number, end?: number): Array<T>;
+  transform(value: string, start: number, end?: number): string;
+  transform(value: null, start: number, end?: number): null;
+  transform(value: undefined, start: number, end?: number): undefined;
+  transform(value: any, start: number, end?: number): any;
+
+  static ɵpipe: i0.ɵPipeDefWithMeta<SlicePipe, 'slice'>;
+}
+
 export declare class NgForOf<T> {
   ngForOf: i0.NgIterable<T>;
   static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T>;
@@ -56,7 +66,7 @@ export declare class NgIf {
 }
 
 export declare class CommonModule {
-  static ɵmod: i0.ɵɵNgModuleDefWithMeta<CommonModule, [typeof NgIf, typeof NgForOf, typeof IndexPipe], never, [typeof NgIf, typeof NgForOf, typeof IndexPipe]>;
+  static ɵmod: i0.ɵɵNgModuleDefWithMeta<CommonModule, [typeof NgIf, typeof NgForOf, typeof IndexPipe, typeof SlicePipe], never, [typeof NgIf, typeof NgForOf, typeof IndexPipe, typeof SlicePipe]>;
 }
 `);
       env.write('node_modules/@angular/animations/index.d.ts', `
@@ -862,30 +872,48 @@ export declare class AnimationEvent {
       expect(diags[0].length).toBe(19);
     });
 
-    it('should property type-check a microsyntax variable with the same name as the expression',
-       () => {
-         env.write('test.ts', `
-    import {CommonModule} from '@angular/common';
-    import {Component, Input, NgModule} from '@angular/core';
+    describe('microsyntax variables', () => {
+      beforeEach(() => {
+        // Use the same template for both tests
+        env.write('test.ts', `
+          import {CommonModule} from '@angular/common';
+          import {Component, NgModule} from '@angular/core';
+      
+          @Component({
+            selector: 'test',
+            template: \`<div *ngFor="let foo of foos as foos">
+              {{foo.name}} of {{foos.length}}
+            </div>
+            \`,
+          })
+          export class TestCmp {
+            foos: {name: string}[];
+          }
+      
+          @NgModule({
+            declarations: [TestCmp],
+            imports: [CommonModule],
+          })
+          export class Module {}
+        `);
+      });
 
-    @Component({
-      selector: 'test',
-      template: '<div *ngIf="foo as foo">{{foo}}</div>',
-    })
-    export class TestCmp<T extends {name: string}> {
-      foo: any;
-    }
+      it('should be treated as \'any\' without strictTemplates', () => {
+        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: false});
 
-    @NgModule({
-      declarations: [TestCmp],
-      imports: [CommonModule],
-    })
-    export class Module {}
-    `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
 
-         const diags = env.driveDiagnostics();
-         expect(diags.length).toBe(0);
-       });
+      it('should be correctly inferred under strictTemplates', () => {
+        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText)
+            .toBe(`Property 'length' does not exist on type 'NgIterable<{ name: string; }>'.`);
+      });
+    });
 
     it('should properly type-check inherited directives', () => {
       env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
