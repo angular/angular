@@ -1276,7 +1276,7 @@ function tcbCreateEventHandler(
       /* modifier */ undefined,
       /* typeParameters */ undefined,
       /* parameters */[eventParam],
-      /* type */ undefined,
+      /* type */ ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
       /* equalsGreaterThanToken*/ undefined,
       /* body */ handler);
 }
