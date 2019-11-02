@@ -90,6 +90,7 @@ export function getNativeByIndex(index: number, lView: LView): RNode {
  * @param lView
  */
 export function getNativeByTNode(tNode: TNode, lView: LView): RNode {
+  // TODO(misko): rename to getRNodeFromLView
   ngDevMode && assertTNodeForLView(tNode, lView);
   ngDevMode && assertDataInRange(lView, tNode.index);
   const node: RNode = unwrapRNode(lView[tNode.index]);

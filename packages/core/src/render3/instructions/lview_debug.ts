@@ -144,7 +144,7 @@ export const TNodeConstructor = class TNode implements ITNode {
       case TNodeType.Container:
         return 'TNodeType.Container';
       case TNodeType.Element:
-        return 'TNodeType.Element';
+        return 'TNodeType.Element' + (this.tagName === null ? '(#text)' : '');
       case TNodeType.ElementContainer:
         return 'TNodeType.ElementContainer';
       case TNodeType.IcuContainer:
@@ -176,13 +176,42 @@ export const TNodeConstructor = class TNode implements ITNode {
     const buf: string[] = [];
     buf.push('<', this.tagName || this.type_);
     if (this.attrs) {
+      let attrMode: AttributeMarker|null = null;
       for (let i = 0; i < this.attrs.length;) {
         const attrName = this.attrs[i++];
-        if (typeof attrName == 'number') {
-          break;
+        if (typeof attrName === 'number') {
+          attrMode = attrName;
+        } else {
+          switch (attrMode) {
+            case null:
+              const attrValue = this.attrs[i++];
+              buf.push(' ', attrName as string, '="', attrValue as string, '"');
+              break;
+            case AttributeMarker.Bindings:
+              buf.push(' [', attrName as string, ']');
+              break;
+            case AttributeMarker.Classes:
+              buf.push(' implement-classes ');
+              break;
+            case AttributeMarker.I18n:
+              buf.push(' implement-i18n ');
+              break;
+            case AttributeMarker.NamespaceURI:
+              buf.push(' implement-namespace ');
+              break;
+            case AttributeMarker.ProjectAs:
+              buf.push(' implement-projectas ');
+              break;
+            case AttributeMarker.Styles:
+              buf.push(' implement-styles ');
+              break;
+            case AttributeMarker.Template:
+              buf.push(' implement-template ');
+              break;
+            default:
+              throw new Error('Unreachable code');
+          }
         }
-        const attrValue = this.attrs[i++];
-        buf.push(' ', attrName as string, '="', attrValue as string, '"');
       }
     }
     buf.push('>');
@@ -200,9 +229,9 @@ function processTNodeChildren(tNode: TNode | null, buf: string[]) {
 }
 
 const TViewData = NG_DEV_MODE && createNamedArrayType('TViewData') || null !as ArrayConstructor;
-let TVIEWDATA_EMPTY:
-    unknown[];  // can't initialize here or it will not be tree shaken, because `LView`
-                // constructor could have side-effects.
+let TVIEWDATA_EMPTY: unknown[];  // can't initialize here or it will not be tree
+                                 // shaken, because `LView`
+                                 // constructor could have side-effects.
 /**
  * This function clones a blueprint and creates TData.
  *
@@ -254,7 +283,8 @@ export function toDebug(obj: any): any {
 }
 
 /**
- * Use this method to unwrap a native element in `LView` and convert it into HTML for easier
+ * Use this method to unwrap a native element in `LView` and convert it into HTML
+ * for easier
  * reading.
  *
  * @param value possibly wrapped native DOM node.
@@ -409,7 +439,8 @@ export class LContainerDebug {
  */
 export function readLViewValue(value: any): LView|null {
   while (Array.isArray(value)) {
-    // This check is not quite right, as it does not take into account `StylingContext`
+    // This check is not quite right, as it does not take into account
+    // `StylingContext`
     // This is why it is in debug, not in util.ts
     if (value.length >= HEADER_OFFSET - 1) return value as LView;
     value = value[HOST];
@@ -428,7 +459,8 @@ export class I18NDebugItem {
 }
 
 /**
- * Turns a list of "Create" & "Update" OpCodes into a human-readable list of operations for
+ * Turns a list of "Create" & "Update" OpCodes into a human-readable list of
+ * operations for
  * debugging purposes.
  * @param mutateOpCodes mutation opCodes to read
  * @param updateOpCodes update opCodes to read
