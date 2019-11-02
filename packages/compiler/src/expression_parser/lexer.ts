@@ -35,7 +35,7 @@ export class Lexer {
 
 export class Token {
   constructor(
-      public index: number, public type: TokenType, public numValue: number,
+      public index: number, public end: number, public type: TokenType, public numValue: number,
       public strValue: string) {}
 
   isCharacter(code: number): boolean {
@@ -91,35 +91,35 @@ export class Token {
   }
 }
 
-function newCharacterToken(index: number, code: number): Token {
-  return new Token(index, TokenType.Character, code, String.fromCharCode(code));
+function newCharacterToken(index: number, end: number, code: number): Token {
+  return new Token(index, end, TokenType.Character, code, String.fromCharCode(code));
 }
 
-function newIdentifierToken(index: number, text: string): Token {
-  return new Token(index, TokenType.Identifier, 0, text);
+function newIdentifierToken(index: number, end: number, text: string): Token {
+  return new Token(index, end, TokenType.Identifier, 0, text);
 }
 
-function newKeywordToken(index: number, text: string): Token {
-  return new Token(index, TokenType.Keyword, 0, text);
+function newKeywordToken(index: number, end: number, text: string): Token {
+  return new Token(index, end, TokenType.Keyword, 0, text);
 }
 
-function newOperatorToken(index: number, text: string): Token {
-  return new Token(index, TokenType.Operator, 0, text);
+function newOperatorToken(index: number, end: number, text: string): Token {
+  return new Token(index, end, TokenType.Operator, 0, text);
 }
 
-function newStringToken(index: number, text: string): Token {
-  return new Token(index, TokenType.String, 0, text);
+function newStringToken(index: number, end: number, text: string): Token {
+  return new Token(index, end, TokenType.String, 0, text);
 }
 
-function newNumberToken(index: number, n: number): Token {
-  return new Token(index, TokenType.Number, n, '');
+function newNumberToken(index: number, end: number, n: number): Token {
+  return new Token(index, end, TokenType.Number, n, '');
 }
 
-function newErrorToken(index: number, message: string): Token {
-  return new Token(index, TokenType.Error, 0, message);
+function newErrorToken(index: number, end: number, message: string): Token {
+  return new Token(index, end, TokenType.Error, 0, message);
 }
 
-export const EOF: Token = new Token(-1, TokenType.Character, 0, '');
+export const EOF: Token = new Token(-1, -1, TokenType.Character, 0, '');
 
 class _Scanner {
   length: number;
@@ -165,7 +165,7 @@ class _Scanner {
       case chars.$PERIOD:
         this.advance();
         return chars.isDigit(this.peek) ? this.scanNumber(start) :
-                                          newCharacterToken(start, chars.$PERIOD);
+                                          newCharacterToken(start, this.index, chars.$PERIOD);
       case chars.$LPAREN:
       case chars.$RPAREN:
       case chars.$LBRACE:
@@ -211,13 +211,13 @@ class _Scanner {
 
   scanCharacter(start: number, code: number): Token {
     this.advance();
-    return newCharacterToken(start, code);
+    return newCharacterToken(start, this.index, code);
   }
 
 
   scanOperator(start: number, str: string): Token {
     this.advance();
-    return newOperatorToken(start, str);
+    return newOperatorToken(start, this.index, str);
   }
 
   /**
@@ -243,7 +243,7 @@ class _Scanner {
       this.advance();
       str += three;
     }
-    return newOperatorToken(start, str);
+    return newOperatorToken(start, this.index, str);
   }
 
   scanIdentifier(): Token {
@@ -251,8 +251,8 @@ class _Scanner {
     this.advance();
     while (isIdentifierPart(this.peek)) this.advance();
     const str: string = this.input.substring(start, this.index);
-    return KEYWORDS.indexOf(str) > -1 ? newKeywordToken(start, str) :
-                                        newIdentifierToken(start, str);
+    return KEYWORDS.indexOf(str) > -1 ? newKeywordToken(start, this.index, str) :
+                                        newIdentifierToken(start, this.index, str);
   }
 
   scanNumber(start: number): Token {
@@ -275,7 +275,7 @@ class _Scanner {
     }
     const str: string = this.input.substring(start, this.index);
     const value: number = simple ? parseIntAutoRadix(str) : parseFloat(str);
-    return newNumberToken(start, value);
+    return newNumberToken(start, this.index, value);
   }
 
   scanString(): Token {
@@ -321,13 +321,14 @@ class _Scanner {
     const last: string = input.substring(marker, this.index);
     this.advance();  // Skip terminating quote.
 
-    return newStringToken(start, buffer + last);
+    return newStringToken(start, this.index, buffer + last);
   }
 
   error(message: string, offset: number): Token {
     const position: number = this.index + offset;
     return newErrorToken(
-        position, `Lexer Error: ${message} at column ${position} in expression [${this.input}]`);
+        position, this.index,
+        `Lexer Error: ${message} at column ${position} in expression [${this.input}]`);
   }
 }
 
