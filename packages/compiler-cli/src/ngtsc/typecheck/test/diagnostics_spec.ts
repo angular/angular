@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TestFile, runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import * as ts from 'typescript';
+
+import {TestFile, runInEachFileSystem} from '../../file_system/testing';
+import {TypeCheckingConfig} from '../src/api';
 
 import {TestDeclaration, ngForDeclaration, ngForDts, typecheck} from './test_utils';
 
@@ -258,6 +260,21 @@ runInEachFileSystem(() => {
 
         expect(messages).toEqual([]);
       });
+
+      // https://github.com/angular/angular/issues/33528
+      it('should not produce a diagnostic for implicit any return types', () => {
+        const messages = diagnose(
+            `<div (click)="state = null"></div>`, `
+          class TestComponent {
+            state: any;
+          }`,
+            // Disable strict DOM event checking and strict null checks, to infer an any return type
+            // that would be implicit if the handler function would not have an explicit return
+            // type.
+            [], [], {checkTypeOfDomEvents: false}, {strictNullChecks: false});
+
+        expect(messages).toEqual([]);
+      });
     });
 
     describe('strict null checks', () => {
@@ -314,8 +331,9 @@ class TestComponent {
 
 function diagnose(
     template: string, source: string, declarations?: TestDeclaration[],
-    additionalSources: TestFile[] = []): string[] {
-  const diagnostics = typecheck(template, source, declarations, additionalSources);
+    additionalSources: TestFile[] = [], config?: Partial<TypeCheckingConfig>,
+    options?: ts.CompilerOptions): string[] {
+  const diagnostics = typecheck(template, source, declarations, additionalSources, config, options);
   return diagnostics.map(diag => {
     const text =
         typeof diag.messageText === 'string' ? diag.messageText : diag.messageText.messageText;
