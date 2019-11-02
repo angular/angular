@@ -253,26 +253,26 @@ describe('type check blocks', () => {
       const TEMPLATE = `<div dir (dirOutput)="foo($event)"></div>`;
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain(
-          '_outputHelper(_t2.outputField).subscribe($event => (ctx).foo($event));');
+          '_outputHelper(_t2.outputField).subscribe(($event): any => (ctx).foo($event));');
     });
 
     it('should emit a listener function with AnimationEvent for animation events', () => {
       const TEMPLATE = `<div (@animation.done)="foo($event)"></div>`;
       const block = tcb(TEMPLATE);
-      expect(block).toContain('($event: animations.AnimationEvent) => (ctx).foo($event);');
+      expect(block).toContain('($event: animations.AnimationEvent): any => (ctx).foo($event);');
     });
 
     it('should emit addEventListener calls for unclaimed outputs', () => {
       const TEMPLATE = `<div (event)="foo($event)"></div>`;
       const block = tcb(TEMPLATE);
-      expect(block).toContain('_t1.addEventListener("event", $event => (ctx).foo($event));');
+      expect(block).toContain('_t1.addEventListener("event", ($event): any => (ctx).foo($event));');
     });
 
     it('should allow to cast $event using $any', () => {
       const TEMPLATE = `<div (event)="foo($any($event))"></div>`;
       const block = tcb(TEMPLATE);
       expect(block).toContain(
-          '_t1.addEventListener("event", $event => (ctx).foo(($event as any)));');
+          '_t1.addEventListener("event", ($event): any => (ctx).foo(($event as any)));');
     });
 
   });
@@ -374,18 +374,18 @@ describe('type check blocks', () => {
       it('should check types of directive outputs when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain(
-            '_outputHelper(_t2.outputField).subscribe($event => (ctx).foo($event));');
+            '_outputHelper(_t2.outputField).subscribe(($event): any => (ctx).foo($event));');
         expect(block).toContain(
-            '_t1.addEventListener("nonDirOutput", $event => (ctx).foo($event));');
+            '_t1.addEventListener("nonDirOutput", ($event): any => (ctx).foo($event));');
       });
       it('should not check types of directive outputs when disabled', () => {
         const DISABLED_CONFIG:
             TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfOutputEvents: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain('($event: any) => (ctx).foo($event);');
+        expect(block).toContain('($event: any): any => (ctx).foo($event);');
         // Note that DOM events are still checked, that is controlled by `checkTypeOfDomEvents`
         expect(block).toContain(
-            '_t1.addEventListener("nonDirOutput", $event => (ctx).foo($event));');
+            '_t1.addEventListener("nonDirOutput", ($event): any => (ctx).foo($event));');
       });
     });
 
@@ -394,13 +394,13 @@ describe('type check blocks', () => {
 
       it('should check types of animation events when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('($event: animations.AnimationEvent) => (ctx).foo($event);');
+        expect(block).toContain('($event: animations.AnimationEvent): any => (ctx).foo($event);');
       });
       it('should not check types of animation events when disabled', () => {
         const DISABLED_CONFIG:
             TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfAnimationEvents: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain('($event: any) => (ctx).foo($event);');
+        expect(block).toContain('($event: any): any => (ctx).foo($event);');
       });
     });
 
@@ -410,9 +410,9 @@ describe('type check blocks', () => {
       it('should check types of DOM events when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain(
-            '_outputHelper(_t2.outputField).subscribe($event => (ctx).foo($event));');
+            '_outputHelper(_t2.outputField).subscribe(($event): any => (ctx).foo($event));');
         expect(block).toContain(
-            '_t1.addEventListener("nonDirOutput", $event => (ctx).foo($event));');
+            '_t1.addEventListener("nonDirOutput", ($event): any => (ctx).foo($event));');
       });
       it('should not check types of DOM events when disabled', () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfDomEvents: false};
@@ -420,8 +420,8 @@ describe('type check blocks', () => {
         // Note that directive outputs are still checked, that is controlled by
         // `checkTypeOfOutputEvents`
         expect(block).toContain(
-            '_outputHelper(_t2.outputField).subscribe($event => (ctx).foo($event));');
-        expect(block).toContain('($event: any) => (ctx).foo($event);');
+            '_outputHelper(_t2.outputField).subscribe(($event): any => (ctx).foo($event));');
+        expect(block).toContain('($event: any): any => (ctx).foo($event);');
       });
     });
 

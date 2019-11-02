@@ -230,7 +230,8 @@ export function tcb(
 
 export function typecheck(
     template: string, source: string, declarations: TestDeclaration[] = [],
-    additionalSources: {name: AbsoluteFsPath; contents: string}[] = []): ts.Diagnostic[] {
+    additionalSources: {name: AbsoluteFsPath; contents: string}[] = [],
+    config: Partial<TypeCheckingConfig> = {}, opts: ts.CompilerOptions = {}): ts.Diagnostic[] {
   const typeCheckFilePath = absoluteFrom('/_typecheck_.ts');
   const files = [
     typescriptLibDts(),
@@ -243,7 +244,7 @@ export function typecheck(
     ...additionalSources,
   ];
   const {program, host, options} =
-      makeProgram(files, {strictNullChecks: true, noImplicitAny: true}, undefined, false);
+      makeProgram(files, {strictNullChecks: true, noImplicitAny: true, ...opts}, undefined, false);
   const sf = program.getSourceFile(absoluteFrom('/main.ts')) !;
   const checker = program.getTypeChecker();
   const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
@@ -254,7 +255,7 @@ export function typecheck(
         program, checker, options, host, new TypeScriptReflectionHost(checker)),
     new LogicalProjectStrategy(reflectionHost, logicalFs),
   ]);
-  const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, typeCheckFilePath);
+  const ctx = new TypeCheckContext({...ALL_ENABLED_CONFIG, ...config}, emitter, typeCheckFilePath);
 
   const templateUrl = 'synthetic.html';
   const templateFile = new ParseSourceFile(template, templateUrl);
