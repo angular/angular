@@ -18,6 +18,7 @@ pubspec.lock
 .settings/
 .vscode/launch.json
 .vscode/settings.json
+.vscode/tasks.json
 *.swo
 modules/.settings
 modules/.vscode
