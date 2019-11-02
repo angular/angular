@@ -1,6 +1,6 @@
 # Getting Started with Angular: Your First App
 
-Welcome to Angular!
+Welcome to Angular!!
 
 This tutorial introduces you to the essentials of Angular by walking you through building a simple e-commerce site with a catalog, shopping cart, and check-out form. It uses the [StackBlitz](https://stackblitz.com/ "StackBlitz website") online development environment so you can get started right away.
 
