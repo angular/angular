@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ivyEnabled} from '@angular/private/testing';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -24,8 +25,8 @@ describe('perform watch', () => {
     outDir = path.resolve(testSupport.basePath, 'outDir');
   });
 
-  function createConfig(): ng.ParsedConfiguration {
-    const options = testSupport.createCompilerOptions({outDir});
+  function createConfig(overrideOptions: ng.CompilerOptions = {}): ng.ParsedConfiguration {
+    const options = testSupport.createCompilerOptions({outDir, ...overrideOptions});
     return {
       options,
       rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')],
@@ -48,6 +49,33 @@ describe('perform watch', () => {
     expectNoDiagnostics(config.options, watchResult.firstCompileResult);
 
     expect(fs.existsSync(path.resolve(outDir, 'src', 'main.ngfactory.js'))).toBe(true);
+  });
+
+  it('should recompile components when its template changes', () => {
+    const config = createConfig({enableIvy: ivyEnabled});
+    const host = new MockWatchHost(config);
+
+    testSupport.writeFiles({
+      'src/main.ts': createModuleAndCompSource('main', './main.html'),
+      'src/main.html': 'initial',
+      'src/index.ts': `export * from './main'; `,
+    });
+
+    const watchResult = performWatchCompilation(host);
+    expectNoDiagnostics(config.options, watchResult.firstCompileResult);
+
+    const htmlPath = path.posix.join(testSupport.basePath, 'src', 'main.html');
+    const genPath = ivyEnabled ? path.posix.join(outDir, 'src', 'main.js') :
+                                 path.posix.join(outDir, 'src', 'main.ngfactory.js');
+
+    const initial = fs.readFileSync(genPath, {encoding: 'utf8'});
+    expect(initial).toContain('"initial"');
+
+    testSupport.write(htmlPath, 'updated');
+    host.triggerFileChange(FileChangeEvent.Change, htmlPath);
+
+    const updated = fs.readFileSync(genPath, {encoding: 'utf8'});
+    expect(updated).toContain('"updated"');
   });
 
   it('should cache files on subsequent runs', () => {

@@ -153,7 +153,7 @@ export function performWatchCompilation(host: PerformWatchHost):
   }
 
   // Invoked to perform initial compilation or re-compilation in watch mode
-  function doCompilation(modifiedResourceFiles?: Set<string>): Diagnostics {
+  function doCompilation(): Diagnostics {
     if (!cachedOptions) {
       cachedOptions = host.readConfiguration();
     }
@@ -197,8 +197,12 @@ export function performWatchCompilation(host: PerformWatchHost):
         return ce.content !;
       };
       // Provide access to the file paths that triggered this rebuild
-      cachedCompilerHost.getModifiedResourceFiles =
-          modifiedResourceFiles !== undefined ? () => modifiedResourceFiles : undefined;
+      cachedCompilerHost.getModifiedResourceFiles = function() {
+        if (timerHandleForRecompilation === undefined) {
+          return undefined;
+        }
+        return timerHandleForRecompilation.modifiedResourceFiles;
+      };
     }
     ignoreFilesForWatch.clear();
     const oldProgram = cachedProgram;
@@ -287,7 +291,7 @@ export function performWatchCompilation(host: PerformWatchHost):
   function recompile() {
     host.reportDiagnostics(
         [createMessageDiagnostic('File change detected. Starting incremental compilation.')]);
-    doCompilation(timerHandleForRecompilation !.modifiedResourceFiles);
+    doCompilation();
     timerHandleForRecompilation = undefined;
   }
 }
