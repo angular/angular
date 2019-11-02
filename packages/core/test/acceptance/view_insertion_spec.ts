@@ -7,9 +7,10 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectorRef, Component, EmbeddedViewRef, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {ChangeDetectorRef, Component, Directive, EmbeddedViewRef, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {ivyEnabled} from '@angular/private/testing';
 
 describe('view insertion', () => {
   describe('of a simple template', () => {
@@ -18,7 +19,7 @@ describe('view insertion', () => {
 
       @Component({
         selector: 'increment-comp',
-        template: `<span>created{{counter}}</span>`,
+        template: `<span>Created{{counter}}</span>`,
       })
       class IncrementComp {
         counter = _counter++;
@@ -27,6 +28,8 @@ describe('view insertion', () => {
       @Component({
         template: `
               <ng-template #simple><increment-comp></increment-comp></ng-template>
+              <ng-template #nested><ng-template [ngIf]="true">Nested</ng-template></ng-template>
+              <ng-template #empty></ng-template>
               <div #container></div>
             `
       })
@@ -37,25 +40,49 @@ describe('view insertion', () => {
         @ViewChild('simple', {read: TemplateRef, static: true})
         simple: TemplateRef<any> = null !;
 
+        // This case demonstrates when `LView` contains another `LContainer` and requires
+        // recursion when we retrieve the insert before `RNode`
+        @ViewChild('nested', {read: TemplateRef, static: true})
+        nested: TemplateRef<any> = null !;
+
+        // This case demonstrates when `LView` contains no `TNode` and we have to go to the next
+        // `LView` in order to get a real `RNode`
+        @ViewChild('empty', {read: TemplateRef, static: true})
+        empty: TemplateRef<any> = null !;
+
         view0: EmbeddedViewRef<any> = null !;
         view1: EmbeddedViewRef<any> = null !;
         view2: EmbeddedViewRef<any> = null !;
         view3: EmbeddedViewRef<any> = null !;
+        view4: EmbeddedViewRef<any> = null !;
 
         constructor(public changeDetector: ChangeDetectorRef) {}
 
         ngAfterViewInit() {
-          // insert at the front
-          this.view1 = this.container.createEmbeddedView(this.simple);  // "created0"
+          // insert at the front. Because this is empty and has no `RNode` any insertions in
+          // front of it need to fall through to the next `LView` to get insertion node.
+          this.view1 = this.container.createEmbeddedView(this.empty);
+          expect(fixture.nativeElement.textContent).toBe('');
+
+          this.view2 = this.container.createEmbeddedView(this.nested);  // "nested"
+          this.view2.detectChanges();
+          expect(fixture.nativeElement.textContent).toBe('Nested');
 
           // insert at the front again
-          this.view0 = this.container.createEmbeddedView(this.simple, {}, 0);  // "created1"
+          debugger;
+          this.view0 = this.container.createEmbeddedView(this.simple, {}, 0);  // "Created0"
+          this.view0.detectChanges();
+          expect(fixture.nativeElement.textContent).toBe('Created0Nested');
 
           // insert at the end
-          this.view3 = this.container.createEmbeddedView(this.simple);  // "created2"
+          this.view4 = this.container.createEmbeddedView(this.simple);  // "Created1"
+          this.view4.detectChanges();
+          expect(fixture.nativeElement.textContent).toBe('Created0NestedCreated1');
 
           // insert in the middle
-          this.view2 = this.container.createEmbeddedView(this.simple, {}, 2);  // "created3"
+          this.view3 = this.container.createEmbeddedView(this.simple, {}, 3);  // "Created2"
+          this.view3.detectChanges();
+          expect(fixture.nativeElement.textContent).toBe('Created0NestedCreated2Created1');
 
           // We need to run change detection here to avoid
           // ExpressionChangedAfterItHasBeenCheckedError because of the value updating in
@@ -75,8 +102,9 @@ describe('view insertion', () => {
       expect(app.container.indexOf(app.view1)).toBe(1);
       expect(app.container.indexOf(app.view2)).toBe(2);
       expect(app.container.indexOf(app.view3)).toBe(3);
+      expect(app.container.indexOf(app.view4)).toBe(4);
       // The text in each component differs based on *when* it was created.
-      expect(fixture.nativeElement.textContent).toBe('created1created0created3created2');
+      expect(fixture.nativeElement.textContent).toBe('Created0NestedCreated2Created1');
     });
   });
 
@@ -248,5 +276,83 @@ describe('view insertion', () => {
 
       expect(fixture.debugElement.queryAll(By.css('div.dynamic')).length).toBe(4);
     });
+  });
+
+  describe('regression', () => {
+    it('FW-1559: should support inserting in front of nested `LContainers', () => {
+      @Component({
+        selector: 'repeater',
+        template: `
+          <ng-template ngFor [ngForOf]="rendered" [ngForTrackBy]="trackByFn" let-item>
+            <ng-template [ngTemplateOutlet]="outerTemplate"
+                        [ngTemplateOutletContext]="{$implicit: item}">
+            </ng-template>
+          </ng-template>
+
+          <ng-template #outerTemplate let-item>{{item}}</ng-template>
+        `
+      })
+      class Repeater {
+        rendered: string[] = [];
+
+        trackByFn(index: number, item: string) { return item; }
+      }
+
+      const fixture =
+          TestBed.configureTestingModule({declarations: [Repeater]}).createComponent(Repeater);
+      fixture.componentInstance.rendered = ['b'];
+      fixture.detectChanges();
+
+      fixture.componentInstance.rendered = ['a', 'b'];
+      (global as any).break = true;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toEqual('ab');
+    });
+
+    it('FW-1559: should properly render content if vcr.createEmbeddedView is called', () => {
+      @Directive({selector: '[dir]'})
+      class MyDir {
+        viewRef: any;
+
+        constructor(public template: TemplateRef<{}>, public viewContainerRef: ViewContainerRef) {}
+
+        show() {
+          this.viewRef = this.viewContainerRef.createEmbeddedView(this.template);
+          this.viewRef.detectChanges();
+        }
+      }
+
+      @Component({
+        selector: 'edit-form',
+        template: `
+          <ng-template dir>
+            <div *ngIf="myFlag">Text</div>
+          </ng-template>
+        `,
+      })
+      class MyComp {
+        myFlag: boolean = true;
+        @ViewChild(MyDir, {static: true}) dir !: MyDir;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [MyComp, MyDir],
+        imports: [CommonModule],
+      });
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const dirRef = fixture.componentInstance.dir;
+      dirRef.show();
+
+      // In VE:  3 nodes - 2 comment nodes + 1 div
+      // In Ivy: 2 comment node (anchor)
+      const rootNodes = dirRef.viewRef.rootNodes;
+      expect(rootNodes.length).toBe(ivyEnabled ? 2 : 3);
+      expect((rootNodes[0] as Comment).textContent).toMatch(/"ng-reflect-ng-if": "true"/);
+      expect((rootNodes[1] as HTMLElement).outerHTML).toEqual('<div>Text</div>');
+    });
+
   });
 });

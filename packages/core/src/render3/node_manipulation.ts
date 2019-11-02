@@ -663,27 +663,54 @@ export function appendChild(childEl: RNode | RNode[], childTNode: TNode, current
   }
 }
 
-export function getBeforeNodeForView(viewIndexInContainer: number, lContainer: LContainer): RNode|
-    null {
-  const nextViewIndex = CONTAINER_HEADER_OFFSET + viewIndexInContainer + 1;
-  if (nextViewIndex < lContainer.length) {
-    const lView = lContainer[nextViewIndex] as LView;
-    ngDevMode && assertDefined(lView[T_HOST], 'Missing Host TNode');
-    let tViewNodeChild = (lView[T_HOST] as TViewNode).child;
-    if (tViewNodeChild !== null) {
-      if (tViewNodeChild.type === TNodeType.ElementContainer ||
-          tViewNodeChild.type === TNodeType.IcuContainer) {
-        let currentChild = tViewNodeChild.child;
-        while (currentChild && (currentChild.type === TNodeType.ElementContainer ||
-                                currentChild.type === TNodeType.IcuContainer)) {
-          currentChild = currentChild.child;
-        }
-        tViewNodeChild = currentChild || tViewNodeChild;
+/**
+ * Retrieves `RNode` from `LContainer` to be used for DOM operations which is need as `before` node.
+ *
+ * When inserting `LView`s into DOM we often need to know a `before` node to insert into the DOM
+ * tree into. This function is useful for returning the `RNode` since it retrieves the first `RNode`
+ * of the `LView` at a given `index` in the `LContainer`.
+ *
+ * This method takes into account the fact that the `LView`'s first `TNode` may be another `LView`,
+ * `IcuContainer`, or `ElementContainer` which requires descending into those locations in order
+ * to retrieve the `RNode`.
+ *
+ * @param lViewIndex Index into the `LContainer` which points to the `LView` of interest
+ * @param lContainer `LContainer` to look into.
+ * @returns `RNode` of the `LView` at `index` in the `LContainer` or `LContainer`'s anchor node if
+ * no `LView` is found at `index`.
+ */
+export function getFirstRNodeFromLViewInLContainer(
+    lContainer: LContainer, lViewIndex: number): RNode {
+  ngDevMode && assertLContainer(lContainer);
+  // We read the `LView` and look for first `TNode`. However, if we have an empty `TView` (such as
+  // `<ng-template></ng-template>) we need to go to the next `LView` to and repeat the process. If
+  // we run of out of `LView`s to look at we return the `LContainer` anchor.
+  for (let i = CONTAINER_HEADER_OFFSET + lViewIndex; i < lContainer.length; i++) {
+    const lView = lContainer[i];
+    let tNode = lView[TVIEW].firstChild;
+    if (tNode !== null) {
+    let tNodeType = tNode.type;
+    if (tNodeType === TNodeType.Container) {
+      // In this case the first `TNode` is another `LContainer` this means we now need to
+      // recurse
+      // into it the `LView` and retrieve its `RNode`.
+      const childLContainer = lView[tNode.index] as LContainer;
+      ngDevMode && assertLContainer(childLContainer);
+      return getFirstRNodeFromLViewInLContainer(childLContainer, 0);
+    } else {
+      // If we have `ElementContainer` or `IcuContainer` than we need to descend into them and
+      // find the actual first `Element`
+      while (tNodeType === TNodeType.ElementContainer || tNodeType === TNodeType.IcuContainer) {
+        tNode = tNode.child !;
+        ngDevMode && assertDefined(tNode, 'ElementContainer and IcuContainer must have children');
+        tNodeType = tNode.type;
       }
-      return getNativeByTNodeOrNull(tViewNodeChild, lView);
+      return getNativeByTNode(tNode, lView);
     }
   }
-
+  }
+  // If we could not find any `RNode` in any of the `LView`s, than just use the `LContainer`'s
+  // anchor.
   return lContainer[NATIVE];
 }
 

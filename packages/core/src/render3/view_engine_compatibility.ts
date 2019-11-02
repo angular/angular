@@ -25,9 +25,9 @@ import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from './in
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
 import {isComponentHost, isLContainer, isLView, isRootView} from './interfaces/type_checks';
-import {CONTEXT, DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
+import {DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
-import {addRemoveViewFromContainer, appendChild, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
+import {addRemoveViewFromContainer, appendChild, detachView, getFirstRNodeFromLViewInLContainer, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
 import {getParentInjectorTNode} from './node_util';
 import {getLView, getPreviousOrParentTNode} from './state';
 import {getParentInjectorView, hasParentInjector} from './util/injector_utils';
@@ -254,9 +254,9 @@ export function createContainerRef(
           return this.move(viewRef, adjustedIdx);
         }
 
+        const beforeNode = getFirstRNodeFromLViewInLContainer(this._lContainer, adjustedIdx);
         insertView(lView, this._lContainer, adjustedIdx);
 
-        const beforeNode = getBeforeNodeForView(adjustedIdx, this._lContainer);
         addRemoveViewFromContainer(lView, true, beforeNode);
 
         (viewRef as ViewRef<any>).attachToViewContainerRef(this);
