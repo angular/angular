@@ -86,11 +86,11 @@ The following table shows all methods that the migration maps from `Renderer` to
 |`createText(parentElement, value, debugInfo?)`|`appendChild(parentElement, createText(value))`|
 |`createTemplateAnchor(parentElement)`|`appendChild(parentElement, createComment(''))`|
 |`setElementClass(renderElement, className, isAdd)`|`isAdd ? addClass(renderElement, className) : removeClass(renderElement, className)`|
-|`projectNodes(parentElement, nodes)`|`for (let i = 0; i < nodes.length; i<ins></ins>) { appendChild(parentElement, nodes<i>); }`|
-|`attachViewAfter(node, viewRootNodes)`|`const parentElement = parentNode(node); const nextSibling = nextSibling(node); for (let i = 0; i < viewRootNodes.length; i<ins></ins>) { insertBefore(parentElement, viewRootNodes<i>, nextSibling);}`|
-|`detachView(viewRootNodes)`|`for (let i = 0; i < viewRootNodes.length; i<ins></ins>) {const node = viewRootNodes<i>; const parentElement = parentNode(node); removeChild(parentElement, node);}`|
-|`destroyView(hostElement, viewAllNodes)`|`for (let i = 0; i < viewAllNodes.length; i<ins></ins>) { destroyNode(viewAllNodes<i>); }`|
+|`projectNodes(parentElement, nodes)`|`for (let i = 0; i < nodes.length; i++) { appendChild(parentElement, nodes[i]); }`|
+|`attachViewAfter(node, viewRootNodes)`|`const parentElement = parentNode(node); const nextSibling = nextSibling(node); for (let i = 0; i < viewRootNodes.length; i++) { insertBefore(parentElement, viewRootNodes[i], nextSibling);}`|
+|`detachView(viewRootNodes)`|`for (let i = 0; i < viewRootNodes.length; i++) {const node = viewRootNodes[i]; const parentElement = parentNode(node); removeChild(parentElement, node);}`|
+|`destroyView(hostElement, viewAllNodes)`|`for (let i = 0; i < viewAllNodes.length; i++) { destroyNode(viewAllNodes[i]); }`|
 |`setBindingDebugInfo()`|This function is a noop in `Renderer2`.|
 |`createViewRoot(hostElement)`|Should be replaced with a reference to `hostElement`|
-|`invokeElementMethod(renderElement, methodName, args?)`|`(renderElement as any)<methodName>.apply(renderElement, args);`|
+|`invokeElementMethod(renderElement, methodName, args?)`|`(renderElement as any)[methodName].apply(renderElement, args);`|
 |`animate(element, startingStyles, keyframes, duration, delay, easing, previousPlayers?)`|Throws an error (same behavior as `Renderer.animate()`)|
