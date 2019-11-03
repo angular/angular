@@ -260,6 +260,28 @@ describe('directives', () => {
       expect(calls).toEqual(['MyDir.ngOnInit']);
     });
 
+    it('should match namespaced elements', () => {
+      const calls: string[] = [];
+
+      @Directive({selector: 'text[dir]'})
+      class MyDir {
+        ngOnInit() { calls.push('MyDir.ngOnInit'); }
+      }
+
+      @Component({
+        selector: `my-comp`,
+        template: `<svg><text dir></text></svg>`,
+      })
+      class MyComp {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      expect(calls).toEqual(['MyDir.ngOnInit']);
+    });
+
     it('should match directives when the node has "class", "style" and a binding', () => {
       const logs: string[] = [];
 
