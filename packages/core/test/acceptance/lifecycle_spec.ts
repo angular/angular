@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, ComponentFactoryResolver, Directive, Input, NgModule, OnChanges, SimpleChanges, ViewChild, ViewContainerRef} from '@angular/core';
+import {ChangeDetectorRef, Component, ComponentFactoryResolver, ContentChildren, Directive, Input, NgModule, OnChanges, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {SimpleChange} from '@angular/core/src/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -3286,6 +3286,60 @@ describe('onDestroy', () => {
     expect(fixture.componentInstance.clicksToButton2).toBe(1);
 
     expect(events).toEqual(['comp']);
+  });
+
+  it('should not produce errors if change detection is triggered during ngOnDestroy', () => {
+    @Component({selector: 'child', template: `<ng-content></ng-content>`})
+    class Child {
+    }
+
+    @Component({selector: 'parent', template: `<ng-content></ng-content>`})
+    class Parent {
+      @ContentChildren(Child, {descendants: true}) child !: QueryList<Child>;
+    }
+
+    @Component({
+      selector: 'app',
+      template: `
+        <ng-template #tpl>
+          <parent>
+            <child></child>
+          </parent>
+        </ng-template>
+
+        <div #container dir></div>
+      `
+    })
+    class App {
+      @ViewChild('container', {read: ViewContainerRef, static: true})
+      container !: ViewContainerRef;
+
+      @ViewChild('tpl', {read: TemplateRef, static: true})
+      tpl !: TemplateRef<any>;
+
+      ngOnInit() { this.container.createEmbeddedView(this.tpl); }
+    }
+
+    @Directive({selector: '[dir]'})
+    class Dir {
+      constructor(public cdr: ChangeDetectorRef) {}
+
+      ngOnDestroy() {
+        // Important: calling detectChanges in destroy hook like that
+        // doesn’t have practical purpose, but in real-world cases it might
+        // happen, for example as a result of "focus()" call on a DOM element,
+        // in case ZoneJS is active.
+        this.cdr.detectChanges();
+      }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Parent, Child, Dir],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.autoDetectChanges();
+
+    expect(() => fixture.destroy()).not.toThrow();
   });
 
   onlyInIvy(

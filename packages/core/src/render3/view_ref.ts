@@ -19,7 +19,7 @@ import {CONTEXT, FLAGS, HOST, LView, LViewFlags, TVIEW, T_HOST} from './interfac
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {destroyLView, renderDetachView} from './node_manipulation';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode, unwrapRNode} from './util/view_utils';
+import {getNativeByTNode, isViewDestroyed, unwrapRNode} from './util/view_utils';
 
 
 
@@ -70,9 +70,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
 
   get context(): T { return this._lView[CONTEXT] as T; }
 
-  get destroyed(): boolean {
-    return (this._lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
-  }
+  get destroyed(): boolean { return isViewDestroyed(this._lView); }
 
   destroy(): void {
     if (this._appRef) {

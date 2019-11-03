@@ -160,6 +160,11 @@ export function isCreationMode(view: LView): boolean {
   return (view[FLAGS] & LViewFlags.CreationMode) === LViewFlags.CreationMode;
 }
 
+/** Checks whether a given view is marked as destroyed */
+export function isViewDestroyed(view: LView): boolean {
+  return (view[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
+}
+
 /**
  * Returns a boolean for whether the view is attached to the change detection tree.
  *

@@ -9,6 +9,7 @@
 import {ViewEncapsulation} from '../metadata/view';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertDomNode, assertEqual} from '../util/assert';
+
 import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
@@ -21,7 +22,7 @@ import {isLContainer, isLView, isRootView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_LCONTAINER, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {findComponentView} from './util/view_traversal_utils';
-import {getNativeByTNode, getNativeByTNodeOrNull, unwrapRNode} from './util/view_utils';
+import {getNativeByTNode, getNativeByTNodeOrNull, isViewDestroyed, unwrapRNode} from './util/view_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -336,7 +337,7 @@ export function removeView(lContainer: LContainer, removeIndex: number) {
  * @param lView The view to be destroyed.
  */
 export function destroyLView(lView: LView) {
-  if (!(lView[FLAGS] & LViewFlags.Destroyed)) {
+  if (!isViewDestroyed(lView)) {
     const renderer = lView[RENDERER];
     if (isProceduralRenderer(renderer) && renderer.destroyNode) {
       applyView(renderer, WalkTNodeTreeAction.Destroy, lView, null, null);
@@ -380,7 +381,7 @@ export function getParentState(lViewOrLContainer: LView | LContainer, rootView: 
  * @param view The LView to clean up
  */
 function cleanUpView(view: LView | LContainer): void {
-  if (isLView(view) && !(view[FLAGS] & LViewFlags.Destroyed)) {
+  if (isLView(view) && !isViewDestroyed(view)) {
     // Usually the Attached flag is removed when the view is detached from its parent, however
     // if it's a root view, the flag won't be unset hence why we're also removing on destroy.
     view[FLAGS] &= ~LViewFlags.Attached;
