@@ -246,9 +246,6 @@
     "name": "getFactoryDef"
   },
   {
-    "name": "getHostNative"
-  },
-  {
     "name": "getInjectorIndex"
   },
   {
@@ -259,9 +256,6 @@
   },
   {
     "name": "getLView"
-  },
-  {
-    "name": "getLViewParent"
   },
   {
     "name": "getNativeAnchorNode"

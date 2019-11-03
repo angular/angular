@@ -312,9 +312,6 @@
     "name": "getFactoryDef"
   },
   {
-    "name": "getHostNative"
-  },
-  {
     "name": "getInitialStylingValue"
   },
   {
@@ -328,9 +325,6 @@
   },
   {
     "name": "getLView"
-  },
-  {
-    "name": "getLViewParent"
   },
   {
     "name": "getMapProp"

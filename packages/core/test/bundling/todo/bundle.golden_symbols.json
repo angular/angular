@@ -672,9 +672,6 @@
     "name": "getGuardMask"
   },
   {
-    "name": "getHostNative"
-  },
-  {
     "name": "getInitialStylingValue"
   },
   {

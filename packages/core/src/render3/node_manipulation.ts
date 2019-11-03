@@ -20,7 +20,7 @@ import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRend
 import {isLContainer, isLView, isRootView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_LCONTAINER, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {findComponentView, getLViewParent} from './util/view_traversal_utils';
+import {findComponentView} from './util/view_traversal_utils';
 import {getNativeByTNode, getNativeByTNodeOrNull, unwrapRNode} from './util/view_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
@@ -515,7 +515,8 @@ function getRenderParent(tNode: TNode, currentView: LView): RElement|null {
     } else {
       // We are inserting a root element of the component view into the component host element and
       // it should always be eager.
-      return getHostNative(currentView);
+      ngDevMode && assertNodeOfPossibleTypes(hostTNode, TNodeType.Element);
+      return currentView[HOST];
     }
   } else {
     const isIcuCase = tNode && tNode.type === TNodeType.IcuContainer;
@@ -545,18 +546,6 @@ function getRenderParent(tNode: TNode, currentView: LView): RElement|null {
 
     return getNativeByTNode(parentTNode, currentView) as RElement;
   }
-}
-
-/**
- * Gets the native host element for a given view. Will return null if the current view does not have
- * a host element.
- */
-function getHostNative(currentView: LView): RElement|null {
-  ngDevMode && assertLView(currentView);
-  const hostTNode = currentView[T_HOST];
-  return hostTNode && hostTNode.type === TNodeType.Element ?
-      (getNativeByTNode(hostTNode, getLViewParent(currentView) !) as RElement) :
-      null;
 }
 
 /**
