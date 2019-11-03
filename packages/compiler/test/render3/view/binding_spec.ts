@@ -64,6 +64,26 @@ describe('t2 binding', () => {
     expect(directives[0].name).toBe('NgFor');
   });
 
+  it('should match directives on namespaced elements', () => {
+    const template = parseTemplate('<svg><text dir>SVG</text></svg>', '', {});
+    const matcher = new SelectorMatcher<DirectiveMeta>();
+    matcher.addSelectables(CssSelector.parse('text[dir]'), {
+      name: 'Dir',
+      exportAs: null,
+      inputs: {},
+      outputs: {},
+      isComponent: false,
+    });
+    const binder = new R3TargetBinder(matcher);
+    const res = binder.bind({template: template.nodes});
+    const svgNode = template.nodes[0] as a.Element;
+    const textNode = svgNode.children[0] as a.Element;
+    const directives = res.getDirectivesOfNode(textNode) !;
+    expect(directives).not.toBeNull();
+    expect(directives.length).toBe(1);
+    expect(directives[0].name).toBe('Dir');
+  });
+
   it('should not match directives intended for an element on a microsyntax template', () => {
     const template = parseTemplate('<div *ngFor="let item of items" dir></div>', '', {});
     const binder = new R3TargetBinder(makeSelectorMatcher());

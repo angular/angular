@@ -1189,9 +1189,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return args;
   }
 
-  private matchDirectives(tagName: string, elOrTpl: t.Element|t.Template) {
+  private matchDirectives(elementName: string, elOrTpl: t.Element|t.Template) {
     if (this.directiveMatcher) {
-      const selector = createCssSelector(tagName, getAttrsForDirectiveMatching(elOrTpl));
+      const selector = createCssSelector(elementName, getAttrsForDirectiveMatching(elOrTpl));
       this.directiveMatcher.match(
           selector, (cssSelector, staticType) => { this.directives.add(staticType); });
     }
@@ -1762,15 +1762,18 @@ export class BindingScope implements LocalResolver {
 /**
  * Creates a `CssSelector` given a tag name and a map of attributes
  */
-function createCssSelector(tag: string, attributes: {[name: string]: string}): CssSelector {
+export function createCssSelector(
+    elementName: string, attributes: {[name: string]: string}): CssSelector {
   const cssSelector = new CssSelector();
+  const elementNameNoNs = splitNsName(elementName)[1];
 
-  cssSelector.setElement(tag);
+  cssSelector.setElement(elementNameNoNs);
 
   Object.getOwnPropertyNames(attributes).forEach((name) => {
+    const nameNoNs = splitNsName(name)[1];
     const value = attributes[name];
 
-    cssSelector.addAttribute(name, value);
+    cssSelector.addAttribute(nameNoNs, value);
     if (name.toLowerCase() === 'class') {
       const classes = value.trim().split(/\s+/);
       classes.forEach(className => cssSelector.addClassName(className));
