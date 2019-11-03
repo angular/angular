@@ -354,7 +354,7 @@ array of the services that you'll test or mock.
 <code-example
   path="testing/src/app/demo/demo.testbed.spec.ts"
   region="value-service-before-each"
-  header="app/demo/demo.testbed.spec.ts (provide ValueService in beforeEach">
+  header="app/demo/demo.testbed.spec.ts (provide ValueService in beforeEach)">
 </code-example>
 
 Then inject it inside a test by calling `TestBed.inject()` with the service class as the argument.
