@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, EventEmitter, Output, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, Directive, ElementRef, EventEmitter, Output, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {Input} from '@angular/core/src/metadata';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -260,17 +260,18 @@ describe('directives', () => {
       expect(calls).toEqual(['MyDir.ngOnInit']);
     });
 
-    it('should match namespaced elements', () => {
+    it('should match directives on elements with namespace', () => {
       const calls: string[] = [];
 
-      @Directive({selector: 'text[dir]'})
+      @Directive({selector: 'svg[dir]'})
       class MyDir {
-        ngOnInit() { calls.push('MyDir.ngOnInit'); }
+        constructor(private el: ElementRef) {}
+        ngOnInit() { calls.push(`MyDir.ngOnInit: ${this.el.nativeElement.tagName}`); }
       }
 
       @Component({
         selector: `my-comp`,
-        template: `<svg><text dir></text></svg>`,
+        template: `<svg dir><text dir></text></svg>`,
       })
       class MyComp {
       }
@@ -279,7 +280,30 @@ describe('directives', () => {
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
 
-      expect(calls).toEqual(['MyDir.ngOnInit']);
+      expect(calls).toEqual(['MyDir.ngOnInit: svg']);
+    });
+
+    it('should match directives on descendant elements with namespace', () => {
+      const calls: string[] = [];
+
+      @Directive({selector: 'text[dir]'})
+      class MyDir {
+        constructor(private el: ElementRef) {}
+        ngOnInit() { calls.push(`MyDir.ngOnInit: ${this.el.nativeElement.tagName}`); }
+      }
+
+      @Component({
+        selector: `my-comp`,
+        template: `<svg dir><text dir></text></svg>`,
+      })
+      class MyComp {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      expect(calls).toEqual(['MyDir.ngOnInit: text']);
     });
 
     it('should match directives when the node has "class", "style" and a binding', () => {
