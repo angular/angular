@@ -2318,19 +2318,30 @@ Use a flatter structure until there is an obvious value to creating a new folder
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 {@a 04-05}
 
+<!--
 ### _T-DRY_ (Try to be _DRY_)
+-->
+### _T-DRY_ (되도록이면 _DRY_ 정책을 지키세요.)
 
+<!--
 #### Style 04-05
+-->
+#### 스타일 04-05
 
 <div class="s-rule do">
 
-
+<!--
 **Do** be DRY (Don't Repeat Yourself).
+-->
+DRY (Don't Repeat Yourself) 정책을 **되도록이면 지키세요**.
 
 </div>
 
@@ -2338,8 +2349,10 @@ Use a flatter structure until there is an obvious value to creating a new folder
 
 <div class="s-rule avoid">
 
-
+<!--
 **Avoid** being so DRY that you sacrifice readability.
+-->
+하지만 DRY 정책이 과하면 코드의 가독성이 떨어집니다.
 
 </div>
 
@@ -2348,30 +2361,45 @@ Use a flatter structure until there is an obvious value to creating a new folder
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Being DRY is important, but not crucial if it sacrifices the other elements of LIFT.
 That's why it's called _T-DRY_.
 For example, it's redundant to name a template `hero-view.component.html` because
 with the `.html` extension, it is obviously a view.
 But if something is not obvious or departs from a convention, then spell it out.
-
+-->
+**왜?** DRY 정책을 유지하는 것은 좋지만 다른 LIFT 정책을 포기할 정도로 중요하지는 않습니다.
+그래서 DRY 정책을 *반드시* 지키라는 것이 아니라 *되도록이면* 지키라고 하는 것입니다.
+예를 들어 `hero-view.component.html`라는 이름의 템플릿 파일이 있을 때 이 파일의 확장자 부분 `.html`은 쓸모없어 보일 수 있습니다.
+하지만 확장자 지정을 생략하면 이 파일이 어떤 용도로 사용되는 파일인지 한 번에 알아볼 수 없게 됩니다.
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 {@a 04-06}
 
+<!--
 ### Overall structural guidelines
+-->
+### 폴더 구조 가이드라인
 
+<!--
 #### Style 04-06
+-->
+#### 스타일 04-06
 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** start small but keep in mind where the app is heading down the road.
+-->
+작은 부분부터 코딩을 시작하더라도 애플리케이션의 최종 목적지를 항상 **염두에 두어야 합니다**.
 
 
 </div>
@@ -2380,8 +2408,10 @@ But if something is not obvious or departs from a convention, then spell it out.
 
 <div class="s-rule do">
 
-
+<!--
 **Do** have a near term view of implementation and a long term vision.
+-->
+그래서 간단한 코드를 구현할 때도 장기 계획을 **염두에 두어야 합니다**.
 
 </div>
 
@@ -2389,8 +2419,10 @@ But if something is not obvious or departs from a convention, then spell it out.
 
 <div class="s-rule do">
 
-
+<!--
 **Do** put all of the app's code in a folder named `src`.
+-->
+애플리케이션의 코드는 모두 `src` 폴더 아래에 **두세요**.
 
 </div>
 
@@ -2399,8 +2431,11 @@ But if something is not obvious or departs from a convention, then spell it out.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** creating a folder for a component when it has multiple accompanying files (`.ts`, `.html`, `.css` and `.spec`).
+-->
+컴포넌트를 구성하는 파일이 여러개라면(`.ts`, `.html`, `.css`, `.spec`) 이 파일들은 따로 폴더를 만들어서 관리하는 것을 **고려해볼만 합니다**.
+
 </div>
 
 
@@ -2408,8 +2443,10 @@ But if something is not obvious or departs from a convention, then spell it out.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Helps keep the app structure small and easy to maintain in the early stages, while being easy to evolve as the app grows.
+-->
+**왜?** 애플리케이션의 폴더 구조는 개발 초기부터 간단하게 구성해야 애플리케이션을 확장할 때도 편합니다.
 </div>
 
 
@@ -2417,16 +2454,20 @@ But if something is not obvious or departs from a convention, then spell it out.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Components often have four files (e.g. `*.html`, `*.css`, `*.ts`, and `*.spec.ts`) and can clutter a folder quickly.
+-->
+**왜?** 컴포넌트는 보통 4개 파일(`*.html`, `*.css`, `*.ts`, `*.spec.ts`)로 구성되기 때문에 컴포넌트 폴더를 따로 구분하지 않고 모아둔다면 이 폴더는 빠르게 복잡해집니다.
 </div>
 
 
 
 {@a file-tree}
 
-
+<!--
 Here is a compliant folder and file structure:
+-->
+그래서 다음과 같은 폴더 구조와 파일 구성을 권장합니다:
 
 
 <div class='filetree'>
@@ -2655,21 +2696,34 @@ Here is a compliant folder and file structure:
 
 <div class="alert is-helpful">
 
+<!--
 While components in dedicated folders are widely preferred,
 another option for small apps is to keep components flat (not in a dedicated folder).
 This adds up to four files to the existing folder, but also reduces the folder nesting.
 Whatever you choose, be consistent.
-
+-->
+컴포넌트마다 폴더를 만들고 이 폴더에 컴포넌트를 구성하는 파일들을 모아놓고 관리하는 것이 일반적이지만, 작은 애플리케이션이라면 컴포넌트 폴더 없이 한 폴더에 모아두는 것도 고려해볼만 합니다.
+이렇게 구성하면 컴포넌트가 모여있는 폴더에는 파일이 많을 수 있지만 폴더의 구조가 단순해집니다.
+어떤 방식을 선택하던지 문제는 없습니다. 일관성만 유지하면 됩니다.
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 04-07}
 
+<!--
 ### _Folders-by-feature_ structure
+-->
+### _기능별로 폴더를 만드는_ 구성
 
+<!--
 #### Style 04-07
+-->
+#### 스타일 04-07
 
 
 <div class="s-rule do">
