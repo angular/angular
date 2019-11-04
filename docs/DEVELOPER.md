@@ -32,7 +32,26 @@ following products on your development machine:
 
 * [Java Development Kit](https://www.oracle.com/technetwork/java/javase/downloads/index.html) which is used
   to execute the selenium standalone server for e2e testing.
-* [XCode](https://developer.apple.com/xcode/) (if developing on Mac) which provides compilers/toochains/SDKs for the build system.
+
+### Platform Specific Prerequisites
+
+Each platform has some specific prerequisites. Make sure to set up everything necessary for your particular environment.
+
+#### Ubuntu
+
+Install `pkg-config`, `zip`, `g++`, `zlib1g-dev`, `unzip` and `python3`.
+
+```shell
+sudo apt-get install pkg-config zip g++ zlib1g-dev unzip python3
+```
+
+#### Mac
+
+Install [XCode](https://developer.apple.com/xcode/), which provides compilers/toochains/SDKs for the build system.
+
+#### Windows
+
+Install [Visual C++ Redistributable 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145), which provides compiles/toolchains/SDKs for the build system.
 
 ## Getting the Sources
 
