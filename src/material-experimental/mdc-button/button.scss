@@ -29,9 +29,11 @@
 // In order to work around this issue by *not* hiding overflow, we adjust the child elements
 // to fully cover the actual button element. This means that the border-radius would be correct
 // then. See: https://github.com/angular/components/issues/13738
-.mat-mdc-outlined-button .mat-mdc-button-ripple {
+.mat-mdc-outlined-button .mat-mdc-button-ripple,
+.mat-mdc-outlined-button .mdc-button__ripple {
   top: -$mdc-button-outlined-border-width;
   left: -$mdc-button-outlined-border-width;
   bottom: -$mdc-button-outlined-border-width;
   right: -$mdc-button-outlined-border-width;
+  border: none;
 }
