@@ -144,7 +144,7 @@ const windowEventNames = [
   'unhandledrejection',
   'unload',
   'userproximity',
-  'vrdisplyconnected',
+  'vrdisplayconnected',
   'vrdisplaydisconnected',
   'vrdisplaypresentchange'
 ];
