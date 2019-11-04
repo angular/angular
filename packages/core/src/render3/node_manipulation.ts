@@ -8,7 +8,7 @@
 
 import {ViewEncapsulation} from '../metadata/view';
 import {addToArray, removeFromArray} from '../util/array_utils';
-import {assertDefined, assertDomNode, assertEqual} from '../util/assert';
+import {assertDefined, assertDomNode, assertEqual, assertNotSame} from '../util/assert';
 import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
@@ -21,7 +21,7 @@ import {isLContainer, isLView, isRootView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_LCONTAINER, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode, getNativeByTNodeOrNull, unwrapRNode} from './util/view_utils';
+import {getNativeByTNode, unwrapRNode} from './util/view_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -64,6 +64,9 @@ const enum WalkTNodeTreeAction {
 
   /** node destruction using the renderer's API */
   Destroy = 3,
+
+  /** Retrieve the first RNode in search */
+  RetrieveRNode = 4,
 }
 
 
@@ -689,24 +692,9 @@ export function getFirstRNodeFromLViewInLContainer(
     const lView = lContainer[i];
     let tNode = lView[TVIEW].firstChild;
     if (tNode !== null) {
-      let tNodeType = tNode.type;
-      if (tNodeType === TNodeType.Container) {
-        // In this case the first `TNode` is another `LContainer` this means we now need to
-        // recurse
-        // into it the `LView` and retrieve its `RNode`.
-        const childLContainer = lView[tNode.index] as LContainer;
-        ngDevMode && assertLContainer(childLContainer);
-        return getFirstRNodeFromLViewInLContainer(childLContainer, 0);
-      } else {
-        // If we have `ElementContainer` or `IcuContainer` than we need to descend into them and
-        // find the actual first `Element`
-        while (tNodeType === TNodeType.ElementContainer || tNodeType === TNodeType.IcuContainer) {
-          tNode = tNode.child !;
-          ngDevMode && assertDefined(tNode, 'ElementContainer and IcuContainer must have children');
-          tNodeType = tNode.type;
-        }
-        return getNativeByTNode(tNode, lView);
-      }
+      const rNode =
+          applyNodes(null !, WalkTNodeTreeAction.RetrieveRNode, tNode, lView, null, null, false);
+      if (rNode !== null) return rNode;
     }
   }
   // If we could not find any `RNode` in any of the `LView`s, than just use the `LContainer`'s
@@ -737,7 +725,7 @@ export function nativeRemoveNode(renderer: Renderer3, rNode: RNode, isHostElemen
  */
 function applyNodes(
     renderer: Renderer3, action: WalkTNodeTreeAction, tNode: TNode | null, lView: LView,
-    renderParent: RElement | null, beforeNode: RNode | null, isProjection: boolean) {
+    renderParent: RElement | null, beforeNode: RNode | null, isProjection: boolean): RNode|null {
   while (tNode != null) {
     ngDevMode && assertTNodeForLView(tNode, lView);
     ngDevMode && assertNodeOfPossibleTypes(
@@ -753,18 +741,29 @@ function applyNodes(
     }
     if ((tNode.flags & TNodeFlags.isDetached) !== TNodeFlags.isDetached) {
       if (tNodeType === TNodeType.ElementContainer || tNodeType === TNodeType.IcuContainer) {
-        applyNodes(renderer, action, tNode.child, lView, renderParent, beforeNode, false);
+        const rNode =
+            applyNodes(renderer, action, tNode.child, lView, renderParent, beforeNode, false);
+        if (action == WalkTNodeTreeAction.RetrieveRNode) return rNode;
         applyToElementOrContainer(action, renderer, renderParent, rawSlotValue, beforeNode);
       } else if (tNodeType === TNodeType.Projection) {
-        applyProjectionRecursive(
+        const rNode = applyProjectionRecursive(
             renderer, action, lView, tNode as TProjectionNode, renderParent, beforeNode);
+        if (action == WalkTNodeTreeAction.RetrieveRNode) return rNode;
       } else {
         ngDevMode && assertNodeOfPossibleTypes(tNode, TNodeType.Element, TNodeType.Container);
+        if (action == WalkTNodeTreeAction.RetrieveRNode) {
+          if (isLContainer(rawSlotValue)) {
+            return applyContainer(renderer, action, rawSlotValue, null, null);
+          } else {
+            return unwrapRNode(rawSlotValue);
+          }
+        }
         applyToElementOrContainer(action, renderer, renderParent, rawSlotValue, beforeNode);
       }
     }
     tNode = isProjection ? tNode.projectionNext : tNode.next;
   }
+  return null;
 }
 
 
@@ -792,11 +791,11 @@ function applyNodes(
  */
 function applyView(
     renderer: Renderer3, action: WalkTNodeTreeAction, lView: LView, renderParent: RElement | null,
-    beforeNode: RNode | null) {
+    beforeNode: RNode | null): RNode|null {
   const tView = lView[TVIEW];
   ngDevMode && assertNodeType(tView.node !, TNodeType.View);
   const viewRootTNode: TNode|null = tView.node !.child;
-  applyNodes(renderer, action, viewRootTNode, lView, renderParent, beforeNode, false);
+  return applyNodes(renderer, action, viewRootTNode, lView, renderParent, beforeNode, false);
 }
 
 /**
@@ -833,7 +832,8 @@ export function applyProjection(lView: LView, tProjectionNode: TProjectionNode) 
  */
 function applyProjectionRecursive(
     renderer: Renderer3, action: WalkTNodeTreeAction, lView: LView,
-    tProjectionNode: TProjectionNode, renderParent: RElement | null, beforeNode: RNode | null) {
+    tProjectionNode: TProjectionNode, renderParent: RElement | null,
+    beforeNode: RNode | null): RNode|null {
   const componentLView = findComponentView(lView);
   const componentNode = componentLView[T_HOST] as TElementNode;
   ngDevMode &&
@@ -847,14 +847,17 @@ function applyProjectionRecursive(
     // This should be refactored and cleaned up.
     for (let i = 0; i < nodeToProjectOrRNodes.length; i++) {
       const rNode = nodeToProjectOrRNodes[i];
+      if (action == WalkTNodeTreeAction.RetrieveRNode && rNode !== null) return rNode;
       applyToElementOrContainer(action, renderer, renderParent, rNode, beforeNode);
     }
   } else {
     let nodeToProject: TNode|null = nodeToProjectOrRNodes;
     const projectedComponentLView = componentLView[PARENT] as LView;
-    applyNodes(
+    const rNode = applyNodes(
         renderer, action, nodeToProject, projectedComponentLView, renderParent, beforeNode, true);
+    if (rNode !== null) return rNode;
   }
+  return null;
 }
 
 
@@ -873,7 +876,7 @@ function applyProjectionRecursive(
  */
 function applyContainer(
     renderer: Renderer3, action: WalkTNodeTreeAction, lContainer: LContainer,
-    renderParent: RElement | null, beforeNode: RNode | null | undefined) {
+    renderParent: RElement | null, beforeNode: RNode | null | undefined): RNode|null {
   ngDevMode && assertLContainer(lContainer);
   const anchor = lContainer[NATIVE];  // LContainer has its own before node.
   const native = unwrapRNode(lContainer);
@@ -888,10 +891,13 @@ function applyContainer(
     // see a reason why they should be different, but they are.
     //
     // If they are we need to process the second anchor as well.
+    ngDevMode && assertNotSame(action, WalkTNodeTreeAction.RetrieveRNode, 'Unexpected code.')
     applyToElementOrContainer(action, renderer, renderParent, anchor, beforeNode);
   }
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     const lView = lContainer[i] as LView;
-    applyView(renderer, action, lView, renderParent, anchor);
+    const rNode = applyView(renderer, action, lView, renderParent, anchor);
+    if (action === WalkTNodeTreeAction.RetrieveRNode) return rNode;
   }
+  return action === WalkTNodeTreeAction.RetrieveRNode ? native : null;
 }

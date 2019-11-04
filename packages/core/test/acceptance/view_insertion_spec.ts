@@ -8,6 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {ChangeDetectorRef, Component, Directive, EmbeddedViewRef, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {getComponent} from '@angular/core/src/render3';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {ivyEnabled} from '@angular/private/testing';
@@ -278,6 +279,75 @@ describe('view insertion', () => {
   });
 
   describe('regression', () => {
+    it('should allow inserting of all different types', () => {
+      @Component({
+        selector: 'test-container-insertion',
+        template: `
+        <ng-template #container></ng-template>
+
+        <ng-template #empty></ng-template>
+        <ng-template #basic>(basic)</ng-template>
+        <ng-template #nested><ng-template [ngIf]="true">(nested)</ng-template></ng-template>
+        <ng-template #projection><ng-content></ng-content></ng-template>
+        <ng-template #icu>{count, plural, =0 {(icu)} other {(icu-other)}}</ng-template>
+        `
+      })
+      class TestContainerInsertionComponent {
+        count: number = 0;
+
+        @ViewChild('container', {read: ViewContainerRef})
+        container: ViewContainerRef = null !;
+
+        @ViewChild('empty', {read: TemplateRef})
+        empty: TemplateRef<any> = null !;
+        @ViewChild('basic', {read: TemplateRef})
+        basic: TemplateRef<any> = null !;
+        @ViewChild('projection', {read: TemplateRef})
+        projection: TemplateRef<any> = null !;
+        @ViewChild('nested', {read: TemplateRef})
+        nested: TemplateRef<any> = null !;
+        @ViewChild('icu', {read: TemplateRef})
+        icu: TemplateRef<any> = null !;
+      }
+
+      @Component({
+        selector: 'test-component',
+        template: `
+        <test-container-insertion>(content)</test-container-insertion>
+        `
+      })
+      class TestComponent {
+      }
+
+      const fixture = TestBed
+                          .configureTestingModule(
+                              {declarations: [TestComponent, TestContainerInsertionComponent]})
+                          .createComponent(TestComponent);
+      fixture.detectChanges();
+      const testContainerComponent = getComponent<TestContainerInsertionComponent>(
+          (fixture.nativeElement as HTMLElement).querySelector('test-container-insertion') !) !;
+
+      testContainerComponent.container.createEmbeddedView(testContainerComponent.empty, {}, 0);
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      testContainerComponent.container.createEmbeddedView(testContainerComponent.basic, {}, 0);
+      expect(fixture.nativeElement.textContent).toBe('(basic)');
+
+      const nestedView =
+          testContainerComponent.container.createEmbeddedView(testContainerComponent.nested, {}, 0);
+      nestedView.detectChanges();  // So that `*ngIf` unrolls
+      expect(fixture.nativeElement.textContent).toBe('(nested)(basic)');
+
+      (global as any).debug = true;
+      testContainerComponent.container.createEmbeddedView(testContainerComponent.projection, {}, 0);
+      expect(fixture.nativeElement.textContent).toBe('(content)(nested)(basic)');
+
+      const icuView =
+          testContainerComponent.container.createEmbeddedView(testContainerComponent.icu, {}, 0);
+      icuView.detectChanges();  // So that ICU updates
+      expect(fixture.nativeElement.textContent).toBe('(icu)(content)(nested)(basic)');
+    });
+
     it('FW-1559: should support inserting in front of nested `LContainers', () => {
       @Component({
         selector: 'repeater',
@@ -303,7 +373,6 @@ describe('view insertion', () => {
       fixture.detectChanges();
 
       fixture.componentInstance.rendered = ['a', 'b'];
-      (global as any).break = true;
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toEqual('ab');
     });
