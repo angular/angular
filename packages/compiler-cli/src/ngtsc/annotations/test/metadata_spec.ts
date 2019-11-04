@@ -119,7 +119,8 @@ runInEachFileSystem(() => {
     }
     const sf = getSourceFileOrError(program, _('/index.ts'));
     const im = new ImportManager(new NoopImportRewriter(), 'i');
-    const tsStatement = translateStatement(call, im, NOOP_DEFAULT_IMPORT_RECORDER);
+    const tsStatement =
+        translateStatement(call, im, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES2015);
     const res = ts.createPrinter().printNode(ts.EmitHint.Unspecified, tsStatement, sf);
     return res.replace(/\s+/g, ' ');
   }

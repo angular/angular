@@ -5,10 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {relative, dirname, AbsoluteFsPath, absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
-import {Import, ImportManager} from '../../../src/ngtsc/translator';
+import {NOOP_DEFAULT_IMPORT_RECORDER, Reexport} from '../../../src/ngtsc/imports';
+import {Import, ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
 import {CompiledClass} from '../analysis/types';
 import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
@@ -16,13 +18,14 @@ import {ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyze
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {RenderingFormatter, RedundantDecoratorMap} from './rendering_formatter';
 import {stripExtension} from './utils';
-import {Reexport} from '../../../src/ngtsc/imports';
 import {isAssignment} from '../host/esm2015_host';
 
 /**
  * A RenderingFormatter that works with ECMAScript Module import and export statements.
  */
 export class EsmRenderingFormatter implements RenderingFormatter {
+  protected printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
+
   constructor(protected host: NgccReflectionHost, protected isCore: boolean) {}
 
   /**
@@ -223,6 +226,24 @@ export class EsmRenderingFormatter implements RenderingFormatter {
             `: ${generateImportString(importManager, '@angular/core', 'ModuleWithProviders')}<${ngModule}>`);
       }
     });
+  }
+
+  /**
+   * Convert a `Statement` to JavaScript code in a format suitable for rendering by this formatter.
+   *
+   * @param stmt The `Statement` to print.
+   * @param sourceFile A `ts.SourceFile` that provides context for the statement. See
+   *     `ts.Printer#printNode()` for more info.
+   * @param importManager The `ImportManager` to use for managing imports.
+   *
+   * @return The JavaScript code corresponding to `stmt` (in the appropriate format).
+   */
+  printStatement(stmt: Statement, sourceFile: ts.SourceFile, importManager: ImportManager): string {
+    const node = translateStatement(
+        stmt, importManager, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES2015);
+    const code = this.printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
+
+    return code;
   }
 
   protected findEndOfImports(sf: ts.SourceFile): number {
