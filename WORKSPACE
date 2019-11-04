@@ -5,8 +5,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Add NodeJS rules
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "ad4be2c6f40f5af70c7edf294955f9d9a0222c8e2756109731b25f79ea2ccea0",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.38.3/rules_nodejs-0.38.3.tar.gz"],
+    sha256 = "3d7296d834208792fa3b2ded8ec04e75068e3de172fae79db217615bd75a6ff7",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.39.1/rules_nodejs-0.39.1.tar.gz"],
 )
 
 # Add sass rules
@@ -21,8 +21,8 @@ http_archive(
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
-# The minimum bazel version to use with this repo is 0.27.0
-check_bazel_version("0.27.0")
+# The minimum bazel version to use with this repo is 1.0.0
+check_bazel_version("1.0.0")
 
 node_repositories(
     node_repositories = {
@@ -46,7 +46,6 @@ yarn_install(
     # are executed in the Bazel sandbox.
     data = [
         "//:angular-tsconfig.json",
-        "//:tools/bazel/angular_bazel_0.38.2.patch",
         "//:tools/bazel/flat_module_factory_resolution.patch",
         "//:tools/bazel/manifest_externs_hermeticity.patch",
         "//:tools/bazel/postinstall-patches.js",
@@ -102,9 +101,9 @@ sass_repositories()
 # Bring in bazel_toolchains for RBE setup configuration.
 http_archive(
     name = "bazel_toolchains",
-    sha256 = "ab0d8aaeaeeef413ddb03922dbdb99bbae9e1b2c157a87c77d70d45a830be5b0",
-    strip_prefix = "bazel-toolchains-0.29.1",
-    url = "https://github.com/bazelbuild/bazel-toolchains/archive/0.29.1.tar.gz",
+    sha256 = "0b36eef8a66f39c8dbae88e522d5bbbef49d5e66e834a982402c79962281be10",
+    strip_prefix = "bazel-toolchains-1.0.1",
+    url = "https://github.com/bazelbuild/bazel-toolchains/archive/1.0.1.tar.gz",
 )
 
 load("@bazel_toolchains//repositories:repositories.bzl", bazel_toolchains_repositories = "repositories")
