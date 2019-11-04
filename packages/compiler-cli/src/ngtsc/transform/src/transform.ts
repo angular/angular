@@ -64,8 +64,9 @@ class IvyVisitor extends Visitor {
 
       res.forEach(field => {
         // Translate the initializer for the field into TS nodes.
-        const exprNode =
-            translateExpression(field.initializer, this.importManager, this.defaultImportRecorder);
+        const exprNode = translateExpression(
+            field.initializer, this.importManager, this.defaultImportRecorder,
+            ts.ScriptTarget.ES2015);
 
         // Create a static property declaration for the new field.
         const property = ts.createProperty(
@@ -73,7 +74,9 @@ class IvyVisitor extends Visitor {
             undefined, exprNode);
 
         field.statements
-            .map(stmt => translateStatement(stmt, this.importManager, this.defaultImportRecorder))
+            .map(
+                stmt => translateStatement(
+                    stmt, this.importManager, this.defaultImportRecorder, ts.ScriptTarget.ES2015))
             .forEach(stmt => statements.push(stmt));
 
         members.push(property);
@@ -218,7 +221,8 @@ function transformIvySourceFile(
   // Generate the constant statements first, as they may involve adding additional imports
   // to the ImportManager.
   const constants = constantPool.statements.map(
-      stmt => translateStatement(stmt, importManager, defaultImportRecorder));
+      stmt =>
+          translateStatement(stmt, importManager, defaultImportRecorder, ts.ScriptTarget.ES2015));
 
   // Preserve @fileoverview comments required by Closure, since the location might change as a
   // result of adding extra imports and constant pool statements.
