@@ -44,7 +44,13 @@ dirs=`echo "$targets" | sed -e 's/\/\/src\/\(.*\):npm_package/\1/'`
 # do this to ensure that the version placeholders are properly populated.
 for pkg in ${dirs}; do
   pkg_dir="${bazel_bin_path}/src/${pkg}/npm_package"
-  rm -Rf ${pkg_dir}
+  if [[ -d ${pkg_dir} ]]; then
+    # Make all directories in the previous package output writable. Bazel by default
+    # makes tree artifacts and file outputs readonly. This causes permission errors
+    # when deleting the folder. To avoid these errors, we make all files writable.
+    chmod -R u+w ${pkg_dir}
+    rm -Rf ${pkg_dir}
+  fi
 done
 
 # Walk through each release package target and build it.
