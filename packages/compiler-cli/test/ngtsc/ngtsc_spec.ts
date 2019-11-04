@@ -2853,6 +2853,39 @@ runInEachFileSystem(os => {
          expect(jsContents).toContain('directives: function () { return [CmpB]; }');
        });
 
+    it('should keep declaration order of types in "directives" ', () => {
+      env.write('test.ts', `
+        import {Component, Directive, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'cmp-a',
+          template: '<div dirC dirB></div>',
+        })
+        class CmpA {}
+
+        @Directive({
+          selector: '[dirB]',
+        })
+        class DirB {}
+
+        @Directive({
+          selector: '[dirC]',
+        })
+        class DirC {}
+
+        @NgModule({
+          declarations: [CmpA, DirB, DirC],
+        })
+        class Module {}
+    `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toMatch(/directives: function \(\) { return \[DirB,\s*DirC\]; }/);
+    });
+
+
     it('should emit setClassMetadata calls for all types', () => {
       env.write('test.ts', `
       import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';

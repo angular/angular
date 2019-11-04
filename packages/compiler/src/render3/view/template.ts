@@ -159,6 +159,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // expressions to output AST.
   private _implicitReceiverExpr: o.ReadVarExpr|null = null;
 
+  // Matched directives in template that need to be sorted by index
+  private _directivesWithIndex: [o.Expression, number][] = [];
+
   constructor(
       private constantPool: ConstantPool, parentBindingScope: BindingScope, private level = 0,
       private contextName: string|null, private i18nContext: I18nContext|null,
@@ -274,6 +277,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const updateBlock = updateStatements.length > 0 ?
         [renderFlagCheckIfStmt(core.RenderFlags.Update, updateVariables.concat(updateStatements))] :
         [];
+
+    this._directivesWithIndex.sort((t1, t2) => t1[1] - t2[1]);
+    for (let i = 0; i < this._directivesWithIndex.length; i++) {
+      this.directives.add(this._directivesWithIndex[i][0]);
+    }
 
     return o.fn(
         // i.e. (rf: RenderFlags, ctx: any)
@@ -1194,8 +1202,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private matchDirectives(tagName: string, elOrTpl: t.Element|t.Template) {
     if (this.directiveMatcher) {
       const selector = createCssSelector(tagName, getAttrsForDirectiveMatching(elOrTpl));
-      this.directiveMatcher.match(
-          selector, (cssSelector, staticType) => { this.directives.add(staticType); });
+      this.directiveMatcher.match(selector, (cssSelector, staticType, index) => {
+        this._directivesWithIndex.push([staticType, index]);
+      });
     }
   }
 

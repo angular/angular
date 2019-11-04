@@ -163,6 +163,7 @@ export class SelectorMatcher<T = any> {
   private _classPartialMap = new Map<string, SelectorMatcher<T>>();
   private _attrValueMap = new Map<string, Map<string, SelectorContext<T>[]>>();
   private _attrValuePartialMap = new Map<string, Map<string, SelectorMatcher<T>>>();
+  private _selectorIndexMap = new Map<CssSelector, number>();
   private _listContexts: SelectorListContext[] = [];
 
   addSelectables(cssSelectors: CssSelector[], callbackCtxt?: T) {
@@ -188,6 +189,7 @@ export class SelectorMatcher<T = any> {
     const classNames = cssSelector.classNames;
     const attrs = cssSelector.attrs;
     const selectable = new SelectorContext(cssSelector, callbackCtxt, listContext);
+    this._selectorIndexMap.set(cssSelector, this._selectorIndexMap.size);
 
     if (element) {
       const isTerminal = attrs.length === 0 && classNames.length === 0;
@@ -262,7 +264,9 @@ export class SelectorMatcher<T = any> {
    * @param matchedCallback This callback will be called with the object handed into `addSelectable`
    * @return boolean true if a match was found
   */
-  match(cssSelector: CssSelector, matchedCallback: ((c: CssSelector, a: T) => void)|null): boolean {
+  match(
+      cssSelector: CssSelector,
+      matchedCallback: ((c: CssSelector, a: T, i: number) => void)|null): boolean {
     let result = false;
     const element = cssSelector.element !;
     const classNames = cssSelector.classNames;
@@ -272,17 +276,24 @@ export class SelectorMatcher<T = any> {
       this._listContexts[i].alreadyMatched = false;
     }
 
-    result = this._matchTerminal(this._elementMap, element, cssSelector, matchedCallback) || result;
-    result = this._matchPartial(this._elementPartialMap, element, cssSelector, matchedCallback) ||
+    const selectorMatchCallback = matchedCallback != null ? (c: CssSelector, a: T) => {
+      matchedCallback(c, a, this._selectorIndexMap.get(c) !);
+    } : null;
+
+    result = this._matchTerminal(this._elementMap, element, cssSelector, selectorMatchCallback) ||
+        result;
+    result =
+        this._matchPartial(this._elementPartialMap, element, cssSelector, selectorMatchCallback) ||
         result;
 
     if (classNames) {
       for (let i = 0; i < classNames.length; i++) {
         const className = classNames[i];
         result =
-            this._matchTerminal(this._classMap, className, cssSelector, matchedCallback) || result;
-        result =
-            this._matchPartial(this._classPartialMap, className, cssSelector, matchedCallback) ||
+            this._matchTerminal(this._classMap, className, cssSelector, selectorMatchCallback) ||
+            result;
+        result = this._matchPartial(
+                     this._classPartialMap, className, cssSelector, selectorMatchCallback) ||
             result;
       }
     }
@@ -294,18 +305,20 @@ export class SelectorMatcher<T = any> {
 
         const terminalValuesMap = this._attrValueMap.get(name) !;
         if (value) {
-          result =
-              this._matchTerminal(terminalValuesMap, '', cssSelector, matchedCallback) || result;
+          result = this._matchTerminal(terminalValuesMap, '', cssSelector, selectorMatchCallback) ||
+              result;
         }
         result =
-            this._matchTerminal(terminalValuesMap, value, cssSelector, matchedCallback) || result;
+            this._matchTerminal(terminalValuesMap, value, cssSelector, selectorMatchCallback) ||
+            result;
 
         const partialValuesMap = this._attrValuePartialMap.get(name) !;
         if (value) {
-          result = this._matchPartial(partialValuesMap, '', cssSelector, matchedCallback) || result;
+          result = this._matchPartial(partialValuesMap, '', cssSelector, selectorMatchCallback) ||
+              result;
         }
-        result =
-            this._matchPartial(partialValuesMap, value, cssSelector, matchedCallback) || result;
+        result = this._matchPartial(partialValuesMap, value, cssSelector, selectorMatchCallback) ||
+            result;
       }
     }
     return result;

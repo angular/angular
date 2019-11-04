@@ -13,7 +13,7 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
 {
   describe('SelectorMatcher', () => {
     let matcher: SelectorMatcher;
-    let selectableCollector: (selector: CssSelector, context: any) => void;
+    let selectableCollector: (selector: CssSelector, context: any, index: number) => void;
     let s1: any[], s2: any[], s3: any[], s4: any[];
     let matched: any[];
 
@@ -22,8 +22,9 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
     beforeEach(() => {
       reset();
       s1 = s2 = s3 = s4 = null !;
-      selectableCollector =
-          (selector: CssSelector, context: any) => { matched.push(selector, context); };
+      selectableCollector = (selector: CssSelector, context: any, index: number) => {
+        matched.push(selector, context, index);
+      };
       matcher = new SelectorMatcher();
     });
 
@@ -38,7 +39,7 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
       expect(matched).toEqual([]);
 
       expect(matcher.match(getSelectorFor({tag: 'someTag'}), selectableCollector)).toEqual(true);
-      expect(matched).toEqual([s1[0], 1]);
+      expect(matched).toEqual([s1[0], 1, 0]);
     });
 
     it('should select by class name case insensitive', () => {
@@ -51,12 +52,12 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
 
       expect(matcher.match(getSelectorFor({classes: 'SOMECLASS'}), selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s1[0], 1]);
+      expect(matched).toEqual([s1[0], 1, 0]);
 
       reset();
       expect(matcher.match(getSelectorFor({classes: 'someClass class2'}), selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s1[0], 1, s2[0], 2]);
+      expect(matched).toEqual([s1[0], 1, 0, s2[0], 2, 1]);
     });
 
     it('should not throw for class name "constructor"', () => {
@@ -86,28 +87,28 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
           matcher.match(
               getSelectorFor({attrs: [['someAttr', ''], ['someAttr2', '']]}), selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s1[0], 1, s2[0], 2]);
+      expect(matched).toEqual([s1[0], 1, 0, s2[0], 2, 1]);
 
       reset();
       expect(matcher.match(
                  getSelectorFor({attrs: [['someAttr', 'someValue'], ['someAttr2', '']]}),
                  selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s1[0], 1, s2[0], 2]);
+      expect(matched).toEqual([s1[0], 1, 0, s2[0], 2, 1]);
 
       reset();
       expect(matcher.match(
                  getSelectorFor({attrs: [['someAttr2', ''], ['someAttr', 'someValue']]}),
                  selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s1[0], 1, s2[0], 2]);
+      expect(matched).toEqual([s1[0], 1, 0, s2[0], 2, 1]);
 
       reset();
       expect(matcher.match(
                  getSelectorFor({attrs: [['someAttr2', 'someValue'], ['someAttr', '']]}),
                  selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s1[0], 1, s2[0], 2]);
+      expect(matched).toEqual([s1[0], 1, 0, s2[0], 2, 1]);
     });
 
     it('should support "." in attribute names', () => {
@@ -120,7 +121,7 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
       reset();
       expect(matcher.match(getSelectorFor({attrs: [['foo.bar', '']]}), selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s1[0], 1]);
+      expect(matched).toEqual([s1[0], 1, 0]);
     });
 
     it('should select by attr name only once if the value is from the DOM', () => {
@@ -131,7 +132,7 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
       const empty = element.getAttribute('attr') !;
       elementSelector.addAttribute('some-decor', empty);
       matcher.match(elementSelector, selectableCollector);
-      expect(matched).toEqual([s1[0], 1]);
+      expect(matched).toEqual([s1[0], 1, 0]);
     });
 
     it('should select by attr name case sensitive and value case insensitive', () => {
@@ -150,7 +151,7 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
       expect(
           matcher.match(getSelectorFor({attrs: [['someAttr', 'SOMEVALUE']]}), selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s1[0], 1]);
+      expect(matched).toEqual([s1[0], 1, 0]);
     });
 
     it('should select by element name, class name and attribute name with value', () => {
@@ -189,7 +190,7 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
                      {tag: 'someTag', classes: 'someClass', attrs: [['someAttr', 'someValue']]}),
                  selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s1[0], 1]);
+      expect(matched).toEqual([s1[0], 1, 0]);
     });
 
     it('should select by many attributes and independent of the value', () => {
@@ -201,7 +202,7 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
       cssSelector.addAttribute('control', 'one');
 
       expect(matcher.match(cssSelector, selectableCollector)).toEqual(true);
-      expect(matched).toEqual([s1[0], 1]);
+      expect(matched).toEqual([s1[0], 1, 0]);
     });
 
     it('should select independent of the order in the css selector', () => {
@@ -212,22 +213,22 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
 
       expect(matcher.match(CssSelector.parse('[someAttr].someClass')[0], selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s1[0], 1, s2[0], 2]);
+      expect(matched).toEqual([s1[0], 1, 0, s2[0], 2, 1]);
 
       reset();
       expect(matcher.match(CssSelector.parse('.someClass[someAttr]')[0], selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s1[0], 1, s2[0], 2]);
+      expect(matched).toEqual([s1[0], 1, 0, s2[0], 2, 1]);
 
       reset();
       expect(matcher.match(CssSelector.parse('.class1.class2')[0], selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s3[0], 3, s4[0], 4]);
+      expect(matched).toEqual([s3[0], 3, 2, s4[0], 4, 3]);
 
       reset();
       expect(matcher.match(CssSelector.parse('.class2.class1')[0], selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s4[0], 4, s3[0], 3]);
+      expect(matched).toEqual([s4[0], 4, 3, s3[0], 3, 2]);
     });
 
     it('should not select with a matching :not selector', () => {
@@ -255,7 +256,7 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
               getSelectorFor({tag: 'p', attrs: [['someOtherAttr', '']], classes: 'someOtherClass'}),
               selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s1[0], 1, s2[0], 2, s3[0], 3, s4[0], 4]);
+      expect(matched).toEqual([s1[0], 1, 0, s2[0], 2, 1, s3[0], 3, 2, s4[0], 4, 3]);
     });
 
     it('should match * with :not selector', () => {
@@ -277,13 +278,13 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
       matcher.addSelectables(s1 = CssSelector.parse('input[type=text], textbox'), 1);
 
       expect(matcher.match(getSelectorFor({tag: 'textbox'}), selectableCollector)).toEqual(true);
-      expect(matched).toEqual([s1[1], 1]);
+      expect(matched).toEqual([s1[1], 1, 1]);
 
       reset();
       expect(matcher.match(
                  getSelectorFor({tag: 'input', attrs: [['type', 'text']]}), selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s1[0], 1]);
+      expect(matched).toEqual([s1[0], 1, 0]);
     });
 
     it('should not select twice with two matches in a list', () => {
@@ -292,8 +293,8 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
       expect(
           matcher.match(getSelectorFor({tag: 'input', classes: 'someclass'}), selectableCollector))
           .toEqual(true);
-      expect(matched.length).toEqual(2);
-      expect(matched).toEqual([s1[0], 1]);
+      expect(matched.length).toEqual(3);
+      expect(matched).toEqual([s1[0], 1, 0]);
     });
   });
 
