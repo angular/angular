@@ -313,4 +313,66 @@ describe('ng-add schematic', () => {
           .toBe('custom-theme', 'Expected the old custom theme content to be unchanged.');
     });
   });
+
+  it('should add the global typography class if the body has no classes', async () => {
+    const tree = await runner.runSchematicAsync('ng-add-setup-project', {
+      typography: true
+    }, appTree).toPromise();
+    const workspace = getWorkspace(tree);
+    const project = getProjectFromWorkspace(workspace);
+
+    const indexFiles = getProjectIndexFiles(project);
+    expect(indexFiles.length).toBe(1);
+
+    indexFiles.forEach(indexPath => {
+      const buffer = tree.read(indexPath)!;
+      expect(buffer.toString()).toContain('<body class="mat-typography">');
+    });
+  });
+
+  it('should add the global typography class if the body has existing classes', async () => {
+    appTree.overwrite('projects/material/src/index.html', `
+      <html>
+        <head></head>
+        <body class="one two"></body>
+      </html>
+    `);
+
+    const tree = await runner.runSchematicAsync('ng-add-setup-project', {
+      typography: true
+    }, appTree).toPromise();
+
+    const workspace = getWorkspace(tree);
+    const project = getProjectFromWorkspace(workspace);
+    const indexFiles = getProjectIndexFiles(project);
+    expect(indexFiles.length).toBe(1);
+
+    indexFiles.forEach(indexPath => {
+      const buffer = tree.read(indexPath)!;
+      expect(buffer.toString()).toContain('<body class="one two mat-typography">');
+    });
+  });
+
+  it('should not add the global typography class if it exists already', async () => {
+    appTree.overwrite('projects/material/src/index.html', `
+      <html>
+        <head></head>
+        <body class="one mat-typography two"></body>
+      </html>
+    `);
+
+    const tree = await runner.runSchematicAsync('ng-add-setup-project', {
+      typography: true
+    }, appTree).toPromise();
+
+    const workspace = getWorkspace(tree);
+    const project = getProjectFromWorkspace(workspace);
+    const indexFiles = getProjectIndexFiles(project);
+    expect(indexFiles.length).toBe(1);
+
+    indexFiles.forEach(indexPath => {
+      const buffer = tree.read(indexPath)!;
+      expect(buffer.toString()).toContain('<body class="one mat-typography two">');
+    });
+  });
 });

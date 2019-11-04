@@ -19,7 +19,7 @@ import {getWorkspace} from '@schematics/angular/utility/config';
 import {getAppModulePath} from '@schematics/angular/utility/ng-ast-utils';
 import {addFontsToIndex} from './fonts/material-fonts';
 import {Schema} from './schema';
-import {addThemeToAppStyles} from './theming/theming';
+import {addThemeToAppStyles, addTypographyClass} from './theming/theming';
 
 /** Name of the Angular module that enables Angular browser animations. */
 const browserAnimationsModuleName = 'BrowserAnimationsModule';
@@ -39,6 +39,7 @@ export default function(options: Schema): Rule {
     addThemeToAppStyles(options),
     addFontsToIndex(options),
     addMaterialAppStyles(options),
+    addTypographyClass(options),
   ]);
 }
 

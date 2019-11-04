@@ -10,10 +10,12 @@ import {normalize} from '@angular-devkit/core';
 import {WorkspaceProject, WorkspaceSchema} from '@angular-devkit/core/src/experimental/workspace';
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
 import {
+  addBodyClass,
   defaultTargetBuilders,
   getProjectFromWorkspace,
   getProjectStyleFile,
   getProjectTargetOptions,
+  getProjectIndexFiles,
 } from '@angular/cdk/schematics';
 import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace} from '@schematics/angular/utility/config';
@@ -40,6 +42,23 @@ export function addThemeToAppStyles(options: Schema): (host: Tree) => Tree {
     } else {
       insertPrebuiltTheme(project, host, themeName, workspace);
     }
+
+    return host;
+  };
+}
+
+/** Adds the global typography class to the body element. */
+export function addTypographyClass(options: Schema): (host: Tree) => Tree {
+  return function(host: Tree): Tree {
+    const workspace = getWorkspace(host);
+    const project = getProjectFromWorkspace(workspace, options.project);
+    const projectIndexFiles = getProjectIndexFiles(project);
+
+    if (!projectIndexFiles.length) {
+      throw new SchematicsException('No project index HTML file could be found.');
+    }
+
+    projectIndexFiles.forEach(indexFilePath => addBodyClass(host, indexFilePath, 'mat-typography'));
 
     return host;
   };

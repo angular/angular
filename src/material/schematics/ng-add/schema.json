@@ -27,6 +27,12 @@
         ]
       }
     },
+    "typography": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to set up global typography styles.",
+      "x-prompt": "Set up global Angular Material typography styles?"
+    },
     "animations": {
       "type": "boolean",
       "default": true,
