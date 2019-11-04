@@ -1,4 +1,3 @@
-import {coerceNumberProperty} from '@angular/cdk/coercion';
 import {Component} from '@angular/core';
 
 /**
@@ -20,12 +19,9 @@ export class SliderConfigurableExample {
   thumbLabel = false;
   value = 0;
   vertical = false;
+  tickInterval = 1;
 
-  get tickInterval(): number | 'auto' {
-    return this.showTicks ? (this.autoTicks ? 'auto' : this._tickInterval) : 0;
+  getSliderTickInterval(): number | 'auto' {
+    return this.showTicks ? (this.autoTicks ? 'auto' : this.tickInterval) : 0;
   }
-  set tickInterval(value) {
-    this._tickInterval = coerceNumberProperty(value);
-  }
-  private _tickInterval = 1;
 }

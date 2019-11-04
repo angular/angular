@@ -20,4 +20,10 @@ export class CustomStepper extends CdkStepper {
   onClick(index: number): void {
     this.selectedIndex = index;
   }
+
+  // These properties are required so that the Ivy template type checker in strict mode knows
+  // what kind of values are accepted by the `linear` and `selectedIndex` inputs which
+  // are inherited from `CdkStepper`.
+  static ngAcceptInputType_linear: boolean | string;
+  static ngAcceptInputType_selectedIndex: number | string;
 }

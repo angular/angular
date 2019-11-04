@@ -55,7 +55,7 @@
         [min]="min"
         [step]="step"
         [thumbLabel]="thumbLabel"
-        [tickInterval]="tickInterval"
+        [tickInterval]="getSliderTickInterval()"
         [(ngModel)]="value"
         [vertical]="vertical">
     </mat-slider>

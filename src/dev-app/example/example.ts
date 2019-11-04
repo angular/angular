@@ -71,4 +71,6 @@ export class Example implements OnInit {
     this._elementRef.nativeElement.appendChild(new exampleElementCtor(this._injector));
     this.title = EXAMPLE_COMPONENTS[this.id] ? EXAMPLE_COMPONENTS[this.id].title : '';
   }
+
+  static ngAcceptInputType_showLabel: boolean | string;
 }

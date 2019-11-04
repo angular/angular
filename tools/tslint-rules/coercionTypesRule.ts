@@ -149,8 +149,10 @@ class Walker extends Lint.RuleWalker {
         return prop.name && ts.isIdentifier(prop.name) && prop.name.text === 'selector';
       }) : null;
 
-      return !!selector && ts.isPropertyAssignment(selector) && ts.isIdentifier(selector.name) &&
-             !selector.name.text.startsWith('do-not-use-abstract-');
+      return !!selector && ts.isPropertyAssignment(selector) &&
+        (ts.isStringLiteral(selector.initializer) ||
+         ts.isNoSubstitutionTemplateLiteral(selector.initializer)) &&
+         !selector.initializer.text.startsWith('do-not-use-abstract-');
     }
 
     return false;
@@ -180,7 +182,9 @@ function usesCoercion(setter: ts.SetAccessorDeclaration, coercionFunctions: Set<
       coercionWasUsed = true;
     }
 
-    if (!coercionWasUsed) {
+    // Don't check callback functions since coercion used
+    // inside them most-likely won't need to be declared.
+    if (!coercionWasUsed && !ts.isArrowFunction(node) && !ts.isFunctionExpression(node)) {
       node.forEachChild(walk);
     }
   });

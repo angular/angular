@@ -290,5 +290,4 @@ export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy
   static ngAcceptInputType_hidePageSize: boolean | string;
   static ngAcceptInputType_showFirstLastButtons: boolean | string;
   static ngAcceptInputType_disabled: boolean | string;
-
 }

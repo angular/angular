@@ -116,7 +116,7 @@
     "rxjs-imports": true,
     "require-breaking-change-version": true,
     "class-list-signatures": true,
-    "coercion-types": [false, // Disabled until #17528 gets in.
+    "coercion-types": [true,
       ["coerceBooleanProperty", "coerceCssPixelValue", "coerceNumberProperty"],
       {
         "CanDisable": ["disabled"],
