@@ -19,9 +19,8 @@ In order to improve the updating experience, we strongly suggest that you update
 Additionally, during the RC period, the `--next` command line flag is required. This flag will no longer be necessary once version 9 final is released.
 </div>
 
-The script will run a series of small migrations that will transform the code of your application to be compatible with version 9.
-
-If you're curious about the specific migrations being run (e.g. what code is changing and why), see the [automated migrations section](#migrations).
+The script runs a series of small migrations that will transform the code of your application to be compatible with version 9.
+If you're curious about the specific migrations being run, see the [automated migrations section](#migrations) for details on what code is changing and why.
 
 ## Changes and Deprecations in Version 9
 
@@ -30,14 +29,13 @@ If you're curious about the specific migrations being run (e.g. what code is cha
 
 - Angular now compiles with Ivy by default. See [Ivy compatibility section](#ivy).
 
-- CLI apps compile in [AOT mode](/guide/aot-compiler) by default (which includes template type-checking). 
-Users who only built with JIT before may see new type errors. 
+- CLI apps compile in [AOT mode](/guide/aot-compiler) by default (which includes template type-checking).
+Users who only built with JIT before may see new type errors.
 See our [template type-checking guide](guide/template-typecheck) for more information and debugging tips.
 
 - Typescript 3.4 and 3.5 are no longer supported. Please update to Typescript 3.6.
 
-- tslib is now listed as a peer dependency rather than a direct dependency. 
-Users not using the CLI will need to manually install tslib via `yarn add tslib` or `npm install tslib --save`.
+- `tslib` is now listed as a peer dependency rather than a direct dependency. If you are not using the CLI, you must manually install `tslib`, using `yarn add tslib` or `npm install tslib --save`.
 
 {@a deprecations}
 ### New Deprecations
@@ -68,23 +66,17 @@ Users not using the CLI will need to manually install tslib via `yarn add tslib`
 | `@angular/forms` | `ngForm` element selector | `ng-form` element selector | none |
 | `@angular/service-worker` | `versionedFiles` | `files` | In the service worker configuration file `ngsw-config.json`, replace `versionedFiles` with `files`. See [Service Worker Configuration](guide/service-worker-config#assetgroups). |
 
-
-
-{@a ivy-features}
-## Ivy Features
-
-Angular version 9 introduces more comprehensive type-checking. For details, see [Template Type-checking](guide/template-typecheck).
-
-
 {@a ivy}
-## Ivy Compatibility
+
+## Ivy features and compatibility
 
 In Version 9, Angular Ivy is the default rendering engine. If you haven't heard of Ivy, you can read more about it in the [Angular Ivy guide](guide/ivy).
 
-For guidance on debugging and a list of minor changes associated with Ivy, please see our [compatibility guide](guide/ivy-compatibility).
+* Among other features, Ivy introduces more comprehensive type-checking within templates. For details, see [Template Type-checking](guide/template-typecheck).
 
-For help with opting out of Ivy, please see the instructions [here](guide/ivy#opting-out-of-angular-ivy).
+* For general guidance on debugging and a list of minor changes associated with Ivy, see the [Ivy compatibility guide](guide/ivy-compatibility).
 
+* For help with opting out of Ivy, see the instructions [here](guide/ivy#opting-out-of-angular-ivy).
 
 {@a migrations}
 ## Automated Migrations for Version 9
