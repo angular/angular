@@ -140,7 +140,7 @@ Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpa
 
 ## Server configuration
 
-This section covers changes you may have to make to the server or to files deployed to the server.
+This section covers changes you may have to make to the server or to files deployed on the server.
 
 {@a fallback}
 
