@@ -116,6 +116,13 @@
     "rxjs-imports": true,
     "require-breaking-change-version": true,
     "class-list-signatures": true,
+    "coercion-types": [false, // Disabled until #17528 gets in.
+      ["coerceBooleanProperty", "coerceCssPixelValue", "coerceNumberProperty"],
+      {
+        "CanDisable": ["disabled"],
+        "CanDisableRipple": ["disableRipple"]
+      }
+    ],
     "no-host-decorator-in-concrete": [
       true,
       "HostBinding",
