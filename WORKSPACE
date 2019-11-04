@@ -30,11 +30,13 @@ node_repositories(
         "12.9.1-linux_amd64": ("node-v12.9.1-linux-x64.tar.xz", "node-v12.9.1-linux-x64", "680a1263c9f5f91adadcada549f0a9c29f1b26d09658d2b501c334c3f63719e5"),
         "12.9.1-windows_amd64": ("node-v12.9.1-win-x64.zip", "node-v12.9.1-win-x64", "6a4e54bda091bd02dbd8ff1b9f6671e036297da012a53891e3834d4bf4bed297"),
     },
+    node_urls = ["https://nodejs.org/dist/v{version}/{filename}"],
     # For deterministic builds, specify explicit NodeJS and Yarn versions.
     node_version = "12.9.1",
     yarn_repositories = {
         "1.19.1": ("yarn-v1.19.1.tar.gz", "yarn-v1.19.1", "34293da6266f2aae9690d59c2d764056053ff7eebc56b80b8df05010c3da9343"),
     },
+    yarn_urls = ["https://github.com/yarnpkg/yarn/releases/download/v{version}/{filename}"],
     yarn_version = "1.19.1",
 )
 
