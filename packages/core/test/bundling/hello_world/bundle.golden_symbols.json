@@ -225,9 +225,6 @@
     "name": "generateExpandoInstructionBlock"
   },
   {
-    "name": "getBeforeNodeForView"
-  },
-  {
     "name": "getCheckNoChangesMode"
   },
   {
@@ -247,6 +244,9 @@
   },
   {
     "name": "getFactoryDef"
+  },
+  {
+    "name": "getFirstRNodeFromLViewInLContainer"
   },
   {
     "name": "getHostNative"
@@ -271,9 +271,6 @@
   },
   {
     "name": "getNativeByTNode"
-  },
-  {
-    "name": "getNativeByTNodeOrNull"
   },
   {
     "name": "getNodeInjectable"

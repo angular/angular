@@ -279,9 +279,6 @@
     "name": "generatePropertyAliases"
   },
   {
-    "name": "getBeforeNodeForView"
-  },
-  {
     "name": "getBindingsEnabled"
   },
   {
@@ -307,6 +304,9 @@
   },
   {
     "name": "getFactoryDef"
+  },
+  {
+    "name": "getFirstRNodeFromLViewInLContainer"
   },
   {
     "name": "getHostNative"
@@ -346,9 +346,6 @@
   },
   {
     "name": "getNativeByTNode"
-  },
-  {
-    "name": "getNativeByTNodeOrNull"
   },
   {
     "name": "getNodeInjectable"

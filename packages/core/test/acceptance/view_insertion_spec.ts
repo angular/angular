@@ -69,7 +69,6 @@ describe('view insertion', () => {
           expect(fixture.nativeElement.textContent).toBe('Nested');
 
           // insert at the front again
-          debugger;
           this.view0 = this.container.createEmbeddedView(this.simple, {}, 0);  // "Created0"
           this.view0.detectChanges();
           expect(fixture.nativeElement.textContent).toBe('Created0Nested');

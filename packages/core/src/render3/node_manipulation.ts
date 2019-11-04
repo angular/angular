@@ -627,7 +627,7 @@ function getNativeAnchorNode(parentTNode: TNode, lView: LView): RNode|null {
   if (parentTNode.type === TNodeType.View) {
     const lContainer = getLContainer(parentTNode as TViewNode, lView);
     if (lContainer === null) return null;
-    const index = lContainer.indexOf(lView, CONTAINER_HEADER_OFFSET) - CONTAINER_HEADER_OFFSET;
+    const index = lContainer.indexOf(lView, CONTAINER_HEADER_OFFSET) - CONTAINER_HEADER_OFFSET + 1;
     return getFirstRNodeFromLViewInLContainer(lContainer, index);
   } else if (
       parentTNode.type === TNodeType.ElementContainer ||

@@ -612,9 +612,6 @@
     "name": "getAndIncrementBindingIndex"
   },
   {
-    "name": "getBeforeNodeForView"
-  },
-  {
     "name": "getBindingValue"
   },
   {
@@ -673,6 +670,9 @@
   },
   {
     "name": "getFactoryDef"
+  },
+  {
+    "name": "getFirstRNodeFromLViewInLContainer"
   },
   {
     "name": "getGuardMask"
