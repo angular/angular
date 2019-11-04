@@ -25,7 +25,7 @@ There are a few cases where the decorator won't be added. For example:
 
   - It already has another decorator such as `@Component()`, `@Directive()` or `@Pipe()`. These decorators already cause the compiler to generate the necessary information.
   - The provider definition has `useValue`, `useFactory`, or `useExisting`. In
-  these cases, the framework doesn't need the `@Injectable()` decorator to create the class because
+  these cases, the framework doesn't need the `@Injectable()` decorator to create the class
   because it can just use the value,
   factory function, or existing instance that was provided.
 
