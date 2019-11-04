@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach (inspect)",
+      "name": "Attach to bazel test ... --config=debug",
       "type": "node",
       "request": "attach",
       "port": 9229,
@@ -18,7 +18,7 @@
       "timeout": 60000,
     },
     {
-      "name": "Attach (no-sm,inspect)",
+      "name": "Attach to bazel test ... --config=debug (no source maps)",
       "type": "node",
       "request": "attach",
       "port": 9229,
@@ -31,9 +31,9 @@
       "timeout": 60000,
     },
     {
+      "name": "IVY:packages/core/test/acceptance",
       "type": "node",
       "request": "launch",
-      "name": "IVY:packages/core/test/acceptance",
       "program": "${workspaceFolder}/node_modules/.bin/bazel",
       "args": [
         "test",
@@ -43,14 +43,14 @@
       ],
       "port": 9229,
       "address": "localhost",
+      "sourceMaps": true,
       "restart": true,
       "timeout": 60000,
-      "sourceMaps": true,
     },
     {
+      "name": "IVY:packages/core/test/render3",
       "type": "node",
       "request": "launch",
-      "name": "IVY:packages/core/test/render3",
       "program": "${workspaceFolder}/node_modules/.bin/bazel",
       "args": [
         "test",
@@ -60,14 +60,14 @@
       ],
       "port": 9229,
       "address": "localhost",
+      "sourceMaps": true,
       "restart": true,
       "timeout": 60000,
-      "sourceMaps": true,
     },
     {
+      "name": "IVY:packages/core/test",
       "type": "node",
       "request": "launch",
-      "name": "IVY:packages/core/test",
       "program": "${workspaceFolder}/node_modules/.bin/bazel",
       "args": [
         "test",
@@ -77,9 +77,9 @@
       ],
       "port": 9229,
       "address": "localhost",
+      "sourceMaps": true,
       "restart": true,
       "timeout": 60000,
-      "sourceMaps": true,
     },
   ]
 }
