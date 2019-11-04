@@ -2,14 +2,8 @@
 
 Welcome to Angular!
 
-This tutorial introduces you to the essentials of Angular by walking you through building a simple e-commerce site with a catalog, shopping cart, and check-out form. It uses the [StackBlitz](https://stackblitz.com/ "StackBlitz website") online development environment so you can get started right away.
-
-
-<div class="alert is-helpful">
-
-This guide uses the StackBlitz Generator to show you a ready-made, simple application that you can examine and play with interactively. In actual development you will typically use the [Angular CLI](guide/glossary#command-line-interface-cli), a powerful command-line tool that lets you generate and modify applications. For more information, see the [CLI Overview](cli).
-
-</div>
+This tutorial introduces you to the essentials of Angular by walking you through a simple e-commerce site with a catalog, shopping cart, and check-out form.
+To help you get started right away, this guide uses a simple ready-made application that you can examine and play with interactively.
 
 <div class="callout is-helpful">
 <header>New to web development?</header>
@@ -17,29 +11,29 @@ This guide uses the StackBlitz Generator to show you a ready-made, simple applic
 
  There are many resources to complement the Angular docs. Mozilla's MDN docs include both [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials") and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript") introductions. [TypeScript's docs](https://www.typescriptlang.org/docs/home.html "TypeScript documentation") include a 5-minute tutorial. Various online course platforms, such as [Udemy](http://www.udemy.com "Udemy online courses") and [Codecademy](https://www.codecademy.com/ "Codecademy online courses"), also cover web development basics.
 
-
 </div>
-
 
 
 {@a new-project}
 ## Create a new project
 
 <h4>
-<live-example name="getting-started-v0" noDownload>Click here to create a new project in StackBlitz.</live-example>
+<live-example name="getting-started-v0" noDownload>Click here to create the ready-made sample project in StackBlitz.</live-example>
 </h4>
-
-StackBlitz creates a starter Angular app with a top
-bar&mdash;containing the store name and
-checkout icon&mdash;and the title for a product list.
-
 
 <figure class="lightbox">
   <div class="card">
-    <img src="generated/images/guide/start/new-app.png" alt="Starter online store app">
+    <img src="generated/images/guide/start/new-app-all.gif" alt="Starter online store app">
   </div>
 </figure>
 
+* The preview pane on the right shows the starting state of the sample Angular app.
+It defines a frame with a top bar (containing the store name and checkout icon) and the title for a product list (which will be populated and dynamically updated with data from the application).
+
+* The project pane on the left shows the source files that make up the application, including all of the infrastructure and configuration files. The currently selected file shows up in the editor pane in the middle.
+
+Before going into the source structure, the next section shows how to fill out the HTML *template* for the product list, using the provided sample data.
+This should give you an idea how easy it is to modify and update the page dynamically.
 
 <div class="callout is-helpful">
 <header>StackBlitz tips</header>
@@ -61,6 +55,15 @@ behavior will be the same.
 
 </div>
 
+<div class="alert is-helpful">
+
+If you go directly to the [StackBlitz online development environment](https://stackblitz.com/) and choose to [start a new Angular workspace](https://stackblitz.com/fork/angular), you get a generic stub application, rather than this [illustrative sample](#new-project). Once you have been introduced to the basic concepts here, this can be helpful for working interactively while you are learning Angular.
+
+In actual development you will typically use the [Angular CLI](guide/glossary#command-line-interface-cli), a powerful command-line tool that lets you generate and modify applications. For more information, see the [CLI Overview](cli).
+
+</div>
+
+
 {@a template-syntax}
 ## Template syntax
 
@@ -73,8 +76,7 @@ To help you get going, the following steps use predefined product data and metho
 
 </div>
 
-1. In the `product-list` folder, open the template
-file `product-list.component.html`.
+1. In the `product-list` folder, open the template file `product-list.component.html`.
 
 1. Modify the product list template to display a list of product names.
 
