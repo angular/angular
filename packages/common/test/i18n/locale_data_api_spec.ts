@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵfindLocaleData as findLocaleData} from '@angular/core';
+import {ɵfindLocaleData} from '@angular/core';
 import localeCaESVALENCIA from '@angular/common/locales/ca-ES-VALENCIA';
 import localeEn from '@angular/common/locales/en';
 import localeFr from '@angular/common/locales/fr';
@@ -32,28 +32,28 @@ import {getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNumberOfCurrency
     describe('findLocaleData', () => {
       it('should throw if the LOCALE_DATA for the chosen locale or its parent locale is not available',
          () => {
-           expect(() => findLocaleData('pt-AO'))
+           expect(() => ɵfindLocaleData('pt-AO'))
                .toThrowError(/Missing locale data for the locale "pt-AO"/);
          });
 
       it('should return english data if the locale is en-US',
-         () => { expect(findLocaleData('en-US')).toEqual(localeEn); });
+         () => { expect(ɵfindLocaleData('en-US')).toEqual(localeEn); });
 
       it('should return the exact LOCALE_DATA if it is available',
-         () => { expect(findLocaleData('fr-CA')).toEqual(localeFrCA); });
+         () => { expect(ɵfindLocaleData('fr-CA')).toEqual(localeFrCA); });
 
       it('should return the parent LOCALE_DATA if it exists and exact locale is not available',
-         () => { expect(findLocaleData('fr-BE')).toEqual(localeFr); });
+         () => { expect(ɵfindLocaleData('fr-BE')).toEqual(localeFr); });
 
       it(`should find the LOCALE_DATA even if the locale id is badly formatted`, () => {
-        expect(findLocaleData('ca-ES-VALENCIA')).toEqual(localeCaESVALENCIA);
-        expect(findLocaleData('CA_es_Valencia')).toEqual(localeCaESVALENCIA);
+        expect(ɵfindLocaleData('ca-ES-VALENCIA')).toEqual(localeCaESVALENCIA);
+        expect(ɵfindLocaleData('CA_es_Valencia')).toEqual(localeCaESVALENCIA);
       });
 
       it(`should find the LOCALE_DATA if the locale id was registered`, () => {
-        expect(findLocaleData('fake-id')).toEqual(localeFr);
-        expect(findLocaleData('fake_iD')).toEqual(localeFr);
-        expect(findLocaleData('fake-id2')).toEqual(localeFrCA);
+        expect(ɵfindLocaleData('fake-id')).toEqual(localeFr);
+        expect(ɵfindLocaleData('fake_iD')).toEqual(localeFr);
+        expect(ɵfindLocaleData('fake-id2')).toEqual(localeFrCA);
       });
     });
 
