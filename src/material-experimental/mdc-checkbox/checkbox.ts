@@ -26,7 +26,11 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {MAT_CHECKBOX_CLICK_ACTION, MatCheckboxClickAction} from '@angular/material/checkbox';
+import {
+  MAT_CHECKBOX_CLICK_ACTION,
+  MAT_CHECKBOX_DEFAULT_OPTIONS,
+  MatCheckboxClickAction, MatCheckboxDefaultOptions
+} from '@angular/material/checkbox';
 import {ThemePalette} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MDCCheckboxAdapter, MDCCheckboxFoundation} from '@material/checkbox';
@@ -228,12 +232,29 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
       private _changeDetectorRef: ChangeDetectorRef,
       private _platform: Platform,
       @Attribute('tabindex') tabIndex: string,
+      /**
+       * @deprecated `_clickAction` parameter to be removed, use
+       * `MAT_CHECKBOX_DEFAULT_OPTIONS`
+       * @breaking-change 10.0.0
+       */
       @Optional() @Inject(MAT_CHECKBOX_CLICK_ACTION) private _clickAction: MatCheckboxClickAction,
-      @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
-    this.tabIndex = parseInt(tabIndex) || 0;
-    this._checkboxFoundation = new MDCCheckboxFoundation(this._checkboxAdapter);
+      @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
+      @Optional() @Inject(MAT_CHECKBOX_DEFAULT_OPTIONS)
+          private _options?: MatCheckboxDefaultOptions) {
     // Note: We don't need to set up the MDCFormFieldFoundation. Its only purpose is to manage the
     // ripple, which we do ourselves instead.
+    this.tabIndex = parseInt(tabIndex) || 0;
+    this._checkboxFoundation = new MDCCheckboxFoundation(this._checkboxAdapter);
+
+    this._options = this._options || {};
+
+    if (this._options.color) {
+      this.color = this._options.color;
+    }
+
+    // @breaking-change 10.0.0: Remove this after the `_clickAction` parameter is removed as an
+    // injection parameter.
+    this._clickAction = this._clickAction || this._options.clickAction;
   }
 
   ngAfterViewInit() {
