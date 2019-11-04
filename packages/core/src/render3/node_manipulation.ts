@@ -628,7 +628,7 @@ function getNativeAnchorNode(parentTNode: TNode, lView: LView): RNode|null {
     const lContainer = getLContainer(parentTNode as TViewNode, lView);
     if (lContainer === null) return null;
     const index = lContainer.indexOf(lView, CONTAINER_HEADER_OFFSET) - CONTAINER_HEADER_OFFSET;
-    return getBeforeNodeForView(index, lContainer);
+    return getFirstRNodeFromLViewInLContainer(lContainer, index);
   } else if (
       parentTNode.type === TNodeType.ElementContainer ||
       parentTNode.type === TNodeType.IcuContainer) {
@@ -689,25 +689,25 @@ export function getFirstRNodeFromLViewInLContainer(
     const lView = lContainer[i];
     let tNode = lView[TVIEW].firstChild;
     if (tNode !== null) {
-    let tNodeType = tNode.type;
-    if (tNodeType === TNodeType.Container) {
-      // In this case the first `TNode` is another `LContainer` this means we now need to
-      // recurse
-      // into it the `LView` and retrieve its `RNode`.
-      const childLContainer = lView[tNode.index] as LContainer;
-      ngDevMode && assertLContainer(childLContainer);
-      return getFirstRNodeFromLViewInLContainer(childLContainer, 0);
-    } else {
-      // If we have `ElementContainer` or `IcuContainer` than we need to descend into them and
-      // find the actual first `Element`
-      while (tNodeType === TNodeType.ElementContainer || tNodeType === TNodeType.IcuContainer) {
-        tNode = tNode.child !;
-        ngDevMode && assertDefined(tNode, 'ElementContainer and IcuContainer must have children');
-        tNodeType = tNode.type;
+      let tNodeType = tNode.type;
+      if (tNodeType === TNodeType.Container) {
+        // In this case the first `TNode` is another `LContainer` this means we now need to
+        // recurse
+        // into it the `LView` and retrieve its `RNode`.
+        const childLContainer = lView[tNode.index] as LContainer;
+        ngDevMode && assertLContainer(childLContainer);
+        return getFirstRNodeFromLViewInLContainer(childLContainer, 0);
+      } else {
+        // If we have `ElementContainer` or `IcuContainer` than we need to descend into them and
+        // find the actual first `Element`
+        while (tNodeType === TNodeType.ElementContainer || tNodeType === TNodeType.IcuContainer) {
+          tNode = tNode.child !;
+          ngDevMode && assertDefined(tNode, 'ElementContainer and IcuContainer must have children');
+          tNodeType = tNode.type;
+        }
+        return getNativeByTNode(tNode, lView);
       }
-      return getNativeByTNode(tNode, lView);
     }
-  }
   }
   // If we could not find any `RNode` in any of the `LView`s, than just use the `LContainer`'s
   // anchor.
