@@ -1495,5 +1495,32 @@ describe('Undecorated classes with DI migration', () => {
       expect(warnOutput.length).toBe(0);
       expect(errorOutput.length).toBe(0);
     });
+
+    it('should not throw if tsconfig references non-existent source file', async() => {
+      writeFile('/tsconfig.json', JSON.stringify({
+        compilerOptions: {
+          lib: ['es2015'],
+        },
+        files: [
+          './non-existent.ts',
+        ]
+      }));
+
+      let failed = false;
+      try {
+        await runMigration();
+      } catch (e) {
+        failed = true;
+      }
+
+      expect(failed).toBe(false, 'Expected the migration not to fail.');
+      expect(warnOutput.length).toBe(1);
+      expect(errorOutput.length).toBe(1);
+      expect(warnOutput[0])
+          .toContain(
+              'TypeScript project "tsconfig.json" has configuration errors. This could cause an ' +
+              'incomplete migration. Please fix the following failures and rerun the migration:');
+      expect(errorOutput[0]).toMatch(/non-existent\.ts' not found/);
+    });
   });
 });

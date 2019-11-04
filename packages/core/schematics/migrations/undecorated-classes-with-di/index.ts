@@ -9,6 +9,7 @@
 import {logging} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {AotCompiler} from '@angular/compiler';
+import {Diagnostic as NgDiagnostic} from '@angular/compiler-cli';
 import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {relative} from 'path';
@@ -84,10 +85,11 @@ function runUndecoratedClassesMigration(
   const partialEvaluator =
       new PartialEvaluator(new TypeScriptReflectionHost(typeChecker), typeChecker);
   const declarationCollector = new NgDeclarationCollector(typeChecker, partialEvaluator);
-  const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
+  const sourceFiles = program.getSourceFiles().filter(
+      s => !s.isDeclarationFile && !program.isSourceFileFromExternalLibrary(s));
 
   // Analyze source files by detecting all directives, components and providers.
-  rootSourceFiles.forEach(sourceFile => declarationCollector.visitNode(sourceFile));
+  sourceFiles.forEach(sourceFile => declarationCollector.visitNode(sourceFile));
 
   const {decoratedDirectives, decoratedProviders, undecoratedDeclarations} = declarationCollector;
   const transform =
@@ -151,14 +153,28 @@ function runUndecoratedClassesMigration(
   }
 }
 
+function getErrorDiagnostics(diagnostics: ReadonlyArray<ts.Diagnostic|NgDiagnostic>) {
+  return <ts.Diagnostic[]>diagnostics.filter(d => d.category === ts.DiagnosticCategory.Error);
+}
+
 function gracefullyCreateProgram(
     tree: Tree, basePath: string, tsconfigPath: string,
     logger: logging.LoggerApi): {compiler: AotCompiler, program: ts.Program}|null {
   try {
     const {ngcProgram, host, program, compiler} = createNgcProgram(
         (options) => createMigrationCompilerHost(tree, options, basePath), tsconfigPath);
-    const syntacticDiagnostics = ngcProgram.getTsSyntacticDiagnostics();
-    const structuralDiagnostics = ngcProgram.getNgStructuralDiagnostics();
+    const syntacticDiagnostics = getErrorDiagnostics(ngcProgram.getTsSyntacticDiagnostics());
+    const structuralDiagnostics = getErrorDiagnostics(ngcProgram.getNgStructuralDiagnostics());
+    const configDiagnostics = getErrorDiagnostics(
+        [...program.getOptionsDiagnostics(), ...ngcProgram.getNgOptionDiagnostics()]);
+
+    if (configDiagnostics.length) {
+      logger.warn(
+          `\nTypeScript project "${tsconfigPath}" has configuration errors. This could cause ` +
+          `an incomplete migration. Please fix the following failures and rerun the migration:`);
+      logger.error(ts.formatDiagnostics(configDiagnostics, host));
+      return null;
+    }
 
     // Syntactic TypeScript errors can throw off the query analysis and therefore we want
     // to notify the developer that we couldn't analyze parts of the project. Developers
