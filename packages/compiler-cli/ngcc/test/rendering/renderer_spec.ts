@@ -5,14 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {fromObject, generateMapFileComment, SourceMapConverter} from 'convert-source-map';
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {Reexport} from '../../../src/ngtsc/imports';
+import {NOOP_DEFAULT_IMPORT_RECORDER, Reexport} from '../../../src/ngtsc/imports';
 import {loadTestFiles} from '../../../test/helpers';
-import {Import, ImportManager} from '../../../src/ngtsc/translator';
+import {Import, ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {CompiledClass} from '../../src/analysis/types';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
@@ -27,6 +28,8 @@ import {RenderingFormatter, RedundantDecoratorMap} from '../../src/rendering/ren
 import {makeTestEntryPointBundle, getRootFiles} from '../helpers/utils';
 
 class TestRenderingFormatter implements RenderingFormatter {
+  private printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
+
   addImports(output: MagicString, imports: Import[], sf: ts.SourceFile) {
     output.prepend('\n// ADD IMPORTS\n');
   }
@@ -55,6 +58,13 @@ class TestRenderingFormatter implements RenderingFormatter {
       output: MagicString, moduleWithProviders: ModuleWithProvidersInfo[],
       importManager: ImportManager): void {
     output.prepend('\n// ADD MODUlE WITH PROVIDERS PARAMS\n');
+  }
+  printStatement(stmt: Statement, sourceFile: ts.SourceFile, importManager: ImportManager): string {
+    const node = translateStatement(
+        stmt, importManager, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES2015);
+    const code = this.printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
+
+    return `// TRANSPILED\n${code}`;
   }
 }
 
@@ -92,6 +102,7 @@ function createTestRenderer(
   spyOn(testFormatter, 'removeDecorators').and.callThrough();
   spyOn(testFormatter, 'rewriteSwitchableDeclarations').and.callThrough();
   spyOn(testFormatter, 'addModuleWithProvidersParams').and.callThrough();
+  spyOn(testFormatter, 'printStatement').and.callThrough();
 
   const renderer = new Renderer(host, testFormatter, fs, logger, bundle);
 
@@ -200,8 +211,9 @@ runInEachFileSystem(() => {
         renderer.renderProgram(
             decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
         const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
-        expect(addDefinitionsSpy.calls.first().args[2])
-            .toEqual(`A.ɵfac = function A_Factory(t) { return new (t || A)(); };
+        expect(addDefinitionsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
+A.ɵfac = function A_Factory(t) { return new (t || A)(); };
+// TRANSPILED
 A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
         ɵngcc0.ɵɵtext(0);
     } if (rf & 2) {
@@ -209,8 +221,8 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
     } }, encapsulation: 2 });`);
 
         const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
-        expect(addAdjacentStatementsSpy.calls.first().args[2])
-            .toEqual(`/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
+        expect(addAdjacentStatementsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
+/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
         type: Component,
         args: [{ selector: 'a', template: '{{ person!.name }}' }]
     }], null, null);`);
@@ -243,8 +255,9 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
                name: 'A',
                decorators: [jasmine.objectContaining({name: 'Directive'})]
              }));
-             expect(addDefinitionsSpy.calls.first().args[2])
-                 .toEqual(`A.ɵfac = function A_Factory(t) { return new (t || A)(); };
+             expect(addDefinitionsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
+A.ɵfac = function A_Factory(t) { return new (t || A)(); };
+// TRANSPILED
 A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`);
            });
 
@@ -260,8 +273,8 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
              expect(addAdjacentStatementsSpy.calls.first().args[1])
                  .toEqual(jasmine.objectContaining(
                      {name: 'A', decorators: [jasmine.objectContaining({name: 'Directive'})]}));
-             expect(addAdjacentStatementsSpy.calls.first().args[2])
-                 .toEqual(`/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
+             expect(addAdjacentStatementsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
+/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
         type: Directive,
         args: [{ selector: '[a]' }]
     }], null, null);`);
@@ -271,7 +284,7 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
            () => {
              const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
                     testFormatter} = createTestRenderer('test-package', [INPUT_PROGRAM]);
-             const result = renderer.renderProgram(
+             renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              const removeDecoratorsSpy = testFormatter.removeDecorators as jasmine.Spy;
              expect(removeDecoratorsSpy.calls.first().args[0].toString())
@@ -467,9 +480,9 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
 
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
-          expect(addDefinitionsSpy.calls.first().args[2])
-              .toEqual(
-                  `UndecoratedBase.ɵfac = function UndecoratedBase_Factory(t) { return new (t || UndecoratedBase)(); };
+          expect(addDefinitionsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
+UndecoratedBase.ɵfac = function UndecoratedBase_Factory(t) { return new (t || UndecoratedBase)(); };
+// TRANSPILED
 UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, viewQuery: function UndecoratedBase_Query(rf, ctx) { if (rf & 1) {
         ɵngcc0.ɵɵstaticViewQuery(_c0, true);
     } if (rf & 2) {

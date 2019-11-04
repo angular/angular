@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {DeclareVarStmt, LiteralExpr, StmtModifier} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {NoopImportRewriter} from '../../../src/ngtsc/imports';
@@ -622,6 +623,20 @@ export { D };
           static withProviders1(): (ModuleWithProviders)&{ngModule:ExternalModule};
           static withProviders2(): (ModuleWithProviders)&{ngModule:ExternalModule};`);
          });
+    });
+
+    describe('printStatement', () => {
+      it('should transpile code to ES2015', () => {
+        const {renderer, sourceFile, importManager} = setup([PROGRAM]);
+
+        const stmt1 = new DeclareVarStmt('foo', new LiteralExpr(42), null, [StmtModifier.Final]);
+        const stmt2 = new DeclareVarStmt('bar', new LiteralExpr(true));
+        const stmt3 = new DeclareVarStmt('baz', new LiteralExpr('qux'), undefined, []);
+
+        expect(renderer.printStatement(stmt1, sourceFile, importManager)).toBe('const foo = 42;');
+        expect(renderer.printStatement(stmt2, sourceFile, importManager)).toBe('var bar = true;');
+        expect(renderer.printStatement(stmt3, sourceFile, importManager)).toBe('var baz = "qux";');
+      });
     });
   });
 });

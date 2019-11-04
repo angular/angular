@@ -8,19 +8,18 @@
 import {ConstantPool, Expression, Statement, WrappedNodeExpr, WritePropExpr} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
-import {NOOP_DEFAULT_IMPORT_RECORDER} from '../../../src/ngtsc/imports';
-import {translateStatement, ImportManager} from '../../../src/ngtsc/translator';
+import {ImportManager} from '../../../src/ngtsc/translator';
 import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/types';
 import {PrivateDeclarationsAnalyses} from '../analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalysis} from '../analysis/switch_marker_analyzer';
 import {IMPORT_PREFIX} from '../constants';
 import {FileSystem} from '../../../src/ngtsc/file_system';
-import {EntryPointBundle} from '../packages/entry_point_bundle';
+import {NgccReflectionHost} from '../host/ngcc_host';
 import {Logger} from '../logging/logger';
-import {FileToWrite, getImportRewriter, stripExtension} from './utils';
+import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {RenderingFormatter, RedundantDecoratorMap} from './rendering_formatter';
 import {extractSourceMap, renderSourceAndMap} from './source_maps';
-import {NgccReflectionHost} from '../host/ngcc_host';
+import {FileToWrite, getImportRewriter, stripExtension} from './utils';
 
 /**
  * A base-class for rendering an `AnalyzedFile`.
@@ -98,7 +97,8 @@ export class Renderer {
 
       this.srcFormatter.addConstants(
           outputText,
-          renderConstantPool(compiledFile.sourceFile, compiledFile.constantPool, importManager),
+          renderConstantPool(
+              this.srcFormatter, compiledFile.sourceFile, compiledFile.constantPool, importManager),
           compiledFile.sourceFile);
     }
 
@@ -185,12 +185,9 @@ export class Renderer {
 
   private renderStatements(
       sourceFile: ts.SourceFile, statements: Statement[], imports: ImportManager): string {
-    const printer = createPrinter();
-    const translate = (stmt: Statement) =>
-        translateStatement(stmt, imports, NOOP_DEFAULT_IMPORT_RECORDER);
-    const print = (stmt: Statement) =>
-        printer.printNode(ts.EmitHint.Unspecified, translate(stmt), sourceFile);
-    return statements.map(print).join('\n');
+    const printStatement = (stmt: Statement) =>
+        this.srcFormatter.printStatement(stmt, sourceFile, imports);
+    return statements.map(printStatement).join('\n');
   }
 }
 
@@ -198,12 +195,10 @@ export class Renderer {
  * Render the constant pool as source code for the given class.
  */
 export function renderConstantPool(
-    sourceFile: ts.SourceFile, constantPool: ConstantPool, imports: ImportManager): string {
-  const printer = createPrinter();
-  return constantPool.statements
-      .map(stmt => translateStatement(stmt, imports, NOOP_DEFAULT_IMPORT_RECORDER))
-      .map(stmt => printer.printNode(ts.EmitHint.Unspecified, stmt, sourceFile))
-      .join('\n');
+    formatter: RenderingFormatter, sourceFile: ts.SourceFile, constantPool: ConstantPool,
+    imports: ImportManager): string {
+  const printStatement = (stmt: Statement) => formatter.printStatement(stmt, sourceFile, imports);
+  return constantPool.statements.map(printStatement).join('\n');
 }
 
 /**
@@ -215,8 +210,4 @@ function createAssignmentStatement(
     receiverName: ts.DeclarationName, propName: string, initializer: Expression): Statement {
   const receiver = new WrappedNodeExpr(receiverName);
   return new WritePropExpr(receiver, propName, initializer).toStmt();
-}
-
-function createPrinter(): ts.Printer {
-  return ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
 }
