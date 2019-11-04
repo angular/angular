@@ -484,7 +484,7 @@ jobs:
 workflows:
   version: 2
 
-  bazel_targets:
+  default_workflow:
     jobs:
       - bazel_build:
           filters: *ignore_presubmit_branch_filter
@@ -494,33 +494,20 @@ workflows:
           filters: *ignore_presubmit_branch_filter
       - tests_local_browsers:
           filters: *ignore_presubmit_branch_filter
-
-  unit_tests:
-    jobs:
       - tests_browserstack:
           filters: *ignore_presubmit_branch_filter
       - tests_saucelabs:
           filters: *ignore_presubmit_branch_filter
-
-  integration_tests:
-    jobs:
       - e2e_tests:
           filters: *ignore_presubmit_branch_filter
-
-  release_output:
-    jobs:
       - build_release_packages:
+          filters: *ignore_presubmit_branch_filter
+      - lint:
           filters: *ignore_presubmit_branch_filter
       - publish_snapshots:
           filters: *publish_branches_filter
           requires:
             - build_release_packages
-
-  # Lint workflow. As we want to lint in one job, this is a workflow with just one job.
-  lint:
-    jobs:
-      - lint:
-          filters: *ignore_presubmit_branch_filter
 
   # Snapshot tests workflow that is scheduled to run all specified jobs every hour.
   # This workflow runs various jobs against the Angular snapshot builds from Github.
