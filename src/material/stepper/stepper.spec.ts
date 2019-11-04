@@ -1175,6 +1175,18 @@ describe('MatStepper', () => {
     });
 
   });
+
+  it('should be able to toggle steps via ngIf', () => {
+    const fixture = createComponent(StepperWithNgIf);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelectorAll('.mat-step-header').length).toBe(1);
+
+    fixture.componentInstance.showStep2 = true;
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelectorAll('.mat-step-header').length).toBe(2);
+  });
 });
 
 /** Asserts that keyboard interaction works correctly. */
@@ -1643,4 +1655,22 @@ class StepperWithAriaInputs {
   `
 })
 class StepperWithIndirectDescendantSteps {
+}
+
+
+@Component({
+  template: `
+    <mat-vertical-stepper>
+      <mat-step>
+        <ng-template matStepLabel>Step 1</ng-template>
+      </mat-step>
+
+      <mat-step *ngIf="showStep2">
+        <ng-template matStepLabel>Step 2</ng-template>
+      </mat-step>
+    </mat-vertical-stepper>
+  `
+})
+class StepperWithNgIf {
+  showStep2 = false;
 }

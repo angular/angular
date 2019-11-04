@@ -51,7 +51,10 @@ import {MatStepperIcon, MatStepperIconContext} from './stepper-icon';
   moduleId: module.id,
   selector: 'mat-step',
   templateUrl: 'step.html',
-  providers: [{provide: ErrorStateMatcher, useExisting: MatStep}],
+  providers: [
+    {provide: ErrorStateMatcher, useExisting: MatStep},
+    {provide: CdkStep, useExisting: MatStep},
+  ],
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matStep',
   changeDetection: ChangeDetectionStrategy.OnPush,
