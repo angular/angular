@@ -121,6 +121,7 @@ export class BrowserViewportScroller implements ViewportScroller {
       try {
         const elSelectedById = this.document.querySelector(`#${anchor}`);
         if (elSelectedById) {
+          console.log("Test log by Sergej!")
           this.scrollToElement(elSelectedById);
           return;
         }
