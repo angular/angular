@@ -975,6 +975,9 @@
     "name": "isStylingValueDefined"
   },
   {
+    "name": "isViewDestroyed"
+  },
+  {
     "name": "iterateListLike"
   },
   {
