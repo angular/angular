@@ -1,41 +1,47 @@
-# Template type-checking
+# Template type checking
 
-## Overview of template type-checking
+## Overview of template type checking
 
-Just as TypeScript catches type errors in your code, Angular checks the expressions and bindings within the templates of your application and can report any type errors it finds. Angular currently has three modes of doing this, depending on the value of the `fullTemplateTypeCheck` and `strictTemplates` flags.
+Just as TypeScript catches type errors in your code, Angular checks the expressions and bindings within the templates of your application and can report any type errors it finds.
+Angular currently has three modes of doing this, depending on the value of the `fullTemplateTypeCheck` and `strictTemplates` flags in the [TypeScript configuration file](guide/typescript-configuration), `tsconfig.json`.
 
 ### Basic mode
 
-In the most basic type-checking mode, with the `fullTemplateTypeCheck` flag set to `false`, Angular will only validate top-level expressions in a template.
+In the most basic type-checking mode, with the `fullTemplateTypeCheck` flag set to `false`, Angular validates only top-level expressions in a template.
 
-If you write `<map [city]="user.address.city">`, the compiler will verify the following:
+If you write `<map [city]="user.address.city">`, the compiler verifies the following:
 
 * `user` is a property on the component class.
 * `user` is an object with an address property.
 * `user.address` is an object with a city property.
 
-The compiler will not verify that the value of `user.address.city` is assignable to the city input of the `<map>` component.
+The compiler does not verify that the value of `user.address.city` is assignable to the city input of the `<map>` component.
 
 The compiler also has some major limitations in this mode:
 
-* Importantly, it won't check embedded views, such as `*ngIf`, `*ngFor`, other `<ng-template>` embedded view.
-* It won't figure out the types of `#refs`, the results of pipes, the type of `$event` in event bindings, etc.
-* In many cases, these things end up as type `any` which can cause subsequent parts of the expression to go unchecked.
+* Importantly, it doesn't check embedded views, such as `*ngIf`, `*ngFor`, other `<ng-template>` embedded view.
+* It doesn't figure out the types of `#refs`, the results of pipes, the type of `$event` in event bindings, and so on.
+
+In many cases, these things end up as type `any`, which can cause subsequent parts of the expression to go unchecked.
 
 
 
 ### Full mode
 
-If the `fullTemplateTypeCheck` flag is set to `true`, Angular will be more aggressive in its type-checking within templates.
+If the `fullTemplateTypeCheck` flag is set to `true`, Angular is more aggressive in its type-checking within templates.
 In particular:
 
-* Embedded views (such as those within an `*ngIf` or `*ngFor`) will be checked.
-* Pipes will have the correct return type.
-* Local references to directives and pipes will have the correct type (except for any generic parameters, which will be `any`).
-* Local references to DOM elements will still have type `any`.
-* `$event` will still have type `any`.
-* Safe navigation expressions will still have type `any`.
+* Embedded views (such as those within an `*ngIf` or `*ngFor`) are checked.
+* Pipes have the correct return type.
+* Local references to directives and pipes have the correct type (except for any generic parameters, which will be `any`).
 
+The following still have type `any`.
+
+* Local references to DOM elements.
+* The `$event` object.
+* Safe navigation expressions.
+
+{@a strict-mode}
 
 ### Strict mode
 
@@ -56,7 +62,7 @@ In addition to the full mode behavior, Angular version 9:
 
 ## Checking of `*ngFor`
 
-The three modes of type-checking treat embedded views differently. Consider the following example:
+The three modes of type-checking treat embedded views differently. Consider the following example.
 
 
 <code-example language="ts" header="User interface">
@@ -81,27 +87,28 @@ interface User {
 
 The `<h2>` and the `<span>` are in the `*ngFor` embedded view.
 In basic mode, Angular doesn't check either of them.
-However, in full mode, Angular checks that `config` and `user` exists and assumes a type of `any`.
-In strict mode, Angular knows that the `user` in the `<span>` has a type of `User` as well as `address` is an object with a `city` property of type `string`.
+However, in full mode, Angular checks that `config` and `user` exist and assumes a type of `any`.
+In strict mode, Angular knows that the `user` in the `<span>` has a type of `User`, and that `address` is an object with a `city` property of type `string`.
 
+{@a troubleshooting-template-errors}
 
 ## Troubleshooting template errors
 
-When enabling the new strict mode in version 9, you might encounter template errors which didn't arise in either of the previous modes. These errors often represent genuine type mismatches in the templates which were not caught by the previous tooling. If this is the case, the error message should make it clear where in the template the problem occurs.
+When enabling the new strict mode in version 9, you might encounter template errors that didn't arise in either of the previous modes.
+These errors often represent genuine type mismatches in the templates that were not caught by the previous tooling.
+If this is the case, the error message should make it clear where in the template the problem occurs.
 
-They can also be false positives when the typings of an Angular library are either incomplete or incorrect, or when the typings don't quite line up with expectations as in the following:
+There can also be false positives when the typings of an Angular library are either incomplete or incorrect, or when the typings don't quite line up with expectations as in the following cases.
 
-1. When a library's typings are wrong or incomplete (for example, missing `null | undefined` if the library was not written with `strictNullChecks` in mind).
-1. When a library's input types are too narrow and the library hasn't added appropriate metadata for Angular to figure this out. This usually occurs with disabled or other common boolean inputs used as attributes, for example, `<input disabled>`.
-1. When using `$event.target` for DOM events (because of the possibility of event bubbling, `$event.target` in the DOM typings doesn't have the type you might expect).
-
-It's also possible that an error can be the result of a bug in the template type-checker itself.
+* When a library's typings are wrong or incomplete (for example, missing `null | undefined` if the library was not written with `strictNullChecks` in mind).
+* When a library's input types are too narrow and the library hasn't added appropriate metadata for Angular to figure this out. This usually occurs with disabled or other common Boolean inputs used as attributes, for example, `<input disabled>`.
+* When using `$event.target` for DOM events (because of the possibility of event bubbling, `$event.target` in the DOM typings doesn't have the type you might expect).
 
 In case of a false positive like these, there are a few options:
 
-* `$any()` can be used in certain contexts to opt out of type-checking for a part of the expression.
-* `strictTemplates` can be disabled entirely.
-* Certain type-checking operations can be disabled individually, while maintaining strictness in other aspects, by setting a _strictness flag_ to `false`.
+* Use the [`$any()` type-cast function](guide/template-syntax#any-type-cast-function) in certain contexts to opt out of type-checking for a part of the expression.
+* You can disable strict checks entirely by setting `strictTemplates: false` in the application's TypeScript configuration file, `tsconfig.json`.
+* You can disable certain type-checking operations individually, while maintaining strictness in other aspects, by setting a _strictness flag_ to `false`.
 
 |Strictness flag|Effect|
 |-|-|
@@ -116,4 +123,8 @@ In case of a false positive like these, there are a few options:
 
 If you still have issues after troubleshooting with these flags, you can fall back to full mode by disabling `strictTemplates`.
 
-If that doesn't work, an option of last resort is to turn off full mode entirely with `fullTemplateTypeCheck: false`, as we've made a special effort to make Angular version 9 backwards compatible in this case. If you get errors that require falling back to basic mode, then please [file an issue](https://github.com/angular/angular/issues) so the team can address it, as it is almost definitely a bug.
+If that doesn't work, an option of last resort is to turn off full mode entirely with `fullTemplateTypeCheck: false`, as we've made a special effort to make Angular version 9 backwards compatible in this case.
+
+A type-checking error that you cannot resolve with any of the recommended methods can be the result of a bug in the template type-checker itself.
+If you get errors that require falling back to basic mode, it is likely to be such a bug.
+If this happens, please [file an issue](https://github.com/angular/angular/issues) so the team can address it.
