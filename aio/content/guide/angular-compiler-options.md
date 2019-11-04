@@ -77,11 +77,19 @@ When `false`, disables this rewriting, requiring the rewriting to be done manual
 
 When `true`, the compiler does not check the TypeScript version and does not report an error when an unsupported version of TypeScript is used. Not recommended, as unsupported versions of TypeScript might have undefined behavior. Default is false.
 
+### `enableIvy`
+
+Enables the [Ivy](guide/ivy) compilation and rendering pipeline. Default is `true`, as of version 9. In version 9, you can [opt out of Ivy](guide/ivy#opting-out-of-angular-ivy) to continue using the previous compiler, View Engine.
+
+For library projects generated with the CLI, the `prod` configuration default is false in version 9.
+
 ### `enableResourceInlining`
 
 When true, replaces the `templateUrl` and `styleUrls` property in all `@Component` decorators with inlined contents in `template` and `styles` properties.
 
 When enabled, the `.js` output of `ngc` does not include any lazy-loaded template or style URLs.
+
+For library projects generated with the CLI, the dev configuration default is true.
 
 
 {@a enablelegacytemplate}
@@ -118,9 +126,9 @@ would be `"index.d.ts"`.
 
 ### `fullTemplateTypeCheck`
 
-When true (recommended), enables the [binding expression validation](guide/aot-compiler#binding-expression-validation) phase of the template compiler, which uses TypeScript to validate binding expressions.
+When true (recommended), enables the [binding expression validation](guide/aot-compiler#binding-expression-validation) phase of the template compiler, which uses TypeScript to validate binding expressions. For more information, see [Template type checking](guide/template-typecheck).
 
-Default is currently false.
+Default is false, but when you use the CLI command `ng new`, it is set to true by default in the generated project's configuration.
 
 ### `generateCodeForLibraries`
 
@@ -154,6 +162,8 @@ When true, does not emit `.ngfactory.js` and `.ngstyle.js` files. This turns off
 
 Can be used to instruct the template compiler to produce `.metadata.json` files for distribution with an `npm` package while avoiding the production of `.ngfactory.js` and `.ngstyle.js` files that cannot be distributed to `npm`.
 
+For library projects generated with the CLI, the dev configuration default is true.
+
 ### `strictMetadataEmit`
 
 When true, reports an error to the `.metadata.json` file if `"skipMetadataEmit"` is `false`.
@@ -170,9 +180,20 @@ If the client of a library intends to use a symbol in an annotation, the templat
 This option allows detection of these errors during the build phase of
 the library and is used, for example, in producing Angular libraries themselves.
 
+For library projects generated with the CLI, the dev configuration default is true.
+
 ### `strictInjectionParameters`
 
 When true (recommended), reports an error for a supplied parameter whose injection type cannot be determined. When false (currently the default), constructor parameters of classes marked with `@Injectable` whose type cannot be resolved produce a warning.
+
+When you use the CLI command `ng new`, it is set to true by default in the generated project's configuration.
+
+### `strictTemplates`
+
+When true, enables [strict template type checking](guide/template-typecheck#strict-mode) in Angular version 9. Strict mode is only available when using [Ivy](guide/ivy).
+
+Additional strictness flags allow you to enable and disable specific types of strict template type checking. See [troubleshooting template errors](guide/template-typecheck#troubleshooting-template-errors).
+
 
 ### `trace`
 

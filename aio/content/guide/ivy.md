@@ -119,7 +119,7 @@ To revert the compiler default, set the build option `aot: false` in the `angula
 </div>
 
 {@a using-ssr-without-angular-ivy}
-## Using SSR without Ivy
+### Using SSR without Ivy
 
 If you opt out of Ivy and your application uses  [Angular Universal](guide/universal) to render Angular applications on the server, you must also change the way the server performs bootstrapping.
 
