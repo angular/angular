@@ -204,7 +204,8 @@ export class Environment {
     const ngExpr = this.refEmitter.emit(ref, this.contextFile);
 
     // Use `translateExpression` to convert the `Expression` into a `ts.Expression`.
-    return translateExpression(ngExpr, this.importManager, NOOP_DEFAULT_IMPORT_RECORDER);
+    return translateExpression(
+        ngExpr, this.importManager, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES2015);
   }
 
   /**

@@ -53,6 +53,7 @@ class TestRenderingFormatter implements RenderingFormatter {
       importManager: ImportManager): void {
     output.prepend('\n// ADD MODUlE WITH PROVIDERS PARAMS\n');
   }
+  printStatement(): string { return 'IGNORED'; }
 }
 
 function createTestRenderer(
@@ -87,6 +88,7 @@ function createTestRenderer(
   spyOn(testFormatter, 'removeDecorators').and.callThrough();
   spyOn(testFormatter, 'rewriteSwitchableDeclarations').and.callThrough();
   spyOn(testFormatter, 'addModuleWithProvidersParams').and.callThrough();
+  spyOn(testFormatter, 'printStatement').and.callThrough();
 
   const renderer = new DtsRenderer(testFormatter, fs, logger, host, bundle);
 

@@ -100,17 +100,19 @@ export class ImportManager {
 }
 
 export function translateExpression(
-    expression: Expression, imports: ImportManager,
-    defaultImportRecorder: DefaultImportRecorder): ts.Expression {
+    expression: Expression, imports: ImportManager, defaultImportRecorder: DefaultImportRecorder,
+    scriptTarget: Exclude<ts.ScriptTarget, ts.ScriptTarget.JSON>): ts.Expression {
   return expression.visitExpression(
-      new ExpressionTranslatorVisitor(imports, defaultImportRecorder), new Context(false));
+      new ExpressionTranslatorVisitor(imports, defaultImportRecorder, scriptTarget),
+      new Context(false));
 }
 
 export function translateStatement(
-    statement: Statement, imports: ImportManager,
-    defaultImportRecorder: DefaultImportRecorder): ts.Statement {
+    statement: Statement, imports: ImportManager, defaultImportRecorder: DefaultImportRecorder,
+    scriptTarget: Exclude<ts.ScriptTarget, ts.ScriptTarget.JSON>): ts.Statement {
   return statement.visitStatement(
-      new ExpressionTranslatorVisitor(imports, defaultImportRecorder), new Context(true));
+      new ExpressionTranslatorVisitor(imports, defaultImportRecorder, scriptTarget),
+      new Context(true));
 }
 
 export function translateType(type: Type, imports: ImportManager): ts.TypeNode {
@@ -120,10 +122,14 @@ export function translateType(type: Type, imports: ImportManager): ts.TypeNode {
 class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor {
   private externalSourceFiles = new Map<string, ts.SourceMapSource>();
   constructor(
-      private imports: ImportManager, private defaultImportRecorder: DefaultImportRecorder) {}
+      private imports: ImportManager, private defaultImportRecorder: DefaultImportRecorder,
+      private scriptTarget: Exclude<ts.ScriptTarget, ts.ScriptTarget.JSON>) {}
 
   visitDeclareVarStmt(stmt: DeclareVarStmt, context: Context): ts.VariableStatement {
-    const nodeFlags = stmt.hasModifier(StmtModifier.Final) ? ts.NodeFlags.Const : ts.NodeFlags.None;
+    const nodeFlags =
+        ((this.scriptTarget >= ts.ScriptTarget.ES2015) && stmt.hasModifier(StmtModifier.Final)) ?
+        ts.NodeFlags.Const :
+        ts.NodeFlags.None;
     return ts.createVariableStatement(
         undefined, ts.createVariableDeclarationList(
                        [ts.createVariableDeclaration(
@@ -149,6 +155,11 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   }
 
   visitDeclareClassStmt(stmt: ClassStmt, context: Context) {
+    if (this.scriptTarget < ts.ScriptTarget.ES2015) {
+      throw new Error(
+          `Unsupported mode: Visiting a "declare class" statement (class ${stmt.name}) while ` +
+          `targeting ${ts.ScriptTarget[this.scriptTarget]}.`);
+    }
     throw new Error('Method not implemented.');
   }
 
@@ -200,7 +211,7 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     const exprContext = context.withExpressionMode;
     const lhs = ts.createElementAccess(
         expr.receiver.visitExpression(this, exprContext),
-        expr.index.visitExpression(this, exprContext), );
+        expr.index.visitExpression(this, exprContext));
     const rhs = expr.value.visitExpression(this, exprContext);
     const result: ts.Expression = ts.createBinary(lhs, ts.SyntaxKind.EqualsToken, rhs);
     return context.isStatement ? result : ts.createParen(result);
@@ -252,6 +263,12 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   }
 
   visitLocalizedString(ast: LocalizedString, context: Context): ts.Expression {
+    if (this.scriptTarget < ts.ScriptTarget.ES2015) {
+      // This should never happen.
+      throw new Error(
+          'Unsupported mode: Visiting a localized string (which produces a tagged template ' +
+          `literal) ' while targeting ${ts.ScriptTarget[this.scriptTarget]}.`);
+    }
     return visitLocalizedString(ast, context, this);
   }
 
@@ -518,7 +535,8 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
   }
 
   visitTypeofExpr(ast: TypeofExpr, context: Context): ts.TypeQueryNode {
-    let expr = translateExpression(ast.expr, this.imports, NOOP_DEFAULT_IMPORT_RECORDER);
+    let expr = translateExpression(
+        ast.expr, this.imports, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES2015);
     return ts.createTypeQueryNode(expr as ts.Identifier);
   }
 }

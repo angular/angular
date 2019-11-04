@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {Reexport} from '../../../src/ngtsc/imports';
@@ -45,4 +46,5 @@ export interface RenderingFormatter {
   addModuleWithProvidersParams(
       outputText: MagicString, moduleWithProviders: ModuleWithProvidersInfo[],
       importManager: ImportManager): void;
+  printStatement(stmt: Statement, sourceFile: ts.SourceFile, importManager: ImportManager): string;
 }
