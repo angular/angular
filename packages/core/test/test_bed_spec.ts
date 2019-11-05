@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Input, ModuleWithProviders, NgModule, Optional, Pipe, getModuleFactory, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
+import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, ModuleWithProviders, NgModule, Optional, Pipe, getModuleFactory, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
 import {registerModuleFactory} from '@angular/core/src/linker/ng_module_factory_registration';
 import {NgModuleFactory} from '@angular/core/src/render3';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
@@ -408,6 +408,24 @@ describe('TestBed', () => {
        const service = TestBed.inject(MyService);
        expect(service.get()).toEqual('override');
      });
+
+  it('overrides injectable that is using providedIn: AModule', () => {
+    @NgModule()
+    class ServiceModule {
+    }
+    @Injectable({providedIn: ServiceModule})
+    class Service {
+    }
+
+    const fake = 'fake';
+    TestBed.overrideProvider(Service, {useValue: fake});
+    // Create an injector whose source is the ServiceModule, not DynamicTestModule.
+    const ngModuleFactory = TestBed.inject(Compiler).compileModuleSync(ServiceModule);
+    const injector = ngModuleFactory.create(TestBed.inject(Injector)).injector;
+
+    const service = injector.get(Service);
+    expect(service).toBe(fake);
+  });
 
   it('allow to override multi provider', () => {
     const MY_TOKEN = new InjectionToken('MyProvider');

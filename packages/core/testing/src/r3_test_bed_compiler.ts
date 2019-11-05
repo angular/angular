@@ -7,9 +7,9 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {ApplicationInitStatus, COMPILER_OPTIONS, Compiler, Component, Directive, Injector, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, Type, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDef as InjectableDef} from '@angular/core';
-import {ModuleRegistrationMap, getRegisteredModulesState, restoreRegisteredModulesState} from '../../src/linker/ng_module_factory_registration';
+import {ApplicationInitStatus, COMPILER_OPTIONS, Compiler, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, Type, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDef as InjectableDef} from '@angular/core';
 
+import {ModuleRegistrationMap, getRegisteredModulesState, restoreRegisteredModulesState} from '../../src/linker/ng_module_factory_registration';
 import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
 
 import {MetadataOverride} from './metadata_override';
@@ -82,6 +82,9 @@ export class R3TestBedCompiler {
 
   private providerOverrides: Provider[] = [];
   private rootProviderOverrides: Provider[] = [];
+  // Overrides for injectables with `{providedIn: SomeModule}` need to be tracked and added to that
+  // module's provider list.
+  private providerOverridesByModule = new Map<InjectorType<any>, Provider[]>();
   private providerOverridesByToken = new Map<any, Provider>();
   private moduleProvidersOverridden = new Set<Type<any>>();
 
@@ -163,15 +166,23 @@ export class R3TestBedCompiler {
         } :
         {provide: token, useValue: provider.useValue, multi: provider.multi};
 
-    let injectableDef: InjectableDef<any>|null;
-    const isRoot =
-        (typeof token !== 'string' && (injectableDef = getInjectableDef(token)) &&
-         injectableDef.providedIn === 'root');
+    const injectableDef: InjectableDef<any>|null =
+        typeof token !== 'string' ? getInjectableDef(token) : null;
+    const isRoot = injectableDef !== null && injectableDef.providedIn === 'root';
     const overridesBucket = isRoot ? this.rootProviderOverrides : this.providerOverrides;
     overridesBucket.push(providerDef);
 
     // Keep overrides grouped by token as well for fast lookups using token
     this.providerOverridesByToken.set(token, providerDef);
+    if (injectableDef !== null && injectableDef.providedIn !== null &&
+        typeof injectableDef.providedIn !== 'string') {
+      const existingOverrides = this.providerOverridesByModule.get(injectableDef.providedIn);
+      if (existingOverrides !== undefined) {
+        existingOverrides.push(providerDef);
+      } else {
+        this.providerOverridesByModule.set(injectableDef.providedIn, [providerDef]);
+      }
+    }
   }
 
   overrideTemplateUsingTestingModule(type: Type<any>, template: string): void {
@@ -371,7 +382,10 @@ export class R3TestBedCompiler {
       const providersFromModules = flatten(flatten(
           injectorDef.imports, (imported: NgModuleType<any>| ModuleWithProviders<any>) =>
                                    isModuleWithProviders(imported) ? imported.providers : []));
-      const providers = [...providersFromModules, ...injectorDef.providers];
+      const providers = [
+        ...providersFromModules, ...injectorDef.providers,
+        ...(this.providerOverridesByModule.get(moduleType as InjectorType<any>) || [])
+      ];
       if (this.hasProviderOverrides(providers)) {
         this.maybeStoreNgDef(NG_INJ_DEF, moduleType);
 
