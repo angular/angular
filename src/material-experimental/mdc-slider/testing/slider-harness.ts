@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
-import {SliderHarnessFilters} from './slider-harness-filters';
+import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {SliderHarnessFilters} from '@angular/material/slider/testing';
 
 /**
- * Harness for interacting with a standard mat-slider in tests.
+ * Harness for interacting with a MDC mat-slider in tests.
  * @dynamic
  */
 export class MatSliderHarness extends ComponentHarness {
@@ -29,12 +29,12 @@ export class MatSliderHarness extends ComponentHarness {
     return new HarnessPredicate(MatSliderHarness, options);
   }
 
-  private _textLabel = this.locatorFor('.mat-slider-thumb-label-text');
-  private _wrapper = this.locatorFor('.mat-slider-wrapper');
+  private _textLabel = this.locatorForOptional('.mdc-slider__pin-value-marker');
+  private _trackContainer = this.locatorFor('.mdc-slider__track-container');
 
   /** Gets the slider's id. */
   async getId(): Promise<string|null> {
-    const id = await (await this.host()).getAttribute('id');
+    const id = await (await this.host()).getProperty('id');
     // In case no id has been specified, the "id" property always returns
     // an empty string. To make this method more explicit, we return null.
     return id !== '' ? id : null;
@@ -45,11 +45,8 @@ export class MatSliderHarness extends ComponentHarness {
    * label is disabled.
    */
   async getDisplayValue(): Promise<string|null> {
-    const [host, textLabel] = await Promise.all([this.host(), this._textLabel()]);
-    if (await host.hasClass('mat-slider-thumb-label-showing')) {
-      return textLabel.text();
-    }
-    return null;
+    const textLabelEl = await this._textLabel();
+    return textLabelEl ? textLabelEl.text() : null;
   }
 
   /** Gets the current percentage value of the slider. */
@@ -79,9 +76,10 @@ export class MatSliderHarness extends ComponentHarness {
   }
 
   /** Gets the orientation of the slider. */
-  async getOrientation(): Promise<'horizontal'|'vertical'> {
-    // "aria-orientation" will always be set to either "horizontal" or "vertical".
-    return (await this.host()).getAttribute('aria-orientation') as any;
+  async getOrientation(): Promise<'horizontal'> {
+    // "aria-orientation" will always be set to "horizontal" for the MDC
+    // slider as there is no vertical slider support yet.
+    return (await this.host()).getAttribute('aria-orientation') as Promise<'horizontal'>;
   }
 
   /**
@@ -93,24 +91,26 @@ export class MatSliderHarness extends ComponentHarness {
    * select the given value or expand the slider's size for a better user experience.
    */
   async setValue(value: number): Promise<void> {
-    const [sliderEl, wrapperEl, orientation] =
-        await Promise.all([this.host(), this._wrapper(), this.getOrientation()]);
-    let percentage = await this._calculatePercentage(value);
-    const {height, width} = await wrapperEl.getDimensions();
-    const isVertical = orientation === 'vertical';
+    // Need to wait for async tasks outside Angular to complete. This is necessary because
+    // whenever directionality changes, the slider updates the element dimensions in the next
+    // tick (in a timer outside of the NgZone). Since this method relies on the element
+    // dimensions to be updated, we wait for the delayed calculation task to complete.
+    await this.waitForTasksOutsideAngular();
 
-    // In case the slider is inverted in LTR mode or not inverted in RTL mode,
-    // we need to invert the percentage so that the proper value is set.
+    const [sliderEl, trackContainer] =
+        await Promise.all([this.host(), this._trackContainer()]);
+    let percentage = await this._calculatePercentage(value);
+    const {width} = await trackContainer.getDimensions();
+
+    // In case the slider is displayed in RTL mode, we need to invert the
+    // percentage so that the proper value is set.
     if (await sliderEl.hasClass('mat-slider-invert-mouse-coords')) {
       percentage = 1 - percentage;
     }
 
     // We need to round the new coordinates because creating fake DOM
     // events will cause the coordinates to be rounded down.
-    const relativeX = isVertical ? 0 : Math.round(width * percentage);
-    const relativeY = isVertical ? Math.round(height * percentage) : 0;
-
-    await wrapperEl.click(relativeX, relativeY);
+    await sliderEl.click(Math.round(width * percentage), 0);
   }
 
   /**

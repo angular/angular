@@ -1,6 +1,6 @@
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {Component} from '@angular/core';
+import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatSliderHarness} from '@angular/material/slider/testing/slider-harness';
@@ -8,7 +8,8 @@ import {MatSliderHarness} from '@angular/material/slider/testing/slider-harness'
 /** Shared tests to run on both the original and MDC-based sliders. */
 export function runHarnessTests(
     sliderModule: typeof MatSliderModule,
-    sliderHarness: typeof MatSliderHarness) {
+    sliderHarness: typeof MatSliderHarness,
+    options: {supportsVertical: boolean, supportsInvert: boolean}) {
   let fixture: ComponentFixture<SliderHarnessTest>;
   let loader: HarnessLoader;
 
@@ -17,6 +18,10 @@ export function runHarnessTests(
         .configureTestingModule({
           imports: [sliderModule],
           declarations: [SliderHarnessTest],
+          // Use custom element schema since some inputs (like vertical or invert) do not
+          // exist in the MDC implementation of the slider. Though we still want to re-use
+          // the same test component.
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
         })
         .compileComponents();
 
@@ -72,7 +77,7 @@ export function runHarnessTests(
 
   it('should get display value of slider', async () => {
     const sliders = await loader.getAllHarnesses(sliderHarness);
-    expect(await sliders[0].getDisplayValue()).toBe('50');
+    expect(await sliders[0].getDisplayValue()).toBe(null);
     expect(await sliders[1].getDisplayValue()).toBe('Null');
     expect(await sliders[2].getDisplayValue()).toBe('#225');
   });
@@ -81,18 +86,21 @@ export function runHarnessTests(
     const sliders = await loader.getAllHarnesses(sliderHarness);
     expect(await sliders[0].getOrientation()).toBe('horizontal');
     expect(await sliders[1].getOrientation()).toBe('horizontal');
-    expect(await sliders[2].getOrientation()).toBe('vertical');
+    expect(await sliders[2].getOrientation()).toBe(options.supportsVertical ?
+        'vertical' : 'horizontal');
   });
 
   it('should be able to focus slider', async () => {
-    const [slider] = await loader.getAllHarnesses(sliderHarness);
+    // the first slider is disabled.
+    const slider = (await loader.getAllHarnesses(sliderHarness))[1];
     expect(getActiveElementTagName()).not.toBe('mat-slider');
     await slider.focus();
     expect(getActiveElementTagName()).toBe('mat-slider');
   });
 
   it('should be able to blur slider', async () => {
-    const [slider] = await loader.getAllHarnesses(sliderHarness);
+    // the first slider is disabled.
+    const slider = (await loader.getAllHarnesses(sliderHarness))[1];
     expect(getActiveElementTagName()).not.toBe('mat-slider');
     await slider.focus();
     expect(getActiveElementTagName()).toBe('mat-slider');
@@ -127,43 +135,45 @@ export function runHarnessTests(
     expect(await sliders[1].getValue()).toBe(80);
   });
 
-  it('should be able to set value of inverted slider', async () => {
-    const sliders = await loader.getAllHarnesses(sliderHarness);
-    expect(await sliders[1].getValue()).toBe(0);
-    expect(await sliders[2].getValue()).toBe(225);
-
-    fixture.componentInstance.invertSliders = true;
-    fixture.detectChanges();
-
-    await sliders[1].setValue(75);
-    await sliders[2].setValue(210);
-
-    expect(await sliders[1].getValue()).toBe(75);
-    expect(await sliders[2].getValue()).toBe(210);
-  });
-
-  it('should be able to set value of inverted slider in rtl', async () => {
-    const sliders = await loader.getAllHarnesses(sliderHarness);
-    expect(await sliders[1].getValue()).toBe(0);
-    expect(await sliders[2].getValue()).toBe(225);
-
-    fixture.componentInstance.invertSliders = true;
-    fixture.componentInstance.dir = 'rtl';
-    fixture.detectChanges();
-
-    await sliders[1].setValue(75);
-    await sliders[2].setValue(210);
-
-    expect(await sliders[1].getValue()).toBe(75);
-    expect(await sliders[2].getValue()).toBe(210);
-  });
-
   it('should get disabled state of slider', async () => {
     const sliders = await loader.getAllHarnesses(sliderHarness);
     expect(await sliders[0].isDisabled()).toBe(true);
     expect(await sliders[1].isDisabled()).toBe(false);
     expect(await sliders[2].isDisabled()).toBe(false);
   });
+
+  if (options.supportsInvert) {
+    it('should be able to set value of inverted slider', async () => {
+      const sliders = await loader.getAllHarnesses(sliderHarness);
+      expect(await sliders[1].getValue()).toBe(0);
+      expect(await sliders[2].getValue()).toBe(225);
+
+      fixture.componentInstance.invertSliders = true;
+      fixture.detectChanges();
+
+      await sliders[1].setValue(75);
+      await sliders[2].setValue(210);
+
+      expect(await sliders[1].getValue()).toBe(75);
+      expect(await sliders[2].getValue()).toBe(210);
+    });
+
+    it('should be able to set value of inverted slider in rtl', async () => {
+      const sliders = await loader.getAllHarnesses(sliderHarness);
+      expect(await sliders[1].getValue()).toBe(0);
+      expect(await sliders[2].getValue()).toBe(225);
+
+      fixture.componentInstance.invertSliders = true;
+      fixture.componentInstance.dir = 'rtl';
+      fixture.detectChanges();
+
+      await sliders[1].setValue(75);
+      await sliders[2].setValue(210);
+
+      expect(await sliders[1].getValue()).toBe(75);
+      expect(await sliders[2].getValue()).toBe(210);
+    });
+  }
 }
 
 function getActiveElementTagName() {
@@ -175,12 +185,12 @@ function getActiveElementTagName() {
     <mat-slider value="50" disabled></mat-slider>
     <div [dir]="dir">
       <mat-slider [id]="sliderId" [displayWith]="displayFn"
-                  [invert]="invertSliders"></mat-slider>
+                  [invert]="invertSliders" thumbLabel></mat-slider>
     </div>
     <mat-slider min="200" max="250" value="225" [displayWith]="displayFn" vertical
-                [invert]="invertSliders">
+                [invert]="invertSliders" thumbLabel>
     </mat-slider>
-    `
+    `,
 })
 class SliderHarnessTest {
   sliderId = 'my-slider';

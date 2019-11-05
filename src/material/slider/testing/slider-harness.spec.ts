@@ -3,5 +3,8 @@ import {runHarnessTests} from '@angular/material/slider/testing/shared.spec';
 import {MatSliderHarness} from './slider-harness';
 
 describe('Non-MDC-based MatSliderHarness', () => {
-  runHarnessTests(MatSliderModule, MatSliderHarness);
+  runHarnessTests(MatSliderModule, MatSliderHarness, {
+    supportsInvert: true,
+    supportsVertical: true,
+  });
 });
