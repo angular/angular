@@ -26,8 +26,8 @@
       "restart": false,
       "sourceMaps": false,
       "localRoot": "${workspaceRoot}",
-      "stopOnEntry": false,
       "remoteRoot": "${workspaceRoot}",
+      "stopOnEntry": false,
       "timeout": 60000,
     },
     {
@@ -43,8 +43,8 @@
       ],
       "port": 9229,
       "address": "localhost",
-      "sourceMaps": true,
       "restart": true,
+      "sourceMaps": true,
       "timeout": 60000,
     },
     {
@@ -60,8 +60,8 @@
       ],
       "port": 9229,
       "address": "localhost",
-      "sourceMaps": true,
       "restart": true,
+      "sourceMaps": true,
       "timeout": 60000,
     },
     {
@@ -77,8 +77,8 @@
       ],
       "port": 9229,
       "address": "localhost",
-      "sourceMaps": true,
       "restart": true,
+      "sourceMaps": true,
       "timeout": 60000,
     },
   ]

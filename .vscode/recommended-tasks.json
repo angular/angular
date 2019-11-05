@@ -1,5 +1,5 @@
 {
-  // See https://go.microsoft.com/fwlink/?LinkId=733558 
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
   // for the documentation about the tasks.json format
   "version": "2.0.0",
   "tasks": [
@@ -17,7 +17,7 @@
       "group": "test",
       "presentation": {
         "reveal": "always",
-        "panel": "dedicated"
+        "panel": "dedicated",
       },
     },
     {
@@ -33,7 +33,7 @@
       "group": "test",
       "presentation": {
         "reveal": "always",
-        "panel": "dedicated"
+        "panel": "dedicated",
       },
     },
     {
@@ -43,12 +43,12 @@
       "args": [
         "test",
         "--define=compile=aot",
-        "packages/core/test/acceptance"
+        "packages/core/test/acceptance",
       ],
       "group": "test",
       "presentation": {
         "reveal": "always",
-        "panel": "dedicated"
+        "panel": "dedicated",
       },
     },
     {
@@ -57,12 +57,12 @@
       "command": "${workspaceFolder}/node_modules/.bin/bazel",
       "args": [
         "test",
-        "packages/core/test/acceptance"
+        "packages/core/test/acceptance",
       ],
       "group": "test",
       "presentation": {
         "reveal": "always",
-        "panel": "dedicated"
+        "panel": "dedicated",
       },
     },
     {
@@ -72,12 +72,12 @@
       "args": [
         "test",
         "--define=compile=aot",
-        "packages/core/test"
+        "packages/core/test",
       ],
       "group": "test",
       "presentation": {
         "reveal": "always",
-        "panel": "dedicated"
+        "panel": "dedicated",
       },
     },
     {
@@ -86,12 +86,12 @@
       "command": "${workspaceFolder}/node_modules/.bin/bazel",
       "args": [
         "test",
-        "packages/core/test"
+        "packages/core/test",
       ],
       "group": "test",
       "presentation": {
         "reveal": "always",
-        "panel": "dedicated"
+        "panel": "dedicated",
       },
     },
     {
@@ -101,13 +101,13 @@
       "args": [
         "test",
         "--define=compile=aot",
-        "packages/core/test/render3"
+        "packages/core/test/render3",
       ],
       "group": "test",
       "presentation": {
         "reveal": "always",
-        "panel": "dedicated"
+        "panel": "dedicated",
       },
     },
-  ]
+  ],
 }
