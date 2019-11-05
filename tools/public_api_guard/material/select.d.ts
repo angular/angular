@@ -89,6 +89,8 @@ export declare class MatSelect extends _MatSelectMixinBase implements AfterConte
     static ngAcceptInputType_multiple: boolean | string;
     static ngAcceptInputType_required: boolean | string;
     static ngAcceptInputType_typeaheadDebounceInterval: number | string;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSelect, "mat-select", ["matSelect"], { 'disabled': "disabled", 'disableRipple': "disableRipple", 'tabIndex': "tabIndex", 'panelClass': "panelClass", 'placeholder': "placeholder", 'required': "required", 'multiple': "multiple", 'disableOptionCentering': "disableOptionCentering", 'compareWith': "compareWith", 'value': "value", 'ariaLabel': "aria-label", 'ariaLabelledby': "aria-labelledby", 'errorStateMatcher': "errorStateMatcher", 'typeaheadDebounceInterval': "typeaheadDebounceInterval", 'sortComparator': "sortComparator", 'id': "id" }, { 'openedChange': "openedChange", '_openedStream': "opened", '_closedStream': "closed", 'selectionChange': "selectionChange", 'valueChange': "valueChange" }, ["customTrigger", "options", "optionGroups"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSelect>;
 }
 
 export declare const matSelectAnimations: {
@@ -105,9 +107,13 @@ export declare class MatSelectChange {
 }
 
 export declare class MatSelectModule {
+    static ɵinj: i0.ɵɵInjectorDef<MatSelectModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatSelectModule, [typeof i1.MatSelect, typeof i1.MatSelectTrigger], [typeof i2.CommonModule, typeof i3.OverlayModule, typeof i4.MatOptionModule, typeof i4.MatCommonModule], [typeof i5.MatFormFieldModule, typeof i1.MatSelect, typeof i1.MatSelectTrigger, typeof i4.MatOptionModule, typeof i4.MatCommonModule]>;
 }
 
 export declare class MatSelectTrigger {
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatSelectTrigger, "mat-select-trigger", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSelectTrigger>;
 }
 
 export declare const SELECT_ITEM_HEIGHT_EM = 3;

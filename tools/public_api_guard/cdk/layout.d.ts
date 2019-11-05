@@ -3,6 +3,8 @@ export declare class BreakpointObserver implements OnDestroy {
     isMatched(value: string | string[]): boolean;
     ngOnDestroy(): void;
     observe(value: string | string[]): Observable<BreakpointState>;
+    static ɵfac: i0.ɵɵFactoryDef<BreakpointObserver>;
+    static ɵprov: i0.ɵɵInjectableDef<BreakpointObserver>;
 }
 
 export declare const Breakpoints: {
@@ -30,9 +32,13 @@ export interface BreakpointState {
 }
 
 export declare class LayoutModule {
+    static ɵinj: i0.ɵɵInjectorDef<LayoutModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<LayoutModule, never, never, never>;
 }
 
 export declare class MediaMatcher {
     constructor(_platform: Platform);
     matchMedia(query: string): MediaQueryList;
+    static ɵfac: i0.ɵɵFactoryDef<MediaMatcher>;
+    static ɵprov: i0.ɵɵInjectableDef<MediaMatcher>;
 }

@@ -48,6 +48,8 @@ export declare class MatAutocomplete extends _MatAutocompleteMixinBase implement
     ngAfterContentInit(): void;
     static ngAcceptInputType_autoActiveFirstOption: boolean | string;
     static ngAcceptInputType_disableRipple: boolean | string;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatAutocomplete, "mat-autocomplete", ["matAutocomplete"], { 'disableRipple': "disableRipple", 'displayWith': "displayWith", 'autoActiveFirstOption': "autoActiveFirstOption", 'panelWidth': "panelWidth", 'classList': "class" }, { 'optionSelected': "optionSelected", 'opened': "opened", 'closed': "closed" }, ["options", "optionGroups"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatAutocomplete>;
 }
 
 export interface MatAutocompleteDefaultOptions {
@@ -55,12 +57,16 @@ export interface MatAutocompleteDefaultOptions {
 }
 
 export declare class MatAutocompleteModule {
+    static ɵinj: i0.ɵɵInjectorDef<MatAutocompleteModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatAutocompleteModule, [typeof i1.MatAutocomplete, typeof i2.MatAutocompleteTrigger, typeof i3.MatAutocompleteOrigin], [typeof i4.MatOptionModule, typeof i5.OverlayModule, typeof i4.MatCommonModule, typeof i6.CommonModule], [typeof i1.MatAutocomplete, typeof i4.MatOptionModule, typeof i2.MatAutocompleteTrigger, typeof i3.MatAutocompleteOrigin, typeof i4.MatCommonModule]>;
 }
 
 export declare class MatAutocompleteOrigin {
     elementRef: ElementRef<HTMLElement>;
     constructor(
     elementRef: ElementRef<HTMLElement>);
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatAutocompleteOrigin, "[matAutocompleteOrigin]", ["matAutocompleteOrigin"], {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatAutocompleteOrigin>;
 }
 
 export declare class MatAutocompleteSelectedEvent {
@@ -98,4 +104,6 @@ export declare class MatAutocompleteTrigger implements ControlValueAccessor, Aft
     updatePosition(): void;
     writeValue(value: any): void;
     static ngAcceptInputType_autocompleteDisabled: boolean | string;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatAutocompleteTrigger, "input[matAutocomplete], textarea[matAutocomplete]", ["matAutocompleteTrigger"], { 'autocomplete': "matAutocomplete", 'position': "matAutocompletePosition", 'connectedTo': "matAutocompleteConnectedTo", 'autocompleteAttribute': "autocomplete", 'autocompleteDisabled': "matAutocompleteDisabled" }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatAutocompleteTrigger>;
 }

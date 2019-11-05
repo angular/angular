@@ -9,6 +9,8 @@ export declare class MatBottomSheet implements OnDestroy {
     ngOnDestroy(): void;
     open<T, D = any, R = any>(component: ComponentType<T>, config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T, R>;
     open<T, D = any, R = any>(template: TemplateRef<T>, config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T, R>;
+    static ɵfac: i0.ɵɵFactoryDef<MatBottomSheet>;
+    static ɵprov: i0.ɵɵInjectableDef<MatBottomSheet>;
 }
 
 export declare const matBottomSheetAnimations: {
@@ -44,9 +46,13 @@ export declare class MatBottomSheetContainer extends BasePortalOutlet implements
     enter(): void;
     exit(): void;
     ngOnDestroy(): void;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatBottomSheetContainer, "mat-bottom-sheet-container", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatBottomSheetContainer>;
 }
 
 export declare class MatBottomSheetModule {
+    static ɵinj: i0.ɵɵInjectorDef<MatBottomSheetModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatBottomSheetModule, [typeof i1.MatBottomSheetContainer], [typeof i2.CommonModule, typeof i3.OverlayModule, typeof i4.MatCommonModule, typeof i5.PortalModule], [typeof i1.MatBottomSheetContainer, typeof i4.MatCommonModule]>;
 }
 
 export declare class MatBottomSheetRef<T = any, R = any> {

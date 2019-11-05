@@ -88,6 +88,8 @@ export declare const defaultRippleAnimationConfig: {
 
 export declare class ErrorStateMatcher {
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean;
+    static ɵfac: i0.ɵɵFactoryDef<ErrorStateMatcher>;
+    static ɵprov: i0.ɵɵInjectableDef<ErrorStateMatcher>;
 }
 
 export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
@@ -98,6 +100,8 @@ export declare class GestureConfig extends HammerGestureConfig {
     events: string[];
     constructor(_hammerOptions?: HammerOptions | undefined, _commonModule?: MatCommonModule);
     buildHammer(element: HTMLElement): HammerInstance;
+    static ɵfac: i0.ɵɵFactoryDef<GestureConfig>;
+    static ɵprov: i0.ɵɵInjectableDef<GestureConfig>;
 }
 
 export interface GranularSanityChecks {
@@ -198,6 +202,8 @@ export declare const MAT_RIPPLE_GLOBAL_OPTIONS: InjectionToken<RippleGlobalOptio
 
 export declare class MatCommonModule {
     constructor(sanityChecks: any);
+    static ɵinj: i0.ɵɵInjectorDef<MatCommonModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatCommonModule, never, [typeof i1.BidiModule], [typeof i1.BidiModule]>;
 }
 
 export declare type MatDateFormats = {
@@ -215,9 +221,13 @@ export declare type MatDateFormats = {
 export declare const MATERIAL_SANITY_CHECKS: InjectionToken<SanityChecks>;
 
 export declare class MatLine {
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatLine, "[mat-line], [matLine]", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatLine>;
 }
 
 export declare class MatLineModule {
+    static ɵinj: i0.ɵɵInjectorDef<MatLineModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatLineModule, [typeof MatLine], [typeof i1.MatCommonModule], [typeof MatLine, typeof i1.MatCommonModule]>;
 }
 
 export declare class MatLineSetter {
@@ -225,12 +235,16 @@ export declare class MatLineSetter {
 }
 
 export declare class MatNativeDateModule {
+    static ɵinj: i0.ɵɵInjectorDef<MatNativeDateModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatNativeDateModule, never, [typeof NativeDateModule], never>;
 }
 
 export declare class MatOptgroup extends _MatOptgroupMixinBase implements CanDisable {
     _labelId: string;
     label: string;
     static ngAcceptInputType_disabled: boolean | string;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOptgroup, "mat-optgroup", ["matOptgroup"], { 'disabled': "disabled", 'label': "label" }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatOptgroup>;
 }
 
 export declare class MatOption implements FocusableOption, AfterViewChecked, OnDestroy {
@@ -260,9 +274,13 @@ export declare class MatOption implements FocusableOption, AfterViewChecked, OnD
     setActiveStyles(): void;
     setInactiveStyles(): void;
     static ngAcceptInputType_disabled: boolean | string;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOption, "mat-option", ["matOption"], { 'value': "value", 'id': "id", 'disabled': "disabled" }, { 'onSelectionChange': "onSelectionChange" }, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatOption>;
 }
 
 export declare class MatOptionModule {
+    static ɵinj: i0.ɵɵInjectorDef<MatOptionModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatOptionModule, [typeof i1.MatOption, typeof i2.MatOptgroup], [typeof i3.MatRippleModule, typeof i4.CommonModule, typeof i5.MatPseudoCheckboxModule], [typeof i1.MatOption, typeof i2.MatOptgroup]>;
 }
 
 export interface MatOptionParentComponent {
@@ -283,9 +301,13 @@ export declare class MatPseudoCheckbox {
     disabled: boolean;
     state: MatPseudoCheckboxState;
     constructor(_animationMode?: string | undefined);
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatPseudoCheckbox, "mat-pseudo-checkbox", never, { 'state': "state", 'disabled': "disabled" }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatPseudoCheckbox>;
 }
 
 export declare class MatPseudoCheckboxModule {
+    static ɵinj: i0.ɵɵInjectorDef<MatPseudoCheckboxModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatPseudoCheckboxModule, [typeof i1.MatPseudoCheckbox], never, [typeof i1.MatPseudoCheckbox]>;
 }
 
 export declare type MatPseudoCheckboxState = 'unchecked' | 'checked' | 'indeterminate';
@@ -306,9 +328,13 @@ export declare class MatRipple implements OnInit, OnDestroy, RippleTarget {
     launch(x: number, y: number, config?: RippleConfig): RippleRef;
     ngOnDestroy(): void;
     ngOnInit(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatRipple, "[mat-ripple], [matRipple]", ["matRipple"], { 'color': "matRippleColor", 'unbounded': "matRippleUnbounded", 'centered': "matRippleCentered", 'radius': "matRippleRadius", 'animation': "matRippleAnimation", 'disabled': "matRippleDisabled", 'trigger': "matRippleTrigger" }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatRipple>;
 }
 
 export declare class MatRippleModule {
+    static ɵinj: i0.ɵɵInjectorDef<MatRippleModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatRippleModule, [typeof i1.MatRipple], [typeof i2.MatCommonModule, typeof i3.PlatformModule], [typeof i1.MatRipple, typeof i2.MatCommonModule]>;
 }
 
 export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
@@ -351,9 +377,13 @@ export declare class NativeDateAdapter extends DateAdapter<Date> {
     parse(value: any): Date | null;
     toIso8601(date: Date): string;
     today(): Date;
+    static ɵfac: i0.ɵɵFactoryDef<NativeDateAdapter>;
+    static ɵprov: i0.ɵɵInjectableDef<NativeDateAdapter>;
 }
 
 export declare class NativeDateModule {
+    static ɵinj: i0.ɵɵInjectorDef<NativeDateModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<NativeDateModule, never, [typeof i1.PlatformModule], never>;
 }
 
 export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
@@ -428,6 +458,8 @@ export declare function setLines(lines: QueryList<MatLine>, element: ElementRef<
 
 export declare class ShowOnDirtyErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean;
+    static ɵfac: i0.ɵɵFactoryDef<ShowOnDirtyErrorStateMatcher>;
+    static ɵprov: i0.ɵɵInjectableDef<ShowOnDirtyErrorStateMatcher>;
 }
 
 export declare type ThemePalette = 'primary' | 'accent' | 'warn' | undefined;

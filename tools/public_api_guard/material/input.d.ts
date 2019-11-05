@@ -52,9 +52,13 @@ export declare class MatInput extends _MatInputMixinBase implements MatFormField
     static ngAcceptInputType_readonly: boolean | string;
     static ngAcceptInputType_required: boolean | string;
     static ngAcceptInputType_value: any;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatInput, "input[matInput], textarea[matInput], select[matNativeControl],      input[matNativeControl], textarea[matNativeControl]", ["matInput"], { 'disabled': "disabled", 'id': "id", 'placeholder': "placeholder", 'required': "required", 'type': "type", 'errorStateMatcher': "errorStateMatcher", 'value': "value", 'readonly': "readonly" }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatInput>;
 }
 
 export declare class MatInputModule {
+    static ɵinj: i0.ɵɵInjectorDef<MatInputModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatInputModule, [typeof i1.MatInput, typeof i2.MatTextareaAutosize], [typeof i3.CommonModule, typeof i4.TextFieldModule, typeof i5.MatFormFieldModule], [typeof i4.TextFieldModule, typeof i5.MatFormFieldModule, typeof i1.MatInput, typeof i2.MatTextareaAutosize]>;
 }
 
 export declare class MatTextareaAutosize extends CdkTextareaAutosize {
@@ -65,4 +69,6 @@ export declare class MatTextareaAutosize extends CdkTextareaAutosize {
     static ngAcceptInputType_enabled: boolean | string;
     static ngAcceptInputType_maxRows: number | string;
     static ngAcceptInputType_minRows: number | string;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTextareaAutosize, "textarea[mat-autosize], textarea[matTextareaAutosize]", ["matTextareaAutosize"], { 'cdkAutosizeMinRows': "cdkAutosizeMinRows", 'cdkAutosizeMaxRows': "cdkAutosizeMaxRows", 'matAutosizeMinRows': "matAutosizeMinRows", 'matAutosizeMaxRows': "matAutosizeMaxRows", 'matAutosize': "mat-autosize", 'matTextareaAutosize': "matTextareaAutosize" }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatTextareaAutosize>;
 }

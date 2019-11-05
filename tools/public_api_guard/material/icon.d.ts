@@ -34,6 +34,8 @@ export declare class MatIcon extends _MatIconMixinBase implements OnChanges, OnI
     ngOnDestroy(): void;
     ngOnInit(): void;
     static ngAcceptInputType_inline: boolean | string;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatIcon, "mat-icon", ["matIcon"], { 'color': "color", 'inline': "inline", 'svgIcon': "svgIcon", 'fontSet': "fontSet", 'fontIcon': "fontIcon" }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatIcon>;
 }
 
 export interface MatIconLocation {
@@ -41,6 +43,8 @@ export interface MatIconLocation {
 }
 
 export declare class MatIconModule {
+    static ɵinj: i0.ɵɵInjectorDef<MatIconModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatIconModule, [typeof i1.MatIcon], [typeof i2.MatCommonModule], [typeof i1.MatIcon, typeof i2.MatCommonModule]>;
 }
 
 export declare class MatIconRegistry implements OnDestroy {
@@ -60,4 +64,6 @@ export declare class MatIconRegistry implements OnDestroy {
     ngOnDestroy(): void;
     registerFontClassAlias(alias: string, className?: string): this;
     setDefaultFontSetClass(className: string): this;
+    static ɵfac: i0.ɵɵFactoryDef<MatIconRegistry>;
+    static ɵprov: i0.ɵɵInjectableDef<MatIconRegistry>;
 }

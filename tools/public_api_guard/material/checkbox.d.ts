@@ -1,4 +1,6 @@
 export declare class _MatCheckboxRequiredValidatorModule {
+    static ɵinj: i0.ɵɵInjectorDef<_MatCheckboxRequiredValidatorModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<_MatCheckboxRequiredValidatorModule, [typeof i1.MatCheckboxRequiredValidator], never, [typeof i1.MatCheckboxRequiredValidator]>;
 }
 
 export declare const MAT_CHECKBOX_CLICK_ACTION: InjectionToken<MatCheckboxClickAction>;
@@ -47,6 +49,8 @@ export declare class MatCheckbox extends _MatCheckboxMixinBase implements Contro
     static ngAcceptInputType_disableRipple: boolean | string;
     static ngAcceptInputType_disabled: boolean | string;
     static ngAcceptInputType_required: boolean | string;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatCheckbox, "mat-checkbox", ["matCheckbox"], { 'disableRipple': "disableRipple", 'color': "color", 'tabIndex': "tabIndex", 'ariaLabel': "aria-label", 'ariaLabelledby': "aria-labelledby", 'id': "id", 'required': "required", 'labelPosition': "labelPosition", 'name': "name", 'value': "value", 'checked': "checked", 'disabled': "disabled", 'indeterminate': "indeterminate" }, { 'change': "change", 'indeterminateChange': "indeterminateChange" }, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatCheckbox>;
 }
 
 export declare class MatCheckboxChange {
@@ -62,9 +66,13 @@ export interface MatCheckboxDefaultOptions {
 }
 
 export declare class MatCheckboxModule {
+    static ɵinj: i0.ɵɵInjectorDef<MatCheckboxModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatCheckboxModule, [typeof i2.MatCheckbox], [typeof i3.CommonModule, typeof i4.MatRippleModule, typeof i4.MatCommonModule, typeof i5.ObserversModule, typeof _MatCheckboxRequiredValidatorModule], [typeof i2.MatCheckbox, typeof i4.MatCommonModule, typeof _MatCheckboxRequiredValidatorModule]>;
 }
 
 export declare class MatCheckboxRequiredValidator extends CheckboxRequiredValidator {
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatCheckboxRequiredValidator, "mat-checkbox[required][formControlName],             mat-checkbox[required][formControl], mat-checkbox[required][ngModel]", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatCheckboxRequiredValidator>;
 }
 
 export declare enum TransitionCheckState {

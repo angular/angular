@@ -10,6 +10,8 @@ export declare class AutofillMonitor implements OnDestroy {
     ngOnDestroy(): void;
     stopMonitoring(element: Element): void;
     stopMonitoring(element: ElementRef<Element>): void;
+    static ɵfac: i0.ɵɵFactoryDef<AutofillMonitor>;
+    static ɵprov: i0.ɵɵInjectableDef<AutofillMonitor>;
 }
 
 export declare class CdkAutofill implements OnDestroy, OnInit {
@@ -17,6 +19,8 @@ export declare class CdkAutofill implements OnDestroy, OnInit {
     constructor(_elementRef: ElementRef<HTMLElement>, _autofillMonitor: AutofillMonitor);
     ngOnDestroy(): void;
     ngOnInit(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkAutofill, "[cdkAutofill]", never, {}, { 'cdkAutofill': "cdkAutofill" }, never>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkAutofill>;
 }
 
 export declare class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
@@ -35,7 +39,11 @@ export declare class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDe
     static ngAcceptInputType_enabled: boolean | string;
     static ngAcceptInputType_maxRows: number | string;
     static ngAcceptInputType_minRows: number | string;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkTextareaAutosize, "textarea[cdkTextareaAutosize]", ["cdkTextareaAutosize"], { 'minRows': "cdkAutosizeMinRows", 'maxRows': "cdkAutosizeMaxRows", 'enabled': "cdkTextareaAutosize" }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkTextareaAutosize>;
 }
 
 export declare class TextFieldModule {
+    static ɵinj: i0.ɵɵInjectorDef<TextFieldModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<TextFieldModule, [typeof i1.CdkAutofill, typeof i2.CdkTextareaAutosize], [typeof i3.PlatformModule], [typeof i1.CdkAutofill, typeof i2.CdkTextareaAutosize]>;
 }

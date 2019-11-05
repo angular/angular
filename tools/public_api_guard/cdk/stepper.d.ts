@@ -23,17 +23,23 @@ export declare class CdkStep implements OnChanges {
     static ngAcceptInputType_editable: boolean | string;
     static ngAcceptInputType_hasError: boolean | string;
     static ngAcceptInputType_optional: boolean | string;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkStep, "cdk-step", ["cdkStep"], { 'stepControl': "stepControl", 'label': "label", 'errorMessage': "errorMessage", 'ariaLabel': "aria-label", 'ariaLabelledby': "aria-labelledby", 'state': "state", 'editable': "editable", 'optional': "optional", 'completed': "completed", 'hasError': "hasError" }, {}, ["stepLabel"]>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkStep>;
 }
 
 export declare class CdkStepHeader implements FocusableOption {
     protected _elementRef: ElementRef<HTMLElement>;
     constructor(_elementRef: ElementRef<HTMLElement>);
     focus(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepHeader, "[cdkStepHeader]", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkStepHeader>;
 }
 
 export declare class CdkStepLabel {
     template: TemplateRef<any>;
     constructor(/** @docs-private */ template: TemplateRef<any>);
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepLabel, "[cdkStepLabel]", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkStepLabel>;
 }
 
 export declare class CdkStepper implements AfterViewInit, OnDestroy {
@@ -67,9 +73,13 @@ export declare class CdkStepper implements AfterViewInit, OnDestroy {
     static ngAcceptInputType_linear: boolean | string;
     static ngAcceptInputType_optional: boolean | string;
     static ngAcceptInputType_selectedIndex: number | string;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepper, "[cdkStepper]", ["cdkStepper"], { 'linear': "linear", 'selectedIndex': "selectedIndex", 'selected': "selected" }, { 'selectionChange': "selectionChange" }, ["_steps", "_stepHeader"]>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkStepper>;
 }
 
 export declare class CdkStepperModule {
+    static ɵinj: i0.ɵɵInjectorDef<CdkStepperModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<CdkStepperModule, [typeof i1.CdkStep, typeof i1.CdkStepper, typeof i2.CdkStepHeader, typeof i3.CdkStepLabel, typeof i4.CdkStepperNext, typeof i4.CdkStepperPrevious], [typeof i5.BidiModule, typeof i6.CommonModule], [typeof i1.CdkStep, typeof i1.CdkStepper, typeof i2.CdkStepHeader, typeof i3.CdkStepLabel, typeof i4.CdkStepperNext, typeof i4.CdkStepperPrevious]>;
 }
 
 export declare class CdkStepperNext {
@@ -77,6 +87,8 @@ export declare class CdkStepperNext {
     type: string;
     constructor(_stepper: CdkStepper);
     _handleClick(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepperNext, "button[cdkStepperNext]", never, { 'type': "type" }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkStepperNext>;
 }
 
 export declare class CdkStepperPrevious {
@@ -84,6 +96,8 @@ export declare class CdkStepperPrevious {
     type: string;
     constructor(_stepper: CdkStepper);
     _handleClick(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepperPrevious, "button[cdkStepperPrevious]", never, { 'type': "type" }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkStepperPrevious>;
 }
 
 export declare const MAT_STEPPER_GLOBAL_OPTIONS: InjectionToken<StepperOptions>;

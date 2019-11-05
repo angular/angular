@@ -61,6 +61,8 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     static ngAcceptInputType_tickInterval: number | string;
     static ngAcceptInputType_value: number | string | null;
     static ngAcceptInputType_vertical: boolean | string;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSlider, "mat-slider", ["matSlider"], { 'disabled': "disabled", 'color': "color", 'tabIndex': "tabIndex", 'invert': "invert", 'max': "max", 'min': "min", 'step': "step", 'thumbLabel': "thumbLabel", 'tickInterval': "tickInterval", 'value': "value", 'displayWith': "displayWith", 'vertical': "vertical" }, { 'change': "change", 'input': "input", 'valueChange': "valueChange" }, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSlider>;
 }
 
 export declare class MatSliderChange {
@@ -69,4 +71,6 @@ export declare class MatSliderChange {
 }
 
 export declare class MatSliderModule {
+    static ɵinj: i0.ɵɵInjectorDef<MatSliderModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatSliderModule, [typeof i1.MatSlider], [typeof i2.CommonModule, typeof i3.MatCommonModule], [typeof i1.MatSlider, typeof i3.MatCommonModule]>;
 }

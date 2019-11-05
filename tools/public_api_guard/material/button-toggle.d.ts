@@ -28,6 +28,8 @@ export declare class MatButtonToggle extends _MatButtonToggleMixinBase implement
     static ngAcceptInputType_disabled: boolean | string;
     static ngAcceptInputType_multiple: boolean | string;
     static ngAcceptInputType_vertical: boolean | string;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatButtonToggle, "mat-button-toggle", ["matButtonToggle"], { 'disableRipple': "disableRipple", 'ariaLabel': "aria-label", 'ariaLabelledby': "aria-labelledby", 'id': "id", 'name': "name", 'value': "value", 'tabIndex': "tabIndex", 'appearance': "appearance", 'checked': "checked", 'disabled': "disabled" }, { 'change': "change" }, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatButtonToggle>;
 }
 
 export declare type MatButtonToggleAppearance = 'legacy' | 'standard';
@@ -71,12 +73,16 @@ export declare class MatButtonToggleGroup implements ControlValueAccessor, OnIni
     static ngAcceptInputType_disabled: boolean | string;
     static ngAcceptInputType_multiple: boolean | string;
     static ngAcceptInputType_vertical: boolean | string;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatButtonToggleGroup, "mat-button-toggle-group", ["matButtonToggleGroup"], { 'appearance': "appearance", 'name': "name", 'vertical': "vertical", 'value': "value", 'multiple': "multiple", 'disabled': "disabled" }, { 'valueChange': "valueChange", 'change': "change" }, ["_buttonToggles"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatButtonToggleGroup>;
 }
 
 export declare class MatButtonToggleGroupMultiple {
 }
 
 export declare class MatButtonToggleModule {
+    static ɵinj: i0.ɵɵInjectorDef<MatButtonToggleModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatButtonToggleModule, [typeof i1.MatButtonToggleGroup, typeof i1.MatButtonToggle], [typeof i2.MatCommonModule, typeof i2.MatRippleModule], [typeof i2.MatCommonModule, typeof i1.MatButtonToggleGroup, typeof i1.MatButtonToggle]>;
 }
 
 export declare type ToggleType = 'checkbox' | 'radio';
