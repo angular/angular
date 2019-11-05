@@ -154,10 +154,9 @@ function stylingProp(
   let updated = false;
 
   const lView = getLView();
+  const firstUpdatePass = lView[TVIEW].firstUpdatePass;
   const tNode = getTNode(elementIndex, lView);
-  const tView = lView[TVIEW];
   const native = getNativeByTNode(tNode, lView) as RElement;
-  const firstUpdatePass = tView.firstUpdatePass;
   const context = isClassBased ? getClassesContext(tNode) : getStylesContext(tNode);
   const sanitizer = isClassBased ? null : getCurrentStyleSanitizer();
 
@@ -237,7 +236,7 @@ export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | nu
   const index = getSelectedIndex();
   const lView = getLView();
   const tNode = getTNode(index, lView);
-  const tView = lView[TVIEW];
+  const firstUpdatePass = lView[TVIEW].firstUpdatePass;
   const context = getStylesContext(tNode);
   const hasDirectiveInput = hasStyleInput(tNode);
 
@@ -251,13 +250,12 @@ export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | nu
   // there should not be a situation where a directive host bindings function
   // evaluates the inputs (this should only happen in the template function)
   if (!isHostStyling() && hasDirectiveInput && styles !== NO_CHANGE) {
-    updateDirectiveInputValue(
-        context, lView, tNode, bindingIndex, styles, false, tView.firstUpdatePass);
+    updateDirectiveInputValue(context, lView, tNode, bindingIndex, styles, false, firstUpdatePass);
     styles = NO_CHANGE;
   }
 
   stylingMap(
-      context, tNode, tView.firstUpdatePass, lView, bindingIndex, styles, false, hasDirectiveInput);
+      context, tNode, firstUpdatePass, lView, bindingIndex, styles, false, hasDirectiveInput);
 }
 
 /**
@@ -292,7 +290,7 @@ export function classMapInternal(
     elementIndex: number, classes: {[className: string]: any} | NO_CHANGE | string | null): void {
   const lView = getLView();
   const tNode = getTNode(elementIndex, lView);
-  const tView = lView[TVIEW];
+  const firstUpdatePass = lView[TVIEW].firstUpdatePass;
   const context = getClassesContext(tNode);
   const hasDirectiveInput = hasClassInput(tNode);
 
@@ -306,13 +304,12 @@ export function classMapInternal(
   // there should not be a situation where a directive host bindings function
   // evaluates the inputs (this should only happen in the template function)
   if (!isHostStyling() && hasDirectiveInput && classes !== NO_CHANGE) {
-    updateDirectiveInputValue(
-        context, lView, tNode, bindingIndex, classes, true, tView.firstUpdatePass);
+    updateDirectiveInputValue(context, lView, tNode, bindingIndex, classes, true, firstUpdatePass);
     classes = NO_CHANGE;
   }
 
   stylingMap(
-      context, tNode, tView.firstUpdatePass, lView, bindingIndex, classes, true, hasDirectiveInput);
+      context, tNode, firstUpdatePass, lView, bindingIndex, classes, true, hasDirectiveInput);
 }
 
 /**
