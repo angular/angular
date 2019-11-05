@@ -1011,9 +1011,13 @@ function i18nAttributesFirstPass(lView: LView, tView: TView, index: number, valu
                 generateBindingUpdateOpCodes(value, previousElementIndex, attrName), updateOpCodes);
           }
         } else {
-          elementAttributeInternal(previousElementIndex, attrName, value, lView);
-          // Check if that attribute is a directive input
           const tNode = getTNode(previousElementIndex, lView);
+          // Set attributes for Elements only, for other types (like ElementContainer),
+          // only set inputs below
+          if (tNode.type === TNodeType.Element) {
+            elementAttributeInternal(previousElementIndex, attrName, value, lView);
+          }
+          // Check if that attribute is a directive input
           const dataValue = tNode.inputs && tNode.inputs[attrName];
           if (dataValue) {
             setInputsForProperty(lView, dataValue, value);
