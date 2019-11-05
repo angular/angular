@@ -3419,7 +3419,7 @@ describe('i18n support in the template compiler', () => {
       expect(errorThrown.ngParseErrors.length).toBe(1);
       const msg = errorThrown.ngParseErrors[0].toString();
       expect(msg).toContain(
-          'Could not mark an element as translatable inside of a translatable section');
+          'Cannot mark an element as translatable inside of a translatable section. Please remove the nested i18n marker.');
       expect(msg).toContain(expectedErrorText);
       expect(msg).toMatch(/app\/spec\.ts\@\d+\:\d+/);
     };

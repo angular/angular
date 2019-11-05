@@ -90,7 +90,7 @@ class HtmlAstToIvyAst implements html.Visitor {
     if (isI18nRootElement) {
       if (this.inI18nBlock) {
         this.reportError(
-            'Could not mark an element as translatable inside of a translatable section',
+            'Cannot mark an element as translatable inside of a translatable section. Please remove the nested i18n marker.',
             element.sourceSpan);
       }
       this.inI18nBlock = true;
