@@ -438,16 +438,57 @@ export function flushStyling(
 }
 
 /**
- * Registers all static styling values on to the context.
+ * Registers all static styling values into the context as default values.
  *
- * Directives and component host bindings may include static class/style values which are
- * bound to the host element. When this happens, the styling context will need to be informed
- * so it can use these static styling values as defaults when a matching binding is falsy.
- * These initial styling values are read from the initial styling values slot within the
- * provided `TStylingContext` (which is an instance of a `StylingMapArray`). This inner map will
- * be updated each time a host binding applies its static styling values (via `elementHostAttrs`)
- * so these values are only read at this point because this is the very last point before the
- * first style/class values are flushed to the element.
+ * Static styles are stored on the `tNode.styles` and `tNode.classes`
+ * properties as instances of `StylingMapArray`. When an instance of
+ * `TStylingContext` is assigned to `tNode.styles` and `tNode.classes`
+ * then the existing initial styling values are copied into the the
+ * `InitialStylingValuePosition` slot.
+ *
+ * Because all static styles/classes are collected and registered on
+ * the initial styling array each time a directive is instantiated,
+ * the context may not yet know about the static values. When this
+ * function is called it will copy over all the static style/class
+ * values from the initial styling array into the context as default
+ * values for each of the matching entries in the context.
+ *
+ * Let's imagine the following example:
+ *
+ * ```html
+ * <div style="color:red"
+ *     [style.color]="myColor"
+ *     dir-that-has-static-height>
+ *   ...
+ * </div>
+ * ```
+ *
+ * When this gets compiled the `tNode.styles` value will look like so:
+ *
+ * ```typescript
+ * tNode.styles = [
+ *   // ...
+ *   // initial styles
+ *   ['color:red; height:200px', 'color', 'red', 'height', '200px'],
+ *
+ *   0, 0b1, 0b0, 'color', 20, null, // [style.color] binding
+ * ]
+ * ```
+ *
+ * After this function is called it will balance out the context with
+ * the static `color` and `height` values and set them as defaults within
+ * the context:
+ *
+ * ```typescript
+ * tNode.styles = [
+ *   // ...
+ *   // initial styles
+ *   ['color:red; height:200px', 'color', 'red', 'height', '200px'],
+ *
+ *   0, 0b1, 0b0, 'color', 20, 'red',
+ *   0, 0b0, 0b0, 'height', 0, '200px',
+ * ]
+ * ```
  */
 function syncContextInitialStyling(context: TStylingContext): void {
   // the TStylingContext always has initial style/class values which are
