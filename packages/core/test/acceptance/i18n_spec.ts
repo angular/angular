@@ -337,6 +337,11 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(fixture.nativeElement.innerHTML).toEqual(`texte<!--ng-container-->`);
     });
 
+    fit('should support i18n attributes on ng-container', () => {
+      loadTranslations({[computeMsgId('attr-value', 'meaning')]: 'ATTR-VALUE'});
+      expect(() => initWithTemplate(AppComp, `<ng-container i18n-attr="meaning|description" attr="attr-value">text</ng-container>`)).not.toThrow();
+    });
+
     it('should handle single translation message within ng-template', () => {
       loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
       const fixture =
