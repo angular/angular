@@ -2,9 +2,10 @@ import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatProgressSpinnerModule, ProgressSpinnerMode} from '@angular/material/progress-spinner';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatProgressSpinnerHarness} from './progress-spinner-harness';
 
+/** Runs the shared unit tests for the progress spinner test harness. */
 export function runHarnessTests(progressSpinnerModule: typeof MatProgressSpinnerModule,
                                 progressSpinnerHarness: typeof MatProgressSpinnerHarness) {
   let fixture: ComponentFixture<ProgressSpinnerHarnessTest>;
@@ -13,7 +14,7 @@ export function runHarnessTests(progressSpinnerModule: typeof MatProgressSpinner
   beforeEach(async () => {
     await TestBed
         .configureTestingModule({
-          imports: [MatProgressSpinnerModule],
+          imports: [progressSpinnerModule],
           declarations: [ProgressSpinnerHarnessTest],
         })
         .compileComponents();
@@ -37,8 +38,8 @@ export function runHarnessTests(progressSpinnerModule: typeof MatProgressSpinner
 
   it('should get the mode', async () => {
     const [determinate, indeterminate] = await loader.getAllHarnesses(progressSpinnerHarness);
-    expect<ProgressSpinnerMode>(await determinate.getMode()).toBe('determinate');
-    expect<ProgressSpinnerMode>(await indeterminate.getMode()).toBe('indeterminate');
+    expect(await determinate.getMode()).toBe('determinate');
+    expect(await indeterminate.getMode()).toBe('indeterminate');
   });
 }
 

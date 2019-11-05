@@ -7,7 +7,7 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {MatDialogHarness} from './dialog-harness';
 
-/** Shared tests to run on both the original and MDC-based radio-button's. */
+/** Shared tests to run on both the original and MDC-based dialog's. */
 export function runHarnessTests(
     dialogModule: typeof MatDialogModule, dialogHarness: typeof MatDialogHarness) {
   let fixture: ComponentFixture<DialogHarnessTest>;
@@ -17,7 +17,7 @@ export function runHarnessTests(
   beforeEach(async () => {
     await TestBed
         .configureTestingModule({
-          imports: [MatDialogModule, NoopAnimationsModule],
+          imports: [dialogModule, NoopAnimationsModule],
           declarations: [DialogHarnessTest],
         })
         .compileComponents();
