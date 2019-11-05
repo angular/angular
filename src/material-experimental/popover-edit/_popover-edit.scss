@@ -105,8 +105,10 @@
     mat-form-field {
       display: block;
 
+      // Clear the top padding, because we don't have a label on it and the reserved space
+      // can throw off the alignment when there isn't a header (see discussion in #17600).
       &:not(.mat-form-field-has-label) .mat-form-field-infix {
-        padding: 0;
+        padding-top: 0;
       }
     }
   }
