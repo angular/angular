@@ -35,7 +35,6 @@ describe('Renderer to Renderer2 migration', () => {
     }));
     // We need to declare the Angular symbols we're testing for, otherwise type checking won't work.
     writeFile('/node_modules/@angular/core/index.d.ts', `
-      export declare abstract class Renderer {}
       export declare function forwardRef(fn: () => any): any {}
     `);
 
