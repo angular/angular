@@ -364,26 +364,26 @@ selectors. For example, `<table mat-table>` becomes `<mat-table>`; `<tr mat-row`
 ```html
 <mat-table [dataSource]="dataSource">
   <!-- User name Definition -->
-  <ng-container cdkColumnDef="username">
-    <mat-header-cell *cdkHeaderCellDef> User name </mat-header-cell>
-    <mat-cell *cdkCellDef="let row"> {{row.username}} </mat-cell>
+  <ng-container matColumnDef="username">
+    <mat-header-cell *matHeaderCellDef> User name </mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{row.username}} </mat-cell>
   </ng-container>
 
   <!-- Age Definition -->
-  <ng-container cdkColumnDef="age">
-    <mat-header-cell *cdkHeaderCellDef> Age </mat-header-cell>
-    <mat-cell *cdkCellDef="let row"> {{row.age}} </mat-cell>
+  <ng-container matColumnDef="age">
+    <mat-header-cell *matHeaderCellDef> Age </mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{row.age}} </mat-cell>
   </ng-container>
 
   <!-- Title Definition -->
-  <ng-container cdkColumnDef="title">
-    <mat-header-cell *cdkHeaderCellDef> Title </mat-header-cell>
-    <mat-cell *cdkCellDef="let row"> {{row.title}} </mat-cell>
+  <ng-container matColumnDef="title">
+    <mat-header-cell *matHeaderCellDef> Title </mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{row.title}} </mat-cell>
   </ng-container>
 
   <!-- Header and Row Declarations -->
-  <mat-header-row *cdkHeaderRowDef="['username', 'age', 'title']"></mat-header-row>
-  <mat-row *cdkRowDef="let row; columns: ['username', 'age', 'title']"></mat-row>
+  <mat-header-row *matHeaderRowDef="['username', 'age', 'title']"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: ['username', 'age', 'title']"></mat-row>
 </mat-table>
 ```
 
