@@ -30,11 +30,11 @@
     "@bazel/typescript": "0.39.1",
     "@types/jasmine": "2.8.8",
     "http-server": "^0.11.1",
-    "rollup": "~1.25.0",
+    "rollup": "^1.21.4",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
-    "terser": "^4.3.9",
+    "terser": "4.3.1",
     "typescript": "3.6.4"
   },
   "scripts": {
