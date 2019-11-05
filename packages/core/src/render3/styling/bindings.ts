@@ -463,7 +463,9 @@ export function flushStyling(
  * </div>
  * ```
  *
- * When this gets compiled the `tNode.styles` value will look like so:
+ * When the code above is processed, the underlying element/styling
+ * instructions will create an instance of `TStylingContext` for
+ * the `tNode.styles` property. Here's what that looks like:
  *
  * ```typescript
  * tNode.styles = [

@@ -256,7 +256,8 @@ export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | nu
     styles = NO_CHANGE;
   }
 
-  stylingMap(context, tNode, tView, lView, bindingIndex, styles, false, hasDirectiveInput);
+  stylingMap(
+      context, tNode, tView.firstUpdatePass, lView, bindingIndex, styles, false, hasDirectiveInput);
 }
 
 /**
@@ -310,7 +311,8 @@ export function classMapInternal(
     classes = NO_CHANGE;
   }
 
-  stylingMap(context, tNode, tView, lView, bindingIndex, classes, true, hasDirectiveInput);
+  stylingMap(
+      context, tNode, tView.firstUpdatePass, lView, bindingIndex, classes, true, hasDirectiveInput);
 }
 
 /**
@@ -320,15 +322,14 @@ export function classMapInternal(
  * `[class]` bindings in Angular.
  */
 function stylingMap(
-    context: TStylingContext, tNode: TNode, tView: TView, lView: LView, bindingIndex: number,
-    value: {[key: string]: any} | string | null, isClassBased: boolean,
+    context: TStylingContext, tNode: TNode, firstUpdatePass: boolean, lView: LView,
+    bindingIndex: number, value: {[key: string]: any} | string | null, isClassBased: boolean,
     hasDirectiveInput: boolean): void {
   const directiveIndex = getActiveDirectiveId();
   const native = getNativeByTNode(tNode, lView) as RElement;
   const oldValue = getValue(lView, bindingIndex);
   const sanitizer = getCurrentStyleSanitizer();
   const valueHasChanged = hasValueChanged(oldValue, value);
-  const firstUpdatePass = tView.firstUpdatePass;
 
   // [style] and [class] bindings do not use `bind()` and will therefore
   // manage accessing and updating the new value in the lView directly.

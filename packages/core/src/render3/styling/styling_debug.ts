@@ -494,6 +494,10 @@ function buildConfig(context: TStylingContext) {
   const hasCollisions = hasConfig(context, TStylingConfig.HasCollisions);
   const hasTemplateBindings = hasConfig(context, TStylingConfig.HasTemplateBindings);
   const hasHostBindings = hasConfig(context, TStylingConfig.HasHostBindings);
+
+  // `firstTemplatePass` here is false because the context has already been constructed
+  // directly within the behavior of the debugging tools (outside of style/class debugging,
+  // the context is constructed during the first template pass).
   const allowDirectStyling = _allowDirectStyling(context, false);
   return {
       hasMapBindings,       //

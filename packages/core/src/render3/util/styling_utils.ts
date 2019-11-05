@@ -74,8 +74,10 @@ export function hasConfig(context: TStylingContext, flag: TStylingConfig) {
  * Determines whether or not to apply styles/classes directly or via context resolution.
  *
  * There are three cases that are matched here:
- * 1. there are no directives present AND ngDevMode is falsy
- * 2. context is locked for template or host bindings (depending on `hostBindingsMode`)
+ * 1. there are no directives present AND `ngDevMode` is falsy
+ * 2. the `firstUpdatePass` has not already run (which means that
+ *    there are more bindings to register and, therefore, direct
+ *    style/class application is not yet possible)
  * 3. There are no collisions (i.e. properties with more than one binding) across multiple
  *    sources (i.e. template + directive, directive + directive, directive + component)
  */
