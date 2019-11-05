@@ -1268,6 +1268,33 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(comp.attributes['messagetext']).toBe('Bonjour');
       expect(comp.attributes['ng-reflect-message-text']).toBe('Bonjour');
     });
+
+    it('with <ng-container> elements', () => {
+      loadTranslations({[computeMsgId('Hello', 'meaning')]: 'Bonjour'});
+
+      @Directive({selector: '[mydir]'})
+      class Dir {
+        @Input() mydir: string = '';
+      }
+
+      @Component({
+        selector: 'my-cmp',
+        template: `
+          <ng-container i18n-mydir="meaning|description" mydir="Hello"></ng-container>
+        `,
+      })
+      class Cmp {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Cmp, Dir],
+      });
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+
+      const dir = fixture.debugElement.childNodes[0].injector.get(Dir);
+      expect(dir.mydir).toEqual('Bonjour');
+    });
   });
 
   it('should work with directives and host bindings', () => {
