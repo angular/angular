@@ -10,7 +10,8 @@ import {relative} from 'path';
 import * as ts from 'typescript';
 
 export function createMigrationCompilerHost(
-    tree: Tree, options: ts.CompilerOptions, basePath: string): ts.CompilerHost {
+    tree: Tree, options: ts.CompilerOptions, basePath: string,
+    fakeRead?: (fileName: string) => string | null): ts.CompilerHost {
   const host = ts.createCompilerHost(options, true);
 
   // We need to overwrite the host "readFile" method, as we want the TypeScript
@@ -18,7 +19,9 @@ export function createMigrationCompilerHost(
   // if we run multiple migrations we might have intersecting changes and
   // source files.
   host.readFile = fileName => {
-    const buffer = tree.read(relative(basePath, fileName));
+    const treeRelativePath = relative(basePath, fileName);
+    const fakeOutput = fakeRead ? fakeRead(treeRelativePath) : null;
+    const buffer = fakeOutput === null ? tree.read(treeRelativePath) : fakeOutput;
     // Strip BOM as otherwise TSC methods (Ex: getWidth) will return an offset which
     // which breaks the CLI UpdateRecorder.
     // See: https://github.com/angular/angular/pull/30719
