@@ -8,7 +8,7 @@ export const cdkExperimentalPackage = new BuildPackage('cdk-experimental', [cdkP
 export const materialExperimentalPackage = new BuildPackage('material-experimental',
     [cdkPackage, cdkExperimentalPackage, materialPackage]);
 export const momentAdapterPackage = new BuildPackage('material-moment-adapter', [materialPackage]);
-export const examplesPackage = new BuildPackage('material-examples', [
+export const examplesPackage = new BuildPackage('components-examples', [
   cdkPackage,
   cdkExperimentalPackage,
   materialPackage,

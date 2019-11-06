@@ -12,7 +12,7 @@
       "@angular/cdk-experimental/*": ["../cdk-experimental/*"],
       "@angular/cdk-experimental": ["../cdk-experimental/"],
       "@angular/material-moment-adapter": ["../material-moment-adapter/"],
-      "@angular/material-examples": ["../material-examples/"]
+      "@angular/components-examples": ["../components-examples/"]
     }
   },
   "include": ["./**/*.ts"]

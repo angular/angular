@@ -7,13 +7,13 @@
  */
 
 import {NgModule} from '@angular/core';
-import {FormsModule} from '@angular/forms';
 import {
   CdkPopoverEditExamplesModule
-} from '@angular/material-examples/cdk-experimental/popover-edit/module';
+} from '@angular/components-examples/cdk-experimental/popover-edit';
 import {
   PopoverEditExamplesModule
-} from '@angular/material-examples/material-experimental/popover-edit/module';
+} from '@angular/components-examples/material-experimental/popover-edit';
+import {FormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {PopoverEditDemo} from './popover-edit-demo';
 

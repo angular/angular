@@ -24,7 +24,6 @@ createPackageBuildTasks(googleMapsPackage);
 import './tasks/ci';
 import './tasks/clean';
 import './tasks/default';
-import './tasks/example-module';
 import './tasks/material-release';
 import './tasks/unit-test';
 

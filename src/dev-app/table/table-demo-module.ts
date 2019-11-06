@@ -7,9 +7,9 @@
  */
 
 import {NgModule} from '@angular/core';
+import {CdkTableExamplesModule} from '@angular/components-examples/cdk/table';
+import {TableExamplesModule} from '@angular/components-examples/material/table';
 import {RouterModule} from '@angular/router';
-import {CdkTableExamplesModule} from '@angular/material-examples/cdk/table/module';
-import {TableExamplesModule} from '@angular/material-examples/material/table/module';
 import {TableDemo} from './table-demo';
 
 @NgModule({

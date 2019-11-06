@@ -7,8 +7,8 @@
  */
 
 import {NgModule} from '@angular/core';
+import {CoreExamplesModule} from '@angular/components-examples/material/core';
 import {FormsModule} from '@angular/forms';
-import {CoreExamplesModule} from '@angular/material-examples/material/core/module';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatIconModule} from '@angular/material/icon';

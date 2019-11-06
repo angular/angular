@@ -32,9 +32,9 @@ var packagesConfig = {};
 // Configure all primary entry-points.
 configureEntryPoint('cdk');
 configureEntryPoint('cdk-experimental');
+configureEntryPoint('components-examples');
 configureEntryPoint('material');
 configureEntryPoint('material-experimental');
-configureEntryPoint('material-examples');
 configureEntryPoint('material-moment-adapter');
 
 // Configure all secondary entry-points.
@@ -56,7 +56,7 @@ configureEntryPoint('youtube-player');
 /** Configures the specified package, its entry-point and its examples. */
 function configureEntryPoint(pkgName, entryPoint) {
   var name = entryPoint ? pkgName + '/' + entryPoint : pkgName;
-  var examplesName = 'material-examples/' + name;
+  var examplesName = 'components-examples/' + name;
 
   pathMapping['@angular/' + name] = srcRunfilePath + '/' + name;
   pathMapping['@angular/' + examplesName] = srcRunfilePath + '/' + examplesName;

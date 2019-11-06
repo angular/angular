@@ -7,9 +7,9 @@ ng_module(
     srcs = glob(["**/*.ts"]),
     assets = ["table-demo.html"],
     deps = [
+        "//src/components-examples/cdk/table",
+        "//src/components-examples/material/table",
         "//src/dev-app/example",
-        "//src/material-examples/cdk/table",
-        "//src/material-examples/material/table",
         "@npm//@angular/router",
     ],
 )

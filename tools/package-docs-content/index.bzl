@@ -5,7 +5,7 @@
 
 def _package_docs_content(ctx):
     # Directory that will contain all grouped input files. This directory will be created
-    # relatively to the current target package. (e.g. "bin/src/material-examples/docs-content")
+    # relatively to the current target package. (e.g. "bin/src/components-examples/docs-content")
     output_dir = ctx.attr.name
 
     # Arguments that will be passed to the packager executable.

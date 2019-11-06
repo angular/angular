@@ -7,8 +7,8 @@ ng_module(
     srcs = glob(["**/*.ts"]),
     assets = ["tooltip-demo.html"],
     deps = [
+        "//src/components-examples/material/tooltip",
         "//src/dev-app/example",
-        "//src/material-examples/material/tooltip",
         "@npm//@angular/router",
     ],
 )

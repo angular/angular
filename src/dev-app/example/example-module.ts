@@ -9,14 +9,14 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatExpansionModule} from '@angular/material/expansion';
-import {ExampleModule as ExampleDataModule} from '@angular/material-examples';
+import {ExampleModule as DocsExampleModule} from '@angular/components-examples';
 import {Example} from './example';
 
 
 import {ExampleList} from './example-list';
 
 @NgModule({
-  imports: [CommonModule, ExampleDataModule, MatExpansionModule],
+  imports: [CommonModule, MatExpansionModule, DocsExampleModule],
   declarations: [Example, ExampleList],
   exports: [Example, ExampleList]
 })

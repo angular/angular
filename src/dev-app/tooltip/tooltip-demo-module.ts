@@ -7,8 +7,8 @@
  */
 
 import {NgModule} from '@angular/core';
+import {TooltipExamplesModule} from '@angular/components-examples/material/tooltip';
 import {RouterModule} from '@angular/router';
-import {TooltipExamplesModule} from '@angular/material-examples/material/tooltip/module';
 import {TooltipDemo} from './tooltip-demo';
 
 @NgModule({

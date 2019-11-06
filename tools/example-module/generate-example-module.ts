@@ -27,7 +27,7 @@ interface AnalyzedExamples {
 /** Creates an import declaration for the given symbols from the specified file. */
 function createImportDeclaration(relativePath: string, symbols: string[]): string {
   const posixRelativePath = relativePath.replace(/\\/g, '/').replace('.ts', '');
-  return `import {${symbols.join(',')}} from '@angular/material-examples/${posixRelativePath}';`;
+  return `import {${symbols.join(',')}} from '@angular/components-examples/${posixRelativePath}';`;
 }
 
 /** Inlines the example module template with the specified parsed data. */
@@ -88,7 +88,7 @@ function analyzeExamples(sourceFiles: string[], baseFile: string): AnalyzedExamp
     const relativePath = path.relative(baseFile, sourceFile);
 
     // Collect all individual example modules.
-    if (path.basename(sourceFile) === 'module.ts') {
+    if (path.basename(sourceFile) === 'index.ts') {
       exampleModules.push(...parseExampleModuleFile(sourceFile).map(name => ({
         name: name,
         packagePath: path.dirname(relativePath),

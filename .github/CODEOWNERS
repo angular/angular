@@ -121,7 +121,7 @@
 
 # Docs examples & guides
 /guides/**                                         @jelbourn
-/src/material-examples/**                          @jelbourn
+/src/components-examples/**                        @jelbourn
 
 # Accessibility demos
 /src/a11y-demo/**/*                                @jelbourn

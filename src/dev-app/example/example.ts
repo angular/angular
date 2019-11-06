@@ -8,7 +8,7 @@
 
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Component, ElementRef, Injector, Input, OnInit} from '@angular/core';
-import {EXAMPLE_COMPONENTS} from '@angular/material-examples';
+import {EXAMPLE_COMPONENTS} from '@angular/components-examples';
 import {createCustomElement} from '@angular/elements';
 
 @Component({

@@ -1,0 +1,132 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools/highlight-files:index.bzl", "highlight_files")
+load("//tools/package-docs-content:index.bzl", "package_docs_content")
+
+EXAMPLE_PACKAGES = [
+    # TODO(devversion): try to have for each entry-point a bazel package so that
+    # we can automate this using the "package.bzl" variables. Currently generated
+    # with "bazel query 'kind("ng_module", //src/components-examples/...:*)' --output="label"
+    "//src/components-examples/material/tree",
+    "//src/components-examples/material/tooltip",
+    "//src/components-examples/material/toolbar",
+    "//src/components-examples/material/tabs",
+    "//src/components-examples/material/table",
+    "//src/components-examples/material/stepper",
+    "//src/components-examples/material/sort",
+    "//src/components-examples/material/snack-bar",
+    "//src/components-examples/material/slider",
+    "//src/components-examples/material/slide-toggle",
+    "//src/components-examples/material/sidenav",
+    "//src/components-examples/material/select",
+    "//src/components-examples/material/radio",
+    "//src/components-examples/material/progress-spinner",
+    "//src/components-examples/material/progress-bar",
+    "//src/components-examples/material/paginator",
+    "//src/components-examples/material/menu",
+    "//src/components-examples/material/list",
+    "//src/components-examples/material/input",
+    "//src/components-examples/material/icon",
+    "//src/components-examples/material/grid-list",
+    "//src/components-examples/material/form-field",
+    "//src/components-examples/material/expansion",
+    "//src/components-examples/material/divider",
+    "//src/components-examples/material/dialog",
+    "//src/components-examples/material/datepicker",
+    "//src/components-examples/material/core",
+    "//src/components-examples/material/chips",
+    "//src/components-examples/material/checkbox",
+    "//src/components-examples/material/card",
+    "//src/components-examples/material/button-toggle",
+    "//src/components-examples/material/button",
+    "//src/components-examples/material/bottom-sheet",
+    "//src/components-examples/material/badge",
+    "//src/components-examples/material/autocomplete",
+    "//src/components-examples/material-experimental/popover-edit",
+    "//src/components-examples/cdk/tree",
+    "//src/components-examples/cdk/text-field",
+    "//src/components-examples/cdk/table",
+    "//src/components-examples/cdk/stepper",
+    "//src/components-examples/cdk/scrolling",
+    "//src/components-examples/cdk/portal",
+    "//src/components-examples/cdk/platform",
+    "//src/components-examples/cdk/drag-drop",
+    "//src/components-examples/cdk/clipboard",
+    "//src/components-examples/cdk/a11y",
+    "//src/components-examples/cdk-experimental/popover-edit",
+]
+
+ng_module(
+    name = "components-examples",
+    srcs = glob(["*.ts"]) + [":example-module.ts"],
+    module_name = "@angular/components-examples",
+    deps = EXAMPLE_PACKAGES,
+)
+
+filegroup(
+    name = "example-source-files",
+    srcs = ["%s:source-files" % pkg for pkg in EXAMPLE_PACKAGES],
+)
+
+highlight_files(
+    name = "highlighted-source-files",
+    srcs = [":example-source-files"],
+    tags = ["docs-package"],
+)
+
+package_docs_content(
+    name = "docs-content",
+    srcs = {
+        # We want to package the guides in to the docs content. These will be displayed
+        # in the documentation.
+        "//guides": "guides",
+
+        # Package the overviews for "@angular/material" and "@angular/cdk" into the docs content
+        "//src/cdk:overviews": "overviews/cdk",
+        "//src/material:overviews": "overviews/material",
+
+        # Package the API docs for the Material and CDK package into the docs-content
+        "//src:api-docs": "api-docs",
+
+        # In order to be able to run examples in StackBlitz, we also want to package the
+        # plain source files into the docs-content.
+        ":example-source-files": "examples-source",
+
+        # For the live-examples in our docs, we want to package the highlighted files
+        # into the docs content. These will be used to show the source code for examples.
+        ":highlighted-source-files": "examples-highlighted",
+    },
+    tags = ["docs-package"],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = ["package.json"],
+    data = [":docs-content"],
+    entry_point = ":public-api.ts",
+    tags = ["docs-package"],
+    deps = [":components-examples"] + EXAMPLE_PACKAGES,
+)
+
+genrule(
+    name = "example-module",
+    srcs = [":example-source-files"],
+    outs = [
+        "example-module.ts",
+        "_example_module.MF",
+    ],
+    cmd = """
+      # Create source file manifest
+      echo "$(locations //src/components-examples:example-source-files)" \
+          > $(location _example_module.MF)
+
+      # Run the bazel entry-point for generating the example module.
+      ./$(location //tools/example-module:bazel-bin) \
+          "$(location _example_module.MF)" \
+          "$(location example-module.ts)" \
+          "$$PWD/src/components-examples"
+    """,
+    output_to_bindir = True,
+    tools = ["//tools/example-module:bazel-bin"],
+)

@@ -7,9 +7,9 @@
  */
 
 import {NgModule} from '@angular/core';
+import {TabGroupExamplesModule} from '@angular/components-examples/material/tabs';
 import {MatTabsModule} from '@angular/material/tabs';
 import {RouterModule} from '@angular/router';
-import {TabGroupExamplesModule} from '@angular/material-examples/material/tabs/module';
 import {TabsDemo} from './tabs-demo';
 
 @NgModule({

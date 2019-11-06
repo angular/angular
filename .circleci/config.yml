@@ -356,7 +356,7 @@ jobs:
 
       # TODO(devversion): Ideally the "build_release_packages" job should build all packages with
       # Bazel, but for now we mix up the Gulp and bazel setup, so we need to build the package here.
-      - run: bazel build src/material-examples:npm_package --config=release
+      - run: bazel build src/components-examples:npm_package --config=release
 
       - run: ./scripts/circleci/publish-snapshots.sh
 

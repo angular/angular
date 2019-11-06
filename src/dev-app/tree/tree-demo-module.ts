@@ -8,6 +8,8 @@
 import {CdkTreeModule} from '@angular/cdk/tree';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
+import {CdkTreeExamplesModule} from '@angular/components-examples/cdk/tree';
+import {TreeExamplesModule} from '@angular/components-examples/material/tree';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
@@ -18,8 +20,6 @@ import {MatInputModule} from '@angular/material/input';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatTreeModule} from '@angular/material/tree';
 import {RouterModule} from '@angular/router';
-import {CdkTreeExamplesModule} from '@angular/material-examples/cdk/tree/module';
-import {TreeExamplesModule} from '@angular/material-examples/material/tree/module';
 
 import {ChecklistNestedTreeDemo} from './checklist-tree-demo/checklist-nested-tree-demo';
 import {ChecklistTreeDemo} from './checklist-tree-demo/checklist-tree-demo';

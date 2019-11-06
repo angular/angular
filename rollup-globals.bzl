@@ -105,13 +105,13 @@ create_globals(
 # Rollup globals the examples package. Since individual examples are
 # grouped by package and component, the primary entry-point imports
 # from entry-points which should be treated as external imports.
-create_globals("material-examples/cdk", CDK_ENTRYPOINTS)
-create_globals("material-examples/cdk-experimental", CDK_EXPERIMENTAL_ENTRYPOINTS)
+create_globals("components-examples/cdk", CDK_ENTRYPOINTS)
+create_globals("components-examples/cdk-experimental", CDK_EXPERIMENTAL_ENTRYPOINTS)
 create_globals(
-    "material-examples/material",
+    "components-examples/material",
     MATERIAL_ENTRYPOINTS + MATERIAL_TESTING_ENTRYPOINTS,
 )
 create_globals(
-    "material-examples/material-experimental",
+    "components-examples/material-experimental",
     MATERIAL_EXPERIMENTAL_ENTRYPOINTS + MATERIAL_EXPERIMENTAL_TESTING_ENTRYPOINTS,
 )

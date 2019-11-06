@@ -8,7 +8,7 @@
 
 import {Component, Input} from '@angular/core';
 
-/** Loads an example component from `@angular/material-examples`. */
+/** Loads an example component from `@angular/components-examples`. */
 @Component({
   selector: 'example-list-viewer',
   template: `

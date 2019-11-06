@@ -6,9 +6,9 @@ ng_module(
     name = "popover-edit",
     srcs = glob(["**/*.ts"]),
     deps = [
+        "//src/components-examples/cdk-experimental/popover-edit",
+        "//src/components-examples/material-experimental/popover-edit",
         "//src/dev-app/example",
-        "//src/material-examples/cdk-experimental/popover-edit",
-        "//src/material-examples/material-experimental/popover-edit",
         "@npm//@angular/forms",
         "@npm//@angular/router",
     ],

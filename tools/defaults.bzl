@@ -60,10 +60,14 @@ def ng_module(
     if not tsconfig:
         tsconfig = _getDefaultTsConfig(testonly)
 
+    # We only generate a flat module if there is a "public-api.ts" file that
+    # will be picked up by NGC or ngtsc.
+    needs_flat_module = "public-api.ts" in srcs
+
     # Targets which have a module name and are not used for tests, should
     # have a default flat module out file named "index". This is necessary
     # as imports to that target should go through the flat module bundle.
-    if module_name and not flat_module_out_file and not testonly:
+    if needs_flat_module and module_name and not flat_module_out_file and not testonly:
         flat_module_out_file = "index"
 
     # Workaround to avoid a lot of changes to the Bazel build rules. Since

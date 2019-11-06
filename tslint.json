@@ -144,10 +144,10 @@
         "!host": "\\[class\\]"
       },
       "NgModule": "^(?!\\s*$).+"
-    }, "src/!(a11y-demo|e2e-app|material-examples|universal-app|dev-app)/**/!(*.spec).ts"],
+    }, "src/!(a11y-demo|e2e-app|components-examples|universal-app|dev-app)/**/!(*.spec).ts"],
     "require-license-banner": [
       true,
-      "src/!(a11y-demo|e2e-app|material-examples|universal-app)/**/!(*.spec).ts"
+      "src/!(a11y-demo|e2e-app|components-examples|universal-app)/**/!(*.spec).ts"
     ],
     "missing-rollup-globals": [
       true,
