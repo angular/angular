@@ -89,17 +89,18 @@ export class DecorationAnalyzer {
         this.scopeRegistry, this.scopeRegistry, this.isCore, this.resourceManager, this.rootDirs,
         /* defaultPreserveWhitespaces */ false,
         /* i18nUseExternalIds */ true, /* i18nLegacyMessageIdFormat */ '', this.moduleResolver,
-        this.cycleAnalyzer, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER),
+        this.cycleAnalyzer, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER,
+        /* annotateForClosureCompiler */ false),
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
-        this.isCore),
+        this.isCore, /* annotateForClosureCompiler */ false),
     new InjectableDecoratorHandler(
         this.reflectionHost, NOOP_DEFAULT_IMPORT_RECORDER, this.isCore,
         /* strictCtorDeps */ false),
     new NgModuleDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullMetaReader, this.fullRegistry,
         this.scopeRegistry, this.referencesRegistry, this.isCore, /* routeAnalyzer */ null,
-        this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER),
+        this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER, /* annotateForClosureCompiler */ false),
     new PipeDecoratorHandler(
         this.reflectionHost, this.evaluator, this.metaRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
         this.isCore),

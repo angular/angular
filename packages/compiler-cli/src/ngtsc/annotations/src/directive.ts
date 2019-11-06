@@ -19,7 +19,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFl
 
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies} from './util';
+import {findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 const FIELD_DECORATORS = [
@@ -40,7 +40,7 @@ export class DirectiveDecoratorHandler implements
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private defaultImportRecorder: DefaultImportRecorder,
-      private isCore: boolean) {}
+      private isCore: boolean, private annotateForClosureCompiler: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
@@ -76,7 +76,7 @@ export class DirectiveDecoratorHandler implements
       AnalysisOutput<DirectiveHandlerData> {
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.defaultImportRecorder, this.isCore,
-        flags);
+        flags, this.annotateForClosureCompiler);
     const analysis = directiveResult && directiveResult.metadata;
 
     if (analysis === undefined) {
@@ -102,7 +102,8 @@ export class DirectiveDecoratorHandler implements
       analysis: {
         meta: analysis,
         metadataStmt: generateSetClassMetadataCall(
-            node, this.reflector, this.defaultImportRecorder, this.isCore),
+            node, this.reflector, this.defaultImportRecorder, this.isCore,
+            this.annotateForClosureCompiler),
       }
     };
   }
@@ -136,7 +137,8 @@ export class DirectiveDecoratorHandler implements
 export function extractDirectiveMetadata(
     clazz: ClassDeclaration, decorator: Decorator | null, reflector: ReflectionHost,
     evaluator: PartialEvaluator, defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
-    flags: HandlerFlags, defaultSelector: string | null = null): {
+    flags: HandlerFlags, annotateForClosureCompiler: boolean,
+    defaultSelector: string | null = null): {
   decorator: Map<string, ts.Expression>,
   metadata: R3DirectiveMetadata,
 }|undefined {
@@ -230,8 +232,12 @@ export function extractDirectiveMetadata(
 
   const host = extractHostBindings(decoratedElements, evaluator, coreModule, directive);
 
-  const providers: Expression|null =
-      directive.has('providers') ? new WrappedNodeExpr(directive.get('providers') !) : null;
+  const providers: Expression|null = directive.has('providers') ?
+      new WrappedNodeExpr(
+          annotateForClosureCompiler ?
+              wrapFunctionExpressionsInParens(directive.get('providers') !) :
+              directive.get('providers') !) :
+      null;
 
   // Determine if `ngOnChanges` is a lifecycle hook defined on the component.
   const usesOnChanges = members.some(
