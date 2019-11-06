@@ -1,3 +1,45 @@
+<a name="9.0.0-rc.1"></a>
+# [9.0.0-rc.1](https://github.com/angular/angular/compare/9.0.0-rc.0...9.0.0-rc.1) (2019-11-06)
+
+
+### Bug Fixes
+
+* **compiler-cli:** attach the correct `viaModule` to namespace imports ([#33495](https://github.com/angular/angular/issues/33495)) ([1d141a8](https://github.com/angular/angular/commit/1d141a8)), closes [#32166](https://github.com/angular/angular/issues/32166)
+* **compiler-cli:** Pass SourceFile to getLeadingTriviaWidth ([#33588](https://github.com/angular/angular/issues/33588)) ([4b62ba9](https://github.com/angular/angular/commit/4b62ba9))
+* **compiler-cli:** remove unused CLI private exports ([#33242](https://github.com/angular/angular/issues/33242)) ([fc8eeca](https://github.com/angular/angular/commit/fc8eeca))
+* **core:** renderer-to-renderer2 migration not migrating methods ([#33571](https://github.com/angular/angular/issues/33571)) ([d751ca7](https://github.com/angular/angular/commit/d751ca7))
+* **core:** undecorated-classes-with-di migration should report config errors ([#33567](https://github.com/angular/angular/issues/33567)) ([c0ad47a](https://github.com/angular/angular/commit/c0ad47a))
+* **ivy:** avoid implicit any errors in event handlers ([#33550](https://github.com/angular/angular/issues/33550)) ([e2d7b25](https://github.com/angular/angular/commit/e2d7b25)), closes [#33528](https://github.com/angular/angular/issues/33528)
+* **ivy:** don't crash on an unknown localref target ([#33454](https://github.com/angular/angular/issues/33454)) ([9db59d0](https://github.com/angular/angular/commit/9db59d0))
+* **ivy:** don't crash on unknown pipe ([#33454](https://github.com/angular/angular/issues/33454)) ([38758d8](https://github.com/angular/angular/commit/38758d8))
+* **ivy:** more descriptive errors for nested i18n sections ([#33583](https://github.com/angular/angular/issues/33583)) ([d9a3892](https://github.com/angular/angular/commit/d9a3892))
+* **language-service:** Should not crash if expr ends unexpectedly ([#33524](https://github.com/angular/angular/issues/33524)) ([9ebac71](https://github.com/angular/angular/commit/9ebac71))
+* **ngcc:** handle new `__spreadArrays` tslib helper ([#33617](https://github.com/angular/angular/issues/33617)) ([d749dd3](https://github.com/angular/angular/commit/d749dd3)), closes [#33614](https://github.com/angular/angular/issues/33614)
+* **ngcc:** override `getInternalNameOfClass()` and `getAdjacentNameOfClass()` for ES5 ([#33533](https://github.com/angular/angular/issues/33533)) ([93a23b9](https://github.com/angular/angular/commit/93a23b9))
+* **ngcc:** render adjacent statements after static properties ([#33630](https://github.com/angular/angular/issues/33630)) ([fe12d0d](https://github.com/angular/angular/commit/fe12d0d)), closes [/github.com/angular/angular/pull/33337#issuecomment-545487737](https://github.com//github.com/angular/angular/pull/33337/issues/issuecomment-545487737)
+* **ngcc:** render new definitions using the inner name of the class ([#33533](https://github.com/angular/angular/issues/33533)) ([85298e3](https://github.com/angular/angular/commit/85298e3))
+* **service-worker:** ensure initialization before handling messages ([#32525](https://github.com/angular/angular/issues/32525)) ([72eba77](https://github.com/angular/angular/commit/72eba77)), closes [#25611](https://github.com/angular/angular/issues/25611)
+
+
+### Features
+
+* **common:** support loading locales from a global ([#33523](https://github.com/angular/angular/issues/33523)) ([c5894e0](https://github.com/angular/angular/commit/c5894e0))
+* **ivy:** graceful evaluation of unknown or invalid expressions ([#33453](https://github.com/angular/angular/issues/33453)) ([ce30888](https://github.com/angular/angular/commit/ce30888))
+* **ivy:** implement unknown element detection in jit mode ([#33419](https://github.com/angular/angular/issues/33419)) ([c83f501](https://github.com/angular/angular/commit/c83f501))
+* add a flag in bootstrap to enable coalesce event change detection to improve performance ([#30533](https://github.com/angular/angular/issues/30533)) ([44623a1](https://github.com/angular/angular/commit/44623a1))
+
+
+### Performance Improvements
+
+* **ivy:** add new benchmark focused on template creation ([#33511](https://github.com/angular/angular/issues/33511)) ([df1bef3](https://github.com/angular/angular/commit/df1bef3))
+* **ivy:** add ngIf-like directive to the ng_template benchmark ([#33595](https://github.com/angular/angular/issues/33595)) ([e89c2dd](https://github.com/angular/angular/commit/e89c2dd))
+* **ivy:** avoid native node retrieval from LView ([#33511](https://github.com/angular/angular/issues/33511)) ([083d48e](https://github.com/angular/angular/commit/083d48e))
+* **ivy:** avoid repeated native node retrieval and patching ([#33322](https://github.com/angular/angular/issues/33322)) ([41caafc](https://github.com/angular/angular/commit/41caafc))
+* **ivy:** avoid repeated tNode.initialInputs reads ([#33322](https://github.com/angular/angular/issues/33322)) ([4452d6d](https://github.com/angular/angular/commit/4452d6d))
+* **ivy:** move local references into consts array ([#33129](https://github.com/angular/angular/issues/33129)) ([66725b7](https://github.com/angular/angular/commit/66725b7)), closes [#32798](https://github.com/angular/angular/issues/32798)
+
+
+
 <a name="9.0.0-rc.0"></a>
 # [9.0.0-rc.0](https://github.com/angular/angular/compare/9.0.0-next.15...9.0.0-rc.0) (2019-10-31)
 
