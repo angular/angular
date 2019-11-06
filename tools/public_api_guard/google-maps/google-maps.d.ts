@@ -61,7 +61,7 @@ export declare class MapInfoWindow implements OnInit, OnDestroy {
     position: google.maps.LatLngLiteral | google.maps.LatLng;
     positionChanged: EventEmitter<void>;
     zindexChanged: EventEmitter<void>;
-    constructor(googleMap: GoogleMap, _elementRef: ElementRef<HTMLElement>);
+    constructor(_googleMap: GoogleMap, _elementRef: ElementRef<HTMLElement>);
     close(): void;
     getContent(): string | Node;
     getPosition(): google.maps.LatLng | null;
@@ -101,7 +101,7 @@ export declare class MapMarker implements OnInit, OnDestroy {
     titleChanged: EventEmitter<void>;
     visibleChanged: EventEmitter<void>;
     zindexChanged: EventEmitter<void>;
-    constructor(googleMap: GoogleMap);
+    constructor(_googleMap: GoogleMap);
     getAnimation(): google.maps.Animation | null;
     getClickable(): boolean;
     getCursor(): string | null;
