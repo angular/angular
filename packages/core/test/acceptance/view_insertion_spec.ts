@@ -10,6 +10,7 @@ import {CommonModule} from '@angular/common';
 import {ChangeDetectorRef, Component, ComponentFactoryResolver, Directive, EmbeddedViewRef, Injector, NgModule, TemplateRef, ViewChild, ViewContainerRef, ViewRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {onlyInIvy} from '@angular/private/testing';
 
 describe('view insertion', () => {
   describe('of a simple template', () => {
@@ -344,6 +345,26 @@ describe('view insertion', () => {
       it('should insert before a view with an empty container as the first root node', () => {
         expect(createAndInsertViews(`<ng-template [ngIf]="true"></ng-template>`).textContent)
             .toBe('insert');
+
+      });
+
+      onlyInIvy('VE incorrectly inserts views before ng-container content')
+          .it('should insert before a view with a ng-container where ViewContainerRef is injected',
+              () => {
+                expect(createAndInsertViews(`
+          <ng-container [ngTemplateOutlet]="after">|before</ng-container>
+          <ng-template #after>|after</ng-template>
+        `).textContent)
+                    .toBe('insert|before|after');
+
+              });
+
+      it('should insert before a view with an element where ViewContainerRef is injected', () => {
+        expect(createAndInsertViews(`
+          <div [ngTemplateOutlet]="after">|before</div>
+          <ng-template #after>|after</ng-template>
+        `).textContent)
+            .toBe('insert|before|after');
 
       });
 

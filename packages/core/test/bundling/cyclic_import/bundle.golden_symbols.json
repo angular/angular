@@ -264,6 +264,9 @@
     "name": "findAttrIndexInNode"
   },
   {
+    "name": "findComponentView"
+  },
+  {
     "name": "findDirectiveMatches"
   },
   {
@@ -312,6 +315,9 @@
     "name": "getFactoryDef"
   },
   {
+    "name": "getFirstNativeNode"
+  },
+  {
     "name": "getInitialStylingValue"
   },
   {
@@ -325,6 +331,9 @@
   },
   {
     "name": "getLView"
+  },
+  {
+    "name": "getLViewParent"
   },
   {
     "name": "getMapProp"
@@ -343,9 +352,6 @@
   },
   {
     "name": "getNativeByTNode"
-  },
-  {
-    "name": "getNativeByTNodeOrNull"
   },
   {
     "name": "getNodeInjectable"
