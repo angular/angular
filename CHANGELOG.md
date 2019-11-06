@@ -298,7 +298,7 @@ or
 npm install tslib --save
 ```
 * **forms:** * `<ngForm></ngForm>` can no longer be used as a selector. Use `<ng-form></ng-form>` instead.
-* The `NgFromSelectorWarning` directive has been removed.
+* The `NgFormSelectorWarning` directive has been removed.
 * `FormsModule.withConfig` has been removed. Use the `FormsModule` directly.
 
 
