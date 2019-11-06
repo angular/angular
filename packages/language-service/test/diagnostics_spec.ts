@@ -173,6 +173,23 @@ describe('diagnostics', () => {
     expect(diagnostics).toEqual([]);
   });
 
+  it('should report diagnostic for invalid property in nested ngFor', () => {
+    const content = mockHost.override(TEST_TEMPLATE, `
+      <div *ngFor="let leagueMembers of league">
+        <div *ngFor="let member of leagueMembers">
+          {{member.xyz}}
+        </div>
+      </div>
+    `);
+    const diagnostics = ngLS.getDiagnostics(TEST_TEMPLATE);
+    expect(diagnostics.length).toBe(1);
+    const {messageText, start, length} = diagnostics[0];
+    expect(messageText)
+        .toBe(`Identifier 'xyz' is not defined. 'Hero' does not contain such a member`);
+    expect(start).toBe(content.indexOf('member.xyz'));
+    expect(length).toBe('member.xyz'.length);
+  });
+
   describe('with $event', () => {
     it('should accept an event', () => {
       const fileName = '/app/test.ng';
