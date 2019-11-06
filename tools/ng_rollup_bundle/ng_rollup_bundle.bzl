@@ -255,6 +255,12 @@ def _write_rollup_config(ctx, root_dir, build_optimizer, filename = "_%s.rollup.
                           (dep.label, k, mappings[k], v)), "deps")
                 mappings[k] = v
 
+    globals = {}
+    external = []
+    if ctx.attr.globals:
+        globals = ctx.attr.globals.items()
+        external = ctx.attr.globals.keys()
+
     ctx.actions.expand_template(
         output = config,
         template = ctx.file._rollup_config_tmpl,
@@ -266,6 +272,8 @@ def _write_rollup_config(ctx, root_dir, build_optimizer, filename = "_%s.rollup.
             "TMPL_root_dir": root_dir,
             "TMPL_stamp_data": "\"%s\"" % ctx.version_file.path if ctx.version_file else "undefined",
             "TMPL_workspace_name": ctx.workspace_name,
+            "TMPL_external": ", ".join(["'%s'" % e for e in external]),
+            "TMPL_globals": ", ".join(["'%s': '%s'" % g for g in globals]),
         },
     )
 
@@ -294,12 +302,6 @@ def _run_rollup(ctx, entry_point_path, sources, config):
     args.add("--silent")
 
     args.add("--preserveSymlinks")
-
-    if ctx.attr.globals:
-        args.add("--external")
-        args.add_joined(ctx.attr.globals.keys(), join_with = ",")
-        args.add("--globals")
-        args.add_joined(["%s:%s" % g for g in ctx.attr.globals.items()], join_with = ",")
 
     direct_inputs = [config]
 
