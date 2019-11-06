@@ -1269,7 +1269,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(comp.attributes['ng-reflect-message-text']).toBe('Bonjour');
     });
 
-    it('with <ng-container> elements', () => {
+    it('should support i18n attributes on <ng-container> elements', () => {
       loadTranslations({[computeMsgId('Hello', 'meaning')]: 'Bonjour'});
 
       @Directive({selector: '[mydir]'})
