@@ -53,10 +53,7 @@
         'oktober', 'nowember', 'december'
       ]
     ],
-    [
-      ['pś.Chr.n.', 'pó Chr.n.'], u,
-      ['pśed Kristusowym naroźenim', 'pó Kristusowem naroźenju']
-    ],
+    [['pś.Chr.n.', 'pó Chr.n.'], u, ['pśed Kristusowym naroźenim', 'pó Kristusowem naroźenju']],
     1,
     [6, 0],
     ['d.M.yy', 'd.M.y', 'd. MMMM y', 'EEEE, d. MMMM y'],

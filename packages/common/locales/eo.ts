@@ -36,6 +36,6 @@ export default [
   ['yy-MM-dd', 'y-MMM-dd', 'y-MMMM-dd', 'EEEE, d-\'a\' \'de\' MMMM y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'H-\'a\' \'horo\' \'kaj\' m:ss zzzz'], ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], u, u,
-  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], u, u, {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  plural
 ];

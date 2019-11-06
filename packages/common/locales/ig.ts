@@ -18,8 +18,7 @@ function plural(n: number): number {
 export default [
   'ig', [['A.M.', 'P.M.'], u, u], u,
   [
-    ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-    ['Ụka', 'Mọn', 'Tiu', 'Wen', 'Tọọ', 'Fraị', 'Sat'],
+    ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Ụka', 'Mọn', 'Tiu', 'Wen', 'Tọọ', 'Fraị', 'Sat'],
     ['Mbọsị Ụka', 'Mọnde', 'Tiuzdee', 'Wenezdee', 'Tọọzdee', 'Fraịdee', 'Satọdee'],
     ['Ụka', 'Mọn', 'Tiu', 'Wen', 'Tọọ', 'Fraị', 'Sat']
   ],
@@ -28,8 +27,8 @@ export default [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
     ['Jen', 'Feb', 'Maa', 'Epr', 'Mee', 'Juu', 'Jul', 'Ọgọ', 'Sep', 'Ọkt', 'Nov', 'Dis'],
     [
-      'Jenụwarị', 'Febrụwarị', 'Maachị', 'Eprel', 'Mee', 'Juun', 'Julaị',
-      'Ọgọọst', 'Septemba', 'Ọktoba', 'Novemba', 'Disemba'
+      'Jenụwarị', 'Febrụwarị', 'Maachị', 'Eprel', 'Mee', 'Juun', 'Julaị', 'Ọgọọst', 'Septemba',
+      'Ọktoba', 'Novemba', 'Disemba'
     ]
   ],
   u, [['T.K.', 'A.K.'], u, ['Tupu Kristi', 'Afọ Kristi']], 1, [6, 0],
