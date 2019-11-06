@@ -60,7 +60,8 @@ Before disabling Ivy, check out the debugging recommendations in the [Ivy Compat
 
 To opt out of Ivy, change the `angularCompilerOptions` in your project's TypeScript configuration, most commonly located at `tsconfig.app.json` at the root of the workspace.
 
-The value of the `enableIvy`  flag is set to `true` by default, as of version 9.
+The value of the `enableIvy` flag is set to `true` by default, as of version 9.
+
 The following example shows how to set the `enableIvy` option to `false` in order to opt out of Ivy.
 
 <code-example language="json" header="tsconfig.app.json">
@@ -70,17 +71,94 @@ The following example shows how to set the `enableIvy` option to `false` in orde
     "outDir": "./out-tsc/app",
     "types": []
   },
+  "files": [
+    "src/main.ts",
+    "src/polyfills.ts"
+  ],
   "include": [
-    "src/**/*.ts"
+    "src/**/*.d.ts"
   ],
-  "exclude": [
-    "src/test.ts",
-    "src/**/*.spec.ts"
-  ],
-"angularCompilerOptions": {
- "enableIvy": false
- }
+  "angularCompilerOptions": {
+    "enableIvy": false
+  }
 }
 </code-example>
 
-If you disable Ivy, you might also want to reconsider whether to make AOT compilation the default for your application development, as described [above](#aot-and-ivy). To revert the compiler default, set the build option `aot: false` in the `angular.json` configuration file.
+<div class="alert is-important">
+
+If you disable Ivy, you might also want to reconsider whether to make AOT compilation the default for your application development, as described [above](#aot-and-ivy).
+
+To revert the compiler default, set the build option `aot: false` in the `angular.json` configuration file.
+
+</div>
+
+{@a using-ssr-without-angular-ivy}
+## Using SSR without Ivy
+
+If you opt out of Ivy and your application uses  [Angular Universal](guide/universal) to render Angular applications on the server, you must also change the way the server performs bootstrapping.
+
+The following example shows how you modify the `server.ts` file to provide the `AppServerModuleNgFactory` as the bootstrap module.
+
+* Import `AppServerModuleNgFactory` from the `app.server.module.ngfactory` virtual file.
+* Set `bootstrap: AppServerModuleNgFactory` in the `ngExpressEngine` call.
+
+<code-example language="typescript" header="server.ts">
+import 'zone.js/dist/zone-node';
+
+import { ngExpressEngine } from '@nguniversal/express-engine';
+import * as express from 'express';
+import { join } from 'path';
+
+import { APP_BASE_HREF } from '@angular/common';
+
+import { AppServerModuleNgFactory } from './src/app/app.server.module.ngfactory';
+
+// The Express app is exported so that it can be used by serverless Functions.
+export function app() {
+  const server = express();
+  const distFolder = join(process.cwd(), 'dist/ivy-test/browser');
+
+  // Our Universal express-engine (found @ https://github.com/angular/universal/tree/master/modules/express-engine)
+  server.engine('html', ngExpressEngine({
+    bootstrap: AppServerModuleNgFactory,
+  }));
+
+  server.set('view engine', 'html');
+  server.set('views', distFolder);
+
+  // Example Express Rest API endpoints
+  // app.get('/api/**', (req, res) => { });
+  // Serve static files from /browser
+  server.get('*.*', express.static(distFolder, {
+    maxAge: '1y'
+  }));
+
+  // All regular routes use the Universal engine
+  server.get('*', (req, res) => {
+    res.render('index', { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] });
+  });
+
+  return server;
+}
+
+function run() {
+  const port = process.env.PORT || 4000;
+
+  // Start up the Node server
+  const server = app();
+  server.listen(port, () => {
+    console.log(`Node Express server listening on http://localhost:${port}`);
+  });
+}
+
+// Webpack will replace 'require' with '__webpack_require__'
+// '__non_webpack_require__' is a proxy to Node 'require'
+// The below code is to ensure that the server is run only when not requiring the bundle.
+declare const __non_webpack_require__: NodeRequire;
+const mainModule = __non_webpack_require__.main;
+if (mainModule && mainModule.filename === __filename) {
+  run();
+}
+
+export * from './src/main.server';
+</code-example>
