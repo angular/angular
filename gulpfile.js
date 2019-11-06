@@ -56,5 +56,4 @@ gulp.task('changelog', loadTask('changelog'));
 gulp.task('changelog:zonejs', loadTask('changelog-zonejs'));
 gulp.task('check-env', () => {/* this is a noop because the env test ran already above */});
 gulp.task('cldr:extract', loadTask('cldr', 'extract'));
-gulp.task('cldr:download', loadTask('cldr', 'download'));
 gulp.task('cldr:gen-closure-locale', loadTask('cldr', 'closure'));
