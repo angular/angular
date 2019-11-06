@@ -1100,7 +1100,7 @@ export class Router {
     }
     */
 
-    this.console.log("navigation for every hashtag!")
+    this.console.log("navigation for every hashtag!");
 
     let resolve: any;
     let reject: any;
@@ -1109,12 +1109,14 @@ export class Router {
       resolve = priorPromise.resolve;
       reject = priorPromise.reject;
       promise = priorPromise.promise;
-
+      this.console.log("scheduleNavigation - priorPromise");
     } else {
       promise = new Promise<boolean>((res, rej) => {
         resolve = res;
         reject = rej;
       });
+      this.console.log("scheduleNavigation - newPromise: \n");
+      this.console.log("promise: " + promise);
     }
 
     const id = ++this.navigationId;
@@ -1138,9 +1140,11 @@ export class Router {
     const path = this.urlSerializer.serialize(url);
     state = state || {};
     if (this.location.isCurrentPathEqualTo(path) || replaceUrl) {
+      this.console.log("setBrowserUrl - isCurrentPathEqualTo - replaceState");
       // TODO(jasonaden): Remove first `navigationId` and rely on `ng` namespace.
       this.location.replaceState(path, '', {...state, navigationId: id});
     } else {
+      this.console.log("setBrowserUrl - else - go!");
       this.location.go(path, '', {...state, navigationId: id});
     }
   }
@@ -1149,10 +1153,12 @@ export class Router {
     (this as{routerState: RouterState}).routerState = storedState;
     this.currentUrlTree = storedUrl;
     this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, rawUrl);
+    this.console.log("resetStateAndUrl");
     this.resetUrlToCurrentUrlTree();
   }
 
   private resetUrlToCurrentUrlTree(): void {
+    this.console.log("resetUrlToCurrentUrlTree");
     this.location.replaceState(
         this.urlSerializer.serialize(this.rawUrlTree), '', {navigationId: this.lastSuccessfulId});
   }
