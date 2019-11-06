@@ -17,7 +17,6 @@ import {
 const defaultConfig = new MatBottomSheetConfig();
 
 @Component({
-  moduleId: module.id,
   selector: 'bottom-sheet-demo',
   styleUrls: ['bottom-sheet-demo.css'],
   templateUrl: 'bottom-sheet-demo.html',

@@ -25,7 +25,6 @@ import {GridKeyManagerRow, NAVIGATION_KEYS} from './grid-key-manager';
  * the matChipInputFor directive.
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-chip-row, mat-basic-chip-row',
   templateUrl: 'chip-row.html',
   styleUrls: ['chips.css'],

@@ -11,7 +11,6 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 
 
 @Component({
-  moduleId: module.id,
   selector: 'dual-sidenav-a11y',
   templateUrl: 'dual-sidenav-a11y.html',
   styleUrls: ['shared.css', 'dual-sidenav-a11y.css'],

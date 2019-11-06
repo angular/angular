@@ -10,7 +10,6 @@ import {Component} from '@angular/core';
 
 
 @Component({
-  moduleId: module.id,
   selector: 'select-a11y',
   templateUrl: 'select-a11y.html',
   styleUrls: ['select-a11y.css'],

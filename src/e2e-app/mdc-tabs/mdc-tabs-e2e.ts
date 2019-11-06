@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'mdc-tabs-e2e',
   templateUrl: 'mdc-tabs-e2e.html',
 })

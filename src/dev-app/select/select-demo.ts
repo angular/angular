@@ -22,7 +22,6 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-    moduleId: module.id,
     selector: 'select-demo',
     templateUrl: 'select-demo.html',
     styleUrls: ['select-demo.css'],

@@ -24,7 +24,6 @@ import {coerceNumberProperty} from '@angular/cdk/coercion';
 import {MAT_GRID_LIST, MatGridListBase} from './grid-list-base';
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-grid-tile',
   exportAs: 'matGridTile',
   host: {
@@ -66,7 +65,6 @@ export class MatGridTile {
 }
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-grid-tile-header, mat-grid-tile-footer',
   templateUrl: 'grid-tile-text.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

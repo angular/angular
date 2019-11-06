@@ -37,7 +37,6 @@ import {
  * "contained" but without elevation.
  */
 @Component({
-  moduleId: module.id,
   selector: `
     button[mat-button], button[mat-raised-button], button[mat-flat-button],
     button[mat-stroked-button]
@@ -72,7 +71,6 @@ export class MatButton extends MatButtonBase {
  * "contained" but without elevation.
  */
 @Component({
-  moduleId: module.id,
   selector: `a[mat-button], a[mat-raised-button], a[mat-flat-button], a[mat-stroked-button]`,
   exportAs: 'matButton, matAnchor',
   host: MAT_ANCHOR_HOST,

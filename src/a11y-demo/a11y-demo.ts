@@ -11,7 +11,6 @@ import {NavigationEnd, Router} from '@angular/router';
 import {Subscription} from 'rxjs';
 
 @Component({
-  moduleId: module.id,
   templateUrl: 'a11y-demo.html',
   styleUrls: ['a11y-demo.css'],
 })
@@ -82,7 +81,6 @@ export class AccessibilityDemoRoot implements OnDestroy {
 }
 
 @Component({
-  moduleId: module.id,
   selector: 'accessibility-home',
   template: `<p>Welcome to the accessibility examples for Angular Material!</p>`,
 })

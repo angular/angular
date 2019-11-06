@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'mdc-menu-demo',
   templateUrl: 'mdc-menu-demo.html',
   styleUrls: ['mdc-menu-demo.css'],

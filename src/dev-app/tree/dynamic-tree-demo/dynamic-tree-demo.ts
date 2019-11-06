@@ -12,7 +12,6 @@ import {DynamicDataSource, DynamicFlatNode, DynamicDatabase} from './dynamic-dat
 
 
 @Component({
-  moduleId: module.id,
   selector: 'dynamic-tree-demo',
   templateUrl: 'dynamic-tree-demo.html',
   styleUrls: ['dynamic-tree-demo.css'],

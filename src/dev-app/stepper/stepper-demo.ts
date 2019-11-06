@@ -11,7 +11,6 @@ import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/form
 
 
 @Component({
-  moduleId: module.id,
   selector: 'stepper-demo',
   templateUrl: 'stepper-demo.html',
 })

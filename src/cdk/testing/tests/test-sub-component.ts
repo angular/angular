@@ -9,7 +9,6 @@
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'test-sub',
   template: `
       <h2>List of {{title}}</h2>

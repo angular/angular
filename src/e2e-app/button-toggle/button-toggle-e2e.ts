@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'button-toggle-demo',
   template: `<example-list-viewer [ids]="examples"></example-list-viewer>`,
 })

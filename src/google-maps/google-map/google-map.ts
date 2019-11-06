@@ -54,7 +54,6 @@ export const DEFAULT_WIDTH = '500px';
  * @see https://developers.google.com/maps/documentation/javascript/reference/
  */
 @Component({
-  moduleId: module.id,
   selector: 'google-map',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<div class="map-container"></div><ng-content></ng-content>',

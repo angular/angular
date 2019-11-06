@@ -38,7 +38,6 @@ const _MatToolbarMixinBase: CanColorCtor & typeof MatToolbarBase = mixinColor(Ma
 export class MatToolbarRow {}
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-toolbar',
   exportAs: 'matToolbar',
   templateUrl: 'toolbar.html',

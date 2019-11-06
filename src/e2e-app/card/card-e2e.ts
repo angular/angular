@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'card-demo',
   template: `<example-list-viewer [ids]="examples"></example-list-viewer>`,
 })

@@ -88,7 +88,6 @@ export class MatSelectionListChange {
  * if the current item is selected.
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-list-option',
   exportAs: 'matListOption',
   inputs: ['disableRipple'],
@@ -316,7 +315,6 @@ export class MatListOption extends _MatListOptionMixinBase implements AfterConte
  * Material Design list component where each item is a selectable option. Behaves as a listbox.
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-selection-list',
   exportAs: 'matSelectionList',
   inputs: ['disableRipple'],

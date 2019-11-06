@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   template: `
     <h3>CDK popover-edit with cdk-table</h3>
     <cdk-popover-edit-cdk-table-example></cdk-popover-edit-cdk-table-example>

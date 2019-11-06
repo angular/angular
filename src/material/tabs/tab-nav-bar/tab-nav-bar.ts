@@ -145,7 +145,6 @@ export abstract class _MatTabNavBase extends MatPaginatedTabHeader implements Af
  * Provides anchored navigation with animated ink bar.
  */
 @Component({
-  moduleId: module.id,
   selector: '[mat-tab-nav-bar]',
   exportAs: 'matTabNavBar, matTabNav',
   inputs: ['color'],

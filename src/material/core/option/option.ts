@@ -63,7 +63,6 @@ export const MAT_OPTION_PARENT_COMPONENT =
  * Single option inside of a `<mat-select>` element.
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-option',
   exportAs: 'matOption',
   host: {

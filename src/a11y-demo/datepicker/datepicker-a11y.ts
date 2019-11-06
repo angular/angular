@@ -10,7 +10,6 @@ import {Component} from '@angular/core';
 
 
 @Component({
-  moduleId: module.id,
   selector: 'datepicker-a11y',
   templateUrl: 'datepicker-a11y.html',
   styleUrls: ['datepicker-a11y.css'],

@@ -36,7 +36,6 @@ import {MatSnackBarConfig} from './snack-bar-config';
  * @docs-private
  */
 @Component({
-  moduleId: module.id,
   selector: 'snack-bar-container',
   templateUrl: 'snack-bar-container.html',
   styleUrls: ['snack-bar-container.css'],

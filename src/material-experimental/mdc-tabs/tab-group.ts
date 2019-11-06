@@ -36,7 +36,6 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
  * See: https://material.io/design/components/tabs.html
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-tab-group',
   exportAs: 'matTabGroup',
   templateUrl: 'tab-group.html',

@@ -49,7 +49,6 @@ const _MatChipSetMixinBase: HasTabIndexCtor & typeof MatChipSetBase =
  * Extended by MatChipListbox and MatChipGrid for different interaction patterns.
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-chip-set',
   template: '<ng-content></ng-content>',
   styleUrls: ['chips.css'],

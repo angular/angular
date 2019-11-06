@@ -10,7 +10,6 @@ import {Component, ViewEncapsulation} from '@angular/core';
 
 /** Root component for the e2e-app demos. */
 @Component({
-  moduleId: module.id,
   selector: 'e2e-app',
   template: '<e2e-app-layout><router-outlet></router-outlet></e2e-app-layout>',
   encapsulation: ViewEncapsulation.None,

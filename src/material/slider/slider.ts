@@ -108,7 +108,6 @@ const _MatSliderMixinBase:
  * behavior to the native `<input type="range">` element.
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-slider',
   exportAs: 'matSlider',
   providers: [MAT_SLIDER_VALUE_ACCESSOR],

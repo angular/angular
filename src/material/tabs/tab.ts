@@ -43,7 +43,6 @@ const _MatTabMixinBase: CanDisableCtor & typeof MatTabBase =
 export const MAT_TAB_GROUP = new InjectionToken<any>('MAT_TAB_GROUP');
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-tab',
   templateUrl: 'tab.html',
   inputs: ['disabled'],

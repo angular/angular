@@ -92,7 +92,6 @@ const _MatChipMixinBase:
  * Extended by MatChipOption and MatChipRow for different interaction patterns.
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-basic-chip, mat-chip',
   inputs: ['color', 'disableRipple'],
   exportAs: 'matChip',

@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'mdc-button-e2e',
   templateUrl: 'mdc-button-e2e.html',
 })

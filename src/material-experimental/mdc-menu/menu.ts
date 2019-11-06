@@ -38,7 +38,6 @@ export const MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER: Provider = {
 };
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-menu',
   templateUrl: 'menu.html',
   styleUrls: ['menu.css'],

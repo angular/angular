@@ -12,7 +12,6 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 
 @Component({
-  moduleId: module.id,
   selector: 'drag-drop-demo',
   templateUrl: 'drag-drop-demo.html',
   styleUrls: ['drag-drop-demo.css'],

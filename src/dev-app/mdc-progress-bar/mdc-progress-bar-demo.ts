@@ -10,7 +10,6 @@ import {Component} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'mdc-progress-bar-demo',
   templateUrl: 'mdc-progress-bar-demo.html',
   styleUrls: ['mdc-progress-bar-demo.css'],

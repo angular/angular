@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'mdc-button-demo',
   templateUrl: 'mdc-button-demo.html',
   styleUrls: ['mdc-button-demo.css'],

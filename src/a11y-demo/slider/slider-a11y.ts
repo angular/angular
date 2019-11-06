@@ -10,7 +10,6 @@ import {Component} from '@angular/core';
 
 
 @Component({
-  moduleId: module.id,
   selector: 'slider-a11y',
   templateUrl: 'slider-a11y.html',
   styleUrls: ['slider-a11y.css'],

@@ -190,7 +190,6 @@ export class MatSelectTrigger {}
 
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-select',
   exportAs: 'matSelect',
   templateUrl: 'select.html',

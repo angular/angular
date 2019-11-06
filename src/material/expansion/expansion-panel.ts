@@ -76,7 +76,6 @@ export const MAT_EXPANSION_PANEL_DEFAULT_OPTIONS =
  * multiple children of an element with the MatAccordion directive attached.
  */
 @Component({
-  moduleId: module.id,
   styleUrls: ['./expansion-panel.css'],
   selector: 'mat-expansion-panel',
   exportAs: 'matExpansionPanel',

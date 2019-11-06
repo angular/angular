@@ -79,10 +79,6 @@ def ng_module(
         # Add tslib because we use import helpers for all public packages.
         "@npm//tslib",
         "@npm//@angular/platform-browser",
-
-        # Depend on the module typings for each `ng_module`. Since all components within the project
-        # need to use `module.id` when creating components, this is always a dependency.
-        "//src:module-typings",
     ]
 
     # Append given deps only if they're not in the default set of deps

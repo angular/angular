@@ -43,7 +43,6 @@ export class MatCalendarCell {
  * @docs-private
  */
 @Component({
-  moduleId: module.id,
   selector: '[mat-calendar-body]',
   templateUrl: 'calendar-body.html',
   styleUrls: ['calendar-body.css'],

@@ -18,7 +18,6 @@ import {MatTabContent} from './tab-content';
 import {MatTabLabel} from './tab-label';
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-tab',
 
   // Note that usually we'd go through a bit more trouble and set up another class so that

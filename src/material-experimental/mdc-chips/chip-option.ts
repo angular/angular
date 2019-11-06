@@ -36,7 +36,6 @@ export class MatChipSelectionChange {
  * Used with MatChipListbox.
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-basic-chip-option, mat-chip-option',
   templateUrl: 'chip-option.html',
   styleUrls: ['chips.css'],

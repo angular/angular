@@ -44,7 +44,6 @@ export const yearsPerRow = 4;
  * @docs-private
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-multi-year-view',
   templateUrl: 'multi-year-view.html',
   exportAs: 'matMultiYearView',

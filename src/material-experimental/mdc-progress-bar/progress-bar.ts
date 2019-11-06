@@ -41,7 +41,6 @@ const _MatProgressBarMixinBase: CanColorCtor & typeof MatProgressBarBase =
 export type ProgressBarMode = 'determinate' | 'indeterminate' | 'buffer' | 'query';
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-progress-bar',
   exportAs: 'matProgressBar',
   host: {

@@ -53,7 +53,6 @@ export const TEXT_COLUMN_OPTIONS =
  * input.
  */
 @Component({
-  moduleId: module.id,
   selector: 'cdk-text-column',
   template: `
     <ng-container cdkColumnDef>

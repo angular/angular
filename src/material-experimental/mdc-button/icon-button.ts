@@ -33,7 +33,6 @@ import {
  * See https://material.io/develop/web/components/buttons/icon-buttons/
  */
 @Component({
-  moduleId: module.id,
   selector: `button[mat-icon-button]`,
   templateUrl: 'button.html',
   styleUrls: ['icon-button.css'],
@@ -63,7 +62,6 @@ export class MatIconButton extends MatButtonBase {
  * See https://material.io/develop/web/components/buttons/icon-buttons/
  */
 @Component({
-  moduleId: module.id,
   selector: `a[mat-icon-button]`,
   templateUrl: 'button.html',
   styleUrls: ['icon-button.css'],

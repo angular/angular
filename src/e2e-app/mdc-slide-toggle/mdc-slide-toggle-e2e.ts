@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'mdc-slide-toggle-e2e',
   templateUrl: 'mdc-slide-toggle-e2e.html',
 })

@@ -16,7 +16,6 @@ import {ChecklistDatabase, TodoItemNode} from './checklist-database';
  * Checklist demo with nested tree
  */
 @Component({
-  moduleId: module.id,
   selector: 'checklist-nested-tree-demo',
   templateUrl: 'checklist-nested-tree-demo.html',
   styleUrls: ['checklist-tree-demo.css'],

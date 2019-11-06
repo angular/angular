@@ -14,7 +14,6 @@ import {DevAppDirectionality} from './dev-app-directionality';
 
 /** Root component for the dev-app demos. */
 @Component({
-  moduleId: module.id,
   selector: 'dev-app-layout',
   templateUrl: 'dev-app-layout.html',
   styleUrls: ['dev-app-layout.css'],

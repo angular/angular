@@ -12,7 +12,6 @@ import {Component} from '@angular/core';
 const USD_TO_JPY = 110.29;
 
 @Component({
-  moduleId: module.id,
   selector: 'input-a11y',
   templateUrl: 'input-a11y.html',
 })

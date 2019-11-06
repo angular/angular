@@ -19,7 +19,6 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
  * input.
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-text-column',
   template: `
     <ng-container matColumnDef>

@@ -53,7 +53,6 @@ export class MatCheckboxChange {
 }
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-checkbox',
   templateUrl: 'checkbox.html',
   styleUrls: ['checkbox.css'],

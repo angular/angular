@@ -19,8 +19,7 @@
     }
   },
   "files": [
-    "index.ts",
-    "typings.d.ts"
+    "index.ts"
   ],
   "angularCompilerOptions": {
     "enableIvy": false,

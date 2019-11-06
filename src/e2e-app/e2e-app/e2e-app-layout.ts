@@ -6,7 +6,6 @@ export class Home {
 }
 
 @Component({
-  moduleId: module.id,
   selector: 'e2e-app-layout',
   templateUrl: 'e2e-app-layout.html',
   encapsulation: ViewEncapsulation.None,

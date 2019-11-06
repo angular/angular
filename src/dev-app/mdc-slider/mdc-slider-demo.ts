@@ -10,7 +10,6 @@ import {Component} from '@angular/core';
 
 
 @Component({
-  moduleId: module.id,
   selector: 'mdc-slider-demo',
   templateUrl: 'mdc-slider-demo.html',
 })

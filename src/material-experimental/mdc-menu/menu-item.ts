@@ -14,7 +14,6 @@ import {MatMenuItem as BaseMatMenuItem} from '@angular/material/menu';
  * It exists mostly to set the role attribute.
  */
 @Component({
-  moduleId: module.id,
   selector: '[mat-menu-item]',
   exportAs: 'matMenuItem',
   inputs: ['disabled', 'disableRipple'],

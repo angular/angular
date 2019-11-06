@@ -17,7 +17,6 @@ import {
 
 
 @Component({
-  moduleId: module.id,
   selector: 'snack-bar-demo',
   styleUrls: ['snack-bar-demo.css'],
   templateUrl: 'snack-bar-demo.html',

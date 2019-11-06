@@ -8,7 +8,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'tooltip-demo',
   templateUrl: 'tooltip-demo.html',
 })

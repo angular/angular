@@ -3,7 +3,6 @@ import {MatDialog, MatDialogRef, MatDialogConfig} from '@angular/material/dialog
 
 @Component({
   selector: 'dialog-e2e',
-  moduleId: module.id,
   templateUrl: 'dialog-e2e.html'
 })
 export class DialogE2E {

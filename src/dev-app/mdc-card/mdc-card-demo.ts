@@ -9,7 +9,6 @@
 import {Component, ViewEncapsulation} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'mdc-card-demo',
   templateUrl: 'mdc-card-demo.html',
   styleUrls: ['mdc-card-demo.css'],

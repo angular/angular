@@ -11,7 +11,6 @@ import {MatRipple} from '@angular/material/core';
 
 
 @Component({
-  moduleId: module.id,
   selector: 'ripple-demo',
   templateUrl: 'ripple-demo.html',
   styleUrls: ['ripple-demo.css'],

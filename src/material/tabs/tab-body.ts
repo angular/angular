@@ -246,7 +246,6 @@ export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
  * @docs-private
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-tab-body',
   templateUrl: 'tab-body.html',
   styleUrls: ['tab-body.css'],

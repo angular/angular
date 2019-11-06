@@ -152,7 +152,6 @@ export interface RenderRow<T> {
  * connect function that will return an Observable stream that emits the data array to render.
  */
 @Component({
-  moduleId: module.id,
   selector: 'cdk-table, table[cdk-table]',
   exportAs: 'cdkTable',
   template: CDK_TABLE_TEMPLATE,

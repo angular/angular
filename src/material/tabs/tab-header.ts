@@ -76,7 +76,6 @@ export abstract class _MatTabHeaderBase extends MatPaginatedTabHeader implements
  * @docs-private
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-tab-header',
   templateUrl: 'tab-header.html',
   styleUrls: ['tab-header.css'],

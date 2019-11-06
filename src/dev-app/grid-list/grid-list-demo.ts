@@ -10,7 +10,6 @@ import {Component} from '@angular/core';
 
 
 @Component({
-  moduleId: module.id,
   selector: 'grid-list-demo',
   templateUrl: 'grid-list-demo.html',
   styleUrls: ['grid-list-demo.css']

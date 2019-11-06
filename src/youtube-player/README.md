@@ -34,7 +34,6 @@ export class YoutubePlayerExampleModule {
 
 // example-component.ts
 @Component({
-  moduleId: module.id,
   template: '<youtube-player videoId="PRQCAL_RMVo" />',
   selector: 'youtube-player-example',
 })

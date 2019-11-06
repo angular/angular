@@ -473,7 +473,6 @@ export class MatMenu extends _MatMenuBase {}
 
 /** @docs-public MatMenu */
 @Component({
-  moduleId: module.id,
   selector: 'mat-menu',
   templateUrl: 'menu.html',
   styleUrls: ['menu.css'],

@@ -84,7 +84,6 @@ const isBrowser = typeof window === 'object' && !!window;
  * @see https://developers.google.com/youtube/iframe_api_reference
  */
 @Component({
-  moduleId: module.id,
   selector: 'youtube-player',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,

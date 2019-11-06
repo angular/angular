@@ -47,7 +47,6 @@ export function throwMatDialogContentAlreadyAttachedError() {
  * @docs-private
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-dialog-container',
   templateUrl: 'dialog-container.html',
   styleUrls: ['dialog.css'],

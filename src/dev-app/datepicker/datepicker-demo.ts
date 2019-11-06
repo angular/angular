@@ -27,7 +27,6 @@ import {takeUntil} from 'rxjs/operators';
 
 
 @Component({
-  moduleId: module.id,
   selector: 'datepicker-demo',
   templateUrl: 'datepicker-demo.html',
   styleUrls: ['datepicker-demo.css'],
@@ -67,7 +66,6 @@ export class DatepickerDemo {
 
 // Custom header component for datepicker
 @Component({
-  moduleId: module.id,
   selector: 'custom-header',
   templateUrl: 'custom-header.html',
   styleUrls: ['custom-header.css'],
@@ -109,7 +107,6 @@ export class CustomHeader<D> implements OnDestroy {
 }
 
 @Component({
-    moduleId: module.id,
     selector: 'customer-header-ng-content',
     template: `
       <mat-calendar-header #header>

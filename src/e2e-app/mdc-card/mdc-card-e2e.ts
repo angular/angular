@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'mdc-card-e2e',
   templateUrl: 'mdc-card-e2e.html',
 })

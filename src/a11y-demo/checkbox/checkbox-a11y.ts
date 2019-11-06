@@ -16,7 +16,6 @@ export interface Task {
 }
 
 @Component({
-  moduleId: module.id,
   selector: 'checkbox-a11y',
   templateUrl: 'checkbox-a11y.html',
   styleUrls: ['checkbox-a11y.css'],

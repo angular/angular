@@ -97,7 +97,6 @@ export const MAT_FORM_FIELD_DEFAULT_OPTIONS =
 
 /** Container for form controls that applies Material Design styling and behavior. */
 @Component({
-  moduleId: module.id,
   selector: 'mat-form-field',
   exportAs: 'matFormField',
   templateUrl: 'form-field.html',

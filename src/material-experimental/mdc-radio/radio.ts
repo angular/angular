@@ -22,7 +22,6 @@ import {MDCRadioAdapter, MDCRadioFoundation} from '@material/radio';
 let nextUniqueId = 0;
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-radio-button',
   templateUrl: 'radio.html',
   styleUrls: ['radio.css'],

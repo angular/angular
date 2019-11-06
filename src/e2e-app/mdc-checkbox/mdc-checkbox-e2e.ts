@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'mdc-checkbox-e2e',
   templateUrl: 'mdc-checkbox-e2e.html',
 })

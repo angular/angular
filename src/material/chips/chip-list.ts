@@ -73,7 +73,6 @@ export class MatChipListChange {
  * A material design chips component (named ChipList for its similarity to the List component).
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-chip-list',
   template: `<div class="mat-chip-list-wrapper"><ng-content></ng-content></div>`,
   exportAs: 'matChipList',

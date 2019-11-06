@@ -14,8 +14,7 @@
     }
   },
   "files": [
-    "./index.ts",
-    "typings.d.ts"
+    "./index.ts"
   ],
   "angularCompilerOptions": {
     "skipTemplateCodegen": true,

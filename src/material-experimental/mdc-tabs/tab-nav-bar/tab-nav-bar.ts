@@ -46,7 +46,6 @@ import {takeUntil} from 'rxjs/operators';
  * Provides anchored navigation with animated ink bar.
  */
 @Component({
-  moduleId: module.id,
   selector: '[mat-tab-nav-bar]',
   exportAs: 'matTabNavBar, matTabNav',
   inputs: ['color'],
@@ -109,7 +108,6 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
  * Link inside of a `mat-tab-nav-bar`.
  */
 @Component({
-  moduleId: module.id,
   selector: '[mat-tab-link], [matTabLink]',
   exportAs: 'matTabLink',
   inputs: ['disabled', 'disableRipple', 'tabIndex'],

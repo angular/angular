@@ -136,9 +136,9 @@
         "!host": "\\[class\\]",
         "!preserveWhitespaces": ".*",
         "!styles": ".*",
+        "!moduleId": ".*",
         "changeDetection": "\\.OnPush$",
-        "encapsulation": "\\.None$",
-        "moduleId": "^module\\.id$"
+        "encapsulation": "\\.None$"
       },
       "Directive": {
         "!host": "\\[class\\]"

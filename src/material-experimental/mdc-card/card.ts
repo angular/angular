@@ -22,7 +22,6 @@ import {
  * MatCard provides no behaviors, instead serving as a purely visual treatment.
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-card',
   templateUrl: 'card.html',
   styleUrls: ['card.css'],
@@ -58,7 +57,6 @@ export class MatCardTitle {}
  * (e.g. `<img matCardLgImage>`).
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-card-title-group',
   templateUrl: 'card-title-group.html',
   encapsulation: ViewEncapsulation.None,
@@ -137,7 +135,6 @@ export class MatCardActions {
  * MatCardHeader provides no behaviors, instead serving as a purely visual treatment.
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-card-header',
   templateUrl: 'card-header.html',
   encapsulation: ViewEncapsulation.None,

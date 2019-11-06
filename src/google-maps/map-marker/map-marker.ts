@@ -37,7 +37,6 @@ export const DEFAULT_MARKER_OPTIONS = {
  * @see developers.google.com/maps/documentation/javascript/reference/marker
  */
 @Component({
-  moduleId: module.id,
   selector: 'map-marker',
   template: '<ng-content></ng-content>',
   changeDetection: ChangeDetectionStrategy.OnPush,

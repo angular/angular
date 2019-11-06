@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'mdc-radio-demo',
   templateUrl: 'mdc-radio-demo.html',
   styleUrls: ['mdc-radio-demo.css'],

@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'mdc-slide-toggle-demo',
   templateUrl: 'mdc-slide-toggle-demo.html',
   styleUrls: ['mdc-slide-toggle-demo.css'],

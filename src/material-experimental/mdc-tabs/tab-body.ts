@@ -49,7 +49,6 @@ export class MatTabBodyPortal extends BaseMatTabBodyPortal {
  * @docs-private
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-tab-body',
   templateUrl: 'tab-body.html',
   styleUrls: ['tab-body.css'],

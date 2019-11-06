@@ -59,7 +59,6 @@ export const MAT_CHIP_LISTBOX_CONTROL_VALUE_ACCESSOR: any = {
  * Used with MatChipOption chips.
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-chip-listbox',
   template: '<ng-content></ng-content>',
   styleUrls: ['chips.css'],

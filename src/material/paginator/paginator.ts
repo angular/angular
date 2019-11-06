@@ -66,7 +66,6 @@ const _MatPaginatorBase: CanDisableCtor & HasInitializedCtor & typeof MatPaginat
  * navigational button to go to the previous or next page.
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-paginator',
   exportAs: 'matPaginator',
   templateUrl: 'paginator.html',

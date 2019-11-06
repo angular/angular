@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 
 
 @Component({
-  moduleId: module.id,
   selector: 'mdc-progress-bar-e2e',
   templateUrl: 'mdc-progress-bar-e2e.html',
   styles: [`

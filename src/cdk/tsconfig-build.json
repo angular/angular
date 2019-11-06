@@ -18,7 +18,6 @@
   },
   "files": [
     "public-api.ts",
-    "typings.d.ts"
   ],
   "angularCompilerOptions": {
     "enableIvy": false,

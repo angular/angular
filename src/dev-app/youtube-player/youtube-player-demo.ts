@@ -29,7 +29,6 @@ const VIDEOS: Video[] = [
 ];
 
 @Component({
-  moduleId: module.id,
   selector: 'youtube-player-demo',
   templateUrl: 'youtube-player-demo.html',
   styleUrls: ['youtube-player-demo.css'],

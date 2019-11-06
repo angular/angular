@@ -11,7 +11,6 @@ import {MapInfoWindow, MapMarker} from '@angular/google-maps';
 
 /** Demo Component for @angular/google-maps/map */
 @Component({
-  moduleId: module.id,
   selector: 'google-map-demo',
   templateUrl: 'google-map-demo.html',
 })

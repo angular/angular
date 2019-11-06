@@ -77,7 +77,6 @@ const _MatChipGridMixinBase: CanUpdateErrorStateCtor & typeof MatChipGridBase =
  * the matChipInputFor directive.
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-chip-grid',
   template: '<ng-content></ng-content>',
   styleUrls: ['chips.css'],

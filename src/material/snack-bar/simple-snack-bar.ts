@@ -16,7 +16,6 @@ import {MAT_SNACK_BAR_DATA} from './snack-bar-config';
  * This should only be used internally by the snack bar service.
  */
 @Component({
-  moduleId: module.id,
   selector: 'simple-snack-bar',
   templateUrl: 'simple-snack-bar.html',
   styleUrls: ['simple-snack-bar.css'],

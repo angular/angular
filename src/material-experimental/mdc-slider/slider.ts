@@ -72,7 +72,6 @@ export class MatSliderChange {
 }
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-slider',
   templateUrl: 'slider.html',
   styleUrls: ['slider.css'],

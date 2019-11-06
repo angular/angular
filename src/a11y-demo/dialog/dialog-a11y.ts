@@ -11,7 +11,6 @@ import {MatDialog} from '@angular/material/dialog';
 
 
 @Component({
-  moduleId: module.id,
   selector: 'dialog-a11y',
   templateUrl: 'dialog-a11y.html',
   styleUrls: ['dialog-a11y.css'],
@@ -42,21 +41,18 @@ export class DialogAccessibilityDemo {
 }
 
 @Component({
-  moduleId: module.id,
   selector: 'dialog-fruit-a11y',
   templateUrl: 'dialog-fruit-a11y.html',
 })
 export class DialogFruitExampleDialog {}
 
 @Component({
-  moduleId: module.id,
   selector: 'dialog-welcome-a11y',
   templateUrl: 'dialog-welcome-a11y.html',
 })
 export class DialogWelcomeExampleDialog {}
 
 @Component({
-  moduleId: module.id,
   selector: 'dialog-neptune-a11y-dialog',
   templateUrl: './dialog-neptune-a11y.html',
 })
@@ -69,7 +65,6 @@ export class DialogNeptuneExampleDialog {
 }
 
 @Component({
-  moduleId: module.id,
   selector: 'dialog-neptune-iframe-dialog',
   styles: [`
     iframe {
@@ -81,7 +76,6 @@ export class DialogNeptuneExampleDialog {
 export class DialogNeptuneIFrameDialog {}
 
 @Component({
-  moduleId: module.id,
   selector: 'dialog-address-form-a11y',
   styles: [`
     .demo-full-width {

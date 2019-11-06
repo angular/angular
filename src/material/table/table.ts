@@ -13,7 +13,6 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
  * Wrapper for the CdkTable with Material design styles.
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-table, table[mat-table]',
   exportAs: 'matTable',
   template: CDK_TABLE_TEMPLATE,

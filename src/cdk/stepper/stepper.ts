@@ -105,7 +105,6 @@ export interface StepperOptions {
 }
 
 @Component({
-  moduleId: module.id,
   selector: 'cdk-step',
   exportAs: 'cdkStep',
   template: '<ng-template><ng-content></ng-content></ng-template>',

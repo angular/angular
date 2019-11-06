@@ -10,7 +10,6 @@ import {Component} from '@angular/core';
 
 
 @Component({
-  moduleId: module.id,
   selector: 'list-a11y',
   templateUrl: 'list-a11y.html',
   styleUrls: ['list-a11y.css']

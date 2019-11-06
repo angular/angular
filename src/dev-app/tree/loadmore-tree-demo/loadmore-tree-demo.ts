@@ -20,7 +20,6 @@ const LOAD_MORE = 'LOAD_MORE';
  * `Load more...` button to manually request for more data in the tree.
  */
 @Component({
-  moduleId: module.id,
   selector: 'loadmore-tree-demo',
   templateUrl: 'loadmore-tree-demo.html',
   styleUrls: ['loadmore-tree-demo.css'],

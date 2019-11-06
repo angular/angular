@@ -18,7 +18,6 @@ type State = {
 
 
 @Component({
-  moduleId: module.id,
   selector: 'virtual-scroll-demo',
   templateUrl: 'virtual-scroll-demo.html',
   styleUrls: ['virtual-scroll-demo.css'],

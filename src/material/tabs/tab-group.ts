@@ -387,7 +387,6 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
  * See: https://material.io/design/components/tabs.html
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-tab-group',
   exportAs: 'matTabGroup',
   templateUrl: 'tab-group.html',

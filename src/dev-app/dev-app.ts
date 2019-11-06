@@ -10,7 +10,6 @@ import {Component, ViewEncapsulation} from '@angular/core';
 
 /** Root component for the dev-app demos. */
 @Component({
-  moduleId: module.id,
   selector: 'dev-app',
   template: '<dev-app-layout><router-outlet></router-outlet></dev-app-layout>',
   encapsulation: ViewEncapsulation.None,

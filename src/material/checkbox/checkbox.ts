@@ -111,7 +111,6 @@ const _MatCheckboxMixinBase:
  * See: https://material.io/design/components/selection-controls.html
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-checkbox',
   templateUrl: 'checkbox.html',
   styleUrls: ['checkbox.css'],

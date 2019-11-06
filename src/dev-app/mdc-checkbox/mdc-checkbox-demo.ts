@@ -40,7 +40,6 @@ export class AnimationsNoop {
 }
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-checkbox-demo-nested-checklist',
   styles: [`
     li {
@@ -95,7 +94,6 @@ export class MatCheckboxDemoNestedChecklist {
 }
 
 @Component({
-  moduleId: module.id,
   selector: 'mdc-checkbox-demo',
   templateUrl: 'mdc-checkbox-demo.html',
   styleUrls: ['mdc-checkbox-demo.css'],

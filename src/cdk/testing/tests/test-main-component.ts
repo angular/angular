@@ -19,7 +19,6 @@ import {
 } from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'test-main',
   templateUrl: 'test-main-component.html',
   host: {

@@ -36,7 +36,6 @@ import {MatInkBar} from './ink-bar';
  * @docs-private
  */
 @Component({
-  moduleId: module.id,
   selector: 'mat-tab-header',
   templateUrl: 'tab-header.html',
   styleUrls: ['tab-header.css'],

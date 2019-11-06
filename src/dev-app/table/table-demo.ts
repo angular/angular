@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   templateUrl: './table-demo.html',
 })
 export class TableDemo {}

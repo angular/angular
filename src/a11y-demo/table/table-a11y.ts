@@ -30,7 +30,6 @@ const exampleData = [
 ];
 
 @Component({
-  moduleId: module.id,
   selector: 'table-a11y',
   templateUrl: 'table-a11y.html',
   styleUrls: ['table-a11y.css'],

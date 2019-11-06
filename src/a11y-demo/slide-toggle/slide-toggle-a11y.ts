@@ -11,7 +11,6 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 
 
 @Component({
-  moduleId: module.id,
   selector: 'slide-toggle-a11y',
   templateUrl: 'slide-toggle-a11y.html',
 })

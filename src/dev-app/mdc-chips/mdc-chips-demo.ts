@@ -21,7 +21,6 @@ export interface DemoColor {
 }
 
 @Component({
-  moduleId: module.id,
   selector: 'mdc-chips-demo',
   templateUrl: 'mdc-chips-demo.html',
   styleUrls: ['mdc-chips-demo.css'],

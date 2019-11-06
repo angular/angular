@@ -37,6 +37,3 @@ require.config({
     '@material/top-app-bar': '@material/top-app-bar/dist/mdc.topAppBar',
   }
 });
-
-// Workaround until https://github.com/angular/components/issues/13883 has been addressed.
-var module = {id: ''};

@@ -15,7 +15,6 @@ export interface Dog {
 }
 
 @Component({
-  moduleId: module.id,
   selector: 'grid-list-a11y',
   templateUrl: 'grid-list-a11y.html',
   styleUrls: ['grid-list-a11y.css'],

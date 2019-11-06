@@ -54,7 +54,6 @@ export class MatSlideToggleChange {
 }
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-slide-toggle',
   templateUrl: 'slide-toggle.html',
   styleUrls: ['slide-toggle.css'],

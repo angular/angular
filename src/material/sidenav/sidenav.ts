@@ -27,7 +27,6 @@ import {ScrollDispatcher} from '@angular/cdk/scrolling';
 
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-sidenav-content',
   template: '<ng-content></ng-content>',
   host: {
@@ -51,7 +50,6 @@ export class MatSidenavContent extends MatDrawerContent {
 
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-sidenav',
   exportAs: 'matSidenav',
   templateUrl: 'drawer.html',
@@ -108,7 +106,6 @@ export class MatSidenav extends MatDrawer {
 
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-sidenav-container',
   exportAs: 'matSidenavContainer',
   templateUrl: 'sidenav-container.html',

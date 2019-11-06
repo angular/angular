@@ -47,7 +47,6 @@ const SCROLL_SCHEDULER =
 
 /** A viewport that virtualizes its scrolling with the help of `CdkVirtualForOf`. */
 @Component({
-  moduleId: module.id,
   selector: 'cdk-virtual-scroll-viewport',
   templateUrl: 'virtual-scroll-viewport.html',
   styleUrls: ['virtual-scroll-viewport.css'],
