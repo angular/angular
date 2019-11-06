@@ -71,9 +71,10 @@ export class RouterScroller implements OnDestroy {
           this.viewportScroller.scrollToPosition(e.position);
         }
         // imperative navigation "forward"
+        console.log("router_scroller - consumeScrollEvents - imperative navigation 'forward'");
       } else {
         if (e.anchor && this.options.anchorScrolling === 'enabled') {
-          console.log("Inside private consumeScrollEvents: e.anchor && this.options.anchorScrolling")
+          console.log("router_scroller - consumeScrollEvents - scrollToAnchor")
           this.viewportScroller.scrollToAnchor(e.anchor);
         } else if (this.options.scrollPositionRestoration !== 'disabled') {
           this.viewportScroller.scrollToPosition([0, 0]);
