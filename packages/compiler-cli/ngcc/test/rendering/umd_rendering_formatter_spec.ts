@@ -154,7 +154,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
       ], A);
       return A;
   }());
-  export { A };
+  exports.A = A;
   var B = /** @class */ (function () {
       function B() {
       }
@@ -164,7 +164,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
       ], B);
       return B;
   }());
-  export { B };
+  exports.B = B;
   var C = /** @class */ (function () {
       function C() {
       }
@@ -173,7 +173,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
       ], C);
       return C;
   }());
-  export { C };
+  exports.C = C;
   var D = /** @class */ (function () {
       function D() {
       }
@@ -412,6 +412,62 @@ SOME DEFINITION TEXT
         expect(() => renderer.addDefinitions(output, mockBadIifeClass, 'SOME DEFINITION TEXT'))
             .toThrowError(
                 `Compiled class wrapper IIFE does not have a return statement: BadIife in ${_('/node_modules/test-package/some/file.js')}`);
+      });
+    });
+
+    describe('addAdjacentStatements', () => {
+      const contents = `(function (global, factory) {\n` +
+          `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports,require('tslib'),require('@angular/core')) :\n` +
+          `  typeof define === 'function' && define.amd ? define('file', ['exports','/tslib','@angular/core'], factory) :\n` +
+          `  (factory(global.file,global.tslib,global.ng.core));\n` +
+          `  }(this, (function (exports,tslib,core) {'use strict';\n` +
+          `\n` +
+          `  var SomeDirective = /** @class **/ (function () {\n` +
+          `    function SomeDirective(zone, cons) {}\n` +
+          `    SomeDirective.prototype.method = function() {}\n` +
+          `    SomeDirective.decorators = [\n` +
+          `      { type: core.Directive, args: [{ selector: '[a]' }] },\n` +
+          `      { type: OtherA }\n` +
+          `    ];\n` +
+          `    SomeDirective.ctorParameters = () => [\n` +
+          `      { type: core.NgZone },\n` +
+          `      { type: core.Console }\n` +
+          `    ];\n` +
+          `    return SomeDirective;\n` +
+          `  }());\n` +
+          `  exports.SomeDirective = SomeDirective;\n` +
+          `})));`;
+
+      it('should insert the statements after all the static methods of the class', () => {
+        const program = {name: _('/node_modules/test-package/some/file.js'), contents};
+        const {renderer, decorationAnalyses, sourceFile} = setup(program);
+        const output = new MagicString(contents);
+        const compiledClass = decorationAnalyses.get(sourceFile) !.compiledClasses.find(
+            c => c.name === 'SomeDirective') !;
+        renderer.addAdjacentStatements(output, compiledClass, 'SOME STATEMENTS');
+        expect(output.toString())
+            .toContain(
+                `    SomeDirective.ctorParameters = () => [\n` +
+                `      { type: core.NgZone },\n` +
+                `      { type: core.Console }\n` +
+                `    ];\n` +
+                `SOME STATEMENTS\n` +
+                `    return SomeDirective;\n`);
+      });
+
+      it('should insert the statements after any definitions', () => {
+        const program = {name: _('/node_modules/test-package/some/file.js'), contents};
+        const {renderer, decorationAnalyses, sourceFile} = setup(program);
+        const output = new MagicString(contents);
+        const compiledClass = decorationAnalyses.get(sourceFile) !.compiledClasses.find(
+            c => c.name === 'SomeDirective') !;
+        renderer.addDefinitions(output, compiledClass, 'SOME DEFINITIONS');
+        renderer.addAdjacentStatements(output, compiledClass, 'SOME STATEMENTS');
+        const definitionsPosition = output.toString().indexOf('SOME DEFINITIONS');
+        const statementsPosition = output.toString().indexOf('SOME STATEMENTS');
+        expect(definitionsPosition).not.toEqual(-1, 'definitions should exist');
+        expect(statementsPosition).not.toEqual(-1, 'statements should exist');
+        expect(statementsPosition).toBeGreaterThan(definitionsPosition);
       });
     });
 
