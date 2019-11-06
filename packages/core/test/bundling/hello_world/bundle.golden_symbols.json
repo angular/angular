@@ -219,6 +219,9 @@
     "name": "extractPipeDef"
   },
   {
+    "name": "findComponentView"
+  },
+  {
     "name": "generateExpandoInstructionBlock"
   },
   {
@@ -246,6 +249,9 @@
     "name": "getFactoryDef"
   },
   {
+    "name": "getFirstNativeNode"
+  },
+  {
     "name": "getInjectorIndex"
   },
   {
@@ -258,13 +264,13 @@
     "name": "getLView"
   },
   {
+    "name": "getLViewParent"
+  },
+  {
     "name": "getNativeAnchorNode"
   },
   {
     "name": "getNativeByTNode"
-  },
-  {
-    "name": "getNativeByTNodeOrNull"
   },
   {
     "name": "getNodeInjectable"

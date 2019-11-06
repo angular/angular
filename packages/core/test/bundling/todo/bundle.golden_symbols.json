@@ -666,6 +666,9 @@
     "name": "getFactoryDef"
   },
   {
+    "name": "getFirstNativeNode"
+  },
+  {
     "name": "getGuardMask"
   },
   {
@@ -709,9 +712,6 @@
   },
   {
     "name": "getNativeByTNode"
-  },
-  {
-    "name": "getNativeByTNodeOrNull"
   },
   {
     "name": "getNodeInjectable"
