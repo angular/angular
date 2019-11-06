@@ -20,8 +20,8 @@ import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRend
 import {isLContainer, isLView, isRootView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_LCONTAINER, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {findComponentView} from './util/view_traversal_utils';
-import {getNativeByTNode, getNativeByTNodeOrNull, unwrapRNode} from './util/view_utils';
+import {findComponentView, getLViewParent} from './util/view_traversal_utils';
+import {getNativeByTNode, unwrapRNode} from './util/view_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -652,25 +652,55 @@ export function appendChild(childEl: RNode | RNode[], childTNode: TNode, current
   }
 }
 
+/**
+ * Returns the first native node for a given LView, starting from the provided TNode.
+ *
+ * Native nodes are returned in the order in which those appear in the native tree (DOM).
+ */
+function getFirstNativeNode(lView: LView, tNode: TNode | null): RNode|null {
+  if (tNode !== null) {
+    ngDevMode && assertNodeOfPossibleTypes(
+                     tNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer,
+                     TNodeType.IcuContainer, TNodeType.Projection);
+
+    const tNodeType = tNode.type;
+
+    if (tNodeType === TNodeType.Element) {
+      return getNativeByTNode(tNode, lView);
+    } else if (tNodeType === TNodeType.Container) {
+      const lContainer = lView[tNode.index];
+      if (lContainer.length > CONTAINER_HEADER_OFFSET) {
+        const firstView = lContainer[CONTAINER_HEADER_OFFSET];
+        return getFirstNativeNode(firstView, firstView[TVIEW].firstChild);
+      } else {
+        return lContainer[NATIVE];
+      }
+    } else if (tNodeType === TNodeType.ElementContainer || tNodeType === TNodeType.IcuContainer) {
+      return getFirstNativeNode(lView, tNode.child);
+    } else {
+      const componentView = findComponentView(lView);
+      const componentHost = componentView[T_HOST] as TElementNode;
+      const parentView = getLViewParent(componentView);
+      const firstProjectedTNode: TNode|null =
+          (componentHost.projection as(TNode | null)[])[tNode.projection as number];
+
+      if (firstProjectedTNode != null) {
+        return getFirstNativeNode(parentView !, firstProjectedTNode);
+      } else {
+        return getFirstNativeNode(lView, tNode.next);
+      }
+    }
+  }
+
+  return null;
+}
+
 export function getBeforeNodeForView(viewIndexInContainer: number, lContainer: LContainer): RNode|
     null {
   const nextViewIndex = CONTAINER_HEADER_OFFSET + viewIndexInContainer + 1;
   if (nextViewIndex < lContainer.length) {
     const lView = lContainer[nextViewIndex] as LView;
-    ngDevMode && assertDefined(lView[T_HOST], 'Missing Host TNode');
-    let tViewNodeChild = (lView[T_HOST] as TViewNode).child;
-    if (tViewNodeChild !== null) {
-      if (tViewNodeChild.type === TNodeType.ElementContainer ||
-          tViewNodeChild.type === TNodeType.IcuContainer) {
-        let currentChild = tViewNodeChild.child;
-        while (currentChild && (currentChild.type === TNodeType.ElementContainer ||
-                                currentChild.type === TNodeType.IcuContainer)) {
-          currentChild = currentChild.child;
-        }
-        tViewNodeChild = currentChild || tViewNodeChild;
-      }
-      return getNativeByTNodeOrNull(tViewNodeChild, lView);
-    }
+    return getFirstNativeNode(lView, lView[TVIEW].firstChild);
   }
 
   return lContainer[NATIVE];
