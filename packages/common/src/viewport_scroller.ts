@@ -110,27 +110,36 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @param anchor The ID of the anchor element.
    */
   scrollToAnchor(anchor: string): void {
+    console.log("Level 0: Pre supportScrollRestoration");
     if (this.supportScrollRestoration()) {
+      console.log("Level 1: In supportScrollRestoration");
       // Escape anything passed to `querySelector` as it can throw errors and stop the application
       // from working if invalid values are passed.
       if (this.window.CSS && this.window.CSS.escape) {
+        console.log("Level 2a: In this.window.CSS && this.window.CSS.escape");
         anchor = this.window.CSS.escape(anchor);
       } else {
+        console.log("Level 2b: In anchor.replace");
         anchor = anchor.replace(/(\"|\'\ |:|\.|\[|\]|,|=)/g, '\\$1');
       }
+      console.log("Level 3: Pre try");
       try {
+        console.log("Level 4: In try");
         const elSelectedById = this.document.querySelector(`#${anchor}`);
         if (elSelectedById) {
-          console.log("Test log by Sergej!")
+          console.log("Level 5a: Works! selectById");
           this.scrollToElement(elSelectedById);
           return;
         }
         const elSelectedByName = this.document.querySelector(`[name='${anchor}']`);
         if (elSelectedByName) {
+          console.log("Level 5b: Works! selectByName");
           this.scrollToElement(elSelectedByName);
           return;
         }
       } catch (e) {
+        console.log("Level 5c: Error!");
+        console.log("Error: \n " + e);
         this.errorHandler.handleError(e);
       }
     }
