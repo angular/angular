@@ -78,6 +78,10 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   grep "ApplicationModule.ɵmod = ɵngcc0.ɵɵdefineNgModule" node_modules/@angular/core/esm5/src/application_module.js
   assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (esm5)."
 
+# Did it place the `setClassMetadata` call correctly?
+  cat node_modules/@angular/core/fesm2015/core.js | awk 'ORS=" "' | grep "ApplicationRef.ctorParameters.*setClassMetadata(ApplicationRef"
+  assertSucceeded "Expected 'ngcc' to place 'setClassMetadata' after static properties like 'ctorParameters' in '@angular/core' (fesm2015)."
+
 
 # Did it transform @angular/core typing files correctly?
   grep "import [*] as ɵngcc0 from './src/r3_symbols';" node_modules/@angular/core/core.d.ts
