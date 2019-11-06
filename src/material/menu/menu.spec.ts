@@ -796,6 +796,7 @@ describe('MatMenu', () => {
     fixture.detectChanges();
     fixture.componentInstance.trigger.openMenu();
     fixture.detectChanges();
+    tick(500);
 
     expect(document.activeElement).toBe(overlayContainerElement.querySelector('.mat-menu-panel'));
   }));
