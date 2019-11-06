@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {DefaultImportRecorder} from '../../imports';
 import {CtorParameter, Decorator, ReflectionHost} from '../../reflection';
 
-import {valueReferenceToExpression} from './util';
+import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './util';
 
 
 /**
@@ -24,7 +24,7 @@ import {valueReferenceToExpression} from './util';
  */
 export function generateSetClassMetadataCall(
     clazz: ts.Declaration, reflection: ReflectionHost, defaultImportRecorder: DefaultImportRecorder,
-    isCore: boolean): Statement|null {
+    isCore: boolean, annotateForClosureCompiler?: boolean): Statement|null {
   if (!reflection.isClass(clazz)) {
     return null;
   }
@@ -37,7 +37,9 @@ export function generateSetClassMetadataCall(
     return null;
   }
   const ngClassDecorators =
-      classDecorators.filter(dec => isAngularDecorator(dec, isCore)).map(decoratorToMetadata);
+      classDecorators.filter(dec => isAngularDecorator(dec, isCore))
+          .map(
+              (decorator: Decorator) => decoratorToMetadata(decorator, annotateForClosureCompiler));
   if (ngClassDecorators.length === 0) {
     return null;
   }
@@ -109,8 +111,8 @@ function ctorParameterToMetadata(
 
   // If the parameter has decorators, include the ones from Angular.
   if (param.decorators !== null) {
-    const ngDecorators =
-        param.decorators.filter(dec => isAngularDecorator(dec, isCore)).map(decoratorToMetadata);
+    const ngDecorators = param.decorators.filter(dec => isAngularDecorator(dec, isCore))
+                             .map((decorator: Decorator) => decoratorToMetadata(decorator));
     const value = new WrappedNodeExpr(ts.createArrayLiteral(ngDecorators));
     mapEntries.push({key: 'decorators', value, quoted: false});
   }
@@ -122,8 +124,8 @@ function ctorParameterToMetadata(
  */
 function classMemberToMetadata(
     name: string, decorators: Decorator[], isCore: boolean): ts.PropertyAssignment {
-  const ngDecorators =
-      decorators.filter(dec => isAngularDecorator(dec, isCore)).map(decoratorToMetadata);
+  const ngDecorators = decorators.filter(dec => isAngularDecorator(dec, isCore))
+                           .map((decorator: Decorator) => decoratorToMetadata(decorator));
   const decoratorMeta = ts.createArrayLiteral(ngDecorators);
   return ts.createPropertyAssignment(name, decoratorMeta);
 }
@@ -131,7 +133,8 @@ function classMemberToMetadata(
 /**
  * Convert a reflected decorator to metadata.
  */
-function decoratorToMetadata(decorator: Decorator): ts.ObjectLiteralExpression {
+function decoratorToMetadata(
+    decorator: Decorator, wrapFunctionsInParens?: boolean): ts.ObjectLiteralExpression {
   if (decorator.identifier === null) {
     throw new Error('Illegal state: synthesized decorator cannot be emitted in class metadata.');
   }
@@ -141,7 +144,10 @@ function decoratorToMetadata(decorator: Decorator): ts.ObjectLiteralExpression {
   ];
   // Sometimes they have arguments.
   if (decorator.args !== null && decorator.args.length > 0) {
-    const args = decorator.args.map(arg => ts.getMutableClone(arg));
+    const args = decorator.args.map(arg => {
+      const expr = ts.getMutableClone(arg);
+      return wrapFunctionsInParens ? wrapFunctionExpressionsInParens(expr) : expr;
+    });
     properties.push(ts.createPropertyAssignment('args', ts.createArrayLiteral(args)));
   }
   return ts.createObjectLiteral(properties, true);

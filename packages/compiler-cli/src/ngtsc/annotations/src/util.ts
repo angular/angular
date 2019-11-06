@@ -351,3 +351,28 @@ export function readBaseClass(
 
   return null;
 }
+
+const parensWrapperTransformerFactory: ts.TransformerFactory<ts.Expression> =
+    (context: ts.TransformationContext) => {
+      const visitor = (node: ts.Node): ts.Node => {
+        const visited = ts.visitEachChild(node, visitor, context);
+        if (ts.isArrowFunction(visited) || ts.isFunctionExpression(visited)) {
+          return ts.createParen(visited);
+        }
+        return visited;
+      };
+      return (node: ts.Expression) => ts.visitEachChild(node, visitor, context);
+    };
+
+/**
+ * Wraps all functions in a given expression in parentheses. This is needed to avoid problems
+ * where Tsickle annotations added between analyse and transform phases in Angular may trigger
+ * automatic semicolon insertion, e.g. if a function is the expression in a `return` statement. More
+ * info can be found in Tsickle source code here:
+ * https://github.com/angular/tsickle/blob/d7974262571c8a17d684e5ba07680e1b1993afdd/src/jsdoc_transformer.ts#L1021
+ *
+ * @param expression Expression where functions should be wrapped in parentheses
+ */
+export function wrapFunctionExpressionsInParens(expression: ts.Expression): ts.Expression {
+  return ts.transform(expression, [parensWrapperTransformerFactory]).transformed[0];
+}
