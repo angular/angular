@@ -57,13 +57,13 @@ class Walker extends Lint.RuleWalker {
       // Check class members that were declared via the constructor
       // (e.g. `constructor(private _something: number)`. These nodes don't
       // show up under `ClassDeclaration.members`.
-      if (tsutils.hasModifier(modifiers, ts.SyntaxKind.ReadonlyKeyword) ||
-          tsutils.hasModifier(modifiers, ts.SyntaxKind.PublicKeyword)) {
-        this._validateNode(param, 'public');
-      } else if (tsutils.hasModifier(modifiers, ts.SyntaxKind.PrivateKeyword)) {
+      if (tsutils.hasModifier(modifiers, ts.SyntaxKind.PrivateKeyword)) {
         this._validateNode(param, 'private');
       } else if (tsutils.hasModifier(modifiers, ts.SyntaxKind.ProtectedKeyword)) {
         this._validateNode(param, 'protected');
+      } else if (tsutils.hasModifier(modifiers, ts.SyntaxKind.ReadonlyKeyword) ||
+                 tsutils.hasModifier(modifiers, ts.SyntaxKind.PublicKeyword)) {
+        this._validateNode(param, 'public');
       }
     });
 

@@ -86,8 +86,8 @@ export class MapInfoWindow implements OnInit, OnDestroy {
 
   private _infoWindow?: google.maps.InfoWindow;
 
-  constructor(private readonly googleMap: GoogleMap, private _elementRef: ElementRef<HTMLElement>) {
-  }
+  constructor(private readonly _googleMap: GoogleMap,
+              private _elementRef: ElementRef<HTMLElement>) {}
 
   ngOnInit() {
     this._combineOptions().pipe(takeUntil(this._destroy)).subscribe(options => {
@@ -149,9 +149,9 @@ export class MapInfoWindow implements OnInit, OnDestroy {
    */
   open(anchor?: MapMarker) {
     const marker = anchor ? anchor._marker : undefined;
-    if (this.googleMap._googleMap) {
+    if (this._googleMap._googleMap) {
       this._elementRef.nativeElement.style.display = '';
-      this._infoWindow!.open(this.googleMap._googleMap, marker);
+      this._infoWindow!.open(this._googleMap._googleMap, marker);
     }
   }
 

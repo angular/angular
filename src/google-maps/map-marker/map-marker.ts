@@ -209,14 +209,14 @@ export class MapMarker implements OnInit, OnDestroy {
 
   _marker?: google.maps.Marker;
 
-  constructor(private readonly googleMap: GoogleMap) {}
+  constructor(private readonly _googleMap: GoogleMap) {}
 
   ngOnInit() {
     const combinedOptionsChanges = this._combineOptions();
 
     combinedOptionsChanges.pipe(take(1)).subscribe(options => {
       this._marker = new google.maps.Marker(options);
-      this._marker.setMap(this.googleMap._googleMap);
+      this._marker.setMap(this._googleMap._googleMap);
       this._initializeEventHandlers();
     });
 
@@ -343,7 +343,7 @@ export class MapMarker implements OnInit, OnDestroy {
             position: position || options.position,
             label: label || options.label,
             clickable: clickable !== undefined ? clickable : options.clickable,
-            map: this.googleMap._googleMap || null,
+            map: this._googleMap._googleMap || null,
           };
           return combinedOptions;
         }));
