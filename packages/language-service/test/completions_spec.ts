@@ -283,6 +283,20 @@ describe('completions', () => {
       const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
       expectContain(completions, CompletionKind.PROPERTY, ['name', 'age', 'street']);
     });
+
+    it('should be able to resolve variable in nested loop', () => {
+      mockHost.override(TEST_TEMPLATE, `
+        <div *ngFor="let leagueMembers of league">
+          <div *ngFor="let member of leagueMembers">
+            {{member.~{position}}}
+          </div>
+        </div>
+      `);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'position');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      // member variable of type Hero has properties 'id' and 'name'.
+      expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
+    });
   });
 
   describe('data binding', () => {

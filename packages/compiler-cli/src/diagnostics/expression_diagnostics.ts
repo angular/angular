@@ -90,52 +90,77 @@ function getDefinitionOf(info: DiagnosticTemplateInfo, ast: TemplateAst): Defini
   }
 }
 
-function getVarDeclarations(
-    info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolDeclaration[] {
-  const result: SymbolDeclaration[] = [];
-
-  let current = path.tail;
-  while (current) {
-    if (current instanceof EmbeddedTemplateAst) {
-      for (const variable of current.variables) {
-        const name = variable.name;
-
-        // Find the first directive with a context.
-        const context =
-            current.directives.map(d => info.query.getTemplateContext(d.directive.type.reference))
-                .find(c => !!c);
-
-        // Determine the type of the context field referenced by variable.value.
-        let type: Symbol|undefined = undefined;
-        if (context) {
-          const value = context.get(variable.value);
-          if (value) {
-            type = value.type !;
-            let kind = info.query.getTypeKind(type);
-            if (kind === BuiltinType.Any || kind == BuiltinType.Unbound) {
-              // The any type is not very useful here. For special cases, such as ngFor, we can do
-              // better.
-              type = refinedVariableType(type, info, current);
-            }
-          }
-        }
-        if (!type) {
-          type = info.query.getBuiltinType(BuiltinType.Any);
-        }
-        result.push({
-          name,
-          kind: 'variable', type, get definition() { return getDefinitionOf(info, variable); }
-        });
-      }
+/**
+ * Resolve the specified `variable` from the `directives` list and return the
+ * corresponding symbol. If resolution fails, return the `any` type.
+ * @param variable template variable to resolve
+ * @param directives template context
+ * @param query
+ */
+function findSymbolForVariableInDirectives(
+    variable: VariableAst, directives: DirectiveAst[], query: SymbolQuery): Symbol {
+  for (const d of directives) {
+    // Get the symbol table for the directive's StaticSymbol
+    const table = query.getTemplateContext(d.directive.type.reference);
+    if (!table) {
+      continue;
     }
-    current = path.parentOf(current);
+    const symbol = table.get(variable.value);
+    if (symbol) {
+      return symbol;
+    }
   }
-
-  return result;
+  return query.getBuiltinType(BuiltinType.Any);
 }
 
+/**
+ * Resolve all variable declarations in a template by traversing the specified
+ * `path`.
+ * @param info
+ * @param path template AST path
+ */
+function getVarDeclarations(
+    info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolDeclaration[] {
+  const results: SymbolDeclaration[] = [];
+  for (let current = path.head; current; current = path.childOf(current)) {
+    if (!(current instanceof EmbeddedTemplateAst)) {
+      continue;
+    }
+    const {directives, variables} = current;
+    for (const variable of variables) {
+      let symbol = findSymbolForVariableInDirectives(variable, directives, info.query);
+      const kind = info.query.getTypeKind(symbol);
+      if (kind === BuiltinType.Any || kind === BuiltinType.Unbound) {
+        // For special cases such as ngFor and ngIf, the any type is not very useful.
+        // We can do better by resolving the binding value.
+        const symbolsInScope = info.query.mergeSymbolTable([
+          info.members,
+          // Since we are traversing the AST path from head to tail, any variables
+          // that have been declared so far are also in scope.
+          info.query.createSymbolTable(results),
+        ]);
+        symbol = refinedVariableType(symbolsInScope, info.query, current);
+      }
+      results.push({
+        name: variable.name,
+        kind: 'variable',
+        type: symbol, get definition() { return getDefinitionOf(info, variable); },
+      });
+    }
+  }
+  return results;
+}
+
+/**
+ * Resolve a more specific type for the variable in `templateElement` by inspecting
+ * all variables that are in scope in the `mergedTable`. This function is a special
+ * case for `ngFor` and `ngIf`. If resolution fails, return the `any` type.
+ * @param mergedTable symbol table for all variables in scope
+ * @param query
+ * @param templateElement
+ */
 function refinedVariableType(
-    type: Symbol, info: DiagnosticTemplateInfo, templateElement: EmbeddedTemplateAst): Symbol {
+    mergedTable: SymbolTable, query: SymbolQuery, templateElement: EmbeddedTemplateAst): Symbol {
   // Special case the ngFor directive
   const ngForDirective = templateElement.directives.find(d => {
     const name = identifierName(d.directive.type);
@@ -144,9 +169,9 @@ function refinedVariableType(
   if (ngForDirective) {
     const ngForOfBinding = ngForDirective.inputs.find(i => i.directiveName == 'ngForOf');
     if (ngForOfBinding) {
-      const bindingType = new AstType(info.members, info.query, {}).getType(ngForOfBinding.value);
+      const bindingType = new AstType(mergedTable, query, {}).getType(ngForOfBinding.value);
       if (bindingType) {
-        const result = info.query.getElementType(bindingType);
+        const result = query.getElementType(bindingType);
         if (result) {
           return result;
         }
@@ -160,7 +185,7 @@ function refinedVariableType(
   if (ngIfDirective) {
     const ngIfBinding = ngIfDirective.inputs.find(i => i.directiveName === 'ngIf');
     if (ngIfBinding) {
-      const bindingType = new AstType(info.members, info.query, {}).getType(ngIfBinding.value);
+      const bindingType = new AstType(mergedTable, query, {}).getType(ngIfBinding.value);
       if (bindingType) {
         return bindingType;
       }
@@ -168,7 +193,7 @@ function refinedVariableType(
   }
 
   // We can't do better, return any
-  return info.query.getBuiltinType(BuiltinType.Any);
+  return query.getBuiltinType(BuiltinType.Any);
 }
 
 function getEventDeclaration(info: DiagnosticTemplateInfo, includeEvent?: boolean) {
