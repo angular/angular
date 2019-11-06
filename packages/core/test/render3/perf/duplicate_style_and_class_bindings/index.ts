@@ -13,7 +13,7 @@ import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {TVIEW} from '../../../../src/render3/interfaces/view';
 import {createBenchmark} from '../micro_bench';
 import {setupRootViewWithEmbeddedViews} from '../setup';
-import {createDirectiveDef} from '../shared';
+import {defineBenchmarkTestDirective} from '../shared';
 
 `<ng-template>
   <section>
@@ -154,8 +154,8 @@ const rootLView = setupRootViewWithEmbeddedViews(
       ['dir-that-sets-width', '', 'dir-that-sets-foo-class', ''],
     ],
     [
-      createDirectiveDef('dir-that-sets-width', dirThatSetsWidthHostBindings),
-      createDirectiveDef('dir-that-sets-foo-class', dirThatSetsFooClassHostBindings),
+      defineBenchmarkTestDirective('dir-that-sets-width', dirThatSetsWidthHostBindings),
+      defineBenchmarkTestDirective('dir-that-sets-foo-class', dirThatSetsFooClassHostBindings),
     ]);
 const rootTView = rootLView[TVIEW];
 
