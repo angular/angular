@@ -338,6 +338,8 @@ export function extractPipeDef(type: Type<any>): PipeDef<any> {
   return def !;
 }
 
+export const autoRegisterModuleById: {[id: string]: NgModuleDef<any>} = {};
+
 /**
  * @codeGenApi
  */
@@ -376,6 +378,9 @@ export function ɵɵdefineNgModule<T>(def: {
     schemas: def.schemas || null,
     id: def.id || null,
   };
+  if (def.id != null) {
+    autoRegisterModuleById[def.id] = res;
+  }
   return res as never;
 }
 
