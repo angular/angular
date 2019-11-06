@@ -214,7 +214,7 @@ export class AstType implements AstVisitor {
     // The members of the implicit receiver are what is defined by the
     // scope passed into this class.
     return {
-      name: '$implict',
+      name: '$implicit',
       kind: 'component',
       language: 'ng-template',
       type: undefined,
@@ -384,7 +384,7 @@ export class AstType implements AstVisitor {
     const member = receiverType.members().get(ast.name);
     if (!member) {
       let receiverInfo = receiverType.name;
-      if (receiverInfo == '$implict') {
+      if (receiverInfo == '$implicit') {
         receiverInfo =
             'The component declaration, template variable declarations, and element references do';
       } else if (receiverType.nullable) {
@@ -398,7 +398,7 @@ export class AstType implements AstVisitor {
     }
     if (!member.public) {
       let receiverInfo = receiverType.name;
-      if (receiverInfo == '$implict') {
+      if (receiverInfo == '$implicit') {
         receiverInfo = 'the component';
       } else {
         receiverInfo = `'${receiverInfo}'`;
