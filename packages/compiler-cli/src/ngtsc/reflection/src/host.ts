@@ -336,6 +336,10 @@ export enum TsHelperFn {
    * Indicates the `__spread` function.
    */
   Spread,
+  /**
+   * Indicates the `__spreadArrays` function.
+   */
+  SpreadArrays,
 }
 
 /**

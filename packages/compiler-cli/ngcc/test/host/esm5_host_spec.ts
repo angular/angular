@@ -1651,7 +1651,7 @@ runInEachFileSystem(() => {
       it('should recognize TypeScript __spread helper function declaration', () => {
         const file: TestFile = {
           name: _('/declaration.d.ts'),
-          contents: `export declare function __spread(...args: any[]): any[];`,
+          contents: `export declare function __spread(...args: any[][]): any[];`,
         };
         loadTestFiles([file]);
         const {program} = makeTestBundleProgram(file.name);
@@ -1709,6 +1709,78 @@ runInEachFileSystem(() => {
            expect(definition.node).toBe(node);
            expect(definition.body).toBeNull();
            expect(definition.helper).toBe(TsHelperFn.Spread);
+           expect(definition.parameters.length).toEqual(0);
+         });
+
+      it('should recognize TypeScript __spreadArrays helper function declaration', () => {
+        const file: TestFile = {
+          name: _('/declaration.d.ts'),
+          contents: `export declare function __spreadArrays(...args: any[][]): any[];`,
+        };
+        loadTestFiles([file]);
+        const {program} = makeTestBundleProgram(file.name);
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+
+        const node =
+            getDeclaration(program, file.name, '__spreadArrays', isNamedFunctionDeclaration) !;
+
+        const definition = host.getDefinitionOfFunction(node) !;
+        expect(definition.node).toBe(node);
+        expect(definition.body).toBeNull();
+        expect(definition.helper).toBe(TsHelperFn.SpreadArrays);
+        expect(definition.parameters.length).toEqual(0);
+      });
+
+      it('should recognize TypeScript __spreadArrays helper function implementation', () => {
+        const file: TestFile = {
+          name: _('/implementation.js'),
+          contents: `
+                var __spreadArrays = (this && this.__spreadArrays) || function () {
+                  for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+                  for (var r = Array(s), k = 0, i = 0; i < il; i++)
+                      for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+                          r[k] = a[j];
+                  return r;
+                };`,
+        };
+        loadTestFiles([file]);
+        const {program} = makeTestBundleProgram(file.name);
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+
+        const node =
+            getDeclaration(program, file.name, '__spreadArrays', ts.isVariableDeclaration) !;
+
+        const definition = host.getDefinitionOfFunction(node) !;
+        expect(definition.node).toBe(node);
+        expect(definition.body).toBeNull();
+        expect(definition.helper).toBe(TsHelperFn.SpreadArrays);
+        expect(definition.parameters.length).toEqual(0);
+      });
+
+      it('should recognize TypeScript __spreadArrays helper function implementation when suffixed',
+         () => {
+           const file: TestFile = {
+             name: _('/implementation.js'),
+             contents: `
+                var __spreadArrays$2 = (this && this.__spreadArrays$2) || function () {
+                  for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+                  for (var r = Array(s), k = 0, i = 0; i < il; i++)
+                      for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+                          r[k] = a[j];
+                  return r;
+                };`,
+           };
+           loadTestFiles([file]);
+           const {program} = makeTestBundleProgram(file.name);
+           const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+
+           const node =
+               getDeclaration(program, file.name, '__spreadArrays$2', ts.isVariableDeclaration) !;
+
+           const definition = host.getDefinitionOfFunction(node) !;
+           expect(definition.node).toBe(node);
+           expect(definition.body).toBeNull();
+           expect(definition.helper).toBe(TsHelperFn.SpreadArrays);
            expect(definition.parameters.length).toEqual(0);
          });
     });
