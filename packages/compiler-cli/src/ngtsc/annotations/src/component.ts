@@ -28,7 +28,7 @@ import {ResourceLoader} from './api';
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, unwrapExpression} from './util';
+import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -55,6 +55,7 @@ export class ComponentDecoratorHandler implements
       private i18nLegacyMessageIdFormat: string, private moduleResolver: ModuleResolver,
       private cycleAnalyzer: CycleAnalyzer, private refEmitter: ReferenceEmitter,
       private defaultImportRecorder: DefaultImportRecorder,
+      private annotateForClosureCompiler: boolean,
       private resourceDependencies:
           ResourceDependencyRecorder = new NoopResourceDependencyRecorder()) {}
 
@@ -146,7 +147,8 @@ export class ComponentDecoratorHandler implements
     // on it.
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.defaultImportRecorder, this.isCore,
-        flags, this.elementSchemaRegistry.getDefaultComponentElementName());
+        flags, this.annotateForClosureCompiler,
+        this.elementSchemaRegistry.getDefaultComponentElementName());
     if (directiveResult === undefined) {
       // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
       // case, compilation of the decorator is skipped. Returning an empty object signifies
@@ -169,7 +171,10 @@ export class ComponentDecoratorHandler implements
     }, undefined) !;
 
     const viewProviders: Expression|null = component.has('viewProviders') ?
-        new WrappedNodeExpr(component.get('viewProviders') !) :
+        new WrappedNodeExpr(
+            this.annotateForClosureCompiler ?
+                wrapFunctionExpressionsInParens(component.get('viewProviders') !) :
+                component.get('viewProviders') !) :
         null;
 
     // Parse the template.
@@ -297,7 +302,8 @@ export class ComponentDecoratorHandler implements
           i18nUseExternalIds: this.i18nUseExternalIds, relativeContextFilePath
         },
         metadataStmt: generateSetClassMetadataCall(
-            node, this.reflector, this.defaultImportRecorder, this.isCore),
+            node, this.reflector, this.defaultImportRecorder, this.isCore,
+            this.annotateForClosureCompiler),
         parsedTemplate: template, parseTemplate, templateSourceMapping,
       },
       typeCheck: true,

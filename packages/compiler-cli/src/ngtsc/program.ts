@@ -604,16 +604,18 @@ export class NgtscProgram implements api.Program {
           this.isCore, this.resourceManager, this.rootDirs,
           this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds !== false,
           this.getI18nLegacyMessageFormat(), this.moduleResolver, this.cycleAnalyzer,
-          this.refEmitter, this.defaultImportTracker, this.incrementalState),
+          this.refEmitter, this.defaultImportTracker, this.closureCompilerEnabled,
+          this.incrementalState),
       new DirectiveDecoratorHandler(
-          this.reflector, evaluator, metaRegistry, this.defaultImportTracker, this.isCore),
+          this.reflector, evaluator, metaRegistry, this.defaultImportTracker, this.isCore,
+          this.closureCompilerEnabled),
       new InjectableDecoratorHandler(
           this.reflector, this.defaultImportTracker, this.isCore,
           this.options.strictInjectionParameters || false),
       new NgModuleDecoratorHandler(
           this.reflector, evaluator, this.metaReader, metaRegistry, scopeRegistry,
           referencesRegistry, this.isCore, this.routeAnalyzer, this.refEmitter,
-          this.defaultImportTracker, this.options.i18nInLocale),
+          this.defaultImportTracker, this.closureCompilerEnabled, this.options.i18nInLocale),
       new PipeDecoratorHandler(
           this.reflector, evaluator, metaRegistry, this.defaultImportTracker, this.isCore),
     ];

@@ -69,7 +69,8 @@ runInEachFileSystem(() => {
 
       const handler = new NgModuleDecoratorHandler(
           reflectionHost, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry,
-          false, null, refEmitter, NOOP_DEFAULT_IMPORT_RECORDER);
+          false, null, refEmitter, NOOP_DEFAULT_IMPORT_RECORDER,
+          /* annotateForClosureCompiler */ false);
       const TestModule =
           getDeclaration(program, _('/entry.ts'), 'TestModule', isNamedClassDeclaration);
       const detected =
