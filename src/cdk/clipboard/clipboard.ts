@@ -13,10 +13,6 @@ import {PendingCopy} from './pending-copy';
 
 /**
  * A service for copying text to the clipboard.
- *
- * Example usage:
- *
- * clipboard.copy("copy this text");
  */
 @Injectable({providedIn: 'root'})
 export class Clipboard {

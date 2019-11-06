@@ -13,10 +13,6 @@ import {Clipboard} from './clipboard';
 /**
  * Provides behavior for a button that when clicked copies content into user's
  * clipboard.
- *
- * Example usage:
- *
- * `<button copyToClipboard="Content to be copied">Copy me!</button>`
  */
 @Directive({
   selector: '[cdkCopyToClipboard]',
