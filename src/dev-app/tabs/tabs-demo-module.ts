@@ -9,12 +9,12 @@
 import {NgModule} from '@angular/core';
 import {MatTabsModule} from '@angular/material/tabs';
 import {RouterModule} from '@angular/router';
-import {ExampleModule} from '../example/example-module';
+import {TabGroupExamplesModule} from '@angular/material-examples/material/tabs/module';
 import {TabsDemo} from './tabs-demo';
 
 @NgModule({
   imports: [
-    ExampleModule,
+    TabGroupExamplesModule,
     MatTabsModule,
     RouterModule.forChild([{path: '', component: TabsDemo}]),
   ],

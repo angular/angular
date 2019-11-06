@@ -8,12 +8,12 @@
 
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
-import {ExampleModule} from '../example/example-module';
+import {TooltipExamplesModule} from '@angular/material-examples/material/tooltip/module';
 import {TooltipDemo} from './tooltip-demo';
 
 @NgModule({
   imports: [
-    ExampleModule,
+    TooltipExamplesModule,
     RouterModule.forChild([{path: '', component: TooltipDemo}]),
   ],
   declarations: [TooltipDemo],

@@ -8,12 +8,14 @@
 
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
-import {ExampleModule} from '../example/example-module';
+import {CdkTableExamplesModule} from '@angular/material-examples/cdk/table/module';
+import {TableExamplesModule} from '@angular/material-examples/material/table/module';
 import {TableDemo} from './table-demo';
 
 @NgModule({
   imports: [
-    ExampleModule,
+    CdkTableExamplesModule,
+    TableExamplesModule,
     RouterModule.forChild([{path: '', component: TableDemo}]),
   ],
   declarations: [TableDemo],

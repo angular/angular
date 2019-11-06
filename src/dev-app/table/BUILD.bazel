@@ -5,9 +5,11 @@ load("//tools:defaults.bzl", "ng_module")
 ng_module(
     name = "table",
     srcs = glob(["**/*.ts"]),
+    assets = ["table-demo.html"],
     deps = [
         "//src/dev-app/example",
-        "//src/material-examples:examples",
+        "//src/material-examples/cdk/table",
+        "//src/material-examples/material/table",
         "@npm//@angular/router",
     ],
 )

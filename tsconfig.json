@@ -28,7 +28,8 @@
       "@angular/cdk-experimental/*": ["./src/cdk-experimental/*"],
       "@angular/cdk-experimental": ["./src/cdk-experimental"],
       "@angular/material-moment-adapter": ["./src/material-moment-adapter"],
-      "@angular/material-examples": ["./src/packages/material-examples"]
+      "@angular/material-examples": ["./src/packages/material-examples"],
+      "@angular/material-examples/*": ["./src/packages/material-examples/*"]
     }
   },
   "include": [

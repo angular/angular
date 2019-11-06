@@ -15,7 +15,8 @@
       "@angular/cdk-experimental": ["../cdk-experimental"],
       "@angular/material-moment-adapter": ["../material-moment-adapter/public-api.ts"],
       "@angular/google-maps": ["../google-maps"],
-      "@angular/material-examples": ["../../dist/packages/material-examples"]
+      "@angular/material-examples": ["../material-examples"],
+      "@angular/material-examples/*": ["../material-examples/*"]
     }
   },
   "include": ["./**/*.ts"]

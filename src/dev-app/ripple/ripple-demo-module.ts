@@ -8,17 +8,17 @@
 
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
+import {CoreExamplesModule} from '@angular/material-examples/material/core/module';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {RouterModule} from '@angular/router';
-import {ExampleModule} from '../example/example-module';
 import {RippleDemo} from './ripple-demo';
 
 @NgModule({
   imports: [
-    ExampleModule,
+    CoreExamplesModule,
     FormsModule,
     MatButtonModule,
     MatCheckboxModule,

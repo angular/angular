@@ -7,14 +7,9 @@
  */
 
 import {Component} from '@angular/core';
-import {EXAMPLE_COMPONENTS} from '@angular/material-examples';
-
 
 @Component({
   moduleId: module.id,
-  template: '<material-example-list [ids]="examples"></material-example-list>',
+  templateUrl: './table-demo.html',
 })
-export class TableDemo {
-  examples = Object.keys(EXAMPLE_COMPONENTS)
-      .filter(example => example.startsWith('table-') || example.startsWith('cdk-table-'));
-}
+export class TableDemo {}

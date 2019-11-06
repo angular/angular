@@ -8,7 +8,7 @@ ng_module(
     assets = ["tooltip-demo.html"],
     deps = [
         "//src/dev-app/example",
-        "//src/material-examples:examples",
+        "//src/material-examples/material/tooltip",
         "@npm//@angular/router",
     ],
 )
