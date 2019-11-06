@@ -163,7 +163,7 @@ export class Parser {
             'Blank expressions are not allowed in interpolated strings', input,
             `at column ${this._findInterpolationErrorColumn(parts, i, interpolationConfig)} in`,
             location);
-        expressions.push('$implict');
+        expressions.push('$implicit');
         offsets.push(offset);
       }
     }
