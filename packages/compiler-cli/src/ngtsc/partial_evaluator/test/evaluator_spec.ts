@@ -514,7 +514,28 @@ runInEachFileSystem(() => {
             {
               name: _('/node_modules/tslib/index.d.ts'),
               contents: `
-          export declare function __spread(...args: any[]): any[];
+          export declare function __spread(...args: any[][]): any[];
+        `
+            },
+          ]);
+      const reflectionHost = new TsLibAwareReflectionHost(checker);
+      const evaluator = new PartialEvaluator(reflectionHost, checker);
+      const value = evaluator.evaluate(expression);
+      expect(value).toEqual([1, 2, 3]);
+    });
+
+    it('should evaluate TypeScript __spreadArrays helper', () => {
+      const {checker, expression} = makeExpression(
+          `
+        import * as tslib from 'tslib';
+        const a = [1];
+        const b = [2, 3];
+      `,
+          'tslib.__spreadArrays(a, b)', [
+            {
+              name: _('/node_modules/tslib/index.d.ts'),
+              contents: `
+          export declare function __spreadArrays(...args: any[][]): any[];
         `
             },
           ]);
@@ -612,10 +633,13 @@ runInEachFileSystem(() => {
   function getTsHelperFn(node: ts.FunctionDeclaration): TsHelperFn|null {
     const name = node.name !== undefined && ts.isIdentifier(node.name) && node.name.text;
 
-    if (name === '__spread') {
-      return TsHelperFn.Spread;
-    } else {
-      return null;
+    switch (name) {
+      case '__spread':
+        return TsHelperFn.Spread;
+      case '__spreadArrays':
+        return TsHelperFn.SpreadArrays;
+      default:
+        return null;
     }
   }
 });
