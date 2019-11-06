@@ -334,6 +334,56 @@ SOME DEFINITION TEXT
       });
     });
 
+    describe('addAdjacentStatements', () => {
+      const contents = `import {Directive, NgZone, Console} from '@angular/core';\n` +
+          `var SomeDirective = /** @class **/ (function () {\n` +
+          `  function SomeDirective(zone, cons) {}\n` +
+          `  SomeDirective.prototype.method = function() {}\n` +
+          `  SomeDirective.decorators = [\n` +
+          `    { type: Directive, args: [{ selector: '[a]' }] },\n` +
+          `    { type: OtherA }\n` +
+          `  ];\n` +
+          `  SomeDirective.ctorParameters = () => [\n` +
+          `    { type: NgZone },\n` +
+          `    { type: Console }\n` +
+          `  ];\n` +
+          `  return SomeDirective;\n` +
+          `}());\n` +
+          `export {SomeDirective};`;
+
+      it('should insert the statements after all the static methods of the class', () => {
+        const program = {name: _('/node_modules/test-package/some/file.js'), contents};
+        const {renderer, decorationAnalyses, sourceFile} = setup(program);
+        const output = new MagicString(contents);
+        const compiledClass = decorationAnalyses.get(sourceFile) !.compiledClasses.find(
+            c => c.name === 'SomeDirective') !;
+        renderer.addAdjacentStatements(output, compiledClass, 'SOME STATEMENTS');
+        expect(output.toString())
+            .toContain(
+                `  SomeDirective.ctorParameters = () => [\n` +
+                `    { type: NgZone },\n` +
+                `    { type: Console }\n` +
+                `  ];\n` +
+                `SOME STATEMENTS\n` +
+                `  return SomeDirective;\n`);
+      });
+
+      it('should insert the statements after any definitions', () => {
+        const program = {name: _('/node_modules/test-package/some/file.js'), contents};
+        const {renderer, decorationAnalyses, sourceFile} = setup(program);
+        const output = new MagicString(contents);
+        const compiledClass = decorationAnalyses.get(sourceFile) !.compiledClasses.find(
+            c => c.name === 'SomeDirective') !;
+        renderer.addDefinitions(output, compiledClass, 'SOME DEFINITIONS');
+        renderer.addAdjacentStatements(output, compiledClass, 'SOME STATEMENTS');
+        const definitionsPosition = output.toString().indexOf('SOME DEFINITIONS');
+        const statementsPosition = output.toString().indexOf('SOME STATEMENTS');
+        expect(definitionsPosition).not.toEqual(-1, 'definitions should exist');
+        expect(statementsPosition).not.toEqual(-1, 'statements should exist');
+        expect(statementsPosition).toBeGreaterThan(definitionsPosition);
+      });
+    });
+
 
     describe('removeDecorators', () => {
 

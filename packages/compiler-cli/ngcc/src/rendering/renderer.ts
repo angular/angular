@@ -86,6 +86,10 @@ export class Renderer {
             this.renderDefinitions(compiledFile.sourceFile, clazz, importManager);
         this.srcFormatter.addDefinitions(outputText, clazz, renderedDefinition);
 
+        const renderedStatements =
+            this.renderAdjacentStatements(compiledFile.sourceFile, clazz, importManager);
+        this.srcFormatter.addAdjacentStatements(outputText, clazz, renderedStatements);
+
         if (!isEntryPoint && clazz.reexports.length > 0) {
           this.srcFormatter.addDirectExports(
               outputText, clazz.reexports, importManager, compiledFile.sourceFile);
@@ -147,26 +151,45 @@ export class Renderer {
   }
 
   /**
- * Render the definitions as source code for the given class.
- * @param sourceFile The file containing the class to process.
- * @param clazz The class whose definitions are to be rendered.
- * @param compilation The results of analyzing the class - this is used to generate the rendered
- * definitions.
- * @param imports An object that tracks the imports that are needed by the rendered definitions.
- */
+   * Render the definitions as source code for the given class.
+   * @param sourceFile The file containing the class to process.
+   * @param clazz The class whose definitions are to be rendered.
+   * @param compilation The results of analyzing the class - this is used to generate the rendered
+   * definitions.
+   * @param imports An object that tracks the imports that are needed by the rendered definitions.
+   */
   private renderDefinitions(
       sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: ImportManager): string {
-    const printer = createPrinter();
     const name = this.host.getInternalNameOfClass(compiledClass.declaration);
+    const statements: Statement[] = compiledClass.compilation.map(
+        c => { return createAssignmentStatement(name, c.name, c.initializer); });
+    return this.renderStatements(sourceFile, statements, imports);
+  }
+
+  /**
+   * Render the adjacent statements as source code for the given class.
+   * @param sourceFile The file containing the class to process.
+   * @param clazz The class whose statements are to be rendered.
+   * @param compilation The results of analyzing the class - this is used to generate the rendered
+   * definitions.
+   * @param imports An object that tracks the imports that are needed by the rendered definitions.
+   */
+  private renderAdjacentStatements(
+      sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: ImportManager): string {
+    const statements: Statement[] = [];
+    for (const c of compiledClass.compilation) {
+      statements.push(...c.statements);
+    }
+    return this.renderStatements(sourceFile, statements, imports);
+  }
+
+  private renderStatements(
+      sourceFile: ts.SourceFile, statements: Statement[], imports: ImportManager): string {
+    const printer = createPrinter();
     const translate = (stmt: Statement) =>
         translateStatement(stmt, imports, NOOP_DEFAULT_IMPORT_RECORDER);
     const print = (stmt: Statement) =>
         printer.printNode(ts.EmitHint.Unspecified, translate(stmt), sourceFile);
-    const statements: Statement[] = compiledClass.compilation.map(
-        c => { return createAssignmentStatement(name, c.name, c.initializer); });
-    for (const c of compiledClass.compilation) {
-      statements.push(...c.statements);
-    }
     return statements.map(print).join('\n');
   }
 }

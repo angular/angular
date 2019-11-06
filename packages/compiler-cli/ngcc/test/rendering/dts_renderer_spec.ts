@@ -39,6 +39,9 @@ class TestRenderingFormatter implements RenderingFormatter {
   addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string) {
     output.prepend('\n// ADD DEFINITIONS\n');
   }
+  addAdjacentStatements(output: MagicString, compiledClass: CompiledClass, statements: string) {
+    output.prepend('\n// ADD ADJACENT STATEMENTS\n');
+  }
   removeDecorators(output: MagicString, decoratorsToRemove: RedundantDecoratorMap) {
     output.prepend('\n// REMOVE DECORATORS\n');
   }
@@ -79,6 +82,7 @@ function createTestRenderer(
   spyOn(testFormatter, 'addExports').and.callThrough();
   spyOn(testFormatter, 'addImports').and.callThrough();
   spyOn(testFormatter, 'addDefinitions').and.callThrough();
+  spyOn(testFormatter, 'addAdjacentStatements').and.callThrough();
   spyOn(testFormatter, 'addConstants').and.callThrough();
   spyOn(testFormatter, 'removeDecorators').and.callThrough();
   spyOn(testFormatter, 'rewriteSwitchableDeclarations').and.callThrough();

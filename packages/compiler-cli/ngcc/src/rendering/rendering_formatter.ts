@@ -36,6 +36,8 @@ export interface RenderingFormatter {
       output: MagicString, exports: Reexport[], importManager: ImportManager,
       file: ts.SourceFile): void;
   addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string): void;
+  addAdjacentStatements(output: MagicString, compiledClass: CompiledClass, statements: string):
+      void;
   removeDecorators(output: MagicString, decoratorsToRemove: RedundantDecoratorMap): void;
   rewriteSwitchableDeclarations(
       outputText: MagicString, sourceFile: ts.SourceFile,

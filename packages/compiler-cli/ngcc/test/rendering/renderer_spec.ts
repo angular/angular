@@ -42,6 +42,9 @@ class TestRenderingFormatter implements RenderingFormatter {
   addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string) {
     output.prepend('\n// ADD DEFINITIONS\n');
   }
+  addAdjacentStatements(output: MagicString, compiledClass: CompiledClass, statements: string) {
+    output.prepend('\n// ADD ADJACENT STATEMENTS\n');
+  }
   removeDecorators(output: MagicString, decoratorsToRemove: RedundantDecoratorMap) {
     output.prepend('\n// REMOVE DECORATORS\n');
   }
@@ -84,6 +87,7 @@ function createTestRenderer(
   spyOn(testFormatter, 'addExports').and.callThrough();
   spyOn(testFormatter, 'addImports').and.callThrough();
   spyOn(testFormatter, 'addDefinitions').and.callThrough();
+  spyOn(testFormatter, 'addAdjacentStatements').and.callThrough();
   spyOn(testFormatter, 'addConstants').and.callThrough();
   spyOn(testFormatter, 'removeDecorators').and.callThrough();
   spyOn(testFormatter, 'rewriteSwitchableDeclarations').and.callThrough();
@@ -149,6 +153,8 @@ runInEachFileSystem(() => {
 
 // ADD CONSTANTS
 
+// ADD ADJACENT STATEMENTS
+
 // ADD DEFINITIONS
 
 // REMOVE DECORATORS
@@ -160,14 +166,14 @@ runInEachFileSystem(() => {
         'sources': [_('/node_modules/test-package/src/file.js')],
         'sourcesContent': [INPUT_PROGRAM.contents],
         'names': [],
-        'mappings': ';;;;;;;;;;AAAA;;;;;;;;;'
+        'mappings': ';;;;;;;;;;;;AAAA;;;;;;;;;'
       });
 
       MERGED_OUTPUT_PROGRAM_MAP = fromObject({
         'version': 3,
         'sources': [_('/node_modules/test-package/src/file.ts')],
         'names': [],
-        'mappings': ';;;;;;;;;;AAAA',
+        'mappings': ';;;;;;;;;;;;AAAA',
         'file': 'file.js',
         'sourcesContent': [INPUT_PROGRAM.contents]
       });
@@ -200,8 +206,11 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
         ɵngcc0.ɵɵtext(0);
     } if (rf & 2) {
         ɵngcc0.ɵɵtextInterpolate(ctx.person.name);
-    } }, encapsulation: 2 });
-/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
+    } }, encapsulation: 2 });`);
+
+        const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
+        expect(addAdjacentStatementsSpy.calls.first().args[2])
+            .toEqual(`/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
         type: Component,
         args: [{ selector: 'a', template: '{{ person!.name }}' }]
     }], null, null);`);
@@ -226,7 +235,7 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
            () => {
              const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
                     testFormatter} = createTestRenderer('test-package', [INPUT_PROGRAM]);
-             const result = renderer.renderProgram(
+             renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
              expect(addDefinitionsSpy.calls.first().args[0].toString()).toEqual(RENDERED_CONTENTS);
@@ -234,11 +243,25 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
                name: 'A',
                decorators: [jasmine.objectContaining({name: 'Directive'})]
              }));
-
              expect(addDefinitionsSpy.calls.first().args[2])
                  .toEqual(`A.ɵfac = function A_Factory(t) { return new (t || A)(); };
-A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });
-/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
+A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`);
+           });
+
+        it('should call addAdjacentStatements with the source code, the analyzed class and the rendered statements',
+           () => {
+             const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                    testFormatter} = createTestRenderer('test-package', [INPUT_PROGRAM]);
+             renderer.renderProgram(
+                 decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+             const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
+             expect(addAdjacentStatementsSpy.calls.first().args[0].toString())
+                 .toEqual(RENDERED_CONTENTS);
+             expect(addAdjacentStatementsSpy.calls.first().args[1])
+                 .toEqual(jasmine.objectContaining(
+                     {name: 'A', decorators: [jasmine.objectContaining({name: 'Directive'})]}));
+             expect(addAdjacentStatementsSpy.calls.first().args[2])
+                 .toEqual(`/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
         type: Directive,
         args: [{ selector: '[a]' }]
     }], null, { foo: [] });`);
@@ -268,23 +291,25 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });
                  .toEqual(`{ type: Directive, args: [{ selector: '[a]' }] }`);
            });
 
-        it('should render static fields before any additional statements', () => {
+        it('should render definitions as static fields', () => {
           const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
                  testFormatter} = createTestRenderer('test-package', [NGMODULE_PROGRAM]);
           renderer.renderProgram(
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
           const definitions: string = addDefinitionsSpy.calls.first().args[2];
-          const ngModuleDef = definitions.indexOf('ɵmod');
-          expect(ngModuleDef).not.toEqual(-1, 'ɵmod should exist');
-          const ngInjectorDef = definitions.indexOf('ɵinj');
-          expect(ngInjectorDef).not.toEqual(-1, 'ɵinj should exist');
-          const setClassMetadata = definitions.indexOf('setClassMetadata');
-          expect(setClassMetadata).not.toEqual(-1, 'setClassMetadata call should exist');
-          expect(setClassMetadata)
-              .toBeGreaterThan(ngModuleDef, 'setClassMetadata should follow ɵmod');
-          expect(setClassMetadata)
-              .toBeGreaterThan(ngInjectorDef, 'setClassMetadata should follow ɵinj');
+          expect(definitions).toContain('A.ɵmod = ɵngcc0.ɵɵdefineNgModule(');
+          expect(definitions).toContain('A.ɵinj = ɵngcc0.ɵɵdefineInjector(');
+        });
+
+        it('should render adjacent statements', () => {
+          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                 testFormatter} = createTestRenderer('test-package', [NGMODULE_PROGRAM]);
+          renderer.renderProgram(
+              decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+          const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
+          const statements: string = addAdjacentStatementsSpy.calls.first().args[2];
+          expect(statements).toContain('ɵsetClassMetadata(A');
         });
 
         it('should render directives using the inner class name if different from outer', () => {
@@ -308,12 +333,15 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
 
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
-          const output = addDefinitionsSpy.calls.first().args[2];
-          expect(output).toContain('InnerClass.ɵfac');
-          expect(output).toContain('new (t || InnerClass)');
-          expect(output).toContain('InnerClass.ɵdir');
-          expect(output).toContain('type: InnerClass');
-          expect(output).toContain('ɵsetClassMetadata(InnerClass');
+          const definitions = addDefinitionsSpy.calls.first().args[2];
+          expect(definitions).toContain('InnerClass.ɵfac');
+          expect(definitions).toContain('new (t || InnerClass)');
+          expect(definitions).toContain('InnerClass.ɵdir');
+          expect(definitions).toContain('type: InnerClass');
+
+          const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
+          const statements = addAdjacentStatementsSpy.calls.first().args[2];
+          expect(statements).toContain('ɵsetClassMetadata(InnerClass');
         });
 
         it('should render injectables using the inner class name if different from outer', () => {
@@ -337,12 +365,15 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
 
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
-          const output = addDefinitionsSpy.calls.first().args[2];
-          expect(output).toContain('InnerClass.ɵfac');
-          expect(output).toContain('new (t || InnerClass)()');
-          expect(output).toContain('InnerClass.ɵprov');
-          expect(output).toContain('token: InnerClass');
-          expect(output).toContain('ɵsetClassMetadata(InnerClass');
+          const definitions = addDefinitionsSpy.calls.first().args[2];
+          expect(definitions).toContain('InnerClass.ɵfac');
+          expect(definitions).toContain('new (t || InnerClass)()');
+          expect(definitions).toContain('InnerClass.ɵprov');
+          expect(definitions).toContain('token: InnerClass');
+
+          const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
+          const statements = addAdjacentStatementsSpy.calls.first().args[2];
+          expect(statements).toContain('ɵsetClassMetadata(InnerClass');
         });
 
         it('should render ng-modules using the inner class name if different from outer', () => {
@@ -371,11 +402,15 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
 
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
-          const output = addDefinitionsSpy.calls.all()[1].args[2];
-          expect(output).toContain('InnerClass.ɵmod');
-          expect(output).toContain('type: InnerClass');
-          expect(output).toContain('ɵɵsetNgModuleScope(InnerClass');
-          expect(output).toContain('ɵsetClassMetadata(InnerClass');
+          const definitions = addDefinitionsSpy.calls.all()[1].args[2];
+          expect(definitions).toContain('InnerClass.ɵmod');
+          expect(definitions).toContain('type: InnerClass');
+
+
+          const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
+          const statements = addAdjacentStatementsSpy.calls.all()[1].args[2];
+          expect(statements).toContain('ɵɵsetNgModuleScope(InnerClass');
+          expect(statements).toContain('ɵsetClassMetadata(InnerClass');
         });
 
         it('should render pipes using the inner class name if different from outer', () => {
@@ -399,11 +434,14 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
 
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
-          const output = addDefinitionsSpy.calls.first().args[2];
-          expect(output).toContain('InnerClass.ɵfac');
-          expect(output).toContain('new (t || InnerClass)()');
-          expect(output).toContain('InnerClass.ɵpipe');
-          expect(output).toContain('ɵsetClassMetadata(InnerClass');
+          const definitions = addDefinitionsSpy.calls.first().args[2];
+          expect(definitions).toContain('InnerClass.ɵfac');
+          expect(definitions).toContain('new (t || InnerClass)()');
+          expect(definitions).toContain('InnerClass.ɵpipe');
+
+          const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
+          const statements = addAdjacentStatementsSpy.calls.first().args[2];
+          expect(statements).toContain('ɵsetClassMetadata(InnerClass');
         });
 
         it('should render classes without decorators if class fields are decorated', () => {
@@ -446,12 +484,14 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
                  testFormatter} = createTestRenderer('test-package', [INPUT_PROGRAM]);
           const addExportsSpy = testFormatter.addExports as jasmine.Spy;
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
+          const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
           const addConstantsSpy = testFormatter.addConstants as jasmine.Spy;
           const addImportsSpy = testFormatter.addImports as jasmine.Spy;
           renderer.renderProgram(
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           expect(addExportsSpy).toHaveBeenCalledBefore(addImportsSpy);
           expect(addDefinitionsSpy).toHaveBeenCalledBefore(addImportsSpy);
+          expect(addAdjacentStatementsSpy).toHaveBeenCalledBefore(addImportsSpy);
           expect(addConstantsSpy).toHaveBeenCalledBefore(addImportsSpy);
         });
       });
@@ -513,8 +553,8 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
                  testFormatter} = createTestRenderer('@angular/core', [CORE_FILE, R3_SYMBOLS_FILE]);
           renderer.renderProgram(
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
-          const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
-          expect(addDefinitionsSpy.calls.first().args[2])
+          const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
+          expect(addAdjacentStatementsSpy.calls.first().args[2])
               .toContain(`/*@__PURE__*/ ɵngcc0.setClassMetadata(`);
           const addImportsSpy = testFormatter.addImports as jasmine.Spy;
           expect(addImportsSpy.calls.first().args[1]).toEqual([
@@ -533,8 +573,8 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
                  testFormatter} = createTestRenderer('@angular/core', [CORE_FILE]);
           renderer.renderProgram(
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
-          const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
-          expect(addDefinitionsSpy.calls.first().args[2])
+          const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
+          expect(addAdjacentStatementsSpy.calls.first().args[2])
               .toContain(`/*@__PURE__*/ setClassMetadata(`);
           const addImportsSpy = testFormatter.addImports as jasmine.Spy;
           expect(addImportsSpy.calls.first().args[1]).toEqual([]);
