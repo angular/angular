@@ -152,7 +152,11 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
   }
 
   /** The chips that are part of this chip set. */
-  @ContentChildren(MatChip) _chips: QueryList<MatChip>;
+  @ContentChildren(MatChip, {
+    // We need to use `descendants: true`, because Ivy will no longer match
+    // indirect descendants if it's left as false.
+    descendants: true
+  }) _chips: QueryList<MatChip>;
 
   constructor(protected _elementRef: ElementRef,
               protected _changeDetectorRef: ChangeDetectorRef,
