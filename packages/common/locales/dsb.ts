@@ -23,8 +23,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'dsb', [['dop.', 'wótp.'], ['dopołdnja', 'wótpołdnja'], u],
-  [['dopołdnja', 'wótpołdnja'], u, u],
+  'dsb', [['dop.', 'wótp.'], ['dopołdnja', 'wótpołdnja'], u], [['dopołdnja', 'wótpołdnja'], u, u],
   [
     ['n', 'p', 'w', 's', 's', 'p', 's'], ['nje', 'pón', 'wał', 'srj', 'stw', 'pět', 'sob'],
     ['njeźela', 'pónjeźele', 'wałtora', 'srjoda', 'stwórtk', 'pětk', 'sobota'],
@@ -34,8 +33,7 @@ export default [
   [
     ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
     [
-      'jan.', 'feb.', 'měr.', 'apr.', 'maj.', 'jun.', 'jul.', 'awg.', 'sep.', 'okt.', 'now.',
-      'dec.'
+      'jan.', 'feb.', 'měr.', 'apr.', 'maj.', 'jun.', 'jul.', 'awg.', 'sep.', 'okt.', 'now.', 'dec.'
     ],
     [
       'januara', 'februara', 'měrca', 'apryla', 'maja', 'junija', 'julija', 'awgusta', 'septembra',
@@ -50,8 +48,8 @@ export default [
       'oktober', 'nowember', 'december'
     ]
   ],
-  [['pś.Chr.n.', 'pó Chr.n.'], u, ['pśed Kristusowym naroźenim', 'pó Kristusowem naroźenju']],
-  1, [6, 0], ['d.M.yy', 'd.M.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
+  [['pś.Chr.n.', 'pó Chr.n.'], u, ['pśed Kristusowym naroźenim', 'pó Kristusowem naroźenju']], 1,
+  [6, 0], ['d.M.yy', 'd.M.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
   ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'], ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro',

@@ -23,8 +23,7 @@
     [['mo.', 'nomë.'], ['moies', 'nomëttes'], u],
     [['moies', 'nomëttes'], u, u],
     [
-      ['S', 'M', 'D', 'M', 'D', 'F', 'S'],
-      ['Son.', 'Méi.', 'Dën.', 'Mët.', 'Don.', 'Fre.', 'Sam.'],
+      ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['Son.', 'Méi.', 'Dën.', 'Mët.', 'Don.', 'Fre.', 'Sam.'],
       ['Sonndeg', 'Méindeg', 'Dënschdeg', 'Mëttwoch', 'Donneschdeg', 'Freideg', 'Samschdeg'],
       ['So.', 'Mé.', 'Dë.', 'Më.', 'Do.', 'Fr.', 'Sa.']
     ],

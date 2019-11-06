@@ -19,10 +19,7 @@ export default [
   'kam', [['Ĩyakwakya', 'Ĩyawĩoo'], u, u], u,
   [
     ['Y', 'W', 'E', 'A', 'A', 'A', 'A'], ['Wky', 'Wkw', 'Wkl', 'Wtũ', 'Wkn', 'Wtn', 'Wth'],
-    [
-      'Wa kyumwa', 'Wa kwambĩlĩlya', 'Wa kelĩ', 'Wa katatũ', 'Wa kana', 'Wa katano',
-      'Wa thanthatũ'
-    ],
+    ['Wa kyumwa', 'Wa kwambĩlĩlya', 'Wa kelĩ', 'Wa katatũ', 'Wa kana', 'Wa katano', 'Wa thanthatũ'],
     ['Wky', 'Wkw', 'Wkl', 'Wtũ', 'Wkn', 'Wtn', 'Wth']
   ],
   u,

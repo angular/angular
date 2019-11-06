@@ -29,10 +29,9 @@
       ['M', 'K', 'K', 'K', 'G', 'G', 'M', 'K', 'K', 'I', 'I', 'I'],
       ['Mbe', 'Kai', 'Kat', 'Kan', 'Gat', 'Gan', 'Mug', 'Knn', 'Ken', 'Iku', 'Imw', 'Igi'],
       [
-        'Mweri wa mbere', 'Mweri wa kaĩri', 'Mweri wa kathatũ', 'Mweri wa kana',
-        'Mweri wa gatano', 'Mweri wa gatantatũ', 'Mweri wa mũgwanja', 'Mweri wa kanana',
-        'Mweri wa kenda', 'Mweri wa ikũmi', 'Mweri wa ikũmi na ũmwe',
-        'Mweri wa ikũmi na Kaĩrĩ'
+        'Mweri wa mbere', 'Mweri wa kaĩri', 'Mweri wa kathatũ', 'Mweri wa kana', 'Mweri wa gatano',
+        'Mweri wa gatantatũ', 'Mweri wa mũgwanja', 'Mweri wa kanana', 'Mweri wa kenda',
+        'Mweri wa ikũmi', 'Mweri wa ikũmi na ũmwe', 'Mweri wa ikũmi na Kaĩrĩ'
       ]
     ],
     u,

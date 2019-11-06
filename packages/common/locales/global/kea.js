@@ -29,8 +29,7 @@
     [
       ['D', 'S', 'T', 'K', 'K', 'S', 'S'], ['dum', 'sig', 'ter', 'kua', 'kin', 'ses', 'sab'],
       [
-        'dumingu', 'sigunda-fera', 'tersa-fera', 'kuarta-fera', 'kinta-fera', 'sesta-fera',
-        'sábadu'
+        'dumingu', 'sigunda-fera', 'tersa-fera', 'kuarta-fera', 'kinta-fera', 'sesta-fera', 'sábadu'
       ],
       ['du', 'si', 'te', 'ku', 'ki', 'se', 'sa']
     ],
@@ -53,13 +52,7 @@
     ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
     '​',
     'Skudu Kabuverdianu',
-    {
-      'AUD': ['AU$', '$'],
-      'CVE': ['​'],
-      'JPY': ['JP¥', '¥'],
-      'THB': ['฿'],
-      'USD': ['US$', '$']
-    },
+    {'AUD': ['AU$', '$'], 'CVE': ['​'], 'JPY': ['JP¥', '¥'], 'THB': ['฿'], 'USD': ['US$', '$']},
     plural,
     []
   ];
