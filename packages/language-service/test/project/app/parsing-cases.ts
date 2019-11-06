@@ -189,6 +189,7 @@ export class TemplateReference {
   title = 'Some title';
   hero: Hero = {id: 1, name: 'Windstorm'};
   heroes: Hero[] = [this.hero];
+  league: Hero[][] = [this.heroes];
   anyValue: any;
   myClick(event: any) {}
 }
