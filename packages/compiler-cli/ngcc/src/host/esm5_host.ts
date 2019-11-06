@@ -627,10 +627,13 @@ function getTsHelperFn(node: ts.NamedDeclaration): TsHelperFn|null {
       stripDollarSuffix(node.name.text) :
       null;
 
-  if (name === '__spread') {
-    return TsHelperFn.Spread;
-  } else {
-    return null;
+  switch (name) {
+    case '__spread':
+      return TsHelperFn.Spread;
+    case '__spreadArrays':
+      return TsHelperFn.SpreadArrays;
+    default:
+      return null;
   }
 }
 

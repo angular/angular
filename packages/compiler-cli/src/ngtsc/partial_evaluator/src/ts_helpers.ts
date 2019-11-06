@@ -15,10 +15,12 @@ import {ResolvedValue, ResolvedValueArray} from './result';
 
 export function evaluateTsHelperInline(
     helper: TsHelperFn, node: ts.Node, args: ResolvedValueArray): ResolvedValue {
-  if (helper === TsHelperFn.Spread) {
-    return evaluateTsSpreadHelper(node, args);
-  } else {
-    throw new Error(`Cannot evaluate unknown helper ${helper} inline`);
+  switch (helper) {
+    case TsHelperFn.Spread:
+    case TsHelperFn.SpreadArrays:
+      return evaluateTsSpreadHelper(node, args);
+    default:
+      throw new Error(`Cannot evaluate unknown helper ${helper} inline`);
   }
 }
 
