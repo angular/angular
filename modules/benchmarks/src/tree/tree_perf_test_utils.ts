@@ -19,7 +19,7 @@ export function runTreeBenchmark({id, prepare, setup, work}: {
     id: id,
     url: '',
     ignoreBrowserSynchronization: true,
-    params: [{name: 'depth', value: 11}],
+    params: [],
     work: work,
     prepare: prepare,
     setup: setup
