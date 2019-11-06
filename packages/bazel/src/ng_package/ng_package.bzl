@@ -197,7 +197,7 @@ def _compute_node_modules_root(ctx):
         node_modules_root = "external/npm/node_modules"
     return node_modules_root
 
-def _write_rollup_config(ctx, root_dir, filename = "_%s.rollup.conf.js"):
+def _write_rollup_config(ctx, root_dir, filename = "_%s.rollup.conf.js", include_tslib = False):
     """Generate a rollup config file.
 
     Args:
@@ -220,6 +220,15 @@ def _write_rollup_config(ctx, root_dir, filename = "_%s.rollup.conf.js"):
                           (dep.label, k, mappings[k], v)), "deps")
                 mappings[k] = v
 
+    globals = dict(WELL_KNOWN_GLOBALS, **ctx.attr.globals)
+    external = globals.keys()
+    if not include_tslib:
+        external.append("tslib")
+
+    # Pass external & globals through a templated config file because on Windows there is
+    # an argument limit and we there might be a lot of globals which need to be passed to
+    # rollup.
+
     ctx.actions.expand_template(
         output = config,
         template = ctx.file.rollup_config_tmpl,
@@ -230,17 +239,19 @@ def _write_rollup_config(ctx, root_dir, filename = "_%s.rollup.conf.js"):
             "TMPL_root_dir": root_dir,
             "TMPL_stamp_data": "\"%s\"" % ctx.version_file.path if ctx.version_file else "undefined",
             "TMPL_workspace_name": ctx.workspace_name,
+            "TMPL_external": ", ".join(["'%s'" % e for e in external]),
+            "TMPL_globals": ", ".join(["'%s': '%s'" % g for g in globals.items()]),
         },
     )
 
     return config
 
-def _run_rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output, format, module_name = "", include_tslib = False):
+def _run_rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output, format, module_name = ""):
     map_output = ctx.actions.declare_file(js_output.basename + ".map", sibling = js_output)
 
     args = ctx.actions.args()
-    args.add("--config", rollup_config)
     args.add("--input", entry_point)
+    args.add("--config", rollup_config)
     args.add("--output.file", js_output)
     args.add("--output.format", format)
     if module_name:
@@ -267,18 +278,6 @@ def _run_rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output,
     args.add("--sourcemap")
 
     args.add("--preserveSymlinks")
-
-    globals = dict(WELL_KNOWN_GLOBALS, **ctx.attr.globals)
-    external = globals.keys()
-    if not include_tslib:
-        external.append("tslib")
-    args.add_joined("--external", external, join_with = ",")
-
-    args.add_joined(
-        "--globals",
-        ["%s:%s" % g for g in globals.items()],
-        join_with = ",",
-    )
 
     # We will produce errors as needed. Anything else is spammy: a well-behaved
     # bazel rule prints nothing on success.
@@ -496,6 +495,7 @@ def _ng_package_impl(ctx):
 
         esm2015_config = _write_rollup_config(ctx, ctx.bin_dir.path, filename = "_%s.rollup_esm2015.conf.js")
         esm5_config = _write_rollup_config(ctx, "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]), filename = "_%s.rollup_esm5.conf.js")
+        esm5_tslib_config = _write_rollup_config(ctx, "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]), filename = "_%s.rollup_esm5_tslib.conf.js", include_tslib = True)
 
         fesm2015.append(
             _run_rollup(
@@ -525,13 +525,12 @@ def _ng_package_impl(ctx):
             _run_rollup(
                 ctx,
                 "umd",
-                esm5_config,
+                esm5_tslib_config,
                 es5_entry_point,
                 esm5_rollup_inputs,
                 umd_output,
                 module_name = module_name,
                 format = "umd",
-                include_tslib = True,
             ),
         )
         terser_sourcemap = _terser(

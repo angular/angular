@@ -113,6 +113,13 @@ function resolveBazel(
   }
 
   if (resolved) {
+    if (path.extname(resolved) == '.js') {
+      // check for .mjs file and prioritize that
+      const resolved_mjs = resolved.substr(0, resolved.length - 3) + '.mjs';
+      if (fileExists(resolved_mjs)) {
+        resolved = resolved_mjs;
+      }
+    }
     log_verbose(`resolved to ${resolved}`);
   } else {
     log_verbose(`allowing rollup to resolve '${importee}' with node module resolution`);
@@ -152,8 +159,10 @@ const plugins = [
 
 const config = {
   plugins,
+  external: [TMPL_external],
   output: {
-      banner,
+    globals: {TMPL_globals},
+    banner,
   }
 };
 
