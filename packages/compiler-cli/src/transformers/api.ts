@@ -290,7 +290,7 @@ export interface CompilerOptions extends ts.CompilerOptions {
   /**
    * Whether to replace the `templateUrl` and `styleUrls` property in all
    * @Component decorators with inlined contents in `template` and `styles`
-   * properties.
+   * properties. Also removes the `moduleId` property if defined.
    * When enabled, the .js output of ngc will have no lazy-loaded `templateUrl`
    * or `styleUrl`s. Note that this requires that resources be available to
    * load statically at compile-time.

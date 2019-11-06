@@ -43,6 +43,7 @@ describe('inline resources transformer', () => {
         @Component({
           templateUrl: './thing.html',
 	        otherProp: 3,
+	        moduleId: module.id,
 	      }) export class Foo {}`);
       expect(actual).not.toContain('templateUrl:');
       expect(actual.replace(/\s+/g, ' '))
@@ -80,6 +81,14 @@ describe('inline resources transformer', () => {
       expect(actual).not.toContain('styleUrls:');
       expect(actual).not.toContain('styles:');
     });
+    it('should remove moduleId', () => {
+      const actual = convert(`import {Component} from '@angular/core';
+        @Component({
+          moduleId: module.id,
+        })
+        export class Foo {}`);
+      expect(actual).not.toContain('moduleId');
+    });
   });
   describe('annotation input', () => {
     it('should replace templateUrl', () => {
@@ -94,6 +103,7 @@ describe('inline resources transformer', () => {
           },{
             type: Component,
             args: [{
+              moduleId: module.id,
               templateUrl: './thing.html'
           }],
         }];
@@ -102,7 +112,7 @@ describe('inline resources transformer', () => {
       expect(actual).not.toContain('templateUrl:');
       expect(actual.replace(/\s+/g, ' '))
           .toMatch(
-              /Foo\.decorators = [{ .*type: core_1\.Component, args: [{ template: "Some template" }]/);
+              /Foo\.decorators = \[ { .*type: core_1\.Component, args: \[{ template: "Some template" }] } ]/);
     });
     it('should replace styleUrls', () => {
       const actual = convert(`import {Component} from '@angular/core';
@@ -112,6 +122,7 @@ describe('inline resources transformer', () => {
         static decorators: {type: Function, args?: any[]}[] = [{
           type: Component,
           args: [{
+            moduleId: module.id,
             styleUrls: ['./thing1.css', './thing2.css'],
           }],
         }];
@@ -120,7 +131,7 @@ describe('inline resources transformer', () => {
       expect(actual).not.toContain('styleUrls:');
       expect(actual.replace(/\s+/g, ' '))
           .toMatch(
-              /Foo\.decorators = [{ .*type: core_1\.Component, args: [{ style: "Some template" }]/);
+              /Foo\.decorators = \[{ .*type: core_1\.Component, args: \[{ styles: \[".some_style {}", ".some_other_style {}"] }] }]/);
     });
   });
 });
@@ -129,6 +140,7 @@ describe('metadata transformer', () => {
   it('should transform decorators', () => {
     const source = `import {Component} from '@angular/core';
       @Component({
+        moduleId: module.id,
         templateUrl: './thing.html',
         styleUrls: ['./thing1.css', './thing2.css'],
         styles: ['h1 { color: red }'],
@@ -148,6 +160,7 @@ describe('metadata transformer', () => {
       expect(classData && isClassMetadata(classData))
           .toBeDefined(`Expected metadata to contain data for Foo`);
       if (classData && isClassMetadata(classData)) {
+        expect(JSON.stringify(classData)).not.toContain('moduleId');
         expect(JSON.stringify(classData)).not.toContain('templateUrl');
         expect(JSON.stringify(classData)).toContain('"template":"Some template"');
         expect(JSON.stringify(classData)).not.toContain('styleUrls');

@@ -82,6 +82,10 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
       delete arg['styleUrls'];
     }
 
+    if (arg['moduleId']) {
+      delete arg['moduleId'];
+    }
+
     return arg;
   }
 }
@@ -255,8 +259,8 @@ function isComponentSymbol(identifier: ts.Node, typeChecker: ts.TypeChecker) {
 }
 
 /**
- * For each property in the object literal, if it's templateUrl or styleUrls, replace it
- * with content.
+ * For each property in the object literal, if it's templateUrl or styleUrls,
+ * replace it with content. Also removes the "moduleId" property.
  * @param node the arguments to @Component() or args property of decorators: [{type:Component}]
  * @param loader provides access to the loadResource method of the host
  * @returns updated arguments
@@ -313,6 +317,10 @@ function updateComponentProperties(
         const template = loader.get(prop.initializer.text);
         newProperties.push(ts.updatePropertyAssignment(
             prop, ts.createIdentifier('template'), ts.createLiteral(template)));
+        break;
+
+      case 'moduleId':
+        // do not add "moduleId" to the new properties.
         break;
 
       default:
