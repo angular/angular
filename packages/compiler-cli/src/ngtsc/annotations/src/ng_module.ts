@@ -21,7 +21,7 @@ import {getSourceFile} from '../../util/src/typescript';
 
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
-import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression} from './util';
+import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
 
 export interface NgModuleAnalysis {
   mod: R3NgModuleMetadata;
@@ -44,7 +44,8 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       private scopeRegistry: LocalModuleScopeRegistry,
       private referencesRegistry: ReferencesRegistry, private isCore: boolean,
       private routeAnalyzer: NgModuleRouteAnalyzer|null, private refEmitter: ReferenceEmitter,
-      private defaultImportRecorder: DefaultImportRecorder, private localeId?: string) {}
+      private defaultImportRecorder: DefaultImportRecorder,
+      private annotateForClosureCompiler: boolean, private localeId?: string) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
@@ -212,7 +213,11 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     };
 
     const rawProviders = ngModule.has('providers') ? ngModule.get('providers') ! : null;
-    const providers = rawProviders !== null ? new WrappedNodeExpr(rawProviders) : null;
+    const providers = rawProviders !== null ?
+        new WrappedNodeExpr(
+            this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(rawProviders) :
+                                              rawProviders) :
+        null;
 
     // At this point, only add the module's imports as the injectors' imports. Any exported modules
     // are added during `resolve`, as we need scope information to be able to filter out directives
@@ -244,7 +249,8 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         declarations: declarationRefs,
         exports: exportRefs,
         metadataStmt: generateSetClassMetadataCall(
-            node, this.reflector, this.defaultImportRecorder, this.isCore),
+            node, this.reflector, this.defaultImportRecorder, this.isCore,
+            this.annotateForClosureCompiler),
       },
       factorySymbolName: node.name.text,
     };
