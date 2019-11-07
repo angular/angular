@@ -21,9 +21,9 @@ If the errors are gone, switch back to Ivy by removing the changes to the `tscon
 {@a common-changes}
 ### Changes You May See
 
-* By default, `@ContentChildren` queries will only search direct child nodes in the DOM hierarchy (previously, they would search any nesting level in the DOM as long as another directive wasn't matched above it). ([details](guide/ivy-compatibility-examples#content-children-descendants))
+* By default, `@ContentChildren` queries will only search direct child nodes in the DOM hierarchy (previously, they would search any nesting level in the DOM as long as another directive wasn't matched above it). [details](guide/ivy-compatibility-examples#content-children-descendants)
 
-* All classes that use Angular DI must have an Angular decorator like `@Directive()` or `@Injectable` (previously, undecorated classes were allowed if an ancestor class or subclass had a decorator).
+* All classes that use Angular DI must have an Angular decorator like `@Directive()` or `@Injectable` (previously, undecorated classes were allowed in AOT mode only or if injection flags were used). [details](guide/ivy-compatibility-examples#undecorated-classes)
 
 * Unbound inputs for directives (e.g. name in `<my-comp name="">`) are now set upon creation of the view, before change detection runs (previously, all inputs were set during change detection).
 
