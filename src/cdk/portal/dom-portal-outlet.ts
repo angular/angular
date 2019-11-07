@@ -13,7 +13,7 @@ import {
   ApplicationRef,
   Injector,
 } from '@angular/core';
-import {BasePortalOutlet, ComponentPortal, TemplatePortal} from './portal';
+import {BasePortalOutlet, ComponentPortal, TemplatePortal, DomPortal} from './portal';
 
 
 /**
@@ -21,13 +21,22 @@ import {BasePortalOutlet, ComponentPortal, TemplatePortal} from './portal';
  * application context.
  */
 export class DomPortalOutlet extends BasePortalOutlet {
+  private _document: Document;
+
   constructor(
       /** Element into which the content is projected. */
       public outletElement: Element,
       private _componentFactoryResolver: ComponentFactoryResolver,
       private _appRef: ApplicationRef,
-      private _defaultInjector: Injector) {
+      private _defaultInjector: Injector,
+
+      /**
+       * @deprecated `_document` Parameter to be made required.
+       * @breaking-change 10.0.0
+       */
+      _document?: any) {
     super();
+    this._document = _document;
   }
 
   /**
@@ -91,6 +100,33 @@ export class DomPortalOutlet extends BasePortalOutlet {
 
     // TODO(jelbourn): Return locals from view.
     return viewRef;
+  }
+
+  /**
+   * Attaches a DOM portal by transferring its content into the outlet.
+   * @param portal Portal to be attached.
+   * @deprecated To be turned into a method.
+   * @breaking-change 10.0.0
+   */
+  attachDomPortal = (portal: DomPortal) => {
+    // @breaking-change 10.0.0 Remove check and error once the
+    // `_document` constructor parameter is required.
+    if (!this._document) {
+      throw Error('Cannot attach DOM portal without _document constructor parameter');
+    }
+
+    // Anchor used to save the element's previous position so
+    // that we can restore it when the portal is detached.
+    let anchorNode = this._document.createComment('dom-portal');
+    let element = portal.element;
+
+    element.parentNode!.insertBefore(anchorNode, element);
+    this.outletElement.appendChild(element);
+
+    super.setDisposeFn(() => {
+      // We can't use `replaceWith` here because IE doesn't support it.
+      anchorNode.parentNode!.replaceChild(element, anchorNode);
+    });
   }
 
   /**

@@ -26,6 +26,7 @@ import {
   ComponentPortal,
   TemplatePortal,
   CdkPortalOutlet,
+  DomPortal,
 } from '@angular/cdk/portal';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {MatBottomSheetConfig} from './bottom-sheet-config';
@@ -119,6 +120,18 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
     this._setPanelClass();
     this._savePreviouslyFocusedElement();
     return this._portalOutlet.attachTemplatePortal(portal);
+  }
+
+  /**
+   * Attaches a DOM portal to the bottom sheet container.
+   * @deprecated To be turned into a method.
+   * @breaking-change 10.0.0
+   */
+  attachDomPortal = (portal: DomPortal) => {
+    this._validatePortalAttached();
+    this._setPanelClass();
+    this._savePreviouslyFocusedElement();
+    return this._portalOutlet.attachDomPortal(portal);
   }
 
   /** Begin animation of bottom sheet entrance into view. */

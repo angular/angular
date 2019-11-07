@@ -26,7 +26,8 @@ import {
   BasePortalOutlet,
   ComponentPortal,
   CdkPortalOutlet,
-  TemplatePortal
+  TemplatePortal,
+  DomPortal
 } from '@angular/cdk/portal';
 import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
 import {MatDialogConfig} from './dialog-config';
@@ -130,6 +131,21 @@ export class MatDialogContainer extends BasePortalOutlet {
 
     this._savePreviouslyFocusedElement();
     return this._portalOutlet.attachTemplatePortal(portal);
+  }
+
+  /**
+   * Attaches a DOM portal to the dialog container.
+   * @param portal Portal to be attached.
+   * @deprecated To be turned into a method.
+   * @breaking-change 10.0.0
+   */
+  attachDomPortal = (portal: DomPortal) => {
+    if (this._portalOutlet.hasAttached()) {
+      throwMatDialogContentAlreadyAttachedError();
+    }
+
+    this._savePreviouslyFocusedElement();
+    return this._portalOutlet.attachDomPortal(portal);
   }
 
   /** Moves the focus inside the focus trap. */

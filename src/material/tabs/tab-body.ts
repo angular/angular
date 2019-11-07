@@ -28,6 +28,7 @@ import {
 import {AnimationEvent} from '@angular/animations';
 import {TemplatePortal, CdkPortalOutlet, PortalHostDirective} from '@angular/cdk/portal';
 import {Directionality, Direction} from '@angular/cdk/bidi';
+import {DOCUMENT} from '@angular/common';
 import {Subscription, Subject} from 'rxjs';
 import {matTabsAnimations} from './tabs-animations';
 import {startWith, distinctUntilChanged} from 'rxjs/operators';
@@ -69,8 +70,13 @@ export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestr
   constructor(
     componentFactoryResolver: ComponentFactoryResolver,
     viewContainerRef: ViewContainerRef,
-    @Inject(forwardRef(() => MatTabBody)) private _host: MatTabBody) {
-      super(componentFactoryResolver, viewContainerRef);
+    @Inject(forwardRef(() => MatTabBody)) private _host: MatTabBody,
+    /**
+     * @deprecated `_document` parameter to be made required.
+     * @breaking-change 9.0.0
+     */
+    @Inject(DOCUMENT) _document?: any) {
+    super(componentFactoryResolver, viewContainerRef, _document);
   }
 
   /** Set initial visibility or set up subscription for changing visibility. */

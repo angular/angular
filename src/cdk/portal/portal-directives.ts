@@ -18,8 +18,10 @@ import {
   Output,
   TemplateRef,
   ViewContainerRef,
+  Inject,
 } from '@angular/core';
-import {BasePortalOutlet, ComponentPortal, Portal, TemplatePortal} from './portal';
+import {DOCUMENT} from '@angular/common';
+import {BasePortalOutlet, ComponentPortal, Portal, TemplatePortal, DomPortal} from './portal';
 
 
 /**
@@ -69,6 +71,8 @@ export type CdkPortalOutletAttachedRef = ComponentRef<any> | EmbeddedViewRef<any
   inputs: ['portal: cdkPortalOutlet']
 })
 export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestroy {
+  private _document: Document;
+
   /** Whether the portal component is initialized. */
   private _isInitialized = false;
 
@@ -77,8 +81,15 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
 
   constructor(
       private _componentFactoryResolver: ComponentFactoryResolver,
-      private _viewContainerRef: ViewContainerRef) {
+      private _viewContainerRef: ViewContainerRef,
+
+      /**
+       * @deprecated `_document` parameter to be made required.
+       * @breaking-change 9.0.0
+       */
+      @Inject(DOCUMENT) _document?: any) {
     super();
+    this._document = _document;
   }
 
   /** Portal associated with the Portal outlet. */
@@ -155,7 +166,7 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
   }
 
   /**
-   * Attach the given TemplatePortal to this PortlHost as an embedded View.
+   * Attach the given TemplatePortal to this PortalHost as an embedded View.
    * @param portal Portal to be attached.
    * @returns Reference to the created embedded view.
    */
@@ -169,6 +180,36 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
     this.attached.emit(viewRef);
 
     return viewRef;
+  }
+
+  /**
+   * Attaches the given DomPortal to this PortalHost by moving all of the portal content into it.
+   * @param portal Portal to be attached.
+   * @deprecated To be turned into a method.
+   * @breaking-change 10.0.0
+   */
+  attachDomPortal = (portal: DomPortal) => {
+    // @breaking-change 9.0.0 Remove check and error once the
+    // `_document` constructor parameter is required.
+    if (!this._document) {
+      throw Error('Cannot attach DOM portal without _document constructor parameter');
+    }
+
+    // Anchor used to save the element's previous position so
+    // that we can restore it when the portal is detached.
+    let anchorNode = this._document.createComment('dom-portal');
+    let element = portal.element;
+    const nativeElement: Node = this._viewContainerRef.element.nativeElement;
+    const rootNode = nativeElement.nodeType === nativeElement.ELEMENT_NODE ?
+        nativeElement : nativeElement.parentNode!;
+
+    portal.setAttachedHost(this);
+    element.parentNode!.insertBefore(anchorNode, element);
+    rootNode.appendChild(element);
+
+    super.setDisposeFn(() => {
+      anchorNode.parentNode!.replaceChild(element, anchorNode);
+    });
   }
 
   static ngAcceptInputType_portal: Portal<any> | null | undefined | '';

@@ -12,10 +12,11 @@ import {
   ApplicationRef,
   TemplateRef,
   ComponentRef,
+  ElementRef,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {CdkPortal, CdkPortalOutlet, PortalModule} from './portal-directives';
-import {Portal, ComponentPortal, TemplatePortal} from './portal';
+import {Portal, ComponentPortal, TemplatePortal, DomPortal} from './portal';
 import {DomPortalOutlet} from './dom-portal-outlet';
 
 
@@ -74,6 +75,36 @@ describe('Portals', () => {
       expect(testAppComponent.portalOutlet.attachedRef).toBeTruthy();
       expect(testAppComponent.attachedSpy)
           .toHaveBeenCalledWith(testAppComponent.portalOutlet.attachedRef);
+    });
+
+    it('should load a DOM portal', () => {
+      const testAppComponent = fixture.componentInstance;
+      const hostContainer = fixture.nativeElement.querySelector('.portal-container');
+      const innerContent = fixture.nativeElement.querySelector('.dom-portal-inner-content');
+      const domPortal = new DomPortal(testAppComponent.domPortalContent);
+      const initialParent = domPortal.element.parentNode!;
+
+      expect(innerContent).toBeTruthy('Expected portal content to be rendered.');
+      expect(domPortal.element.contains(innerContent))
+          .toBe(true, 'Expected content to be inside portal on init.');
+      expect(hostContainer.contains(innerContent))
+          .toBe(false, 'Expected content to be outside of portal outlet.');
+
+      testAppComponent.selectedPortal = domPortal;
+      fixture.detectChanges();
+
+      expect(domPortal.element.parentNode)
+          .not.toBe(initialParent, 'Expected portal to be out of the initial parent on attach.');
+      expect(hostContainer.contains(innerContent))
+          .toBe(true, 'Expected content to be inside the outlet on attach.');
+
+      testAppComponent.selectedPortal = undefined;
+      fixture.detectChanges();
+
+      expect(domPortal.element.parentNode)
+          .toBe(initialParent, 'Expected portal to be back inside initial parent on detach.');
+      expect(hostContainer.contains(innerContent))
+          .toBe(false, 'Expected content to be removed from outlet on detach.');
     });
 
     it('should project template context bindings in the portal', () => {
@@ -351,7 +382,8 @@ describe('Portals', () => {
 
     beforeEach(() => {
       someDomElement = document.createElement('div');
-      host = new DomPortalOutlet(someDomElement, componentFactoryResolver, appRef, injector);
+      host = new DomPortalOutlet(someDomElement, componentFactoryResolver, appRef, injector,
+                                 document);
 
       someFixture = TestBed.createComponent(ArbitraryViewContainerRefComponent);
       someViewContainerRef = someFixture.componentInstance.viewContainerRef;
@@ -502,6 +534,20 @@ describe('Portals', () => {
       expect(spy).toHaveBeenCalled();
     });
 
+    it('should attach and detach a DOM portal', () => {
+      const fixture = TestBed.createComponent(PortalTestApp);
+      fixture.detectChanges();
+      const portal = new DomPortal(fixture.componentInstance.domPortalContent);
+
+      portal.attach(host);
+
+      expect(someDomElement.textContent).toContain('Hello there');
+
+      host.detach();
+
+      expect(someDomElement.textContent!.trim()).toBe('');
+    });
+
   });
 });
 
@@ -559,12 +605,17 @@ class ArbitraryViewContainerRefComponent {
   </ng-template>
 
   <ng-template #templateRef let-data> {{fruit}} - {{ data?.status }}!</ng-template>
+
+  <div #domPortalContent>
+    <p class="dom-portal-inner-content">Hello there</p>
+  </div>
   `,
 })
 class PortalTestApp {
   @ViewChildren(CdkPortal) portals: QueryList<CdkPortal>;
   @ViewChild(CdkPortalOutlet, {static: true}) portalOutlet: CdkPortalOutlet;
-  @ViewChild('templateRef', { read: TemplateRef , static: true}) templateRef: TemplateRef<any>;
+  @ViewChild('templateRef', {read: TemplateRef, static: true}) templateRef: TemplateRef<any>;
+  @ViewChild('domPortalContent', {static: true}) domPortalContent: ElementRef<HTMLElement>;
 
   selectedPortal: Portal<any>|undefined;
   fruit: string = 'Banana';

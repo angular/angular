@@ -3,6 +3,7 @@ export declare abstract class BasePortalHost extends BasePortalOutlet {
 
 export declare abstract class BasePortalOutlet implements PortalOutlet {
     protected _attachedPortal: Portal<any> | null;
+    readonly attachDomPortal: null | ((portal: DomPortal) => any);
     attach<T>(portal: ComponentPortal<T>): ComponentRef<T>;
     attach<T>(portal: TemplatePortal<T>): EmbeddedViewRef<T>;
     attach(portal: any): any;
@@ -21,10 +22,12 @@ export declare class CdkPortal extends TemplatePortal {
 }
 
 export declare class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestroy {
+    attachDomPortal: (portal: DomPortal<HTMLElement>) => void;
     attached: EventEmitter<CdkPortalOutletAttachedRef>;
     readonly attachedRef: CdkPortalOutletAttachedRef;
     portal: Portal<any> | null;
-    constructor(_componentFactoryResolver: ComponentFactoryResolver, _viewContainerRef: ViewContainerRef);
+    constructor(_componentFactoryResolver: ComponentFactoryResolver, _viewContainerRef: ViewContainerRef,
+    _document?: any);
     attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;
     attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C>;
     ngOnDestroy(): void;
@@ -48,13 +51,20 @@ export interface ComponentType<T> {
     new (...args: any[]): T;
 }
 
+export declare class DomPortal<T = HTMLElement> extends Portal<T> {
+    readonly element: T;
+    constructor(element: T | ElementRef<T>);
+}
+
 export declare class DomPortalHost extends DomPortalOutlet {
 }
 
 export declare class DomPortalOutlet extends BasePortalOutlet {
+    attachDomPortal: (portal: DomPortal<HTMLElement>) => void;
     outletElement: Element;
     constructor(
-    outletElement: Element, _componentFactoryResolver: ComponentFactoryResolver, _appRef: ApplicationRef, _defaultInjector: Injector);
+    outletElement: Element, _componentFactoryResolver: ComponentFactoryResolver, _appRef: ApplicationRef, _defaultInjector: Injector,
+    _document?: any);
     attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;
     attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C>;
     dispose(): void;

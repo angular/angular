@@ -36,6 +36,7 @@ export declare class MatBottomSheetContainer extends BasePortalOutlet implements
     _animationState: 'void' | 'visible' | 'hidden';
     _animationStateChanged: EventEmitter<AnimationEvent>;
     _portalOutlet: CdkPortalOutlet;
+    attachDomPortal: (portal: DomPortal<HTMLElement>) => void;
     bottomSheetConfig: MatBottomSheetConfig;
     constructor(_elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _focusTrapFactory: FocusTrapFactory, breakpointObserver: BreakpointObserver, document: any,
     bottomSheetConfig: MatBottomSheetConfig);

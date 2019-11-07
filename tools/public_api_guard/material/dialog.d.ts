@@ -94,6 +94,7 @@ export declare class MatDialogContainer extends BasePortalOutlet {
     _id: string;
     _portalOutlet: CdkPortalOutlet;
     _state: 'void' | 'enter' | 'exit';
+    attachDomPortal: (portal: DomPortal<HTMLElement>) => void;
     constructor(_elementRef: ElementRef, _focusTrapFactory: FocusTrapFactory, _changeDetectorRef: ChangeDetectorRef, _document: any,
     _config: MatDialogConfig);
     _onAnimationDone(event: AnimationEvent): void;

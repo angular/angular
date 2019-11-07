@@ -121,6 +121,7 @@ export class Overlay {
       this._appRef = this._injector.get<ApplicationRef>(ApplicationRef);
     }
 
-    return new DomPortalOutlet(pane, this._componentFactoryResolver, this._appRef, this._injector);
+    return new DomPortalOutlet(pane, this._componentFactoryResolver, this._appRef, this._injector,
+                               this._document);
   }
 }

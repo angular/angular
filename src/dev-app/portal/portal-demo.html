@@ -15,6 +15,10 @@
   Science joke
 </button>
 
+<button type="button" (click)="selectedPortal = dadJoke">
+  Dad joke
+</button>
+
 <!-- Template vars on <ng-template> elements can't be accessed _in_ the template because Angular
     doesn't support grabbing the instance / TemplateRef this way because the variable may be
     referring to something *in* the template (such as #item in ngFor). As such, the component
@@ -28,4 +32,9 @@
 <div *cdk-portal>
  <p> - Did you hear about this year's Fibonacci Conference? </p>
  <p> - It's going to be as big as the last two put together. </p>
+</div>
+
+<div class="demo-dad-joke" #domPortalSource>
+  <p> - Scientists got bored of watching the moon for 24 hours </p>
+  <p> - So they called it a day. </p>
 </div>

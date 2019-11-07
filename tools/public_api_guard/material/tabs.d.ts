@@ -146,7 +146,8 @@ export declare class MatTabBody extends _MatTabBodyBase {
 export declare type MatTabBodyOriginState = 'left' | 'right';
 
 export declare class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestroy {
-    constructor(componentFactoryResolver: ComponentFactoryResolver, viewContainerRef: ViewContainerRef, _host: MatTabBody);
+    constructor(componentFactoryResolver: ComponentFactoryResolver, viewContainerRef: ViewContainerRef, _host: MatTabBody,
+    _document?: any);
     ngOnDestroy(): void;
     ngOnInit(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTabBodyPortal, "[matTabBodyHost]", never, {}, {}, never>;

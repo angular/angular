@@ -12,7 +12,8 @@ import {
   BasePortalOutlet,
   ComponentPortal,
   CdkPortalOutlet,
-  TemplatePortal
+  TemplatePortal,
+  DomPortal,
 } from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
 import {
@@ -179,6 +180,21 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
 
     this._savePreviouslyFocusedElement();
     return this._portalHost.attachTemplatePortal(portal);
+  }
+
+  /**
+   * Attaches a DOM portal to the dialog container.
+   * @param portal Portal to be attached.
+   * @deprecated To be turned into a method.
+   * @breaking-change 10.0.0
+   */
+  attachDomPortal = (portal: DomPortal) => {
+    if (this._portalHost.hasAttached()) {
+      throwDialogContentAlreadyAttachedError();
+    }
+
+    this._savePreviouslyFocusedElement();
+    return this._portalHost.attachDomPortal(portal);
   }
 
   /** Emit lifecycle events based on animation `start` callback. */
