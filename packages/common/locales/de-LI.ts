@@ -18,7 +18,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'de-LI', [['vm.', 'nm.'], ['vorm.', 'nachm.'], u], u,
+  'de-LI', [['AM', 'PM'], u, u], [['vm.', 'nm.'], ['AM', 'PM'], u],
   [
     ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'],
     ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
@@ -32,7 +32,8 @@ export default [
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     [
-      'Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'
+      'Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sept.', 'Okt.', 'Nov.',
+      'Dez.'
     ],
     [
       'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September',
@@ -67,6 +68,7 @@ export default [
     'SYP': [],
     'THB': ['฿'],
     'TWD': ['NT$'],
+    'XXX': [],
     'ZMW': [u, 'K']
   },
   plural

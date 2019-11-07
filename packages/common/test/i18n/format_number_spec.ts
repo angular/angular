@@ -55,7 +55,7 @@ describe('Format number', () => {
         expect(formatPercent(1.23, ɵDEFAULT_LOCALE_ID)).toEqual('123%');
         expect(formatPercent(1.2, ɵDEFAULT_LOCALE_ID, '.2')).toEqual('120.00%');
         expect(formatPercent(1.2, ɵDEFAULT_LOCALE_ID, '4.2')).toEqual('0,120.00%');
-        expect(formatPercent(1.2, 'fr', '4.2')).toEqual('0 120,00 %');
+        expect(formatPercent(1.2, 'fr', '4.2')).toEqual('0\u202f120,00 %');
         expect(formatPercent(1.2, 'ar', '4.2')).toEqual('0,120.00‎%‎');
         // see issue #20136
         expect(formatPercent(0.12345674, ɵDEFAULT_LOCALE_ID, '0.0-10')).toEqual('12.345674%');
@@ -93,7 +93,7 @@ describe('Format number', () => {
         expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, '$', defaultCurrencyCode, '5.2-2'))
             .toEqual('$00,005.12');
         expect(formatCurrency(5.1234, 'fr', '$', defaultCurrencyCode, '5.2-2'))
-            .toEqual('00 005,12 $');
+            .toEqual('00\u202f005,12 $');
         expect(formatCurrency(5, 'fr', '$US', defaultCurrencyCode)).toEqual('5,00 $US');
       });
 
@@ -107,10 +107,10 @@ describe('Format number', () => {
       });
 
       it('should round to the default number of digits if no digitsInfo', () => {
-        // IDR has a default number of digits of 0
-        expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'IDR', 'IDR')).toEqual('IDR5');
-        expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'IDR', 'IDR', '.2')).toEqual('IDR5.12');
-        expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'Custom name', 'IDR'))
+        // GNF has a default number of digits of 0
+        expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'GNF', 'GNF')).toEqual('GNF5');
+        expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'GNF', 'GNF', '.2')).toEqual('GNF5.12');
+        expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'Custom name', 'GNF'))
             .toEqual('Custom name5');
         // BHD has a default number of digits of 3
         expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'BHD', 'BHD')).toEqual('BHD5.123');
