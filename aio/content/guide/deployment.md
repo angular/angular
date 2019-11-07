@@ -230,7 +230,7 @@ modified to serve `index.html`:
   	http.ListenAndServe(":"+httpPort, nil)
   }
   ```
-  
+
 * [Ruby](https://www.ruby-lang.org/): create a Ruby server using ([sinatra](http://sinatrarb.com/)) with a basic Ruby file that configures the server `server.rb`:
 
   ``` ruby
@@ -669,7 +669,7 @@ In `angular.json` add two new configuration sections under the `build` and `serv
      ...
     },
     "es5": {
-      "browserTarget": "<app-name>:build:es5"
+      "browserTarget": "&lt;app-name&gt;:build:es5"
     }
   }
 },
@@ -741,7 +741,7 @@ Create an [ES5 serve configuration](guide/deployment#configuring-serve-for-es5) 
 		  ...
 	  },
     "es5": {
-      "devServerTarget": "<app-name>:serve:es5"
+      "devServerTarget": "&lt;app-name&gt;:serve:es5"
     }
   }
 },
