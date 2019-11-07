@@ -19,7 +19,7 @@ import {CONTEXT, FLAGS, HOST, LView, LViewFlags, TVIEW, T_HOST} from './interfac
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {destroyLView, renderDetachView} from './node_manipulation';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode, unwrapRNode} from './util/view_utils';
+import {unwrapRNode} from './util/view_utils';
 
 
 
@@ -302,7 +302,8 @@ export class RootViewRef<T> extends ViewRef<T> {
   get context(): T { return null !; }
 }
 
-function collectNativeNodes(lView: LView, tNode: TNode | null, result: any[]): any[] {
+function collectNativeNodes(
+    lView: LView, tNode: TNode | null, result: any[], isProjection: boolean = false): any[] {
   while (tNode !== null) {
     ngDevMode && assertNodeOfPossibleTypes(
                      tNode, TNodeType.Element, TNodeType.Container, TNodeType.Projection,
@@ -333,15 +334,13 @@ function collectNativeNodes(lView: LView, tNode: TNode | null, result: any[]): a
       const componentView = findComponentView(lView);
       const componentHost = componentView[T_HOST] as TElementNode;
       const parentView = getLViewParent(componentView);
-      let currentProjectedNode: TNode|null =
+      let firstProjectedNode: TNode|null =
           (componentHost.projection as(TNode | null)[])[tNode.projection as number];
-
-      while (currentProjectedNode !== null && parentView !== null) {
-        result.push(getNativeByTNode(currentProjectedNode, parentView));
-        currentProjectedNode = currentProjectedNode.next;
+      if (firstProjectedNode !== null && parentView !== null) {
+        collectNativeNodes(parentView, firstProjectedNode, result, true);
       }
     }
-    tNode = tNode.next;
+    tNode = isProjection ? tNode.projectionNext : tNode.next;
   }
 
   return result;
