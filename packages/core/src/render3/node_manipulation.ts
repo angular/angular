@@ -256,12 +256,13 @@ export function insertView(lView: LView, lContainer: LContainer, index: number) 
  * different LContainer.
  */
 function trackMovedView(declarationContainer: LContainer, lView: LView) {
+  ngDevMode && assertDefined(lView, 'LView required');
   ngDevMode && assertLContainer(declarationContainer);
-  const declaredViews = declarationContainer[MOVED_VIEWS];
-  if (declaredViews === null) {
+  const movedViews = declarationContainer[MOVED_VIEWS];
+  if (movedViews === null) {
     declarationContainer[MOVED_VIEWS] = [lView];
   } else {
-    declaredViews.push(lView);
+    movedViews.push(lView);
   }
 }
 
@@ -270,9 +271,9 @@ function detachMovedView(declarationContainer: LContainer, lView: LView) {
   ngDevMode && assertDefined(
                    declarationContainer[MOVED_VIEWS],
                    'A projected view should belong to a non-empty projected views collection');
-  const projectedViews = declarationContainer[MOVED_VIEWS] !;
-  const declaredViewIndex = projectedViews.indexOf(lView);
-  projectedViews.splice(declaredViewIndex, 1);
+  const movedViews = declarationContainer[MOVED_VIEWS] !;
+  const declaredViewIndex = movedViews.indexOf(lView);
+  movedViews.splice(declaredViewIndex, 1);
 }
 
 /**
