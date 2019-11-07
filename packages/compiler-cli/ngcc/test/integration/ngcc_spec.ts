@@ -918,23 +918,35 @@ runInEachFileSystem(() => {
               var __decorate = null;
               var core_1 = require("@angular/core");
               var directive_1 = require("./directive");
+              var LocalDir = /** @class */ (function () {
+                  function LocalDir() {
+                  }
+                  LocalDir = __decorate([
+                      core_1.Directive({
+                          selector: '[local]',
+                      })
+                  ], LocalDir);
+                  return LocalDir;
+              }());
               var FooModule = /** @class */ (function () {
                   function FooModule() {
                   }
                   FooModule = __decorate([
                       core_1.NgModule({
-                          declarations: [directive_1.Foo],
-                          exports: [directive_1.Foo],
+                          declarations: [directive_1.Foo, LocalDir],
+                          exports: [directive_1.Foo, LocalDir],
                       })
                   ], FooModule);
                   return FooModule;
               }());
+              exports.LocalDir = LocalDir;
               exports.FooModule = FooModule;
             `,
           },
           {
             name: _('/node_modules/test-package/module.d.ts'),
             contents: `
+              export declare class LocalDir {}
               export declare class FooModule {}
             `,
           },
@@ -1005,6 +1017,8 @@ runInEachFileSystem(() => {
         expect(jsContents).toContain('exports.ɵngExportɵFooModuleɵFoo = ɵngcc1.Foo;');
         expect(dtsContents)
             .toContain(`export {Foo as ɵngExportɵFooModuleɵFoo} from './directive';`);
+        expect(dtsContents.match(/ɵngExportɵFooModuleɵFoo/g) !.length).toBe(1);
+        expect(dtsContents).not.toContain(`ɵngExportɵFooModuleɵLocalDir`);
       });
     });
 
