@@ -436,10 +436,16 @@ export const enum StylingMapArrayIndex {
  *  applied to the element.
  */
 export interface SyncStylingMapsFn {
-  (context: TStylingContext, renderer: Renderer3|ProceduralRenderer3|null, element: RElement,
-   data: LStylingData, sourceIndex: number, applyStylingFn: ApplyStylingFn,
-   sanitizer: StyleSanitizeFn|null, mode: StylingMapsSyncMode, targetProp?: string|null,
-   defaultValue?: boolean|string|null): boolean;
+  (context: TStylingContext,           //
+   stylingRenderer: StylingRenderer,   //
+   element: RElement,                  //
+   data: LStylingData,                 //
+   sourceIndex: number,                //
+   sanitizer: StyleSanitizeFn|null,    //
+   mode: StylingMapsSyncMode,          //
+   targetProp: string|null,            //
+   defaultValue: boolean|string|null,  //
+   isClassBased: boolean): boolean;    //
 }
 
 /**
@@ -471,3 +477,16 @@ export const enum StylingMapsSyncMode {
  * The styling algorithm code only needs access to `flags`.
  */
 export interface TStylingNode { flags: TNodeFlags; }
+
+/**
+ * Contains all style/class writing APIs.
+ *
+ * This API can be used to mock out all style/class
+ * property writes which are used in the styling
+ * algorithms.
+ */
+export interface StylingRenderer {
+  setCurrentRenderer(renderer: any): void;
+  setClass(element: RElement, className: string, value: any, bindingIndex: number|null): void;
+  setStyle(element: RElement, prop: string, value: any, bindingIndex: number|null): void;
+}

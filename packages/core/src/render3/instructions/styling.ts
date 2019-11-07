@@ -16,6 +16,7 @@ import {isDirectiveHost} from '../interfaces/type_checks';
 import {LView, RENDERER, TVIEW, TView} from '../interfaces/view';
 import {getActiveDirectiveId, getCheckNoChangesMode, getCurrentStyleSanitizer, getLView, getSelectedIndex, incrementBindingIndex, nextBindingIndex, resetCurrentStyleSanitizer, setCurrentStyleSanitizer, setElementExitFn} from '../state';
 import {applyStylingMapDirectly, applyStylingValueDirectly, flushStyling, setClass, setStyle, updateClassViaContext, updateStyleViaContext} from '../styling/bindings';
+import {getStylingRenderer} from '../styling/dom_styling_renderer';
 import {activateStylingMapFeature} from '../styling/map_based_bindings';
 import {attachStylingDebugObject} from '../styling/styling_debug';
 import {NO_CHANGE} from '../tokens';
@@ -484,10 +485,11 @@ function stylingApply(): void {
   const tNode = getTNode(elementIndex, lView);
   const native = getNativeByTNode(tNode, lView) as RElement;
   const directiveIndex = getActiveDirectiveId();
-  const renderer = getRenderer(tNode, lView);
   const sanitizer = getCurrentStyleSanitizer();
   const classesContext = isStylingContext(tNode.classes) ? tNode.classes as TStylingContext : null;
   const stylesContext = isStylingContext(tNode.styles) ? tNode.styles as TStylingContext : null;
+  const renderer = getStylingRenderer();
+  renderer.setCurrentRenderer(getRenderer(tNode, lView));
   flushStyling(
       renderer, lView, tNode, classesContext, stylesContext, native, directiveIndex, sanitizer,
       tView.firstUpdatePass);

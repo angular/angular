@@ -8,10 +8,11 @@
 import {unwrapSafeValue} from '../../sanitization/bypass';
 import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
 import {ProceduralRenderer3, RElement, Renderer3} from '../interfaces/renderer';
-import {ApplyStylingFn, LStylingData, StylingMapArray, StylingMapArrayIndex, StylingMapsSyncMode, SyncStylingMapsFn, TStylingContext, TStylingContextIndex} from '../interfaces/styling';
+import {ApplyStylingFn, LStylingData, StylingMapArray, StylingMapArrayIndex, StylingMapsSyncMode, StylingRenderer, SyncStylingMapsFn, TStylingContext, TStylingContextIndex} from '../interfaces/styling';
 import {getBindingValue, getMapProp, getMapValue, getValue, getValuesCount, isStylingValueDefined} from '../util/styling_utils';
 
 import {setStylingMapsSyncFn} from './bindings';
+
 
 
 /**
@@ -111,10 +112,9 @@ export function activateStylingMapFeature() {
  * in merge sort).
  */
 export const syncStylingMap: SyncStylingMapsFn =
-    (context: TStylingContext, renderer: Renderer3 | ProceduralRenderer3 | null, element: RElement,
-     data: LStylingData, sourceIndex: number, applyStylingFn: ApplyStylingFn,
-     sanitizer: StyleSanitizeFn | null, mode: StylingMapsSyncMode, targetProp?: string | null,
-     defaultValue?: string | boolean | null): boolean => {
+    (context: TStylingContext, renderer: StylingRenderer, element: RElement, data: LStylingData,
+     sourceIndex: number, sanitizer: StyleSanitizeFn | null, mode: StylingMapsSyncMode,
+     targetProp: string | null, defaultValue: string | boolean | null, isClassBased): boolean => {
       let targetPropValueWasApplied = false;
 
       // once the map-based styling code is activate it is never deactivated. For this reason a
@@ -135,8 +135,8 @@ export const syncStylingMap: SyncStylingMapsFn =
 
         if (runTheSyncAlgorithm) {
           targetPropValueWasApplied = innerSyncStylingMap(
-              context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp || null,
-              sourceIndex, defaultValue || null);
+              context, renderer, element, data, sanitizer, mode, targetProp || null, sourceIndex,
+              defaultValue || null, isClassBased);
         }
 
         if (loopUntilEnd) {
@@ -157,10 +157,10 @@ export const syncStylingMap: SyncStylingMapsFn =
  * processed. To learn more about how the algorithm works, see `syncStylingMap`.
  */
 function innerSyncStylingMap(
-    context: TStylingContext, renderer: Renderer3 | ProceduralRenderer3 | null, element: RElement,
-    data: LStylingData, applyStylingFn: ApplyStylingFn, sanitizer: StyleSanitizeFn | null,
-    mode: StylingMapsSyncMode, targetProp: string | null, currentMapIndex: number,
-    defaultValue: string | boolean | null): boolean {
+    context: TStylingContext, renderer: StylingRenderer, element: RElement, data: LStylingData,
+    sanitizer: StyleSanitizeFn | null, mode: StylingMapsSyncMode, targetProp: string | null,
+    currentMapIndex: number, defaultValue: string | boolean | null,
+    isClassBased: boolean): boolean {
   const totalMaps = getValuesCount(context) - 1;  // maps have no default value
   const mapsLimit = totalMaps - 1;
   const recurseInnerMaps =
@@ -200,8 +200,8 @@ function innerSyncStylingMap(
         const innerProp = iteratedTooFar ? targetProp : prop;
         let valueApplied = recurseInnerMaps ?
             innerSyncStylingMap(
-                context, renderer, element, data, applyStylingFn, sanitizer, innerMode, innerProp,
-                currentMapIndex + 1, defaultValue) :
+                context, renderer, element, data, sanitizer, innerMode, innerProp,
+                currentMapIndex + 1, defaultValue, isClassBased) :
             false;
 
         if (iteratedTooFar) {
@@ -227,7 +227,11 @@ function innerSyncStylingMap(
                   (value ? unwrapSafeValue(value) : null);
             }
 
-            applyStylingFn(renderer, element, prop, finalValue, bindingIndexToApply);
+            if (isClassBased) {
+              renderer.setClass(element, prop, finalValue, bindingIndexToApply);
+            } else {
+              renderer.setStyle(element, prop, finalValue, bindingIndexToApply);
+            }
           }
         }
 
@@ -245,13 +249,13 @@ function innerSyncStylingMap(
       if (recurseInnerMaps &&
           (stylingMapArr.length === StylingMapArrayIndex.ValuesStartPosition || !targetProp)) {
         targetPropValueWasApplied = innerSyncStylingMap(
-            context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp,
-            currentMapIndex + 1, defaultValue);
+            context, renderer, element, data, sanitizer, mode, targetProp, currentMapIndex + 1,
+            defaultValue, isClassBased);
       }
     } else if (recurseInnerMaps) {
       targetPropValueWasApplied = innerSyncStylingMap(
-          context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp,
-          currentMapIndex + 1, defaultValue);
+          context, renderer, element, data, sanitizer, mode, targetProp, currentMapIndex + 1,
+          defaultValue, isClassBased);
     }
   }
 

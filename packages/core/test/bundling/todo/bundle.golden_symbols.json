@@ -54,6 +54,9 @@
     "name": "DefaultIterableDifferFactory"
   },
   {
+    "name": "DomStylingRenderer"
+  },
+  {
     "name": "EMPTY_ARRAY"
   },
   {
@@ -325,6 +328,9 @@
   },
   {
     "name": "_renderCompCount"
+  },
+  {
+    "name": "_renderer"
   },
   {
     "name": "_state"
@@ -784,6 +790,9 @@
   },
   {
     "name": "getStylingMapsSyncFn"
+  },
+  {
+    "name": "getStylingRenderer"
   },
   {
     "name": "getStylingState"

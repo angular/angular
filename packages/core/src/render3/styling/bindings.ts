@@ -10,7 +10,7 @@ import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanit
 import {global} from '../../util/global';
 import {TNodeFlags} from '../interfaces/node';
 import {ProceduralRenderer3, RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
-import {ApplyStylingFn, LStylingData, StylingMapArray, StylingMapArrayIndex, StylingMapsSyncMode, SyncStylingMapsFn, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags, TStylingNode} from '../interfaces/styling';
+import {ApplyStylingFn, LStylingData, StylingMapArray, StylingMapArrayIndex, StylingMapsSyncMode, StylingRenderer, SyncStylingMapsFn, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags, TStylingNode} from '../interfaces/styling';
 import {NO_CHANGE} from '../tokens';
 import {DEFAULT_BINDING_INDEX, DEFAULT_BINDING_VALUE, DEFAULT_GUARD_MASK_VALUE, MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, concatString, forceStylesAsString, getBindingValue, getDefaultValue, getGuardMask, getInitialStylingValue, getMapProp, getMapValue, getProp, getPropValuesStartPosition, getStylingMapArray, getTotalSources, getValue, getValuesCount, hasConfig, hasValueChanged, isHostStylingActive, isSanitizationRequired, isStylingMapArray, isStylingValueDefined, normalizeIntoStylingMap, patchConfig, setDefaultValue, setGuardMask, setMapAsDirty, setValue} from '../util/styling_utils';
 
@@ -416,7 +416,7 @@ function addNewSourceColumn(context: TStylingContext): void {
  * (i.e. the `bitMask` and `counter` values for styles and classes will be cleared).
  */
 export function flushStyling(
-    renderer: Renderer3 | ProceduralRenderer3 | null, data: LStylingData, tNode: TStylingNode,
+    renderer: StylingRenderer, data: LStylingData, tNode: TStylingNode,
     classesContext: TStylingContext | null, stylesContext: TStylingContext | null,
     element: RElement, directiveIndex: number, styleSanitizer: StyleSanitizeFn | null,
     firstUpdatePass: boolean): void {
@@ -430,8 +430,8 @@ export function flushStyling(
 
     if (state.stylesBitMask !== 0) {
       applyStylingViaContext(
-          stylesContext, tNode, renderer, element, data, state.stylesBitMask, setStyle,
-          styleSanitizer, hostBindingsMode, false);
+          stylesContext, tNode, renderer, element, data, state.stylesBitMask, styleSanitizer,
+          hostBindingsMode, false);
     }
   }
 
@@ -440,7 +440,7 @@ export function flushStyling(
 
     if (state.classesBitMask !== 0) {
       applyStylingViaContext(
-          classesContext, tNode, renderer, element, data, state.classesBitMask, setClass, null,
+          classesContext, tNode, renderer, element, data, state.classesBitMask, null,
           hostBindingsMode, true);
     }
   }
@@ -575,10 +575,9 @@ function updateInitialStylingOnContext(
  * the styles and classes contexts).
  */
 export function applyStylingViaContext(
-    context: TStylingContext, tNode: TStylingNode, renderer: Renderer3 | ProceduralRenderer3 | null,
-    element: RElement, bindingData: LStylingData, bitMaskValue: number | boolean,
-    applyStylingFn: ApplyStylingFn, sanitizer: StyleSanitizeFn | null, hostBindingsMode: boolean,
-    isClassBased: boolean): void {
+    context: TStylingContext, tNode: TStylingNode, renderer: StylingRenderer, element: RElement,
+    bindingData: LStylingData, bitMaskValue: number | boolean, sanitizer: StyleSanitizeFn | null,
+    hostBindingsMode: boolean, isClassBased: boolean): void {
   const bitMask = normalizeBitMaskValue(bitMaskValue);
 
   let stylingMapsSyncFn: SyncStylingMapsFn|null = null;
@@ -620,7 +619,8 @@ export function applyStylingViaContext(
               const finalValue = sanitizer && isSanitizationRequired(context, i) ?
                   sanitizer(prop, value, StyleSanitizeMode.SanitizeOnly) :
                   unwrapSafeValue(value);
-              applyStylingFn(renderer, element, prop, finalValue, bindingIndex);
+              isClassBased ? renderer.setClass(element, prop, finalValue, bindingIndex) :
+                             renderer.setStyle(element, prop, finalValue, bindingIndex);
             }
             valueApplied = true;
           }
@@ -644,8 +644,8 @@ export function applyStylingViaContext(
           }
 
           const valueAppliedWithinMap = stylingMapsSyncFn(
-              context, renderer, element, bindingData, j, applyStylingFn, sanitizer, mode, prop,
-              defaultValue);
+              context, renderer, element, bindingData, j, sanitizer, mode, prop, defaultValue,
+              isClassBased);
           valueApplied = valueApplied || valueAppliedWithinMap;
         }
       }
@@ -655,7 +655,8 @@ export function applyStylingViaContext(
       // prop-based or map-based bindings code. If and when this happens, just apply the
       // default value (even if the default value is `null`).
       if (!valueApplied) {
-        applyStylingFn(renderer, element, prop, defaultValue);
+        isClassBased ? renderer.setClass(element, prop, defaultValue, 0) :
+                       renderer.setStyle(element, prop, defaultValue, 0);
       }
     }
 
@@ -670,7 +671,7 @@ export function applyStylingViaContext(
       mapsMode |= StylingMapsSyncMode.CheckValuesOnly;
     }
     stylingMapsSyncFn(
-        context, renderer, element, bindingData, 0, applyStylingFn, sanitizer, mapsMode);
+        context, renderer, element, bindingData, 0, sanitizer, mapsMode, null, null, isClassBased);
   }
 }
 

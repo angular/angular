@@ -9,12 +9,13 @@ import {createProxy} from '../../debug/proxy';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {TNodeFlags} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
-import {ApplyStylingFn, LStylingData, TStylingContext, TStylingContextIndex, TStylingNode} from '../interfaces/styling';
+import {ApplyStylingFn, LStylingData, StylingRenderer, TStylingContext, TStylingContextIndex, TStylingNode} from '../interfaces/styling';
 import {getCurrentStyleSanitizer} from '../state';
 import {attachDebugObject} from '../util/debug_utils';
 import {MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, allowDirectStyling as _allowDirectStyling, getBindingValue, getDefaultValue, getGuardMask, getProp, getPropValuesStartPosition, getValue, getValuesCount, hasConfig, isSanitizationRequired, isStylingContext, normalizeIntoStylingMap, setValue} from '../util/styling_utils';
 
 import {applyStylingViaContext} from './bindings';
+import {DomStylingRenderer} from './dom_styling_renderer';
 import {activateStylingMapFeature} from './map_based_bindings';
 
 
@@ -481,18 +482,35 @@ export class NodeStylingDebug implements DebugNodeStyling {
     const mapFn: ApplyStylingFn =
         (renderer: any, element: RElement, prop: string, value: string | null,
          bindingIndex?: number | null) => fn(prop, value, bindingIndex || null);
+    const renderer = new MockStylingRenderer(mapFn);
 
     const sanitizer = this._isClassBased ? null : (this._sanitizer || getCurrentStyleSanitizer());
 
     // run the template bindings
     applyStylingViaContext(
-        this.context.context, this._tNode, null, mockElement, data, true, mapFn, sanitizer, false,
+        this.context.context, this._tNode, renderer, mockElement, data, true, sanitizer, false,
         this._isClassBased);
 
     // and also the host bindings
     applyStylingViaContext(
-        this.context.context, this._tNode, null, mockElement, data, true, mapFn, sanitizer, true,
+        this.context.context, this._tNode, renderer, mockElement, data, true, sanitizer, true,
         this._isClassBased);
+  }
+}
+
+class MockStylingRenderer implements StylingRenderer {
+  constructor(private _interceptorFn: ApplyStylingFn) {}
+
+  setCurrentRenderer(renderer: any) {}
+
+  setClass(element: HTMLElement, className: string, value: boolean, bindingIndex: number|null):
+      void {
+    this._interceptorFn(null, element, className, value, bindingIndex);
+  }
+
+  setStyle(element: HTMLElement, prop: string, value: string|null, bindingIndex: number|null):
+      void {
+    this._interceptorFn(null, element, prop, value, bindingIndex);
   }
 }
 
