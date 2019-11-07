@@ -96,14 +96,14 @@ export class DtsRenderer {
         const newStatement = `    static ${declaration.name}: ${typeStr};\n`;
         outputText.appendRight(endOfClass - 1, newStatement);
       });
-
-      if (renderInfo.reexports.length > 0) {
-        for (const e of renderInfo.reexports) {
-          const newStatement = `\nexport {${e.symbolName} as ${e.asAlias}} from '${e.fromModule}';`;
-          outputText.appendRight(endOfClass, newStatement);
-        }
-      }
     });
+
+    if (renderInfo.reexports.length > 0) {
+      for (const e of renderInfo.reexports) {
+        const newStatement = `\nexport {${e.symbolName} as ${e.asAlias}} from '${e.fromModule}';`;
+        outputText.append(newStatement);
+      }
+    }
 
     this.dtsFormatter.addModuleWithProvidersParams(
         outputText, renderInfo.moduleWithProviders, importManager);
