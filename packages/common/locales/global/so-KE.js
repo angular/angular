@@ -20,17 +20,17 @@
   }
   root.ng.common.locales['so-ke'] = [
     'so-KE',
-    [['sn.', 'gn.'], u, u],
-    u,
+    [['h', 'd'], ['GH', 'GD'], u],
+    [['GH', 'GD'], u, u],
     [
-      ['A', 'I', 'T', 'A', 'Kh', 'J', 'S'], ['Axd', 'Isn', 'Tal', 'Arb', 'Kha', 'Jim', 'Sab'],
+      ['A', 'I', 'T', 'A', 'Kh', 'J', 'S'], ['Axd', 'Isn', 'Tldo', 'Arbc', 'Khms', 'Jmc', 'Sbti'],
       ['Axad', 'Isniin', 'Talaado', 'Arbaco', 'Khamiis', 'Jimco', 'Sabti'],
-      ['Axd', 'Isn', 'Tal', 'Arb', 'Kha', 'Jim', 'Sab']
+      ['Axd', 'Isn', 'Tldo', 'Arbc', 'Khms', 'Jmc', 'Sbti']
     ],
     u,
     [
-      ['K', 'L', 'S', 'A', 'S', 'L', 'T', 'S', 'S', 'T', 'K', 'L'],
-      ['Kob', 'Lab', 'Sad', 'Afr', 'Sha', 'Lix', 'Tod', 'Sid', 'Sag', 'Tob', 'KIT', 'LIT'],
+      ['J', 'F', 'M', 'A', 'M', 'J', 'L', 'O', 'S', 'O', 'N', 'D'],
+      ['Jan', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Lul', 'Ogs', 'Seb', 'Okt', 'Nof', 'Dis'],
       [
         'Bisha Koobaad', 'Bisha Labaad', 'Bisha Saddexaad', 'Bisha Afraad', 'Bisha Shanaad',
         'Bisha Lixaad', 'Bisha Todobaad', 'Bisha Sideedaad', 'Bisha Sagaalaad', 'Bisha Tobnaad',
@@ -38,25 +38,24 @@
       ]
     ],
     [
-      ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-      ['Kob', 'Lab', 'Sad', 'Afr', 'Sha', 'Lix', 'Tod', 'Sid', 'Sag', 'Tob', 'KIT', 'LIT'],
+      ['J', 'F', 'M', 'A', 'M', 'J', 'L', 'O', 'S', 'O', 'N', 'D'],
+      ['Jan', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Lul', 'Ogs', 'Seb', 'Okt', 'Nof', 'Dis'],
       [
-        'Bisha Koobaad', 'Bisha Labaad', 'Bisha Saddexaad', 'Bisha Afraad', 'Bisha Shanaad',
-        'Bisha Lixaad', 'Bisha Todobaad', 'Bisha Sideedaad', 'Bisha Sagaalaad', 'Bisha Tobnaad',
-        'Bisha Kow iyo Tobnaad', 'Bisha Laba iyo Tobnaad'
+        'Jannaayo', 'Febraayo', 'Maarso', 'Abriil', 'May', 'Juun', 'Luuliyo', 'Ogost', 'Sebtembar',
+        'Oktoobar', 'Nofembar', 'Desembar'
       ]
     ],
-    [['CK', 'CD'], u, u],
+    [['CH', 'CD'], u, ['Ciise Hortii', 'Ciise Dabadii']],
     0,
     [6, 0],
     ['dd/MM/yy', 'dd-MMM-y', 'dd MMMM y', 'EEEE, MMMM dd, y'],
     ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
     ['{1} {0}', u, u, u],
-    ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+    ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'MaL', ':'],
     ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
     'Ksh',
-    'KES',
-    {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'SOS': ['S'], 'USD': ['US$', '$']},
+    'Shilingka Kenya',
+    {'BBD': ['DBB', '$'], 'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'SOS': ['S'], 'USD': ['US$', '$']},
     plural,
     []
   ];

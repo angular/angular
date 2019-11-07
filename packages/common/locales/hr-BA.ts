@@ -51,7 +51,7 @@ export default [
   ['d. M. yy.', 'd. MMM y.', 'd. MMMM y.', 'EEEE, d. MMMM y.'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss (zzzz)'], ['{1} {0}', u, '{1} \'u\' {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'KM', 'konvertibilna marka', {
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'KM', 'konvertibilna marka', {
     'AUD': [u, '$'],
     'BAM': ['KM'],
     'BRL': [u, 'R$'],
@@ -70,7 +70,8 @@ export default [
     'USD': [u, '$'],
     'VND': [u, '₫'],
     'XCD': [u, '$'],
-    'XPF': []
+    'XPF': [],
+    'XXX': []
   },
   plural
 ];

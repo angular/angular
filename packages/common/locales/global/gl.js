@@ -60,21 +60,23 @@
     [['a.C.', 'd.C.'], u, ['antes de Cristo', 'despois de Cristo']],
     1,
     [6, 0],
-    ['dd/MM/yy', 'dd/MM/y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
+    ['dd/MM/yy', 'd \'de\' MMM \'de\' y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
     ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
     ['{0}, {1}', u, '{0} \'do\' {1}', u],
     [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
     ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
     '€',
-    'Euro',
+    'euro',
     {
+      'BYN': [u, 'Br'],
       'ESP': ['₧'],
       'JPY': ['JP¥', '¥'],
       'KMF': [u, 'FC'],
       'MXN': ['$MX', '$'],
       'RUB': [u, 'руб'],
       'THB': ['฿'],
-      'TWD': ['NT$']
+      'TWD': ['NT$'],
+      'XCD': [u, '$']
     },
     plural,
     [

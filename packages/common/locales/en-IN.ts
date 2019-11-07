@@ -18,7 +18,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'en-IN', [['a', 'p'], ['AM', 'PM'], u], [['AM', 'PM'], u, u],
+  'en-IN', [['a', 'p'], ['am', 'pm'], u], [['am', 'pm'], u, u],
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
@@ -37,6 +37,6 @@ export default [
   ['dd/MM/yy', 'dd-MMM-y', 'd MMMM y', 'EEEE, d MMMM, y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1}, {0}', u, '{1} \'at\' {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], '₹', 'Indian Rupee',
+  ['#,##,##0.###', '#,##,##0%', '¤#,##,##0.00', '#E0'], '₹', 'Indian Rupee',
   {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
 ];

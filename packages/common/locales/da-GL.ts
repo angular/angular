@@ -39,7 +39,7 @@ export default [
     ]
   ],
   u, [['fKr', 'eKr'], ['f.Kr.', 'e.Kr.'], u], 1, [6, 0],
-  ['dd/MM/y', 'd. MMM y', 'd. MMMM y', 'EEEE \'den\' d. MMMM y'],
+  ['dd.MM.y', 'd. MMM y', 'd. MMMM y', 'EEEE \'den\' d. MMMM y'],
   ['HH.mm', 'HH.mm.ss', 'HH.mm.ss z', 'HH.mm.ss zzzz'], ['{1} {0}', u, '{1} \'kl\'. {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', '.'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr.', 'dansk krone', {
@@ -51,7 +51,8 @@ export default [
     'RON': [u, 'L'],
     'SEK': [u, 'kr.'],
     'THB': ['฿'],
-    'TWD': ['NT$']
+    'TWD': ['NT$'],
+    'USD': ['US$', '$']
   },
   plural
 ];

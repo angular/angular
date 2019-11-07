@@ -24,8 +24,8 @@
   }
   root.ng.common.locales['cy'] = [
     'cy',
-    [['b', 'h'], ['yb', 'yh'], u],
-    [['yb', 'yh'], u, u],
+    [['b', 'h'], ['AM', 'PM'], ['yb', 'yh']],
+    [['AM', 'PM'], u, u],
     [
       ['S', 'Ll', 'M', 'M', 'I', 'G', 'S'], ['Sul', 'Llun', 'Maw', 'Mer', 'Iau', 'Gwen', 'Sad'],
       [
@@ -44,10 +44,7 @@
     ],
     [
       ['I', 'Ch', 'M', 'E', 'M', 'M', 'G', 'A', 'M', 'H', 'T', 'Rh'],
-      [
-        'Ion', 'Chwef', 'Maw', 'Ebrill', 'Mai', 'Meh', 'Gorff', 'Awst', 'Medi', 'Hyd', 'Tach',
-        'Rhag'
-      ],
+      ['Ion', 'Chwef', 'Maw', 'Ebr', 'Mai', 'Meh', 'Gorff', 'Awst', 'Medi', 'Hyd', 'Tach', 'Rhag'],
       [
         'Ionawr', 'Chwefror', 'Mawrth', 'Ebrill', 'Mai', 'Mehefin', 'Gorffennaf', 'Awst', 'Medi',
         'Hydref', 'Tachwedd', 'Rhagfyr'
@@ -80,6 +77,7 @@
       'THB': ['฿'],
       'TWD': ['NT$'],
       'USD': ['US$', '$'],
+      'XXX': [],
       'ZAR': [],
       'ZMW': []
     },

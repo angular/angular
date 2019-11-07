@@ -20,7 +20,7 @@
   }
   root.ng.common.locales['es-us'] = [
     'es-US',
-    [['a. m.', 'p. m.'], u, u],
+    [['a. m.', 'p. m.'], u, u],
     u,
     [
       ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
@@ -44,9 +44,9 @@
     [['a. C.', 'd. C.'], u, ['antes de Cristo', 'después de Cristo']],
     0,
     [6, 0],
-    ['d/M/yy', 'd MMM y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
+    ['d/M/y', 'd MMM y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
     ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
-    ['{1} {0}', u, '{1}, {0}', u],
+    ['{1} {0}', u, '{1} \'a\' \'las\' {0}', u],
     ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
     ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'],
     '$',
@@ -54,6 +54,7 @@
     {
       'AUD': [u, '$'],
       'BRL': [u, 'R$'],
+      'BYN': [u, 'p.'],
       'CAD': [u, '$'],
       'CNY': [u, '¥'],
       'ESP': ['₧'],
@@ -66,7 +67,6 @@
       'MXN': [u, '$'],
       'NZD': [u, '$'],
       'TWD': [u, 'NT$'],
-      'VEF': [u, 'BsF'],
       'VND': [u, '₫'],
       'XAF': [],
       'XCD': [u, '$'],

@@ -20,7 +20,7 @@
   }
   root.ng.common.locales['es-ar'] = [
     'es-AR',
-    [['a. m.', 'p. m.'], u, u],
+    [['a. m.', 'p. m.'], u, u],
     u,
     [
       ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
@@ -42,11 +42,11 @@
     ],
     u,
     [['a. C.', 'd. C.'], u, ['antes de Cristo', 'después de Cristo']],
-    0,
+    1,
     [6, 0],
     ['d/M/yy', 'd MMM y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
     ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-    ['{1} {0}', u, '{1}, {0}', u],
+    ['{1} {0}', u, '{1} \'a\' \'las\' {0}', u],
     [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
     ['#,##0.###', '#,##0 %', '¤ #,##0.00', '#E0'],
     '$',

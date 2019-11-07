@@ -34,7 +34,7 @@ export default [
     ]
   ],
   u, [['v.C.', 'n.C.'], ['v.Chr.', 'n.Chr.'], ['voor Christus', 'na Christus']], 1, [6, 0],
-  ['dd-MM-yy', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+  ['dd-MM-y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, '{1} \'om\' {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤ #,##0.00;¤ -#,##0.00', '#E0'], '$', 'Surinaamse dollar', {
@@ -47,7 +47,8 @@ export default [
     'THB': ['฿'],
     'TWD': ['NT$'],
     'USD': ['US$', '$'],
-    'XPF': []
+    'XPF': [],
+    'XXX': []
   },
   plural
 ];

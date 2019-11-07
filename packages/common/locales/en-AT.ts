@@ -18,7 +18,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'en-AT', [['a', 'p'], ['AM', 'PM'], u], [['AM', 'PM'], u, u],
+  'en-AT', [['a', 'p'], ['am', 'pm'], u], [['am', 'pm'], u, u],
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],

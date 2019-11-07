@@ -42,38 +42,28 @@
     [6, 0],
     ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
     ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-    ['{1}, {0}', u, '{1} \'saa\' {0}', u],
+    ['{1} {0}', u, u, u],
     ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-    ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+    ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
     'Ksh',
     'Shilingi ya Kenya',
-    {
-      'JPY': ['JP¥', '¥'],
-      'KES': ['Ksh'],
-      'THB': ['฿'],
-      'TWD': ['NT$'],
-      'TZS': ['TSh'],
-      'USD': ['US$', '$']
-    },
+    {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'THB': ['฿'], 'TWD': ['NT$'], 'TZS': ['TSh']},
     plural,
     [
       [
         ['usiku', 'mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku'],
+        ['saa sita za usiku', 'adhuhuri', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku'],
         [
           'saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni',
           'usiku'
-        ],
-        u
+        ]
       ],
       [
         [
           'saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni',
           'usiku'
         ],
-        [
-          'saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'alasiri', 'jioni',
-          'usiku'
-        ],
+        ['saa sita za usiku', 'adhuhuri', 'alfajiri', 'asubuhi', 'alasiri', 'jioni', 'usiku'],
         [
           'saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni',
           'usiku'

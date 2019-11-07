@@ -44,7 +44,8 @@ export default [
     'JPY': ['JP¥', '¥'],
     'KRW': ['￦', '₩'],
     'TWD': ['NT$'],
-    'USD': ['US$', '$']
+    'USD': ['US$', '$'],
+    'XXX': []
   },
   plural
 ];

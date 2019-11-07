@@ -43,7 +43,7 @@
     [['v.C.', 'n.C.'], u, ['voor Christus', 'na Christus']],
     0,
     [6, 0],
-    ['y-MM-dd', 'dd MMM y', 'dd MMMM y', 'EEEE, dd MMMM y'],
+    ['y-MM-dd', 'dd MMM y', 'dd MMMM y', 'EEEE dd MMMM y'],
     ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
     ['{1} {0}', u, u, u],
     [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
@@ -51,12 +51,13 @@
     'R',
     'Suid-Afrikaanse rand',
     {
+      'CAD': [u, '$'],
       'JPY': ['JP¥', '¥'],
       'MXN': [u, '$'],
       'RON': [u, 'leu'],
       'THB': ['฿'],
       'TWD': ['NT$'],
-      'USD': ['US$', '$'],
+      'USD': [u, '$'],
       'ZAR': ['R']
     },
     plural,

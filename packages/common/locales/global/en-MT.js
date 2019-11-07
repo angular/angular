@@ -21,8 +21,8 @@
   }
   root.ng.common.locales['en-mt'] = [
     'en-MT',
-    [['a', 'p'], ['AM', 'PM'], u],
-    [['AM', 'PM'], u, u],
+    [['a', 'p'], ['am', 'pm'], u],
+    [['am', 'pm'], u, u],
     [
       ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
       ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],

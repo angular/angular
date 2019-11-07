@@ -25,7 +25,7 @@
   }
   root.ng.common.locales['lt'] = [
     'lt',
-    [['pr. p.', 'pop.'], ['priešpiet', 'popiet'], u],
+    [['pr. p.', 'pop.'], ['priešpiet', 'popiet'], u],
     u,
     [
       ['S', 'P', 'A', 'T', 'K', 'P', 'Š'], ['sk', 'pr', 'an', 'tr', 'kt', 'pn', 'št'],

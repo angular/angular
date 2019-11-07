@@ -27,7 +27,7 @@
     u,
     [
       ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
-      ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'],
+      ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
       [
         'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September',
         'Oktober', 'November', 'Desember'
@@ -51,7 +51,8 @@
       'JPY': ['JP¥', '¥'],
       'THB': ['฿'],
       'TWD': ['NT$'],
-      'USD': ['US$', '$']
+      'USD': ['US$', '$'],
+      'XXX': []
     },
     plural,
     [

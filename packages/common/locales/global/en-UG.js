@@ -21,8 +21,8 @@
   }
   root.ng.common.locales['en-ug'] = [
     'en-UG',
-    [['a', 'p'], ['AM', 'PM'], u],
-    [['AM', 'PM'], u, u],
+    [['a', 'p'], ['am', 'pm'], u],
+    [['am', 'pm'], u, u],
     [
       ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
       ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
@@ -40,7 +40,7 @@
     u,
     [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']],
     1,
-    [6, 0],
+    [0, 0],
     ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
     ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
     ['{1}, {0}', u, '{1} \'at\' {0}', u],

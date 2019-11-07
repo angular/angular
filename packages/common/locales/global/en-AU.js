@@ -25,17 +25,14 @@
     u,
     [
       ['Su.', 'M.', 'Tu.', 'W.', 'Th.', 'F.', 'Sa.'],
-      ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'],
+      ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
       ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-      ['Su.', 'Mon.', 'Tu.', 'Wed.', 'Th.', 'Fri.', 'Sat.']
+      ['Su', 'Mon', 'Tu', 'Wed', 'Th', 'Fri', 'Sat']
     ],
     u,
     [
       ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
-      [
-        'Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.',
-        'Dec.'
-      ],
+      ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       [
         'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
         'October', 'November', 'December'
@@ -48,7 +45,7 @@
     ['d/M/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
     ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
     ['{1}, {0}', u, '{1} \'at\' {0}', u],
-    ['.', ',', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', '.'],
+    ['.', ',', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', ':'],
     ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
     '$',
     'Australian Dollar',

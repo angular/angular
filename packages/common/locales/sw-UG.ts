@@ -32,11 +32,11 @@ export default [
       'Oktoba', 'Novemba', 'Desemba'
     ]
   ],
-  u, [['KK', 'BK'], u, ['Kabla ya Kristo', 'Baada ya Kristo']], 1, [6, 0],
+  u, [['KK', 'BK'], u, ['Kabla ya Kristo', 'Baada ya Kristo']], 1, [0, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'USh', 'Shilingi ya Uganda', {
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'USh', 'Shilingi ya Uganda', {
     'JPY': ['JP¥', '¥'],
     'KES': ['Ksh'],
     'THB': ['฿'],

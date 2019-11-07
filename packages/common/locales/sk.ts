@@ -61,7 +61,8 @@ export default [
     'NZD': [u, '$'],
     'TWD': [u, 'NT$'],
     'USD': [u, '$'],
-    'VND': [u, '₫']
+    'VND': [u, '₫'],
+    'XXX': []
   },
   plural
 ];

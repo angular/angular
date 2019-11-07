@@ -37,7 +37,7 @@ export default [
     ]
   ],
   u, [['av. J.-C.', 'ap. J.-C.'], u, ['avant Jésus-Christ', 'après Jésus-Christ']], 0, [6, 0],
-  ['yy-MM-dd', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+  ['y-MM-dd', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
   [
     'HH \'h\' mm', 'HH \'h\' mm \'min\' ss \'s\'', 'HH \'h\' mm \'min\' ss \'s\' z',
     'HH \'h\' mm \'min\' ss \'s\' zzzz'
@@ -68,10 +68,10 @@ export default [
     'RON': [u, 'L'],
     'RWF': [u, 'FR'],
     'SGD': ['$ SG', '$'],
+    'TOP': [u, '$T'],
     'TWD': [u, 'NT$'],
     'USD': ['$ US', '$'],
     'VND': [u, '₫'],
-    'WST': ['WS$'],
     'XAF': [],
     'XCD': [u, '$'],
     'XOF': [],

@@ -22,7 +22,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'lt', [['pr. p.', 'pop.'], ['priešpiet', 'popiet'], u], u,
+  'lt', [['pr. p.', 'pop.'], ['priešpiet', 'popiet'], u], u,
   [
     ['S', 'P', 'A', 'T', 'K', 'P', 'Š'], ['sk', 'pr', 'an', 'tr', 'kt', 'pn', 'št'],
     [

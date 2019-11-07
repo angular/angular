@@ -36,7 +36,7 @@ export default [
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'TSh', 'Shilingi ya Tanzania', {
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'TSh', 'Shilingi ya Tanzania', {
     'JPY': ['JP¥', '¥'],
     'KES': ['Ksh'],
     'THB': ['฿'],

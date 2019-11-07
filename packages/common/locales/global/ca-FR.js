@@ -21,7 +21,7 @@
   }
   root.ng.common.locales['ca-fr'] = [
     'ca-FR',
-    [['a. m.', 'p. m.'], u, u],
+    [['a. m.', 'p. m.'], u, u],
     u,
     [
       ['dg', 'dl', 'dt', 'dc', 'dj', 'dv', 'ds'], ['dg.', 'dl.', 'dt.', 'dc.', 'dj.', 'dv.', 'ds.'],
@@ -65,15 +65,15 @@
       'AUD': ['AU$', '$'],
       'BRL': [u, 'R$'],
       'CAD': [u, '$'],
-      'CNY': ['¥'],
+      'CNY': [u, '¥'],
       'ESP': ['₧'],
       'FRF': ['F'],
-      'JPY': ['JP¥', '¥'],
       'MXN': [u, '$'],
       'THB': ['฿'],
       'USD': [u, '$'],
-      'VEF': [],
-      'XCD': [u, '$']
+      'VEF': [u, 'Bs F'],
+      'XCD': [u, '$'],
+      'XXX': []
     },
     plural,
     [

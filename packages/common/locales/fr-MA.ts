@@ -36,7 +36,7 @@ export default [
       'octobre', 'novembre', 'décembre'
     ]
   ],
-  u, [['av. J.-C.', 'ap. J.-C.'], u, ['avant Jésus-Christ', 'après Jésus-Christ']], 6, [5, 6],
+  u, [['av. J.-C.', 'ap. J.-C.'], u, ['avant Jésus-Christ', 'après Jésus-Christ']], 1, [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', '{1} \'à\' {0}', u, u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
@@ -46,7 +46,6 @@ export default [
     'BEF': ['FB'],
     'BMD': ['$BM', '$'],
     'BND': ['$BN', '$'],
-    'BSD': ['$BS', '$'],
     'BZD': ['$BZ', '$'],
     'CAD': ['$CA', '$'],
     'CLP': ['$CL', '$'],
@@ -77,11 +76,12 @@ export default [
     'SBD': ['$SB', '$'],
     'SGD': ['$SG', '$'],
     'SRD': ['$SR', '$'],
+    'TOP': [u, '$T'],
     'TTD': ['$TT', '$'],
     'TWD': [u, 'NT$'],
     'USD': ['$US', '$'],
     'UYU': ['$UY', '$'],
-    'WST': ['WS$'],
+    'WST': ['$WS'],
     'XCD': [u, '$'],
     'XPF': ['FCFP'],
     'ZMW': [u, 'Kw']

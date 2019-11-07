@@ -100,7 +100,7 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
           expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow')).toEqual('$5.12');
           expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow', '5.2-2')).toEqual('$00,005.12');
           expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow', '5.2-2', 'fr'))
-              .toEqual('00 005,12 $');
+              .toEqual('00\u202f005,12 $');
           expect(pipe.transform(5, 'USD', 'symbol', '', 'fr')).toEqual('5,00 $US');
           expect(pipe.transform(123456789, 'EUR', 'symbol', '', 'de-at'))
               .toEqual('€ 123.456.789,00');

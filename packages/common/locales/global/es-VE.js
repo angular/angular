@@ -20,7 +20,7 @@
   }
   root.ng.common.locales['es-ve'] = [
     'es-VE',
-    [['a. m.', 'p. m.'], u, u],
+    [['a. m.', 'p. m.'], u, u],
     u,
     [
       ['d', 'l', 'm', 'm', 'j', 'v', 's'],
@@ -51,11 +51,11 @@
     [6, 0],
     ['d/M/yy', 'd MMM y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
     ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
-    ['{1} {0}', u, '{1}, {0}', u],
+    ['{1} {0}', u, '{1} \'a\' \'las\' {0}', u],
     [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
     ['#,##0.###', '#,##0 %', '¤#,##0.00;¤-#,##0.00', '#E0'],
-    'Bs.',
-    'bolívar venezolano',
+    'Bs.S',
+    'bolívar soberano',
     {
       'AUD': [u, '$'],
       'BRL': [u, 'R$'],
@@ -78,6 +78,7 @@
       'TWD': [u, 'NT$'],
       'USD': [u, '$'],
       'VEF': ['Bs.'],
+      'VES': ['Bs.S'],
       'VND': [u, '₫'],
       'XAF': [],
       'XCD': [u, '$'],

@@ -18,7 +18,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'hi', [['पू', 'अ'], ['पूर्वाह्न', 'अपराह्न'], u], u,
+  'hi', [['am', 'pm'], u, u], u,
   [
     ['र', 'सो', 'मं', 'बु', 'गु', 'शु', 'श'],
     [

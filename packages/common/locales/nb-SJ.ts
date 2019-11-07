@@ -64,7 +64,8 @@ export default [
     'VND': [u, '₫'],
     'XAF': [],
     'XCD': [u, '$'],
-    'XPF': []
+    'XPF': [],
+    'XXX': []
   },
   plural
 ];

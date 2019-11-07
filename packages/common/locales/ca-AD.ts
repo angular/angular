@@ -18,7 +18,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'ca-AD', [['a. m.', 'p. m.'], u, u], u,
+  'ca-AD', [['a. m.', 'p. m.'], u, u], u,
   [
     ['dg', 'dl', 'dt', 'dc', 'dj', 'dv', 'ds'], ['dg.', 'dl.', 'dt.', 'dc.', 'dj.', 'dv.', 'ds.'],
     ['diumenge', 'dilluns', 'dimarts', 'dimecres', 'dijous', 'divendres', 'dissabte'],
@@ -56,14 +56,14 @@ export default [
     'AUD': ['AU$', '$'],
     'BRL': [u, 'R$'],
     'CAD': [u, '$'],
-    'CNY': ['¥'],
+    'CNY': [u, '¥'],
     'ESP': ['₧'],
-    'JPY': ['JP¥', '¥'],
     'MXN': [u, '$'],
     'THB': ['฿'],
     'USD': [u, '$'],
-    'VEF': [],
-    'XCD': [u, '$']
+    'VEF': [u, 'Bs F'],
+    'XCD': [u, '$'],
+    'XXX': []
   },
   plural
 ];
