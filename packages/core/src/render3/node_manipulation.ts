@@ -668,18 +668,7 @@ function getFirstNativeNode(lView: LView, tNode: TNode | null): RNode|null {
     if (tNodeType === TNodeType.Element) {
       return getNativeByTNode(tNode, lView);
     } else if (tNodeType === TNodeType.Container) {
-      const lContainer = lView[tNode.index];
-      if (lContainer.length > CONTAINER_HEADER_OFFSET) {
-        const firstView = lContainer[CONTAINER_HEADER_OFFSET];
-        const firstTNodeOfView = firstView[TVIEW].firstChild;
-        if (firstTNodeOfView !== null) {
-          return getFirstNativeNode(firstView, firstTNodeOfView);
-        } else {
-          return lContainer[NATIVE];
-        }
-      } else {
-        return lContainer[NATIVE];
-      }
+      return getBeforeNodeForView(-1, lView[tNode.index]);
     } else if (tNodeType === TNodeType.ElementContainer || tNodeType === TNodeType.IcuContainer) {
       const elIcuContainerChild = tNode.child;
       if (elIcuContainerChild !== null) {
@@ -710,7 +699,10 @@ export function getBeforeNodeForView(viewIndexInContainer: number, lContainer: L
   const nextViewIndex = CONTAINER_HEADER_OFFSET + viewIndexInContainer + 1;
   if (nextViewIndex < lContainer.length) {
     const lView = lContainer[nextViewIndex] as LView;
-    return getFirstNativeNode(lView, lView[TVIEW].firstChild);
+    const firstTNodeOfView = lView[TVIEW].firstChild;
+    if (firstTNodeOfView !== null) {
+      return getFirstNativeNode(lView, firstTNodeOfView);
+    }
   }
 
   return lContainer[NATIVE];
