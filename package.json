@@ -136,7 +136,7 @@
     "check-side-effects": "0.0.21",
     "clang-format": "1.0.41",
     "cldr": "4.10.0",
-    "cldr-data": "33.0.0",
+    "cldr-data": "36.0.0",
     "cldrjs": "0.5.0",
     "conventional-changelog": "^2.0.3",
     "cors": "2.8.4",
