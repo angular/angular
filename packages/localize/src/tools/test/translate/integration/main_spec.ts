@@ -208,6 +208,43 @@ runInEachFileSystem(() => {
           .toEqual(`var name="World";var message="Ciao, "+name+"!";`);
     });
 
+    it('should map files to the destination folders', () => {
+      const diagnostics = new Diagnostics();
+      const outputPathFn = getOutputPathFn(fs.resolve(testDir, '{{LOCALE}}'));
+      translateFiles({
+        sourceRootPath: testFilesDir,
+        sourceFilePaths: ['folder-1/map-me.txt'],
+        outputPathFn,
+        translationFilePaths: resolveAll(
+            translationFilesDir,
+            ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf', 'messages.it.xtb']),
+        translationFileLocales: [],
+        diagnostics,
+        missingTranslation: 'error',
+        duplicateTranslation: 'error',
+        fileMappings: [{
+          match: '**/*.txt',
+          regex: '(.*/)([^/]+\\.txt$)',
+          replacer: fs.resolve(translationFilesDir, 'assets/{{LOCALE}}/$2')
+        }]
+      });
+
+      expect(diagnostics.messages.length).toEqual(1);
+      expect(diagnostics.messages).toEqual([{
+        type: 'error',
+        message: 'There is no translation of file "folder-1/map-me.txt" for locale "es".\n' +
+            `Looked in "${fs.resolve(translationFilesDir, 'assets/es/map-me.txt')}".`
+      }]);
+
+      expect(fs.readFile(fs.resolve(testDir, 'de', 'folder-1/map-me.txt')))
+          .toEqual('Ordne mich zu');
+      // Note that there is no `es` translation so the file is not translated.
+      expect(fs.readFile(fs.resolve(testDir, 'es', 'folder-1/map-me.txt'))).toEqual('Map me');
+      expect(fs.readFile(fs.resolve(testDir, 'fr', 'folder-1/map-me.txt'))).toEqual('Carte moi');
+      expect(fs.readFile(fs.resolve(testDir, 'it', 'folder-1/map-me.txt'))).toEqual('Mappami');
+    });
+
+
     function resolveAll(rootPath: string, paths: string[]): string[] {
       return paths.map(p => fs.resolve(rootPath, p));
     }

@@ -12,6 +12,9 @@ import * as yargs from 'yargs';
 
 import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics';
 import {AssetTranslationHandler} from './asset_files/asset_translation_handler';
+import {GlobPathMatcher} from './mapped_files/glob_path_matcher';
+import {MappedFileTranslationHandler} from './mapped_files/mapped_file_translation_handler';
+import {RegExpPathMapper} from './mapped_files/regexp_path_mapper';
 import {getOutputPathFn, OutputPathFn} from './output_path';
 import {SourceFileTranslationHandler} from './source_files/source_file_translation_handler';
 import {TranslationLoader} from './translation_files/translation_loader';
@@ -93,6 +96,18 @@ if (require.main === module) {
             type: 'string',
           })
 
+          .option('file-mapping', {
+            array: true,
+            describe:
+                'A string that configures the translator to replace a matched file with a translated file.\n' +
+                'Source files that match are replaced rather than being translated via the source code translation.\n' +
+                'The format of string is "glob => regex => replacer", where:\n' +
+                ' - `glob` is the pattern that is used to identify files to map.\n' +
+                ' - `regex` and `replacer` are used to map the source path to the path where the translated file will be.\n' +
+                '   This can include the expression "{{LOCALE}}" which will be replaced with the locale being translated.',
+            type: 'string',
+          })
+
           .strict()
           .help()
           .parse(args);
@@ -109,6 +124,7 @@ if (require.main === module) {
   const duplicateTranslation = options.d as DiagnosticHandlingStrategy;
   const sourceLocale: string|undefined = options.l;
   const translationFileLocales: string[] = options['target-locales'] || [];
+  const fileMappings = parseFileMappings(options['file-mapping']);
 
   translateFiles({
     sourceRootPath,
@@ -119,7 +135,8 @@ if (require.main === module) {
     diagnostics,
     missingTranslation,
     duplicateTranslation,
-    sourceLocale
+    sourceLocale,
+    fileMappings
   });
 
   diagnostics.messages.forEach(m => console.warn(`${m.type}: ${m.message}`));
@@ -188,6 +205,31 @@ export interface TranslateFilesOptions {
    * the `$localize` calls stripped out.
    */
   sourceLocale?: string;
+  /**
+   * What source files should be replaced with mapped files during translation.
+   */
+  fileMappings?: FileMappingOptions[];
+}
+
+/**
+ * How to match and map a file to add to the translation output.
+ */
+export interface FileMappingOptions {
+  /**
+   * A glob pattern relative to the `sourceRootPath` to match to the path of the file.
+   */
+  match: string;
+  /**
+   * A regex that will be used to match parts of the source file path that will be replaced by the
+   * `replacer` in the translated file path.
+   */
+  regex: string;
+  /**
+   * A string that will be applied to each match of the `regex` to replace the parts of the source
+   * file path to return the translated file path. The resulting string should either be absolute or
+   * relative to the current working directory.
+   */
+  replacer: string;
 }
 
 export function translateFiles({
@@ -199,7 +241,8 @@ export function translateFiles({
   diagnostics,
   missingTranslation,
   duplicateTranslation,
-  sourceLocale
+  sourceLocale,
+  fileMappings = []
 }: TranslateFilesOptions) {
   const fs = getFileSystem();
   const translationLoader = new TranslationLoader(
@@ -212,9 +255,16 @@ export function translateFiles({
       ],
       duplicateTranslation, diagnostics);
 
+  const mappings = fileMappings.map(
+      fileMapping => ({
+        matcher: new GlobPathMatcher(fileMapping.match),
+        mapper: new RegExpPathMapper(new RegExp(fileMapping.regex), fileMapping.replacer)
+      }));
+
   const resourceProcessor = new Translator(
       fs,
       [
+        new MappedFileTranslationHandler(fs, {mappings, missingTranslation}),
         new SourceFileTranslationHandler(fs, {missingTranslation}),
         new AssetTranslationHandler(fs),
       ],
@@ -243,4 +293,24 @@ function convertArraysFromArgs(args: string[]): (string|string[])[] {
       arg => (arg.startsWith('[') && arg.endsWith(']')) ?
           arg.slice(1, -1).split(',').map(arg => arg.trim()) :
           arg);
+}
+
+/**
+ * Parse the given `fileMappings` strings to `FileMappingOptions` objects.
+ *
+ * The format of each string is "glob => regex => replacer", where:
+ *  - `glob` is the pattern that is used to identify files to map.
+ *  - `regex` and `replacer` are used to map the source path to the path where the translated file
+ * will be.
+ *
+ * @param fileMappings The strings passed through the command line arguments.
+ */
+function parseFileMappings(fileMappings: string[] = []): FileMappingOptions[] {
+  return fileMappings.map(fileMapping => {
+    const parts = fileMapping.split('=>').map(part => part.trim());
+    if (parts.length !== 3) {
+      throw new Error(`Invalid file-mapping: "${fileMapping}".`);
+    }
+    return {match: parts[0], regex: parts[1], replacer: parts[2]};
+  });
 }

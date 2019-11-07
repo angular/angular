@@ -27,6 +27,7 @@ ts_library(
         "@npm//@types/babel__core",
         "@npm//@types/babel__traverse",
         "@npm//@types/glob",
+        "@npm//@types/minimatch",
         "@npm//@types/node",
         "@npm//@types/yargs",
     ],
