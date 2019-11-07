@@ -56,7 +56,7 @@ export function setupTestHarness(
       rendererFactory, renderer);
   const mockRCommentNode = renderer.createComment('');
   const lContainer =
-      createLContainer(mockRCommentNode, hostLView, mockRCommentNode, tContainerNode, true);
+      createLContainer(mockRCommentNode, hostLView, mockRCommentNode, tContainerNode);
   addToViewTree(hostLView, lContainer);
 
 
