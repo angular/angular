@@ -92,13 +92,15 @@ To revert the compiler default, set the build option `aot: false` in the `angula
 
 </div>
 
-If your application uses [Angular Universal](guide/universal) to render Angular applications on the server. You also need to update the `server.ts` and provide the `AppServerModuleNgFactory` as the bootstrap module.
+{@a using-ssr-without-angular-ivy}
+## Using SSR without Ivy
 
-Follow these steps:
+If you opt out of Ivy and your application uses  [Angular Universal](guide/universal) to render Angular applications on the server, you must also change the way the server performs bootstrapping.
+
+The following example shows how you modify the `server.ts` file to provide the `AppServerModuleNgFactory` as the bootstrap module.
+
 * Import `AppServerModuleNgFactory` from the `app.server.module.ngfactory` virtual file.
-* Set the value of `bootstrap` option in the `ngExpressEngine` call to `AppServerModuleNgFactory`.
-
-The following example shows how the server bootstrapping should be changed to opt-out of ivy.
+* Set `bootstrap: AppServerModuleNgFactory` in the `ngExpressEngine` call.
 
 <code-example language="typescript" header="server.ts">
 import 'zone.js/dist/zone-node';
