@@ -125,7 +125,6 @@ export function compileNgModuleDefs(
               exports: flatten(ngModule.exports || EMPTY_ARRAY)
                            .map(resolveForwardRef)
                            .map(expandModuleWithProviders),
-              emitInline: true,
               schemas: ngModule.schemas ? flatten(ngModule.schemas) : null,
               id: ngModule.id || null,
             });

@@ -548,7 +548,7 @@ runInEachFileSystem(os => {
           .toContain('i0.ɵɵdefineNgModule({ type: TestModule, bootstrap: [TestCmp] });');
       expect(jsContents)
           .toContain(
-              '/*@__PURE__*/ i0.ɵɵsetNgModuleScope(TestModule, { declarations: [TestCmp] });');
+              'function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(TestModule, { declarations: [TestCmp] }); })();');
       expect(jsContents)
           .toContain(
               'i0.ɵɵdefineInjector({ factory: ' +
