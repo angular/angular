@@ -676,7 +676,12 @@ function getFirstNativeNode(lView: LView, tNode: TNode | null): RNode|null {
         return lContainer[NATIVE];
       }
     } else if (tNodeType === TNodeType.ElementContainer || tNodeType === TNodeType.IcuContainer) {
-      return getFirstNativeNode(lView, tNode.child);
+      const elIcuContainerChild = tNode.child;
+      if (elIcuContainerChild !== null) {
+        return getFirstNativeNode(lView, elIcuContainerChild);
+      } else {
+        return getNativeByTNode(tNode, lView);
+      }
     } else {
       const componentView = findComponentView(lView);
       const componentHost = componentView[T_HOST] as TElementNode;
