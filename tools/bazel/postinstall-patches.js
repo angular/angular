@@ -49,16 +49,12 @@ searchAndReplace(
 // Workaround for: https://github.com/angular/angular/pull/32650
 searchAndReplace(
     'var indexFile;', `
-  var publicApiFile = files.find(f => f.endsWith('/public-api.ts'));
-  var moduleFile = files.find(f => f.endsWith('/module.ts'));
-  var indexFile = publicApiFile || moduleFile;
+  var indexFile = files.find(f => f.endsWith('/public-api.ts'));
 `,
     'node_modules/@angular/compiler-cli/src/metadata/bundle_index_host.js');
 searchAndReplace(
     'var resolvedEntryPoint = null;', `
-  var publicApiFile = tsFiles.find(f => f.endsWith('/public-api.ts'));
-  var moduleFile = tsFiles.find(f => f.endsWith('/module.ts'));
-  var resolvedEntryPoint = publicApiFile || moduleFile || null;
+  var resolvedEntryPoint = tsFiles.find(f => f.endsWith('/public-api.ts')) || null;
 `,
     'node_modules/@angular/compiler-cli/src/ngtsc/entry_point/src/logic.js');
 
