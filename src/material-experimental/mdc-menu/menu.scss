@@ -4,6 +4,7 @@
 @import '../../material/core/style/menu-common';
 @import '../../material/core/style/button-common';
 @import '../../cdk/a11y/a11y';
+@import '../mdc-helpers/mdc-helpers';
 
 @include mdc-menu-surface-core-styles($query: structure);
 
@@ -28,6 +29,12 @@
 }
 
 .mat-mdc-menu-item {
+  $height: mdc-density-prop-value(
+    $density-config: $mdc-list-single-line-density-config,
+    $density-scale: $mdc-list-single-line-density-scale,
+    $property-name: height,
+  );
+
   // Note that we include this private mixin, because the public
   // one adds a bunch of styles that we aren't using for the menu.
   @include mdc-list-item-base_;
@@ -35,6 +42,7 @@
   // MDC's menu items are `<li>` nodes which don't need resets, however ours
   // can be anything, including buttons, so we need to do the reset ourselves.
   @include mat-button-reset;
+  @include mdc-list-single-line-height($height, $query: $mat-base-styles-query);
   cursor: pointer;
   width: 100%;
   text-align: left;
