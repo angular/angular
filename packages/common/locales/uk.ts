@@ -80,7 +80,7 @@ export default [
     'KRW': [u, '₩'],
     'MXN': [u, '$'],
     'NZD': [u, '$'],
-    'TWD': [u, 'NT$'],
+    'TWD': [u, '$'],
     'UAH': ['₴'],
     'UAK': ['крб.'],
     'USD': [u, '$'],

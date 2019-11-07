@@ -18,7 +18,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'de-AT', [['vm.', 'nm.'], ['vorm.', 'nachm.'], u], u,
+  'de-AT', [['AM', 'PM'], u, u], [['vm.', 'nm.'], ['AM', 'PM'], u],
   [
     ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'],
     ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
@@ -67,6 +67,7 @@ export default [
     'SYP': [],
     'THB': ['฿'],
     'TWD': ['NT$'],
+    'XXX': [],
     'ZMW': [u, 'K']
   },
   plural

@@ -20,16 +20,14 @@
     [['a', 'p'], ['prije podne', 'po podne'], u],
     u,
     [
-      ['n', 'p', 'u', 's', 'č', 'p', 's'], ['ned.', 'pon.', 'ut.', 'sr.', 'čet.', 'pet.', 'sub.'],
+      ['n', 'p', 'u', 's', 'č', 'p', 's'], ['ned', 'pon', 'uto', 'sre', 'čet', 'pet', 'sub'],
       ['nedjelja', 'ponedeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota'],
       ['ne', 'po', 'ut', 'sr', 'če', 'pe', 'su']
     ],
     u,
     [
       ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
-      [
-        'jan.', 'feb.', 'mart', 'apr.', 'maj', 'jun', 'jul', 'avg.', 'sept.', 'okt.', 'nov.', 'dec.'
-      ],
+      ['jan', 'feb', 'mart', 'apr', 'maj', 'jun', 'jul', 'avg', 'sept', 'okt', 'nov', 'dec'],
       [
         'januar', 'februar', 'mart', 'april', 'maj', 'jun', 'jul', 'avgust', 'septembar', 'oktobar',
         'novembar', 'decembar'

@@ -55,7 +55,6 @@ export default [
     'SEK': [u, 'Kr'],
     'THB': ['฿'],
     'TWD': ['NT$'],
-    'USD': ['US$', '$'],
     'ZAR': ['R']
   },
   plural
