@@ -20,7 +20,7 @@
   }
   root.ng.common.locales['es-gq'] = [
     'es-GQ',
-    [['a. m.', 'p. m.'], u, u],
+    [['a. m.', 'p. m.'], u, u],
     u,
     [
       ['D', 'L', 'M', 'X', 'J', 'V', 'S'],

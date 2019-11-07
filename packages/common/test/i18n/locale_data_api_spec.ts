@@ -46,7 +46,7 @@ import {getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNumberOfCurrency
     describe('getNbOfCurrencyDigits', () => {
       it('should return the correct value', () => {
         expect(getNumberOfCurrencyDigits('USD')).toEqual(2);
-        expect(getNumberOfCurrencyDigits('IDR')).toEqual(0);
+        expect(getNumberOfCurrencyDigits('GNF')).toEqual(0);
         expect(getNumberOfCurrencyDigits('BHD')).toEqual(3);
         expect(getNumberOfCurrencyDigits('unexisting_ISO_code')).toEqual(2);
       });
