@@ -55,7 +55,7 @@ describe('TemplateRef', () => {
           expect(rootNodes.length).toBe(0);
         });
 
-    it('should include projected nodes', () => {
+    it('should include projected nodes and their children', () => {
       @Component({
         selector: 'menu-content',
         template: `
@@ -75,6 +75,7 @@ describe('TemplateRef', () => {
               <menu-content #menu="menuContent">
                 <button>Item one</button>
                 <button>Item two</button>
+                <ng-template [ngIf]="true"><button>Item three</button></ng-template>
               </menu-content>
             `
       })
@@ -90,10 +91,11 @@ describe('TemplateRef', () => {
 
       const instance = fixture.componentInstance;
       const viewRef = instance.viewContainerRef.createEmbeddedView(instance.content.template);
-      const rootNodeTextContent = viewRef.rootNodes.map(node => node && node.textContent.trim())
-                                      .filter(text => text !== '');
+      const rootNodeTextContent =
+          viewRef.rootNodes.map(node => node && node.textContent.trim())
+              .filter(text => text !== '' && text.indexOf('ng-reflect-ng-if') === -1);
 
-      expect(rootNodeTextContent).toEqual(['Header', 'Item one', 'Item two']);
+      expect(rootNodeTextContent).toEqual(['Header', 'Item one', 'Item two', 'Item three']);
     });
 
     it('should descend into view containers on ng-template', () => {
