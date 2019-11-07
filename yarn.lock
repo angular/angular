@@ -2303,10 +2303,10 @@ cldr-data-downloader@0.3.x:
     request "~2.87.0"
     request-progress "0.3.1"
 
-cldr-data@33.0.0:
-  version "33.0.0"
-  resolved "https://registry.yarnpkg.com/cldr-data/-/cldr-data-33.0.0.tgz#15c341b56b6e9fb231f9908a4913da23e7f382ff"
-  integrity sha512-f6AV9/m0hHQ/xnAJ6xdmyY/uo8QjHkxzF+M15VOrTM121oFgnUvff3XPxRk8F3cZXUpQnife4bqG4gvk15hHVQ==
+cldr-data@36.0.0:
+  version "36.0.0"
+  resolved "https://registry.yarnpkg.com/cldr-data/-/cldr-data-36.0.0.tgz#55b3a50b187c28d59203182cb57e98141558c91b"
+  integrity sha512-F3n+9DUs41vhys8eF/hsCgkmYlgXMCiwaE75uGZjUbS/jkszBnLylXj7xW3bBlMU1d2IuAptpoNAb6lTCu/RSg==
   dependencies:
     cldr-data-downloader "0.3.x"
     glob "5.x.x"
