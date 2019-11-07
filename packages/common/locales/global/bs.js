@@ -27,7 +27,7 @@
   }
   root.ng.common.locales['bs'] = [
     'bs',
-    [['prijepodne', 'popodne'], u, u],
+    [['prijepodne', 'popodne'], ['AM', 'PM'], ['prijepodne', 'popodne']],
     u,
     [
       ['N', 'P', 'U', 'S', 'Č', 'P', 'S'], ['ned', 'pon', 'uto', 'sri', 'čet', 'pet', 'sub'],
@@ -41,9 +41,9 @@
     ],
     [
       ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
-      ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'avg', 'sep', 'okt', 'nov', 'dec'],
+      ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'],
       [
-        'januar', 'februar', 'mart', 'april', 'maj', 'juni', 'juli', 'avgust', 'septembar',
+        'januar', 'februar', 'mart', 'april', 'maj', 'juni', 'juli', 'august', 'septembar',
         'oktobar', 'novembar', 'decembar'
       ]
     ],
@@ -51,7 +51,7 @@
     [['p.n.e.', 'n.e.'], ['p. n. e.', 'n. e.'], ['prije nove ere', 'nove ere']],
     1,
     [6, 0],
-    ['d.M.yy.', 'd. MMM y.', 'd. MMMM y.', 'EEEE, d. MMMM y.'],
+    ['d. M. y.', 'd. MMM y.', 'd. MMMM y.', 'EEEE, d. MMMM y.'],
     ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
     ['{1} {0}', u, '{1} \'u\' {0}', u],
     [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],

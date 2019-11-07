@@ -23,8 +23,8 @@
   }
   root.ng.common.locales['ga'] = [
     'ga',
-    [['a', 'p'], ['r.n.', 'i.n.'], u],
-    [['a', 'p'], ['a.m.', 'p.m.'], u],
+    [['r.n.', 'i.n.'], u, u],
+    u,
     [
       ['D', 'L', 'M', 'C', 'D', 'A', 'S'],
       ['Domh', 'Luan', 'Máirt', 'Céad', 'Déar', 'Aoine', 'Sath'],
@@ -48,7 +48,7 @@
     ],
     u,
     [['RC', 'AD'], u, ['Roimh Chríost', 'Anno Domini']],
-    0,
+    1,
     [6, 0],
     ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
     ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
@@ -57,7 +57,7 @@
     ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
     '€',
     'Euro',
-    {'THB': ['฿'], 'TWD': ['NT$']},
+    {'THB': ['฿'], 'TWD': ['NT$'], 'XXX': []},
     plural,
     []
   ];

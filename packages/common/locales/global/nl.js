@@ -44,7 +44,7 @@
     [['v.C.', 'n.C.'], ['v.Chr.', 'n.Chr.'], ['voor Christus', 'na Christus']],
     1,
     [6, 0],
-    ['dd-MM-yy', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+    ['dd-MM-y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
     ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
     ['{1} {0}', u, '{1} \'om\' {0}', u],
     [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
@@ -60,11 +60,12 @@
       'THB': ['฿'],
       'TWD': ['NT$'],
       'USD': ['US$', '$'],
-      'XPF': []
+      'XPF': [],
+      'XXX': []
     },
     plural,
     [
-      [['middernacht', '‘s ochtends', '‘s middags', '‘s avonds', '‘s nachts'], u, u],
+      [['middernacht', '’s ochtends', '’s middags', '’s avonds', '’s nachts'], u, u],
       [['middernacht', 'ochtend', 'middag', 'avond', 'nacht'], u, u],
       ['00:00', ['06:00', '12:00'], ['12:00', '18:00'], ['18:00', '24:00'], ['00:00', '06:00']]
     ]

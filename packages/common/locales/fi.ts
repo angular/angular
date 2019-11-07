@@ -155,6 +155,7 @@ export default [
     'VND': [],
     'XCD': [],
     'XPF': [],
+    'XXX': [],
     'ZAR': [],
     'ZMW': []
   },

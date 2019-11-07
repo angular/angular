@@ -36,17 +36,16 @@ export default [
       'octobre', 'novembre', 'décembre'
     ]
   ],
-  u, [['av. J.-C.', 'ap. J.-C.'], u, ['avant Jésus-Christ', 'après Jésus-Christ']], 0, [5, 6],
+  u, [['av. J.-C.', 'ap. J.-C.'], u, ['avant Jésus-Christ', 'après Jésus-Christ']], 1, [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', '{1} \'à\' {0}', u, u],
-  [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+  [',', '\u202f', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'DT', 'dinar tunisien', {
     'ARS': ['$AR', '$'],
     'AUD': ['$AU', '$'],
     'BEF': ['FB'],
     'BMD': ['$BM', '$'],
     'BND': ['$BN', '$'],
-    'BSD': ['$BS', '$'],
     'BZD': ['$BZ', '$'],
     'CAD': ['$CA', '$'],
     'CLP': ['$CL', '$'],
@@ -78,11 +77,12 @@ export default [
     'SGD': ['$SG', '$'],
     'SRD': ['$SR', '$'],
     'TND': ['DT'],
+    'TOP': [u, '$T'],
     'TTD': ['$TT', '$'],
     'TWD': [u, 'NT$'],
     'USD': ['$US', '$'],
     'UYU': ['$UY', '$'],
-    'WST': ['WS$'],
+    'WST': ['$WS'],
     'XCD': [u, '$'],
     'XPF': ['FCFP'],
     'ZMW': [u, 'Kw']
