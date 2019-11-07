@@ -59,12 +59,12 @@ export class FactoryGenerator implements ShimGenerator {
     let comment: string = '';
     if (original.statements.length > 0) {
       const firstStatement = original.statements[0];
-      // Must pass SourceFile to getLeadingTriviaWidth(), otherwise it'll try to
+      // Must pass SourceFile to getLeadingTriviaWidth() and getFullText(), otherwise it'll try to
       // get SourceFile by recursively looking up the parent of the Node and fail,
       // because parent is undefined.
       const leadingTriviaWidth = firstStatement.getLeadingTriviaWidth(original);
       if (leadingTriviaWidth > 0) {
-        comment = firstStatement.getFullText().substr(0, leadingTriviaWidth);
+        comment = firstStatement.getFullText(original).substr(0, leadingTriviaWidth);
       }
     }
 
