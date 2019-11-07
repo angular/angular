@@ -22,6 +22,7 @@ import {TConstants} from './interfaces/node';
 // while SelectorFlags is unused here, it's required so that types don't get resolved lazily
 // see: https://github.com/Microsoft/web-build-tools/issues/1050
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
+import {NgModuleType} from './ng_module_ref';
 
 let _renderCompCount = 0;
 
@@ -338,6 +339,8 @@ export function extractPipeDef(type: Type<any>): PipeDef<any> {
   return def !;
 }
 
+export const autoRegisterModuleById: {[id: string]: NgModuleType} = {};
+
 /**
  * @codeGenApi
  */
@@ -376,6 +379,10 @@ export function ɵɵdefineNgModule<T>(def: {
     schemas: def.schemas || null,
     id: def.id || null,
   };
+  if (def.id != null) {
+    noSideEffects(
+        () => { autoRegisterModuleById[def.id !] = def.type as unknown as NgModuleType; });
+  }
   return res as never;
 }
 
