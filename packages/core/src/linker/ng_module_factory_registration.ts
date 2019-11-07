@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+
 import {Type} from '../interface/type';
+import {autoRegisterModuleById} from '../render3/definition';
 import {NgModuleType} from '../render3/ng_module_ref';
 import {stringify} from '../util/stringify';
 
@@ -68,5 +70,5 @@ export function restoreRegisteredModulesState(moduleMap: ModuleRegistrationMap) 
 }
 
 export function getRegisteredNgModuleType(id: string) {
-  return modules.get(id);
+  return modules.get(id) || autoRegisterModuleById[id];
 }
