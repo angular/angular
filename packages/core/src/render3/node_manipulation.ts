@@ -671,7 +671,12 @@ function getFirstNativeNode(lView: LView, tNode: TNode | null): RNode|null {
       const lContainer = lView[tNode.index];
       if (lContainer.length > CONTAINER_HEADER_OFFSET) {
         const firstView = lContainer[CONTAINER_HEADER_OFFSET];
-        return getFirstNativeNode(firstView, firstView[TVIEW].firstChild);
+        const firstTNodeOfView = firstView[TVIEW].firstChild;
+        if (firstTNodeOfView !== null) {
+          return getFirstNativeNode(firstView, firstTNodeOfView);
+        } else {
+          return lContainer[NATIVE];
+        }
       } else {
         return lContainer[NATIVE];
       }
