@@ -9,7 +9,11 @@
 
 import {CommonModule} from '@angular/common';
 import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, Input, NgModule, OnInit, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {ivyEnabled} from '@angular/core/src/ivy_switch';
+import {markDirty} from '@angular/core/src/render3/index';
+import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
+import {getCheckNoChangesMode, instructionState} from '@angular/core/src/render3/state';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {BehaviorSubject} from 'rxjs';
 
@@ -1098,4 +1102,140 @@ describe('change detection', () => {
 
   });
 
+  describe('transplanted views', () => {
+    @Component({
+      selector: 'insert-comp',
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      template: `
+        InsertComp({{greeting}})
+        <ng-container
+            [ngTemplateOutlet]="template"
+            [ngTemplateOutletContext]="{$implicit: greeting}">
+        </ng-container>
+      `
+    })
+    class InsertComp {
+      get template(): TemplateRef<any> { return declareComp.myTmpl; }
+      greeting: string = 'Hello';
+      constructor(public changeDetectorRef: ChangeDetectorRef) { insertComp = this; }
+    }
+
+    @Component({
+      selector: `declare-comp`,
+      template: `
+        DeclareComp({{name}})
+        <ng-template #myTmpl let-greeting>
+          {{greeting}} {{nameWithLog}}!
+        </ng-template>
+      `
+    })
+    class DeclareComp {
+      @ViewChild('myTmpl')
+      myTmpl !: TemplateRef<any>;
+      name: string = 'world';
+      get nameWithLog() {
+        if (ivyEnabled && !getCheckNoChangesMode()) {
+          const lFrame = instructionState.lFrame;
+          const parentChangeDetectionLView = lFrame.parent.lView;
+          if (parentChangeDetectionLView[CONTEXT] === declareComp) {
+            log.push('Declare');
+          } else if (parentChangeDetectionLView[CONTEXT] === insertComp) {
+            log.push('Insert');
+          } else {
+            log.push(
+                'UNEXPECTED VIEW: ' + parentChangeDetectionLView ![CONTEXT] !.constructor.name);
+          }
+        }
+        return this.name;
+      }
+      constructor() { declareComp = this; }
+    }
+
+    @Component({
+      template: `
+      <declare-comp *ngIf="showDeclare"></declare-comp>
+      <insert-comp *ngIf="showInsert"></insert-comp>
+      `
+    })
+    class AppComp {
+      showDeclare: boolean = true;
+      showInsert: boolean = true;
+      constructor() { appComp = this; }
+    }
+
+    let log !: string[];
+    let fixture !: ComponentFixture<AppComp>;
+    let appComp !: AppComp;
+    let insertComp !: InsertComp;
+    let declareComp !: DeclareComp;
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        declarations: [InsertComp, DeclareComp, AppComp],
+        imports: [CommonModule],
+      });
+      log = [];
+      fixture = TestBed.createComponent(AppComp);
+    });
+
+    it('should CD with declaration', () => {
+      fixture.detectChanges();
+      ivyEnabled && expect(log).toEqual(['Insert']);
+      log.length = 0;
+      expect(trim(fixture.nativeElement.textContent))
+          .toEqual('DeclareComp(world) InsertComp(Hello) Hello world!');
+
+      declareComp.name = 'Angular';
+      fixture.detectChanges();
+      ivyEnabled && expect(log).toEqual(['Declare']);
+      log.length = 0;
+      // Expect transplanted LView to be CD because the declaration is CD.
+      expect(trim(fixture.nativeElement.textContent))
+          .toEqual('DeclareComp(Angular) InsertComp(Hello) Hello Angular!');
+
+      insertComp.greeting = 'Hi';
+      fixture.detectChanges();
+      ivyEnabled && expect(log).toEqual(['Declare']);
+      log.length = 0;
+      // expect no change because it is on push.
+      expect(trim(fixture.nativeElement.textContent))
+          .toEqual('DeclareComp(Angular) InsertComp(Hello) Hello Angular!');
+
+      insertComp.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      ivyEnabled && expect(log).toEqual(['Declare', 'Insert']);
+      log.length = 0;
+      expect(trim(fixture.nativeElement.textContent))
+          .toEqual('DeclareComp(Angular) InsertComp(Hi) Hi Angular!');
+
+      // Destroy insertion should also destroy declaration
+      appComp.showInsert = false;
+      insertComp.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      ivyEnabled && expect(log).toEqual([]);  // No update in declaration
+      log.length = 0;
+      expect(trim(fixture.nativeElement.textContent)).toEqual('DeclareComp(Angular)');
+
+      // Restore both
+      appComp.showInsert = true;
+      fixture.detectChanges();
+      ivyEnabled && expect(log).toEqual(['Insert']);
+      log.length = 0;
+      expect(trim(fixture.nativeElement.textContent))
+          .toEqual('DeclareComp(Angular) InsertComp(Hello) Hello Angular!');
+
+      // Destroy declaration, But we should still be able to see updates in insertion
+      appComp.showDeclare = false;
+      insertComp.greeting = 'Hello';
+      insertComp.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      ivyEnabled && expect(log).toEqual(['Insert']);
+      log.length = 0;
+      expect(trim(fixture.nativeElement.textContent)).toEqual('InsertComp(Hello) Hello Angular!');
+    });
+  });
 });
+
+function trim(text: string | null): string {
+  return text ? text.replace(/[\s\n]+/gm, ' ').trim() : '';
+}
