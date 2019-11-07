@@ -327,6 +327,11 @@ describe('view insertion', () => {
             .toBe('insert|before');
       });
 
+      it('should insert before a view with the empty ng-container as the first root node', () => {
+        expect(createAndInsertViews(`<ng-container></ng-container>|before`).textContent)
+            .toBe('insert|before');
+      });
+
       it('should insert before a view with ICU container inside a ng-container as the first root node',
          () => {
            expect(
