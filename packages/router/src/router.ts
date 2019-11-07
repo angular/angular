@@ -473,9 +473,9 @@ export class Router {
               switchMap(t => {
                 const urlTransition =
                     !this.navigated || t.extractedUrl.toString() !== this.browserUrlTree.toString();
-                const processCurrentUrl =
-                    (this.onSameUrlNavigation === 'reload' ? true : urlTransition) &&
-                    this.urlHandlingStrategy.shouldProcessUrl(t.rawUrl);
+                const processCurrentUrl = true;
+                  //  (this.onSameUrlNavigation === 'reload' ? true : urlTransition) &&
+                  //  this.urlHandlingStrategy.shouldProcessUrl(t.rawUrl);
 
                 if (processCurrentUrl) {
                   return of (t).pipe(
