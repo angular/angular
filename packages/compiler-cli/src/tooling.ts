@@ -20,3 +20,8 @@ export const GLOBAL_DEFS_FOR_TERSER = {
   ngDevMode: false,
   ngI18nClosureMode: false,
 };
+
+export const GLOBAL_DEFS_FOR_TERSER_WITH_AOT = {
+  ...GLOBAL_DEFS_FOR_TERSER,
+  ngJitMode: false,
+};

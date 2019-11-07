@@ -46,7 +46,7 @@ runInEachFileSystem(() => {
           expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
           expect(jsContents)
               .toContain(
-                  '/*@__PURE__*/ i0.ɵɵsetNgModuleScope(TestModule, { imports: [OtherModule] });');
+                  'function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(TestModule, { imports: [OtherModule] }); })();');
 
           const dtsContents = env.getContents('test.d.ts');
           expect(dtsContents)
@@ -107,7 +107,7 @@ runInEachFileSystem(() => {
           expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
           expect(jsContents)
               .toContain(
-                  '/*@__PURE__*/ i0.ɵɵsetNgModuleScope(TestModule, { exports: [OtherModule] });');
+                  '(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(TestModule, { exports: [OtherModule] }); })();');
 
           const dtsContents = env.getContents('test.d.ts');
           expect(dtsContents)
