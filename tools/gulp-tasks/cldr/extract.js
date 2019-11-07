@@ -86,7 +86,7 @@ module.exports = (gulp, done) => {
     console.log(`\t${I18N_DATA_EXTRA_FOLDER}/${locale}.ts`);
     fs.writeFileSync(
         `${RELATIVE_I18N_DATA_EXTRA_FOLDER}/${locale}.ts`, generateLocaleExtra(locale, localeData));
-    console.log(`\t${I18N_GLOBAL_FOLDER}/${locale}.ts`);
+    console.log(`\t${I18N_GLOBAL_FOLDER}/${locale}.js`);
     fs.writeFileSync(
         `${RELATIVE_I18N_GLOBAL_FOLDER}/${locale}.js`,
         generateGlobalLocale(
@@ -140,7 +140,7 @@ function generateGlobalLocale(locale, localeData, baseCurrencies) {
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   ${getPluralFunction(locale, false)}
-  root.ng.common.locales['${normalizeLocale(locale)}'] = ${data};
+  global.ng.common.locales['${normalizeLocale(locale)}'] = ${data};
 })(typeof globalThis !== 'undefined' && globalThis || typeof global !== 'undefined' && global || typeof window !== 'undefined' && window);
   `;
 }
