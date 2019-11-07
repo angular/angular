@@ -14,7 +14,7 @@ import {OutputContext} from '../util';
 
 import {R3DependencyMetadata, R3FactoryTarget, compileFactoryFunction} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
-import {R3Reference, convertMetaToOutput, mapToMapExpression} from './util';
+import {R3Reference, convertMetaToOutput, jitOnlyGuardedExpression, mapToMapExpression} from './util';
 
 export interface R3NgModuleDef {
   expression: o.Expression;
@@ -199,13 +199,25 @@ function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement|nul
     return null;
   }
 
+  // setNgModuleScope(...)
   const fnCall = new o.InvokeFunctionExpr(
       /* fn */ o.importExpr(R3.setNgModuleScope),
-      /* args */[moduleType, mapToMapExpression(scopeMap)],
-      /* type */ undefined,
-      /* sourceSpan */ undefined,
-      /* pure */ true);
-  return fnCall.toStmt();
+      /* args */[moduleType, mapToMapExpression(scopeMap)]);
+
+  // (ngJitMode guard) && setNgModuleScope(...)
+  const guardedCall = jitOnlyGuardedExpression(fnCall);
+
+  // function() { (ngJitMode guard) && setNgModuleScope(...); }
+  const iife = new o.FunctionExpr(
+      /* params */[],
+      /* statements */[guardedCall.toStmt()]);
+
+  // (function() { (ngJitMode guard) && setNgModuleScope(...); })()
+  const iifeCall = new o.InvokeFunctionExpr(
+      /* fn */ iife,
+      /* args */[]);
+
+  return iifeCall.toStmt();
 }
 
 export interface R3InjectorDef {
