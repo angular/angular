@@ -698,7 +698,7 @@ export function applyStylingViaContext(
  * @returns whether or not the styling map was applied to the element.
  */
 export function applyStylingMapDirectly(
-    renderer: any, context: TStylingContext, tNode: TStylingNode, element: RElement,
+    renderer: StylingRenderer, context: TStylingContext, tNode: TStylingNode, element: RElement,
     data: LStylingData, bindingIndex: number, value: {[key: string]: any} | string | null,
     isClassBased: boolean, sanitizer: StyleSanitizeFn | null, forceUpdate: boolean,
     bindingValueContainsInitial: boolean): void {
@@ -750,7 +750,6 @@ export function applyStylingMapDirectly(
           writeStylingValueDirectly(renderer, element, value, isClassBased, initialValue);
       setValue(data, cachedValueIndex, valueToApply || null);
     } else {
-      const applyFn = isClassBased ? setClass : setStyle;
       const map = normalizeIntoStylingMap(oldValue, value, !isClassBased);
       const initialStyles = hasInitial ? getStylingMapArray(context) : null;
 
@@ -760,18 +759,19 @@ export function applyStylingMapDirectly(
         const value = getMapValue(map, i);
 
         // case 1: apply the map value (if it exists)
-        let applied =
-            applyStylingValue(renderer, element, prop, value, applyFn, bindingIndex, sanitizer);
+        let applied = applyStylingValue(
+            renderer, element, prop, value, bindingIndex, sanitizer, isClassBased);
 
         // case 2: apply the initial value (if it exists)
         if (!applied && initialStyles) {
           applied = findAndApplyMapValue(
-              renderer, element, applyFn, initialStyles, prop, bindingIndex, sanitizer);
+              renderer, element, initialStyles, prop, bindingIndex, sanitizer, isClassBased);
         }
 
         // default case: apply `null` to remove the value
         if (!applied) {
-          applyFn(renderer, element, prop, null, bindingIndex);
+          isClassBased ? renderer.setClass(element, prop, null, bindingIndex) :
+                         renderer.setStyle(element, prop, null, bindingIndex);
         }
       }
 
@@ -786,7 +786,7 @@ export function applyStylingMapDirectly(
 }
 
 export function writeStylingValueDirectly(
-    renderer: any, element: RElement, value: {[key: string]: any} | string | null,
+    renderer: StylingRenderer, element: RElement, value: {[key: string]: any} | string | null,
     isClassBased: boolean, initialValue: string | null): string {
   let valueToApply: string;
   if (isClassBased) {
@@ -794,13 +794,13 @@ export function writeStylingValueDirectly(
     if (initialValue !== null) {
       valueToApply = concatString(initialValue, valueToApply, ' ');
     }
-    setClassName(renderer, element, valueToApply);
+    renderer.setClassAttr(element, valueToApply);
   } else {
     valueToApply = forceStylesAsString(value, true);
     if (initialValue !== null) {
       valueToApply = initialValue + ';' + valueToApply;
     }
-    setStyleAttr(renderer, element, valueToApply);
+    renderer.setStyleAttr(element, valueToApply);
   }
   return valueToApply;
 }
@@ -836,16 +836,16 @@ export function writeStylingValueDirectly(
  * @returns whether or not the prop/value styling was applied to the element.
  */
 export function applyStylingValueDirectly(
-    renderer: any, context: TStylingContext, tNode: TStylingNode, element: RElement,
+    renderer: StylingRenderer, context: TStylingContext, tNode: TStylingNode, element: RElement,
     data: LStylingData, bindingIndex: number, prop: string, value: any, isClassBased: boolean,
-    sanitizer?: StyleSanitizeFn | null): boolean {
+    sanitizer: StyleSanitizeFn | null): boolean {
   let applied = false;
   if (hasValueChanged(data[bindingIndex], value)) {
     setValue(data, bindingIndex, value);
-    const applyFn = isClassBased ? setClass : setStyle;
 
     // case 1: apply the provided value (if it exists)
-    applied = applyStylingValue(renderer, element, prop, value, applyFn, bindingIndex, sanitizer);
+    applied =
+        applyStylingValue(renderer, element, prop, value, bindingIndex, sanitizer, isClassBased);
 
     // case 2: find the matching property in a styling map and apply the detected value
     const mapBindingsFlag =
@@ -853,42 +853,45 @@ export function applyStylingValueDirectly(
     if (!applied && hasConfig(tNode, mapBindingsFlag)) {
       const state = getStylingState(element, TEMPLATE_DIRECTIVE_INDEX);
       const map = isClassBased ? state.lastDirectClassMap : state.lastDirectStyleMap;
-      applied = map ?
-          findAndApplyMapValue(renderer, element, applyFn, map, prop, bindingIndex, sanitizer) :
-          false;
+      applied = map ? findAndApplyMapValue(
+                          renderer, element, map, prop, bindingIndex, sanitizer, isClassBased) :
+                      false;
     }
 
     // case 3: apply the initial value (if it exists)
     if (!applied && hasConfig(tNode, TNodeFlags.hasInitialStyling)) {
       const map = getStylingMapArray(context);
-      applied =
-          map ? findAndApplyMapValue(renderer, element, applyFn, map, prop, bindingIndex) : false;
+      applied = map ? findAndApplyMapValue(
+                          renderer, element, map, prop, bindingIndex, sanitizer, isClassBased) :
+                      false;
     }
 
     // default case: apply `null` to remove the value
     if (!applied) {
-      applyFn(renderer, element, prop, null, bindingIndex);
+      isClassBased ? renderer.setClass(element, prop, null, bindingIndex) :
+                     renderer.setStyle(element, prop, null, bindingIndex);
     }
   }
   return applied;
 }
 
 function applyStylingValue(
-    renderer: any, element: RElement, prop: string, value: any, applyFn: ApplyStylingFn,
-    bindingIndex: number, sanitizer?: StyleSanitizeFn | null): boolean {
+    renderer: StylingRenderer, element: RElement, prop: string, value: any, bindingIndex: number,
+    sanitizer: StyleSanitizeFn | null | undefined, isClassBased: boolean): boolean {
   let valueToApply: string|null = unwrapSafeValue(value);
   if (isStylingValueDefined(valueToApply)) {
     valueToApply =
         sanitizer ? sanitizer(prop, value, StyleSanitizeMode.ValidateAndSanitize) : valueToApply;
-    applyFn(renderer, element, prop, valueToApply, bindingIndex);
+    isClassBased ? renderer.setClass(element, prop, valueToApply, bindingIndex) :
+                   renderer.setStyle(element, prop, valueToApply, bindingIndex);
     return true;
   }
   return false;
 }
 
 function findAndApplyMapValue(
-    renderer: any, element: RElement, applyFn: ApplyStylingFn, map: StylingMapArray, prop: string,
-    bindingIndex: number, sanitizer?: StyleSanitizeFn | null) {
+    renderer: StylingRenderer, element: RElement, map: StylingMapArray, prop: string,
+    bindingIndex: number, sanitizer: StyleSanitizeFn | null | undefined, isClassBased: boolean) {
   for (let i = StylingMapArrayIndex.ValuesStartPosition; i < map.length;
        i += StylingMapArrayIndex.TupleSize) {
     const p = getMapProp(map, i);
@@ -897,7 +900,8 @@ function findAndApplyMapValue(
       valueToApply = sanitizer ?
           sanitizer(prop, valueToApply, StyleSanitizeMode.ValidateAndSanitize) :
           valueToApply;
-      applyFn(renderer, element, prop, valueToApply, bindingIndex);
+      isClassBased ? renderer.setClass(element, prop, valueToApply, bindingIndex) :
+                     renderer.setStyle(element, prop, valueToApply, bindingIndex);
       return true;
     }
     if (p > prop) {
@@ -1000,26 +1004,6 @@ export const setClass: ApplyStylingFn =
         }
       }
     };
-
-export const setClassName = (renderer: Renderer3 | null, native: RElement, className: string) => {
-  if (renderer !== null) {
-    if (isProceduralRenderer(renderer)) {
-      renderer.setAttribute(native, 'class', className);
-    } else {
-      native.className = className;
-    }
-  }
-};
-
-export const setStyleAttr = (renderer: Renderer3 | null, native: RElement, value: string) => {
-  if (renderer !== null) {
-    if (isProceduralRenderer(renderer)) {
-      renderer.setAttribute(native, 'style', value);
-    } else {
-      native.setAttribute('style', value);
-    }
-  }
-};
 
 /**
  * Iterates over all provided styling entries and renders them on the element.

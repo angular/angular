@@ -16,7 +16,7 @@ import {isDirectiveHost} from '../interfaces/type_checks';
 import {LView, RENDERER, TVIEW, TView} from '../interfaces/view';
 import {getActiveDirectiveId, getCheckNoChangesMode, getCurrentStyleSanitizer, getLView, getSelectedIndex, incrementBindingIndex, nextBindingIndex, resetCurrentStyleSanitizer, setCurrentStyleSanitizer, setElementExitFn} from '../state';
 import {applyStylingMapDirectly, applyStylingValueDirectly, flushStyling, setClass, setStyle, updateClassViaContext, updateStyleViaContext} from '../styling/bindings';
-import {getStylingRenderer} from '../styling/dom_styling_renderer';
+import {getStylingRenderer as _getStylingRenderer} from '../styling/dom_styling_renderer';
 import {activateStylingMapFeature} from '../styling/map_based_bindings';
 import {attachStylingDebugObject} from '../styling/styling_debug';
 import {NO_CHANGE} from '../tokens';
@@ -197,7 +197,7 @@ function stylingProp(
   // style/class value directly to the element
   if (allowDirectStyling(tNode, isClassBased, firstUpdatePass)) {
     const sanitizerToUse = isClassBased ? null : sanitizer;
-    const renderer = getRenderer(tNode, lView);
+    const renderer = getStylingRenderer(tNode, lView);
     updated = applyStylingValueDirectly(
         renderer, context, tNode, native, lView, bindingIndex, prop, value, isClassBased,
         sanitizerToUse);
@@ -374,7 +374,7 @@ function stylingMap(
   // style/class map values directly to the element
   if (allowDirectStyling(tNode, isClassBased, firstUpdatePass)) {
     const sanitizerToUse = isClassBased ? null : sanitizer;
-    const renderer = getRenderer(tNode, lView);
+    const renderer = getStylingRenderer(tNode, lView);
     applyStylingMapDirectly(
         renderer, context, tNode, native, lView, bindingIndex, value, isClassBased, sanitizerToUse,
         valueHasChanged, hasDirectiveInput);
@@ -488,8 +488,8 @@ function stylingApply(): void {
   const sanitizer = getCurrentStyleSanitizer();
   const classesContext = isStylingContext(tNode.classes) ? tNode.classes as TStylingContext : null;
   const stylesContext = isStylingContext(tNode.styles) ? tNode.styles as TStylingContext : null;
-  const renderer = getStylingRenderer();
-  renderer.setCurrentRenderer(getRenderer(tNode, lView));
+  const renderer = getStylingRenderer(tNode, lView);
+
   flushStyling(
       renderer, lView, tNode, classesContext, stylesContext, native, directiveIndex, sanitizer,
       tView.firstUpdatePass);
@@ -616,4 +616,10 @@ function patchHostStylingFlag(tNode: TNode, hostBindingsMode: boolean, isClassBa
       isClassBased ? TNodeFlags.hasHostClassBindings : TNodeFlags.hasHostStyleBindings :
       isClassBased ? TNodeFlags.hasTemplateClassBindings : TNodeFlags.hasTemplateStyleBindings;
   patchConfig(tNode, flag);
+}
+
+function getStylingRenderer(tNode: TNode, lView: LView) {
+  const renderer = _getStylingRenderer();
+  renderer.setCurrentRenderer(getRenderer(tNode, lView));
+  return renderer;
 }

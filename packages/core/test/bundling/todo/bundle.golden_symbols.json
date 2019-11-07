@@ -591,9 +591,6 @@
     "name": "flushStyling"
   },
   {
-    "name": "forceStylesAsString"
-  },
-  {
     "name": "forwardRef"
   },
   {
@@ -795,6 +792,9 @@
     "name": "getStylingRenderer"
   },
   {
+    "name": "getStylingRenderer"
+  },
+  {
     "name": "getStylingState"
   },
   {
@@ -844,9 +844,6 @@
   },
   {
     "name": "hasValueChanged"
-  },
-  {
-    "name": "hyphenate"
   },
   {
     "name": "includeViewProviders"
@@ -1071,9 +1068,6 @@
     "name": "normalizeBitMaskValue"
   },
   {
-    "name": "objectToClassName"
-  },
-  {
     "name": "patchConfig"
   },
   {
@@ -1203,9 +1197,6 @@
     "name": "setClass"
   },
   {
-    "name": "setClassName"
-  },
-  {
     "name": "setCurrentDirectiveDef"
   },
   {
@@ -1258,9 +1249,6 @@
   },
   {
     "name": "setStyle"
-  },
-  {
-    "name": "setStyleAttr"
   },
   {
     "name": "setUpAttributes"
@@ -1342,9 +1330,6 @@
   },
   {
     "name": "wrapListener"
-  },
-  {
-    "name": "writeStylingValueDirectly"
   },
   {
     "name": "ɵɵadvance"

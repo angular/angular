@@ -32,6 +32,7 @@ import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {ActiveElementFlags, enterView, executeElementExitFn, getBindingIndex, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, hasActiveElementFlag, incrementActiveDirectiveId, leaveView, leaveViewProcessExit, setActiveHostElement, setBindingIndex, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {renderStylingMap, writeStylingValueDirectly} from '../styling/bindings';
+import {getStylingRenderer} from '../styling/dom_styling_renderer';
 import {NO_CHANGE} from '../tokens';
 import {isAnimationProp} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
@@ -1838,7 +1839,9 @@ export function renderInitialStyling(
       renderStylingMap(renderer, native, tNode.classes, true);
     } else {
       const classes = getInitialStylingValue(tNode.classes);
-      writeStylingValueDirectly(renderer, native, classes, true, null);
+      const stylingRenderer = getStylingRenderer();
+      stylingRenderer.setCurrentRenderer(renderer);
+      stylingRenderer.setClassAttr(native, classes);
     }
   }
   if (tNode.styles !== null) {
@@ -1846,7 +1849,9 @@ export function renderInitialStyling(
       renderStylingMap(renderer, native, tNode.styles, false);
     } else {
       const styles = getInitialStylingValue(tNode.styles);
-      writeStylingValueDirectly(renderer, native, styles, false, null);
+      const stylingRenderer = getStylingRenderer();
+      stylingRenderer.setCurrentRenderer(renderer);
+      stylingRenderer.setStyleAttr(native, styles);
     }
   }
 }

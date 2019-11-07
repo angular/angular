@@ -488,5 +488,7 @@ export interface TStylingNode { flags: TNodeFlags; }
 export interface StylingRenderer {
   setCurrentRenderer(renderer: any): void;
   setClass(element: RElement, className: string, value: any, bindingIndex: number|null): void;
+  setClassAttr(element: RElement, className: string): void;
   setStyle(element: RElement, prop: string, value: any, bindingIndex: number|null): void;
+  setStyleAttr(element: RElement, styleValue: any): void;
 }

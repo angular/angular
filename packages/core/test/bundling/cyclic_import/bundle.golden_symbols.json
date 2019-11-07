@@ -30,6 +30,9 @@
     "name": "DepComponent"
   },
   {
+    "name": "DomStylingRenderer"
+  },
+  {
     "name": "EMPTY_ARRAY"
   },
   {
@@ -142,6 +145,9 @@
   },
   {
     "name": "_renderCompCount"
+  },
+  {
+    "name": "_renderer"
   },
   {
     "name": "addComponentLogic"
@@ -267,9 +273,6 @@
     "name": "findDirectiveMatches"
   },
   {
-    "name": "forceStylesAsString"
-  },
-  {
     "name": "generateExpandoInstructionBlock"
   },
   {
@@ -387,6 +390,9 @@
     "name": "getStylingMapArray"
   },
   {
+    "name": "getStylingRenderer"
+  },
+  {
     "name": "hasActiveElementFlag"
   },
   {
@@ -400,9 +406,6 @@
   },
   {
     "name": "hasTagAndTypeMatch"
-  },
-  {
-    "name": "hyphenate"
   },
   {
     "name": "includeViewProviders"
@@ -528,9 +531,6 @@
     "name": "noSideEffects"
   },
   {
-    "name": "objectToClassName"
-  },
-  {
     "name": "refreshChildComponents"
   },
   {
@@ -606,9 +606,6 @@
     "name": "setClass"
   },
   {
-    "name": "setClassName"
-  },
-  {
     "name": "setCurrentDirectiveDef"
   },
   {
@@ -648,9 +645,6 @@
     "name": "setStyle"
   },
   {
-    "name": "setStyleAttr"
-  },
-  {
     "name": "setUpAttributes"
   },
   {
@@ -673,9 +667,6 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
-  },
-  {
-    "name": "writeStylingValueDirectly"
   },
   {
     "name": "ɵɵdefineComponent"

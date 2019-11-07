@@ -512,6 +512,10 @@ class MockStylingRenderer implements StylingRenderer {
       void {
     this._interceptorFn(null, element, prop, value, bindingIndex);
   }
+
+  setClassAttr(element: RElement, className: string): void {}
+
+  setStyleAttr(element: RElement, styleValue: any): void {}
 }
 
 function buildConfig(tNode: TStylingNode, isClassBased: boolean): DebugStylingConfig {

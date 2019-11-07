@@ -5,9 +5,10 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
-import {RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
+import {RElement, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 import {StylingRenderer} from '../interfaces/styling';
 import {isStylingValueDefined} from '../util/styling_utils';
+
 
 /**
  * Wrapper used to apply style/class values to the DOM.
@@ -80,6 +81,22 @@ export class DomStylingRenderer implements StylingRenderer {
           elementStyle.removeProperty(prop);
         }
       }
+    }
+  }
+
+  setClassAttr(element: RElement, className: string): void {
+    if (this._hasRenderer()) {
+      this._renderer.setAttribute(element, 'class', className);
+    } else {
+      element.className = className;
+    }
+  }
+
+  setStyleAttr(element: RElement, styleValue: any): void {
+    if (this._hasRenderer()) {
+      this._renderer.setAttribute(element, 'style', styleValue);
+    } else {
+      element.setAttribute('style', styleValue);
     }
   }
 
