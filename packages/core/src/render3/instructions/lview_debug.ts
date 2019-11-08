@@ -7,11 +7,11 @@
  */
 
 import {AttributeMarker, ComponentTemplate} from '..';
-import {SchemaMetadata, Type} from '../../core';
+import {SchemaMetadata} from '../../core';
 import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
-import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
+import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
 import {PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
@@ -24,6 +24,7 @@ import {DebugNodeStyling, NodeStylingDebug} from '../styling/styling_debug';
 import {attachDebugObject} from '../util/debug_utils';
 import {isStylingContext} from '../util/styling_utils';
 import {getTNode, unwrapRNode} from '../util/view_utils';
+import {getLContainerActiveIndex} from './container';
 
 const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNgDevMode());
 
@@ -433,7 +434,11 @@ export function buildDebugNode(tNode: TNode, lView: LView, nodeIndex: number): D
 export class LContainerDebug {
   constructor(private readonly _raw_lContainer: LContainer) {}
 
-  get activeIndex(): number { return this._raw_lContainer[ACTIVE_INDEX]; }
+  get activeIndex(): number { return getLContainerActiveIndex(this._raw_lContainer); }
+  get hasTransplantedViews(): boolean {
+    return (this._raw_lContainer[ACTIVE_INDEX] & ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS) ===
+        ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS;
+  }
   get views(): LViewDebug[] {
     return this._raw_lContainer.slice(CONTAINER_HEADER_OFFSET)
         .map(toDebug as(l: LView) => LViewDebug);
