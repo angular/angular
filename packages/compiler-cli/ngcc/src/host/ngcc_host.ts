@@ -116,4 +116,16 @@ export interface NgccReflectionHost extends ReflectionHost {
    * objects.
    */
   getModuleWithProvidersFunctions(f: ts.SourceFile): ModuleWithProvidersFunction[];
+
+  /**
+   * Find the last node that is relevant to the specified class.
+   *
+   * As well as the main declaration, classes can have additional statements such as static
+   * properties (`SomeClass.staticProp = ...;`) and decorators (`__decorate(SomeClass, ...);`).
+   * It is useful to know exactly where the class "ends" so that we can inject additional
+   * statements after that point.
+   *
+   * @param classSymbol The class whose statements we want.
+   */
+  getEndOfClass(classSymbol: NgccClassSymbol): ts.Node;
 }

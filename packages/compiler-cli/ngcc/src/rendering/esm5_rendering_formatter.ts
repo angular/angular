@@ -35,25 +35,4 @@ export class Esm5RenderingFormatter extends EsmRenderingFormatter {
     const insertionPoint = returnStatement.getFullStart();
     output.appendLeft(insertionPoint, '\n' + definitions);
   }
-
-  /**
-   * Add the adjacent statements inside the IIFE of each decorated class
-   */
-  addAdjacentStatements(output: MagicString, compiledClass: CompiledClass, statements: string):
-      void {
-    const iifeBody = getIifeBody(compiledClass.declaration);
-    if (!iifeBody) {
-      throw new Error(
-          `Compiled class declaration is not inside an IIFE: ${compiledClass.name} in ${compiledClass.declaration.getSourceFile().fileName}`);
-    }
-
-    const returnStatement = iifeBody.statements.find(ts.isReturnStatement);
-    if (!returnStatement) {
-      throw new Error(
-          `Compiled class wrapper IIFE does not have a return statement: ${compiledClass.name} in ${compiledClass.declaration.getSourceFile().fileName}`);
-    }
-
-    const insertionPoint = returnStatement.getFullStart();
-    output.appendLeft(insertionPoint, '\n' + statements);
-  }
 }
