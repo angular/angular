@@ -13,6 +13,8 @@ const stringify = require('./util').stringify;
 const cldr = require('cldr');
 // used to extract all other cldr data
 const cldrJs = require('cldrjs');
+// used to call to clang-format
+const shelljs = require('shelljs');
 
 const COMMON_PACKAGE = 'packages/common';
 const CORE_PACKAGE = 'packages/core';
@@ -94,19 +96,10 @@ module.exports = (gulp, done) => {
   console.log(`${LOCALES.length} locale files generated.`);
 
   console.log(`All i18n cldr files have been generated, formatting files..."`);
-  const format = require('gulp-clang-format');
-  const clangFormat = require('clang-format');
-  return gulp
-      .src(
-          [
-            `${I18N_DATA_FOLDER}/**/*.ts`,
-            `${I18N_FOLDER}/currencies.ts`,
-            `${I18N_CORE_FOLDER}/locale_en.ts`,
-            `${I18N_GLOBAL_FOLDER}/*.js`,
-          ],
-          {base: '.'})
-      .pipe(format.format('file', clangFormat))
-      .pipe(gulp.dest('.'));
+  shelljs.exec(
+    `yarn clang-format -i ${I18N_DATA_FOLDER}/**/*.ts ${I18N_DATA_FOLDER}/*.ts ${I18N_FOLDER}/currencies.ts ${I18N_CORE_FOLDER}/locale_en.ts ${I18N_GLOBAL_FOLDER}/*.js`,
+    {silent: true});
+  done();
 };
 
 /**
