@@ -56,7 +56,7 @@ export function registerNgModuleType(ngModuleType: NgModuleType) {
   }
 }
 
-export function clearModuleRegistry(): void {
+export function clearModulesForTest(): void {
   modules.clear();
 }
 
