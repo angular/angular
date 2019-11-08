@@ -28,9 +28,14 @@ If you're curious about the specific migrations being run (e.g. what code is cha
 
 - Angular now compiles with Ivy by default. See [Ivy compatibility section](#ivy).
 
+- CLI apps compile in [AOT mode](/guide/aot-compiler) by default (which includes template type-checking). 
+Users who only built with JIT before may see new type errors. 
+See our [template type-checking guide](guide/template-typecheck) for more information and debugging tips.
+
 - Typescript 3.4 and 3.5 are no longer supported. Please update to Typescript 3.6.
 
-- tslib is now listed as a peer dependency rather than a direct dependency. Users not using the CLI will need to manually install tslib via `yarn add tslib` or `npm install tslib --save`.
+- tslib is now listed as a peer dependency rather than a direct dependency. 
+Users not using the CLI will need to manually install tslib via `yarn add tslib` or `npm install tslib --save`.
 
 {@a deprecations}
 ### New Deprecations
