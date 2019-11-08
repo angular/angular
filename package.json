@@ -173,5 +173,6 @@
   "// 4": "Overwrite graceful-fs to a version that does not rely on the 'natives' package. This fixes gulp for >= 10.13, more information: #28213",
   "resolutions": {
     "**/graceful-fs": "4.2.2"
-  }
+  },
+  "cldr-data-coverage": "full"
 }
