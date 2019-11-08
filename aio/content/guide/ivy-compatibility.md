@@ -39,8 +39,6 @@ If the errors are gone, switch back to Ivy by removing the changes to the `tscon
 
 - If a token is injected with the `@Host` or `@Self` flag, the module injector is not searched for that token (previously, tokens marked with these flags would still search at the module level).
 
-- If a template is declared in one view but inserted into a different view, change detection will occur for that template only when its insertion point is checked (previously, change detection would also run when its declaration point was checked).
-
 - When accessing multiple local refs with the same name in template bindings, the first is matched (previously, the last instance was matched).
 
 - Directives that are used in an exported module (but not exported themselves) are exported publicly (previously, the compiler would automatically write a private, aliased export that it could use its global knowledge to resolve downstream).
@@ -58,3 +56,5 @@ If the errors are gone, switch back to Ivy by removing the changes to the `tscon
 - Special injection tokens (e.g. `TemplateRef` or `ViewContainerRef`) return a new instance whenever they are requested (previously, instances of special tokens were shared if requested on the same node). This primarily affects tests that do identity comparison of these objects.
 
 - ICU parsing happens at runtime, so only text, HTML tags and text bindings are allowed inside ICU cases (previously, directives were also permitted inside ICUs).
+
+- Providers formatted as `{provide: X}` without a `useValue`, `useFactory`, `useExisting`, or `useClass` property are treated like `{provide: X, useClass: X}` (previously, it defaulted to `{provide: X, useValue: undefined}`).
