@@ -11,7 +11,7 @@ That said, some applications will likely need to apply some manual updates.
 In version 9, [a few deprecated APIs have been removed](guide/updating-to-version-9#removals) and there are a [few breaking changes](guide/updating-to-version-9#breaking-changes) unrelated to Ivy.
 If you're seeing errors after updating to version 9, you'll first want to rule those changes out.
 
-To do so, temporarily [turn off Ivy in your `tsconfig.json`](guide/ivy#opting-out-of-angular-ivy) and re-start your app.
+To do so, temporarily [turn off Ivy](guide/ivy#opting-out-of-angular-ivy) in your `tsconfig.json` and re-start your app.
 
 If you're still seeing the errors, they are not specific to Ivy. In this case, you may want to consult the [general version 9 guide](guide/updating-to-version-9).
 
