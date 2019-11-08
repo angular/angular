@@ -90,7 +90,7 @@ runInEachFileSystem(() => {
         expect(hasInjectableDecorator(index, analysis, 'OtherService')).toBe(false);
       });
 
-      it(`should migrate object literal provider in ${type}`, () => {
+      it(`should not migrate object literal provider in ${type}`, () => {
         const {program, analysis} = setUpAndAnalyzeProgram([{
           name: INDEX_FILENAME,
           contents: `
@@ -107,7 +107,7 @@ runInEachFileSystem(() => {
         }]);
 
         const index = program.getSourceFile(INDEX_FILENAME) !;
-        expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(true);
+        expect(hasInjectableDecorator(index, analysis, 'MyService')).toBe(false);
         expect(hasInjectableDecorator(index, analysis, 'OtherService')).toBe(false);
       });
 
@@ -121,7 +121,7 @@ runInEachFileSystem(() => {
 
             export class TestClass {}
             TestClass.decorators = [
-              { type: ${type}, args: [{${args}${propName}: [{provide: forwardRef(() => MyService) }]}] }
+              { type: ${type}, args: [{${args}${propName}: [forwardRef(() => MyService)]}] }
             ];
           `,
         }]);
@@ -350,7 +350,7 @@ runInEachFileSystem(() => {
 
         const index = program.getSourceFile(INDEX_FILENAME) !;
         expect(hasInjectableDecorator(index, analysis, 'ServiceA')).toBe(true);
-        expect(hasInjectableDecorator(index, analysis, 'ServiceB')).toBe(true);
+        expect(hasInjectableDecorator(index, analysis, 'ServiceB')).toBe(false);
         expect(hasInjectableDecorator(index, analysis, 'ServiceC')).toBe(true);
         expect(hasInjectableDecorator(index, analysis, 'ServiceD')).toBe(false);
       });
@@ -372,7 +372,7 @@ runInEachFileSystem(() => {
             { type: ${type}, args: [{${args}${propName}: [
                 ServiceA,
                 [
-                  {provide: ServiceB},
+                  {provide: ServiceB, useClass: ServiceB},
                   ServiceC,
                 ],
               ]}]

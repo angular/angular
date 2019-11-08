@@ -118,19 +118,11 @@ function migrateProviders(metadata: ResolvedValueMap, field: string, host: Migra
  */
 function migrateProvider(provider: ResolvedValue, host: MigrationHost): void {
   if (provider instanceof Map) {
-    if (!provider.has('provide') || provider.has('useValue') || provider.has('useFactory') ||
-        provider.has('useExisting')) {
-      return;
-    }
-    if (provider.has('useClass')) {
-      // {provide: ..., useClass: SomeClass, deps: [...]} does not require a decorator on SomeClass,
-      // as the provider itself configures 'deps'. Only if 'deps' is missing will this require a
-      // factory to exist on SomeClass.
-      if (!provider.has('deps')) {
-        migrateProviderClass(provider.get('useClass') !, host);
-      }
-    } else {
-      migrateProviderClass(provider.get('provide') !, host);
+    // {provide: ..., useClass: SomeClass, deps: [...]} does not require a decorator on SomeClass,
+    // as the provider itself configures 'deps'. Only if 'deps' is missing will this require a
+    // factory to exist on SomeClass.
+    if (provider.has('provide') && provider.has('useClass') && !provider.has('deps')) {
+      migrateProviderClass(provider.get('useClass') !, host);
     }
   } else if (Array.isArray(provider)) {
     for (const v of provider) {
