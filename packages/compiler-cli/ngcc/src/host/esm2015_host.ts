@@ -900,7 +900,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     // Note that although the helper calls are retrieved using the class symbol, the result may
     // contain helper calls corresponding with unrelated classes. Therefore, each helper call still
     // has to be checked to actually correspond with the class symbol.
-    const helperCalls = this.getHelperCallsForClass(classSymbol, '__decorate');
+    const helperCalls = this.getHelperCallsForClass(classSymbol, ['__decorate']);
 
     for (const helperCall of helperCalls) {
       if (isClassDecorateCall(helperCall, classSymbol.name)) {
@@ -1065,23 +1065,26 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   }
 
   /**
-   * Check the given statement to see if it is a call to the specified helper function or null if
-   * not found.
+   * Check the given statement to see if it is a call to any of the specified helper functions or
+   * null if not found.
    *
    * Matching statements will look like:  `tslib_1.__decorate(...);`.
    * @param statement the statement that may contain the call.
-   * @param helperName the name of the helper we are looking for.
+   * @param helperNames the names of the helper we are looking for.
    * @returns the node that corresponds to the `__decorate(...)` call or null if the statement
    * does not match.
    */
-  protected getHelperCall(statement: ts.Statement, helperName: string): ts.CallExpression|null {
+  protected getHelperCall(statement: ts.Statement, helperNames: string[]): ts.CallExpression|null {
     if (ts.isExpressionStatement(statement)) {
       let expression = statement.expression;
       while (isAssignment(expression)) {
         expression = expression.right;
       }
-      if (ts.isCallExpression(expression) && getCalleeName(expression) === helperName) {
-        return expression;
+      if (ts.isCallExpression(expression)) {
+        const calleeName = getCalleeName(expression);
+        if (calleeName !== null && helperNames.includes(calleeName)) {
+          return expression;
+        }
       }
     }
     return null;
@@ -1326,8 +1329,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * Get the parameter type and decorators for the constructor of a class,
    * where the information is stored on a static property of the class.
    *
-   * Note that in ESM2015, the property is defined an array, or by an arrow function that returns an
-   * array, of decorator and type information.
+   * Note that in ESM2015, the property is defined an array, or by an arrow function that returns
+   * an array, of decorator and type information.
    *
    * For example,
    *
@@ -1387,14 +1390,14 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   /**
    * Search statements related to the given class for calls to the specified helper.
    * @param classSymbol the class whose helper calls we are interested in.
-   * @param helperName the name of the helper (e.g. `__decorate`) whose calls we are interested
+   * @param helperNames the names of the helpers (e.g. `__decorate`) whose calls we are interested
    * in.
    * @returns an array of CallExpression nodes for each matching helper call.
    */
-  protected getHelperCallsForClass(classSymbol: NgccClassSymbol, helperName: string):
+  protected getHelperCallsForClass(classSymbol: NgccClassSymbol, helperNames: string[]):
       ts.CallExpression[] {
     return this.getStatementsForClass(classSymbol)
-        .map(statement => this.getHelperCall(statement, helperName))
+        .map(statement => this.getHelperCall(statement, helperNames))
         .filter(isDefined);
   }
 
@@ -1620,9 +1623,9 @@ interface DecoratorInfo {
 
   /**
    * Represents the constructor parameter information, such as the type of a parameter and all
-   * decorators for a certain parameter. Indices in this array correspond with the parameter's index
-   * in the constructor. Note that this array may be sparse, i.e. certain constructor parameters may
-   * not have any info recorded.
+   * decorators for a certain parameter. Indices in this array correspond with the parameter's
+   * index in the constructor. Note that this array may be sparse, i.e. certain constructor
+   * parameters may not have any info recorded.
    */
   constructorParamInfo: ParamInfo[];
 }
