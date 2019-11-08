@@ -9,7 +9,6 @@
 import {ResourceLoader} from '@angular/compiler';
 import {ApplicationInitStatus, COMPILER_OPTIONS, Compiler, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, Type, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDef as InjectableDef} from '@angular/core';
 
-import {ModuleRegistrationMap, getRegisteredModulesState, restoreRegisteredModulesState} from '../../src/linker/ng_module_factory_registration';
 import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
 
 import {MetadataOverride} from './metadata_override';
@@ -42,7 +41,6 @@ interface CleanupOperation {
 
 export class R3TestBedCompiler {
   private originalComponentResolutionQueue: Map<Type<any>, Component>|null = null;
-  private originalRegisteredModules: null|ModuleRegistrationMap = null;
 
   // Testing module configuration
   private declarations: Type<any>[] = [];
@@ -277,9 +275,6 @@ export class R3TestBedCompiler {
    * @internal
    */
   async _compileNgModuleAsync(moduleType: Type<any>): Promise<void> {
-    if (this.originalRegisteredModules === null) {
-      this.originalRegisteredModules = getRegisteredModulesState();
-    }
     this.queueTypesFromModulesArray([moduleType]);
     await this.compileComponents();
     this.applyProviderOverrides();
@@ -567,10 +562,6 @@ export class R3TestBedCompiler {
     this.initialNgDefs.clear();
     this.moduleProvidersOverridden.clear();
     this.restoreComponentResolutionQueue();
-    if (this.originalRegisteredModules) {
-      restoreRegisteredModulesState(this.originalRegisteredModules);
-      this.originalRegisteredModules = null;
-    }
     // Restore the locale ID to the default value, this shouldn't be necessary but we never know
     setLocaleId(DEFAULT_LOCALE_ID);
   }
