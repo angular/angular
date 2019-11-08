@@ -16,7 +16,8 @@
       "@angular/material-moment-adapter": ["../material-moment-adapter/public-api.ts"],
       "@angular/google-maps": ["../google-maps"],
       "@angular/components-examples": ["../components-examples"],
-      "@angular/components-examples/*": ["../components-examples/*"]
+      "@angular/components-examples/*": ["../components-examples/*"],
+      "@angular/youtube-player": ["../youtube-player"]
     }
   },
   "include": ["./**/*.ts"]
