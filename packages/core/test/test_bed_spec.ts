@@ -6,13 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-<<<<<<< HEAD
-import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, ModuleWithProviders, NgModule, Optional, Pipe, getModuleFactory, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
-import {registerModuleFactory} from '@angular/core/src/linker/ng_module_factory_registration';
-import {NgModuleFactory} from '@angular/core/src/render3';
-=======
-import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Input, ModuleWithProviders, NgModule, Optional, Pipe, getModuleFactory, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
->>>>>>> parent of 63256b511a... fix(ivy): Only restore registered modules if user compiles modules with TestBed (#32944)
+import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, ModuleWithProviders, NgModule, Optional, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -872,18 +866,5 @@ describe('TestBed', () => {
              expect((ComponentWithProvider as any).ɵcmp.providersResolver)
                  .toEqual(originalResolver);
            });
-      });
-
-  onlyInIvy('Ivy module registration happens when NgModuleFactory is created')
-      .it('cleans up registered modules', async() => {
-        @NgModule({id: 'my_module'})
-        class MyModule {
-        }
-
-        expect(() => getModuleFactory('my_module')).toThrowError();
-        await TestBed.inject(Compiler).compileModuleAsync(MyModule);
-        expect(() => getModuleFactory('my_module')).not.toThrowError();
-        TestBed.resetTestingModule();
-        expect(() => getModuleFactory('my_module')).toThrowError();
       });
 });
