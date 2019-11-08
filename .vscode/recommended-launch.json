@@ -15,7 +15,7 @@
       "localRoot": "${workspaceRoot}",
       "remoteRoot": "${workspaceRoot}",
       "stopOnEntry": false,
-      "timeout": 60000,
+      "timeout": 600000,
     },
     {
       "name": "Attach to bazel test ... --config=debug (no source maps)",
@@ -28,7 +28,7 @@
       "localRoot": "${workspaceRoot}",
       "remoteRoot": "${workspaceRoot}",
       "stopOnEntry": false,
-      "timeout": 60000,
+      "timeout": 600000,
     },
     {
       "name": "IVY:packages/core/test/acceptance",
@@ -45,7 +45,7 @@
       "address": "localhost",
       "restart": true,
       "sourceMaps": true,
-      "timeout": 60000,
+      "timeout": 600000,
     },
     {
       "name": "IVY:packages/core/test/render3",
@@ -62,7 +62,7 @@
       "address": "localhost",
       "restart": true,
       "sourceMaps": true,
-      "timeout": 60000,
+      "timeout": 600000,
     },
     {
       "name": "IVY:packages/core/test",
@@ -79,7 +79,7 @@
       "address": "localhost",
       "restart": true,
       "sourceMaps": true,
-      "timeout": 60000,
+      "timeout": 600000,
     },
   ]
 }
