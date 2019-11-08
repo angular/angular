@@ -25,7 +25,23 @@
 // @param target Which kind of high contrast setting to target. Defaults to `active`, can be
 //    `white-on-black` or `black-on-white`.
 @mixin cdk-high-contrast($target: active) {
-  @media (-ms-high-contrast: $target) {
-    @content;
+  @if ($target != 'active' and $target != 'black-on-white' and $target != 'white-on-black') {
+    @error 'Unknown cdk-high-contrast value "#{$target}" provided. Allowed values are "active", "black-on-white", and "white-on-black"'; // stylelint-disable
+  }
+
+  // If the selector context has multiple parts, such as `.section, .region`, just doing
+  // `.cdk-high-contrast-xxx #{&}` will only apply the parent selector to the first part of the
+  // context. We address this by nesting the selector context under .cdk-high-contrast.
+  @at-root {
+    $selector-context: #{&};
+    .cdk-high-contrast-#{$target} {
+      @if ($selector-context == '') {
+        @content
+      } @else {
+        #{$selector-context} {
+          @content
+        }
+      }
+    }
   }
 }

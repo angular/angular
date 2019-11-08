@@ -201,7 +201,7 @@ export declare const MAT_OPTION_PARENT_COMPONENT: InjectionToken<MatOptionParent
 export declare const MAT_RIPPLE_GLOBAL_OPTIONS: InjectionToken<RippleGlobalOptions>;
 
 export declare class MatCommonModule {
-    constructor(sanityChecks: any);
+    constructor(highContrastModeDetector: HighContrastModeDetector, sanityChecks: any);
     static ɵinj: i0.ɵɵInjectorDef<MatCommonModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatCommonModule, never, [typeof i1.BidiModule], [typeof i1.BidiModule]>;
 }

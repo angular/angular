@@ -1,4 +1,5 @@
 export declare class A11yModule {
+    constructor(highContrastModeDetector: HighContrastModeDetector);
     static ɵinj: i0.ɵɵInjectorDef<A11yModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<A11yModule, [typeof i1.CdkAriaLive, typeof i2.CdkTrapFocus, typeof i3.CdkMonitorFocus], [typeof i4.CommonModule, typeof i5.PlatformModule, typeof i6.ObserversModule], [typeof i1.CdkAriaLive, typeof i2.CdkTrapFocus, typeof i3.CdkMonitorFocus]>;
 }
@@ -104,6 +105,20 @@ export declare class FocusTrapFactory {
     create(element: HTMLElement, deferCaptureElements?: boolean): FocusTrap;
     static ɵfac: i0.ɵɵFactoryDef<FocusTrapFactory>;
     static ɵprov: i0.ɵɵInjectableDef<FocusTrapFactory>;
+}
+
+export declare const enum HighContrastMode {
+    NONE = 0,
+    BLACK_ON_WHITE = 1,
+    WHITE_ON_BLACK = 2
+}
+
+export declare class HighContrastModeDetector {
+    constructor(_platform: Platform, document: any);
+    _applyBodyHighContrastModeCssClasses(): void;
+    getHighContrastMode(): HighContrastMode;
+    static ɵfac: i0.ɵɵFactoryDef<HighContrastModeDetector>;
+    static ɵprov: i0.ɵɵInjectableDef<HighContrastModeDetector>;
 }
 
 export interface Highlightable extends ListKeyManagerOption {

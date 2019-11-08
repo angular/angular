@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule, InjectionToken, Optional, Inject, isDevMode, Version} from '@angular/core';
+import {HighContrastModeDetector} from '@angular/cdk/a11y';
 import {BidiModule} from '@angular/cdk/bidi';
+import {Inject, InjectionToken, isDevMode, NgModule, Optional, Version} from '@angular/core';
 import {VERSION as CDK_VERSION} from '@angular/cdk';
+
 
 // Private version constant to circumvent test/build issues,
 // i.e. avoid core to depend on the @angular/material primary entry-point
@@ -69,7 +71,13 @@ export class MatCommonModule {
   /** Configured sanity checks. */
   private _sanityChecks: SanityChecks;
 
-  constructor(@Optional() @Inject(MATERIAL_SANITY_CHECKS) sanityChecks: any) {
+  constructor(
+      highContrastModeDetector: HighContrastModeDetector,
+      @Optional() @Inject(MATERIAL_SANITY_CHECKS) sanityChecks: any) {
+    // While A11yModule also does this, we repeat it here to avoid importing A11yModule
+    // in MatCommonModule.
+    highContrastModeDetector._applyBodyHighContrastModeCssClasses();
+
     // Note that `_sanityChecks` is typed to `any`, because AoT
     // throws an error if we use the `SanityChecks` type directly.
     this._sanityChecks = sanityChecks;

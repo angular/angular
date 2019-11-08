@@ -16,3 +16,7 @@ export * from './live-announcer/live-announcer-tokens';
 export * from './focus-monitor/focus-monitor';
 export * from './fake-mousedown';
 export * from './a11y-module';
+export {
+  HighContrastModeDetector,
+  HighContrastMode,
+} from './high-contrast-mode/high-contrast-mode-detector';
