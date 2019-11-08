@@ -9,7 +9,7 @@ import {assertDataInRange, assertEqual} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags, registerPostOrderHooks} from '../hooks';
-import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
+import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
 import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType, TViewNode} from '../interfaces/node';
 import {isDirectiveHost} from '../interfaces/type_checks';
@@ -160,7 +160,7 @@ export function ɵɵcontainerRefreshEnd(): void {
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Container);
 
   const lContainer: LContainer = getLView()[previousOrParentTNode.index];
-  const nextIndex = lContainer[ACTIVE_INDEX];
+  const nextIndex = lContainer[ACTIVE_INDEX] >> ActiveIndexFlag.SHIFT;
 
   // remove extra views at the end of the container
   while (nextIndex < lContainer.length - CONTAINER_HEADER_OFFSET) {

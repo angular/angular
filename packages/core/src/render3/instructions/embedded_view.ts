@@ -8,7 +8,7 @@
 
 import {assertDefined, assertEqual} from '../../util/assert';
 import {assertLContainerOrUndefined} from '../assert';
-import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
+import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {RenderFlags} from '../interfaces/definition';
 import {TContainerNode, TNodeType} from '../interfaces/node';
 import {CONTEXT, LView, LViewFlags, PARENT, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
@@ -38,7 +38,8 @@ export function ɵɵembeddedViewStart(viewBlockId: number, decls: number, vars: 
   const lContainer = lView[containerTNode.index] as LContainer;
 
   ngDevMode && assertNodeType(containerTNode, TNodeType.Container);
-  let viewToRender = scanForView(lContainer, lContainer[ACTIVE_INDEX] !, viewBlockId);
+  let viewToRender =
+      scanForView(lContainer, lContainer[ACTIVE_INDEX] ! >> ActiveIndexFlag.SHIFT, viewBlockId);
 
   if (viewToRender) {
     setIsParent();
@@ -57,9 +58,9 @@ export function ɵɵembeddedViewStart(viewBlockId: number, decls: number, vars: 
   if (lContainer) {
     if (isCreationMode(viewToRender)) {
       // it is a new view, insert it into collection of views for a given container
-      insertView(viewToRender, lContainer, lContainer[ACTIVE_INDEX] !);
+      insertView(viewToRender, lContainer, lContainer[ACTIVE_INDEX] ! >> ActiveIndexFlag.SHIFT);
     }
-    lContainer[ACTIVE_INDEX] !++;
+    lContainer[ACTIVE_INDEX] += ActiveIndexFlag.INCREMENT;
   }
   return isCreationMode(viewToRender) ? RenderFlags.Create | RenderFlags.Update :
                                         RenderFlags.Update;
