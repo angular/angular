@@ -6,9 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+<<<<<<< HEAD
 import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, ModuleWithProviders, NgModule, Optional, Pipe, getModuleFactory, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
 import {registerModuleFactory} from '@angular/core/src/linker/ng_module_factory_registration';
 import {NgModuleFactory} from '@angular/core/src/render3';
+=======
+import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Input, ModuleWithProviders, NgModule, Optional, Pipe, getModuleFactory, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
+>>>>>>> parent of 63256b511a... fix(ivy): Only restore registered modules if user compiles modules with TestBed (#32944)
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -871,30 +875,15 @@ describe('TestBed', () => {
       });
 
   onlyInIvy('Ivy module registration happens when NgModuleFactory is created')
-      .describe('cleans up registered modules - ', () => {
-        it('removes modules registered with TestBed', async() => {
-          @NgModule({id: 'my_module'})
-          class MyModule {
-          }
+      .it('cleans up registered modules', async() => {
+        @NgModule({id: 'my_module'})
+        class MyModule {
+        }
 
-          expect(() => getModuleFactory('my_module')).toThrowError();
-          await TestBed.inject(Compiler).compileModuleAsync(MyModule);
-          expect(() => getModuleFactory('my_module')).not.toThrowError();
-          TestBed.resetTestingModule();
-          expect(() => getModuleFactory('my_module')).toThrowError();
-        });
-
-        it('does not remove modules registered outside TestBed (i.e., side effect registration in ngfactory files)',
-           () => {
-             @NgModule({id: 'auto_module'})
-             class AutoModule {
-             }
-
-             expect(() => getModuleFactory('auto_module')).toThrowError();
-             registerModuleFactory('auto_module', new NgModuleFactory(AutoModule));
-             expect(() => getModuleFactory('auto_module')).not.toThrowError();
-             TestBed.resetTestingModule();
-             expect(() => getModuleFactory('auto_module')).not.toThrowError();
-           });
+        expect(() => getModuleFactory('my_module')).toThrowError();
+        await TestBed.inject(Compiler).compileModuleAsync(MyModule);
+        expect(() => getModuleFactory('my_module')).not.toThrowError();
+        TestBed.resetTestingModule();
+        expect(() => getModuleFactory('my_module')).toThrowError();
       });
 });
