@@ -670,12 +670,12 @@
     "groups": ["Collaborators", "GDE"],
     "mentor": "gkalpak"
   },
-  "JiaLiPassion": {
-    "name": "JiaLi Passion",
+  "jiali": {
+    "name": "Jia Li",
     "groups": ["Collaborators"],
     "mentor": "mhevery",
     "picture": "JiaLiPassion.jpg",
-    "bio": "A programmer with passion, angular/zone.js guy! Web frontend engineer @sylabs"
+    "bio": "A programmer with passion, angular/zone.js guy! Web frontend engineer @thisdot"
   },
   "cexbrayat": {
     "name": "Cédric Exbrayat",
