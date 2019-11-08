@@ -6,16 +6,18 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {createProxy} from '../../debug/proxy';
+import {RendererStyleFlags2} from '../../render/api';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {TNodeFlags} from '../interfaces/node';
-import {RElement} from '../interfaces/renderer';
-import {ApplyStylingFn, LStylingData, TStylingContext, TStylingContextIndex, TStylingNode} from '../interfaces/styling';
+import {ProceduralRenderer3, RElement, RendererStyleFlags3} from '../interfaces/renderer';
+import {LStylingData, StylingMapArrayIndex, TStylingContext, TStylingContextIndex, TStylingNode} from '../interfaces/styling';
 import {getCurrentStyleSanitizer} from '../state';
 import {attachDebugObject} from '../util/debug_utils';
-import {MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, allowDirectStyling as _allowDirectStyling, getBindingValue, getDefaultValue, getGuardMask, getProp, getPropValuesStartPosition, getValue, getValuesCount, hasConfig, isSanitizationRequired, isStylingContext, normalizeIntoStylingMap, setValue} from '../util/styling_utils';
+import {MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, allowDirectStyling as _allowDirectStyling, getBindingValue, getDefaultValue, getGuardMask, getMapProp, getMapValue, getProp, getPropValuesStartPosition, getValue, getValuesCount, hasConfig, isSanitizationRequired, isStylingContext, normalizeIntoStylingMap, setValue} from '../util/styling_utils';
 
-import {applyStylingViaContext} from './bindings';
+import {applyStylingViaContext, setClass, setStyle} from './bindings';
 import {activateStylingMapFeature} from './map_based_bindings';
+import {parseStyleString} from './style_string_parser';
 
 
 
@@ -142,9 +144,6 @@ export interface DebugNodeStylingEntry {
 
   /** The last applied value for the style/class property */
   value: string|boolean|null;
-
-  /** The binding index of the last applied style/class property */
-  bindingIndex: number|null;
 }
 
 
@@ -392,9 +391,7 @@ export class NodeStylingDebug implements DebugNodeStyling {
       this._convertMapBindingsToStylingMapArrays(data);
     }
 
-    this._mapValues(data, (prop: string, value: any, bindingIndex: number | null) => {
-      entries[prop] = {prop, value, bindingIndex};
-    });
+    this._mapValues(data, (prop: string, value: any) => { entries[prop] = {prop, value}; });
 
     // because the styling algorithm runs into two different
     // modes: direct and context-resolution, the output of the entries
@@ -408,7 +405,6 @@ export class NodeStylingDebug implements DebugNodeStyling {
           value = {
             prop,
             value: isClassBased ? false : null,
-            bindingIndex: null,
           };
         } return value;
       },
@@ -464,9 +460,7 @@ export class NodeStylingDebug implements DebugNodeStyling {
     }
   }
 
-  private _mapValues(
-      data: LStylingData,
-      fn: (prop: string, value: string|null, bindingIndex: number|null) => any) {
+  private _mapValues(data: LStylingData, fn: (prop: string, value: string|null) => any) {
     // there is no need to store/track an element instance. The
     // element is only used when the styling algorithm attempts to
     // style the value (and we mock out the stylingApplyFn anyway).
@@ -478,21 +472,88 @@ export class NodeStylingDebug implements DebugNodeStyling {
       activateStylingMapFeature();
     }
 
-    const mapFn: ApplyStylingFn =
-        (renderer: any, element: RElement, prop: string, value: string | null,
-         bindingIndex?: number | null) => fn(prop, value, bindingIndex || null);
-
+    const renderer = new MockRendererForStyling();
+    const mapFn = this._isClassBased ? setClass : setStyle;
     const sanitizer = this._isClassBased ? null : (this._sanitizer || getCurrentStyleSanitizer());
 
     // run the template bindings
-    applyStylingViaContext(
-        this.context.context, this._tNode, null, mockElement, data, true, mapFn, sanitizer, false,
-        this._isClassBased);
+    applyStylingViaContext(this.context.context, this._tNode, renderer as {
+    } as ProceduralRenderer3, mockElement, data, true, mapFn, sanitizer, false, this._isClassBased);
 
     // and also the host bindings
-    applyStylingViaContext(
-        this.context.context, this._tNode, null, mockElement, data, true, mapFn, sanitizer, true,
-        this._isClassBased);
+    applyStylingViaContext(this.context.context, this._tNode, renderer as {
+    } as ProceduralRenderer3, mockElement, data, true, mapFn, sanitizer, true, this._isClassBased);
+
+    const values =
+        this._isClassBased ? renderer.computeClassValues() : renderer.computeStyleValues();
+    Object.keys(values).forEach(prop => { fn(prop, values[prop]); });
+  }
+}
+
+class MockRendererForStyling {
+  private _classAttr: string = '';
+  private _styleAttr: string = '';
+  private _styles: {[key: string]: any} = {};
+  private _classes: {[key: string]: any} = {};
+
+  listen(target: any, eventName: string, callback: (event: any) => boolean | void): () => void {
+    // this method is only used to trigger the check for the renderer
+    // as a procedural renderer to pass...
+    return () => {};
+  }
+
+  setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void {
+    if (name === 'class') {
+      this._classAttr = value;
+    } else {
+      this._styleAttr = value;
+    }
+  }
+
+  removeAttribute(el: RElement, name: string, namespace?: string|null): void {
+    if (name === 'class') {
+      this._classAttr = '';
+    } else {
+      this._styleAttr = '';
+    }
+  }
+
+  addClass(el: RElement, name: string): void { this._classes[name] = true; }
+
+  removeClass(el: RElement, name: string): void { this._classes[name] = false; }
+
+  setStyle(
+      el: RElement, style: string, value: any,
+      flags?: RendererStyleFlags2|RendererStyleFlags3): void {
+    this._styles[style] = value;
+  }
+
+  removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2|RendererStyleFlags3): void {
+    this._styles[style] = null;
+  }
+
+  computeStyleValues(): {[key: string]: any} {
+    let values: {[prop: string]: string | null} = {};
+    if (this._styleAttr) {
+      const directStyles = parseStyleString(this._styleAttr);
+      for (let i = StylingMapArrayIndex.ValuesStartPosition; i < directStyles.length;
+           i += StylingMapArrayIndex.TupleSize) {
+        const prop = getMapProp(directStyles, i);
+        const value = getMapValue(directStyles, i);
+        values[prop] = value;
+      }
+    }
+    values = {...values, ...this._styles};
+    return values;
+  }
+
+  computeClassValues(): {[key: string]: any} {
+    let values: {[klass: string]: boolean} = {};
+    if (this._classAttr) {
+      this._classAttr.split(/\s+/).forEach(klass => values[klass] = true);
+    }
+    values = {...values, ...this._classes};
+    return values;
   }
 }
 

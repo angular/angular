@@ -216,8 +216,6 @@ function innerSyncStylingMap(
 
           if (!checkValuesOnly) {
             const useDefault = isTargetPropMatched && !valueIsDefined;
-            const bindingIndexToApply = isTargetPropMatched ? bindingIndex : null;
-
             let finalValue: any;
             if (useDefault) {
               finalValue = defaultValue;
@@ -227,7 +225,7 @@ function innerSyncStylingMap(
                   (value ? unwrapSafeValue(value) : null);
             }
 
-            applyStylingFn(renderer, element, prop, finalValue, bindingIndexToApply);
+            applyStylingFn(renderer, element, prop, finalValue);
           }
         }
 

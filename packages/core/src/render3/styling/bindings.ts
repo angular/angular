@@ -620,7 +620,7 @@ export function applyStylingViaContext(
               const finalValue = sanitizer && isSanitizationRequired(context, i) ?
                   sanitizer(prop, value, StyleSanitizeMode.SanitizeOnly) :
                   unwrapSafeValue(value);
-              applyStylingFn(renderer, element, prop, finalValue, bindingIndex);
+              applyStylingFn(renderer, element, prop, finalValue);
             }
             valueApplied = true;
           }
@@ -770,7 +770,7 @@ export function applyStylingMapDirectly(
 
         // default case: apply `null` to remove the value
         if (!applied) {
-          applyFn(renderer, element, prop, null, bindingIndex);
+          applyFn(renderer, element, prop, null);
         }
       }
 
@@ -866,7 +866,7 @@ export function applyStylingValueDirectly(
 
     // default case: apply `null` to remove the value
     if (!applied) {
-      applyFn(renderer, element, prop, null, bindingIndex);
+      applyFn(renderer, element, prop, null);
     }
   }
   return applied;
@@ -879,7 +879,7 @@ function applyStylingValue(
   if (isStylingValueDefined(valueToApply)) {
     valueToApply =
         sanitizer ? sanitizer(prop, value, StyleSanitizeMode.ValidateAndSanitize) : valueToApply;
-    applyFn(renderer, element, prop, valueToApply, bindingIndex);
+    applyFn(renderer, element, prop, valueToApply);
     return true;
   }
   return false;
@@ -896,7 +896,7 @@ function findAndApplyMapValue(
       valueToApply = sanitizer ?
           sanitizer(prop, valueToApply, StyleSanitizeMode.ValidateAndSanitize) :
           valueToApply;
-      applyFn(renderer, element, prop, valueToApply, bindingIndex);
+      applyFn(renderer, element, prop, valueToApply);
       return true;
     }
     if (p > prop) {
@@ -1039,9 +1039,9 @@ export function renderStylingMap(
       const prop = getMapProp(stylingMapArr, i);
       const value = getMapValue(stylingMapArr, i);
       if (isClassBased) {
-        setClass(renderer, element, prop, value, null);
+        setClass(renderer, element, prop, value);
       } else {
-        setStyle(renderer, element, prop, value, null);
+        setStyle(renderer, element, prop, value);
       }
     }
   }

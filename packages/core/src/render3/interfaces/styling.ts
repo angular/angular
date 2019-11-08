@@ -363,8 +363,7 @@ export const enum TStylingContextPropConfigFlags {
  * A function used to apply or remove styling from an element for a given property.
  */
 export interface ApplyStylingFn {
-  (renderer: Renderer3|ProceduralRenderer3|null, element: RElement, prop: string, value: any,
-   bindingIndex?: number|null): void;
+  (renderer: Renderer3|ProceduralRenderer3|null, element: RElement, prop: string, value: any): void;
 }
 
 /**

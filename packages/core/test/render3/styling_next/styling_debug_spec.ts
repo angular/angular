@@ -28,7 +28,6 @@ describe('styling debugging tools', () => {
            width: {
              prop: 'width',
              value: null,
-             bindingIndex: null,
            },
          });
 
@@ -37,7 +36,6 @@ describe('styling debugging tools', () => {
            width: {
              prop: 'width',
              value: '100px',
-             bindingIndex: null,
            },
          });
 
@@ -49,7 +47,6 @@ describe('styling debugging tools', () => {
            width: {
              prop: 'width',
              value: '200px',
-             bindingIndex: someBindingIndex1,
            },
          });
 
@@ -61,7 +58,6 @@ describe('styling debugging tools', () => {
            width: {
              prop: 'width',
              value: '200px',
-             bindingIndex: someBindingIndex1,
            },
          });
        });
