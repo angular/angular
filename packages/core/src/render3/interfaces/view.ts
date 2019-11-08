@@ -41,10 +41,11 @@ export const SANITIZER = 12;
 export const CHILD_HEAD = 13;
 export const CHILD_TAIL = 14;
 export const DECLARATION_VIEW = 15;
-export const DECLARATION_LCONTAINER = 16;
-export const PREORDER_HOOK_FLAGS = 17;
+export const DECLARATION_COMPONENT_VIEW = 16;
+export const DECLARATION_LCONTAINER = 17;
+export const PREORDER_HOOK_FLAGS = 18;
 /** Size of LView's header. Necessary to adjust for it when setting slots.  */
-export const HEADER_OFFSET = 18;
+export const HEADER_OFFSET = 19;
 
 
 // This interface replaces the real LView interface if it is an arg or a
@@ -193,6 +194,78 @@ export interface LView extends Array<any> {
    * context.
    */
   [DECLARATION_VIEW]: LView|null;
+
+
+  /**
+   * Points to the declaration component view, used to track transplanted `LView`s.
+   *
+   * See: `DECLARATION_VIEW` which points to the actual `LView` where it was declared, whereas
+   * `DECLARATION_COMPONENT_VIEW` points to the component which may not be same as
+   * `DECLARATION_VIEW`.
+   *
+   * Example:
+   * ```
+   * <#VIEW #myComp>
+   *  <div *ngIf="true">
+   *   <ng-template #myTmpl>...</ng-template>
+   *  </div>
+   * </#VIEW>
+   * ```
+   * In the above case `DECLARATION_VIEW` for `myTmpl` points to the `LView` of `ngIf` whereas
+   * `DECLARATION_COMPONENT_VIEW` points to `LView` of the `myComp` which owns the template.
+   *
+   * The reason for this is that all embedded views are always check-always whereas the component
+   * view can be check-always or on-push. When we have a transplanted view it is important to
+   * determine if we have transplanted a view from check-always declaration to on-push insertion
+   * point. In such a case the transplanted view needs to be added to the `LContainer` in the
+   * declared `LView` and CD during the declared view CD (in addition to the CD at the insertion
+   * point.) (Any transplanted views which are intra Component are of no interest because the CD
+   * strategy of declaration and insertion will always be the same, because it is the same
+   * component.)
+   *
+   * Queries already track moved views in `LView[DECLARATION_LCONTAINER]` and
+   * `LContainer[MOVED_VIEWS]`. However the queries also track `LView`s which moved within the same
+   * component `LView`. Transplanted views are a subset of moved views, and we use
+   * `DECLARATION_COMPONENT_VIEW` to differentiate them. As in this example.
+   *
+   * Example showing intra component `LView` movement.
+   * ```
+   * <#VIEW #myComp>
+   *   <div *ngIf="condition; then thenBlock else elseBlock"></div>
+   *   <ng-template #thenBlock>Content to render when condition is true.</ng-template>
+   *   <ng-template #elseBlock>Content to render when condition is false.</ng-template>
+   * </#VIEW>
+   * ```
+   * The `thenBlock` and `elseBlock` is moved but not transplanted.
+   *
+   * Example showing inter component `LView` movement (transplanted view).
+   * ```
+   * <#VIEW #myComp>
+   *   <ng-template #myTmpl>...</ng-template>
+   *   <insertion-component [template]="myTmpl"></insertion-component>
+   * </#VIEW>
+   * ```
+   * In the above example `myTmpl` is passed into a different component. If `insertion-component`
+   * instantiates `myTmpl` and `insertion-component` is on-push then the `LContainer` needs to be
+   * marked as containing transplanted views and those views need to be CD as part of the
+   * declaration CD.
+   *
+   *
+   * When change detection runs, it iterates over `[MOVED_VIEWS]` and CDs any child `LView`s where
+   * the `DECLARATION_COMPONENT_VIEW` of the current component and the child `LView` does not match
+   * (it has been transplanted across components.)
+   *
+   * Note: `[DECLARATION_COMPONENT_VIEW]` points to itself if the LView is a component view (the
+   *       simplest / most common case).
+   *
+   * see also:
+   *   - https://hackmd.io/@mhevery/rJUJsvv9H write up of the problem
+   *   - `LContainer[ACTIVE_INDEX]` for flag which marks which `LContainer` has transplanted views.
+   *   - `LContainer[TRANSPLANT_HEAD]` and `LContainer[TRANSPLANT_TAIL]` storage for transplanted
+   *   - `LView[DECLARATION_LCONTAINER]` similar problem for queries
+   *   - `LContainer[MOVED_VIEWS]` similar problem for queries
+   */
+  [DECLARATION_COMPONENT_VIEW]: LView|null;
 
   /**
    * A declaration point of embedded views (ones instantiated based on the content of a
@@ -346,6 +419,11 @@ export const enum TViewType {
  * Stored on the `ComponentDef.tView`.
  */
 export interface TView {
+  /**
+   * Type of `TView` (`Root`|`Component`|`Embedded`).
+   */
+  type: TViewType;
+
   /**
    * ID for inline views to determine whether a view is the same as the previous view
    * in a certain position. If it's not, we know the new view needs to be inserted

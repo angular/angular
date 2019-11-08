@@ -15,20 +15,20 @@ import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGrea
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
-import {assertFirstCreatePass, assertLView} from '../assert';
+import {assertFirstCreatePass, assertLContainer, assertLView} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {getFactoryDef} from '../definition';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags, registerPreOrderHooks} from '../hooks';
-import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS} from '../interfaces/container';
+import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TConstants, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
 import {RComment, RElement, RNode, RText, Renderer3, RendererFactory3, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {ActiveElementFlags, enterView, executeElementExitFn, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, hasActiveElementFlag, incrementActiveDirectiveId, leaveView, leaveViewProcessExit, setActiveHostElement, setBindingIndex, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
@@ -37,7 +37,7 @@ import {NO_CHANGE} from '../tokens';
 import {isAnimationProp} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
 import {getInitialStylingValue} from '../util/styling_utils';
-import {findComponentView, getLViewParent} from '../util/view_traversal_utils';
+import {getLViewParent} from '../util/view_traversal_utils';
 import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
 
 import {selectIndexInternal} from './advance';
@@ -173,6 +173,9 @@ export function createLView<T>(
   lView[SANITIZER] = sanitizer || parentLView && parentLView[SANITIZER] || null !;
   lView[INJECTOR as any] = injector || parentLView && parentLView[INJECTOR] || null;
   lView[T_HOST] = tHostNode;
+  lView[DECLARATION_COMPONENT_VIEW] = tView.type == TViewType.Embedded ?
+      (parentLView === null ? null : parentLView ![DECLARATION_COMPONENT_VIEW]) :
+      lView;
   ngDevMode && attachLViewDebug(lView);
   return lView;
 }
@@ -637,6 +640,7 @@ export function createTView(
              schemas,                                        // schemas: SchemaMetadata[]|null,
              consts) :                                       // consts: TConstants|null
       {
+        type: type,
         id: viewIndex,
         blueprint: blueprint,
         template: templateFn,
@@ -1469,15 +1473,15 @@ export function createLContainer(
   ngDevMode && !isProceduralRenderer(currentView[RENDERER]) && assertDomNode(native);
   // https://jsperf.com/array-literal-vs-new-array-really
   const lContainer: LContainer = new (ngDevMode ? LContainerArray : Array)(
-      hostNative,   // host native
-      true,         // Boolean `true` in this position signifies that this is an `LContainer`
-      -1,           // active index
-      currentView,  // parent
-      null,         // next
-      null,         // queries
-      tNode,        // t_host
-      native,       // native,
-      null,         // view refs
+      hostNative,  // host native
+      true,        // Boolean `true` in this position signifies that this is an `LContainer`
+      ActiveIndexFlag.DYNAMIC_EMBEDDED_VIEWS_ONLY << ActiveIndexFlag.SHIFT,  // active index
+      currentView,                                                           // parent
+      null,                                                                  // next
+      null,                                                                  // queries
+      tNode,                                                                 // t_host
+      native,                                                                // native,
+      null,                                                                  // view refs
       );
   ngDevMode && attachLContainerDebug(lContainer);
   return lContainer;
@@ -1493,38 +1497,21 @@ function refreshDynamicEmbeddedViews(lView: LView) {
   while (viewOrContainer !== null) {
     // Note: viewOrContainer can be an LView or an LContainer instance, but here we are only
     // interested in LContainer
-    if (isLContainer(viewOrContainer) && viewOrContainer[ACTIVE_INDEX] === -1) {
+    let activeIndexFlag: ActiveIndexFlag;
+    if (isLContainer(viewOrContainer) &&
+        (activeIndexFlag = viewOrContainer[ACTIVE_INDEX]) >> ActiveIndexFlag.SHIFT ===
+            ActiveIndexFlag.DYNAMIC_EMBEDDED_VIEWS_ONLY) {
       for (let i = CONTAINER_HEADER_OFFSET; i < viewOrContainer.length; i++) {
         const embeddedLView = viewOrContainer[i];
         const embeddedTView = embeddedLView[TVIEW];
         ngDevMode && assertDefined(embeddedTView, 'TView must be allocated');
         refreshView(embeddedLView, embeddedTView, embeddedTView.template, embeddedLView[CONTEXT] !);
       }
-      const movedViews = viewOrContainer[MOVED_VIEWS];
-      if (movedViews !== null) {
+      if ((activeIndexFlag & ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS) !== 0) {
         // We should only CD moved views if the component where they were inserted does not match
-        // the component where they were declared. Moved views also contains intra component moves,
-        // which we don't care about.
-        // TODO(misko): this is not the most efficient way to do this as we have to do a lot of
-        // searches. Will refactor for performance later.
-        const declaredComponentLView = findComponentView(lView);
-        for (let i = 0; i < movedViews.length; i++) {
-          const movedLView = movedViews[i] !;
-          let parentLView = movedLView[PARENT];
-          while (isLContainer(parentLView)) {
-            parentLView = parentLView[PARENT];
-          }
-          const insertedComponentLView = findComponentView(parentLView !);
-          const insertionIsOnPush =
-              (insertedComponentLView[FLAGS] & LViewFlags.CheckAlways) !== LViewFlags.CheckAlways;
-          if (insertionIsOnPush && insertedComponentLView !== declaredComponentLView) {
-            // Here we know that the template has been transplanted across components
-            // (not just moved within a component)
-            const movedTView = movedLView[TVIEW];
-            ngDevMode && assertDefined(movedTView, 'TView must be allocated');
-            refreshView(movedLView, movedTView, movedTView.template, movedLView[CONTEXT] !);
-          }
-        }
+        // the component where they were declared and insertion is on-push. Moved views also
+        // contains intra component moves, or check-always which need to be skipped.
+        refreshTransplantedViews(viewOrContainer, lView[DECLARATION_COMPONENT_VIEW] !);
       }
     }
     viewOrContainer = viewOrContainer[NEXT];
@@ -1532,6 +1519,45 @@ function refreshDynamicEmbeddedViews(lView: LView) {
 }
 
 
+/**
+ * Refresh transplanted LViews.
+ *
+ * See: `ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS` and `LView[DECLARATION_COMPONENT_VIEW]` for
+ * explanation of transplanted views.
+ *
+ * @param lContainer The `LContainer` which has transplanted views.
+ * @param declaredComponentLView The `lContainer` parent component `LView`.
+ */
+function refreshTransplantedViews(lContainer: LContainer, declaredComponentLView: LView) {
+  const movedViews = lContainer[MOVED_VIEWS] !;
+  ngDevMode && assertDefined(movedViews, 'Transplanted View flags set but missing MOVED_VIEWS');
+  for (let i = 0; i < movedViews.length; i++) {
+    const movedLView = movedViews[i] !;
+    const insertionLContainer = movedLView[PARENT] as LContainer;
+    ngDevMode && assertLContainer(insertionLContainer);
+    const insertedComponentLView = insertionLContainer[PARENT][DECLARATION_COMPONENT_VIEW] !;
+    ngDevMode && assertDefined(insertedComponentLView, 'Missing LView');
+    // Check if we have a transplanted view by compering declaration and insertion location.
+    if (insertedComponentLView !== declaredComponentLView) {
+      // Yes the `LView` is transplanted.
+      // Here we would like to know if the component is `OnPush`. We don't have
+      // explicit `OnPush` flag instead we set `CheckAlways` to false (which is `OnPush`)
+      // Not to be confused with `ManualOnPush` which is used with wether a DOM event
+      // should automatically mark a view as dirty.
+      const insertionComponentIsOnPush =
+          (insertedComponentLView[FLAGS] & LViewFlags.CheckAlways) === 0;
+      if (insertionComponentIsOnPush) {
+        // Here we know that the template has been transplanted across components and is
+        // on-push (not just moved within a component). If the insertion is marked dirty, then
+        // there is no need to CD here as we will do it again later when we get to insertion
+        // point.
+        const movedTView = movedLView[TVIEW];
+        ngDevMode && assertDefined(movedTView, 'TView must be allocated');
+        refreshView(movedLView, movedTView, movedTView.template, movedLView[CONTEXT] !);
+      }
+    }
+  }
+}
 
 /////////////
 
