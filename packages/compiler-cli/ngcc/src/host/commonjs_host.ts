@@ -63,14 +63,14 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
    * @param helperName the name of the helper (e.g. `__decorate`) whose calls we are interested in.
    * @returns an array of nodes of calls to the helper with the given name.
    */
-  protected getHelperCallsForClass(classSymbol: NgccClassSymbol, helperName: string):
+  protected getHelperCallsForClass(classSymbol: NgccClassSymbol, helperNames: string[]):
       ts.CallExpression[] {
-    const esm5HelperCalls = super.getHelperCallsForClass(classSymbol, helperName);
+    const esm5HelperCalls = super.getHelperCallsForClass(classSymbol, helperNames);
     if (esm5HelperCalls.length > 0) {
       return esm5HelperCalls;
     } else {
       const sourceFile = classSymbol.declaration.valueDeclaration.getSourceFile();
-      return this.getTopLevelHelperCalls(sourceFile, helperName);
+      return this.getTopLevelHelperCalls(sourceFile, helperNames);
     }
   }
 
@@ -81,16 +81,21 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
    * each class in a file.
    *
    * @param sourceFile the source who may contain helper calls.
-   * @param helperName the name of the helper (e.g. `__decorate`) whose calls we are interested in.
+   * @param helperNames the names of the helpers (e.g. `__decorate`) whose calls we are interested
+   * in.
    * @returns an array of nodes of calls to the helper with the given name.
    */
-  private getTopLevelHelperCalls(sourceFile: ts.SourceFile, helperName: string):
+  private getTopLevelHelperCalls(sourceFile: ts.SourceFile, helperNames: string[]):
       ts.CallExpression[] {
-    const helperCallsMap = getOrDefault(this.topLevelHelperCalls, helperName, () => new Map());
-    return getOrDefault(
-        helperCallsMap, sourceFile,
-        () => sourceFile.statements.map(statement => this.getHelperCall(statement, helperName))
-                  .filter(isDefined));
+    const calls: ts.CallExpression[] = [];
+    helperNames.forEach(helperName => {
+      const helperCallsMap = getOrDefault(this.topLevelHelperCalls, helperName, () => new Map());
+      calls.push(...getOrDefault(
+          helperCallsMap, sourceFile,
+          () => sourceFile.statements.map(statement => this.getHelperCall(statement, helperNames))
+                    .filter(isDefined)));
+    });
+    return calls;
   }
 
   private computeExportsOfCommonJsModule(sourceFile: ts.SourceFile): Map<string, Declaration> {
