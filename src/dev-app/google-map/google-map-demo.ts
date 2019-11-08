@@ -13,6 +13,7 @@ import {MapInfoWindow, MapMarker} from '@angular/google-maps';
 @Component({
   selector: 'google-map-demo',
   templateUrl: 'google-map-demo.html',
+  styleUrls: ['google-map-demo.css']
 })
 export class GoogleMapDemo {
   @ViewChild(MapInfoWindow) infoWindow: MapInfoWindow;
@@ -20,7 +21,6 @@ export class GoogleMapDemo {
   center = {lat: 24, lng: 12};
   markerOptions = {draggable: false};
   markerPositions: google.maps.LatLngLiteral[] = [];
-  infoWindowPosition: google.maps.LatLngLiteral;
   zoom = 4;
   display?: google.maps.LatLngLiteral;
 
