@@ -114,7 +114,7 @@ Option 2:
 ```
 
 {@a undecorated-classes}
-## All Classes That Use Angular DI Must Have A Decorator 
+## All Classes That Use Angular DI Must Have An Angular Class-level Decorator 
 
 
 ### Basic example of change: 
