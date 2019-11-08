@@ -103,6 +103,22 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     return this.getInternalNameOfClass(clazz);
   }
 
+  getEndOfClass(classSymbol: NgccClassSymbol): ts.Node {
+    const iifeBody = getIifeBody(classSymbol.declaration.valueDeclaration);
+    if (!iifeBody) {
+      throw new Error(
+          `Compiled class declaration is not inside an IIFE: ${classSymbol.name} in ${classSymbol.declaration.valueDeclaration.getSourceFile().fileName}`);
+    }
+
+    const returnStatementIndex = iifeBody.statements.findIndex(ts.isReturnStatement);
+    if (returnStatementIndex === -1) {
+      throw new Error(
+          `Compiled class wrapper IIFE does not have a return statement: ${classSymbol.name} in ${classSymbol.declaration.valueDeclaration.getSourceFile().fileName}`);
+    }
+
+    // Return the statement before the IIFE return statement
+    return iifeBody.statements[returnStatementIndex - 1];
+  }
   /**
    * In ES5, the implementation of a class is a function expression that is hidden inside an IIFE,
    * whose value is assigned to a variable (which represents the class to the rest of the program).
