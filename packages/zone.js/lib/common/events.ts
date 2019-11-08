@@ -418,7 +418,12 @@ export function patchEventTarget(
             }
           }
         } else {
-          existingTasks = target[symbolEventName] = [];
+          existingTasks = [];
+          Object.defineProperty(target, symbolEventName, {
+            value: existingTasks,
+            configurable: true,
+            writable: true,
+          });
         }
         let source;
         const constructorName = target.constructor['name'];
