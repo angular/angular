@@ -10,13 +10,10 @@ import {OverlayModule} from '@angular/cdk/overlay';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule, MatRippleModule} from '@angular/material/core';
+import {_MatMenu} from './menu';
 import {MatMenuContent} from './menu-content';
-import {_MatMenu, _MatMenuBase, MatMenu} from './menu';
 import {MatMenuItem} from './menu-item';
-import {
-  MatMenuTrigger,
-  MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER,
-} from './menu-trigger';
+import {MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER, MatMenuTrigger} from './menu-trigger';
 
 /**
  * Used by both the current `MatMenuModule` and the MDC `MatMenuModule`
@@ -27,10 +24,6 @@ import {
   declarations: [
     MatMenuTrigger,
     MatMenuContent,
-    // TODO(devversion): remove when `MatMenu` becomes a selectorless Directive.
-    MatMenu,
-    // TODO(devversion): remove when `_MatMenuBase` becomes a selectorless Directive.
-    _MatMenuBase
   ],
   providers: [MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER]
 })

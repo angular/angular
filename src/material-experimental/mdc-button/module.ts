@@ -10,7 +10,6 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatAnchor, MatButton} from './button';
-import {MatAnchorBase, MatButtonBase} from './button-base';
 import {MatFabAnchor, MatFabButton} from './fab';
 import {MatIconAnchor, MatIconButton} from './icon-button';
 
@@ -32,10 +31,6 @@ import {MatIconAnchor, MatIconButton} from './icon-button';
     MatIconButton,
     MatFabAnchor,
     MatFabButton,
-    // TODO(devversion): remove when `MatButtonBase` becomes a selectorless Directive.
-    MatButtonBase,
-    // TODO(devversion): remove when `MatAnchorBase` becomes a selectorless Directive.
-    MatAnchorBase,
   ],
 })
 export class MatButtonModule {

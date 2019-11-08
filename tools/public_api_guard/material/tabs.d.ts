@@ -25,7 +25,7 @@ export declare abstract class _MatTabBodyBase implements OnInit, OnDestroy {
     _onTranslateTabStarted(event: AnimationEvent): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabBodyBase, "do-not-use-abstract-mat-tab-body-base", never, { '_content': "content", 'origin': "origin", 'animationDuration': "animationDuration", 'position': "position" }, { '_onCentering': "_onCentering", '_beforeCentering': "_beforeCentering", '_afterLeavingCenter': "_afterLeavingCenter", '_onCentered': "_onCentered" }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabBodyBase, never, never, { '_content': "content", 'origin': "origin", 'animationDuration': "animationDuration", 'position': "position" }, { '_onCentering': "_onCentering", '_beforeCentering': "_beforeCentering", '_afterLeavingCenter': "_afterLeavingCenter", '_onCentered': "_onCentered" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatTabBodyBase>;
 }
 
@@ -58,7 +58,7 @@ export declare abstract class _MatTabGroupBase extends _MatTabGroupMixinBase imp
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
     realignInkBar(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabGroupBase, "do-not-use-abstract-mat-tab-group-base", never, { 'dynamicHeight': "dynamicHeight", 'selectedIndex': "selectedIndex", 'headerPosition': "headerPosition", 'animationDuration': "animationDuration", 'disablePagination': "disablePagination", 'backgroundColor': "backgroundColor" }, { 'selectedIndexChange': "selectedIndexChange", 'focusChange': "focusChange", 'animationDone': "animationDone", 'selectedTabChange': "selectedTabChange" }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabGroupBase, never, never, { 'dynamicHeight': "dynamicHeight", 'selectedIndex': "selectedIndex", 'headerPosition': "headerPosition", 'animationDuration': "animationDuration", 'disablePagination': "disablePagination", 'backgroundColor': "backgroundColor" }, { 'selectedIndexChange': "selectedIndexChange", 'focusChange': "focusChange", 'animationDone': "animationDone", 'selectedTabChange': "selectedTabChange" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatTabGroupBase>;
 }
 
@@ -66,7 +66,7 @@ export declare abstract class _MatTabHeaderBase extends MatPaginatedTabHeader im
     disableRipple: any;
     constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler, dir: Directionality, ngZone: NgZone, platform: Platform, animationMode?: string);
     protected _itemSelected(event: KeyboardEvent): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabHeaderBase, "do-not-use-abstract-mat-tab-header-base", never, { 'disableRipple': "disableRipple" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabHeaderBase, never, never, { 'disableRipple': "disableRipple" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatTabHeaderBase>;
 }
 
@@ -79,7 +79,7 @@ export declare class _MatTabLinkBase extends _MatTabLinkMixinBase implements OnD
     constructor(_tabNavBar: _MatTabNavBase, elementRef: ElementRef, globalRippleOptions: RippleGlobalOptions | null, tabIndex: string, _focusMonitor: FocusMonitor, animationMode?: string);
     focus(): void;
     ngOnDestroy(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabLinkBase, "do-not-use-abstract-mat-tab-link-base", never, { 'active': "active" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabLinkBase, never, never, { 'active': "active" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatTabLinkBase>;
 }
 
@@ -95,7 +95,7 @@ export declare abstract class _MatTabNavBase extends MatPaginatedTabHeader imple
     protected _itemSelected(): void;
     ngAfterContentInit(): void;
     updateActiveLink(_element?: ElementRef): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabNavBase, "do-not-use-abstract-mat-tab-nav-base", never, { 'backgroundColor': "backgroundColor", 'disableRipple': "disableRipple", 'color': "color" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabNavBase, never, never, { 'backgroundColor': "backgroundColor", 'disableRipple': "disableRipple", 'color': "color" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatTabNavBase>;
 }
 
@@ -249,7 +249,7 @@ export interface MatTabsConfig {
 
 export declare class MatTabsModule {
     static ɵinj: i0.ɵɵInjectorDef<MatTabsModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatTabsModule, [typeof i1.MatTabGroup, typeof i2.MatTabLabel, typeof i3.MatTab, typeof i4.MatInkBar, typeof i5.MatTabLabelWrapper, typeof i6.MatTabNav, typeof i6.MatTabLink, typeof i7.MatTabBody, typeof i7.MatTabBodyPortal, typeof i8.MatTabHeader, typeof i9.MatTabContent, typeof i10.MatPaginatedTabHeader, typeof i1._MatTabGroupBase, typeof i6._MatTabNavBase, typeof i7._MatTabBodyBase, typeof i8._MatTabHeaderBase, typeof i6._MatTabLinkBase], [typeof i11.CommonModule, typeof i12.MatCommonModule, typeof i13.PortalModule, typeof i12.MatRippleModule, typeof i14.ObserversModule, typeof i15.A11yModule], [typeof i12.MatCommonModule, typeof i1.MatTabGroup, typeof i2.MatTabLabel, typeof i3.MatTab, typeof i6.MatTabNav, typeof i6.MatTabLink, typeof i9.MatTabContent]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatTabsModule, [typeof i1.MatTabGroup, typeof i2.MatTabLabel, typeof i3.MatTab, typeof i4.MatInkBar, typeof i5.MatTabLabelWrapper, typeof i6.MatTabNav, typeof i6.MatTabLink, typeof i7.MatTabBody, typeof i7.MatTabBodyPortal, typeof i8.MatTabHeader, typeof i9.MatTabContent], [typeof i10.CommonModule, typeof i11.MatCommonModule, typeof i12.PortalModule, typeof i11.MatRippleModule, typeof i13.ObserversModule, typeof i14.A11yModule], [typeof i11.MatCommonModule, typeof i1.MatTabGroup, typeof i2.MatTabLabel, typeof i3.MatTab, typeof i6.MatTabNav, typeof i6.MatTabLink, typeof i9.MatTabContent]>;
 }
 
 export declare type ScrollDirection = 'after' | 'before';

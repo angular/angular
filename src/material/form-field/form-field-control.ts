@@ -12,12 +12,7 @@ import {Directive} from '@angular/core';
 
 
 /** An interface which allows a control to work inside of a `MatFormField`. */
-@Directive({
-  // The @Directive with selector is required here because we're still running a lot of things
-  // against ViewEngine where directives without selectors are not allowed.
-  // TODO(crisbeto): convert to a selectorless Directive after we switch to Ivy.
-  selector: 'do-not-use-abstract-mat-form-field-control',
-})
+@Directive()
 export abstract class MatFormFieldControl<T> {
   /** The value of the control. */
   value: T | null;

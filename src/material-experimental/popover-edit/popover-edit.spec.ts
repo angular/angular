@@ -59,10 +59,7 @@ interface PeriodicElement {
   weight: number;
 }
 
-@Directive({
-  // TODO(devversion): this selector can be removed when we update to Angular 9.0.
-  selector: 'do-not-use-abstract-mat-popover-edit-base-test-component'
-})
+@Directive()
 abstract class BaseTestComponent {
   @ViewChild('table') table: ElementRef;
 

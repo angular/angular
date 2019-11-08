@@ -68,10 +68,7 @@ export type MatPaginatedTabHeaderItem = FocusableOption & {elementRef: ElementRe
  * Base class for a tab header that supported pagination.
  * @docs-private
  */
-@Directive({
-  // TODO(crisbeto): this selector can be removed when we update to Angular 9.0.
-  selector: 'do-not-use-abstract-mat-paginated-tab-header'
-})
+@Directive()
 export abstract class MatPaginatedTabHeader implements AfterContentChecked, AfterContentInit,
   AfterViewInit, OnDestroy {
   abstract _items: QueryList<MatPaginatedTabHeaderItem>;

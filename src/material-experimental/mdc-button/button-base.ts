@@ -79,10 +79,7 @@ export const _MatButtonBaseMixin: CanDisableRippleCtor&CanDisableCtor&CanColorCt
     typeof MatButtonMixinCore = mixinColor(mixinDisabled(mixinDisableRipple(MatButtonMixinCore)));
 
 /** Base class for all buttons.  */
-@Directive({
-  // TODO(devversion): this selector can be removed when we update to Angular 9.0.
-  selector: 'do-not-use-abstract-mat-button-base'
-})
+@Directive()
 export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, CanColor,
                                                                   CanDisableRipple {
   /** The ripple animation configuration to use for the buttons. */
@@ -154,10 +151,7 @@ export const MAT_ANCHOR_HOST = {
 /**
  * Anchor button base.
  */
-@Directive({
-  // TODO(devversion): this selector can be removed when we update to Angular 9.0.
-  selector: 'do-not-use-abstract-mat-anchor-base'
-})
+@Directive()
 export class MatAnchorBase extends MatButtonBase {
   tabIndex: number;
 

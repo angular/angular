@@ -140,19 +140,22 @@ class Walker extends Lint.RuleWalker {
     const directiveDecorator =
         node.decorators.find(decorator => isDecoratorCalled(decorator, 'Directive'));
 
-    // We should lint non-abstract directives.
     if (directiveDecorator) {
-      const args = (directiveDecorator.expression as ts.CallExpression).arguments;
-      const directiveConfig = args.length && ts.isObjectLiteralExpression(args[0]) ?
-          args[0] as ts.ObjectLiteralExpression : null;
-      const selector = directiveConfig ? directiveConfig.properties.find(prop => {
-        return prop.name && ts.isIdentifier(prop.name) && prop.name.text === 'selector';
-      }) : null;
+      const firstArg = (directiveDecorator.expression as ts.CallExpression).arguments[0];
+      const metadata = firstArg && ts.isObjectLiteralExpression(firstArg) ? firstArg : null;
+      const selectorProp = metadata ?
+          metadata.properties.find((prop): prop is ts.PropertyAssignment => {
+            return ts.isPropertyAssignment(prop) && prop.name && ts.isIdentifier(prop.name) &&
+                prop.name.text === 'selector';
+          }) :
+          null;
+      const selectorText =
+          selectorProp != null && ts.isStringLiteralLike(selectorProp.initializer) ?
+          selectorProp.initializer.text :
+          null;
 
-      return !!selector && ts.isPropertyAssignment(selector) &&
-        (ts.isStringLiteral(selector.initializer) ||
-         ts.isNoSubstitutionTemplateLiteral(selector.initializer)) &&
-         !selector.initializer.text.startsWith('do-not-use-abstract-');
+      // We only want to lint directives with a selector (i.e. no abstract directives).
+      return selectorText !== null;
     }
 
     return false;
