@@ -2530,5 +2530,20 @@ runInEachFileSystem(() => {
         ]);
       });
     });
+
+    describe('getEndOfClass()', () => {
+      it('should return the last static property of the class', () => {
+        loadTestFiles([SOME_DIRECTIVE_FILE]);
+        const {program} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classSymbol =
+            host.findClassSymbols(program.getSourceFile(SOME_DIRECTIVE_FILE.name) !)[0];
+        const endOfClass = host.getEndOfClass(classSymbol);
+        expect(endOfClass.getText()).toEqual(`SomeDirective.propDecorators = {
+        "input1": [{ type: Input },],
+        "input2": [{ type: Input },],
+      };`);
+      });
+    });
   });
 });

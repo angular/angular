@@ -534,6 +534,35 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     return infos;
   }
 
+  getEndOfClass(classSymbol: NgccClassSymbol): ts.Node {
+    let last: ts.Node = classSymbol.declaration.valueDeclaration;
+
+    // If there are static members on this class then find the last one
+    if (classSymbol.declaration.exports !== undefined) {
+      classSymbol.declaration.exports.forEach(exportSymbol => {
+        if (exportSymbol.valueDeclaration === undefined) {
+          return;
+        }
+        const exportStatement = getContainingStatement(exportSymbol.valueDeclaration);
+        if (exportStatement !== null && last.getEnd() < exportStatement.getEnd()) {
+          last = exportStatement;
+        }
+      });
+    }
+
+    // If there are helper calls for this class then find the last one
+    const helpers = this.getHelperCallsForClass(
+        classSymbol, ['__decorate', '__extends', '__param', '__metadata']);
+    helpers.forEach(helper => {
+      const helperStatement = getContainingStatement(helper);
+      if (helperStatement !== null && last.getEnd() < helperStatement.getEnd()) {
+        last = helperStatement;
+      }
+    });
+
+    return last;
+  }
+
   ///////////// Protected Helpers /////////////
 
   /**
@@ -1890,4 +1919,18 @@ function isSynthesizedSuperCall(expression: ts.Expression): boolean {
   const argument = expression.arguments[0];
   return ts.isSpreadElement(argument) && ts.isIdentifier(argument.expression) &&
       argument.expression.text === 'arguments';
+}
+
+/**
+ * Find the statement that contains the given node
+ * @param node a node whose containing statement we wish to find
+ */
+function getContainingStatement(node: ts.Node): ts.ExpressionStatement|null {
+  while (node) {
+    if (ts.isExpressionStatement(node)) {
+      break;
+    }
+    node = node.parent;
+  }
+  return node || null;
 }

@@ -2160,5 +2160,62 @@ runInEachFileSystem(() => {
             ]);
       });
     });
+
+    describe('getEndOfClass()', () => {
+      it('should return the last static property of the class', () => {
+        const testFile: TestFile = {
+          name: _('/node_modules/test-package/some/file.js'),
+          contents: `import {Directive, NgZone, Console} from '@angular/core';\n` +
+              `export class SomeDirective {\n` +
+              `  constructor(zone, cons) {}\n` +
+              `  method() {}\n` +
+              `}\n` +
+              `SomeDirective.decorators = [\n` +
+              `  { type: Directive, args: [{ selector: '[a]' }] },\n` +
+              `  { type: OtherA }\n` +
+              `];\n` +
+              `SomeDirective.ctorParameters = () => [\n` +
+              `  { type: NgZone },\n` +
+              `  { type: Console }\n` +
+              `];\n` +
+              `callSomeFunction();\n` +
+              `var value = 100;\n`
+        };
+        loadTestFiles([testFile]);
+        const {program} = makeTestBundleProgram(testFile.name);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classSymbol = host.findClassSymbols(program.getSourceFile(testFile.name) !)[0];
+        const endOfClass = host.getEndOfClass(classSymbol);
+        expect(endOfClass.getText())
+            .toEqual(
+                `SomeDirective.ctorParameters = () => [\n` +
+                `  { type: NgZone },\n` +
+                `  { type: Console }\n` +
+                `];`);
+      });
+
+      it('should return the class declaration if there are no extra statements', () => {
+        const testFile: TestFile = {
+          name: _('/node_modules/test-package/some/file.js'),
+          contents: `export class SomeDirective {\n` +
+              `  constructor(zone, cons) {}\n` +
+              `  method() {}\n` +
+              `}\n` +
+              `callSomeFunction();\n` +
+              `var value = 100;\n`
+        };
+        loadTestFiles([testFile]);
+        const {program} = makeTestBundleProgram(testFile.name);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classSymbol = host.findClassSymbols(program.getSourceFile(testFile.name) !)[0];
+        const endOfClass = host.getEndOfClass(classSymbol);
+        expect(endOfClass.getText())
+            .toEqual(
+                `export class SomeDirective {\n` +
+                `  constructor(zone, cons) {}\n` +
+                `  method() {}\n` +
+                `}`);
+      });
+    });
   });
 });

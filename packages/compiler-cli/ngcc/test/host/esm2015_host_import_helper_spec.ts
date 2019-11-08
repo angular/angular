@@ -486,6 +486,20 @@ runInEachFileSystem(() => {
             expect(value).toBe(null);
           });
         });
+
+        describe('getEndOfClass()', () => {
+          it('should return the last statement related to the class', () => {
+            const {program} = makeTestBundleProgram(_('/ngmodule.js'));
+            const host =
+                new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const classSymbol =
+                host.findClassSymbols(program.getSourceFile(_('/ngmodule.js')) !)[0];
+            const endOfClass = host.getEndOfClass(classSymbol);
+            expect(endOfClass.getText())
+                .toMatch(
+                    /HttpClientXsrfModule = HttpClientXsrfModule_1 = .*__decorate.*\(\[\n\s*NgModule\(\{\n\s*providers: \[],\n\s*}\)\n\s*], HttpClientXsrfModule\);/);
+          });
+        });
       });
     });
 
