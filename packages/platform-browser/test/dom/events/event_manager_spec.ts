@@ -23,7 +23,7 @@ import {createMouseEvent, el} from '../../../testing/src/browser_util';
     beforeEach(() => {
       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
       zone = new NgZone({});
-      domEventPlugin = new DomEventsPlugin(doc, zone, null);
+      domEventPlugin = new DomEventsPlugin(doc);
     });
 
     it('should delegate event bindings to plugins that are passed in from the most generic one to the most specific one',
@@ -322,7 +322,7 @@ import {createMouseEvent, el} from '../../../testing/src/browser_util';
     it('should only trigger one Change detection when bubbling', (done: DoneFn) => {
       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
       zone = new NgZone({shouldCoalesceEventChangeDetection: true});
-      domEventPlugin = new DomEventsPlugin(doc, zone, null);
+      domEventPlugin = new DomEventsPlugin(doc);
       const element = el('<div></div>');
       const child = el('<div></div>');
       element.appendChild(child);
