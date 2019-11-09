@@ -48,6 +48,9 @@
     "name": "DEFAULT_TOTAL_SOURCES"
   },
   {
+    "name": "DOCUMENT"
+  },
+  {
     "name": "DefaultIterableDiffer"
   },
   {
@@ -655,6 +658,9 @@
   },
   {
     "name": "getDirectiveDef"
+  },
+  {
+    "name": "getDocument"
   },
   {
     "name": "getElementDepthCount"
