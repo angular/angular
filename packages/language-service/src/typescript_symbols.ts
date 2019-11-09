@@ -157,8 +157,8 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     const context: TypeContext = {node: this.source, program: this.program, checker: this.checker};
     const typeSymbol = findClassSymbolInContext(type, context);
     if (typeSymbol) {
-      const contextType = this.getTemplateRefContextType(typeSymbol);
-      if (contextType) return new SymbolWrapper(contextType, context).members();
+      const contextType = this.getTemplateRefContextType(typeSymbol, context);
+      if (contextType) return contextType.members();
     }
   }
 
@@ -186,7 +186,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     return spanAt(this.source, line, column);
   }
 
-  private getTemplateRefContextType(typeSymbol: ts.Symbol): ts.Symbol|undefined {
+  private getTemplateRefContextType(typeSymbol: ts.Symbol, context: TypeContext): Symbol|undefined {
     const type = this.checker.getTypeOfSymbolAtLocation(typeSymbol, this.source);
     const constructor = type.symbol && type.symbol.members &&
         getFromSymbolTable(type.symbol.members !, '__constructor');
@@ -196,9 +196,10 @@ class TypeScriptSymbolQuery implements SymbolQuery {
       for (const parameter of constructorDeclaration.parameters) {
         const type = this.checker.getTypeAtLocation(parameter.type !);
         if (type.symbol !.name == 'TemplateRef' && isReferenceType(type)) {
-          const typeReference = type as ts.TypeReference;
-          if (typeReference.typeArguments && typeReference.typeArguments.length === 1) {
-            return typeReference.typeArguments[0].symbol;
+          const typeWrapper = new TypeWrapper(type, context);
+          const typeArguments = typeWrapper.typeArguments();
+          if (typeArguments && typeArguments.length === 1) {
+            return typeArguments[0];
           }
         }
       }
@@ -313,8 +314,13 @@ class TypeWrapper implements Symbol {
   }
 
   typeArguments(): Symbol[]|undefined {
-    // TODO: use checker.getTypeArguments when TS 3.7 lands in the monorepo.
-    const typeArguments: ReadonlyArray<ts.Type> = (this.tsType as any).typeArguments;
+    if (!isReferenceType(this.tsType)) return;
+
+    const typeReference = (this.tsType as ts.TypeReference);
+    let typeArguments: ReadonlyArray<ts.Type>|undefined;
+    if (this.context.checker.getTypeArguments)
+      typeArguments = this.context.checker.getTypeArguments(typeReference);
+    typeArguments = typeReference.typeArguments;
     if (!typeArguments) return undefined;
     return typeArguments.map(ta => new TypeWrapper(ta, this.context));
   }

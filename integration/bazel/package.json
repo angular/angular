@@ -35,7 +35,7 @@
     "rollup-plugin-node-resolve": "5.2.0",
     "rollup-plugin-sourcemaps": "0.4.2",
     "terser": "4.3.9",
-    "typescript": "3.6.4"
+    "typescript": "3.7.4"
   },
   "scripts": {
     "test": "bazel build ... --noshow_progress && bazel test ...",

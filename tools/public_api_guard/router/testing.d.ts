@@ -6,7 +6,10 @@ export declare function setupTestingRouter(urlSerializer: UrlSerializer, context
 export declare function setupTestingRouter(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location, loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][], urlHandlingStrategy?: UrlHandlingStrategy): Router;
 
 export declare class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
-    stubbedModules: {
+    set stubbedModules(modules: {
+        [path: string]: any;
+    });
+    get stubbedModules(): {
         [path: string]: any;
     };
     constructor(compiler: Compiler);
