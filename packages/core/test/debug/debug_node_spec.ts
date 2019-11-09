@@ -9,6 +9,7 @@
 
 import {CommonModule, NgIfContext, ɵgetDOM as getDOM} from '@angular/common';
 import {Component, DebugElement, DebugNode, Directive, ElementRef, EmbeddedViewRef, EventEmitter, HostBinding, Injectable, Input, NO_ERRORS_SCHEMA, OnInit, Output, Renderer2, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {NgZone} from '@angular/core/src/zone';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {hasClass} from '@angular/platform-browser/testing/src/browser_util';
@@ -795,13 +796,21 @@ class TestCmptWithPropInterpolation {
       @Component({template: ''})
       class TestComponent implements OnInit {
         count = 0;
-        eventObj: any;
-        constructor(private renderer: Renderer2, private elementRef: ElementRef) {}
+        eventObj1: any;
+        eventObj2: any;
+        constructor(
+            private renderer: Renderer2, private elementRef: ElementRef, private ngZone: NgZone) {}
 
         ngOnInit() {
           this.renderer.listen(this.elementRef.nativeElement, 'click', (event: any) => {
             this.count++;
-            this.eventObj = event;
+            this.eventObj1 = event;
+          });
+          this.ngZone.runOutsideAngular(() => {
+            this.renderer.listen(this.elementRef.nativeElement, 'click', (event: any) => {
+              this.count++;
+              this.eventObj2 = event;
+            });
           });
         }
       }
@@ -816,8 +825,8 @@ class TestCmptWithPropInterpolation {
         const event = {value: true};
         fixture.detectChanges();
         fixture.debugElement.triggerEventHandler('click', event);
-        expect(fixture.componentInstance.count).toBe(1);
-        expect(fixture.componentInstance.eventObj).toBe(event);
+        expect(fixture.componentInstance.count).toBe(2);
+        expect(fixture.componentInstance.eventObj2).toBe(event);
       }
     });
 
