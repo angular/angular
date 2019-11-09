@@ -22,7 +22,7 @@ export interface RequestMatch {
 }
 
 export declare class TestRequest {
-    readonly cancelled: boolean;
+    get cancelled(): boolean;
     request: HttpRequest<any>;
     constructor(request: HttpRequest<any>, observer: Observer<HttpEvent<any>>);
     error(error: ErrorEvent, opts?: {
