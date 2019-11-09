@@ -64,14 +64,14 @@ describe('perform watch', () => {
     const watchResult = performWatchCompilation(host);
     expectNoDiagnostics(config.options, watchResult.firstCompileResult);
 
-    const htmlPath = path.resolve(testSupport.basePath, 'src', 'main.html');
-    const genPath = ivyEnabled ? path.resolve(outDir, 'src', 'main.js') :
-                                 path.resolve(outDir, 'src', 'main.ngfactory.js');
+    const htmlPath = path.posix.join(testSupport.basePath, 'src', 'main.html');
+    const genPath = ivyEnabled ? path.posix.join(outDir, 'src', 'main.js') :
+                                 path.posix.join(outDir, 'src', 'main.ngfactory.js');
 
     const initial = fs.readFileSync(genPath, {encoding: 'utf8'});
     expect(initial).toContain('"initial"');
 
-    fs.writeFileSync(htmlPath, 'updated');
+    testSupport.write(htmlPath, 'updated');
     host.triggerFileChange(FileChangeEvent.Change, htmlPath);
 
     const updated = fs.readFileSync(genPath, {encoding: 'utf8'});
