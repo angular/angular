@@ -16,25 +16,7 @@
  */
 
 import {RendererStyleFlags2, RendererType2} from '../../render/api';
-
-
-let DOCUMENT: Document|undefined = undefined;
-
-export function setDocument(document: Document | undefined): void {
-  DOCUMENT = document;
-}
-
-export function getDocument(): Document {
-  if (DOCUMENT !== undefined) {
-    return DOCUMENT;
-  } else if (typeof document !== 'undefined') {
-    return document;
-  } else {
-    throw new Error(
-        'No "document" can be found. If you are running outside a browser then you must call `setDocument()` before using the renderer.');
-  }
-}
-
+import {getDocument} from './document';
 
 // TODO: cleanup once the code is merged in angular/angular
 export enum RendererStyleFlags3 {

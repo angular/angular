@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getDocument} from '../render3/interfaces/renderer';
+import {getDocument} from '../render3/interfaces/document';
 import {SANITIZER} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
 import {renderStringify} from '../render3/util/misc_utils';
