@@ -1,4 +1,4 @@
-export declare const BEFORE_APP_SERIALIZED: InjectionToken<(() => void)[]>;
+export declare const BEFORE_APP_SERIALIZED: InjectionToken<(() => void | Promise<void>)[]>;
 
 export declare const INITIAL_CONFIG: InjectionToken<PlatformConfig>;
 

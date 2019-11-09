@@ -1,37 +1,37 @@
 export declare class ActivatedRoute {
-    readonly children: ActivatedRoute[];
+    get children(): ActivatedRoute[];
     component: Type<any> | string | null;
     data: Observable<Data>;
-    readonly firstChild: ActivatedRoute | null;
+    get firstChild(): ActivatedRoute | null;
     fragment: Observable<string>;
     outlet: string;
-    readonly paramMap: Observable<ParamMap>;
+    get paramMap(): Observable<ParamMap>;
     params: Observable<Params>;
-    readonly parent: ActivatedRoute | null;
-    readonly pathFromRoot: ActivatedRoute[];
-    readonly queryParamMap: Observable<ParamMap>;
+    get parent(): ActivatedRoute | null;
+    get pathFromRoot(): ActivatedRoute[];
+    get queryParamMap(): Observable<ParamMap>;
     queryParams: Observable<Params>;
-    readonly root: ActivatedRoute;
-    readonly routeConfig: Route | null;
+    get root(): ActivatedRoute;
+    get routeConfig(): Route | null;
     snapshot: ActivatedRouteSnapshot;
     url: Observable<UrlSegment[]>;
     toString(): string;
 }
 
 export declare class ActivatedRouteSnapshot {
-    readonly children: ActivatedRouteSnapshot[];
+    get children(): ActivatedRouteSnapshot[];
     component: Type<any> | string | null;
     data: Data;
-    readonly firstChild: ActivatedRouteSnapshot | null;
+    get firstChild(): ActivatedRouteSnapshot | null;
     fragment: string;
     outlet: string;
-    readonly paramMap: ParamMap;
+    get paramMap(): ParamMap;
     params: Params;
-    readonly parent: ActivatedRouteSnapshot | null;
-    readonly pathFromRoot: ActivatedRouteSnapshot[];
-    readonly queryParamMap: ParamMap;
+    get parent(): ActivatedRouteSnapshot | null;
+    get pathFromRoot(): ActivatedRouteSnapshot[];
+    get queryParamMap(): ParamMap;
     queryParams: Params;
-    readonly root: ActivatedRouteSnapshot;
+    get root(): ActivatedRouteSnapshot;
     readonly routeConfig: Route | null;
     url: UrlSegment[];
     toString(): string;
@@ -333,7 +333,7 @@ export declare class Router {
     relativeLinkResolution: 'legacy' | 'corrected';
     routeReuseStrategy: RouteReuseStrategy;
     readonly routerState: RouterState;
-    readonly url: string;
+    get url(): string;
     urlHandlingStrategy: UrlHandlingStrategy;
     urlUpdateStrategy: 'deferred' | 'eager';
     constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
@@ -374,18 +374,18 @@ export declare class RouterEvent {
 export declare class RouterLink {
     fragment: string;
     preserveFragment: boolean;
-    /** @deprecated */ preserveQueryParams: boolean;
+    /** @deprecated */ set preserveQueryParams(value: boolean);
     queryParams: {
         [k: string]: any;
     };
     queryParamsHandling: QueryParamsHandling;
     replaceUrl: boolean;
-    routerLink: any[] | string;
+    set routerLink(commands: any[] | string);
     skipLocationChange: boolean;
     state?: {
         [k: string]: any;
     };
-    readonly urlTree: UrlTree;
+    get urlTree(): UrlTree;
     constructor(router: Router, route: ActivatedRoute, tabIndex: string, renderer: Renderer2, el: ElementRef);
     onClick(): boolean;
 }
@@ -394,7 +394,7 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
     readonly isActive: boolean;
     links: QueryList<RouterLink>;
     linksWithHrefs: QueryList<RouterLinkWithHref>;
-    routerLinkActive: string[] | string;
+    set routerLinkActive(data: string[] | string);
     routerLinkActiveOptions: {
         exact: boolean;
     };
@@ -408,19 +408,19 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     fragment: string;
     href: string;
     preserveFragment: boolean;
-    preserveQueryParams: boolean;
+    set preserveQueryParams(value: boolean);
     queryParams: {
         [k: string]: any;
     };
     queryParamsHandling: QueryParamsHandling;
     replaceUrl: boolean;
-    routerLink: any[] | string;
+    set routerLink(commands: any[] | string);
     skipLocationChange: boolean;
     state?: {
         [k: string]: any;
     };
     target: string;
-    readonly urlTree: UrlTree;
+    get urlTree(): UrlTree;
     constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
     ngOnChanges(changes: {}): any;
     ngOnDestroy(): any;
@@ -435,11 +435,11 @@ export declare class RouterModule {
 
 export declare class RouterOutlet implements OnDestroy, OnInit {
     activateEvents: EventEmitter<any>;
-    readonly activatedRoute: ActivatedRoute;
-    readonly activatedRouteData: Data;
-    readonly component: Object;
+    get activatedRoute(): ActivatedRoute;
+    get activatedRouteData(): Data;
+    get component(): Object;
     deactivateEvents: EventEmitter<any>;
-    readonly isActivated: boolean;
+    get isActivated(): boolean;
     constructor(parentContexts: ChildrenOutletContexts, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string, changeDetector: ChangeDetectorRef);
     activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
     attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void;
@@ -510,7 +510,7 @@ export declare type UrlMatchResult = {
 };
 
 export declare class UrlSegment {
-    readonly parameterMap: ParamMap;
+    get parameterMap(): ParamMap;
     parameters: {
         [name: string]: string;
     };
@@ -527,7 +527,7 @@ export declare class UrlSegmentGroup {
     children: {
         [key: string]: UrlSegmentGroup;
     };
-    readonly numberOfChildren: number;
+    get numberOfChildren(): number;
     parent: UrlSegmentGroup | null;
     segments: UrlSegment[];
     constructor(
@@ -546,7 +546,7 @@ export declare abstract class UrlSerializer {
 
 export declare class UrlTree {
     fragment: string | null;
-    readonly queryParamMap: ParamMap;
+    get queryParamMap(): ParamMap;
     queryParams: Params;
     root: UrlSegmentGroup;
     toString(): string;
