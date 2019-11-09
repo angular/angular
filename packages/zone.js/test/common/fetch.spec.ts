@@ -150,7 +150,7 @@ describe(
 
         it('cancel fetch should invoke onCancelTask',
            ifEnvSupportsWithDone('AbortController', (done: DoneFn) => {
-             if (isSafari) {
+             if (isSafari()) {
                // safari not work with AbortController
                done();
                return;
@@ -177,7 +177,7 @@ describe(
 
         it('cancel fetchTask should trigger abort',
            ifEnvSupportsWithDone('AbortController', (done: DoneFn) => {
-             if (isSafari) {
+             if (isSafari()) {
                // safari not work with AbortController
                done();
                return;
