@@ -651,18 +651,20 @@ export class R3TestBedCompiler {
     const overrides = this.getProviderOverrides(flattenedProviders);
     const overriddenProviders = [...flattenedProviders, ...overrides];
     const final: Provider[] = [];
-    const seenMultiProviders = new Set<Provider>();
+    const seenOverriddenProviders = new Set<Provider>();
 
-    // We iterate through the list of providers in reverse order to make sure multi provider
-    // overrides take precedence over the values defined in provider list. We also filter out all
-    // multi providers that have overrides, keeping overridden values only.
+    // We iterate through the list of providers in reverse order to make sure provider overrides
+    // take precedence over the values defined in provider list. We also filter out all providers
+    // that have overrides, keeping overridden values only. This is needed, since presence of a
+    // provider with `ngOnDestroy` hook will cause this hook to be registered and invoked later.
     forEachRight(overriddenProviders, (provider: any) => {
       const token: any = getProviderToken(provider);
-      if (isMultiProvider(provider) && this.providerOverridesByToken.has(token)) {
-        // Don't add overridden multi-providers twice because when you override a multi-provider, we
-        // treat it as `{multi: false}` to avoid providing the same value multiple times.
-        if (!seenMultiProviders.has(token)) {
-          seenMultiProviders.add(token);
+      if (this.providerOverridesByToken.has(token)) {
+        if (!seenOverriddenProviders.has(token)) {
+          seenOverriddenProviders.add(token);
+          // Treat all overridden providers as `{multi: false}` (even if it's a multi-provider) to
+          // make sure that provided override takes highest precedence and is not combined with
+          // other instances of the same multi provider.
           final.unshift({...provider, multi: false});
         }
       } else {
@@ -724,10 +726,6 @@ function getProviderField(provider: Provider, field: string) {
 
 function getProviderToken(provider: Provider) {
   return getProviderField(provider, 'provide') || provider;
-}
-
-function isMultiProvider(provider: Provider) {
-  return !!getProviderField(provider, 'multi');
 }
 
 function isModuleWithProviders(value: any): value is ModuleWithProviders<any> {
