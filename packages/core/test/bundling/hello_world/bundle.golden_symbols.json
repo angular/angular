@@ -27,6 +27,9 @@
     "name": "DECLARATION_VIEW"
   },
   {
+    "name": "DOCUMENT"
+  },
+  {
     "name": "EMPTY_ARRAY"
   },
   {
@@ -244,6 +247,9 @@
   },
   {
     "name": "getDirectiveDef"
+  },
+  {
+    "name": "getDocument"
   },
   {
     "name": "getFactoryDef"
