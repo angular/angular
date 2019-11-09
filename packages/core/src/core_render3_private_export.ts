@@ -243,6 +243,10 @@ export {
   LContext as ɵLContext,
 } from './render3/interfaces/context';
 
+export {
+  setDocument as ɵsetDocument
+} from './render3/interfaces/renderer';
+
 // we reexport these symbols just so that they are retained during the dead code elimination
 // performed by rollup while it's creating fesm files.
 //

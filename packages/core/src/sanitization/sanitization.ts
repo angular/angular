@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {getDocument} from '../render3/interfaces/renderer';
 import {SANITIZER} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
 import {renderStringify} from '../render3/util/misc_utils';
@@ -42,7 +43,7 @@ export function ɵɵsanitizeHtml(unsafeHtml: any): string {
   if (allowSanitizationBypassAndThrow(unsafeHtml, BypassType.Html)) {
     return unwrapSafeValue(unsafeHtml);
   }
-  return _sanitizeHtml(document, renderStringify(unsafeHtml));
+  return _sanitizeHtml(getDocument(), renderStringify(unsafeHtml));
 }
 
 /**

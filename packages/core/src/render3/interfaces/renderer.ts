@@ -8,14 +8,32 @@
 
 /**
  * The goal here is to make sure that the browser DOM API is the Renderer.
- * We do this by defining a subset of DOM API to be the renderer and than
- * use that time for rendering.
+ * We do this by defining a subset of DOM API to be the renderer and then
+ * use that at runtime for rendering.
  *
  * At runtime we can then use the DOM api directly, in server or web-worker
  * it will be easy to implement such API.
  */
 
 import {RendererStyleFlags2, RendererType2} from '../../render/api';
+
+
+let DOCUMENT: Document|undefined = undefined;
+
+export function setDocument(document: Document | undefined): void {
+  DOCUMENT = document;
+}
+
+export function getDocument(): Document {
+  if (DOCUMENT !== undefined) {
+    return DOCUMENT;
+  } else if (typeof document !== 'undefined') {
+    return document;
+  } else {
+    throw new Error(
+        'No "document" can be found. If you are running outside a browser then you must call `setDocument()` before using the renderer.');
+  }
+}
 
 
 // TODO: cleanup once the code is merged in angular/angular
@@ -105,7 +123,7 @@ export interface RendererFactory3 {
 
 export const domRendererFactory3: RendererFactory3 = {
   createRenderer: (hostElement: RElement | null, rendererType: RendererType2 | null):
-                      Renderer3 => { return document;}
+                      Renderer3 => { return getDocument();}
 };
 
 /** Subset of API needed for appending elements and text nodes. */

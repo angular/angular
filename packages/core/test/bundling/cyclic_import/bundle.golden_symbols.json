@@ -27,6 +27,9 @@
     "name": "DECLARATION_VIEW"
   },
   {
+    "name": "DOCUMENT"
+  },
+  {
     "name": "DepComponent"
   },
   {
@@ -307,6 +310,9 @@
   },
   {
     "name": "getDirectiveDef"
+  },
+  {
+    "name": "getDocument"
   },
   {
     "name": "getElementDepthCount"
