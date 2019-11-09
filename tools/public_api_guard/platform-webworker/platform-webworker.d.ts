@@ -40,7 +40,7 @@ export interface MessageBusSource {
 /** @deprecated */
 export declare const platformWorkerApp: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
-export declare const platformWorkerUi: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
+export declare const platformWorkerUi: (extraProviders?: StaticProvider[] | undefined) => import("@angular/core").PlatformRef;
 
 /** @deprecated */
 export interface ReceivedMessage {

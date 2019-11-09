@@ -20,6 +20,7 @@ import {setDelayProjection} from './instructions/all';
 import {attachI18nOpCodesDebug} from './instructions/lview_debug';
 import {TsickleIssue1009, allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty, setNgReflectProperties, textBindingInternal} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
+import {getDocument} from './interfaces/document';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
 import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from './interfaces/node';
 import {RComment, RElement, RText} from './interfaces/renderer';
@@ -1180,7 +1181,7 @@ function icuStart(
 function parseIcuCase(
     unsafeHtml: string, parentIndex: number, nestedIcus: IcuExpression[], tIcus: TIcu[],
     expandoStartIndex: number): IcuCase {
-  const inertBodyHelper = new InertBodyHelper(document);
+  const inertBodyHelper = new InertBodyHelper(getDocument());
   const inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);
   if (!inertBodyElement) {
     throw new Error('Unable to generate inert body element');
