@@ -16,6 +16,13 @@ import {onlyInIvy} from '@angular/private/testing';
 
 const NAME = new InjectionToken<string>('name');
 
+@Injectable({providedIn: 'root'})
+class SimpleService {
+  static ngOnDestroyCalls: number = 0;
+  id: number = 1;
+  ngOnDestroy() { SimpleService.ngOnDestroyCalls++; }
+}
+
 // -- module: HWModule
 @Component({
   selector: 'hello-world',
@@ -32,7 +39,22 @@ export class HelloWorld {
 export class GreetingCmp {
   name: string;
 
-  constructor(@Inject(NAME) @Optional() name: string) { this.name = name || 'nobody!'; }
+  constructor(
+      @Inject(NAME) @Optional() name: string,
+      @Inject(SimpleService) @Optional() service: SimpleService) {
+    this.name = name || 'nobody!';
+  }
+}
+
+@Component({
+  selector: 'cmp-with-providers',
+  template: '<hello-world></hello-world>',
+  providers: [
+    SimpleService,  //
+    {provide: NAME, useValue: `from Component`}
+  ]
+})
+class CmpWithProviders {
 }
 
 @NgModule({
@@ -88,7 +110,7 @@ export class ComponentWithInlineTemplate {
 @NgModule({
   declarations: [
     HelloWorld, SimpleCmp, WithRefsCmp, InheritedCmp, SimpleApp, ComponentWithPropBindings,
-    HostBindingDir
+    HostBindingDir, CmpWithProviders
   ],
   imports: [GreetingModule],
   providers: [
@@ -250,6 +272,22 @@ describe('TestBed', () => {
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
     expect(hello.nativeElement).toHaveText('Hello injected World a second time!');
+  });
+
+  it('should not call ngOnDestroy for a service that was overridden', () => {
+    SimpleService.ngOnDestroyCalls = 0;
+
+    TestBed.overrideProvider(SimpleService, {useValue: {id: 2, ngOnDestroy: () => {}}});
+    const fixture = TestBed.createComponent(CmpWithProviders);
+    fixture.detectChanges();
+
+    const service = TestBed.inject(SimpleService);
+    expect(service.id).toBe(2);
+
+    fixture.destroy();
+
+    // verify that original `ngOnDestroy` was not called
+    expect(SimpleService.ngOnDestroyCalls).toBe(0);
   });
 
   describe('multi providers', () => {
