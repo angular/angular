@@ -8,6 +8,7 @@
 
 import {Observable, Observer, Subscription, merge} from 'rxjs';
 import {share} from 'rxjs/operators';
+
 import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {getCompilerFacade} from './compiler/compiler_facade';
@@ -30,6 +31,7 @@ import {assertNgModuleType} from './render3/assert';
 import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
 import {setLocaleId} from './render3/i18n';
 import {NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
+import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {isDevMode} from './util/is_dev_mode';
 import {isPromise} from './util/lang';
@@ -81,6 +83,16 @@ export function compileNgModuleFactory__POST_R3__<M>(
       .then(() => moduleFactory);
 }
 
+// the `window.ng` global utilities are only available in non-VE versions of
+// Angular. The function switch below will make sure that the code is not
+// included into Angular when PRE mode is active.
+export function publishDefaultGlobalUtils__PRE_R3__() {}
+export function publishDefaultGlobalUtils__POST_R3__() {
+  ngDevMode && _publishDefaultGlobalUtils();
+}
+
+let publishDefaultGlobalUtils: () => any = publishDefaultGlobalUtils__PRE_R3__;
+
 let isBoundToModule: <C>(cf: ComponentFactory<C>) => boolean = isBoundToModule__PRE_R3__;
 
 export function isBoundToModule__PRE_R3__<C>(cf: ComponentFactory<C>): boolean {
@@ -116,6 +128,7 @@ export function createPlatform(injector: Injector): PlatformRef {
     throw new Error(
         'There can be only one platform. Destroy the previous one to create a new one.');
   }
+  publishDefaultGlobalUtils();
   _platform = injector.get(PlatformRef);
   const inits = injector.get(PLATFORM_INITIALIZER, null);
   if (inits) inits.forEach((init: any) => init());
@@ -206,6 +219,27 @@ export interface BootstrapOptions {
    * - `noop` - Use `NoopNgZone` which does nothing.
    */
   ngZone?: NgZone|'zone.js'|'noop';
+
+  /**
+   * Optionally specify coalescing event change detections or not.
+   * Consider the following case.
+   *
+   * <div (click)="doSomething()">
+   *   <button (click)="doSomethingElse()"></button>
+   * </div>
+   *
+   * When button is clicked, because of the event bubbling, both
+   * event handlers will be called and 2 change detections will be
+   * triggered. We can colesce such kind of events to only trigger
+   * change detection only once.
+   *
+   * By default, this option will be false. So the events will not be
+   * coalesced and the change detection will be triggered multiple times.
+   * And if this option be set to true, the change detection will be
+   * triggered async by scheduling a animation frame. So in the case above,
+   * the change detection will only be trigged once.
+   */
+  ngZoneEventCoalescing?: boolean;
 }
 
 /**
@@ -256,7 +290,8 @@ export class PlatformRef {
     // So we create a mini parent injector that just contains the new NgZone and
     // pass that as parent to the NgModuleFactory.
     const ngZoneOption = options ? options.ngZone : undefined;
-    const ngZone = getNgZone(ngZoneOption);
+    const ngZoneEventCoalescing = (options && options.ngZoneEventCoalescing) || false;
+    const ngZone = getNgZone(ngZoneOption, ngZoneEventCoalescing);
     const providers: StaticProvider[] = [{provide: NgZone, useValue: ngZone}];
     // Attention: Don't use ApplicationRef.run here,
     // as we want to be sure that all possible constructor calls are inside `ngZone.run`!
@@ -264,7 +299,7 @@ export class PlatformRef {
       const ngZoneInjector = Injector.create(
           {providers: providers, parent: this.injector, name: moduleFactory.moduleType.name});
       const moduleRef = <InternalNgModuleRef<M>>moduleFactory.create(ngZoneInjector);
-      const exceptionHandler: ErrorHandler = moduleRef.injector.get(ErrorHandler, null);
+      const exceptionHandler: ErrorHandler|null = moduleRef.injector.get(ErrorHandler, null);
       if (!exceptionHandler) {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
@@ -352,14 +387,17 @@ export class PlatformRef {
   get destroyed() { return this._destroyed; }
 }
 
-function getNgZone(ngZoneOption?: NgZone | 'zone.js' | 'noop'): NgZone {
+function getNgZone(
+    ngZoneOption: NgZone | 'zone.js' | 'noop' | undefined, ngZoneEventCoalescing: boolean): NgZone {
   let ngZone: NgZone;
 
   if (ngZoneOption === 'noop') {
     ngZone = new NoopNgZone();
   } else {
-    ngZone = (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) ||
-        new NgZone({enableLongStackTrace: isDevMode()});
+    ngZone = (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) || new NgZone({
+               enableLongStackTrace: isDevMode(),
+               shouldCoalesceEventChangeDetection: ngZoneEventCoalescing
+             });
   }
   return ngZone;
 }

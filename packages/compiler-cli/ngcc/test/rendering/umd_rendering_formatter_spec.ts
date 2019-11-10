@@ -50,9 +50,20 @@ runInEachFileSystem(() => {
     let _: typeof absoluteFrom;
     let PROGRAM: TestFile;
     let PROGRAM_DECORATE_HELPER: TestFile;
+    let PROGRAM_WITH_GLOBAL_INITIALIZER: TestFile;
 
     beforeEach(() => {
       _ = absoluteFrom;
+
+      PROGRAM_WITH_GLOBAL_INITIALIZER = {
+        name: _('/node_modules/test-package/some/file.js'),
+        contents: `
+        (function (global, factory) {
+          typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports,require('some-side-effect'),require('/local-dep'),require('@angular/core')) :
+          typeof define === 'function' && define.amd ? define('file', ['exports','some-side-effect','/local-dep','@angular/core'], factory) :
+          (global = global || self, factory(global.file,global.someSideEffect,global.localDep,global.ng.core));
+          }(this, (function (exports,someSideEffect,localDep,core) {'use strict'; })));`
+      };
 
       PROGRAM = {
         name: _('/node_modules/test-package/some/file.js'),
@@ -143,7 +154,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
       ], A);
       return A;
   }());
-  export { A };
+  exports.A = A;
   var B = /** @class */ (function () {
       function B() {
       }
@@ -153,7 +164,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
       ], B);
       return B;
   }());
-  export { B };
+  exports.B = B;
   var C = /** @class */ (function () {
       function C() {
       }
@@ -162,7 +173,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
       ], C);
       return C;
   }());
-  export { C };
+  exports.C = C;
   var D = /** @class */ (function () {
       function D() {
       }
@@ -228,6 +239,22 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
                 `(factory(global.file,global.someSideEffect,global.localDep,global.ng.core,global.ng.core,global.ng.common));`);
       });
 
+      it('should append the given imports into the global initialization, if it has a global/self initializer',
+         () => {
+           const {renderer, program} = setup(PROGRAM_WITH_GLOBAL_INITIALIZER);
+           const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
+           const output = new MagicString(file.text);
+           renderer.addImports(
+               output,
+               [
+                 {specifier: '@angular/core', qualifier: 'i0'},
+                 {specifier: '@angular/common', qualifier: 'i1'}
+               ],
+               file);
+           expect(output.toString())
+               .toContain(
+                   `(global = global || self, factory(global.file,global.someSideEffect,global.localDep,global.ng.core,global.ng.core,global.ng.common));`);
+         });
       it('should append the given imports as parameters into the factory function definition',
          () => {
            const {renderer, program} = setup(PROGRAM);
@@ -388,6 +415,62 @@ SOME DEFINITION TEXT
       });
     });
 
+    describe('addAdjacentStatements', () => {
+      const contents = `(function (global, factory) {\n` +
+          `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports,require('tslib'),require('@angular/core')) :\n` +
+          `  typeof define === 'function' && define.amd ? define('file', ['exports','/tslib','@angular/core'], factory) :\n` +
+          `  (factory(global.file,global.tslib,global.ng.core));\n` +
+          `  }(this, (function (exports,tslib,core) {'use strict';\n` +
+          `\n` +
+          `  var SomeDirective = /** @class **/ (function () {\n` +
+          `    function SomeDirective(zone, cons) {}\n` +
+          `    SomeDirective.prototype.method = function() {}\n` +
+          `    SomeDirective.decorators = [\n` +
+          `      { type: core.Directive, args: [{ selector: '[a]' }] },\n` +
+          `      { type: OtherA }\n` +
+          `    ];\n` +
+          `    SomeDirective.ctorParameters = () => [\n` +
+          `      { type: core.NgZone },\n` +
+          `      { type: core.Console }\n` +
+          `    ];\n` +
+          `    return SomeDirective;\n` +
+          `  }());\n` +
+          `  exports.SomeDirective = SomeDirective;\n` +
+          `})));`;
+
+      it('should insert the statements after all the static methods of the class', () => {
+        const program = {name: _('/node_modules/test-package/some/file.js'), contents};
+        const {renderer, decorationAnalyses, sourceFile} = setup(program);
+        const output = new MagicString(contents);
+        const compiledClass = decorationAnalyses.get(sourceFile) !.compiledClasses.find(
+            c => c.name === 'SomeDirective') !;
+        renderer.addAdjacentStatements(output, compiledClass, 'SOME STATEMENTS');
+        expect(output.toString())
+            .toContain(
+                `    SomeDirective.ctorParameters = () => [\n` +
+                `      { type: core.NgZone },\n` +
+                `      { type: core.Console }\n` +
+                `    ];\n` +
+                `SOME STATEMENTS\n` +
+                `    return SomeDirective;\n`);
+      });
+
+      it('should insert the statements after any definitions', () => {
+        const program = {name: _('/node_modules/test-package/some/file.js'), contents};
+        const {renderer, decorationAnalyses, sourceFile} = setup(program);
+        const output = new MagicString(contents);
+        const compiledClass = decorationAnalyses.get(sourceFile) !.compiledClasses.find(
+            c => c.name === 'SomeDirective') !;
+        renderer.addDefinitions(output, compiledClass, 'SOME DEFINITIONS');
+        renderer.addAdjacentStatements(output, compiledClass, 'SOME STATEMENTS');
+        const definitionsPosition = output.toString().indexOf('SOME DEFINITIONS');
+        const statementsPosition = output.toString().indexOf('SOME STATEMENTS');
+        expect(definitionsPosition).not.toEqual(-1, 'definitions should exist');
+        expect(statementsPosition).not.toEqual(-1, 'statements should exist');
+        expect(statementsPosition).toBeGreaterThan(definitionsPosition);
+      });
+    });
+
     describe('removeDecorators', () => {
 
       it('should delete the decorator (and following comma) that was matched in the analysis',
@@ -398,7 +481,7 @@ SOME DEFINITION TEXT
                decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
            const decorator = compiledClass.decorators ![0];
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString())
                .not.toContain(`{ type: core.Directive, args: [{ selector: '[a]' }] },`);
@@ -419,7 +502,7 @@ SOME DEFINITION TEXT
                decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'B') !;
            const decorator = compiledClass.decorators ![0];
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString())
                .toContain(`{ type: core.Directive, args: [{ selector: '[a]' }] },`);
@@ -440,7 +523,7 @@ SOME DEFINITION TEXT
                decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
            const decorator = compiledClass.decorators ![0];
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
            renderer.removeDecorators(output, decoratorsToRemove);
            renderer.addDefinitions(output, compiledClass, 'SOME DEFINITION TEXT');
            expect(output.toString())
@@ -463,7 +546,7 @@ SOME DEFINITION TEXT
                decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
            const decorator = compiledClass.decorators !.find(d => d.name === 'Directive') !;
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString()).not.toContain(`core.Directive({ selector: '[a]' }),`);
            expect(output.toString()).toContain(`OtherA()`);
@@ -480,7 +563,7 @@ SOME DEFINITION TEXT
                decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'B') !;
            const decorator = compiledClass.decorators !.find(d => d.name === 'Directive') !;
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString()).toContain(`core.Directive({ selector: '[a]' }),`);
            expect(output.toString()).toContain(`OtherA()`);
@@ -498,7 +581,7 @@ SOME DEFINITION TEXT
                decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
            const decorator = compiledClass.decorators !.find(d => d.name === 'Directive') !;
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString()).toContain(`core.Directive({ selector: '[a]' }),`);
            expect(output.toString()).toContain(`OtherA()`);

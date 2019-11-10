@@ -244,12 +244,12 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       (metadata.styles as(ɵStyleData | string)[]).forEach(styleTuple => {
         if (typeof styleTuple == 'string') {
           if (styleTuple == AUTO_STYLE) {
-            styles.push(styleTuple as string);
+            styles.push(styleTuple);
           } else {
             context.errors.push(`The provided style string value ${styleTuple} is not allowed.`);
           }
         } else {
-          styles.push(styleTuple as ɵStyleData);
+          styles.push(styleTuple);
         }
       });
     } else {
@@ -518,7 +518,7 @@ function consumeOffset(styles: ɵStyleData | string | (ɵStyleData | string)[]):
       }
     });
   } else if (isObject(styles) && styles.hasOwnProperty('offset')) {
-    const obj = styles as ɵStyleData;
+    const obj = styles;
     offset = parseFloat(obj['offset'] as string);
     delete obj['offset'];
   }
@@ -534,8 +534,8 @@ function constructTimingAst(value: string | number | AnimateTimings, errors: any
   if (value.hasOwnProperty('duration')) {
     timings = value as AnimateTimings;
   } else if (typeof value == 'number') {
-    const duration = resolveTiming(value as number, errors).duration;
-    return makeTimingAst(duration as number, 0, '');
+    const duration = resolveTiming(value, errors).duration;
+    return makeTimingAst(duration, 0, '');
   }
 
   const strValue = value as string;

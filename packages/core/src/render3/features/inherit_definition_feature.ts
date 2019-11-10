@@ -11,12 +11,9 @@ import {fillProperties} from '../../util/property';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, HostBindingsFunction, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {isComponentDef} from '../interfaces/type_checks';
-import {adjustActiveDirectiveSuperClassDepthPosition} from '../state';
 
-import {ɵɵNgOnChangesFeature} from './ng_onchanges_feature';
-
-function getSuperType(type: Type<any>): Type<any>&
-    {ngComponentDef?: ComponentDef<any>, ngDirectiveDef?: DirectiveDef<any>} {
+export function getSuperType(type: Type<any>): Type<any>&
+    {ɵcmp?: ComponentDef<any>, ɵdir?: DirectiveDef<any>} {
   return Object.getPrototypeOf(type.prototype).constructor;
 }
 
@@ -33,39 +30,23 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
     let superDef: DirectiveDef<any>|ComponentDef<any>|undefined = undefined;
     if (isComponentDef(definition)) {
       // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
-      superDef = superType.ngComponentDef || superType.ngDirectiveDef;
+      superDef = superType.ɵcmp || superType.ɵdir;
     } else {
-      if (superType.ngComponentDef) {
+      if (superType.ɵcmp) {
         throw new Error('Directives cannot inherit Components');
       }
       // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
-      superDef = superType.ngDirectiveDef;
+      superDef = superType.ɵdir;
     }
 
-    const baseDef = (superType as any).ngBaseDef;
-
-    // Some fields in the definition may be empty, if there were no values to put in them that
-    // would've justified object creation. Unwrap them if necessary.
-    if (baseDef || superDef) {
+    if (superDef) {
+      // Some fields in the definition may be empty, if there were no values to put in them that
+      // would've justified object creation. Unwrap them if necessary.
       const writeableDef = definition as any;
       writeableDef.inputs = maybeUnwrapEmpty(definition.inputs);
       writeableDef.declaredInputs = maybeUnwrapEmpty(definition.declaredInputs);
       writeableDef.outputs = maybeUnwrapEmpty(definition.outputs);
-    }
 
-    if (baseDef) {
-      const baseViewQuery = baseDef.viewQuery;
-      const baseContentQueries = baseDef.contentQueries;
-      const baseHostBindings = baseDef.hostBindings;
-      baseHostBindings && inheritHostBindings(definition, baseHostBindings);
-      baseViewQuery && inheritViewQuery(definition, baseViewQuery);
-      baseContentQueries && inheritContentQueries(definition, baseContentQueries);
-      fillProperties(definition.inputs, baseDef.inputs);
-      fillProperties(definition.declaredInputs, baseDef.declaredInputs);
-      fillProperties(definition.outputs, baseDef.outputs);
-    }
-
-    if (superDef) {
       // Merge hostBindings
       const superHostBindings = superDef.hostBindings;
       superHostBindings && inheritHostBindings(definition, superHostBindings);
@@ -100,25 +81,6 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
           if (feature && feature.ngInherit) {
             (feature as DirectiveDefFeature)(definition);
           }
-        }
-      }
-    } else {
-      // Even if we don't have a definition, check the type for the hooks and use those if need be
-      const superPrototype = superType.prototype;
-      if (superPrototype) {
-        definition.afterContentChecked =
-            definition.afterContentChecked || superPrototype.ngAfterContentChecked;
-        definition.afterContentInit =
-            definition.afterContentInit || superPrototype.ngAfterContentInit;
-        definition.afterViewChecked =
-            definition.afterViewChecked || superPrototype.ngAfterViewChecked;
-        definition.afterViewInit = definition.afterViewInit || superPrototype.ngAfterViewInit;
-        definition.doCheck = definition.doCheck || superPrototype.ngDoCheck;
-        definition.onDestroy = definition.onDestroy || superPrototype.ngOnDestroy;
-        definition.onInit = definition.onInit || superPrototype.ngOnInit;
-
-        if (superPrototype.ngOnChanges) {
-          ɵɵNgOnChangesFeature()(definition);
         }
       }
     }
@@ -177,24 +139,8 @@ function inheritHostBindings(
   // to ensure we don't inherit it twice.
   if (superHostBindings !== prevHostBindings) {
     if (prevHostBindings) {
-      // because inheritance is unknown during compile time, the runtime code
-      // needs to be informed of the super-class depth so that instruction code
-      // can distinguish one host bindings function from another. The reason why
-      // relying on the directive uniqueId exclusively is not enough is because the
-      // uniqueId value and the directive instance stay the same between hostBindings
-      // calls throughout the directive inheritance chain. This means that without
-      // a super-class depth value, there is no way to know whether a parent or
-      // sub-class host bindings function is currently being executed.
       definition.hostBindings = (rf: RenderFlags, ctx: any, elementIndex: number) => {
-        // The reason why we increment first and then decrement is so that parent
-        // hostBindings calls have a higher id value compared to sub-class hostBindings
-        // calls (this way the leaf directive is always at a super-class depth of 0).
-        adjustActiveDirectiveSuperClassDepthPosition(1);
-        try {
-          superHostBindings(rf, ctx, elementIndex);
-        } finally {
-          adjustActiveDirectiveSuperClassDepthPosition(-1);
-        }
+        superHostBindings(rf, ctx, elementIndex);
         prevHostBindings(rf, ctx, elementIndex);
       };
     } else {

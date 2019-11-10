@@ -128,7 +128,7 @@ export declare const COMPOSITION_BUFFER_MODE: InjectionToken<boolean>;
 
 export declare abstract class ControlContainer extends AbstractControlDirective {
     readonly formDirective: Form | null;
-    name: string;
+    name: string | number | null;
     readonly path: string[] | null;
 }
 
@@ -194,7 +194,7 @@ export declare class FormArrayName extends ControlContainer implements OnInit, O
     readonly asyncValidator: AsyncValidatorFn | null;
     readonly control: FormArray;
     readonly formDirective: FormGroupDirective | null;
-    name: string;
+    name: string | number | null;
     readonly path: string[];
     readonly validator: ValidatorFn | null;
     constructor(parent: ControlContainer, validators: any[], asyncValidators: any[]);
@@ -322,13 +322,11 @@ export declare class FormGroupDirective extends ControlContainer implements Form
 }
 
 export declare class FormGroupName extends AbstractFormGroupDirective implements OnInit, OnDestroy {
-    name: string;
+    name: string | number | null;
     constructor(parent: ControlContainer, validators: any[], asyncValidators: any[]);
 }
 
 export declare class FormsModule {
-    static withConfig(opts: { warnOnDeprecatedNgFormSelector?: 'never' | 'once' | 'always';
-    }): ModuleWithProviders<FormsModule>;
 }
 
 export declare class MaxLengthValidator implements Validator, OnChanges {
@@ -395,11 +393,6 @@ export declare class NgForm extends ControlContainer implements Form, AfterViewI
         [key: string]: any;
     }): void;
     updateModel(dir: NgControl, value: any): void;
-}
-
-/** @deprecated */
-export declare class NgFormSelectorWarning {
-    constructor(ngFormWarning: string | null);
 }
 
 export declare class NgModel extends NgControl implements OnChanges, OnDestroy {

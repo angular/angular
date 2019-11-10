@@ -21,6 +21,7 @@ export interface TypeCheckableDirectiveMeta extends DirectiveMeta {
   ref: Reference<ClassDeclaration>;
   queries: string[];
   ngTemplateGuards: TemplateGuardMeta[];
+  coercedInputFields: Set<string>;
   hasNgTemplateContextGuard: boolean;
 }
 
@@ -67,6 +68,11 @@ export interface TypeCtorMetadata {
    * Input, output, and query field names in the type which should be included as constructor input.
    */
   fields: {inputs: string[]; outputs: string[]; queries: string[];};
+
+  /**
+   * `Set` of field names which have type coercion enabled.
+   */
+  coercedInputFields: Set<string>;
 }
 
 export interface TypeCheckingConfig {
@@ -84,6 +90,33 @@ export interface TypeCheckingConfig {
   checkTypeOfInputBindings: boolean;
 
   /**
+   * Whether to use strict null types for input bindings for directives.
+   *
+   * If this is `true`, applications that are compiled with TypeScript's `strictNullChecks` enabled
+   * will produce type errors for bindings which can evaluate to `undefined` or `null` where the
+   * inputs's type does not include `undefined` or `null` in its type. If set to `false`, all
+   * binding expressions are wrapped in a non-null assertion operator to effectively disable strict
+   * null checks. This may be particularly useful when the directive is from a library that is not
+   * compiled with `strictNullChecks` enabled.
+   *
+   * If `checkTypeOfInputBindings` is set to `false`, this flag has no effect.
+   */
+  strictNullInputBindings: boolean;
+
+  /**
+   * Whether to check text attributes that happen to be consumed by a directive or component.
+   *
+   * For example, in a template containing `<input matInput disabled>` the `disabled` attribute ends
+   * up being consumed as an input with type `boolean` by the `matInput` directive. At runtime, the
+   * input will be set to the attribute's string value, which is an empty string for attributes
+   * without a value, so with this flag set to `true`, an error would be reported. If set to
+   * `false`, text attributes will never report an error.
+   *
+   * Note that if `checkTypeOfInputBindings` is set to `false`, this flag has no effect.
+   */
+  checkTypeOfAttributes: boolean;
+
+  /**
    * Whether to check the left-hand side type of binding operations to DOM properties.
    *
    * As `checkTypeOfBindings`, but only applies to bindings to DOM properties.
@@ -94,6 +127,52 @@ export interface TypeCheckingConfig {
    * for assignability to the underlying DOM element properties.
    */
   checkTypeOfDomBindings: boolean;
+
+  /**
+   * Whether to infer the type of the `$event` variable in event bindings for directive outputs or
+   * animation events.
+   *
+   * If this is `true`, the type of `$event` will be inferred based on the generic type of
+   * `EventEmitter`/`Subject` of the output. If set to `false`, the `$event` variable will be of
+   * type `any`.
+   */
+  checkTypeOfOutputEvents: boolean;
+
+  /**
+   * Whether to infer the type of the `$event` variable in event bindings for animations.
+   *
+   * If this is `true`, the type of `$event` will be `AnimationEvent` from `@angular/animations`.
+   * If set to `false`, the `$event` variable will be of type `any`.
+   */
+  checkTypeOfAnimationEvents: boolean;
+
+  /**
+   * Whether to infer the type of the `$event` variable in event bindings to DOM events.
+   *
+   * If this is `true`, the type of `$event` will be inferred based on TypeScript's
+   * `HTMLElementEventMap`, with a fallback to the native `Event` type. If set to `false`, the
+   * `$event` variable will be of type `any`.
+   */
+  checkTypeOfDomEvents: boolean;
+
+  /**
+   * Whether to infer the type of local references to DOM elements.
+   *
+   * If this is `true`, the type of a `#ref` variable on a DOM node in the template will be
+   * determined by the type of `document.createElement` for the given DOM node type. If set to
+   * `false`, the type of `ref` for DOM nodes will be `any`.
+   */
+  checkTypeOfDomReferences: boolean;
+
+
+  /**
+   * Whether to infer the type of local references.
+   *
+   * If this is `true`, the type of a `#ref` variable that points to a directive or `TemplateRef` in
+   * the template will be inferred correctly. If set to `false`, the type of `ref` for will be
+   * `any`.
+   */
+  checkTypeOfNonDomReferences: boolean;
 
   /**
    * Whether to include type information from pipes in the type-checking operation.

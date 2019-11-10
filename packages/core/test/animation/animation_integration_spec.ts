@@ -328,6 +328,36 @@ const DEFAULT_COMPONENT_ID = '1';
         ]);
       });
 
+      // https://github.com/angular/angular/issues/32794
+      it('should support nested animation triggers', () => {
+        const REUSABLE_ANIMATION = [trigger(
+            'myAnimation',
+            [transition(
+                'void => *', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])];
+
+        @Component({
+          selector: 'if-cmp',
+          template: `
+          <div @myAnimation></div>
+        `,
+          animations: [REUSABLE_ANIMATION],
+        })
+        class Cmp {
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.inject(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.detectChanges();
+        engine.flush();
+
+        expect(getLog().length).toEqual(1);
+        expect(getLog().pop() !.keyframes).toEqual([
+          {offset: 0, opacity: '0'}, {offset: 1, opacity: '1'}
+        ]);
+      });
+
       it('should allow a transition to use a function to determine what method to run', () => {
         let valueToMatch = '';
         let capturedElement: any;
@@ -346,7 +376,7 @@ const DEFAULT_COMPONENT_ID = '1';
           ]
         })
         class Cmp {
-          @ViewChild('element', {static: false})
+          @ViewChild('element')
           element: any;
           exp: any = '';
         }
@@ -1433,7 +1463,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ])]
         })
         class Cmp {
-          @ViewChild('green', {static: false}) public element: any;
+          @ViewChild('green') public element: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1769,7 +1799,7 @@ const DEFAULT_COMPONENT_ID = '1';
         class Cmp {
           public exp: any;
 
-          @ViewChild('parent', {static: false}) public parentElement: any;
+          @ViewChild('parent') public parentElement: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1823,9 +1853,9 @@ const DEFAULT_COMPONENT_ID = '1';
              public exp1: any;
              public exp2: any;
 
-             @ViewChild('parent', {static: false}) public parent: any;
+             @ViewChild('parent') public parent: any;
 
-             @ViewChild('child', {static: false}) public child: any;
+             @ViewChild('child') public child: any;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1880,11 +1910,11 @@ const DEFAULT_COMPONENT_ID = '1';
              public exp1: any;
              public exp2: any;
 
-             @ViewChild('parent', {static: false}) public parent: any;
+             @ViewChild('parent') public parent: any;
 
-             @ViewChild('child1', {static: false}) public child1Elm: any;
+             @ViewChild('child1') public child1Elm: any;
 
-             @ViewChild('child2', {static: false}) public child2Elm: any;
+             @ViewChild('child2') public child2Elm: any;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2239,7 +2269,7 @@ const DEFAULT_COMPONENT_ID = '1';
               [transition(':enter', [style({opacity: 0}), animate('1s', style({opacity: 1}))])])]
         })
         class OuterCmp {
-          @ViewChild('inner', {static: false}) public inner: any;
+          @ViewChild('inner') public inner: any;
           public exp: any = null;
 
           update() { this.exp = 'go'; }
@@ -3230,7 +3260,7 @@ const DEFAULT_COMPONENT_ID = '1';
             ]
           })
           class Cmp {
-            @ViewChild('parent', {static: false}) public parentElm: any;
+            @ViewChild('parent') public parentElm: any;
             disableExp = false;
             exp = false;
           }
@@ -3321,7 +3351,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 `
              })
              class ParentCmp {
-               @ViewChild('child', {static: false}) public child: ChildCmp|null = null;
+               @ViewChild('child') public child: ChildCmp|null = null;
                disableExp = false;
              }
 
@@ -3437,7 +3467,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 `
              })
              class Cmp {
-               @ViewChild('container', {static: false}) public container: any;
+               @ViewChild('container') public container: any;
 
                disableExp = false;
                exp = '';

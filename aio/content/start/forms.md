@@ -66,15 +66,17 @@ Next, you'll add a checkout form at the bottom of the "Cart" page.
   <code-example path="getting-started/src/app/cart/cart.component.html" region="checkout-form-1">
   </code-example>
 
-1. Add input fields for `name` and `address`.  Use the `formControlName` attribute binding to bind the `checkoutForm` form controls for `name` and `address` to their input fields. The final complete component is shown below:
+1. Add input fields for `name` and `address`. Use the `formControlName` attribute binding to bind the `checkoutForm` form controls for `name` and `address` to their input fields. The final complete component is shown below:
 
   <code-example path="getting-started/src/app/cart/cart.component.html" region="checkout-form-2">
   </code-example>
 
 After putting a few items in the cart, users can now review their items, enter name and address, and submit their purchase:
 
-<figure>
-  <img src='generated/images/guide/start/cart-with-items-and-form.png' alt="Cart page with checkout form">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/start/cart-with-items-and-form.png' alt="Cart page with checkout form">
+  </div>
 </figure>
 
 
@@ -83,4 +85,3 @@ After putting a few items in the cart, users can now review their items, enter n
 Congratulations! You have a complete online store application with a product catalog, a shopping cart, and a checkout function.
 
 [Continue to the "Deployment" section](start/deployment "Getting Started: Deployment") to move to local development, or deploy your app to Firebase or your own server.
-

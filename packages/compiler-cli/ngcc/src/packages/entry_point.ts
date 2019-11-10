@@ -36,6 +36,10 @@ export interface EntryPoint extends JsonObject {
   typings: AbsoluteFsPath;
   /** Is this EntryPoint compiled with the Angular View Engine compiler? */
   compiledByAngular: boolean;
+  /** Should ngcc ignore missing dependencies and process this entrypoint anyway? */
+  ignoreMissingDependencies: boolean;
+  /** Should ngcc generate deep re-exports for this entrypoint? */
+  generateDeepReexports: boolean;
 }
 
 export type JsonPrimitive = string | number | boolean | null;
@@ -82,7 +86,9 @@ export function getEntryPointInfo(
     fs: FileSystem, config: NgccConfiguration, logger: Logger, packagePath: AbsoluteFsPath,
     entryPointPath: AbsoluteFsPath): EntryPoint|null {
   const packageJsonPath = resolve(entryPointPath, 'package.json');
-  const entryPointConfig = config.getConfig(packagePath).entryPoints[entryPointPath];
+  const packageVersion = getPackageVersion(fs, packageJsonPath);
+  const entryPointConfig =
+      config.getConfig(packagePath, packageVersion).entryPoints[entryPointPath];
   if (entryPointConfig === undefined && !fs.exists(packageJsonPath)) {
     return null;
   }
@@ -118,6 +124,10 @@ export function getEntryPointInfo(
     package: packagePath,
     path: entryPointPath,
     typings: resolve(entryPointPath, typings), compiledByAngular,
+    ignoreMissingDependencies:
+        entryPointConfig !== undefined ? !!entryPointConfig.ignoreMissingDependencies : false,
+    generateDeepReexports:
+        entryPointConfig !== undefined ? !!entryPointConfig.generateDeepReexports : false,
   };
 
   return entryPointInfo;
@@ -221,6 +231,23 @@ function guessTypingsFromPackageJson(
     if (fs.exists(typingsPath)) {
       return typingsPath;
     }
+  }
+  return null;
+}
+
+/**
+ * Find the version of the package at `packageJsonPath`.
+ *
+ * @returns the version string or `null` if the package.json does not exist or is invalid.
+ */
+function getPackageVersion(fs: FileSystem, packageJsonPath: AbsoluteFsPath): string|null {
+  try {
+    if (fs.exists(packageJsonPath)) {
+      const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+      return packageJson['version'] || null;
+    }
+  } catch {
+    // Do nothing
   }
   return null;
 }

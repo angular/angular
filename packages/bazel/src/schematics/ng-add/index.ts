@@ -48,11 +48,18 @@ function addDevDependenciesToPackageJson(options: Schema) {
 
     const devDependencies: {[k: string]: string} = {
       '@angular/bazel': angularCoreVersion,
-      '@bazel/bazel': '^0.28.1',
+      '@bazel/bazel': '1.0.0',
       '@bazel/ibazel': '^0.10.2',
-      '@bazel/karma': '0.34.0',
-      '@bazel/protractor': '0.34.0',
-      '@bazel/typescript': '0.34.0',
+      '@bazel/karma': '0.39.1',
+      '@bazel/protractor': '0.39.1',
+      '@bazel/rollup': '0.39.1',
+      '@bazel/terser': '0.39.1',
+      '@bazel/typescript': '0.39.1',
+      'history-server': '^1.3.1',
+      'rollup': '^1.25.2',
+      'rollup-plugin-commonjs': '^10.1.0',
+      'rollup-plugin-node-resolve': '^5.2.0',
+      'terser': '^4.3.9',
     };
 
     const recorder = host.beginUpdate(packageJson);
@@ -70,6 +77,47 @@ function addDevDependenciesToPackageJson(options: Schema) {
         insertPropertyInAstObjectInOrder(recorder, devDeps, packageName, version, indent);
       }
     }
+    host.commitUpdate(recorder);
+    return host;
+  };
+}
+
+/**
+ * Remove packages that are not needed under Bazel.
+ * @param options
+ */
+function removeObsoleteDependenciesFromPackageJson(options: Schema) {
+  return (host: Tree) => {
+    const packageJson = 'package.json';
+    if (!host.exists(packageJson)) {
+      throw new Error(`Could not find ${packageJson}`);
+    }
+    const buffer = host.read(packageJson);
+    if (!buffer) {
+      throw new Error('Failed to read package.json content');
+    }
+    const content = buffer.toString();
+    const jsonAst = parseJsonAst(content) as JsonAstObject;
+    const deps = findPropertyInAstObject(jsonAst, 'dependencies') as JsonAstObject;
+    const devDeps = findPropertyInAstObject(jsonAst, 'devDependencies') as JsonAstObject;
+
+    const depsToRemove = [
+      '@angular-devkit/build-angular',
+    ];
+
+    const recorder = host.beginUpdate(packageJson);
+
+    for (const packageName of depsToRemove) {
+      const depNode = findPropertyInAstObject(deps, packageName);
+      if (depNode) {
+        removeKeyValueInAstObject(recorder, content, deps, packageName);
+      }
+      const devDepNode = findPropertyInAstObject(devDeps, packageName);
+      if (devDepNode) {
+        removeKeyValueInAstObject(recorder, content, devDeps, packageName);
+      }
+    }
+
     host.commitUpdate(recorder);
     return host;
   };
@@ -268,15 +316,11 @@ function upgradeRxjs() {
 }
 
 /**
- * When using Angular NPM packages and building with AOT compilation, ngc
- * requires ngsumamry files but they are not shipped. This function adds a
- * postinstall step to generate these files.
+ * When using Ivy, ngcc must be run as a postinstall step.
+ * This function adds this postinstall step.
  */
-function addPostinstallToGenerateNgSummaries() {
+function addPostinstallToRunNgcc() {
   return (host: Tree, context: SchematicContext) => {
-    if (!host.exists('angular-metadata.tsconfig.json')) {
-      return;
-    }
     const packageJson = 'package.json';
     if (!host.exists(packageJson)) {
       throw new Error(`Could not find ${packageJson}`);
@@ -291,13 +335,29 @@ function addPostinstallToGenerateNgSummaries() {
     }
     const scripts = findPropertyInAstObject(jsonAst, 'scripts') as JsonAstObject;
     const recorder = host.beginUpdate(packageJson);
+    // For bazel we need to compile the all files in place so we
+    // don't use `--first-only` or `--create-ivy-entry-points`
+    const ngccCommand = 'ngcc --properties es2015 browser module main';
     if (scripts) {
-      insertPropertyInAstObjectInOrder(
-          recorder, scripts, 'postinstall', 'ngc -p ./angular-metadata.tsconfig.json', 4);
+      const postInstall = findPropertyInAstObject(scripts, 'postinstall');
+      if (postInstall && postInstall.value) {
+        let value = postInstall.value as string;
+        if (/\bngcc\b/.test(value)) {
+          // `ngcc` is already in the postinstall script
+          value =
+              value.replace(/\s*--first-only\b/, '').replace(/\s*--create-ivy-entry-points\b/, '');
+          replacePropertyInAstObject(recorder, scripts, 'postinstall', value);
+        } else {
+          const command = `${postInstall.value}; ${ngccCommand}`;
+          replacePropertyInAstObject(recorder, scripts, 'postinstall', command);
+        }
+      } else {
+        insertPropertyInAstObjectInOrder(recorder, scripts, 'postinstall', ngccCommand, 4);
+      }
     } else {
       insertPropertyInAstObjectInOrder(
           recorder, jsonAst, 'scripts', {
-            postinstall: 'ngc -p ./angular-metadata.tsconfig.json',
+            postinstall: ngccCommand,
           },
           2);
     }
@@ -328,7 +388,8 @@ export default function(options: Schema): Rule {
     return chain([
       addFilesRequiredByBazel(options),
       addDevDependenciesToPackageJson(options),
-      addPostinstallToGenerateNgSummaries(),
+      removeObsoleteDependenciesFromPackageJson(options),
+      addPostinstallToRunNgcc(),
       backupAngularJson(),
       updateAngularJsonToUseBazelBuilder(options),
       updateGitignore(),

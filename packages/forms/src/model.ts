@@ -47,12 +47,12 @@ export const DISABLED = 'DISABLED';
 function _find(control: AbstractControl, path: Array<string|number>| string, delimiter: string) {
   if (path == null) return null;
 
-  if (!(path instanceof Array)) {
-    path = (<string>path).split(delimiter);
+  if (!Array.isArray(path)) {
+    path = path.split(delimiter);
   }
-  if (path instanceof Array && (path.length === 0)) return null;
+  if (Array.isArray(path) && path.length === 0) return null;
 
-  return (<Array<string|number>>path).reduce((v: AbstractControl | null, name) => {
+  return path.reduce((v: AbstractControl | null, name) => {
     if (v instanceof FormGroup) {
       return v.controls.hasOwnProperty(name as string) ? v.controls[name] : null;
     }
@@ -1366,7 +1366,7 @@ export class FormGroup extends AbstractControl {
    * ```
    *
    * @throws When strict checks fail, such as setting the value of a control
-   * that doesn't exist or if you excluding the value of a control.
+   * that doesn't exist or if you exclude a value of a control that does exist.
    *
    * @param value The new value for the control that matches the structure of the group.
    * @param options Configuration options that determine how the control propagates changes

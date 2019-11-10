@@ -8,7 +8,9 @@
 import {assertDataInRange, assertGreaterThan} from '../../util/assert';
 import {executeCheckHooks, executeInitAndCheckHooks} from '../hooks';
 import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, TVIEW} from '../interfaces/view';
-import {getCheckNoChangesMode, getLView, getSelectedIndex, setSelectedIndex} from '../state';
+import {ActiveElementFlags, executeElementExitFn, getCheckNoChangesMode, getLView, getSelectedIndex, hasActiveElementFlag, setSelectedIndex} from '../state';
+
+
 
 /**
  * Advances to an element for later binding instructions.
@@ -50,6 +52,10 @@ export function ɵɵselect(index: number): void {
 export function selectIndexInternal(lView: LView, index: number, checkNoChangesMode: boolean) {
   ngDevMode && assertGreaterThan(index, -1, 'Invalid index');
   ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
+
+  if (hasActiveElementFlag(ActiveElementFlags.RunExitFn)) {
+    executeElementExitFn();
+  }
 
   // Flush the initial hooks for elements in the view that have been added up to this point.
   // PERF WARNING: do NOT extract this to a separate function without running benchmarks

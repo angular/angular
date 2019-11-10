@@ -20,7 +20,7 @@ ts_library(
         "//packages/core/src/util",
         "//packages/core/testing",
         "//packages/localize",
-        "//packages/localize/run_time",
+        "//packages/localize/init",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
@@ -28,8 +28,8 @@ ts_library(
         "//packages/platform-server",
         "//packages/private/testing",
         "//packages/router",
+        "//packages/zone.js/lib:zone_d_ts",
         "@npm//rxjs",
-        "@npm//zone.js",
     ],
 )
 
@@ -38,10 +38,10 @@ jasmine_node_test(
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
     deps = [
         ":acceptance_lib",
+        "//packages/zone.js/lib:zone_d_ts",
         "//tools/testing:node",
         "@npm//base64-js",
         "@npm//source-map",
-        "@npm//zone.js",
     ],
 )
 

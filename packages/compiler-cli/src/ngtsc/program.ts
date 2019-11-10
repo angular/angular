@@ -11,14 +11,14 @@ import * as ts from 'typescript';
 
 import * as api from '../transformers/api';
 import {nocollapseHack} from '../transformers/nocollapse_hack';
+import {verifySupportedTypeScriptVersion} from '../typescript_support';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from './annotations';
-import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {CycleAnalyzer, ImportGraph} from './cycles';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
 import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from './file_system';
-import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, DefaultImportTracker, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
+import {AbsoluteModuleStrategy, AliasStrategy, AliasingHost, DefaultImportTracker, FileToModuleAliasingHost, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
 import {IncrementalState} from './incremental';
 import {IndexedComponent, IndexingContext} from './indexer';
 import {generateAnalysis} from './indexer/src/transform';
@@ -60,6 +60,7 @@ export class NgtscProgram implements api.Program {
   private cycleAnalyzer: CycleAnalyzer;
   private metaReader: MetadataReader|null = null;
 
+  private aliasingHost: AliasingHost|null = null;
   private refEmitter: ReferenceEmitter|null = null;
   private fileToModuleHost: FileToModuleHost|null = null;
   private defaultImportTracker: DefaultImportTracker;
@@ -73,6 +74,10 @@ export class NgtscProgram implements api.Program {
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
       private host: api.CompilerHost, oldProgram?: NgtscProgram) {
+    if (!options.disableTypeScriptVersionCheck) {
+      verifySupportedTypeScriptVersion();
+    }
+
     if (shouldEnablePerfTracing(options)) {
       this.perfTracker = PerfTracker.zeroedToNow();
       this.perfRecorder = this.perfTracker;
@@ -83,7 +88,15 @@ export class NgtscProgram implements api.Program {
     this.rootDirs = getRootDirs(host, options);
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
     this.resourceManager = new HostResourceLoader(host, options);
-    const shouldGenerateShims = options.allowEmptyCodegenFiles || false;
+    // TODO(alxhub): remove the fallback to allowEmptyCodegenFiles after verifying that the rest of
+    // our build tooling is no longer relying on it.
+    const allowEmptyCodegenFiles = options.allowEmptyCodegenFiles || false;
+    const shouldGenerateFactoryShims = options.generateNgFactoryShims !== undefined ?
+        options.generateNgFactoryShims :
+        allowEmptyCodegenFiles;
+    const shouldGenerateSummaryShims = options.generateNgSummaryShims !== undefined ?
+        options.generateNgSummaryShims :
+        allowEmptyCodegenFiles;
     const normalizedRootNames = rootNames.map(n => absoluteFrom(n));
     if (host.fileNameToModuleName !== undefined) {
       this.fileToModuleHost = host as FileToModuleHost;
@@ -91,10 +104,14 @@ export class NgtscProgram implements api.Program {
     let rootFiles = [...rootNames];
 
     const generators: ShimGenerator[] = [];
-    if (shouldGenerateShims) {
+    let summaryGenerator: SummaryGenerator|null = null;
+    if (shouldGenerateSummaryShims) {
       // Summary generation.
-      const summaryGenerator = SummaryGenerator.forRootFiles(normalizedRootNames);
+      summaryGenerator = SummaryGenerator.forRootFiles(normalizedRootNames);
+      generators.push(summaryGenerator);
+    }
 
+    if (shouldGenerateFactoryShims) {
       // Factory generation.
       const factoryGenerator = FactoryGenerator.forRootFiles(normalizedRootNames);
       const factoryFileMap = factoryGenerator.factoryFileMap;
@@ -107,8 +124,14 @@ export class NgtscProgram implements api.Program {
       });
 
       const factoryFileNames = Array.from(factoryFileMap.keys());
-      rootFiles.push(...factoryFileNames, ...summaryGenerator.getSummaryFileNames());
-      generators.push(summaryGenerator, factoryGenerator);
+      rootFiles.push(...factoryFileNames);
+      generators.push(factoryGenerator);
+    }
+
+    // Done separately to preserve the order of factory files before summary files in rootFiles.
+    // TODO(alxhub): validate that this is necessary.
+    if (shouldGenerateSummaryShims) {
+      rootFiles.push(...summaryGenerator !.getSummaryFileNames());
     }
 
     this.typeCheckFilePath = typeCheckFilePath(this.rootDirs);
@@ -147,7 +170,8 @@ export class NgtscProgram implements api.Program {
     }
 
     if (generators.length > 0) {
-      this.host = new GeneratedShimsHostWrapper(host, generators);
+      // FIXME: Remove the any cast once google3 is fully on TS3.6.
+      this.host = (new GeneratedShimsHostWrapper(host, generators) as any);
     }
 
     this.tsProgram =
@@ -332,6 +356,10 @@ export class NgtscProgram implements api.Program {
       declarationTransformFactory(compilation),
     ];
 
+    // Only add aliasing re-exports to the .d.ts output if the `AliasingHost` requests it.
+    if (this.aliasingHost !== null && this.aliasingHost.aliasExportsInDts) {
+      afterDeclarationsTransforms.push(aliasTransformFactory(compilation.exportStatements));
+    }
 
     if (this.factoryToSourceInfo !== null) {
       beforeTransforms.push(
@@ -396,15 +424,29 @@ export class NgtscProgram implements api.Program {
     // requested.
     let typeCheckingConfig: TypeCheckingConfig;
     if (this.options.fullTemplateTypeCheck) {
+      const strictTemplates = !!this.options.strictTemplates;
       typeCheckingConfig = {
         applyTemplateContextGuards: true,
         checkQueries: false,
         checkTemplateBodies: true,
-        checkTypeOfInputBindings: true,
+        checkTypeOfInputBindings: strictTemplates,
+        strictNullInputBindings: strictTemplates,
+        checkTypeOfAttributes: strictTemplates,
         // Even in full template type-checking mode, DOM binding checks are not quite ready yet.
         checkTypeOfDomBindings: false,
+        checkTypeOfOutputEvents: strictTemplates,
+        checkTypeOfAnimationEvents: strictTemplates,
+        // Checking of DOM events currently has an adverse effect on developer experience,
+        // e.g. for `<input (blur)="update($event.target.value)">` enabling this check results in:
+        // - error TS2531: Object is possibly 'null'.
+        // - error TS2339: Property 'value' does not exist on type 'EventTarget'.
+        checkTypeOfDomEvents: strictTemplates,
+        checkTypeOfDomReferences: strictTemplates,
+        // Non-DOM references have the correct type in View Engine so there is no strictness flag.
+        checkTypeOfNonDomReferences: true,
+        // Pipes are checked in View Engine so there is no strictness flag.
         checkTypeOfPipes: true,
-        strictSafeNavigationTypes: true,
+        strictSafeNavigationTypes: strictTemplates,
       };
     } else {
       typeCheckingConfig = {
@@ -412,10 +454,42 @@ export class NgtscProgram implements api.Program {
         checkQueries: false,
         checkTemplateBodies: false,
         checkTypeOfInputBindings: false,
+        strictNullInputBindings: false,
+        checkTypeOfAttributes: false,
         checkTypeOfDomBindings: false,
+        checkTypeOfOutputEvents: false,
+        checkTypeOfAnimationEvents: false,
+        checkTypeOfDomEvents: false,
+        checkTypeOfDomReferences: false,
+        checkTypeOfNonDomReferences: false,
         checkTypeOfPipes: false,
         strictSafeNavigationTypes: false,
       };
+    }
+
+    // Apply explicitly configured strictness flags on top of the default configuration
+    // based on "fullTemplateTypeCheck".
+    if (this.options.strictInputTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfInputBindings = this.options.strictInputTypes;
+    }
+    if (this.options.strictNullInputTypes !== undefined) {
+      typeCheckingConfig.strictNullInputBindings = this.options.strictNullInputTypes;
+    }
+    if (this.options.strictOutputEventTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfOutputEvents = this.options.strictOutputEventTypes;
+      typeCheckingConfig.checkTypeOfAnimationEvents = this.options.strictOutputEventTypes;
+    }
+    if (this.options.strictDomEventTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfDomEvents = this.options.strictDomEventTypes;
+    }
+    if (this.options.strictSafeNavigationTypes !== undefined) {
+      typeCheckingConfig.strictSafeNavigationTypes = this.options.strictSafeNavigationTypes;
+    }
+    if (this.options.strictDomLocalRefTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfDomReferences = this.options.strictDomLocalRefTypes;
+    }
+    if (this.options.strictAttributeTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfAttributes = this.options.strictAttributeTypes;
     }
 
     // Execute the typeCheck phase of each decorator in the program.
@@ -444,7 +518,6 @@ export class NgtscProgram implements api.Program {
   private makeCompilation(): IvyCompilation {
     const checker = this.tsProgram.getTypeChecker();
 
-    let aliasGenerator: AliasGenerator|null = null;
     // Construct the ReferenceEmitter.
     if (this.fileToModuleHost === null || !this.options._useHostForImportGeneration) {
       // The CompilerHost doesn't have fileNameToModuleName, so build an NPM-centric reference
@@ -458,8 +531,17 @@ export class NgtscProgram implements api.Program {
         // Finally, check if the reference is being written into a file within the project's logical
         // file system, and use a relative import if so. If this fails, ReferenceEmitter will throw
         // an error.
-        new LogicalProjectStrategy(checker, new LogicalFileSystem(this.rootDirs)),
+        new LogicalProjectStrategy(this.reflector, new LogicalFileSystem(this.rootDirs)),
       ]);
+
+      // If an entrypoint is present, then all user imports should be directed through the
+      // entrypoint and private exports are not needed. The compiler will validate that all publicly
+      // visible directives/pipes are importable via this entrypoint.
+      if (this.entryPoint === null && this.options.generateDeepReexports === true) {
+        // No entrypoint is present and deep re-exports were requested, so configure the aliasing
+        // system to generate them.
+        this.aliasingHost = new PrivateExportAliasingHost(this.reflector);
+      }
     } else {
       // The CompilerHost supports fileNameToModuleName, so use that to emit imports.
       this.refEmitter = new ReferenceEmitter([
@@ -468,18 +550,18 @@ export class NgtscProgram implements api.Program {
         // Then use aliased references (this is a workaround to StrictDeps checks).
         new AliasStrategy(),
         // Then use fileNameToModuleName to emit imports.
-        new FileToModuleStrategy(checker, this.fileToModuleHost),
+        new FileToModuleStrategy(this.reflector, this.fileToModuleHost),
       ]);
-      aliasGenerator = new AliasGenerator(this.fileToModuleHost);
+      this.aliasingHost = new FileToModuleAliasingHost(this.fileToModuleHost);
     }
 
     const evaluator = new PartialEvaluator(this.reflector, checker, this.incrementalState);
     const dtsReader = new DtsMetadataReader(checker, this.reflector);
     const localMetaRegistry = new LocalMetadataRegistry();
     const localMetaReader = new CompoundMetadataReader([localMetaRegistry, this.incrementalState]);
-    const depScopeReader = new MetadataDtsModuleScopeResolver(dtsReader, aliasGenerator);
+    const depScopeReader = new MetadataDtsModuleScopeResolver(dtsReader, this.aliasingHost);
     const scopeRegistry = new LocalModuleScopeRegistry(
-        localMetaReader, depScopeReader, this.refEmitter, aliasGenerator, this.incrementalState);
+        localMetaReader, depScopeReader, this.refEmitter, this.aliasingHost, this.incrementalState);
     const scopeReader = new CompoundComponentScopeReader([scopeRegistry, this.incrementalState]);
     const metaRegistry =
         new CompoundMetadataRegistry([localMetaRegistry, scopeRegistry, this.incrementalState]);
@@ -504,13 +586,12 @@ export class NgtscProgram implements api.Program {
 
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers = [
-      new BaseDefDecoratorHandler(this.reflector, evaluator, this.isCore),
       new ComponentDecoratorHandler(
           this.reflector, evaluator, metaRegistry, this.metaReader !, scopeReader, scopeRegistry,
           this.isCore, this.resourceManager, this.rootDirs,
           this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds !== false,
-          this.moduleResolver, this.cycleAnalyzer, this.refEmitter, this.defaultImportTracker,
-          this.incrementalState),
+          this.getI18nLegacyMessageFormat(), this.moduleResolver, this.cycleAnalyzer,
+          this.refEmitter, this.defaultImportTracker, this.incrementalState),
       new DirectiveDecoratorHandler(
           this.reflector, evaluator, metaRegistry, this.defaultImportTracker, this.isCore),
       new InjectableDecoratorHandler(
@@ -527,6 +608,11 @@ export class NgtscProgram implements api.Program {
     return new IvyCompilation(
         handlers, this.reflector, this.importRewriter, this.incrementalState, this.perfRecorder,
         this.sourceToFactorySymbols, scopeRegistry);
+  }
+
+  private getI18nLegacyMessageFormat(): string {
+    return this.options.enableI18nLegacyMessageIdFormat !== false && this.options.i18nInFormat ||
+        '';
   }
 
   private get reflector(): TypeScriptReflectionHost {

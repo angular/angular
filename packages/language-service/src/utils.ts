@@ -60,7 +60,7 @@ export function hasTemplateReference(type: CompileTypeMetadata): boolean {
   if (type.diDeps) {
     for (let diDep of type.diDeps) {
       if (diDep.token && diDep.token.identifier &&
-          identifierName(diDep.token !.identifier !) == 'TemplateRef')
+          identifierName(diDep.token !.identifier !) === 'TemplateRef')
         return true;
     }
   }
@@ -69,21 +69,15 @@ export function hasTemplateReference(type: CompileTypeMetadata): boolean {
 
 export function getSelectors(info: AstResult): SelectorInfo {
   const map = new Map<CssSelector, CompileDirectiveSummary>();
-  const selectors: CssSelector[] = flatten(info.directives.map(directive => {
+  const results: CssSelector[] = [];
+  for (const directive of info.directives) {
     const selectors: CssSelector[] = CssSelector.parse(directive.selector !);
-    selectors.forEach(selector => map.set(selector, directive));
-    return selectors;
-  }));
-  return {selectors, map};
-}
-
-export function flatten<T>(a: T[][]) {
-  return (<T[]>[]).concat(...a);
-}
-
-export function removeSuffix(value: string, suffix: string) {
-  if (value.endsWith(suffix)) return value.substring(0, value.length - suffix.length);
-  return value;
+    for (const selector of selectors) {
+      results.push(selector);
+      map.set(selector, directive);
+    }
+  }
+  return {selectors: results, map};
 }
 
 export function isTypescriptVersion(low: string, high?: string) {
@@ -149,7 +143,7 @@ export function findTemplateAstAt(
       // Ignore the host properties of a directive
       const result = this.visitChildren(context, visit => { visit(ast.inputs); });
       // We never care about the diretive itself, just its inputs.
-      if (path[path.length - 1] == ast) {
+      if (path[path.length - 1] === ast) {
         path.pop();
       }
       return result;
@@ -213,4 +207,22 @@ export function getDirectiveClassLike(node: ts.Node): DirectiveClassLike|undefin
       };
     }
   }
+}
+
+/**
+ * Finds the value of a property assignment that is nested in a TypeScript node and is of a certain
+ * type T.
+ *
+ * @param startNode node to start searching for nested property assignment from
+ * @param propName property assignment name
+ * @param predicate function to verify that a node is of type T.
+ * @return node property assignment value of type T, or undefined if none is found
+ */
+export function findPropertyValueOfType<T extends ts.Node>(
+    startNode: ts.Node, propName: string, predicate: (node: ts.Node) => node is T): T|undefined {
+  if (ts.isPropertyAssignment(startNode) && startNode.name.getText() === propName) {
+    const {initializer} = startNode;
+    if (predicate(initializer)) return initializer;
+  }
+  return startNode.forEachChild(c => findPropertyValueOfType(c, propName, predicate));
 }

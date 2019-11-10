@@ -670,12 +670,12 @@
     "groups": ["Collaborators", "GDE"],
     "mentor": "gkalpak"
   },
-  "JiaLiPassion": {
-    "name": "JiaLi Passion",
+  "jiali": {
+    "name": "Jia Li",
     "groups": ["Collaborators"],
     "mentor": "mhevery",
     "picture": "JiaLiPassion.jpg",
-    "bio": "A programmer with passion, angular/zone.js guy! Web frontend engineer @sylabs"
+    "bio": "A programmer with passion, angular/zone.js guy! Web frontend engineer @thisdot"
   },
   "cexbrayat": {
     "name": "Cédric Exbrayat",
@@ -824,5 +824,45 @@
     "website": "http://martina-kraus.io",
     "bio": "Martina is a software engineer and an Angular enthusiast. As a trainer, mentor and speaker she loves sharing knowledge about Web Technologies and Angular. She is Organizer of ngGirls and the local Angular Meetup",
     "groups": ["GDE"]
+  },
+  "ayazhafiz": {
+    "name": "Ayaz Hafiz",
+    "groups": ["Collaborators"],
+    "picture": "hafiz.jpg",
+    "website": "https://github.com/ayazhafiz",
+    "bio": "Ayaz is an undergraduate student with interests in free software."
+  },
+  "brocco": {
+    "name": "Mike Brocchi",
+    "picture": "mike-brocchi.jpg",
+    "twitter": "brocco",
+    "website": "https://github.com/Brocco",
+    "bio": "Mike (aka Brocco) is a Google Developer Expert in Web Technologies and Angular. He is passionate about teaching and helping others. You can find him online as half of the ngBS live stream and also as a panelist on the Angular Air video broadcast.",
+    "groups": ["GDE"]
+  },
+  "webdave": {
+    "name": "David Muellerchen",
+    "picture": "webdave.jpg",
+    "twitter": "webdave_de",
+    "website": "https://github.com/web-dave",
+    "bio": "David is an Angular consultant who offers support for your Angular applications and projects. He’s also a trainer at angular.de, angular-college and swissangular. He loves to speak and teach at meetups and conferences. David also writes his own blog and reviews upcoming books and articles. During leisure time he jumps arround with his 3 boys and his wife. He is an organizer of Angular Hamburg and ng-de.",
+    "groups": ["GDE"]
+  },
+  "FabianGosebrink": {
+    "name": "Fabian Gosebrink",
+    "picture": "fabiangosebrink.jpg",
+    "twitter": "FabianGosebrink",
+    "website": "https://fabian-gosebrink.com",
+    "bio": "Fabian Gosebrink is a Google Developer Expert for Angular and Web Technologies, Microsoft MVP and Web Developer for ASP.NET Core and Angular. As a professional software engineer, consultant and trainer, he advises and supports customers in the implementation of frontend, backend, and mobile development of web applications.",
+    "groups": ["GDE"]
+  },
+  "dgp1130": {
+    "name": "Doug Parker",
+    "picture": "dgp1130.jpg",
+    "twitter": "develwoutacause",
+    "website": "https://github.com/dgp1130",
+    "bio": "Doug is an overly-opinionated software developer with a passion for making awesome developer tools. He is motivated primarily by his selfish desire to make his own life easier, but loves to share his tools and workflows with others to make everyone's lives easier.",
+    "groups": ["Angular"],
+    "lead": "igorminar"
   }
 }

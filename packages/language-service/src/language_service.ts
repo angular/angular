@@ -12,7 +12,7 @@ import {isAstResult} from './common';
 import {getTemplateCompletions} from './completions';
 import {getDefinitionAndBoundSpan, getTsDefinitionAndBoundSpan} from './definitions';
 import {getDeclarationDiagnostics, getTemplateDiagnostics, ngDiagnosticToTsDiagnostic, uniqueBySpan} from './diagnostics';
-import {getHover} from './hover';
+import {getHover, getTsHover} from './hover';
 import {Diagnostic, LanguageService} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 
@@ -37,6 +37,7 @@ class LanguageServiceImpl implements LanguageService {
     const analyzedModules = this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
     const results: Diagnostic[] = [];
     const templates = this.host.getTemplates(fileName);
+
     for (const template of templates) {
       const astOrDiagnostic = this.host.getTemplateAst(template);
       if (isAstResult(astOrDiagnostic)) {
@@ -45,10 +46,12 @@ class LanguageServiceImpl implements LanguageService {
         results.push(astOrDiagnostic);
       }
     }
+
     const declarations = this.host.getDeclarations(fileName);
     if (declarations && declarations.length) {
-      results.push(...getDeclarationDiagnostics(declarations, analyzedModules));
+      results.push(...getDeclarationDiagnostics(declarations, analyzedModules, this.host));
     }
+
     const sourceFile = fileName.endsWith('.ts') ? this.host.getSourceFile(fileName) : undefined;
     return uniqueBySpan(results).map(d => ngDiagnosticToTsDiagnostic(d, sourceFile));
   }
@@ -67,7 +70,8 @@ class LanguageServiceImpl implements LanguageService {
       isGlobalCompletion: false,
       isMemberCompletion: false,
       isNewIdentifierLocation: false,
-      entries: results,
+      // Cast CompletionEntry.kind from ng.CompletionKind to ts.ScriptElementKind
+      entries: results as unknown as ts.CompletionEntry[],
     };
   }
 
@@ -92,7 +96,16 @@ class LanguageServiceImpl implements LanguageService {
     this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
     const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
-      return getHover(templateInfo, position);
+      return getHover(templateInfo, position, this.host);
+    }
+
+    // Attempt to get Angular-specific hover information in a TypeScript file, the NgModule a
+    // directive belongs to.
+    if (fileName.endsWith('.ts')) {
+      const sf = this.host.getSourceFile(fileName);
+      if (sf) {
+        return getTsHover(sf, position, this.host);
+      }
     }
   }
 }

@@ -27,12 +27,14 @@ export default [
       'domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira',
       'sábado'
     ],
-    ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb']
+    ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado']
   ],
   u,
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
-    ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'],
+    [
+      'jan.', 'fev.', 'mar.', 'abr.', 'mai.', 'jun.', 'jul.', 'ago.', 'set.', 'out.', 'nov.', 'dez.'
+    ],
     [
       'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro',
       'outubro', 'novembro', 'dezembro'
@@ -42,7 +44,7 @@ export default [
   ['dd/MM/yy', 'dd/MM/y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'às\' {0}', u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'Db', 'São Tomé & Príncipe Dobra (2018)', {
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'Db', 'dobra de São Tomé e Príncipe', {
     'AUD': ['AU$', '$'],
     'JPY': ['JP¥', '¥'],
     'PTE': ['​'],

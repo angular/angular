@@ -11,13 +11,13 @@ import {attachPatchData} from '../context_discovery';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags, registerPostOrderHooks} from '../hooks';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
-import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeFlags, TNodeType, TViewNode} from '../interfaces/node';
+import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType, TViewNode} from '../interfaces/node';
 import {isDirectiveHost} from '../interfaces/type_checks';
-import {BINDING_INDEX, FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
+import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TVIEW, TViewType, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild, removeView} from '../node_manipulation';
-import {getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
-import {getNativeByTNode, load} from '../util/view_utils';
+import {getBindingIndex, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {getConstant, load} from '../util/view_utils';
 
 import {addToViewTree, createDirectivesInstances, createLContainer, createTNode, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
@@ -38,7 +38,7 @@ export function ɵɵcontainer(index: number): void {
   const lView = getLView();
   const tNode = containerInternal(lView, index, null, null);
 
-  if (lView[TVIEW].firstTemplatePass) {
+  if (lView[TVIEW].firstCreatePass) {
     tNode.tViews = [];
   }
   setIsNotParent();
@@ -53,33 +53,36 @@ export function ɵɵcontainer(index: number): void {
  *
  * @param index The index of the container in the data array
  * @param templateFn Inline template
- * @param consts The number of nodes, local refs, and pipes for this template
+ * @param decls The number of nodes, local refs, and pipes for this template
  * @param vars The number of bindings for this template
  * @param tagName The name of the container element, if applicable
- * @param attrs The attrs attached to the container, if applicable
- * @param localRefs A set of local reference bindings on the element.
+ * @param attrsIndex Index of template attributes in the `consts` array.
+ * @param localRefs Index of the local references in the `consts` array.
  * @param localRefExtractor A function which extracts local-refs values from the template.
  *        Defaults to the current element associated with the local-ref.
  *
  * @codeGenApi
  */
 export function ɵɵtemplate(
-    index: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
-    tagName?: string | null, attrs?: TAttributes | null, localRefs?: string[] | null,
+    index: number, templateFn: ComponentTemplate<any>| null, decls: number, vars: number,
+    tagName?: string | null, attrsIndex?: number | null, localRefsIndex?: number | null,
     localRefExtractor?: LocalRefExtractor) {
   const lView = getLView();
   const tView = lView[TVIEW];
+  const tViewConsts = tView.consts;
 
   // TODO: consider a separate node type for templates
-  const tContainerNode = containerInternal(lView, index, tagName || null, attrs || null);
-  if (tView.firstTemplatePass) {
-    ngDevMode && ngDevMode.firstTemplatePass++;
-    resolveDirectives(tView, lView, tContainerNode, localRefs || null);
+  const tContainerNode = containerInternal(
+      lView, index, tagName || null, getConstant(tViewConsts, attrsIndex) as TAttributes);
+  const localRefs = getConstant(tViewConsts, localRefsIndex) as string[];
+  if (tView.firstCreatePass) {
+    ngDevMode && ngDevMode.firstCreatePass++;
+    resolveDirectives(tView, lView, tContainerNode, localRefs);
     registerPostOrderHooks(tView, tContainerNode);
 
     const embeddedTView = tContainerNode.tViews = createTView(
-        -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null,
-        tView.schemas);
+        TViewType.Embedded, -1, templateFn, decls, vars, tView.directiveRegistry,
+        tView.pipeRegistry, null, tView.schemas, tViewConsts);
     const embeddedTViewNode = createTNode(tView, null, TNodeType.View, -1, null, null) as TViewNode;
     embeddedTViewNode.injectorIndex = tContainerNode.injectorIndex;
     embeddedTView.node = embeddedTViewNode;
@@ -169,7 +172,7 @@ function containerInternal(
     lView: LView, nodeIndex: number, tagName: string | null,
     attrs: TAttributes | null): TContainerNode {
   ngDevMode && assertEqual(
-                   lView[BINDING_INDEX], lView[TVIEW].bindingStartIndex,
+                   getBindingIndex(), lView[TVIEW].bindingStartIndex,
                    'container nodes should be created before any bindings');
 
   const adjustedIndex = nodeIndex + HEADER_OFFSET;
@@ -182,7 +185,7 @@ function containerInternal(
   const lContainer = lView[adjustedIndex] = createLContainer(comment, lView, comment, tNode);
 
   appendChild(comment, tNode, lView);
-  attachPatchData(getNativeByTNode(tNode, lView), lView);
+  attachPatchData(comment, lView);
 
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.

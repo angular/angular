@@ -266,8 +266,10 @@ everything work seamlessly:
   When you register a downgraded service, you must explicitly specify a *string token* that you want to
   use in AngularJS.
 
-<figure>
-  <img src="generated/images/guide/upgrade/injectors.png" alt="The two injectors in a hybrid application">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/upgrade/injectors.png" alt="The two injectors in a hybrid application">
+  </div>
 </figure>
 
 #### Components and the DOM
@@ -302,8 +304,10 @@ ways:
     bridges the related concepts of AngularJS transclusion and Angular content
     projection together.
 
-<figure>
-  <img src="generated/images/guide/upgrade/dom.png" alt="DOM element ownership in a hybrid application">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/upgrade/dom.png" alt="DOM element ownership in a hybrid application">
+  </div>
 </figure>
 
 Whenever you use a component that belongs to the other framework, a
@@ -347,12 +351,14 @@ AngularJS and Angular approaches. Here's what happens:
   every turn of the Angular zone. This also triggers AngularJS change
   detection after every event.
 
-<figure>
-  <img src="generated/images/guide/upgrade/change_detection.png" alt="Change detection in a hybrid application">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/upgrade/change_detection.png" alt="Change detection in a hybrid application">
+  </div>
 </figure>
 
 In practice, you do not need to call `$apply()`,
-regardless of whether it is in AngularJS on Angular. The
+regardless of whether it is in AngularJS or Angular. The
 `UpgradeModule` does it for us. You *can* still call `$apply()` so there
 is no need to remove such calls from existing code. Those calls just trigger
 additional AngularJS change detection checks in a hybrid application.
@@ -962,7 +968,7 @@ Once you introduce the Angular Router, using the Angular Router triggers navigat
 
 You can take advantage of Ahead-of-time (AOT) compilation on hybrid apps just like on any other
 Angular application.
-The setup for an hybrid app is mostly the same as described in
+The setup for a hybrid app is mostly the same as described in
 [the Ahead-of-time Compilation chapter](guide/aot-compiler)
 save for differences in `index.html` and `main-aot.ts`
 
@@ -1500,7 +1506,7 @@ This is something you'll do to all components as you upgrade them. Simultaneousl
 with the AngularJS to Angular upgrade you're also migrating code from scripts to modules.
 
 At this point, you can switch the two components to use the new service
-instead of the old one.  While you `$inject` it as the downgraded `phone` factory,
+instead of the old one. While you `$inject` it as the downgraded `phone` factory,
 it's really an instance of the `Phone` class and you annotate its type accordingly:
 
 <code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.component.ajs.ts" header="app/phone-list/phone-list.component.ts">
@@ -1622,7 +1628,7 @@ There are several notable changes here:
 * You're using the property binding syntax around `ng-class`. Though Angular
   does have [a very similar `ngClass`](guide/template-syntax#directives)
   as AngularJS does, its value is not magically evaluated as an expression.
-  In Angular, you always specify  in the template when an attribute's value is
+  In Angular, you always specify in the template when an attribute's value is
   a property expression, as opposed to a literal string.
 
 * You've replaced `ng-repeat`s with `*ngFor`s.
@@ -1709,7 +1715,7 @@ Create a new `app.component.ts` file with the following `AppComponent` class:
 <code-example path="upgrade-phonecat-3-final/app/app.component.ts" header="app/app.component.ts">
 </code-example>
 
-It has a simple template that only includes the `<router-outlet>.
+It has a simple template that only includes the `<router-outlet>`.
 This component just renders the contents of the active route and nothing else.
 
 The selector tells Angular to plug this root component into the `<phonecat-app>`

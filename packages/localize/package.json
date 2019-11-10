@@ -5,22 +5,35 @@
   "main": "./bundles/localize.umd.js",
   "module": "./fesm5/localize.js",
   "es2015": "./fesm2015/localize.js",
-  "esm5": "./esm5/localize.js",
-  "esm2015": "./esm2015/localize.js",
+  "esm5": "./esm5/index.js",
+  "esm2015": "./esm2015/index.js",
   "fesm5": "./fesm5/localize.js",
   "fesm2015": "./fesm2015/localize.js",
   "typings": "./index.d.ts",
+  "bin": {
+    "localize-translate": "./src/tools/src/translate/main.js"
+  },
   "author": "angular",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
   },
+  "schematics": "./schematics/collection.json",
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "sideEffects": true,
+  "sideEffects": [
+    "**/init/index.js",
+    "**/init.js",
+    "**/localize-init.umd.js"
+  ],
   "engines": {
     "node": ">=8.0"
+  },
+  "dependencies": {
+    "@babel/core": "^7.5.5",
+    "glob": "7.1.2",
+    "yargs": "13.1.0"
   }
 }

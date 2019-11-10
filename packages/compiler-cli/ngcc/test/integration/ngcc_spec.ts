@@ -19,6 +19,7 @@ import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTI
 import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 import {MockLogger} from '../helpers/mock_logger';
+import {genNodeModules} from './util';
 
 
 const testFiles = loadStandardTestFiles({fakeCore: false, rxjs: true});
@@ -749,6 +750,275 @@ runInEachFileSystem(() => {
           fesm5: '0.0.0-PLACEHOLDER',
           typings: '0.0.0-PLACEHOLDER',
         });
+      });
+    });
+
+    describe('undecorated child class migration', () => {
+      it('should generate a directive definition with CopyDefinitionFeature for an undecorated child directive',
+         () => {
+           genNodeModules({
+             'test-package': {
+               '/index.ts': `
+              import {Directive, NgModule} from '@angular/core';
+
+              @Directive({
+                selector: '[base]',
+              })
+              export class BaseDir {}
+
+              export class DerivedDir extends BaseDir {}
+
+              @NgModule({
+                declarations: [DerivedDir],
+              })
+              export class Module {}
+            `,
+             },
+           });
+
+           mainNgcc({
+             basePath: '/node_modules',
+             targetEntryPointPath: 'test-package',
+             propertiesToConsider: ['main'],
+           });
+
+
+           const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
+           expect(jsContents)
+               .toContain(
+                   'DerivedDir.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: DerivedDir, selectors: [["", "base", ""]], ' +
+                   'features: [ɵngcc0.ɵɵInheritDefinitionFeature, ɵngcc0.ɵɵCopyDefinitionFeature] });');
+
+           const dtsContents = fs.readFile(_(`/node_modules/test-package/index.d.ts`));
+           expect(dtsContents)
+               .toContain(
+                   'static ɵdir: ɵngcc0.ɵɵDirectiveDefWithMeta<DerivedDir, "[base]", never, {}, {}, never>;');
+         });
+
+      it('should generate a component definition with CopyDefinitionFeature for an undecorated child component',
+         () => {
+           genNodeModules({
+             'test-package': {
+               '/index.ts': `
+           import {Component, NgModule} from '@angular/core';
+
+           @Component({
+             selector: '[base]',
+             template: '<span>This is the base template</span>',
+           })
+           export class BaseCmp {}
+
+           export class DerivedCmp extends BaseCmp {}
+
+           @NgModule({
+             declarations: [DerivedCmp],
+           })
+           export class Module {}
+         `,
+             },
+           });
+
+           mainNgcc({
+             basePath: '/node_modules',
+             targetEntryPointPath: 'test-package',
+             propertiesToConsider: ['main'],
+           });
+
+
+           const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
+           expect(jsContents).toContain('DerivedCmp.ɵcmp = ɵngcc0.ɵɵdefineComponent');
+           expect(jsContents)
+               .toContain(
+                   'features: [ɵngcc0.ɵɵInheritDefinitionFeature, ɵngcc0.ɵɵCopyDefinitionFeature]');
+
+           const dtsContents = fs.readFile(_(`/node_modules/test-package/index.d.ts`));
+           expect(dtsContents)
+               .toContain(
+                   'static ɵcmp: ɵngcc0.ɵɵComponentDefWithMeta<DerivedCmp, "[base]", never, {}, {}, never>;');
+         });
+
+      it('should generate directive definitions with CopyDefinitionFeature for undecorated child directives in a long inheritance chain',
+         () => {
+           genNodeModules({
+             'test-package': {
+               '/index.ts': `
+           import {Directive, NgModule} from '@angular/core';
+
+           @Directive({
+             selector: '[base]',
+           })
+           export class BaseDir {}
+
+           export class DerivedDir1 extends BaseDir {}
+
+           export class DerivedDir2 extends DerivedDir1 {}
+
+           export class DerivedDir3 extends DerivedDir2 {}
+
+           @NgModule({
+             declarations: [DerivedDir3],
+           })
+           export class Module {}
+         `,
+             },
+           });
+
+           mainNgcc({
+             basePath: '/node_modules',
+             targetEntryPointPath: 'test-package',
+             propertiesToConsider: ['main'],
+           });
+
+           const dtsContents = fs.readFile(_(`/node_modules/test-package/index.d.ts`));
+           expect(dtsContents)
+               .toContain(
+                   'static ɵdir: ɵngcc0.ɵɵDirectiveDefWithMeta<DerivedDir1, "[base]", never, {}, {}, never>;');
+           expect(dtsContents)
+               .toContain(
+                   'static ɵdir: ɵngcc0.ɵɵDirectiveDefWithMeta<DerivedDir2, "[base]", never, {}, {}, never>;');
+           expect(dtsContents)
+               .toContain(
+                   'static ɵdir: ɵngcc0.ɵɵDirectiveDefWithMeta<DerivedDir3, "[base]", never, {}, {}, never>;');
+         });
+    });
+
+    describe('aliasing re-exports in commonjs', () => {
+      it('should add re-exports to commonjs files', () => {
+        loadTestFiles([
+          {
+            name: _('/node_modules/test-package/package.json'),
+            contents: `
+              {
+                "name": "test-package",
+                "main": "./index.js",
+                "typings": "./index.d.ts"
+              }
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/index.js'),
+            contents: `
+              var __export = null;
+              __export(require("./module"));
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/index.d.ts'),
+            contents: `
+              export * from "./module";
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/index.metadata.json'),
+            contents: '{}',
+          },
+          {
+            name: _('/node_modules/test-package/module.js'),
+            contents: `
+              var __decorate = null;
+              var core_1 = require("@angular/core");
+              var directive_1 = require("./directive");
+              var LocalDir = /** @class */ (function () {
+                  function LocalDir() {
+                  }
+                  LocalDir = __decorate([
+                      core_1.Directive({
+                          selector: '[local]',
+                      })
+                  ], LocalDir);
+                  return LocalDir;
+              }());
+              var FooModule = /** @class */ (function () {
+                  function FooModule() {
+                  }
+                  FooModule = __decorate([
+                      core_1.NgModule({
+                          declarations: [directive_1.Foo, LocalDir],
+                          exports: [directive_1.Foo, LocalDir],
+                      })
+                  ], FooModule);
+                  return FooModule;
+              }());
+              exports.LocalDir = LocalDir;
+              exports.FooModule = FooModule;
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/module.d.ts'),
+            contents: `
+              export declare class LocalDir {}
+              export declare class FooModule {}
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/module.metadata.json'),
+            contents: '{}',
+          },
+          {
+            name: _('/node_modules/test-package/directive.js'),
+            contents: `
+              var __decorate = null;
+              var core_1 = require("@angular/core");
+              var Foo = /** @class */ (function () {
+                  function Foo() {
+                  }
+                  Foo = __decorate([
+                      core_1.Directive({
+                          selector: '[foo]',
+                      })
+                  ], Foo);
+                  return Foo;
+              }());
+              exports.Foo = Foo;
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/directive.d.ts'),
+            contents: `
+              export declare class Foo {}
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/directive.metadata.json'),
+            contents: '{}',
+          },
+          {
+            name: _('/ngcc.config.js'),
+            contents: `
+              module.exports = {
+                packages: {
+                  'test-package': {
+                    entryPoints: {
+                      '.': {
+                        generateDeepReexports: true
+                      },
+                    },
+                  },
+                },
+              };
+            `,
+          }
+        ]);
+
+        mainNgcc({
+          basePath: '/node_modules',
+          targetEntryPointPath: 'test-package',
+          propertiesToConsider: ['main'],
+        });
+
+        expect(loadPackage('test-package').__processed_by_ivy_ngcc__).toEqual({
+          main: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+
+        const jsContents = fs.readFile(_(`/node_modules/test-package/module.js`));
+        const dtsContents = fs.readFile(_(`/node_modules/test-package/module.d.ts`));
+        expect(jsContents).toContain(`var ɵngcc1 = require('./directive');`);
+        expect(jsContents).toContain('exports.ɵngExportɵFooModuleɵFoo = ɵngcc1.Foo;');
+        expect(dtsContents)
+            .toContain(`export {Foo as ɵngExportɵFooModuleɵFoo} from './directive';`);
+        expect(dtsContents.match(/ɵngExportɵFooModuleɵFoo/g) !.length).toBe(1);
+        expect(dtsContents).not.toContain(`ɵngExportɵFooModuleɵLocalDir`);
       });
     });
 

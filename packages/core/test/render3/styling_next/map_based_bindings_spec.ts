@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {normalizeIntoStylingMap as createMap} from '../../../src/render3/styling_next/map_based_bindings';
+import {normalizeIntoStylingMap as createMap} from '../../../src/render3/util/styling_utils';
 
 describe('map-based bindings', () => {
   describe('StylingMapArray construction', () => {
@@ -81,5 +81,5 @@ describe('map-based bindings', () => {
 
 function createAndAssertValues(newValue: any, entries: any[]) {
   const result = createMap(null, newValue);
-  expect(result).toEqual([newValue || null, ...entries]);
+  expect(result).toEqual([newValue, ...entries]);
 }

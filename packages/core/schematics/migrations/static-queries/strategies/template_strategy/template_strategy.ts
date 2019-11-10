@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, CompileDirectiveMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompileStylesheetMetadata, NgAnalyzedModules, StaticSymbol, TemplateAst, findStaticQueryIds, staticViewQueryIds} from '@angular/compiler';
+import {AotCompiler, CompileDirectiveMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompileStylesheetMetadata, ElementAst, EmbeddedTemplateAst, NgAnalyzedModules, QueryMatch, StaticSymbol, TemplateAst} from '@angular/compiler';
 import {Diagnostic, createProgram, readConfiguration} from '@angular/compiler-cli';
 import {resolve} from 'path';
 import * as ts from 'typescript';
 
-import {hasPropertyNameText} from '../../../../utils/typescript/property_name';
 import {ClassMetadataMap} from '../../angular/ng_query_visitor';
 import {NgQueryDefinition, QueryTiming, QueryType} from '../../angular/query-definition';
 import {TimingResult, TimingStrategy} from '../timing-strategy';
@@ -34,6 +33,13 @@ export class QueryTemplateStrategy implements TimingStrategy {
    */
   setup() {
     const {rootNames, options} = readConfiguration(this.projectPath);
+
+    // https://github.com/angular/angular/commit/ec4381dd401f03bded652665b047b6b90f2b425f made Ivy
+    // the default. This breaks the assumption that "createProgram" from compiler-cli returns the
+    // NGC program. In order to ensure that the migration runs properly, we set "enableIvy" to
+    // false.
+    options.enableIvy = false;
+
     const aotProgram = createProgram({rootNames, options, host: this.host});
 
     // The "AngularCompilerProgram" does not expose the "AotCompiler" instance, nor does it
@@ -181,4 +187,56 @@ export class QueryTemplateStrategy implements TimingStrategy {
   private _getViewQueryUniqueKey(filePath: string, className: string, propName: string) {
     return `${resolve(filePath)}#${className}-${propName}`;
   }
+}
+
+interface StaticAndDynamicQueryIds {
+  staticQueryIds: Set<number>;
+  dynamicQueryIds: Set<number>;
+}
+
+/** Figures out which queries are static and which ones are dynamic. */
+function findStaticQueryIds(
+    nodes: TemplateAst[], result = new Map<TemplateAst, StaticAndDynamicQueryIds>()):
+    Map<TemplateAst, StaticAndDynamicQueryIds> {
+  nodes.forEach((node) => {
+    const staticQueryIds = new Set<number>();
+    const dynamicQueryIds = new Set<number>();
+    let queryMatches: QueryMatch[] = undefined !;
+    if (node instanceof ElementAst) {
+      findStaticQueryIds(node.children, result);
+      node.children.forEach((child) => {
+        const childData = result.get(child) !;
+        childData.staticQueryIds.forEach(queryId => staticQueryIds.add(queryId));
+        childData.dynamicQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
+      });
+      queryMatches = node.queryMatches;
+    } else if (node instanceof EmbeddedTemplateAst) {
+      findStaticQueryIds(node.children, result);
+      node.children.forEach((child) => {
+        const childData = result.get(child) !;
+        childData.staticQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
+        childData.dynamicQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
+      });
+      queryMatches = node.queryMatches;
+    }
+    if (queryMatches) {
+      queryMatches.forEach((match) => staticQueryIds.add(match.queryId));
+    }
+    dynamicQueryIds.forEach(queryId => staticQueryIds.delete(queryId));
+    result.set(node, {staticQueryIds, dynamicQueryIds});
+  });
+  return result;
+}
+
+/** Splits queries into static and dynamic. */
+function staticViewQueryIds(nodeStaticQueryIds: Map<TemplateAst, StaticAndDynamicQueryIds>):
+    StaticAndDynamicQueryIds {
+  const staticQueryIds = new Set<number>();
+  const dynamicQueryIds = new Set<number>();
+  Array.from(nodeStaticQueryIds.values()).forEach((entry) => {
+    entry.staticQueryIds.forEach(queryId => staticQueryIds.add(queryId));
+    entry.dynamicQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
+  });
+  dynamicQueryIds.forEach(queryId => staticQueryIds.delete(queryId));
+  return {staticQueryIds, dynamicQueryIds};
 }

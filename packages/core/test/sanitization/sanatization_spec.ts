@@ -8,8 +8,8 @@
  */
 
 import {SECURITY_SCHEMA} from '@angular/compiler/src/schema/dom_security_schema';
-import {HEADER_OFFSET, LView} from '@angular/core/src/render3/interfaces/view';
-import {setTNodeAndViewData} from '@angular/core/src/render3/state';
+import {LView} from '@angular/core/src/render3/interfaces/view';
+import {enterView, leaveView} from '@angular/core/src/render3/state';
 
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
 import {getUrlSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl, ɵɵsanitizeUrlOrResourceUrl} from '../../src/sanitization/sanitization';
@@ -20,8 +20,8 @@ function fakeLView(): LView {
 }
 
 describe('sanitization', () => {
-  beforeEach(() => setTNodeAndViewData(null !, fakeLView()));
-  afterEach(() => setTNodeAndViewData(null !, null !));
+  beforeEach(() => enterView(fakeLView(), null));
+  afterEach(() => leaveView());
   class Wrap {
     constructor(private value: string) {}
     toString() { return this.value; }

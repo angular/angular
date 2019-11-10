@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ParseSourceSpan, ParseSpan, Position} from '@angular/compiler';
+import {AbsoluteSourceSpan, ParseSourceSpan, ParseSpan, Position} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {getTokenAtPosition} from '../../util/src/typescript';
@@ -53,6 +53,11 @@ export interface AbsoluteSpan {
 export function toAbsoluteSpan(span: ParseSpan, sourceSpan: ParseSourceSpan): AbsoluteSpan {
   const offset = sourceSpan.start.offset;
   return <AbsoluteSpan>{start: span.start + offset, end: span.end + offset};
+}
+
+export function absoluteSourceSpanToSourceLocation(
+    id: string, span: AbsoluteSourceSpan): SourceLocation {
+  return {id, ...span};
 }
 
 /**
@@ -109,6 +114,8 @@ export function shouldReportDiagnostic(diagnostic: ts.Diagnostic): boolean {
   } else if (code === 6199 /* All variables are unused. */) {
     return false;
   } else if (code === 2695 /* Left side of comma operator is unused and has no side effects. */) {
+    return false;
+  } else if (code === 7006 /* Parameter '$event' implicitly has an 'any' type. */) {
     return false;
   }
   return true;
@@ -270,5 +277,5 @@ function parseParseSpanComment(commentText: string): ParseSpan|null {
     return null;
   }
 
-  return {start: +match[1], end: +match[2]};
+  return new ParseSpan(+match[1], +match[2]);
 }

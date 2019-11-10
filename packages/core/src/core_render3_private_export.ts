@@ -18,7 +18,6 @@ export {
   ɵɵattributeInterpolate7,
   ɵɵattributeInterpolate8,
   ɵɵattributeInterpolateV,
-  ɵɵdefineBase,
   ɵɵdefineComponent,
   ɵɵdefineDirective,
   ɵɵdefinePipe,
@@ -34,12 +33,14 @@ export {
   ɵɵdirectiveInject,
   ɵɵinjectAttribute,
   ɵɵinjectPipeChangeDetectorRef,
+  ɵɵinvalidFactory,
   ɵɵgetFactoryOf,
   ɵɵgetInheritedFactory,
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
   ɵɵtemplateRefExtractor,
   ɵɵProvidersFeature,
+  ɵɵCopyDefinitionFeature,
   ɵɵInheritDefinitionFeature,
   ɵɵNgOnChangesFeature,
   LifecycleHooksFeature as ɵLifecycleHooksFeature,
@@ -120,7 +121,6 @@ export {
   ɵɵelementContainerStart,
   ɵɵelementContainerEnd,
   ɵɵelementContainer,
-  ɵɵstyling,
   ɵɵstyleMap,
   ɵɵstyleSanitizer,
   ɵɵclassMap,
@@ -143,7 +143,6 @@ export {
   ɵɵstylePropInterpolate7,
   ɵɵstylePropInterpolate8,
   ɵɵstylePropInterpolateV,
-  ɵɵstylingApply,
   ɵɵclassProp,
   ɵɵelementHostAttrs,
 
@@ -153,7 +152,6 @@ export {
   ɵɵembeddedViewEnd,
   store as ɵstore,
   ɵɵpipe,
-  ɵɵBaseDef,
   ComponentDef as ɵComponentDef,
   ɵɵComponentDefWithMeta,
   ɵɵFactoryDef,
@@ -223,16 +221,15 @@ export {
 
 export {
   NG_ELEMENT_ID as ɵNG_ELEMENT_ID,
-  NG_COMPONENT_DEF as ɵNG_COMPONENT_DEF,
-  NG_DIRECTIVE_DEF as ɵNG_DIRECTIVE_DEF,
+  NG_COMP_DEF as ɵNG_COMP_DEF,
+  NG_DIR_DEF as ɵNG_DIR_DEF,
   NG_PIPE_DEF as ɵNG_PIPE_DEF,
-  NG_MODULE_DEF as ɵNG_MODULE_DEF,
-  NG_BASE_DEF as ɵNG_BASE_DEF
+  NG_MOD_DEF as ɵNG_MOD_DEF,
 } from './render3/fields';
 
 export {
-  NG_INJECTABLE_DEF as ɵNG_INJECTABLE_DEF,
-  NG_INJECTOR_DEF as ɵNG_INJECTOR_DEF,
+  NG_PROV_DEF as ɵNG_PROV_DEF,
+  NG_INJ_DEF as ɵNG_INJ_DEF,
 } from './di/interface/defs';
 
 export {

@@ -9,12 +9,14 @@
 import {logging} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {AotCompiler} from '@angular/compiler';
+import {Diagnostic as NgDiagnostic} from '@angular/compiler-cli';
 import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
+import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
 
 import {createNgcProgram} from './create_ngc_program';
 import {NgDeclarationCollector} from './ng_declaration_collector';
@@ -34,8 +36,7 @@ export default function(): Rule {
     const {buildPaths} = getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const failures: string[] = [];
-
-    ctx.logger.info('------ Undecorated classes with DI migration ------');
+    let programError = false;
 
     if (!buildPaths.length) {
       throw new SchematicsException(
@@ -44,30 +45,39 @@ export default function(): Rule {
     }
 
     for (const tsconfigPath of buildPaths) {
-      failures.push(...runUndecoratedClassesMigration(tree, tsconfigPath, basePath, ctx.logger));
+      const result = runUndecoratedClassesMigration(tree, tsconfigPath, basePath, ctx.logger);
+      failures.push(...result.failures);
+      programError = programError || !!result.programError;
     }
 
-    if (failures.length) {
+    if (programError) {
+      ctx.logger.info('Could not migrate all undecorated classes that use dependency');
+      ctx.logger.info('injection. Some project targets could not be analyzed due to');
+      ctx.logger.info('TypeScript program failures.\n');
+      ctx.logger.info(`${MIGRATION_RERUN_MESSAGE}\n`);
+
+      if (failures.length) {
+        ctx.logger.info('Please manually fix the following failures and re-run the');
+        ctx.logger.info('migration once the TypeScript program failures are resolved.');
+        failures.forEach(message => ctx.logger.warn(`⮑   ${message}`));
+      }
+    } else if (failures.length) {
       ctx.logger.info('Could not migrate all undecorated classes that use dependency');
       ctx.logger.info('injection. Please manually fix the following failures:');
       failures.forEach(message => ctx.logger.warn(`⮑   ${message}`));
-    } else {
-      ctx.logger.info('Successfully migrated all found undecorated classes');
-      ctx.logger.info('that use dependency injection.');
     }
-
-    ctx.logger.info('----------------------------------------------');
   };
 }
 
 function runUndecoratedClassesMigration(
-    tree: Tree, tsconfigPath: string, basePath: string, logger: logging.LoggerApi): string[] {
+    tree: Tree, tsconfigPath: string, basePath: string,
+    logger: logging.LoggerApi): {failures: string[], programError?: boolean} {
   const failures: string[] = [];
   const programData = gracefullyCreateProgram(tree, basePath, tsconfigPath, logger);
 
   // Gracefully exit if the program could not be created.
   if (programData === null) {
-    return [];
+    return {failures: [], programError: true};
   }
 
   const {program, compiler} = programData;
@@ -75,10 +85,11 @@ function runUndecoratedClassesMigration(
   const partialEvaluator =
       new PartialEvaluator(new TypeScriptReflectionHost(typeChecker), typeChecker);
   const declarationCollector = new NgDeclarationCollector(typeChecker, partialEvaluator);
-  const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
+  const sourceFiles = program.getSourceFiles().filter(
+      s => !s.isDeclarationFile && !program.isSourceFileFromExternalLibrary(s));
 
   // Analyze source files by detecting all directives, components and providers.
-  rootSourceFiles.forEach(sourceFile => declarationCollector.visitNode(sourceFile));
+  sourceFiles.forEach(sourceFile => declarationCollector.visitNode(sourceFile));
 
   const {decoratedDirectives, decoratedProviders, undecoratedDeclarations} = declarationCollector;
   const transform =
@@ -107,7 +118,7 @@ function runUndecoratedClassesMigration(
   // file in order to avoid shifted character offsets.
   updateRecorders.forEach(recorder => recorder.commitUpdate());
 
-  return failures;
+  return {failures};
 
   /** Gets the update recorder for the specified source file. */
   function getUpdateRecorder(sourceFile: ts.SourceFile): UpdateRecorder {
@@ -142,27 +153,28 @@ function runUndecoratedClassesMigration(
   }
 }
 
+function getErrorDiagnostics(diagnostics: ReadonlyArray<ts.Diagnostic|NgDiagnostic>) {
+  return <ts.Diagnostic[]>diagnostics.filter(d => d.category === ts.DiagnosticCategory.Error);
+}
+
 function gracefullyCreateProgram(
     tree: Tree, basePath: string, tsconfigPath: string,
     logger: logging.LoggerApi): {compiler: AotCompiler, program: ts.Program}|null {
   try {
-    const {ngcProgram, host, program, compiler} = createNgcProgram((options) => {
-      const host = ts.createCompilerHost(options, true);
+    const {ngcProgram, host, program, compiler} = createNgcProgram(
+        (options) => createMigrationCompilerHost(tree, options, basePath), tsconfigPath);
+    const syntacticDiagnostics = getErrorDiagnostics(ngcProgram.getTsSyntacticDiagnostics());
+    const structuralDiagnostics = getErrorDiagnostics(ngcProgram.getNgStructuralDiagnostics());
+    const configDiagnostics = getErrorDiagnostics(
+        [...program.getOptionsDiagnostics(), ...ngcProgram.getNgOptionDiagnostics()]);
 
-      // We need to overwrite the host "readFile" method, as we want the TypeScript
-      // program to be based on the file contents in the virtual file tree.
-      host.readFile = fileName => {
-        const buffer = tree.read(relative(basePath, fileName));
-        // Strip BOM as otherwise TSC methods (Ex: getWidth) will return an offset which
-        // which breaks the CLI UpdateRecorder.
-        // See: https://github.com/angular/angular/pull/30719
-        return buffer ? buffer.toString().replace(/^\uFEFF/, '') : undefined;
-      };
-
-      return host;
-    }, tsconfigPath);
-    const syntacticDiagnostics = ngcProgram.getTsSyntacticDiagnostics();
-    const structuralDiagnostics = ngcProgram.getNgStructuralDiagnostics();
+    if (configDiagnostics.length) {
+      logger.warn(
+          `\nTypeScript project "${tsconfigPath}" has configuration errors. This could cause ` +
+          `an incomplete migration. Please fix the following failures and rerun the migration:`);
+      logger.error(ts.formatDiagnostics(configDiagnostics, host));
+      return null;
+    }
 
     // Syntactic TypeScript errors can throw off the query analysis and therefore we want
     // to notify the developer that we couldn't analyze parts of the project. Developers
@@ -172,7 +184,6 @@ function gracefullyCreateProgram(
           `\nTypeScript project "${tsconfigPath}" has syntactical errors which could cause ` +
           `an incomplete migration. Please fix the following failures and rerun the migration:`);
       logger.error(ts.formatDiagnostics(syntacticDiagnostics, host));
-      logger.info(MIGRATION_RERUN_MESSAGE);
       return null;
     }
 
@@ -182,9 +193,8 @@ function gracefullyCreateProgram(
 
     return {program, compiler};
   } catch (e) {
-    logger.warn(`\n${MIGRATION_AOT_FAILURE}. The following project failed: ${tsconfigPath}\n`);
+    logger.warn(`\n${MIGRATION_AOT_FAILURE} The following project failed: ${tsconfigPath}\n`);
     logger.error(`${e.toString()}\n`);
-    logger.info(MIGRATION_RERUN_MESSAGE);
     return null;
   }
 }

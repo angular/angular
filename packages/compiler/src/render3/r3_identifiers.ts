@@ -69,8 +69,6 @@ export class Identifiers {
 
   static elementContainer: o.ExternalReference = {name: 'ɵɵelementContainer', moduleName: CORE};
 
-  static styling: o.ExternalReference = {name: 'ɵɵstyling', moduleName: CORE};
-
   static styleMap: o.ExternalReference = {name: 'ɵɵstyleMap', moduleName: CORE};
 
   static classMap: o.ExternalReference = {name: 'ɵɵclassMap', moduleName: CORE};
@@ -114,8 +112,6 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵɵstylePropInterpolate8', moduleName: CORE};
   static stylePropInterpolateV:
       o.ExternalReference = {name: 'ɵɵstylePropInterpolateV', moduleName: CORE};
-
-  static stylingApply: o.ExternalReference = {name: 'ɵɵstylingApply', moduleName: CORE};
 
   static styleSanitizer: o.ExternalReference = {name: 'ɵɵstyleSanitizer', moduleName: CORE};
 
@@ -215,6 +211,7 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵɵinjectPipeChangeDetectorRef', moduleName: CORE};
 
   static directiveInject: o.ExternalReference = {name: 'ɵɵdirectiveInject', moduleName: CORE};
+  static invalidFactory: o.ExternalReference = {name: 'ɵɵinvalidFactory', moduleName: CORE};
 
   static templateRefExtractor:
       o.ExternalReference = {name: 'ɵɵtemplateRefExtractor', moduleName: CORE};
@@ -222,13 +219,6 @@ export class Identifiers {
   static resolveWindow: o.ExternalReference = {name: 'ɵɵresolveWindow', moduleName: CORE};
   static resolveDocument: o.ExternalReference = {name: 'ɵɵresolveDocument', moduleName: CORE};
   static resolveBody: o.ExternalReference = {name: 'ɵɵresolveBody', moduleName: CORE};
-
-  static defineBase: o.ExternalReference = {name: 'ɵɵdefineBase', moduleName: CORE};
-
-  static BaseDef: o.ExternalReference = {
-    name: 'ɵɵBaseDef',
-    moduleName: CORE,
-  };
 
   static defineComponent: o.ExternalReference = {name: 'ɵɵdefineComponent', moduleName: CORE};
 
@@ -287,6 +277,9 @@ export class Identifiers {
 
   static InheritDefinitionFeature:
       o.ExternalReference = {name: 'ɵɵInheritDefinitionFeature', moduleName: CORE};
+
+  static CopyDefinitionFeature:
+      o.ExternalReference = {name: 'ɵɵCopyDefinitionFeature', moduleName: CORE};
 
   static ProvidersFeature: o.ExternalReference = {name: 'ɵɵProvidersFeature', moduleName: CORE};
 

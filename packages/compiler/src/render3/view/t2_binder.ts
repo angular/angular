@@ -11,6 +11,7 @@ import {CssSelector, SelectorMatcher} from '../../selector';
 import {BoundAttribute, BoundEvent, BoundText, Content, Element, Icu, Node, Reference, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
 
 import {BoundTarget, DirectiveMeta, Target, TargetBinder} from './t2_api';
+import {createCssSelector} from './template';
 import {getAttrsForDirectiveMatching} from './util';
 
 
@@ -222,25 +223,10 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
 
   visitTemplate(template: Template): void { this.visitElementOrTemplate('ng-template', template); }
 
-  visitElementOrTemplate(tag: string, node: Element|Template): void {
+  visitElementOrTemplate(elementName: string, node: Element|Template): void {
     // First, determine the HTML shape of the node for the purpose of directive matching.
     // Do this by building up a `CssSelector` for the node.
-    const cssSelector = new CssSelector();
-    cssSelector.setElement(tag);
-
-    // Add attributes to the CSS selector.
-    const attrs = getAttrsForDirectiveMatching(node);
-    Object.getOwnPropertyNames(attrs).forEach((name) => {
-      const value = attrs[name];
-
-      cssSelector.addAttribute(name, value);
-
-      // Treat the 'class' attribute specially.
-      if (name.toLowerCase() === 'class') {
-        const classes = value.trim().split(/\s+/g);
-        classes.forEach(className => cssSelector.addClassName(className));
-      }
-    });
+    const cssSelector = createCssSelector(elementName, getAttrsForDirectiveMatching(node));
 
     // Next, use the `SelectorMatcher` to get the list of directives on the node.
     const directives: DirectiveT[] = [];
@@ -260,16 +246,16 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
         // This could be a reference to a component if there is one.
         dirTarget = directives.find(dir => dir.isComponent) || null;
       } else {
-        // This is a reference to a directive exported via exportAs. One should exist.
+        // This should be a reference to a directive exported via exportAs.
         dirTarget =
             directives.find(
                 dir => dir.exportAs !== null && dir.exportAs.some(value => value === ref.value)) ||
             null;
-
-        // Check if a matching directive was found, and error if it wasn't.
+        // Check if a matching directive was found.
         if (dirTarget === null) {
-          // TODO(alxhub): Return an error value here that can be used for template validation.
-          throw new Error(`Assertion error: failed to find directive with exportAs: ${ref.value}`);
+          // No matching directive was found - this reference points to an unknown target. Leave it
+          // unmapped.
+          return;
         }
       }
 

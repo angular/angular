@@ -14,7 +14,7 @@ ng_module(
         "//packages:types",
         "//packages/common",
         "//packages/core",
-        "//packages/localize",
+        "//packages/localize/init",
         "//packages/platform-browser",
         "@npm//rxjs",
     ],
@@ -44,10 +44,10 @@ ts_devserver(
     index_html = "index.html",
     port = 4200,
     static_files = [
-        "@npm//:node_modules/zone.js/dist/zone.js",
+        "//packages/zone.js/dist:zone.js",
     ],
     deps = [
-        ":bundle.min.js",
+        ":bundle.min_debug.es2015.js",
     ],
 )
 
@@ -64,7 +64,7 @@ ts_devserver(
         "//tools/rxjs:rxjs_umd_modules",
     ],
     static_files = [
-        "@npm//:node_modules/zone.js/dist/zone.js",
+        "//packages/zone.js/dist:zone.js",
     ],
     deps = [":application_lib"],
 )

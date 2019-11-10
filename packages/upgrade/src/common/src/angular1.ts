@@ -280,7 +280,6 @@ export function getAngularLib(): any {
  */
 export function setAngularJSGlobal(ng: any): void {
   angular = ng;
-  version = ng && ng.version;
 }
 
 /**
@@ -309,5 +308,3 @@ export const injector: typeof angular.injector =
 export const resumeBootstrap: typeof angular.resumeBootstrap = () => angular.resumeBootstrap();
 
 export const getTestability: typeof angular.getTestability = e => angular.getTestability(e);
-
-export let version = angular.version;

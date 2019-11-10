@@ -3,7 +3,7 @@
 Injectors in Angular have rules that you can leverage to
 achieve the desired visibility of injectables in your apps.
 By understanding these rules, you can determine in which
-NgModule or component you should declare a provider.
+NgModule, Component or Directive you should declare a provider.
 
 ## Two injector hierarchies
 
@@ -108,8 +108,10 @@ The following diagram represents the relationship between the
 `root` `ModuleInjector` and its parent injectors as the
 previous paragraphs describe.
 
- <figure>
-  <img src="generated/images/guide/dependency-injection/injectors.svg" alt="NullInjector, ModuleInjector, root injector">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/dependency-injection/injectors.svg" alt="NullInjector, ModuleInjector, root injector">
+  </div>
 </figure>
 
 While the name `root` is a special alias, other `ModuleInjector`s
@@ -364,7 +366,7 @@ templates in separate files. For the purposes of understanding
 how the injection system works, it is useful to look at them
 from the point of view of a combined logical tree. The term
 logical distinguishes it from the render tree (your application
-DOM tree). To mark the locations of  where the component
+DOM tree). To mark the locations of where the component
 templates are located, this guide uses the `<#VIEW>`
 pseudo element, which doesn't actually exist in the render tree
 and is present for mental model purposes only.
@@ -515,7 +517,7 @@ In the logical tree, this would be represented as follows:
 </app-root>
 ```
 
-When `<app-root>` requests the `FlowerService`, it is  the injector's job
+When `<app-root>` requests the `FlowerService`, it is the injector's job
 to resolve the `FlowerService` token. The resolution of the token happens
 in two phases:
 
@@ -562,7 +564,7 @@ The next step is to add a binding to the `ChildComponent` template.
 </code-example>
 
 To render the new values, add `<app-child>` to the bottom of
-the`AppComponent` template so the view also displays the sunflower:
+the `AppComponent` template so the view also displays the sunflower:
 
 ```
 Child Component
@@ -592,7 +594,7 @@ its search at the `<#VIEW>` belonging to `<app-child>` (`<#VIEW>` is
 included because it is injected from `@Component()`) and ends with
 `<app-child>`. In this case, the `FlowerService` is resolved in the
 `<app-child>`'s `providers` array with sunflower 🌻. The injector doesn't
-have to look any further in the injector tree. It stops as soon as it as it
+have to look any further in the injector tree. It stops as soon as it
 finds the `FlowerService` and never sees the 🌺 (red hibiscus).
 
 
@@ -618,7 +620,7 @@ set it up on your own, skip ahead to [Modifying service availability](guide/hier
 The example app features a second service, the `AnimalService` to
 demonstrate `viewProviders`.
 
-First, create an `AnimalService` with an `emoji` property of whale 🐳:
+First, create an `AnimalService` with an `emoji` property of 🐳 (whale):
 
 <code-example path="providers-viewproviders/src/app/animal.service.ts" header="providers-viewproviders/src/app/animal.service.ts" region="animal-service">
 
@@ -795,7 +797,7 @@ The `AnimalService` in the logical tree would look like this:
 </app-root>
 ```
 
-The projected content of `<app-inspector>` sees the whale 🐳, not
+The projected content of `<app-inspector>` sees the 🐳 (whale), not
 the 🐶 (puppy), because the
 🐶 (puppy) is inside the `<app-child>` `<#VIEW>`. The `<app-inspector>` can
 only see the 🐶 (puppy)
@@ -1097,8 +1099,10 @@ Each tax return component has the following characteristics:
 * Has the ability to save the changes to its tax return or cancel them.
 
 
-<figure>
-  <img src="generated/images/guide/dependency-injection/hid-heroes-anim.gif" alt="Heroes in action">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/dependency-injection/hid-heroes-anim.gif" alt="Heroes in action">
+  </div>
 </figure>
 
 Suppose that the `HeroTaxReturnComponent` had logic to manage and restore changes.
@@ -1168,8 +1172,10 @@ that have special capabilities suitable for whatever is going on in component (B
 Component (B) is the parent of another component (C) that defines its own, even _more specialized_ provider for `CarService`.
 
 
-<figure>
-  <img src="generated/images/guide/dependency-injection/car-components.png" alt="car components">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/dependency-injection/car-components.png" alt="car components">
+  </div>
 </figure>
 
 Behind the scenes, each component sets up its own injector with zero, one, or more providers defined for that component itself.
@@ -1179,8 +1185,10 @@ its injector produces an instance of `Car` resolved by injector (C) with an `Eng
 `Tires` resolved by the root injector (A).
 
 
-<figure>
-  <img src="generated/images/guide/dependency-injection/injector-tree.png" alt="car injector tree">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/dependency-injection/injector-tree.png" alt="car injector tree">
+  </div>
 </figure>
 
 

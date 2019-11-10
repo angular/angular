@@ -55,7 +55,7 @@ export function getConstructorDependencies(
       if (name === 'Inject') {
         if (dec.args === null || dec.args.length !== 1) {
           throw new FatalDiagnosticError(
-              ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
+              ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(dec),
               `Unexpected number of arguments to @Inject().`);
         }
         token = new WrappedNodeExpr(dec.args[0]);
@@ -70,14 +70,15 @@ export function getConstructorDependencies(
       } else if (name === 'Attribute') {
         if (dec.args === null || dec.args.length !== 1) {
           throw new FatalDiagnosticError(
-              ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
+              ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(dec),
               `Unexpected number of arguments to @Attribute().`);
         }
         token = new WrappedNodeExpr(dec.args[0]);
         resolved = R3ResolvedDependencyType.Attribute;
       } else {
         throw new FatalDiagnosticError(
-            ErrorCode.DECORATOR_UNEXPECTED, dec.node, `Unexpected decorator ${name} on parameter.`);
+            ErrorCode.DECORATOR_UNEXPECTED, Decorator.nodeForError(dec),
+            `Unexpected decorator ${name} on parameter.`);
       }
     });
 
@@ -133,6 +134,25 @@ export function valueReferenceToExpression(
   }
 }
 
+/**
+ * Convert `ConstructorDeps` into the `R3DependencyMetadata` array for those deps if they're valid,
+ * or into an `'invalid'` signal if they're not.
+ *
+ * This is a companion function to `validateConstructorDependencies` which accepts invalid deps.
+ */
+export function unwrapConstructorDependencies(deps: ConstructorDeps | null): R3DependencyMetadata[]|
+    'invalid'|null {
+  if (deps === null) {
+    return null;
+  } else if (deps.deps !== null) {
+    // These constructor dependencies are valid.
+    return deps.deps;
+  } else {
+    // These deps are invalid.
+    return 'invalid';
+  }
+}
+
 export function getValidConstructorDependencies(
     clazz: ClassDeclaration, reflector: ReflectionHost,
     defaultImportRecorder: DefaultImportRecorder, isCore: boolean): R3DependencyMetadata[]|null {
@@ -140,6 +160,13 @@ export function getValidConstructorDependencies(
       clazz, getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore));
 }
 
+/**
+ * Validate that `ConstructorDeps` does not have any invalid dependencies and convert them into the
+ * `R3DependencyMetadata` array if so, or raise a diagnostic if some deps are invalid.
+ *
+ * This is a companion function to `unwrapConstructorDependencies` which does not accept invalid
+ * deps.
+ */
 export function validateConstructorDependencies(
     clazz: ClassDeclaration, deps: ConstructorDeps | null): R3DependencyMetadata[]|null {
   if (deps === null) {
@@ -312,15 +339,10 @@ export function isWrappedTsNodeExpr(expr: Expression): expr is WrappedNodeExpr<t
 export function readBaseClass(
     node: ClassDeclaration, reflector: ReflectionHost,
     evaluator: PartialEvaluator): Reference<ClassDeclaration>|'dynamic'|null {
-  if (!isNamedClassDeclaration(node)) {
-    // If the node isn't a ts.ClassDeclaration, consider any base class to be dynamic for now.
-    return reflector.hasBaseClass(node) ? 'dynamic' : null;
-  }
-
   const baseExpression = reflector.getBaseClassExpression(node);
   if (baseExpression !== null) {
     const baseClass = evaluator.evaluate(baseExpression);
-    if (baseClass instanceof Reference && isNamedClassDeclaration(baseClass.node)) {
+    if (baseClass instanceof Reference && reflector.isClass(baseClass.node)) {
       return baseClass as Reference<ClassDeclaration>;
     } else {
       return 'dynamic';

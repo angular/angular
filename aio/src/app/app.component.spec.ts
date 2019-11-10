@@ -1,5 +1,5 @@
 import { NO_ERRORS_SCHEMA, DebugElement } from '@angular/core';
-import { inject, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { inject, ComponentFixture, TestBed, fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -464,14 +464,14 @@ describe('AppComponent', () => {
       let scrollSpy: jasmine.Spy;
       let scrollToTopSpy: jasmine.Spy;
       let scrollAfterRenderSpy: jasmine.Spy;
-      let removeStoredScrollPositionSpy: jasmine.Spy;
+      let removeStoredScrollInfoSpy: jasmine.Spy;
 
       beforeEach(() => {
         scrollService = fixture.debugElement.injector.get<ScrollService>(ScrollService);
         scrollSpy = spyOn(scrollService, 'scroll');
         scrollToTopSpy = spyOn(scrollService, 'scrollToTop');
         scrollAfterRenderSpy = spyOn(scrollService, 'scrollAfterRender');
-        removeStoredScrollPositionSpy = spyOn(scrollService, 'removeStoredScrollPosition');
+        removeStoredScrollInfoSpy = spyOn(scrollService, 'removeStoredScrollInfo');
       });
 
       it('should not scroll immediately when the docId (path) changes', () => {
@@ -516,9 +516,9 @@ describe('AppComponent', () => {
         expect(scrollSpy).toHaveBeenCalledTimes(1);
       });
 
-      it('should call `removeStoredScrollPosition` when call `onDocRemoved` directly', () => {
+      it('should call `removeStoredScrollInfo` when call `onDocRemoved` directly', () => {
         component.onDocRemoved();
-        expect(removeStoredScrollPositionSpy).toHaveBeenCalled();
+        expect(removeStoredScrollInfoSpy).toHaveBeenCalled();
       });
 
       it('should call `scrollAfterRender` when call `onDocInserted` directly', (() => {
@@ -529,7 +529,8 @@ describe('AppComponent', () => {
       it('should call `scrollAfterRender` (via `onDocInserted`) when navigate to a new Doc', fakeAsync(() => {
         locationService.go('guide/pipes');
         tick(1); // triggers the HTTP response for the document
-        fixture.detectChanges(); // triggers the event that calls `onDocInserted`
+        fixture.detectChanges();  // passes the new doc to the `DocViewer`
+        flushMicrotasks();  // triggers the `DocViewer` event that calls `onDocInserted`
 
         expect(scrollAfterRenderSpy).toHaveBeenCalledWith(scrollDelay);
 
@@ -667,7 +668,7 @@ describe('AppComponent', () => {
 
       it('should restrain scrolling inside the ToC container', () => {
         const restrainScrolling = spyOn(component, 'restrainScrolling');
-        const evt = new MouseEvent('mousewheel');
+        const evt = new WheelEvent('wheel');
 
         setHasFloatingToc(true);
         expect(restrainScrolling).not.toHaveBeenCalled();

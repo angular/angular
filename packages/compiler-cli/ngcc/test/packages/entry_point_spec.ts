@@ -50,6 +50,8 @@ runInEachFileSystem(() => {
                _(`/project/node_modules/some_package/valid_entry_point/valid_entry_point.d.ts`),
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/valid_entry_point'),
            compiledByAngular: true,
+           ignoreMissingDependencies: false,
+           generateDeepReexports: false,
          });
        });
 
@@ -109,6 +111,8 @@ runInEachFileSystem(() => {
         typings: _('/project/node_modules/some_package/valid_entry_point/some_other.d.ts'),
         packageJson: overriddenPackageJson,
         compiledByAngular: true,
+        ignoreMissingDependencies: false,
+        generateDeepReexports: false,
       });
     });
 
@@ -155,6 +159,8 @@ runInEachFileSystem(() => {
                '/project/node_modules/some_package/missing_package_json/missing_package_json.d.ts'),
            packageJson: {name: 'some_package/missing_package_json', ...override},
            compiledByAngular: true,
+           ignoreMissingDependencies: false,
+           generateDeepReexports: false,
          });
        });
 
@@ -211,6 +217,8 @@ runInEachFileSystem(() => {
           typings: _(`/project/node_modules/some_package/missing_typings/${typingsPath}.d.ts`),
           packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_typings'),
           compiledByAngular: true,
+          ignoreMissingDependencies: false,
+          generateDeepReexports: false,
         });
       });
     }
@@ -234,6 +242,8 @@ runInEachFileSystem(() => {
            typings: _(`/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts`),
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_metadata'),
            compiledByAngular: false,
+           ignoreMissingDependencies: false,
+           generateDeepReexports: false,
          });
        });
 
@@ -260,6 +270,8 @@ runInEachFileSystem(() => {
            typings: _('/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts'),
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_metadata'),
            compiledByAngular: true,
+           ignoreMissingDependencies: false,
+           generateDeepReexports: false,
          });
        });
 
@@ -288,6 +300,8 @@ runInEachFileSystem(() => {
         packageJson:
             loadPackageJson(fs, '/project/node_modules/some_package/types_rather_than_typings'),
         compiledByAngular: true,
+        ignoreMissingDependencies: false,
+        generateDeepReexports: false,
       });
     });
 
@@ -319,6 +333,8 @@ runInEachFileSystem(() => {
         typings: _(`/project/node_modules/some_package/material_style/material_style.d.ts`),
         packageJson: loadPackageJson(fs, '/project/node_modules/some_package/material_style'),
         compiledByAngular: true,
+        ignoreMissingDependencies: false,
+        generateDeepReexports: false,
       });
     });
 

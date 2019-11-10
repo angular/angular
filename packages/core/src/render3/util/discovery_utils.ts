@@ -10,14 +10,16 @@ import {Injector} from '../../di/injector';
 import {assertLView} from '../assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from '../context_discovery';
 import {NodeInjector} from '../di';
+import {DebugNode, buildDebugNode} from '../instructions/lview_debug';
 import {LContext} from '../interfaces/context';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
-import {CLEANUP, CONTEXT, FLAGS, HOST, LView, LViewFlags, TVIEW} from '../interfaces/view';
+import {isLView} from '../interfaces/type_checks';
+import {CLEANUP, CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, TVIEW, T_HOST} from '../interfaces/view';
 
 import {stringifyForError} from './misc_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';
-import {unwrapRNode} from './view_utils';
+import {getTNode, unwrapRNode} from './view_utils';
 
 
 
@@ -42,7 +44,10 @@ import {unwrapRNode} from './view_utils';
  * @publicApi
  */
 export function getComponent<T = {}>(element: Element): T|null {
-  const context = loadLContextFromNode(element);
+  if (!(element instanceof Node)) throw new Error('Expecting instance of DOM Node');
+  const context = loadLContext(element, false);
+  if (context === null) return null;
+
 
   if (context.component === undefined) {
     context.component = getComponentAtNodeIndex(context.nodeIndex, context.lView);
@@ -72,7 +77,10 @@ export function getComponent<T = {}>(element: Element): T|null {
  * @publicApi
  */
 export function getContext<T = {}>(element: Element): T|null {
-  const context = loadLContextFromNode(element) !;
+  if (!(element instanceof Node)) throw new Error('Expecting instance of DOM Node');
+  const context = loadLContext(element, false);
+  if (context === null) return null;
+
   return context.lView[CONTEXT] as T;
 }
 
@@ -97,7 +105,9 @@ export function getContext<T = {}>(element: Element): T|null {
  * @publicApi
  */
 export function getViewComponent<T = {}>(element: Element | {}): T|null {
-  const context = loadLContext(element) !;
+  const context = loadLContext(element, false);
+  if (context === null) return null;
+
   let lView = context.lView;
   let parent: LView|null;
   ngDevMode && assertLView(lView);
@@ -129,7 +139,9 @@ export function getRootComponents(target: {}): any[] {
  * @publicApi
  */
 export function getInjector(target: {}): Injector {
-  const context = loadLContext(target);
+  const context = loadLContext(target, false);
+  if (context === null) return Injector.NULL;
+
   const tNode = context.lView[TVIEW].data[context.nodeIndex] as TElementNode;
   return new NodeInjector(tNode, context.lView);
 }
@@ -142,7 +154,7 @@ export function getInjector(target: {}): Injector {
  */
 export function getInjectionTokens(element: Element): any[] {
   const context = loadLContext(element, false);
-  if (!context) return [];
+  if (context === null) return [];
   const lView = context.lView;
   const tView = lView[TVIEW];
   const tNode = tView.data[context.nodeIndex] as TNode;
@@ -207,7 +219,8 @@ export function loadLContext(target: {}, throwOnNotFound: boolean = true): LCont
  * @publicApi
  */
 export function getLocalRefs(target: {}): {[key: string]: any} {
-  const context = loadLContext(target) !;
+  const context = loadLContext(target, false);
+  if (context === null) return {};
 
   if (context.localRefs === undefined) {
     context.localRefs = discoverLocalRefs(context.lView, context.nodeIndex);
@@ -285,7 +298,10 @@ export function isBrowserEvents(listener: Listener): boolean {
  * @publicApi
  */
 export function getListeners(element: Element): Listener[] {
-  const lContext = loadLContextFromNode(element);
+  if (!(element instanceof Node)) throw new Error('Expecting instance of DOM Node');
+  const lContext = loadLContext(element, false);
+  if (lContext === null) return [];
+
   const lView = lContext.lView;
   const tView = lView[TVIEW];
   const lCleanup = lView[CLEANUP];
@@ -328,4 +344,46 @@ function sortListeners(a: Listener, b: Listener) {
  */
 function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
   return obj.type !== undefined && obj.template !== undefined && obj.declaredInputs !== undefined;
+}
+
+/**
+ * Returns the attached `DebugNode` instance for an element in the DOM.
+ *
+ * @param element DOM element which is owned by an existing component's view.
+ *
+ * @publicApi
+ */
+export function getDebugNode(element: Node): DebugNode|null {
+  let debugNode: DebugNode|null = null;
+
+  const lContext = loadLContextFromNode(element);
+  const lView = lContext.lView;
+  const nodeIndex = lContext.nodeIndex;
+  if (nodeIndex !== -1) {
+    const valueInLView = lView[nodeIndex];
+    // this means that value in the lView is a component with its own
+    // data. In this situation the TNode is not accessed at the same spot.
+    const tNode = isLView(valueInLView) ? (valueInLView[T_HOST] as TNode) :
+                                          getTNode(nodeIndex - HEADER_OFFSET, lView);
+    debugNode = buildDebugNode(tNode, lView, nodeIndex);
+  }
+
+  return debugNode;
+}
+
+/**
+ * Retrieve the component `LView` from component/element.
+ *
+ * NOTE: `LView` is a private and should not be leaked outside.
+ *       Don't export this method to `ng.*` on window.
+ *
+ * @param target Component or Element instance.
+ */
+export function getComponentLView(target: any): LView {
+  const lContext = loadLContext(target);
+  const nodeIndx = lContext.nodeIndex;
+  const lView = lContext.lView;
+  const componentLView = lView[nodeIndx];
+  ngDevMode && assertLView(componentLView);
+  return componentLView;
 }

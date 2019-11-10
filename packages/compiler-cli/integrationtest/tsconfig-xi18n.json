@@ -15,7 +15,8 @@
     "outDir": "./xi18n-out",
     "rootDir": "",
     "skipLibCheck": true,
-    "target": "es5"
+    "target": "es5",
+    "typeRoots": ["node_modules/@types"]
   },
 
   "files": [

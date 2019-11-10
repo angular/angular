@@ -17,7 +17,7 @@ import {CssSelector} from './selector';
 export interface Inject { token: any; }
 export const createInject = makeMetadataFactory<Inject>('Inject', (token: any) => ({token}));
 export const createInjectionToken = makeMetadataFactory<object>(
-    'InjectionToken', (desc: string) => ({_desc: desc, ngInjectableDef: undefined}));
+    'InjectionToken', (desc: string) => ({_desc: desc, ɵprov: undefined}));
 
 export interface Attribute { attributeName?: string; }
 export const createAttribute =
@@ -29,7 +29,7 @@ export interface Query {
   read: any;
   isViewQuery: boolean;
   selector: any;
-  static: boolean;
+  static?: boolean;
 }
 
 export const createContentChildren = makeMetadataFactory<Query>(

@@ -272,7 +272,7 @@ That header is in the `httpOptions` constant defined in the `HeroService`. Add t
 </code-example>
 
 Refresh the browser, change a hero name and save your change. The `save()`
-method in `HeroDetailComponent`navigates to the previous view.
+method in `HeroDetailComponent` navigates to the previous view.
 The hero now appears in the list with the changed name.
 
 
@@ -324,7 +324,7 @@ The HTML for the list of heroes should look like this:
 <code-example path="toh-pt6/src/app/heroes/heroes.component.html" region="list" header="src/app/heroes/heroes.component.html (list of heroes)"></code-example>
 
 To position the delete button at the far right of the hero entry,
-add some CSS to the `heroes.component.css`.  You'll find that CSS
+add some CSS to the `heroes.component.css`. You'll find that CSS
 in the [final review code](#heroescomponent) below.
 
 Add the `delete()` handler to the component class.
@@ -513,8 +513,10 @@ That's the job of the [`AsyncPipe`](#asyncpipe) in the template.
 Run the app again. In the *Dashboard*, enter some text in the search box.
 If you enter characters that match any existing hero names, you'll see something like this.
 
-<figure>
-  <img src='generated/images/guide/toh/toh-hero-search.png' alt="Hero Search Component">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/toh/toh-hero-search.png' alt="Hero Search Component">
+  </div>
 </figure>
 
 ## Final code review

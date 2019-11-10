@@ -144,11 +144,11 @@ describe('compiler compliance: providers', () => {
         result.source, `
     export class MyComponent {
     }
-    MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-    MyComponent.ngComponentDef = i0.ɵɵdefineComponent({
+    MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
+    MyComponent.ɵcmp = i0.ɵɵdefineComponent({
       type: MyComponent,
       selectors: [["my-component"]],
-      consts: 1,
+      decls: 1,
       vars: 0,
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {

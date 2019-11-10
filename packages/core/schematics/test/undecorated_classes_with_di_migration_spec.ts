@@ -21,6 +21,7 @@ describe('Undecorated classes with DI migration', () => {
   let previousWorkingDir: string;
   let warnOutput: string[];
   let errorOutput: string[];
+  let infoOutput: string[];
 
   beforeEach(() => {
     runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
@@ -39,11 +40,14 @@ describe('Undecorated classes with DI migration', () => {
 
     warnOutput = [];
     errorOutput = [];
+    infoOutput = [];
     runner.logger.subscribe(logEntry => {
       if (logEntry.level === 'warn') {
         warnOutput.push(logEntry.message);
       } else if (logEntry.level === 'error') {
         errorOutput.push(logEntry.message);
+      } else if (logEntry.level === 'info') {
+        infoOutput.push(logEntry.message);
       }
     });
 
@@ -112,6 +116,10 @@ describe('Undecorated classes with DI migration', () => {
     expect(errorOutput.length).toBe(0);
     expect(warnOutput.length).toBe(1);
     expect(warnOutput[0]).toMatch(/Class needs to declare an explicit constructor./);
+    expect(infoOutput.join(' '))
+        .toContain(
+            'Could not migrate all undecorated classes that use ' +
+            'dependency injection. Please manually fix the following failures');
   });
 
   it('should add @Directive() decorator to extended base class', async() => {
@@ -1308,7 +1316,6 @@ describe('Undecorated classes with DI migration', () => {
         generateCodeForLibraries: false,
         allowEmptyCodegenFiles: true,
         enableSummariesForJit: true,
-        enableIvy: false,
       }
     }));
 
@@ -1440,9 +1447,13 @@ describe('Undecorated classes with DI migration', () => {
       expect(warnOutput.length).toBe(1);
       expect(warnOutput[0])
           .toMatch(
-              /ensure there are no AOT compilation errors and rerun the migration.*project failed: tsconfig\.json/);
+              /ensure there are no AOT compilation errors and rerun the migration. The following project failed: tsconfig\.json/);
       expect(errorOutput.length).toBe(1);
       expect(errorOutput[0]).toMatch(/Cannot determine the module for class TestComp/);
+      expect(infoOutput.join(' '))
+          .toContain(
+              'Some project targets could not be analyzed due to ' +
+              'TypeScript program failures');
     });
 
     it('should gracefully exit migration if project fails with syntactical diagnostic', async() => {
@@ -1457,6 +1468,59 @@ describe('Undecorated classes with DI migration', () => {
           .toMatch(/project "tsconfig.json" has syntactical errors which could cause/);
       expect(errorOutput.length).toBe(1);
       expect(errorOutput[0]).toMatch(/error TS1005: 'from' expected/);
+      expect(infoOutput.join(' '))
+          .toContain(
+              'Some project targets could not be analyzed due to ' +
+              'TypeScript program failures');
+    });
+
+    it('should not throw if resources could not be read', async() => {
+      writeFile('/index.ts', `
+        import {Component, NgModule} from '@angular/core';
+        
+        @Component({
+          templateUrl: './my-template.pug',
+          styleUrls: ["./test.scss", "./some-special-file.custom"],
+        })
+        export class TestComp {}
+       
+        @NgModule({declarations: [TestComp]})
+        export class MyModule {}
+      `);
+
+      writeFile('/test.scss', `@import '~theme.scss';`);
+
+      await runMigration();
+
+      expect(warnOutput.length).toBe(0);
+      expect(errorOutput.length).toBe(0);
+    });
+
+    it('should not throw if tsconfig references non-existent source file', async() => {
+      writeFile('/tsconfig.json', JSON.stringify({
+        compilerOptions: {
+          lib: ['es2015'],
+        },
+        files: [
+          './non-existent.ts',
+        ]
+      }));
+
+      let failed = false;
+      try {
+        await runMigration();
+      } catch (e) {
+        failed = true;
+      }
+
+      expect(failed).toBe(false, 'Expected the migration not to fail.');
+      expect(warnOutput.length).toBe(1);
+      expect(errorOutput.length).toBe(1);
+      expect(warnOutput[0])
+          .toContain(
+              'TypeScript project "tsconfig.json" has configuration errors. This could cause an ' +
+              'incomplete migration. Please fix the following failures and rerun the migration:');
+      expect(errorOutput[0]).toMatch(/non-existent\.ts' not found/);
     });
   });
 });

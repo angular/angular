@@ -8,7 +8,7 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
   template: `
     <div [ngClass]="{ 'flipped': person.isFlipped }" class="contributor-card">
 
-        <div class="card-front" (click)="flipCard(person)">
+        <div class="card-front" (click)="flipCard(person)" (keyup.enter)="flipCard(person)">
             <h3>{{person.name}}</h3>
 
             <div class="contributor-image" [style.background-image]="'url('+pictureBase+(person.picture || noPicture)+')'">
@@ -28,7 +28,7 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
             </div>
         </div>
 
-        <div class="card-back" *ngIf="person.isFlipped" (click)="flipCard(person)">
+        <div class="card-back" *ngIf="person.isFlipped" (click)="flipCard(person)" (keyup.enter)="flipCard(person)">
             <h3>{{person.name}}</h3>
             <p class="contributor-bio">{{person.bio}}</p>
         </div>

@@ -46,7 +46,7 @@ describe('lifecycles', () => {
     }, 1);
 
     function createOnInitComponent(
-        name: string, template: ComponentTemplate<any>, consts: number, vars: number = 0,
+        name: string, template: ComponentTemplate<any>, decls: number, vars: number = 0,
         directives: any[] = []) {
       return class Component {
         val: string = '';
@@ -55,11 +55,11 @@ describe('lifecycles', () => {
           events.push(`${name}${this.val}`);
         }
 
-        static ngFactoryDef = () => new Component();
-        static ngComponentDef = ɵɵdefineComponent({
+        static ɵfac = () => new Component();
+        static ɵcmp = ɵɵdefineComponent({
           type: Component,
           selectors: [[name]],
-          consts: consts,
+          decls: decls,
           vars: vars,
           inputs: {val: 'val'}, template,
           directives: directives
@@ -70,8 +70,8 @@ describe('lifecycles', () => {
     class Directive {
       ngOnInit() { events.push('dir'); }
 
-      static ngFactoryDef = () => new Directive();
-      static ngDirectiveDef = ɵɵdefineDirective({type: Directive, selectors: [['', 'dir', '']]});
+      static ɵfac = () => new Directive();
+      static ɵdir = ɵɵdefineDirective({type: Directive, selectors: [['', 'dir', '']]});
     }
 
     const directives = [Comp, Parent, ProjectedComp, Directive, NgIf];

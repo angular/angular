@@ -296,6 +296,30 @@ lignes`,
       it('should return the target locale',
          () => { expect(serializer.load(LOAD_XLIFF, 'url').locale).toEqual('fr'); });
 
+      it('should ignore alt-trans targets', () => {
+        const XLIFF = `
+          <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+            <file source-language="en" target-language="fr" datatype="plaintext" original="ng2.template">
+              <body>
+                <trans-unit datatype="html" approved="no" id="registration.submit">
+                  <source>Continue</source>
+                  <target state="translated" xml:lang="de">Weiter</target>
+                  <context-group purpose="location">
+                    <context context-type="sourcefile">src/app/auth/registration-form/registration-form.component.html</context>
+                    <context context-type="linenumber">69</context>
+                  </context-group>
+                  <?sid 1110954287-0?>
+                  <alt-trans origin="autoFuzzy" tool="Swordfish" match-quality="71" ts="63">
+                    <source xml:lang="en">Content</source>
+                    <target state="translated" xml:lang="de">Content</target>
+                  </alt-trans>
+              </trans-unit>
+              </body>
+            </file>
+          </xliff>`;
+
+        expect(loadAsMap(XLIFF)).toEqual({'registration.submit': 'Weiter'});
+      });
 
       describe('structure errors', () => {
         it('should throw when a trans-unit has no translation', () => {

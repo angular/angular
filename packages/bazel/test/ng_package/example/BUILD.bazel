@@ -22,6 +22,7 @@ ng_package(
         ":arbitrary_bin_file",
         ":arbitrary_genfiles_file",
         ":extra-styles.css",
+        ":logo.png",
     ],
     entry_point = ":index.ts",
     entry_point_name = "waffels",

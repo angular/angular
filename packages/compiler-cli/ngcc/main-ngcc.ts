@@ -45,6 +45,20 @@ if (require.main === module) {
                 'If specified then only the first matching package.json property will be compiled.',
             type: 'boolean'
           })
+          .option('create-ivy-entry-points', {
+            describe:
+                'If specified then new `*_ivy_ngcc` entry-points will be added to package.json rather than modifying the ones in-place.\n' +
+                'For this to work you need to have custom resolution set up (e.g. in webpack) to look for these new entry-points.\n' +
+                'The Angular CLI does this already, so it is safe to use this option if the project is being built via the CLI.',
+            type: 'boolean',
+          })
+          .option('async', {
+            describe:
+                'Whether to compile asynchronously. This is enabled by default as it allows compilations to be parallelized.\n' +
+                'Disabling asynchronous compilation may be useful for debugging.',
+            type: 'boolean',
+            default: true,
+          })
           .option('l', {
             alias: 'loglevel',
             describe: 'The lowest severity logging message that should be output.',
@@ -65,6 +79,7 @@ if (require.main === module) {
   const propertiesToConsider: string[] = options['p'];
   const targetEntryPointPath = options['t'] ? options['t'] : undefined;
   const compileAllFormats = !options['first-only'];
+  const createNewEntryPointFormats = options['create-ivy-entry-points'];
   const logLevel = options['l'] as keyof typeof LogLevel | undefined;
 
   (async() => {
@@ -76,8 +91,9 @@ if (require.main === module) {
         propertiesToConsider,
         targetEntryPointPath,
         compileAllFormats,
+        createNewEntryPointFormats,
         logger,
-        async: true,
+        async: options['async'],
       });
 
       if (logger) {

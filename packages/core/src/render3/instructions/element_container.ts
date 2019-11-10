@@ -11,13 +11,14 @@ import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TNodeType} from '../interfaces/node';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {BINDING_INDEX, HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
+import {HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
-import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
-import {registerInitialStylingOnTNode} from '../styling_next/instructions';
+import {getBindingIndex, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {getConstant} from '../util/view_utils';
 
 import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
+import {registerInitialStylingOnTNode} from './styling';
 
 
 
@@ -26,8 +27,8 @@ import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, reso
  * The instruction must later be followed by `elementContainerEnd()` call.
  *
  * @param index Index of the element in the LView array
- * @param attrs Set of attributes to be used when matching directives.
- * @param localRefs A set of local reference bindings on the element.
+ * @param attrsIndex Index of the container attributes in the `consts` array.
+ * @param localRefsIndex Index of the container's local references in the `consts` array.
  *
  * Even if this instruction accepts a set of attributes no actual attribute values are propagated to
  * the DOM (as a comment node can't have attributes). Attributes are here only for directive
@@ -36,13 +37,16 @@ import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, reso
  * @codeGenApi
  */
 export function ɵɵelementContainerStart(
-    index: number, attrs?: TAttributes | null, localRefs?: string[] | null): void {
+    index: number, attrsIndex?: number | null, localRefsIndex?: number): void {
   const lView = getLView();
   const tView = lView[TVIEW];
   const renderer = lView[RENDERER];
   const tagName = 'ng-container';
+  const tViewConsts = tView.consts;
+  const attrs = getConstant(tViewConsts, attrsIndex) as TAttributes;
+  const localRefs = getConstant(tViewConsts, localRefsIndex) as string[];
   ngDevMode && assertEqual(
-                   lView[BINDING_INDEX], tView.bindingStartIndex,
+                   getBindingIndex(), tView.bindingStartIndex,
                    'element containers should be created before any bindings');
 
   ngDevMode && ngDevMode.rendererCreateComment++;
@@ -50,22 +54,21 @@ export function ɵɵelementContainerStart(
   const native = lView[index + HEADER_OFFSET] = renderer.createComment(ngDevMode ? tagName : '');
 
   ngDevMode && assertDataInRange(lView, index - 1);
-  const tNode = getOrCreateTNode(
-      tView, lView[T_HOST], index, TNodeType.ElementContainer, tagName, attrs || null);
+  const tNode =
+      getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.ElementContainer, tagName, attrs);
 
-
-  if (attrs && tView.firstTemplatePass) {
+  if (attrs && tView.firstCreatePass) {
     // While ng-container doesn't necessarily support styling, we use the style context to identify
     // and execute directives on the ng-container.
-    registerInitialStylingOnTNode(tNode, attrs as TAttributes, 0);
+    registerInitialStylingOnTNode(tNode, attrs, 0);
   }
 
   appendChild(native, tNode, lView);
   attachPatchData(native, lView);
 
-  if (tView.firstTemplatePass) {
-    ngDevMode && ngDevMode.firstTemplatePass++;
-    resolveDirectives(tView, lView, tNode, localRefs || null);
+  if (tView.firstCreatePass) {
+    ngDevMode && ngDevMode.firstCreatePass++;
+    resolveDirectives(tView, lView, tNode, localRefs);
     if (tView.queries) {
       tView.queries.elementStart(tView, tNode);
     }
@@ -100,7 +103,7 @@ export function ɵɵelementContainerEnd(): void {
 
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.ElementContainer);
 
-  if (tView.firstTemplatePass) {
+  if (tView.firstCreatePass) {
     registerPostOrderHooks(tView, previousOrParentTNode);
     if (isContentQueryHost(previousOrParentTNode)) {
       tView.queries !.elementEnd(previousOrParentTNode);
@@ -113,13 +116,13 @@ export function ɵɵelementContainerEnd(): void {
  * and {@link elementContainerEnd}
  *
  * @param index Index of the element in the LView array
- * @param attrs Set of attributes to be used when matching directives.
- * @param localRefs A set of local reference bindings on the element.
+ * @param attrsIndex Index of the container attributes in the `consts` array.
+ * @param localRefsIndex Index of the container's local references in the `consts` array.
  *
  * @codeGenApi
  */
 export function ɵɵelementContainer(
-    index: number, attrs?: TAttributes | null, localRefs?: string[] | null): void {
-  ɵɵelementContainerStart(index, attrs, localRefs);
+    index: number, attrsIndex?: number | null, localRefsIndex?: number): void {
+  ɵɵelementContainerStart(index, attrsIndex, localRefsIndex);
   ɵɵelementContainerEnd();
 }

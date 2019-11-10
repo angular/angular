@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectFlags} from './core';
 import {Identifiers} from './identifiers';
 import * as o from './output/output_ast';
-import {R3DependencyMetadata, R3FactoryDelegateType, R3FactoryMetadata, compileFactoryFunction} from './render3/r3_factory';
+import {R3DependencyMetadata, R3FactoryDelegateType, R3FactoryMetadata, R3FactoryTarget, compileFactoryFunction} from './render3/r3_factory';
 import {mapToMapExpression, typeWithParameters} from './render3/util';
 
 export interface InjectableDef {
@@ -21,8 +20,8 @@ export interface InjectableDef {
 export interface R3InjectableMetadata {
   name: string;
   type: o.Expression;
+  internalType: o.Expression;
   typeArgumentCount: number;
-  ctorDeps: R3DependencyMetadata[]|'invalid'|null;
   providedIn: o.Expression;
   useClass?: o.Expression;
   useFactory?: o.Expression;
@@ -34,12 +33,14 @@ export interface R3InjectableMetadata {
 export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
   let result: {factory: o.Expression, statements: o.Statement[]}|null = null;
 
-  const factoryMeta = {
+  const factoryMeta: R3FactoryMetadata = {
     name: meta.name,
     type: meta.type,
+    internalType: meta.internalType,
     typeArgumentCount: meta.typeArgumentCount,
-    deps: meta.ctorDeps,
+    deps: [],
     injectFn: Identifiers.inject,
+    target: R3FactoryTarget.Injectable,
   };
 
   if (meta.useClass !== undefined) {
@@ -50,7 +51,7 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
     // A special case exists for useClass: Type where Type is the injectable type itself and no
     // deps are specified, in which case 'useClass' is effectively ignored.
 
-    const useClassOnSelf = meta.useClass.isEquivalent(meta.type);
+    const useClassOnSelf = meta.useClass.isEquivalent(meta.internalType);
     let deps: R3DependencyMetadata[]|undefined = undefined;
     if (meta.userDeps !== undefined) {
       deps = meta.userDeps;
@@ -67,19 +68,22 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
     } else if (useClassOnSelf) {
       result = compileFactoryFunction(factoryMeta);
     } else {
-      result = compileFactoryFunction({
-        ...factoryMeta,
-        delegate: meta.useClass,
-        delegateType: R3FactoryDelegateType.Factory,
-      });
+      result = delegateToFactory(meta.useClass);
     }
   } else if (meta.useFactory !== undefined) {
-    result = compileFactoryFunction({
-      ...factoryMeta,
-      delegate: meta.useFactory,
-      delegateDeps: meta.userDeps || [],
-      delegateType: R3FactoryDelegateType.Function,
-    });
+    if (meta.userDeps !== undefined) {
+      result = compileFactoryFunction({
+        ...factoryMeta,
+        delegate: meta.useFactory,
+        delegateDeps: meta.userDeps || [],
+        delegateType: R3FactoryDelegateType.Function,
+      });
+    } else {
+      result = {
+        statements: [],
+        factory: o.fn([], [new o.ReturnStatement(meta.useFactory.callFn([]))])
+      };
+    }
   } else if (meta.useValue !== undefined) {
     // Note: it's safe to use `meta.useValue` instead of the `USE_VALUE in meta` check used for
     // client code because meta.useValue is an Expression which will be defined even if the actual
@@ -95,10 +99,10 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
       expression: o.importExpr(Identifiers.inject).callFn([meta.useExisting]),
     });
   } else {
-    result = compileFactoryFunction(factoryMeta);
+    result = delegateToFactory(meta.internalType);
   }
 
-  const token = meta.type;
+  const token = meta.internalType;
   const providedIn = meta.providedIn;
 
   const expression = o.importExpr(Identifiers.ɵɵdefineInjectable).callFn([mapToMapExpression(
@@ -110,5 +114,14 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
     expression,
     type,
     statements: result.statements,
+  };
+}
+
+function delegateToFactory(type: o.Expression) {
+  return {
+    statements: [],
+    // () => type.ɵfac(t)
+    factory: o.fn([new o.FnParam('t', o.DYNAMIC_TYPE)], [new o.ReturnStatement(type.callMethod(
+                                                            'ɵfac', [o.variable('t')]))])
   };
 }

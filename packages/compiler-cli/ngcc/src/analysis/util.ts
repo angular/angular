@@ -9,8 +9,9 @@ import * as ts from 'typescript';
 
 import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
 import {AbsoluteFsPath, absoluteFromSourceFile, relative} from '../../../src/ngtsc/file_system';
-import {ClassSymbol, Decorator} from '../../../src/ngtsc/reflection';
-import {DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
+import {Decorator} from '../../../src/ngtsc/reflection';
+import {DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence} from '../../../src/ngtsc/transform';
+import {NgccClassSymbol} from '../host/ngcc_host';
 
 import {AnalyzedClass, MatchingHandler} from './types';
 
@@ -19,9 +20,9 @@ export function isWithinPackage(packagePath: AbsoluteFsPath, sourceFile: ts.Sour
 }
 
 export function analyzeDecorators(
-    symbol: ClassSymbol, decorators: Decorator[] | null,
-    handlers: DecoratorHandler<any, any>[]): AnalyzedClass|null {
-  const declaration = symbol.valueDeclaration;
+    classSymbol: NgccClassSymbol, decorators: Decorator[] | null,
+    handlers: DecoratorHandler<any, any>[], flags?: HandlerFlags): AnalyzedClass|null {
+  const declaration = classSymbol.declaration.valueDeclaration;
   const matchingHandlers = handlers
                                .map(handler => {
                                  const detected = handler.detect(declaration, decorators);
@@ -63,7 +64,7 @@ export function analyzeDecorators(
   const allDiagnostics: ts.Diagnostic[] = [];
   for (const {handler, detected} of detections) {
     try {
-      const {analysis, diagnostics} = handler.analyze(declaration, detected.metadata);
+      const {analysis, diagnostics} = handler.analyze(declaration, detected.metadata, flags);
       if (diagnostics !== undefined) {
         allDiagnostics.push(...diagnostics);
       }
@@ -77,7 +78,7 @@ export function analyzeDecorators(
     }
   }
   return {
-    name: symbol.name,
+    name: classSymbol.name,
     declaration,
     decorators,
     matches,

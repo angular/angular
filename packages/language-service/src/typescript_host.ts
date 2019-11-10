@@ -9,6 +9,7 @@
 import {AotSummaryResolver, CompileDirectiveSummary, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, I18NHtmlParser, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, isFormattedError} from '@angular/compiler';
 import {SchemaMetadata, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as ts from 'typescript';
+import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {AstResult, isAstResult} from './common';
 import {createLanguageService} from './language_service';
@@ -57,7 +58,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private readonly summaryResolver: AotSummaryResolver;
   private readonly reflectorHost: ReflectorHost;
   private readonly staticSymbolResolver: StaticSymbolResolver;
-  private resolver: CompileMetadataResolver;
 
   private readonly staticSymbolCache = new StaticSymbolCache();
   private readonly fileToComponent = new Map<string, StaticSymbol>();
@@ -86,14 +86,23 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     this.staticSymbolResolver = new StaticSymbolResolver(
         this.reflectorHost, this.staticSymbolCache, this.summaryResolver,
         (e, filePath) => this.collectError(e, filePath));
-    this.resolver = this.createMetadataResolver();
   }
 
+  // The resolver is instantiated lazily and should not be accessed directly.
+  // Instead, call the resolver getter. The instantiation of the resolver also
+  // requires instantiation of the StaticReflector, and the latter requires
+  // resolution of core Angular symbols. Module resolution should not be done
+  // during instantiation to avoid cyclic dependency between the plugin and the
+  // containing Project, so the Singleton pattern is used here.
+  private _resolver: CompileMetadataResolver|undefined;
+
   /**
-   * Creates a new metadata resolver. This is needed whenever the program
-   * changes.
+   * Return the singleton instance of the MetadataResolver.
    */
-  private createMetadataResolver(): CompileMetadataResolver {
+  private get resolver(): CompileMetadataResolver {
+    if (this._resolver) {
+      return this._resolver;
+    }
     // StaticReflector keeps its own private caches that are not clearable.
     // We have no choice but to create a new instance to invalidate the caches.
     // TODO: Revisit this when language service gets rewritten for Ivy.
@@ -119,11 +128,20 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     });
     const directiveNormalizer =
         new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
-    return new CompileMetadataResolver(
+    this._resolver = new CompileMetadataResolver(
         config, htmlParser, moduleResolver, directiveResolver, pipeResolver,
         new JitSummaryResolver(), elementSchemaRegistry, directiveNormalizer, new Console(),
         this.staticSymbolCache, staticReflector,
         (error, type) => this.collectError(error, type && type.filePath));
+    return this._resolver;
+  }
+
+  /**
+   * Return the singleton instance of the StaticReflector hosted in the
+   * MetadataResolver.
+   */
+  private get reflector(): StaticReflector {
+    return this.resolver.getReflector() as StaticReflector;
   }
 
   getTemplateReferences(): string[] { return [...this.templateReferences]; }
@@ -134,9 +152,13 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
    * and templateReferences.
    * In addition to returning information about NgModules, this method plays the
    * same role as 'synchronizeHostData' in tsserver.
+   * @param ensureSynchronized whether or not the Language Service should make sure analyzedModules
+   *   are synced to the last update of the project. If false, returns the set of analyzedModules
+   *   that is already cached. This is useful if the project must not be reanalyzed, even if its
+   *   file watchers (which are disjoint from the TypeScriptServiceHost) detect an update.
    */
-  getAnalyzedModules(): NgAnalyzedModules {
-    if (this.upToDate()) {
+  getAnalyzedModules(ensureSynchronized = true): NgAnalyzedModules {
+    if (!ensureSynchronized || this.upToDate()) {
       return this.analyzedModules;
     }
 
@@ -144,7 +166,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     this.templateReferences = [];
     this.fileToComponent.clear();
     this.collectedErrors.clear();
-    this.resolver = this.createMetadataResolver();
+    this.resolver.clearCache();
 
     const analyzeHost = {isSourceFile(filePath: string) { return true; }};
     const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
@@ -260,44 +282,42 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return program;
   }
 
-  get reflector(): StaticReflector { return this.resolver.getReflector() as StaticReflector; }
-
   /**
    * Checks whether the program has changed, and invalidate caches if it has.
    * Returns true if modules are up-to-date, false otherwise.
    * This should only be called by getAnalyzedModules().
    */
-  private upToDate() {
-    const program = this.program;
-    if (this.lastProgram === program) {
+  private upToDate(): boolean {
+    const {lastProgram, program} = this;
+    if (lastProgram === program) {
       return true;
     }
+    this.lastProgram = program;
 
     // Invalidate file that have changed in the static symbol resolver
     const seen = new Set<string>();
-    let hasChanges = false;
     for (const sourceFile of program.getSourceFiles()) {
       const fileName = sourceFile.fileName;
       seen.add(fileName);
       const version = this.tsLsHost.getScriptVersion(fileName);
       const lastVersion = this.fileVersions.get(fileName);
-      if (version !== lastVersion) {
-        hasChanges = true;
-        this.fileVersions.set(fileName, version);
-        this.staticSymbolResolver.invalidateFile(fileName);
+      this.fileVersions.set(fileName, version);
+      // Should not invalidate file on the first encounter or if file hasn't changed
+      if (lastVersion !== undefined && version !== lastVersion) {
+        const symbols = this.staticSymbolResolver.invalidateFile(fileName);
+        this.reflector.invalidateSymbols(symbols);
       }
     }
 
-    // Remove file versions that are no longer in the file and invalidate them.
+    // Remove file versions that are no longer in the program and invalidate them.
     const missing = Array.from(this.fileVersions.keys()).filter(f => !seen.has(f));
     missing.forEach(f => {
       this.fileVersions.delete(f);
-      this.staticSymbolResolver.invalidateFile(f);
+      const symbols = this.staticSymbolResolver.invalidateFile(f);
+      this.reflector.invalidateSymbols(symbols);
     });
 
-    this.lastProgram = program;
-
-    return missing.length === 0 && !hasChanges;
+    return false;
   }
 
   /**
@@ -424,6 +444,14 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   /**
+   * Gets a StaticSymbol from a file and symbol name.
+   * @return Angular StaticSymbol matching the file and name, if any
+   */
+  getStaticSymbol(file: string, name: string): StaticSymbol|undefined {
+    return this.reflector.getStaticSymbol(file, name);
+  }
+
+  /**
    * Find the NgModule which the directive associated with the `classSymbol`
    * belongs to, then return its schema and transitive directives and pipes.
    * @param classSymbol Angular Symbol that defines a directive
@@ -482,6 +510,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
           );
       const htmlResult = htmlParser.parse(template.source, fileName, {
         tokenizeExpansionForms: true,
+        preserveLineEndings: true,  // do not convert CRLF to LF
       });
       const {directives, pipes, schemas} = this.getModuleMetadataForDirective(classSymbol);
       const parseResult =
@@ -506,6 +535,45 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         span:
             e.fileName === fileName && template.query.getSpanAt(e.line, e.column) || template.span,
       };
+    }
+  }
+
+  /**
+   * Log the specified `msg` to file at INFO level. If logging is not enabled
+   * this method is a no-op.
+   * @param msg Log message
+   */
+  log(msg: string) {
+    if (this.tsLsHost.log) {
+      this.tsLsHost.log(msg);
+    }
+  }
+
+  /**
+   * Log the specified `msg` to file at ERROR level. If logging is not enabled
+   * this method is a no-op.
+   * @param msg error message
+   */
+  error(msg: string) {
+    if (this.tsLsHost.error) {
+      this.tsLsHost.error(msg);
+    }
+  }
+
+  /**
+   * Log debugging info to file at INFO level, only if verbose setting is turned
+   * on. Otherwise, this method is a no-op.
+   * @param msg debugging message
+   */
+  debug(msg: string) {
+    const project = this.tsLsHost as tss.server.Project;
+    if (!project.projectService) {
+      // tsLsHost is not a Project
+      return;
+    }
+    const {logger} = project.projectService;
+    if (logger.hasLevel(tss.server.LogLevel.verbose)) {
+      logger.info(msg);
     }
   }
 }
@@ -545,7 +613,7 @@ function spanAt(sourceFile: ts.SourceFile, line: number, column: number): Span|u
 }
 
 function convertChain(chain: FormattedMessageChain): DiagnosticMessageChain {
-  return {message: chain.message, next: chain.next ? convertChain(chain.next) : undefined};
+  return {message: chain.message, next: chain.next ? chain.next.map(convertChain) : undefined};
 }
 
 function errorToDiagnosticWithChain(error: FormattedError, span: Span): DeclarationError {

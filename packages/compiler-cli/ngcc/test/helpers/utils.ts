@@ -6,15 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
+
 import {AbsoluteFsPath, NgtscCompilerHost, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {TestFile} from '../../../src/ngtsc/file_system/testing';
 import {BundleProgram, makeBundleProgram} from '../../src/packages/bundle_program';
+import {NgccEntryPointConfig} from '../../src/packages/configuration';
 import {EntryPoint, EntryPointFormat} from '../../src/packages/entry_point';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {NgccSourcesCompilerHost} from '../../src/packages/ngcc_compiler_host';
 
+export type TestConfig = Pick<NgccEntryPointConfig, 'generateDeepReexports'>;
+
 export function makeTestEntryPoint(
-    entryPointName: string, packageName: string = entryPointName): EntryPoint {
+    entryPointName: string, packageName: string = entryPointName, config?: TestConfig): EntryPoint {
   return {
     name: entryPointName,
     packageJson: {name: entryPointName},
@@ -22,6 +26,8 @@ export function makeTestEntryPoint(
     path: absoluteFrom(`/node_modules/${entryPointName}`),
     typings: absoluteFrom(`/node_modules/${entryPointName}/index.d.ts`),
     compiledByAngular: true,
+    ignoreMissingDependencies: false,
+    generateDeepReexports: config !== undefined ? !!config.generateDeepReexports : false,
   };
 }
 
@@ -33,8 +39,8 @@ export function makeTestEntryPoint(
  */
 export function makeTestEntryPointBundle(
     packageName: string, format: EntryPointFormat, isCore: boolean, srcRootNames: AbsoluteFsPath[],
-    dtsRootNames?: AbsoluteFsPath[]): EntryPointBundle {
-  const entryPoint = makeTestEntryPoint(packageName);
+    dtsRootNames?: AbsoluteFsPath[], config?: TestConfig): EntryPointBundle {
+  const entryPoint = makeTestEntryPoint(packageName, packageName, config);
   const src = makeTestBundleProgram(srcRootNames[0], isCore);
   const dts =
       dtsRootNames ? makeTestDtsBundleProgram(dtsRootNames[0], entryPoint.package, isCore) : null;

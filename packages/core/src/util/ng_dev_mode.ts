@@ -8,6 +8,9 @@
 
 import {global} from './global';
 
+// Do not remove: needed for closure to be able to properly tree-shake ngDevMode.
+// goog.define
+
 declare global {
   /**
    * Values of ngDevMode
@@ -26,7 +29,7 @@ declare global {
   const ngDevMode: null|NgDevModePerfCounters;
   interface NgDevModePerfCounters {
     namedConstructors: boolean;
-    firstTemplatePass: number;
+    firstCreatePass: number;
     tNode: number;
     tView: number;
     rendererCreateTextNode: number;
@@ -59,8 +62,6 @@ declare global {
     flushStyling: number;
     classesApplied: number;
     stylesApplied: number;
-    stylingWritePersistedState: number;
-    stylingReadPersistedState: number;
   }
 }
 
@@ -68,7 +69,7 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
   const locationString = typeof location !== 'undefined' ? location.toString() : '';
   const newCounters: NgDevModePerfCounters = {
     namedConstructors: locationString.indexOf('ngDevMode=namedConstructors') != -1,
-    firstTemplatePass: 0,
+    firstCreatePass: 0,
     tNode: 0,
     tView: 0,
     rendererCreateTextNode: 0,
@@ -101,8 +102,6 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     flushStyling: 0,
     classesApplied: 0,
     stylesApplied: 0,
-    stylingWritePersistedState: 0,
-    stylingReadPersistedState: 0,
   };
 
   // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.

@@ -28,7 +28,7 @@ export function generateSetClassMetadataCall(
   if (!reflection.isClass(clazz)) {
     return null;
   }
-  const id = ts.updateIdentifier(clazz.name);
+  const id = ts.updateIdentifier(reflection.getAdjacentNameOfClass(clazz));
 
   // Reflect over the class decorators. If none are present, or those that are aren't from
   // Angular, then return null. Otherwise, turn them into metadata.
@@ -122,6 +122,9 @@ function classMemberToMetadata(
  * Convert a reflected decorator to metadata.
  */
 function decoratorToMetadata(decorator: Decorator): ts.ObjectLiteralExpression {
+  if (decorator.identifier === null) {
+    throw new Error('Illegal state: synthesized decorator cannot be emitted in class metadata.');
+  }
   // Decorators have a type.
   const properties: ts.ObjectLiteralElementLike[] = [
     ts.createPropertyAssignment('type', ts.getMutableClone(decorator.identifier)),

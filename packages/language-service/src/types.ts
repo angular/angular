@@ -262,11 +262,13 @@ export enum DirectiveKind {
  * ScriptElementKind for completion.
  */
 export enum CompletionKind {
+  ANGULAR_ELEMENT = 'angular element',
   ATTRIBUTE = 'attribute',
   COMPONENT = 'component',
   ELEMENT = 'element',
   ENTITY = 'entity',
   HTML_ATTRIBUTE = 'html attribute',
+  HTML_ELEMENT = 'html element',
   KEY = 'key',
   METHOD = 'method',
   PIPE = 'pipe',
@@ -275,6 +277,10 @@ export enum CompletionKind {
   TYPE = 'type',
   VARIABLE = 'variable',
 }
+
+export type CompletionEntry = Omit<ts.CompletionEntry, 'kind'>& {
+  kind: CompletionKind,
+};
 
 /**
  * A template diagnostics message chain. This is similar to the TypeScript
@@ -295,7 +301,7 @@ export interface DiagnosticMessageChain {
   /**
    * The next message in the chain.
    */
-  next?: DiagnosticMessageChain;
+  next?: DiagnosticMessageChain[];
 }
 
 /**

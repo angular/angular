@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CommonModule} from '@angular/common';
-import {Component, Directive, InjectionToken, ViewChild} from '@angular/core';
+import {Component, Directive, HostBinding, InjectionToken, ViewChild} from '@angular/core';
+import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
+import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {onlyInIvy} from '@angular/private/testing';
 
 import {getHostElement, markDirty} from '../../src/render3/index';
-import {getComponent, getContext, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getRootComponents, getViewComponent, loadLContext} from '../../src/render3/util/discovery_utils';
+import {getComponent, getComponentLView, getContext, getDebugNode, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getRootComponents, getViewComponent, loadLContext} from '../../src/render3/util/discovery_utils';
 
 onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
   let fixture: ComponentFixture<MyApp>;
@@ -84,6 +86,20 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
       expect(getComponent<MyApp>(fixture.nativeElement)).toEqual(myApp);
       expect(getComponent<Child>(child[0])).toEqual(childComponent[0]);
       expect(getComponent<Child>(child[1])).toEqual(childComponent[1]);
+    });
+  });
+
+  describe('getComponentLView', () => {
+    it('should retrieve component LView from element', () => {
+      const childLView = getComponentLView(child[0]);
+      expect(isLView(childLView)).toBe(true);
+      expect(childLView[CONTEXT] instanceof Child).toBe(true);
+    });
+
+    it('should retrieve component LView from component instance', () => {
+      const childLView = getComponentLView(childComponent[0]);
+      expect(isLView(childLView)).toBe(true);
+      expect(childLView[CONTEXT] instanceof Child).toBe(true);
     });
   });
 
@@ -312,9 +328,9 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils deprecated', () =>
         `
       })
       class Comp {
-        @ViewChild(MyDir1, {static: false}) myDir1Instance !: MyDir1;
-        @ViewChild(MyDir2, {static: false}) myDir2Instance !: MyDir2;
-        @ViewChild(MyDir3, {static: false}) myDir3Instance !: MyDir3;
+        @ViewChild(MyDir1) myDir1Instance !: MyDir1;
+        @ViewChild(MyDir2) myDir2Instance !: MyDir2;
+        @ViewChild(MyDir3) myDir3Instance !: MyDir3;
       }
 
       TestBed.configureTestingModule({declarations: [Comp, MyDir1, MyDir2, MyDir3]});
@@ -401,6 +417,67 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils deprecated', () =>
       const localRefs = getLocalRefs(divEl);
 
       expect(localRefs.elRef.tagName.toLowerCase()).toBe('div');
+    });
+  });
+
+  describe('getDebugNode()', () => {
+    it('should create an instance of `DebugNode` when called for a specific element', () => {
+      @Component({
+        template: `
+          <div class="parent">
+            <div class="child"></div>
+          </div>
+        `
+      })
+      class Comp {
+      }
+
+      TestBed.configureTestingModule({declarations: [Comp]});
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+
+      const parent = fixture.nativeElement.querySelector('.parent') !;
+      const child = fixture.nativeElement.querySelector('.child') !;
+
+      const parentDebug = getDebugNode(parent) !;
+      const childDebug = getDebugNode(child) !;
+
+      expect(parentDebug.native).toBe(parent);
+      expect(childDebug.native).toBe(child);
+    });
+
+    it('should be able to pull debug information for a component host element', () => {
+      @Component({
+        selector: 'child-comp',
+        template: `
+          child comp
+        `
+      })
+      class ChildComp {
+        @HostBinding('style') public styles = {width: '200px', height: '400px'};
+      }
+
+      @Component({
+        template: `
+          <child-comp></child-comp>
+        `
+      })
+      class Comp {
+      }
+
+      TestBed.configureTestingModule({declarations: [Comp, ChildComp]});
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+
+      const child = fixture.nativeElement.querySelector('child-comp') !;
+      const childDebug = getDebugNode(child) !;
+
+      expect(childDebug.native).toBe(child);
+      expect(childDebug.styles).toBeTruthy();
+
+      const styles = childDebug.styles !.values;
+      expect(styles['width']).toEqual('200px');
+      expect(styles['height']).toEqual('400px');
     });
   });
 });

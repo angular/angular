@@ -10,7 +10,7 @@ import {CustomTransformers, Program, defaultGatherDiagnostics} from '@angular/co
 import * as api from '@angular/compiler-cli/src/transformers/api';
 import * as ts from 'typescript';
 
-import {createCompilerHost, createProgram} from '../../ngtools2';
+import {createCompilerHost, createProgram} from '../../index';
 import {main, mainDiagnosticsForTest, readNgcCommandLineAndConfiguration} from '../../src/main';
 import {AbsoluteFsPath, FileSystem, NgtscCompilerHost, absoluteFrom, getFileSystem} from '../../src/ngtsc/file_system';
 import {Folder, MockFileSystem} from '../../src/ngtsc/file_system/testing';

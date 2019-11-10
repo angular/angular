@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssSelector, ParseSourceFile, ParseSourceSpan, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, parseTemplate} from '@angular/compiler';
+import {CssSelector, ParseSourceFile, ParseSourceSpan, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, TmplAstReference, Type, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from '../../file_system';
@@ -19,6 +19,7 @@ import {TemplateSourceMapping, TypeCheckBlockMetadata, TypeCheckableDirectiveMet
 import {TypeCheckContext} from '../src/context';
 import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
+import {OutOfBandDiagnosticRecorder} from '../src/oob';
 import {generateTypeCheckBlock} from '../src/type_check_block';
 
 export function typescriptLibDts(): TestFile {
@@ -40,7 +41,21 @@ export function typescriptLibDts(): TestFile {
         length: number;
       }
       
-      declare interface HTMLElement {}
+      declare interface Event {
+        preventDefault(): void;
+      }
+      declare interface MouseEvent extends Event {
+        readonly x: number;
+        readonly y: number;
+      }
+      
+      declare interface HTMLElementEventMap {
+        "click": MouseEvent;
+      }
+      declare interface HTMLElement {
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any): void;
+        addEventListener(type: string, listener: (evt: Event): void;): void;
+      }
       declare interface HTMLDivElement extends HTMLElement {}
       declare interface HTMLImageElement extends HTMLElement {
         src: string;
@@ -72,6 +87,21 @@ export function angularCoreDts(): TestFile {
     export declare class TemplateRef<C> {
       abstract readonly elementRef: unknown;
       abstract createEmbeddedView(context: C): unknown;
+    }
+    
+    export declare class EventEmitter<T> {
+      subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown;
+    }
+  `
+  };
+}
+
+export function angularAnimationsDts(): TestFile {
+  return {
+    name: absoluteFrom('/node_modules/@angular/animations/index.d.ts'),
+    contents: `
+    export declare class AnimationEvent {
+      element: any;
     }
   `
   };
@@ -119,17 +149,30 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   checkQueries: false,
   checkTemplateBodies: true,
   checkTypeOfInputBindings: true,
+  strictNullInputBindings: true,
+  checkTypeOfAttributes: true,
   // Feature is still in development.
   // TODO(alxhub): enable when DOM checking via lib.dom.d.ts is further along.
   checkTypeOfDomBindings: false,
+  checkTypeOfOutputEvents: true,
+  checkTypeOfAnimationEvents: true,
+  checkTypeOfDomEvents: true,
+  checkTypeOfDomReferences: true,
+  checkTypeOfNonDomReferences: true,
   checkTypeOfPipes: true,
   strictSafeNavigationTypes: true,
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
 export type TestDirective =
-    Partial<Pick<TypeCheckableDirectiveMeta, Exclude<keyof TypeCheckableDirectiveMeta, 'ref'>>>&
-    {selector: string, name: string, file?: AbsoluteFsPath, type: 'directive'};
+    Partial<Pick<
+        TypeCheckableDirectiveMeta,
+        Exclude<keyof TypeCheckableDirectiveMeta, 'ref'|'coercedInputFields'>>>&
+    {
+      selector: string,
+      name: string, file?: AbsoluteFsPath,
+      type: 'directive', coercedInputFields?: string[],
+    };
 export type TestPipe = {
   name: string,
   file?: AbsoluteFsPath,
@@ -160,7 +203,14 @@ export function tcb(
     applyTemplateContextGuards: true,
     checkQueries: false,
     checkTypeOfInputBindings: true,
+    strictNullInputBindings: true,
+    checkTypeOfAttributes: true,
     checkTypeOfDomBindings: false,
+    checkTypeOfOutputEvents: true,
+    checkTypeOfAnimationEvents: true,
+    checkTypeOfDomEvents: true,
+    checkTypeOfDomReferences: true,
+    checkTypeOfNonDomReferences: true,
     checkTypeOfPipes: true,
     checkTemplateBodies: true,
     strictSafeNavigationTypes: true,
@@ -171,7 +221,7 @@ export function tcb(
 
   const tcb = generateTypeCheckBlock(
       FakeEnvironment.newFake(config), new Reference(clazz), ts.createIdentifier('Test_TCB'), meta,
-      new NoopSchemaChecker());
+      new NoopSchemaChecker(), new NoopOobRecorder());
 
   const removeComments = !options.emitSpans;
   const res = ts.createPrinter({removeComments}).printNode(ts.EmitHint.Unspecified, tcb, sf);
@@ -180,28 +230,32 @@ export function tcb(
 
 export function typecheck(
     template: string, source: string, declarations: TestDeclaration[] = [],
-    additionalSources: {name: AbsoluteFsPath; contents: string}[] = []): ts.Diagnostic[] {
+    additionalSources: {name: AbsoluteFsPath; contents: string}[] = [],
+    config: Partial<TypeCheckingConfig> = {}, opts: ts.CompilerOptions = {}): ts.Diagnostic[] {
   const typeCheckFilePath = absoluteFrom('/_typecheck_.ts');
   const files = [
     typescriptLibDts(),
     angularCoreDts(),
+    angularAnimationsDts(),
     // Add the typecheck file to the program, as the typecheck program is created with the
     // assumption that the typecheck file was already a root file in the original program.
     {name: typeCheckFilePath, contents: 'export const TYPECHECK = true;'},
     {name: absoluteFrom('/main.ts'), contents: source},
     ...additionalSources,
   ];
-  const {program, host, options} = makeProgram(files, {strictNullChecks: true}, undefined, false);
+  const {program, host, options} =
+      makeProgram(files, {strictNullChecks: true, noImplicitAny: true, ...opts}, undefined, false);
   const sf = program.getSourceFile(absoluteFrom('/main.ts')) !;
   const checker = program.getTypeChecker();
   const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
+  const reflectionHost = new TypeScriptReflectionHost(checker);
   const emitter = new ReferenceEmitter([
     new LocalIdentifierStrategy(),
     new AbsoluteModuleStrategy(
         program, checker, options, host, new TypeScriptReflectionHost(checker)),
-    new LogicalProjectStrategy(checker, logicalFs),
+    new LogicalProjectStrategy(reflectionHost, logicalFs),
   ]);
-  const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, typeCheckFilePath);
+  const ctx = new TypeCheckContext({...ALL_ENABLED_CONFIG, ...config}, emitter, typeCheckFilePath);
 
   const templateUrl = 'synthetic.html';
   const templateFile = new ParseSourceFile(template, templateUrl);
@@ -255,6 +309,7 @@ function prepareDeclarations(
       inputs: decl.inputs || {},
       isComponent: decl.isComponent || false,
       ngTemplateGuards: decl.ngTemplateGuards || [],
+      coercedInputFields: new Set<string>(decl.coercedInputFields || []),
       outputs: decl.outputs || {},
       queries: decl.queries || [],
     };
@@ -291,6 +346,8 @@ class FakeEnvironment /* implements Environment */ {
     return ts.createParen(ts.createAsExpression(ts.createNull(), this.referenceType(ref)));
   }
 
+  declareOutputHelper(): ts.Expression { return ts.createIdentifier('_outputHelper'); }
+
   reference(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.Expression {
     return ref.node.name;
   }
@@ -299,14 +356,17 @@ class FakeEnvironment /* implements Environment */ {
     return ts.createTypeReferenceNode(ref.node.name, /* typeArguments */ undefined);
   }
 
-  referenceCoreType(name: string, typeParamCount: number = 0): ts.TypeNode {
+  referenceExternalType(moduleName: string, name: string, typeParams?: Type[]): ts.TypeNode {
     const typeArgs: ts.TypeNode[] = [];
-    for (let i = 0; i < typeParamCount; i++) {
-      typeArgs.push(ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+    if (typeParams !== undefined) {
+      for (let i = 0; i < typeParams.length; i++) {
+        typeArgs.push(ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+      }
     }
 
-    const qName = ts.createQualifiedName(ts.createIdentifier('ng'), name);
-    return ts.createTypeReferenceNode(qName, typeParamCount > 0 ? typeArgs : undefined);
+    const ns = ts.createIdentifier(moduleName.replace('@angular/', ''));
+    const qName = ts.createQualifiedName(ns, name);
+    return ts.createTypeReferenceNode(qName, typeArgs.length > 0 ? typeArgs : undefined);
   }
 
   getPreludeStatements(): ts.Statement[] { return []; }
@@ -323,4 +383,10 @@ export class NoopSchemaChecker implements DomSchemaChecker {
   checkProperty(
       id: string, element: TmplAstElement, name: string, span: ParseSourceSpan,
       schemas: SchemaMetadata[]): void {}
+}
+
+export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
+  get diagnostics(): ReadonlyArray<ts.Diagnostic> { return []; }
+  missingReferenceTarget(): void {}
+  missingPipe(): void {}
 }

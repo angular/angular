@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TestFile, runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import * as ts from 'typescript';
+
+import {TestFile, runInEachFileSystem} from '../../file_system/testing';
+import {TypeCheckingConfig} from '../src/api';
 
 import {TestDeclaration, ngForDeclaration, ngForDts, typecheck} from './test_utils';
 
@@ -33,7 +35,7 @@ runInEachFileSystem(() => {
           }]);
 
       expect(messages).toEqual(
-          [`synthetic.html(1, 10): Type 'string' is not assignable to type 'number | undefined'.`]);
+          [`synthetic.html(1, 10): Type 'string' is not assignable to type 'number'.`]);
     });
 
     it('infers type of template variables', () => {
@@ -150,7 +152,26 @@ runInEachFileSystem(() => {
 
       expect(messages).toEqual([
         `synthetic.html(1, 29): Property 'heihgt' does not exist on type 'TestComponent'. Did you mean 'height'?`,
-        `synthetic.html(1, 6): 'srcc' is not a valid property of <img>.`,
+        `synthetic.html(1, 6): Can't bind to 'srcc' since it isn't a known property of 'img'.`,
+      ]);
+    });
+
+    it('checks text attributes that are consumed by bindings with literal string types', () => {
+      const messages = diagnose(
+          `<div dir mode="drak"></div><div dir mode="light"></div>`, `
+        class Dir {
+          mode: 'dark'|'light';
+        }
+        class TestComponent {}`,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            inputs: {'mode': 'mode'},
+          }]);
+
+      expect(messages).toEqual([
+        `synthetic.html(1, 10): Type '"drak"' is not assignable to type '"dark" | "light"'.`,
       ]);
     });
 
@@ -183,6 +204,77 @@ runInEachFileSystem(() => {
       }`);
 
       expect(messages).toEqual([]);
+    });
+
+    describe('outputs', () => {
+      it('should produce a diagnostic for directive outputs', () => {
+        const messages = diagnose(
+            `<div dir (event)="handleEvent($event)"></div>`, `
+          import {EventEmitter} from '@angular/core';
+          class Dir {
+            out = new EventEmitter<number>();
+          }
+          class TestComponent {
+            handleEvent(event: string): void {}
+          }`,
+            [{type: 'directive', name: 'Dir', selector: '[dir]', outputs: {'out': 'event'}}]);
+
+        expect(messages).toEqual([
+          `synthetic.html(1, 31): Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        ]);
+      });
+
+      it('should produce a diagnostic for animation events', () => {
+        const messages = diagnose(`<div dir (@animation.done)="handleEvent($event)"></div>`, `
+          class TestComponent {
+            handleEvent(event: string): void {}
+          }`);
+
+        expect(messages).toEqual([
+          `synthetic.html(1, 41): Argument of type 'AnimationEvent' is not assignable to parameter of type 'string'.`,
+        ]);
+      });
+
+      it('should produce a diagnostic for element outputs', () => {
+        const messages = diagnose(`<div (click)="handleEvent($event)"></div>`, `
+          import {EventEmitter} from '@angular/core';
+          class TestComponent {
+            handleEvent(event: string): void {}
+          }`);
+
+        expect(messages).toEqual([
+          `synthetic.html(1, 27): Argument of type 'MouseEvent' is not assignable to parameter of type 'string'.`,
+        ]);
+      });
+
+      it('should not produce a diagnostic when $event implicitly has an any type', () => {
+        const messages = diagnose(
+            `<div dir (event)="handleEvent($event)"></div>`, `
+          class Dir {
+            out: any;
+          }
+          class TestComponent {
+            handleEvent(event: string): void {}
+          }`,
+            [{type: 'directive', name: 'Dir', selector: '[dir]', outputs: {'out': 'event'}}]);
+
+        expect(messages).toEqual([]);
+      });
+
+      // https://github.com/angular/angular/issues/33528
+      it('should not produce a diagnostic for implicit any return types', () => {
+        const messages = diagnose(
+            `<div (click)="state = null"></div>`, `
+          class TestComponent {
+            state: any;
+          }`,
+            // Disable strict DOM event checking and strict null checks, to infer an any return type
+            // that would be implicit if the handler function would not have an explicit return
+            // type.
+            [], [], {checkTypeOfDomEvents: false}, {strictNullChecks: false});
+
+        expect(messages).toEqual([]);
+      });
     });
 
     describe('strict null checks', () => {
@@ -239,8 +331,9 @@ class TestComponent {
 
 function diagnose(
     template: string, source: string, declarations?: TestDeclaration[],
-    additionalSources: TestFile[] = []): string[] {
-  const diagnostics = typecheck(template, source, declarations, additionalSources);
+    additionalSources: TestFile[] = [], config?: Partial<TypeCheckingConfig>,
+    options?: ts.CompilerOptions): string[] {
+  const diagnostics = typecheck(template, source, declarations, additionalSources, config, options);
   return diagnostics.map(diag => {
     const text =
         typeof diag.messageText === 'string' ? diag.messageText : diag.messageText.messageText;

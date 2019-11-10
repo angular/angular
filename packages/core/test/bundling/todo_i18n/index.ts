@@ -6,9 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import '@angular/core/test/bundling/util/src/reflect_metadata';
-// Make the `$localize()` global function available to the compiled templates, and the direct calls
-// below. This would normally be done inside the application `polyfills.ts` file.
-import '@angular/localize';
 import './translations';
 import {CommonModule} from '@angular/common';
 import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
@@ -85,9 +82,9 @@ class TodoStore {
           <input *ngIf="todo.editing"
                  class="edit" #editedtodo
                  [value]="todo.title"
-                 (blur)="updateEditingTodo(todo, editedtodo.value)"
-                 (keyup)="updateEditedTodoValue($event.target.value)"
-                 (keyup)="$event.code == 'Enter' && updateEditingTodo(todo, editedtodo.value)"
+                 (blur)="updateEditedTodoValue(todo, editedtodo.value)"
+                 (keyup)="updateEditedTodoValue(todo, $event.target.value)"
+                 (keyup)="$event.code == 'Enter' && updateEditedTodoValue(todo, editedtodo.value)"
                  (keyup)="$event.code == 'Escape' && cancelEditingTodo(todo)">
         </li>
       </ul>

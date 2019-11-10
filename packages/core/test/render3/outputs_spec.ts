@@ -21,12 +21,12 @@ describe('outputs', () => {
     change = new EventEmitter();
     resetStream = new EventEmitter();
 
-    static ngFactoryDef = () => buttonToggle = new ButtonToggle();
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵfac = () => buttonToggle = new ButtonToggle();
+    static ɵcmp = ɵɵdefineComponent({
       type: ButtonToggle,
       selectors: [['button-toggle']],
       template: function(rf: RenderFlags, ctx: any) {},
-      consts: 0,
+      decls: 0,
       vars: 0,
       outputs: {change: 'change', resetStream: 'reset'}
     });
@@ -37,8 +37,8 @@ describe('outputs', () => {
   class OtherDir {
     changeStream = new EventEmitter();
 
-    static ngFactoryDef = () => otherDir = new OtherDir;
-    static ngDirectiveDef = ɵɵdefineDirective(
+    static ɵfac = () => otherDir = new OtherDir;
+    static ɵdir = ɵɵdefineDirective(
         {type: OtherDir, selectors: [['', 'otherDir', '']], outputs: {changeStream: 'change'}});
   }
 
@@ -80,7 +80,7 @@ describe('outputs', () => {
             ɵɵembeddedViewEnd();
           } else {
             if (ɵɵembeddedViewStart(1, 1, 0)) {
-              ɵɵelementStart(0, 'div', ['otherDir', '']);
+              ɵɵelementStart(0, 'div', 0);
               {
                 ɵɵlistener('change', function() { return ctx.onChange(); });
               }
@@ -95,13 +95,14 @@ describe('outputs', () => {
 
     let counter = 0;
     const ctx = {condition: true, onChange: () => counter++, onClick: () => {}};
-    renderToHtml(Template, ctx, 3, 0, deps);
+    const attrs = [['otherDir', '']];
+    renderToHtml(Template, ctx, 3, 0, deps, null, null, false, attrs);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
 
     ctx.condition = false;
-    renderToHtml(Template, ctx, 3, 0, deps);
+    renderToHtml(Template, ctx, 3, 0, deps, null, null, false, attrs);
     expect(counter).toEqual(1);
 
     otherDir !.changeStream.next();

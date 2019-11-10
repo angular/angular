@@ -12,13 +12,14 @@ import {stringify} from '../util/stringify';
 
 import {NgModuleFactory} from './ng_module_factory';
 
+export type ModuleRegistrationMap = Map<string, NgModuleFactory<any>|NgModuleType>;
 
 /**
  * Map of module-id to the corresponding NgModule.
  * - In pre Ivy we track NgModuleFactory,
  * - In post Ivy we track the NgModuleType
  */
-const modules = new Map<string, NgModuleFactory<any>|NgModuleType>();
+let modules: ModuleRegistrationMap = new Map();
 
 /**
  * Registers a loaded module. Should only be called from generated NgModuleFactory code.
@@ -38,14 +39,14 @@ function assertSameOrNotExisting(id: string, type: Type<any>| null, incoming: Ty
 }
 
 export function registerNgModuleType(ngModuleType: NgModuleType) {
-  if (ngModuleType.ngModuleDef.id !== null) {
-    const id = ngModuleType.ngModuleDef.id;
+  if (ngModuleType.ɵmod.id !== null) {
+    const id = ngModuleType.ɵmod.id;
     const existing = modules.get(id) as NgModuleType | null;
     assertSameOrNotExisting(id, existing, ngModuleType);
     modules.set(id, ngModuleType);
   }
 
-  let imports = ngModuleType.ngModuleDef.imports;
+  let imports = ngModuleType.ɵmod.imports;
   if (imports instanceof Function) {
     imports = imports();
   }
@@ -54,8 +55,16 @@ export function registerNgModuleType(ngModuleType: NgModuleType) {
   }
 }
 
-export function clearModulesForTest(): void {
+export function clearRegisteredModuleState(): void {
   modules.clear();
+}
+
+export function getRegisteredModulesState(): ModuleRegistrationMap {
+  return new Map(modules);
+}
+
+export function restoreRegisteredModulesState(moduleMap: ModuleRegistrationMap) {
+  modules = new Map(moduleMap);
 }
 
 export function getRegisteredNgModuleType(id: string) {

@@ -9,7 +9,7 @@
 import {RendererType2} from '../../src/render/api';
 import {getLContext} from '../../src/render3/context_discovery';
 import {AttributeMarker, ɵɵadvance, ɵɵattribute, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵhostProperty, ɵɵproperty} from '../../src/render3/index';
-import {ɵɵallocHostVars, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵprojection, ɵɵprojectionDef, ɵɵstyling, ɵɵstylingApply, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
+import {ɵɵallocHostVars, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵprojection, ɵɵprojectionDef, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
 import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -34,7 +34,7 @@ describe('render3 integration test', () => {
         expect(renderToHtml(Template, 'once', 1, 1)).toEqual('once');
         expect(renderToHtml(Template, 'twice', 1, 1)).toEqual('once');
         expect(ngDevMode).toHaveProperties({
-          firstTemplatePass: 0,
+          firstCreatePass: 0,
           tNode: 2,
           tView: 2,  // 1 for root view, 1 for template
           rendererSetText: 1,
@@ -117,11 +117,11 @@ describe('render3 integration test', () => {
       // TODO(issue/24571): remove '!'.
       afterTree !: Tree;
 
-      static ngFactoryDef = () => new ChildComponent;
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new ChildComponent;
+      static ɵcmp = ɵɵdefineComponent({
         selectors: [['child']],
         type: ChildComponent,
-        consts: 3,
+        decls: 3,
         vars: 0,
         template: function ChildComponentTemplate(
             rf: RenderFlags, ctx: {beforeTree: Tree, afterTree: Tree}) {
@@ -199,11 +199,11 @@ describe('render3 integration test', () => {
 describe('component styles', () => {
   it('should pass in the component styles directly into the underlying renderer', () => {
     class StyledComp {
-      static ngFactoryDef = () => new StyledComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new StyledComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: StyledComp,
         styles: ['div { color: red; }'],
-        consts: 1,
+        decls: 1,
         vars: 0,
         encapsulation: 100,
         selectors: [['foo']],
@@ -227,10 +227,10 @@ describe('component animations', () => {
     const animB = {name: 'b'};
 
     class AnimComp {
-      static ngFactoryDef = () => new AnimComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new AnimComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: AnimComp,
-        consts: 0,
+        decls: 0,
         vars: 0,
         data: {
           animation: [
@@ -254,10 +254,10 @@ describe('component animations', () => {
 
   it('should include animations in the renderType data array even if the array is empty', () => {
     class AnimComp {
-      static ngFactoryDef = () => new AnimComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new AnimComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: AnimComp,
-        consts: 0,
+        decls: 0,
         vars: 0,
         data: {
           animation: [],
@@ -274,15 +274,16 @@ describe('component animations', () => {
 
   it('should allow [@trigger] bindings to be picked up by the underlying renderer', () => {
     class AnimComp {
-      static ngFactoryDef = () => new AnimComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new AnimComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: AnimComp,
-        consts: 1,
+        decls: 1,
         vars: 1,
         selectors: [['foo']],
+        consts: [[AttributeMarker.Bindings, '@fooAnimation']],
         template: (rf: RenderFlags, ctx: AnimComp) => {
           if (rf & RenderFlags.Create) {
-            ɵɵelement(0, 'div', [AttributeMarker.Bindings, '@fooAnimation']);
+            ɵɵelement(0, 'div', 0);
           }
           if (rf & RenderFlags.Update) {
             ɵɵattribute('@fooAnimation', ctx.animationValue);
@@ -310,15 +311,16 @@ describe('component animations', () => {
   it('should allow creation-level [@trigger] properties to be picked up by the underlying renderer',
      () => {
        class AnimComp {
-         static ngFactoryDef = () => new AnimComp();
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new AnimComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: AnimComp,
-           consts: 1,
+           decls: 1,
            vars: 1,
            selectors: [['foo']],
+           consts: [['@fooAnimation', '']],
            template: (rf: RenderFlags, ctx: AnimComp) => {
              if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'div', ['@fooAnimation', '']);
+               ɵɵelement(0, 'div', 0);
              }
            }
          });
@@ -343,8 +345,8 @@ describe('component animations', () => {
 
   //   it('should allow host binding animations to be picked up and rendered', () => {
   //     class ChildCompWithAnim {
-  //       static ngFactoryDef = () => new ChildCompWithAnim();
-  //       static ngDirectiveDef = ɵɵdefineDirective({
+  //       static ɵfac = () => new ChildCompWithAnim();
+  //       static ɵdir = ɵɵdefineDirective({
   //         type: ChildCompWithAnim,
   //         selectors: [['child-comp-with-anim']],
   //         hostBindings: function(rf: RenderFlags, ctx: any, elementIndex: number): void {
@@ -358,10 +360,10 @@ describe('component animations', () => {
   //     }
 
   //     class ParentComp {
-  //       static ngFactoryDef = () => new ParentComp();
-  //       static ngComponentDef = ɵɵdefineComponent({
+  //       static ɵfac = () => new ParentComp();
+  //       static ɵcmp = ɵɵdefineComponent({
   //         type: ParentComp,
-  //         consts: 1,
+  //         decls: 1,
   //         vars: 1,
   //         selectors: [['foo']],
   //         template: (rf: RenderFlags, ctx: ParentComp) => {
@@ -388,11 +390,11 @@ describe('component animations', () => {
 describe('element discovery', () => {
   it('should only monkey-patch immediate child nodes in a component', () => {
     class StructuredComp {
-      static ngFactoryDef = () => new StructuredComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new StructuredComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        consts: 2,
+        decls: 2,
         vars: 0,
         template: (rf: RenderFlags, ctx: StructuredComp) => {
           if (rf & RenderFlags.Create) {
@@ -420,11 +422,11 @@ describe('element discovery', () => {
 
   it('should only monkey-patch immediate child nodes in a sub component', () => {
     class ChildComp {
-      static ngFactoryDef = () => new ChildComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new ChildComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: ChildComp,
         selectors: [['child-comp']],
-        consts: 3,
+        decls: 3,
         vars: 0,
         template: (rf: RenderFlags, ctx: ChildComp) => {
           if (rf & RenderFlags.Create) {
@@ -437,12 +439,12 @@ describe('element discovery', () => {
     }
 
     class ParentComp {
-      static ngFactoryDef = () => new ParentComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new ParentComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: ParentComp,
         selectors: [['parent-comp']],
         directives: [ChildComp],
-        consts: 2,
+        decls: 2,
         vars: 0,
         template: (rf: RenderFlags, ctx: ParentComp) => {
           if (rf & RenderFlags.Create) {
@@ -470,13 +472,14 @@ describe('element discovery', () => {
 
   it('should only monkey-patch immediate child nodes in an embedded template container', () => {
     class StructuredComp {
-      static ngFactoryDef = () => new StructuredComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new StructuredComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
         directives: [NgIf],
-        consts: 2,
+        decls: 2,
         vars: 1,
+        consts: [['ngIf', '']],
         template: (rf: RenderFlags, ctx: StructuredComp) => {
           if (rf & RenderFlags.Create) {
             ɵɵelementStart(0, 'section');
@@ -487,7 +490,7 @@ describe('element discovery', () => {
                 ɵɵelementEnd();
                 ɵɵelement(2, 'div');
               }
-            }, 3, 0, 'ng-template', ['ngIf', '']);
+            }, 3, 0, 'ng-template', 0);
             ɵɵelementEnd();
           }
           if (rf & RenderFlags.Update) {
@@ -519,12 +522,12 @@ describe('element discovery', () => {
 
   it('should return a context object from a given dom node', () => {
     class StructuredComp {
-      static ngFactoryDef = () => new StructuredComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new StructuredComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
         directives: [NgIf],
-        consts: 2,
+        decls: 2,
         vars: 0,
         template: (rf: RenderFlags, ctx: StructuredComp) => {
           if (rf & RenderFlags.Create) {
@@ -557,11 +560,11 @@ describe('element discovery', () => {
 
   it('should cache the element context on a element was pre-emptively monkey-patched', () => {
     class StructuredComp {
-      static ngFactoryDef = () => new StructuredComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new StructuredComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        consts: 1,
+        decls: 1,
         vars: 0,
         template: (rf: RenderFlags, ctx: StructuredComp) => {
           if (rf & RenderFlags.Create) {
@@ -589,11 +592,11 @@ describe('element discovery', () => {
   it('should cache the element context on an intermediate element that isn\'t pre-emptively monkey-patched',
      () => {
        class StructuredComp {
-         static ngFactoryDef = () => new StructuredComp();
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new StructuredComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
-           consts: 2,
+           decls: 2,
            vars: 0,
            template: (rf: RenderFlags, ctx: StructuredComp) => {
              if (rf & RenderFlags.Create) {
@@ -622,20 +625,15 @@ describe('element discovery', () => {
   it('should be able to pull in element context data even if the element is decorated using styling',
      () => {
        class StructuredComp {
-         static ngFactoryDef = () => new StructuredComp();
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new StructuredComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
-           consts: 1,
+           decls: 1,
            vars: 0,
            template: (rf: RenderFlags, ctx: StructuredComp) => {
              if (rf & RenderFlags.Create) {
-               ɵɵelementStart(0, 'section');
-               ɵɵstyling();
-               ɵɵelementEnd();
-             }
-             if (rf & RenderFlags.Update) {
-               ɵɵstylingApply();
+               ɵɵelement(0, 'section');
              }
            }
          });
@@ -675,11 +673,11 @@ describe('element discovery', () => {
          </section>
        */
        class ProjectorComp {
-         static ngFactoryDef = () => new ProjectorComp();
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new ProjectorComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: ProjectorComp,
            selectors: [['projector-comp']],
-           consts: 4,
+           decls: 4,
            vars: 0,
            template: (rf: RenderFlags, ctx: ProjectorComp) => {
              if (rf & RenderFlags.Create) {
@@ -698,12 +696,12 @@ describe('element discovery', () => {
        }
 
        class ParentComp {
-         static ngFactoryDef = () => new ParentComp();
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new ParentComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: ParentComp,
            selectors: [['parent-comp']],
            directives: [ProjectorComp],
-           consts: 5,
+           decls: 5,
            vars: 0,
            template: (rf: RenderFlags, ctx: ParentComp) => {
              if (rf & RenderFlags.Create) {
@@ -772,11 +770,11 @@ describe('element discovery', () => {
   it('should return `null` when an element context is retrieved that is a DOM node that was not created by Angular',
      () => {
        class StructuredComp {
-         static ngFactoryDef = () => new StructuredComp();
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new StructuredComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
-           consts: 1,
+           decls: 1,
            vars: 0,
            template: (rf: RenderFlags, ctx: StructuredComp) => {
              if (rf & RenderFlags.Create) {
@@ -799,11 +797,11 @@ describe('element discovery', () => {
 
   it('should by default monkey-patch the bootstrap component with context details', () => {
     class StructuredComp {
-      static ngFactoryDef = () => new StructuredComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new StructuredComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        consts: 0,
+        decls: 0,
         vars: 0,
         template: (rf: RenderFlags, ctx: StructuredComp) => {}
       });
@@ -838,35 +836,33 @@ describe('element discovery', () => {
        let myDir3Instance: MyDir2|null = null;
 
        class MyDir1 {
-         static ngFactoryDef = () => myDir1Instance = new MyDir1();
-         static ngDirectiveDef =
-             ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
+         static ɵfac = () => myDir1Instance = new MyDir1();
+         static ɵdir = ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
        }
 
        class MyDir2 {
-         static ngFactoryDef = () => myDir2Instance = new MyDir2();
-         static ngDirectiveDef =
-             ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
+         static ɵfac = () => myDir2Instance = new MyDir2();
+         static ɵdir = ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
        }
 
        class MyDir3 {
-         static ngFactoryDef = () => myDir3Instance = new MyDir2();
-         static ngDirectiveDef =
-             ɵɵdefineDirective({type: MyDir3, selectors: [['', 'my-dir-3', '']]});
+         static ɵfac = () => myDir3Instance = new MyDir2();
+         static ɵdir = ɵɵdefineDirective({type: MyDir3, selectors: [['', 'my-dir-3', '']]});
        }
 
        class StructuredComp {
-         static ngFactoryDef = () => new StructuredComp();
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new StructuredComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
            directives: [MyDir1, MyDir2, MyDir3],
-           consts: 2,
+           decls: 2,
            vars: 0,
+           consts: [['my-dir-1', '', 'my-dir-2', ''], ['my-dir-3']],
            template: (rf: RenderFlags, ctx: StructuredComp) => {
              if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'div', ['my-dir-1', '', 'my-dir-2', '']);
-               ɵɵelement(1, 'div', ['my-dir-3']);
+               ɵɵelement(0, 'div', 0);
+               ɵɵelement(1, 'div', 1);
              }
            }
          });
@@ -921,23 +917,21 @@ describe('element discovery', () => {
        let childComponentInstance: ChildComp|null = null;
 
        class MyDir1 {
-         static ngFactoryDef = () => myDir1Instance = new MyDir1();
-         static ngDirectiveDef =
-             ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
+         static ɵfac = () => myDir1Instance = new MyDir1();
+         static ɵdir = ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
        }
 
        class MyDir2 {
-         static ngFactoryDef = () => myDir2Instance = new MyDir2();
-         static ngDirectiveDef =
-             ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
+         static ɵfac = () => myDir2Instance = new MyDir2();
+         static ɵdir = ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
        }
 
        class ChildComp {
-         static ngFactoryDef = () => childComponentInstance = new ChildComp();
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => childComponentInstance = new ChildComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: ChildComp,
            selectors: [['child-comp']],
-           consts: 1,
+           decls: 1,
            vars: 0,
            template: (rf: RenderFlags, ctx: ChildComp) => {
              if (rf & RenderFlags.Create) {
@@ -948,16 +942,17 @@ describe('element discovery', () => {
        }
 
        class ParentComp {
-         static ngFactoryDef = () => new ParentComp();
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new ParentComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: ParentComp,
            selectors: [['parent-comp']],
            directives: [ChildComp, MyDir1, MyDir2],
-           consts: 1,
+           decls: 1,
            vars: 0,
+           consts: [['my-dir-1', '', 'my-dir-2', '']],
            template: (rf: RenderFlags, ctx: ParentComp) => {
              if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'child-comp', ['my-dir-1', '', 'my-dir-2', '']);
+               ɵɵelement(0, 'child-comp', 0);
              }
            }
          });
@@ -1010,11 +1005,11 @@ describe('element discovery', () => {
   it('should monkey-patch sub components with the view data and then replace them with the context result once a lookup occurs',
      () => {
        class ChildComp {
-         static ngFactoryDef = () => new ChildComp();
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new ChildComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: ChildComp,
            selectors: [['child-comp']],
-           consts: 3,
+           decls: 3,
            vars: 0,
            template: (rf: RenderFlags, ctx: ChildComp) => {
              if (rf & RenderFlags.Create) {
@@ -1027,12 +1022,12 @@ describe('element discovery', () => {
        }
 
        class ParentComp {
-         static ngFactoryDef = () => new ParentComp();
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new ParentComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: ParentComp,
            selectors: [['parent-comp']],
            directives: [ChildComp],
-           consts: 2,
+           decls: 2,
            vars: 0,
            template: (rf: RenderFlags, ctx: ParentComp) => {
              if (rf & RenderFlags.Create) {
@@ -1071,11 +1066,11 @@ describe('element discovery', () => {
 describe('sanitization', () => {
   it('should sanitize data using the provided sanitization interface', () => {
     class SanitizationComp {
-      static ngFactoryDef = () => new SanitizationComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new SanitizationComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: SanitizationComp,
         selectors: [['sanitize-this']],
-        consts: 1,
+        decls: 1,
         vars: 1,
         template: (rf: RenderFlags, ctx: SanitizationComp) => {
           if (rf & RenderFlags.Create) {
@@ -1113,8 +1108,8 @@ describe('sanitization', () => {
       // @HostBinding()
       cite: any = 'http://cite-dir-value';
 
-      static ngFactoryDef = () => hostBindingDir = new UnsafeUrlHostBindingDir();
-      static ngDirectiveDef = ɵɵdefineDirective({
+      static ɵfac = () => hostBindingDir = new UnsafeUrlHostBindingDir();
+      static ɵdir = ɵɵdefineDirective({
         type: UnsafeUrlHostBindingDir,
         selectors: [['', 'unsafeUrlHostBindingDir', '']],
         hostBindings: (rf: RenderFlags, ctx: any) => {
@@ -1129,15 +1124,16 @@ describe('sanitization', () => {
     }
 
     class SimpleComp {
-      static ngFactoryDef = () => new SimpleComp();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new SimpleComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: SimpleComp,
         selectors: [['sanitize-this']],
-        consts: 1,
+        decls: 1,
         vars: 0,
+        consts: [['unsafeUrlHostBindingDir', '']],
         template: (rf: RenderFlags, ctx: SimpleComp) => {
           if (rf & RenderFlags.Create) {
-            ɵɵelement(0, 'blockquote', ['unsafeUrlHostBindingDir', '']);
+            ɵɵelement(0, 'blockquote', 0);
           }
         },
         directives: [UnsafeUrlHostBindingDir]

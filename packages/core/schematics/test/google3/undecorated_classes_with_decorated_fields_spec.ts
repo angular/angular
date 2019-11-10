@@ -183,7 +183,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
       import { ViewChild, ElementRef } from '@angular/core';
 
       export class Base {
-        @ViewChild('button', { static: false }) button: ElementRef<HTMLElement>;
+        @ViewChild('button') button: ElementRef<HTMLElement>;
       }
     `);
 
@@ -209,7 +209,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
       import { ContentChild, ElementRef } from '@angular/core';
 
       export class Base {
-        @ContentChild('button', { static: false }) button: ElementRef<HTMLElement>;
+        @ContentChild('button') button: ElementRef<HTMLElement>;
       }
     `);
 

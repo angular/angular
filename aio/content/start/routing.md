@@ -54,8 +54,10 @@ The app is already set up to use the Angular router and to use routing to naviga
 
     Notice that the URL in the preview window changes. The final segment is `products/1`.
 
-    <figure>
-      <img src="generated/images/guide/start/product-details-works.png" alt="Product details page with updated URL">
+    <figure class="lightbox">
+      <div class="card">
+        <img src="generated/images/guide/start/product-details-works.png" alt="Product details page with updated URL">
+      </div>
     </figure>
 
     
@@ -90,8 +92,16 @@ The product details component handles the display of each product. The Angular R
     <code-example path="getting-started/src/app/product-details/product-details.component.1.ts" region="get-product">
     </code-example>
 
+    Angular calls `ngOnInit()` shortly after creating a component.
+
     The route parameters correspond to the path variables defined in the route. The `productId` is provided from
-    the URL that was matched to the route. You use the `productId` to display the details for each unique product. 
+    the URL that was matched to the route. You use the `productId` to display the details for each unique product.
+
+    <div class="alert is-helpful">
+
+    For more information on `ngOnInit()`, see [Lifecycle hooks](guide/lifecycle-hooks).
+    
+    </div>
 
 1. Update the template to display product details information inside an `*ngIf`.
 
@@ -100,8 +110,10 @@ The product details component handles the display of each product. The Angular R
 
 Now, when the user clicks on a name in the product list, the router navigates you to the distinct URL for the product, swaps out the product list component for the product details component, and displays the product details. 
 
-  <figure>
-    <img src="generated/images/guide/start/product-details-routed.png" alt="Product details page with updated URL and full details displayed">
+  <figure class="lightbox">
+    <div class="card">
+      <img src="generated/images/guide/start/product-details-routed.png" alt="Product details page with updated URL and full details displayed">
+    </div>
   </figure>
 
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, ParseSourceFile, ParseTemplateOptions, R3ComponentMetadata, R3TargetBinder, SchemaMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, ParseError, ParseSourceFile, ParseTemplateOptions, R3ComponentMetadata, R3FactoryTarget, R3TargetBinder, SchemaMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
@@ -19,7 +19,7 @@ import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance'
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry} from '../../scope';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck';
 import {NoopResourceDependencyRecorder, ResourceDependencyRecorder} from '../../util/src/resource_recorder';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
@@ -52,8 +52,9 @@ export class ComponentDecoratorHandler implements
       private scopeReader: ComponentScopeReader, private scopeRegistry: LocalModuleScopeRegistry,
       private isCore: boolean, private resourceLoader: ResourceLoader, private rootDirs: string[],
       private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean,
-      private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
-      private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder,
+      private i18nLegacyMessageIdFormat: string, private moduleResolver: ModuleResolver,
+      private cycleAnalyzer: CycleAnalyzer, private refEmitter: ReferenceEmitter,
+      private defaultImportRecorder: DefaultImportRecorder,
       private resourceDependencies:
           ResourceDependencyRecorder = new NoopResourceDependencyRecorder()) {}
 
@@ -136,7 +137,8 @@ export class ComponentDecoratorHandler implements
     }
   }
 
-  analyze(node: ClassDeclaration, decorator: Decorator): AnalysisOutput<ComponentHandlerData> {
+  analyze(node: ClassDeclaration, decorator: Decorator, flags: HandlerFlags = HandlerFlags.NONE):
+      AnalysisOutput<ComponentHandlerData> {
     const containingFile = node.getSourceFile().fileName;
     this.literalCache.delete(decorator);
 
@@ -144,7 +146,7 @@ export class ComponentDecoratorHandler implements
     // on it.
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.defaultImportRecorder, this.isCore,
-        this.elementSchemaRegistry.getDefaultComponentElementName());
+        flags, this.elementSchemaRegistry.getDefaultComponentElementName());
     if (directiveResult === undefined) {
       // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
       // case, compilation of the decorator is skipped. Returning an empty object signifies
@@ -215,24 +217,20 @@ export class ComponentDecoratorHandler implements
           `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);
     }
 
-    // If the component has a selector, it should be registered with the
-    // `LocalModuleScopeRegistry`
-    // so that when this component appears in an `@NgModule` scope, its selector can be
-    // determined.
-    if (metadata.selector !== null) {
-      const ref = new Reference(node);
-      this.metaRegistry.registerDirectiveMetadata({
-        ref,
-        name: node.name.text,
-        selector: metadata.selector,
-        exportAs: metadata.exportAs,
-        inputs: metadata.inputs,
-        outputs: metadata.outputs,
-        queries: metadata.queries.map(query => query.propertyName),
-        isComponent: true, ...extractDirectiveGuards(node, this.reflector),
-        baseClass: readBaseClass(node, this.reflector, this.evaluator),
-      });
-    }
+    // Register this component's information with the `MetadataRegistry`. This ensures that
+    // the information about the component is available during the compile() phase.
+    const ref = new Reference(node);
+    this.metaRegistry.registerDirectiveMetadata({
+      ref,
+      name: node.name.text,
+      selector: metadata.selector,
+      exportAs: metadata.exportAs,
+      inputs: metadata.inputs,
+      outputs: metadata.outputs,
+      queries: metadata.queries.map(query => query.propertyName),
+      isComponent: true, ...extractDirectiveGuards(node, this.reflector),
+      baseClass: readBaseClass(node, this.reflector, this.evaluator),
+    });
 
     // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
     // precede inline styles, and styles defined in the template override styles defined in the
@@ -324,7 +322,9 @@ export class ComponentDecoratorHandler implements
     const matcher = new SelectorMatcher<DirectiveMeta>();
     if (scope !== null) {
       for (const directive of scope.compilation.directives) {
-        matcher.addSelectables(CssSelector.parse(directive.selector), directive);
+        if (directive.selector !== null) {
+          matcher.addSelectables(CssSelector.parse(directive.selector), directive);
+        }
       }
     }
     const binder = new R3TargetBinder(matcher);
@@ -367,8 +367,10 @@ export class ComponentDecoratorHandler implements
     const scope = this.scopeReader.getScopeForComponent(node);
     if (scope !== null) {
       for (const meta of scope.compilation.directives) {
-        const extMeta = flattenInheritedDirectiveMetadata(this.metaReader, meta.ref);
-        matcher.addSelectables(CssSelector.parse(meta.selector), extMeta);
+        if (meta.selector !== null) {
+          const extMeta = flattenInheritedDirectiveMetadata(this.metaReader, meta.ref);
+          matcher.addSelectables(CssSelector.parse(meta.selector), extMeta);
+        }
       }
       for (const {name, ref} of scope.compilation.pipes) {
         if (!ts.isClassDeclaration(ref.node)) {
@@ -399,7 +401,7 @@ export class ComponentDecoratorHandler implements
       // First it needs to be determined if actually importing the directives/pipes used in the
       // template would create a cycle. Currently ngtsc refuses to generate cycles, so an option
       // known as "remote scoping" is used if a cycle would be created. In remote scoping, the
-      // module file sets the directives/pipes on the ngComponentDef of the component, without
+      // module file sets the directives/pipes on the ɵcmp of the component, without
       // requiring new imports (but also in a way that breaks tree shaking).
       //
       // Determining this is challenging, because the TemplateDefinitionBuilder is responsible for
@@ -421,9 +423,11 @@ export class ComponentDecoratorHandler implements
 
       for (const dir of scope.compilation.directives) {
         const {ref, selector} = dir;
-        const expression = this.refEmitter.emit(ref, context);
-        directives.push({selector, expression});
-        matcher.addSelectables(CssSelector.parse(selector), {...dir, expression});
+        if (selector !== null) {
+          const expression = this.refEmitter.emit(ref, context);
+          directives.push({selector, expression});
+          matcher.addSelectables(CssSelector.parse(selector), {...dir, expression});
+        }
       }
       const pipes = new Map<string, Expression>();
       for (const pipe of scope.compilation.pipes) {
@@ -455,7 +459,7 @@ export class ComponentDecoratorHandler implements
           this._recordSyntheticImport(pipe, context);
         }
 
-        // Check whether the directive/pipe arrays in ngComponentDef need to be wrapped in closures.
+        // Check whether the directive/pipe arrays in ɵcmp need to be wrapped in closures.
         // This is required if any directive/pipe reference is to a declaration in the same file but
         // declared after this component.
         const wrapDirectivesAndPipesInClosure =
@@ -486,13 +490,14 @@ export class ComponentDecoratorHandler implements
       CompileResult[] {
     const meta = analysis.meta;
     const res = compileComponentFromMetadata(meta, pool, makeBindingParser());
-    const factoryRes = compileNgFactoryDefField(meta);
+    const factoryRes = compileNgFactoryDefField(
+        {...meta, injectFn: Identifiers.directiveInject, target: R3FactoryTarget.Component});
     if (analysis.metadataStmt !== null) {
       factoryRes.statements.push(analysis.metadataStmt);
     }
     return [
       factoryRes, {
-        name: 'ngComponentDef',
+        name: 'ɵcmp',
         initializer: res.expression,
         statements: [],
         type: res.type,
@@ -506,7 +511,7 @@ export class ComponentDecoratorHandler implements
     }
     if (decorator.args === null || decorator.args.length !== 1) {
       throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
+          ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
           `Incorrect number of arguments to @Component decorator`);
     }
     const meta = unwrapExpression(decorator.args[0]);
@@ -621,7 +626,8 @@ export class ComponentDecoratorHandler implements
   } {
     if (!component.has('template')) {
       throw new FatalDiagnosticError(
-          ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node, 'component is missing a template');
+          ErrorCode.COMPONENT_MISSING_TEMPLATE, Decorator.nodeForError(decorator),
+          'component is missing a template');
     }
     const templateExpr = component.get('template') !;
 
@@ -697,7 +703,8 @@ export class ComponentDecoratorHandler implements
       ...parseTemplate(templateStr, templateUrl, {
         preserveWhitespaces,
         interpolationConfig: interpolation,
-        range: templateRange, escapedString, ...options,
+        range: templateRange, escapedString,
+        i18nLegacyMessageIdFormat: this.i18nLegacyMessageIdFormat, ...options,
       }),
       template: templateStr, templateUrl,
       isInline: component.has('template'),

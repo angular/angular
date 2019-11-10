@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {forwardRefResolver} from '@angular/compiler-cli/src/ngtsc/annotations/src/util';
 import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
 import {DynamicValue, PartialEvaluator, ResolvedValue} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
@@ -13,9 +14,10 @@ import * as ts from 'typescript';
 
 import {getAngularDecorators} from '../../utils/ng_decorators';
 
+import {ResolvedDirective, ResolvedNgModule} from './definition_collector';
 import {ImportManager} from './import_manager';
-import {ResolvedNgModule} from './module_collector';
 import {UpdateRecorder} from './update_recorder';
+
 
 /** Name of decorators which imply that a given class does not need to be migrated. */
 const NO_MIGRATE_DECORATORS = ['Injectable', 'Directive', 'Component', 'Pipe'];
@@ -42,13 +44,31 @@ export class MissingInjectableTransform {
 
   recordChanges() { this.importManager.recordChanges(); }
 
+  /**
+   * Migrates all specified NgModule's by walking through referenced providers
+   * and decorating them with "@Injectable" if needed.
+   */
+  migrateModules(modules: ResolvedNgModule[]): AnalysisFailure[] {
+    return modules.reduce(
+        (failures, node) => failures.concat(this.migrateModule(node)), [] as AnalysisFailure[]);
+  }
+
+  /**
+   * Migrates all specified directives by walking through referenced providers
+   * and decorating them with "@Injectable" if needed.
+   */
+  migrateDirectives(directives: ResolvedDirective[]): AnalysisFailure[] {
+    return directives.reduce(
+        (failures, node) => failures.concat(this.migrateDirective(node)), [] as AnalysisFailure[]);
+  }
+
   /** Migrates a given NgModule by walking through the referenced providers. */
   migrateModule(module: ResolvedNgModule): AnalysisFailure[] {
     if (module.providersExpr === null) {
       return [];
     }
 
-    const evaluatedExpr = this.partialEvaluator.evaluate(module.providersExpr);
+    const evaluatedExpr = this._evaluateExpression(module.providersExpr);
 
     if (!Array.isArray(evaluatedExpr)) {
       return [{
@@ -60,17 +80,57 @@ export class MissingInjectableTransform {
     return this._visitProviderResolvedValue(evaluatedExpr, module);
   }
 
+
+  /**
+   * Migrates a given directive by walking through defined providers. This method
+   * also handles components with "viewProviders" defined.
+   */
+  migrateDirective(directive: ResolvedDirective): AnalysisFailure[] {
+    const failures: AnalysisFailure[] = [];
+
+    // Migrate "providers" on directives and components if defined.
+    if (directive.providersExpr) {
+      const evaluatedExpr = this._evaluateExpression(directive.providersExpr);
+      if (!Array.isArray(evaluatedExpr)) {
+        return [
+          {node: directive.providersExpr, message: `Providers are not statically analyzable.`}
+        ];
+      }
+      failures.push(...this._visitProviderResolvedValue(evaluatedExpr, directive));
+    }
+
+    // Migrate "viewProviders" on components if defined.
+    if (directive.viewProvidersExpr) {
+      const evaluatedExpr = this._evaluateExpression(directive.viewProvidersExpr);
+      if (!Array.isArray(evaluatedExpr)) {
+        return [
+          {node: directive.viewProvidersExpr, message: `Providers are not statically analyzable.`}
+        ];
+      }
+      failures.push(...this._visitProviderResolvedValue(evaluatedExpr, directive));
+    }
+    return failures;
+  }
+
   /**
    * Migrates a given provider class if it is not decorated with
    * any Angular decorator.
    */
-  migrateProviderClass(node: ts.ClassDeclaration, module: ResolvedNgModule) {
+  migrateProviderClass(node: ts.ClassDeclaration, context: ResolvedNgModule|ResolvedDirective) {
     if (this.visitedProviderClasses.has(node)) {
       return;
     }
     this.visitedProviderClasses.add(node);
 
     const sourceFile = node.getSourceFile();
+
+    // We cannot migrate provider classes outside of source files. This is because the
+    // migration for third-party library files should happen in "ngcc", and in general
+    // would also involve metadata parsing.
+    if (sourceFile.isDeclarationFile) {
+      return;
+    }
+
     const ngDecorators =
         node.decorators ? getAngularDecorators(this.typeChecker, node.decorators) : null;
 
@@ -93,10 +153,18 @@ export class MissingInjectableTransform {
     const existingInjectDecorator =
         ngDecorators !== null ? ngDecorators.find(d => d.name === 'Inject') : null;
     if (existingInjectDecorator) {
-      updateRecorder.replaceDecorator(existingInjectDecorator.node, newDecoratorText, module.name);
+      updateRecorder.replaceDecorator(existingInjectDecorator.node, newDecoratorText, context.name);
     } else {
-      updateRecorder.addClassDecorator(node, newDecoratorText, module.name);
+      updateRecorder.addClassDecorator(node, newDecoratorText, context.name);
     }
+  }
+
+  /**
+   * Evaluates the given TypeScript expression using the partial evaluator with
+   * the foreign function resolver for handling "forwardRef" calls.
+   */
+  private _evaluateExpression(expr: ts.Expression): ResolvedValue {
+    return this.partialEvaluator.evaluate(expr, forwardRefResolver);
   }
 
   /**
@@ -109,12 +177,11 @@ export class MissingInjectableTransform {
     if (value instanceof Reference && ts.isClassDeclaration(value.node)) {
       this.migrateProviderClass(value.node, module);
     } else if (value instanceof Map) {
-      if (!value.has('provide') || value.has('useValue') || value.has('useFactory')) {
+      if (!value.has('provide') || value.has('useValue') || value.has('useFactory') ||
+          value.has('useExisting')) {
         return [];
       }
-      if (value.has('useExisting')) {
-        return this._visitProviderResolvedValue(value.get('useExisting') !, module);
-      } else if (value.has('useClass')) {
+      if (value.has('useClass')) {
         return this._visitProviderResolvedValue(value.get('useClass') !, module);
       } else {
         return this._visitProviderResolvedValue(value.get('provide') !, module);

@@ -691,18 +691,18 @@ describe('JS control flow', () => {
     let log: string[] = [];
 
     // Intentionally duplicating the templates in test below so we are
-    // testing the behavior on firstTemplatePass for each of these tests
+    // testing the behavior on firstCreatePass for each of these tests
     class Comp {
-      static ngFactoryDef =
+      static ɵfac =
           () => {
             log.push('comp!');
             return new Comp();
           }
 
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
-        consts: 0,
+        decls: 0,
         vars: 0,
         template: function(rf: RenderFlags, ctx: Comp) {}
       });
@@ -712,11 +712,11 @@ describe('JS control flow', () => {
       condition = true;
       condition2 = true;
 
-      static ngFactoryDef = () => new App();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new App();
+      static ɵcmp = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
-        consts: 3,
+        decls: 3,
         vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
@@ -761,18 +761,18 @@ describe('JS control flow', () => {
     let log: string[] = [];
 
     // Intentionally duplicating the templates from above so we are
-    // testing the behavior on firstTemplatePass for each of these tests
+    // testing the behavior on firstCreatePass for each of these tests
     class Comp {
-      static ngFactoryDef =
+      static ɵfac =
           () => {
             log.push('comp!');
             return new Comp();
           }
 
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵcmp = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
-        consts: 0,
+        decls: 0,
         vars: 0,
         template: function(rf: RenderFlags, ctx: Comp) {}
       });
@@ -782,11 +782,11 @@ describe('JS control flow', () => {
       condition = false;
       condition2 = true;
 
-      static ngFactoryDef = () => new App();
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new App();
+      static ɵcmp = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
-        consts: 3,
+        decls: 3,
         vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {

@@ -15,7 +15,9 @@ import {ImportManager} from '../../translator';
 import {TypeCheckBlockMetadata, TypeCheckingConfig} from './api';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
+import {OutOfBandDiagnosticRecorder} from './oob';
 import {generateTypeCheckBlock} from './type_check_block';
+
 
 
 /**
@@ -38,9 +40,9 @@ export class TypeCheckFile extends Environment {
 
   addTypeCheckBlock(
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, meta: TypeCheckBlockMetadata,
-      domSchemaChecker: DomSchemaChecker): void {
+      domSchemaChecker: DomSchemaChecker, oobRecorder: OutOfBandDiagnosticRecorder): void {
     const fnId = ts.createIdentifier(`_tcb${this.nextTcbId++}`);
-    const fn = generateTypeCheckBlock(this, ref, fnId, meta, domSchemaChecker);
+    const fn = generateTypeCheckBlock(this, ref, fnId, meta, domSchemaChecker, oobRecorder);
     this.tcbStatements.push(fn);
   }
 
@@ -51,6 +53,9 @@ export class TypeCheckFile extends Environment {
         '\n\n';
     const printer = ts.createPrinter();
     source += '\n';
+    for (const stmt of this.helperStatements) {
+      source += printer.printNode(ts.EmitHint.Unspecified, stmt, this.contextFile) + '\n';
+    }
     for (const stmt of this.pipeInstStatements) {
       source += printer.printNode(ts.EmitHint.Unspecified, stmt, this.contextFile) + '\n';
     }

@@ -28,7 +28,6 @@ export class NodeJSFileSystem implements FileSystem {
   pwd(): AbsoluteFsPath { return this.normalize(process.cwd()) as AbsoluteFsPath; }
   copyFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void { fs.copyFileSync(from, to); }
   moveFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void { fs.renameSync(from, to); }
-  mkdir(path: AbsoluteFsPath): void { fs.mkdirSync(path); }
   ensureDir(path: AbsoluteFsPath): void {
     const parents: AbsoluteFsPath[] = [];
     while (!this.isRoot(path) && !this.exists(path)) {
@@ -36,7 +35,7 @@ export class NodeJSFileSystem implements FileSystem {
       path = this.dirname(path);
     }
     while (parents.length) {
-      this.mkdir(parents.pop() !);
+      this.safeMkdir(parents.pop() !);
     }
   }
   isCaseSensitive(): boolean {
@@ -69,6 +68,18 @@ export class NodeJSFileSystem implements FileSystem {
   normalize<T extends string>(path: T): T {
     // Convert backslashes to forward slashes
     return path.replace(/\\/g, '/') as T;
+  }
+
+  private safeMkdir(path: AbsoluteFsPath): void {
+    try {
+      fs.mkdirSync(path);
+    } catch (err) {
+      // Ignore the error, if the path already exists and points to a directory.
+      // Re-throw otherwise.
+      if (!this.exists(path) || !this.stat(path).isDirectory()) {
+        throw err;
+      }
+    }
   }
 }
 

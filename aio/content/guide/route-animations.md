@@ -25,8 +25,10 @@ Let's illustrate a router transition animation by navigating between two routes,
 
 </br>
 
-<figure>
-<img src="generated/images/guide/animations/route-animation.gif" alt="Animations in action" width="440">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/animations/route-animation.gif" alt="Animations in action" width="440">
+  </div>
 </figure>
 
 ## Route configuration
@@ -63,7 +65,7 @@ The `<router-outlet>` container has an attribute directive that contains data ab
 
 <code-example path="animations/src/app/app.component.html" header="src/app/app.component.html" region="route-animations-outlet"></code-example>
 
-`AppComponent` defines a method that can detect when a view changes. The method assigns an animation state value to the animation trigger (`@routeAnimation`) based on the route configuration `data` property value.  Here's an example of an `AppComponent` method that detects when a route change happens.
+`AppComponent` defines a method that can detect when a view changes. The method assigns an animation state value to the animation trigger (`@routeAnimation`) based on the route configuration `data` property value. Here's an example of an `AppComponent` method that detects when a route change happens.
 
 <code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="prepare-router-outlet" language="typescript"></code-example>
 

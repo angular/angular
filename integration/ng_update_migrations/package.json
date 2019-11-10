@@ -21,16 +21,16 @@
     "@angular/router": "file:../../dist/packages-dist/router",
     "rxjs": "file:../../node_modules/rxjs",
     "tslib": "file:../../node_modules/tslib",
-    "zone.js": "file:../../node_modules/zone.js"
+    "zone.js": "file:../../dist/bin/packages/zone.js/npm_package"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.803.0",
-    "@angular/cli": "^8.3.0",
+    "@angular-devkit/build-angular": "^0.900.0-rc.0",
+    "@angular/cli": "file:../../node_modules/@angular/cli",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
     "@types/jasmine": "~3.3.8",
     "@types/jasminewd2": "~2.0.3",
-    "@types/node": "~8.9.4",
+    "@types/node": "file:../../node_modules/@types/node",
     "chalk": "^2.4.2",
     "diff": "^4.0.1",
     "glob": "^7.1.4",

@@ -33,10 +33,12 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
   constructor(private delegate: ts.CompilerHost, private shimGenerators: ShimGenerator[]) {
     if (delegate.resolveModuleNames !== undefined) {
       this.resolveModuleNames =
-          (moduleNames: string[], containingFile: string, reusedNames?: string[],
-           redirectedReference?: ts.ResolvedProjectReference) =>
-              delegate.resolveModuleNames !(
-                  moduleNames, containingFile, reusedNames, redirectedReference);
+          (moduleNames: string[], containingFile: string, reusedNames: string[],
+           redirectedReference: ts.ResolvedProjectReference, options?: ts.CompilerOptions) =>
+              // FIXME: Additional parameters are required in TS3.6, but ignored in 3.5.
+          // Remove the any cast once google3 is fully on TS3.6.
+          (delegate.resolveModuleNames as any) !(
+              moduleNames, containingFile, reusedNames, redirectedReference, options);
     }
     if (delegate.resolveTypeReferenceDirectives) {
       // Backward compatibility with TypeScript 2.9 and older since return
@@ -56,9 +58,12 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
     }
   }
 
+  // FIXME: Additional options param is needed in TS3.6, but not alloowed in 3.5.
+  // Make the options param non-optional once google3 is fully on TS3.6.
   resolveModuleNames?:
-      (moduleNames: string[], containingFile: string, reusedNames?: string[],
-       redirectedReference?: ts.ResolvedProjectReference) => (ts.ResolvedModule | undefined)[];
+      (moduleNames: string[], containingFile: string, reusedNames: string[],
+       redirectedReference: ts.ResolvedProjectReference,
+       options?: ts.CompilerOptions) => (ts.ResolvedModule | undefined)[];
 
   resolveTypeReferenceDirectives?:
       (names: string[], containingFile: string) => ts.ResolvedTypeReferenceDirective[];

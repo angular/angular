@@ -196,10 +196,10 @@ It's difficult to identify the _selected hero_ in the list when all `<li>` eleme
 
 If the user clicks "Magneta", that hero should render with a distinctive but subtle background color like this:
 
-<figure>
-
-  <img src='generated/images/guide/toh/heroes-list-selected.png' alt="Selected hero">
-
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/toh/heroes-list-selected.png' alt="Selected hero">
+  </div>
 </figure>
 
 That _selected hero_ coloring is the work of the `.selected` CSS class in the [styles you added earlier](#styles).
@@ -208,7 +208,7 @@ You just have to apply the `.selected` class to the `<li>` when the user clicks 
 The Angular [class binding](guide/template-syntax#class-binding) makes it easy to add and remove a CSS class conditionally.
 Just add `[class.some-css-class]="some-condition"` to the element you want to style.
 
-Add the following `[class.selected]` binding to  the `<li>` in the `HeroesComponent` template:
+Add the following `[class.selected]` binding to the `<li>` in the `HeroesComponent` template:
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="class-selected" header="heroes.component.html (toggle the 'selected' CSS class)"></code-example>
 

@@ -9,25 +9,17 @@
 import * as ts from 'typescript';
 
 import {createLanguageService} from '../src/language_service';
-import {LanguageService} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
-import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
 
 describe('definitions', () => {
-  let mockHost: MockTypescriptHost;
-  let service: ts.LanguageService;
-  let ngHost: TypeScriptServiceHost;
-  let ngService: LanguageService;
+  const mockHost = new MockTypescriptHost(['/app/main.ts']);
+  const service = ts.createLanguageService(mockHost);
+  const ngHost = new TypeScriptServiceHost(mockHost, service);
+  const ngService = createLanguageService(ngHost);
 
-  beforeEach(() => {
-    // Create a new mockHost every time to reset any files that are overridden.
-    mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
-    service = ts.createLanguageService(mockHost);
-    ngHost = new TypeScriptServiceHost(mockHost, service);
-    ngService = createLanguageService(ngHost);
-  });
+  beforeEach(() => { mockHost.reset(); });
 
   it('should be able to find field in an interpolation', () => {
     const fileName = mockHost.addCode(`
@@ -156,7 +148,14 @@ describe('definitions', () => {
     expect(def.fileName).toBe(refFileName);
     expect(def.name).toBe('TestComponent');
     expect(def.kind).toBe('component');
-    expect(def.textSpan).toEqual(mockHost.getLocationMarkerFor(refFileName, 'test-comp'));
+    const content = mockHost.readFile(refFileName) !;
+    const begin = '/*BeginTestComponent*/ ';
+    const start = content.indexOf(begin) + begin.length;
+    const end = content.indexOf(' /*EndTestComponent*/');
+    expect(def.textSpan).toEqual({
+      start,
+      length: end - start,
+    });
   });
 
   it('should be able to find an event provider', () => {
@@ -186,11 +185,15 @@ describe('definitions', () => {
     expect(def.fileName).toBe(refFileName);
     expect(def.name).toBe('testEvent');
     expect(def.kind).toBe('event');
-    expect(def.textSpan).toEqual(mockHost.getDefinitionMarkerFor(refFileName, 'test'));
+    const content = mockHost.readFile(refFileName) !;
+    const ref = `@Output('test') testEvent = new EventEmitter();`;
+    expect(def.textSpan).toEqual({
+      start: content.indexOf(ref),
+      length: ref.length,
+    });
   });
 
   it('should be able to find an input provider', () => {
-    // '/app/parsing-cases.ts', 'tcName',
     const fileName = mockHost.addCode(`
       @Component({
         template: '<test-comp ~{start-my}[«tcName»]="name"~{end-my}></div>'
@@ -219,7 +222,12 @@ describe('definitions', () => {
     expect(def.fileName).toBe(refFileName);
     expect(def.name).toBe('name');
     expect(def.kind).toBe('property');
-    expect(def.textSpan).toEqual(mockHost.getDefinitionMarkerFor(refFileName, 'tcName'));
+    const content = mockHost.readFile(refFileName) !;
+    const ref = `@Input('tcName') name = 'test';`;
+    expect(def.textSpan).toEqual({
+      start: content.indexOf(ref),
+      length: ref.length,
+    });
   });
 
   it('should be able to find a pipe', () => {

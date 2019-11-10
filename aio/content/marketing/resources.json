@@ -66,6 +66,13 @@
             "rev": true,
             "title": "Happy Angular Podcast",
             "url": "https://happy-angular.de/"
+          },
+          "ngruair": {
+            "desc": "Russian language video podcast about Angular.",
+            "logo": "",
+            "rev": true,
+            "title": "NgRuAir",
+            "url": "https://github.com/ngRuAir/ngruair"
           }
         }
       }
@@ -667,6 +674,13 @@
             "rev": true,
             "title": "MDB Angular Boilerplate",
             "url": "https://github.com/mdbootstrap/Angular-Bootstrap-Boilerplate"
+          },
+          "dotnettricks": {
+            "desc": "Online videos and training for Angular.",
+            "logo": "",
+            "rev": true,
+            "title": "DotNetTricks",
+            "url": "https://www.dotnettricks.com/courses/angular"
           }
         }
       },

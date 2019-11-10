@@ -557,7 +557,7 @@ class PipeSymbol implements Symbol {
 
   selectSignature(types: Symbol[]): Signature|undefined {
     let signature = selectSignature(this.tsType, this.context, types) !;
-    if (types.length == 1) {
+    if (types.length > 0) {
       const parameterType = types[0];
       if (parameterType instanceof TypeWrapper) {
         let resultType: ts.Type|undefined = undefined;
@@ -575,7 +575,7 @@ class PipeSymbol implements Symbol {
             }
             break;
           case 'slice':
-            resultType = getTypeParameterOf(parameterType.tsType, 'Array');
+            resultType = parameterType.tsType;
             break;
         }
         if (resultType) {
@@ -624,7 +624,7 @@ function findClassSymbolInContext(type: StaticSymbol, context: TypeContext): ts.
     // This handles a case where an <packageName>/index.d.ts and a <packageName>/<packageName>.d.ts
     // are in the same directory. If we are looking for <packageName>/<packageName> and didn't
     // find it, look for <packageName>/index.d.ts as the program might have found that instead.
-    const p = type.filePath as string;
+    const p = type.filePath;
     const m = p.match(INDEX_PATTERN);
     if (m) {
       const indexVersion = path.join(path.dirname(p), 'index.d.ts');

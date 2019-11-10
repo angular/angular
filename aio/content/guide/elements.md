@@ -40,12 +40,12 @@ After you register your configured class with the browser's custom-element regis
 <my-popup message="Use Angular!"></my-popup>
 ```
 
-When your custom element is placed on a page, the browser creates an instance of the registered class and adds it to the DOM. The content is provided by the component's template, which  uses Angular template syntax, and is rendered using the component and DOM data. Input properties in the component correspond to input attributes for the element.
+When your custom element is placed on a page, the browser creates an instance of the registered class and adds it to the DOM. The content is provided by the component's template, which uses Angular template syntax, and is rendered using the component and DOM data. Input properties in the component correspond to input attributes for the element.
 
-<figure>
-
-<img src="generated/images/guide/elements/customElement1.png" alt="Custom element in browser" class="left">
-
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/elements/customElement1.png" alt="Custom element in browser" class="left">
+  </div>
 </figure>
 
 <hr class="clear">
@@ -64,10 +64,10 @@ Use a JavaScript function, `customElements.define()`,  to register the configure
 and its associated custom-element tag with the browser's `CustomElementRegistry`.
 When the browser encounters the tag for the registered element, it uses the constructor to create a custom-element instance.
 
-<figure>
-
-<img src="generated/images/guide/elements/createElement.png" alt="Transform a component to a custom element" class="left">
-
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/elements/createElement.png" alt="Transform a component to a custom element" class="left">
+  </div>
 </figure>
 
 ### Mapping
@@ -170,7 +170,7 @@ You can download the full code for the example <live-example downloadOnly>here</
 
 Generic DOM APIs, such as `document.createElement()` or `document.querySelector()`, return an element type that is appropriate for the specified arguments. For example, calling `document.createElement('a')` will return an `HTMLAnchorElement`, which TypeScript knows has an `href` property. Similarly, `document.createElement('div')` will return an `HTMLDivElement`, which TypeScript knows has no `href` property.
 
-When called with unknown elements, such as a custom element name (`popup-element` in our example), the methods will return a generic type, such as `HTMLELement`, since TypeScript can't infer the correct type of the returned element.
+When called with unknown elements, such as a custom element name (`popup-element` in our example), the methods will return a generic type, such as `HTMLElement`, since TypeScript can't infer the correct type of the returned element.
 
 Custom elements created with Angular extend `NgElement` (which in turn extends `HTMLElement`). Additionally, these custom elements will have a property for each input of the corresponding component. For example, our `popup-element` will have a `message` property of type `string`.
 
@@ -194,7 +194,7 @@ aDialog.body = 'News';  // <-- ERROR: TypeScript knows there is no `body` proper
 
 This is a good way to quickly get TypeScript features, such as type checking and autocomplete support, for you custom element. But it can get cumbersome if you need it in several places, because you have to cast the return type on every occurrence.
 
-An alternative way, that only requires defining each custom element's type once, is augmenting the `HTMLELementTagNameMap`, which TypeScript uses to infer the type of a returned element based on its tag name (for DOM methods such as `document.createElement()`, `document.querySelector()`, etc.):
+An alternative way, that only requires defining each custom element's type once, is augmenting the `HTMLElementTagNameMap`, which TypeScript uses to infer the type of a returned element based on its tag name (for DOM methods such as `document.createElement()`, `document.querySelector()`, etc.):
 
 ```ts
 declare global {

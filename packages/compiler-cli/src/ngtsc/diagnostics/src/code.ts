@@ -59,20 +59,21 @@ export enum ErrorCode {
   NGMODULE_INVALID_REEXPORT = 6004,
 
   /**
+   * Raised when a `ModuleWithProviders` with a missing
+   * generic type argument is passed into an `NgModule`.
+   */
+  NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC = 6005,
+
+  /**
+   * Raised when an NgModule exports multiple directives/pipes of the same name and the compiler
+   * attempts to generate private re-exports within the NgModule file.
+   */
+  NGMODULE_REEXPORT_NAME_COLLISION = 6006,
+
+  /**
    * Raised when ngcc tries to inject a synthetic decorator over one that already exists.
    */
   NGCC_MIGRATION_DECORATOR_INJECTION_ERROR = 7001,
-
-  /**
-   * Raised when ngcc tries to decorate a base class that was imported from outside the package.
-   */
-  NGCC_MIGRATION_EXTERNAL_BASE_CLASS = 7002,
-
-  /**
-   * Raised when ngcc tries to migrate a class that is extended from a dynamic base class
-   * expression.
-   */
-  NGCC_MIGRATION_DYNAMIC_BASE_CLASS = 7003,
 
   /**
    * An element name failed validation against the DOM schema.
@@ -83,6 +84,16 @@ export enum ErrorCode {
    * An element's attribute name failed validation against the DOM schema.
    */
   SCHEMA_INVALID_ATTRIBUTE = 8002,
+
+  /**
+   * No matching directive was found for a `#ref="target"` expression.
+   */
+  MISSING_REFERENCE_TARGET = 8003,
+
+  /**
+   * No matching pipe was found for a
+   */
+  MISSING_PIPE = 8004,
 }
 
 export function ngErrorCode(code: ErrorCode): number {

@@ -37,16 +37,13 @@ export interface CompilerFacade {
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3DirectiveMetadataFacade): any;
   compileComponent(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3ComponentMetadataFacade): any;
-  compileBase(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3BaseMetadataFacade):
-      any;
   compileFactory(
-      angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
-      meta: R3PipeMetadataFacade|R3DirectiveMetadataFacade|R3ComponentMetadataFacade,
-      isPipe?: boolean): any;
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3FactoryDefMetadataFacade): any;
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
 
   R3ResolvedDependencyType: typeof R3ResolvedDependencyType;
+  R3FactoryTarget: typeof R3FactoryTarget;
   ResourceLoader: {new (): ResourceLoader};
 }
 
@@ -72,6 +69,14 @@ export enum R3ResolvedDependencyType {
   ChangeDetectorRef = 2,
 }
 
+export enum R3FactoryTarget {
+  Directive = 0,
+  Component = 1,
+  Injectable = 2,
+  Pipe = 3,
+  NgModule = 4,
+}
+
 export interface R3DependencyMetadataFacade {
   token: any;
   resolved: R3ResolvedDependencyType;
@@ -94,7 +99,6 @@ export interface R3InjectableMetadataFacade {
   name: string;
   type: any;
   typeArgumentCount: number;
-  ctorDeps: R3DependencyMetadataFacade[]|null;
   providedIn: any;
   useClass?: any;
   useFactory?: any;
@@ -154,14 +158,13 @@ export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
   changeDetection?: ChangeDetectionStrategy;
 }
 
-export interface R3BaseMetadataFacade {
+export interface R3FactoryDefMetadataFacade {
   name: string;
   type: any;
-  propMetadata: {[key: string]: any[]};
-  inputs?: {[key: string]: string | [string, string]};
-  outputs?: {[key: string]: string};
-  queries?: R3QueryMetadataFacade[];
-  viewQueries?: R3QueryMetadataFacade[];
+  typeArgumentCount: number;
+  deps: R3DependencyMetadataFacade[]|null;
+  injectFn: 'directiveInject'|'inject';
+  target: R3FactoryTarget;
 }
 
 export type ViewEncapsulation = number;

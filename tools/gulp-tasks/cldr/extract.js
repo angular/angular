@@ -20,12 +20,15 @@ const I18N_FOLDER = `${COMMON_PACKAGE}/src/i18n`;
 const I18N_CORE_FOLDER = `${CORE_PACKAGE}/src/i18n`;
 const I18N_DATA_FOLDER = `${COMMON_PACKAGE}/locales`;
 const I18N_DATA_EXTRA_FOLDER = `${I18N_DATA_FOLDER}/extra`;
+const I18N_GLOBAL_FOLDER = `${I18N_DATA_FOLDER}/global`;
 const RELATIVE_I18N_FOLDER = path.resolve(__dirname, `../../../${I18N_FOLDER}`);
 const RELATIVE_I18N_CORE_FOLDER = path.resolve(__dirname, `../../../${I18N_CORE_FOLDER}`);
 const RELATIVE_I18N_DATA_FOLDER = path.resolve(__dirname, `../../../${I18N_DATA_FOLDER}`);
-const RELATIVE_I18N_DATA_EXTRA_FOLDER = path.resolve(__dirname, `../../../${I18N_DATA_EXTRA_FOLDER}`);
-const DEFAULT_RULE = 'function anonymous(n\n/*``*/) {\nreturn"other"\n}';
-const EMPTY_RULE = 'function anonymous(n\n/*``*/) {\n\n}';
+const RELATIVE_I18N_DATA_EXTRA_FOLDER =
+    path.resolve(__dirname, `../../../${I18N_DATA_EXTRA_FOLDER}`);
+const RELATIVE_I18N_GLOBAL_FOLDER = path.resolve(__dirname, `../../../${I18N_GLOBAL_FOLDER}`);
+const DEFAULT_RULE = 'function anonymous(n) {\nreturn"other"\n}';
+const EMPTY_RULE = 'function anonymous(n) {\n\n}';
 const WEEK_DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 const HEADER = `/**
  * @license
@@ -41,7 +44,7 @@ const HEADER = `/**
 
 // tslint:disable:no-console
 module.exports = (gulp, done) => {
-  const cldrData = require('./cldr-data');
+  const cldrData = require('cldr-data');
   const LOCALES = cldrData.availableLocales;
 
   console.log(`Loading CLDR data...`);
@@ -56,6 +59,9 @@ module.exports = (gulp, done) => {
   }
   if (!fs.existsSync(RELATIVE_I18N_DATA_EXTRA_FOLDER)) {
     fs.mkdirSync(RELATIVE_I18N_DATA_EXTRA_FOLDER);
+  }
+  if (!fs.existsSync(RELATIVE_I18N_GLOBAL_FOLDER)) {
+    fs.mkdirSync(RELATIVE_I18N_GLOBAL_FOLDER);
   }
 
   console.log(`Writing file ${I18N_FOLDER}/currencies.ts`);
@@ -72,9 +78,18 @@ module.exports = (gulp, done) => {
 
     console.log(`${index + 1}/${LOCALES.length}`);
     console.log(`\t${I18N_DATA_FOLDER}/${locale}.ts`);
-    fs.writeFileSync(`${RELATIVE_I18N_DATA_FOLDER}/${locale}.ts`, locale === 'en'? localeEnFile : generateLocale(locale, localeData, baseCurrencies));
+    fs.writeFileSync(
+        `${RELATIVE_I18N_DATA_FOLDER}/${locale}.ts`,
+        locale === 'en' ? localeEnFile : generateLocale(locale, localeData, baseCurrencies));
     console.log(`\t${I18N_DATA_EXTRA_FOLDER}/${locale}.ts`);
-    fs.writeFileSync(`${RELATIVE_I18N_DATA_EXTRA_FOLDER}/${locale}.ts`, generateLocaleExtra(locale, localeData));
+    fs.writeFileSync(
+        `${RELATIVE_I18N_DATA_EXTRA_FOLDER}/${locale}.ts`, generateLocaleExtra(locale, localeData));
+    console.log(`\t${I18N_GLOBAL_FOLDER}/${locale}.ts`);
+    fs.writeFileSync(
+        `${RELATIVE_I18N_GLOBAL_FOLDER}/${locale}.js`,
+        generateGlobalLocale(
+            locale, locale === 'en' ? new cldrJs('en') : localeData, baseCurrencies));
+
   });
   console.log(`${LOCALES.length} locale files generated.`);
 
@@ -82,52 +97,89 @@ module.exports = (gulp, done) => {
   const format = require('gulp-clang-format');
   const clangFormat = require('clang-format');
   return gulp
-    .src([
-      `${I18N_DATA_FOLDER}/**/*.ts`,
-      `${I18N_FOLDER}/currencies.ts`,
-      `${I18N_CORE_FOLDER}/locale_en.ts`
-    ], {base: '.'})
-    .pipe(format.format('file', clangFormat))
-    .pipe(gulp.dest('.'));
+      .src(
+          [
+            `${I18N_DATA_FOLDER}/**/*.ts`,
+            `${I18N_FOLDER}/currencies.ts`,
+            `${I18N_CORE_FOLDER}/locale_en.ts`,
+            `${I18N_GLOBAL_FOLDER}/*.js`,
+          ],
+          {base: '.'})
+      .pipe(format.format('file', clangFormat))
+      .pipe(gulp.dest('.'));
 };
 
 /**
- * Generate file that contains basic locale data
+ * Generate contents for the basic locale data file
  */
 function generateLocale(locale, localeData, baseCurrencies) {
-  // [ localeId, dateTime, number, currency, pluralCase ]
-  let data = stringify([
-    locale,
-    ...getDateTimeTranslations(localeData),
-    ...getDateTimeSettings(localeData),
-    ...getNumberSettings(localeData),
-    ...getCurrencySettings(locale, localeData),
-    generateLocaleCurrencies(localeData, baseCurrencies)
-  ], true)
-  // We remove "undefined" added by spreading arrays when there is no value
-    .replace(/undefined/g, 'u');
-
-  // adding plural function after, because we don't want it as a string
-  data = data.substring(0, data.lastIndexOf(']')) + `, plural]`;
-
   return `${HEADER}
 const u = undefined;
 
 ${getPluralFunction(locale)}
 
-export default ${data};
+export default ${generateBasicLocaleString(locale, localeData, baseCurrencies)};
 `;
 }
 
 /**
- * Generate a file that contains extra data (for now: day period rules, and extended day period data)
+ * Generate the contents for the extra data file
  */
 function generateLocaleExtra(locale, localeData) {
+  return `${HEADER}
+const u = undefined;
+
+export default ${generateDayPeriodsSupplementalString(locale, localeData)};
+`;
+}
+
+/**
+ * Generated the contents for the global locale file
+ */
+function generateGlobalLocale(locale, localeData, baseCurrencies) {
+  const basicLocaleData = generateBasicLocaleString(locale, localeData, baseCurrencies);
+  const extraLocaleData = generateDayPeriodsSupplementalString(locale, localeData);
+  const data = basicLocaleData.replace(/\]$/, `, ${extraLocaleData}]`);
+  return `${HEADER}
+(function(global) {
+  global.ng = global.ng || {};
+  global.ng.common = global.ng.common || {};
+  global.ng.common.locales = global.ng.common.locales || {};
+  const u = undefined;
+  ${getPluralFunction(locale, false)}
+  root.ng.common.locales['${normalizeLocale(locale)}'] = ${data};
+})(typeof globalThis !== 'undefined' && globalThis || typeof global !== 'undefined' && global || typeof window !== 'undefined' && window);
+  `;
+}
+
+/**
+ * Collect up the basic locale data [ localeId, dateTime, number, currency, pluralCase ].
+ */
+function generateBasicLocaleString(locale, localeData, baseCurrencies) {
+  let data =
+      stringify(
+          [
+            locale, ...getDateTimeTranslations(localeData), ...getDateTimeSettings(localeData),
+            ...getNumberSettings(localeData), ...getCurrencySettings(locale, localeData),
+            generateLocaleCurrencies(localeData, baseCurrencies)
+          ],
+          true)
+          // We remove "undefined" added by spreading arrays when there is no value
+          .replace(/undefined/g, 'u');
+
+  // adding plural function after, because we don't want it as a string
+  data = data.replace(/\]$/, ', plural]');
+  return data;
+}
+
+/**
+ * Collect up the day period rules, and extended day period data.
+ */
+function generateDayPeriodsSupplementalString(locale, localeData) {
   const dayPeriods = getDayPeriodsNoAmPm(localeData);
   const dayPeriodRules = getDayPeriodRules(localeData);
 
   let dayPeriodsSupplemental = [];
-
   if (Object.keys(dayPeriods.format.narrow).length) {
     const keys = Object.keys(dayPeriods.format.narrow);
 
@@ -136,8 +188,7 @@ function generateLocaleExtra(locale, localeData) {
     }
 
     const dayPeriodsFormat = removeDuplicates([
-      objectValues(dayPeriods.format.narrow),
-      objectValues(dayPeriods.format.abbreviated),
+      objectValues(dayPeriods.format.narrow), objectValues(dayPeriods.format.abbreviated),
       objectValues(dayPeriods.format.wide)
     ]);
 
@@ -148,15 +199,9 @@ function generateLocaleExtra(locale, localeData) {
     ]);
 
     const rules = keys.map(key => dayPeriodRules[key]);
-
     dayPeriodsSupplemental = [...removeDuplicates([dayPeriodsFormat, dayPeriodsStandalone]), rules];
   }
-
-  return `${HEADER}
-const u = undefined;
-
-export default ${stringify(dayPeriodsSupplemental).replace(/undefined/g, 'u')};
-`;
+  return stringify(dayPeriodsSupplemental).replace(/undefined/g, 'u');
 }
 
 /**
@@ -243,13 +288,16 @@ export const CURRENCIES_EN: {[code: string]: CurrenciesSymbols | [string | undef
 
 /**
  * Returns data for the chosen day periods
- * @returns {format: {narrow / abbreviated / wide: [...]}, stand-alone: {narrow / abbreviated / wide: [...]}}
+ * @returns {
+ *   format: {narrow / abbreviated / wide: [...]},
+ *   stand-alone: {narrow / abbreviated / wide: [...]}
+ * }
  */
 function getDayPeriods(localeData, dayPeriodsList) {
   const dayPeriods = localeData.main(`dates/calendars/gregorian/dayPeriods`);
   const result = {};
   // cleaning up unused keys
-  Object.keys(dayPeriods).forEach(key1 => {          // format / stand-alone
+  Object.keys(dayPeriods).forEach(key1 => {  // format / stand-alone
     result[key1] = {};
     Object.keys(dayPeriods[key1]).forEach(key2 => {  // narrow / abbreviated / wide
       result[key1][key2] = {};
@@ -275,13 +323,16 @@ function getDayPeriodsAmPm(localeData) {
  * Returns the extra day periods (without am/pm)
  */
 function getDayPeriodsNoAmPm(localeData) {
-  return getDayPeriods(localeData, ['noon', 'midnight', 'morning1', 'morning2', 'afternoon1',
-    'afternoon2', 'evening1', 'evening2', 'night1', 'night2']);
+  return getDayPeriods(localeData, [
+    'noon', 'midnight', 'morning1', 'morning2', 'afternoon1', 'afternoon2', 'evening1', 'evening2',
+    'night1', 'night2'
+  ]);
 }
 
 /**
  * Returns date-related translations for a locale
- * @returns [ dayPeriodsFormat, dayPeriodsStandalone, daysFormat, dayStandalone, monthsFormat, monthsStandalone, eras ]
+ * @returns [ dayPeriodsFormat, dayPeriodsStandalone, daysFormat, dayStandalone, monthsFormat,
+ * monthsStandalone, eras ]
  * each value: [ narrow, abbreviated, wide, short? ]
  */
 function getDateTimeTranslations(localeData) {
@@ -291,8 +342,7 @@ function getDateTimeTranslations(localeData) {
   const dayPeriods = getDayPeriodsAmPm(localeData);
 
   const dayPeriodsFormat = removeDuplicates([
-    objectValues(dayPeriods.format.narrow),
-    objectValues(dayPeriods.format.abbreviated),
+    objectValues(dayPeriods.format.narrow), objectValues(dayPeriods.format.abbreviated),
     objectValues(dayPeriods.format.wide)
   ]);
 
@@ -303,22 +353,17 @@ function getDateTimeTranslations(localeData) {
   ]);
 
   const daysFormat = removeDuplicates([
-    objectValues(dayNames.format.narrow),
-    objectValues(dayNames.format.abbreviated),
-    objectValues(dayNames.format.wide),
-    objectValues(dayNames.format.short)
+    objectValues(dayNames.format.narrow), objectValues(dayNames.format.abbreviated),
+    objectValues(dayNames.format.wide), objectValues(dayNames.format.short)
   ]);
 
   const daysStandalone = removeDuplicates([
-    objectValues(dayNames['stand-alone'].narrow),
-    objectValues(dayNames['stand-alone'].abbreviated),
-    objectValues(dayNames['stand-alone'].wide),
-    objectValues(dayNames['stand-alone'].short)
+    objectValues(dayNames['stand-alone'].narrow), objectValues(dayNames['stand-alone'].abbreviated),
+    objectValues(dayNames['stand-alone'].wide), objectValues(dayNames['stand-alone'].short)
   ]);
 
   const monthsFormat = removeDuplicates([
-    objectValues(monthNames.format.narrow),
-    objectValues(monthNames.format.abbreviated),
+    objectValues(monthNames.format.narrow), objectValues(monthNames.format.abbreviated),
     objectValues(monthNames.format.wide)
   ]);
 
@@ -337,8 +382,7 @@ function getDateTimeTranslations(localeData) {
   const dateTimeTranslations = [
     ...removeDuplicates([dayPeriodsFormat, dayPeriodsStandalone]),
     ...removeDuplicates([daysFormat, daysStandalone]),
-    ...removeDuplicates([monthsFormat, monthsStandalone]),
-    eras
+    ...removeDuplicates([monthsFormat, monthsStandalone]), eras
   ];
 
   return dateTimeTranslations;
@@ -352,10 +396,8 @@ function getDateTimeTranslations(localeData) {
 function getDateTimeFormats(localeData) {
   function getFormats(data) {
     return removeDuplicates([
-      data.short._value || data.short,
-      data.medium._value || data.medium,
-      data.long._value || data.long,
-      data.full._value || data.full
+      data.short._value || data.short, data.medium._value || data.medium,
+      data.long._value || data.long, data.full._value || data.full
     ]);
   }
 
@@ -363,11 +405,7 @@ function getDateTimeFormats(localeData) {
   const timeFormats = localeData.main('dates/calendars/gregorian/timeFormats');
   const dateTimeFormats = localeData.main('dates/calendars/gregorian/dateTimeFormats');
 
-  return [
-    getFormats(dateFormats),
-    getFormats(timeFormats),
-    getFormats(dateTimeFormats)
-  ];
+  return [getFormats(dateFormats), getFormats(timeFormats), getFormats(dateTimeFormats)];
 }
 
 /**
@@ -375,7 +413,8 @@ function getDateTimeFormats(localeData) {
  * @returns string[]
  */
 function getDayPeriodRules(localeData) {
-  const dayPeriodRules = localeData.get(`supplemental/dayPeriodRuleSet/${localeData.attributes.language}`);
+  const dayPeriodRules =
+      localeData.get(`supplemental/dayPeriodRuleSet/${localeData.attributes.language}`);
   const rules = {};
   if (dayPeriodRules) {
     Object.keys(dayPeriodRules).forEach(key => {
@@ -404,11 +443,11 @@ function getFirstDayOfWeek(localeData) {
  */
 function getWeekendRange(localeData) {
   const startDay =
-    localeData.get(`supplemental/weekData/weekendStart/${localeData.attributes.territory}`) ||
-    localeData.get('supplemental/weekData/weekendStart/001');
+      localeData.get(`supplemental/weekData/weekendStart/${localeData.attributes.territory}`) ||
+      localeData.get('supplemental/weekData/weekendStart/001');
   const endDay =
-    localeData.get(`supplemental/weekData/weekendEnd/${localeData.attributes.territory}`) ||
-    localeData.get('supplemental/weekData/weekendEnd/001');
+      localeData.get(`supplemental/weekData/weekendEnd/${localeData.attributes.territory}`) ||
+      localeData.get('supplemental/weekData/weekendEnd/001');
   return [WEEK_DAYS.indexOf(startDay), WEEK_DAYS.indexOf(endDay)];
 }
 
@@ -417,13 +456,17 @@ function getWeekendRange(localeData) {
  * @returns [ firstDayOfWeek, weekendRange, formats ]
  */
 function getDateTimeSettings(localeData) {
-  return [getFirstDayOfWeek(localeData), getWeekendRange(localeData), ...getDateTimeFormats(localeData)];
+  return [
+    getFirstDayOfWeek(localeData), getWeekendRange(localeData), ...getDateTimeFormats(localeData)
+  ];
 }
 
 /**
  * Returns the number symbols and formats for a locale
  * @returns [ symbols, formats ]
- * symbols: [ decimal, group, list, percentSign, plusSign, minusSign, exponential, superscriptingExponent, perMille, infinity, nan, timeSeparator, currencyDecimal?, currencyGroup? ]
+ * symbols: [ decimal, group, list, percentSign, plusSign, minusSign, exponential,
+ * superscriptingExponent, perMille, infinity, nan, timeSeparator, currencyDecimal?, currencyGroup?
+ * ]
  * formats: [ currency, decimal, percent, scientific ]
  */
 function getNumberSettings(localeData) {
@@ -455,10 +498,7 @@ function getNumberSettings(localeData) {
     symbolValues.push(symbols.currencyGroup);
   }
 
-  return [
-    symbolValues,
-    [decimalFormat, percentFormat, currencyFormat, scientificFormat]
-  ];
+  return [symbolValues, [decimalFormat, percentFormat, currencyFormat, scientificFormat]];
 }
 
 /**
@@ -471,8 +511,9 @@ function getCurrencySettings(locale, localeData) {
 
   // find the currency currently used in this country
   const currencies =
-    localeData.get(`supplemental/currencyData/region/${localeData.attributes.territory}`) ||
-    localeData.get(`supplemental/currencyData/region/${localeData.attributes.language.toUpperCase()}`);
+      localeData.get(`supplemental/currencyData/region/${localeData.attributes.territory}`) ||
+      localeData.get(
+          `supplemental/currencyData/region/${localeData.attributes.language.toUpperCase()}`);
 
   if (currencies) {
     currencies.some(currency => {
@@ -492,7 +533,8 @@ function getCurrencySettings(locale, localeData) {
   let currencySettings = [undefined, undefined];
 
   if (currentCurrency) {
-    currencySettings = [currencyInfo[currentCurrency].symbol, currencyInfo[currentCurrency].displayName];
+    currencySettings =
+        [currencyInfo[currentCurrency].symbol, currencyInfo[currentCurrency].displayName];
   }
 
   return currencySettings;
@@ -510,30 +552,27 @@ function toRegExp(s) {
  * todo(ocombe): replace "cldr" extractPluralRuleFunction with our own extraction using "CldrJS"
  * because the 2 libs can become out of sync if they use different versions of the cldr database
  */
-function getPluralFunction(locale) {
+function getPluralFunction(locale, withTypes = true) {
   let fn = cldr.extractPluralRuleFunction(locale).toString();
 
   if (fn === EMPTY_RULE) {
     fn = DEFAULT_RULE;
   }
 
-  fn = fn
-    .replace(
-      toRegExp('function anonymous(n\n/*``*/) {\n'),
-      'function plural(n: number): number {\n  ')
-    .replace(toRegExp('var'), 'let')
-    .replace(toRegExp('if(typeof n==="string")n=parseInt(n,10);'), '')
-    .replace(toRegExp('\n}'), ';\n}');
+  const numberType = withTypes ? ': number' : '';
+  fn = fn.replace(/function anonymous\(n[^}]+{/g, `function plural(n${numberType})${numberType} {`)
+           .replace(toRegExp('var'), 'let')
+           .replace(toRegExp('if(typeof n==="string")n=parseInt(n,10);'), '')
+           .replace(toRegExp('\n}'), ';\n}');
 
   // The replacement values must match the `Plural` enum from common.
   // We do not use the enum directly to avoid depending on that package.
-  return fn
-    .replace(toRegExp('"zero"'), ' 0')
-    .replace(toRegExp('"one"'), ' 1')
-    .replace(toRegExp('"two"'), ' 2')
-    .replace(toRegExp('"few"'), ' 3')
-    .replace(toRegExp('"many"'), ' 4')
-    .replace(toRegExp('"other"'), ' 5');
+  return fn.replace(toRegExp('"zero"'), ' 0')
+      .replace(toRegExp('"one"'), ' 1')
+      .replace(toRegExp('"two"'), ' 2')
+      .replace(toRegExp('"few"'), ' 3')
+      .replace(toRegExp('"many"'), ' 4')
+      .replace(toRegExp('"other"'), ' 5');
 }
 
 /**
@@ -562,7 +601,7 @@ function objectValues(obj) {
  */
 function removeDuplicates(data) {
   const dedup = [data[0]];
-  for(let i = 1; i < data.length; i++) {
+  for (let i = 1; i < data.length; i++) {
     if (stringify(data[i]) !== stringify(data[i - 1])) {
       dedup.push(data[i]);
     } else {
@@ -570,6 +609,13 @@ function removeDuplicates(data) {
     }
   }
   return dedup;
+}
+
+/**
+ * In Angular the locale is referenced by a "normalized" form.
+ */
+function normalizeLocale(locale) {
+  return locale.toLowerCase().replace(/_/g, '-');
 }
 
 module.exports.I18N_FOLDER = I18N_FOLDER;

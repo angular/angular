@@ -7,22 +7,22 @@
  */
 
 import {AttributeMarker, ComponentTemplate} from '..';
-import {SchemaMetadata} from '../../core';
+import {SchemaMetadata, Type} from '../../core';
 import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
-import {PropertyAliases, TContainerNode, TElementNode, TNode as ITNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
+import {PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
 import {TQueries} from '../interfaces/query';
 import {RComment, RElement, RNode} from '../interfaces/renderer';
-import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, T_HOST} from '../interfaces/view';
-import {TStylingContext} from '../styling_next/interfaces';
-import {DebugStyling as DebugNewStyling, NodeStylingDebug} from '../styling_next/styling_debug';
-import {isStylingContext} from '../styling_next/util';
+import {TStylingContext} from '../interfaces/styling';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, TViewType, T_HOST} from '../interfaces/view';
+import {DebugNodeStyling, NodeStylingDebug} from '../styling/styling_debug';
 import {attachDebugObject} from '../util/debug_utils';
+import {isStylingContext} from '../util/styling_utils';
 import {getTNode, unwrapRNode} from '../util/view_utils';
 
 const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNgDevMode());
@@ -56,25 +56,64 @@ const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNg
  * ```
  */
 
-export const LViewArray = NG_DEV_MODE && createNamedArrayType('LView') || null !as ArrayConstructor;
-let LVIEW_EMPTY: unknown[];  // can't initialize here or it will not be tree shaken, because `LView`
-                             // constructor could have side-effects.
+let LVIEW_COMPONENT_CACHE !: Map<string|null, Array<any>>;
+let LVIEW_EMBEDDED_CACHE !: Map<string|null, Array<any>>;
+let LVIEW_ROOT !: Array<any>;
+
+interface TViewDebug extends ITView {
+  type: TViewType;
+}
+
 /**
  * This function clones a blueprint and creates LView.
  *
  * Simple slice will keep the same type, and we need it to be LView
  */
-export function cloneToLView(list: any[]): LView {
-  if (LVIEW_EMPTY === undefined) LVIEW_EMPTY = new LViewArray();
-  return LVIEW_EMPTY.concat(list) as any;
+export function cloneToLViewFromTViewBlueprint(tView: TView): LView {
+  const debugTView = tView as TViewDebug;
+  const lView = getLViewToClone(debugTView.type, tView.template && tView.template.name);
+  return lView.concat(tView.blueprint) as any;
+}
+
+function getLViewToClone(type: TViewType, name: string | null): Array<any> {
+  switch (type) {
+    case TViewType.Root:
+      if (LVIEW_ROOT === undefined) LVIEW_ROOT = new (createNamedArrayType('LRootView'))();
+      return LVIEW_ROOT;
+    case TViewType.Component:
+      if (LVIEW_COMPONENT_CACHE === undefined) LVIEW_COMPONENT_CACHE = new Map();
+      let componentArray = LVIEW_COMPONENT_CACHE.get(name);
+      if (componentArray === undefined) {
+        componentArray = new (createNamedArrayType('LComponentView' + nameSuffix(name)))();
+        LVIEW_COMPONENT_CACHE.set(name, componentArray);
+      }
+      return componentArray;
+    case TViewType.Embedded:
+      if (LVIEW_EMBEDDED_CACHE === undefined) LVIEW_EMBEDDED_CACHE = new Map();
+      let embeddedArray = LVIEW_EMBEDDED_CACHE.get(name);
+      if (embeddedArray === undefined) {
+        embeddedArray = new (createNamedArrayType('LEmbeddedView' + nameSuffix(name)))();
+        LVIEW_EMBEDDED_CACHE.set(name, embeddedArray);
+      }
+      return embeddedArray;
+  }
+  throw new Error('unreachable code');
+}
+
+function nameSuffix(text: string | null | undefined): string {
+  if (text == null) return '';
+  const index = text.lastIndexOf('_Template');
+  return '_' + (index === -1 ? text : text.substr(0, index));
 }
 
 /**
- * This class is a debug version of Object literal so that we can have constructor name show up in
+ * This class is a debug version of Object literal so that we can have constructor name show up
+ * in
  * debug tools in ngDevMode.
  */
 export const TViewConstructor = class TView implements ITView {
   constructor(
+      public type: TViewType,                                //
       public id: number,                                     //
       public blueprint: LView,                               //
       public template: ComponentTemplate<{}>|null,           //
@@ -85,7 +124,8 @@ export const TViewConstructor = class TView implements ITView {
       public bindingStartIndex: number,                      //
       public expandoStartIndex: number,                      //
       public expandoInstructions: ExpandoInstructions|null,  //
-      public firstTemplatePass: boolean,                     //
+      public firstCreatePass: boolean,                       //
+      public firstUpdatePass: boolean,                       //
       public staticViewQueries: boolean,                     //
       public staticContentQueries: boolean,                  //
       public preOrderHooks: HookData|null,                   //
@@ -102,6 +142,7 @@ export const TViewConstructor = class TView implements ITView {
       public pipeRegistry: PipeDefList|null,                 //
       public firstChild: TNode|null,                         //
       public schemas: SchemaMetadata[]|null,                 //
+      public consts: TConstants|null,                        //
       ) {}
 
   get template_(): string {
@@ -162,6 +203,8 @@ export const TNodeConstructor = class TNode implements ITNode {
     if (this.flags & TNodeFlags.hasClassInput) flags.push('TNodeFlags.hasClassInput');
     if (this.flags & TNodeFlags.hasContentQuery) flags.push('TNodeFlags.hasContentQuery');
     if (this.flags & TNodeFlags.hasStyleInput) flags.push('TNodeFlags.hasStyleInput');
+    if (this.flags & TNodeFlags.hasInitialStyling) flags.push('TNodeFlags.hasInitialStyling');
+    if (this.flags & TNodeFlags.hasHostBindings) flags.push('TNodeFlags.hasHostBindings');
     if (this.flags & TNodeFlags.isComponentHost) flags.push('TNodeFlags.isComponentHost');
     if (this.flags & TNodeFlags.isDirectiveHost) flags.push('TNodeFlags.isDirectiveHost');
     if (this.flags & TNodeFlags.isDetached) flags.push('TNodeFlags.isDetached');
@@ -255,8 +298,10 @@ export function toDebug(obj: any): any {
  * reading.
  *
  * @param value possibly wrapped native DOM node.
- * @param includeChildren If `true` then the serialized HTML form will include child elements (same
- * as `outerHTML`). If `false` then the serialized HTML form will only contain the element itself
+ * @param includeChildren If `true` then the serialized HTML form will include child elements
+ * (same
+ * as `outerHTML`). If `false` then the serialized HTML form will only contain the element
+ * itself
  * (will not serialize child elements).
  */
 function toHtml(value: any, includeChildren: boolean = false): string|null {
@@ -301,7 +346,8 @@ export class LViewDebug {
   get html(): string { return (this.nodes || []).map(node => toHtml(node.native, true)).join(''); }
   get context(): {}|null { return this._raw_lView[CONTEXT]; }
   /**
-   * The tree of nodes associated with the current `LView`. The nodes have been normalized into a
+   * The tree of nodes associated with the current `LView`. The nodes have been normalized into
+   * a
    * tree structure with relevant details pulled out for readability.
    */
   get nodes(): DebugNode[]|null {
@@ -322,7 +368,6 @@ export class LViewDebug {
   get declarationView() { return toDebug(this._raw_lView[DECLARATION_VIEW]); }
   get queries() { return this._raw_lView[QUERIES]; }
   get tHost() { return this._raw_lView[T_HOST]; }
-  get bindingIndex() { return this._raw_lView[BINDING_INDEX]; }
 
   /**
    * Normalized view of child views (and containers) attached at this location.
@@ -341,8 +386,8 @@ export class LViewDebug {
 export interface DebugNode {
   html: string|null;
   native: Node;
-  styles: DebugNewStyling|null;
-  classes: DebugNewStyling|null;
+  styles: DebugNodeStyling|null;
+  classes: DebugNodeStyling|null;
   nodes: DebugNode[]|null;
   component: LViewDebug|null;
 }
@@ -358,27 +403,31 @@ export function toDebugNodes(tNode: TNode | null, lView: LView): DebugNode[]|nul
     const debugNodes: DebugNode[] = [];
     let tNodeCursor: TNode|null = tNode;
     while (tNodeCursor) {
-      const rawValue = lView[tNode.index];
-      const native = unwrapRNode(rawValue);
-      const componentLViewDebug = toDebug(readLViewValue(rawValue));
-      const styles = isStylingContext(tNode.styles) ?
-          new NodeStylingDebug(tNode.styles as any as TStylingContext, lView) :
-          null;
-      const classes = isStylingContext(tNode.classes) ?
-          new NodeStylingDebug(tNode.classes as any as TStylingContext, lView, true) :
-          null;
-      debugNodes.push({
-        html: toHtml(native),
-        native: native as any, styles, classes,
-        nodes: toDebugNodes(tNode.child, lView),
-        component: componentLViewDebug,
-      });
+      debugNodes.push(buildDebugNode(tNodeCursor, lView, tNodeCursor.index));
       tNodeCursor = tNodeCursor.next;
     }
     return debugNodes;
   } else {
     return null;
   }
+}
+
+export function buildDebugNode(tNode: TNode, lView: LView, nodeIndex: number): DebugNode {
+  const rawValue = lView[nodeIndex];
+  const native = unwrapRNode(rawValue);
+  const componentLViewDebug = toDebug(readLViewValue(rawValue));
+  const styles = isStylingContext(tNode.styles) ?
+      new NodeStylingDebug(tNode.styles as any as TStylingContext, tNode, lView, false) :
+      null;
+  const classes = isStylingContext(tNode.classes) ?
+      new NodeStylingDebug(tNode.classes as any as TStylingContext, tNode, lView, true) :
+      null;
+  return {
+    html: toHtml(native),
+    native: native as any, styles, classes,
+    nodes: toDebugNodes(tNode.child, lView),
+    component: componentLViewDebug,
+  };
 }
 
 export class LContainerDebug {

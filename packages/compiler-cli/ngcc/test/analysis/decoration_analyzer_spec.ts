@@ -80,6 +80,7 @@ runInEachFileSystem(() => {
         handler.resolve.and.callFake((decl: ts.Declaration, analysis: any) => {
           logs.push(`resolve: ${(decl as any).name.text}@${analysis.decoratorName}`);
           analysis.resolved = true;
+          return {};
         });
         // The "test" compilation result is just the name of the decorator being compiled
         // (suffixed with `(compiled)`)
@@ -198,10 +199,10 @@ runInEachFileSystem(() => {
         it('should call `apply()` on each migration for each class', () => {
           expect(migrationLogs).toEqual([
             'migration1:MyComponent',
-            'migration2:MyComponent',
             'migration1:MyDirective',
-            'migration2:MyDirective',
             'migration1:MyOtherComponent',
+            'migration2:MyComponent',
+            'migration2:MyDirective',
             'migration2:MyOtherComponent',
           ]);
         });

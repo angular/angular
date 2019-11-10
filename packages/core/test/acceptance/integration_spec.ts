@@ -7,6 +7,9 @@
  */
 import {CommonModule} from '@angular/common';
 import {Component, ContentChild, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgModule, OnInit, Output, Pipe, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {TVIEW} from '@angular/core/src/render3/interfaces/view';
+import {getLView} from '@angular/core/src/render3/state';
+import {loadLContext} from '@angular/core/src/render3/util/discovery_utils';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -243,7 +246,7 @@ describe('acceptance integration tests', () => {
 
       @Component({template: '<div><ng-container dir></ng-container></div>'})
       class App {
-        @ViewChild(TestDirective, {static: false}) testDirective !: TestDirective;
+        @ViewChild(TestDirective) testDirective !: TestDirective;
       }
 
       TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -273,7 +276,7 @@ describe('acceptance integration tests', () => {
             '<ng-container dir [contentTpl]="content"><ng-template #content>Content</ng-template></ng-container>'
       })
       class App {
-        @ViewChild(TestDirective, {static: false}) testDirective !: TestDirective;
+        @ViewChild(TestDirective) testDirective !: TestDirective;
       }
 
       TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -303,7 +306,7 @@ describe('acceptance integration tests', () => {
 
       @Component({template: '<ng-container><ng-template dir>Content</ng-template></ng-container>'})
       class App {
-        @ViewChild(TestDirective, {static: false}) testDirective !: TestDirective;
+        @ViewChild(TestDirective) testDirective !: TestDirective;
       }
 
       TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -608,7 +611,7 @@ describe('acceptance integration tests', () => {
 
       @Component({template: '<todo></todo>'})
       class App {
-        @ViewChild(TodoComponentHostBinding, {static: false})
+        @ViewChild(TodoComponentHostBinding)
         todoComponentHostBinding !: TodoComponentHostBinding;
       }
 
@@ -844,7 +847,7 @@ describe('acceptance integration tests', () => {
 
         @Component({template: '<div hostBindingDir></div>'})
         class App {
-          @ViewChild(HostBindingDir, {static: false}) hostBindingDir !: HostBindingDir;
+          @ViewChild(HostBindingDir) hostBindingDir !: HostBindingDir;
         }
 
         TestBed.configureTestingModule({declarations: [App, HostBindingDir]});
@@ -1012,7 +1015,7 @@ describe('acceptance integration tests', () => {
           `
         })
         class App {
-          @ViewChild(StructuralComp, {static: false}) structuralComp !: StructuralComp;
+          @ViewChild(StructuralComp) structuralComp !: StructuralComp;
           value: any;
         }
 
@@ -1053,7 +1056,7 @@ describe('acceptance integration tests', () => {
          () => {
            @Component({template: '<div class="apple orange banana" DirWithClass></div>'})
            class App {
-             @ViewChild(DirWithClassDirective, {static: false})
+             @ViewChild(DirWithClassDirective)
              mockClassDirective !: DirWithClassDirective;
            }
 
@@ -1071,7 +1074,7 @@ describe('acceptance integration tests', () => {
          () => {
            @Component({template: '<div style="width:100px;height:200px" DirWithStyle></div>'})
            class App {
-             @ViewChild(DirWithStyleDirective, {static: false})
+             @ViewChild(DirWithStyleDirective)
              mockStyleDirective !: DirWithStyleDirective;
            }
 
@@ -1090,7 +1093,7 @@ describe('acceptance integration tests', () => {
          () => {
            @Component({template: '<div DirWithClass [class]="value"></div>'})
            class App {
-             @ViewChild(DirWithClassDirective, {static: false})
+             @ViewChild(DirWithClassDirective)
              mockClassDirective !: DirWithClassDirective;
              value = '';
            }
@@ -1109,7 +1112,7 @@ describe('acceptance integration tests', () => {
               () => {
                 @Component({template: '<div DirWithStyle [style]="value"></div>'})
                 class App {
-                  @ViewChild(DirWithStyleDirective, {static: false})
+                  @ViewChild(DirWithStyleDirective)
                   mockStyleDirective !: DirWithStyleDirective;
                   value !: {[key: string]: string};
                 }
@@ -1186,7 +1189,7 @@ describe('acceptance integration tests', () => {
             `
                 })
                 class App {
-                  @ViewChild(DirWithSingleStylingBindings, {static: false})
+                  @ViewChild(DirWithSingleStylingBindings)
                   dirInstance !: DirWithSingleStylingBindings;
                 }
 
@@ -1242,8 +1245,8 @@ describe('acceptance integration tests', () => {
                 @Component(
                     {template: '<div Dir1WithStyle Dir2WithStyle [style.width]="width"></div>'})
                 class App {
-                  @ViewChild(Dir1WithStyle, {static: false}) dir1Instance !: Dir1WithStyle;
-                  @ViewChild(Dir2WithStyle, {static: false}) dir2Instance !: Dir2WithStyle;
+                  @ViewChild(Dir1WithStyle) dir1Instance !: Dir1WithStyle;
+                  @ViewChild(Dir2WithStyle) dir2Instance !: Dir2WithStyle;
                   width: string|null = null;
                 }
 
@@ -1307,8 +1310,8 @@ describe('acceptance integration tests', () => {
                       '<div Dir1WithStyling Dir2WithStyling [style]="stylesExp" [class]="classesExp"></div>'
                 })
                 class App {
-                  @ViewChild(Dir1WithStyling, {static: false}) dir1Instance !: Dir1WithStyling;
-                  @ViewChild(Dir2WithStyling, {static: false}) dir2Instance !: Dir2WithStyling;
+                  @ViewChild(Dir1WithStyling) dir1Instance !: Dir1WithStyling;
+                  @ViewChild(Dir2WithStyling) dir2Instance !: Dir2WithStyling;
                   stylesExp: any = {};
                   classesExp: any = {};
                 }
@@ -1876,5 +1879,98 @@ describe('acceptance integration tests', () => {
     });
     const fixture = TestBed.createComponent(Cmp);
     expect(() => fixture.detectChanges()).toThrowError('this error is expected');
+  });
+
+  describe('tView.firstUpdatePass', () => {
+    function isFirstUpdatePass() {
+      const lView = getLView();
+      const tView = lView[TVIEW];
+      return tView.firstUpdatePass;
+    }
+
+    function assertAttrValues(element: Element, value: string) {
+      expect(element.getAttribute('data-comp')).toEqual(value);
+      expect(element.getAttribute('data-dir')).toEqual(value);
+    }
+
+    onlyInIvy('tView instances are ivy-specific')
+        .it('should be marked with `firstUpdatePass` up until the template and host bindings are evaluated',
+            () => {
+              @Directive({
+                selector: '[dir]',
+              })
+              class Dir {
+                @HostBinding('attr.data-dir')
+                get text() {
+                  return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+                }
+              }
+
+              @Component({
+                template: '<div [attr.data-comp]="text" dir></div>',
+              })
+              class Cmp {
+                get text() {
+                  return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+                }
+              }
+
+              TestBed.configureTestingModule({
+                declarations: [Cmp, Dir],
+              });
+              const fixture = TestBed.createComponent(Cmp);
+              fixture.detectChanges(false);
+              const element = fixture.nativeElement.querySelector('div') !;
+
+              assertAttrValues(element, 'first-update-pass');
+
+              fixture.detectChanges(false);
+
+              assertAttrValues(element, 'post-update-pass');
+            });
+
+    onlyInIvy('tView instances are ivy-specific')
+        .it('tView.firstUpdatePass should be applied immediately after the first embedded view is processed',
+            () => {
+              @Directive({
+                selector: '[dir]',
+              })
+              class Dir {
+                @HostBinding('attr.data-dir')
+                get text() {
+                  return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+                }
+              }
+
+              @Component({
+                template: `
+          <div *ngFor="let item of items" dir [attr.data-comp]="text">
+            ...
+          </div>
+        `
+              })
+              class Cmp {
+                items = [1, 2, 3];
+                get text() {
+                  return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+                }
+              }
+
+              TestBed.configureTestingModule({
+                declarations: [Cmp, Dir],
+              });
+              const fixture = TestBed.createComponent(Cmp);
+              fixture.detectChanges(false);
+
+              const elements = fixture.nativeElement.querySelectorAll('div');
+              assertAttrValues(elements[0], 'first-update-pass');
+              assertAttrValues(elements[1], 'post-update-pass');
+              assertAttrValues(elements[2], 'post-update-pass');
+
+              fixture.detectChanges(false);
+              assertAttrValues(elements[0], 'post-update-pass');
+              assertAttrValues(elements[1], 'post-update-pass');
+              assertAttrValues(elements[2], 'post-update-pass');
+            });
   });
 });

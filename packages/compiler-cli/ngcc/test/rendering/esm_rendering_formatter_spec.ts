@@ -241,9 +241,54 @@ SOME DEFINITION TEXT
 A.decorators = [
 `);
       });
-
     });
 
+    describe('addAdjacentStatements', () => {
+      const contents = `import {Directive, NgZone, Console} from '@angular/core';\n` +
+          `export class SomeDirective {\n` +
+          `  constructor(zone, cons) {}\n` +
+          `  method() {}\n` +
+          `}\n` +
+          `SomeDirective.decorators = [\n` +
+          `  { type: Directive, args: [{ selector: '[a]' }] },\n` +
+          `  { type: OtherA }\n` +
+          `];\n` +
+          `SomeDirective.ctorParameters = () => [\n` +
+          `  { type: NgZone },\n` +
+          `  { type: Console }\n` +
+          `];`;
+
+      it('should insert the statements after all the static methods of the class', () => {
+        const program = {name: _('/node_modules/test-package/some/file.js'), contents};
+        const {renderer, decorationAnalyses, sourceFile} = setup([program]);
+        const output = new MagicString(contents);
+        const compiledClass = decorationAnalyses.get(sourceFile) !.compiledClasses.find(
+            c => c.name === 'SomeDirective') !;
+        renderer.addAdjacentStatements(output, compiledClass, 'SOME STATEMENTS');
+        expect(output.toString())
+            .toContain(
+                `SomeDirective.ctorParameters = () => [\n` +
+                `  { type: NgZone },\n` +
+                `  { type: Console }\n` +
+                `];\n` +
+                `SOME STATEMENTS`);
+      });
+
+      it('should insert the statements after any definitions', () => {
+        const program = {name: _('/node_modules/test-package/some/file.js'), contents};
+        const {renderer, decorationAnalyses, sourceFile} = setup([program]);
+        const output = new MagicString(contents);
+        const compiledClass = decorationAnalyses.get(sourceFile) !.compiledClasses.find(
+            c => c.name === 'SomeDirective') !;
+        renderer.addDefinitions(output, compiledClass, 'SOME DEFINITIONS');
+        renderer.addAdjacentStatements(output, compiledClass, 'SOME STATEMENTS');
+        const definitionsPosition = output.toString().indexOf('SOME DEFINITIONS');
+        const statementsPosition = output.toString().indexOf('SOME STATEMENTS');
+        expect(definitionsPosition).not.toEqual(-1, 'definitions should exist');
+        expect(statementsPosition).not.toEqual(-1, 'statements should exist');
+        expect(statementsPosition).toBeGreaterThan(definitionsPosition);
+      });
+    });
 
     describe('removeDecorators', () => {
       describe('[static property declaration]', () => {
@@ -255,7 +300,7 @@ A.decorators = [
                  decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
              const decorator = compiledClass.decorators ![0];
              const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-             decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+             decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
              renderer.removeDecorators(output, decoratorsToRemove);
              expect(output.toString())
                  .not.toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
@@ -276,7 +321,7 @@ A.decorators = [
                  decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'B') !;
              const decorator = compiledClass.decorators ![0];
              const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-             decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+             decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
              renderer.removeDecorators(output, decoratorsToRemove);
              expect(output.toString())
                  .toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
@@ -288,6 +333,28 @@ A.decorators = [
                  .toContain(`{ type: Directive, args: [{ selector: '[c]' }] }`);
            });
 
+        it('should handle a decorator with a trailing comment', () => {
+          const text = `
+import {Directive} from '@angular/core';
+export class A {}
+A.decorators = [
+  { type: Directive, args: [{ selector: '[a]' }] },
+  { type: OtherA }
+];
+          `;
+          const file = {name: _('/node_modules/test-package/index.js'), contents: text};
+          const {decorationAnalyses, sourceFile, renderer} = setup([file]);
+          const output = new MagicString(text);
+          const compiledClass =
+              decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
+          const decorator = compiledClass.decorators ![0];
+          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+          decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
+          renderer.removeDecorators(output, decoratorsToRemove);
+          // The decorator should have been removed correctly.
+          expect(output.toString()).toContain('A.decorators = [ { type: OtherA }');
+        });
+
 
         it('should delete the decorator (and its container if there are no other decorators left) that was matched in the analysis',
            () => {
@@ -297,7 +364,7 @@ A.decorators = [
                  decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
              const decorator = compiledClass.decorators ![0];
              const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-             decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+             decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
              renderer.removeDecorators(output, decoratorsToRemove);
              expect(output.toString())
                  .toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
@@ -363,7 +430,7 @@ export { D };
                decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
            const decorator = compiledClass.decorators !.find(d => d.name === 'Directive') !;
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString()).not.toContain(`Directive({ selector: '[a]' }),`);
            expect(output.toString()).toContain(`OtherA()`);
@@ -380,7 +447,7 @@ export { D };
                decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'B') !;
            const decorator = compiledClass.decorators !.find(d => d.name === 'Directive') !;
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString()).toContain(`Directive({ selector: '[a]' }),`);
            expect(output.toString()).toContain(`OtherA()`);
@@ -398,7 +465,7 @@ export { D };
                decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
            const decorator = compiledClass.decorators !.find(d => d.name === 'Directive') !;
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           decoratorsToRemove.set(decorator.node !.parent !, [decorator.node !]);
            renderer.removeDecorators(output, decoratorsToRemove);
            expect(output.toString()).toContain(`Directive({ selector: '[a]' }),`);
            expect(output.toString()).toContain(`OtherA()`);

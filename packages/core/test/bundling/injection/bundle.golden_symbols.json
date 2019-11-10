@@ -6,9 +6,6 @@
     "name": "EMPTY_ARRAY"
   },
   {
-    "name": "EmptyErrorImpl"
-  },
-  {
     "name": "INJECTOR"
   },
   {
@@ -36,6 +33,12 @@
     "name": "NG_INJECTOR_DEF"
   },
   {
+    "name": "NG_INJ_DEF"
+  },
+  {
+    "name": "NG_PROV_DEF"
+  },
+  {
     "name": "NG_TEMP_TOKEN_PATH"
   },
   {
@@ -52,9 +55,6 @@
   },
   {
     "name": "NullInjector"
-  },
-  {
-    "name": "ObjectUnsubscribedErrorImpl"
   },
   {
     "name": "Optional"
@@ -82,9 +82,6 @@
   },
   {
     "name": "USE_VALUE"
-  },
-  {
-    "name": "UnsubscriptionErrorImpl"
   },
   {
     "name": "__forward_ref__"

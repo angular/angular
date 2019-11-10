@@ -7,9 +7,10 @@
  */
 import {assertDataInRange, assertEqual} from '../../util/assert';
 import {TNodeType} from '../interfaces/node';
-import {BINDING_INDEX, HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
+import {HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {appendChild, createTextNode} from '../node_manipulation';
-import {getLView, setIsNotParent} from '../state';
+import {getBindingIndex, getLView, setIsNotParent} from '../state';
+
 import {getOrCreateTNode} from './shared';
 
 
@@ -25,7 +26,7 @@ import {getOrCreateTNode} from './shared';
 export function ɵɵtext(index: number, value: string = ''): void {
   const lView = getLView();
   ngDevMode && assertEqual(
-                   lView[BINDING_INDEX], lView[TVIEW].bindingStartIndex,
+                   getBindingIndex(), lView[TVIEW].bindingStartIndex,
                    'text nodes should be created before any bindings');
   ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
   const textNative = lView[index + HEADER_OFFSET] = createTextNode(value, lView[RENDERER]);

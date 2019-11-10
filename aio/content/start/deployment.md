@@ -50,6 +50,12 @@ ng build --prod
 
 This will produce the files that you need to deploy.
 
+<div class="alert is-helpful">
+
+If the above `ng build` command throws an error about missing packages, append the missing dependencies in your local project's `package.json` file to match the one in the downloaded StackBlitz project.
+
+</div>
+
 #### Hosting the built project
 
 The files in the `dist/my-project-name` folder are static and can be hosted on any web server capable of serving files (`Node.js`, Java, .NET) or any backend (Firebase, Google Cloud, App Engine, others).
@@ -62,8 +68,11 @@ One of the easiest ways to get your site live is to host it using Firebase.
 1. Create a new project, giving it any name you like.
 1. Install the `firebase-tools` CLI that will handle your deployment using `npm install -g firebase-tools`.
 1. Connect your CLI to your Firebase account and initialize the connection to your project using `firebase login` and `firebase init`.
-1. Follow the prompts to select the `Firebase` project you creating for hosting.
-1. Deploy your application with `firebase deploy` because StackBlitz has created a `firebase.json` that tells Firebase how to serve your app.
+1. Follow the prompts to select the `Firebase` project you are creating for hosting.
+  - Select the `Hosting` option on the first prompt.
+  - Select the project you previously created on Firebase.
+  - Select `dist/my-project-name` as the public directory.
+1. Deploy your application with `firebase deploy`, because the command `firebase init` has created a `firebase.json` file that tells Firebase how to serve your app.
 1. Once deployed, visit https://your-firebase-project-name.firebaseapp.com to see it live!
 
 ### Hosting an Angular app anywhere else

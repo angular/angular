@@ -41,11 +41,11 @@ describe('compiler compliance: listen()', () => {
 
     // The template should look like this (where IDENT is a wild card for an identifier):
     const template = `
-        const $e0_attrs$ = [${AttributeMarker.Bindings}, "click"];
         …
+        consts: [[${AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $e0_attrs$);
+            $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵlistener("click", function MyComponent_Template_div_click_0_listener($event) {
               ctx.onClick($event);
               return 1 == 2;
@@ -87,11 +87,11 @@ describe('compiler compliance: listen()', () => {
     };
 
     const template = `
-        const $e0_attrs$ = [${AttributeMarker.Bindings}, "click"];
         …
+        consts: [[${AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "my-app", $e0_attrs$);
+            $r3$.ɵɵelementStart(0, "my-app", 0);
             $r3$.ɵɵlistener("click", function MyComponent_Template_my_app_click_0_listener($event) {
               return ctx.onClick($event);
             });
@@ -133,21 +133,18 @@ describe('compiler compliance: listen()', () => {
     };
 
     const template = `
-        const $t0_attrs$ = [${AttributeMarker.Template}, "ngIf"];
-        const $e_attrs$ = [${AttributeMarker.Bindings}, "click"];
-
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
             const $s$ = $r3$.ɵɵgetCurrentView();
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵelementStart(1, "div", $e_attrs$);
+            $r3$.ɵɵelementStart(1, "div", 1);
             $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_div_click_1_listener($event) {
               $r3$.ɵɵrestoreView($s$);
               const $comp$ = $r3$.ɵɵnextContext();
               return $comp$.onClick($comp$.foo);
             });
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(2, "button", $e_attrs$);
+            $r3$.ɵɵelementStart(2, "button", 1);
             $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_button_click_2_listener($event) {
               $r3$.ɵɵrestoreView($s$);
               const $comp2$ = $r3$.ɵɵnextContext();
@@ -158,9 +155,10 @@ describe('compiler compliance: listen()', () => {
           }
         }
         // ...
+        consts: [[${AttributeMarker.Template}, "ngIf"], [${AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 3, 0, "div", $c0$);
+            $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 3, 0, "div", 0);
           }
           if (rf & 2) {
             $i0$.ɵɵproperty("ngIf", ctx.showing);
@@ -195,18 +193,17 @@ describe('compiler compliance: listen()', () => {
     };
 
     const MyComponentDefinition = `
-        const $e0_attrs$ = [${AttributeMarker.Bindings}, "click"];
-        const $e2_refs$ = ["user", ""];
         …
-        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
-          consts: 4,
+          decls: 4,
           vars: 0,
+          consts: [[${AttributeMarker.Bindings}, "click"], ["user", ""]],
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               const $s$ = $r3$.ɵɵgetCurrentView();
-              $r3$.ɵɵelementStart(0, "button", $e0_attrs$);
+              $r3$.ɵɵelementStart(0, "button", 0);
                 $r3$.ɵɵlistener("click", function MyComponent_Template_button_click_0_listener($event) {
                    $r3$.ɵɵrestoreView($s$);
                    const $user$ = $r3$.ɵɵreference(3);
@@ -214,7 +211,7 @@ describe('compiler compliance: listen()', () => {
                 });
                 $r3$.ɵɵtext(1, "Save");
               $r3$.ɵɵelementEnd();
-              $r3$.ɵɵelement(2, "input", null, $e2_refs$);
+              $r3$.ɵɵelement(2, "input", null, 1);
             }
           },
           encapsulation: 2
@@ -222,14 +219,14 @@ describe('compiler compliance: listen()', () => {
       `;
 
     const MyComponentFactory = `
-      MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
+      MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
     `;
 
     const result = compile(files, angularFiles);
     const source = result.source;
 
-    expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ngComponentDef');
-    expectEmit(source, MyComponentFactory, 'Incorrect MyComponent.ngFactoryDef');
+    expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ɵcmp');
+    expectEmit(source, MyComponentFactory, 'Incorrect MyComponent.ɵfac');
   });
 
 });

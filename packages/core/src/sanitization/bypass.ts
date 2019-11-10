@@ -61,9 +61,7 @@ export interface SafeResourceUrl extends SafeValue {}
 
 
 abstract class SafeValueImpl implements SafeValue {
-  constructor(public changingThisBreaksApplicationSecurity: string) {
-    // empty
-  }
+  constructor(public changingThisBreaksApplicationSecurity: string) {}
 
   abstract getTypeName(): string;
 
@@ -89,10 +87,9 @@ class SafeResourceUrlImpl extends SafeValueImpl implements SafeResourceUrl {
   getTypeName() { return BypassType.ResourceUrl; }
 }
 
-export function unwrapSafeValue(value: SafeValue): string {
-  return value instanceof SafeValueImpl ?
-      (value as SafeValueImpl).changingThisBreaksApplicationSecurity :
-      '';
+export function unwrapSafeValue(value: string | SafeValue): string {
+  return value instanceof SafeValueImpl ? value.changingThisBreaksApplicationSecurity :
+                                          value as string;
 }
 
 
@@ -118,8 +115,7 @@ export function allowSanitizationBypassAndThrow(value: any, type: BypassType): b
 }
 
 export function getSanitizationBypassType(value: any): BypassType|null {
-  return value instanceof SafeValueImpl && (value as SafeValueImpl).getTypeName() as BypassType ||
-      null;
+  return value instanceof SafeValueImpl && value.getTypeName() as BypassType || null;
 }
 
 /**

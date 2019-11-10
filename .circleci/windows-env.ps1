@@ -26,12 +26,6 @@ Add-Content $profile $bazelVersionGlobalVar
 # TODO: is this really needed? Maybe there's a better way. It doesn't happen on Linux or on Codefresh.
 git config --global --unset url.ssh://git@github.com.insteadOf
 
-# Print node and yarn versions.
-echo "Node version:"
-node -v
-echo "Yarn version:"
-yarn -v
-
 
 # These Bazel prereqs aren't needed because the CircleCI image already includes them.
 # choco install nodejs --version 10.16.0 --no-progress

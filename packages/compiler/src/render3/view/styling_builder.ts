@@ -7,7 +7,7 @@
  */
 import {ConstantPool} from '../../constant_pool';
 import {AttributeMarker} from '../../core';
-import {AST, BindingType, Interpolation} from '../../expression_parser/ast';
+import {AST, ASTWithSource, BindingPipe, BindingType, Interpolation} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import {isEmptyExpression} from '../../template_parser/template_parser';
@@ -68,7 +68,6 @@ interface BoundStylingEntry {
  *   classMap(...)
  *   styleProp(...)
  *   classProp(...)
- *   stylingApply(...)
  * }
  *
  * The creation/update methods within the builder class produce these instructions.
@@ -81,6 +80,7 @@ export class StylingBuilder {
    *  (i.e. `[style]`, `[class]`, `[style.prop]` or `[class.name]`)
    */
   public hasBindings = false;
+  public hasBindingsWithPipes = false;
 
   /** the input for [class] (if it exists) */
   private _classMapInput: BoundStylingEntry|null = null;
@@ -187,6 +187,7 @@ export class StylingBuilder {
     }
     this._lastStylingInput = entry;
     this._firstStylingInput = this._firstStylingInput || entry;
+    this._checkForPipes(value);
     this.hasBindings = true;
     return entry;
   }
@@ -200,6 +201,10 @@ export class StylingBuilder {
     const entry:
         BoundStylingEntry = {name: property, value, sourceSpan, hasOverrideFlag, unit: null};
     if (isMapBased) {
+      if (this._classMapInput) {
+        throw new Error(
+            '[class] and [className] bindings cannot be used on the same element simultaneously');
+      }
       this._classMapInput = entry;
     } else {
       (this._singleClassInputs = this._singleClassInputs || []).push(entry);
@@ -207,8 +212,15 @@ export class StylingBuilder {
     }
     this._lastStylingInput = entry;
     this._firstStylingInput = this._firstStylingInput || entry;
+    this._checkForPipes(value);
     this.hasBindings = true;
     return entry;
+  }
+
+  private _checkForPipes(value: AST) {
+    if ((value instanceof ASTWithSource) && (value.ast instanceof BindingPipe)) {
+      this.hasBindingsWithPipes = true;
+    }
   }
 
   /**
@@ -285,25 +297,6 @@ export class StylingBuilder {
   }
 
   /**
-   * Builds an instruction with all the expressions and parameters for `styling`.
-   *
-   * The instruction generation code below is used for producing the AOT statement code which is
-   * responsible for registering style/class bindings to an element.
-   */
-  buildStylingInstruction(sourceSpan: ParseSourceSpan|null, constantPool: ConstantPool):
-      StylingInstruction|null {
-    if (this.hasBindings) {
-      return {
-        sourceSpan,
-        allocateBindingSlots: 0,
-        reference: R3.styling,
-        params: () => [],
-      };
-    }
-    return null;
-  }
-
-  /**
    * Builds an instruction with all the expressions and parameters for `classMap`.
    *
    * The instruction data will contain all expressions for `classMap` to function
@@ -333,7 +326,10 @@ export class StylingBuilder {
       valueConverter: ValueConverter, isClassBased: boolean,
       stylingInput: BoundStylingEntry): StylingInstruction {
     // each styling binding value is stored in the LView
-    let totalBindingSlotsRequired = 1;
+    // map-based bindings allocate two slots: one for the
+    // previous binding value and another for the previous
+    // className or style attribute value.
+    let totalBindingSlotsRequired = 2;
 
     // these values must be outside of the update block so that they can
     // be evaluated (the AST visit call) during creation time so that any
@@ -422,15 +418,6 @@ export class StylingBuilder {
     return [];
   }
 
-  private _buildApplyFn(): StylingInstruction {
-    return {
-      sourceSpan: this._lastStylingInput ? this._lastStylingInput.sourceSpan : null,
-      reference: R3.stylingApply,
-      allocateBindingSlots: 0,
-      params: () => { return []; }
-    };
-  }
-
   private _buildSanitizerFn(): StylingInstruction {
     return {
       sourceSpan: this._firstStylingInput ? this._firstStylingInput.sourceSpan : null,
@@ -460,7 +447,6 @@ export class StylingBuilder {
       }
       instructions.push(...this._buildStyleInputs(valueConverter));
       instructions.push(...this._buildClassInputs(valueConverter));
-      instructions.push(this._buildApplyFn());
     }
     return instructions;
   }

@@ -14,8 +14,10 @@ An asterisk `*` or *wildcard* matches any animation state. This is useful for de
 
 For example, a transition of `open => *` applies when the element's state changes from open to anything else.
 
-<figure>
-<img src="generated/images/guide/animations/wildcard-state-500.png" alt="wildcard state expressions">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/animations/wildcard-state-500.png" alt="wildcard state expressions">
+  </div>
 </figure>
 
 Here's another code sample using the wildcard state together with our previous example using the `open` and `closed` states. Instead of defining each state-to-state transition pair, we're now saying that any transition to `closed` takes 1 second, and any transition to `open` takes 0.5 seconds.
@@ -32,8 +34,10 @@ Use a double arrow syntax to specify state-to-state transitions in both directio
 
 In our two-state button example, the wildcard isn't that useful because there are only two possible states, `open` and `closed`. Wildcard states are better when an element in one particular state has multiple potential states that it can change to. If our button can change from `open` to either `closed` or something like `inProgress`, using a wildcard state could reduce the amount of coding needed.
 
-<figure>
-<img src="generated/images/guide/animations/wildcard-3-states.png" alt="wildcard state with 3 states">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/animations/wildcard-3-states.png" alt="wildcard state with 3 states">
+  </div>
 </figure>
 
 
@@ -123,7 +127,7 @@ The `transition()` function takes additional selector values, `:increment` and `
 
 <div class="alert is-helpful">
 
-**Note:** The following example uses `query()` and `stagger()` methods, which is discussed  in the [complex sequences](guide/complex-animation-sequences#complex-sequence) page.
+**Note:** The following example uses `query()` and `stagger()` methods, which is discussed in the [complex sequences](guide/complex-animation-sequences#complex-sequence) page.
 
 </div>
 
@@ -217,8 +221,10 @@ In the previous section, we saw a simple two-state transition. Now we'll create 
 
 Angular's `keyframe()` function is similar to keyframes in CSS. Keyframes allow several style changes within a single timing segment. For example, our button, instead of fading, could change color several times over a single 2-second timespan.
 
-<figure>
-<img src="generated/images/guide/animations/keyframes-500.png" alt="keyframes">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/animations/keyframes-500.png" alt="keyframes">
+  </div>
 </figure>
 
 The code for this color change might look like this.
@@ -231,8 +237,10 @@ Keyframes include an *offset* that defines the point in the animation where each
 
 Defining offsets for keyframes is optional. If you omit them, evenly spaced offsets are automatically assigned. For example, three keyframes without predefined offsets receive offsets of 0, 0.5, and 1. Specifying an offset of 0.8 for the middle transition in the above example might look like this.
 
-<figure>
-<img src="generated/images/guide/animations/keyframes-offset-500.png" alt="keyframes with offset">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/animations/keyframes-offset-500.png" alt="keyframes with offset">
+  </div>
 </figure>
 
 The code with offsets specified would be as follows.
@@ -252,8 +260,10 @@ Here's an example of using keyframes to create a pulse effect:
 
 * A keyframes sequence inserted in the middle that causes the button to appear to pulsate irregularly over the course of that same 1-second timeframe
 
-<figure>
-<img src="generated/images/guide/animations/keyframes-pulsation.png" alt="keyframes with irregular pulsation">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/animations/keyframes-pulsation.png" alt="keyframes with irregular pulsation">
+  </div>
 </figure>
 
 The code snippet for this animation might look like this.

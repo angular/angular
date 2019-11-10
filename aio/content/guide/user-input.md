@@ -69,7 +69,7 @@ In this case, `target` refers to the [`<input>` element](https://developer.mozil
 `event.target.value` returns the current contents of that element.
 
 After each call, the `onKey()` method appends the contents of the input box value to the list
-in the component's `values` property, followed by a  separator character (|).
+in the component's `values` property, followed by a separator character (|).
 The [interpolation](guide/template-syntax#interpolation)
 displays the accumulating input box changes from the `values` property.
 
@@ -82,8 +82,10 @@ Here's what the UI displays:
 
 
 
-<figure>
-  <img src='generated/images/guide/user-input/keyup1-anim.gif' alt="key up 1">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/user-input/keyup1-anim.gif' alt="key up 1">
+  </div>
 </figure>
 
 
@@ -161,8 +163,10 @@ and the component does nothing.
 Type something in the input box, and watch the display update with each keystroke.
 
 
-<figure>
-  <img src='generated/images/guide/user-input/keyup-loop-back-anim.gif' alt="loop back">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/user-input/keyup-loop-back-anim.gif' alt="loop back">
+  </div>
 </figure>
 
 
@@ -211,8 +215,10 @@ Then Angular calls the event handler only when the user presses _Enter_.
 
 Here's how it works.
 
-<figure>
-  <img src='generated/images/guide/user-input/keyup3-anim.gif' alt="key up 3">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/user-input/keyup3-anim.gif' alt="key up 3">
+  </div>
 </figure>
 
 
@@ -243,8 +249,10 @@ The user can add a hero by typing the hero's name in the input box and
 clicking **Add**.
 
 
-<figure>
-  <img src='generated/images/guide/user-input/little-tour-anim.gif' alt="Little Tour of Heroes">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/user-input/little-tour-anim.gif' alt="Little Tour of Heroes">
+  </div>
 </figure>
 
 
@@ -268,7 +276,7 @@ get the input box value and pass *that* to `addHero`.
 
 * **Keep template statements simple** &mdash;
 The `(blur)` event is bound to two JavaScript statements.
-The first statement calls `addHero`.  The second statement, `newHero.value=''`,
+The first statement calls `addHero`. The second statement, `newHero.value=''`,
 clears the input box after a new hero is added to the list.
 
 

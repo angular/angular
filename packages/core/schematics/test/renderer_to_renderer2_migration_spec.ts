@@ -29,14 +29,12 @@ describe('Renderer to Renderer2 migration', () => {
         lib: ['es2015'],
         strictNullChecks: true,
       },
-      angularCompilerOptions: {enableIvy: false}
     }));
     writeFile('/angular.json', JSON.stringify({
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
     }));
     // We need to declare the Angular symbols we're testing for, otherwise type checking won't work.
     writeFile('/node_modules/@angular/core/index.d.ts', `
-      export declare abstract class Renderer {}
       export declare function forwardRef(fn: () => any): any {}
     `);
 

@@ -5,8 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {registerLocaleData} from '@angular/common';
 import localeAr from '@angular/common/locales/ar';
 import localeDe from '@angular/common/locales/de';
 import localeEn from '@angular/common/locales/en';
@@ -15,7 +13,7 @@ import localeHu from '@angular/common/locales/hu';
 import localeSr from '@angular/common/locales/sr';
 import localeTh from '@angular/common/locales/th';
 import {isDate, toDate, formatDate} from '@angular/common/src/i18n/format_date';
-import {ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
+import {ɵDEFAULT_LOCALE_ID, ɵunregisterLocaleData, ɵregisterLocaleData} from '@angular/core';
 
 describe('Format date', () => {
   describe('toDate', () => {
@@ -52,17 +50,20 @@ describe('Format date', () => {
 
     // Check the transformation of a date into a pattern
     function expectDateFormatAs(date: Date | string, pattern: any, output: string): void {
-      expect(formatDate(date, pattern, DEFAULT_LOCALE_ID)).toEqual(output, `pattern: "${pattern}"`);
+      expect(formatDate(date, pattern, ɵDEFAULT_LOCALE_ID))
+          .toEqual(output, `pattern: "${pattern}"`);
     }
 
     beforeAll(() => {
-      registerLocaleData(localeEn, localeEnExtra);
-      registerLocaleData(localeDe);
-      registerLocaleData(localeHu);
-      registerLocaleData(localeSr);
-      registerLocaleData(localeTh);
-      registerLocaleData(localeAr);
+      ɵregisterLocaleData(localeEn, localeEnExtra);
+      ɵregisterLocaleData(localeDe);
+      ɵregisterLocaleData(localeHu);
+      ɵregisterLocaleData(localeSr);
+      ɵregisterLocaleData(localeTh);
+      ɵregisterLocaleData(localeAr);
     });
+
+    afterAll(() => ɵunregisterLocaleData());
 
     beforeEach(() => { date = new Date(2015, 5, 15, 9, 3, 1, 550); });
 
@@ -209,7 +210,7 @@ describe('Format date', () => {
       };
 
       Object.keys(dateFixtures).forEach((pattern: string) => {
-        expect(formatDate(date, pattern, DEFAULT_LOCALE_ID, '+0430'))
+        expect(formatDate(date, pattern, ɵDEFAULT_LOCALE_ID, '+0430'))
             .toMatch(dateFixtures[pattern]);
       });
     });
@@ -254,22 +255,22 @@ describe('Format date', () => {
       };
 
       Object.keys(dateFixtures).forEach((pattern: string) => {
-        expect(formatDate(date, pattern, DEFAULT_LOCALE_ID)).toMatch(dateFixtures[pattern]);
+        expect(formatDate(date, pattern, ɵDEFAULT_LOCALE_ID)).toMatch(dateFixtures[pattern]);
       });
     });
 
     it('should format invalid in IE ISO date',
-       () => expect(formatDate('2017-01-11T12:00:00.014-0500', defaultFormat, DEFAULT_LOCALE_ID))
+       () => expect(formatDate('2017-01-11T12:00:00.014-0500', defaultFormat, ɵDEFAULT_LOCALE_ID))
                  .toEqual('Jan 11, 2017'));
 
     it('should format invalid in Safari ISO date',
-       () => expect(formatDate('2017-01-20T12:00:00+0000', defaultFormat, DEFAULT_LOCALE_ID))
+       () => expect(formatDate('2017-01-20T12:00:00+0000', defaultFormat, ɵDEFAULT_LOCALE_ID))
                  .toEqual('Jan 20, 2017'));
 
     // https://github.com/angular/angular/issues/9524
     // https://github.com/angular/angular/issues/9524
     it('should format correctly with iso strings that contain time',
-       () => expect(formatDate('2017-05-07T22:14:39', 'dd-MM-yyyy HH:mm', DEFAULT_LOCALE_ID))
+       () => expect(formatDate('2017-05-07T22:14:39', 'dd-MM-yyyy HH:mm', ɵDEFAULT_LOCALE_ID))
                  .toMatch(/07-05-2017 \d{2}:\d{2}/));
 
     // https://github.com/angular/angular/issues/21491
@@ -277,22 +278,22 @@ describe('Format date', () => {
       // this test only works if the timezone is not in UTC
       // which is the case for BrowserStack when we test Safari
       if (new Date().getTimezoneOffset() !== 0) {
-        expect(formatDate('2018-01-11T13:00:00', 'HH', DEFAULT_LOCALE_ID))
-            .not.toEqual(formatDate('2018-01-11T13:00:00Z', 'HH', DEFAULT_LOCALE_ID));
+        expect(formatDate('2018-01-11T13:00:00', 'HH', ɵDEFAULT_LOCALE_ID))
+            .not.toEqual(formatDate('2018-01-11T13:00:00Z', 'HH', ɵDEFAULT_LOCALE_ID));
       }
     });
 
     // https://github.com/angular/angular/issues/16624
     // https://github.com/angular/angular/issues/17478
     it('should show the correct time when the timezone is fixed', () => {
-      expect(formatDate('2017-06-13T10:14:39+0000', 'shortTime', DEFAULT_LOCALE_ID, '+0000'))
+      expect(formatDate('2017-06-13T10:14:39+0000', 'shortTime', ɵDEFAULT_LOCALE_ID, '+0000'))
           .toEqual('10:14 AM');
-      expect(formatDate('2017-06-13T10:14:39+0000', 'h:mm a', DEFAULT_LOCALE_ID, '+0000'))
+      expect(formatDate('2017-06-13T10:14:39+0000', 'h:mm a', ɵDEFAULT_LOCALE_ID, '+0000'))
           .toEqual('10:14 AM');
     });
 
     it('should remove bidi control characters',
-       () => expect(formatDate(date, 'MM/dd/yyyy', DEFAULT_LOCALE_ID) !.length).toEqual(10));
+       () => expect(formatDate(date, 'MM/dd/yyyy', ɵDEFAULT_LOCALE_ID) !.length).toEqual(10));
 
     it(`should format the date correctly in various locales`, () => {
       expect(formatDate(date, 'short', 'de')).toEqual('15.06.15, 09:03');

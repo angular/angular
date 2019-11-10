@@ -62,12 +62,12 @@ TestClass.ngTypeCtor({value: 'test'});
         ];
         const {program, host, options} = makeProgram(files, undefined, undefined, false);
         const checker = program.getTypeChecker();
+        const reflectionHost = new TypeScriptReflectionHost(checker);
         const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
         const emitter = new ReferenceEmitter([
           new LocalIdentifierStrategy(),
-          new AbsoluteModuleStrategy(
-              program, checker, options, host, new TypeScriptReflectionHost(checker)),
-          new LogicalProjectStrategy(checker, logicalFs),
+          new AbsoluteModuleStrategy(program, checker, options, host, reflectionHost),
+          new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
         const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, _('/_typecheck_.ts'));
         const TestClass =
@@ -81,6 +81,7 @@ TestClass.ngTypeCtor({value: 'test'});
                 outputs: [],
                 queries: [],
               },
+              coercedInputFields: new Set(),
             });
         ctx.calculateTemplateDiagnostics(program, host, options);
       });
@@ -94,12 +95,12 @@ TestClass.ngTypeCtor({value: 'test'});
         ];
         const {program, host, options} = makeProgram(files, undefined, undefined, false);
         const checker = program.getTypeChecker();
+        const reflectionHost = new TypeScriptReflectionHost(checker);
         const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
         const emitter = new ReferenceEmitter([
           new LocalIdentifierStrategy(),
-          new AbsoluteModuleStrategy(
-              program, checker, options, host, new TypeScriptReflectionHost(checker)),
-          new LogicalProjectStrategy(checker, logicalFs),
+          new AbsoluteModuleStrategy(program, checker, options, host, reflectionHost),
+          new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
         const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, _('/_typecheck_.ts'));
         const TestClass =
@@ -113,12 +114,54 @@ TestClass.ngTypeCtor({value: 'test'});
                 outputs: [],
                 queries: ['queryField'],
               },
+              coercedInputFields: new Set(),
             });
         const res = ctx.calculateTemplateDiagnostics(program, host, options);
         const TestClassWithCtor =
             getDeclaration(res.program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         const typeCtor = TestClassWithCtor.members.find(isTypeCtor) !;
         expect(typeCtor.getText()).not.toContain('queryField');
+      });
+    });
+
+    describe('input type coercion', () => {
+      it('should coerce input types', () => {
+        const files: TestFile[] = [
+          LIB_D_TS, TYPE_CHECK_TS, {
+            name: _('/main.ts'),
+            contents: `class TestClass { value: any; }`,
+          }
+        ];
+        const {program, host, options} = makeProgram(files, undefined, undefined, false);
+        const checker = program.getTypeChecker();
+        const reflectionHost = new TypeScriptReflectionHost(checker);
+        const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
+        const emitter = new ReferenceEmitter([
+          new LocalIdentifierStrategy(),
+          new AbsoluteModuleStrategy(program, checker, options, host, reflectionHost),
+          new LogicalProjectStrategy(reflectionHost, logicalFs),
+        ]);
+        const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, _('/_typecheck_.ts'));
+        const TestClass =
+            getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
+        ctx.addInlineTypeCtor(
+            getSourceFileOrError(program, _('/main.ts')), new Reference(TestClass), {
+              fnName: 'ngTypeCtor',
+              body: true,
+              fields: {
+                inputs: ['foo', 'bar'],
+                outputs: [],
+                queries: [],
+              },
+              coercedInputFields: new Set(['bar']),
+            });
+        const res = ctx.calculateTemplateDiagnostics(program, host, options);
+        const TestClassWithCtor =
+            getDeclaration(res.program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
+        const typeCtor = TestClassWithCtor.members.find(isTypeCtor) !;
+        const ctorText = typeCtor.getText().replace(/[ \r\n]+/g, ' ');
+        expect(ctorText).toContain(
+            'init: Pick<TestClass, "foo"> | { bar: typeof TestClass.ngAcceptInputType_bar; }');
       });
     });
   });

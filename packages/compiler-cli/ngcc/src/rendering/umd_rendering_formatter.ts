@@ -13,6 +13,7 @@ import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {UmdReflectionHost} from '../host/umd_host';
 import {Esm5RenderingFormatter} from './esm5_rendering_formatter';
 import {stripExtension} from './utils';
+import {Reexport} from '../../../src/ngtsc/imports';
 
 type CommonJsConditional = ts.ConditionalExpression & {whenTrue: ts.CallExpression};
 type AmdConditional = ts.ConditionalExpression & {whenTrue: ts.CallExpression};
@@ -69,6 +70,26 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
       const exportStr = `\nexports.${e.identifier} = ${importNamespace}${namedImport.symbol};`;
       output.appendRight(insertionPoint, exportStr);
     });
+  }
+
+  addDirectExports(
+      output: MagicString, exports: Reexport[], importManager: ImportManager,
+      file: ts.SourceFile): void {
+    const umdModule = this.umdHost.getUmdModule(file);
+    if (!umdModule) {
+      return;
+    }
+    const factoryFunction = umdModule.factoryFn;
+    const lastStatement =
+        factoryFunction.body.statements[factoryFunction.body.statements.length - 1];
+    const insertionPoint =
+        lastStatement ? lastStatement.getEnd() : factoryFunction.body.getEnd() - 1;
+    for (const e of exports) {
+      const namedImport = importManager.generateNamedImport(e.fromModule, e.symbolName);
+      const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport}.` : '';
+      const exportStr = `\nexports.${e.asAlias} = ${importNamespace}${namedImport.symbol};`;
+      output.appendRight(insertionPoint, exportStr);
+    }
   }
 
   /**
@@ -204,13 +225,19 @@ function isAmdConditional(value: ts.Node): value is AmdConditional {
  */
 function isGlobalFactoryCall(value: ts.Node): value is ts.CallExpression {
   if (ts.isCallExpression(value) && !!value.parent) {
+    // Be resilient to the value being part of a comma list
+    value = isCommaExpression(value.parent) ? value.parent : value;
     // Be resilient to the value being inside parentheses
-    const expression = ts.isParenthesizedExpression(value.parent) ? value.parent : value;
-    return !!expression.parent && ts.isConditionalExpression(expression.parent) &&
-        expression.parent.whenFalse === expression;
+    value = ts.isParenthesizedExpression(value.parent) ? value.parent : value;
+    return !!value.parent && ts.isConditionalExpression(value.parent) &&
+        value.parent.whenFalse === value;
   } else {
     return false;
   }
+}
+
+function isCommaExpression(value: ts.Node): value is ts.BinaryExpression {
+  return ts.isBinaryExpression(value) && value.operatorToken.kind === ts.SyntaxKind.CommaToken;
 }
 
 function getGlobalIdentifier(i: Import) {

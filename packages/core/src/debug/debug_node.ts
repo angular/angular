@@ -10,18 +10,18 @@ import {Injector} from '../di';
 import {getViewComponent} from '../render3/global_utils_api';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
+import {StylingMapArray, TStylingContext} from '../render3/interfaces/styling';
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
 import {LView, PARENT, TData, TVIEW, T_HOST} from '../render3/interfaces/view';
-import {TStylingContext} from '../render3/styling_next/interfaces';
-import {stylingMapToStringMap} from '../render3/styling_next/map_based_bindings';
-import {NodeStylingDebug} from '../render3/styling_next/styling_debug';
-import {isStylingContext} from '../render3/styling_next/util';
+import {NodeStylingDebug} from '../render3/styling/styling_debug';
 import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER, renderStringify} from '../render3/util/misc_utils';
+import {isStylingContext, stylingMapToStringMap} from '../render3/util/styling_utils';
 import {findComponentView} from '../render3/util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
+import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
+import {createProxy} from './proxy';
 
 
 
@@ -346,12 +346,42 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     return attributes;
   }
 
-  get styles(): {[key: string]: string | null;} {
-    return _getStylingDebugInfo(this.nativeElement, false);
+  get styles(): {[key: string]: string | null} {
+    if (this.nativeElement && (this.nativeElement as HTMLElement).style) {
+      return (this.nativeElement as HTMLElement).style as{[key: string]: any};
+    }
+    return {};
   }
 
+  private _classesProxy !: {};
   get classes(): {[key: string]: boolean;} {
-    return _getStylingDebugInfo(this.nativeElement, true);
+    if (!this._classesProxy) {
+      const element = this.nativeElement;
+
+      // we use a proxy here because VE code expects `.classes` to keep
+      // track of which classes have been added and removed. Because we
+      // do not make use of a debug renderer anymore, the return value
+      // must always be `false` in the event that a class does not exist
+      // on the element (even if it wasn't added and removed beforehand).
+      this._classesProxy = createProxy({
+        get(target: {}, prop: string) {
+          return element ? element.classList.contains(prop) : false;
+        },
+        set(target: {}, prop: string, value: any) {
+          return element ? element.classList.toggle(prop, !!value) : false;
+        },
+        ownKeys() { return element ? Array.from(element.classList).sort() : []; },
+        getOwnPropertyDescriptor(k: any) {
+          // we use a special property descriptor here so that enumeration operations
+          // such as `Object.keys` will work on this proxy.
+          return {
+            enumerable: true,
+            configurable: true,
+          };
+        },
+      });
+    }
+    return this._classesProxy;
   }
 
   get childNodes(): DebugNode[] {
@@ -419,26 +449,6 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
   }
 }
 
-function _getStylingDebugInfo(element: any, isClassBased: boolean) {
-  const context = loadLContext(element, false);
-  if (!context) {
-    return {};
-  }
-
-  const lView = context.lView;
-  const tData = lView[TVIEW].data;
-  const tNode = tData[context.nodeIndex] as TNode;
-  if (isClassBased) {
-    return isStylingContext(tNode.classes) ?
-        new NodeStylingDebug(tNode.classes as TStylingContext, lView, true).values :
-        stylingMapToStringMap(tNode.classes);
-  } else {
-    return isStylingContext(tNode.styles) ?
-        new NodeStylingDebug(tNode.styles as TStylingContext, lView, false).values :
-        stylingMapToStringMap(tNode.styles);
-  }
-}
-
 /**
  * Walk the TNode tree to find matches for the predicate.
  *
@@ -484,7 +494,7 @@ function _queryNodeChildrenR3(
     if (isComponentHost(tNode)) {
       // If the element is the host of a component, then all nodes in its view have to be processed.
       // Note: the component's content (tNode.child) will be processed from the insertion points.
-      const componentView = getComponentViewByIndex(tNode.index, lView);
+      const componentView = getComponentLViewByIndex(tNode.index, lView);
       if (componentView && componentView[TVIEW].firstChild) {
         _queryNodeChildrenR3(
             componentView[TVIEW].firstChild !, componentView, predicate, matches, elementsOnly,

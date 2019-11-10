@@ -19,7 +19,16 @@ export function isClassDeclaration(clazz: ts.Declaration): clazz is ClassDeclara
  * Returns true if the `clazz` is decorated as a `Directive` or `Component`.
  */
 export function hasDirectiveDecorator(host: MigrationHost, clazz: ClassDeclaration): boolean {
-  return host.metadata.getDirectiveMetadata(new Reference(clazz)) !== null;
+  const ref = new Reference(clazz);
+  return host.metadata.getDirectiveMetadata(ref) !== null;
+}
+
+/**
+ * Returns true if the `clazz` is decorated as a `Pipe`.
+ */
+export function hasPipeDecorator(host: MigrationHost, clazz: ClassDeclaration): boolean {
+  const ref = new Reference(clazz);
+  return host.metadata.getPipeMetadata(ref) !== null;
 }
 
 /**
@@ -32,32 +41,96 @@ export function hasConstructor(host: MigrationHost, clazz: ClassDeclaration): bo
 /**
  * Create an empty `Directive` decorator that will be associated with the `clazz`.
  */
-export function createDirectiveDecorator(clazz: ClassDeclaration): Decorator {
-  const selectorArg = ts.createObjectLiteral([
-    // TODO: At the moment ngtsc does not accept a directive with no selector
-    ts.createPropertyAssignment('selector', ts.createStringLiteral('NGCC_DUMMY')),
-  ]);
-  const decoratorType = ts.createIdentifier('Directive');
-  const decoratorNode = ts.createObjectLiteral([
-    ts.createPropertyAssignment('type', decoratorType),
-    ts.createPropertyAssignment('args', ts.createArrayLiteral([selectorArg])),
-  ]);
-
-  setParentPointers(clazz.getSourceFile(), decoratorNode);
-
+export function createDirectiveDecorator(
+    clazz: ClassDeclaration,
+    metadata?: {selector: string | null, exportAs: string[] | null}): Decorator {
+  const args: ts.Expression[] = [];
+  if (metadata !== undefined) {
+    const metaArgs: ts.PropertyAssignment[] = [];
+    if (metadata.selector !== null) {
+      metaArgs.push(property('selector', metadata.selector));
+    }
+    if (metadata.exportAs !== null) {
+      metaArgs.push(property('exportAs', metadata.exportAs));
+    }
+    args.push(reifySourceFile(ts.createObjectLiteral(metaArgs)));
+  }
   return {
     name: 'Directive',
-    identifier: decoratorType,
+    identifier: null,
     import: {name: 'Directive', from: '@angular/core'},
-    node: decoratorNode,
-    args: [selectorArg],
+    node: null,
+    synthesizedFor: clazz.name, args,
   };
 }
 
 /**
- * Ensure that a tree of AST nodes have their parents wired up.
+ * Create an empty `Component` decorator that will be associated with the `clazz`.
  */
-export function setParentPointers(parent: ts.Node, child: ts.Node): void {
-  child.parent = parent;
-  ts.forEachChild(child, grandchild => setParentPointers(child, grandchild));
+export function createComponentDecorator(
+    clazz: ClassDeclaration,
+    metadata: {selector: string | null, exportAs: string[] | null}): Decorator {
+  const metaArgs: ts.PropertyAssignment[] = [
+    property('template', ''),
+  ];
+  if (metadata.selector !== null) {
+    metaArgs.push(property('selector', metadata.selector));
+  }
+  if (metadata.exportAs !== null) {
+    metaArgs.push(property('exportAs', metadata.exportAs));
+  }
+  return {
+    name: 'Component',
+    identifier: null,
+    import: {name: 'Component', from: '@angular/core'},
+    node: null,
+    synthesizedFor: clazz.name,
+    args: [
+      reifySourceFile(ts.createObjectLiteral(metaArgs)),
+    ],
+  };
+}
+
+/**
+ * Create an empty `Injectable` decorator that will be associated with the `clazz`.
+ */
+export function createInjectableDecorator(clazz: ClassDeclaration): Decorator {
+  return {
+    name: 'Injectable',
+    identifier: null,
+    import: {name: 'Injectable', from: '@angular/core'},
+    node: null,
+    synthesizedFor: clazz.name,
+    args: [],
+  };
+}
+
+function property(name: string, value: string | string[]): ts.PropertyAssignment {
+  if (typeof value === 'string') {
+    return ts.createPropertyAssignment(name, ts.createStringLiteral(value));
+  } else {
+    return ts.createPropertyAssignment(
+        name, ts.createArrayLiteral(value.map(v => ts.createStringLiteral(v))));
+  }
+}
+
+const EMPTY_SF = ts.createSourceFile('(empty)', '', ts.ScriptTarget.Latest);
+
+/**
+ * Takes a `ts.Expression` and returns the same `ts.Expression`, but with an associated
+ * `ts.SourceFile`.
+ *
+ * This transformation is necessary to use synthetic `ts.Expression`s with the `PartialEvaluator`,
+ * and many decorator arguments are interpreted in this way.
+ */
+function reifySourceFile(expr: ts.Expression): ts.Expression {
+  const printer = ts.createPrinter();
+  const exprText = printer.printNode(ts.EmitHint.Unspecified, expr, EMPTY_SF);
+  const sf = ts.createSourceFile(
+      '(synthetic)', `const expr = ${exprText};`, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const stmt = sf.statements[0];
+  if (!ts.isVariableStatement(stmt)) {
+    throw new Error(`Expected VariableStatement, got ${ts.SyntaxKind[stmt.kind]}`);
+  }
+  return stmt.declarationList.declarations[0].initializer !;
 }

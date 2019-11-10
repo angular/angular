@@ -19,11 +19,11 @@
     "express": "^4.14.1",
     "rxjs": "file:../../node_modules/rxjs",
     "typescript": "file:../../node_modules/typescript",
-    "zone.js": "file:../../node_modules/zone.js"
+    "zone.js": "file:../../dist/bin/packages/zone.js/npm_package"
   },
   "devDependencies": {
     "@types/jasmine": "2.5.41",
-    "@types/node": "10.11.x",
+    "@types/node": "file:../../node_modules/@types/node",
     "babel-core": "^6.23.1",
     "babel-loader": "^6.4.0",
     "babel-preset-es2015": "^6.22.0",

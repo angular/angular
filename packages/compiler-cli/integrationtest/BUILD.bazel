@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_test")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_test")
 load("//tools:defaults.bzl", "nodejs_binary")
 
 nodejs_binary(
@@ -38,10 +38,17 @@ nodejs_test(
         "@npm//rxjs",
         "@npm//tslib",
         "@npm//jasmine/bin:jasmine",
-        "@npm//zone.js",
         "@npm//xhr2",
         "@npm//@types/node",
         "@npm//@types/jasmine",
+        # we need to reference zone.d.ts typing file from zone.js build target
+        # instead of npm because angular repo will not depends on npm zone.js
+        # any longer.
+        "//packages/zone.js/lib:zone_d_ts",
+        # we need to reference zone.js npm_package build target
+        # instead of npm because angular repo will not depends on npm zone.js
+        # any longer, so we need to build a zone.js npm release first.
+        "//packages/zone.js:npm_package",
         "//packages/animations:npm_package",
         "//packages/common:npm_package",
         "//packages/compiler:npm_package",

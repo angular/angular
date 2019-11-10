@@ -7,9 +7,10 @@
  */
 import {ExternalExpr, ExternalReference} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {AliasGenerator, FileToModuleHost, Reference} from '../../imports';
+import {AliasingHost, FileToModuleAliasingHost, FileToModuleHost, Reference} from '../../imports';
 import {DtsMetadataReader} from '../../metadata';
 import {ClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {makeProgram} from '../../testing';
@@ -42,7 +43,7 @@ export declare type PipeMeta<A, B> = never;
  * destructured to retrieve references to specific declared classes.
  */
 function makeTestEnv(
-    modules: {[module: string]: string}, aliasGenerator: AliasGenerator | null = null): {
+    modules: {[module: string]: string}, aliasGenerator: AliasingHost | null = null): {
   refs: {[name: string]: Reference<ClassDeclaration>},
   resolver: MetadataDtsModuleScopeResolver,
 } {
@@ -85,12 +86,12 @@ runInEachFileSystem(() => {
       const {resolver, refs} = makeTestEnv({
         'test': `
         export declare class Dir {
-          static ngDirectiveDef: DirectiveMeta<Dir, '[dir]', ['exportAs'], {'input': 'input2'},
+          static ɵdir: DirectiveMeta<Dir, '[dir]', ['exportAs'], {'input': 'input2'},
             {'output': 'output2'}, ['query']>;
         }
 
         export declare class Module {
-          static ngModuleDef: ModuleMeta<Module, [typeof Dir], never, [typeof Dir]>;
+          static ɵmod: ModuleMeta<Module, [typeof Dir], never, [typeof Dir]>;
         }
       `
       });
@@ -103,15 +104,15 @@ runInEachFileSystem(() => {
       const {resolver, refs} = makeTestEnv({
         'test': `
         export declare class Dir {
-          static ngDirectiveDef: DirectiveMeta<Dir, '[dir]', never, never, never, never>;
+          static ɵdir: DirectiveMeta<Dir, '[dir]', never, never, never, never>;
         }
 
         export declare class ModuleA {
-          static ngModuleDef: ModuleMeta<ModuleA, [typeof Dir], never, [typeof Dir]>;
+          static ɵmod: ModuleMeta<ModuleA, [typeof Dir], never, [typeof Dir]>;
         }
 
         export declare class ModuleB {
-          static ngModuleDef: ModuleMeta<ModuleB, never, never, [typeof ModuleA]>;
+          static ɵmod: ModuleMeta<ModuleB, never, never, [typeof ModuleA]>;
         }
       `
       });
@@ -124,18 +125,18 @@ runInEachFileSystem(() => {
       const {resolver, refs} = makeTestEnv({
         'declaration': `
           export declare class Dir {
-            static ngDirectiveDef: DirectiveMeta<Dir, '[dir]', never, never, never, never>;
+            static ɵdir: DirectiveMeta<Dir, '[dir]', never, never, never, never>;
           }
 
           export declare class ModuleA {
-            static ngModuleDef: ModuleMeta<ModuleA, [typeof Dir], never, [typeof Dir]>;
+            static ɵmod: ModuleMeta<ModuleA, [typeof Dir], never, [typeof Dir]>;
           }
         `,
         'exported': `
           import * as d from 'declaration';
 
           export declare class ModuleB {
-            static ngModuleDef: ModuleMeta<ModuleB, never, never, [typeof d.ModuleA]>;
+            static ɵmod: ModuleMeta<ModuleB, never, never, [typeof d.ModuleA]>;
           }
         `
       });
@@ -152,37 +153,37 @@ runInEachFileSystem(() => {
           {
             'deep': `
             export declare class DeepDir {
-              static ngDirectiveDef: DirectiveMeta<DeepDir, '[deep]', never, never, never, never>;
+              static ɵdir: DirectiveMeta<DeepDir, '[deep]', never, never, never, never>;
             }
 
             export declare class DeepModule {
-              static ngModuleDef: ModuleMeta<DeepModule, [typeof DeepDir], never, [typeof DeepDir]>;
+              static ɵmod: ModuleMeta<DeepModule, [typeof DeepDir], never, [typeof DeepDir]>;
             }
       `,
             'middle': `
             import * as deep from 'deep';
 
             export declare class MiddleDir {
-              static ngDirectiveDef: DirectiveMeta<MiddleDir, '[middle]', never, never, never, never>;
+              static ɵdir: DirectiveMeta<MiddleDir, '[middle]', never, never, never, never>;
             }
 
             export declare class MiddleModule {
-              static ngModuleDef: ModuleMeta<MiddleModule, [typeof MiddleDir], never, [typeof MiddleDir, typeof deep.DeepModule]>;
+              static ɵmod: ModuleMeta<MiddleModule, [typeof MiddleDir], never, [typeof MiddleDir, typeof deep.DeepModule]>;
             }
       `,
             'shallow': `
             import * as middle from 'middle';
 
             export declare class ShallowDir {
-              static ngDirectiveDef: DirectiveMeta<ShallowDir, '[middle]', never, never, never, never>;
+              static ɵdir: DirectiveMeta<ShallowDir, '[middle]', never, never, never, never>;
             }
 
             export declare class ShallowModule {
-              static ngModuleDef: ModuleMeta<ShallowModule, [typeof ShallowDir], never, [typeof ShallowDir, typeof middle.MiddleModule]>;
+              static ɵmod: ModuleMeta<ShallowModule, [typeof ShallowDir], never, [typeof ShallowDir, typeof middle.MiddleModule]>;
             }
       `,
           },
-          new AliasGenerator(testHost));
+          new FileToModuleAliasingHost(testHost));
       const {ShallowModule} = refs;
       const scope = resolver.resolve(ShallowModule) !;
       const [DeepDir, MiddleDir, ShallowDir] = scopeToRefs(scope);
@@ -202,37 +203,37 @@ runInEachFileSystem(() => {
           {
             'deep': `
             export declare class DeepDir {
-              static ngDirectiveDef: DirectiveMeta<DeepDir, '[deep]', never, never, never, never>;
+              static ɵdir: DirectiveMeta<DeepDir, '[deep]', never, never, never, never>;
             }
 
             export declare class DeepModule {
-              static ngModuleDef: ModuleMeta<DeepModule, [typeof DeepDir], never, [typeof DeepDir]>;
+              static ɵmod: ModuleMeta<DeepModule, [typeof DeepDir], never, [typeof DeepDir]>;
             }
     `,
             'middle': `
             import * as deep from 'deep';
 
             export declare class MiddleDir {
-              static ngDirectiveDef: DirectiveMeta<MiddleDir, '[middle]', never, never, never, never>;
+              static ɵdir: DirectiveMeta<MiddleDir, '[middle]', never, never, never, never>;
             }
 
             export declare class MiddleModule {
-              static ngModuleDef: ModuleMeta<MiddleModule, [typeof MiddleDir], [typeof deep.DeepModule], [typeof MiddleDir, typeof deep.DeepDir]>;
+              static ɵmod: ModuleMeta<MiddleModule, [typeof MiddleDir], [typeof deep.DeepModule], [typeof MiddleDir, typeof deep.DeepDir]>;
             }
     `,
             'shallow': `
             import * as middle from 'middle';
 
             export declare class ShallowDir {
-              static ngDirectiveDef: DirectiveMeta<ShallowDir, '[middle]', never, never, never, never>;
+              static ɵdir: DirectiveMeta<ShallowDir, '[middle]', never, never, never, never>;
             }
 
             export declare class ShallowModule {
-              static ngModuleDef: ModuleMeta<ShallowModule, [typeof ShallowDir], never, [typeof ShallowDir, typeof middle.MiddleModule]>;
+              static ɵmod: ModuleMeta<ShallowModule, [typeof ShallowDir], never, [typeof ShallowDir, typeof middle.MiddleModule]>;
             }
     `,
           },
-          new AliasGenerator(testHost));
+          new FileToModuleAliasingHost(testHost));
       const {ShallowModule} = refs;
       const scope = resolver.resolve(ShallowModule) !;
       const [DeepDir, MiddleDir, ShallowDir] = scopeToRefs(scope);
@@ -253,19 +254,19 @@ runInEachFileSystem(() => {
              {
                'module': `
                 export declare class DeepDir {
-                  static ngDirectiveDef: DirectiveMeta<DeepDir, '[deep]', never, never, never, never>;
+                  static ɵdir: DirectiveMeta<DeepDir, '[deep]', never, never, never, never>;
                 }
 
                 export declare class DeepModule {
-                  static ngModuleDef: ModuleMeta<DeepModule, [typeof DeepDir], never, [typeof DeepDir]>;
+                  static ɵmod: ModuleMeta<DeepModule, [typeof DeepDir], never, [typeof DeepDir]>;
                 }
 
                 export declare class DeepExportModule {
-                  static ngModuleDef: ModuleMeta<DeepExportModule, never, never, [typeof DeepModule]>;
+                  static ɵmod: ModuleMeta<DeepExportModule, never, never, [typeof DeepModule]>;
                 }
               `,
              },
-             new AliasGenerator(testHost));
+             new FileToModuleAliasingHost(testHost));
          const {DeepExportModule} = refs;
          const scope = resolver.resolve(DeepExportModule) !;
          const [DeepDir] = scopeToRefs(scope);

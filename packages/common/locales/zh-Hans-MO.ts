@@ -45,7 +45,8 @@ export default [
     'KRW': ['￦', '₩'],
     'MOP': ['MOP$'],
     'TWD': ['NT$'],
-    'USD': ['US$', '$']
+    'USD': ['US$', '$'],
+    'XXX': []
   },
   plural
 ];

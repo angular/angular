@@ -69,8 +69,10 @@ Let's animate a simple transition that changes a single HTML element from one st
 
 In HTML, these attributes are set using ordinary CSS styles such as color and opacity. In Angular, use the `style()` function to specify a set of CSS styles for use with animations. You can collect a set of styles in an animation state, and give the state a name, such as `open` or `closed`.
 
-<figure>
-<img src="generated/images/guide/animations/open-closed.png" alt="open and closed states">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/animations/open-closed.png" alt="open and closed states">
+  </div>
 </figure>
 
 ### Animation state and styles
@@ -93,7 +95,7 @@ In the `closed` state, shown below, the button has a height of 100 pixels, an op
 
 In Angular, you can set multiple styles without any animation. However, without further refinement, the button instantly transforms with no fade, no shrinkage, or other visible indicator that a change is occurring.
 
-To make the change less abrupt, we need to define an animation *transition* to specify the changes that occur between one state and another over a period of time. The `transition()` function accepts two arguments: the first argument accepts an expression that defines the direction between two transition states, and the second argument accepts an `animate()` function.
+To make the change less abrupt, we need to define an animation *transition* to specify the changes that occur between one state and another over a period of time. The `transition()` function accepts two arguments: the first argument accepts an expression that defines the direction between two transition states, and the second argument accepts one or a series of `animate()` steps.
 
 
 Use the `animate()` function to define the length, delay, and easing of a transition, and to designate the style function for defining styles while transitions are taking place. You can also use the `animate()` function to define the `keyframes()` function for multi-step animations. These definitions are placed in the second argument of the `animate()` function.
@@ -166,8 +168,10 @@ The `trigger()` function describes the property name to watch for changes. When 
 
 In this example, we'll name the trigger `openClose`, and attach it to the `button` element. The trigger describes the open and closed states, and the timings for the two transitions.
 
-<figure>
-<img src="generated/images/guide/animations/triggering-the-animation.png" alt="triggering the animation">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/animations/triggering-the-animation.png" alt="triggering the animation">
+  </div>
 </figure>
 
 <div class="alert is-helpful">

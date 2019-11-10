@@ -12,8 +12,8 @@ import {assertDefined, assertNotEqual} from '../util/assert';
 
 import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
-import {getInitialStylingValue} from './styling_next/util';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
+import {getInitialStylingValue} from './util/styling_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2;
 
@@ -81,7 +81,7 @@ export function isNodeMatchingSelector(
     const current = selector[i];
     if (typeof current === 'number') {
       // If we finish processing a :not selector and it hasn't failed, return false
-      if (!skipToNextSelector && !isPositive(mode) && !isPositive(current as number)) {
+      if (!skipToNextSelector && !isPositive(mode) && !isPositive(current)) {
         return false;
       }
       // If we are skipping to the next :not() and this mode flag is positive,

@@ -41,8 +41,10 @@ It shows that Karma ran three tests that all passed.
 
 A chrome browser also opens and displays the test output in the "Jasmine HTML Reporter" like this.
 
-<figure>
-  <img src='generated/images/guide/testing/initial-jasmine-html-reporter.png' alt="Jasmine HTML Reporter in the browser">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/testing/initial-jasmine-html-reporter.png' alt="Jasmine HTML Reporter in the browser">
+  </div>
 </figure>
 
 Most people find this browser output easier to read than the console log.
@@ -186,7 +188,7 @@ When the CLI commands `ng test` and `ng e2e` are generally running the CI tests 
 
 There are configuration files for both the [Karma JavaScript test runner](https://karma-runner.github.io/latest/config/configuration-file.html)
 and [Protractor](https://www.protractortest.org/#/api-overview) end-to-end testing tool,
-which  you must adjust to start Chrome without sandboxing.
+which you must adjust to start Chrome without sandboxing.
 
 We'll be using [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome#cli) in these examples.
 
@@ -233,7 +235,7 @@ Now you can run the following commands to use the `--no-sandbox` flag:
 ## Enable code coverage reports
 
 The CLI can run unit tests and create code coverage reports.
-Code coverage reports show you  any parts of our code base that may not be properly tested by your unit tests.
+Code coverage reports show you any parts of our code base that may not be properly tested by your unit tests.
 
 To generate a coverage report run the following command in the root of your project.
 
@@ -241,7 +243,7 @@ To generate a coverage report run the following command in the root of your proj
   ng test --no-watch --code-coverage
 </code-example>
 
-When  the tests are complete, the command creates a new `/coverage` folder in the project. Open the `index.html` file to see a report with your source code and code coverage values.
+When the tests are complete, the command creates a new `/coverage` folder in the project. Open the `index.html` file to see a report with your source code and code coverage values.
 
 If you want to create code-coverage reports every time you test, you can set the following option in the CLI configuration file, `angular.json`:
 
@@ -352,15 +354,19 @@ array of the services that you'll test or mock.
 <code-example
   path="testing/src/app/demo/demo.testbed.spec.ts"
   region="value-service-before-each"
-  header="app/demo/demo.testbed.spec.ts (provide ValueService in beforeEach">
+  header="app/demo/demo.testbed.spec.ts (provide ValueService in beforeEach)">
 </code-example>
 
 Then inject it inside a test by calling `TestBed.inject()` with the service class as the argument.
+
+<div class="alert is-helpful">
 
 **Note:** We used to have `TestBed.get()` instead of `TestBed.inject()`.
 The `get` method wasn't type safe, it always returned `any`, and this is error prone.
 We decided to migrate to a new function instead of updating the existing one given
 the large scale use that would have an immense amount of breaking changes.
+
+</div>
 
 <code-example
   path="testing/src/app/demo/demo.testbed.spec.ts"
@@ -1065,7 +1071,7 @@ The component injector is a property of the fixture's `DebugElement`.
   header="WelcomeComponent's injector">
 </code-example>
 
-{@a testbed-get}
+{@a testbed-inject}
 
 #### _TestBed.inject()_
 
@@ -2256,8 +2262,10 @@ tests with the `RouterTestingModule`.
 
 The `HeroDetailComponent` is a simple view with a title, two hero fields, and two buttons.
 
-<figure>
-  <img src='generated/images/guide/testing/hero-detail.component.png' alt="HeroDetailComponent in action">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/testing/hero-detail.component.png' alt="HeroDetailComponent in action">
+  </div>
 </figure>
 
 But there's plenty of template complexity even in this simple form.
@@ -2685,8 +2693,10 @@ A better solution is to create an artificial test component that demonstrates al
 
 <code-example path="testing/src/app/shared/highlight.directive.spec.ts" region="test-component" header="app/shared/highlight.directive.spec.ts (TestComponent)"></code-example>
 
-<figure>
-  <img src='generated/images/guide/testing/highlight-directive-spec.png' alt="HighlightDirective spec in action">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/testing/highlight-directive-spec.png' alt="HighlightDirective spec in action">
+  </div>
 </figure>
 
 <div class="alert is-helpful">
@@ -2766,8 +2776,10 @@ Debug specs in the browser in the same way that you debug an application.
 1. Set a breakpoint in the test.
 1. Refresh the browser, and it stops at the breakpoint.
 
-<figure>
-  <img src='generated/images/guide/testing/karma-1st-spec-debug.png' alt="Karma debugging">
+<figure class="lightbox">
+  <div class="card">
+    <img src='generated/images/guide/testing/karma-1st-spec-debug.png' alt="Karma debugging">
+  </div>
 </figure>
 
 <hr>
@@ -2960,7 +2972,7 @@ appropriate to the method, that is, the parameter of an `@NgModule`,
 {@a testbed-methods}
 {@a testbed-api-summary}
 
-The `TestBed` API consists of static class methods that either update or reference a _global_ instance of the`TestBed`.
+The `TestBed` API consists of static class methods that either update or reference a _global_ instance of the `TestBed`.
 
 Internally, all static methods cover methods of the current runtime `TestBed` instance,
 which is also returned by the `getTestBed()` function.
@@ -3079,8 +3091,8 @@ Here are the most important static methods, in order of likely utility.
 
   <tr>
     <td style="vertical-align: top">
-      {@a testbed-get}
-      <code>get</code>
+      {@a testbed-inject}
+      <code>inject</code>
     </td>
 
     <td>

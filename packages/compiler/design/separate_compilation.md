@@ -39,8 +39,8 @@ The mental model of Ivy is that the decorator is the compiler. That is
 the decorator can be thought of as parameters to a class transformer that
 transforms the class by generating definitions based on the decorator
 parameters. An `@Component` decorator transforms the class by adding
-an `ngComponentDef` static property, `@Directive` adds `ngDirectiveDef`,
-`@Pipe` adds `ngPipeDef`, etc. In most cases values supplied to the
+a `ɵcmp` static property, `@Directive` adds `ɵdir`,
+`@Pipe` adds `ɵpipe`, etc. In most cases values supplied to the
 decorator is sufficient to generate the definition. However, in the case of
 interpreting the template, the compiler needs to know the selector defined for
 each component, directive and pipe that are in scope of the template. The
@@ -65,29 +65,29 @@ class:
 | field               | destination           |
 |---------------------|-----------------------|
 | `type`              | implicit              |
-| `isComponent`       | `ngComponentDef`      |
+| `isComponent`       | `ɵcmp`                |
 | `selector`          | `ngModuleScope`       |
-| `exportAs`          | `ngDirectiveDef`      |
-| `inputs`            | `ngDirectiveDef`      |
-| `outputs`           | `ngDirectiveDef`      |
-| `hostListeners`     | `ngDirectiveDef`      |
-| `hostProperties`    | `ngDirectiveDef`      |
-| `hostAttributes`    | `ngDirectiveDef`      |
-| `providers`         | `ngInjectorDef`       |
-| `viewProviders`     | `ngComponentDef`      |
-| `queries`           | `ngDirectiveDef`      |
+| `exportAs`          | `ɵdir`                |
+| `inputs`            | `ɵdir`                |
+| `outputs`           | `ɵdir`                |
+| `hostListeners`     | `ɵdir`                |
+| `hostProperties`    | `ɵdir`                |
+| `hostAttributes`    | `ɵdir`                |
+| `providers`         | `ɵinj`                |
+| `viewProviders`     | `ɵcmp`                |
+| `queries`           | `ɵdir`                |
 | `guards`            | not used              |
-| `viewQueries`       | `ngComponentDef`      |
+| `viewQueries`       | `ɵcmp`                |
 | `entryComponents`   | not used              |
-| `changeDetection`   | `ngComponentDef`      |
-| `template`          | `ngComponentDef`      |
+| `changeDetection`   | `ɵcmp`                |
+| `template`          | `ɵcmp`                |
 | `componentViewType` | not used              |
 | `renderType`        | not used              |
 | `componentFactory`  | not used              |
 
 Only one definition is generated per class. All components are directives so a
-`ngComponentDef` contains all the `ngDirectiveDef` information. All directives
-are injectable so `ngComponentDef` and `ngDirectiveDef` contain `ngInjectableDef`
+`ɵcmp` contains all the `ɵdir` information. All directives
+are injectable so `ɵcmp` and `ɵdir` contain `ɵprov`
 information.
 
 For `CompilePipeSummary` the table looks like:
@@ -98,7 +98,7 @@ For `CompilePipeSummary` the table looks like:
 |---------------------|-----------------------|
 | `type`              | implicit              |
 | `name`              | `ngModuleScope`       |
-| `pure`              | `ngPipeDef`           |
+| `pure`              | `ɵpipe`               |
 
 The only pieces of information that are not generated into the definition are
 the directive selector and the pipe name as they go into the module scope.
@@ -126,9 +126,9 @@ reexported from the index.
 
 The metadata for a class in ivy is transformed to be what the metadata of the
 transformed .js file produced by the ivy compiler would be. For example, a
-component's `@Component` is removed by the compiler and replaced by a `ngComponentDef`.
+component's `@Component` is removed by the compiler and replaced by a `ɵcmp`.
 The `.metadata.json` file is similarly transformed but the content of the
-value assigned is elided (e.g. `"ngComponentDef": {}`). The compiler doesn't
+value assigned is elided (e.g. `"ɵcmp": {}`). The compiler doesn't
 record the selector declared for a component but it is needed to produce the
 `ngModuleScope` so the information is recorded as if a static field
 `ngSelector` was declared on class with the value of the `selector` field
@@ -141,7 +141,7 @@ The following transformations are performed:
 The metadata for a component is transformed by:
 
 1. Removing the `@Component` directive.
-2. Add  `"ngComponentDef": {}` static field.
+2. Add  `"ɵcmp": {}` static field.
 3. Add `"ngSelector": <selector-value>` static field.
 
 ##### Example
@@ -161,7 +161,7 @@ export class MyComponent {
 ```js
 export class MyComponent {
   name: string;
-  static ngComponentDef = ɵɵdefineComponent({...});
+  static ɵcmp = ɵɵdefineComponent({...});
 }
 ```
 
@@ -174,7 +174,7 @@ export class MyComponent {
     "MyComponent": {
       "__symbolic": "class",
       "statics": {
-        "ngComponentDef": {},
+        "ɵcmp": {},
         "ngSelector": "my-comp"
       }
     }
@@ -193,7 +193,7 @@ manually.
 The metadata for a directive is transformed by:
 
 1. Removing the `@Directive` directive.
-2. Add  `"ngDirectiveDef": {}` static field.
+2. Add  `"ɵdir": {}` static field.
 3. Add `"ngSelector": <selector-value>` static field.
 
 ##### example
@@ -213,7 +213,7 @@ export class MyDirective {
   constructor() {
     this.dirId = 'some id';
   }
-  static ngDirectiveDef = ɵɵdefineDirective({...});
+  static ɵdir = ɵɵdefineDirective({...});
 }
 ```
 
@@ -226,7 +226,7 @@ export class MyDirective {
     "MyDirective": {
       "__symbolic": "class",
       "statics": {
-        "ngDirectiveDef": {},
+        "ɵdir": {},
         "ngSelector": "[my-dir]"
       }
     }
@@ -239,7 +239,7 @@ export class MyDirective {
 The metadata for a pipe is transformed by:
 
 1. Removing the `@Pipe` directive.
-2. Add  `"ngPipeDef": {}` static field.
+2. Add  `"ɵpipe": {}` static field.
 3. Add `"ngSelector": <name-value>` static field.
 
 ##### example
@@ -256,7 +256,7 @@ export class MyPipe implements PipeTransform {
 ```js
 export class MyPipe {
   transform(...) ...
-  static ngPipeDef = ɵɵdefinePipe({...});
+  static ɵpipe = ɵɵdefinePipe({...});
 }
 ```
 
@@ -269,7 +269,7 @@ export class MyPipe {
     "MyPipe": {
       "__symbolic": "class",
       "statics": {
-        "ngPipeDef": {},
+        "ɵpipe": {},
         "ngSelector": "myPipe"
       }
     }
@@ -282,7 +282,7 @@ export class MyPipe {
 The metadata for a module is transformed by:
 
 1. Remove the `@NgModule` directive.
-2. Add  `"ngInjectorDef": {}` static field.
+2. Add  `"ɵinj": {}` static field.
 3. Add `"ngModuleScope": <module-scope>` static field.
 
 The scope value is an array the following type:
@@ -329,7 +329,7 @@ export class MyModule {}
 *my.module.js*
 ```js
 export class MyModule {
-  static ngInjectorDef = ɵɵdefineInjector(...);
+  static ɵinj = ɵɵdefineInjector(...);
 }
 ```
 
@@ -342,7 +342,7 @@ export class MyModule {
     "MyModule": {
       "__symbolic": "class",
       "statics": {
-        "ngInjectorDef": {},
+        "ɵinj": {},
         "ngModuleScope": [
           {
             "type": {
@@ -389,7 +389,7 @@ manually written as:
 
 ```ts
 export class MyModule {
-  static ngInjectorDef = ɵɵdefineInjector({
+  static ɵinj = ɵɵdefineInjector({
     providers: [{
       provide: Service, useClass: ServiceImpl
     }],
@@ -440,7 +440,7 @@ properties by including a `// @__BUILD_OPTIMIZER_REMOVE_` comment:
 
 ```ts
 export class MyModule {
-  static ngInjectorDef = ɵɵdefineInjector({
+  static ɵinj = ɵɵdefineInjector({
     providers: [{
       provide: Service, useClass: ServiceImpl
     }],
@@ -758,10 +758,10 @@ rule and the `ts_dev_server` sources move to `ng_experimental_iv_srcs`.
 #### `ng_module` ivy output
 
 The `ng_module` is able to provide the ivy version of the `.js` files which
-will be generated with as `.ivy.js` for the development sources and `.ivy.closure.js`
+will be generated with as `.ivy.js` for the development sources and `.ivy.mjs`
 for the production sources.
 
-The `ng_module` rule will also generate a `angular.back_patch.js` and `.closure.js`
+The `ng_module` rule will also generate a `angular.back_patch.js` and `.mjs`
 files and a `module_scope.json` file. The type of the `module_scope.json` file will
 be:
 

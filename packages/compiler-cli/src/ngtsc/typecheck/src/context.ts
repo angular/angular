@@ -19,6 +19,7 @@ import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {TypeCheckProgramHost} from './host';
+import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
 import {TcbSourceManager} from './source';
 import {generateTypeCheckBlock, requiresInlineTypeCheckBlock} from './type_check_block';
 import {TypeCheckFile} from './type_check_file';
@@ -58,6 +59,8 @@ export class TypeCheckContext {
 
   private domSchemaChecker = new RegistryDomSchemaChecker(this.sourceManager);
 
+  private oobRecorder = new OutOfBandDiagnosticRecorderImpl(this.sourceManager);
+
   /**
    * Record a template for the given component `node`, with a `SelectorMatcher` for directive
    * matching.
@@ -90,6 +93,7 @@ export class TypeCheckContext {
             // TODO(alxhub): support queries
             queries: dir.queries,
           },
+          coercedInputFields: dir.coercedInputFields,
         });
       }
     }
@@ -101,7 +105,8 @@ export class TypeCheckContext {
       this.addInlineTypeCheckBlock(ref, tcbMetadata);
     } else {
       // The class can be type-checked externally as normal.
-      this.typeCheckFile.addTypeCheckBlock(ref, tcbMetadata, this.domSchemaChecker);
+      this.typeCheckFile.addTypeCheckBlock(
+          ref, tcbMetadata, this.domSchemaChecker, this.oobRecorder);
     }
   }
 
@@ -123,7 +128,7 @@ export class TypeCheckContext {
     const ops = this.opMap.get(sf) !;
 
     // Push a `TypeCtorOp` into the operation queue for the source file.
-    ops.push(new TypeCtorOp(ref, ctorMeta, this.config));
+    ops.push(new TypeCtorOp(ref, ctorMeta));
   }
 
   /**
@@ -218,6 +223,7 @@ export class TypeCheckContext {
     }
 
     diagnostics.push(...this.domSchemaChecker.diagnostics);
+    diagnostics.push(...this.oobRecorder.diagnostics);
 
     return {
       diagnostics,
@@ -233,7 +239,7 @@ export class TypeCheckContext {
       this.opMap.set(sf, []);
     }
     const ops = this.opMap.get(sf) !;
-    ops.push(new TcbOp(ref, tcbMeta, this.config, this.domSchemaChecker));
+    ops.push(new TcbOp(ref, tcbMeta, this.config, this.domSchemaChecker, this.oobRecorder));
   }
 }
 
@@ -265,7 +271,8 @@ class TcbOp implements Op {
   constructor(
       readonly ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       readonly meta: TypeCheckBlockMetadata, readonly config: TypeCheckingConfig,
-      readonly domSchemaChecker: DomSchemaChecker) {}
+      readonly domSchemaChecker: DomSchemaChecker,
+      readonly oobRecorder: OutOfBandDiagnosticRecorder) {}
 
   /**
    * Type check blocks are inserted immediately after the end of the component class.
@@ -276,7 +283,8 @@ class TcbOp implements Op {
       string {
     const env = new Environment(this.config, im, refEmitter, sf);
     const fnName = ts.createIdentifier(`_tcb_${this.ref.node.pos}`);
-    const fn = generateTypeCheckBlock(env, this.ref, fnName, this.meta, this.domSchemaChecker);
+    const fn = generateTypeCheckBlock(
+        env, this.ref, fnName, this.meta, this.domSchemaChecker, this.oobRecorder);
     return printer.printNode(ts.EmitHint.Unspecified, fn, sf);
   }
 }
@@ -287,7 +295,7 @@ class TcbOp implements Op {
 class TypeCtorOp implements Op {
   constructor(
       readonly ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      readonly meta: TypeCtorMetadata, private config: TypeCheckingConfig) {}
+      readonly meta: TypeCtorMetadata) {}
 
   /**
    * Type constructor operations are inserted immediately before the end of the directive class.
@@ -296,7 +304,7 @@ class TypeCtorOp implements Op {
 
   execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
       string {
-    const tcb = generateInlineTypeCtor(this.ref.node, this.meta, this.config);
+    const tcb = generateInlineTypeCtor(this.ref.node, this.meta);
     return printer.printNode(ts.EmitHint.Unspecified, tcb, sf);
   }
 }

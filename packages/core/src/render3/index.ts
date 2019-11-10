@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {LifecycleHooksFeature, renderComponent, whenRendered} from './component';
-import {ɵɵdefineBase, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefineNgModule, ɵɵdefinePipe, ɵɵsetComponentScope, ɵɵsetNgModuleScope} from './definition';
+import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefineNgModule, ɵɵdefinePipe, ɵɵsetComponentScope, ɵɵsetNgModuleScope} from './definition';
+import {ɵɵCopyDefinitionFeature} from './features/copy_definition_feature';
 import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_feature';
 import {ɵɵNgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ɵɵProvidersFeature} from './features/providers_feature';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveType, PipeDef, ɵɵBaseDef, ɵɵComponentDefWithMeta, ɵɵDirectiveDefWithMeta, ɵɵFactoryDef, ɵɵPipeDefWithMeta} from './interfaces/definition';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PipeDef, ɵɵComponentDefWithMeta, ɵɵDirectiveDefWithMeta, ɵɵFactoryDef, ɵɵPipeDefWithMeta} from './interfaces/definition';
 import {getComponent, getDirectives, getHostElement, getRenderedText} from './util/discovery_utils';
 
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref';
@@ -55,6 +56,7 @@ export {
   ɵɵcontainerRefreshStart,
 
   ɵɵdirectiveInject,
+  ɵɵinvalidFactory,
 
   ɵɵelement,
   ɵɵelementContainer,
@@ -97,7 +99,7 @@ export {
 
   ɵɵreference,
 
-  // TODO: remove `select` once we're refactored all of the tests not to use it.
+  // TODO: remove `select` once we've refactored all of the tests not to use it.
   ɵɵselect,
   ɵɵadvance,
   ɵɵstyleMap,
@@ -114,8 +116,6 @@ export {
   ɵɵstylePropInterpolateV,
 
   ɵɵstyleSanitizer,
-  ɵɵstyling,
-  ɵɵstylingApply,
   ɵɵtemplate,
 
   ɵɵtext,
@@ -202,17 +202,16 @@ export {ɵɵresolveWindow, ɵɵresolveDocument, ɵɵresolveBody} from './util/mi
 // clang-format on
 
 export {
-  ɵɵBaseDef,
   ComponentDef,
   ɵɵComponentDefWithMeta,
   ɵɵFactoryDef,
   ComponentTemplate,
   ComponentType,
   DirectiveDef,
-  DirectiveDefFlags,
   ɵɵDirectiveDefWithMeta,
   DirectiveType,
   ɵɵNgOnChangesFeature,
+  ɵɵCopyDefinitionFeature,
   ɵɵInheritDefinitionFeature,
   ɵɵProvidersFeature,
   PipeDef,
@@ -221,7 +220,6 @@ export {
   ɵɵdefineComponent,
   ɵɵdefineDirective,
   ɵɵdefineNgModule,
-  ɵɵdefineBase,
   ɵɵdefinePipe,
   getHostElement,
   getComponent,

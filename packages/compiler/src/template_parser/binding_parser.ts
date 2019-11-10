@@ -118,7 +118,7 @@ export class BindingParser {
       tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteOffset: number,
       targetMatchableAttrs: string[][], targetProps: ParsedProperty[],
       targetVars: ParsedVariable[]) {
-    const bindings = this._parseTemplateBindings(tplKey, tplValue, sourceSpan);
+    const bindings = this._parseTemplateBindings(tplKey, tplValue, sourceSpan, absoluteOffset);
 
     for (let i = 0; i < bindings.length; i++) {
       const binding = bindings[i];
@@ -137,13 +137,14 @@ export class BindingParser {
     }
   }
 
-  private _parseTemplateBindings(tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan):
-      TemplateBinding[] {
+  private _parseTemplateBindings(
+      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan,
+      absoluteOffset: number): TemplateBinding[] {
     const sourceInfo = sourceSpan.start.toString();
 
     try {
-      const bindingsResult = this._exprParser.parseTemplateBindings(
-          tplKey, tplValue, sourceInfo, sourceSpan.start.offset);
+      const bindingsResult =
+          this._exprParser.parseTemplateBindings(tplKey, tplValue, sourceInfo, absoluteOffset);
       this._reportExpressionParserErrors(bindingsResult.errors, sourceSpan);
       bindingsResult.templateBindings.forEach((binding) => {
         if (binding.expression) {
@@ -277,7 +278,7 @@ export class BindingParser {
     // Check for special cases (prefix style, attr, class)
     if (parts.length > 1) {
       if (parts[0] == ATTRIBUTE_PREFIX) {
-        boundPropertyName = parts[1];
+        boundPropertyName = parts.slice(1).join(PROPERTY_PARTS_SEPARATOR);
         if (!skipValidation) {
           this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, true);
         }

@@ -30,7 +30,7 @@ This object contains a Boolean `success` field and an optional `error` field tha
 
 Angular provides some builders that are used by the CLI for commands such as `ng build`, `ng test`, and `ng lint`.
 Default target configurations for these and other built-in CLI builders can be found (and customized) in the "architect" section of the [workspace configuration file](guide/workspace-config), `angular.json`.
-You can also extend and customize Angular by creating your own builders, which you can run  using the [`ng run` CLI command](cli/run).
+You can also extend and customize Angular by creating your own builders, which you can run using the [`ng run` CLI command](cli/run).
 
 ### Builder project structure
 
@@ -59,8 +59,7 @@ npm install @example/my-builder
 As an example, let’s create a builder that executes a shell command.
 To create a builder, use the `createBuilder()` CLI Builder function, and return a `BuilderOutput` object.
 
-```
-
+<code-example language="typescript" header="/command/index.ts">
 import { BuilderOutput, createBuilder } from '@angular-devkit/architect';
 
 export default createBuilder(_commandBuilder);
@@ -72,13 +71,13 @@ function _commandBuilder(
   ...
 }
 
-```
+</code-example>
 
 Now let’s add some logic to it.
 The following code retrieves the command and arguments from the user options, spawns the new process, and waits for the process to finish.
 If the process is successful (returns a code of 0), it resolves the return value.
 
-```
+<code-example language="typescript" header="/command/index.ts">
 import { BuilderOutput, createBuilder } from '@angular-devkit/architect';
 import * as childProcess from 'child_process';
 
@@ -95,7 +94,8 @@ function _commandBuilder(
     });
   });
 }
-```
+
+</code-example>
 
 ### Handling output
 
@@ -105,7 +105,7 @@ This also allows the builder itself to be executed in a separate process, even i
 
 We can retrieve a Logger instance from the context.
 
-```
+<code-example language="typescript" header="/command/index.ts">
 import { BuilderOutput, createBuilder, BuilderContext } from '@angular-devkit/architect';
 import * as childProcess from 'child_process';
 
@@ -130,7 +130,7 @@ function _commandBuilder(
   });
 }
 
-```
+</code-example>
 
 ### Progress and status reporting
 
@@ -144,10 +144,10 @@ You can see an [example](https://github.com/angular/angular-cli/blob/ba21c855c0c
 
 In our example, the shell command either finishes or is still executing, so there’s no need for a progress report, but we can report status so that a parent builder that called our builder would know what’s going on.
 Use the `BuilderContext.reportStatus()` method to generate a status string of any length.
-(Note that there’s no guarantee that a long string will be shown entirely; it could be cut to fit the  UI that displays it.)
+(Note that there’s no guarantee that a long string will be shown entirely; it could be cut to fit the UI that displays it.)
 Pass an empty string to remove the status.
 
-```
+<code-example language="typescript" header="/command/index.ts">
 import { BuilderOutput, createBuilder, BuilderContext } from '@angular-devkit/architect';
 import * as childProcess from 'child_process';
 
@@ -174,7 +174,8 @@ function _commandBuilder(
     });
   });
 }
-```
+
+</code-example>
 
 ## Builder input
 
@@ -191,8 +192,7 @@ For our example builder, we expect the `options` value to be a `JsonObject` with
 
 We can provide the following schema for type validation of these values.
 
-<code-example language="json">
-
+<code-example language="json" header="command/schema.json">
 {
   "$schema": "http://json-schema.org/schema",
   "type": "object",
@@ -222,7 +222,7 @@ To link our builder implementation with its schema and name, we need to create a
 
 Create a file named `builders.json` file that looks like this.
 
-<code-example language="json">
+<code-example language="json" header="builders.json">
 
 {
   "builders": {
@@ -238,7 +238,7 @@ Create a file named `builders.json` file that looks like this.
 
 In the `package.json` file, add a `builders` key that tells the Architect tool where to find our builder definition file.
 
-<code-example language="json">
+<code-example language="json" header="package.json">
 
 {
   "name": "@example/command-runner",
@@ -253,11 +253,11 @@ In the `package.json` file, add a `builders` key that tells the Architect tool w
 </code-example>
 
 The official name of our builder is now ` @example/command-runner:command`.
-The first part  of this is the package name (resolved using node resolution), and the second part is the builder name (resolved using the `builders.json` file).
+The first part of this is the package name (resolved using node resolution), and the second part is the builder name (resolved using the `builders.json` file).
 
 Using one of our `options` is very straightforward, we did this in the previous section when we accessed `options.command`.
 
-<code-example language="typescript">
+<code-example language="typescript" header="/command/index.ts">
     context.reportStatus(`Executing "${options.command}"...`);
     const child = childProcess.spawn(options.command, options.args, { stdio: 'pipe' });
 
@@ -267,14 +267,14 @@ Using one of our `options` is very straightforward, we did this in the previous 
 
 A builder must have a defined target that associates it with a specific input configuration and [project](guide/glossary#project).
 
-Targets are defined in the `angular.json` [workspace configuration file](guide/workspace-config).
+Targets are defined in the `angular.json` [CLI configuration file](guide/workspace-config).
 A target specifies the builder to use, its default options configuration, and named alternative configurations.
 The Architect tool uses the target definition to resolve input options for a given run.
 
 The  `angular.json` file has a section for each project, and the "architect" section of each project configures targets for builders used by CLI commands such as 'build', 'test', and 'lint'.
-By default, for example, the `build` command runs the builder  `@angular-devkit/build-angular:browser` to perform the build task, and passes in default option values as specified for the `build` target in `angular.json`.
+By default, for example, the `build` command runs the builder  `@angular-devkit/build-angular:browser` to perform the build task, and passes in default option values as specified for the `build` target in   `angular.json`.
 
-<code-example language="json">
+<code-example language="json" header="angular.json">
 {
   "myApp": {
     ...
@@ -311,7 +311,7 @@ You might also add more alternative configurations to the `build` target, to def
 
 #### Target strings
 
-The  generic `ng run` CLI command takes as its first argument a target string of the form *project:target[:configuration]*.
+The generic `ng run` CLI command takes as its first argument a target string of the form *project:target[:configuration]*.
 
 * *project*: The name of the Angular CLI project that the target is associated with.
 
@@ -361,7 +361,7 @@ npm install @example/command-runner
 
 If we create a new project with `ng new builder-test`, the generated `angular.json` file looks something like this, with only default builder configurations.
 
-<code-example language="json">
+<code-example language="json" header="angular.json">
 
 {
   // ...
@@ -413,7 +413,7 @@ We need to update the `angular.json` file to add a target for this builder to th
 
 * The configurations key is optional, we'll leave it out for now.
 
-<code-example language="json">
+<code-example language="json" header="angular.json">
 
 {
   "projects": {
@@ -493,7 +493,7 @@ Use integration testing for your builder, so that you can use the Architect sche
 Here’s an example of a test that runs the command builder.
 The test uses the builder to run the `ls` command, then validates that it ran successfully and listed the proper files.
 
-<code-example language="typescript">
+<code-example language="typescript" header="command/index_spec.ts">
 
 import { Architect } from '@angular-devkit/architect';
 import { TestingArchitectHost } from '@angular-devkit/architect/testing';

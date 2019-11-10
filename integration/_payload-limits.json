@@ -2,36 +2,56 @@
   "cli-hello-world": {
     "master": {
       "uncompressed": {
-        "runtime": 1497,
-        "main": 157021,
-        "polyfills": 45399
+        "runtime-es2015": 1485,
+        "main-es2015": 143181,
+        "polyfills-es2015": 36808
       }
     }
   },
   "cli-hello-world-ivy-minimal": {
     "master": {
       "uncompressed": {
-        "runtime": 1440,
-        "main": 13264,
-        "polyfills": 45340
+        "runtime-es2015": 1485,
+        "main-es2015": 15040,
+        "polyfills-es2015": 36808
       }
     }
   },
   "cli-hello-world-ivy-compat": {
     "master": {
       "uncompressed": {
-        "runtime": 1440,
-        "main": 123904,
-        "polyfills": 45340
+        "runtime-es2015": 1485,
+        "main-es2015": 149315,
+        "polyfills-es2015": 36808
       }
     }
   },
   "cli-hello-world-ivy-i18n": {
     "master": {
       "uncompressed": {
-        "runtime": 1440,
-        "main": 141209,
-        "polyfills": 45949
+        "runtime-es2015": 1485,
+        "main-es2015": 138032,
+        "polyfills-es2015": 37494
+      }
+    }
+  },
+  "cli-hello-world-lazy": {
+    "master": {
+      "uncompressed": {
+        "runtime-es2015": 2289,
+        "main-es2015": 268404,
+        "polyfills-es2015": 36808,
+        "5-es2015": 751
+      }
+    }
+  },
+  "cli-hello-world-lazy-rollup": {
+    "master": {
+      "uncompressed": {
+        "runtime-es2015": 2289,
+        "main-es2015": 227998,
+        "polyfills-es2015": 36808,
+        "5-es2015": 779
       }
     }
   },

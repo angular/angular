@@ -64,8 +64,10 @@ The form control assigned to `name` is displayed when the component is added to 
 
 <code-example path="reactive-forms/src/app/app.component.1.html" region="app-name-editor" header="src/app/app.component.html (name editor)"></code-example>
 
-<figure>
-  <img src="generated/images/guide/reactive-forms/name-editor-1.png" alt="Name Editor">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/reactive-forms/name-editor-1.png" alt="Name Editor">
+  </div>
 </figure>
 
 ## Managing control values
@@ -108,8 +110,10 @@ Update the template with a button to simulate a name update. When you click the 
 
 The form model is the source of truth for the control, so when you click the button, the value of the input is changed within the component class, overriding its current value.
 
-<figure>
-  <img src="generated/images/guide/reactive-forms/name-editor-2.png" alt="Name Editor Update">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/reactive-forms/name-editor-2.png" alt="Name Editor Update">
+  </div>
 </figure>
 
 <div class="alert is-helpful">
@@ -188,8 +192,10 @@ To display the `ProfileEditor` component that contains the form, add it to a com
 
 `ProfileEditor` allows you to manage the form control instances for the `firstName` and `lastName` controls within the form group instance.
 
-<figure>
-  <img src="generated/images/guide/reactive-forms/profile-editor-1.png" alt="Profile Editor">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/reactive-forms/profile-editor-1.png" alt="Profile Editor">
+  </div>
 </figure>
 
 ## Creating nested form groups
@@ -214,8 +220,10 @@ Add the `address` form group containing the `street`, `city`, `state`, and `zip`
 
 The `ProfileEditor` form is displayed as one group, but the model is broken down further to represent the logical grouping areas.
 
-<figure>
-  <img src="generated/images/guide/reactive-forms/profile-editor-2.png" alt="Profile Editor Update">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/reactive-forms/profile-editor-2.png" alt="Profile Editor Update">
+  </div>
 </figure>
 
 <div class="alert is-helpful">
@@ -346,8 +354,10 @@ Display the current status of `profileForm` using interpolation.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" header="src/app/profile-editor/profile-editor.component.html (display status)"></code-example>
 
-<figure>
-  <img src="generated/images/guide/reactive-forms/profile-editor-3.png" alt="Profile Editor Validation">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/reactive-forms/profile-editor-3.png" alt="Profile Editor Validation">
+  </div>
 </figure>
 
 The **Submit** button is disabled because `profileForm` is invalid due to the required `firstName` form control. After you fill out the `firstName` input, the form becomes valid and the **Submit** button is enabled.
@@ -382,7 +392,7 @@ The aliases control in the form group instance is now populated with a single co
 
 A getter provides easy access to the aliases in the form array instance compared to repeating the `profileForm.get()` method to get each instance. The form array instance represents an undefined number of controls in an array. It's convenient to access a control through a getter, and this approach is easy to repeat for additional controls.
 
-Use the getter syntax to create an `aliases` class property to retrieve the alias's form array  control from the parent form group.
+Use the getter syntax to create an `aliases` class property to retrieve the alias's form array control from the parent form group.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="aliases-getter" header="src/app/profile-editor/profile-editor.component.ts (aliases getter)">
 
@@ -412,8 +422,10 @@ Add the template HTML below after the `<div>` closing the `formGroupName` elemen
 
 The `*ngFor` directive iterates over each form control instance provided by the aliases form array instance. Because form array elements are unnamed, you assign the index to the `i` variable and pass it to each control to bind it to the `formControlName` input.
 
-<figure>
-  <img src="generated/images/guide/reactive-forms/profile-editor-4.png" alt="Profile Editor Aliases">
+<figure class="lightbox">
+  <div class="card">
+    <img src="generated/images/guide/reactive-forms/profile-editor-4.png" alt="Profile Editor Aliases">
+  </div>
 </figure>
 
 Each time a new alias instance is added, the new form array instance is provided its control based on the index. This allows you to track each individual control when calculating the status and value of the root control.

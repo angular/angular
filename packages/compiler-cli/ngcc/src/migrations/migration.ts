@@ -6,10 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
+
 import {MetadataReader} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
+import {HandlerFlags} from '../../../src/ngtsc/transform';
 import {NgccReflectionHost} from '../host/ngcc_host';
+
 
 /**
  * Implement this interface and add it to the `DecorationAnalyzer.migrations` collection to get ngcc
@@ -41,5 +44,22 @@ export interface MigrationHost {
    * @param clazz the class to receive the new decorator.
    * @param decorator the decorator to inject.
    */
-  injectSyntheticDecorator(clazz: ClassDeclaration, decorator: Decorator): void;
+  injectSyntheticDecorator(clazz: ClassDeclaration, decorator: Decorator, flags?: HandlerFlags):
+      void;
+
+  /**
+   * Retrieves all decorators that are associated with the class, including synthetic decorators
+   * that have been injected before.
+   * @param clazz the class for which all decorators are retrieved.
+   * @returns the list of the decorators, or null if the class was not decorated.
+   */
+  getAllDecorators(clazz: ClassDeclaration): Decorator[]|null;
+
+  /**
+   * Determines whether the provided class in within scope of the entry-point that is currently
+   * being compiled.
+   * @param clazz the class for which to determine whether it is within the current entry-point.
+   * @returns true if the file is part of the compiled entry-point, false otherwise.
+   */
+  isInScope(clazz: ClassDeclaration): boolean;
 }

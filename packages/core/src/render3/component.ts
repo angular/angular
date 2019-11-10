@@ -17,13 +17,13 @@ import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {registerPostOrderHooks, registerPreOrderHooks} from './hooks';
-import {CLEAN_PROMISE, addToViewTree, createLView, createTView, getOrCreateTNode, getOrCreateTView, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, renderView} from './instructions/shared';
+import {CLEAN_PROMISE, addToViewTree, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, renderView} from './instructions/shared';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
-import {getPreviousOrParentTNode, resetComponentState, selectView, setActiveHostElement} from './state';
+import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
+import {enterView, getPreviousOrParentTNode, incrementActiveDirectiveId, leaveView, setActiveHostElement} from './state';
 import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler, stringifyForError} from './util/misc_utils';
 import {getRootContext} from './util/view_traversal_utils';
@@ -111,10 +111,6 @@ export function renderComponent<T>(
   ngDevMode && publishDefaultGlobalUtils();
   ngDevMode && assertComponentType(componentType);
 
-  // this is preemptively set to avoid having test and debug code accidentally
-  // read data from a previous application state...
-  setActiveHostElement(null);
-
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
   const componentDef = getComponentDef<T>(componentType) !;
@@ -128,12 +124,12 @@ export function renderComponent<T>(
   const rootContext = createRootContext(opts.scheduler, opts.playerHandler);
 
   const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
-  const rootTView = createTView(-1, null, 1, 0, null, null, null, null);
+  const rootTView = createTView(TViewType.Root, -1, null, 1, 0, null, null, null, null, null);
   const rootView: LView = createLView(
       null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, undefined,
       opts.injector || null);
 
-  const oldView = selectView(rootView, null);
+  enterView(rootView, null);
   let component: T;
 
   try {
@@ -149,7 +145,7 @@ export function renderComponent<T>(
     refreshView(rootView, rootTView, null, null);
 
   } finally {
-    selectView(oldView, null);
+    leaveView();
     if (rendererFactory.end) rendererFactory.end();
   }
 
@@ -170,16 +166,16 @@ export function renderComponent<T>(
 export function createRootComponentView(
     rNode: RElement | null, def: ComponentDef<any>, rootView: LView,
     rendererFactory: RendererFactory3, renderer: Renderer3, sanitizer?: Sanitizer | null): LView {
-  resetComponentState();
   const tView = rootView[TVIEW];
   ngDevMode && assertDataInRange(rootView, 0 + HEADER_OFFSET);
   rootView[0 + HEADER_OFFSET] = rNode;
   const tNode: TElementNode = getOrCreateTNode(tView, null, 0, TNodeType.Element, null, null);
   const componentView = createLView(
-      rootView, getOrCreateTView(def), null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
-      rootView[HEADER_OFFSET], tNode, rendererFactory, renderer, sanitizer);
+      rootView, getOrCreateTComponentView(def), null,
+      def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[HEADER_OFFSET], tNode,
+      rendererFactory, renderer, sanitizer);
 
-  if (tView.firstTemplatePass) {
+  if (tView.firstCreatePass) {
     diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), tView, def.type);
     markAsComponentHost(tView, tNode);
     initNodeFlags(tNode, rootView.length, 1);
@@ -214,13 +210,14 @@ export function createRootComponent<T>(
   }
 
   const rootTNode = getPreviousOrParentTNode();
-  if (tView.firstTemplatePass && componentDef.hostBindings) {
+  if (tView.firstCreatePass && componentDef.hostBindings) {
     const elementIndex = rootTNode.index - HEADER_OFFSET;
     setActiveHostElement(elementIndex);
+    incrementActiveDirectiveId();
 
     const expando = tView.expandoInstructions !;
     invokeHostBindingsInCreationMode(
-        componentDef, expando, component, rootTNode, tView.firstTemplatePass);
+        componentDef, expando, component, rootTNode, tView.firstCreatePass);
 
     setActiveHostElement(null);
   }

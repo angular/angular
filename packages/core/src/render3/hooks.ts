@@ -8,7 +8,7 @@
 
 import {assertEqual, assertNotEqual} from '../util/assert';
 
-import {assertFirstTemplatePass} from './assert';
+import {assertFirstCreatePass} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
 import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
@@ -36,7 +36,7 @@ import {getCheckNoChangesMode} from './state';
 export function registerPreOrderHooks(
     directiveIndex: number, directiveDef: DirectiveDef<any>, tView: TView, nodeIndex: number,
     initialPreOrderHooksLength: number, initialPreOrderCheckHooksLength: number): void {
-  ngDevMode && assertFirstTemplatePass(tView);
+  ngDevMode && assertFirstCreatePass(tView);
   const {onChanges, onInit, doCheck} = directiveDef;
   if (initialPreOrderHooksLength >= 0 &&
       (!tView.preOrderHooks || initialPreOrderHooksLength === tView.preOrderHooks.length) &&
@@ -85,7 +85,7 @@ export function registerPreOrderHooks(
  * @param tNode The TNode whose directives are to be searched for hooks to queue
  */
 export function registerPostOrderHooks(tView: TView, tNode: TNode): void {
-  ngDevMode && assertFirstTemplatePass(tView);
+  ngDevMode && assertFirstCreatePass(tView);
   // It's necessary to loop through the directives at elementEnd() (rather than processing in
   // directiveCreate) so we can preserve the current hook order. Content, view, and destroy
   // hooks for projected components and directives must be called *before* their hosts.

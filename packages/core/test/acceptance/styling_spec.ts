@@ -5,7 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, Directive, ElementRef, HostBinding, Input, ViewChild} from '@angular/core';
+import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, HostBinding, Input, NgModule, Renderer2, ViewChild, ViewContainerRef} from '@angular/core';
+import {getDebugNode} from '@angular/core/src/render3/util/discovery_utils';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
@@ -112,6 +113,34 @@ describe('styling', () => {
        expect(outer.textContent.trim()).toEqual('outer');
      });
 
+  it('should render initial styling for repeated nodes that a component host', () => {
+    @Component({
+      selector: '[comp]',
+      template: '',
+    })
+    class Comp {
+    }
+
+    @Component({
+      template: `
+        <ng-template ngFor [ngForOf]="items" let-item>
+          <p comp class="a">A</p>
+        </ng-template>
+      `
+    })
+    class App {
+      items = [1, 2, 3];
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.debugElement.queryAll(By.css('.a')).length).toBe(3);
+  });
+
   it('should do nothing for empty style bindings', () => {
     @Component({template: '<div [style.color]></div>'})
     class App {
@@ -134,6 +163,20 @@ describe('styling', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.innerHTML).toBe('<div></div>');
+  });
+
+  it('should be able to bind zero', () => {
+    @Component({template: '<div #div [style.opacity]="opacity"></div>'})
+    class App {
+      @ViewChild('div') div !: ElementRef<HTMLElement>;
+      opacity = 0;
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.div.nativeElement.style.opacity).toBe('0');
   });
 
   it('should be able to bind a SafeValue to backgroundImage', () => {
@@ -508,6 +551,74 @@ describe('styling', () => {
     expect(capturedMyClassBindingCount).toEqual(1);
   });
 
+  it('should write to a `className` input binding', () => {
+    @Component({
+      selector: 'comp',
+      template: `{{className}}`,
+    })
+    class Comp {
+      @Input() className: string = '';
+    }
+    @Component({
+      template: `<comp [className]="'my-className'"></comp>`,
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [Comp, App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.debugElement.nativeElement.firstChild.innerHTML).toBe('my-className');
+  });
+
+  onlyInIvy('only ivy combines static and dynamic class-related attr values')
+      .it('should write to a `className` input binding, when static `class` is present', () => {
+        @Component({
+          selector: 'comp',
+          template: `{{className}}`,
+        })
+        class Comp {
+          @Input() className: string = '';
+        }
+
+        @Component({
+          template: `<comp class="static" [className]="'my-className'"></comp>`,
+        })
+        class App {
+        }
+
+        TestBed.configureTestingModule({declarations: [Comp, App]});
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        expect(fixture.debugElement.nativeElement.firstChild.innerHTML).toBe('static my-className');
+      });
+
+  onlyInIvy('in Ivy [class] and [className] bindings on the same element are not allowed')
+      .it('should throw an error in case [class] and [className] bindings are used on the same element',
+          () => {
+            @Component({
+              selector: 'comp',
+              template: `{{class}} - {{className}}`,
+            })
+            class Comp {
+              @Input() class: string = '';
+              @Input() className: string = '';
+            }
+            @Component({
+              template: `<comp [class]="'my-class'" [className]="'className'"></comp>`,
+            })
+            class App {
+            }
+
+            TestBed.configureTestingModule({declarations: [Comp, App]});
+            expect(() => {
+              const fixture = TestBed.createComponent(App);
+              fixture.detectChanges();
+            })
+                .toThrowError(
+                    '[class] and [className] bindings cannot be used on the same element simultaneously');
+          });
+
   onlyInIvy('only ivy persists static class/style attrs with their binding counterparts')
       .it('should write to a `class` input binding if there is a static class value and there is a binding value',
           () => {
@@ -628,7 +739,6 @@ describe('styling', () => {
       expect(childDir.parent).toBeAnInstanceOf(TestDir);
       expect(testDirDiv.classList).not.toContain('with-button');
       expect(fixture.debugElement.nativeElement.textContent).toContain('Hello');
-
     });
   });
 
@@ -643,7 +753,7 @@ describe('styling', () => {
       template: '<span dir [classesInSchool]="classes" [styleOfClothing]="style"></span>',
     })
     class App {
-      @ViewChild(Dir, {static: false}) dir !: Dir;
+      @ViewChild(Dir) dir !: Dir;
 
       classes = 'math';
       style = '80s';
@@ -673,4 +783,1567 @@ describe('styling', () => {
     expect(classList.contains('one')).toBe(true);
     expect(classList.contains('two')).toBe(true);
   });
+
+  onlyInIvy('ivy resolves styling across directives, components and templates in unison')
+      .it('should apply single property styles/classes to the element and default to any static styling values',
+          () => {
+            @Component({
+              template: `
+        <div [style.width]="w"
+              [style.height]="h"
+              [style.opacity]="o"
+              style="width:200px; height:200px;"
+              [class.abc]="abc"
+              [class.xyz]="xyz"></div>
+      `
+            })
+            class Cmp {
+              w: string|null = '100px';
+              h: string|null = '100px';
+              o: string|null = '0.5';
+              abc = true;
+              xyz = false;
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp]});
+            const fixture = TestBed.createComponent(Cmp);
+            fixture.detectChanges();
+
+            const element = fixture.nativeElement.querySelector('div');
+            expect(element.style.width).toEqual('100px');
+            expect(element.style.height).toEqual('100px');
+            expect(element.style.opacity).toEqual('0.5');
+            expect(element.classList.contains('abc')).toBeTruthy();
+            expect(element.classList.contains('xyz')).toBeFalsy();
+
+            fixture.componentInstance.w = null;
+            fixture.componentInstance.h = null;
+            fixture.componentInstance.o = null;
+            fixture.componentInstance.abc = false;
+            fixture.componentInstance.xyz = true;
+            fixture.detectChanges();
+
+            expect(element.style.width).toEqual('200px');
+            expect(element.style.height).toEqual('200px');
+            expect(element.style.opacity).toBeFalsy();
+            expect(element.classList.contains('abc')).toBeFalsy();
+            expect(element.classList.contains('xyz')).toBeTruthy();
+          });
+
+  onlyInIvy('ivy resolves styling across directives, components and templates in unison')
+      .it('should apply single style/class across the template and directive host bindings', () => {
+        @Directive({selector: '[dir-that-sets-width]'})
+        class DirThatSetsWidthDirective {
+          @Input('dir-that-sets-width') @HostBinding('style.width') public width: string = '';
+        }
+
+        @Directive({selector: '[another-dir-that-sets-width]', host: {'[style.width]': 'width'}})
+        class AnotherDirThatSetsWidthDirective {
+          @Input('another-dir-that-sets-width') public width: string = '';
+        }
+
+        @Component({
+          template: `
+        <div [style.width]="w0"
+              [dir-that-sets-width]="w1"
+              [another-dir-that-sets-width]="w2">
+      `
+        })
+        class Cmp {
+          w0: string|null = null;
+          w1: string|null = null;
+          w2: string|null = null;
+        }
+
+        TestBed.configureTestingModule(
+            {declarations: [Cmp, DirThatSetsWidthDirective, AnotherDirThatSetsWidthDirective]});
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.componentInstance.w0 = '100px';
+        fixture.componentInstance.w1 = '200px';
+        fixture.componentInstance.w2 = '300px';
+        fixture.detectChanges();
+
+        const element = fixture.nativeElement.querySelector('div');
+        expect(element.style.width).toEqual('100px');
+
+        fixture.componentInstance.w0 = null;
+        fixture.detectChanges();
+
+        expect(element.style.width).toEqual('200px');
+
+        fixture.componentInstance.w1 = null;
+        fixture.detectChanges();
+
+        expect(element.style.width).toEqual('300px');
+
+        fixture.componentInstance.w2 = null;
+        fixture.detectChanges();
+
+        expect(element.style.width).toBeFalsy();
+
+        fixture.componentInstance.w2 = '400px';
+        fixture.detectChanges();
+
+        expect(element.style.width).toEqual('400px');
+
+        fixture.componentInstance.w1 = '500px';
+        fixture.componentInstance.w0 = '600px';
+        fixture.detectChanges();
+
+        expect(element.style.width).toEqual('600px');
+      });
+
+  onlyInIvy('ivy resolves styling across directives, components and templates in unison')
+      .it('should only run stylingFlush once when there are no collisions between styling properties',
+          () => {
+            @Directive({selector: '[dir-with-styling]'})
+            class DirWithStyling {
+              @HostBinding('style.font-size') public fontSize = '100px';
+            }
+
+            @Component({selector: 'comp-with-styling'})
+            class CompWithStyling {
+              @HostBinding('style.width') public width = '900px';
+
+              @HostBinding('style.height') public height = '900px';
+            }
+
+            @Component({
+              template: `
+        <comp-with-styling
+          [style.opacity]="opacity"
+          dir-with-styling>...</comp-with-styling>
+      `
+            })
+            class Cmp {
+              opacity: string|null = '0.5';
+              @ViewChild(CompWithStyling, {static: true})
+              compWithStyling: CompWithStyling|null = null;
+              @ViewChild(DirWithStyling, {static: true}) dirWithStyling: DirWithStyling|null = null;
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp, DirWithStyling, CompWithStyling]});
+            const fixture = TestBed.createComponent(Cmp);
+            fixture.detectChanges();
+
+            const component = fixture.componentInstance;
+            const element = fixture.nativeElement.querySelector('comp-with-styling');
+            const node = getDebugNode(element) !;
+
+            const styles = node.styles !;
+            const config = styles.context.config;
+            expect(config.hasCollisions).toBeFalsy();
+            expect(config.hasMapBindings).toBeFalsy();
+            expect(config.hasPropBindings).toBeTruthy();
+            expect(config.allowDirectStyling).toBeTruthy();
+
+            expect(element.style.opacity).toEqual('0.5');
+            expect(element.style.width).toEqual('900px');
+            expect(element.style.height).toEqual('900px');
+            expect(element.style.fontSize).toEqual('100px');
+
+            // once for the template flush and again for the host bindings
+            expect(ngDevMode !.flushStyling).toEqual(2);
+            ngDevModeResetPerfCounters();
+
+            component.opacity = '0.6';
+            component.compWithStyling !.height = '100px';
+            component.compWithStyling !.width = '100px';
+            component.dirWithStyling !.fontSize = '50px';
+            fixture.detectChanges();
+
+            expect(element.style.opacity).toEqual('0.6');
+            expect(element.style.width).toEqual('100px');
+            expect(element.style.height).toEqual('100px');
+            expect(element.style.fontSize).toEqual('50px');
+
+            // there is no need to flush styling since the styles are applied directly
+            expect(ngDevMode !.flushStyling).toEqual(0);
+          });
+
+  onlyInIvy('ivy resolves styling across directives, components and templates in unison')
+      .it('should combine all styling across the template, directive and component host bindings',
+          () => {
+            @Directive({selector: '[dir-with-styling]'})
+            class DirWithStyling {
+              @HostBinding('style.color') public color = 'red';
+
+              @HostBinding('style.font-size') public fontSize = '100px';
+
+              @HostBinding('class.dir') public dirClass = true;
+            }
+
+            @Component({selector: 'comp-with-styling'})
+            class CompWithStyling {
+              @HostBinding('style.width') public width = '900px';
+
+              @HostBinding('style.height') public height = '900px';
+
+              @HostBinding('class.comp') public compClass = true;
+            }
+
+            @Component({
+              template: `
+        <comp-with-styling
+          [style.opacity]="opacity"
+          [style.width]="width"
+          [class.tpl]="tplClass"
+          dir-with-styling>...</comp-with-styling>
+      `
+            })
+            class Cmp {
+              opacity: string|null = '0.5';
+              width: string|null = 'auto';
+              tplClass = true;
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp, DirWithStyling, CompWithStyling]});
+            const fixture = TestBed.createComponent(Cmp);
+            fixture.detectChanges();
+
+            const element = fixture.nativeElement.querySelector('comp-with-styling');
+
+            const node = getDebugNode(element) !;
+            const styles = node.styles !;
+            const classes = node.classes !;
+
+            expect(styles.values).toEqual({
+              'color': 'red',
+              'width': 'auto',
+              'opacity': '0.5',
+              'height': '900px',
+              'font-size': '100px'
+            });
+            expect(classes.values).toEqual({
+              'dir': true,
+              'comp': true,
+              'tpl': true,
+            });
+
+            fixture.componentInstance.width = null;
+            fixture.componentInstance.opacity = null;
+            fixture.componentInstance.tplClass = false;
+            fixture.detectChanges();
+
+            expect(styles.values).toEqual({
+              'color': 'red',
+              'width': '900px',
+              'opacity': null,
+              'height': '900px',
+              'font-size': '100px'
+            });
+            expect(classes.values).toEqual({
+              'dir': true,
+              'comp': true,
+              'tpl': false,
+            });
+          });
+
+  onlyInIvy('ivy resolves styling across directives, components and templates in unison')
+      .it('should properly apply styling across sub and super class directive host bindings',
+          () => {
+            @Directive({selector: '[super-class-dir]'})
+            class SuperClassDirective {
+              @HostBinding('style.width') public w1 = '100px';
+            }
+
+            @Component({selector: '[sub-class-dir]'})
+            class SubClassDirective extends SuperClassDirective {
+              @HostBinding('style.width') public w2 = '200px';
+            }
+
+            @Component({
+              template: `
+          <div sub-class-dir [style.width]="w3"></div>
+      `
+            })
+            class Cmp {
+              w3: string|null = '300px';
+            }
+
+            TestBed.configureTestingModule(
+                {declarations: [Cmp, SuperClassDirective, SubClassDirective]});
+            const fixture = TestBed.createComponent(Cmp);
+            fixture.detectChanges();
+
+            const element = fixture.nativeElement.querySelector('div');
+
+            const node = getDebugNode(element) !;
+            const styles = node.styles !;
+
+            expect(styles.values).toEqual({
+              'width': '300px',
+            });
+
+            fixture.componentInstance.w3 = null;
+            fixture.detectChanges();
+
+            expect(styles.values).toEqual({
+              'width': '200px',
+            });
+          });
+
+  onlyInIvy('only ivy has style/class bindings debugging support')
+      .it('should support situations where there are more than 32 bindings', () => {
+        const TOTAL_BINDINGS = 34;
+
+        let bindingsHTML = '';
+        let bindingsArr: any[] = [];
+        for (let i = 0; i < TOTAL_BINDINGS; i++) {
+          bindingsHTML += `[style.prop${i}]="bindings[${i}]" `;
+          bindingsArr.push(null);
+        }
+
+        @Component({template: `<div ${bindingsHTML}></div>`})
+        class Cmp {
+          bindings = bindingsArr;
+
+          updateBindings(value: string) {
+            for (let i = 0; i < TOTAL_BINDINGS; i++) {
+              this.bindings[i] = value + i;
+            }
+          }
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+
+        let testValue = 'initial';
+        fixture.componentInstance.updateBindings('initial');
+        fixture.detectChanges();
+
+        const element = fixture.nativeElement.querySelector('div');
+
+        const node = getDebugNode(element) !;
+        const styles = node.styles !;
+
+        let values = styles.values;
+        let props = Object.keys(values);
+        expect(props.length).toEqual(TOTAL_BINDINGS);
+
+        for (let i = 0; i < props.length; i++) {
+          const prop = props[i];
+          const value = values[prop] as string;
+          const num = value.substr(testValue.length);
+          expect(value).toEqual(`initial${num}`);
+        }
+
+        testValue = 'final';
+        fixture.componentInstance.updateBindings('final');
+        fixture.detectChanges();
+
+        values = styles.values;
+        props = Object.keys(values);
+        expect(props.length).toEqual(TOTAL_BINDINGS);
+        for (let i = 0; i < props.length; i++) {
+          const prop = props[i];
+          const value = values[prop] as string;
+          const num = value.substr(testValue.length);
+          expect(value).toEqual(`final${num}`);
+        }
+      });
+
+  onlyInIvy('only ivy has style debugging support')
+      .it('should apply map-based style and class entries', () => {
+        @Component({template: '<div [style]="s" [class]="c"></div>'})
+        class Cmp {
+          public c: {[key: string]: any}|null = null;
+          updateClasses(classes: string) {
+            const c = this.c || (this.c = {});
+            Object.keys(this.c).forEach(className => { c[className] = false; });
+            classes.split(/\s+/).forEach(className => { c[className] = true; });
+          }
+
+          public s: {[key: string]: any}|null = null;
+          updateStyles(prop: string, value: string|number|null) {
+            const s = this.s || (this.s = {});
+            Object.assign(s, {[prop]: value});
+          }
+
+          reset() {
+            this.s = null;
+            this.c = null;
+          }
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const comp = fixture.componentInstance;
+        comp.updateStyles('width', '100px');
+        comp.updateStyles('height', '200px');
+        comp.updateClasses('abc');
+        fixture.detectChanges();
+
+        const element = fixture.nativeElement.querySelector('div');
+        const node = getDebugNode(element) !;
+        let styles = node.styles !;
+        let classes = node.classes !;
+
+        let stylesSummary = styles.summary;
+        let widthSummary = stylesSummary['width'];
+        expect(widthSummary.prop).toEqual('width');
+        expect(widthSummary.value).toEqual('100px');
+
+        let heightSummary = stylesSummary['height'];
+        expect(heightSummary.prop).toEqual('height');
+        expect(heightSummary.value).toEqual('200px');
+
+        let classesSummary = classes.summary;
+        let abcSummary = classesSummary['abc'];
+        expect(abcSummary.prop).toEqual('abc');
+        expect(abcSummary.value).toBeTruthy();
+
+        comp.reset();
+        comp.updateStyles('width', '500px');
+        comp.updateStyles('height', null);
+        comp.updateClasses('def');
+        fixture.detectChanges();
+
+        styles = node.styles !;
+        classes = node.classes !;
+
+        stylesSummary = styles.summary;
+        widthSummary = stylesSummary['width'];
+        expect(widthSummary.value).toEqual('500px');
+
+        heightSummary = stylesSummary['height'];
+        expect(heightSummary.value).toEqual(null);
+
+        classesSummary = classes.summary;
+        abcSummary = classesSummary['abc'];
+        expect(abcSummary.prop).toEqual('abc');
+        expect(abcSummary.value).toBeFalsy();
+
+        let defSummary = classesSummary['def'];
+        expect(defSummary.prop).toEqual('def');
+        expect(defSummary.value).toBeTruthy();
+      });
+
+  onlyInIvy('ivy resolves styling across directives, components and templates in unison')
+      .it('should resolve styling collisions across templates, directives and components for prop and map-based entries',
+          () => {
+            @Directive({selector: '[dir-that-sets-styling]'})
+            class DirThatSetsStyling {
+              @HostBinding('style') public map: any = {color: 'red', width: '777px'};
+            }
+
+            @Component({
+              template: `
+        <div [style.width]="width"
+              [style]="map"
+              style="width:200px; font-size:99px"
+              dir-that-sets-styling
+              #dir
+              [class.xyz]="xyz"></div>
+      `
+            })
+            class Cmp {
+              map: any = {width: '111px', opacity: '0.5'};
+              width: string|null = '555px';
+
+              @ViewChild('dir', {read: DirThatSetsStyling, static: true})
+              dir !: DirThatSetsStyling;
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp, DirThatSetsStyling]});
+            const fixture = TestBed.createComponent(Cmp);
+            const comp = fixture.componentInstance;
+            fixture.detectChanges();
+
+            const element = fixture.nativeElement.querySelector('div');
+            const node = getDebugNode(element) !;
+
+            const styles = node.styles !;
+
+            expect(styles.values).toEqual({
+              'width': '555px',
+              'color': 'red',
+              'font-size': '99px',
+              'opacity': '0.5',
+            });
+
+            comp.width = null;
+            fixture.detectChanges();
+
+            expect(styles.values).toEqual({
+              'width': '111px',
+              'color': 'red',
+              'font-size': '99px',
+              'opacity': '0.5',
+            });
+
+            comp.map = null;
+            fixture.detectChanges();
+
+            expect(styles.values).toEqual({
+              'width': '777px',
+              'color': 'red',
+              'font-size': '99px',
+              'opacity': null,
+            });
+
+            comp.dir.map = null;
+            fixture.detectChanges();
+
+            expect(styles.values).toEqual({
+              'width': '200px',
+              'color': null,
+              'font-size': '99px',
+              'opacity': null,
+            });
+          });
+
+  onlyInIvy('ivy resolves styling across directives, components and templates in unison')
+      .it('should only apply each styling property once per CD across templates, components, directives',
+          () => {
+            @Directive({selector: '[dir-that-sets-styling]'})
+            class DirThatSetsStyling {
+              @HostBinding('style') public map: any = {width: '999px', height: '999px'};
+            }
+
+            @Component({
+              template: `
+                <div #dir
+                  style="width:0px; height:0px"
+                  [style.width]="width"
+                  [style.height]="height"
+                  [style]="map"
+                  dir-that-sets-styling></div>
+              `
+            })
+            class Cmp {
+              width: string|null = '111px';
+              height: string|null = '111px';
+
+              map: any = {width: '555px', height: '555px'};
+
+              @ViewChild('dir', {read: DirThatSetsStyling, static: true})
+              dir !: DirThatSetsStyling;
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp, DirThatSetsStyling]});
+            const fixture = TestBed.createComponent(Cmp);
+            const comp = fixture.componentInstance;
+
+            ngDevModeResetPerfCounters();
+            fixture.detectChanges();
+            const element = fixture.nativeElement.querySelector('div');
+
+            // both are applied because this is the first pass
+            assertStyleCounters(2, 0);
+            assertStyle(element, 'width', '111px');
+            assertStyle(element, 'height', '111px');
+
+            comp.width = '222px';
+            ngDevModeResetPerfCounters();
+            fixture.detectChanges();
+
+            assertStyleCounters(1, 0);
+            assertStyle(element, 'width', '222px');
+            assertStyle(element, 'height', '111px');
+
+            comp.height = '222px';
+            ngDevModeResetPerfCounters();
+            fixture.detectChanges();
+
+            assertStyleCounters(1, 0);
+            assertStyle(element, 'width', '222px');
+            assertStyle(element, 'height', '222px');
+
+            comp.width = null;
+            ngDevModeResetPerfCounters();
+            fixture.detectChanges();
+
+            assertStyleCounters(1, 0);
+            assertStyle(element, 'width', '555px');
+            assertStyle(element, 'height', '222px');
+
+            comp.width = '123px';
+            comp.height = '123px';
+            ngDevModeResetPerfCounters();
+            fixture.detectChanges();
+
+            assertStyle(element, 'width', '123px');
+            assertStyle(element, 'height', '123px');
+
+            comp.map = {};
+            ngDevModeResetPerfCounters();
+            fixture.detectChanges();
+
+            // both are applied because the map was altered
+            assertStyleCounters(2, 0);
+            assertStyle(element, 'width', '123px');
+            assertStyle(element, 'height', '123px');
+
+            comp.width = null;
+            ngDevModeResetPerfCounters();
+            fixture.detectChanges();
+
+            // the width is applied both in TEMPLATE and in HOST_BINDINGS mode
+            assertStyleCounters(2, 0);
+            assertStyle(element, 'width', '999px');
+            assertStyle(element, 'height', '123px');
+
+            comp.dir.map = null;
+            ngDevModeResetPerfCounters();
+            fixture.detectChanges();
+
+            // the width is only applied once
+            assertStyleCounters(1, 0);
+            assertStyle(element, 'width', '0px');
+            assertStyle(element, 'height', '123px');
+
+            comp.dir.map = {width: '1000px', height: '1000px', color: 'red'};
+            ngDevModeResetPerfCounters();
+            fixture.detectChanges();
+
+            // only the width and color have changed
+            assertStyleCounters(2, 0);
+            assertStyle(element, 'width', '1000px');
+            assertStyle(element, 'height', '123px');
+            assertStyle(element, 'color', 'red');
+
+            comp.height = null;
+            ngDevModeResetPerfCounters();
+            fixture.detectChanges();
+
+            // height gets applied twice and all other
+            // values get applied
+            assertStyleCounters(4, 0);
+            assertStyle(element, 'width', '1000px');
+            assertStyle(element, 'height', '1000px');
+            assertStyle(element, 'color', 'red');
+
+            comp.map = {color: 'blue', width: '2000px', opacity: '0.5'};
+            ngDevModeResetPerfCounters();
+            fixture.detectChanges();
+
+            assertStyleCounters(5, 0);
+            assertStyle(element, 'width', '2000px');
+            assertStyle(element, 'height', '1000px');
+            assertStyle(element, 'color', 'blue');
+            assertStyle(element, 'opacity', '0.5');
+
+            comp.map = {color: 'blue', width: '2000px'};
+            ngDevModeResetPerfCounters();
+            fixture.detectChanges();
+
+            // all four are applied because the map was altered
+            assertStyleCounters(4, 1);
+            assertStyle(element, 'width', '2000px');
+            assertStyle(element, 'height', '1000px');
+            assertStyle(element, 'color', 'blue');
+            assertStyle(element, 'opacity', '');
+          });
+
+  onlyInIvy('only ivy has style/class bindings debugging support')
+      .it('should sanitize style values before writing them', () => {
+        @Component({
+          template: `
+                <div [style.width]="widthExp"
+                      [style.background-image]="bgImageExp"
+                      [style]="styleMapExp"></div>
+              `
+        })
+        class Cmp {
+          widthExp = '';
+          bgImageExp = '';
+          styleMapExp: any = {};
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const comp = fixture.componentInstance;
+        fixture.detectChanges();
+
+        const element = fixture.nativeElement.querySelector('div');
+        const node = getDebugNode(element) !;
+        const styles = node.styles !;
+
+        const lastSanitizedProps: any[] = [];
+        styles.overrideSanitizer((prop, value) => {
+          lastSanitizedProps.push(prop);
+          return value;
+        });
+
+        comp.bgImageExp = '123';
+        fixture.detectChanges();
+
+        expect(styles.values).toEqual({
+          'background-image': '123',
+          'width': null,
+        });
+
+        expect(lastSanitizedProps).toEqual(['background-image']);
+        lastSanitizedProps.length = 0;
+
+        comp.styleMapExp = {'clip-path': '456'};
+        fixture.detectChanges();
+
+        expect(styles.values).toEqual({
+          'background-image': '123',
+          'clip-path': '456',
+          'width': null,
+        });
+
+        expect(lastSanitizedProps).toEqual(['background-image', 'clip-path']);
+        lastSanitizedProps.length = 0;
+
+        comp.widthExp = '789px';
+        fixture.detectChanges();
+
+        expect(styles.values).toEqual({
+          'background-image': '123',
+          'clip-path': '456',
+          'width': '789px',
+        });
+
+        expect(lastSanitizedProps).toEqual(['background-image', 'clip-path']);
+        lastSanitizedProps.length = 0;
+      });
+
+  onlyInIvy('only ivy has style/class bindings debugging support')
+      .it('should apply a unit to a style before writing it', () => {
+        @Component({
+          template: `
+            <div [style.width.px]="widthExp"
+                  [style.height.em]="heightExp"></div>
+          `
+        })
+        class Cmp {
+          widthExp: string|number|null = '';
+          heightExp: string|number|null = '';
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const comp = fixture.componentInstance;
+        fixture.detectChanges();
+
+        const element = fixture.nativeElement.querySelector('div');
+        const node = getDebugNode(element) !;
+        const styles = node.styles !;
+
+        comp.widthExp = '200';
+        comp.heightExp = 10;
+        fixture.detectChanges();
+
+        expect(styles.values).toEqual({
+          'width': '200px',
+          'height': '10em',
+        });
+
+        comp.widthExp = 0;
+        comp.heightExp = null;
+        fixture.detectChanges();
+
+        expect(styles.values).toEqual({
+          'width': '0px',
+          'height': null,
+        });
+      });
+
+  it('should be able to bind a SafeValue to clip-path', () => {
+    @Component({template: '<div [style.clip-path]="path"></div>'})
+    class Cmp {
+      path !: SafeStyle;
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    const sanitizer: DomSanitizer = TestBed.inject(DomSanitizer);
+
+    fixture.componentInstance.path = sanitizer.bypassSecurityTrustStyle('url("#test")');
+    fixture.detectChanges();
+
+    const html = fixture.nativeElement.innerHTML;
+
+    // Note that check the raw HTML, because (at the time of writing) the Node-based renderer
+    // that we use to run tests doesn't support `clip-path` in `CSSStyleDeclaration`.
+    expect(html).toMatch(/style=["|']clip-path:\s*url\(.*#test.*\)/);
+  });
+
+  onlyInIvy('only ivy has style/class bindings debugging support')
+      .it('should evaluate follow-up [style] maps even if a former map is null', () => {
+        @Directive({selector: '[dir-with-styling]'})
+        class DirWithStyleMap {
+          @HostBinding('style') public styleMap: any = {color: 'red'};
+        }
+
+        @Directive({selector: '[dir-with-styling-part2]'})
+        class DirWithStyleMapPart2 {
+          @HostBinding('style') public styleMap: any = {width: '200px'};
+        }
+
+        @Component({
+          template: `
+        <div #div
+              [style]="map"
+              dir-with-styling
+              dir-with-styling-part2></div>
+      `
+        })
+        class Cmp {
+          map: any = null;
+
+          @ViewChild('div', {read: DirWithStyleMap, static: true})
+          dir1 !: DirWithStyleMap;
+
+          @ViewChild('div', {read: DirWithStyleMapPart2, static: true})
+          dir2 !: DirWithStyleMapPart2;
+        }
+
+        TestBed.configureTestingModule(
+            {declarations: [Cmp, DirWithStyleMap, DirWithStyleMapPart2]});
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.detectChanges();
+
+        const element = fixture.nativeElement.querySelector('div');
+        const node = getDebugNode(element) !;
+        const styles = node.styles !;
+
+        const values = styles.values;
+        const props = Object.keys(values).sort();
+        expect(props).toEqual(['color', 'width']);
+
+        expect(values['width']).toEqual('200px');
+        expect(values['color']).toEqual('red');
+      });
+
+  onlyInIvy('only ivy has style/class bindings debugging support')
+      .it('should evaluate initial style/class values on a list of elements that changes', () => {
+        @Component({
+          template: `
+            <div *ngFor="let item of items"
+                  class="initial-class item-{{ item }}">
+              {{ item }}
+            </div>
+          `
+        })
+        class Cmp {
+          items = [1, 2, 3];
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const comp = fixture.componentInstance;
+        fixture.detectChanges();
+
+        function getItemElements(): HTMLElement[] {
+          return [].slice.call(fixture.nativeElement.querySelectorAll('div'));
+        }
+
+        function getItemClasses(): string[] {
+          return getItemElements().map(e => e.className).sort().join(' ').split(' ');
+        }
+
+        expect(getItemElements().length).toEqual(3);
+        expect(getItemClasses()).toEqual([
+          'initial-class',
+          'item-1',
+          'initial-class',
+          'item-2',
+          'initial-class',
+          'item-3',
+        ]);
+
+        comp.items = [2, 4, 6, 8];
+        fixture.detectChanges();
+
+        expect(getItemElements().length).toEqual(4);
+        expect(getItemClasses()).toEqual([
+          'initial-class',
+          'item-2',
+          'initial-class',
+          'item-4',
+          'initial-class',
+          'item-6',
+          'initial-class',
+          'item-8',
+        ]);
+      });
+
+  onlyInIvy('only ivy has style/class bindings debugging support')
+      .it('should create and update multiple class bindings across multiple elements in a template',
+          () => {
+            @Component({
+              template: `
+            <header class="header">header</header>
+            <div *ngFor="let item of items" class="item item-{{ item }}">
+              {{ item }}
+            </div>
+            <footer class="footer">footer</footer>
+          `
+            })
+            class Cmp {
+              items = [1, 2, 3];
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp]});
+            const fixture = TestBed.createComponent(Cmp);
+            const comp = fixture.componentInstance;
+            fixture.detectChanges();
+
+            function getItemElements(): HTMLElement[] {
+              return [].slice.call(fixture.nativeElement.querySelectorAll('div'));
+            }
+
+            function getItemClasses(): string[] {
+              return getItemElements().map(e => e.className).sort().join(' ').split(' ');
+            }
+
+            const header = fixture.nativeElement.querySelector('header');
+            expect(header.classList.contains('header'));
+
+            const footer = fixture.nativeElement.querySelector('footer');
+            expect(footer.classList.contains('footer'));
+
+            expect(getItemElements().length).toEqual(3);
+            expect(getItemClasses()).toEqual([
+              'item',
+              'item-1',
+              'item',
+              'item-2',
+              'item',
+              'item-3',
+            ]);
+          });
+
+  onlyInIvy('only ivy has style/class bindings debugging support')
+      .it('should understand multiple directives which contain initial classes', () => {
+        @Directive({selector: 'dir-one'})
+        class DirOne {
+          @HostBinding('class') public className = 'dir-one';
+        }
+
+        @Directive({selector: 'dir-two'})
+        class DirTwo {
+          @HostBinding('class') public className = 'dir-two';
+        }
+
+        @Component({
+          template: `
+            <dir-one></dir-one>
+            <div class="initial"></div>
+            <dir-two></dir-two>
+          `
+        })
+        class Cmp {
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp, DirOne, DirTwo]});
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.detectChanges();
+
+        const dirOne = fixture.nativeElement.querySelector('dir-one');
+        const div = fixture.nativeElement.querySelector('div');
+        const dirTwo = fixture.nativeElement.querySelector('dir-two');
+
+        expect(dirOne.classList.contains('dir-one')).toBeTruthy();
+        expect(dirTwo.classList.contains('dir-two')).toBeTruthy();
+        expect(div.classList.contains('initial')).toBeTruthy();
+      });
+
+  onlyInIvy('only ivy has style/class bindings debugging support')
+      .it('should evaluate styling across the template directives when there are multiple elements/sources of styling',
+          () => {
+            @Directive({selector: '[one]'})
+            class DirOne {
+              @HostBinding('class') public className = 'dir-one';
+            }
+
+            @Directive({selector: '[two]'})
+            class DirTwo {
+              @HostBinding('class') public className = 'dir-two';
+            }
+
+            @Component({
+              template: `
+                <div class="a" [style.width.px]="w" one></div>
+                <div class="b" [style.height.px]="h" one two></div>
+                <div class="c" [style.color]="c" two></div>
+              `
+            })
+            class Cmp {
+              w = 100;
+              h = 200;
+              c = 'red';
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp, DirOne, DirTwo]});
+            const fixture = TestBed.createComponent(Cmp);
+            fixture.detectChanges();
+
+            const divA = fixture.nativeElement.querySelector('.a');
+            const divB = fixture.nativeElement.querySelector('.b');
+            const divC = fixture.nativeElement.querySelector('.c');
+
+            expect(divA.style.width).toEqual('100px');
+            expect(divB.style.height).toEqual('200px');
+            expect(divC.style.color).toEqual('red');
+          });
+
+  onlyInIvy('only ivy has style/class bindings debugging support')
+      .it('should evaluate styling across the template and directives within embedded views',
+          () => {
+            @Directive({selector: '[some-dir-with-styling]'})
+            class SomeDirWithStyling {
+              @HostBinding('style')
+              public styles = {
+                width: '200px',
+                height: '500px',
+              };
+            }
+
+            @Component({
+              template: `
+                <div
+                  class="item"
+                  *ngFor="let item of items; let i = index"
+                  [style.color]="c"
+                  [style.height.px]="h * i"
+                  some-dir-with-styling>
+                  {{ item }}
+                </div>
+                <section [style.width.px]="w"></section>
+                <p [style.height.px]="h"></p>
+              `
+            })
+            class Cmp {
+              items: any[] = [];
+              c = 'red';
+              w = 100;
+              h = 100;
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp, SomeDirWithStyling]});
+            const fixture = TestBed.createComponent(Cmp);
+            const comp = fixture.componentInstance;
+            comp.items = [1, 2, 3, 4];
+            fixture.detectChanges();
+
+            const items = fixture.nativeElement.querySelectorAll('.item');
+            expect(items.length).toEqual(4);
+            const [a, b, c, d] = items;
+            expect(a.style.height).toEqual('0px');
+            expect(b.style.height).toEqual('100px');
+            expect(c.style.height).toEqual('200px');
+            expect(d.style.height).toEqual('300px');
+
+            const section = fixture.nativeElement.querySelector('section');
+            const p = fixture.nativeElement.querySelector('p');
+
+            expect(section.style['width']).toEqual('100px');
+            expect(p.style['height']).toEqual('100px');
+          });
+
+  onlyInIvy('only ivy has style/class bindings debugging support')
+      .it('should flush bindings even if any styling hasn\'t changed in a previous directive',
+          () => {
+            @Directive({selector: '[one]'})
+            class DirOne {
+              @HostBinding('style.width') w = '100px';
+              @HostBinding('style.opacity') o = '0.5';
+            }
+
+            @Directive({selector: '[two]'})
+            class DirTwo {
+              @HostBinding('style.height') h = '200px';
+              @HostBinding('style.color') c = 'red';
+            }
+
+            @Component({template: '<div #target one two></div>'})
+            class Cmp {
+              @ViewChild('target', {read: DirOne, static: true}) one !: DirOne;
+              @ViewChild('target', {read: DirTwo, static: true}) two !: DirTwo;
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp, DirOne, DirTwo]});
+            const fixture = TestBed.createComponent(Cmp);
+            const comp = fixture.componentInstance;
+            fixture.detectChanges();
+
+            const div = fixture.nativeElement.querySelector('div');
+            expect(div.style.opacity).toEqual('0.5');
+            expect(div.style.color).toEqual('red');
+            expect(div.style.width).toEqual('100px');
+            expect(div.style.height).toEqual('200px');
+
+            comp.two.h = '300px';
+            fixture.detectChanges();
+            expect(div.style.opacity).toEqual('0.5');
+            expect(div.style.color).toEqual('red');
+            expect(div.style.width).toEqual('100px');
+            expect(div.style.height).toEqual('300px');
+          });
+
+  it('should work with NO_CHANGE values if they are applied to bindings ', () => {
+    @Component({
+      template: `
+            <div
+              [style.width]="w"
+              style.height="{{ h }}"
+              [style.opacity]="o"></div>
+          `
+    })
+    class Cmp {
+      w: any = null;
+      h: any = null;
+      o: any = null;
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    const comp = fixture.componentInstance;
+
+    comp.w = '100px';
+    comp.h = '200px';
+    comp.o = '0.5';
+    fixture.detectChanges();
+
+    const div = fixture.nativeElement.querySelector('div');
+    expect(div.style.width).toEqual('100px');
+    expect(div.style.height).toEqual('200px');
+    expect(div.style.opacity).toEqual('0.5');
+
+    comp.w = '500px';
+    comp.o = '1';
+    fixture.detectChanges();
+
+    expect(div.style.width).toEqual('500px');
+    expect(div.style.height).toEqual('200px');
+    expect(div.style.opacity).toEqual('1');
+  });
+
+  it('should allow [ngStyle] and [ngClass] to be used together', () => {
+    @Component({
+      template: `
+            <div [ngClass]="c" [ngStyle]="s"></div>
+          `
+    })
+    class Cmp {
+      c: any = 'foo bar';
+      s: any = {width: '200px'};
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+
+    const div = fixture.nativeElement.querySelector('div');
+    expect(div.style.width).toEqual('200px');
+    expect(div.classList.contains('foo')).toBeTruthy();
+    expect(div.classList.contains('bar')).toBeTruthy();
+  });
+
+  it('should allow detectChanges to be run in a property change that causes additional styling to be rendered',
+     () => {
+       @Component({
+         selector: 'child',
+         template: `
+          <div [class.ready-child]="readyTpl"></div>
+        `,
+       })
+       class ChildCmp {
+         readyTpl = false;
+
+         @HostBinding('class.ready-host')
+         readyHost = false;
+       }
+
+       @Component({
+         selector: 'parent',
+         template: `
+        <div>
+          <div #template></div>
+          <p>{{prop}}</p>
+        </div>
+      `,
+         host: {
+           '[style.color]': 'color',
+         },
+       })
+       class ParentCmp {
+         private _prop = '';
+
+         @ViewChild('template', {read: ViewContainerRef})
+         vcr: ViewContainerRef = null !;
+
+         private child: ComponentRef<ChildCmp> = null !;
+
+         @Input()
+         set prop(value: string) {
+           this._prop = value;
+           if (this.child && value === 'go') {
+             this.child.instance.readyHost = true;
+             this.child.instance.readyTpl = true;
+             this.child.changeDetectorRef.detectChanges();
+           }
+         }
+
+         get prop() { return this._prop; }
+
+         ngAfterViewInit() {
+           const factory = this.componentFactoryResolver.resolveComponentFactory(ChildCmp);
+           this.child = this.vcr.createComponent(factory);
+         }
+
+         constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+       }
+
+       @Component({
+         template: `<parent [prop]="prop"></parent>`,
+       })
+       class App {
+         prop = 'a';
+       }
+
+       @NgModule({
+         entryComponents: [ChildCmp],
+         declarations: [ChildCmp],
+       })
+       class ChildCmpModule {
+       }
+
+       TestBed.configureTestingModule({declarations: [App, ParentCmp], imports: [ChildCmpModule]});
+       const fixture = TestBed.createComponent(App);
+       fixture.detectChanges(false);
+
+       let readyHost = fixture.nativeElement.querySelector('.ready-host');
+       let readyChild = fixture.nativeElement.querySelector('.ready-child');
+
+       expect(readyHost).toBeFalsy();
+       expect(readyChild).toBeFalsy();
+
+       fixture.componentInstance.prop = 'go';
+       fixture.detectChanges(false);
+
+       readyHost = fixture.nativeElement.querySelector('.ready-host');
+       readyChild = fixture.nativeElement.querySelector('.ready-child');
+       expect(readyHost).toBeTruthy();
+       expect(readyChild).toBeTruthy();
+     });
+
+  it('should allow detectChanges to be run in a hook that causes additional styling to be rendered',
+     () => {
+       @Component({
+         selector: 'child',
+         template: `
+          <div [class.ready-child]="readyTpl"></div>
+        `,
+       })
+       class ChildCmp {
+         readyTpl = false;
+
+         @HostBinding('class.ready-host')
+         readyHost = false;
+       }
+
+       @Component({
+         selector: 'parent',
+         template: `
+          <div>
+            <div #template></div>
+            <p>{{prop}}</p>
+          </div>
+        `,
+       })
+       class ParentCmp {
+         updateChild = false;
+
+         @ViewChild('template', {read: ViewContainerRef})
+         vcr: ViewContainerRef = null !;
+
+         private child: ComponentRef<ChildCmp> = null !;
+
+         ngDoCheck() {
+           if (this.updateChild) {
+             this.child.instance.readyHost = true;
+             this.child.instance.readyTpl = true;
+             this.child.changeDetectorRef.detectChanges();
+           }
+         }
+
+         ngAfterViewInit() {
+           const factory = this.componentFactoryResolver.resolveComponentFactory(ChildCmp);
+           this.child = this.vcr.createComponent(factory);
+         }
+
+         constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+       }
+
+       @Component({
+         template: `<parent #parent></parent>`,
+       })
+       class App {
+         @ViewChild('parent', {static: true}) public parent: ParentCmp|null = null;
+       }
+
+       @NgModule({
+         entryComponents: [ChildCmp],
+         declarations: [ChildCmp],
+       })
+       class ChildCmpModule {
+       }
+
+       TestBed.configureTestingModule({declarations: [App, ParentCmp], imports: [ChildCmpModule]});
+       const fixture = TestBed.createComponent(App);
+       fixture.detectChanges(false);
+
+       let readyHost = fixture.nativeElement.querySelector('.ready-host');
+       let readyChild = fixture.nativeElement.querySelector('.ready-child');
+       expect(readyHost).toBeFalsy();
+       expect(readyChild).toBeFalsy();
+
+       const parent = fixture.componentInstance.parent !;
+       parent.updateChild = true;
+       fixture.detectChanges(false);
+
+       readyHost = fixture.nativeElement.querySelector('.ready-host');
+       readyChild = fixture.nativeElement.querySelector('.ready-child');
+       expect(readyHost).toBeTruthy();
+       expect(readyChild).toBeTruthy();
+     });
+
+  onlyInIvy('only ivy allows for multiple styles/classes to be balanced across directives')
+      .it('should allow various duplicate properties to be defined in various styling maps within the template and directive styling bindings',
+          () => {
+            @Component({
+              template: `
+           <div [style.width]="w"
+                [style.height]="h"
+                [style]="s1"
+                [dir-with-styling]="s2">
+         `
+            })
+            class Cmp {
+              h = '100px';
+              w = '100px';
+              s1: any = {border: '10px solid black', width: '200px'};
+              s2: any = {border: '10px solid red', width: '300px'};
+            }
+
+            @Directive({selector: '[dir-with-styling]'})
+            class DirectiveExpectingStyling {
+              @Input('dir-with-styling') @HostBinding('style') public styles: any = null;
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp, DirectiveExpectingStyling]});
+            const fixture = TestBed.createComponent(Cmp);
+            fixture.detectChanges();
+
+            const element = fixture.nativeElement.querySelector('div');
+            expect(element.style.border).toEqual('10px solid black');
+            expect(element.style.width).toEqual('100px');
+            expect(element.style.height).toEqual('100px');
+
+            fixture.componentInstance.s1 = null;
+            fixture.detectChanges();
+
+            expect(element.style.border).toEqual('10px solid red');
+            expect(element.style.width).toEqual('100px');
+            expect(element.style.height).toEqual('100px');
+          });
+
+  it('should retrieve styles set via Renderer2', () => {
+    let dirInstance: any;
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      constructor(public elementRef: ElementRef, public renderer: Renderer2) { dirInstance = this; }
+
+      setStyles() {
+        this.renderer.setStyle(
+            this.elementRef.nativeElement, 'transform', 'translate3d(0px, 0px, 0px)');
+        this.renderer.addClass(this.elementRef.nativeElement, 'my-class');
+      }
+    }
+
+    @Component({template: `<div dir></div>`})
+    class App {
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Dir],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    dirInstance.setStyles();
+
+    const div = fixture.debugElement.children[0];
+    expect(div.styles.transform).toMatch(/translate3d\(0px\s*,\s*0px\s*,\s*0px\)/);
+    expect(div.classes['my-class']).toBe(true);
+
+    div.classes['other-class'] = true;
+    div.styles['width'] = '200px';
+    expect(div.styles.width).toEqual('200px');
+    expect(div.classes['other-class']).toBe(true);
+
+    if (ivyEnabled) {
+      expect(div.nativeElement.classList.contains('other-class')).toBeTruthy();
+      expect(div.nativeElement.style['width']).toEqual('200px');
+    }
+  });
+
+  it('should not set classes when falsy value is passed while a sanitizer is present', () => {
+    @Component({
+      // Note that we use `background` here because it needs to be sanitized.
+      template: `
+        <span class="container" [ngClass]="{disabled: isDisabled}"></span>
+        <div [style.background]="background"></div>
+      `,
+    })
+
+    class AppComponent {
+      isDisabled = false;
+      background = 'orange';
+    }
+
+    TestBed.configureTestingModule({declarations: [AppComponent]});
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    const span = fixture.nativeElement.querySelector('span');
+    expect(span.classList).not.toContain('disabled');
+
+    // The issue we're testing for happens after the second change detection.
+    fixture.detectChanges();
+    expect(span.classList).not.toContain('disabled');
+  });
+
+  it('should not set classes when falsy value is passed while a sanitizer from host bindings is present',
+     () => {
+       @Directive({selector: '[blockStyles]'})
+       class StylesDirective {
+         @HostBinding('style.border')
+         border = '1px solid red';
+
+         @HostBinding('style.background')
+         background = 'white';
+       }
+
+       @Component({
+         template: `<div class="container" [ngClass]="{disabled: isDisabled}" blockStyles></div>`,
+       })
+       class AppComponent {
+         isDisabled = false;
+       }
+
+       TestBed.configureTestingModule({declarations: [AppComponent, StylesDirective]});
+       const fixture = TestBed.createComponent(AppComponent);
+       fixture.detectChanges();
+
+       const div = fixture.nativeElement.querySelector('div');
+       expect(div.classList.contains('disabled')).toBe(false);
+
+       // The issue we're testing for happens after the second change detection.
+       fixture.detectChanges();
+       expect(div.classList.contains('disabled')).toBe(false);
+     });
+
+  it('should throw an error if a prop-based style/class binding value is changed during checkNoChanges',
+     () => {
+       @Component({
+         template: `
+        <div [style.color]="color" [class.foo]="fooClass"></div>
+      `
+       })
+       class Cmp {
+         color = 'red';
+         fooClass = true;
+
+         ngAfterViewInit() {
+           this.color = 'blue';
+           this.fooClass = false;
+         }
+       }
+
+       TestBed.configureTestingModule({declarations: [Cmp]});
+       const fixture = TestBed.createComponent(Cmp);
+
+       expect(() => {
+         fixture.detectChanges();
+       }).toThrowError(/ExpressionChangedAfterItHasBeenCheckedError/);
+     });
+
+  onlyInIvy('only ivy allows for map-based style AND class bindings')
+      .it('should throw an error if a map-based style/class binding value is changed during checkNoChanges',
+          () => {
+            @Component({
+              template: `
+                <div [style]="style" [class]="klass"></div>
+              `
+            })
+            class Cmp {
+              style: any = {width: '100px'};
+              klass: any = {foo: true, bar: false};
+
+              ngAfterViewInit() {
+                this.style = {height: '200px'};
+                this.klass = {foo: false};
+              }
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp]});
+            const fixture = TestBed.createComponent(Cmp);
+
+            expect(() => {
+              fixture.detectChanges();
+            }).toThrowError(/ExpressionChangedAfterItHasBeenCheckedError/);
+          });
+
+  it('should properly merge class interpolation with class-based directives', () => {
+    @Component(
+        {template: `<div class="zero {{one}}" [class.two]="true" [ngClass]="'three'"></div>`})
+    class MyComp {
+      one = 'one';
+    }
+
+    const fixture =
+        TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+    fixture.detectChanges();
+
+    expect(fixture.debugElement.nativeElement.innerHTML).toContain('zero');
+    expect(fixture.debugElement.nativeElement.innerHTML).toContain('one');
+    expect(fixture.debugElement.nativeElement.innerHTML).toContain('two');
+    expect(fixture.debugElement.nativeElement.innerHTML).toContain('three');
+  });
+
+  onlyInIvy('only ivy treats [class] in concert with other class bindings')
+      .it('should retain classes added externally', () => {
+        @Component({template: `<div [class]="exp"></div>`})
+        class MyComp {
+          exp = '';
+        }
+
+        const fixture =
+            TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+        fixture.detectChanges();
+
+        const div = fixture.nativeElement.querySelector('div') !;
+        div.className += ' abc';
+        expect(splitSortJoin(div.className)).toEqual('abc');
+
+        fixture.componentInstance.exp = '1 2 3';
+        fixture.detectChanges();
+
+        expect(splitSortJoin(div.className)).toEqual('1 2 3 abc');
+
+        fixture.componentInstance.exp = '4 5 6 7';
+        fixture.detectChanges();
+
+        expect(splitSortJoin(div.className)).toEqual('4 5 6 7 abc');
+
+        function splitSortJoin(s: string) { return s.split(/\s+/).sort().join(' ').trim(); }
+      });
 });
+
+function assertStyleCounters(countForSet: number, countForRemove: number) {
+  expect(ngDevMode !.rendererSetStyle).toEqual(countForSet);
+  expect(ngDevMode !.rendererRemoveStyle).toEqual(countForRemove);
+}
+
+function assertStyle(element: HTMLElement, prop: string, value: any) {
+  expect((element.style as any)[prop]).toEqual(value);
+}

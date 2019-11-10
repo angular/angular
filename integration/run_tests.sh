@@ -9,6 +9,7 @@ cd "$(dirname "$0")"
 
 # basedir is the workspace root
 readonly basedir=$(pwd)/..
+readonly bazel_bin=$(yarn bin)/bazel
 
 # When running on the CI, we track the payload size of various integration output files. Also
 # we shard tests across multiple CI job instances. The script needs to be run with a shard index
@@ -35,6 +36,9 @@ else
   TEST_DIRS=$(ls | grep -v node_modules)
 fi
 
+# We need to build zone.js npm package because it is not built in build-packages-dist.sh
+${bazel_bin} build //packages/zone.js:npm_package
+
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
 # Yarn will cache file://dist URIs and not update Angular code
 readonly cache=.yarn_local_cache
@@ -57,10 +61,9 @@ for testDir in ${TEST_DIRS}; do
     yarn install --cache-folder ../$cache
     yarn test || exit 1
 
-    # Track payload size for cli-hello-world, cli-hello-world-ivy-minimal, cli-hello-world-ivy-compat and
-    # hello_world__closure
-    if $CI && ([[ $testDir == cli-hello-world ]] || [[ $testDir == cli-hello-world-ivy-minimal ]] || [[ $testDir == cli-hello-world-ivy-compat ]] || [[ $testDir == hello_world__closure ]]); then
-      if ([[ $testDir == cli-hello-world ]] || [[ $testDir == cli-hello-world-ivy-minimal ]] || [[ $testDir == cli-hello-world-ivy-compat ]]); then
+    # Track payload size for cli-hello-world* tests, plus hello_world__closure
+    if $CI && ([[ $testDir =~ cli-hello-world ]] || [[ $testDir == hello_world__closure ]]); then
+      if ([[ $testDir =~ cli-hello-world ]]); then
         yarn build
       fi
 

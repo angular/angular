@@ -4,6 +4,7 @@
     // packages like the native "http" module are resolved to the Angular "http" package.
     "baseUrl": "..",
     "declaration": true,
+    "downlevelIteration": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "commonjs",
@@ -18,6 +19,7 @@
       "selenium-webdriver": ["./node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["./node_modules/rxjs/*"],
       "@angular/*": ["./packages/*"],
+      "zone.js/*": ["./packages/zone.js/*"],
       "e2e_util/*": ["./modules/e2e_util/*"]
     },
     "rootDir": ".",
@@ -43,12 +45,12 @@
     // Http doesn't need to built since it is no longer maintained and
     // will be removed eventually. See: FW-1392.
     "http/**",
+    "language-service/test/project",
     "platform-server/integrationtest",
     // The webworker packages have deprecated and are not made compatible with the
     // strict flag. Until these packages are removed, we exclude them here.
     "platform-webworker/**",
     "platform-webworker-dynamic/**",
-    "router/test/aot_ngsummary_test",
-    "zone.js"
+    "router/test/aot_ngsummary_test"
   ]
 }

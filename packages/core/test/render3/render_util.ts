@@ -12,9 +12,9 @@ import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {Renderer2} from '@angular/core/src/render/api';
-import {createLView, createTView, getOrCreateTNode, getOrCreateTView, renderComponentOrTemplate} from '@angular/core/src/render3/instructions/shared';
-import {TNodeType} from '@angular/core/src/render3/interfaces/node';
-import {getLView, resetComponentState, selectView} from '@angular/core/src/render3/state';
+import {createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, renderComponentOrTemplate} from '@angular/core/src/render3/instructions/shared';
+import {TConstants, TNodeType} from '@angular/core/src/render3/interfaces/node';
+import {enterView, getLView} from '@angular/core/src/render3/state';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 import {SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as R3_CHANGE_DETECTOR_REF_FACTORY} from '../../src/change_detection/change_detector_ref';
@@ -32,12 +32,14 @@ import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveT
 import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {HEADER_OFFSET, LView, LViewFlags, TVIEW, T_HOST} from '../../src/render3/interfaces/view';
+import {HEADER_OFFSET, LView, LViewFlags, TViewType, T_HOST} from '../../src/render3/interfaces/view';
 import {destroyLView} from '../../src/render3/node_manipulation';
 import {getRootView} from '../../src/render3/util/view_traversal_utils';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 
 import {getRendererFactory2} from './imported_renderer2';
+
+
 
 export abstract class BaseFixture {
   /**
@@ -100,10 +102,10 @@ export class TemplateFixture extends BaseFixture {
    *          `if (rf & RenderFlags.Update) { __here__ }`.
    */
   constructor(
-      private createBlock: () => void, private updateBlock: () => void = noop, consts: number = 0,
+      private createBlock: () => void, private updateBlock: () => void = noop, decls: number = 0,
       private vars: number = 0, directives?: DirectiveTypesOrFactory|null,
       pipes?: PipeTypesOrFactory|null, sanitizer?: Sanitizer|null,
-      rendererFactory?: RendererFactory3) {
+      rendererFactory?: RendererFactory3, private _consts?: TConstants) {
     super();
     this._directiveDefs = toDefs(directives, extractDirectiveDef);
     this._pipeDefs = toDefs(pipes, extractPipeDef);
@@ -119,8 +121,8 @@ export class TemplateFixture extends BaseFixture {
             this.updateBlock();
           }
         },
-        consts, vars, null !, this._rendererFactory, null, this._directiveDefs, this._pipeDefs,
-        sanitizer);
+        decls, vars, null !, this._rendererFactory, null, this._directiveDefs, this._pipeDefs,
+        sanitizer, this._consts);
   }
 
   /**
@@ -131,7 +133,8 @@ export class TemplateFixture extends BaseFixture {
   update(updateBlock?: () => void): void {
     renderTemplate(
         this.hostElement, updateBlock || this.updateBlock, 0, this.vars, null !,
-        this._rendererFactory, this.hostView, this._directiveDefs, this._pipeDefs, this._sanitizer);
+        this._rendererFactory, this.hostView, this._directiveDefs, this._pipeDefs, this._sanitizer,
+        this._consts);
   }
 
   destroy(): void {
@@ -236,40 +239,40 @@ export function resetDOM() {
  *
  * @param hostNode Existing node to render into.
  * @param templateFn Template function with the instructions.
- * @param consts The number of nodes, local refs, and pipes in this template
+ * @param decls The number of nodes, local refs, and pipes in this template
  * @param context to pass into the template.
  * @param providedRendererFactory renderer factory to use
  * @param host The host element node to use
  * @param directives Directive defs that should be used for matching
  * @param pipes Pipe defs that should be used for matching
+ * @param consts Constants associated with the template.
  */
 export function renderTemplate<T>(
-    hostNode: RElement, templateFn: ComponentTemplate<T>, consts: number, vars: number, context: T,
+    hostNode: RElement, templateFn: ComponentTemplate<T>, decls: number, vars: number, context: T,
     providedRendererFactory: RendererFactory3, componentView: LView | null,
     directives?: DirectiveDefListOrFactory | null, pipes?: PipeDefListOrFactory | null,
-    sanitizer?: Sanitizer | null): LView {
+    sanitizer?: Sanitizer | null, consts?: TConstants): LView {
   if (componentView === null) {
-    resetComponentState();
     const renderer = providedRendererFactory.createRenderer(null, null);
 
     // We need to create a root view so it's possible to look up the host element through its index
-    const tView = createTView(-1, null, 1, 0, null, null, null, null);
+    const tView = createTView(TViewType.Root, -1, null, 1, 0, null, null, null, null, null);
     const hostLView = createLView(
         null, tView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null,
         providedRendererFactory, renderer);
-    selectView(hostLView, null);  // SUSPECT! why do we need to enter the View?
+    enterView(hostLView, null);
 
     const def: ComponentDef<any> = ɵɵdefineComponent({
-      selectors: [],
       type: Object,
       template: templateFn,
-      consts: consts,
+      decls: decls,
       vars: vars,
+      consts: consts,
     });
     def.directiveDefs = directives || null;
     def.pipeDefs = pipes || null;
 
-    const componentTView = getOrCreateTView(def);
+    const componentTView = getOrCreateTComponentView(def);
     const hostTNode = getOrCreateTNode(tView, hostLView[T_HOST], 0, TNodeType.Element, null, null);
     hostLView[hostTNode.index] = hostNode;
     componentView = createLView(
@@ -285,12 +288,13 @@ export function renderTemplate<T>(
  * @deprecated use `TemplateFixture` or `ComponentFixture`
  */
 export function renderToHtml(
-    template: ComponentTemplate<any>, ctx: any, consts: number = 0, vars: number = 0,
+    template: ComponentTemplate<any>, ctx: any, decls: number = 0, vars: number = 0,
     directives?: DirectiveTypesOrFactory | null, pipes?: PipeTypesOrFactory | null,
-    providedRendererFactory?: RendererFactory3 | null, keepNgReflect = false) {
+    providedRendererFactory?: RendererFactory3 | null, keepNgReflect = false, consts?: TConstants) {
   hostView = renderTemplate(
-      containerEl, template, consts, vars, ctx, providedRendererFactory || testRendererFactory,
-      hostView, toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef));
+      containerEl, template, decls, vars, ctx, providedRendererFactory || testRendererFactory,
+      hostView, toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef), null,
+      consts);
   return toHtml(containerEl, keepNgReflect);
 }
 
@@ -362,24 +366,26 @@ export function toHtml<T>(componentOrElement: T | RElement, keepNgReflect = fals
 }
 
 export function createComponent(
-    name: string, template: ComponentTemplate<any>, consts: number = 0, vars: number = 0,
+    name: string, template: ComponentTemplate<any>, decls: number = 0, vars: number = 0,
     directives: DirectiveTypesOrFactory = [], pipes: PipeTypesOrFactory = [],
     viewQuery: ComponentTemplate<any>| null = null, providers: Provider[] = [],
-    viewProviders: Provider[] = [], hostBindings?: HostBindingsFunction<any>): ComponentType<any> {
+    viewProviders: Provider[] = [], hostBindings?: HostBindingsFunction<any>,
+    consts: TConstants = []): ComponentType<any> {
   return class Component {
     value: any;
-    static ngFactoryDef = () => new Component;
-    static ngComponentDef = ɵɵdefineComponent({
+    static ɵfac = () => new Component;
+    static ɵcmp = ɵɵdefineComponent({
       type: Component,
       selectors: [[name]],
-      consts: consts,
+      decls: decls,
       vars: vars,
       template: template,
       viewQuery: viewQuery,
       directives: directives, hostBindings,
       pipes: pipes,
       features: (providers.length > 0 || viewProviders.length > 0)?
-      [ɵɵProvidersFeature(providers || [], viewProviders || [])]: []
+      [ɵɵProvidersFeature(providers || [], viewProviders || [])]: [],
+      consts: consts,
     });
   };
 }
@@ -387,8 +393,8 @@ export function createComponent(
 export function createDirective(
     name: string, {exportAs}: {exportAs?: string[]} = {}): DirectiveType<any> {
   return class Directive {
-    static ngFactoryDef = () => new Directive();
-    static ngDirectiveDef = ɵɵdefineDirective({
+    static ɵfac = () => new Directive();
+    static ɵdir = ɵɵdefineDirective({
       type: Directive,
       selectors: [['', name, '']],
       exportAs: exportAs,

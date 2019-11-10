@@ -7,7 +7,7 @@
  */
 
 import * as core from '../../core/src/compiler/compiler_facade_interface';
-import {R3ResolvedDependencyType} from '../public_api';
+import {R3FactoryTarget, R3ResolvedDependencyType} from '../public_api';
 import * as compiler from '../src/compiler_facade_interface';
 
 /**
@@ -60,6 +60,15 @@ const coreR3ResolvedDependencyType3: core.R3ResolvedDependencyType =
 const compilerR3ResolvedDependencyType3: compiler.R3ResolvedDependencyType =
     null !as R3ResolvedDependencyType;
 
+const coreR3FactoryTarget: core.R3FactoryTarget = null !as compiler.R3FactoryTarget;
+const compilerR3FactoryTarget: compiler.R3FactoryTarget = null !as core.R3FactoryTarget;
+
+const coreR3FactoryTarget2: R3FactoryTarget = null !as core.R3FactoryTarget;
+const compilerR3FactoryTarget2: R3FactoryTarget = null !as core.R3FactoryTarget;
+
+const coreR3FactoryTarget3: core.R3FactoryTarget = null !as R3FactoryTarget;
+const compilerR3FactoryTarget3: compiler.R3FactoryTarget = null !as R3FactoryTarget;
+
 const coreR3DependencyMetadataFacade: core.R3DependencyMetadataFacade =
     null !as compiler.R3DependencyMetadataFacade;
 const compilerR3DependencyMetadataFacade: compiler.R3DependencyMetadataFacade =
@@ -93,10 +102,6 @@ const coreR3ComponentMetadataFacade: core.R3ComponentMetadataFacade =
     null !as compiler.R3ComponentMetadataFacade;
 const compilerR3ComponentMetadataFacade: compiler.R3ComponentMetadataFacade =
     null !as core.R3ComponentMetadataFacade;
-
-const coreR3BaseMetadataFacade: core.R3BaseMetadataFacade = null !as compiler.R3BaseMetadataFacade;
-const compilerR3BaseMetadataFacade: compiler.R3BaseMetadataFacade =
-    null !as core.R3BaseMetadataFacade;
 
 const coreViewEncapsulation: core.ViewEncapsulation = null !as compiler.ViewEncapsulation;
 const compilerViewEncapsulation: compiler.ViewEncapsulation = null !as core.ViewEncapsulation;

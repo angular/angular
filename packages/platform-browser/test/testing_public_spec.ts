@@ -781,7 +781,7 @@ const bTok = new InjectionToken<string>('b');
 
           it('should use set up providers', fakeAsync(() => {
                // Keeping this component inside the test is needed to make sure it's not resolved
-               // prior to this test, thus having ngComponentDef and a reference in resource
+               // prior to this test, thus having ɵcmp and a reference in resource
                // resolution queue. This is done to check external resoution logic in isolation by
                // configuring TestBed with the necessary ResourceLoader instance.
                @Component({
@@ -958,7 +958,7 @@ Did you run and wait for 'resolveComponentResources()'?` :
 
       onlyInIvy(`Unknown property warning logged instead of an error`)
           .it('should error on unknown bound properties on custom elements by default', () => {
-            @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+            @Component({template: '<div [someUnknownProp]="true"></div>'})
             class ComponentUsingInvalidProperty {
             }
 

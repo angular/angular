@@ -9,6 +9,8 @@
 import {SchemaMetadata, ViewEncapsulation} from '../../core';
 import {ProcessProvidersFunction} from '../../di/interface/provider';
 import {Type} from '../../interface/type';
+
+import {TConstants} from './node';
 import {CssSelectorList} from './projection';
 import {TView} from './view';
 
@@ -67,27 +69,25 @@ export const enum RenderFlags {
 }
 
 /**
- * A subclass of `Type` which has a static `ngComponentDef`:`ComponentDef` field making it
+ * A subclass of `Type` which has a static `ɵcmp`:`ComponentDef` field making it
  * consumable for rendering.
  */
-export interface ComponentType<T> extends Type<T> { ngComponentDef: never; }
+export interface ComponentType<T> extends Type<T> { ɵcmp: never; }
 
 /**
- * A subclass of `Type` which has a static `ngDirectiveDef`:`DirectiveDef` field making it
+ * A subclass of `Type` which has a static `ɵdir`:`DirectiveDef` field making it
  * consumable for rendering.
  */
 export interface DirectiveType<T> extends Type<T> {
-  ngDirectiveDef: never;
-  ngFactoryDef: () => T;
+  ɵdir: never;
+  ɵfac: () => T;
 }
 
-export const enum DirectiveDefFlags {ContentQuery = 0b10}
-
 /**
- * A subclass of `Type` which has a static `ngPipeDef`:`PipeDef` field making it
+ * A subclass of `Type` which has a static `ɵpipe`:`PipeDef` field making it
  * consumable for rendering.
  */
-export interface PipeType<T> extends Type<T> { ngPipeDef: never; }
+export interface PipeType<T> extends Type<T> { ɵpipe: never; }
 
 /**
  * @codeGenApi
@@ -97,17 +97,20 @@ export type ɵɵDirectiveDefWithMeta<
     OutputMap extends{[key: string]: string}, QueryFields extends string[]> = DirectiveDef<T>;
 
 /**
- * Runtime information for classes that are inherited by components or directives
- * that aren't defined as components or directives.
+ * Runtime link information for Directives.
  *
- * This is an internal data structure used by the renderer to determine what inputs
- * and outputs should be inherited.
+ * This is an internal data structure used by the render to link
+ * directives into templates.
  *
- * See: {@link defineBase}
+ * NOTE: Always use `defineDirective` function to create this object,
+ * never create the object directly since the shape of this object
+ * can change between versions.
  *
- * @codeGenApi
+ * @param Selector type metadata specifying the selector of the directive or component
+ *
+ * See: {@link defineDirective}
  */
-export interface ɵɵBaseDef<T> {
+export interface DirectiveDef<T> {
   /**
    * A dictionary mapping the inputs' minified property names to their public API names, which
    * are their aliases if any, or their original unminified property names
@@ -144,23 +147,7 @@ export interface ɵɵBaseDef<T> {
    * Refreshes host bindings on the associated directive.
    */
   hostBindings: HostBindingsFunction<T>|null;
-}
 
-/**
- * Runtime link information for Directives.
- *
- * This is internal data structure used by the render to link
- * directives into templates.
- *
- * NOTE: Always use `defineDirective` function to create this object,
- * never create the object directly since the shape of this object
- * can change between versions.
- *
- * @param Selector type metadata specifying the selector of the directive or component
- *
- * See: {@link defineDirective}
- */
-export interface DirectiveDef<T> extends ɵɵBaseDef<T> {
   /** Token representing the directive. Used by DI. */
   type: Type<T>;
 
@@ -219,7 +206,7 @@ export type ɵɵFactoryDef<T> = () => T;
 /**
  * Runtime link information for Components.
  *
- * This is internal data structure used by the render to link
+ * This is an internal data structure used by the render to link
  * components into templates.
  *
  * NOTE: Always use `defineComponent` function to create this object,
@@ -239,6 +226,9 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    */
   readonly template: ComponentTemplate<T>;
 
+  /** Constants associated with the component's view. */
+  readonly consts: TConstants|null;
+
   /**
    * An array of `ngContent[selector]` values that were found in the template.
    */
@@ -256,7 +246,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * can pre-fill the array and set the binding start index.
    */
   // TODO(kara): remove queries from this count
-  readonly consts: number;
+  readonly decls: number;
 
   /**
    * The number of bindings in this component template (including pure fn bindings).
@@ -328,7 +318,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
 /**
  * Runtime link information for Pipes.
  *
- * This is internal data structure used by the renderer to link
+ * This is an internal data structure used by the renderer to link
  * pipes into templates.
  *
  * NOTE: Always use `definePipe` function to create this object,

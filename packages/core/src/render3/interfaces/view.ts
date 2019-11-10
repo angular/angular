@@ -15,7 +15,7 @@ import {Sanitizer} from '../../sanitization/sanitizer';
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
 import {I18nUpdateOpCodes, TI18n} from './i18n';
-import {TElementNode, TNode, TViewNode} from './node';
+import {TAttributes, TConstants, TElementNode, TNode, TViewNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
@@ -32,20 +32,19 @@ export const PARENT = 3;
 export const NEXT = 4;
 export const QUERIES = 5;
 export const T_HOST = 6;
-export const BINDING_INDEX = 7;
-export const CLEANUP = 8;
-export const CONTEXT = 9;
-export const INJECTOR = 10;
-export const RENDERER_FACTORY = 11;
-export const RENDERER = 12;
-export const SANITIZER = 13;
-export const CHILD_HEAD = 14;
-export const CHILD_TAIL = 15;
-export const DECLARATION_VIEW = 16;
-export const DECLARATION_LCONTAINER = 17;
-export const PREORDER_HOOK_FLAGS = 18;
+export const CLEANUP = 7;
+export const CONTEXT = 8;
+export const INJECTOR = 9;
+export const RENDERER_FACTORY = 10;
+export const RENDERER = 11;
+export const SANITIZER = 12;
+export const CHILD_HEAD = 13;
+export const CHILD_TAIL = 14;
+export const DECLARATION_VIEW = 15;
+export const DECLARATION_LCONTAINER = 16;
+export const PREORDER_HOOK_FLAGS = 17;
 /** Size of LView's header. Necessary to adjust for it when setting slots.  */
-export const HEADER_OFFSET = 19;
+export const HEADER_OFFSET = 18;
 
 
 // This interface replaces the real LView interface if it is an arg or a
@@ -119,15 +118,6 @@ export interface LView extends Array<any> {
    * If null, this is the root view of an application (root component is in this view).
    */
   [T_HOST]: TViewNode|TElementNode|null;
-
-  /**
-   * The binding index we should access next.
-   *
-   * This is stored so that bindings can continue where they left off
-   * if a view is left midway through processing bindings (e.g. if there is
-   * a setter that creates an embedded view, like in ngIf).
-   */
-  [BINDING_INDEX]: number;
 
   /**
    * When a view is destroyed, listeners need to be released and outputs need to be
@@ -299,7 +289,7 @@ export const enum InitPhaseState {
   InitPhaseCompleted = 0b11,
 }
 
-/** More flags associated with an LView (saved in LView[FLAGS_MORE]) */
+/** More flags associated with an LView (saved in LView[PREORDER_HOOK_FLAGS]) */
 export const enum PreOrderHookFlags {
   /** The index of the next pre-order hook to be called in the hooks array, on the first 16
      bits */
@@ -319,6 +309,35 @@ export const enum PreOrderHookFlags {
  * See VIEW_DATA.md for more information.
  */
 export interface ExpandoInstructions extends Array<number|HostBindingsFunction<any>|null> {}
+
+/**
+ * Explicitly marks `TView` as a specific type in `ngDevMode`
+ *
+ * It is useful to know conceptually what time of `TView` we are dealing with when
+ * debugging an application (even if the runtime does not need it.) For this reason
+ * we store this information in the `ngDevMode` `TView` and than use it for
+ * better debugging experience.
+ */
+export const enum TViewType {
+  /**
+   * Root `TView` is the used to bootstrap components into. It is used in conjunction with
+   * `LView` which takes an existing DOM node not owned by Angular and wraps it in `TView`/`LView`
+   * so that other components can be loaded into it.
+   */
+  Root = 0,
+
+  /**
+   * `TView` associated with a Component. This would be the `TView` directly associated with the
+   * component view (as opposed an `Embedded` `TView` which would be a child of `Component` `TView`)
+   */
+  Component = 1,
+
+  /**
+   * `TView` associated with a template. Such as `*ngIf`, `<ng-template>` etc... A `Component`
+   * can have zero or more `Embedede` `TView`s.
+   */
+  Embedded = 2,
+}
 
 /**
  * The static data for an LView (shared between all templates of a
@@ -370,8 +389,11 @@ export interface TView {
    */
   node: TViewNode|TElementNode|null;
 
-  /** Whether or not this template has been processed. */
-  firstTemplatePass: boolean;
+  /** Whether or not this template has been processed in creation mode. */
+  firstCreatePass: boolean;
+
+  /** Whether or not the first update for this template has been processed. */
+  firstUpdatePass: boolean;
 
   /** Static data equivalent of LView.data[]. Contains TNodes, PipeDefInternal or TI18n. */
   data: TData;
@@ -381,13 +403,15 @@ export interface TView {
    * starts to store bindings only. Saving this value ensures that we
    * will begin reading bindings at the correct point in the array when
    * we are in update mode.
+   *
+   * -1 means that it has not been initialized.
    */
   bindingStartIndex: number;
 
   /**
    * The index where the "expando" section of `LView` begins. The expando
    * section contains injectors, directive instances, and host binding values.
-   * Unlike the "consts" and "vars" sections of `LView`, the length of this
+   * Unlike the "decls" and "vars" sections of `LView`, the length of this
    * section cannot be calculated at compile-time because directives are matched
    * at runtime to preserve locality.
    *
@@ -561,6 +585,12 @@ export interface TView {
    * Set of schemas that declare elements to be allowed inside the view.
    */
   schemas: SchemaMetadata[]|null;
+
+  /**
+   * Array of constants for the view. Includes attribute arrays, local definition arrays etc.
+   * Used for directive matching, attribute bindings, local definitions and more.
+   */
+  consts: TConstants|null;
 }
 
 export const enum RootContextFlags {Empty = 0b00, DetectChanges = 0b01, FlushPlayers = 0b10}

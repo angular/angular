@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Directive, DoCheck, Input, ɵRenderFlags, ɵɵdefineDirective, ɵɵstyleMap, ɵɵstyling, ɵɵstylingApply} from '@angular/core';
+import {Directive, DoCheck, Input, ɵRenderFlags, ɵɵallocHostVars, ɵɵdefineDirective, ɵɵstyleMap} from '@angular/core';
 
 import {NgStyleImpl, NgStyleImplProvider} from './ng_style_impl';
 
@@ -35,11 +35,10 @@ export const ngStyleDirectiveDef__POST_R3__ = ɵɵdefineDirective({
   selectors: null as any,
   hostBindings: function(rf: ɵRenderFlags, ctx: any, elIndex: number) {
     if (rf & ɵRenderFlags.Create) {
-      ɵɵstyling();
+      ɵɵallocHostVars(2);
     }
     if (rf & ɵRenderFlags.Update) {
       ɵɵstyleMap(ctx.getValue());
-      ɵɵstylingApply();
     }
   }
 });
@@ -55,17 +54,17 @@ export const ngStyleFactoryDef = ngStyleDirectiveDef__PRE_R3__;
  * While this is a base class that NgStyle extends from, the
  * class itself acts as a container for non-VE code to setup
  * a link to the `[style]` host binding (via the static
- * `ngDirectiveDef` property on the class).
+ * `ɵdir` property on the class).
  *
- * Note that the `ngDirectiveDef` property's code is switched
+ * Note that the `ɵdir` property's code is switched
  * depending if VE is present or not (this allows for the
  * binding code to be set only for newer versions of Angular).
  *
  * @publicApi
  */
 export class NgStyleBase {
-  static ngDirectiveDef: any = ngStyleDirectiveDef;
-  static ngFactory: any = ngStyleFactoryDef;
+  static ɵdir: any = ngStyleDirectiveDef;
+  static ɵfac: any = ngStyleFactoryDef;
 
   constructor(protected _delegate: NgStyleImpl) {}
 

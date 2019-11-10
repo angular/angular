@@ -42,17 +42,31 @@ export function bindAction(selector: string, callback: () => void) {
 export function profile(create: () => void, destroy: () => void, name: string) {
   return function() {
     window.console.profile(name);
-    let duration = 0;
+    const noOfRuns = 150;
+    let durations: number[] = [];
     let count = 0;
-    while (count++ < 150) {
+    while (count++ < noOfRuns) {
       const start = window.performance.now();
       create();
-      duration += window.performance.now() - start;
+      const end = window.performance.now() - start;
+      durations.push(end);
       destroy();
     }
     window.console.profileEnd();
-    window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
+    reportProfileResults(durations, noOfRuns);
   };
+}
+
+function reportProfileResults(durations: number[], count: number) {
+  const totalDuration = durations.reduce((soFar: number, duration: number) => soFar + duration, 0);
+  const avgDuration = (totalDuration / count).toFixed(2);
+  const minDuration = durations
+                          .reduce(
+                              (soFar: number, duration: number) => Math.min(soFar, duration),
+                              Number.MAX_SAFE_INTEGER)
+                          .toFixed(2);
+  window.console.log(
+      `Iterations: ${count}; cold time: ${durations[0].toFixed(2)} ms; average time: ${avgDuration} ms / iteration; best time: ${minDuration} ms`);
 }
 
 // helper script that will read out the url parameters

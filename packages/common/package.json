@@ -12,13 +12,11 @@
   "typings": "./common.d.ts",
   "author": "angular",
   "license": "MIT",
-  "dependencies": {
-    "tslib": "^1.9.0"
-  },
   "locales": "locales",
   "peerDependencies": {
-    "rxjs": "^6.4.0",
-    "@angular/core": "0.0.0-PLACEHOLDER"
+    "rxjs": "^6.5.3",
+    "@angular/core": "0.0.0-PLACEHOLDER",
+    "tslib": "^1.10.0"
   },
   "repository": {
     "type": "git",
@@ -27,5 +25,8 @@
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "sideEffects": false
+  "sideEffects": [
+    "**/global/*.js",
+    "**/closure-locale.*"
+  ]
 }

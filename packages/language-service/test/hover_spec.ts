@@ -9,24 +9,19 @@
 import * as ts from 'typescript';
 
 import {createLanguageService} from '../src/language_service';
-import {LanguageService} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
-import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
 
-describe('hover', () => {
-  let mockHost: MockTypescriptHost;
-  let tsLS: ts.LanguageService;
-  let ngLSHost: TypeScriptServiceHost;
-  let ngLS: LanguageService;
+const TEST_TEMPLATE = '/app/test.ng';
 
-  beforeEach(() => {
-    mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
-    tsLS = ts.createLanguageService(mockHost);
-    ngLSHost = new TypeScriptServiceHost(mockHost, tsLS);
-    ngLS = createLanguageService(ngLSHost);
-  });
+describe('hover', () => {
+  const mockHost = new MockTypescriptHost(['/app/main.ts']);
+  const tsLS = ts.createLanguageService(mockHost);
+  const ngLSHost = new TypeScriptServiceHost(mockHost, tsLS);
+  const ngLS = createLanguageService(ngLSHost);
+
+  beforeEach(() => { mockHost.reset(); });
 
   it('should be able to find field in an interpolation', () => {
     const fileName = mockHost.addCode(`
@@ -104,7 +99,21 @@ describe('hover', () => {
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
-    expect(toText(displayParts)).toBe('(component) TestComponent');
+    expect(toText(displayParts)).toBe('(component) AppModule.TestComponent: class');
+  });
+
+  it('should be able to find a reference to a directive', () => {
+    const fileName = mockHost.addCode(`
+      @Component({
+        template: '<test-comp «string-model»></test-comp>'
+      })
+      export class MyComponent { }`);
+    const marker = mockHost.getReferenceMarkerFor(fileName, 'string-model');
+    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    expect(quickInfo).toBeTruthy();
+    const {textSpan, displayParts} = quickInfo !;
+    expect(textSpan).toEqual(marker);
+    expect(toText(displayParts)).toBe('(directive) StringModel');
   });
 
   it('should be able to find an event provider', () => {
@@ -148,6 +157,53 @@ describe('hover', () => {
     const marker = mockHost.getReferenceMarkerFor(fileName, 'chart');
     const quickInfo = ngLS.getHoverAt(fileName, marker.start);
     expect(quickInfo).toBeUndefined();
+  });
+
+  it('should be able to find the NgModule of a component', () => {
+    const fileName = '/app/app.component.ts';
+    mockHost.override(fileName, `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: '<div></div>'
+      })
+      export class «AppComponent» {
+        name: string;
+      }`);
+    const marker = mockHost.getReferenceMarkerFor(fileName, 'AppComponent');
+    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    expect(quickInfo).toBeTruthy();
+    const {textSpan, displayParts} = quickInfo !;
+    expect(textSpan).toEqual(marker);
+    expect(toText(displayParts)).toBe('(component) AppModule.AppComponent: class');
+  });
+
+  it('should be able to find the NgModule of a directive', () => {
+    const fileName = '/app/parsing-cases.ts';
+    const content = mockHost.readFile(fileName) !;
+    const position = content.indexOf('StringModel');
+    expect(position).toBeGreaterThan(0);
+    const quickInfo = ngLS.getHoverAt(fileName, position);
+    expect(quickInfo).toBeTruthy();
+    const {textSpan, displayParts} = quickInfo !;
+    expect(textSpan).toEqual({
+      start: position,
+      length: 'StringModel'.length,
+    });
+    expect(toText(displayParts)).toBe('(directive) AppModule.StringModel: class');
+  });
+
+  it('should be able to provide quick info for $any() cast function', () => {
+    const content = mockHost.override(TEST_TEMPLATE, '<div>{{$any(title)}}</div>');
+    const position = content.indexOf('$any');
+    const quickInfo = ngLS.getHoverAt(TEST_TEMPLATE, position);
+    expect(quickInfo).toBeDefined();
+    const {textSpan, displayParts} = quickInfo !;
+    expect(textSpan).toEqual({
+      start: position,
+      length: '$any(title)'.length,
+    });
+    expect(toText(displayParts)).toBe('(method) $any');
   });
 });
 
