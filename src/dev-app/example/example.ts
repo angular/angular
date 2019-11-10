@@ -72,5 +72,5 @@ export class Example implements OnInit {
     this.title = EXAMPLE_COMPONENTS[this.id] ? EXAMPLE_COMPONENTS[this.id].title : '';
   }
 
-  static ngAcceptInputType_showLabel: boolean | string;
+  static ngAcceptInputType_showLabel: boolean | string | null | undefined;
 }

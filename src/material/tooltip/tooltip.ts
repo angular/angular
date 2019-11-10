@@ -604,9 +604,9 @@ export class MatTooltip implements OnDestroy, OnInit {
     }
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_hideDelay: number | string;
-  static ngAcceptInputType_showDelay: number | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_hideDelay: number | string | null | undefined;
+  static ngAcceptInputType_showDelay: number | string | null | undefined;
 }
 
 /**

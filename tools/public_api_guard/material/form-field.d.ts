@@ -55,7 +55,7 @@ export declare class MatFormField extends _MatFormFieldMixinBase implements Afte
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
     updateOutlineGap(): void;
-    static ngAcceptInputType_hideRequiredMarker: boolean | string;
+    static ngAcceptInputType_hideRequiredMarker: boolean | string | null | undefined;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatFormField, "mat-form-field", ["matFormField"], { 'color': "color", 'appearance': "appearance", 'hideRequiredMarker': "hideRequiredMarker", 'hintLabel': "hintLabel", 'floatLabel': "floatLabel" }, {}, ["_controlNonStatic", "_controlStatic", "_labelChildNonStatic", "_labelChildStatic", "_placeholderChild", "_errorChildren", "_hintChildren", "_prefixChildren", "_suffixChildren"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatFormField>;
 }

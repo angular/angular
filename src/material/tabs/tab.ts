@@ -140,5 +140,5 @@ export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnCh
         this._explicitContent || this._implicitContent, this._viewContainerRef);
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
 }

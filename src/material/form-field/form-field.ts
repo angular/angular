@@ -598,5 +598,5 @@ export class MatFormField extends _MatFormFieldMixinBase
     return document.documentElement!.contains(element);
   }
 
-  static ngAcceptInputType_hideRequiredMarker: boolean | string;
+  static ngAcceptInputType_hideRequiredMarker: boolean | string | null | undefined;
 }

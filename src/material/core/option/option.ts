@@ -267,7 +267,7 @@ export class MatOption implements FocusableOption, AfterViewChecked, OnDestroy {
     this.onSelectionChange.emit(new MatOptionSelectionChange(this, isUserInput));
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
 }
 
 /**

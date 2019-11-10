@@ -45,5 +45,5 @@ export class MatOptgroup extends _MatOptgroupMixinBase implements CanDisable {
   /** Unique id for the underlying label. */
   _labelId: string = `mat-optgroup-label-${_uniqueOptgroupIdCounter++}`;
 
-  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
 }

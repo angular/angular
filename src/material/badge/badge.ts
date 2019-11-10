@@ -270,7 +270,7 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, OnChanges
     }
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_hidden: boolean | string;
-  static ngAcceptInputType_overlap: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_hidden: boolean | string | null | undefined;
+  static ngAcceptInputType_overlap: boolean | string | null | undefined;
 }

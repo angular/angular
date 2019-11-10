@@ -55,8 +55,8 @@ export class MatFabButton extends MatButtonBase {
     super(elementRef, platform, ngZone, animationMode);
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
 }
 
 
@@ -87,6 +87,6 @@ export class MatFabAnchor extends MatAnchor {
     super(elementRef, platform, ngZone, animationMode);
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
 }

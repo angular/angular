@@ -369,9 +369,9 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
     this.valueChange.emit(this.value);
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_multiple: boolean | string;
-  static ngAcceptInputType_vertical: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_multiple: boolean | string | null | undefined;
+  static ngAcceptInputType_vertical: boolean | string | null | undefined;
 }
 
 // Boilerplate for applying mixins to the MatButtonToggle class.
@@ -560,9 +560,9 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
     this._changeDetectorRef.markForCheck();
   }
 
-  static ngAcceptInputType_checked: boolean | string;
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_vertical: boolean | string;
-  static ngAcceptInputType_multiple: boolean | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_checked: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_vertical: boolean | string | null | undefined;
+  static ngAcceptInputType_multiple: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
 }

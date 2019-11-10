@@ -46,8 +46,8 @@ export declare class MatAutocomplete extends _MatAutocompleteMixinBase implement
     _setScrollTop(scrollTop: number): void;
     _setVisibility(): void;
     ngAfterContentInit(): void;
-    static ngAcceptInputType_autoActiveFirstOption: boolean | string;
-    static ngAcceptInputType_disableRipple: boolean | string;
+    static ngAcceptInputType_autoActiveFirstOption: boolean | string | null | undefined;
+    static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatAutocomplete, "mat-autocomplete", ["matAutocomplete"], { 'disableRipple': "disableRipple", 'displayWith': "displayWith", 'autoActiveFirstOption': "autoActiveFirstOption", 'panelWidth': "panelWidth", 'classList': "class" }, { 'optionSelected': "optionSelected", 'opened': "opened", 'closed': "closed" }, ["options", "optionGroups"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatAutocomplete>;
 }
@@ -103,7 +103,7 @@ export declare class MatAutocompleteTrigger implements ControlValueAccessor, Aft
     setDisabledState(isDisabled: boolean): void;
     updatePosition(): void;
     writeValue(value: any): void;
-    static ngAcceptInputType_autocompleteDisabled: boolean | string;
+    static ngAcceptInputType_autocompleteDisabled: boolean | string | null | undefined;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatAutocompleteTrigger, "input[matAutocomplete], textarea[matAutocomplete]", ["matAutocompleteTrigger"], { 'autocomplete': "matAutocomplete", 'position': "matAutocompletePosition", 'connectedTo': "matAutocompleteConnectedTo", 'autocompleteAttribute': "autocomplete", 'autocompleteDisabled': "matAutocompleteDisabled" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatAutocompleteTrigger>;
 }

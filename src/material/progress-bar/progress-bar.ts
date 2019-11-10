@@ -219,7 +219,7 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
     }
   }
 
-  static ngAcceptInputType_value: number | string;
+  static ngAcceptInputType_value: number | string | null | undefined;
 }
 
 /** Clamps a value to be between two numbers, by default 0 and 100. */

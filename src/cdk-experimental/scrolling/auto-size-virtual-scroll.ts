@@ -464,6 +464,6 @@ export class CdkAutoSizeVirtualScroll implements OnChanges {
     this._scrollStrategy.updateBufferSize(this.minBufferPx, this.maxBufferPx);
   }
 
-  static ngAcceptInputType_minBufferPx: number | string;
-  static ngAcceptInputType_maxBufferPx: number | string;
+  static ngAcceptInputType_minBufferPx: number | string | null | undefined;
+  static ngAcceptInputType_maxBufferPx: number | string | null | undefined;
 }

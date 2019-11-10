@@ -62,7 +62,7 @@ export class MatTreeNode<T> extends _MatTreeNodeMixinBase<T>
     this.tabIndex = Number(tabIndex) || 0;
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
 }
 
 /**
@@ -134,5 +134,5 @@ export class MatNestedTreeNode<T> extends CdkNestedTreeNode<T> implements AfterC
     super.ngOnDestroy();
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
 }

@@ -80,5 +80,5 @@ export class MatRadioButton implements AfterViewInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
 }

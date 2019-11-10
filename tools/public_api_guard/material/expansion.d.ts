@@ -12,8 +12,8 @@ export declare class MatAccordion extends CdkAccordion implements MatAccordionBa
     _handleHeaderFocus(header: MatExpansionPanelHeader): void;
     _handleHeaderKeydown(event: KeyboardEvent): void;
     ngAfterContentInit(): void;
-    static ngAcceptInputType_hideToggle: boolean | string;
-    static ngAcceptInputType_multi: boolean | string;
+    static ngAcceptInputType_hideToggle: boolean | string | null | undefined;
+    static ngAcceptInputType_multi: boolean | string | null | undefined;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatAccordion, "mat-accordion", ["matAccordion"], { 'multi': "multi", 'hideToggle': "hideToggle", 'displayMode': "displayMode", 'togglePosition': "togglePosition" }, {}, ["_headers"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatAccordion>;
 }
@@ -61,9 +61,9 @@ export declare class MatExpansionPanel extends CdkAccordionItem implements After
     ngAfterContentInit(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
-    static ngAcceptInputType_disabled: boolean | string;
-    static ngAcceptInputType_expanded: boolean | string;
-    static ngAcceptInputType_hideToggle: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string | null | undefined;
+    static ngAcceptInputType_expanded: boolean | string | null | undefined;
+    static ngAcceptInputType_hideToggle: boolean | string | null | undefined;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatExpansionPanel, "mat-expansion-panel", ["matExpansionPanel"], { 'disabled': "disabled", 'expanded': "expanded", 'hideToggle': "hideToggle", 'togglePosition': "togglePosition" }, { 'opened': "opened", 'closed': "closed", 'expandedChange': "expandedChange", 'afterExpand': "afterExpand", 'afterCollapse': "afterCollapse" }, ["_lazyContent"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatExpansionPanel>;
 }

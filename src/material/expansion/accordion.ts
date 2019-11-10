@@ -87,6 +87,6 @@ export class MatAccordion extends CdkAccordion implements MatAccordionBase, Afte
     this._keyManager.updateActiveItem(header);
   }
 
-  static ngAcceptInputType_hideToggle: boolean | string;
-  static ngAcceptInputType_multi: boolean | string;
+  static ngAcceptInputType_hideToggle: boolean | string | null | undefined;
+  static ngAcceptInputType_multi: boolean | string | null | undefined;
 }

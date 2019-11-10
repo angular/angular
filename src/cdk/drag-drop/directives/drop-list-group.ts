@@ -35,5 +35,5 @@ export class CdkDropListGroup<T> implements OnDestroy {
     this._items.clear();
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
 }

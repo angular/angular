@@ -99,9 +99,9 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
     super.ngAfterContentInit();
   }
 
-  static ngAcceptInputType_fitInkBarToContent: boolean | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
-  static ngAcceptInputType_selectedIndex: number | string;
+  static ngAcceptInputType_fitInkBarToContent: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_selectedIndex: number | string | null | undefined;
 }
 
 /**
@@ -154,6 +154,6 @@ export class MatTabLink extends _MatTabLinkBase implements MatInkBarItem, OnInit
     this._foundation.destroy();
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
 }

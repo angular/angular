@@ -34,11 +34,11 @@ export declare class CdkConnectedOverlay implements OnDestroy, OnChanges {
     constructor(_overlay: Overlay, templateRef: TemplateRef<any>, viewContainerRef: ViewContainerRef, scrollStrategyFactory: any, _dir: Directionality);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
-    static ngAcceptInputType_flexibleDimensions: boolean | string;
-    static ngAcceptInputType_growAfterOpen: boolean | string;
-    static ngAcceptInputType_hasBackdrop: boolean | string;
-    static ngAcceptInputType_lockPosition: boolean | string;
-    static ngAcceptInputType_push: boolean | string;
+    static ngAcceptInputType_flexibleDimensions: boolean | string | null | undefined;
+    static ngAcceptInputType_growAfterOpen: boolean | string | null | undefined;
+    static ngAcceptInputType_hasBackdrop: boolean | string | null | undefined;
+    static ngAcceptInputType_lockPosition: boolean | string | null | undefined;
+    static ngAcceptInputType_push: boolean | string | null | undefined;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkConnectedOverlay, "[cdk-connected-overlay], [connected-overlay], [cdkConnectedOverlay]", ["cdkConnectedOverlay"], { 'origin': "cdkConnectedOverlayOrigin", 'positions': "cdkConnectedOverlayPositions", 'offsetX': "cdkConnectedOverlayOffsetX", 'offsetY': "cdkConnectedOverlayOffsetY", 'width': "cdkConnectedOverlayWidth", 'height': "cdkConnectedOverlayHeight", 'minWidth': "cdkConnectedOverlayMinWidth", 'minHeight': "cdkConnectedOverlayMinHeight", 'backdropClass': "cdkConnectedOverlayBackdropClass", 'panelClass': "cdkConnectedOverlayPanelClass", 'viewportMargin': "cdkConnectedOverlayViewportMargin", 'scrollStrategy': "cdkConnectedOverlayScrollStrategy", 'open': "cdkConnectedOverlayOpen", 'hasBackdrop': "cdkConnectedOverlayHasBackdrop", 'lockPosition': "cdkConnectedOverlayLockPosition", 'flexibleDimensions': "cdkConnectedOverlayFlexibleDimensions", 'growAfterOpen': "cdkConnectedOverlayGrowAfterOpen", 'push': "cdkConnectedOverlayPush" }, { 'backdropClick': "backdropClick", 'positionChange': "positionChange", 'attach': "attach", 'detach': "detach", 'overlayKeydown': "overlayKeydown" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkConnectedOverlay>;
 }

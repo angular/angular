@@ -389,11 +389,11 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
     }
   }
 
-  static ngAcceptInputType_selected: boolean | string;
-  static ngAcceptInputType_selectable: boolean | string;
-  static ngAcceptInputType_removable: boolean | string;
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_selected: boolean | string | null | undefined;
+  static ngAcceptInputType_selectable: boolean | string | null | undefined;
+  static ngAcceptInputType_removable: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
 }
 
 

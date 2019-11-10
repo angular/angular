@@ -66,5 +66,5 @@ export class ExampleList {
 
   exampleComponents = EXAMPLE_COMPONENTS;
 
-  static ngAcceptInputType_expandAll: boolean | string;
+  static ngAcceptInputType_expandAll: boolean | string | null | undefined;
 }

@@ -295,9 +295,9 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
         .replace(/DIAMETER/g, `${this.diameter}`);
   }
 
-  static ngAcceptInputType_diameter: number | string;
-  static ngAcceptInputType_strokeWidth: number | string;
-  static ngAcceptInputType_value: number | string;
+  static ngAcceptInputType_diameter: number | string | null | undefined;
+  static ngAcceptInputType_strokeWidth: number | string | null | undefined;
+  static ngAcceptInputType_value: number | string | null | undefined;
 }
 
 
@@ -333,9 +333,9 @@ export class MatSpinner extends MatProgressSpinner {
     this.mode = 'indeterminate';
   }
 
-  static ngAcceptInputType_diameter: number | string;
-  static ngAcceptInputType_strokeWidth: number | string;
-  static ngAcceptInputType_value: number | string;
+  static ngAcceptInputType_diameter: number | string | null | undefined;
+  static ngAcceptInputType_strokeWidth: number | string | null | undefined;
+  static ngAcceptInputType_value: number | string | null | undefined;
 }
 
 

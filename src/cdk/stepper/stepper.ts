@@ -231,10 +231,10 @@ export class CdkStep implements OnChanges {
     this._stepper._stateChanged();
   }
 
-  static ngAcceptInputType_editable: boolean | string;
-  static ngAcceptInputType_hasError: boolean | string;
-  static ngAcceptInputType_optional: boolean | string;
-  static ngAcceptInputType_completed: boolean | string;
+  static ngAcceptInputType_editable: boolean | string | null | undefined;
+  static ngAcceptInputType_hasError: boolean | string | null | undefined;
+  static ngAcceptInputType_optional: boolean | string | null | undefined;
+  static ngAcceptInputType_completed: boolean | string | null | undefined;
 }
 
 @Directive({
@@ -524,12 +524,12 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
     return stepperElement === focusedElement || stepperElement.contains(focusedElement);
   }
 
-  static ngAcceptInputType_editable: boolean | string;
-  static ngAcceptInputType_optional: boolean | string;
-  static ngAcceptInputType_completed: boolean | string;
-  static ngAcceptInputType_hasError: boolean | string;
-  static ngAcceptInputType_linear: boolean | string;
-  static ngAcceptInputType_selectedIndex: number | string;
+  static ngAcceptInputType_editable: boolean | string | null | undefined;
+  static ngAcceptInputType_optional: boolean | string | null | undefined;
+  static ngAcceptInputType_completed: boolean | string | null | undefined;
+  static ngAcceptInputType_hasError: boolean | string | null | undefined;
+  static ngAcceptInputType_linear: boolean | string | null | undefined;
+  static ngAcceptInputType_selectedIndex: number | string | null | undefined;
 }
 
 

@@ -242,7 +242,7 @@ export declare class MatNativeDateModule {
 export declare class MatOptgroup extends _MatOptgroupMixinBase implements CanDisable {
     _labelId: string;
     label: string;
-    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string | null | undefined;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOptgroup, "mat-optgroup", ["matOptgroup"], { 'disabled': "disabled", 'label': "label" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatOptgroup>;
 }
@@ -273,7 +273,7 @@ export declare class MatOption implements FocusableOption, AfterViewChecked, OnD
     select(): void;
     setActiveStyles(): void;
     setInactiveStyles(): void;
-    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string | null | undefined;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOption, "mat-option", ["matOption"], { 'value': "value", 'id': "id", 'disabled': "disabled" }, { 'onSelectionChange': "onSelectionChange" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatOption>;
 }

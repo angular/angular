@@ -294,8 +294,8 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
     this._changeDetectorRef.detectChanges();
   }
 
-  static ngAcceptInputType_required: boolean | string;
-  static ngAcceptInputType_checked: boolean | string;
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_required: boolean | string | null | undefined;
+  static ngAcceptInputType_checked: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
 }

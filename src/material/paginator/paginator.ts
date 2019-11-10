@@ -283,10 +283,10 @@ export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy
     });
   }
 
-  static ngAcceptInputType_pageIndex: number | string;
-  static ngAcceptInputType_length: number | string;
-  static ngAcceptInputType_pageSize: number | string;
-  static ngAcceptInputType_hidePageSize: boolean | string;
-  static ngAcceptInputType_showFirstLastButtons: boolean | string;
-  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_pageIndex: number | string | null | undefined;
+  static ngAcceptInputType_length: number | string | null | undefined;
+  static ngAcceptInputType_pageSize: number | string | null | undefined;
+  static ngAcceptInputType_hidePageSize: boolean | string | null | undefined;
+  static ngAcceptInputType_showFirstLastButtons: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
 }

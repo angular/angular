@@ -83,12 +83,12 @@ export declare class MatSelect extends _MatSelectMixinBase implements AfterConte
     setDisabledState(isDisabled: boolean): void;
     toggle(): void;
     writeValue(value: any): void;
-    static ngAcceptInputType_disableOptionCentering: boolean | string;
-    static ngAcceptInputType_disableRipple: boolean | string;
-    static ngAcceptInputType_disabled: boolean | string;
-    static ngAcceptInputType_multiple: boolean | string;
-    static ngAcceptInputType_required: boolean | string;
-    static ngAcceptInputType_typeaheadDebounceInterval: number | string;
+    static ngAcceptInputType_disableOptionCentering: boolean | string | null | undefined;
+    static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+    static ngAcceptInputType_disabled: boolean | string | null | undefined;
+    static ngAcceptInputType_multiple: boolean | string | null | undefined;
+    static ngAcceptInputType_required: boolean | string | null | undefined;
+    static ngAcceptInputType_typeaheadDebounceInterval: number | string | null | undefined;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSelect, "mat-select", ["matSelect"], { 'disabled': "disabled", 'disableRipple': "disableRipple", 'tabIndex': "tabIndex", 'panelClass': "panelClass", 'placeholder': "placeholder", 'required': "required", 'multiple': "multiple", 'disableOptionCentering': "disableOptionCentering", 'compareWith': "compareWith", 'value': "value", 'ariaLabel': "aria-label", 'ariaLabelledby': "aria-labelledby", 'errorStateMatcher': "errorStateMatcher", 'typeaheadDebounceInterval': "typeaheadDebounceInterval", 'sortComparator': "sortComparator", 'id': "id" }, { 'openedChange': "openedChange", '_openedStream': "opened", '_closedStream': "closed", 'selectionChange': "selectionChange", 'valueChange': "valueChange" }, ["customTrigger", "options", "optionGroups"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatSelect>;
 }

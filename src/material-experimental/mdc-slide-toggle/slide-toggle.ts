@@ -312,9 +312,9 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
     this._changeDetectorRef.markForCheck();
   }
 
-  static ngAcceptInputType_tabIndex: number | string;
-  static ngAcceptInputType_required: boolean | string;
-  static ngAcceptInputType_checked: boolean | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
-  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_tabIndex: number | string | null | undefined;
+  static ngAcceptInputType_required: boolean | string | null | undefined;
+  static ngAcceptInputType_checked: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
 }

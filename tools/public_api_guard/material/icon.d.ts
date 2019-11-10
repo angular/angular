@@ -33,7 +33,7 @@ export declare class MatIcon extends _MatIconMixinBase implements OnChanges, OnI
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
-    static ngAcceptInputType_inline: boolean | string;
+    static ngAcceptInputType_inline: boolean | string | null | undefined;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatIcon, "mat-icon", ["matIcon"], { 'color': "color", 'inline': "inline", 'svgIcon': "svgIcon", 'fontSet': "fontSet", 'fontIcon': "fontIcon" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatIcon>;
 }

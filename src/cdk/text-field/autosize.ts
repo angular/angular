@@ -273,7 +273,7 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     }
   }
 
-  static ngAcceptInputType_minRows: number | string;
-  static ngAcceptInputType_maxRows: number | string;
-  static ngAcceptInputType_enabled: boolean | string;
+  static ngAcceptInputType_minRows: number | string | null | undefined;
+  static ngAcceptInputType_maxRows: number | string | null | undefined;
+  static ngAcceptInputType_enabled: boolean | string | null | undefined;
 }

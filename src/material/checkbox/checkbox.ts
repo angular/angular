@@ -470,7 +470,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     return `mat-checkbox-anim-${animSuffix}`;
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_required: boolean | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_required: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
 }

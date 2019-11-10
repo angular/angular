@@ -194,8 +194,8 @@ export class CdkObserveContent implements AfterContentInit, OnDestroy {
     }
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_debounce: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_debounce: boolean | string | null | undefined;
 }
 
 

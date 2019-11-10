@@ -167,8 +167,8 @@ export class MatSort extends _MatSortMixinBase
     this._stateChanges.complete();
   }
 
-  static ngAcceptInputType_disableClear: boolean | string;
-  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_disableClear: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
 }
 
 /** Returns the sort direction cycle to use given the provided parameters of order and clear. */

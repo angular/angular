@@ -28,8 +28,8 @@ export declare class MatSort extends _MatSortMixinBase implements CanDisable, Ha
     ngOnInit(): void;
     register(sortable: MatSortable): void;
     sort(sortable: MatSortable): void;
-    static ngAcceptInputType_disableClear: boolean | string;
-    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_disableClear: boolean | string | null | undefined;
+    static ngAcceptInputType_disabled: boolean | string | null | undefined;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatSort, "[matSort]", ["matSort"], { 'disabled': "matSortDisabled", 'active': "matSortActive", 'start': "matSortStart", 'direction': "matSortDirection", 'disableClear': "matSortDisableClear" }, { 'sortChange': "matSortChange" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatSort>;
 }
@@ -74,8 +74,8 @@ export declare class MatSortHeader extends _MatSortHeaderMixinBase implements Ca
     _updateArrowDirection(): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
-    static ngAcceptInputType_disableClear: boolean | string;
-    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_disableClear: boolean | string | null | undefined;
+    static ngAcceptInputType_disabled: boolean | string | null | undefined;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSortHeader, "[mat-sort-header]", ["matSortHeader"], { 'disabled': "disabled", 'id': "mat-sort-header", 'arrowPosition': "arrowPosition", 'start': "start", 'disableClear': "disableClear" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatSortHeader>;
 }

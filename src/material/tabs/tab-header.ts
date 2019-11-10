@@ -106,6 +106,6 @@ export class MatTabHeader extends _MatTabHeaderBase {
     super(elementRef, changeDetectorRef, viewportRuler, dir, ngZone, platform, animationMode);
   }
 
-  static ngAcceptInputType_disableRipple: boolean | string;
-  static ngAcceptInputType_selectedIndex: number | string;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_selectedIndex: number | string | null | undefined;
 }

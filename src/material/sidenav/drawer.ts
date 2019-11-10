@@ -452,9 +452,9 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     this._animationEnd.next(event);
   }
 
-  static ngAcceptInputType_disableClose: boolean | string;
-  static ngAcceptInputType_autoFocus: boolean | string;
-  static ngAcceptInputType_opened: boolean | string;
+  static ngAcceptInputType_disableClose: boolean | string | null | undefined;
+  static ngAcceptInputType_autoFocus: boolean | string | null | undefined;
+  static ngAcceptInputType_opened: boolean | string | null | undefined;
 }
 
 
@@ -831,6 +831,6 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
     return drawer != null && drawer.opened;
   }
 
-  static ngAcceptInputType_autosize: boolean | string;
-  static ngAcceptInputType_hasBackdrop: boolean | string;
+  static ngAcceptInputType_autosize: boolean | string | null | undefined;
+  static ngAcceptInputType_hasBackdrop: boolean | string | null | undefined;
 }

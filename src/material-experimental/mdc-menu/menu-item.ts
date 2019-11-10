@@ -34,6 +34,6 @@ import {MatMenuItem as BaseMatMenuItem} from '@angular/material/menu';
   ]
 })
 export class MatMenuItem extends BaseMatMenuItem {
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
 }

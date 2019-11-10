@@ -121,5 +121,5 @@ export class MatChipRemove extends _MatChipRemoveMixinBase implements CanDisable
     super(_elementRef);
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
 }

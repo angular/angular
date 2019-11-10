@@ -170,5 +170,5 @@ export class MatGridList implements MatGridListBase, OnInit, AfterContentChecked
     }
   }
 
-  static ngAcceptInputType_cols: number | string;
+  static ngAcceptInputType_cols: number | string | null | undefined;
 }

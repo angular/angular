@@ -135,8 +135,8 @@ export class MatButton extends _MatButtonMixinBase
     return attributes.some(attribute => this._getHostElement().hasAttribute(attribute));
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
 }
 
 /**
@@ -181,6 +181,6 @@ export class MatAnchor extends MatButton {
     }
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
 }

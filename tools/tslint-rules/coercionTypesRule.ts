@@ -2,6 +2,8 @@ import * as ts from 'typescript';
 import * as Lint from 'tslint';
 import * as tsutils from 'tsutils';
 
+const TYPE_ACCEPT_MEMBER_PREFIX = 'ngAcceptInputType_';
+
 /**
  * TSLint rule that verifies that classes declare corresponding `ngAcceptInputType_*`
  * static fields for inputs that use coercion inside of their setters. Also handles
@@ -29,6 +31,13 @@ class Walker extends Lint.RuleWalker {
     this._coercionInterfaces = options.ruleArguments[1] || {};
   }
 
+  visitPropertyDeclaration(node: ts.PropertyDeclaration) {
+    if (ts.isIdentifier(node.name) && node.name.text.startsWith(TYPE_ACCEPT_MEMBER_PREFIX)) {
+      this._lintCoercionMember(node);
+    }
+    super.visitPropertyDeclaration(node);
+  }
+
   visitClassDeclaration(node: ts.ClassDeclaration) {
     if (this._shouldLintClass(node)) {
       this._lintClass(node, node);
@@ -36,6 +45,48 @@ class Walker extends Lint.RuleWalker {
       this._lintInterfaces(node, node);
     }
     super.visitClassDeclaration(node);
+  }
+
+  /**
+   * Checks if the given property declaration of a coercion member includes null and
+   * undefined in the type node. We enforce that all acceptance members accept these
+   * values since we want coercion inputs to work with the async pipe.
+   */
+  private _lintCoercionMember(node: ts.PropertyDeclaration) {
+    if (!node.type) {
+      this.addFailureAtNode(node, 'Acceptance member needs to have an explicit type.');
+      return;
+    }
+
+    if (node.type.kind === ts.SyntaxKind.AnyKeyword) {
+      // if the type is "any", then it can be "null" and "undefined" too.
+      return;
+    } else if (!ts.isUnionTypeNode(node.type)) {
+      this.addFailureAtNode(node, 'Acceptance member does not have an union type. The member ' +
+        'should use an union type to also accept "null" and "undefined".');
+      return;
+    }
+
+    let hasNull = false;
+    let hasUndefined = false;
+    for (let type of node.type.types) {
+      if (type.kind === ts.SyntaxKind.NullKeyword) {
+        hasNull = true;
+      } else if (type.kind === ts.SyntaxKind.UndefinedKeyword) {
+        hasUndefined = true;
+      }
+    }
+
+    if (!hasNull && !hasUndefined) {
+      this.addFailureAtNode(node, 'Acceptance member has to accept "null" and "undefined".',
+          this.appendText(node.type.getEnd(), ' | null | undefined'));
+    } else if (!hasNull) {
+      this.addFailureAtNode(node, 'Acceptance member has to accept "null".',
+        this.appendText(node.type.getEnd(), ' | null'));
+    } else if (!hasUndefined) {
+      this.addFailureAtNode(node, 'Acceptance member has to accept "undefined".',
+        this.appendText(node.type.getEnd(), ' | undefined'));
+    }
   }
 
   /**
@@ -112,7 +163,7 @@ class Walker extends Lint.RuleWalker {
    * @param setterName
    */
   private _checkForStaticMember(node: ts.ClassDeclaration, setterName: string) {
-    const coercionPropertyName = `ngAcceptInputType_${setterName}`;
+    const coercionPropertyName = `${TYPE_ACCEPT_MEMBER_PREFIX}${setterName}`;
     const correspondingCoercionProperty = node.members.find(member => {
       return ts.isPropertyDeclaration(member) &&
              tsutils.hasModifier(member.modifiers, ts.SyntaxKind.StaticKeyword) &&

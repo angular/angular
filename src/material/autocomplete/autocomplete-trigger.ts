@@ -759,5 +759,5 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
     return !element.readOnly && !element.disabled && !this._autocompleteDisabled;
   }
 
-  static ngAcceptInputType_autocompleteDisabled: boolean | string;
+  static ngAcceptInputType_autocompleteDisabled: boolean | string | null | undefined;
 }

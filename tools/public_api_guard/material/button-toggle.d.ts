@@ -23,11 +23,11 @@ export declare class MatButtonToggle extends _MatButtonToggleMixinBase implement
     focus(options?: FocusOptions): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
-    static ngAcceptInputType_checked: boolean | string;
-    static ngAcceptInputType_disableRipple: boolean | string;
-    static ngAcceptInputType_disabled: boolean | string;
-    static ngAcceptInputType_multiple: boolean | string;
-    static ngAcceptInputType_vertical: boolean | string;
+    static ngAcceptInputType_checked: boolean | string | null | undefined;
+    static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+    static ngAcceptInputType_disabled: boolean | string | null | undefined;
+    static ngAcceptInputType_multiple: boolean | string | null | undefined;
+    static ngAcceptInputType_vertical: boolean | string | null | undefined;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatButtonToggle, "mat-button-toggle", ["matButtonToggle"], { 'disableRipple': "disableRipple", 'ariaLabel': "aria-label", 'ariaLabelledby': "aria-labelledby", 'id': "id", 'name': "name", 'value': "value", 'tabIndex': "tabIndex", 'appearance': "appearance", 'checked': "checked", 'disabled': "disabled" }, { 'change': "change" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatButtonToggle>;
 }
@@ -70,9 +70,9 @@ export declare class MatButtonToggleGroup implements ControlValueAccessor, OnIni
     registerOnTouched(fn: any): void;
     setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
-    static ngAcceptInputType_disabled: boolean | string;
-    static ngAcceptInputType_multiple: boolean | string;
-    static ngAcceptInputType_vertical: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string | null | undefined;
+    static ngAcceptInputType_multiple: boolean | string | null | undefined;
+    static ngAcceptInputType_vertical: boolean | string | null | undefined;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatButtonToggleGroup, "mat-button-toggle-group", ["matButtonToggleGroup"], { 'appearance': "appearance", 'name': "name", 'vertical': "vertical", 'value': "value", 'multiple': "multiple", 'disabled': "disabled" }, { 'valueChange': "valueChange", 'change': "change" }, ["_buttonToggles"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatButtonToggleGroup>;
 }

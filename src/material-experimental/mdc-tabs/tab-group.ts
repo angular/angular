@@ -73,9 +73,9 @@ export class MatTabGroup extends _MatTabGroupBase {
         defaultConfig.fitInkBarToContent : false;
   }
 
-  static ngAcceptInputType_fitInkBarToContent: boolean | string;
-  static ngAcceptInputType_dynamicHeight: boolean | string;
-  static ngAcceptInputType_animationDuration: number | string;
-  static ngAcceptInputType_selectedIndex: number | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_fitInkBarToContent: boolean | string | null | undefined;
+  static ngAcceptInputType_dynamicHeight: boolean | string | null | undefined;
+  static ngAcceptInputType_animationDuration: number | string | null | undefined;
+  static ngAcceptInputType_selectedIndex: number | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
 }

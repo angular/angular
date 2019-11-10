@@ -171,6 +171,6 @@ export class MatChipInput implements MatChipTextControl, OnChanges {
     return Array.isArray(separators) ? separators.indexOf(keyCode) > -1 : separators.has(keyCode);
   }
 
-  static ngAcceptInputType_addOnBlur: boolean | string;
-  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_addOnBlur: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
 }

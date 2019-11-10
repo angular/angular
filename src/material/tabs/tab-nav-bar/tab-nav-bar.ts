@@ -180,8 +180,8 @@ export class MatTabNav extends _MatTabNavBase {
     super(elementRef, dir, ngZone, changeDetectorRef, viewportRuler, platform, animationMode);
   }
 
-  static ngAcceptInputType_disableRipple: boolean | string;
-  static ngAcceptInputType_selectedIndex: number | string;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_selectedIndex: number | string | null | undefined;
 }
 
 // Boilerplate for applying mixins to MatTabLink.
@@ -289,6 +289,6 @@ export class MatTabLink extends _MatTabLinkBase implements OnDestroy {
     this._tabLinkRipple._removeTriggerEvents();
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
 }

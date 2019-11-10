@@ -46,5 +46,5 @@ export class MatTabLabelWrapper extends _MatTabLabelWrapperMixinBase implements 
     return this.elementRef.nativeElement.offsetWidth;
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
 }

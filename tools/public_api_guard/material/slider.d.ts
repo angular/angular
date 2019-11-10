@@ -52,15 +52,15 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     registerOnTouched(fn: any): void;
     setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
-    static ngAcceptInputType_disabled: boolean | string;
-    static ngAcceptInputType_invert: boolean | string;
-    static ngAcceptInputType_max: number | string;
-    static ngAcceptInputType_min: number | string;
-    static ngAcceptInputType_step: number | string;
-    static ngAcceptInputType_thumbLabel: boolean | string;
-    static ngAcceptInputType_tickInterval: number | string;
-    static ngAcceptInputType_value: number | string | null;
-    static ngAcceptInputType_vertical: boolean | string;
+    static ngAcceptInputType_disabled: boolean | string | null | undefined;
+    static ngAcceptInputType_invert: boolean | string | null | undefined;
+    static ngAcceptInputType_max: number | string | null | undefined;
+    static ngAcceptInputType_min: number | string | null | undefined;
+    static ngAcceptInputType_step: number | string | null | undefined;
+    static ngAcceptInputType_thumbLabel: boolean | string | null | undefined;
+    static ngAcceptInputType_tickInterval: number | string | null | undefined;
+    static ngAcceptInputType_value: number | string | null | undefined;
+    static ngAcceptInputType_vertical: boolean | string | null | undefined;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSlider, "mat-slider", ["matSlider"], { 'disabled': "disabled", 'color': "color", 'tabIndex': "tabIndex", 'invert': "invert", 'max': "max", 'min': "min", 'step': "step", 'thumbLabel': "thumbLabel", 'tickInterval': "tickInterval", 'value': "value", 'displayWith': "displayWith", 'vertical': "vertical" }, { 'change': "change", 'input': "input", 'valueChange': "valueChange" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatSlider>;
 }

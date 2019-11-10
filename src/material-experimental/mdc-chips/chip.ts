@@ -389,8 +389,8 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     }
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_removable: boolean | string;
-  static ngAcceptInputType_highlighted: boolean | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_removable: boolean | string | null | undefined;
+  static ngAcceptInputType_highlighted: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
 }

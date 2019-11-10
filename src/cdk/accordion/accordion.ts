@@ -60,5 +60,5 @@ export class CdkAccordion implements OnDestroy, OnChanges {
     }
   }
 
-  static ngAcceptInputType_multi: boolean | string;
+  static ngAcceptInputType_multi: boolean | string | null | undefined;
 }

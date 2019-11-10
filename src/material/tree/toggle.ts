@@ -19,5 +19,5 @@ import {Directive, Input} from '@angular/core';
 export class MatTreeNodeToggle<T> extends CdkTreeNodeToggle<T> {
   @Input('matTreeNodeToggleRecursive') recursive: boolean = false;
 
-  static ngAcceptInputType_recursive: boolean | string;
+  static ngAcceptInputType_recursive: boolean | string | null | undefined;
 }

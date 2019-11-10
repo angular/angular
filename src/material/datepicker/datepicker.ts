@@ -521,6 +521,6 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
     }
   }
 
-  static ngAcceptInputType_disabled: boolean | string;
-  static ngAcceptInputType_touchUi: boolean | string;
+  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_touchUi: boolean | string | null | undefined;
 }

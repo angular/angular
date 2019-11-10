@@ -419,5 +419,5 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Aft
     }
   }
 
-  static ngAcceptInputType_inline: boolean | string;
+  static ngAcceptInputType_inline: boolean | string | null | undefined;
 }

@@ -1,7 +1,7 @@
 export declare class _MatMenu extends MatMenu {
     constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone, defaultOptions: MatMenuDefaultOptions);
-    static ngAcceptInputType_hasBackdrop: boolean | string;
-    static ngAcceptInputType_overlapTrigger: boolean | string;
+    static ngAcceptInputType_hasBackdrop: boolean | string | null | undefined;
+    static ngAcceptInputType_overlapTrigger: boolean | string | null | undefined;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<_MatMenu, "mat-menu", ["matMenu"], {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatMenu>;
 }
@@ -104,8 +104,8 @@ export declare class MatMenuItem extends _MatMenuItemMixinBase implements Focusa
     focus(origin?: FocusOrigin, options?: FocusOptions): void;
     getLabel(): string;
     ngOnDestroy(): void;
-    static ngAcceptInputType_disableRipple: boolean | string;
-    static ngAcceptInputType_disabled: boolean | string;
+    static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+    static ngAcceptInputType_disabled: boolean | string | null | undefined;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatMenuItem, "[mat-menu-item]", ["matMenuItem"], { 'disabled': "disabled", 'disableRipple': "disableRipple", 'role': "role" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatMenuItem>;
 }

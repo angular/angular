@@ -19,10 +19,10 @@ export declare class CdkStep implements OnChanges {
     ngOnChanges(): void;
     reset(): void;
     select(): void;
-    static ngAcceptInputType_completed: boolean | string;
-    static ngAcceptInputType_editable: boolean | string;
-    static ngAcceptInputType_hasError: boolean | string;
-    static ngAcceptInputType_optional: boolean | string;
+    static ngAcceptInputType_completed: boolean | string | null | undefined;
+    static ngAcceptInputType_editable: boolean | string | null | undefined;
+    static ngAcceptInputType_hasError: boolean | string | null | undefined;
+    static ngAcceptInputType_optional: boolean | string | null | undefined;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkStep, "cdk-step", ["cdkStep"], { 'stepControl': "stepControl", 'label': "label", 'errorMessage': "errorMessage", 'ariaLabel': "aria-label", 'ariaLabelledby': "aria-labelledby", 'state': "state", 'editable': "editable", 'optional': "optional", 'completed': "completed", 'hasError': "hasError" }, {}, ["stepLabel"]>;
     static ɵfac: i0.ɵɵFactoryDef<CdkStep>;
 }
@@ -67,12 +67,12 @@ export declare class CdkStepper implements AfterViewInit, OnDestroy {
     ngOnDestroy(): void;
     previous(): void;
     reset(): void;
-    static ngAcceptInputType_completed: boolean | string;
-    static ngAcceptInputType_editable: boolean | string;
-    static ngAcceptInputType_hasError: boolean | string;
-    static ngAcceptInputType_linear: boolean | string;
-    static ngAcceptInputType_optional: boolean | string;
-    static ngAcceptInputType_selectedIndex: number | string;
+    static ngAcceptInputType_completed: boolean | string | null | undefined;
+    static ngAcceptInputType_editable: boolean | string | null | undefined;
+    static ngAcceptInputType_hasError: boolean | string | null | undefined;
+    static ngAcceptInputType_linear: boolean | string | null | undefined;
+    static ngAcceptInputType_optional: boolean | string | null | undefined;
+    static ngAcceptInputType_selectedIndex: number | string | null | undefined;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepper, "[cdkStepper]", ["cdkStepper"], { 'linear': "linear", 'selectedIndex': "selectedIndex", 'selected': "selected" }, { 'selectionChange': "selectionChange" }, ["_steps", "_stepHeader"]>;
     static ɵfac: i0.ɵɵFactoryDef<CdkStepper>;
 }

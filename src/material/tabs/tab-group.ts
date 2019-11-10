@@ -414,8 +414,8 @@ export class MatTabGroup extends _MatTabGroupBase {
     super(elementRef, changeDetectorRef, defaultConfig, animationMode);
   }
 
-  static ngAcceptInputType_dynamicHeight: boolean | string;
-  static ngAcceptInputType_animationDuration: number | string;
-  static ngAcceptInputType_selectedIndex: number | string;
-  static ngAcceptInputType_disableRipple: boolean | string;
+  static ngAcceptInputType_dynamicHeight: boolean | string | null | undefined;
+  static ngAcceptInputType_animationDuration: number | string | null | undefined;
+  static ngAcceptInputType_selectedIndex: number | string | null | undefined;
+  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
 }
