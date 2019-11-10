@@ -856,5 +856,13 @@
     "bio": "Doug is an overly-opinionated software developer with a passion for making awesome developer tools. He is motivated primarily by his selfish desire to make his own life easier, but loves to share his tools and workflows with others to make everyone's lives easier.",
     "groups": ["Angular"],
     "lead": "igorminar"
+  },
+  "martinakraus": {
+    "name": "Martina Kraus",
+    "picture": "martinakraus.jpg",
+    "twitter": "MartinaKraus11",
+    "website": "http://martina-kraus.io",
+    "bio": "Martina is a software engineer and an Angular enthusiast. As a trainer, mentor and speaker she loves sharing knowledge about Web Technologies and Angular. She is Organizer of ngGirls and the local Angular Meetup",
+    "groups": ["GDE"]
   }
 }
