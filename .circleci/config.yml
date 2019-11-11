@@ -570,15 +570,25 @@ jobs:
     environment:
       NG_PACKAGES_DIR: &ng_packages_dir 'dist/packages-dist'
       NG_PACKAGES_ARCHIVES_DIR: &ng_packages_archives_dir 'dist/packages-dist-archives'
+      ZONEJS_PACKAGES_DIR: &zonejs_packages_dir 'dist/zone.js-dist'
+      ZONEJS_PACKAGES_ARCHIVES_DIR: &zonejs_packages_archives_dir 'dist/zone.js-dist-archives'
     steps:
       - custom_attach_workspace
       - init_environment
+      # Publish `@angular/*` packages.
       - run:
-          name: Create artifacts
+          name: Create artifacts for @angular/* packages
           command: ./scripts/ci/create-package-archives.sh $CI_PULL_REQUEST $CI_COMMIT $NG_PACKAGES_DIR $NG_PACKAGES_ARCHIVES_DIR
       - store_artifacts:
           path: *ng_packages_archives_dir
           destination: angular
+      # Publish `zone.js` package.
+      - run:
+          name: Create artifacts for zone.js package
+          command: ./scripts/ci/create-package-archives.sh $CI_PULL_REQUEST $CI_COMMIT $ZONEJS_PACKAGES_DIR $ZONEJS_PACKAGES_ARCHIVES_DIR
+      - store_artifacts:
+          path: *zonejs_packages_archives_dir
+          destination: zone.js
 
   # This job updates the content of repos like github.com/angular/core-builds
   # for every green build on angular/angular.
