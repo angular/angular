@@ -2041,9 +2041,7 @@ runInEachFileSystem(os => {
       const hostBindingsFn = `
       hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
         if (rf & 1) {
-          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick(); });
-          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onDocumentClick($event.target); }, false, i0.ɵɵresolveDocument);
-          i0.ɵɵlistener("scroll", function FooCmp_scroll_HostBindingHandler($event) { return ctx.onWindowScroll(); }, false, i0.ɵɵresolveWindow);
+          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick(); })("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onDocumentClick($event.target); }, false, i0.ɵɵresolveDocument)("scroll", function FooCmp_scroll_HostBindingHandler($event) { return ctx.onWindowScroll(); }, false, i0.ɵɵresolveWindow);
         }
       }
     `;
@@ -2136,9 +2134,7 @@ runInEachFileSystem(os => {
       hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
         if (rf & 1) {
           i0.ɵɵallocHostVars(3);
-          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); });
-          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, false, i0.ɵɵresolveBody);
-          i0.ɵɵlistener("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
+          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); })("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, false, i0.ɵɵresolveBody)("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
         }
         if (rf & 2) {
           i0.ɵɵhostProperty("prop", ctx.bar);
@@ -3144,7 +3140,7 @@ runInEachFileSystem(os => {
 
            env.write('test.ts', `
           import {Component} from '@angular/core';
-  
+
           @Component({
             template: '<div #ref="unknownTarget"></div>',
           })
