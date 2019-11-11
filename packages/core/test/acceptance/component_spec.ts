@@ -352,9 +352,15 @@ describe('component', () => {
       @Component({
         selector: 'app',
         template: `
-        <div id="dynamic-comp-root-a">Existing content in slot A</div>
-        <div id="dynamic-comp-root-b">Existing content in slot B</div>
-      `,
+          <div id="dynamic-comp-root-a">
+            Existing content in slot A, which <b><i>includes</i> some HTML elements</b>.
+          </div>
+          <div id="dynamic-comp-root-b">
+            <p>
+              Existing content in slot B, which includes some HTML elements.
+            </p>
+          </div>
+        `,
       })
       class App {
         constructor(public injector: Injector, public cfr: ComponentFactoryResolver) {}
