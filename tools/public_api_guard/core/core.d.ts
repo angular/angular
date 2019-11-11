@@ -732,7 +732,7 @@ export declare type ɵɵComponentDefWithMeta<T, Selector extends String, ExportA
     [key: string]: string;
 }, QueryFields extends string[]> = ComponentDef<T>;
 
-export declare function ɵɵcomponentHostSyntheticListener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): void;
+export declare function ɵɵcomponentHostSyntheticListener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): TsickleIssue1009;
 
 export declare function ɵɵcontainer(index: number): void;
 
@@ -897,7 +897,7 @@ export declare function ɵɵinjectPipeChangeDetectorRef(flags?: InjectFlags): Ch
 
 export declare function ɵɵinvalidFactory(): never;
 
-export declare function ɵɵlistener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): void;
+export declare function ɵɵlistener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): TsickleIssue1009;
 
 export declare function ɵɵloadQuery<T>(): QueryList<T>;
 
