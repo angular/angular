@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef} from '../../change_detection/change_detector_ref';
-import {CompilerFacade, R3DependencyMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
+import {CompilerFacade, R3DependencyMetadataFacade, R3ResolvedDependencyType, getCompilerFacade} from '../../compiler/compiler_facade';
 import {Type} from '../../interface/type';
 import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
 import {Attribute, Host, Inject, Optional, Self, SkipSelf} from '../metadata';
@@ -42,10 +42,7 @@ function reflectDependency(compiler: CompilerFacade, dep: any | any[]): R3Depend
     meta.token = token;
   }
 
-  if (Array.isArray(dep)) {
-    if (dep.length === 0) {
-      throw new Error('Dependency array must have arguments.');
-    }
+  if (Array.isArray(dep) && dep.length > 0) {
     for (let j = 0; j < dep.length; j++) {
       const param = dep[j];
       if (param === undefined) {
@@ -74,6 +71,9 @@ function reflectDependency(compiler: CompilerFacade, dep: any | any[]): R3Depend
         setTokenAndResolvedType(param);
       }
     }
+  } else if (dep === undefined || (Array.isArray(dep) && dep.length === 0)) {
+    meta.token = undefined;
+    meta.resolved = R3ResolvedDependencyType.Invalid;
   } else {
     setTokenAndResolvedType(dep);
   }
