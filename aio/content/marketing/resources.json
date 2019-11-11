@@ -560,6 +560,12 @@
       "Online Training": {
         "order": 3,
         "resources": {
+          "angular-dyma": {
+            "desc": "Learn Angular and all its ecosystem (Material, Flex-layout, Ngrx and more) from scratch.",
+            "rev": true,
+            "title": "Dyma (French)",
+            "url": "https://dyma.fr/angular"
+          },
           "-KLIBoTWXMiBcvG0dAM6": {
             "desc": "This course introduces you to the essentials of this \"superheroic\" framework, including declarative templates, two-way data binding, and dependency injection.",
             "rev": true,
