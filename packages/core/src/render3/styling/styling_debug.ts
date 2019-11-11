@@ -9,7 +9,7 @@ import {createProxy} from '../../debug/proxy';
 import {RendererStyleFlags2} from '../../render/api';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {TNodeFlags} from '../interfaces/node';
-import {ProceduralRenderer3, RElement, RendererStyleFlags3} from '../interfaces/renderer';
+import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererStyleFlags3} from '../interfaces/renderer';
 import {LStylingData, StylingMapArrayIndex, TStylingContext, TStylingContextIndex, TStylingNode} from '../interfaces/styling';
 import {getCurrentStyleSanitizer} from '../state';
 import {attachDebugObject} from '../util/debug_utils';
@@ -477,12 +477,14 @@ export class NodeStylingDebug implements DebugNodeStyling {
     const sanitizer = this._isClassBased ? null : (this._sanitizer || getCurrentStyleSanitizer());
 
     // run the template bindings
-    applyStylingViaContext(this.context.context, this._tNode, renderer as {
-    } as ProceduralRenderer3, mockElement, data, true, mapFn, sanitizer, false, this._isClassBased);
+    applyStylingViaContext(
+        this.context.context, this._tNode, renderer, mockElement, data, true, mapFn, sanitizer,
+        false, this._isClassBased);
 
     // and also the host bindings
-    applyStylingViaContext(this.context.context, this._tNode, renderer as {
-    } as ProceduralRenderer3, mockElement, data, true, mapFn, sanitizer, true, this._isClassBased);
+    applyStylingViaContext(
+        this.context.context, this._tNode, renderer, mockElement, data, true, mapFn, sanitizer,
+        true, this._isClassBased);
 
     const values =
         this._isClassBased ? renderer.computeClassValues() : renderer.computeStyleValues();
@@ -490,15 +492,44 @@ export class NodeStylingDebug implements DebugNodeStyling {
   }
 }
 
-class MockRendererForStyling {
+class MockRendererForStyling implements ProceduralRenderer3 {
   private _classAttr: string = '';
   private _styleAttr: string = '';
   private _styles: {[key: string]: any} = {};
   private _classes: {[key: string]: any} = {};
 
+  destroy(): void { throwUndefinedMethodError(); }
+
+  createComment(value: string): RComment { return throwUndefinedMethodError(); }
+
+  createElement(name: string, namespace?: string|null): RElement {
+    return throwUndefinedMethodError();
+  }
+
+  createText(value: string): RText { return throwUndefinedMethodError(); }
+
+  appendChild(parent: RElement, newChild: RNode): void { throwUndefinedMethodError(); }
+
+  insertBefore(parent: RNode, newChild: RNode, refChild: RNode|null): void {
+    throwUndefinedMethodError();
+  }
+
+  removeChild(parent: RElement, oldChild: RNode, isHostElement?: boolean): void {
+    throwUndefinedMethodError();
+  }
+
+  selectRootElement(selectorOrNode: string|any): RElement { return throwUndefinedMethodError(); }
+
+  parentNode(node: RNode): RElement|null { return throwUndefinedMethodError(); }
+
+  nextSibling(node: RNode): RNode|null { return throwUndefinedMethodError(); }
+
+  setProperty(el: RElement, name: string, value: any): void { throwUndefinedMethodError(); }
+
+  setValue(node: RText|RComment, value: string): void { throwUndefinedMethodError(); }
+
   listen(target: any, eventName: string, callback: (event: any) => boolean | void): () => void {
-    // this method is only used to trigger the check for the renderer
-    // as a procedural renderer to pass...
+    throwUndefinedMethodError();
     return () => {};
   }
 
@@ -555,6 +586,11 @@ class MockRendererForStyling {
     values = {...values, ...this._classes};
     return values;
   }
+}
+
+function throwUndefinedMethodError() {
+  throw new Error('DebugStyle Mock does not implement');
+  return null as any;
 }
 
 function buildConfig(tNode: TStylingNode, isClassBased: boolean): DebugStylingConfig {
