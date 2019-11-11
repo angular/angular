@@ -19,7 +19,15 @@ $mat-chip-remove-font-size: 18px;
   @include mat-chips-color(mat-color($palette, default-contrast), mat-color($palette));
 
   .mat-ripple-element {
-    background: mat-color($palette, default-contrast, 0.1);
+    $ripple-opacity: 0.1;
+    $ripple-color: mat-color($palette, default-contrast, $ripple-opacity);
+    background-color: $ripple-color;
+
+    // If the ripple color is a CSS variable, `mat-color` will
+    // return a solid color so we have to apply the opacity separately.
+    @if (type-of($ripple-color) != color) {
+      opacity: $ripple-opacity;
+    }
   }
 }
 
