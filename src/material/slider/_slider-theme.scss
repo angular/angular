@@ -26,9 +26,8 @@
   $mat-slider-disabled-color: mat-color($foreground, slider-off);
   $mat-slider-labeled-min-value-thumb-color: mat-color($foreground, slider-min);
   $mat-slider-labeled-min-value-thumb-label-color: mat-color($foreground, slider-off);
-  $mat-slider-focus-ring-color: mat-color($accent, default, 0.2);
-  $mat-slider-focus-ring-min-value-color: mat-color($foreground, base, 0.12);
-  $mat-slider-tick-color: mat-color($foreground, base, 0.7);
+  $mat-slider-tick-opacity: 0.7;
+  $mat-slider-tick-color: mat-color($foreground, base, $mat-slider-tick-opacity);
   $mat-slider-tick-size: 2px;
 
   .mat-slider-track-background {
@@ -48,7 +47,15 @@
   }
 
   .mat-slider-focus-ring {
-    background-color: $mat-slider-focus-ring-color;
+    $opacity: 0.2;
+    $color: mat-color($accent, default, $opacity);
+    background-color: $color;
+
+    // `mat-color` uses `rgba` for the opacity which won't work with
+    // CSS variables so we need to use `opacity` as a fallback.
+    @if (type-of($color) != color) {
+      opacity: $opacity;
+    }
   }
 
   .mat-slider:hover,
@@ -74,7 +81,15 @@
 
   .mat-slider-min-value {
     .mat-slider-focus-ring {
-      background-color: $mat-slider-focus-ring-min-value-color;
+      $opacity: 0.12;
+      $color: mat-color($foreground, base, $opacity);
+      background-color: $color;
+
+      // `mat-color` uses `rgba` for the opacity which won't work with
+      // CSS variables so we need to use `opacity` as a fallback.
+      @if (type-of($color) != color) {
+        opacity: $opacity;
+      }
     }
 
     &.mat-slider-thumb-label-showing {
@@ -112,6 +127,12 @@
 
   .mat-slider-has-ticks .mat-slider-wrapper::after {
     border-color: $mat-slider-tick-color;
+
+    // `mat-color` uses `rgba` for the opacity which won't work with
+    // CSS variables so we need to use `opacity` as a fallback.
+    @if (type-of($mat-slider-tick-color) != color) {
+      opacity: $mat-slider-tick-opacity;
+    }
   }
 
   .mat-slider-horizontal .mat-slider-ticks {
@@ -121,11 +142,23 @@
     // (see https://bugzilla.mozilla.org/show_bug.cgi?id=1314319).
     background-image: -moz-repeating-linear-gradient(0.0001deg, $mat-slider-tick-color,
         $mat-slider-tick-color $mat-slider-tick-size, transparent 0, transparent);
+
+    // `mat-color` uses `rgba` for the opacity which won't work with
+    // CSS variables so we need to use `opacity` as a fallback.
+    @if (type-of($mat-slider-tick-color) != color) {
+      opacity: $mat-slider-tick-opacity;
+    }
   }
 
   .mat-slider-vertical .mat-slider-ticks {
     background-image: repeating-linear-gradient(to bottom, $mat-slider-tick-color,
         $mat-slider-tick-color $mat-slider-tick-size, transparent 0, transparent);
+
+    // `mat-color` uses `rgba` for the opacity which won't work with
+    // CSS variables so we need to use `opacity` as a fallback.
+    @if (type-of($mat-slider-tick-color) != color) {
+      opacity: $mat-slider-tick-opacity;
+    }
   }
 }
 
