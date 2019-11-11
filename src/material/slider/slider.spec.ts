@@ -107,6 +107,15 @@ describe('MatSlider', () => {
       expect(trackFillElement.style.transform).toContain('scale3d(0.39, 1, 1)');
     });
 
+    it('should hide the fill element at zero percent', () => {
+      expect(trackFillElement.style.display).toBe('none');
+
+      dispatchMousedownEventSequence(sliderNativeElement, 0.39);
+      fixture.detectChanges();
+
+      expect(trackFillElement.style.display).toBeFalsy();
+    });
+
     it('should update the track fill on slide', () => {
       expect(trackFillElement.style.transform).toContain('scale3d(0, 1, 1)');
 
