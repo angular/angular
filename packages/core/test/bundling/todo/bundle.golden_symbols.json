@@ -738,6 +738,9 @@
     "name": "getOriginalError"
   },
   {
+    "name": "getOwnDefinition"
+  },
+  {
     "name": "getParentInjectorIndex"
   },
   {

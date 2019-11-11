@@ -132,6 +132,9 @@
     "name": "getNullInjector"
   },
   {
+    "name": "getOwnDefinition"
+  },
+  {
     "name": "getUndecoratedInjectableFactory"
   },
   {
