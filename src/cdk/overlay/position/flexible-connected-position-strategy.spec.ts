@@ -2019,6 +2019,65 @@ describe('FlexibleConnectedPositionStrategy', () => {
         document.body.removeChild(veryLargeElement);
       });
 
+    it('should set the maxWidth and maxHeight on the bounding box when exact dimension are ' +
+      'not used', () => {
+        originElement.style.top = '50px';
+        originElement.style.left = '50%';
+        originElement.style.position = 'fixed';
+
+        positionStrategy
+          .withFlexibleDimensions()
+          .withPositions([{
+            overlayX: 'start',
+            overlayY: 'top',
+            originX: 'start',
+            originY: 'bottom'
+          }]);
+
+        attachOverlay({
+          positionStrategy,
+          maxWidth: 250,
+          maxHeight: 300
+        });
+
+        const overlayStyle = overlayRef.overlayElement.style;
+        const boundingBoxStyle = overlayRef.hostElement.style;
+
+        expect(overlayStyle.maxWidth).toBeFalsy();
+        expect(overlayStyle.maxHeight).toBeFalsy();
+        expect(boundingBoxStyle.maxWidth).toBe('250px');
+        expect(boundingBoxStyle.maxHeight).toBe('300px');
+      });
+
+    it('should set the maxWidth and maxHeight on the overlay pane when exact dimensions are used',
+      () => {
+        originElement.style.bottom = '0';
+        originElement.style.left = '50%';
+        originElement.style.position = 'fixed';
+
+        positionStrategy
+          .withFlexibleDimensions()
+          .withPositions([{
+            overlayX: 'start',
+            overlayY: 'top',
+            originX: 'start',
+            originY: 'bottom'
+          }]);
+
+        attachOverlay({
+          positionStrategy,
+          maxWidth: 250,
+          maxHeight: 300
+        });
+
+        const overlayStyle = overlayRef.overlayElement.style;
+        const boundingBoxStyle = overlayRef.hostElement.style;
+
+        expect(overlayStyle.maxWidth).toBe('250px');
+        expect(overlayStyle.maxHeight).toBe('300px');
+        expect(boundingBoxStyle.maxWidth).toBeFalsy();
+        expect(boundingBoxStyle.maxHeight).toBeFalsy();
+      });
 
   });
 
