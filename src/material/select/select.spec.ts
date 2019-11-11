@@ -3075,6 +3075,58 @@ describe('MatSelect', () => {
       expect(spy).toHaveBeenCalledWith('steak-0');
     }));
 
+    it('should set the value when options are clicked', fakeAsync(() => {
+      const fixture = TestBed.createComponent(BasicSelectWithoutForms);
+      fixture.detectChanges();
+      const select = fixture.nativeElement.querySelector('.mat-select');
+
+      expect(fixture.componentInstance.selectedFood).toBeFalsy();
+
+      const trigger = fixture.nativeElement.querySelector('.mat-select-trigger');
+
+      trigger.click();
+      fixture.detectChanges();
+      flush();
+
+      dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+      dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+
+      dispatchKeyboardEvent(select, 'keydown', TAB);
+      fixture.detectChanges();
+      flush();
+
+      expect(fixture.componentInstance.selectedFood).toBe('sandwich-2');
+      expect(fixture.componentInstance.select.value).toBe('sandwich-2');
+      expect(trigger.textContent).toContain('Sandwich');
+    }));
+
+    it('should not change the multiple value selection when tabbing away', fakeAsync(() => {
+      const fixture = TestBed.createComponent(BasicSelectWithoutFormsMultiple);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.selectedFoods).toBeFalsy('Expected no value on init.');
+
+      const select = fixture.nativeElement.querySelector('.mat-select');
+      const trigger = fixture.nativeElement.querySelector('.mat-select-trigger');
+      trigger.click();
+      fixture.detectChanges();
+
+      dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+      dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+
+      dispatchKeyboardEvent(select, 'keydown', TAB);
+      fixture.detectChanges();
+      flush();
+
+      expect(fixture.componentInstance.selectedFoods)
+          .toBeFalsy('Expected no value after tabbing away.');
+    }));
+
+
   });
 
   describe('with option centering disabled', () => {
