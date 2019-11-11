@@ -10,10 +10,8 @@ ts_library(
             "schema.ts",
         ],
     deps = [
-        "//packages/common",
-        "//packages/core",
         "@npm//@angular-devkit/schematics",
-        "@npm//rxjs",
+        "@npm//@schematics/angular",
     ],
 )
 
@@ -23,12 +21,13 @@ ts_library(
     srcs = [
         "index_spec.ts",
     ],
+    data = [
+        "schema.json",
+    ],
     deps = [
         ":ng-add",
-        "//packages/common",
-        "//packages/core",
         "@npm//@angular-devkit/schematics",
-        "@npm//rxjs",
+        "@npm//@schematics/angular",
     ],
 )
 
@@ -37,6 +36,5 @@ jasmine_node_test(
     deps = [
         ":test_lib",
         "//packages/elements/schematics:collection",
-        "@npm//@schematics/angular",
     ],
 )
