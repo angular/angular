@@ -23,23 +23,30 @@
     [['AM', 'PM'], u, u],
     u,
     [
-      ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['sab', 'ata', 'mar', 'pin', 'sis', 'tal', 'arf'],
+      ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['sap', 'ata', 'mar', 'pin', 'sis', 'tal', 'arf'],
       [
-        'sabaat', 'ataasinngorneq', 'marlunngorneq', 'pingasunngorneq', 'sisamanngorneq',
+        'sapaat', 'ataasinngorneq', 'marlunngorneq', 'pingasunngorneq', 'sisamanngorneq',
         'tallimanngorneq', 'arfininngorneq'
       ],
-      ['sab', 'ata', 'mar', 'pin', 'sis', 'tal', 'arf']
+      ['sap', 'ata', 'mar', 'pin', 'sis', 'tal', 'arf']
     ],
     u,
     [
       ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-      ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'],
+      ['jan', 'febr', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sept', 'okt', 'nov', 'dec'],
       [
-        'januari', 'februari', 'martsi', 'aprili', 'maji', 'juni', 'juli', 'augustusi',
-        'septemberi', 'oktoberi', 'novemberi', 'decemberi'
+        'januaarip', 'februaarip', 'marsip', 'apriilip', 'maajip', 'juunip', 'juulip', 'aggustip',
+        'septembarip', 'oktobarip', 'novembarip', 'decembarip'
       ]
     ],
-    u,
+    [
+      ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+      ['jan', 'febr', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sept', 'okt', 'nov', 'dec'],
+      [
+        'januaari', 'februaari', 'marsi', 'apriili', 'maaji', 'juuni', 'juuli', 'aggusti',
+        'septembari', 'oktobari', 'novembari', 'decembari'
+      ]
+    ],
     [['BCE', 'CE'], u, u],
     1,
     [6, 0],

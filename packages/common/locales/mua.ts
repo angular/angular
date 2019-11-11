@@ -19,7 +19,10 @@ export default [
   'mua', [['comme', 'lilli'], u, u], u,
   [
     ['Y', 'L', 'Z', 'O', 'A', 'G', 'E'], ['Cya', 'Cla', 'Czi', 'Cko', 'Cka', 'Cga', 'Cze'],
-    ['Com’yakke', 'Comlaaɗii', 'Comzyiiɗii', 'Comkolle', 'Comkaldǝɓlii', 'Comgaisuu', 'Comzyeɓsuu'],
+    [
+      'Com’yakke', 'Comlaaɗii', 'Comzyiiɗii', 'Comkolle', 'Comkaldǝɓlii', 'Comgaisuu',
+      'Comzyeɓsuu'
+    ],
     ['Cya', 'Cla', 'Czi', 'Cko', 'Cka', 'Cga', 'Cze']
   ],
   u,
@@ -27,8 +30,9 @@ export default [
     ['O', 'A', 'I', 'F', 'D', 'B', 'L', 'M', 'E', 'U', 'W', 'Y'],
     ['FLO', 'CLA', 'CKI', 'FMF', 'MAD', 'MBI', 'MLI', 'MAM', 'FDE', 'FMU', 'FGW', 'FYU'],
     [
-      'Fĩi Loo', 'Cokcwaklaŋne', 'Cokcwaklii', 'Fĩi Marfoo', 'Madǝǝuutǝbijaŋ', 'Mamǝŋgwãafahbii',
-      'Mamǝŋgwãalii', 'Madǝmbii', 'Fĩi Dǝɓlii', 'Fĩi Mundaŋ', 'Fĩi Gwahlle', 'Fĩi Yuru'
+      'Fĩi Loo', 'Cokcwaklaŋne', 'Cokcwaklii', 'Fĩi Marfoo', 'Madǝǝuutǝbijaŋ',
+      'Mamǝŋgwãafahbii', 'Mamǝŋgwãalii', 'Madǝmbii', 'Fĩi Dǝɓlii', 'Fĩi Mundaŋ',
+      'Fĩi Gwahlle', 'Fĩi Yuru'
     ]
   ],
   u, [['KK', 'PK'], u, ['KǝPel Kristu', 'Pel Kristu']], 1, [6, 0],

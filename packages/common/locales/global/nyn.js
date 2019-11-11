@@ -43,7 +43,7 @@
     u,
     [['BC', 'AD'], u, ['Kurisito Atakaijire', 'Kurisito Yaijire']],
     1,
-    [6, 0],
+    [0, 0],
     ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
     ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
     ['{1} {0}', u, u, u],

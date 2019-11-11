@@ -20,8 +20,8 @@
   }
   root.ng.common.locales['ha'] = [
     'ha',
+    [['AM', 'PM'], u, ['Safiya', 'Yamma']],
     [['AM', 'PM'], u, u],
-    u,
     [
       ['L', 'L', 'T', 'L', 'A', 'J', 'A'], ['Lah', 'Lit', 'Tal', 'Lar', 'Alh', 'Jum', 'Asa'],
       ['Lahadi', 'Litinin', 'Talata', 'Laraba', 'Alhamis', 'Jummaʼa', 'Asabar'],
@@ -37,17 +37,17 @@
       ]
     ],
     u,
-    [['KHAI', 'BHAI'], u, ['Kafin haihuwar annab', 'Bayan haihuwar annab']],
+    [['K.H', 'BHAI'], u, ['Kafin haihuwar annab', 'Bayan haihuwar annab']],
     1,
     [6, 0],
-    ['d/M/yy', 'd MMM, y', 'd MMMM, y', 'EEEE, d MMMM, y'],
+    ['d/M/yy', 'd MMM, y', 'd MMMM, y', 'EEEE d MMMM, y'],
     ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
     ['{1} {0}', u, u, u],
     ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
     ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
     '₦',
-    'Naira',
-    {'JPY': ['JP¥', '¥'], 'NGN': ['₦'], 'USD': ['US$', '$']},
+    'Nairar Najeriya',
+    {'NGN': ['₦']},
     plural,
     []
   ];

@@ -57,7 +57,8 @@ export default [
     'RUR': [],
     'SEK': [],
     'THB': ['฿'],
-    'TWD': ['NT$']
+    'TWD': ['NT$'],
+    'XXX': []
   },
   plural
 ];

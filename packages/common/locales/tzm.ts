@@ -33,7 +33,7 @@ export default [
       'Kṭuber', 'Nwanbir', 'Dujanbir'
     ]
   ],
-  u, [['ZƐ', 'ḌƐ'], u, ['Zdat Ɛisa (TAƔ)', 'Ḍeffir Ɛisa (TAƔ)']], 6, [5, 6],
+  u, [['ZƐ', 'ḌƐ'], u, ['Zdat Ɛisa (TAƔ)', 'Ḍeffir Ɛisa (TAƔ)']], 1, [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],

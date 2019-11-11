@@ -27,8 +27,8 @@ export default [
     ['J', 'F', 'M', 'Ĩ', 'M', 'N', 'N', 'A', 'S', 'O', 'N', 'D'],
     ['JAN', 'FEB', 'MAC', 'ĨPU', 'MĨĨ', 'NJU', 'NJR', 'AGA', 'SPT', 'OKT', 'NOV', 'DEC'],
     [
-      'Januarĩ', 'Feburuarĩ', 'Machi', 'Ĩpurũ', 'Mĩĩ', 'Njuni', 'Njuraĩ', 'Agasti', 'Septemba',
-      'Oktũba', 'Novemba', 'Dicemba'
+      'Januarĩ', 'Feburuarĩ', 'Machi', 'Ĩpurũ', 'Mĩĩ', 'Njuni', 'Njuraĩ', 'Agasti',
+      'Septemba', 'Oktũba', 'Novemba', 'Dicemba'
     ]
   ],
   u, [['MK', 'NK'], u, ['Mbere ya Kristũ', 'Nyuma ya Kristũ']], 0, [6, 0],

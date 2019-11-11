@@ -23,7 +23,8 @@
     [['AM', 'PM'], u, u],
     u,
     [
-      ['S', 'M', 'T', 'M', 'H', 'F', 'L'], ['sun.', 'mán.', 'týs.', 'mik.', 'hós.', 'frí.', 'ley.'],
+      ['S', 'M', 'T', 'M', 'H', 'F', 'L'],
+      ['sun.', 'mán.', 'týs.', 'mik.', 'hós.', 'frí.', 'ley.'],
       [
         'sunnudagur', 'mánadagur', 'týsdagur', 'mikudagur', 'hósdagur', 'fríggjadagur',
         'leygardagur'

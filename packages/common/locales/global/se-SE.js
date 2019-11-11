@@ -39,8 +39,9 @@
         'juov'
       ],
       [
-        'ođđajagemánnu', 'guovvamánnu', 'njukčamánnu', 'cuoŋománnu', 'miessemánnu', 'geassemánnu',
-        'suoidnemánnu', 'borgemánnu', 'čakčamánnu', 'golggotmánnu', 'skábmamánnu', 'juovlamánnu'
+        'ođđajagemánnu', 'guovvamánnu', 'njukčamánnu', 'cuoŋománnu', 'miessemánnu',
+        'geassemánnu', 'suoidnemánnu', 'borgemánnu', 'čakčamánnu', 'golggotmánnu',
+        'skábmamánnu', 'juovlamánnu'
       ]
     ],
     u,
@@ -50,7 +51,7 @@
     ['y-MM-dd', 'y MMM d', 'y MMMM d', 'y MMMM d, EEEE'],
     ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
     ['{1} {0}', u, u, u],
-    [',', ' ', ';', '%', '+', '−', '·10^', '·', '‰', '∞', '¤¤¤', ':'],
+    [',', ' ', ';', '%', '+', '−', '·10^', '·', '‰', '∞', 'NaN', ':'],
     ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
     'kr',
     'ruoŧŧa kruvdno',

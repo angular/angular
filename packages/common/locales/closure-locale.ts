@@ -555,7 +555,8 @@ export const locale_br = [
     'TWD': [u, '$'],
     'USD': ['$ SU', '$'],
     'VND': [u, '₫'],
-    'XCD': [u, '$']
+    'XCD': [u, '$'],
+    'XXX': []
   },
   plural_br
 ];

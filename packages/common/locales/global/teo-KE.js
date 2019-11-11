@@ -32,8 +32,8 @@
       ['R', 'M', 'K', 'D', 'M', 'M', 'J', 'P', 'S', 'T', 'L', 'P'],
       ['Rar', 'Muk', 'Kwa', 'Dun', 'Mar', 'Mod', 'Jol', 'Ped', 'Sok', 'Tib', 'Lab', 'Poo'],
       [
-        'Orara', 'Omuk', 'Okwamg’', 'Odung’el', 'Omaruk', 'Omodok’king’ol', 'Ojola', 'Opedel',
-        'Osokosokoma', 'Otibar', 'Olabor', 'Opoo'
+        'Orara', 'Omuk', 'Okwamg’', 'Odung’el', 'Omaruk', 'Omodok’king’ol', 'Ojola',
+        'Opedel', 'Osokosokoma', 'Otibar', 'Olabor', 'Opoo'
       ]
     ],
     u,

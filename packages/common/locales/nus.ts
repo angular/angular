@@ -18,20 +18,24 @@ function plural(n: number): number {
 export default [
   'nus', [['RW', 'TŊ'], u, u], u,
   [
-    ['C', 'J', 'R', 'D', 'Ŋ', 'D', 'B'], ['Cäŋ', 'Jiec', 'Rɛw', 'Diɔ̱k', 'Ŋuaan', 'Dhieec', 'Bäkɛl'],
+    ['C', 'J', 'R', 'D', 'Ŋ', 'D', 'B'],
+    ['Cäŋ', 'Jiec', 'Rɛw', 'Diɔ̱k', 'Ŋuaan', 'Dhieec', 'Bäkɛl'],
     [
-      'Cäŋ kuɔth', 'Jiec la̱t', 'Rɛw lätni', 'Diɔ̱k lätni', 'Ŋuaan lätni', 'Dhieec lätni',
-      'Bäkɛl lätni'
+      'Cäŋ kuɔth', 'Jiec la̱t', 'Rɛw lätni', 'Diɔ̱k lätni', 'Ŋuaan lätni',
+      'Dhieec lätni', 'Bäkɛl lätni'
     ],
     ['Cäŋ', 'Jiec', 'Rɛw', 'Diɔ̱k', 'Ŋuaan', 'Dhieec', 'Bäkɛl']
   ],
   u,
   [
     ['T', 'P', 'D', 'G', 'D', 'K', 'P', 'T', 'T', 'L', 'K', 'T'],
-    ['Tiop', 'Pɛt', 'Duɔ̱ɔ̱', 'Guak', 'Duä', 'Kor', 'Pay', 'Thoo', 'Tɛɛ', 'Laa', 'Kur', 'Tid'],
     [
-      'Tiop thar pɛt', 'Pɛt', 'Duɔ̱ɔ̱ŋ', 'Guak', 'Duät', 'Kornyoot', 'Pay yie̱tni', 'Tho̱o̱r', 'Tɛɛr',
-      'Laath', 'Kur', 'Tio̱p in di̱i̱t'
+      'Tiop', 'Pɛt', 'Duɔ̱ɔ̱', 'Guak', 'Duä', 'Kor', 'Pay', 'Thoo', 'Tɛɛ', 'Laa', 'Kur',
+      'Tid'
+    ],
+    [
+      'Tiop thar pɛt', 'Pɛt', 'Duɔ̱ɔ̱ŋ', 'Guak', 'Duät', 'Kornyoot', 'Pay yie̱tni',
+      'Tho̱o̱r', 'Tɛɛr', 'Laath', 'Kur', 'Tio̱p in di̱i̱t'
     ]
   ],
   u, [['AY', 'ƐY'], u, ['A ka̱n Yecu ni dap', 'Ɛ ca Yecu dap']], 1, [6, 0],

@@ -17,8 +17,8 @@
   function plural(n) { return 5; }
   root.ng.common.locales['kea'] = [
     'kea',
-    [['a', 'p'], ['am', 'pm'], u],
     [['am', 'pm'], u, u],
+    u,
     [
       ['D', 'S', 'T', 'K', 'K', 'S', 'S'], ['dum', 'sig', 'ter', 'kua', 'kin', 'ses', 'sab'],
       [
@@ -29,7 +29,8 @@
     [
       ['D', 'S', 'T', 'K', 'K', 'S', 'S'], ['dum', 'sig', 'ter', 'kua', 'kin', 'ses', 'sab'],
       [
-        'dumingu', 'sigunda-fera', 'tersa-fera', 'kuarta-fera', 'kinta-fera', 'sesta-fera', 'sábadu'
+        'dumingu', 'sigunda-fera', 'tersa-fera', 'kuarta-fera', 'kinta-fera', 'sesta-fera',
+        'sábadu'
       ],
       ['du', 'si', 'te', 'ku', 'ki', 'se', 'sa']
     ],
@@ -42,17 +43,23 @@
       ]
     ],
     u,
-    [['AK', 'DK'], u, ['Antis di Kristu', 'Dispos di Kristu']],
+    [['AK', 'DK'], u, ['antis di Kristu', 'dispos di Kristu']],
     1,
     [6, 0],
-    ['d/M/y', 'd MMM y', 'd \'di\' MMMM \'di\' y', 'EEEE, d \'di\' MMMM \'di\' y'],
+    ['dd/MM/y', 'd MMM y', 'd \'di\' MMMM \'di\' y', 'EEEE, d \'di\' MMMM \'di\' y'],
     ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-    ['{1} {0}', u, u, u],
+    ['{1}, {0}', u, u, u],
     [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
     ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
     '​',
     'Skudu Kabuverdianu',
-    {'AUD': ['AU$', '$'], 'CVE': ['​'], 'JPY': ['JP¥', '¥'], 'THB': ['฿'], 'USD': ['US$', '$']},
+    {
+      'AUD': ['AU$', '$'],
+      'CVE': ['​'],
+      'JPY': ['JP¥', '¥'],
+      'THB': ['฿'],
+      'USD': ['US$', '$']
+    },
     plural,
     []
   ];
