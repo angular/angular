@@ -4,7 +4,7 @@ export declare class CdkCopyToClipboard {
     text: string;
     constructor(_clipboard: Clipboard);
     copy(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkCopyToClipboard, "[cdkCopyToClipboard]", never, { 'text': "cdkCopyToClipboard" }, { 'copied': "copied" }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkCopyToClipboard, "[cdkCopyToClipboard]", never, { 'text': "cdkCopyToClipboard" }, { 'copied': "cdkCopyToClipboardCopied", '_deprecatedCopied': "copied" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkCopyToClipboard>;
 }
 
