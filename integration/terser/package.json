@@ -11,6 +11,6 @@
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "rxjs": "file:../../node_modules/rxjs",
     "terser": "3.17.0",
-    "zone.js": "file:../../dist/bin/packages/zone.js/npm_package"
+    "zone.js": "file:../../dist/zone.js-dist/zone.js"
   }
 }

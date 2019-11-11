@@ -19,7 +19,7 @@
     "express": "^4.14.1",
     "rxjs": "file:../../node_modules/rxjs",
     "typescript": "file:../../node_modules/typescript",
-    "zone.js": "file:../../dist/bin/packages/zone.js/npm_package"
+    "zone.js": "file:../../dist/zone.js-dist/zone.js"
   },
   "devDependencies": {
     "@types/jasmine": "2.5.41",

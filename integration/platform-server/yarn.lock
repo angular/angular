@@ -4384,5 +4384,5 @@ yargs@~3.10.0:
     decamelize "^1.0.0"
     window-size "0.1.0"
 
-"zone.js@file:../../node_modules/zone.js":
+"zone.js@file:../../dist/zone.js-dist/zone.js":
   version "0.10.2"
