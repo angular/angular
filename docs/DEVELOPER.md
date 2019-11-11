@@ -151,7 +151,7 @@ time of the build.
 You can access the artifacts for a specific CI run by going to the workflow page, clicking on the
 `publish_packages_as_artifacts` job and then switching to the "Artifacts" tab.
 (If you happen to know the build number of the job, the URL will be something like:
-https://circleci.com/gh/angular/angular/<build-number>#artifacts)
+`https://circleci.com/gh/angular/angular/<build-number>#artifacts`)
 
 #### Archives for each Package
 On the "Artifacts" tab, there is a list of links to compressed archives for Angular packages. The
