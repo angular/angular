@@ -38,7 +38,33 @@ In the `angular.json` workspace configuration file, set the default build option
 
 Ivy applications can be built with libraries that were created with the View Engine compiler.
 This compatibility is provided by a tool known as the Angular compatibility compiler (`ngcc`).
-CLI commands run `ngcc` as needed, either after npm installation of dependencies or when performing an Angular build.
+CLI commands run `ngcc` as needed performing an Angular build.
+
+{@a speeding-up-ngcc-compilation}
+### Speeding up ngcc compilation
+
+The standalone `ngcc` program can run in parallel over your third party modules, making it more efficient than letting Angular CLI run it as needed.
+
+You can run `ngcc` after each installation of node_modules by adding a `postinstall` [npm script](https://docs.npmjs.com/misc/scripts):
+
+<code-example language="json" header="package.json">
+{
+  "scripts": {
+    "postinstall": "ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points"
+  }
+}
+</code-example>
+
+<div class="alert is-important">
+
+The `postinstall` script will run on every installation of `node_modules`, including those performed by `ng update` and `ng add`.
+
+If you perform multiple installs in a row, this can end up being slower than letting Angular CLI run `ngcc` on builds.
+
+</div>
+
+{@a maintaining-library-compatibility}
+### Maintaining library compatibility
 
 If you are a library author, you should keep using the View Engine compiler as of version 9.
 By having all libraries continue to use View Engine, you will maintain compatibility with default v9 applications that use Ivy, as well as with applications that have opted to continue using View Engine.
