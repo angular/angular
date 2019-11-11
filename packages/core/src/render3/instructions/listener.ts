@@ -18,7 +18,7 @@ import {assertNodeOfPossibleTypes} from '../node_assert';
 import {getLView, getPreviousOrParentTNode} from '../state';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
 
-import {getCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
+import {TsickleIssue1009, getCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
 
 
 
@@ -38,11 +38,12 @@ import {getCleanup, handleError, loadComponentRenderer, markViewDirty} from './s
  */
 export function ɵɵlistener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
-    eventTargetResolver?: GlobalTargetResolver): void {
+    eventTargetResolver?: GlobalTargetResolver): TsickleIssue1009 {
   const lView = getLView();
   const tNode = getPreviousOrParentTNode();
   listenerInternal(
       lView, lView[RENDERER], tNode, eventName, listenerFn, useCapture, eventTargetResolver);
+  return ɵɵlistener;
 }
 
 /**
@@ -68,11 +69,12 @@ export function ɵɵlistener(
 */
 export function ɵɵcomponentHostSyntheticListener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
-    eventTargetResolver?: GlobalTargetResolver): void {
+    eventTargetResolver?: GlobalTargetResolver): TsickleIssue1009 {
   const lView = getLView();
   const tNode = getPreviousOrParentTNode();
   const renderer = loadComponentRenderer(tNode, lView);
   listenerInternal(lView, renderer, tNode, eventName, listenerFn, useCapture, eventTargetResolver);
+  return ɵɵcomponentHostSyntheticListener;
 }
 
 /**

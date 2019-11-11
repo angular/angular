@@ -733,17 +733,35 @@ function getBindingNameAndInstruction(binding: ParsedProperty):
 }
 
 function createHostListeners(eventBindings: ParsedEvent[], name?: string): o.Statement[] {
-  return eventBindings.map(binding => {
+  const listeners: o.Expression[][] = [];
+  const syntheticListeners: o.Expression[][] = [];
+  const instructions: o.Statement[] = [];
+
+  eventBindings.forEach(binding => {
     let bindingName = binding.name && sanitizeIdentifier(binding.name);
     const bindingFnName = binding.type === ParsedEventType.Animation ?
         prepareSyntheticListenerFunctionName(bindingName, binding.targetOrPhase) :
         bindingName;
     const handlerName = name && bindingName ? `${name}_${bindingFnName}_HostBindingHandler` : null;
     const params = prepareEventListenerParameters(BoundEvent.fromParsedEvent(binding), handlerName);
-    const instruction =
-        binding.type == ParsedEventType.Animation ? R3.componentHostSyntheticListener : R3.listener;
-    return o.importExpr(instruction).callFn(params).toStmt();
+
+    if (binding.type == ParsedEventType.Animation) {
+      syntheticListeners.push(params);
+    } else {
+      listeners.push(params);
+    }
   });
+
+  if (syntheticListeners.length > 0) {
+    instructions.push(
+        chainedInstruction(R3.componentHostSyntheticListener, syntheticListeners).toStmt());
+  }
+
+  if (listeners.length > 0) {
+    instructions.push(chainedInstruction(R3.listener, listeners).toStmt());
+  }
+
+  return instructions;
 }
 
 function metadataAsSummary(meta: R3HostMetadata): CompileDirectiveSummary {
