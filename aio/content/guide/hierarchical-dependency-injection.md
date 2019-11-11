@@ -108,11 +108,9 @@ The following diagram represents the relationship between the
 `root` `ModuleInjector` and its parent injectors as the
 previous paragraphs describe.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/dependency-injection/injectors.svg" alt="NullInjector, ModuleInjector, root injector">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/dependency-injection/injectors.svg" alt="NullInjector, ModuleInjector, root injector">
+</div>
 
 While the name `root` is a special alias, other `ModuleInjector`s
 don't have aliases. You have the option to create `ModuleInjector`s
@@ -1098,12 +1096,9 @@ Each tax return component has the following characteristics:
 * Can change a tax return without affecting a return in another component.
 * Has the ability to save the changes to its tax return or cancel them.
 
-
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/dependency-injection/hid-heroes-anim.gif" alt="Heroes in action">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/dependency-injection/hid-heroes-anim.gif" alt="Heroes in action">
+</div>
 
 Suppose that the `HeroTaxReturnComponent` had logic to manage and restore changes.
 That would be a pretty easy task for a simple hero tax return.
@@ -1172,11 +1167,9 @@ that have special capabilities suitable for whatever is going on in component (B
 Component (B) is the parent of another component (C) that defines its own, even _more specialized_ provider for `CarService`.
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/dependency-injection/car-components.png" alt="car components">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/dependency-injection/car-components.png" alt="car components">
+</div>
 
 Behind the scenes, each component sets up its own injector with zero, one, or more providers defined for that component itself.
 
@@ -1185,11 +1178,9 @@ its injector produces an instance of `Car` resolved by injector (C) with an `Eng
 `Tires` resolved by the root injector (A).
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/dependency-injection/injector-tree.png" alt="car injector tree">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/dependency-injection/injector-tree.png" alt="car injector tree">
+</div>
 
 
 <hr />

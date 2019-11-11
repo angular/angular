@@ -82,11 +82,9 @@ Here's what the UI displays:
 
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src='generated/images/guide/user-input/keyup1-anim.gif' alt="key up 1">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src='generated/images/guide/user-input/keyup1-anim.gif' alt="key up 1">
+</div>
 
 
 
@@ -163,11 +161,9 @@ and the component does nothing.
 Type something in the input box, and watch the display update with each keystroke.
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src='generated/images/guide/user-input/keyup-loop-back-anim.gif' alt="loop back">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src='generated/images/guide/user-input/keyup-loop-back-anim.gif' alt="loop back">
+</div>
 
 
 
@@ -215,11 +211,9 @@ Then Angular calls the event handler only when the user presses _Enter_.
 
 Here's how it works.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src='generated/images/guide/user-input/keyup3-anim.gif' alt="key up 3">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src='generated/images/guide/user-input/keyup3-anim.gif' alt="key up 3">
+</div>
 
 
 
@@ -249,11 +243,9 @@ The user can add a hero by typing the hero's name in the input box and
 clicking **Add**.
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src='generated/images/guide/user-input/little-tour-anim.gif' alt="Little Tour of Heroes">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src='generated/images/guide/user-input/little-tour-anim.gif' alt="Little Tour of Heroes">
+</div>
 
 
 

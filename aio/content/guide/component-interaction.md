@@ -50,11 +50,9 @@ and each iteration's `hero` instance to the child's `hero` property.
 The running application displays three heroes:
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/component-interaction/parent-to-child.png" alt="Parent-to-child">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/component-interaction/parent-to-child.png" alt="Parent-to-child">
+</div>
 
 
 
@@ -96,11 +94,9 @@ Here's the `NameParentComponent` demonstrating name variations including a name 
 
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/component-interaction/setter.png" alt="Parent-to-child-setter">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/component-interaction/setter.png" alt="Parent-to-child-setter">
+</div>
 
 
 
@@ -156,11 +152,9 @@ The `VersionParentComponent` supplies the `minor` and `major` values and binds b
 Here's the output of a button-pushing sequence:
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/component-interaction/parent-to-child-on-changes.gif" alt="Parent-to-child-onchanges">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/component-interaction/parent-to-child-on-changes.gif" alt="Parent-to-child-onchanges">
+</div>
 
 
 
@@ -212,11 +206,9 @@ The framework passes the event argument&mdash;represented by `$event`&mdash;to t
 and the method processes it:
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/component-interaction/child-to-parent.gif" alt="Child-to-parent">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/component-interaction/child-to-parent.gif" alt="Child-to-parent">
+</div>
 
 
 
@@ -276,11 +268,9 @@ uses interpolation to display the child's `seconds` property.
 Here we see the parent and child working together.
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/component-interaction/countdown-timer-anim.gif" alt="countdown timer">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/component-interaction/countdown-timer-anim.gif" alt="countdown timer">
+</div>
 
 
 
@@ -431,11 +421,9 @@ the parent `MissionControlComponent` and the `AstronautComponent` children,
 facilitated by the service:
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/component-interaction/bidirectional-service.gif" alt="bidirectional-service">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/component-interaction/bidirectional-service.gif" alt="bidirectional-service">
+</div>
 
 
 

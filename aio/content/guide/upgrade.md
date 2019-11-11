@@ -266,11 +266,9 @@ everything work seamlessly:
   When you register a downgraded service, you must explicitly specify a *string token* that you want to
   use in AngularJS.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/upgrade/injectors.png" alt="The two injectors in a hybrid application">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/upgrade/injectors.png" alt="The two injectors in a hybrid application">
+</div>
 
 #### Components and the DOM
 
@@ -304,11 +302,9 @@ ways:
     bridges the related concepts of AngularJS transclusion and Angular content
     projection together.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/upgrade/dom.png" alt="DOM element ownership in a hybrid application">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/upgrade/dom.png" alt="DOM element ownership in a hybrid application">
+</div>
 
 Whenever you use a component that belongs to the other framework, a
 switch between framework boundaries occurs. However, that switch only
@@ -351,11 +347,9 @@ AngularJS and Angular approaches. Here's what happens:
   every turn of the Angular zone. This also triggers AngularJS change
   detection after every event.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/upgrade/change_detection.png" alt="Change detection in a hybrid application">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/upgrade/change_detection.png" alt="Change detection in a hybrid application">
+</div>
 
 In practice, you do not need to call `$apply()`,
 regardless of whether it is in AngularJS or Angular. The

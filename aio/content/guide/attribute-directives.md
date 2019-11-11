@@ -175,11 +175,9 @@ Here's the updated directive in full:
 Run the app and confirm that the background color appears when
 the mouse hovers over the `p` and disappears as it moves out.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/attribute-directives/highlight-directive-anim.gif" alt="Second Highlight">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/attribute-directives/highlight-directive-anim.gif" alt="Second Highlight">
+</div>
 
 {@a bindings}
 
@@ -273,11 +271,9 @@ Revise the `AppComponent.color` so that it has no initial value.
 
 Here are the harness and directive in action.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/attribute-directives/highlight-directive-v2-anim.gif" alt="Highlight v.2">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/attribute-directives/highlight-directive-v2-anim.gif" alt="Highlight v.2">
+</div>
 
 {@a second-property}
 
@@ -311,11 +307,9 @@ because you made it _public_ with the `@Input` decorator.
 
 Here's how the harness should work when you're done coding.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/attribute-directives/highlight-directive-final-anim.gif" alt="Final Highlight">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/attribute-directives/highlight-directive-final-anim.gif" alt="Final Highlight">
+</div>
 
 ## Summary
 

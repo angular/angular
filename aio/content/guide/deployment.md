@@ -434,11 +434,9 @@ showing exactly which classes are included in the bundle.
 
 Here's the output for the _main_ bundle of an example app called `cli-quickstart`.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/deployment/quickstart-sourcemap-explorer.png" alt="quickstart sourcemap explorer">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/deployment/quickstart-sourcemap-explorer.png" alt="quickstart sourcemap explorer">
+</div>
 
 {@a base-tag}
 
