@@ -684,11 +684,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
 
       // Generate Listeners (outputs)
-      element.outputs.forEach((outputAst: t.BoundEvent) => {
-        this.creationInstruction(
-            outputAst.sourceSpan, R3.listener,
-            this.prepareListenerParameter(element.name, outputAst, elementIndex));
-      });
+      if (element.outputs.length > 0) {
+        const listeners = element.outputs.map(
+            (outputAst: t.BoundEvent) => ({
+              sourceSpan: outputAst.sourceSpan,
+              params: this.prepareListenerParameter(element.name, outputAst, elementIndex)
+            }));
+        this.creationInstructionChain(R3.listener, listeners);
+      }
 
       // Note: it's important to keep i18n/i18nStart instructions after i18nAttributes and
       // listeners, to make sure i18nAttributes instruction targets current element at runtime.
@@ -918,11 +921,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // Add the input bindings
       this.templatePropertyBindings(templateIndex, template.inputs);
       // Generate listeners for directive output
-      template.outputs.forEach((outputAst: t.BoundEvent) => {
-        this.creationInstruction(
-            outputAst.sourceSpan, R3.listener,
-            this.prepareListenerParameter('ng_template', outputAst, templateIndex));
-      });
+      if (template.outputs.length > 0) {
+        const listeners = template.outputs.map(
+            (outputAst: t.BoundEvent) => ({
+              sourceSpan: outputAst.sourceSpan,
+              params: this.prepareListenerParameter('ng_template', outputAst, templateIndex)
+            }));
+        this.creationInstructionChain(R3.listener, listeners);
+      }
     }
   }
 
@@ -1096,6 +1102,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       span: ParseSourceSpan|null, reference: o.ExternalReference,
       paramsOrFn?: o.Expression[]|(() => o.Expression[]), prepend?: boolean) {
     this.instructionFn(this._creationCodeFns, span, reference, paramsOrFn || [], prepend);
+  }
+
+  private creationInstructionChain(reference: o.ExternalReference, calls: {
+    sourceSpan: ParseSourceSpan | null,
+    params: () => o.Expression[]
+  }[]) {
+    const span = calls.length ? calls[0].sourceSpan : null;
+    this._creationCodeFns.push(() => {
+      return chainedInstruction(reference, calls.map(call => call.params()), span).toStmt();
+    });
   }
 
   private updateInstructionWithAdvance(
