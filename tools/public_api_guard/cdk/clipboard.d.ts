@@ -1,4 +1,5 @@
 export declare class CdkCopyToClipboard {
+    _deprecatedCopied: EventEmitter<boolean>;
     copied: EventEmitter<boolean>;
     text: string;
     constructor(_clipboard: Clipboard);

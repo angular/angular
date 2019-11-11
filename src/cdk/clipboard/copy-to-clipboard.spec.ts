@@ -8,7 +8,10 @@ const COPY_CONTENT = 'copy content';
 
 @Component({
   selector: 'copy-to-clipboard-host',
-  template: `<button [cdkCopyToClipboard]="content" (copied)="copied.emit($event)"></button>`,
+  template: `
+    <button
+    [cdkCopyToClipboard]="content"
+    (cdkCopyToClipboardCopied)="copied.emit($event)"></button>`,
 })
 class CopyToClipboardHost {
   @Input() content = '';
