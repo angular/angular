@@ -9,11 +9,9 @@ There are new requirements for the Tour of Heroes app:
 
 When you’re done, users will be able to navigate the app like this:
 
-<figure class="lightbox">
-  <div class="card">
-    <img src='generated/images/guide/toh/nav-diagram.png' alt="View navigations">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src='generated/images/guide/toh/nav-diagram.png' alt="View navigations">
+</div>
 
 ## Add the `AppRoutingModule`
 

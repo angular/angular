@@ -1244,19 +1244,19 @@ Images should be specified in an `<img>` tag.
 
 For accessibility, always set the `alt` attribute with a meaningful description of the image.
 
-You should nest the `<img>` tag within a `<figure>` tag, which styles the image within a drop-shadow frame. You'll need the editor's permission to skip the `<figure>` tag.
+You should nest the `<img>` tag within a `<div class="lightbox">` tag, which styles the image within a drop-shadow frame. You'll need the editor's permission to skip the `lightbox` class on its `div` encapsulation.
 
 Here's a conforming example
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/docs-style-guide/flying-hero.png" alt="flying hero">
-</figure>
+</div>
 
 ```html
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/docs-style-guide/flying-hero.png"
        alt="flying hero">
-</figure>
+</div>
 ```
 
 _Note that the HTML image element does not have a closing tag._
@@ -1267,17 +1267,17 @@ The doc generator reads the image dimensions from the file and adds width and he
 
 Here's the "flying hero" at a more reasonable scale.
 
-<figure>
+<div class="lightbox">
  <img src="generated/images/guide/docs-style-guide/flying-hero.png" alt="flying Angular hero" width="200">
-</figure>
+</div>
 
 ```html
 
-<figure>
+<div class="lightbox">
  <img src="generated/images/guide/docs-style-guide/flying-hero.png"
    alt="flying Angular hero"
    width="200">
-</figure>
+</div>
 ```
 
 Wide images can be a problem. Most browsers try to rescale the image but wide images may overflow the document in certain viewports.
@@ -1285,9 +1285,9 @@ Wide images can be a problem. Most browsers try to rescale the image but wide im
 **Do not set a width greater than 700px**. If you wish to display a larger image, provide a link to the actual image that the user can click on to see the full size image separately as in this example of `source-map-explorer` output from the "Ahead-of-time Compilation" guide:
 
 <a href="generated/images/guide/docs-style-guide/toh-pt6-bundle.png" title="Click to view larger image">
-  <figure>
+  <div class="lightbox">
     <img src="generated/images/guide/docs-style-guide/toh-pt6-bundle-700w.png" alt="toh-pt6-bundle" width="300px">
-  </figure>
+  </div>
 </a>
 
 <h3 class="no-toc">Image compression</h3>

@@ -183,12 +183,8 @@ Here are two sample components and the `AdComponent` interface for reference:
 ## Final ad banner
  The final ad banner looks like this:
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/dynamic-component-loader/ads-example.gif" alt="Ads">
-  </div>
-</figure>
-
-
+<div class="lightbox">
+  <img src="generated/images/guide/dynamic-component-loader/ads-example.gif" alt="Ads">
+</div>
 
 See the <live-example name="dynamic-component-loader"></live-example>.

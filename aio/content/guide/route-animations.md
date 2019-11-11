@@ -25,11 +25,9 @@ Let's illustrate a router transition animation by navigating between two routes,
 
 </br>
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/animations/route-animation.gif" alt="Animations in action" width="440">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/animations/route-animation.gif" alt="Animations in action" width="440">
+</div>
 
 ## Route configuration
 

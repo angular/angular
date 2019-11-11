@@ -145,11 +145,9 @@ the same way you've done it before.
 
 Here's *Alex* and family in action.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/dependency-injection-in-action/alex.png" alt="Alex in action">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/dependency-injection-in-action/alex.png" alt="Alex in action">
+</div>
 
 
 
@@ -203,13 +201,9 @@ which *is* what parent means.
 Here's *Alice*, *Barry*, and family in action.
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/dependency-injection-in-action/alice.png" alt="Alice in action">
-  </div>
-</figure>
-
-
+<div class="lightbox">
+  <img src="generated/images/guide/dependency-injection-in-action/alice.png" alt="Alice in action">
+</div>
 
 {@a parent-token}
 
