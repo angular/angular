@@ -513,11 +513,9 @@ That's the job of the [`AsyncPipe`](#asyncpipe) in the template.
 Run the app again. In the *Dashboard*, enter some text in the search box.
 If you enter characters that match any existing hero names, you'll see something like this.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src='generated/images/guide/toh/toh-hero-search.png' alt="Hero Search Component">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src='generated/images/guide/toh/toh-hero-search.png' alt="Hero Search Component">
+</div>
 
 ## Final code review
 

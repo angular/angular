@@ -91,11 +91,9 @@ ng serve
 
 Then go to `localhost:4200` where you should see “customer-app” and three buttons.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/lazy-loading-ngmodules/three-buttons.png" width="300" alt="three buttons in the browser">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/lazy-loading-ngmodules/three-buttons.png" width="300" alt="three buttons in the browser">
+</div>
 
 These buttons work, because the CLI automatically added the routes to the feature modules to the `routes` array in `app.module.ts`.
 
@@ -137,30 +135,24 @@ The other feature module's routing module is configured similarly.
 
 You can check to see that a module is indeed being lazy loaded with the Chrome developer tools. In Chrome, open the dev tools by pressing `Cmd+Option+i` on a Mac or `Ctrl+Shift+j` on a PC and go to the Network Tab.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/lazy-loading-ngmodules/network-tab.png" width="600" alt="lazy loaded modules diagram">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/lazy-loading-ngmodules/network-tab.png" width="600" alt="lazy loaded modules diagram">
+</div>
 
 
 Click on the Orders or Customers button. If you see a chunk appear, everything is wired up properly and the feature module is being lazy loaded. A chunk should appear for Orders and for Customers but will only appear once for each.
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/lazy-loading-ngmodules/chunk-arrow.png" width="600" alt="lazy loaded modules diagram">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/lazy-loading-ngmodules/chunk-arrow.png" width="600" alt="lazy loaded modules diagram">
+</div>
 
 
 To see it again, or to test after working in the project, clear everything out by clicking the circle with a line through it in the upper left of the Network Tab:
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/lazy-loading-ngmodules/clear.gif" width="200" alt="lazy loaded modules diagram">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/lazy-loading-ngmodules/clear.gif" width="200" alt="lazy loaded modules diagram">
+</div>
 
 
 Then reload with `Cmd+r` or `Ctrl+r`, depending on your platform.

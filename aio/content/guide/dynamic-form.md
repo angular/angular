@@ -197,12 +197,9 @@ Saving and retrieving the data is an exercise for another time.
 
 The final form looks like this:
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/dynamic-form/dynamic-form.png" alt="Dynamic-Form">
-  </div>
-</figure>
-
+<div class="lightbox">
+  <img src="generated/images/guide/dynamic-form/dynamic-form.png" alt="Dynamic-Form">
+</div>
 
 
 [Back to top](guide/dynamic-form#top)

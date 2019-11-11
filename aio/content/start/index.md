@@ -21,11 +21,9 @@ To help you get started right away, this guide uses a simple ready-made applicat
 <live-example name="getting-started-v0" noDownload>Click here to create the ready-made sample project in StackBlitz.</live-example>
 </h4>
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/start/new-app-all.gif" alt="Starter online store app">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/start/new-app-all.gif" alt="Starter online store app">
+</div>
 
 * The preview pane on the right shows the starting state of the sample Angular app.
 It defines a frame with a top bar (containing the store name and checkout icon) and the title for a product list (which will be populated and dynamically updated with data from the application).
@@ -100,11 +98,9 @@ To help you get going, the following steps use predefined product data and metho
 
       The preview pane immediately updates to display the name of each product in the list.
 
-      <figure class="lightbox">
-        <div class="card">
-          <img src="generated/images/guide/start/template-syntax-product-names.png" alt="Product names added to list">
-        </div>
-      </figure>
+      <div class="lightbox">
+        <img src="generated/images/guide/start/template-syntax-product-names.png" alt="Product names added to list">
+      </div>
 
 1. To make each product name a link to product details, add the `<a>` element and set its title to be the product's name by using the property binding `[ ]` syntax, as follows:
 
@@ -118,11 +114,9 @@ To help you get going, the following steps use predefined product data and metho
     property value as text; property binding `[ ]` lets you
     use the property value in a template expression.
 
-    <figure class="lightbox">
-      <div class="card">
-        <img src="generated/images/guide/start/template-syntax-product-anchor.png" alt="Product name anchor text is product name property">
-      </div>
-    </figure>
+    <div class="lightbox">
+      <img src="generated/images/guide/start/template-syntax-product-anchor.png" alt="Product name anchor text is product name property">
+    </div>
 
 
 4. Add the product descriptions. On the `<p>` element, use an `*ngIf` directive so that Angular only creates the `<p>` element if the current product has a description.
@@ -132,11 +126,9 @@ To help you get going, the following steps use predefined product data and metho
 
     The app now displays the name and description of each product in the list. Notice that the final product does not have a description paragraph. Because the product's description property is empty, Angular doesn't create the `<p>` element&mdash;including the word "Description".
 
-    <figure class="lightbox">
-      <div class="card">
+    <div class="lightbox">
       <img src="generated/images/guide/start/template-syntax-product-description.png" alt="Product descriptions added to list">
-      </div>
-    </figure>
+    </div>
 
 5. Add a button so users can share a product with friends. Bind the button's `click` event to the `share()` method (in `product-list.component.ts`). Event binding uses a set of parentheses, `( )`, around the event, as in the following `<button>` element:
 
@@ -145,19 +137,15 @@ To help you get going, the following steps use predefined product data and metho
 
     Each product now has a "Share" button:
 
-    <figure class="lightbox">
-      <div class="card">
+    <div class="lightbox">
       <img src="generated/images/guide/start/template-syntax-product-share-button.png" alt="Share button added for each product">
-      </div>
-    </figure>
+    </div>
 
     Test the "Share" button:
 
-    <figure class="lightbox">
-      <div class="card">
+    <div class="lightbox">
       <img src="generated/images/guide/start/template-syntax-product-share-alert.png" alt="Alert box indicating product has been shared">
-      </div>
-    </figure>
+    </div>
 
 The app now has a product list and sharing feature.
 In the process, you've learned to use five common features of Angular's template syntax:
@@ -212,11 +200,9 @@ An Angular application comprises a tree of components, in which each Angular com
 
 Currently, the example app has three components:
 
-<figure class="lightbox">
-  <div class="card">
+<div class="lightbox">
   <img src="generated/images/guide/start/app-components.png" alt="Online store with three components">
-  </div>
-</figure>
+</div>
 
 * `app-root` (orange box) is the application shell. This is the first component to load and the parent of all other components. You can think of it as the base page.
 * `app-top-bar` (blue background) is the store name and checkout button.
@@ -244,11 +230,9 @@ The next step is to create a new alert feature that takes a product as an input.
 
     1. Right click on the `app` folder and use the `Angular Generator` to generate a new component named `product-alerts`.
 
-        <figure class="lightbox">
-          <div class="card">
+        <div class="lightbox">
           <img src="generated/images/guide/start/generate-component.png" alt="StackBlitz command to generate component">
-          </div>
-        </figure>
+        </div>
 
         The generator creates starter files for all three parts of the component:
         * `product-alerts.component.ts`
@@ -295,11 +279,9 @@ The next step is to create a new alert feature that takes a product as an input.
 
 The new product alert component takes a product as input from the product list. With that input, it shows or hides the "Notify Me" button, based on the price of the product. The Phone XL price is over $700, so the "Notify Me" button appears on that product.
 
-<figure class="lightbox">
-  <div class="card">
+<div class="lightbox">
   <img src="generated/images/guide/start/product-alert-button.png" alt="Product alert button added to products over $700">
-  </div>
-</figure>
+</div>
 
 <div class="alert is-helpful">
 
@@ -342,11 +324,9 @@ To make the "Notify Me" button work, you need to configure two things:
 
 1. Try the "Notify Me" button:
 
-    <figure class="lightbox">
-      <div class="card">
+    <div class="lightbox">
       <img src="generated/images/guide/start/product-alert-notification.png" alt="Product alert notification confirmation dialog">
-      </div>
-    </figure>
+    </div>
 
 
 <div class="alert is-helpful">

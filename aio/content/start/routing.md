@@ -54,11 +54,9 @@ The app is already set up to use the Angular router and to use routing to naviga
 
     Notice that the URL in the preview window changes. The final segment is `products/1`.
 
-    <figure class="lightbox">
-      <div class="card">
-        <img src="generated/images/guide/start/product-details-works.png" alt="Product details page with updated URL">
-      </div>
-    </figure>
+    <div class="lightbox">
+      <img src="generated/images/guide/start/product-details-works.png" alt="Product details page with updated URL">
+    </div>
 
     
 
@@ -110,11 +108,9 @@ The product details component handles the display of each product. The Angular R
 
 Now, when the user clicks on a name in the product list, the router navigates you to the distinct URL for the product, swaps out the product list component for the product details component, and displays the product details. 
 
-  <figure class="lightbox">
-    <div class="card">
-      <img src="generated/images/guide/start/product-details-routed.png" alt="Product details page with updated URL and full details displayed">
-    </div>
-  </figure>
+<div class="lightbox">
+  <img src="generated/images/guide/start/product-details-routed.png" alt="Product details page with updated URL and full details displayed">
+</div>
 
 
 

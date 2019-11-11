@@ -70,11 +70,9 @@ When all requested services have been resolved and returned, Angular can call th
 
 The process of `HeroService` injection looks something like this.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/architecture/injector-injects.png" alt="Service" class="left">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/architecture/injector-injects.png" alt="Service" class="left">
+</div>
 
 ### Providing services
 
