@@ -125,6 +125,11 @@ export enum R3ResolvedDependencyType {
    * Injecting the `ChangeDetectorRef` token. Needs special handling when injected into a pipe.
    */
   ChangeDetectorRef = 2,
+
+  /**
+   * An invalid dependency (no token could be determined). An error should be thrown at runtime.
+   */
+  Invalid = 3,
 }
 
 /**
@@ -271,11 +276,12 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3FactoryFn {
 
 function injectDependencies(
     deps: R3DependencyMetadata[], injectFn: o.ExternalReference, isPipe: boolean): o.Expression[] {
-  return deps.map(dep => compileInjectDependency(dep, injectFn, isPipe));
+  return deps.map((dep, index) => compileInjectDependency(dep, injectFn, isPipe, index));
 }
 
 function compileInjectDependency(
-    dep: R3DependencyMetadata, injectFn: o.ExternalReference, isPipe: boolean): o.Expression {
+    dep: R3DependencyMetadata, injectFn: o.ExternalReference, isPipe: boolean,
+    index: number): o.Expression {
   // Interpret the dependency according to its resolved type.
   switch (dep.resolved) {
     case R3ResolvedDependencyType.Token:
@@ -305,6 +311,8 @@ function compileInjectDependency(
     case R3ResolvedDependencyType.Attribute:
       // In the case of attributes, the attribute name in question is given as the token.
       return o.importExpr(R3.injectAttribute).callFn([dep.token]);
+    case R3ResolvedDependencyType.Invalid:
+      return o.importExpr(R3.invalidFactoryDep).callFn([o.literal(index)]);
     default:
       return unsupported(
           `Unknown R3ResolvedDependencyType: ${R3ResolvedDependencyType[dep.resolved]}`);

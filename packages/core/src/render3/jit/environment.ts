@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵinject} from '../../di/injector_compatibility';
+import {ɵɵinject, ɵɵinvalidFactoryDep} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵdefineInjector} from '../../di/interface/defs';
 import * as sanitization from '../../sanitization/sanitization';
 import * as r3 from '../index';
@@ -42,6 +42,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵinject': ɵɵinject,
        'ɵɵinjectAttribute': r3.ɵɵinjectAttribute,
        'ɵɵinvalidFactory': r3.ɵɵinvalidFactory,
+       'ɵɵinvalidFactoryDep': ɵɵinvalidFactoryDep,
        'ɵɵinjectPipeChangeDetectorRef': r3.ɵɵinjectPipeChangeDetectorRef,
        'ɵɵtemplateRefExtractor': r3.ɵɵtemplateRefExtractor,
        'ɵɵNgOnChangesFeature': r3.ɵɵNgOnChangesFeature,

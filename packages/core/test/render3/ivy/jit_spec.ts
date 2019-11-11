@@ -342,6 +342,54 @@ ivyEnabled && describe('render3 jit', () => {
 
     expect((TestComponent as any).ɵcmp.viewQuery).not.toBeNull();
   });
+
+  describe('invalid parameters', () => {
+    it('should error when creating an @Injectable that extends a class with a faulty parameter', () => {
+      @Injectable({providedIn: 'root'})
+      class Legit {
+      }
+
+
+      @Injectable()
+      class Base {
+        constructor(first: Legit, second: any) {}
+      }
+
+      @Injectable({providedIn: 'root'})
+      class Service extends Base {
+      }
+
+      const ServiceAny = Service as any;
+
+      expect(ServiceAny.ɵprov).toBeDefined();
+      expect(ServiceAny.ɵprov.providedIn).toBe('root');
+      expect(() => ɵɵinject(Service))
+          .toThrowError(
+              /constructor is not compatible with Angular Dependency Injection because its dependency at index 1 of the parameter list is invalid/);
+    });
+
+    it('should error when creating an @Directive that extends an undecorated class with parameters',
+       () => {
+         @Injectable({providedIn: 'root'})
+         class Legit {
+         }
+
+         class BaseDir {
+           constructor(first: Legit) {}
+         }
+
+         @Directive({selector: 'test'})
+         class TestDir extends BaseDir {
+         }
+
+         const TestDirAny = TestDir as any;
+
+         expect(TestDirAny.ɵfac).toBeDefined();
+         expect(() => TestDirAny.ɵfac())
+             .toThrowError(
+                 /constructor is not compatible with Angular Dependency Injection because its dependency at index 0 of the parameter list is invalid/);
+       });
+  });
 });
 
 it('ensure at least one spec exists', () => {});

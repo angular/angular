@@ -67,6 +67,7 @@ export enum R3ResolvedDependencyType {
   Token = 0,
   Attribute = 1,
   ChangeDetectorRef = 2,
+  Invalid = 3,
 }
 
 export enum R3FactoryTarget {

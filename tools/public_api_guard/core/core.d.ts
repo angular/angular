@@ -897,6 +897,8 @@ export declare function ɵɵinjectPipeChangeDetectorRef(flags?: InjectFlags): Ch
 
 export declare function ɵɵinvalidFactory(): never;
 
+export declare function ɵɵinvalidFactoryDep(index: number): never;
+
 export declare function ɵɵlistener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): typeof ɵɵlistener;
 
 export declare function ɵɵloadQuery<T>(): QueryList<T>;
