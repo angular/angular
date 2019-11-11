@@ -29,14 +29,14 @@
       ['i', 'b', 'm', 'i', 'm', 'y', 'y', 'ɣ', 'c', 'k', 'n', 'd'],
       ['inn', 'bṛa', 'maṛ', 'ibr', 'may', 'yun', 'yul', 'ɣuc', 'cut', 'ktu', 'nuw', 'duj'],
       [
-        'innayr', 'bṛayṛ', 'maṛṣ', 'ibrir', 'mayyu', 'yunyu', 'yulyuz', 'ɣuct', 'cutanbir', 'ktubr',
-        'nuwanbir', 'dujanbir'
+        'innayr', 'bṛayṛ', 'maṛṣ', 'ibrir', 'mayyu', 'yunyu', 'yulyuz', 'ɣuct', 'cutanbir',
+        'ktubr', 'nuwanbir', 'dujanbir'
       ]
     ],
     u,
     [['daɛ', 'dfɛ'], u, ['dat n ɛisa', 'dffir n ɛisa']],
-    6,
-    [5, 6],
+    1,
+    [6, 0],
     ['d/M/y', 'd MMM, y', 'd MMMM y', 'EEEE d MMMM y'],
     ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
     ['{1} {0}', u, u, u],

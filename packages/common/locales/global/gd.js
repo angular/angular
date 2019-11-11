@@ -33,8 +33,8 @@
     [
       ['F', 'G', 'M', 'G', 'C', 'Ò', 'I', 'L', 'S', 'D', 'S', 'D'],
       [
-        'Faoi', 'Gearr', 'Màrt', 'Gibl', 'Cèit', 'Ògmh', 'Iuch', 'Lùna', 'Sult', 'Dàmh', 'Samh',
-        'Dùbh'
+        'Faoi', 'Gearr', 'Màrt', 'Gibl', 'Cèit', 'Ògmh', 'Iuch', 'Lùna', 'Sult', 'Dàmh',
+        'Samh', 'Dùbh'
       ],
       [
         'dhen Fhaoilleach', 'dhen Ghearran', 'dhen Mhàrt', 'dhen Ghiblean', 'dhen Chèitean',
@@ -45,12 +45,13 @@
     [
       ['F', 'G', 'M', 'G', 'C', 'Ò', 'I', 'L', 'S', 'D', 'S', 'D'],
       [
-        'Faoi', 'Gearr', 'Màrt', 'Gibl', 'Cèit', 'Ògmh', 'Iuch', 'Lùna', 'Sult', 'Dàmh', 'Samh',
-        'Dùbh'
+        'Faoi', 'Gearr', 'Màrt', 'Gibl', 'Cèit', 'Ògmh', 'Iuch', 'Lùna', 'Sult', 'Dàmh',
+        'Samh', 'Dùbh'
       ],
       [
         'Am Faoilleach', 'An Gearran', 'Am Màrt', 'An Giblean', 'An Cèitean', 'An t-Ògmhios',
-        'An t-Iuchar', 'An Lùnastal', 'An t-Sultain', 'An Dàmhair', 'An t-Samhain', 'An Dùbhlachd'
+        'An t-Iuchar', 'An Lùnastal', 'An t-Sultain', 'An Dàmhair', 'An t-Samhain',
+        'An Dùbhlachd'
       ]
     ],
     [['R', 'A'], ['RC', 'AD'], ['Ro Chrìosta', 'An dèidh Chrìosta']],
@@ -63,7 +64,7 @@
     ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
     '£',
     'Punnd Sasannach',
-    {'JPY': ['JP¥', '¥'], 'RON': [u, 'leu'], 'THB': ['฿'], 'TWD': ['NT$']},
+    {'JPY': ['JP¥', '¥'], 'RON': [u, 'leu'], 'THB': ['฿'], 'TWD': ['NT$'], 'XXX': []},
     plural,
     []
   ];

@@ -35,15 +35,25 @@
         'nov.', 'dec.'
       ],
       [
+        'da schaner', 'da favrer', 'da mars', 'd’avrigl', 'da matg', 'da zercladur', 'da fanadur',
+        'd’avust', 'da settember', 'd’october', 'da november', 'da december'
+      ]
+    ],
+    [
+      ['S', 'F', 'M', 'A', 'M', 'Z', 'F', 'A', 'S', 'O', 'N', 'D'],
+      [
+        'schan.', 'favr.', 'mars', 'avr.', 'matg', 'zercl.', 'fan.', 'avust', 'sett.', 'oct.',
+        'nov.', 'dec.'
+      ],
+      [
         'schaner', 'favrer', 'mars', 'avrigl', 'matg', 'zercladur', 'fanadur', 'avust', 'settember',
         'october', 'november', 'december'
       ]
     ],
-    u,
     [['av. Cr.', 's. Cr.'], u, ['avant Cristus', 'suenter Cristus']],
     1,
     [6, 0],
-    ['dd-MM-yy', 'dd-MM-y', 'd \'da\' MMMM y', 'EEEE, \'ils\' d \'da\' MMMM y'],
+    ['dd-MM-yy', 'dd-MM-y', 'd MMMM y', 'EEEE, \'ils\' d MMMM y'],
     ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
     ['{1} {0}', u, u, u],
     ['.', '’', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
