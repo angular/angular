@@ -40,6 +40,7 @@ ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
     "upgrade",
     "router",
     "language-service",
+    "localize",
     "service-worker",
 ]]
 
