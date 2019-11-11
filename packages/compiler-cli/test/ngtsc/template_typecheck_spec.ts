@@ -113,6 +113,43 @@ export declare class AnimationEvent {
       expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
     });
 
+    it('should support inputs and outputs with names that are not JavaScript identifiers', () => {
+      env.tsconfig(
+          {fullTemplateTypeCheck: true, strictInputTypes: true, strictOutputEventTypes: true});
+      env.write('test.ts', `
+        import {Component, Directive, NgModule, EventEmitter} from '@angular/core';
+    
+        @Component({
+          selector: 'test',
+          template: '<div dir [some-input.xs]="2" (some-output)="handleEvent($event)"></div>',
+        })
+        class TestCmp {
+          handleEvent(event: number): void {}
+        }
+    
+        @Directive({
+          selector: '[dir]',
+          inputs: ['some-input.xs'],
+          outputs: ['some-output'],
+        })
+        class TestDir {
+          'some-input.xs': string;
+          'some-output': EventEmitter<string>;
+        }
+    
+        @NgModule({
+          declarations: [TestCmp, TestDir],
+        })
+        class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(2);
+      expect(diags[0].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
+      expect(diags[1].messageText)
+          .toEqual(`Argument of type 'string' is not assignable to parameter of type 'number'.`);
+    });
+
     it('should check event bindings', () => {
       env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
       env.write('test.ts', `
