@@ -1,8 +1,13 @@
+// #docplaster
 // #docregion
+// #docregion remove-heroes
 import { NgModule }       from '@angular/core';
 import { BrowserModule }  from '@angular/platform-browser';
 import { FormsModule }    from '@angular/forms';
+// #enddocregion remove-heroes
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
+// #docregion remove-heroes
 import { AppComponent }     from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HeroesModule }     from './heroes/heroes.module';
@@ -14,6 +19,13 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 // #docregion module-imports
   imports: [
     BrowserModule,
+// #enddocregion module-imports
+// #enddocregion remove-heroes
+// #docregion animation-import
+    BrowserAnimationsModule,
+// #enddocregion animation-import
+// #docregion remove-heroes
+// #docregion module-imports
     FormsModule,
     HeroesModule,
     AppRoutingModule
@@ -27,6 +39,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
+// #enddocregion remove-heroes
 // #enddocregion
 
 /*

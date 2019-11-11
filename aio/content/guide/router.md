@@ -1590,7 +1590,7 @@ Remove the `HeroListComponent` from the `AppModule`'s `declarations` because it'
 After these steps, the `AppModule` should look like this:
 
 
-<code-example path="router/src/app/app.module.3.ts" header="src/app/app.module.ts"></code-example>
+<code-example path="router/src/app/app.module.3.ts" header="src/app/app.module.ts" region="remove-heroes"></code-example>
 
 
 
