@@ -40,11 +40,6 @@
       "description": "Static flag migration. Removes the `static` flag from dynamic queries. As of Angular 9, the \"static\" flag defaults to false and is no longer required for your view and content queries. Read more about this here: https://v9.angular.io/guide/migration-dynamic-flag",
       "factory": "./migrations/dynamic-queries/index"
     },
-    "migration-v9-postinstall-ngcc": {
-      "version": "9-beta",
-      "description": "NGCC postinstall migration. Adds an ngcc invocation to npm/yarn's postinstall script. Read more about this here: https://v9.angular.io/guide/migration-ngcc",
-      "factory": "./migrations/postinstall-ngcc/index"
-    },
     "migration-v9-module-with-providers": {
       "version": "9.0.0-beta",
       "description": "ModuleWithProviders migration. In Angular 9, the ModuleWithProviders type without a generic has been deprecated. This migration adds the generic where it is missing. Read more about this here: https://v9.angular.io/guide/migration-module-with-providers",
