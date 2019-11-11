@@ -848,7 +848,20 @@ describe('MatDrawerContainer', () => {
             .toBe(true);
       }));
 
+    it('should clean up the drawers stream on destroy', fakeAsync(() => {
+      const fixture = TestBed.createComponent(DrawerContainerTwoDrawerTestApp);
+      fixture.detectChanges();
 
+      const spy = jasmine.createSpy('complete spy');
+      const subscription = fixture.componentInstance.drawerContainer._drawers.changes.subscribe({
+        complete: spy
+      });
+
+      fixture.destroy();
+
+      expect(spy).toHaveBeenCalled();
+      subscription.unsubscribe();
+    }));
 });
 
 

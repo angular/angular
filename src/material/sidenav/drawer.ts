@@ -630,6 +630,7 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
   ngOnDestroy() {
     this._contentMarginChanges.complete();
     this._doCheckSubject.complete();
+    this._drawers.destroy();
     this._destroyed.next();
     this._destroyed.complete();
   }
