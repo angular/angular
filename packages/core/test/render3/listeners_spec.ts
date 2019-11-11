@@ -107,8 +107,7 @@ describe('event listeners', () => {
         if (rf & RenderFlags.Create) {
           ɵɵlistener('custom', function() {
             return ctx.onDocumentCustomEvent();
-          }, false, ɵɵresolveDocument as GlobalTargetResolver);
-          ɵɵlistener('click', function() {
+          }, false, ɵɵresolveDocument as GlobalTargetResolver)('click', function() {
             return ctx.onBodyClick();
           }, false, ɵɵresolveBody as GlobalTargetResolver);
         }

@@ -1134,6 +1134,113 @@ describe('compiler compliance: bindings', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
+    it('should chain multiple host listeners into a single instruction', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Directive, HostListener} from '@angular/core';
+
+            @Directive({
+              selector: '[my-dir]',
+              host: {
+                '(mousedown)': 'mousedown()',
+                '(mouseup)': 'mouseup()',
+              }
+            })
+            export class MyDirective {
+              mousedown() {}
+              mouseup() {}
+
+              @HostListener('click')
+              click() {}
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵɵlistener("mousedown", function MyDirective_mousedown_HostBindingHandler($event) { return ctx.mousedown(); })("mouseup", function MyDirective_mouseup_HostBindingHandler($event) { return ctx.mouseup(); })("click", function MyDirective_click_HostBindingHandler($event) { return ctx.click(); });
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain multiple synthetic host listeners into a single instruction', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component, HostListener} from '@angular/core';
+
+            @Component({
+              selector: 'my-comp',
+              template: '',
+              host: {
+                '(@animation.done)': 'done()',
+              }
+            })
+            export class MyComponent {
+              @HostListener('@animation.start')
+              start() {}
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵɵcomponentHostSyntheticListener("@animation.done", function MyComponent_animation_animation_done_HostBindingHandler($event) { return ctx.done(); })("@animation.start", function MyComponent_animation_animation_start_HostBindingHandler($event) { return ctx.start(); });
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain multiple regular and synthetic host listeners into two instructions', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component, HostListener} from '@angular/core';
+
+            @Component({
+              selector: 'my-comp',
+              template: '',
+              host: {
+                '(mousedown)': 'mousedown()',
+                '(@animation.done)': 'done()',
+                '(mouseup)': 'mouseup()',
+              }
+            })
+            export class MyComponent {
+              @HostListener('@animation.start')
+              start() {}
+
+              @HostListener('click')
+              click() {}
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+        …
+        hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+          if (rf & 1) {
+            $r3$.ɵɵcomponentHostSyntheticListener("@animation.done", function MyComponent_animation_animation_done_HostBindingHandler($event) { return ctx.done(); })("@animation.start", function MyComponent_animation_animation_start_HostBindingHandler($event) { return ctx.start(); });
+            $r3$.ɵɵlistener("mousedown", function MyComponent_mousedown_HostBindingHandler($event) { return ctx.mousedown(); })("mouseup", function MyComponent_mouseup_HostBindingHandler($event) { return ctx.mouseup(); })("click", function MyComponent_click_HostBindingHandler($event) { return ctx.click(); });
+          }
+        }
+      `;
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
   });
 
   describe('non bindable behavior', () => {
