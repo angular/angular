@@ -58,15 +58,6 @@ searchAndReplace(
 `,
     'node_modules/@angular/compiler-cli/src/ngtsc/entry_point/src/logic.js');
 
-// Workaround for https://github.com/angular/angular/issues/32603.
-try {
-  shelljs.cat(path.join(__dirname, './rollup_windows_arguments.patch')).exec('patch -p0');
-} catch (_) {
-  // This is getting fixed in ng_rollup_bundle itself but due to the dependency sandwich
-  // between this repo and the material-unit-test job in the angular repo we need to add
-  // this try/catch here temporarily.
-}
-
 // Workaround for: https://hackmd.io/MlqFp-yrSx-0mw4rD7dnQQ?both. We only want to discard
 // the metadata of files in the bazel managed node modules. That way we keep the default
 // behavior of ngc-wrapped except for dependencies between sources of the library. This makes
