@@ -40,28 +40,29 @@ System.config({
     '@material/top-app-bar': 'node:@material/top-app-bar/dist/mdc.topAppBar.js',
 
     // Angular specific mappings.
-    '@angular/core': 'node:@angular/core/bundles/core.umd.js',
-    '@angular/core/testing': 'node:@angular/core/bundles/core-testing.umd.min.js',
-    '@angular/common': 'node:@angular/common/bundles/common.umd.min.js',
-    '@angular/common/testing': 'node:@angular/common/bundles/common-testing.umd.min.js',
-    '@angular/common/http': 'node:@angular/common/bundles/common-http.umd.min.js',
-    '@angular/common/http/testing': 'node:@angular/common/bundles/common-http-testing.umd.min.js',
-    '@angular/compiler': 'node:@angular/compiler/bundles/compiler.umd.min.js',
-    '@angular/compiler/testing': 'node:@angular/compiler/bundles/compiler-testing.umd.min.js',
-    '@angular/forms': 'node:@angular/forms/bundles/forms.umd.min.js',
-    '@angular/forms/testing': 'node:@angular/forms/bundles/forms-testing.umd.min.js',
-    '@angular/animations': 'node:@angular/animations/bundles/animations.umd.min.js',
-    '@angular/animations/browser': 'node:@angular/animations/bundles/animations-browser.umd.min.js',
+    '@angular/core': 'node:@angular/core/__ivy_ngcc__/bundles/core.umd.js',
+    '@angular/core/testing': 'node:@angular/core/__ivy_ngcc__/bundles/core-testing.umd.js',
+    '@angular/common': 'node:@angular/common/__ivy_ngcc__/bundles/common.umd.js',
+    '@angular/common/testing': 'node:@angular/common/__ivy_ngcc__/bundles/common-testing.umd.js',
+    '@angular/common/http': 'node:@angular/common/__ivy_ngcc__/bundles/common-http.umd.js',
+    '@angular/common/http/testing': 'node:@angular/common/__ivy_ngcc__/bundles/common-http-testing.umd.js',
+    '@angular/compiler': 'node:@angular/compiler/bundles/compiler.umd.js',
+    '@angular/compiler/testing': 'node:@angular/compiler/__ivy_ngcc__/bundles/compiler-testing.umd.js',
+    '@angular/forms': 'node:@angular/forms/__ivy_ngcc__/bundles/forms.umd.js',
+    '@angular/forms/testing': 'node:@angular/forms/__ivy_ngcc__/bundles/forms-testing.umd.js',
+    '@angular/animations': 'node:@angular/animations/__ivy_ngcc__/bundles/animations.umd.js',
+    '@angular/animations/browser':
+        'node:@angular/animations/__ivy_ngcc__/bundles/animations-browser.umd.js',
     '@angular/platform-browser/animations':
-        'node:@angular/platform-browser/bundles/platform-browser-animations.umd.min.js',
+        'node:@angular/platform-browser/__ivy_ngcc__/bundles/platform-browser-animations.umd.js',
     '@angular/platform-browser':
-        'node:@angular/platform-browser/bundles/platform-browser.umd.min.js',
+        'node:@angular/platform-browser/__ivy_ngcc__/bundles/platform-browser.umd.js',
     '@angular/platform-browser/testing':
-        'node:@angular/platform-browser/bundles/platform-browser-testing.umd.min.js',
+        'node:@angular/platform-browser/__ivy_ngcc__/bundles/platform-browser-testing.umd.js',
     '@angular/platform-browser-dynamic':
-        'node:@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.min.js',
+        'node:@angular/platform-browser-dynamic/__ivy_ngcc__/bundles/platform-browser-dynamic.umd.js',
     '@angular/platform-browser-dynamic/testing':
-        'node:@angular/platform-browser-dynamic/bundles/platform-browser-dynamic-testing.umd.min.js',
+        'node:@angular/platform-browser-dynamic/__ivy_ngcc__/bundles/platform-browser-dynamic-testing.umd.js',
 
     // Path mappings for local packages that can be imported inside of tests.
     '@angular/material': 'dist/packages/material/index.js',

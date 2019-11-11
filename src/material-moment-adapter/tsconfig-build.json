@@ -1,49 +1,7 @@
-// TypeScript config file that is used to compile the moment-adapter package into ES2015.
 {
+  "extends": "../bazel-tsconfig-build.json",
   "compilerOptions": {
     // Needed for Moment.js since it doesn't have a default export.
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
-    "declaration": true,
-    "stripInternal": false,
-    "experimentalDecorators": true,
-    "noUnusedParameters": false,
-    "noUnusedLocals": false,
-    "strictNullChecks": true,
-    "noImplicitReturns": true,
-    "strictFunctionTypes": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "importHelpers": true,
-    "newLine": "lf",
-    "module": "es2015",
-    "moduleResolution": "node",
-    "outDir": "../../dist/packages/material-moment-adapter",
-    "rootDir": ".",
-    "sourceMap": true,
-    "inlineSources": true,
-    "target": "es2015",
-    "lib": ["es2015", "dom"],
-    "skipLibCheck": true,
-    "types": [],
-    "paths": {
-      "@angular/material/*": ["../../dist/packages/material/*"],
-      "@angular/material": ["../../dist/packages/material"],
-      "@angular/cdk/*": ["../../dist/packages/cdk/*"]
-    }
-  },
-  "files": [
-    "public-api.ts"
-  ],
-  "angularCompilerOptions": {
-    "enableIvy": false,
-    "annotateForClosureCompiler": true,
-    "flatModuleOutFile": "index.js",
-    "flatModuleId": "@angular/material-moment-adapter",
-    "skipTemplateCodegen": true,
-    "fullTemplateTypeCheck": true
-  },
-  "bazelOptions": {
-    "suppressTsconfigOverrideWarnings": true
+    "allowSyntheticDefaultImports": true
   }
 }

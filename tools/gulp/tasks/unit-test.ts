@@ -61,7 +61,7 @@ task('test:static', [':test:build'], karmaWatchTask({browsers: []}));
  * written to disk, which causes it to run tests multiple time and makes it hard to follow
  * the console output. This approach runs the Karma server and then depends on the Gulp API
  * to tell Karma when to run the tests.
- * @param overrides Karma options to use on top of the defaults.
+ * @param options Karma options to use on top of the defaults.
  */
 function karmaWatchTask(options?: any) {
   return () => {

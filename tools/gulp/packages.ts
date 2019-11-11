@@ -8,24 +8,6 @@ export const cdkExperimentalPackage = new BuildPackage('cdk-experimental', [cdkP
 export const materialExperimentalPackage = new BuildPackage('material-experimental',
     [cdkPackage, cdkExperimentalPackage, materialPackage]);
 export const momentAdapterPackage = new BuildPackage('material-moment-adapter', [materialPackage]);
-export const examplesPackage = new BuildPackage('components-examples', [
-  cdkPackage,
-  cdkExperimentalPackage,
-  materialPackage,
-  materialExperimentalPackage,
-  momentAdapterPackage,
-  googleMapsPackage,
-]);
-
-// Some CDK & Material experimental secondary entry-points include SCSS files that should be exposed
-// individually at the release output root. This is different in the Material package because here a
-// full SCSS bundle will be generated.
-cdkPackage.copySecondaryEntryPointStylesToRoot = true;
-materialExperimentalPackage.copySecondaryEntryPointStylesToRoot = true;
-
-// Build and copy the schematics of the CDK and Material package.
-cdkPackage.hasSchematics = true;
-materialPackage.hasSchematics = true;
 
 /** List of all build packages defined for this project. */
 export const allBuildPackages = [

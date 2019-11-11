@@ -1,5 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
+load("@npm_bazel_typescript//:index.bzl", "ts_config")
 load("//tools:defaults.bzl", "ng_module", "ng_package", "ng_test_library", "ng_web_test_suite")
 
 ng_module(
@@ -9,15 +10,20 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     module_name = "@angular/material-moment-adapter",
-    # Explicitly specify the tsconfig that is also used by Gulp. We need to explicitly use this
-    # tsconfig because in order to import Moment with TypeScript, we need some special options
-    # enabled.
-    tsconfig = ":tsconfig-build.json",
+    # We need a custom tsconfig that allows synthetic default imports. This is
+    # because "moment" does not have a typed default import.
+    tsconfig = ":tsconfig",
     deps = [
         "//src/material/core",
         "@npm//@angular/core",
         "@npm//moment",
     ],
+)
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig-build.json",
+    deps = ["//src:bazel-tsconfig-build.json"],
 )
 
 ng_test_library(

@@ -41,8 +41,6 @@
     "stylelint": "stylelint \"src/**/*.+(css|scss)\" --config .stylelintrc.json --syntax scss"
   },
   "version": "9.0.0-rc.1",
-  "requiredAngularVersion": "^9.0.0-0 || ^10.0.0-0",
-  "requiredMDCVersion": "^4.0.0",
   "dependencies": {
     "@angular/animations": "^9.0.0-rc.1",
     "@angular/common": "^9.0.0-rc.1",

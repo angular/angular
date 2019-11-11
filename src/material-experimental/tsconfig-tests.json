@@ -1,13 +1,19 @@
-// TypeScript config file that extends the default build tsconfig file. This config is used to
-// also compile the unit-test files. Since the code will run inside of the browser, the target is
-// set to ES5. Also the format needs to be CommonJS for Karma.
 {
-  "extends": "./tsconfig-build",
+  "extends": "../bazel-tsconfig-build.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "../../dist/packages/material-experimental",
+    "rootDir": ".",
+    "rootDirs": [
+      ".",
+      "../../dist/packages/material-experimental"
+    ],
     "importHelpers": false,
     "module": "commonjs",
     "target": "es5",
     "types": ["jasmine"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "paths": {
       "@angular/cdk/*": ["../../dist/packages/cdk/*"],
       "@angular/cdk-experimental/*": ["../../dist/packages/cdk-experimental/*"],
@@ -15,18 +21,8 @@
       "@angular/material-experimental/*": ["./*"]
     }
   },
-  "angularCompilerOptions": {
-    "skipTemplateCodegen": true,
-    "emitDecoratorMetadata": true,
-
-    // Unset options inherited from tsconfig-build
-    "annotateForClosureCompiler": false,
-    "flatModuleOutFile": null,
-    "flatModuleId": null,
-  },
   "include": [
-    // Include the index.ts for each secondary entry-point
-    "./*/index.ts",
+    "**/*.ts",
     "**/*.spec.ts"
   ],
   "exclude": [

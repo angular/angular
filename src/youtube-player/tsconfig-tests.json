@@ -1,25 +1,25 @@
-// TypeScript config file that extends the default tsconfig file for the library. This config is
-// used to compile the tests for Karma. Since the code will run inside of the browser, the target
-// needs to be ES5. The format needs to be CommonJS since Karma only supports that module format.
 {
-  "extends": "./tsconfig-build",
+  "extends": "../bazel-tsconfig-build.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "../../dist/packages/youtube-player",
+    "rootDir": ".",
+    "rootDirs": [
+      ".",
+      "../../dist/packages/youtube-player"
+    ],
     "importHelpers": false,
     "module": "commonjs",
     "target": "es5",
-    "types": ["jasmine"]
-  },
-  "angularCompilerOptions": {
-    "skipTemplateCodegen": true,
-    "emitDecoratorMetadata": true,
-    "fullTemplateTypeCheck": true,
-
-    // Unset options inherited from tsconfig-build
-    "annotateForClosureCompiler": false,
-    "flatModuleOutFile": null,
-    "flatModuleId": null
+    "types": ["jasmine"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": [
-    "*.ts"
+    "**/*.ts",
+    "**/*.spec.ts"
+  ],
+  "exclude": [
+    "**/*.e2e.spec.ts"
   ]
 }

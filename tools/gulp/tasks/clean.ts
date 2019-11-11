@@ -1,7 +1,8 @@
-import {task} from 'gulp';
-import {cleanTask} from '../util/task-helpers';
+import {task, src} from 'gulp';
 import {buildConfig} from 'material2-build-tools';
 
+// This import lacks type definitions.
+const gulpClean = require('gulp-clean');
 
-/** Deletes the dist/ directory. */
-task('clean', cleanTask(buildConfig.outputDir));
+/** Deletes the output directory. */
+task('clean', () => src(buildConfig.outputDir, { read: false }).pipe(gulpClean(null)));

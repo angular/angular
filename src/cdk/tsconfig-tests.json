@@ -1,40 +1,31 @@
-// TypeScript config file that extends the default tsconfig file for the cdk. This config is
-// used to compile the tests for Karma. Since the code will run inside of the browser, the target
-// needs to be ES5. The format needs to be CommonJS since Karma only supports that module format.
 {
-  "extends": "./tsconfig-build",
+  "extends": "../bazel-tsconfig-build.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "../../dist/packages/cdk",
+    "rootDir": ".",
+    "rootDirs": [
+      ".",
+      "../../dist/packages/cdk"
+    ],
     "importHelpers": false,
     "module": "commonjs",
     "target": "es5",
     "types": ["jasmine"],
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "paths": {
       "@angular/cdk/*": ["./*"]
     }
   },
-  "files": [
-    "./index.ts"
-  ],
-  "angularCompilerOptions": {
-    "skipTemplateCodegen": true,
-    "emitDecoratorMetadata": true,
-    "fullTemplateTypeCheck": true,
-
-    // Unset options inherited from tsconfig-build.
-    "annotateForClosureCompiler": false,
-    "flatModuleOutFile": null,
-    "flatModuleId": null
-  },
   "include": [
-    // Include the index.ts for each secondary entry-point.
-    "./*/index.ts",
-    // Include all spec files of the CDK.
+    "**/index.ts",
     "**/*.spec.ts"
   ],
   "exclude": [
+    "testing/protractor/**.ts",
+    "testing/private/e2e/**.ts",
     "**/schematics/**/*.ts",
-    // Exclude end-to-end tests and utilities.
     "**/*.e2e.spec.ts"
   ]
 }

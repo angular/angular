@@ -8,6 +8,7 @@
 import {ComponentFixture, TestBed, fakeAsync, flush} from '@angular/core/testing';
 import {
   Component,
+  ErrorHandler,
   ViewChild,
   TrackByFunction,
   Type,
@@ -41,10 +42,17 @@ describe('CdkTree', () => {
   function configureCdkTreeTestingModule(declarations: Type<any>[]) {
     TestBed.configureTestingModule({
       imports: [CdkTreeModule],
-      providers: [{
-        provide: Directionality,
-        useFactory: () => dir = {value: 'ltr', change: new EventEmitter<Direction>()}
-      }],
+      providers: [
+        {
+          provide: Directionality,
+          useFactory: () => dir = {value: 'ltr', change: new EventEmitter<Direction>()}
+        },
+        // Custom error handler that re-throws the error. Errors happening within
+        // change detection phase will be reported through the handler and thrown
+        // in Ivy. Since we do not want to pollute the "console.error", but rather
+        // just rely on the actual error interrupting the test, we re-throw here.
+        {provide: ErrorHandler, useValue: ({handleError: (err: any) => { throw err; }})}
+      ],
       declarations: declarations,
     }).compileComponents();
   }
