@@ -24,7 +24,8 @@
     [['n tufat', 'n tmeddit'], u, u],
     u,
     [
-      ['Y', 'S', 'K', 'K', 'S', 'S', 'S'], ['Yan', 'San', 'Kraḍ', 'Kuẓ', 'Sam', 'Sḍis', 'Say'],
+      ['Y', 'S', 'K', 'K', 'S', 'S', 'S'],
+      ['Yan', 'San', 'Kraḍ', 'Kuẓ', 'Sam', 'Sḍis', 'Say'],
       ['Yanass', 'Sanass', 'Kraḍass', 'Kuẓass', 'Samass', 'Sḍisass', 'Sayass'],
       ['Yan', 'San', 'Kraḍ', 'Kuẓ', 'Sam', 'Sḍis', 'Say']
     ],
