@@ -36,9 +36,6 @@ else
   TEST_DIRS=$(ls | grep -v node_modules)
 fi
 
-# We need to build zone.js npm package because it is not built in build-packages-dist.sh
-${bazel_bin} build //packages/zone.js:npm_package
-
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
 # Yarn will cache file://dist URIs and not update Angular code
 readonly cache=.yarn_local_cache

@@ -45,7 +45,7 @@
     "rxjs": "file:../../node_modules/rxjs",
     "serve": "^11.2.0",
     "tslib": "file:../../node_modules/tslib",
-    "zone.js": "file:../../dist/bin/packages/zone.js/npm_package"
+    "zone.js": "file:../../dist/zone.js-dist/zone.js"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.900.0-rc.0",

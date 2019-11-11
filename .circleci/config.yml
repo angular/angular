@@ -509,6 +509,7 @@ jobs:
           root: *workspace_location
           paths:
             - ng/dist/packages-dist
+            - ng/dist/zone.js-dist
 
       # Save dependencies and bazel repository cache to use on subsequent runs.
       - save_cache:

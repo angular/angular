@@ -20,7 +20,7 @@
     "@angular/router": "file:../../dist/packages-dist/router",
     "rxjs": "file:../../node_modules/rxjs",
     "tslib": "^1.10.0",
-    "zone.js": "file:../../dist/bin/packages/zone.js/npm_package"
+    "zone.js": "file:../../dist/zone.js-dist/zone.js"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.900.0-rc.0",

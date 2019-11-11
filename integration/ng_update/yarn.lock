@@ -1578,5 +1578,5 @@ yargs@13.1.0:
     y18n "^4.0.0"
     yargs-parser "^13.0.0"
 
-"zone.js@file:../../node_modules/zone.js":
+"zone.js@file:../../dist/zone.js-dist/zone.js":
   version "0.10.2"
