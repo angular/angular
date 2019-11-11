@@ -2365,6 +2365,25 @@ describe('styling', () => {
 
         function splitSortJoin(s: string) { return s.split(/\s+/).sort().join(' ').trim(); }
       });
+
+  describe('ExpressionChangedAfterItHasBeenCheckedError', () => {
+    it('should not throw when bound to SafeValue', () => {
+      @Component({template: `<div [style.background-image]="iconSafe"></div>`})
+      class MyComp {
+        icon = 'https://i.imgur.com/4AiXzf8.jpg';
+        get iconSafe() { return this.sanitizer.bypassSecurityTrustStyle(`url("${this.icon}")`); }
+
+        constructor(private sanitizer: DomSanitizer) {}
+      }
+
+      const fixture =
+          TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+      fixture.detectChanges(true /* Verify that check no changes does not cause an exception */);
+      const div: HTMLElement = fixture.nativeElement.querySelector('div');
+      expect(div.style.getPropertyValue('background-image'))
+          .toEqual('url("https://i.imgur.com/4AiXzf8.jpg")');
+    });
+  });
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {

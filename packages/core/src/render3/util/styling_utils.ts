@@ -5,6 +5,7 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {unwrapSafeValue} from '../../sanitization/bypass';
 import {PropertyAliases, TNodeFlags} from '../interfaces/node';
 import {LStylingData, StylingMapArray, StylingMapArrayIndex, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags, TStylingNode} from '../interfaces/styling';
 import {NO_CHANGE} from '../tokens';
@@ -169,6 +170,14 @@ export function getPropValuesStartPosition(
   }
   return startPosition;
 }
+
+export function hasValueChangedUnwrapSafeValue(
+    a: NO_CHANGE | StylingMapArray | number | String | string | null | boolean | undefined | {},
+    b: NO_CHANGE | StylingMapArray | number | String | string | null | boolean | undefined |
+        {}): boolean {
+  return hasValueChanged(unwrapSafeValue(a), unwrapSafeValue(b));
+}
+
 
 export function hasValueChanged(
     a: NO_CHANGE | StylingMapArray | number | string | null | boolean | undefined | {},
