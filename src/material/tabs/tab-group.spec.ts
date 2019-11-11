@@ -279,6 +279,18 @@ describe('MatTabGroup', () => {
         .toHaveBeenCalledWith(jasmine.objectContaining({index: 0}));
     });
 
+    it('should clean up the tabs QueryList on destroy', () => {
+      const component: MatTabGroup =
+        fixture.debugElement.query(By.css('mat-tab-group'))!.componentInstance;
+      const spy = jasmine.createSpy('complete spy');
+      const subscription = component._tabs.changes.subscribe({complete: spy});
+
+      fixture.destroy();
+
+      expect(spy).toHaveBeenCalled();
+      subscription.unsubscribe();
+    });
+
   });
 
   describe('aria labelling', () => {

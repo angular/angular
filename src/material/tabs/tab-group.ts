@@ -279,6 +279,7 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
   }
 
   ngOnDestroy() {
+    this._tabs.destroy();
     this._tabsSubscription.unsubscribe();
     this._tabLabelSubscription.unsubscribe();
   }
