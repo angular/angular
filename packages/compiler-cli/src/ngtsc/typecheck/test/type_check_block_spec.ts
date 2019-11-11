@@ -43,7 +43,7 @@ describe('type check blocks', () => {
       selector: '[dir]',
       inputs: {inputA: 'inputA'},
     }];
-    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('inputA: ("value")');
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('"inputA": ("value")');
   });
 
   it('should handle empty bindings', () => {
@@ -54,7 +54,7 @@ describe('type check blocks', () => {
       selector: '[dir-a]',
       inputs: {inputA: 'inputA'},
     }];
-    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('inputA: (undefined)');
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('"inputA": (undefined)');
   });
 
   it('should handle bindings without value', () => {
@@ -65,7 +65,7 @@ describe('type check blocks', () => {
       selector: '[dir-a]',
       inputs: {inputA: 'inputA'},
     }];
-    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('inputA: (undefined)');
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('"inputA": (undefined)');
   });
 
   it('should handle implicit vars on ng-template', () => {
@@ -96,7 +96,7 @@ describe('type check blocks', () => {
       },
     }];
     expect(tcb(TEMPLATE, DIRECTIVES))
-        .toContain('var _t2 = Dir.ngTypeCtor({ fieldA: ((ctx).foo), fieldB: (null as any) });');
+        .toContain('var _t2 = Dir.ngTypeCtor({ "fieldA": ((ctx).foo), "fieldB": (null as any) });');
   });
 
   it('should generate a forward element reference correctly', () => {
@@ -147,7 +147,7 @@ describe('type check blocks', () => {
     }];
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain(
-        'var _t2 = Dir.ngTypeCtor({ color: (null as any), strong: (null as any), enabled: (null as any) });');
+        'var _t2 = Dir.ngTypeCtor({ "color": (null as any), "strong": (null as any), "enabled": (null as any) });');
     expect(block).toContain('"blue"; false; true;');
   });
 
@@ -162,7 +162,7 @@ describe('type check blocks', () => {
       exportAs: ['dir'],
       inputs: {input: 'input'},
     }];
-    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('var _t2 = Dir.ngTypeCtor({ input: (null!) });');
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('var _t2 = Dir.ngTypeCtor({ "input": (null!) });');
   });
 
   it('should generate circular references between two directives correctly', () => {
@@ -188,8 +188,8 @@ describe('type check blocks', () => {
     ];
     expect(tcb(TEMPLATE, DIRECTIVES))
         .toContain(
-            'var _t3 = DirB.ngTypeCtor({ inputA: (null!) }); ' +
-            'var _t2 = DirA.ngTypeCtor({ inputA: (_t3) });');
+            'var _t3 = DirB.ngTypeCtor({ "inputA": (null!) }); ' +
+            'var _t2 = DirA.ngTypeCtor({ "inputA": (_t3) });');
   });
 
   it('should handle $any casts', () => {
@@ -203,7 +203,7 @@ describe('type check blocks', () => {
       const TEMPLATE = `<label [for]="'test'"></label>`;
       const CONFIG = {...ALL_ENABLED_CONFIG, checkTypeOfDomBindings: true};
       expect(tcb(TEMPLATE, /* declarations */ undefined, CONFIG))
-          .toContain('_t1.htmlFor = ("test");');
+          .toContain('_t1["htmlFor"] = ("test");');
     });
   });
 
@@ -253,7 +253,7 @@ describe('type check blocks', () => {
       const TEMPLATE = `<div dir (dirOutput)="foo($event)"></div>`;
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain(
-          '_outputHelper(_t2.outputField).subscribe(($event): any => (ctx).foo($event));');
+          '_outputHelper(_t2["outputField"]).subscribe(($event): any => (ctx).foo($event));');
     });
 
     it('should emit a listener function with AnimationEvent for animation events', () => {
@@ -339,14 +339,14 @@ describe('type check blocks', () => {
 
       it('should include null and undefined when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('Dir.ngTypeCtor({ dirInput: ((ctx).a) })');
+        expect(block).toContain('Dir.ngTypeCtor({ "dirInput": ((ctx).a) })');
         expect(block).toContain('(ctx).b;');
       });
       it('should use the non-null assertion operator when disabled', () => {
         const DISABLED_CONFIG:
             TypeCheckingConfig = {...BASE_CONFIG, strictNullInputBindings: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain('Dir.ngTypeCtor({ dirInput: ((ctx).a!) })');
+        expect(block).toContain('Dir.ngTypeCtor({ "dirInput": ((ctx).a!) })');
         expect(block).toContain('(ctx).b!;');
       });
     });
@@ -356,14 +356,14 @@ describe('type check blocks', () => {
 
       it('should check types of bindings when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('Dir.ngTypeCtor({ dirInput: ((ctx).a) })');
+        expect(block).toContain('Dir.ngTypeCtor({ "dirInput": ((ctx).a) })');
         expect(block).toContain('(ctx).b;');
       });
       it('should not check types of bindings when disabled', () => {
         const DISABLED_CONFIG:
             TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfInputBindings: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain('Dir.ngTypeCtor({ dirInput: (((ctx).a as any)) })');
+        expect(block).toContain('Dir.ngTypeCtor({ "dirInput": (((ctx).a as any)) })');
         expect(block).toContain('((ctx).b as any);');
       });
     });
@@ -374,7 +374,7 @@ describe('type check blocks', () => {
       it('should check types of directive outputs when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain(
-            '_outputHelper(_t2.outputField).subscribe(($event): any => (ctx).foo($event));');
+            '_outputHelper(_t2["outputField"]).subscribe(($event): any => (ctx).foo($event));');
         expect(block).toContain(
             '_t1.addEventListener("nonDirOutput", ($event): any => (ctx).foo($event));');
       });
@@ -410,7 +410,7 @@ describe('type check blocks', () => {
       it('should check types of DOM events when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain(
-            '_outputHelper(_t2.outputField).subscribe(($event): any => (ctx).foo($event));');
+            '_outputHelper(_t2["outputField"]).subscribe(($event): any => (ctx).foo($event));');
         expect(block).toContain(
             '_t1.addEventListener("nonDirOutput", ($event): any => (ctx).foo($event));');
       });
@@ -420,7 +420,7 @@ describe('type check blocks', () => {
         // Note that directive outputs are still checked, that is controlled by
         // `checkTypeOfOutputEvents`
         expect(block).toContain(
-            '_outputHelper(_t2.outputField).subscribe(($event): any => (ctx).foo($event));');
+            '_outputHelper(_t2["outputField"]).subscribe(($event): any => (ctx).foo($event));');
         expect(block).toContain('($event: any): any => (ctx).foo($event);');
       });
     });
@@ -483,17 +483,17 @@ describe('type check blocks', () => {
 
       it('should assign string value to the input when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('disabled: ("")');
-        expect(block).toContain('cols: ("3")');
-        expect(block).toContain('rows: (2)');
+        expect(block).toContain('"disabled": ("")');
+        expect(block).toContain('"cols": ("3")');
+        expect(block).toContain('"rows": (2)');
       });
 
       it('should use any for attributes but still check bound attributes when disabled', () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfAttributes: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain('disabled: (null as any)');
-        expect(block).toContain('cols: (null as any)');
-        expect(block).toContain('rows: (2)');
+        expect(block).toContain('"disabled": (null as any)');
+        expect(block).toContain('"cols": (null as any)');
+        expect(block).toContain('"rows": (2)');
       });
     });
 

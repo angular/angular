@@ -415,7 +415,7 @@ class TcbUnclaimedInputsOp extends TcbOp {
         if (binding.name !== 'style' && binding.name !== 'class') {
           // A direct binding to a property.
           const propertyName = ATTR_TO_PROP[binding.name] || binding.name;
-          const prop = ts.createPropertyAccess(elId, propertyName);
+          const prop = ts.createElementAccess(elId, ts.createStringLiteral(propertyName));
           const stmt = ts.createBinary(prop, ts.SyntaxKind.EqualsToken, wrapForDiagnostics(expr));
           addParseSpanInfo(stmt, binding.sourceSpan);
           this.scope.addStatement(ts.createExpressionStatement(stmt));
@@ -478,7 +478,7 @@ class TcbDirectiveOutputsOp extends TcbOp {
         // that has a `subscribe` method that properly carries the `T` into the handler function.
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Infer);
 
-        const outputField = ts.createPropertyAccess(dirId, field);
+        const outputField = ts.createElementAccess(dirId, ts.createStringLiteral(field));
         const outputHelper =
             ts.createCall(this.tcb.env.declareOutputHelper(), undefined, [outputField]);
         const subscribeFn = ts.createPropertyAccess(outputHelper, 'subscribe');
@@ -1118,6 +1118,8 @@ function tcbCallTypeCtor(
 
   // Construct an array of `ts.PropertyAssignment`s for each of the directive's inputs.
   const members = inputs.map(input => {
+    const propertyName = ts.createStringLiteral(input.field);
+
     if (input.type === 'binding') {
       // For bound inputs, the property is assigned the binding expression.
       let expr = input.expression;
@@ -1131,13 +1133,13 @@ function tcbCallTypeCtor(
         expr = ts.createNonNullExpression(expr);
       }
 
-      const assignment = ts.createPropertyAssignment(input.field, wrapForDiagnostics(expr));
+      const assignment = ts.createPropertyAssignment(propertyName, wrapForDiagnostics(expr));
       addParseSpanInfo(assignment, input.sourceSpan);
       return assignment;
     } else {
       // A type constructor is required to be called with all input properties, so any unset
       // inputs are simply assigned a value of type `any` to ignore them.
-      return ts.createPropertyAssignment(input.field, NULL_AS_ANY);
+      return ts.createPropertyAssignment(propertyName, NULL_AS_ANY);
     }
   });
 
