@@ -105,19 +105,15 @@ When the "Buy" button is clicked, you'll use the cart service to add the current
 
 1. To see the new "Buy" button, refresh the application and click on a product's name to display its details.
 
-    <figure class="lightbox">
-      <div class="card">
-        <img src='generated/images/guide/start/product-details-buy.png' alt="Display details for selected product with a Buy button">
-      </div>
-    </figure>
+    <div class="lightbox">
+      <img src='generated/images/guide/start/product-details-buy.png' alt="Display details for selected product with a Buy button">
+    </div>
 
 1. Click the "Buy" button. The product is added to the stored list of items in the cart, and a message is displayed.
 
-    <figure class="lightbox">
-      <div class="card">
-        <img src='generated/images/guide/start/buy-alert.png' alt="Display details for selected product with a Buy button">
-      </div>
-    </figure>
+    <div class="lightbox">
+      <img src='generated/images/guide/start/buy-alert.png' alt="Display details for selected product with a Buy button">
+    </div>
 
 
 ## Create the cart page
@@ -154,11 +150,9 @@ We'll create the cart page in two steps:
 
     (Note: The "Checkout" button that we provided in the top-bar component was already configured with a `routerLink` for `/cart`.)
 
-    <figure class="lightbox">
-      <div class="card">
-        <img src='generated/images/guide/start/cart-works.png' alt="Display cart page before customizing">
-      </div>
-    </figure>
+    <div class="lightbox">
+      <img src='generated/images/guide/start/cart-works.png' alt="Display cart page before customizing">
+    </div>
 
 
 ### Display the cart items
@@ -210,11 +204,9 @@ Services can be used to share data across components:
     1. Click "Checkout" to see the cart.
     1. To add another product, click "My Store" to return to the product list. Repeat the steps above.
 
-    <figure class="lightbox">
-      <div class="card">
-        <img src='generated/images/guide/start/cart-page-full.png' alt="Cart page with products added">
-      </div>
-    </figure>
+    <div class="lightbox">
+      <img src='generated/images/guide/start/cart-page-full.png' alt="Cart page with products added">
+    </div>
 
 
 <div class="alert is-helpful">
@@ -371,19 +363,15 @@ Now that your app can retrieve shipping data, you'll create a shipping component
 
     Click on the "Checkout" button to see the updated cart. (Remember that changing the app causes the preview to refresh, which empties the cart.)
 
-    <figure class="lightbox">
-      <div class="card">
-        <img src='generated/images/guide/start/cart-empty-with-shipping-prices.png' alt="Cart with link to shipping prices">
-      </div>
-    </figure>
+    <div class="lightbox">
+      <img src='generated/images/guide/start/cart-empty-with-shipping-prices.png' alt="Cart with link to shipping prices">
+    </div>
 
     Click on the link to navigate to the shipping prices.
 
-    <figure class="lightbox">
-      <div class="card">
-        <img src='generated/images/guide/start/shipping-prices.png' alt="Display shipping prices">
-      </div>
-    </figure>
+    <div class="lightbox">
+      <img src='generated/images/guide/start/shipping-prices.png' alt="Display shipping prices">
+    </div>
 
 
 ## Next steps

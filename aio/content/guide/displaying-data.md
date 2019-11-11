@@ -8,12 +8,9 @@ conditionally show a message below the list.
 
 The final UI looks like this:
 
-
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/displaying-data/final.png" alt="Final UI">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/displaying-data/final.png" alt="Final UI">
+</div>
 
 <div class="alert is-helpful">
 
@@ -105,13 +102,9 @@ inside the `<app-root>` tag.
 
 Now run the app. It should display the title and hero name:
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="Title and Hero">
-  </div>
-</figure>
-
-
+<div class="lightbox">
+  <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="Title and Hero">
+</div>
 
 The next few sections review some of the coding choices in the app.
 
@@ -215,14 +208,9 @@ repeat items for any [iterable](https://developer.mozilla.org/en-US/docs/Web/Jav
 
 Now the heroes appear in an unordered list.
 
-
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/displaying-data/hero-names-list.png" alt="After ngfor">
-  </div>
-</figure>
-
-
+<div class="lightbox">
+  <img src="generated/images/guide/displaying-data/hero-names-list.png" alt="After ngfor">
+</div>
 
 
 ## Creating a class for the data

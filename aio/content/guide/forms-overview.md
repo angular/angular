@@ -67,11 +67,9 @@ Here's a component with an input field for a single control implemented using re
 
 The source of truth provides the value and status of the form element at a given point in time. In reactive forms, the form model is the source of truth. In the example above, the form model is the `FormControl` instance.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/forms-overview/key-diff-reactive-forms.png" alt="Reactive forms key differences">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/forms-overview/key-diff-reactive-forms.png" alt="Reactive forms key differences">
+</div>
 
 With reactive forms, the form model is explicitly defined in the component class. The reactive form directive (in this case, `FormControlDirective`) then links the existing `FormControl` instance to a specific form element in the view using a value accessor (`ControlValueAccessor` instance).
 
@@ -84,11 +82,9 @@ Here's the same component with an input field for a single control implemented u
 
 In template-driven forms, the source of truth is the template.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/forms-overview/key-diff-td-forms.png" alt="Template-driven forms key differences">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/forms-overview/key-diff-td-forms.png" alt="Template-driven forms key differences">
+</div>
 
 The abstraction of the form model promotes simplicity over structure. The template-driven form directive `NgModel` is responsible for creating and managing the `FormControl` instance for a given form element. It's less explicit, but you no longer have direct control over the form model.
 
@@ -102,11 +98,9 @@ When building forms in Angular, it's important to understand how the framework h
 
 As described above, in reactive forms each form element in the view is directly linked to a form model (`FormControl` instance). Updates from the view to the model and from the model to the view are synchronous and aren't dependent on the UI rendered. The diagrams below use the same favorite color example to demonstrate how data flows when an input field's value is changed from the view and then from the model.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/forms-overview/dataflow-reactive-forms-vtm.png" alt="Reactive forms data flow - view to model" width="100%">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/forms-overview/dataflow-reactive-forms-vtm.png" alt="Reactive forms data flow - view to model" width="100%">
+</div>
 
 The steps below outline the data flow from view to model.
 
@@ -116,11 +110,9 @@ The steps below outline the data flow from view to model.
 1. The `FormControl` instance emits the new value through the `valueChanges` observable.
 1. Any subscribers to the `valueChanges` observable receive the new value.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/forms-overview/dataflow-reactive-forms-mtv.png" alt="Reactive forms data flow - model to view" width="100%">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/forms-overview/dataflow-reactive-forms-mtv.png" alt="Reactive forms data flow - model to view" width="100%">
+</div>
 
 The steps below outline the data flow from model to view.
 
@@ -133,11 +125,9 @@ The steps below outline the data flow from model to view.
 
 In template-driven forms, each form element is linked to a directive that manages the form model internally. The diagrams below use the same favorite color example to demonstrate how data flows when an input field's value is changed from the view and then from the model.
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/forms-overview/dataflow-td-forms-vtm.png" alt="Template-driven forms data flow - view to model" width="100%">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/forms-overview/dataflow-td-forms-vtm.png" alt="Template-driven forms data flow - view to model" width="100%">
+</div>
 
 The steps below outline the data flow from view to model when the input value changes from *Red* to *Blue*.
 
@@ -150,11 +140,9 @@ The steps below outline the data flow from view to model when the input value ch
 1. Because the component template uses two-way data binding for the `favoriteColor` property, the `favoriteColor` property in the component
 is updated to the value emitted by the `ngModelChange` event (*Blue*).
 
-<figure class="lightbox">
-  <div class="card">
-    <img src="generated/images/guide/forms-overview/dataflow-td-forms-mtv.png" alt="Template-driven forms data flow - model to view" width="100%">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/forms-overview/dataflow-td-forms-mtv.png" alt="Template-driven forms data flow - model to view" width="100%">
+</div>
 
 The steps below outline the data flow from model to view when the `favoriteColor` changes from *Blue* to *Red*.
 

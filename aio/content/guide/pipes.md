@@ -106,13 +106,9 @@ As you click the button, the displayed date alternates between
 "**<samp>04/15/1988</samp>**" and
 "**<samp>Friday, April 15, 1988</samp>**".
 
-
-<figure class="lightbox">
-  <div class="card">
-    <img src='generated/images/guide/pipes/date-format-toggle-anim.gif' alt="Date Format Toggle">
-  </div>
-</figure>
-
+<div class="lightbox">
+  <img src='generated/images/guide/pipes/date-format-toggle-anim.gif' alt="Date Format Toggle">
+</div>
 
 
 <div class="alert is-helpful">
@@ -188,11 +184,9 @@ Now you need a component to demonstrate the pipe.
 
 <code-example path="pipes/src/app/power-booster.component.ts" header="src/app/power-booster.component.ts"></code-example>
 
-<figure class="lightbox">
-  <div class="card">
-    <img src='generated/images/guide/pipes/power-booster.png' alt="Power Booster">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src='generated/images/guide/pipes/power-booster.png' alt="Power Booster">
+</div>
 
 
 
@@ -234,11 +228,9 @@ your pipe and two-way data binding with `ngModel`.
 
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src='generated/images/guide/pipes/power-boost-calculator-anim.gif' alt="Power Boost Calculator">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src='generated/images/guide/pipes/power-boost-calculator-anim.gif' alt="Power Boost Calculator">
+</div>
 
 
 
@@ -313,11 +305,9 @@ The Flying Heroes application extends the
 code with checkbox switches and additional displays to help you experience these effects.
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src='generated/images/guide/pipes/flying-heroes-anim.gif' alt="Flying Heroes">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src='generated/images/guide/pipes/flying-heroes-anim.gif' alt="Flying Heroes">
+</div>
 
 
 
@@ -494,11 +484,9 @@ both requesting the heroes from the `heroes.json` file.
 The component renders as the following:
 
 
-<figure class="lightbox">
-  <div class="card">
-    <img src='generated/images/guide/pipes/hero-list.png' alt="Hero List">
-  </div>
-</figure>
+<div class="lightbox">
+  <img src='generated/images/guide/pipes/hero-list.png' alt="Hero List">
+</div>
 
 
 
