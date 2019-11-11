@@ -63,7 +63,8 @@ export default [
     'TWD': [u, '$'],
     'USD': ['$ SU', '$'],
     'VND': [u, '₫'],
-    'XCD': [u, '$']
+    'XCD': [u, '$'],
+    'XXX': []
   },
   plural
 ];

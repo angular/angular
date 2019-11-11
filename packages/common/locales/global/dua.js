@@ -20,17 +20,20 @@
     [['idiɓa', 'ebyámu'], u, u],
     u,
     [
-      ['e', 'm', 'k', 'm', 'ŋ', 'ɗ', 'e'], ['ét', 'mɔ́s', 'kwa', 'muk', 'ŋgi', 'ɗón', 'esa'],
+      ['e', 'm', 'k', 'm', 'ŋ', 'ɗ', 'e'],
+      ['ét', 'mɔ́s', 'kwa', 'muk', 'ŋgi', 'ɗón', 'esa'],
       ['éti', 'mɔ́sú', 'kwasú', 'mukɔ́sú', 'ŋgisú', 'ɗónɛsú', 'esaɓasú'],
       ['ét', 'mɔ́s', 'kwa', 'muk', 'ŋgi', 'ɗón', 'esa']
     ],
     u,
     [
       ['d', 'ŋ', 's', 'd', 'e', 'e', 'm', 'd', 'n', 'm', 't', 'e'],
-      ['di', 'ŋgɔn', 'sɔŋ', 'diɓ', 'emi', 'esɔ', 'mad', 'diŋ', 'nyɛt', 'may', 'tin', 'elá'],
       [
-        'dimɔ́di', 'ŋgɔndɛ', 'sɔŋɛ', 'diɓáɓá', 'emiasele', 'esɔpɛsɔpɛ', 'madiɓɛ́díɓɛ́', 'diŋgindi',
-        'nyɛtɛki', 'mayésɛ́', 'tiníní', 'eláŋgɛ́'
+        'di', 'ŋgɔn', 'sɔŋ', 'diɓ', 'emi', 'esɔ', 'mad', 'diŋ', 'nyɛt', 'may', 'tin', 'elá'
+      ],
+      [
+        'dimɔ́di', 'ŋgɔndɛ', 'sɔŋɛ', 'diɓáɓá', 'emiasele', 'esɔpɛsɔpɛ',
+        'madiɓɛ́díɓɛ́', 'diŋgindi', 'nyɛtɛki', 'mayésɛ́', 'tiníní', 'eláŋgɛ́'
       ]
     ],
     u,

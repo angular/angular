@@ -20,10 +20,11 @@
     [['kíkíríg', 'ngəgógəle'], u, u],
     u,
     [
-      ['s', 'm', 's', 's', 's', 'f', 's'], ['sɔ́n', 'mɔ́n', 'smb', 'sml', 'smn', 'fúl', 'sér'],
+      ['s', 'm', 's', 's', 's', 'f', 's'],
+      ['sɔ́n', 'mɔ́n', 'smb', 'sml', 'smn', 'fúl', 'sér'],
       [
-        'sɔ́ndɔ', 'mɔ́ndi', 'sɔ́ndɔ məlú mə́bɛ̌', 'sɔ́ndɔ məlú mə́lɛ́', 'sɔ́ndɔ məlú mə́nyi', 'fúladé',
-        'séradé'
+        'sɔ́ndɔ', 'mɔ́ndi', 'sɔ́ndɔ məlú mə́bɛ̌', 'sɔ́ndɔ məlú mə́lɛ́',
+        'sɔ́ndɔ məlú mə́nyi', 'fúladé', 'séradé'
       ],
       ['sɔ́n', 'mɔ́n', 'smb', 'sml', 'smn', 'fúl', 'sér']
     ],
