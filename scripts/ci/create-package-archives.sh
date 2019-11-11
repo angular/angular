@@ -15,11 +15,14 @@ echo "  Preparing output directory: $outputDir"
 rm -rf "$outputDir"
 mkdir -p "$outputDir"
 
-# Create a compressed archive containing all packages.
-# (This is useful for copying all packages into `node_modules/` (without changing `package.json`).)
-outputFileName=all$fileSuffix
-echo "  Creating archive with all packages --> '$outputFileName'..."
-tar --create --gzip --directory "$inputDir" --file "$outputDir/$outputFileName" --transform s/^\./packages/ .
+# If there are more than one packages in `$inputDir`...
+if [[ $(ls -1 "$inputDir" | wc -l) -gt 1 ]]; then
+  # Create a compressed archive containing all packages.
+  # (This is useful for copying all packages into `node_modules/` (without changing `package.json`).)
+  outputFileName=all$fileSuffix
+  echo "  Creating archive with all packages --> '$outputFileName'..."
+  tar --create --gzip --directory "$inputDir" --file "$outputDir/$outputFileName" --transform s/^\./packages/ .
+fi
 
 # Create a compressed archive for each package.
 # (This is useful for referencing the path/URL to the resulting archive in `package.json`.)
