@@ -7,6 +7,7 @@ package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 ng_module(
     name = "ng2_switch",
     srcs = glob(["*.ts"]),
+    generate_ve_shims = True,
     tsconfig = "//modules/benchmarks:tsconfig-build.json",
     # TODO: FW-1004 Type checking is currently not complete.
     type_check = False,

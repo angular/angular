@@ -17,6 +17,7 @@ ng_module(
         exclude = ["*.spec.ts"],
     ),
     assets = [":hello-world-styles"],
+    generate_ve_shims = True,
     deps = [
         "@npm//@angular/core",
         "@npm//@types",

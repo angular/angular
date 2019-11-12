@@ -13,6 +13,7 @@ exports_files(["tsconfig.json"])
 ng_module(
     name = "src",
     srcs = glob(["*.ts"]),
+    generate_ve_shims = True,
     deps = [
         "//src/hello-world",
         "@npm//@angular/common",

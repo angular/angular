@@ -38,6 +38,7 @@ ng_module(
       "**/*.css",
       "**/*.html",
     ]) + ([":styles"] if len(glob(["**/*.scss"])) else []),
+    generate_ve_shims = True,
     deps = [
         "@npm//@angular/core",
         "@npm//@angular/platform-browser",

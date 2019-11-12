@@ -208,11 +208,14 @@ def _expected_outs(ctx):
         if short_path.endswith(".ts") and not short_path.endswith(".d.ts"):
             basename = short_path[len(package_prefix):-len(".ts")]
             if (len(factory_basename_set.to_list()) == 0 or basename in factory_basename_set.to_list()):
-                devmode_js = [
-                    ".ngfactory.js",
-                    ".ngsummary.js",
-                    ".js",
-                ]
+                if _generate_ve_shims(ctx):
+                    devmode_js = [
+                        ".ngfactory.js",
+                        ".ngsummary.js",
+                        ".js",
+                    ]
+                else:
+                    devmode_js = [".js"]
 
                 # Only ngc produces .json files, they're not needed in Ivy.
                 if is_legacy_ngc:
@@ -293,7 +296,18 @@ def _expected_outs(ctx):
         i18n_messages = i18n_messages_files,
     )
 
+# Determines if we need to generate View Engine shims (.ngfactory and .ngsummary files)
+def _generate_ve_shims(ctx):
+    # we are checking the workspace name here, because otherwise this would be a breaking change
+    # (the shims used to be on by default)
+    # we can remove this check once angular/components and angular/angular-cli repos no longer depend
+    # on the presence of shims, or if they explicitly opt-in to their generation via ng_modules' generate_ve_shims attr
+    return _is_bazel() and _is_view_engine_enabled(ctx) or (
+        getattr(ctx.attr, "generate_ve_shims", False) == True or ctx.workspace_name != "angular"
+    )
+
 def _ngc_tsconfig(ctx, files, srcs, **kwargs):
+    generate_ve_shims = _generate_ve_shims(ctx)
     outs = _expected_outs(ctx)
     is_legacy_ngc = _is_view_engine_enabled(ctx)
     if "devmode_manifest" in kwargs:
@@ -305,8 +319,8 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "enableResourceInlining": ctx.attr.inline_resources,
         "generateCodeForLibraries": False,
         "allowEmptyCodegenFiles": True,
-        "generateNgFactoryShims": True,
-        "generateNgSummaryShims": True,
+        "generateNgFactoryShims": True if generate_ve_shims else False,
+        "generateNgSummaryShims": True if generate_ve_shims else False,
         # Summaries are only enabled if Angular outputs are to be produced.
         "enableSummariesForJit": is_legacy_ngc,
         "enableIvy": _is_ivy_enabled(ctx),
@@ -771,6 +785,8 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
         executable = True,
         cfg = "host",
     ),
+    # Should the rule generate ngfactory and ngsummary shim files?
+    "generate_ve_shims": attr.bool(default = False),
 })
 
 ng_module = rule(
