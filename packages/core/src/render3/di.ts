@@ -541,14 +541,12 @@ export function getNodeInjectable(
     if (factory.injectImpl) {
       previousInjectImplementation = setInjectImplementation(factory.injectImpl);
     }
-    enterDI(lView, tNode);
     try {
       value = lView[index] = factory.factory(undefined, tData, lView, tNode);
     } finally {
       if (factory.injectImpl) setInjectImplementation(previousInjectImplementation);
       setIncludeViewProviders(previousIncludeViewProviders);
       factory.resolving = false;
-      leaveDI();
     }
   }
   return value;
