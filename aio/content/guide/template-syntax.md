@@ -1105,6 +1105,8 @@ It has a `size` value property and a companion `sizeChange` event:
 
 <code-example path="two-way-binding/src/app/sizer/sizer.component.ts" header="src/app/sizer.component.ts"></code-example>
 
+<code-example path="two-way-binding/src/app/sizer/sizer.component.html" header="src/app/sizer.component.html"></code-example>
+
 The initial `size` is an input value from a property binding.
 Clicking the buttons increases or decreases the `size`, within
 min/max value constraints,
