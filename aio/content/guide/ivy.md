@@ -15,6 +15,7 @@ Learn more about the [Compiler](https://www.youtube.com/watch?v=anphffaCZrQ) and
 
 AOT compilation with Ivy is faster and should be used by default.
 In the `angular.json` workspace configuration file, set the default build options for your project to always use AOT compilation.
+When using application internationalization (i18n) with Ivy, [translation merging](guide/i18n#merge) also requires the use of AOT compilation.
 
 <code-example language="json" header="angular.json">
 
@@ -117,6 +118,17 @@ If you disable Ivy, you might also want to reconsider whether to make AOT compil
 To revert the compiler default, set the build option `aot: false` in the `angular.json` configuration file.
 
 </div>
+
+If you disable Ivy and the project uses internationalization, you can also remove the `@angular/localize` runtime component from the project's polyfills file located be default at `src/polyfills.ts`.
+
+To remove, delete the `import '@angular/localize/init';` line from the polyfills file. 
+
+<code-example language="typescript" header="polyfills.ts">
+/***************************************************************************************************
+ * Load `$localize` onto the global scope - used if i18n tags appear in Angular templates.
+ */
+import '@angular/localize/init';
+</code-example>
 
 {@a using-ssr-without-angular-ivy}
 ### Using SSR without Ivy
