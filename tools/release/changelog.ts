@@ -27,7 +27,7 @@ const orderedChangelogPackages = [
 ];
 
 /** List of packages which are excluded in the changelog. */
-const excludedChangelogPackages = [];
+const excludedChangelogPackages: string[] = [];
 
 /** Prompts for a changelog release name and prepends the new changelog. */
 export async function promptAndGenerateChangelog(changelogPath: string) {
