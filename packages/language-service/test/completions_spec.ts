@@ -117,6 +117,52 @@ describe('completions', () => {
     expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
   });
 
+  it('should be able to get property completions for members in an array', () => {
+    const fileName = mockHost.addCode(`
+        interface Book {
+          numberOfPages: number;
+        }
+
+        @Component({
+          selector: 'library',
+          template: \`
+            <div>{{books[0].~{props}}}</div>
+          \`,
+        })
+        export class Library {
+          books: Book[];
+        }
+      `);
+    const location = mockHost.getLocationMarkerFor(fileName, 'props');
+    const completions = ngLS.getCompletionsAt(fileName, location.start) !;
+    expectContain(completions, CompletionKind.PROPERTY, ['numberOfPages']);
+  });
+
+  it('should be able to get property completions for members in an indexed type', () => {
+    const fileName = mockHost.addCode(`
+        interface Book {
+          numberOfPages: number;
+        }
+
+        interface BookCatalog {
+          [title: string]: Book;
+        }
+
+        @Component({
+          selector: 'library',
+          template: \`
+            <div>{{books['Angular Design'].~{props}}}</div>
+          \`,
+        })
+        export class Library {
+          books: BookCatalog;
+        }
+      `);
+    const location = mockHost.getLocationMarkerFor(fileName, 'props');
+    const completions = ngLS.getCompletionsAt(fileName, location.start) !;
+    expectContain(completions, CompletionKind.PROPERTY, ['numberOfPages']);
+  });
+
   it('should be able to return attribute names with an incompete attribute', () => {
     const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'no-value-attribute');
     const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
