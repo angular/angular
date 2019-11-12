@@ -16,7 +16,7 @@ import {isDeclaration} from '../../util/src/typescript';
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
 import {DependencyTracker, ForeignFunctionResolver} from './interface';
-import {BuiltinFn, EnumValue, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
+import {BuiltinFn, EnumValue, ResolvedModule, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
 import {evaluateTsHelperInline} from './ts_helpers';
 
 
@@ -183,11 +183,14 @@ export class StaticInterpreter {
         const spread = this.visitExpression(property.expression, context);
         if (spread instanceof DynamicValue) {
           return DynamicValue.fromDynamicInput(node, spread);
-        } else if (!(spread instanceof Map)) {
+        } else if (spread instanceof Map) {
+          spread.forEach((value, key) => map.set(key, value));
+        } else if (spread instanceof ResolvedModule) {
+          spread.getExports().forEach((value, key) => map.set(key, value));
+        } else {
           return DynamicValue.fromDynamicInput(
               node, DynamicValue.fromInvalidExpressionType(property, spread));
         }
-        spread.forEach((value, key) => map.set(key, value));
       } else {
         return DynamicValue.fromUnknown(node);
       }
@@ -323,19 +326,18 @@ export class StaticInterpreter {
     if (declarations === null) {
       return DynamicValue.fromUnknown(node);
     }
-    const map = new Map<string, ResolvedValue>();
-    declarations.forEach((decl, name) => {
+
+    return new ResolvedModule(declarations, decl => {
       const declContext = {
           ...context, ...joinModuleContext(context, node, decl),
       };
+
       // Visit both concrete and inline declarations.
       // TODO(alxhub): remove cast once TS is upgraded in g3.
-      const value = decl.node !== null ?
+      return decl.node !== null ?
           this.visitDeclaration(decl.node, declContext) :
           this.visitExpression((decl as InlineDeclaration).expression, declContext);
-      map.set(name, value);
     });
-    return map;
   }
 
   private accessHelper(
@@ -348,6 +350,8 @@ export class StaticInterpreter {
       } else {
         return undefined;
       }
+    } else if (lhs instanceof ResolvedModule) {
+      return lhs.getExport(strIndex);
     } else if (Array.isArray(lhs)) {
       if (rhs === 'length') {
         return lhs.length;

@@ -389,6 +389,38 @@ runInEachFileSystem(() => {
       });
     });
 
+    it('module spread works', () => {
+      const map = evaluate<Map<string, number>>(
+          `import * as mod from './module'; const c = {...mod, c: 3};`, 'c', [
+            {name: _('/module.ts'), contents: `export const a = 1; export const b = 2;`},
+          ]);
+
+      const obj: {[key: string]: number} = {};
+      map.forEach((value, key) => obj[key] = value);
+      expect(obj).toEqual({
+        a: 1,
+        b: 2,
+        c: 3,
+      });
+    });
+
+    it('evaluates module exports lazily to avoid infinite recursion', () => {
+      const value = evaluate(`import * as mod1 from './mod1';`, 'mod1.primary', [
+        {
+          name: _('/mod1.ts'),
+          contents: `
+            import * as mod2 from './mod2';
+            export const primary = mod2.indirection;
+            export const secondary = 2;`
+        },
+        {
+          name: _('/mod2.ts'),
+          contents: `import * as mod1 from './mod1'; export const indirection = mod1.secondary;`
+        },
+      ]);
+      expect(value).toEqual(2);
+    });
+
     it('indirected-via-object function call works', () => {
       expect(evaluate(
                  `
