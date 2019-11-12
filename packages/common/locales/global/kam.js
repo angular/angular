@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['kam'] = [
+  global.ng.common.locales['kam'] = [
     'kam',
     [['Ĩyakwakya', 'Ĩyawĩoo'], u, u],
     u,

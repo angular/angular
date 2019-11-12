@@ -25,7 +25,7 @@
       return 1;
     return 5;
   }
-  root.ng.common.locales['prg'] = [
+  global.ng.common.locales['prg'] = [
     'prg',
     [['AM', 'PM'], u, u],
     u,

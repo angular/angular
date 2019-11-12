@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['mas'] = [
+  global.ng.common.locales['mas'] = [
     'mas',
     [['Ɛnkakɛnyá', 'Ɛndámâ'], u, u],
     u,

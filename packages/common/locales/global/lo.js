@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['lo'] = [
+  global.ng.common.locales['lo'] = [
     'lo',
     [['ກ່ອນທ່ຽງ', 'ຫຼັງທ່ຽງ'], u, u],
     u,

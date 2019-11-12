@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['teo-ke'] = [
+  global.ng.common.locales['teo-ke'] = [
     'teo-KE',
     [['Taparachu', 'Ebongi'], u, u],
     u,

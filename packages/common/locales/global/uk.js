@@ -26,7 +26,7 @@
       return 4;
     return 5;
   }
-  root.ng.common.locales['uk'] = [
+  global.ng.common.locales['uk'] = [
     'uk',
     [['дп', 'пп'], u, u],
     u,

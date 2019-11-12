@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['nb-sj'] = [
+  global.ng.common.locales['nb-sj'] = [
     'nb-SJ',
     [['a', 'p'], ['a.m.', 'p.m.'], u],
     [['a.m.', 'p.m.'], u, u],

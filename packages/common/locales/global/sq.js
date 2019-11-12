@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['sq'] =
+  global.ng.common.locales['sq'] =
       [
         'sq',
         [['p.d.', 'm.d.'], u, ['e paradites', 'e pasdites']],

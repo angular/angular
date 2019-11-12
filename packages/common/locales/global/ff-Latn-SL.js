@@ -19,7 +19,7 @@
     if (i === 0 || i === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['ff-latn-sl'] = [
+  global.ng.common.locales['ff-latn-sl'] = [
     'ff-Latn-SL',
     [['subaka', 'kikiiɗe'], u, u],
     u,

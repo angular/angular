@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['sr-latn-ba'] = [
+  global.ng.common.locales['sr-latn-ba'] = [
     'sr-Latn-BA',
     [['a', 'p'], ['prije podne', 'po podne'], u],
     u,

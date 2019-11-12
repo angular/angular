@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['ky'] = [
+  global.ng.common.locales['ky'] = [
     'ky',
     [['тң', 'тк'], u, ['таңкы', 'түштөн кийинки']],
     u,
