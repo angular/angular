@@ -2,6 +2,12 @@
 
 This guide contains everything you need to know about updating to the next Angular version.
 
+<div class="alert is-helpful">
+
+For step-by-step instructions on how to update to the latest Angular release, use the interactive update guide at [update.angular.io](https://update.angular.io).
+
+</div>
+
 ## Updating CLI Apps
 
 If your application uses the CLI, you can update to version 9 automatically with the help of the `ng update` script:
@@ -23,6 +29,12 @@ The script runs a series of small migrations that will transform the code of you
 If you're curious about the specific migrations being run, see the [automated migrations section](#migrations) for details on what code is changing and why.
 
 ## Changes and Deprecations in Version 9
+
+<div class="alert is-helpful">
+
+   For information about Angular's deprecation and removal practices, see [Angular Release Practices](guide/releases#deprecation-practices "Angular Release Practices: Deprecation practices").
+
+</div>
 
 {@a breaking-changes}
 ### New Breaking Changes
