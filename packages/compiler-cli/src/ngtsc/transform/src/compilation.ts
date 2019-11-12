@@ -173,9 +173,6 @@ export class IvyCompilation {
   private analyze(sf: ts.SourceFile, preanalyze: true): Promise<void>|undefined;
   private analyze(sf: ts.SourceFile, preanalyze: boolean): Promise<void>|undefined {
     const promises: Promise<void>[] = [];
-    if (this.incrementalState.safeToSkip(sf)) {
-      return;
-    }
     const analyzeClass = (node: ClassDeclaration): void => {
       const ivyClass = this.detectHandlersForClass(node);
 

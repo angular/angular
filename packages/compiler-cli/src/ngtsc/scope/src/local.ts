@@ -16,7 +16,7 @@ import {ClassDeclaration} from '../../reflection';
 import {identifierOfNode, nodeNameForError} from '../../util/src/typescript';
 
 import {ExportScope, ScopeData} from './api';
-import {ComponentScopeReader, ComponentScopeRegistry, NoopComponentScopeRegistry} from './component_scope';
+import {ComponentScopeReader} from './component_scope';
 import {DtsModuleScopeResolver} from './dependency';
 
 export interface LocalNgModuleData {
@@ -104,8 +104,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
 
   constructor(
       private localReader: MetadataReader, private dependencyScopeReader: DtsModuleScopeResolver,
-      private refEmitter: ReferenceEmitter, private aliasingHost: AliasingHost|null,
-      private componentScopeRegistry: ComponentScopeRegistry = new NoopComponentScopeRegistry()) {}
+      private refEmitter: ReferenceEmitter, private aliasingHost: AliasingHost|null) {}
 
   /**
    * Add an NgModule's data to the registry.
@@ -126,9 +125,6 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     const scope = !this.declarationToModule.has(clazz) ?
         null :
         this.getScopeOfModule(this.declarationToModule.get(clazz) !);
-    if (scope !== null) {
-      this.componentScopeRegistry.registerComponentScope(clazz, scope);
-    }
     return scope;
   }
 
@@ -357,7 +353,6 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
    */
   setComponentAsRequiringRemoteScoping(node: ClassDeclaration): void {
     this.remoteScoping.add(node);
-    this.componentScopeRegistry.setComponentAsRequiringRemoteScoping(node);
   }
 
   /**
