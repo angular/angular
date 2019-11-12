@@ -24,7 +24,7 @@
       return 4;
     return 5;
   }
-  root.ng.common.locales['be'] = [
+  global.ng.common.locales['be'] = [
     'be',
     [['am', 'pm'], ['AM', 'PM'], u],
     [['AM', 'PM'], u, u],

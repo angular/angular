@@ -19,7 +19,7 @@
     if (i === 0 || i === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['kab'] = [
+  global.ng.common.locales['kab'] = [
     'kab',
     [['n tufat', 'n tmeddit'], u, u],
     u,

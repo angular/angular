@@ -19,7 +19,7 @@
     if (n === 2) return 2;
     return 5;
   }
-  root.ng.common.locales['naq'] = [
+  global.ng.common.locales['naq'] = [
     'naq',
     [['ǁgoagas', 'ǃuias'], u, u],
     u,

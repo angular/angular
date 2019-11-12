@@ -19,7 +19,7 @@
     if (i === 0 || n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['hi'] = [
+  global.ng.common.locales['hi'] = [
     'hi',
     [['am', 'pm'], u, u],
     u,

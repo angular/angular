@@ -19,7 +19,7 @@
     if (n === 2) return 2;
     return 5;
   }
-  root.ng.common.locales['se-fi'] = [
+  global.ng.common.locales['se-fi'] = [
     'se-FI',
     [['i', 'e'], ['ib', 'eb'], u],
     [['ib', 'eb'], u, u],

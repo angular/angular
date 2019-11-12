@@ -19,7 +19,7 @@
     if (i === 0 || i === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['hy'] = [
+  global.ng.common.locales['hy'] = [
     'hy',
     [['ա', 'հ'], ['AM', 'PM'], u],
     [['AM', 'PM'], u, u],

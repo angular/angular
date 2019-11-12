@@ -20,7 +20,7 @@
     if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11)) return 1;
     return 5;
   }
-  root.ng.common.locales['mk'] = [
+  global.ng.common.locales['mk'] = [
     'mk',
     [['претпл.', 'попл.'], u, ['претпладне', 'попладне']],
     u,

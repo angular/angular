@@ -22,7 +22,7 @@
     if (n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 99) return 4;
     return 5;
   }
-  root.ng.common.locales['ar-ma'] = [
+  global.ng.common.locales['ar-ma'] = [
     'ar-MA',
     [['ص', 'م'], u, u],
     [['ص', 'م'], u, ['صباحًا', 'مساءً']],

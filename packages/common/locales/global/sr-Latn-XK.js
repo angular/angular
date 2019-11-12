@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['sr-latn-xk'] = [
+  global.ng.common.locales['sr-latn-xk'] = [
     'sr-Latn-XK',
     [['a', 'p'], ['pre podne', 'po podne'], u],
     u,

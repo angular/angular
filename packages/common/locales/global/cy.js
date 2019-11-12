@@ -22,7 +22,7 @@
     if (n === 6) return 4;
     return 5;
   }
-  root.ng.common.locales['cy'] = [
+  global.ng.common.locales['cy'] = [
     'cy',
     [['b', 'h'], ['AM', 'PM'], ['yb', 'yh']],
     [['AM', 'PM'], u, u],

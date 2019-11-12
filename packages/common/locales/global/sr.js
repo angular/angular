@@ -25,7 +25,7 @@
       return 3;
     return 5;
   }
-  root.ng.common.locales['sr'] = [
+  global.ng.common.locales['sr'] = [
     'sr',
     [['a', 'p'], ['пре подне', 'по подне'], u],
     [['пре подне', 'по подне'], u, u],

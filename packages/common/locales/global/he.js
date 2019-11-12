@@ -21,7 +21,7 @@
     if (v === 0 && !(n >= 0 && n <= 10) && n % 10 === 0) return 4;
     return 5;
   }
-  root.ng.common.locales['he'] = [
+  global.ng.common.locales['he'] = [
     'he',
     [['לפנה״צ', 'אחה״צ'], u, u],
     [['לפנה״צ', 'אחה״צ'], ['AM', 'PM'], u],

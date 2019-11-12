@@ -18,7 +18,7 @@
     if (n === Math.floor(n) && n >= 0 && n <= 1) return 1;
     return 5;
   }
-  root.ng.common.locales['ak'] = [
+  global.ng.common.locales['ak'] = [
     'ak',
     [['AN', 'EW'], u, u],
     u,

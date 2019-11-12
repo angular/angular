@@ -19,7 +19,7 @@
     if (i === 0 || n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['mr'] = [
+  global.ng.common.locales['mr'] = [
     'mr',
     [['स', 'सं'], ['म.पू.', 'म.उ.'], u],
     [['म.पू.', 'म.उ.'], u, u],

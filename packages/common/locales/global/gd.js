@@ -20,7 +20,7 @@
     if (n === Math.floor(n) && (n >= 3 && n <= 10 || n >= 13 && n <= 19)) return 3;
     return 5;
   }
-  root.ng.common.locales['gd'] = [
+  global.ng.common.locales['gd'] = [
     'gd',
     [['m', 'f'], u, u],
     u,

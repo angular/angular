@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['az-cyrl'] = [
+  global.ng.common.locales['az-cyrl'] = [
     'az-Cyrl',
     [['а', 'п'], ['АМ', 'ПМ'], u],
     [['АМ', 'ПМ'], u, u],

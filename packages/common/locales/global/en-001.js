@@ -19,7 +19,7 @@
     if (i === 1 && v === 0) return 1;
     return 5;
   }
-  root.ng.common.locales['en-001'] = [
+  global.ng.common.locales['en-001'] = [
     'en-001',
     [['a', 'p'], ['am', 'pm'], u],
     [['am', 'pm'], u, u],

@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['rwk'] = [
+  global.ng.common.locales['rwk'] = [
     'rwk',
     [['utuko', 'kyiukonyi'], u, u],
     u,

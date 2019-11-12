@@ -19,7 +19,7 @@
     if (i === 1 && v === 0) return 1;
     return 5;
   }
-  root.ng.common.locales['yi'] = [
+  global.ng.common.locales['yi'] = [
     'yi',
     [['פֿאַרמיטאָג', 'נאָכמיטאָג'], u, u],
     u,

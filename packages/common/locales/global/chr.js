@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['chr'] = [
+  global.ng.common.locales['chr'] = [
     'chr',
     [['Ꮜ', 'Ꮢ'], ['ᏌᎾᎴ', 'ᏒᎯᏱᎢ'], ['ᏌᎾᎴ', 'ᏒᎯᏱᎢᏗᏢ']],
     [['ᏌᎾᎴ', 'ᏒᎯᏱᎢ'], u, ['ᏌᎾᎴ', 'ᏒᎯᏱᎢᏗᏢ']],

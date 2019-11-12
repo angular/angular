@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['ne-in'] = [
+  global.ng.common.locales['ne-in'] = [
     'ne-IN',
     [['पूर्वाह्न', 'अपराह्न'], u, u],
     u,

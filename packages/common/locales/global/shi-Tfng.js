@@ -20,7 +20,7 @@
     if (n === Math.floor(n) && n >= 2 && n <= 10) return 3;
     return 5;
   }
-  root.ng.common.locales['shi-tfng'] = [
+  global.ng.common.locales['shi-tfng'] = [
     'shi-Tfng',
     [['ⵜⵉⴼⴰⵡⵜ', 'ⵜⴰⴷⴳⴳⵯⴰⵜ'], u, u],
     u,

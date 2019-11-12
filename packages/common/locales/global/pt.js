@@ -19,7 +19,7 @@
     if (i === Math.floor(i) && i >= 0 && i <= 1) return 1;
     return 5;
   }
-  root.ng.common.locales['pt'] = [
+  global.ng.common.locales['pt'] = [
     'pt',
     [['AM', 'PM'], u, u],
     u,

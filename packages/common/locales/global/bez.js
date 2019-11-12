@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['bez'] = [
+  global.ng.common.locales['bez'] = [
     'bez',
     [['pamilau', 'pamunyi'], u, u],
     u,

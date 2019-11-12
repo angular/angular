@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['ta-sg'] = [
+  global.ng.common.locales['ta-sg'] = [
     'ta-SG',
     [['மு.ப', 'பி.ப'], ['முற்பகல்', 'பிற்பகல்'], u],
     u,

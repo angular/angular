@@ -25,7 +25,7 @@
       return 3;
     return 5;
   }
-  root.ng.common.locales['sr-cyrl-ba'] = [
+  global.ng.common.locales['sr-cyrl-ba'] = [
     'sr-Cyrl-BA',
     [['a', 'p'], ['прије подне', 'по подне'], u],
     [['а', 'p'], ['прије подне', 'по подне'], u],

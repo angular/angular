@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['ko'] = [
+  global.ng.common.locales['ko'] = [
     'ko',
     [['AM', 'PM'], u, ['오전', '오후']],
     u,

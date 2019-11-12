@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['asa'] = [
+  global.ng.common.locales['asa'] = [
     'asa',
     [['icheheavo', 'ichamthi'], u, u],
     u,

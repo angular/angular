@@ -20,7 +20,7 @@
     if (n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 19) return 4;
     return 5;
   }
-  root.ng.common.locales['mt'] = [
+  global.ng.common.locales['mt'] = [
     'mt',
     [['am', 'pm'], ['AM', 'PM'], u],
     u,

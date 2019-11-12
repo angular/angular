@@ -19,7 +19,7 @@
     if (n === 2) return 2;
     return 5;
   }
-  root.ng.common.locales['kw'] = [
+  global.ng.common.locales['kw'] = [
     'kw',
     [['a.m.', 'p.m.'], u, u],
     u,

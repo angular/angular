@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['ug'] = [
+  global.ng.common.locales['ug'] = [
     'ug',
     [['ب', 'ك'], ['چ.ب', 'چ.ك'], ['چۈشتىن بۇرۇن', 'چۈشتىن كېيىن']],
     [['چ.ب', 'چ.ك'], u, u],

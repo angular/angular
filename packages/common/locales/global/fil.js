@@ -23,7 +23,7 @@
       return 1;
     return 5;
   }
-  root.ng.common.locales['fil'] = [
+  global.ng.common.locales['fil'] = [
     'fil',
     [['am', 'pm'], ['AM', 'PM'], u],
     [['AM', 'PM'], u, u],

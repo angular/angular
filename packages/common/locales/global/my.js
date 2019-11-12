@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['my'] = [
+  global.ng.common.locales['my'] = [
     'my',
     [['နံနက်', 'ညနေ'], u, u],
     u,

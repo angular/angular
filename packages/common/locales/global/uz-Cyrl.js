@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['uz-cyrl'] = [
+  global.ng.common.locales['uz-cyrl'] = [
     'uz-Cyrl',
     [['ТО', 'ТК'], u, u],
     u,

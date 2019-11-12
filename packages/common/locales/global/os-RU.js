@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['os-ru'] = [
+  global.ng.common.locales['os-ru'] = [
     'os-RU',
     [['AM', 'PM'], u, ['ӕмбисбоны размӕ', 'ӕмбисбоны фӕстӕ']],
     [['AM', 'PM'], u, u],

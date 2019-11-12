@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['zh-hans-hk'] = [
+  global.ng.common.locales['zh-hans-hk'] = [
     'zh-Hans-HK',
     [['上午', '下午'], u, u],
     u,

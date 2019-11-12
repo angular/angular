@@ -22,7 +22,7 @@
       return 3;
     return 5;
   }
-  root.ng.common.locales['sl'] = [
+  global.ng.common.locales['sl'] = [
     'sl',
     [['d', 'p'], ['dop.', 'pop.'], u],
     [['d', 'p'], ['dop.', 'pop.'], ['dopoldne', 'popoldne']],

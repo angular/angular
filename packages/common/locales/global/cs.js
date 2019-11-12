@@ -21,7 +21,7 @@
     if (!(v === 0)) return 4;
     return 5;
   }
-  root.ng.common.locales['cs'] = [
+  global.ng.common.locales['cs'] = [
     'cs',
     [['dop.', 'odp.'], u, u],
     u,

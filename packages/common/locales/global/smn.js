@@ -19,7 +19,7 @@
     if (n === 2) return 2;
     return 5;
   }
-  root.ng.common.locales['smn'] = [
+  global.ng.common.locales['smn'] = [
     'smn',
     [['ip.', 'ep.'], u, u],
     u,

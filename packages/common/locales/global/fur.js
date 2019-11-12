@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['fur'] = [
+  global.ng.common.locales['fur'] = [
     'fur',
     [['a.', 'p.'], u, u],
     u,

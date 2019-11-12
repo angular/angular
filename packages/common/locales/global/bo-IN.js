@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['bo-in'] = [
+  global.ng.common.locales['bo-in'] = [
     'bo-IN',
     [['སྔ་དྲོ་', 'ཕྱི་དྲོ་'], u, u],
     u,

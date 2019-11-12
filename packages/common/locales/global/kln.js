@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['kln'] = [
+  global.ng.common.locales['kln'] = [
     'kln',
     [['krn', 'koosk'], u, ['karoon', 'kooskoliny']],
     [['krn', 'koosk'], u, u],

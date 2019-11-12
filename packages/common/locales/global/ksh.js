@@ -19,7 +19,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['ksh'] = [
+  global.ng.common.locales['ksh'] = [
     'ksh',
     [['v.M.', 'n.M.'], u, ['Uhr vörmiddaachs', 'Uhr nommendaachs']],
     [['v.M.', 'n.M.'], u, ['Vörmeddaach', 'Nommendaach']],

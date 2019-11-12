@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['el-cy'] = [
+  global.ng.common.locales['el-cy'] = [
     'el-CY',
     [['πμ', 'μμ'], ['π.μ.', 'μ.μ.'], u],
     u,

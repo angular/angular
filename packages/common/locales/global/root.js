@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['root'] = [
+  global.ng.common.locales['root'] = [
     'root',
     [['a', 'p'], ['AM', 'PM'], u],
     [['AM', 'PM'], u, u],

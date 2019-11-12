@@ -19,7 +19,7 @@
     if (i === 0 || i === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['fr-ca'] = [
+  global.ng.common.locales['fr-ca'] = [
     'fr-CA',
     [['a', 'p'], ['a.m.', 'p.m.'], u],
     [['a.m.', 'p.m.'], u, u],

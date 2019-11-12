@@ -19,7 +19,7 @@
     if (i === Math.floor(i) && i >= 0 && i <= 1) return 1;
     return 5;
   }
-  root.ng.common.locales['pt-mz'] = [
+  global.ng.common.locales['pt-mz'] = [
     'pt-MZ',
     [['a.m.', 'p.m.'], u, ['da manhã', 'da tarde']],
     [['a.m.', 'p.m.'], u, ['manhã', 'tarde']],
