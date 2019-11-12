@@ -28,7 +28,7 @@ import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
 import {TypeScriptReflectionHost} from './reflection';
 import {HostResourceLoader} from './resource_loader';
 import {NgModuleRouteAnalyzer, entryPointKeyFor} from './routing';
-import {CompoundComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from './scope';
+import {ComponentScopeReader, CompoundComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from './scope';
 import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, ShimGenerator, SummaryGenerator, TypeCheckShimGenerator, generatedFactoryTransform} from './shims';
 import {ivySwitchTransform} from './switch';
 import {IvyCompilation, declarationTransformFactory, ivyTransformFactory} from './transform';
@@ -186,8 +186,7 @@ export class NgtscProgram implements api.Program {
       this.incrementalState = IncrementalState.fresh();
     } else {
       this.incrementalState = IncrementalState.reconcile(
-          oldProgram.incrementalState, oldProgram.reuseTsProgram, this.tsProgram,
-          this.modifiedResourceFiles);
+          oldProgram.reuseTsProgram, this.tsProgram, this.modifiedResourceFiles);
     }
   }
 
@@ -309,13 +308,11 @@ export class NgtscProgram implements api.Program {
     if (this.compilation === undefined) {
       const analyzeSpan = this.perfRecorder.start('analyze');
       this.compilation = this.makeCompilation();
-      this.tsProgram.getSourceFiles()
-          .filter(file => !file.fileName.endsWith('.d.ts'))
-          .forEach(file => {
-            const analyzeFileSpan = this.perfRecorder.start('analyzeFile', file);
-            this.compilation !.analyzeSync(file);
-            this.perfRecorder.stop(analyzeFileSpan);
-          });
+      this.tsProgram.getSourceFiles().filter(file => !file.isDeclarationFile).forEach(file => {
+        const analyzeFileSpan = this.perfRecorder.start('analyzeFile', file);
+        this.compilation !.analyzeSync(file);
+        this.perfRecorder.stop(analyzeFileSpan);
+      });
       this.perfRecorder.stop(analyzeSpan);
       this.compilation.resolve();
     }
@@ -558,13 +555,12 @@ export class NgtscProgram implements api.Program {
     const evaluator = new PartialEvaluator(this.reflector, checker, this.incrementalState);
     const dtsReader = new DtsMetadataReader(checker, this.reflector);
     const localMetaRegistry = new LocalMetadataRegistry();
-    const localMetaReader = new CompoundMetadataReader([localMetaRegistry, this.incrementalState]);
+    const localMetaReader: MetadataReader = localMetaRegistry;
     const depScopeReader = new MetadataDtsModuleScopeResolver(dtsReader, this.aliasingHost);
     const scopeRegistry = new LocalModuleScopeRegistry(
-        localMetaReader, depScopeReader, this.refEmitter, this.aliasingHost, this.incrementalState);
-    const scopeReader = new CompoundComponentScopeReader([scopeRegistry, this.incrementalState]);
-    const metaRegistry =
-        new CompoundMetadataRegistry([localMetaRegistry, scopeRegistry, this.incrementalState]);
+        localMetaReader, depScopeReader, this.refEmitter, this.aliasingHost);
+    const scopeReader: ComponentScopeReader = scopeRegistry;
+    const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, scopeRegistry]);
 
     this.metaReader = new CompoundMetadataReader([localMetaReader, dtsReader]);
 
