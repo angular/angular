@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['ckb-ir'] = [
+  global.ng.common.locales['ckb-ir'] = [
     'ckb-IR',
     [['ب.ن', 'د.ن'], u, u],
     u,

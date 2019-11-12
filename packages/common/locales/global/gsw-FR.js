@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['gsw-fr'] = [
+  global.ng.common.locales['gsw-fr'] = [
     'gsw-FR',
     [['vorm.', 'nam.'], u, ['am Vormittag', 'am Namittag']],
     [['vorm.', 'nam.'], u, ['Vormittag', 'Namittag']],

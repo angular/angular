@@ -26,7 +26,7 @@
       return 4;
     return 5;
   }
-  root.ng.common.locales['ru-kz'] = [
+  global.ng.common.locales['ru-kz'] = [
     'ru-KZ',
     [['AM', 'PM'], u, u],
     u,

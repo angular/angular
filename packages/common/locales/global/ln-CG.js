@@ -18,7 +18,7 @@
     if (n === Math.floor(n) && n >= 0 && n <= 1) return 1;
     return 5;
   }
-  root.ng.common.locales['ln-cg'] = [
+  global.ng.common.locales['ln-cg'] = [
     'ln-CG',
     [['ntɔ́ngɔ́', 'mpókwa'], u, u],
     u,

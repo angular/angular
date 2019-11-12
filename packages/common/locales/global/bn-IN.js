@@ -19,7 +19,7 @@
     if (i === 0 || n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['bn-in'] = [
+  global.ng.common.locales['bn-in'] = [
     'bn-IN',
     [['AM', 'PM'], u, u],
     u,

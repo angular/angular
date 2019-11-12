@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['tk'] = [
+  global.ng.common.locales['tk'] = [
     'tk',
     [['öň', 'soň'], ['go.öň', 'go.soň'], ['günortadan öň', 'günortadan soň']],
     [['öň', 'soň'], ['g.öň', 'g.soň'], ['günortadan öň', 'günortadan soň']],

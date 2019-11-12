@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['bas'] = [
+  global.ng.common.locales['bas'] = [
     'bas',
     [['I bikɛ̂glà', 'I ɓugajɔp'], u, u],
     u,

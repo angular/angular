@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['az'] = [
+  global.ng.common.locales['az'] = [
     'az',
     [['a', 'p'], ['AM', 'PM'], u],
     [['AM', 'PM'], u, u],

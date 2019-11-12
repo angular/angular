@@ -20,7 +20,7 @@
     if (n === 1 || !(t === 0) && (i === 0 || i === 1)) return 1;
     return 5;
   }
-  root.ng.common.locales['da'] = [
+  global.ng.common.locales['da'] = [
     'da',
     [['a', 'p'], ['AM', 'PM'], u],
     [['AM', 'PM'], u, u],

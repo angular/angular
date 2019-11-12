@@ -21,7 +21,7 @@
     if (n === Math.floor(n) && n >= 7 && n <= 10) return 4;
     return 5;
   }
-  root.ng.common.locales['ga-gb'] = [
+  global.ng.common.locales['ga-gb'] = [
     'ga-GB',
     [['r.n.', 'i.n.'], u, u],
     u,

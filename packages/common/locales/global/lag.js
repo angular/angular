@@ -20,7 +20,7 @@
     if ((i === 0 || i === 1) && !(n === 0)) return 1;
     return 5;
   }
-  root.ng.common.locales['lag'] = [
+  global.ng.common.locales['lag'] = [
     'lag',
     [['TOO', 'MUU'], u, u],
     u,

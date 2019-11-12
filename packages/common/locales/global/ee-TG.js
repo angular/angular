@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['ee-tg'] = [
+  global.ng.common.locales['ee-tg'] = [
     'ee-TG',
     [['ŋ', 'ɣ'], ['ŋdi', 'ɣetrɔ'], u],
     u,

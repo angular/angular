@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['lb'] = [
+  global.ng.common.locales['lb'] = [
     'lb',
     [['mo.', 'nomë.'], ['moies', 'nomëttes'], u],
     [['moies', 'nomëttes'], u, u],

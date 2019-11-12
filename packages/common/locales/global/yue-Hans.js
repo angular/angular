@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['yue-hans'] = [
+  global.ng.common.locales['yue-hans'] = [
     'yue-Hans',
     [['上午', '下午'], u, u],
     u,

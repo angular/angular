@@ -19,7 +19,7 @@
     if (n === 0 || n === 1 || i === 0 && f === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['si'] = [
+  global.ng.common.locales['si'] = [
     'si',
     [['පෙ', 'ප'], ['පෙ.ව.', 'ප.ව.'], u],
     [['පෙ.ව.', 'ප.ව.'], u, u],

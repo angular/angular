@@ -21,7 +21,7 @@
     if (!(v === 0)) return 4;
     return 5;
   }
-  root.ng.common.locales['sk'] = [
+  global.ng.common.locales['sk'] = [
     'sk',
     [['AM', 'PM'], u, u],
     u,

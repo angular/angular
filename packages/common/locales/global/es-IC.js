@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['es-ic'] = [
+  global.ng.common.locales['es-ic'] = [
     'es-IC',
     [['a. m.', 'p. m.'], u, u],
     u,

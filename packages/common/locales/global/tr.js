@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['tr'] = [
+  global.ng.common.locales['tr'] = [
     'tr',
     [['öö', 'ös'], ['ÖÖ', 'ÖS'], u],
     [['ÖÖ', 'ÖS'], u, u],

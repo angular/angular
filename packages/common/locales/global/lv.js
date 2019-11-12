@@ -25,7 +25,7 @@
       return 1;
     return 5;
   }
-  root.ng.common.locales['lv'] = [
+  global.ng.common.locales['lv'] = [
     'lv',
     [['priekšp.', 'pēcp.'], u, ['priekšpusdienā', 'pēcpusdienā']],
     [['priekšp.', 'pēcpusd.'], u, ['priekšpusdiena', 'pēcpusdiena']],

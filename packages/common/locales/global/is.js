@@ -20,7 +20,7 @@
     if (t === 0 && i % 10 === 1 && !(i % 100 === 11) || !(t === 0)) return 1;
     return 5;
   }
-  root.ng.common.locales['is'] = [
+  global.ng.common.locales['is'] = [
     'is',
     [['f.', 'e.'], ['f.h.', 'e.h.'], u],
     [['f.h.', 'e.h.'], u, u],
