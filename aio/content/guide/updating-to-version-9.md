@@ -97,4 +97,3 @@ Read about the migrations the CLI handles for you automatically:
 - [Migrating dynamic queries](guide/migration-dynamic-flag)
 - [Migrating to the new `$localize` i18n support](guide/migration-localize)
 - [Migrating `ModuleWithProviders`](guide/migration-module-with-providers)
-- [Migrating to `ngcc` npm `postinstall` script](guide/migration-ngcc)
