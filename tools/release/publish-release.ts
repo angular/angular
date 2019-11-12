@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import {spawnSync} from 'child_process';
 import {readFileSync, unlinkSync} from 'fs';
+import {homedir} from 'os';
 import {join} from 'path';
 import {BaseReleaseTask} from './base-release-task';
 import {checkReleaseOutput} from './check-release-output';
@@ -132,7 +133,7 @@ class PublishReleaseTask extends BaseReleaseTask {
     console.info(chalk.yellow(`      ${newReleaseUrl}`));
 
     // Remove file at ~/.npmrc after release is complete.
-    unlinkSync('~/.npmrc');
+    unlinkSync(`${homedir()}/.npmrc`);
   }
 
   /**
