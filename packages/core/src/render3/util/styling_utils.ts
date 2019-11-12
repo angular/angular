@@ -171,9 +171,8 @@ export function getPropValuesStartPosition(
 }
 
 export function hasValueChanged(
-    a: NO_CHANGE | StylingMapArray | number | String | string | null | boolean | undefined | {},
-    b: NO_CHANGE | StylingMapArray | number | String | string | null | boolean | undefined |
-        {}): boolean {
+    a: NO_CHANGE | StylingMapArray | number | string | null | boolean | undefined | {},
+    b: NO_CHANGE | StylingMapArray | number | string | null | boolean | undefined | {}): boolean {
   if (b === NO_CHANGE) return false;
 
   const compareValueA = Array.isArray(a) ? a[StylingMapArrayIndex.RawValuePosition] : a;
