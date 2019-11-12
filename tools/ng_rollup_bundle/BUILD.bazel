@@ -2,7 +2,10 @@ package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
-exports_files(["rollup.config.js"])
+exports_files([
+    "rollup.config.js",
+    "terser_config.json",
+])
 
 nodejs_binary(
     name = "rollup_with_build_optimizer",
