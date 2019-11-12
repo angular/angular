@@ -158,14 +158,19 @@ export class R3TestBedCompiler {
   overrideProvider(
       token: any,
       provider: {useFactory?: Function, useValue?: any, deps?: any[], multi?: boolean}): void {
-    const providerDef = provider.useFactory ?
-        {
-          provide: token,
-          useFactory: provider.useFactory,
-          deps: provider.deps || [],
-          multi: provider.multi
-        } :
-        {provide: token, useValue: provider.useValue, multi: provider.multi};
+    let providerDef: Provider;
+    if (provider.useFactory !== undefined) {
+      providerDef = {
+        provide: token,
+        useFactory: provider.useFactory,
+        deps: provider.deps || [],
+        multi: provider.multi
+      };
+    } else if (provider.useValue !== undefined) {
+      providerDef = {provide: token, useValue: provider.useValue, multi: provider.multi};
+    } else {
+      providerDef = {provide: token};
+    }
 
     const injectableDef: InjectableDef<any>|null =
         typeof token !== 'string' ? getInjectableDef(token) : null;
