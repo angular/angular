@@ -299,7 +299,7 @@ function makeRequest(scope: SwTestHarness, url: string, clientId?: string): Prom
 }
 
 function makeNoCorsRequest(
-    scope: SwTestHarness, url: string, clientId?: string): Promise<String|null> {
+    scope: SwTestHarness, url: string, clientId?: string): Promise<string|null> {
   const req = new MockRequest(url, {mode: 'no-cors'});
   const [resTextPromise, done] = makePendingRequest(scope, req, clientId);
   return done.then(() => resTextPromise);
