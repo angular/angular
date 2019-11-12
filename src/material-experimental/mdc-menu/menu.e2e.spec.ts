@@ -10,7 +10,7 @@ import {
 const presenceOf = ExpectedConditions.presenceOf;
 const not = ExpectedConditions.not;
 
-describe('menu', () => {
+describe('MDC-based menu', () => {
   const menuSelector = '.mat-mdc-menu-panel';
   const page = {
     menu: () => element(by.css(menuSelector)),

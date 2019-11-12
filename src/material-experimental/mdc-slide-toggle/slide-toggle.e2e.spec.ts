@@ -2,7 +2,7 @@ import {browser, element, by, Key} from 'protractor';
 import {expectToExist} from '@angular/cdk/testing/private/e2e';
 
 
-describe('slide-toggle', () => {
+describe('MDC-based slide-toggle', () => {
   const getInput = () => element(by.css('#normal-slide-toggle input'));
   const getNormalToggle = () => element(by.css('#normal-slide-toggle'));
 

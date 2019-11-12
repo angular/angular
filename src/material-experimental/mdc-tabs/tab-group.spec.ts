@@ -9,7 +9,7 @@ import {Observable} from 'rxjs';
 import {MAT_TABS_CONFIG, MatTab, MatTabGroup, MatTabHeaderPosition, MatTabsModule} from './index';
 
 
-describe('MatTabGroup', () => {
+describe('MDC-based MatTabGroup', () => {
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatTabsModule, CommonModule, NoopAnimationsModule],

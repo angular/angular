@@ -25,7 +25,7 @@ import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {MatSlider, MatSliderModule} from './index';
 
-describe('MatMdcSlider', () => {
+describe('MDC-based MatSlider', () => {
   const platform = new Platform();
 
   function createComponent<T>(component: Type<T>): ComponentFixture<T> {

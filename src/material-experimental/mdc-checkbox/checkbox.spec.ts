@@ -18,7 +18,7 @@ import {
 import {MAT_CHECKBOX_DEFAULT_OPTIONS} from '@angular/material/checkbox';
 
 
-describe('MatCheckbox', () => {
+describe('MDC-based MatCheckbox', () => {
   let fixture: ComponentFixture<any>;
 
   function createComponent<T>(componentType: Type<T>, extraDeclarations: Type<any>[] = []) {

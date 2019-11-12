@@ -15,7 +15,7 @@ import {
 } from './index';
 
 
-describe('Option Chips', () => {
+describe('MDC-based Option Chips', () => {
   let fixture: ComponentFixture<any>;
   let chipDebugElement: DebugElement;
   let chipNativeElement: HTMLElement;

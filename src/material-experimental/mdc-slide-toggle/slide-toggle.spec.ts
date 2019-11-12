@@ -7,7 +7,7 @@ import {By} from '@angular/platform-browser';
 import {MatSlideToggle, MatSlideToggleChange, MatSlideToggleModule} from './index';
 import {MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS} from './slide-toggle-config';
 
-describe('MatSlideToggle without forms', () => {
+describe('MDC-based MatSlideToggle without forms', () => {
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatSlideToggleModule, BidiModule],
@@ -390,7 +390,7 @@ describe('MatSlideToggle without forms', () => {
   });
 });
 
-describe('MatSlideToggle with forms', () => {
+describe('MDC-based MatSlideToggle with forms', () => {
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({

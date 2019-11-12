@@ -8,7 +8,7 @@ import {
 } from 'protractor';
 import {pressKeys} from '@angular/cdk/testing/private/e2e';
 
-describe('MDC tabs', () => {
+describe('MDC-based tabs', () => {
   describe('basic behavior', () => {
     let tabLabels: ElementArrayFinder;
     let tabBodies: ElementArrayFinder;

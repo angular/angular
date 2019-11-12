@@ -8,7 +8,7 @@ import {Subject} from 'rxjs';
 import {MatChip, MatChipEvent, MatChipSet, MatChipsModule} from './index';
 
 
-describe('MatChip', () => {
+describe('MDC-based MatChip', () => {
   let fixture: ComponentFixture<any>;
   let chipDebugElement: DebugElement;
   let chipNativeElement: HTMLElement;

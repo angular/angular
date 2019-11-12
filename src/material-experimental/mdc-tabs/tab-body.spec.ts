@@ -9,7 +9,7 @@ import {MatTabBody, MatTabBodyPortal} from './tab-body';
 import {Subject} from 'rxjs';
 
 
-describe('MatTabBody', () => {
+describe('MDC-based MatTabBody', () => {
   let dir: Direction = 'ltr';
   let dirChange: Subject<Direction> = new Subject<Direction>();
 

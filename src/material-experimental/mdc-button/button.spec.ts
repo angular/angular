@@ -5,7 +5,7 @@ import {MatButtonModule, MatButton} from './index';
 import {MatRipple, ThemePalette} from '@angular/material/core';
 
 
-describe('MatButton', () => {
+describe('MDC-based MatButton', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

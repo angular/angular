@@ -26,7 +26,7 @@ import {Subject} from 'rxjs';
 import {ObserversModule, MutationObserverFactory} from '@angular/cdk/observers';
 
 
-describe('MatTabHeader', () => {
+describe('MDC-based MatTabHeader', () => {
   let dir: Direction = 'ltr';
   let change = new Subject();
   let fixture: ComponentFixture<SimpleTabHeaderApp>;

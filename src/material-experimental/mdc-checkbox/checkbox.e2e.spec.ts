@@ -1,6 +1,6 @@
 import {browser, by, element, Key} from 'protractor';
 
-describe('MDC checkbox', () => {
+describe('MDC-based checkbox', () => {
   describe('check behavior', () => {
     beforeEach(async () => await browser.get('/mdc-checkbox'));
 

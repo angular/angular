@@ -13,7 +13,7 @@ import {Subject} from 'rxjs';
 import {MatChipEvent, MatChipGrid, MatChipRow, MatChipsModule} from './index';
 
 
-describe('Row Chips', () => {
+describe('MDC-based Row Chips', () => {
   let fixture: ComponentFixture<any>;
   let chipDebugElement: DebugElement;
   let chipNativeElement: HTMLElement;

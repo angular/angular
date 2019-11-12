@@ -22,7 +22,7 @@ import {
 } from './index';
 
 
-describe('MatChipInput', () => {
+describe('MDC-based MatChipInput', () => {
   let fixture: ComponentFixture<any>;
   let testChipInput: TestChipInput;
   let inputDebugElement: DebugElement;

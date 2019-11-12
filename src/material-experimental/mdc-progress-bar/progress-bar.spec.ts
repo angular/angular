@@ -7,7 +7,7 @@ import {MatProgressBarModule} from './index';
 import {MatProgressBar} from './progress-bar';
 
 
-describe('MatProgressBar', () => {
+describe('MDC-based MatProgressBar', () => {
   function createComponent<T>(componentType: Type<T>,
                               imports?: Array<Type<{}>>): ComponentFixture<T> {
     TestBed.configureTestingModule({

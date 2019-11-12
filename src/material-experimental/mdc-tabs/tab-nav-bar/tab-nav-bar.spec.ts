@@ -11,7 +11,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MAT_TABS_CONFIG} from '../index';
 
 
-describe('MatTabNavBar', () => {
+describe('MDC-based MatTabNavBar', () => {
   let dir: Direction = 'ltr';
   let dirChange = new Subject();
   let globalRippleOptions: RippleGlobalOptions;

@@ -5,7 +5,7 @@ import {By} from '@angular/platform-browser';
 import {MatChip, MatChipSet, MatChipsModule} from './index';
 
 
-describe('MatChipSet', () => {
+describe('MDC-based MatChipSet', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MatChipsModule, CommonModule],

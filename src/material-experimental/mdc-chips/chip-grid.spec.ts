@@ -46,7 +46,7 @@ import {
 } from './index';
 
 
-describe('MatChipGrid', () => {
+describe('MDC-based MatChipGrid', () => {
   let fixture: ComponentFixture<any>;
   let chipGridDebugElement: DebugElement;
   let chipGridNativeElement: HTMLElement;

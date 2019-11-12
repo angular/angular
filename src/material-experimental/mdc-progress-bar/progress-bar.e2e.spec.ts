@@ -1,7 +1,7 @@
 import {browser} from 'protractor';
 import {expectToExist} from '@angular/cdk/testing/private/e2e';
 
-describe('progress-bar', () => {
+describe('MDC-based progress-bar', () => {
   beforeEach(async () => await browser.get('/mdc-progress-bar'));
 
   it('should render a determinate progress bar', async () => {

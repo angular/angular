@@ -31,7 +31,7 @@ import {Subject} from 'rxjs';
 import {MatChip, MatChipListbox, MatChipOption, MatChipsModule} from './index';
 
 
-describe('MatChipListbox', () => {
+describe('MDC-based MatChipListbox', () => {
   let fixture: ComponentFixture<any>;
   let chipListboxDebugElement: DebugElement;
   let chipListboxNativeElement: HTMLElement;
