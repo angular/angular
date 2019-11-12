@@ -717,9 +717,9 @@ export function locateHostElement(
   ngDevMode && assertHostNodeExists(rElement, elementOrSelector);
 
   // Always clear host element's content when Renderer3 is in use. For procedural renderer case we
-  // make it conditionally and depend on whether ShadowDom encapsulation is used (in which case the
-  // content should be preserved to allow native slot projection). ShadowDom encapsulation requires
-  // procedural renderer, and procedural renderer case is handled above.
+  // make it depend on whether ShadowDom encapsulation is used (in which case the content should be
+  // preserved to allow native slot projection). ShadowDom encapsulation requires procedural
+  // renderer, and procedural renderer case is handled above.
   rElement.textContent = '';
 
   return rElement;
