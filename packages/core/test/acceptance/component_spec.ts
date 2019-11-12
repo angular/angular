@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, RendererFactory2, Type, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, RendererFactory2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -379,10 +379,16 @@ describe('component', () => {
       class AppModule {
       }
 
+      function _document(): any {
+        // Tell Ivy about the global document
+        ɵsetDocument(document);
+        return document;
+      }
+
       TestBed.configureTestingModule({
         imports: [AppModule],
         providers: [
-          {provide: DOCUMENT, useValue: document},
+          {provide: DOCUMENT, useFactory: _document, deps: []},
           rendererProviders,
         ],
       });
