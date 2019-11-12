@@ -8,3 +8,6 @@
   <label>name: </label>
 </div>
 &~{entity-amp}amp;
+
+{{ heroes[0].~{heroes-number-index}name }}
+{{ heroesByName['Jacky'].~{heroes-string-index}name }}
