@@ -672,21 +672,28 @@ export class MatSlider extends _MatSliderMixinBase
    */
   private _bindGlobalEvents(triggerEvent: TouchEvent | MouseEvent) {
     if (typeof document !== 'undefined' && document) {
+      const body = document.body;
       const isTouch = isTouchEvent(triggerEvent);
       const moveEventName = isTouch ? 'touchmove' : 'mousemove';
       const endEventName = isTouch ? 'touchend' : 'mouseup';
-      document.body.addEventListener(moveEventName, this._pointerMove, activeEventOptions);
-      document.body.addEventListener(endEventName, this._pointerUp, activeEventOptions);
+      body.addEventListener(moveEventName, this._pointerMove, activeEventOptions);
+      body.addEventListener(endEventName, this._pointerUp, activeEventOptions);
+
+      if (isTouch) {
+        body.addEventListener('touchcancel', this._pointerUp, activeEventOptions);
+      }
     }
   }
 
   /** Removes any global event listeners that we may have added. */
   private _removeGlobalEvents() {
     if (typeof document !== 'undefined' && document) {
-      document.body.removeEventListener('mousemove', this._pointerMove, activeEventOptions);
-      document.body.removeEventListener('mouseup', this._pointerUp, activeEventOptions);
-      document.body.removeEventListener('touchmove', this._pointerMove, activeEventOptions);
-      document.body.removeEventListener('touchend', this._pointerUp, activeEventOptions);
+      const body = document.body;
+      body.removeEventListener('mousemove', this._pointerMove, activeEventOptions);
+      body.removeEventListener('mouseup', this._pointerUp, activeEventOptions);
+      body.removeEventListener('touchmove', this._pointerMove, activeEventOptions);
+      body.removeEventListener('touchend', this._pointerUp, activeEventOptions);
+      body.removeEventListener('touchcancel', this._pointerUp, activeEventOptions);
     }
   }
 
