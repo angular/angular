@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
+import {Declaration} from '../../reflection';
 
 import {DynamicValue} from './dynamic';
 
@@ -21,23 +22,47 @@ import {DynamicValue} from './dynamic';
  * available statically.
  */
 export type ResolvedValue = number | boolean | string | null | undefined | Reference | EnumValue |
-    ResolvedValueArray | ResolvedValueMap | BuiltinFn | DynamicValue<unknown>;
+    ResolvedValueArray | ResolvedValueMap | ResolvedModule | BuiltinFn | DynamicValue<unknown>;
 
 /**
  * An array of `ResolvedValue`s.
  *
  * This is a reified type to allow the circular reference of `ResolvedValue` -> `ResolvedValueArray`
- * ->
- * `ResolvedValue`.
+ * -> `ResolvedValue`.
  */
 export interface ResolvedValueArray extends Array<ResolvedValue> {}
 
 /**
  * A map of strings to `ResolvedValue`s.
  *
- * This is a reified type to allow the circular reference of `ResolvedValue` -> `ResolvedValueMap` ->
- * `ResolvedValue`.
- */ export interface ResolvedValueMap extends Map<string, ResolvedValue> {}
+ * This is a reified type to allow the circular reference of `ResolvedValue` -> `ResolvedValueMap`
+ * -> `ResolvedValue`.
+ */
+export interface ResolvedValueMap extends Map<string, ResolvedValue> {}
+
+/**
+ * A collection of publicly exported declarations from a module. Each declaration is evaluated
+ * lazily upon request.
+ */
+export class ResolvedModule {
+  constructor(
+      private exports: Map<string, Declaration>,
+      private evaluate: (decl: Declaration) => ResolvedValue) {}
+
+  getExport(name: string): ResolvedValue {
+    if (!this.exports.has(name)) {
+      return undefined;
+    }
+
+    return this.evaluate(this.exports.get(name) !);
+  }
+
+  getExports(): ResolvedValueMap {
+    const map = new Map<string, ResolvedValue>();
+    this.exports.forEach((decl, name) => { map.set(name, this.evaluate(decl)); });
+    return map;
+  }
+}
 
 /**
  * A value member of an enumeration.
