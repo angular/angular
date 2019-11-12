@@ -127,6 +127,15 @@ describe('diagnostics', () => {
     expect(diags).toEqual([]);
   });
 
+  it('should produce diagnostics for invalid index type property access', () => {
+    mockHost.override(TEST_TEMPLATE, `
+        {{heroes[0].badProperty}}`);
+    const diags = ngLS.getDiagnostics(TEST_TEMPLATE);
+    expect(diags.length).toBe(1);
+    expect(diags[0].messageText)
+        .toBe(`Identifier 'badProperty' is not defined. 'Hero' does not contain such a member`);
+  });
+
   describe('in expression-cases.ts', () => {
     it('should report access to an unknown field', () => {
       const diags = ngLS.getDiagnostics(EXPRESSION_CASES).map(d => d.messageText);

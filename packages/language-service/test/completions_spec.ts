@@ -118,49 +118,15 @@ describe('completions', () => {
   });
 
   it('should be able to get property completions for members in an array', () => {
-    const fileName = mockHost.addCode(`
-        interface Book {
-          numberOfPages: number;
-        }
-
-        @Component({
-          selector: 'library',
-          template: \`
-            <div>{{books[0].~{props}}}</div>
-          \`,
-        })
-        export class Library {
-          books: Book[];
-        }
-      `);
-    const location = mockHost.getLocationMarkerFor(fileName, 'props');
-    const completions = ngLS.getCompletionsAt(fileName, location.start) !;
-    expectContain(completions, CompletionKind.PROPERTY, ['numberOfPages']);
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-number-index');
+    const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+    expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
   });
 
   it('should be able to get property completions for members in an indexed type', () => {
-    const fileName = mockHost.addCode(`
-        interface Book {
-          numberOfPages: number;
-        }
-
-        interface BookCatalog {
-          [title: string]: Book;
-        }
-
-        @Component({
-          selector: 'library',
-          template: \`
-            <div>{{books['Angular Design'].~{props}}}</div>
-          \`,
-        })
-        export class Library {
-          books: BookCatalog;
-        }
-      `);
-    const location = mockHost.getLocationMarkerFor(fileName, 'props');
-    const completions = ngLS.getCompletionsAt(fileName, location.start) !;
-    expectContain(completions, CompletionKind.PROPERTY, ['numberOfPages']);
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-string-index');
+    const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+    expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
   });
 
   it('should be able to return attribute names with an incompete attribute', () => {
