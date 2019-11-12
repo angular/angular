@@ -4,6 +4,7 @@ ng_module(
     name = "aot_routing_module",
     testonly = True,
     srcs = ["aot_router_module.ts"],
+    generate_ve_shims = True,
     deps = [
         "//packages/core",
         "//packages/router",

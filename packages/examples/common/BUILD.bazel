@@ -9,6 +9,7 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*_spec.ts"],
     ),
+    generate_ve_shims = True,
     # TODO: FW-1004 Type checking is currently not complete.
     type_check = False,
     deps = [

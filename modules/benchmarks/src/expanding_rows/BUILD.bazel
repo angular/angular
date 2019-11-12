@@ -10,6 +10,7 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
+    generate_ve_shims = True,
     deps = [
         "//packages:types",
         "//packages/common",
