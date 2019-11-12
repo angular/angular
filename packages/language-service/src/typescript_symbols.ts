@@ -94,8 +94,11 @@ class TypeScriptSymbolQuery implements SymbolQuery {
   getBuiltinType(kind: BuiltinType): Symbol {
     let result = this.typeCache.get(kind);
     if (!result) {
-      const type = getBuiltinTypeFromTs(
-          kind, {checker: this.checker, node: this.source, program: this.program});
+      const type = getTsTypeFromBuiltinType(kind, {
+        checker: this.checker,
+        node: this.source,
+        program: this.program,
+      });
       result =
           new TypeWrapper(type, {program: this.program, checker: this.checker, node: this.source});
       this.typeCache.set(kind, result);
@@ -553,7 +556,7 @@ class PipeSymbol implements Symbol {
                 resultType = getTypeParameterOf(parameterType.tsType, parameterType.name);
                 break;
               default:
-                resultType = getBuiltinTypeFromTs(BuiltinType.Any, this.context);
+                resultType = getTsTypeFromBuiltinType(BuiltinType.Any, this.context);
                 break;
             }
             break;
@@ -580,7 +583,7 @@ class PipeSymbol implements Symbol {
         type = this._tsType = this.findTransformMethodType(classSymbol) !;
       }
       if (!type) {
-        type = this._tsType = getBuiltinTypeFromTs(BuiltinType.Any, this.context);
+        type = this._tsType = getTsTypeFromBuiltinType(BuiltinType.Any, this.context);
       }
     }
     return type;
@@ -633,62 +636,34 @@ function isSymbolPrivate(s: ts.Symbol): boolean {
   return !!s.valueDeclaration && isPrivate(s.valueDeclaration);
 }
 
-function getBuiltinTypeFromTs(kind: BuiltinType, context: TypeContext): ts.Type {
-  let type: ts.Type;
-  const checker = context.checker;
-  const node = context.node;
-  switch (kind) {
+function getTsTypeFromBuiltinType(builtinType: BuiltinType, ctx: TypeContext): ts.Type {
+  let syntaxKind: ts.SyntaxKind;
+  switch (builtinType) {
     case BuiltinType.Any:
-      type = checker.getTypeAtLocation(setParents(
-          <ts.Node><any>{
-            kind: ts.SyntaxKind.AsExpression,
-            expression: <ts.Node>{kind: ts.SyntaxKind.TrueKeyword},
-            type: <ts.Node>{kind: ts.SyntaxKind.AnyKeyword}
-          },
-          node));
+      syntaxKind = ts.SyntaxKind.AnyKeyword;
       break;
     case BuiltinType.Boolean:
-      type =
-          checker.getTypeAtLocation(setParents(<ts.Node>{kind: ts.SyntaxKind.TrueKeyword}, node));
+      syntaxKind = ts.SyntaxKind.BooleanKeyword;
       break;
     case BuiltinType.Null:
-      type =
-          checker.getTypeAtLocation(setParents(<ts.Node>{kind: ts.SyntaxKind.NullKeyword}, node));
+      syntaxKind = ts.SyntaxKind.NullKeyword;
       break;
     case BuiltinType.Number:
-      const numeric = <ts.LiteralLikeNode>{
-        kind: ts.SyntaxKind.NumericLiteral,
-        text: node.getText(),
-      };
-      setParents(<any>{kind: ts.SyntaxKind.ExpressionStatement, expression: numeric}, node);
-      type = checker.getTypeAtLocation(numeric);
+      syntaxKind = ts.SyntaxKind.NumberKeyword;
       break;
     case BuiltinType.String:
-      type = checker.getTypeAtLocation(setParents(
-          <ts.LiteralLikeNode>{
-            kind: ts.SyntaxKind.NoSubstitutionTemplateLiteral,
-            text: node.getText(),
-          },
-          node));
+      syntaxKind = ts.SyntaxKind.StringKeyword;
       break;
     case BuiltinType.Undefined:
-      type = checker.getTypeAtLocation(setParents(
-          <ts.Node><any>{
-            kind: ts.SyntaxKind.VoidExpression,
-            expression: <ts.Node>{kind: ts.SyntaxKind.NumericLiteral}
-          },
-          node));
+      syntaxKind = ts.SyntaxKind.UndefinedKeyword;
       break;
     default:
-      throw new Error(`Internal error, unhandled literal kind ${kind}:${BuiltinType[kind]}`);
+      throw new Error(
+          `Internal error, unhandled literal kind ${builtinType}:${BuiltinType[builtinType]}`);
   }
-  return type;
-}
-
-function setParents<T extends ts.Node>(node: T, parent: ts.Node): T {
-  node.parent = parent;
-  ts.forEachChild(node, child => setParents(child, node));
-  return node;
+  const node = ts.createNode(syntaxKind);
+  node.parent = ctx.node;
+  return ctx.checker.getTypeAtLocation(node);
 }
 
 function spanAt(sourceFile: ts.SourceFile, line: number, column: number): Span|undefined {
