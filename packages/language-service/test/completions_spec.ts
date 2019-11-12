@@ -117,6 +117,20 @@ describe('completions', () => {
     expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
   });
 
+  it('should be able to get property completions for members in an array', () => {
+    mockHost.override(TEST_TEMPLATE, `{{ heroes[0].~{heroes-number-index}}}`);
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-number-index');
+    const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+    expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
+  });
+
+  it('should be able to get property completions for members in an indexed type', () => {
+    mockHost.override(TEST_TEMPLATE, `{{ heroesByName['Jacky'].~{heroes-string-index}}}`);
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-string-index');
+    const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+    expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
+  });
+
   it('should be able to return attribute names with an incompete attribute', () => {
     const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'no-value-attribute');
     const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);

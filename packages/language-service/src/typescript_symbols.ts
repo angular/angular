@@ -280,7 +280,20 @@ class TypeWrapper implements Symbol {
     return selectSignature(this.tsType, this.context, types);
   }
 
-  indexed(argument: Symbol): Symbol|undefined { return undefined; }
+  indexed(argument: Symbol): Symbol|undefined {
+    const type = argument instanceof TypeWrapper ? argument : argument.type;
+    if (!(type instanceof TypeWrapper)) return;
+
+    const typeKind = typeKindOf(type.tsType);
+    switch (typeKind) {
+      case BuiltinType.Number:
+        const nType = this.tsType.getNumberIndexType();
+        return nType && new TypeWrapper(nType, this.context);
+      case BuiltinType.String:
+        const sType = this.tsType.getStringIndexType();
+        return sType && new TypeWrapper(sType, this.context);
+    }
+  }
 }
 
 class SymbolWrapper implements Symbol {
