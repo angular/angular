@@ -192,6 +192,44 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   /**
+   * Checks whether the program has changed, and invalidate caches if it has.
+   * Returns true if modules are up-to-date, false otherwise.
+   * This should only be called by getAnalyzedModules().
+   */
+  private upToDate(): boolean {
+    const {lastProgram, program} = this;
+    if (lastProgram === program) {
+      return true;
+    }
+    this.lastProgram = program;
+
+    // Invalidate file that have changed in the static symbol resolver
+    const seen = new Set<string>();
+    for (const sourceFile of program.getSourceFiles()) {
+      const fileName = sourceFile.fileName;
+      seen.add(fileName);
+      const version = this.tsLsHost.getScriptVersion(fileName);
+      const lastVersion = this.fileVersions.get(fileName);
+      this.fileVersions.set(fileName, version);
+      // Should not invalidate file on the first encounter or if file hasn't changed
+      if (lastVersion !== undefined && version !== lastVersion) {
+        const symbols = this.staticSymbolResolver.invalidateFile(fileName);
+        this.reflector.invalidateSymbols(symbols);
+      }
+    }
+
+    // Remove file versions that are no longer in the program and invalidate them.
+    const missing = Array.from(this.fileVersions.keys()).filter(f => !seen.has(f));
+    missing.forEach(f => {
+      this.fileVersions.delete(f);
+      const symbols = this.staticSymbolResolver.invalidateFile(f);
+      this.reflector.invalidateSymbols(symbols);
+    });
+
+    return false;
+  }
+
+  /**
    * Find all templates in the specified `file`.
    * @param fileName TS or HTML file
    */
@@ -280,44 +318,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       throw new Error('No program in language service!');
     }
     return program;
-  }
-
-  /**
-   * Checks whether the program has changed, and invalidate caches if it has.
-   * Returns true if modules are up-to-date, false otherwise.
-   * This should only be called by getAnalyzedModules().
-   */
-  private upToDate(): boolean {
-    const {lastProgram, program} = this;
-    if (lastProgram === program) {
-      return true;
-    }
-    this.lastProgram = program;
-
-    // Invalidate file that have changed in the static symbol resolver
-    const seen = new Set<string>();
-    for (const sourceFile of program.getSourceFiles()) {
-      const fileName = sourceFile.fileName;
-      seen.add(fileName);
-      const version = this.tsLsHost.getScriptVersion(fileName);
-      const lastVersion = this.fileVersions.get(fileName);
-      this.fileVersions.set(fileName, version);
-      // Should not invalidate file on the first encounter or if file hasn't changed
-      if (lastVersion !== undefined && version !== lastVersion) {
-        const symbols = this.staticSymbolResolver.invalidateFile(fileName);
-        this.reflector.invalidateSymbols(symbols);
-      }
-    }
-
-    // Remove file versions that are no longer in the program and invalidate them.
-    const missing = Array.from(this.fileVersions.keys()).filter(f => !seen.has(f));
-    missing.forEach(f => {
-      this.fileVersions.delete(f);
-      const symbols = this.staticSymbolResolver.invalidateFile(f);
-      this.reflector.invalidateSymbols(symbols);
-    });
-
-    return false;
   }
 
   /**
