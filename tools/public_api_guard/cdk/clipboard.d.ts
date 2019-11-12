@@ -1,12 +1,20 @@
 export declare class CdkCopyToClipboard {
     _deprecatedCopied: EventEmitter<boolean>;
+    attempts: number;
     copied: EventEmitter<boolean>;
     text: string;
-    constructor(_clipboard: Clipboard);
-    copy(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkCopyToClipboard, "[cdkCopyToClipboard]", never, { 'text': "cdkCopyToClipboard" }, { 'copied': "cdkCopyToClipboardCopied", '_deprecatedCopied': "copied" }, never>;
+    constructor(_clipboard: Clipboard,
+    _ngZone?: NgZone | undefined, config?: CdkCopyToClipboardConfig);
+    copy(attempts?: number): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkCopyToClipboard, "[cdkCopyToClipboard]", never, { 'text': "cdkCopyToClipboard", 'attempts': "cdkCopyToClipboardAttempts" }, { 'copied': "cdkCopyToClipboardCopied", '_deprecatedCopied': "copied" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkCopyToClipboard>;
 }
+
+export interface CdkCopyToClipboardConfig {
+    attempts?: number;
+}
+
+export declare const CKD_COPY_TO_CLIPBOARD_CONFIG: InjectionToken<CdkCopyToClipboardConfig>;
 
 export declare class Clipboard {
     constructor(document: any);

@@ -55,3 +55,10 @@ class HeroProfile {
   }
 }
 ```
+
+If you're using the `cdkCopyToClipboard` you can pass in the `cdkCopyToClipboardAttempts` input
+to automatically attempt to copy some text a certain number of times.
+
+```html
+<button [cdkCopyToClipboard]="longText" [cdkCopyToClipboardAttempts]="5">Copy text</button>
+```
