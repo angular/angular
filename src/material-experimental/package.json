@@ -24,5 +24,8 @@
     "@angular/material": "0.0.0-PLACEHOLDER",
     "material-components-web": "0.0.0-MDC",
     "tslib": "^1.9.0"
+  },
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
   }
 }

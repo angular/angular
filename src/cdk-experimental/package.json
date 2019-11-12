@@ -23,5 +23,8 @@
     "@angular/cdk": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-NG",
     "tslib": "^1.9.0"
+  },
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
   }
 }

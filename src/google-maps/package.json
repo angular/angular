@@ -31,5 +31,8 @@
     "@angular/core": "0.0.0-NG",
     "@angular/common": "0.0.0-NG"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
+  }
 }

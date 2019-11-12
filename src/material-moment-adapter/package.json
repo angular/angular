@@ -31,5 +31,8 @@
       "@angular/cdk",
       "@angular/material-moment-adapter"
     ]
+  },
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
   }
 }

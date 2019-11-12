@@ -1,26 +1,18 @@
 import chalk from 'chalk';
 import {spawnSync} from 'child_process';
-import {readFileSync} from 'fs';
+import {readFileSync, unlinkSync} from 'fs';
 import {join} from 'path';
 import {BaseReleaseTask} from './base-release-task';
 import {checkReleaseOutput} from './check-release-output';
 import {extractReleaseNotes} from './extract-release-notes';
 import {GitClient} from './git/git-client';
 import {getGithubNewReleaseUrl} from './git/github-urls';
-import {
-  isNpmAuthenticated,
-  npmLogout,
-  npmLoginInteractive,
-  npmPublish,
-} from './npm/npm-client';
-import {promptForNpmDistTag, promptForNpmOtp} from './prompt/npm-dist-tag-prompt';
+import {npmPublish} from './npm/npm-client';
+import {promptForNpmDistTag} from './prompt/npm-dist-tag-prompt';
 import {promptForUpstreamRemote} from './prompt/upstream-remote-prompt';
 import {releasePackages} from './release-output/release-packages';
 import {CHANGELOG_FILE_NAME} from './stage-release';
 import {parseVersionName, Version} from './version-name/parse-version';
-
-/** Maximum allowed tries to authenticate NPM. */
-const MAX_NPM_LOGIN_TRIES = 2;
 
 /**
  * Class that can be instantiated in order to create a new release. The tasks requires user
@@ -94,10 +86,6 @@ class PublishReleaseTask extends BaseReleaseTask {
       await this._promptStableVersionForNextTag();
     }
 
-    // Ensure that we are authenticated, so that we can run "npm publish" for
-    // each package once the release output is built.
-    this._checkNpmAuthentication();
-
     this._buildReleasePackages();
     console.info(chalk.green(`  ✓   Built the release output.`));
 
@@ -124,12 +112,8 @@ class PublishReleaseTask extends BaseReleaseTask {
     // the user to interactively confirm that the script should continue.
     await this._promptConfirmReleasePublish();
 
-    // Prompt for the OTP right before publishing so that it doesn't expire while building the
-    // packages.
-    const npmOtp = await promptForNpmOtp();
-
     for (let packageName of releasePackages) {
-      this._publishPackageToNpm(packageName, npmDistTag, npmOtp);
+      this._publishPackageToNpm(packageName, npmDistTag);
     }
 
     const newReleaseUrl = getGithubNewReleaseUrl({
@@ -144,17 +128,11 @@ class PublishReleaseTask extends BaseReleaseTask {
 
     console.log();
     console.info(chalk.green(chalk.bold(`  ✓   Published all packages successfully`)));
-
-    // Always log out of npm after releasing to prevent unintentional changes to
-    // any packages.
-    if (npmLogout()) {
-      console.info(chalk.green(`  ✓   Logged out of npm`));
-    } else {
-      console.error(chalk.red(`  ✘   Could not log out of NPM. Please manually log out!`));
-    }
-
     console.info(chalk.yellow(`  ⚠   Please draft a new release of the version on Github.`));
     console.info(chalk.yellow(`      ${newReleaseUrl}`));
+
+    // Remove file at ~/.npmrc after release is complete.
+    unlinkSync('~/.npmrc');
   }
 
   /**
@@ -205,45 +183,11 @@ class PublishReleaseTask extends BaseReleaseTask {
     }
   }
 
-  /**
-   * Checks whether NPM is currently authenticated. If not, the user will be prompted to enter
-   * the NPM credentials that are necessary to publish the release. We achieve this by basically
-   * running "npm login" as a child process and piping stdin/stdout/stderr to the current tty.
-   */
-  private _checkNpmAuthentication() {
-    if (isNpmAuthenticated()) {
-      console.info(chalk.green(`  ✓   NPM is authenticated.`));
-      return;
-    }
-
-    let failedAuthentication = false;
-    console.log(chalk.yellow(`  ⚠   NPM is currently not authenticated. Running "npm login"..`));
-
-    for (let i = 0;  i < MAX_NPM_LOGIN_TRIES; i++) {
-      if (npmLoginInteractive()) {
-        // In case the user was able to login properly, we want to exit the loop as we
-        // don't need to ask for authentication again.
-        break;
-      }
-
-      failedAuthentication = true;
-      console.error(chalk.red(`  ✘   Could not authenticate successfully. Please try again.`));
-    }
-
-    if (failedAuthentication) {
-      console.error(chalk.red(`  ✘   Could not authenticate after ${MAX_NPM_LOGIN_TRIES} tries. ` +
-        `Exiting..`));
-      process.exit(1);
-    }
-
-    console.info(chalk.green(`  ✓   Successfully authenticated NPM.`));
-  }
-
   /** Publishes the specified package within the given NPM dist tag. */
-  private _publishPackageToNpm(packageName: string, npmDistTag: string, npmOtp: string) {
+  private _publishPackageToNpm(packageName: string, npmDistTag: string) {
     console.info(chalk.green(`  ⭮   Publishing "${packageName}"..`));
 
-    const errorOutput = npmPublish(join(this.releaseOutputPath, packageName), npmDistTag, npmOtp);
+    const errorOutput = npmPublish(join(this.releaseOutputPath, packageName), npmDistTag);
 
     if (errorOutput) {
       console.error(chalk.red(`  ✘   An error occurred while publishing "${packageName}".`));
