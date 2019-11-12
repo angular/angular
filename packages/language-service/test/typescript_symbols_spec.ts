@@ -53,10 +53,10 @@ describe('symbol query', () => {
     const tests: Array<[BuiltinType, boolean, ts.TypeFlags?]> = [
       // builtinType, throws, want
       [BuiltinType.Any, false, ts.TypeFlags.Any],
-      [BuiltinType.Boolean, false, ts.TypeFlags.BooleanLiteral],
+      [BuiltinType.Boolean, false, ts.TypeFlags.Boolean | ts.TypeFlags.Union],
       [BuiltinType.Null, false, ts.TypeFlags.Null],
-      [BuiltinType.Number, false, ts.TypeFlags.NumberLiteral],
-      [BuiltinType.String, false, ts.TypeFlags.StringLiteral],
+      [BuiltinType.Number, false, ts.TypeFlags.Number],
+      [BuiltinType.String, false, ts.TypeFlags.String],
       [BuiltinType.Undefined, false, ts.TypeFlags.Undefined],
       [BuiltinType.Unbound, true],
       [BuiltinType.Other, true],
