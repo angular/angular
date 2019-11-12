@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['sd'] = [
+  global.ng.common.locales['sd'] = [
     'sd',
     [
       ['صبح، منجهند', 'منجهند، شام'],

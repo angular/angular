@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['or'] = [
+  global.ng.common.locales['or'] = [
     'or',
     [['ପୂ', 'ଅ'], ['AM', 'PM'], u],
     [['AM', 'ଅପରାହ୍ନ'], ['ପୂର୍ବାହ୍ନ', 'ଅପରାହ୍ନ'], u],

@@ -24,7 +24,7 @@
     if (!(n === 0) && n % 1e6 === 0) return 4;
     return 5;
   }
-  root.ng.common.locales['br'] = [
+  global.ng.common.locales['br'] = [
     'br',
     [['am', 'gm'], ['A.M.', 'G.M.'], u],
     [['A.M.', 'G.M.'], u, u],

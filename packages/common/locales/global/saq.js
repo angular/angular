@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['saq'] = [
+  global.ng.common.locales['saq'] = [
     'saq',
     [['Tesiran', 'Teipa'], u, u],
     u,

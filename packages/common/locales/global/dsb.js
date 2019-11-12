@@ -24,7 +24,7 @@
       return 3;
     return 5;
   }
-  root.ng.common.locales['dsb'] = [
+  global.ng.common.locales['dsb'] = [
     'dsb',
     [['dop.', 'wótp.'], ['dopołdnja', 'wótpołdnja'], u],
     [['dopołdnja', 'wótpołdnja'], u, u],

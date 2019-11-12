@@ -19,7 +19,7 @@
       return 1;
     return 5;
   }
-  root.ng.common.locales['tzm'] = [
+  global.ng.common.locales['tzm'] = [
     'tzm',
     [['Zdat azal', 'Ḍeffir aza'], u, u],
     u,

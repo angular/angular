@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['kok'] = [
+  global.ng.common.locales['kok'] = [
     'kok',
     [['a', 'p'], ['AM', 'PM'], u],
     [['AM', 'PM'], u, u],

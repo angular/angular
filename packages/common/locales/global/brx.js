@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['brx'] = [
+  global.ng.common.locales['brx'] = [
     'brx',
     [['फुं', 'बेलासे'], u, u],
     u,

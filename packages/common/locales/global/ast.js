@@ -19,7 +19,7 @@
     if (i === 1 && v === 0) return 1;
     return 5;
   }
-  root.ng.common.locales['ast'] = [
+  global.ng.common.locales['ast'] = [
     'ast',
     [['a', 'p'], ['AM', 'PM'], ['de la mañana', 'de la tarde']],
     [['a', 'p'], ['AM', 'PM'], ['mañana', 'tarde']],

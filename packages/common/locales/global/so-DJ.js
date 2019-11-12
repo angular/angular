@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['so-dj'] = [
+  global.ng.common.locales['so-dj'] = [
     'so-DJ',
     [['h', 'd'], ['GH', 'GD'], u],
     [['GH', 'GD'], u, u],

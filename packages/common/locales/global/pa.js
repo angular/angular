@@ -18,7 +18,7 @@
     if (n === Math.floor(n) && n >= 0 && n <= 1) return 1;
     return 5;
   }
-  root.ng.common.locales['pa'] = [
+  global.ng.common.locales['pa'] = [
     'pa',
     [['ਸ.', 'ਸ਼.'], ['ਪੂ.ਦੁ.', 'ਬਾ.ਦੁ.'], u],
     [['ਪੂ.ਦੁ.', 'ਬਾ.ਦੁ.'], u, u],

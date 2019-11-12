@@ -19,7 +19,7 @@
     if (i === 0 || n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['as'] = [
+  global.ng.common.locales['as'] = [
     'as',
     [['পূৰ্বাহ্ন', 'অপৰাহ্ন'], u, u],
     u,

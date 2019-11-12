@@ -24,7 +24,7 @@
     if (!(v === 0)) return 4;
     return 5;
   }
-  root.ng.common.locales['gv'] = [
+  global.ng.common.locales['gv'] = [
     'gv',
     [['a.m.', 'p.m.'], u, u],
     u,

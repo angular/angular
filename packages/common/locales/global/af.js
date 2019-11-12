@@ -18,7 +18,7 @@
     if (n === 1) return 1;
     return 5;
   }
-  root.ng.common.locales['af'] = [
+  global.ng.common.locales['af'] = [
     'af',
     [['v', 'n'], ['vm.', 'nm.'], u],
     u,

@@ -15,7 +15,7 @@
   global.ng.common.locales = global.ng.common.locales || {};
   const u = undefined;
   function plural(n) { return 5; }
-  root.ng.common.locales['ki'] = [
+  global.ng.common.locales['ki'] = [
     'ki',
     [['Kiroko', 'Hwaĩ-inĩ'], u, u],
     u,
