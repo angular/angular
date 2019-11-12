@@ -356,6 +356,7 @@ describe('view insertion', () => {
 
               });
 
+
       it('should insert before a view with an element where ViewContainerRef is injected', () => {
         expect(createAndInsertViews(`
           <div [ngTemplateOutlet]="after">|before</div>
@@ -381,6 +382,37 @@ describe('view insertion', () => {
           </ng-template>
         `).textContent)
             .toBe('insert|before');
+      });
+
+      it('should insert before a ng-container with a ViewContainerRef on it', () => {
+        @Component({
+          selector: 'app-root',
+          template: `            
+            <div>start|</div>
+            <ng-container [ngTemplateOutlet]="insertTpl ? tpl : null"></ng-container>
+            <ng-container [ngTemplateOutlet]="tpl"></ng-container>
+            <div>|end</div>
+            
+            <ng-template #tpl>test</ng-template>
+          `
+        })
+        class AppComponent {
+          insertTpl = false;
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [AppComponent],
+          imports: [CommonModule],
+        });
+
+        const fixture = TestBed.createComponent(AppComponent);
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.nativeElement.textContent).toBe('start|test|end');
+
+        fixture.componentInstance.insertTpl = true;
+        fixture.detectChanges();
+        expect(fixture.debugElement.nativeElement.textContent).toBe('start|testtest|end');
       });
 
     });
