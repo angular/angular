@@ -887,7 +887,6 @@ testing/**                                                      @angular/fw-test
 /aio/content/guide/migration-injectable.md                      @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/migration-localize.md                        @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/migration-module-with-providers.md           @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
-/aio/content/guide/migration-ngcc.md                            @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/updating-to-version-9.md                     @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/ivy-compatibility.md                         @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/ivy-compatibility-examples.md                     @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
