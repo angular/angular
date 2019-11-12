@@ -56,14 +56,33 @@ export function main(
 }
 
 export function mainDiagnosticsForTest(
-    args: string[], config?: NgcParsedConfiguration): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
+    args: string[], config?: NgcParsedConfiguration,
+    programReuse?: {program: api.Program | undefined},
+    modifiedResourceFiles?: Set<string>| null): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
   let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
       config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
     return configErrors;
   }
-  const {diagnostics: compileDiags} = performCompilation(
-      {rootNames, options, emitFlags, emitCallback: createEmitCallback(options)});
+
+  let oldProgram: api.Program|undefined;
+  if (programReuse !== undefined) {
+    oldProgram = programReuse.program;
+  }
+
+  const {diagnostics: compileDiags, program} = performCompilation({
+    rootNames,
+    options,
+    emitFlags,
+    oldProgram,
+    modifiedResourceFiles,
+    emitCallback: createEmitCallback(options),
+  });
+
+  if (programReuse !== undefined) {
+    programReuse.program = program;
+  }
+
   return compileDiags;
 }
 

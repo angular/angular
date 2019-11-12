@@ -54,6 +54,7 @@ export class NgtscTestEnvironment {
         "experimentalDecorators": true,
         "skipLibCheck": true,
         "noImplicitAny": true,
+        "noEmitOnError": true,
         "strictNullChecks": true,
         "outDir": "built",
         "baseUrl": ".",
@@ -199,7 +200,23 @@ export class NgtscTestEnvironment {
    */
   driveDiagnostics(): ReadonlyArray<ts.Diagnostic> {
     // ngtsc only produces ts.Diagnostic messages.
-    return mainDiagnosticsForTest(['-p', this.basePath]) as ts.Diagnostic[];
+    let reuseProgram: {program: Program | undefined}|undefined = undefined;
+    if (this.multiCompileHostExt !== null) {
+      reuseProgram = {
+        program: this.oldProgram || undefined,
+      };
+    }
+
+    const diags = mainDiagnosticsForTest(
+        ['-p', this.basePath], undefined, reuseProgram, this.changedResources);
+
+
+    if (this.multiCompileHostExt !== null) {
+      this.oldProgram = reuseProgram !.program !;
+    }
+
+    // In ngtsc, only `ts.Diagnostic`s are produced.
+    return diags as ReadonlyArray<ts.Diagnostic>;
   }
 
   async driveDiagnosticsAsync(): Promise<ReadonlyArray<ts.Diagnostic>> {
