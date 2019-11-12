@@ -989,4 +989,17 @@ describe('TestBed', () => {
                  .toEqual(originalResolver);
            });
       });
+
+  onlyInIvy('VE injects undefined when provider does not have useValue or useFactory')
+      .describe('overrides provider', () => {
+        it('with empty provider object', () => {
+          @Injectable()
+          class Service {
+          }
+          TestBed.overrideProvider(Service, {});
+          // Should be able to get a Service instance because it has no dependencies that can't be
+          // resolved
+          expect(TestBed.inject(Service)).toBeDefined();
+        });
+      });
 });
