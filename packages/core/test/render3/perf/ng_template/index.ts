@@ -41,15 +41,15 @@ class NgIfLike {
   }
   static ɵdir = ɵɵdefineDirective({
     type: NgIfLike,
-    selectors: [['', 'viewManipulation', '']],
+    selectors: [['', 'ngIfLike', '']],
   });
 
   constructor(private tplRef: TemplateRefToken, private vcRef: ViewContainerRefToken) {}
 }
 
 `
-<ng-template viewManipulation></ng-template>
-<ng-template viewManipulation></ng-template>
+<ng-template ngIfLike></ng-template>
+<ng-template ngIfLike></ng-template>
 `;
 function testTemplate(rf: RenderFlags, ctx: any) {
   if (rf & 1) {
@@ -60,8 +60,7 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 
 const viewTNode = createTNode(null !, null, TNodeType.View, -1, null, null) as TViewNode;
 const embeddedTView = createTView(
-    TViewType.Root, -1, testTemplate, 2, 0, [NgIfLike.ɵdir], null, null, null,
-    [['viewManipulation', '']]);
+    TViewType.Root, -1, testTemplate, 2, 0, [NgIfLike.ɵdir], null, null, null, [['ngIfLike', '']]);
 
 // create view once so we don't profile first template pass
 createAndRenderLView(null, embeddedTView, viewTNode);
