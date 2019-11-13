@@ -43,6 +43,7 @@ export interface FileSystem {
   lstat(path: AbsoluteFsPath): FileStats;
   stat(path: AbsoluteFsPath): FileStats;
   pwd(): AbsoluteFsPath;
+  chdir(path: AbsoluteFsPath): void;
   extname(path: AbsoluteFsPath|PathSegment): string;
   copyFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void;
   moveFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void;
