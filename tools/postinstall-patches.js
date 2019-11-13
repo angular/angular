@@ -20,7 +20,7 @@ try {
   process.exit(0);
 }
 
-const {set, cd, sed, echo, ls} = require('shelljs');
+const {set, cd, sed, echo, ls, rm} = require('shelljs');
 const {readFileSync} = require('fs');
 const path = require('path');
 const log = console.log;
@@ -67,5 +67,35 @@ ls('node_modules/@types').filter(f => f.startsWith('babel__')).forEach(pkg => {
     echo('}').toEnd(typingsFile);
   }
 });
+
+log('\n# patch: delete d.ts files refering to rxjs-compat');
+// more info in https://github.com/angular/angular/pull/33786
+rm('-rf', [
+  'node_modules/rxjs/add/',
+  'node_modules/rxjs/observable/',
+  'node_modules/rxjs/operator/',
+  'node_modules/rxjs/operators/!(index.*)',
+  'node_modules/rxjs/scheduler/',
+  'node_modules/rxjs/symbol/',
+  'node_modules/rxjs/util/',
+  'node_modules/rxjs/AsyncSubject.d.ts',
+  'node_modules/rxjs/BehaviorSubject.d.ts',
+  'node_modules/rxjs/InnerSubscriber.d.ts',
+  'node_modules/rxjs/interfaces.d.ts',
+  'node_modules/rxjs/internal/Rx.d.ts',
+  'node_modules/rxjs/Notification.d.ts',
+  'node_modules/rxjs/Observable.d.ts',
+  'node_modules/rxjs/Observer.d.ts',
+  'node_modules/rxjs/Operator.d.ts',
+  'node_modules/rxjs/OuterSubscriber.d.ts',
+  'node_modules/rxjs/ReplaySubject.d.ts',
+  'node_modules/rxjs/Rx.d.ts',
+  'node_modules/rxjs/Scheduler.d.ts',
+  'node_modules/rxjs/Subject.d.ts',
+  'node_modules/rxjs/SubjectSubscription.d.ts',
+  'node_modules/rxjs/Subscriber.d.ts',
+  'node_modules/rxjs/Subscription.d.ts',
+]);
+
 
 log('===== finished running the postinstall-patches.js script =====');
