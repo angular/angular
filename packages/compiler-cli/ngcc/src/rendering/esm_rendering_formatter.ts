@@ -17,6 +17,7 @@ import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {RenderingFormatter, RedundantDecoratorMap} from './rendering_formatter';
 import {stripExtension} from './utils';
 import {Reexport} from '../../../src/ngtsc/imports';
+import {isAssignment} from '../host/esm2015_host';
 
 /**
  * A RenderingFormatter that works with ECMAScript Module import and export statements.
@@ -124,7 +125,19 @@ export class EsmRenderingFormatter implements RenderingFormatter {
           // Remove the entire statement
           const statement = findStatement(containerNode);
           if (statement) {
-            output.remove(statement.getFullStart(), statement.getEnd());
+            if (ts.isExpressionStatement(statement)) {
+              // The statement looks like: `SomeClass = __decorate(...);`
+              // Remove it completely
+              output.remove(statement.getFullStart(), statement.getEnd());
+            } else if (
+                ts.isReturnStatement(statement) && statement.expression &&
+                isAssignment(statement.expression)) {
+              // The statement looks like: `return SomeClass = __decorate(...);`
+              // We only want to end up with: `return SomeClass;`
+              const startOfRemoval = statement.expression.left.getEnd();
+              const endOfRemoval = getEndExceptSemicolon(statement);
+              output.remove(startOfRemoval, endOfRemoval);
+            }
           }
         } else {
           nodesToRemove.forEach(node => {
@@ -239,7 +252,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
 
 function findStatement(node: ts.Node) {
   while (node) {
-    if (ts.isExpressionStatement(node)) {
+    if (ts.isExpressionStatement(node) || ts.isReturnStatement(node)) {
       return node;
     }
     node = node.parent;
@@ -256,4 +269,10 @@ function generateImportString(
 function getNextSiblingInArray<T extends ts.Node>(node: T, array: ts.NodeArray<T>): T|null {
   const index = array.indexOf(node);
   return index !== -1 && array.length > index + 1 ? array[index + 1] : null;
+}
+
+function getEndExceptSemicolon(statement: ts.Statement): number {
+  const lastToken = statement.getLastToken();
+  return (lastToken && lastToken.kind === ts.SyntaxKind.SemicolonToken) ? statement.getEnd() - 1 :
+                                                                          statement.getEnd();
 }
