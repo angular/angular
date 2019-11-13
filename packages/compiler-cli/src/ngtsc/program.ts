@@ -18,7 +18,7 @@ import {CycleAnalyzer, ImportGraph} from './cycles';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
 import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from './file_system';
-import {AbsoluteModuleStrategy, AliasStrategy, AliasingHost, DefaultImportTracker, FileToModuleAliasingHost, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
+import {AbsoluteModuleStrategy, AliasStrategy, AliasingHost, DefaultImportTracker, FileToModuleAliasingHost, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy} from './imports';
 import {IncrementalState} from './incremental';
 import {IndexedComponent, IndexingContext} from './indexer';
 import {generateAnalysis} from './indexer/src/transform';
@@ -520,6 +520,24 @@ export class NgtscProgram implements api.Program {
 
     // Construct the ReferenceEmitter.
     if (this.fileToModuleHost === null || !this.options._useHostForImportGeneration) {
+      let localImportStrategy: ReferenceEmitStrategy;
+
+      // The strategy used for local, in-project imports depends on whether TS has been configured
+      // with rootDirs. If so, then multiple directories may be mapped in the same "module
+      // namespace" and the logic of `LogicalProjectStrategy` is required to generate correct
+      // imports which may cross these multiple directories. Otherwise, plain relative imports are
+      // sufficient.
+      if (this.options.rootDir !== undefined ||
+          (this.options.rootDirs !== undefined && this.options.rootDirs.length > 0)) {
+        // rootDirs logic is in effect - use the `LogicalProjectStrategy` for in-project relative
+        // imports.
+        localImportStrategy =
+            new LogicalProjectStrategy(this.reflector, new LogicalFileSystem(this.rootDirs));
+      } else {
+        // Plain relative imports are all that's needed.
+        localImportStrategy = new RelativePathStrategy(this.reflector);
+      }
+
       // The CompilerHost doesn't have fileNameToModuleName, so build an NPM-centric reference
       // resolution strategy.
       this.refEmitter = new ReferenceEmitter([
@@ -528,10 +546,10 @@ export class NgtscProgram implements api.Program {
         // Next, attempt to use an absolute import.
         new AbsoluteModuleStrategy(
             this.tsProgram, checker, this.options, this.host, this.reflector),
-        // Finally, check if the reference is being written into a file within the project's logical
-        // file system, and use a relative import if so. If this fails, ReferenceEmitter will throw
+        // Finally, check if the reference is being written into a file within the project's .ts
+        // sources, and use a relative import if so. If this fails, ReferenceEmitter will throw
         // an error.
-        new LogicalProjectStrategy(this.reflector, new LogicalFileSystem(this.rootDirs)),
+        localImportStrategy,
       ]);
 
       // If an entrypoint is present, then all user imports should be directed through the
@@ -569,10 +587,8 @@ export class NgtscProgram implements api.Program {
     this.metaReader = new CompoundMetadataReader([localMetaReader, dtsReader]);
 
 
-    // If a flat module entrypoint was specified, then track references via a `ReferenceGraph`
-    // in
-    // order to produce proper diagnostics for incorrectly exported directives/pipes/etc. If
-    // there
+    // If a flat module entrypoint was specified, then track references via a `ReferenceGraph` in
+    // order to produce proper diagnostics for incorrectly exported directives/pipes/etc. If there
     // is no flat module entrypoint then don't pay the cost of tracking references.
     let referencesRegistry: ReferencesRegistry;
     if (this.entryPoint !== null) {
