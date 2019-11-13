@@ -26,6 +26,7 @@ export class NodeJSFileSystem implements FileSystem {
   lstat(path: AbsoluteFsPath): FileStats { return fs.lstatSync(path); }
   stat(path: AbsoluteFsPath): FileStats { return fs.statSync(path); }
   pwd(): AbsoluteFsPath { return this.normalize(process.cwd()) as AbsoluteFsPath; }
+  chdir(dir: AbsoluteFsPath): void { process.chdir(dir); }
   copyFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void { fs.copyFileSync(from, to); }
   moveFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void { fs.renameSync(from, to); }
   ensureDir(path: AbsoluteFsPath): void {

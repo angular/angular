@@ -35,7 +35,8 @@ export class NgtscTestEnvironment {
   /**
    * Set up a new testing environment.
    */
-  static setup(files?: Folder): NgtscTestEnvironment {
+  static setup(files?: Folder, workingDir: AbsoluteFsPath = absoluteFrom('/')):
+      NgtscTestEnvironment {
     const fs = getFileSystem();
     if (files !== undefined && fs instanceof MockFileSystem) {
       fs.init(files);
@@ -44,7 +45,8 @@ export class NgtscTestEnvironment {
     const host = new AugmentedCompilerHost(fs);
     setWrapHostForTest(makeWrapHost(host));
 
-    const env = new NgtscTestEnvironment(fs, fs.resolve('/built'), absoluteFrom('/'));
+    const env = new NgtscTestEnvironment(fs, fs.resolve('/built'), workingDir);
+    fs.chdir(workingDir);
 
     env.write(absoluteFrom('/tsconfig-base.json'), `{
       "compilerOptions": {
@@ -54,7 +56,6 @@ export class NgtscTestEnvironment {
         "noImplicitAny": true,
         "strictNullChecks": true,
         "outDir": "built",
-        "rootDir": ".",
         "baseUrl": ".",
         "declaration": true,
         "target": "es5",
