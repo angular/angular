@@ -1,3 +1,56 @@
+<a name="9.0.0-rc.2"></a>
+# [9.0.0-rc.2](https://github.com/angular/angular/compare/9.0.0-rc.1...9.0.0-rc.2) (2019-11-13)
+
+
+### Bug Fixes
+
+* **common:** rerun cldr to remove � characters ([#33699](https://github.com/angular/angular/issues/33699)) ([011ecdf](https://github.com/angular/angular/commit/011ecdf))
+* **common:** update CLDR generated files after change to npm sources ([#33634](https://github.com/angular/angular/issues/33634)) ([59b25da](https://github.com/angular/angular/commit/59b25da))
+* **common:** update CLDR generated files to 36.0.0 ([#33584](https://github.com/angular/angular/issues/33584)) ([c1bd3bc](https://github.com/angular/angular/commit/c1bd3bc))
+* **compiler:** correctly parse attributes with a dot in the name ([#32256](https://github.com/angular/angular/issues/32256)) ([687582f](https://github.com/angular/angular/commit/687582f))
+* **compiler-cli:** Fix typo $implict ([#33633](https://github.com/angular/angular/issues/33633)) ([7bccef5](https://github.com/angular/angular/commit/7bccef5))
+* **compiler-cli:** Pass SourceFile to getFullText() ([#33660](https://github.com/angular/angular/issues/33660)) ([33f6cd4](https://github.com/angular/angular/commit/33f6cd4))
+* **core:** remove ngcc postinstall migration ([#33727](https://github.com/angular/angular/issues/33727)) ([508bbfd](https://github.com/angular/angular/commit/508bbfd))
+* **core:** support `ngInjectableDef` on types with inherited `ɵprov` ([#33732](https://github.com/angular/angular/issues/33732)) ([4ec079f](https://github.com/angular/angular/commit/4ec079f))
+* **ivy:** auto register NgModules with ID ([#33663](https://github.com/angular/angular/issues/33663)) ([4988094](https://github.com/angular/angular/commit/4988094))
+* **ivy:** better support for i18n attributes on <ng-container>s ([#33599](https://github.com/angular/angular/issues/33599)) ([2046202](https://github.com/angular/angular/commit/2046202))
+* **ivy:** ComponentFactory.create should clear host element content ([#33487](https://github.com/angular/angular/issues/33487)) ([d67a38b](https://github.com/angular/angular/commit/d67a38b))
+* **ivy:** ensure module scope is rebuilt on dependent change ([#33522](https://github.com/angular/angular/issues/33522)) ([71238a9](https://github.com/angular/angular/commit/71238a9)), closes [#32416](https://github.com/angular/angular/issues/32416)
+* **ivy:** ensure that the  correct `document` is available ([#33712](https://github.com/angular/angular/issues/33712)) ([8362696](https://github.com/angular/angular/commit/8362696)), closes [#33651](https://github.com/angular/angular/issues/33651)
+* **ivy:** Handle overrides for {providedIn: AModule} in R3TestBed ([#33606](https://github.com/angular/angular/issues/33606)) ([d09ad82](https://github.com/angular/angular/commit/d09ad82))
+* **ivy:** match directives on namespaced elements ([#33555](https://github.com/angular/angular/issues/33555)) ([99ead47](https://github.com/angular/angular/commit/99ead47)), closes [#32061](https://github.com/angular/angular/issues/32061)
+* **ivy:** properly determine the first native node of a view ([#33627](https://github.com/angular/angular/issues/33627)) ([811275c](https://github.com/angular/angular/commit/811275c))
+* **ivy:** properly insert views in front of empty views ([#33647](https://github.com/angular/angular/issues/33647)) ([c5737f4](https://github.com/angular/angular/commit/c5737f4))
+* **ivy:** properly insert views in front of views with an empty element container ([#33647](https://github.com/angular/angular/issues/33647)) ([0b99884](https://github.com/angular/angular/commit/0b99884))
+* **ivy:** provider override via TestBed should remove old providers from the list ([#33706](https://github.com/angular/angular/issues/33706)) ([f45d5dc](https://github.com/angular/angular/commit/f45d5dc))
+* **ivy:** recompile component when template changes in ngc watch mode ([#33551](https://github.com/angular/angular/issues/33551)) ([da01dbc](https://github.com/angular/angular/commit/da01dbc)), closes [#32869](https://github.com/angular/angular/issues/32869)
+* **ivy:** recompile component when template changes in ngc watch mode ([#33551](https://github.com/angular/angular/issues/33551)) ([cd8333c](https://github.com/angular/angular/commit/cd8333c)), closes [#32869](https://github.com/angular/angular/issues/32869)
+* **ivy:** Run ChangeDetection on transplanted views ([#33644](https://github.com/angular/angular/issues/33644)) ([37ae45e](https://github.com/angular/angular/commit/37ae45e)), closes [#33393](https://github.com/angular/angular/issues/33393)
+* **language-service:** Resolve template variable in nested ngFor ([#33676](https://github.com/angular/angular/issues/33676)) ([6615743](https://github.com/angular/angular/commit/6615743))
+* **ngcc:** add default config for `ng2-dragula` ([#33797](https://github.com/angular/angular/issues/33797)) ([ecf38d4](https://github.com/angular/angular/commit/ecf38d4)), closes [#33718](https://github.com/angular/angular/issues/33718)
+* **ngcc:** add reexports only once ([#33658](https://github.com/angular/angular/issues/33658)) ([83b635c](https://github.com/angular/angular/commit/83b635c))
+* **ngcc:** ensure that adjacent statements go after helper calls ([#33689](https://github.com/angular/angular/issues/33689)) ([c540061](https://github.com/angular/angular/commit/c540061))
+* generate the new locale files ([#33682](https://github.com/angular/angular/issues/33682)) ([72796b9](https://github.com/angular/angular/commit/72796b9))
+* resolve event listeners not correct when registered outside of ngZone ([#33711](https://github.com/angular/angular/issues/33711)) ([9045e3e](https://github.com/angular/angular/commit/9045e3e)), closes [#33687](https://github.com/angular/angular/issues/33687)
+* use full cldr data to support all locales ([#33682](https://github.com/angular/angular/issues/33682)) ([ea83125](https://github.com/angular/angular/commit/ea83125)), closes [#33681](https://github.com/angular/angular/issues/33681)
+* **ngcc:** remove `__decorator` calls even when part of the IIFE return statement ([#33777](https://github.com/angular/angular/issues/33777)) ([e1df98b](https://github.com/angular/angular/commit/e1df98b))
+* **ngcc:** support minified ES5 scenarios ([#33777](https://github.com/angular/angular/issues/33777)) ([49e517d](https://github.com/angular/angular/commit/49e517d))
+
+
+### Performance Improvements
+
+* **core:** Avoid unnecessary creating provider factory ([#33742](https://github.com/angular/angular/issues/33742)) ([c315881](https://github.com/angular/angular/commit/c315881))
+
+
+### Reverts
+
+* "fix(ivy): recompile component when template changes in ngc watch mode ([#33551](https://github.com/angular/angular/issues/33551))" ([#33661](https://github.com/angular/angular/issues/33661)) ([cb55f60](https://github.com/angular/angular/commit/cb55f60))
+* fix(ivy): Only restore registered modules if user compiles modules with TestBed ([#32944](https://github.com/angular/angular/issues/32944)) ([#33663](https://github.com/angular/angular/issues/33663)) ([f8e9c1e](https://github.com/angular/angular/commit/f8e9c1e))
+* fix(ivy): R3TestBed should clean up registered modules after each test ([#32872](https://github.com/angular/angular/issues/32872)) ([#33663](https://github.com/angular/angular/issues/33663)) ([7c4366d](https://github.com/angular/angular/commit/7c4366d))
+
+
+
+
 <a name="8.2.14"></a>
 ## [8.2.14](https://github.com/angular/angular/compare/8.2.13...8.2.14) (2019-11-13)
 
