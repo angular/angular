@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, Decorator, FunctionDefinition, Parameter, TsHelperFn, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {getNameText, hasNameIdentifier, stripDollarSuffix} from '../utils';
 
-import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './esm2015_host';
+import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignment, isAssignmentStatement} from './esm2015_host';
 import {NgccClassSymbol} from './ngcc_host';
 
 /**
@@ -602,23 +602,36 @@ function getClassDeclarationFromInnerFunctionDeclaration(node: ts.Node):
 }
 
 export function getIifeBody(declaration: ts.Declaration): ts.Block|undefined {
-  if (!ts.isVariableDeclaration(declaration) || !declaration.initializer ||
-      !ts.isParenthesizedExpression(declaration.initializer)) {
+  if (!ts.isVariableDeclaration(declaration) || !declaration.initializer) {
     return undefined;
   }
-  const call = declaration.initializer;
-  return ts.isCallExpression(call.expression) &&
-          ts.isFunctionExpression(call.expression.expression) ?
-      call.expression.expression.body :
-      undefined;
+
+  const call = stripParentheses(declaration.initializer);
+  if (!ts.isCallExpression(call)) {
+    return undefined;
+  }
+
+  const fn = stripParentheses(call.expression);
+  if (!ts.isFunctionExpression(fn)) {
+    return undefined;
+  }
+
+  return fn.body;
 }
 
 function getReturnIdentifier(body: ts.Block): ts.Identifier|undefined {
   const returnStatement = body.statements.find(ts.isReturnStatement);
-  return returnStatement && returnStatement.expression &&
-          ts.isIdentifier(returnStatement.expression) ?
-      returnStatement.expression :
-      undefined;
+  if (!returnStatement || !returnStatement.expression) {
+    return undefined;
+  }
+  if (ts.isIdentifier(returnStatement.expression)) {
+    return returnStatement.expression;
+  }
+  if (isAssignment(returnStatement.expression) &&
+      ts.isIdentifier(returnStatement.expression.left)) {
+    return returnStatement.expression.left;
+  }
+  return undefined;
 }
 
 function getReturnStatement(declaration: ts.Expression | undefined): ts.ReturnStatement|undefined {
