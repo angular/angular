@@ -921,6 +921,7 @@ function declareTests(config?: {useJit: boolean}) {
         @Directive({selector: '[host-properties]', host: {'[id]': 'id', '[title]': 'unknownProp'}})
         class DirectiveWithHostProps {
           id = 'one';
+          unknownProp = 'unknownProp';
         }
 
         const fixture =
@@ -933,7 +934,7 @@ function declareTests(config?: {useJit: boolean}) {
 
         const tc = fixture.debugElement.children[0];
         expect(tc.properties['id']).toBe('one');
-        expect(tc.properties['title']).toBe(undefined);
+        expect(tc.properties['title']).toBe('unknownProp');
       });
 
       it('should not allow pipes in hostProperties', () => {

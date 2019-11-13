@@ -164,7 +164,8 @@ describe('TestBed', () => {
     fixture.detectChanges();
 
     const divElement = fixture.debugElement.query(By.css('div'));
-    expect(divElement.properties).toEqual({id: 'one', title: 'some title'});
+    expect(divElement.properties.id).toEqual('one');
+    expect(divElement.properties.title).toEqual('some title');
   });
 
   it('should give the ability to access interpolated properties on a node', () => {
@@ -172,8 +173,8 @@ describe('TestBed', () => {
     fixture.detectChanges();
 
     const paragraphEl = fixture.debugElement.query(By.css('p'));
-    expect(paragraphEl.properties)
-        .toEqual({title: '( some label - some title )', id: '[ some label ] [ some title ]'});
+    expect(paragraphEl.properties.title).toEqual('( some label - some title )');
+    expect(paragraphEl.properties.id).toEqual('[ some label ] [ some title ]');
   });
 
   it('should give access to the node injector', () => {

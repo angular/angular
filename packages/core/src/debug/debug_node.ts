@@ -278,14 +278,12 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     const tData = lView[TVIEW].data;
     const tNode = tData[context.nodeIndex] as TNode;
 
-    const properties = collectPropertyBindings(tNode, lView, tData);
-    const className = collectClassNames(this);
-
-    if (className) {
-      properties['className'] =
-          properties['className'] ? properties['className'] + ` ${className}` : className;
-    }
-
+    const properties: {[key: string]: string} = {};
+    // Collect properties from the DOM.
+    copyDomProperties(this.nativeElement, properties);
+    // Collect properties from the bindings. This is needed for animation renderer which has
+    // synthetic properties which don't get reflected into the DOM.
+    collectPropertyBindings(properties, tNode, lView, tData);
     return properties;
   }
 
@@ -444,6 +442,34 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       });
     }
   }
+}
+
+function copyDomProperties(element: Element | null, properties: {[name: string]: string}): void {
+  if (element) {
+    // Skip own properties (as those are patched)
+    let obj = Object.getPrototypeOf(element);
+    const NodePrototype: any = Node.prototype;
+    while (obj !== null && obj !== NodePrototype) {
+      const descriptors = Object.getOwnPropertyDescriptors(obj);
+      for (let key in descriptors) {
+        if (!key.startsWith('__') && !key.startsWith('on')) {
+          // don't include properties starting with `__` and `on`.
+          // `__` are patched values which should not be included.
+          // `on` are listeners which also should not be included.
+          const value = (element as any)[key];
+          if (isPrimitiveValue(value)) {
+            properties[key] = value;
+          }
+        }
+      }
+      obj = Object.getPrototypeOf(obj);
+    }
+  }
+}
+
+function isPrimitiveValue(value: any): boolean {
+  return typeof value === 'string' || typeof value === 'boolean' || typeof value === 'number' ||
+      value === null;
 }
 
 /**
@@ -649,8 +675,7 @@ function _queryNativeNodeDescendants(
  * defined in templates, not in host bindings.
  */
 function collectPropertyBindings(
-    tNode: TNode, lView: LView, tData: TData): {[key: string]: string} {
-  const properties: {[key: string]: string} = {};
+    properties: {[key: string]: string}, tNode: TNode, lView: LView, tData: TData): void {
   let bindingIndexes = tNode.propertyBindings;
 
   if (bindingIndexes !== null) {
@@ -670,22 +695,6 @@ function collectPropertyBindings(
       }
     }
   }
-
-  return properties;
-}
-
-
-function collectClassNames(debugElement: DebugElement__POST_R3__): string {
-  const classes = debugElement.classes;
-  let output = '';
-
-  for (const className of Object.keys(classes)) {
-    if (classes[className]) {
-      output = output ? output + ` ${className}` : className;
-    }
-  }
-
-  return output;
 }
 
 
