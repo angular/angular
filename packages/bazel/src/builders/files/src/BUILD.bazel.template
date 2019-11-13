@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@npm_angular_bazel//:index.bzl", "ng_module")
-load("@npm_bazel_karma//:index.bzl", "ts_web_test_suite")
+load("@npm_bazel_karma//:index.bzl", "karma_web_test_suite")
 load("@build_bazel_rules_nodejs//internal/web_package:web_package.bzl", "web_package")
 load("@npm//history-server:index.bzl", "history_server")
 load("@npm_bazel_rollup//:index.bzl", "rollup_bundle")
@@ -137,7 +137,7 @@ ts_library(
     ],
 )
 
-ts_web_test_suite(
+karma_web_test_suite(
     name = "test",
     srcs = [
         "@npm//:node_modules/tslib/tslib.js",
