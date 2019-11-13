@@ -1404,11 +1404,9 @@ export class ValueConverter extends AstMemoryEfficientTransformer {
         array.span, array.sourceSpan, this.visitAll(array.expressions), values => {
           // If the literal has calculated (non-literal) elements transform it into
           // calls to literal factories that compose the literal and will cache intermediate
-          // values. Otherwise, just return an literal array that contains the values.
+          // values.
           const literal = o.literalArr(values);
-          return values.every(a => a.isConstant()) ?
-              this.constantPool.getConstLiteral(literal, true) :
-              getLiteralFactory(this.constantPool, literal, this.allocatePureFunctionSlots);
+          return getLiteralFactory(this.constantPool, literal, this.allocatePureFunctionSlots);
         });
   }
 
@@ -1416,12 +1414,10 @@ export class ValueConverter extends AstMemoryEfficientTransformer {
     return new BuiltinFunctionCall(map.span, map.sourceSpan, this.visitAll(map.values), values => {
       // If the literal has calculated (non-literal) elements  transform it into
       // calls to literal factories that compose the literal and will cache intermediate
-      // values. Otherwise, just return an literal array that contains the values.
+      // values.
       const literal = o.literalMap(values.map(
           (value, index) => ({key: map.keys[index].key, value, quoted: map.keys[index].quoted})));
-      return values.every(a => a.isConstant()) ?
-          this.constantPool.getConstLiteral(literal, true) :
-          getLiteralFactory(this.constantPool, literal, this.allocatePureFunctionSlots);
+      return getLiteralFactory(this.constantPool, literal, this.allocatePureFunctionSlots);
     });
   }
 }
@@ -1468,15 +1464,11 @@ function getLiteralFactory(
   const {literalFactory, literalFactoryArguments} = constantPool.getLiteralFactory(literal);
   // Allocate 1 slot for the result plus 1 per argument
   const startSlot = allocateSlots(1 + literalFactoryArguments.length);
-  literalFactoryArguments.length > 0 || error(`Expected arguments to a literal factory function`);
   const {identifier, isVarLength} = pureFunctionCallInfo(literalFactoryArguments);
 
   // Literal factories are pure functions that only need to be re-invoked when the parameters
   // change.
-  const args = [
-    o.literal(startSlot),
-    literalFactory,
-  ];
+  const args = [o.literal(startSlot), literalFactory];
 
   if (isVarLength) {
     args.push(o.literalArr(literalFactoryArguments));

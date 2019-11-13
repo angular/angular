@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CommonModule} from '@angular/common';
-import {Component, Input} from '@angular/core';
+import {Component, Directive, Input, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {onlyInIvy} from '@angular/private/testing';
 
 describe('components using pure function instructions internally', () => {
   describe('with array literals', () => {
@@ -478,5 +479,85 @@ describe('components using pure function instructions internally', () => {
       expect(objectComps[0].config).toEqual({opacity: 0, duration: 1000});
       expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
     });
+  });
+
+  onlyInIvy('issue has only been fixed for Ivy').describe('identical literals', () => {
+    @Directive({selector: '[dir]'})
+    class Dir {
+      @Input('dir') value: any;
+    }
+
+    it('should not share object literals across elements', () => {
+      @Component({
+        template: `
+          <div [dir]="{}"></div>
+          <div [dir]="{}"></div>
+        `
+      })
+      class App {
+        @ViewChildren(Dir) directives !: QueryList<Dir>;
+      }
+
+      TestBed.configureTestingModule({declarations: [Dir, App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const directives = fixture.componentInstance.directives.toArray();
+      expect(directives[0].value).not.toBe(directives[1].value);
+    });
+
+    it('should not share array literals across elements', () => {
+      @Component({
+        template: `
+          <div [dir]="[]"></div>
+          <div [dir]="[]"></div>
+        `
+      })
+      class App {
+        @ViewChildren(Dir) directives !: QueryList<Dir>;
+      }
+
+      TestBed.configureTestingModule({declarations: [Dir, App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const directives = fixture.componentInstance.directives.toArray();
+      expect(directives[0].value).not.toBe(directives[1].value);
+    });
+
+    it('should not share object literals across component instances', () => {
+      @Component({template: `<div [dir]="{}"></div>`})
+      class App {
+        @ViewChild(Dir) directive !: Dir;
+      }
+
+      TestBed.configureTestingModule({declarations: [Dir, App]});
+      const firstFixture = TestBed.createComponent(App);
+      firstFixture.detectChanges();
+
+      const secondFixture = TestBed.createComponent(App);
+      secondFixture.detectChanges();
+
+      expect(firstFixture.componentInstance.directive.value)
+          .not.toBe(secondFixture.componentInstance.directive.value);
+    });
+
+    it('should not share array literals across component instances', () => {
+      @Component({template: `<div [dir]="[]"></div>`})
+      class App {
+        @ViewChild(Dir) directive !: Dir;
+      }
+
+      TestBed.configureTestingModule({declarations: [Dir, App]});
+      const firstFixture = TestBed.createComponent(App);
+      firstFixture.detectChanges();
+
+      const secondFixture = TestBed.createComponent(App);
+      secondFixture.detectChanges();
+
+      expect(firstFixture.componentInstance.directive.value)
+          .not.toBe(secondFixture.componentInstance.directive.value);
+    });
+
   });
 });

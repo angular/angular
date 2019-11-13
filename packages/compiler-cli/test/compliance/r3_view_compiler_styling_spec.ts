@@ -917,7 +917,7 @@ describe('compiler compliance: styling', () => {
             if (rf & 2) {
               $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind2(1, 8, $ctx$.myStyleExp, 1000));
-              $r3$.ɵɵclassMap($e2_styling$);
+              $r3$.ɵɵclassMap($r3$.ɵɵpureFunction0(20, _c0));
               $r3$.ɵɵstyleProp("bar", $r3$.ɵɵpipeBind2(2, 11, $ctx$.barExp, 3000));
               $r3$.ɵɵstyleProp("baz", $r3$.ɵɵpipeBind2(3, 14, $ctx$.bazExp, 4000));
               $r3$.ɵɵclassProp("foo", $r3$.ɵɵpipeBind2(4, 17, $ctx$.fooExp, 2000));
