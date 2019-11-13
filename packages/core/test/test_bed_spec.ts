@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, ModuleWithProviders, NgModule, Optional, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
+import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, ModuleWithProviders, NgModule, Optional, Pipe, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -287,6 +287,59 @@ describe('TestBed', () => {
 
     // verify that original `ngOnDestroy` was not called
     expect(SimpleService.ngOnDestroyCalls).toBe(0);
+  });
+
+  describe('module overrides using TestBed.overrideModule', () => {
+    @Component({
+      selector: 'test-cmp',
+      template: '...',
+    })
+    class TestComponent {
+      testField = 'default';
+    }
+
+    @NgModule({
+      declarations: [TestComponent],
+      exports: [TestComponent],
+    })
+    class TestModule {
+    }
+
+    @Component({
+      selector: 'app-root',
+      template: `<test-cmp #testCmpCtrl></test-cmp>`,
+    })
+    class AppComponent {
+      @ViewChild('testCmpCtrl', {static: true}) testCmpCtrl !: TestComponent;
+    }
+
+    @NgModule({
+      declarations: [AppComponent],
+      imports: [TestModule],
+    })
+    class AppModule {
+    }
+    @Component({
+      selector: 'test-cmp',
+      template: '...',
+    })
+    class MockTestComponent {
+      testField = 'overwritten';
+    }
+
+    it('should allow declarations override', () => {
+      TestBed.configureTestingModule({
+        imports: [AppModule],
+      });
+      // replace TestComponent with MockTestComponent
+      TestBed.overrideModule(TestModule, {
+        remove: {declarations: [TestComponent], exports: [TestComponent]},
+        add: {declarations: [MockTestComponent], exports: [MockTestComponent]}
+      });
+      const fixture = TestBed.createComponent(AppComponent);
+      const app = fixture.componentInstance;
+      expect(app.testCmpCtrl.testField).toBe('overwritten');
+    });
   });
 
   describe('multi providers', () => {
