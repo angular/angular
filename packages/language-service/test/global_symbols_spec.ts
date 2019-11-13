@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getSymbolQuery} from '@angular/compiler-cli';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {EMPTY_SYMBOL_TABLE, createGlobalSymbolTable} from '../src/global_symbols';
+import {getSymbolQuery} from '../src/typescript_symbols';
 
 import {MockTypescriptHost} from './test_utils';
 

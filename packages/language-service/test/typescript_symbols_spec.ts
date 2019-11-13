@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Directory} from '@angular/compiler-cli/test/mocks';
 import {ReflectorHost} from '@angular/language-service/src/reflector_host';
 import * as ts from 'typescript';
 
-import {BuiltinType, Symbol, SymbolQuery, SymbolTable} from '../../src/diagnostics/symbols';
-import {getSymbolQuery, toSymbolTableFactory} from '../../src/diagnostics/typescript_symbols';
-import {Directory} from '../mocks';
+import {BuiltinType, Symbol, SymbolQuery, SymbolTable} from '../src/symbols';
+import {getSymbolQuery, toSymbolTableFactory} from '../src/typescript_symbols';
 
 import {DiagnosticContext, MockLanguageServiceHost} from './mocks';
 
@@ -74,15 +74,10 @@ describe('symbol query', () => {
 });
 
 describe('toSymbolTableFactory(tsVersion)', () => {
-  it('should return a Map for versions of TypeScript >= 2.2 and a dictionary otherwise', () => {
+  it('should return a Map for versions of TypeScript >= 2.2', () => {
     const a = { name: 'a' } as ts.Symbol;
     const b = { name: 'b' } as ts.Symbol;
-
-    expect(toSymbolTableFactory('2.1')([a, b]) instanceof Map).toEqual(false);
-    expect(toSymbolTableFactory('2.4')([a, b]) instanceof Map).toEqual(true);
-
-    // Check that for the lower bound version `2.2`, toSymbolTableFactory('2.2') returns a map
-    expect(toSymbolTableFactory('2.2')([a, b]) instanceof Map).toEqual(true);
+    expect(toSymbolTableFactory([a, b]) instanceof Map).toEqual(true);
   });
 });
 

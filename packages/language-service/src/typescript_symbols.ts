@@ -11,7 +11,6 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {BuiltinType, DeclarationKind, Definition, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
-import {isVersionBetween} from './typescript_version';
 
 // In TypeScript 2.1 these flags moved
 // These helpers work for both 2.0 and 2.1.
@@ -396,33 +395,18 @@ class SignatureResultOverride implements Signature {
   get result(): Symbol { return this.resultType; }
 }
 
-/**
- * Indicates the lower bound TypeScript version supporting `SymbolTable` as an ES6 `Map`.
- * For lower versions, `SymbolTable` is implemented as a dictionary
- */
-const MIN_TS_VERSION_SUPPORTING_MAP = '2.2';
-
-export const toSymbolTableFactory = (tsVersion: string) => (symbols: ts.Symbol[]) => {
-  if (isVersionBetween(tsVersion, MIN_TS_VERSION_SUPPORTING_MAP)) {
-    // ∀ Typescript version >= 2.2, `SymbolTable` is implemented as an ES6 `Map`
-    const result = new Map<string, ts.Symbol>();
-    for (const symbol of symbols) {
-      result.set(symbol.name, symbol);
-    }
-    // First, tell the compiler that `result` is of type `any`. Then, use a second type assertion
-    // to `ts.SymbolTable`.
-    // Otherwise, `Map<string, ts.Symbol>` and `ts.SymbolTable` will be considered as incompatible
-    // types by the compiler
-    return <ts.SymbolTable>(<any>result);
-  }
-
-  // ∀ Typescript version < 2.2, `SymbolTable` is implemented as a dictionary
-  const result: {[name: string]: ts.Symbol} = {};
+export function toSymbolTableFactory(symbols: ts.Symbol[]) {
+  // ∀ Typescript version >= 2.2, `SymbolTable` is implemented as an ES6 `Map`
+  const result = new Map<string, ts.Symbol>();
   for (const symbol of symbols) {
-    result[symbol.name] = symbol;
+    result.set(symbol.name, symbol);
   }
+  // First, tell the compiler that `result` is of type `any`. Then, use a second type assertion
+  // to `ts.SymbolTable`.
+  // Otherwise, `Map<string, ts.Symbol>` and `ts.SymbolTable` will be considered as incompatible
+  // types by the compiler
   return <ts.SymbolTable>(<any>result);
-};
+}
 
 function toSymbols(symbolTable: ts.SymbolTable | undefined): ts.Symbol[] {
   if (!symbolTable) return [];
@@ -456,8 +440,7 @@ class SymbolTableWrapper implements SymbolTable {
 
     if (Array.isArray(symbols)) {
       this.symbols = symbols;
-      const toSymbolTable = toSymbolTableFactory(ts.version);
-      this.symbolTable = toSymbolTable(symbols);
+      this.symbolTable = toSymbolTableFactory(symbols);
     } else {
       this.symbols = toSymbols(symbols);
       this.symbolTable = symbols;
