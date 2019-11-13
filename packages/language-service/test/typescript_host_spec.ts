@@ -50,7 +50,7 @@ describe('TypeScriptServiceHost', () => {
     expect(analyzedModules.files.length).toBe(0);
     expect(analyzedModules.ngModules.length).toBe(0);
     expect(analyzedModules.ngModuleByPipeOrDirective.size).toBe(0);
-    expect(analyzedModules.symbolsMissingModule).toEqual([]);
+    expect(analyzedModules.symbolsMissingModule).toBeUndefined();
   });
 
   it('should clear the caches if new script is added', () => {
@@ -166,8 +166,14 @@ describe('TypeScriptServiceHost', () => {
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     const oldModules = ngLSHost.getAnalyzedModules();
+    const oldProgram = ngLSHost.program;
     tsLSHost.override('/app/test.ng', '<div></div>');
     const newModules = ngLSHost.getAnalyzedModules();
+    const newProgram = ngLSHost.program;
+    // Assert that the program has changed because external template was updated
+    expect(newProgram).not.toBe(oldProgram);
+    // But, analyzed modules should remain the same because none of the source
+    // files have changed.
     expect(newModules).toBe(oldModules);
   });
 

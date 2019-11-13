@@ -114,9 +114,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
 
   override(fileName: string, content: string) {
     this.scriptVersion.set(fileName, (this.scriptVersion.get(fileName) || 0) + 1);
-    if (fileName.endsWith('.ts')) {
-      this.projectVersion++;
-    }
+    this.projectVersion++;
     if (content) {
       this.overrides.set(fileName, content);
       this.overrideDirectory.add(path.dirname(fileName));

@@ -195,7 +195,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   /**
-   * Checks whether the program has changed, and invalidate caches if it has.
+   * Checks whether the program has changed, and invalidate static symbols in
+   * the source files that have changed.
    * Returns true if modules are up-to-date, false otherwise.
    * This should only be called by getAnalyzedModules().
    */
@@ -206,30 +207,46 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     }
     this.lastProgram = program;
 
-    // Invalidate file that have changed in the static symbol resolver
+    // Even though the program has changed, it could be the case that none of
+    // the source files have changed. If all source files remain the same, then
+    // program is still up-to-date, and we should not invalidate caches.
+    let filesAdded = 0;
+    const filesChangedOrRemoved: string[] = [];
+
+    // Check if any source files have been added / changed since last computation.
     const seen = new Set<string>();
-    for (const sourceFile of program.getSourceFiles()) {
-      const fileName = sourceFile.fileName;
+    for (const {fileName} of program.getSourceFiles()) {
       seen.add(fileName);
       const version = this.tsLsHost.getScriptVersion(fileName);
       const lastVersion = this.fileVersions.get(fileName);
-      this.fileVersions.set(fileName, version);
-      // Should not invalidate file on the first encounter or if file hasn't changed
-      if (lastVersion !== undefined && version !== lastVersion) {
-        const symbols = this.staticSymbolResolver.invalidateFile(fileName);
-        this.reflector.invalidateSymbols(symbols);
+      if (lastVersion === undefined) {
+        filesAdded++;
+        this.fileVersions.set(fileName, version);
+      } else if (version !== lastVersion) {
+        filesChangedOrRemoved.push(fileName);  // changed
+        this.fileVersions.set(fileName, version);
       }
     }
 
-    // Remove file versions that are no longer in the program and invalidate them.
-    const missing = Array.from(this.fileVersions.keys()).filter(f => !seen.has(f));
-    missing.forEach(f => {
-      this.fileVersions.delete(f);
-      const symbols = this.staticSymbolResolver.invalidateFile(f);
-      this.reflector.invalidateSymbols(symbols);
-    });
+    // Check if any source files have been removed since last computation.
+    for (const [fileName] of this.fileVersions) {
+      if (!seen.has(fileName)) {
+        filesChangedOrRemoved.push(fileName);  // removed
+        // Because Maps are iterated in insertion order, it is safe to delete
+        // entries from the same map while iterating.
+        // See https://stackoverflow.com/questions/35940216 and
+        // https://www.ecma-international.org/ecma-262/10.0/index.html#sec-map.prototype.foreach
+        this.fileVersions.delete(fileName);
+      }
+    }
 
-    return false;
+    for (const fileName of filesChangedOrRemoved) {
+      const symbols = this.staticSymbolResolver.invalidateFile(fileName);
+      this.reflector.invalidateSymbols(symbols);
+    }
+
+    // Program is up-to-date iff no files are added, changed, or removed.
+    return filesAdded === 0 && filesChangedOrRemoved.length === 0;
   }
 
   /**
