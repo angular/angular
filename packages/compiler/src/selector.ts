@@ -9,17 +9,31 @@
 import {getHtmlTagDefinition} from './ml_parser/html_tags';
 
 const _SELECTOR_REGEXP = new RegExp(
-    '(\\:not\\()|' +           //":not("
-        '([-\\w]+)|' +         // "tag"
-        '(?:\\.([-\\w]+))|' +  // ".class"
+    '(\\:not\\()|' +               // 1: ":not("
+        '(([\\.\\#]?)[-\\w]+)|' +  // 2: "tag"; 3: "."/"#";
         // "-" should appear first in the regexp below as FF31 parses "[.-\w]" as a range
+        // 4: attribute; 5: attribute_string; 6: attribute_value
         '(?:\\[([-.\\w*]+)(?:=([\"\']?)([^\\]\"\']*)\\5)?\\])|' +  // "[name]", "[name=value]",
                                                                    // "[name="value"]",
                                                                    // "[name='value']"
-        '(\\))|' +                                                 // ")"
-        '(\\s*,\\s*)',                                             // ","
+        '(\\))|' +                                                 // 7: ")"
+        '(\\s*,\\s*)',                                             // 8: ","
     'g');
 
+/**
+ * These offsets should match the match-groups in `_SELECTOR_REGEXP` offsets.
+ */
+const enum SelectorRegexp {
+  ALL = 0,  // The whole match
+  NOT = 1,
+  TAG = 2,
+  PREFIX = 3,
+  ATTRIBUTE = 4,
+  ATTRIBUTE_STRING = 5,
+  ATTRIBUTE_VALUE = 6,
+  NOT_END = 7,
+  SEPARATOR = 8,
+}
 /**
  * A css selector contains an element name,
  * css classes and attribute/value pairs with the purpose
@@ -57,28 +71,37 @@ export class CssSelector {
     let inNot = false;
     _SELECTOR_REGEXP.lastIndex = 0;
     while (match = _SELECTOR_REGEXP.exec(selector)) {
-      if (match[1]) {
+      if (match[SelectorRegexp.NOT]) {
         if (inNot) {
-          throw new Error('Nesting :not is not allowed in a selector');
+          throw new Error('Nesting :not in a selector is not allowed');
         }
         inNot = true;
         current = new CssSelector();
         cssSelector.notSelectors.push(current);
       }
-      if (match[2]) {
-        current.setElement(match[2]);
+      const tag = match[SelectorRegexp.TAG];
+      if (tag) {
+        const prefix = match[SelectorRegexp.PREFIX];
+        if (prefix === '#') {
+          // #hash
+          current.addAttribute('id', tag.substr(1));
+        } else if (prefix === '.') {
+          // Class
+          current.addClassName(tag.substr(1));
+        } else {
+          // Element
+          current.setElement(tag);
+        }
       }
-      if (match[3]) {
-        current.addClassName(match[3]);
+      const attribute = match[SelectorRegexp.ATTRIBUTE];
+      if (attribute) {
+        current.addAttribute(attribute, match[SelectorRegexp.ATTRIBUTE_VALUE]);
       }
-      if (match[4]) {
-        current.addAttribute(match[4], match[6]);
-      }
-      if (match[7]) {
+      if (match[SelectorRegexp.NOT_END]) {
         inNot = false;
         current = cssSelector;
       }
-      if (match[8]) {
+      if (match[SelectorRegexp.SEPARATOR]) {
         if (inNot) {
           throw new Error('Multiple selectors in :not are not supported');
         }
