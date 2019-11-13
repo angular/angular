@@ -91,29 +91,6 @@ function getDefinitionOf(info: DiagnosticTemplateInfo, ast: TemplateAst): Defini
 }
 
 /**
- * Resolve the specified `variable` from the `directives` list and return the
- * corresponding symbol. If resolution fails, return the `any` type.
- * @param variable template variable to resolve
- * @param directives template context
- * @param query
- */
-function findSymbolForVariableInDirectives(
-    variable: VariableAst, directives: DirectiveAst[], query: SymbolQuery): Symbol {
-  for (const d of directives) {
-    // Get the symbol table for the directive's StaticSymbol
-    const table = query.getTemplateContext(d.directive.type.reference);
-    if (!table) {
-      continue;
-    }
-    const symbol = table.get(variable.value);
-    if (symbol) {
-      return symbol;
-    }
-  }
-  return query.getBuiltinType(BuiltinType.Any);
-}
-
-/**
  * Resolve all variable declarations in a template by traversing the specified
  * `path`.
  * @param info
@@ -126,9 +103,8 @@ function getVarDeclarations(
     if (!(current instanceof EmbeddedTemplateAst)) {
       continue;
     }
-    const {directives, variables} = current;
-    for (const variable of variables) {
-      let symbol = findSymbolForVariableInDirectives(variable, directives, info.query);
+    for (const variable of current.variables) {
+      let symbol = info.members.get(variable.value) || info.query.getBuiltinType(BuiltinType.Any);
       const kind = info.query.getTypeKind(symbol);
       if (kind === BuiltinType.Any || kind === BuiltinType.Unbound) {
         // For special cases such as ngFor and ngIf, the any type is not very useful.

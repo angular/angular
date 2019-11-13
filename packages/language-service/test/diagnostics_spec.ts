@@ -109,6 +109,16 @@ describe('diagnostics', () => {
         .toBe(`Identifier 'age' is not defined. 'Hero' does not contain such a member`);
   });
 
+  it('should not report error for variable initialized as class method', () => {
+    mockHost.override(TEST_TEMPLATE, `
+      <ng-template let-greet="myClick">
+        <span (click)="greet()"></span>
+      </ng-template>
+    `);
+    const diagnostics = ngLS.getDiagnostics(TEST_TEMPLATE);
+    expect(diagnostics).toEqual([]);
+  });
+
   describe('in expression-cases.ts', () => {
     it('should report access to an unknown field', () => {
       const diags = ngLS.getDiagnostics(EXPRESSION_CASES).map(d => d.messageText);
