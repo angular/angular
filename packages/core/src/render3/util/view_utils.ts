@@ -176,8 +176,9 @@ export function viewAttachedToContainer(view: LView): boolean {
 }
 
 /** Returns a constant from `TConstants` instance. */
-export function getConstant(consts: TConstants | null, index: number | null | undefined) {
-  return consts === null || index == null ? null : consts[index];
+export function getConstant<T>(consts: TConstants | null, index: number | null | undefined): T|
+    null {
+  return consts === null || index == null ? null : consts[index] as unknown as T;
 }
 
 /**
