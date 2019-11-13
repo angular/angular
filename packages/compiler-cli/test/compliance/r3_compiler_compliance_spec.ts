@@ -675,6 +675,35 @@ describe('compiler compliance', () => {
       expectEmit(source, OtherDirectiveFactory, 'Incorrect OtherDirective.ɵfac');
     });
 
+    it('should convert #myApp selector to ["", "id", "myApp"]', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({selector: '#my-app', template: ''})
+            export class SomeComponent {}
+
+            @NgModule({declarations: [SomeComponent]})
+            export class MyModule{}
+          `
+        }
+      };
+
+      // SomeDirective definition should be:
+      const SomeDirectiveDefinition = `
+        SomeComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+          type: SomeComponent,
+          selectors: [["", "id", "my-app"]],
+          …
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      const source = result.source;
+
+      expectEmit(source, SomeDirectiveDefinition, 'Incorrect SomeComponent.ɵcomp');
+    });
     it('should support components without selector', () => {
       const files = {
         app: {
