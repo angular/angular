@@ -3,10 +3,10 @@
 
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "9.0.0-next.14"
+  version "9.0.0-rc.1"
 
 "@angular/bazel@file:../../dist/packages-dist/bazel":
-  version "9.0.0-next.14"
+  version "9.0.0-rc.1"
   dependencies:
     "@microsoft/api-extractor" "^7.3.9"
     shelljs "0.8.2"
@@ -22,10 +22,10 @@
     parse5 "^5.0.0"
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "9.0.0-next.14"
+  version "9.0.0-rc.1"
 
 "@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
-  version "9.0.0-next.14"
+  version "9.0.0-rc.1"
   dependencies:
     canonical-path "1.0.0"
     chokidar "^2.1.1"
@@ -39,13 +39,13 @@
     yargs "13.1.0"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
-  version "9.0.0-next.14"
+  version "9.0.0-rc.1"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "9.0.0-next.14"
+  version "9.0.0-rc.1"
 
 "@angular/forms@file:../../dist/packages-dist/forms":
-  version "9.0.0-next.14"
+  version "9.0.0-rc.1"
 
 "@angular/material@8.0.1":
   version "8.0.1"
@@ -55,13 +55,13 @@
     tslib "^1.7.1"
 
 "@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
-  version "9.0.0-next.14"
+  version "9.0.0-rc.1"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "9.0.0-next.14"
+  version "9.0.0-rc.1"
 
 "@angular/router@file:../../dist/packages-dist/router":
-  version "9.0.0-next.14"
+  version "9.0.0-rc.1"
 
 "@bazel/bazel-darwin_x64@1.0.0":
   version "1.0.0"
@@ -92,10 +92,10 @@
   resolved "https://registry.yarnpkg.com/@bazel/hide-bazel-files/-/hide-bazel-files-0.38.3.tgz#e98231d3d360d51860d9c1a7c3345b40dab4cf81"
   integrity sha512-o+dNkfDm3qxWQ8h/04cWuTcjR7qnjZi3pQGv4aklVb16oPWx2jF8BzbkwvWuIkdbOl9VnqYP0vaHzwQVJRRcIA==
 
-"@bazel/karma@0.39.1":
-  version "0.39.1"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.39.1.tgz#23898875444a5ef1fd9ac0dbaebcdd05b90d51f8"
-  integrity sha512-P4LNCeopKGmhwRJrA6qtMLAvMgIalq5I9XYlaPOLjkoYKcjwAReBKyWY9VYhDEYld2P/P1YJmx/+nQDZAowocA==
+"@bazel/karma@0.40.0":
+  version "0.40.0"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.40.0.tgz#5d6b669355d173dea02e9b5d21ff41db91ceb3fd"
+  integrity sha512-xRbUU3vg2KUmCTYBkHsvdDEy6vhtmWICiE/s0vikb4c3lCY5UtY/Y9fmoflhNHjOgjnncEFS8J4uMaWn5rZmhg==
   dependencies:
     jasmine-core "2.8.0"
     karma "~4.1.0"
@@ -109,27 +109,27 @@
     semver "5.6.0"
     tmp "0.0.33"
 
-"@bazel/protractor@0.39.1":
-  version "0.39.1"
-  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-0.39.1.tgz#24988e12eaa3efbcdbb7e80dba20105e379e4016"
-  integrity sha512-zVbCrK8Uyfd2D93laHYp+YLvoR2Pfov/i13b6MTDkgDkzWd0NoPIlPqLAXuKhOUi5rYUcbp+DoY9A+HA2Rfy1g==
+"@bazel/protractor@0.40.0":
+  version "0.40.0"
+  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-0.40.0.tgz#0c64ddbf5a063417f43520ec1fed5cbc485792cf"
+  integrity sha512-qio8c8ie6Ajwu6hEs3vYf5+18JvrYH/6bv2b5YcE7HnyQZKGeJCDyTUErIUkCHwq8RsIqpsgxtCj69xmUxZXbw==
   dependencies:
     protractor "^5.4.2"
 
-"@bazel/rollup@0.39.1":
-  version "0.39.1"
-  resolved "https://registry.yarnpkg.com/@bazel/rollup/-/rollup-0.39.1.tgz#9c7ca1fef256743353b8acb7944ca2f9723d83a1"
-  integrity sha512-5EqAgupj8NHQ2p3GgtuOZ8O0qM6S0NfDj8OgROuSF0sJFH9ojQkXBZowHfZfWT3Xt6Igi3dw55bZS964havh8Q==
+"@bazel/rollup@0.40.0":
+  version "0.40.0"
+  resolved "https://registry.yarnpkg.com/@bazel/rollup/-/rollup-0.40.0.tgz#8ee08e1967c1ff7d549ce81b676872fa7e45afdb"
+  integrity sha512-7ZKzOIfHm0lEc3G/o2ykCZQlc7xcKSHiwIV4GIeaYJIbFUnO/L0cmaWzxOhdlr7NFfTdXcltTFnCrG7wlaad9A==
 
-"@bazel/terser@0.39.1":
-  version "0.39.1"
-  resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-0.39.1.tgz#fa8ad78502d6e953a953dc6ef4e135e6a50aaf3e"
-  integrity sha512-YIfs7uoEQU2xnpfY3bF7GjCaaHTE6e5gUIy0Ua9V1qeLZECUmVQgIfmSEV/JTykzIQpO+l3dX3IcIzkYZGlF/A==
+"@bazel/terser@0.40.0":
+  version "0.40.0"
+  resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-0.40.0.tgz#e31c76c32055a6bdffc711b05b530ae8df7ed1d5"
+  integrity sha512-XSnoLnB9i+RTJ4T1Tyrq0NMcIStzb9LQ1szMBOkJY4mBTRRNpf8Qnq+k5Vu9YY/dNIKVWtowNYBSWHzxxcL05g==
 
-"@bazel/typescript@0.39.1":
-  version "0.39.1"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.39.1.tgz#fbe3f9e287aa294935987bbbd9f2dce5341a9b02"
-  integrity sha512-n4P6VKir1L3+rM/DgHa5mnlCfT7Wo0ra+TnkbTuZ08SeN/r8HTmClK6YADoDc5ORMQhzq8eXuVuLWeUUsFJyHQ==
+"@bazel/typescript@0.40.0":
+  version "0.40.0"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.40.0.tgz#4f70d1365ee28fb8c1fd430a25034b74deecada9"
+  integrity sha512-826LXZYVlvcf9zNNcywzGprMUgCFqcwCeM/VLp+xG8/q6idJpqCBxABfJy2U6iZ8qIg5+wlxgYkOcmAZBfKMfA==
   dependencies:
     protobufjs "6.8.8"
     semver "5.6.0"
