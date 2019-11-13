@@ -326,10 +326,9 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
  * @returns the value from the injector, `null` when not found, or `notFoundValue` if provided
  */
 export function getOrCreateInjectable<T>(
-    tNode: TElementNode | TContainerNode | TElementContainerNode | null, lView: LView,
-    token: Type<T>| InjectionToken<T>, flags: InjectFlags = InjectFlags.Default,
-    notFoundValue?: any): T|null {
-  if (tNode) {
+    tNode: TDirectiveHostNode | null, lView: LView, token: Type<T>| InjectionToken<T>,
+    flags: InjectFlags = InjectFlags.Default, notFoundValue?: any): T|null {
+  if (tNode !== null) {
     const bloomHash = bloomHashBitOrFactory(token);
     // If the ID stored here is a function, this is a special object like ElementRef or TemplateRef
     // so just call the factory function to create it.
