@@ -1,0 +1,1 @@
+Supplies a testing module for basic Angular directives.

@@ -1,2 +1,3 @@
-Supports the upgrade path from AngularJS to Angular, allowing
-components from both systems to be used in the same application.
+**Deprecated** Provided support for upgrading applications from Angular JS to Angular.
+Use `upgrade/static` package instead.
+See [Angular deprecation policy](guide/deprecations).
