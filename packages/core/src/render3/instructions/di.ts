@@ -9,7 +9,8 @@ import {InjectFlags, InjectionToken, resolveForwardRef} from '../../di';
 import {ɵɵinject} from '../../di/injector_compatibility';
 import {Type} from '../../interface/type';
 import {getOrCreateInjectable, injectAttributeImpl} from '../di';
-import {TContainerNode, TElementContainerNode, TElementNode} from '../interfaces/node';
+import {TDirectiveHostNode, TNodeType} from '../interfaces/node';
+import {assertNodeOfPossibleTypes} from '../node_assert';
 import {getLView, getPreviousOrParentTNode} from '../state';
 
 /**
@@ -40,15 +41,15 @@ export function ɵɵdirectiveInject<T>(token: Type<T>| InjectionToken<T>): T;
 export function ɵɵdirectiveInject<T>(token: Type<T>| InjectionToken<T>, flags: InjectFlags): T;
 export function ɵɵdirectiveInject<T>(
     token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|null {
-  token = resolveForwardRef(token);
   const lView = getLView();
   // Fall back to inject() if view hasn't been created. This situation can happen in tests
   // if inject utilities are used before bootstrapping.
   if (lView == null) return ɵɵinject(token, flags);
-
+  const tNode = getPreviousOrParentTNode();
+  ngDevMode && assertNodeOfPossibleTypes(
+                   tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
   return getOrCreateInjectable<T>(
-      getPreviousOrParentTNode() as TElementNode | TContainerNode | TElementContainerNode, lView,
-      token, flags);
+      tNode as TDirectiveHostNode, lView, resolveForwardRef(token), flags);
 }
 
 /**
