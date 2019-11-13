@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
+load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
 
 ts_library(
     name = "test_lib",
@@ -30,7 +30,7 @@ filegroup(
     ],
 )
 
-ts_web_test_suite(
+karma_web_test_suite(
     name = "test",
     bootstrap = [
         ":elements_test_bootstrap_scripts",

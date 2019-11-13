@@ -2,7 +2,7 @@
 
 load("@build_bazel_rules_nodejs//:index.bzl", _nodejs_binary = "nodejs_binary", _npm_package = "npm_package", _rollup_bundle = "rollup_bundle")
 load("@npm_bazel_jasmine//:index.bzl", _jasmine_node_test = "jasmine_node_test")
-load("@npm_bazel_karma//:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite", _ts_web_test = "ts_web_test", _ts_web_test_suite = "ts_web_test_suite")
+load("@npm_bazel_karma//:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm_bazel_typescript//:index.bzl", _ts_library = "ts_library")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//tools/ng_rollup_bundle:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
@@ -164,62 +164,6 @@ def npm_package(name, replacements = {}, **kwargs):
         **kwargs
     )
 
-def ts_web_test(bootstrap = [], deps = [], runtime_deps = [], **kwargs):
-    """Default values for ts_web_test"""
-    if not bootstrap:
-        bootstrap = ["//:web_test_bootstrap_scripts"]
-    local_deps = [
-        "@npm//:node_modules/tslib/tslib.js",
-        "//tools/rxjs:rxjs_umd_modules",
-    ] + deps
-    local_runtime_deps = [
-        "//tools/testing:browser",
-    ] + runtime_deps
-
-    _ts_web_test(
-        runtime_deps = local_runtime_deps,
-        bootstrap = bootstrap,
-        deps = local_deps,
-        **kwargs
-    )
-
-def ts_web_test_suite(bootstrap = [], deps = [], runtime_deps = [], **kwargs):
-    """Default values for ts_web_test_suite"""
-    if not bootstrap:
-        bootstrap = ["//:web_test_bootstrap_scripts"]
-    local_deps = [
-        "@npm//:node_modules/tslib/tslib.js",
-        "//tools/rxjs:rxjs_umd_modules",
-    ] + deps
-    local_runtime_deps = [
-        "//tools/testing:browser",
-    ] + runtime_deps
-
-    tags = kwargs.pop("tags", [])
-
-    # rules_webtesting has a required_tag "native" for `chromium-local` browser
-    if not "native" in tags:
-        tags = tags + ["native"]
-
-    _ts_web_test_suite(
-        runtime_deps = local_runtime_deps,
-        bootstrap = bootstrap,
-        deps = local_deps,
-        # Run unit tests on local Chromium by default.
-        # You can exclude tests based on tags, e.g. to skip Firefox testing,
-        #   `yarn bazel test --test_tag_filters=-browser:firefox-local [targets]`
-        browsers = [
-            "@io_bazel_rules_webtesting//browsers:chromium-local",
-            # Don't test on local Firefox by default, for faster builds.
-            # We think that bugs in Angular tend to be caught the same in any
-            # evergreen browser.
-            # "@io_bazel_rules_webtesting//browsers:firefox-local",
-            # TODO(alexeagle): add remote browsers on SauceLabs
-        ],
-        tags = tags,
-        **kwargs
-    )
-
 def karma_web_test(bootstrap = [], deps = [], data = [], runtime_deps = [], **kwargs):
     """Default values for karma_web_test"""
     if not bootstrap:
@@ -247,7 +191,7 @@ def karma_web_test(bootstrap = [], deps = [], data = [], runtime_deps = [], **kw
         **kwargs
     )
 
-def karma_web_test_suite(bootstrap = [], deps = [], **kwargs):
+def karma_web_test_suite(bootstrap = [], deps = [], runtime_deps = [], **kwargs):
     """Default values for karma_web_test_suite"""
     if not bootstrap:
         bootstrap = ["//:web_test_bootstrap_scripts"]
@@ -255,6 +199,9 @@ def karma_web_test_suite(bootstrap = [], deps = [], **kwargs):
         "@npm//:node_modules/tslib/tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ] + deps
+    local_runtime_deps = [
+        "//tools/testing:browser",
+    ] + runtime_deps
 
     tags = kwargs.pop("tags", [])
 
