@@ -423,7 +423,7 @@ export function patchComponentDefWithScope<C>(
  *
  * By default this operation is memoized and the result is cached on the module's definition. You
  * can avoid memoization and previously stored results (if available) by providing the second
- * argument with the `false` value.
+ * argument with the `true` value (forcing transitive scopes recalculation).
  *
  * This function can be called on modules with components that have not fully compiled yet, but the
  * result should not be used until they have.
