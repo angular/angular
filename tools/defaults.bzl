@@ -263,6 +263,7 @@ def karma_web_test_suite(bootstrap = [], deps = [], **kwargs):
         tags = tags + ["native"]
 
     _karma_web_test_suite(
+        runtime_deps = local_runtime_deps,
         bootstrap = bootstrap,
         deps = local_deps,
         # Run unit tests on local Chromium by default.
