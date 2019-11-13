@@ -235,10 +235,6 @@ function findNamespaceOfIdentifier(id: ts.Identifier): ts.Identifier|null {
       null;
 }
 
-export function stripParentheses(node: ts.Node): ts.Node {
-  return ts.isParenthesizedExpression(node) ? node.expression : node;
-}
-
 type ReexportStatement = ts.ExpressionStatement & {expression: {arguments: [RequireCall]}};
 function isReexportStatement(statement: ts.Statement): statement is ReexportStatement {
   return ts.isExpressionStatement(statement) && ts.isCallExpression(statement.expression) &&
