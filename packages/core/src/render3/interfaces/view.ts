@@ -255,6 +255,9 @@ export interface LView extends Array<any> {
    * the `DECLARATION_COMPONENT_VIEW` of the current component and the child `LView` does not match
    * (it has been transplanted across components.)
    *
+   * Note: `[DECLARATION_COMPONENT_VIEW]` points to itself if the LView is a component view (the
+   *       simplest / most common case).
+   *
    * see also:
    *   - https://hackmd.io/@mhevery/rJUJsvv9H write up of the problem
    *   - `LContainer[ACTIVE_INDEX]` for flag which marks which `LContainer` has transplanted views.

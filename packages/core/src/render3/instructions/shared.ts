@@ -1456,13 +1456,13 @@ export function createLContainer(
   const lContainer: LContainer = new (ngDevMode ? LContainerArray : Array)(
       hostNative,  // host native
       true,        // Boolean `true` in this position signifies that this is an `LContainer`
-      ActiveIndexFlag.NO_INLINE_EMBEDDED_VIEWS << ActiveIndexFlag.SHIFT,  // active index
-      currentView,                                                        // parent
-      null,                                                               // next
-      null,                                                               // queries
-      tNode,                                                              // t_host
-      native,                                                             // native,
-      null,                                                               // view refs
+      ActiveIndexFlag.DYNAMIC_EMBEDDED_VIEWS_ONLY << ActiveIndexFlag.SHIFT,  // active index
+      currentView,                                                           // parent
+      null,                                                                  // next
+      null,                                                                  // queries
+      tNode,                                                                 // t_host
+      native,                                                                // native,
+      null,                                                                  // view refs
       );
   ngDevMode && attachLContainerDebug(lContainer);
   return lContainer;
@@ -1481,7 +1481,7 @@ function refreshDynamicEmbeddedViews(lView: LView) {
     let activeIndexFlag: ActiveIndexFlag;
     if (isLContainer(viewOrContainer) &&
         (activeIndexFlag = viewOrContainer[ACTIVE_INDEX]) >> ActiveIndexFlag.SHIFT ===
-            ActiveIndexFlag.NO_INLINE_EMBEDDED_VIEWS) {
+            ActiveIndexFlag.DYNAMIC_EMBEDDED_VIEWS_ONLY) {
       for (let i = CONTAINER_HEADER_OFFSET; i < viewOrContainer.length; i++) {
         const embeddedLView = viewOrContainer[i];
         const embeddedTView = embeddedLView[TVIEW];

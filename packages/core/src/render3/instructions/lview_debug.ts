@@ -24,6 +24,7 @@ import {DebugNodeStyling, NodeStylingDebug} from '../styling/styling_debug';
 import {attachDebugObject} from '../util/debug_utils';
 import {isStylingContext} from '../util/styling_utils';
 import {getTNode, unwrapRNode} from '../util/view_utils';
+import {getLContainerActiveIndex} from './container';
 
 const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNgDevMode());
 
@@ -433,7 +434,7 @@ export function buildDebugNode(tNode: TNode, lView: LView, nodeIndex: number): D
 export class LContainerDebug {
   constructor(private readonly _raw_lContainer: LContainer) {}
 
-  get activeIndex(): number { return this._raw_lContainer[ACTIVE_INDEX] >> ActiveIndexFlag.SHIFT; }
+  get activeIndex(): number { return getLContainerActiveIndex(this._raw_lContainer); }
   get hasTransplantedViews(): boolean {
     return (this._raw_lContainer[ACTIVE_INDEX] & ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS) ===
         ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS;

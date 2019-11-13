@@ -16,6 +16,7 @@ import {assertNodeType} from '../node_assert';
 import {insertView, removeView} from '../node_manipulation';
 import {enterView, getIsParent, getLView, getPreviousOrParentTNode, leaveViewProcessExit, setIsParent, setPreviousOrParentTNode} from '../state';
 import {isCreationMode} from '../util/view_utils';
+import {getLContainerActiveIndex} from './container';
 import {assignTViewNodeToLView, createLView, createTView, refreshView, renderView} from './shared';
 
 
@@ -38,8 +39,7 @@ export function ɵɵembeddedViewStart(viewBlockId: number, decls: number, vars: 
   const lContainer = lView[containerTNode.index] as LContainer;
 
   ngDevMode && assertNodeType(containerTNode, TNodeType.Container);
-  let viewToRender =
-      scanForView(lContainer, lContainer[ACTIVE_INDEX] ! >> ActiveIndexFlag.SHIFT, viewBlockId);
+  let viewToRender = scanForView(lContainer, getLContainerActiveIndex(lContainer), viewBlockId);
 
   if (viewToRender) {
     setIsParent();
@@ -58,7 +58,7 @@ export function ɵɵembeddedViewStart(viewBlockId: number, decls: number, vars: 
   if (lContainer) {
     if (isCreationMode(viewToRender)) {
       // it is a new view, insert it into collection of views for a given container
-      insertView(viewToRender, lContainer, lContainer[ACTIVE_INDEX] ! >> ActiveIndexFlag.SHIFT);
+      insertView(viewToRender, lContainer, getLContainerActiveIndex(lContainer));
     }
     lContainer[ACTIVE_INDEX] += ActiveIndexFlag.INCREMENT;
   }
