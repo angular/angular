@@ -14,8 +14,6 @@ import {getNameText, hasNameIdentifier, stripDollarSuffix} from '../utils';
 import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './esm2015_host';
 import {NgccClassSymbol} from './ngcc_host';
 
-
-
 /**
  * ESM5 packages contain ECMAScript IIFE functions that act like classes. For example:
  *
@@ -833,4 +831,8 @@ function isUndefinedComparison(expression: ts.Expression): expression is ts.Expr
   return ts.isBinaryExpression(expression) &&
       expression.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken &&
       ts.isVoidExpression(expression.right) && ts.isIdentifier(expression.left);
+}
+
+export function stripParentheses(node: ts.Node): ts.Node {
+  return ts.isParenthesizedExpression(node) ? node.expression : node;
 }

@@ -12,7 +12,7 @@ import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Declaration, Import} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
-import {Esm5ReflectionHost} from './esm5_host';
+import {Esm5ReflectionHost, stripParentheses} from './esm5_host';
 
 export class UmdReflectionHost extends Esm5ReflectionHost {
   protected umdModules = new Map<ts.SourceFile, UmdModule|null>();
@@ -278,8 +278,4 @@ function findNamespaceOfIdentifier(id: ts.Identifier): ts.Identifier|null {
           ts.isIdentifier(id.parent.expression) ?
       id.parent.expression :
       null;
-}
-
-export function stripParentheses(node: ts.Node): ts.Node {
-  return ts.isParenthesizedExpression(node) ? node.expression : node;
 }
