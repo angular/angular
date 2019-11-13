@@ -738,10 +738,9 @@ export type PropertyAliases = {
  * Store the runtime input or output names for all the directives.
  *
  * i+0: directive instance index
- * i+1: publicName
- * i+2: privateName
+ * i+1: privateName
  *
- * e.g. [0, 'change', 'change-minified']
+ * e.g. [0, 'change-minified']
  */
 export type PropertyAliasValue = (number | string)[];
 

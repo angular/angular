@@ -848,9 +848,9 @@ function generatePropertyAliases(
       const internalName = inputAliasMap[publicName];
 
       if (propStore.hasOwnProperty(publicName)) {
-        propStore[publicName].push(directiveDefIdx, publicName, internalName);
+        propStore[publicName].push(directiveDefIdx, internalName);
       } else {
-        (propStore[publicName] = [directiveDefIdx, publicName, internalName]);
+        (propStore[publicName] = [directiveDefIdx, internalName]);
       }
     }
   }
@@ -925,7 +925,7 @@ export function elementPropertyInternal<T>(
   let inputData = tNode.inputs;
   let dataValue: PropertyAliasValue|undefined;
   if (!nativeOnly && inputData != null && (dataValue = inputData[propName])) {
-    setInputsForProperty(lView, dataValue, value);
+    setInputsForProperty(lView, dataValue, propName, value);
     if (isComponentHost(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
     if (ngDevMode) {
       setNgReflectProperties(lView, element, tNode.type, dataValue, value);
@@ -1002,14 +1002,13 @@ export function setNgReflectProperties(
     /**
      * dataValue is an array containing runtime input or output names for the directives:
      * i+0: directive instance index
-     * i+1: publicName
-     * i+2: privateName
+     * i+1: privateName
      *
      * e.g. [0, 'change', 'change-minified']
-     * we want to set the reflected property with the privateName: dataValue[i+2]
+     * we want to set the reflected property with the privateName: dataValue[i+1]
      */
-    for (let i = 0; i < dataValue.length; i += 3) {
-      setNgReflectProperty(lView, element, type, dataValue[i + 2] as string, value);
+    for (let i = 0; i < dataValue.length; i += 2) {
+      setNgReflectProperty(lView, element, type, dataValue[i + 1] as string, value);
     }
   }
 }
@@ -1864,17 +1863,16 @@ export function handleError(lView: LView, error: any): void {
  * possibly minified, property names to write to.
  * @param value Value to set.
  */
-export function setInputsForProperty(lView: LView, inputs: PropertyAliasValue, value: any): void {
+export function setInputsForProperty(
+    lView: LView, inputs: PropertyAliasValue, publicName: string, value: any): void {
   const tView = lView[TVIEW];
   for (let i = 0; i < inputs.length;) {
     const index = inputs[i++] as number;
-    const publicName = inputs[i++] as string;
     const privateName = inputs[i++] as string;
     const instance = lView[index];
     ngDevMode && assertDataInRange(lView, index);
     const def = tView.data[index] as DirectiveDef<any>;
-    const setInput = def.setInput;
-    if (setInput) {
+    if (def.setInput !== null) {
       def.setInput !(instance, value, publicName, privateName);
     } else {
       instance[privateName] = value;

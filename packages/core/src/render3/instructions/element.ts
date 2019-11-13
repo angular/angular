@@ -134,11 +134,11 @@ export function ɵɵelementEnd(): void {
 
   if (hasClassInput(tNode)) {
     const inputName: string = selectClassBasedInputName(tNode.inputs !);
-    setDirectiveStylingInput(tNode.classes, lView, tNode.inputs ![inputName]);
+    setDirectiveStylingInput(tNode.classes, lView, tNode.inputs ![inputName], inputName);
   }
 
   if (hasStyleInput(tNode)) {
-    setDirectiveStylingInput(tNode.styles, lView, tNode.inputs !['style']);
+    setDirectiveStylingInput(tNode.styles, lView, tNode.inputs !['style'], 'style');
   }
 }
 
@@ -231,7 +231,7 @@ export function ɵɵelementHostAttrs(attrs: TAttributes) {
 
 function setDirectiveStylingInput(
     context: TStylingContext | StylingMapArray | null, lView: LView,
-    stylingInputs: (string | number)[]) {
+    stylingInputs: (string | number)[], propName: string) {
   // older versions of Angular treat the input as `null` in the
   // event that the value does not exist at all. For this reason
   // we can't have a styling value be an empty string.
@@ -240,7 +240,7 @@ function setDirectiveStylingInput(
   // Ivy does an extra `[class]` write with a falsy value since the value
   // is applied during creation mode. This is a deviation from VE and should
   // be (Jira Issue = FW-1467).
-  setInputsForProperty(lView, stylingInputs, value);
+  setInputsForProperty(lView, stylingInputs, propName, value);
 }
 
 function validateElement(
