@@ -1,5 +1,5 @@
 # Image metadata and config.
-FROM circleci/node:10-browsers
+FROM circleci/node:10-browsers  # This needs to be in sync with what we use on CI.
 
 LABEL name="Angular dev environment" \
       description="This image can be used to create a dev environment for building Angular." \
@@ -15,7 +15,7 @@ USER root
 
 # Configure `Node.js`/`npm` and install utilities.
 RUN npm config --global set user root
-RUN npm install --global yarn@1.13.0  # This needs to be in sync with what we use on CI.
+RUN npm install --global yarn@1.19.1  # This needs to be in sync with what we use on CI.
 
 
 # Go! (And keep going.)
