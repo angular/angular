@@ -44,7 +44,6 @@ export function getExternalFiles(project: tss.server.Project): string[] {
     // Without an Angular host there is no way to get template references.
     return [];
   }
-  ngLSHost.getAnalyzedModules();
   const templates = ngLSHost.getTemplateReferences();
   const logger = project.projectService.logger;
   if (logger.hasLevel(tss.server.LogLevel.verbose)) {

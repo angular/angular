@@ -14,7 +14,7 @@ import {TypeScriptServiceHost} from '../src/typescript_host';
 import {MockTypescriptHost} from './test_utils';
 
 describe('service without angular', () => {
-  const mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
+  const mockHost = new MockTypescriptHost(['/app/main.ts']);
   const service = ts.createLanguageService(mockHost);
   const ngHost = new TypeScriptServiceHost(mockHost, service);
   const ngService = createLanguageService(ngHost);
@@ -23,8 +23,6 @@ describe('service without angular', () => {
 
   beforeEach(() => { mockHost.reset(); });
 
-  it('should not crash a get template references',
-     () => { expect(() => ngService.getTemplateReferences()).not.toThrow(); });
   it('should not crash a get diagnostics',
      () => { expect(() => ngService.getDiagnostics(fileName)).not.toThrow(); });
 
