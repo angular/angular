@@ -14,7 +14,7 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {hasClass} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ivyEnabled} from '@angular/private/testing';
+import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 @Injectable()
 class Logger {
@@ -192,6 +192,11 @@ class TestApp {
 class TestCmpt {
 }
 
+@Component({selector: 'test-cmpt-renderer', template: ``})
+class TestCmptWithRenderer {
+  constructor(public renderer: Renderer2) {}
+}
+
 @Component({selector: 'host-class-binding', template: ''})
 class HostClassBindingCmp {
   @HostBinding('class')
@@ -259,6 +264,7 @@ class TestCmptWithPropInterpolation {
           SimpleContentComp,
           TestCmptWithPropBindings,
           TestCmptWithPropInterpolation,
+          TestCmptWithRenderer,
           WithTitleDir,
         ],
         providers: [Logger],
@@ -736,60 +742,101 @@ class TestCmptWithPropInterpolation {
       expect(fixture.componentInstance.customed).toBe(true);
     });
 
-    it('should include classes in properties.className', () => {
-      fixture = TestBed.createComponent(HostClassBindingCmp);
-      fixture.detectChanges();
+    describe('properties', () => {
+      it('should include classes in properties.className', () => {
+        fixture = TestBed.createComponent(HostClassBindingCmp);
+        fixture.detectChanges();
 
-      const debugElement = fixture.debugElement;
+        const debugElement = fixture.debugElement;
 
-      expect(debugElement.properties.className).toBe('class-one class-two');
+        expect(debugElement.properties.className).toBe('class-one class-two');
 
-      fixture.componentInstance.hostClasses = 'class-three';
-      fixture.detectChanges();
+        fixture.componentInstance.hostClasses = 'class-three';
+        fixture.detectChanges();
 
-      expect(debugElement.properties.className).toBe('class-three');
+        expect(debugElement.properties.className).toBe('class-three');
 
-      fixture.componentInstance.hostClasses = '';
-      fixture.detectChanges();
+        fixture.componentInstance.hostClasses = '';
+        fixture.detectChanges();
 
-      expect(debugElement.properties.className).toBeFalsy();
-    });
+        expect(debugElement.properties.className).toBeFalsy();
+      });
 
-    it('should preserve the type of the property values', () => {
-      const fixture = TestBed.createComponent(TestCmptWithPropBindings);
-      fixture.detectChanges();
+      it('should preserve the type of the property values', () => {
+        const fixture = TestBed.createComponent(TestCmptWithPropBindings);
+        fixture.detectChanges();
 
-      const button = fixture.debugElement.query(By.css('button'));
-      expect(button.properties).toEqual({disabled: true, tabIndex: 1337, title: 'hello'});
-    });
+        const button = fixture.debugElement.query(By.css('button'));
+        expect(button.properties.disabled).toEqual(true);
+        expect(button.properties.tabIndex).toEqual(1337);
+        expect(button.properties.title).toEqual('hello');
+      });
 
-    it('should include interpolated properties in the properties map', () => {
-      const fixture = TestBed.createComponent(TestCmptWithPropInterpolation);
-      fixture.detectChanges();
+      it('should include interpolated properties in the properties map', () => {
+        const fixture = TestBed.createComponent(TestCmptWithPropInterpolation);
+        fixture.detectChanges();
 
-      const buttons = fixture.debugElement.children;
+        const buttons = fixture.debugElement.children;
 
-      expect(buttons.length).toBe(10);
-      expect(buttons[0].properties.title).toBe('0');
-      expect(buttons[1].properties.title).toBe('a1b');
-      expect(buttons[2].properties.title).toBe('a1b2c');
-      expect(buttons[3].properties.title).toBe('a1b2c3d');
-      expect(buttons[4].properties.title).toBe('a1b2c3d4e');
-      expect(buttons[5].properties.title).toBe('a1b2c3d4e5f');
-      expect(buttons[6].properties.title).toBe('a1b2c3d4e5f6g');
-      expect(buttons[7].properties.title).toBe('a1b2c3d4e5f6g7h');
-      expect(buttons[8].properties.title).toBe('a1b2c3d4e5f6g7h8i');
-      expect(buttons[9].properties.title).toBe('a1b2c3d4e5f6g7h8i9j');
-    });
+        expect(buttons.length).toBe(10);
+        expect(buttons[0].properties.title).toBe('0');
+        expect(buttons[1].properties.title).toBe('a1b');
+        expect(buttons[2].properties.title).toBe('a1b2c');
+        expect(buttons[3].properties.title).toBe('a1b2c3d');
+        expect(buttons[4].properties.title).toBe('a1b2c3d4e');
+        expect(buttons[5].properties.title).toBe('a1b2c3d4e5f');
+        expect(buttons[6].properties.title).toBe('a1b2c3d4e5f6g');
+        expect(buttons[7].properties.title).toBe('a1b2c3d4e5f6g7h');
+        expect(buttons[8].properties.title).toBe('a1b2c3d4e5f6g7h8i');
+        expect(buttons[9].properties.title).toBe('a1b2c3d4e5f6g7h8i9j');
+      });
 
-    it('should not include directive-shadowed properties in the properties map', () => {
-      TestBed.overrideTemplate(
-          TestCmptWithPropInterpolation, `<button with-title [title]="'goes to input'"></button>`);
-      const fixture = TestBed.createComponent(TestCmptWithPropInterpolation);
-      fixture.detectChanges();
+      it('should not include directive-shadowed properties in the properties map', () => {
+        TestBed.overrideTemplate(
+            TestCmptWithPropInterpolation,
+            `<button with-title [title]="'goes to input'"></button>`);
+        const fixture = TestBed.createComponent(TestCmptWithPropInterpolation);
+        fixture.detectChanges();
 
-      const button = fixture.debugElement.query(By.css('button'));
-      expect(button.properties.title).toBeUndefined();
+        const button = fixture.debugElement.query(By.css('button'));
+        expect(button.properties.title).not.toEqual('goes to input');
+      });
+
+      it('should return native properties from DOM element even if no binding present', () => {
+        TestBed.overrideTemplate(TestCmptWithRenderer, `<button></button>`);
+        const fixture = TestBed.createComponent(TestCmptWithRenderer);
+        fixture.detectChanges();
+        const button = fixture.debugElement.query(By.css('button'));
+        fixture.componentInstance.renderer.setProperty(button.nativeElement, 'title', 'myTitle');
+        expect(button.properties.title).toBe('myTitle');
+      });
+
+      it('should not include patched properties (starting with __) and on* properties', () => {
+        TestBed.overrideTemplate(
+            TestCmptWithPropInterpolation, `<button title="myTitle" (click)="true;"></button>`);
+        const fixture = TestBed.createComponent(TestCmptWithPropInterpolation);
+        fixture.detectChanges();
+
+        const host = fixture.debugElement;
+        const button = fixture.debugElement.query(By.css('button'));
+        expect(Object.keys(host.properties).filter(key => key.startsWith('__'))).toEqual([]);
+        expect(Object.keys(host.properties).filter(key => key.startsWith('on'))).toEqual([]);
+        expect(Object.keys(button.properties).filter(key => key.startsWith('__'))).toEqual([]);
+        expect(Object.keys(button.properties).filter(key => key.startsWith('on'))).toEqual([]);
+      });
+
+      onlyInIvy('Show difference in behavior')
+          .it('should pickup all of the element properties', () => {
+            TestBed.overrideTemplate(
+                TestCmptWithPropInterpolation, `<button title="myTitle"></button>`);
+            const fixture = TestBed.createComponent(TestCmptWithPropInterpolation);
+            fixture.detectChanges();
+
+            const host = fixture.debugElement;
+            const button = fixture.debugElement.query(By.css('button'));
+
+            expect(button.properties.title).toEqual('myTitle');
+          });
     });
 
     it('should trigger events registered via Renderer2', () => {
