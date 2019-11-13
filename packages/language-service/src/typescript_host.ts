@@ -144,7 +144,10 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return this.resolver.getReflector() as StaticReflector;
   }
 
-  getTemplateReferences(): string[] { return [...this.templateReferences]; }
+  getTemplateReferences(): string[] {
+    this.getAnalyzedModules();
+    return [...this.templateReferences];
+  }
 
   /**
    * Checks whether the program has changed and returns all analyzed modules.
