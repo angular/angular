@@ -1249,13 +1249,14 @@ You should nest the `<img>` tag within a `<div class="lightbox">` tag, which sty
 Here's a conforming example
 
 <div class="lightbox">
-  <img src="generated/images/guide/docs-style-guide/flying-hero.png" alt="flying hero">
+  <img src="generated/images/guide/docs-style-guide/flying-hero.png"
+    alt="flying hero">
 </div>
 
 ```html
 <div class="lightbox">
   <img src="generated/images/guide/docs-style-guide/flying-hero.png"
-       alt="flying hero">
+    alt="flying hero">
 </div>
 ```
 
@@ -1268,15 +1269,17 @@ The doc generator reads the image dimensions from the file and adds width and he
 Here's the "flying hero" at a more reasonable scale.
 
 <div class="lightbox">
- <img src="generated/images/guide/docs-style-guide/flying-hero.png" alt="flying Angular hero" width="200">
+  <img src="generated/images/guide/docs-style-guide/flying-hero.png"
+    alt="flying Angular hero"
+    width="200">
 </div>
 
 ```html
 
 <div class="lightbox">
- <img src="generated/images/guide/docs-style-guide/flying-hero.png"
-   alt="flying Angular hero"
-   width="200">
+  <img src="generated/images/guide/docs-style-guide/flying-hero.png"
+    alt="flying Angular hero"
+    width="200">
 </div>
 ```
 
