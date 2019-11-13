@@ -55,14 +55,27 @@ function resolveBazel(
   log_verbose(`resolving '${importee}' from ${importer}`);
 
   function resolveInRootDir(importee) {
-    var candidate = path.join(baseDir, root, importee);
-    log_verbose(`try to resolve '${importee}' at '${candidate}'`);
-    try {
-      var result = resolve(candidate);
-      return result;
-    } catch (e) {
-      return undefined;
+    function tryImportee(importee) {
+      var candidate = path.join(baseDir, root, importee);
+      log_verbose(`try to resolve '${importee}' at '${candidate}'`);
+      try {
+        var result = resolve(candidate);
+        return result;
+      } catch (e) {
+        return undefined;
+      }
     }
+    // Attempt to resovle first as specified, then in the following order
+    // {importee}.mjs, {importee}/index.mjs, {importee}.js, {importee}/index.js.
+    // TODO(gregmagolan): clean this up in the future as the .mjs es2015 outputs
+    // along side the .js es5 outputs from ts_library creates this unusual situation for
+    // which we can't rely on standard node module resolution to do the right thing.
+    // In the future ts_library (or equivalent) should only produce a single flavor of
+    // output and ng_rollup_bundle should also just use the use the vanilla rollup_bundle
+    // rule without the need for a custom bazel resolver.
+    return tryImportee(importee) || tryImportee(`${importee}.mjs`) ||
+        tryImportee(`${importee}/index.mjs`) || tryImportee(`${importee}.js`) ||
+        tryImportee(`${importee}/index.js`);
   }
 
   // Since mappings are always in POSIX paths, when comparing the importee to mappings
@@ -117,13 +130,6 @@ function resolveBazel(
   }
 
   if (resolved) {
-    if (path.extname(resolved) == '.js') {
-      // check for .mjs file and prioritize that
-      const resolved_mjs = resolved.substr(0, resolved.length - 3) + '.mjs';
-      if (fileExists(resolved_mjs)) {
-        resolved = resolved_mjs;
-      }
-    }
     log_verbose(`resolved to ${resolved}`);
   } else {
     log_verbose(`allowing rollup to resolve '${importee}' with node module resolution`);
