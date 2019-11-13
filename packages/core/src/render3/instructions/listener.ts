@@ -190,7 +190,7 @@ function listenerInternal(
   // subscribe to directive outputs
   const outputs = tNode.outputs;
   let props: PropertyAliasValue|undefined;
-  if (processOutputs && outputs != null && (props = outputs[eventName])) {
+  if (processOutputs && outputs !== null && (props = outputs[eventName])) {
     const propsLength = props.length;
     if (propsLength) {
       const lCleanup = getCleanup(lView);

@@ -1019,7 +1019,7 @@ function i18nAttributesFirstPass(lView: LView, tView: TView, index: number, valu
             elementAttributeInternal(previousElementIndex, attrName, value, lView);
           }
           // Check if that attribute is a directive input
-          const dataValue = tNode.inputs && tNode.inputs[attrName];
+          const dataValue = tNode.inputs !== null && tNode.inputs[attrName];
           if (dataValue) {
             setInputsForProperty(lView, dataValue, attrName, value);
             if (ngDevMode) {
