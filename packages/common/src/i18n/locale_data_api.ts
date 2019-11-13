@@ -613,7 +613,7 @@ function extractTime(time: string): Time {
  * @param format The format, `wide` or `narrow`.
  * @param locale A locale code for the locale format rules to use.
  *
- * @returns The symbol, or the currency code if no symbol is available.0
+ * @returns The symbol, or the currency code if no symbol is available.
  * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
  *
  * @publicApi
