@@ -88,6 +88,7 @@ export class R3TestBedCompiler {
 
   private testModuleType: NgModuleType<any>;
   private testModuleRef: NgModuleRef<any>|null = null;
+  private hasModuleOverrides: boolean = false;
 
   constructor(private platform: PlatformRef, private additionalModuleTypes: Type<any>|Type<any>[]) {
     class DynamicTestModule {}
@@ -122,6 +123,8 @@ export class R3TestBedCompiler {
   }
 
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
+    this.hasModuleOverrides = true;
+
     // Compile the module right away.
     this.resolvers.module.addOverride(ngModule, override);
     const metadata = this.resolvers.module.resolve(ngModule);
@@ -331,8 +334,20 @@ export class R3TestBedCompiler {
     const getScopeOfModule =
         (moduleType: Type<any>| TestingModuleOverride): NgModuleTransitiveScopes => {
           if (!moduleToScope.has(moduleType)) {
-            const realType = isTestingModuleOverride(moduleType) ? this.testModuleType : moduleType;
-            moduleToScope.set(moduleType, transitiveScopesFor(realType));
+            const isTestingModule = isTestingModuleOverride(moduleType);
+            const realType = isTestingModule ? this.testModuleType : moduleType as Type<any>;
+            // Module overrides (via TestBed.overrideModule) might affect scopes that were
+            // previously calculated and stored in `transitiveCompileScopes`. If module overrides
+            // are present, always re-calculate transitive scopes to have the most up-to-date
+            // information available. The `moduleToScope` map avoids repeated re-calculation of
+            // scopes for the same module.
+            const ignoreCache = !isTestingModule && this.hasModuleOverrides;
+            if (ignoreCache) {
+              // Calling `transitiveScopesFor` may change the `transitiveCompileScopes` field on
+              // NgModule def. Preserve current def, so we can restore it back to original value.
+              this.maybeStoreNgDef(NG_MOD_DEF, realType);
+            }
+            moduleToScope.set(moduleType, transitiveScopesFor(realType, ignoreCache));
           }
           return moduleToScope.get(moduleType) !;
         };
