@@ -439,7 +439,7 @@ function updateDirectiveInputValue(
       const inputs = tNode.inputs ![inputName] !;
       const initialValue = getInitialStylingValue(context);
       const value = normalizeStylingDirectiveInputValue(initialValue, newValue, isClassBased);
-      setInputsForProperty(lView, inputs, value);
+      setInputsForProperty(lView, inputs, inputName, value);
       setElementExitFn(stylingApply);
     }
     setValue(lView, bindingIndex, newValue);
