@@ -795,8 +795,8 @@ export function createTNode(
                          attrs,  // attrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null
                          null,   // localNames: (string|number)[]|null
                          undefined,  // initialInputs: (string[]|null)[]|null|undefined
-                         undefined,  // inputs: PropertyAliases|null|undefined
-                         undefined,  // outputs: PropertyAliases|null|undefined
+                         null,       // inputs: PropertyAliases|null
+                         null,       // outputs: PropertyAliases|null
                          null,       // tViews: ITView|ITView[]|null
                          null,       // next: ITNode|null
                          null,       // projectionNext: ITNode|null
@@ -819,8 +819,8 @@ export function createTNode(
                        attrs: attrs,
                        localNames: null,
                        initialInputs: undefined,
-                       inputs: undefined,
-                       outputs: undefined,
+                       inputs: null,
+                       outputs: null,
                        tViews: null,
                        next: null,
                        projectionNext: null,
