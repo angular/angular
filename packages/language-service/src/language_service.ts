@@ -28,11 +28,6 @@ export function createLanguageService(host: TypeScriptServiceHost): LanguageServ
 class LanguageServiceImpl implements LanguageService {
   constructor(private readonly host: TypeScriptServiceHost) {}
 
-  getTemplateReferences(): string[] {
-    this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
-    return this.host.getTemplateReferences();
-  }
-
   getDiagnostics(fileName: string): tss.Diagnostic[] {
     const analyzedModules = this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
     const results: Diagnostic[] = [];

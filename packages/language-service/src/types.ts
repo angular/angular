@@ -395,11 +395,6 @@ export interface Hover {
  */
 export interface LanguageService {
   /**
-   * Returns a list of all the external templates referenced by the project.
-   */
-  getTemplateReferences(): string[];
-
-  /**
    * Returns a list of all error for all templates in the given file.
    */
   getDiagnostics(fileName: string): ts.Diagnostic[];
