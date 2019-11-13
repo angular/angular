@@ -24,6 +24,7 @@
     "@angular/core": "0.0.0-NG",
     "tslib": "^1.9.0"
   },
+  "sideEffects": false,
   "publishConfig":{
     "registry":"https://wombat-dressing-room.appspot.com"
   }
