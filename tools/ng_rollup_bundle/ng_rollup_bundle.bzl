@@ -405,9 +405,9 @@ def ng_rollup_bundle(name, **kwargs):
         visibility = visibility,
         **kwargs
     )
-    terser_minified(name = name + ".min", src = name + "", visibility = visibility, **common_terser_args)
+    terser_minified(name = name + ".min", src = name, visibility = visibility, **common_terser_args)
     native.filegroup(name = name + ".min.js", srcs = [name + ".min"], visibility = visibility)
-    terser_minified(name = name + ".min_debug", src = name + "", debug = True, visibility = visibility, **common_terser_args)
+    terser_minified(name = name + ".min_debug", src = name, debug = True, visibility = visibility, **common_terser_args)
     native.filegroup(name = name + ".min_debug.js", srcs = [name + ".min_debug"], visibility = visibility)
     npm_package_bin(
         name = "_%s_brotli" % name,
@@ -428,9 +428,9 @@ def ng_rollup_bundle(name, **kwargs):
         visibility = visibility,
         **kwargs
     )
-    terser_minified(name = name + ".min.es2015", src = name + "", visibility = visibility, **common_terser_args)
+    terser_minified(name = name + ".min.es2015", src = name + ".es2015", visibility = visibility, **common_terser_args)
     native.filegroup(name = name + ".min.es2015.js", srcs = [name + ".min.es2015"], visibility = visibility)
-    terser_minified(name = name + ".min_debug.es2015", src = name + "", debug = True, visibility = visibility, **common_terser_args)
+    terser_minified(name = name + ".min_debug.es2015", src = name + ".es2015", debug = True, visibility = visibility, **common_terser_args)
     native.filegroup(name = name + ".min_debug.es2015.js", srcs = [name + ".min_debug.es2015"], visibility = visibility)
     npm_package_bin(
         name = "_%s_es2015_brotli" % name,
