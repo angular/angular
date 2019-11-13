@@ -272,7 +272,7 @@ function trackMovedView(declarationContainer: LContainer, lView: LView) {
       // At this point the declaration-component is not same as insertion-component and we are in
       // on-push mode, this means that this is a transplanted view. Mark the declared lView as
       // having
-      // transplanted views so that those vies can participate in CD.
+      // transplanted views so that those views can participate in CD.
       declarationContainer[ACTIVE_INDEX] |= ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS;
     }
   }

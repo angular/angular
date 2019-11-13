@@ -160,7 +160,7 @@ export function ɵɵcontainerRefreshEnd(): void {
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Container);
 
   const lContainer: LContainer = getLView()[previousOrParentTNode.index];
-  const nextIndex = lContainer[ACTIVE_INDEX] >> ActiveIndexFlag.SHIFT;
+  const nextIndex = getActiveIndex(lContainer);
 
   // remove extra views at the end of the container
   while (nextIndex < lContainer.length - CONTAINER_HEADER_OFFSET) {

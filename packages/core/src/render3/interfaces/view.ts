@@ -197,9 +197,9 @@ export interface LView extends Array<any> {
 
 
   /**
-   * Points to the declaration component view, used for track transplanted `LView`s.
+   * Points to the declaration component view, used to track transplanted `LView`s.
    *
-   * See: `DECLARATION_VIEW` which points to the actual `LView` where it was declared, where as
+   * See: `DECLARATION_VIEW` which points to the actual `LView` where it was declared, whereas
    * `DECLARATION_COMPONENT_VIEW` points to the component which may not be same as
    * `DECLARATION_VIEW`.
    *
@@ -211,7 +211,7 @@ export interface LView extends Array<any> {
    *  </div>
    * </#VIEW>
    * ```
-   * In the above case `DECLARATION_VIEW` points to the `LView` of `ngIf` where as
+   * In the above case `DECLARATION_VIEW` for `myTmpl` points to the `LView` of `ngIf` where as
    * `DECLARATION_COMPONENT_VIEW` points to `LView` of the `myComp` which owns the template.
    *
    * The reason for this is that all embedded views are always check-always where as the component
@@ -226,7 +226,7 @@ export interface LView extends Array<any> {
    * Queries already track moved views in `LView[DECLARATION_LCONTAINER]` and
    * `LContainer[MOVED_VIEWS]`. However the queries also track `LView`s which moved within the same
    * component `LView`. Transplanted views are a subset of moved views, and we use
-   * `DECLARATION_COMPONENT_VIEW` to differentiated them. As in this example.
+   * `DECLARATION_COMPONENT_VIEW` to differentiate them. As in this example.
    *
    * Example showing intra component `LView` movement.
    * ```
@@ -246,14 +246,14 @@ export interface LView extends Array<any> {
    * </#VIEW>
    * ```
    * In the above example `myTmpl` is passed into a different component. If `insertion-component`
-   * instantiates `myTmpl` and `insertion-component` is on-push than the `LContainer` needs to be
+   * instantiates `myTmpl` and `insertion-component` is on-push then the `LContainer` needs to be
    * marked as containing transplanted views and those views need to be CD as part of the
    * declaration CD.
    *
    *
-   * When change detection runs its iterates over `[MOVED_VIEWS]` and CDs any child `LView`s where
+   * When change detection runs, it iterates over `[MOVED_VIEWS]` and CDs any child `LView`s where
    * the `DECLARATION_COMPONENT_VIEW` of the current component and the child `LView` does not match
-   * (it has been transplanted across component.)
+   * (it has been transplanted across components.)
    *
    * see also:
    *   - https://hackmd.io/@mhevery/rJUJsvv9H write up of the problem

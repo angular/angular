@@ -1184,7 +1184,7 @@ describe('change detection', () => {
       // The reason for this difference is in the algorithm which VE and Ivy use to deal with
       // transplanted views:
       // - VE: always runs CD at insertion point. If the insertion component is `OnPush` and the
-      //   transplanted view is `CheckAlways` than the insertion component will be changed to
+      //   transplanted view is `CheckAlways` then the insertion component will be changed to
       //   `CheckAlways` (defeating the benefit of `OnPush`)
       // - Ivy: Runs the CD at both the declaration as well as insertion point. The benefit of this
       //   approach is that each side (declaration/insertion) gets to keep its own semantics (either
