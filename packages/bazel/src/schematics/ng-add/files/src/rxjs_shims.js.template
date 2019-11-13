@@ -1,7 +1,7 @@
 /**
  * @fileoverview Provides named UMD shims for `rxjs/operators` and `rxjs/testing`.
  * This file should be included in the "scripts" of a "ts_devserver"
- * rule and the "deps" of a "ts_web_test_suite" rule.
+ * rule and the "deps" of a "karma_web_test_suite" rule.
  */
 // rxjs/operators
 (function(factory) {
