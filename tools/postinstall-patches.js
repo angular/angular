@@ -20,7 +20,7 @@ try {
   process.exit(0);
 }
 
-const {set, cd, sed, echo, ls} = require('shelljs');
+const {set, cd, sed, echo, ls, rm} = require('shelljs');
 const {readFileSync} = require('fs');
 const path = require('path');
 const log = console.log;
@@ -67,5 +67,38 @@ ls('node_modules/@types').filter(f => f.startsWith('babel__')).forEach(pkg => {
     echo('}').toEnd(typingsFile);
   }
 });
+
+log('\n# patch: delete d.ts files refering to rxjs-compat');
+// more info in https://github.com/angular/angular/pull/33786
+rm('-rf', [
+  'node_modules/rxjs/add/',
+  'node_modules/rxjs/observable/',
+  'node_modules/rxjs/operator/',
+  // rxjs/operators is a public entry point that also contains files to support legacy deep import
+  // paths, so we need to preserve index.* and package.json files that are required for module
+  // resolution.
+  'node_modules/rxjs/operators/!(index.*|package.json)',
+  'node_modules/rxjs/scheduler/',
+  'node_modules/rxjs/symbol/',
+  'node_modules/rxjs/util/',
+  'node_modules/rxjs/internal/Rx.d.ts',
+  'node_modules/rxjs/AsyncSubject.*',
+  'node_modules/rxjs/BehaviorSubject.*',
+  'node_modules/rxjs/InnerSubscriber.*',
+  'node_modules/rxjs/interfaces.*',
+  'node_modules/rxjs/Notification.*',
+  'node_modules/rxjs/Observable.*',
+  'node_modules/rxjs/Observer.*',
+  'node_modules/rxjs/Operator.*',
+  'node_modules/rxjs/OuterSubscriber.*',
+  'node_modules/rxjs/ReplaySubject.*',
+  'node_modules/rxjs/Rx.*',
+  'node_modules/rxjs/Scheduler.*',
+  'node_modules/rxjs/Subject.*',
+  'node_modules/rxjs/SubjectSubscription.*',
+  'node_modules/rxjs/Subscriber.*',
+  'node_modules/rxjs/Subscription.*',
+]);
+
 
 log('===== finished running the postinstall-patches.js script =====');
