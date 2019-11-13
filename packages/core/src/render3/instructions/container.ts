@@ -73,8 +73,8 @@ export function ɵɵtemplate(
 
   // TODO: consider a separate node type for templates
   const tContainerNode = containerInternal(
-      lView, index, tagName || null, getConstant(tViewConsts, attrsIndex) as TAttributes);
-  const localRefs = getConstant(tViewConsts, localRefsIndex) as string[];
+      lView, index, tagName || null, getConstant<TAttributes>(tViewConsts, attrsIndex));
+  const localRefs = getConstant<string[]>(tViewConsts, localRefsIndex);
   if (tView.firstCreatePass) {
     ngDevMode && ngDevMode.firstCreatePass++;
     resolveDirectives(tView, lView, tContainerNode, localRefs);

@@ -46,8 +46,8 @@ export function ɵɵelementStart(
   const lView = getLView();
   const tView = lView[TVIEW];
   const tViewConsts = tView.consts;
-  const attrs = getConstant(tViewConsts, attrsIndex) as TAttributes;
-  const localRefs = getConstant(tViewConsts, localRefsIndex) as string[];
+  const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
+  const localRefs = getConstant<string[]>(tViewConsts, localRefsIndex);
   ngDevMode && assertEqual(
                    getBindingIndex(), tView.bindingStartIndex,
                    'elements should be created before any bindings');

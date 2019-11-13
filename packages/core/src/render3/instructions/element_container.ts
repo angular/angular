@@ -43,8 +43,8 @@ export function ɵɵelementContainerStart(
   const renderer = lView[RENDERER];
   const tagName = 'ng-container';
   const tViewConsts = tView.consts;
-  const attrs = getConstant(tViewConsts, attrsIndex) as TAttributes;
-  const localRefs = getConstant(tViewConsts, localRefsIndex) as string[];
+  const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
+  const localRefs = getConstant<string[]>(tViewConsts, localRefsIndex);
   ngDevMode && assertEqual(
                    getBindingIndex(), tView.bindingStartIndex,
                    'element containers should be created before any bindings');

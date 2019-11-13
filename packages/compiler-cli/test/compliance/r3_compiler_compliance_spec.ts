@@ -365,10 +365,10 @@ describe('compiler compliance', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelement(0, "div", 0);
-            $r3$.ɵɵpipe(1,"pipe");
+            $r3$.ɵɵpipe(1, "pipe");
           }
           if (rf & 2) {
-            $r3$.ɵɵproperty("ternary", ctx.cond ? $r3$.ɵɵpureFunction1(8, $c0$, ctx.a): $c1$)("pipe", $r3$.ɵɵpipeBind3(1, 4, ctx.value, 1, 2))("and", ctx.cond && $r3$.ɵɵpureFunction1(10, $c0$, ctx.b))("or", ctx.cond || $r3$.ɵɵpureFunction1(12, $c0$, ctx.c));
+            $r3$.ɵɵproperty("ternary", ctx.cond ? $r3$.ɵɵpureFunction1(8, $c0$, ctx.a): $r3$.ɵɵpureFunction0(10, $c1$))("pipe", $r3$.ɵɵpipeBind3(1, 4, ctx.value, 1, 2))("and", ctx.cond && $r3$.ɵɵpureFunction1(11, $c0$, ctx.b))("or", ctx.cond || $r3$.ɵɵpureFunction1(13, $c0$, ctx.c));
           }
         }
       `;
@@ -1082,25 +1082,24 @@ describe('compiler compliance', () => {
         };
 
         const MyAppDefinition = `
-          const $c0$ = {opacity: 0, duration: 0};
+          const $c0$ = function () { return {opacity: 0, duration: 0}; };
           const $e0_ff$ = function ($v$) { return {opacity: 1, duration: $v$}; };
-          const $e0_ff_1$ = function ($v$) { return [$c0$, $v$]; };
+          const $e0_ff_1$ = function ($v1$, $v2$) { return [$v1$, $v2$]; };
           const $e0_ff_2$ = function ($v1$, $v2$) { return {animation: $v1$, actions: $v2$}; };
           …
           MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
             decls: 1,
-            vars: 8,
+            vars: 10,
             consts: [[${AttributeMarker.Bindings}, "config"]],
             template:  function MyApp_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵelement(0, "nested-comp", 0);
               }
               if (rf & 2) {
-                $r3$.ɵɵproperty(
-                    "config",
-                    $r3$.ɵɵpureFunction2(5, $e0_ff_2$, ctx.name, $r3$.ɵɵpureFunction1(3, $e0_ff_1$, $r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.duration))));
+                $r3$.ɵɵproperty("config",
+                  $r3$.ɵɵpureFunction2(7, $e0_ff_2$, ctx.name, $r3$.ɵɵpureFunction2(4, $e0_ff_1$, $r3$.ɵɵpureFunction0(1, $c0$), $r3$.ɵɵpureFunction1(2, $e0_ff$, ctx.duration))));
               }
             },
             directives: [NestedComp],
@@ -2973,6 +2972,88 @@ describe('compiler compliance', () => {
       `;
       const result = compile(files, angularFiles);
       expectEmit(result.source, expectedOutput, 'Invalid directive definition');
+    });
+
+    it('should generate a pure function for constant object literals', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<some-comp [prop]="{}" [otherProp]="{a: 1, b: 2}"></some-comp>'
+            })
+            export class MyApp {
+            }
+          `
+        }
+      };
+
+      const MyAppDeclaration = `
+        const $c0$ = function () { return {}; };
+        const $c1$ = function () { return { a: 1, b: 2 }; };
+        …
+        MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
+          type: MyApp,
+          selectors: [["ng-component"]],
+          decls: 1,
+          vars: 4,
+          consts: [[${AttributeMarker.Bindings}, "prop", "otherProp"]],
+          template:  function MyApp_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵɵelement(0, "some-comp", 0);
+            }
+            if (rf & 2) {
+              $r3$.ɵɵproperty("prop", $r3$.ɵɵpureFunction0(2, $c0$))("otherProp", $r3$.ɵɵpureFunction0(3, $c1$));
+            }
+          },
+         encapsulation: 2
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
+    });
+
+    it('should generate a pure function for constant array literals', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<some-comp [prop]="[]" [otherProp]="[0, 1, 2]"></some-comp>'
+            })
+            export class MyApp {
+            }
+          `
+        }
+      };
+
+      const MyAppDeclaration = `
+        const $c0$ = function () { return []; };
+        const $c1$ = function () { return [0, 1, 2]; };
+        …
+        MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
+          type: MyApp,
+          selectors: [["ng-component"]],
+          decls: 1,
+          vars: 4,
+          consts: [[${AttributeMarker.Bindings}, "prop", "otherProp"]],
+          template:  function MyApp_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵɵelement(0, "some-comp", 0);
+            }
+            if (rf & 2) {
+              $r3$.ɵɵproperty("prop", $r3$.ɵɵpureFunction0(2, $c0$))("otherProp", $r3$.ɵɵpureFunction0(3, $c1$));
+            }
+          },
+         encapsulation: 2
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
     });
 
   });
