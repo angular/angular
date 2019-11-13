@@ -7,11 +7,16 @@
  */
 import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
-import {LogicalFileSystem, LogicalProjectPath, absoluteFrom} from '../../file_system';
+
+import {LogicalFileSystem, LogicalProjectPath, PathSegment, absoluteFrom, absoluteFromSourceFile, basename, dirname, relative, resolve} from '../../file_system';
+import {stripExtension} from '../../file_system/src/util';
 import {ReflectionHost} from '../../reflection';
 import {getSourceFile, getSourceFileOrNull, isDeclaration, nodeNameForError, resolveModuleName} from '../../util/src/typescript';
+
 import {findExportedNameOfNode} from './find_export';
 import {ImportMode, Reference} from './references';
+
+
 
 /**
  * A host which supports an operation to convert a file name into a module name.
@@ -229,6 +234,28 @@ export class LogicalProjectStrategy implements ReferenceEmitStrategy {
     // With both files expressed as LogicalProjectPaths, getting the module specifier as a relative
     // path is now straightforward.
     const moduleName = LogicalProjectPath.relativePathBetween(originPath, destPath);
+    return new ExternalExpr({moduleName, name});
+  }
+}
+
+/**
+ * A `ReferenceEmitStrategy` which constructs relatives paths between `ts.SourceFile`s.
+ *
+ * This strategy can be used if there is no `rootDir`/`rootDirs` structure for the project which
+ * necessitates the stronger logic of `LogicalProjectStrategy`.
+ */
+export class RelativePathStrategy implements ReferenceEmitStrategy {
+  constructor(private reflector: ReflectionHost) {}
+
+  emit(ref: Reference<ts.Node>, context: ts.SourceFile): Expression|null {
+    const destSf = getSourceFile(ref.node);
+    let moduleName = stripExtension(
+        relative(dirname(absoluteFromSourceFile(context)), absoluteFromSourceFile(destSf)));
+    if (!moduleName.startsWith('../')) {
+      moduleName = ('./' + moduleName) as PathSegment;
+    }
+
+    const name = findExportedNameOfNode(ref.node, destSf, this.reflector);
     return new ExternalExpr({moduleName, name});
   }
 }
