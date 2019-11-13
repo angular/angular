@@ -252,7 +252,10 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
   }
 
   // Prevent tsickle adding any types at all if we don't want closure compiler annotations.
-  bazelHost.transformTypesToClosure = compilerOpts.annotateForClosureCompiler;
+  if (compilerOpts.annotateForClosureCompiler) {
+    bazelHost.transformTypesToClosure = true;
+    bazelHost.transformDecorators = true;
+  }
   const origBazelHostFileExist = bazelHost.fileExists;
   bazelHost.fileExists = (fileName: string) => {
     if (NGC_ASSETS.test(fileName)) {

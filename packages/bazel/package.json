@@ -28,7 +28,7 @@
   "dependencies": {
     "@microsoft/api-extractor": "^7.3.9",
     "shelljs": "0.8.2",
-    "tsickle": "^0.37.0"
+    "tsickle": "^0.37.1"
   },
   "peerDependencies": {
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
