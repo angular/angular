@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@npm_bazel_karma//:index.bzl", "ts_web_test_suite")
+load("@npm_bazel_karma//:index.bzl", "karma_web_test_suite")
 load("@npm_bazel_typescript//:index.bzl", "ts_library")
 load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary")
 load("@npm_angular_bazel//:index.bzl", "ng_module", "ng_package")
@@ -43,7 +43,7 @@ ts_library(
     ],
 )
 
-ts_web_test_suite(
+karma_web_test_suite(
     name = "test",
     bootstrap = [
         "@npm//:node_modules/zone.js/dist/zone-testing-bundle.js",
