@@ -448,20 +448,16 @@ export interface TNode {
   initialInputs: InitialInputData|null|undefined;
 
   /**
-   * Input data for all directives on this node.
-   *
-   * - `undefined` means that the prop has not been initialized yet,
-   * - `null` means that the prop has been initialized but no inputs have been found.
+   * Input data for all directives on this node. `null` means that there are no directives with
+   * inputs on this node.
    */
-  inputs: PropertyAliases|null|undefined;
+  inputs: PropertyAliases|null;
 
   /**
-   * Output data for all directives on this node.
-   *
-   * - `undefined` means that the prop has not been initialized yet,
-   * - `null` means that the prop has been initialized but no outputs have been found.
+   * Output data for all directives on this node. `null` means that there are no directives with
+   * outputs on this node.
    */
-  outputs: PropertyAliases|null|undefined;
+  outputs: PropertyAliases|null;
 
   /**
    * The TView or TViews attached to this node.

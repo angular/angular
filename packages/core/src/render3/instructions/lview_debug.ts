@@ -167,8 +167,8 @@ export const TNodeConstructor = class TNode implements ITNode {
       public attrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null,  //
       public localNames: (string|number)[]|null,                               //
       public initialInputs: (string[]|null)[]|null|undefined,                  //
-      public inputs: PropertyAliases|null|undefined,                           //
-      public outputs: PropertyAliases|null|undefined,                          //
+      public inputs: PropertyAliases|null,                                     //
+      public outputs: PropertyAliases|null,                                    //
       public tViews: ITView|ITView[]|null,                                     //
       public next: ITNode|null,                                                //
       public projectionNext: ITNode|null,                                      //
