@@ -2312,32 +2312,29 @@ describe('styling', () => {
 
   it('should allow to reset style property value defined using [style.prop.px] binding', () => {
     @Component({
-      template: `
-        <div [style.left.px]="left"></div>
-        <button (click)="setLeftTo(undefined)"></button>
-        <button (click)="setLeftTo(null)"></button>
-        <button (click)="setLeftTo('')"></button>
-        <button (click)="setLeftTo('20')"></button>
-      `,
+      template: '<div [style.left.px]="left"></div>',
     })
     class MyComp {
-      left = '10';  // initial value
-      setLeftTo(value: any) { this.left = value; }
+      left = '';
     }
 
     TestBed.configureTestingModule({declarations: [MyComp]});
     const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
 
+    const checks = [
+      ['15', '15px'],
+      [undefined, ''],
+      [null, ''],
+      ['', ''],
+      ['0', '0px'],
+    ];
     const div = fixture.nativeElement.querySelector('div');
-
-    const expected = ['', '', '', '20px'];
-    const buttons = fixture.nativeElement.querySelectorAll('button') !;
-    expect(div.style.left).toBe('10px');  // initial value
-    Array.from(buttons).forEach((button: any, index: number) => {
-      button.click();
+    checks.forEach((check: any[]) => {
+      const [fieldValue, expectedValue] = check;
+      fixture.componentInstance.left = fieldValue;
       fixture.detectChanges();
-      expect(div.style.left).toBe(expected[index]);
+      expect(div.style.left).toBe(expectedValue);
     });
   });
 
