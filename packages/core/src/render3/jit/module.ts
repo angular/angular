@@ -421,18 +421,25 @@ export function patchComponentDefWithScope<C>(
 /**
  * Compute the pair of transitive scopes (compilation scope and exported scope) for a given module.
  *
- * This operation is memoized and the result is cached on the module's definition. It can be called
- * on modules with components that have not fully compiled yet, but the result should not be used
- * until they have.
+ * By default this operation is memoized and the result is cached on the module's definition. You
+ * can avoid memoization and previously stored results (if available) by providing the second
+ * argument with the `false` value.
+ *
+ * This function can be called on modules with components that have not fully compiled yet, but the
+ * result should not be used until they have.
+ *
+ * @param moduleType module that transitive scope should be calculated for.
+ * @param forceRecalc flag that indicates whether previously calculated and memoized values should
+ * be ignored and transitive scope to be fully recalculated.
  */
 export function transitiveScopesFor<T>(
-    moduleType: Type<T>, ignoreCache: boolean = false): NgModuleTransitiveScopes {
+    moduleType: Type<T>, forceRecalc: boolean = false): NgModuleTransitiveScopes {
   if (!isNgModule(moduleType)) {
     throw new Error(`${moduleType.name} does not have a module def (ɵmod property)`);
   }
   const def = getNgModuleDef(moduleType) !;
 
-  if (def.transitiveCompileScopes !== null && !ignoreCache) {
+  if (!forceRecalc && def.transitiveCompileScopes !== null) {
     return def.transitiveCompileScopes;
   }
 
@@ -473,7 +480,7 @@ export function transitiveScopesFor<T>(
 
     // When this module imports another, the imported module's exported directives and pipes are
     // added to the compilation scope of this module.
-    const importedScope = transitiveScopesFor(importedType, ignoreCache);
+    const importedScope = transitiveScopesFor(importedType, forceRecalc);
     importedScope.exported.directives.forEach(entry => scopes.compilation.directives.add(entry));
     importedScope.exported.pipes.forEach(entry => scopes.compilation.pipes.add(entry));
   });
@@ -492,7 +499,7 @@ export function transitiveScopesFor<T>(
     if (isNgModule(exportedType)) {
       // When this module exports another, the exported module's exported directives and pipes are
       // added to both the compilation and exported scopes of this module.
-      const exportedScope = transitiveScopesFor(exportedType, ignoreCache);
+      const exportedScope = transitiveScopesFor(exportedType, forceRecalc);
       exportedScope.exported.directives.forEach(entry => {
         scopes.compilation.directives.add(entry);
         scopes.exported.directives.add(entry);
@@ -508,7 +515,9 @@ export function transitiveScopesFor<T>(
     }
   });
 
-  def.transitiveCompileScopes = scopes;
+  if (!forceRecalc) {
+    def.transitiveCompileScopes = scopes;
+  }
   return scopes;
 }
 
