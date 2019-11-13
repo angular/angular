@@ -35,6 +35,19 @@ ng_benchmark(
 )
 
 ng_rollup_bundle(
+    name = "directive_inputs_lib",
+    entry_point = ":directive_inputs/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_benchmark(
+    name = "directive_inputs",
+    bundle = ":directive_inputs_lib",
+)
+
+ng_rollup_bundle(
     name = "directive_instantiate_lib",
     entry_point = ":directive_instantiate/index.ts",
     deps = [
