@@ -2310,6 +2310,34 @@ describe('styling', () => {
     expect(fixture.debugElement.nativeElement.innerHTML).toContain('three');
   });
 
+  it('should allow to reset style property value defined using [style.prop.px] binding', () => {
+    @Component({
+      template: '<div [style.left.px]="left"></div>',
+    })
+    class MyComp {
+      left = '';
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    const checks = [
+      ['15', '15px'],
+      [undefined, ''],
+      [null, ''],
+      ['', ''],
+      ['0', '0px'],
+    ];
+    const div = fixture.nativeElement.querySelector('div');
+    checks.forEach((check: any[]) => {
+      const [fieldValue, expectedValue] = check;
+      fixture.componentInstance.left = fieldValue;
+      fixture.detectChanges();
+      expect(div.style.left).toBe(expectedValue);
+    });
+  });
+
   onlyInIvy('only ivy treats [class] in concert with other class bindings')
       .it('should retain classes added externally', () => {
         @Component({template: `<div [class]="exp"></div>`})
