@@ -9,10 +9,10 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {ClassMemberKind, Import, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles, loadTsLib} from '../../../test/helpers';
-import {Esm5ReflectionHost} from '../../src/host/esm5_host';
+import {Esm5ReflectionHost, getIifeBody} from '../../src/host/esm5_host';
 import {MockLogger} from '../helpers/mock_logger';
 import {convertToDirectTsLibImport, convertToInlineTsLib, makeTestBundleProgram} from '../helpers/utils';
 
@@ -166,6 +166,22 @@ export { SomeDirective };
     export { HttpClientXsrfModule };
     `
         },
+        {
+          name: _('/some_minified_directive.js'),
+          contents: `
+import * as tslib_1 from 'tslib';
+import { Directive } from '@angular/core';
+// Note that the IIFE is not in parentheses
+var SomeDirective = function () {
+    function SomeDirective() {}
+    // Note that the decorator is combined with the return statment
+    return SomeDirective = tslib_1.__decorate([
+        Directive({ selector: '[someDirective]' }),
+    ], SomeDirective);
+}());
+export { SomeDirective };
+`,
+        },
       ];
 
       const DIRECT_IMPORT_FILES = convertToDirectTsLibImport(NAMESPACED_IMPORT_FILES);
@@ -207,6 +223,28 @@ export { SomeDirective };
             expect(decorator.args !.map(arg => arg.getText())).toEqual([
               '{ selector: \'[someDirective]\' }',
             ]);
+
+          });
+
+          it('should find the decorators on a minified class', () => {
+            const {program} = makeTestBundleProgram(_('/some_minified_directive.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const classNode = getDeclaration(
+                program, _('/some_minified_directive.js'), 'SomeDirective',
+                isNamedVariableDeclaration);
+            const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+
+            expect(decorators).toBeDefined();
+            expect(decorators.length).toEqual(1);
+
+            const decorator = decorators[0];
+            expect(decorator.name).toEqual('Directive');
+            expect(decorator.identifier !.getText()).toEqual('Directive');
+            expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+            expect(decorator.args !.map(arg => arg.getText())).toEqual([
+              '{ selector: \'[someDirective]\' }',
+            ]);
+
           });
 
           it('should find the decorators on a class when mixing `ctorParameters` and `__decorate`',
@@ -250,6 +288,23 @@ export { SomeDirective };
             expect(decorator.args !.map(arg => arg.getText())).toEqual([
               '{ selector: \'[someDirective]\' }',
             ]);
+          });
+        });
+
+        describe('getClassSymbol()', () => {
+          it('should find a class that has been minified', () => {
+            const {program} = makeTestBundleProgram(_('/some_minified_directive.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const classNode = getDeclaration(
+                program, _('/some_minified_directive.js'), 'SomeDirective',
+                isNamedVariableDeclaration);
+            const innerNode =
+                getIifeBody(classNode) !.statements.find(isNamedFunctionDeclaration) !;
+            const classSymbol = host.getClassSymbol(classNode);
+
+            expect(classSymbol).toBeDefined();
+            expect(classSymbol !.declaration.valueDeclaration).toBe(classNode);
+            expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
           });
         });
 

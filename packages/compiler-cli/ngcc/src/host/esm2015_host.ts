@@ -1104,7 +1104,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * does not match.
    */
   protected getHelperCall(statement: ts.Statement, helperNames: string[]): ts.CallExpression|null {
-    if (ts.isExpressionStatement(statement)) {
+    if ((ts.isExpressionStatement(statement) || ts.isReturnStatement(statement)) &&
+        statement.expression) {
       let expression = statement.expression;
       while (isAssignment(expression)) {
         expression = expression.right;

@@ -142,6 +142,16 @@ var EmptyClass = (function() {
   }
   return EmptyClass;
 }());
+var NoParensClass = function() {
+  function EmptyClass() {
+  }
+  return EmptyClass;
+}();
+var InnerParensClass = (function() {
+  function EmptyClass() {
+  }
+  return EmptyClass;
+})();
 var NoDecoratorConstructorClass = (function() {
   function NoDecoratorConstructorClass(foo) {
   }
@@ -1853,6 +1863,40 @@ exports.ExternalModule = ExternalModule;
              const outerSymbol = host.getClassSymbol(outerNode) !;
              expect(innerSymbol.declaration).toBe(outerSymbol.declaration);
              expect(innerSymbol.implementation).toBe(outerSymbol.implementation);
+           });
+
+        it('should return the class symbol for an ES5 class whose IIFE is not wrapped in parens',
+           () => {
+             loadTestFiles([SIMPLE_CLASS_FILE]);
+             const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+             const host =
+                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+             const outerNode = getDeclaration(
+                 program, SIMPLE_CLASS_FILE.name, 'NoParensClass', isNamedVariableDeclaration);
+             const innerNode =
+                 getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
+             const classSymbol = host.getClassSymbol(outerNode);
+
+             expect(classSymbol).toBeDefined();
+             expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
+             expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
+           });
+
+        it('should return the class symbol for an ES5 class whose IIFE is not wrapped with inner parens',
+           () => {
+             loadTestFiles([SIMPLE_CLASS_FILE]);
+             const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+             const host =
+                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+             const outerNode = getDeclaration(
+                 program, SIMPLE_CLASS_FILE.name, 'InnerParensClass', isNamedVariableDeclaration);
+             const innerNode =
+                 getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
+             const classSymbol = host.getClassSymbol(outerNode);
+
+             expect(classSymbol).toBeDefined();
+             expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
+             expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
            });
 
         it('should return undefined if node is not an ES5 class', () => {
