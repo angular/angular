@@ -585,7 +585,7 @@ function resolveStylePropValue(
   if (value === NO_CHANGE) return value;
 
   let resolvedValue: string|null = null;
-  if (value !== null) {
+  if (isStylingValueDefined(value)) {
     if (suffix) {
       // when a suffix is applied then it will bypass
       // sanitization entirely (b/c a new string is created)
