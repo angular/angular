@@ -84,15 +84,22 @@ export interface NgccEntryPointConfig {
  */
 export const DEFAULT_NGCC_CONFIG: NgccProjectConfig = {
   packages: {
-      // Add default package configuration here. For example:
-      // '@angular/fire@^5.2.0': {
-      //   entryPoints: {
-      //     './database-deprecated': {
-      //       ignore: true,
-      //     },
-      //   },
-      // },
-  }
+    // Add default package configuration here. For example:
+    // '@angular/fire@^5.2.0': {
+    //   entryPoints: {
+    //     './database-deprecated': {ignore: true},
+    //   },
+    // },
+
+    // The `dist/` directory has a duplicate `package.json` pointing to the same files, which (under
+    // certain configurations) can causes ngcc to try to process the files twice and fail.
+    // Ignore the `dist/` entry-point.
+    'ng2-dragula': {
+      entryPoints: {
+        './dist': {ignore: true},
+      },
+    },
+  },
 };
 
 interface VersionedPackageConfig extends NgccPackageConfig {
