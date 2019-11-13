@@ -35,5 +35,8 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/angular/angular/issues"
+  },
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
   }
 }
