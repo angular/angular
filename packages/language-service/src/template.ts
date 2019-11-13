@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from '@angular/compiler-cli';
 import * as ts from 'typescript';
 
 import {isAstResult} from './common';
 import {createGlobalSymbolTable} from './global_symbols';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
+import {getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from './typescript_symbols';
+
 
 /**
  * A base class to represent a template and which component class it is

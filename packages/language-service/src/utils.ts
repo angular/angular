@@ -7,10 +7,10 @@
  */
 
 import {AstPath, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, ParseSourceSpan, RecursiveTemplateAstVisitor, TemplateAst, TemplateAstPath, identifierName, templateVisitAll} from '@angular/compiler';
-import {DiagnosticTemplateInfo} from '@angular/compiler-cli/src/language_services';
 import * as ts from 'typescript';
 
 import {AstResult, SelectorInfo} from './common';
+import {DiagnosticTemplateInfo} from './expression_diagnostics';
 import {Span} from './types';
 
 export interface SpanHolder {

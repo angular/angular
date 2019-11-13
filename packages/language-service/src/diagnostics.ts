@@ -7,14 +7,15 @@
  */
 
 import {NgAnalyzedModules} from '@angular/compiler';
-import {getTemplateExpressionDiagnostics} from '@angular/compiler-cli/src/language_services';
 import * as path from 'path';
 import * as ts from 'typescript';
 
 import {AstResult} from './common';
+import {getTemplateExpressionDiagnostics} from './expression_diagnostics';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 import {findPropertyValueOfType, findTightestNode, offsetSpan, spanOf} from './utils';
+
 
 /**
  * Return diagnostic information for the parsed AST of the template.

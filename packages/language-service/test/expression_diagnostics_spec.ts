@@ -7,11 +7,11 @@
  */
 
 import {StaticSymbol} from '@angular/compiler';
+import {Directory} from '@angular/compiler-cli/test/mocks';
 import {ReflectorHost} from '@angular/language-service/src/reflector_host';
 import * as ts from 'typescript';
 
-import {getTemplateExpressionDiagnostics} from '../../src/diagnostics/expression_diagnostics';
-import {Directory} from '../mocks';
+import {getTemplateExpressionDiagnostics} from '../src/expression_diagnostics';
 
 import {DiagnosticContext, MockLanguageServiceHost, getDiagnosticTemplateInfo} from './mocks';
 

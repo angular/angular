@@ -7,9 +7,9 @@
  */
 
 import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, CompileTypeSummary, CssSelector, DirectiveAst, ElementAst, SelectorMatcher, TemplateAstPath, findNode, tokenReference} from '@angular/compiler';
-import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
 
 import {AstResult} from './common';
+import {getExpressionScope} from './expression_diagnostics';
 import {getExpressionSymbol} from './expressions';
 import {Definition, DirectiveKind, Span, Symbol} from './types';
 import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, inSpan, offsetSpan, spanOf} from './utils';

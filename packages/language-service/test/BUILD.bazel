@@ -3,15 +3,25 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 ts_library(
     name = "test_lib",
     testonly = True,
-    srcs = glob(
-        include = ["**/*.ts"],
-        exclude = ["project/**/*"],
-    ),
+    srcs = [
+        "completions_spec.ts",
+        "definitions_spec.ts",
+        "diagnostics_spec.ts",
+        "global_symbols_spec.ts",
+        "hover_spec.ts",
+        "html_info_spec.ts",
+        "language_service_spec.ts",
+        "reflector_host_spec.ts",
+        "template_references_spec.ts",
+        "template_spec.ts",
+        "test_utils.ts",
+        "ts_plugin_spec.ts",
+        "typescript_host_spec.ts",
+        "utils_spec.ts",
+    ],
     data = glob(["project/**/*"]),
     deps = [
-        "//packages:types",
         "//packages/compiler",
-        "//packages/compiler-cli",
         "//packages/compiler-cli/test:test_utils",
         "//packages/language-service",
         "@npm//typescript",
@@ -30,5 +40,39 @@ jasmine_node_test(
     ],
     deps = [
         ":test_lib",
+    ],
+)
+
+ts_library(
+    name = "diagnostics_lib",
+    testonly = True,
+    srcs = [
+        "expression_diagnostics_spec.ts",
+        "mocks.ts",
+        "typescript_symbols_spec.ts",
+    ],
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/test:test_utils",
+        "//packages/core",
+        "//packages/language-service",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "diagnostics",
+    data = [
+        "//packages/common:npm_package",
+        "//packages/core:npm_package",
+        "//packages/forms:npm_package",
+    ],
+    tags = [
+        # Disabled as these tests pertain to diagnostics in the old ngc compiler. The Ivy ngtsc
+        # compiler has its own tests for diagnostics.
+        "no-ivy-aot",
+    ],
+    deps = [
+        ":diagnostics_lib",
     ],
 )

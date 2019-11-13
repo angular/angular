@@ -7,15 +7,15 @@
  */
 
 import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, InterpolationConfig, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, SummaryResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver} from '@angular/compiler';
+import {Directory, MockAotContext} from '@angular/compiler-cli/test/mocks';
+import {setup} from '@angular/compiler-cli/test/test_support';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {DiagnosticTemplateInfo} from '../../src/diagnostics/expression_diagnostics';
-import {getClassMembers, getPipesTable, getSymbolQuery} from '../../src/diagnostics/typescript_symbols';
-import {Directory, MockAotContext} from '../mocks';
-import {setup} from '../test_support';
+import {DiagnosticTemplateInfo} from '../src/expression_diagnostics';
+import {getClassMembers, getPipesTable, getSymbolQuery} from '../src/typescript_symbols';
 
 const realFiles = new Map<string, string>();
 
