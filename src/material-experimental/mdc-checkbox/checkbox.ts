@@ -123,6 +123,7 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
   }
   set indeterminate(indeterminate) {
     this._indeterminate = coerceBooleanProperty(indeterminate);
+    this._syncIndeterminate(this._indeterminate);
   }
   private _indeterminate = false;
 
@@ -257,6 +258,7 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
   }
 
   ngAfterViewInit() {
+    this._syncIndeterminate(this._indeterminate);
     this._checkboxFoundation.init();
   }
 
@@ -368,6 +370,21 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
   private _setClass(cssClass: string, active: boolean) {
     this._classes[cssClass] = active;
     this._changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * Syncs the indeterminate value with the checkbox DOM node.
+   *
+   * We sync `indeterminate` directly on the DOM node, because in Ivy the check for whether a
+   * property is supported on an element boils down to `if (propName in element)`. Domino's
+   * HTMLInputElement doesn't have an `indeterminate` property so Ivy will warn during
+   * server-side rendering.
+   */
+  private _syncIndeterminate(value: boolean) {
+    const nativeCheckbox = this._nativeCheckbox;
+    if (nativeCheckbox) {
+      nativeCheckbox.nativeElement.indeterminate = value;
+    }
   }
 
   static ngAcceptInputType_checked: boolean | string | null | undefined;

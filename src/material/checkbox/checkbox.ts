@@ -25,6 +25,7 @@ import {
   Output,
   ViewChild,
   ViewEncapsulation,
+  AfterViewInit,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
@@ -131,7 +132,7 @@ const _MatCheckboxMixinBase:
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAccessor,
-    AfterViewChecked, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple,
+    AfterViewInit, AfterViewChecked, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple,
     FocusableOption {
 
   /**
@@ -235,6 +236,10 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     this._clickAction = this._clickAction || this._options.clickAction;
   }
 
+  ngAfterViewInit() {
+    this._syncIndeterminate(this._indeterminate);
+  }
+
   // TODO: Delete next major revision.
   ngAfterViewChecked() {}
 
@@ -281,7 +286,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   get indeterminate(): boolean { return this._indeterminate; }
   set indeterminate(value: boolean) {
     const changed = value != this._indeterminate;
-    this._indeterminate = value;
+    this._indeterminate = coerceBooleanProperty(value);
 
     if (changed) {
       if (this._indeterminate) {
@@ -292,6 +297,8 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
       }
       this.indeterminateChange.emit(this._indeterminate);
     }
+
+    this._syncIndeterminate(this._indeterminate);
   }
   private _indeterminate: boolean = false;
 
@@ -470,7 +477,24 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     return `mat-checkbox-anim-${animSuffix}`;
   }
 
+  /**
+   * Syncs the indeterminate value with the checkbox DOM node.
+   *
+   * We sync `indeterminate` directly on the DOM node, because in Ivy the check for whether a
+   * property is supported on an element boils down to `if (propName in element)`. Domino's
+   * HTMLInputElement doesn't have an `indeterminate` property so Ivy will warn during
+   * server-side rendering.
+   */
+  private _syncIndeterminate(value: boolean) {
+    const nativeCheckbox = this._inputElement;
+
+    if (nativeCheckbox) {
+      nativeCheckbox.nativeElement.indeterminate = value;
+    }
+  }
+
   static ngAcceptInputType_disabled: boolean | string | null | undefined;
   static ngAcceptInputType_required: boolean | string | null | undefined;
   static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_indeterminate: boolean | string | null | undefined;
 }

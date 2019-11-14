@@ -13,7 +13,7 @@ export declare function MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY(): MatCheckboxDefau
 
 export declare const MAT_CHECKBOX_REQUIRED_VALIDATOR: Provider;
 
-export declare class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAccessor, AfterViewChecked, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple, FocusableOption {
+export declare class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAccessor, AfterViewInit, AfterViewChecked, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple, FocusableOption {
     _animationMode?: string | undefined;
     _inputElement: ElementRef<HTMLInputElement>;
     _onTouched: () => any;
@@ -40,6 +40,7 @@ export declare class MatCheckbox extends _MatCheckboxMixinBase implements Contro
     _onLabelTextChange(): void;
     focus(origin?: FocusOrigin, options?: FocusOptions): void;
     ngAfterViewChecked(): void;
+    ngAfterViewInit(): void;
     ngOnDestroy(): void;
     registerOnChange(fn: (value: any) => void): void;
     registerOnTouched(fn: any): void;
@@ -48,6 +49,7 @@ export declare class MatCheckbox extends _MatCheckboxMixinBase implements Contro
     writeValue(value: any): void;
     static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
     static ngAcceptInputType_disabled: boolean | string | null | undefined;
+    static ngAcceptInputType_indeterminate: boolean | string | null | undefined;
     static ngAcceptInputType_required: boolean | string | null | undefined;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatCheckbox, "mat-checkbox", ["matCheckbox"], { 'disableRipple': "disableRipple", 'color': "color", 'tabIndex': "tabIndex", 'ariaLabel': "aria-label", 'ariaLabelledby': "aria-labelledby", 'id': "id", 'required': "required", 'labelPosition': "labelPosition", 'name': "name", 'value': "value", 'checked': "checked", 'disabled': "disabled", 'indeterminate': "indeterminate" }, { 'change': "change", 'indeterminateChange': "indeterminateChange" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatCheckbox>;
