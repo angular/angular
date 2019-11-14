@@ -384,6 +384,16 @@ def ng_rollup_bundle(name, **kwargs):
     build_optimizer = kwargs.pop("build_optimizer", True)
     visibility = kwargs.pop("visibility", None)
 
+    # Common arguments for all terser_minified targets
+    common_terser_args = {
+        # As of terser 4.3.4 license comments are preserved by default. See
+        # https://github.com/terser/terser/blob/master/CHANGELOG.md. We want to
+        # maintain the comments off behavior. We pass the --comments flag with
+        # a regex that always evaluates to false to do this.
+        "args": ["--comments", "/bogus_string_to_suppress_all_comments^/"],
+        "sourcemap": False,
+    }
+
     # TODO(gregmagolan): reduce this macro to just use the new @bazel/rollup rollup_bundle
     # once esm5 inputs are no longer needed. _ng_rollup_bundle is just here for esm5 support
     # and once that requirement is removed for Angular 10 then there is nothing that rule is doing
@@ -395,9 +405,9 @@ def ng_rollup_bundle(name, **kwargs):
         visibility = visibility,
         **kwargs
     )
-    terser_minified(name = name + ".min", src = name + "", sourcemap = False, visibility = visibility)
+    terser_minified(name = name + ".min", src = name + "", visibility = visibility, **common_terser_args)
     native.filegroup(name = name + ".min.js", srcs = [name + ".min"], visibility = visibility)
-    terser_minified(name = name + ".min_debug", src = name + "", sourcemap = False, debug = True, visibility = visibility)
+    terser_minified(name = name + ".min_debug", src = name + "", debug = True, visibility = visibility, **common_terser_args)
     native.filegroup(name = name + ".min_debug.js", srcs = [name + ".min_debug"], visibility = visibility)
     npm_package_bin(
         name = "_%s_brotli" % name,
@@ -418,9 +428,9 @@ def ng_rollup_bundle(name, **kwargs):
         visibility = visibility,
         **kwargs
     )
-    terser_minified(name = name + ".min.es2015", src = name + "", sourcemap = False, visibility = visibility)
+    terser_minified(name = name + ".min.es2015", src = name + "", visibility = visibility, **common_terser_args)
     native.filegroup(name = name + ".min.es2015.js", srcs = [name + ".min.es2015"], visibility = visibility)
-    terser_minified(name = name + ".min_debug.es2015", src = name + "", sourcemap = False, debug = True, visibility = visibility)
+    terser_minified(name = name + ".min_debug.es2015", src = name + "", debug = True, visibility = visibility, **common_terser_args)
     native.filegroup(name = name + ".min_debug.es2015.js", srcs = [name + ".min_debug.es2015"], visibility = visibility)
     npm_package_bin(
         name = "_%s_es2015_brotli" % name,
