@@ -541,4 +541,42 @@ describe('view insertion', () => {
     });
   });
 
+  describe('non-regression', () => {
+
+    // https://github.com/angular/angular/issues/33679
+    it('should insert views into ViewContainerRef injected by querying <ng-container>', () => {
+
+      @Component({
+        selector: 'app-root',
+        template: `
+        <div>container start|</div>
+        <ng-container #container></ng-container>
+        <div>|container end</div>
+
+        <ng-template #template >test</ng-template>
+        <div (click)="click()" >|click</div>
+        `
+      })
+      class AppComponent {
+        @ViewChild('container', {read: ViewContainerRef, static: true})
+        vcr !: ViewContainerRef;
+
+        @ViewChild('template', {read: TemplateRef, static: true}) template !: TemplateRef<any>;
+
+        click() { this.vcr.createEmbeddedView(this.template, undefined, 0); }
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [AppComponent],
+      });
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('container start||container end|click');
+
+      fixture.componentInstance.click();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('container start|test|container end|click');
+    });
+
+  });
 });
