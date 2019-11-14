@@ -2,11 +2,13 @@ import chalk from 'chalk';
 import {existsSync} from 'fs';
 import {sync as glob} from 'glob';
 import {join} from 'path';
+import {Version} from '../version-name/parse-version';
 
 import {
   checkCdkPackage,
   checkMaterialPackage,
   checkPackageJsonFile,
+  checkPackageJsonMigrations,
   checkReleaseBundle,
   checkTypeDefinitionFile
 } from './output-validations';
@@ -32,7 +34,8 @@ type PackageFailures = Map<string, string[]>;
  * unexpected release output (e.g. the theming bundle is no longer generated)
  * @returns Whether the package passed all checks or not.
  */
-export function checkReleasePackage(releasesPath: string, packageName: string): boolean {
+export function checkReleasePackage(
+    releasesPath: string, packageName: string, currentVersion: Version): boolean {
   const packagePath = join(releasesPath, packageName);
   const failures = new Map() as PackageFailures;
   const addFailure = (message, filePath?) => {
@@ -78,6 +81,9 @@ export function checkReleasePackage(releasesPath: string, packageName: string): 
   if (!existsSync(join(packagePath, 'README.md'))) {
     addFailure('No "README.md" file found in package output.');
   }
+
+  checkPackageJsonMigrations(join(packagePath, 'package.json'), currentVersion)
+      .forEach(f => addFailure(f));
 
   // In case there are failures for this package, we want to print those
   // and return a value that implies that there were failures.

@@ -2,22 +2,22 @@
   "$schema": "./node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
     "migration-v6": {
-      "version": "6",
+      "version": "6.0.0",
       "description": "Updates the Angular CDK to v6",
       "factory": "./ng-update/index#updateToV6"
     },
     "migration-v7": {
-      "version": "7",
+      "version": "7.0.0",
       "description": "Updates the Angular CDK to v7",
       "factory": "./ng-update/index#updateToV7"
     },
     "migration-v8": {
-      "version": "8-beta",
+      "version": "8.0.0",
       "description": "Updates the Angular CDK to v8",
       "factory": "./ng-update/index#updateToV8"
     },
     "migration-v9": {
-      "version": "9",
+      "version": "9.0.0-0",
       "description": "Updates the Angular CDK to v9",
       "factory": "./ng-update/index#updateToV9"
     },

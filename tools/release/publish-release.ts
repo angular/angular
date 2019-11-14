@@ -91,7 +91,7 @@ class PublishReleaseTask extends BaseReleaseTask {
     console.info(chalk.green(`  ✓   Built the release output.`));
 
     // Checks all release packages against release output validations before releasing.
-    checkReleaseOutput(this.releaseOutputPath);
+    checkReleaseOutput(this.releaseOutputPath, this.currentVersion);
 
     // Extract the release notes for the new version from the changelog file.
     const extractedReleaseNotes = extractReleaseNotes(
