@@ -16,15 +16,11 @@ set -u -e -o pipefail
 cd "$(dirname "$0")"
 
 # basedir is the workspace root
-readonly base_dir=$(pwd)/..
-readonly bazel_bin=$(yarn run -s bazel info bazel-bin)
+readonly base_dir="$(realpath "$(pwd)/..")"
+readonly bazel_bin="$(yarn run -s bazel info bazel-bin)"
+readonly script_path="$0"
 
 function buildTargetPackages() {
-  # List of targets to build, e.g. core, common, compiler, etc. Note that we want to
-  # remove all carriage return ("\r") characters form the query output because otherwise
-  # the carriage return is part of the bazel target name and bazel will complain.
-  targets=$(yarn run -s bazel query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //packages/...) intersect kind(".*_package", //packages/...)' | tr -d "\r")
-
   # Path to the output directory into which we copy the npm packages.
   dest_path="$1"
 
@@ -35,10 +31,15 @@ function buildTargetPackages() {
   desc="$3"
 
   echo "##################################"
-  echo "scripts/build-packages-dist.sh:"
-  echo "  building @angular/* npm packages"
-  echo "  mode: ${desc}"
+  echo "${script_path}:"
+  echo "  Building @angular/* npm packages"
+  echo "  Mode: ${desc}"
   echo "##################################"
+
+  # List of targets to build, e.g. core, common, compiler, etc. Note that we want to
+  # remove all carriage return ("\r") characters form the query output because otherwise
+  # the carriage return is part of the bazel target name and bazel will complain.
+  targets=$(yarn run -s bazel query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //packages/...) intersect kind(".*_package", //packages/...)' | tr -d "\r")
 
   # Use --config=release so that snapshot builds get published with embedded version info
   echo "$targets" | xargs yarn run -s bazel build --config=release --define=compile=${compile_mode}
