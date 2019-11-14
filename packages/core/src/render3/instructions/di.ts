@@ -47,7 +47,8 @@ export function ɵɵdirectiveInject<T>(
   if (lView == null) return ɵɵinject(token, flags);
   const tNode = getPreviousOrParentTNode();
   ngDevMode && assertNodeOfPossibleTypes(
-                   tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
+                   tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer,
+                   TNodeType.IcuContainer);
   return getOrCreateInjectable<T>(
       tNode as TDirectiveHostNode, lView, resolveForwardRef(token), flags);
 }
