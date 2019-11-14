@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {forwardRefResolver} from '@angular/compiler-cli/src/ngtsc/annotations/src/util';
 import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
-import {DynamicValue, PartialEvaluator, ResolvedValue} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
+import {DynamicValue, ResolvedValue} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import * as ts from 'typescript';
 
@@ -16,6 +15,7 @@ import {getAngularDecorators} from '../../utils/ng_decorators';
 
 import {ResolvedDirective, ResolvedNgModule} from './definition_collector';
 import {ImportManager} from './import_manager';
+import {ProviderLiteral, ProvidersEvaluator} from './providers_evaluator';
 import {UpdateRecorder} from './update_recorder';
 
 
@@ -30,16 +30,19 @@ export interface AnalysisFailure {
 export class MissingInjectableTransform {
   private printer = ts.createPrinter();
   private importManager = new ImportManager(this.getUpdateRecorder, this.printer);
-  private partialEvaluator: PartialEvaluator;
+  private providersEvaluator: ProvidersEvaluator;
 
   /** Set of provider class declarations which were already checked or migrated. */
   private visitedProviderClasses = new Set<ts.ClassDeclaration>();
 
+  /** Set of provider object literals which were already checked or migrated. */
+  private visitedProviderLiterals = new Set<ts.ObjectLiteralExpression>();
+
   constructor(
       private typeChecker: ts.TypeChecker,
       private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder) {
-    this.partialEvaluator =
-        new PartialEvaluator(new TypeScriptReflectionHost(typeChecker), typeChecker);
+    this.providersEvaluator =
+        new ProvidersEvaluator(new TypeScriptReflectionHost(typeChecker), typeChecker);
   }
 
   recordChanges() { this.importManager.recordChanges(); }
@@ -68,16 +71,17 @@ export class MissingInjectableTransform {
       return [];
     }
 
-    const evaluatedExpr = this._evaluateExpression(module.providersExpr);
+    const {resolvedValue, literals} = this.providersEvaluator.evaluate(module.providersExpr);
+    this._migrateLiteralProviders(literals);
 
-    if (!Array.isArray(evaluatedExpr)) {
+    if (!Array.isArray(resolvedValue)) {
       return [{
         node: module.providersExpr,
         message: 'Providers of module are not statically analyzable.'
       }];
     }
 
-    return this._visitProviderResolvedValue(evaluatedExpr, module);
+    return this._visitProviderResolvedValue(resolvedValue, module);
   }
 
 
@@ -90,24 +94,27 @@ export class MissingInjectableTransform {
 
     // Migrate "providers" on directives and components if defined.
     if (directive.providersExpr) {
-      const evaluatedExpr = this._evaluateExpression(directive.providersExpr);
-      if (!Array.isArray(evaluatedExpr)) {
+      const {resolvedValue, literals} = this.providersEvaluator.evaluate(directive.providersExpr);
+      this._migrateLiteralProviders(literals);
+      if (!Array.isArray(resolvedValue)) {
         return [
           {node: directive.providersExpr, message: `Providers are not statically analyzable.`}
         ];
       }
-      failures.push(...this._visitProviderResolvedValue(evaluatedExpr, directive));
+      failures.push(...this._visitProviderResolvedValue(resolvedValue, directive));
     }
 
     // Migrate "viewProviders" on components if defined.
     if (directive.viewProvidersExpr) {
-      const evaluatedExpr = this._evaluateExpression(directive.viewProvidersExpr);
-      if (!Array.isArray(evaluatedExpr)) {
+      const {resolvedValue, literals} =
+          this.providersEvaluator.evaluate(directive.viewProvidersExpr);
+      this._migrateLiteralProviders(literals);
+      if (!Array.isArray(resolvedValue)) {
         return [
           {node: directive.viewProvidersExpr, message: `Providers are not statically analyzable.`}
         ];
       }
-      failures.push(...this._visitProviderResolvedValue(evaluatedExpr, directive));
+      failures.push(...this._visitProviderResolvedValue(resolvedValue, directive));
     }
     return failures;
   }
@@ -160,11 +167,39 @@ export class MissingInjectableTransform {
   }
 
   /**
-   * Evaluates the given TypeScript expression using the partial evaluator with
-   * the foreign function resolver for handling "forwardRef" calls.
+   * Migrates object literal providers which do not use "useValue", "useClass",
+   * "useExisting" or "useFactory". These providers behave differently in Ivy. e.g.
+   *
+   * ```ts
+   *   {provide: X} -> {provide: X, useValue: undefined} // this is how it behaves in VE
+   *   {provide: X} -> {provide: X, useClass: X} // this is how it behaves in Ivy
+   * ```
+   *
+   * To ensure forward compatibility, we migrate these empty object literal providers
+   * to explicitly use `useValue: undefined`.
    */
-  private _evaluateExpression(expr: ts.Expression): ResolvedValue {
-    return this.partialEvaluator.evaluate(expr, forwardRefResolver);
+  private _migrateLiteralProviders(literals: ProviderLiteral[]) {
+    for (let {node, resolvedValue} of literals) {
+      if (this.visitedProviderLiterals.has(node)) {
+        continue;
+      }
+      this.visitedProviderLiterals.add(node);
+
+      if (!resolvedValue || !(resolvedValue instanceof Map) || !resolvedValue.has('provide') ||
+          resolvedValue.has('useClass') || resolvedValue.has('useValue') ||
+          resolvedValue.has('useExisting') || resolvedValue.has('useFactory')) {
+        continue;
+      }
+
+      const sourceFile = node.getSourceFile();
+      const newObjectLiteral = ts.updateObjectLiteral(
+          node, node.properties.concat(
+                    ts.createPropertyAssignment('useValue', ts.createIdentifier('undefined'))));
+
+      this.getUpdateRecorder(sourceFile)
+          .updateObjectLiteral(
+              node, this.printer.printNode(ts.EmitHint.Unspecified, newObjectLiteral, sourceFile));
+    }
   }
 
   /**
@@ -177,14 +212,11 @@ export class MissingInjectableTransform {
     if (value instanceof Reference && ts.isClassDeclaration(value.node)) {
       this.migrateProviderClass(value.node, module);
     } else if (value instanceof Map) {
-      if (!value.has('provide') || value.has('useValue') || value.has('useFactory') ||
-          value.has('useExisting')) {
-        return [];
-      }
-      if (value.has('useClass')) {
+      // If a "ClassProvider" has the "deps" property set, then we do not need to
+      // decorate the class. This is because the class is instantiated through the
+      // specified "deps" and the class does not need a factory definition.
+      if (value.has('provide') && value.has('useClass') && value.get('deps') == null) {
         return this._visitProviderResolvedValue(value.get('useClass') !, module);
-      } else {
-        return this._visitProviderResolvedValue(value.get('provide') !, module);
       }
     } else if (Array.isArray(value)) {
       return value.reduce((res, v) => res.concat(this._visitProviderResolvedValue(v, module)), [

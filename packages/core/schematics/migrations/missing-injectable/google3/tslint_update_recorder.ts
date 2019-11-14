@@ -54,5 +54,13 @@ export class TslintUpdateRecorder implements UpdateRecorder {
         this.ruleName, fix));
   }
 
+
+  updateObjectLiteral(node: ts.ObjectLiteralExpression, newText: string): void {
+    this.failures.push(new RuleFailure(
+        this.sourceFile, node.getStart(), node.getEnd(),
+        `Object literal needs to be updated to: ${newText}`, this.ruleName,
+        Replacement.replaceFromTo(node.getStart(), node.getEnd(), newText)));
+  }
+
   commitUpdate() {}
 }
