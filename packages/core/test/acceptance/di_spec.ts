@@ -1824,4 +1824,39 @@ describe('di', () => {
       expect(directive.other).toBe('otherValue');
     });
   });
+
+  it('should support dependencies in Pipes used inside ICUs', () => {
+    @Injectable()
+    class MyService {
+      transform(value: string): string { return `${value} (transformed)`; }
+    }
+
+    @Pipe({name: 'somePipe'})
+    class MyPipe {
+      constructor(private service: MyService) {}
+      transform(value: any): any { return this.service.transform(value); }
+    }
+
+    @Component({
+      template: `
+        <div i18n>{
+          count, select,
+          =1 {One}
+          other {Other value is: {{count | somePipe}}}
+        }</div>
+      `
+    })
+    class MyComp {
+      count = '2';
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [MyPipe, MyComp],
+      providers: [MyService],
+    });
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).toContain('Other value is: 2 (transformed)');
+  });
 });
