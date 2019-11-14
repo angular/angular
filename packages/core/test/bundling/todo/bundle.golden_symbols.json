@@ -1101,6 +1101,9 @@
     "name": "refreshDynamicEmbeddedViews"
   },
   {
+    "name": "refreshTransplantedViews"
+  },
+  {
     "name": "refreshView"
   },
   {
@@ -1246,6 +1249,9 @@
   },
   {
     "name": "setIsNotParent"
+  },
+  {
+    "name": "setLContainerActiveIndex"
   },
   {
     "name": "setMapAsDirty"

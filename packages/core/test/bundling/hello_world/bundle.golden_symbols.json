@@ -417,6 +417,9 @@
     "name": "refreshDynamicEmbeddedViews"
   },
   {
+    "name": "refreshTransplantedViews"
+  },
+  {
     "name": "refreshView"
   },
   {
