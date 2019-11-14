@@ -13,11 +13,6 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {onlyInIvy, withBody} from '@angular/private/testing';
 
 describe('bootstrap', () => {
-  onlyInIvy('VE does not allow reading selectors').it('Component should have id selector', () => {
-    const componentDef = getComponentDef(MyAppComponent) !;
-    expect(componentDef.selectors).toEqual([['', 'id', 'my-app']]);
-  });
-
   it('should bootstrap using #id selector', withBody('<div #my-app>', async() => {
        try {
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(MyAppModule);
