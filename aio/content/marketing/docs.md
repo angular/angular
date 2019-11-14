@@ -29,7 +29,7 @@ Tutorials and guides include downloadable example to accelerate your projects.
 ## Assumptions
 
 
-These docs assume that you are already familiar with HTML, CSS, [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript "Learn JavaScript"), 
+These docs assume that you are already familiar with [HTML](https://www.w3schools.com/html/ "Learn HTML"), CSS, [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript "Learn JavaScript"), 
 and some of the tools from the [latest standards](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Language_Resources "Latest JavaScript standards"), such as [classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes "ES2015 Classes") and [modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import "ES2015 Modules"). 
 The code samples are written using [TypeScript](https://www.typescriptlang.org/ "TypeScript"). 
 Most Angular code can be written with just the latest JavaScript, using [types](https://www.typescriptlang.org/docs/handbook/classes.html "TypeScript Types") for dependency injection, and using [decorators](https://www.typescriptlang.org/docs/handbook/decorators.html "Decorators") for metadata.
