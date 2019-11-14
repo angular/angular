@@ -337,167 +337,171 @@ runInEachFileSystem(os => {
     // are valid for the real OS. When on non-Windows systems it doesn't like paths
     // that start with `C:`.
     if (os !== 'Windows' || platform() === 'win32') {
-      it('should add @nocollapse to static fields when closure annotations are requested', () => {
-        env.tsconfig({
-          'annotateForClosureCompiler': true,
+      describe('when closure annotations are requested', () => {
+
+        it('should add @nocollapse to static fields', () => {
+          env.tsconfig({
+            'annotateForClosureCompiler': true,
+          });
+          env.write('test.ts', `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              templateUrl: './dir/test.html',
+            })
+            export class TestCmp {}
+          `);
+          env.write('dir/test.html', '<p>Hello World</p>');
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+          expect(jsContents).toContain('/** @nocollapse */ TestCmp.ɵcmp');
         });
-        env.write('test.ts', `
-        import {Component} from '@angular/core';
 
-        @Component({
-          selector: 'test-cmp',
-          templateUrl: './dir/test.html',
-        })
-        export class TestCmp {}
-    `);
-        env.write('dir/test.html', '<p>Hello World</p>');
-
-        env.driveMain();
-
-        const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain('/** @nocollapse */ TestCmp.ɵcmp');
-      });
-
-      /**
-       * The following set of tests verify that after Tsickle run we do not have cases which trigger
-       * automatic semicolon insertion, which breaks the code. In order to avoid the problem, we
-       * wrap all function expressions in certain fields ("providers" and "viewProviders") in
-       * parentheses. More info on Tsickle processing related to this case can be found here:
-       * https://github.com/angular/tsickle/blob/d7974262571c8a17d684e5ba07680e1b1993afdd/src/jsdoc_transformer.ts#L1021
-       */
-      describe(
-          'wrap functions in certain fields in parentheses when closure annotations are requested',
-          () => {
-            const providers = `
-              [{
-                provide: 'token-a',
-                useFactory: (service: Service) => {
-                  return () => service.id;
+        /**
+         * The following set of tests verify that after Tsickle run we do not have cases which
+         * trigger automatic semicolon insertion, which breaks the code. In order to avoid the
+         * problem, we wrap all function expressions in certain fields ("providers" and
+         * "viewProviders") in parentheses. More info on Tsickle processing related to this case can
+         * be found here:
+         * https://github.com/angular/tsickle/blob/d7974262571c8a17d684e5ba07680e1b1993afdd/src/jsdoc_transformer.ts#L1021
+         */
+        describe('wrap functions in certain fields in parentheses', () => {
+          const providers = `
+            [{
+              provide: 'token-a',
+              useFactory: (service: Service) => {
+                return () => service.id;
+              }
+            }, {
+              provide: 'token-b',
+              useFactory: function(service: Service) {
+                return function() {
+                  return service.id;
                 }
-              }, {
-                provide: 'token-b',
-                useFactory: function(service: Service) {
-                  return function() {
-                    return service.id;
-                  }
-                }
-              }]
-            `;
+              }
+            }]
+          `;
 
-            const service = `
+          const service = `
               export class Service {
                 id: string = 'service-id';
               }
             `;
 
-            const verifyOutput = (jsContents: string) => {
-              // verify that there is no pattern that triggers automatic semicolon insertion
-              expect(trim(jsContents)).not.toContain(trim(`
-                return /**
-                * @return {?}
-                */
-              `));
-              expect(trim(jsContents)).toContain(trim(`
-                [{
-                    provide: 'token-a',
-                    useFactory: (function (service) {
-                        return (/**
-                        * @return {?}
-                        */
-                        function () { return service.id; });
-                    })
-                }, {
-                    provide: 'token-b',
-                    useFactory: (function (service) {
-                        return (/**
-                        * @return {?}
-                        */
-                        function () {
-                            return service.id;
-                        });
-                    })
-                }]
-              `));
-            };
+          const verifyOutput = (jsContents: string) => {
+            // verify that there is no pattern that triggers automatic semicolon insertion
+            // by checking that there are no return statements not wrapped in parentheses
+            expect(trim(jsContents)).not.toContain(trim(`
+              return /**
+              * @return {?}
+              */
+            `));
+            expect(trim(jsContents)).toContain(trim(`
+              [{
+                  provide: 'token-a',
+                  useFactory: (function (service) {
+                      return (/**
+                      * @return {?}
+                      */
+                      function () { return service.id; });
+                  })
+              }, {
+                  provide: 'token-b',
+                  useFactory: (function (service) {
+                      return (/**
+                      * @return {?}
+                      */
+                      function () {
+                          return service.id;
+                      });
+                  })
+              }]
+            `));
+          };
 
-            it('should wrap functions in "providers" list in NgModule', () => {
-              env.tsconfig({
-                'annotateForClosureCompiler': true,
-              });
-              env.write('service.ts', service);
-              env.write('test.ts', `
-                import {NgModule} from '@angular/core';
-                import {Service} from './service';
-
-                @NgModule({
-                  providers: ${providers}
-                })
-                export class SomeModule {}
-              `);
-
-              env.driveMain();
-              verifyOutput(env.getContents('test.js'));
+          it('should wrap functions in "providers" list in NgModule', () => {
+            env.tsconfig({
+              'annotateForClosureCompiler': true,
             });
+            env.write('service.ts', service);
+            env.write('test.ts', `
+              import {NgModule} from '@angular/core';
+              import {Service} from './service';
 
-            it('should wrap functions in "providers" list in Component', () => {
-              env.tsconfig({
-                'annotateForClosureCompiler': true,
-              });
-              env.write('service.ts', service);
-              env.write('test.ts', `
-                import {Component} from '@angular/core';
-                import {Service} from './service';
+              @NgModule({
+                providers: ${providers}
+              })
+              export class SomeModule {}
+            `);
 
-                @Component({
-                  template: '...',
-                  providers: ${providers}
-                })
-                export class SomeComponent {}
-              `);
-
-              env.driveMain();
-              verifyOutput(env.getContents('test.js'));
-            });
-
-            it('should wrap functions in "viewProviders" list in Component', () => {
-              env.tsconfig({
-                'annotateForClosureCompiler': true,
-              });
-              env.write('service.ts', service);
-              env.write('test.ts', `
-                import {Component} from '@angular/core';
-                import {Service} from './service';
-
-                @Component({
-                  template: '...',
-                  viewProviders: ${providers}
-                })
-                export class SomeComponent {}
-              `);
-
-              env.driveMain();
-              verifyOutput(env.getContents('test.js'));
-            });
-
-            it('should wrap functions in "providers" list in Directive', () => {
-              env.tsconfig({
-                'annotateForClosureCompiler': true,
-              });
-              env.write('service.ts', service);
-              env.write('test.ts', `
-                import {Directive} from '@angular/core';
-                import {Service} from './service';
-
-                @Directive({
-                  providers: ${providers}
-                })
-                export class SomeDirective {}
-              `);
-
-              env.driveMain();
-              verifyOutput(env.getContents('test.js'));
-            });
+            env.driveMain();
+            verifyOutput(env.getContents('test.js'));
           });
+
+          it('should wrap functions in "providers" list in Component', () => {
+            env.tsconfig({
+              'annotateForClosureCompiler': true,
+            });
+            env.write('service.ts', service);
+            env.write('test.ts', `
+              import {Component} from '@angular/core';
+              import {Service} from './service';
+
+              @Component({
+                template: '...',
+                providers: ${providers}
+              })
+              export class SomeComponent {}
+            `);
+
+            env.driveMain();
+            verifyOutput(env.getContents('test.js'));
+          });
+
+          it('should wrap functions in "viewProviders" list in Component', () => {
+            env.tsconfig({
+              'annotateForClosureCompiler': true,
+            });
+            env.write('service.ts', service);
+            env.write('test.ts', `
+              import {Component} from '@angular/core';
+              import {Service} from './service';
+
+              @Component({
+                template: '...',
+                viewProviders: ${providers}
+              })
+              export class SomeComponent {}
+            `);
+
+            env.driveMain();
+            verifyOutput(env.getContents('test.js'));
+          });
+
+          it('should wrap functions in "providers" list in Directive', () => {
+            env.tsconfig({
+              'annotateForClosureCompiler': true,
+            });
+            env.write('service.ts', service);
+            env.write('test.ts', `
+              import {Directive} from '@angular/core';
+              import {Service} from './service';
+
+              @Directive({
+                providers: ${providers}
+              })
+              export class SomeDirective {}
+            `);
+
+            env.driveMain();
+            verifyOutput(env.getContents('test.js'));
+          });
+        });
+
+      });
     }
 
     it('should recognize aliased decorators', () => {

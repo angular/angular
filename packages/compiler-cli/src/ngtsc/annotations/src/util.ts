@@ -354,7 +354,7 @@ export function readBaseClass(
 
 const parensWrapperTransformerFactory: ts.TransformerFactory<ts.Expression> =
     (context: ts.TransformationContext) => {
-      const visitor = (node: ts.Node): ts.Node => {
+      const visitor: ts.Visitor = (node: ts.Node): ts.Node => {
         const visited = ts.visitEachChild(node, visitor, context);
         if (ts.isArrowFunction(visited) || ts.isFunctionExpression(visited)) {
           return ts.createParen(visited);
