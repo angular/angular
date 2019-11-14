@@ -7,9 +7,10 @@
 */
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 
-import {TNodeFlags} from './node';
+import {TNode, TNodeFlags} from './node';
 import {ProceduralRenderer3, RElement, Renderer3} from './renderer';
 import {LView} from './view';
+
 
 
 /**
@@ -438,8 +439,8 @@ export const enum StylingMapArrayIndex {
 export interface SyncStylingMapsFn {
   (context: TStylingContext, renderer: Renderer3|ProceduralRenderer3|null, element: RElement,
    data: LStylingData, sourceIndex: number, applyStylingFn: ApplyStylingFn,
-   sanitizer: StyleSanitizeFn|null, mode: StylingMapsSyncMode, targetProp?: string|null,
-   defaultValue?: boolean|string|null): boolean;
+   sanitizer: StyleSanitizeFn|null, mode: StylingMapsSyncMode, targetProp: string|null,
+   defaultValue: boolean|string|null): boolean;
 }
 
 /**
@@ -468,6 +469,52 @@ export const enum StylingMapsSyncMode {
 /**
  * Simplified `TNode` interface for styling-related code.
  *
- * The styling algorithm code only needs access to `flags`.
+ * The original `TNode` data-structure contains various properties that are not
+ * used within the styling algorithm code. Having to create an empty `TNode` with
+ * each of these values and place those into tests and debugging code adds mental
+ * overhead. This data-structure is a simplified `TNode` that is only used for
+ * styling code and will only contain the properties that are necessary for the
+ * styling algorithm to function.
  */
-export interface TStylingNode { flags: TNodeFlags; }
+export interface TStylingNode {
+  /**
+   * Last binding index for any `[class]` or `[class.name]` bindings on this node.
+   *
+   * See [TNode.classesBindingIndex].
+   */
+  classesBindingIndex: number;
+
+  /**
+   * Last binding index for any `[style]` or `[style.name]` bindings on this node.
+   *
+   * See [TNode.stylesBindingIndex].
+   */
+  stylesBindingIndex: number;
+
+  /**
+   * Various flags used in `TNode` some of which are used for styling purposes.
+   *
+   * See [TNode.flags].
+   */
+  flags: TNodeFlags;
+}
+
+/**
+ * This function acts as a hack to compare the type structure of `TStylingNode` against `TNode`.
+ *
+ * Do Not use.
+ */
+function tStylingNodeAndTNodeTypeCheck(x: TNode) {
+  const y: TStylingNode = x;
+  return true;
+}
+
+/**
+ * Various flags used for each style/class binding entry stored inside of `TData`.
+ */
+export const enum TDataStylingFlags {
+  InitialFlag = 0,
+  HasInitialValueOverlap = 0b01,
+  SanitizationRequiredFlag = 0b10,
+  TotalBits = 2,
+}

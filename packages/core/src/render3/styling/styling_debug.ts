@@ -6,15 +6,17 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {createProxy} from '../../debug/proxy';
-import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
+import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
 import {TNodeFlags} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {ApplyStylingFn, LStylingData, TStylingContext, TStylingContextIndex, TStylingNode} from '../interfaces/styling';
+import {TData} from '../interfaces/view';
 import {getCurrentStyleSanitizer} from '../state';
 import {attachDebugObject} from '../util/debug_utils';
-import {MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, allowDirectStyling as _allowDirectStyling, getBindingValue, getDefaultValue, getGuardMask, getProp, getPropValuesStartPosition, getValue, getValuesCount, hasConfig, isSanitizationRequired, isStylingContext, normalizeIntoStylingMap, setValue} from '../util/styling_utils';
+import {MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, allocStylingMapArray, allowDirectStyling as _allowDirectStyling, getBindingValue, getDefaultValue, getGuardMask, getProp, getPropValuesStartPosition, getValue, getValuesCount, hasConfig, isSanitizationRequired, isStylingContext, isStylingMapArray, normalizeIntoStylingMap, setValue} from '../util/styling_utils';
 
 import {applyStylingViaContext} from './bindings';
+import {generateStylingBindingIndices} from './direct_write_algorithm';
 import {activateStylingMapFeature} from './map_based_bindings';
 
 
@@ -142,9 +144,6 @@ export interface DebugNodeStylingEntry {
 
   /** The last applied value for the style/class property */
   value: string|boolean|null;
-
-  /** The binding index of the last applied style/class property */
-  bindingIndex: number|null;
 }
 
 
@@ -355,8 +354,8 @@ export class NodeStylingDebug implements DebugNodeStyling {
   private _debugContext: DebugStylingContext;
 
   constructor(
-      context: TStylingContext|DebugStylingContext, private _tNode: TStylingNode,
-      private _data: LStylingData, private _isClassBased: boolean) {
+      context: TStylingContext|DebugStylingContext|null, private _tNode: TStylingNode,
+      private _tData: TData, private _data: LStylingData, private _isClassBased: boolean) {
     this._debugContext = isStylingContext(context) ?
         new TStylingContextDebug(context as TStylingContext, _tNode, _isClassBased) :
         (context as DebugStylingContext);
@@ -377,24 +376,7 @@ export class NodeStylingDebug implements DebugNodeStyling {
    */
   get summary(): {[key: string]: DebugNodeStylingEntry} {
     const entries: {[key: string]: DebugNodeStylingEntry} = {};
-    const config = this.config;
-    const isClassBased = this._isClassBased;
-
-    let data = this._data;
-
-    // the direct pass code doesn't convert [style] or [class] values
-    // into StylingMapArray instances. For this reason, the values
-    // need to be converted ahead of time since the styling debug
-    // relies on context resolution to figure out what styling
-    // values have been added/removed on the element.
-    if (config.allowDirectStyling && config.hasMapBindings) {
-      data = data.concat([]);  // make a copy
-      this._convertMapBindingsToStylingMapArrays(data);
-    }
-
-    this._mapValues(data, (prop: string, value: any, bindingIndex: number | null) => {
-      entries[prop] = {prop, value, bindingIndex};
-    });
+    this._mapValues(this._data, (prop: string, value: any) => { entries[prop] = {prop, value}; });
 
     // because the styling algorithm runs into two different
     // modes: direct and context-resolution, the output of the entries
@@ -402,13 +384,13 @@ export class NodeStylingDebug implements DebugNodeStyling {
     // saved between updates. For this reason a proxy is created
     // so that the behavior is the same when examining values
     // that are no longer active on the element.
+    const isClassBased = this._isClassBased;
     return createProxy({
       get(target: {}, prop: string): DebugNodeStylingEntry{
         let value: DebugNodeStylingEntry = entries[prop]; if (!value) {
           value = {
             prop,
             value: isClassBased ? false : null,
-            bindingIndex: null,
           };
         } return value;
       },
@@ -432,44 +414,15 @@ export class NodeStylingDebug implements DebugNodeStyling {
    */
   get values(): {[key: string]: any} {
     const entries: {[key: string]: any} = {};
-    const config = this.config;
-    let data = this._data;
-
-    // the direct pass code doesn't convert [style] or [class] values
-    // into StylingMapArray instances. For this reason, the values
-    // need to be converted ahead of time since the styling debug
-    // relies on context resolution to figure out what styling
-    // values have been added/removed on the element.
-    if (config.allowDirectStyling && config.hasMapBindings) {
-      data = data.concat([]);  // make a copy
-      this._convertMapBindingsToStylingMapArrays(data);
-    }
-
-    this._mapValues(data, (prop: string, value: any) => { entries[prop] = value; });
+    this._mapValues(this._data, (prop: string, value: any) => { entries[prop] = value; });
     return entries;
   }
 
-  private _convertMapBindingsToStylingMapArrays(data: LStylingData) {
-    const context = this.context.context;
-    const limit = getPropValuesStartPosition(context, this._tNode, this._isClassBased);
-    for (let i =
-             TStylingContextIndex.ValuesStartPosition + TStylingContextIndex.BindingsStartOffset;
-         i < limit; i++) {
-      const bindingIndex = context[i] as number;
-      const bindingValue = bindingIndex !== 0 ? getValue(data, bindingIndex) : null;
-      if (bindingValue && !Array.isArray(bindingValue)) {
-        const stylingMapArray = normalizeIntoStylingMap(null, bindingValue, !this._isClassBased);
-        setValue(data, bindingIndex, stylingMapArray);
-      }
-    }
-  }
-
-  private _mapValues(
-      data: LStylingData,
-      fn: (prop: string, value: string|null, bindingIndex: number|null) => any) {
+  private _mapValues(data: LStylingData, fn: (prop: string, value: string|null) => any) {
     // there is no need to store/track an element instance. The
     // element is only used when the styling algorithm attempts to
     // style the value (and we mock out the stylingApplyFn anyway).
+    const config = this.config;
     const mockElement = {} as any;
     const mapBindingsFlag =
         this._isClassBased ? TNodeFlags.hasClassMapBindings : TNodeFlags.hasStyleMapBindings;
@@ -478,21 +431,26 @@ export class NodeStylingDebug implements DebugNodeStyling {
       activateStylingMapFeature();
     }
 
-    const mapFn: ApplyStylingFn =
-        (renderer: any, element: RElement, prop: string, value: string | null,
-         bindingIndex?: number | null) => fn(prop, value, bindingIndex || null);
-
     const sanitizer = this._isClassBased ? null : (this._sanitizer || getCurrentStyleSanitizer());
+    if (config.allowDirectStyling) {
+      const values =
+          generateStylingFromLView(data, this._tNode, this._tData, sanitizer, this._isClassBased);
+      Object.keys(values).forEach(prop => fn(prop, values[prop]));
+    } else {
+      const mapFn: ApplyStylingFn =
+          (renderer: any, element: RElement, prop: string, value: string | null,
+           bindingIndex?: number | null) => fn(prop, value);
 
-    // run the template bindings
-    applyStylingViaContext(
-        this.context.context, this._tNode, null, mockElement, data, true, mapFn, sanitizer, false,
-        this._isClassBased);
+      // run the template bindings
+      applyStylingViaContext(
+          this.context.context, this._tNode, null, mockElement, data, true, mapFn, sanitizer, false,
+          this._isClassBased);
 
-    // and also the host bindings
-    applyStylingViaContext(
-        this.context.context, this._tNode, null, mockElement, data, true, mapFn, sanitizer, true,
-        this._isClassBased);
+      // and also the host bindings
+      applyStylingViaContext(
+          this.context.context, this._tNode, null, mockElement, data, true, mapFn, sanitizer, true,
+          this._isClassBased);
+    }
   }
 }
 
@@ -513,7 +471,7 @@ function buildConfig(tNode: TStylingNode, isClassBased: boolean): DebugStylingCo
   // `firstTemplatePass` here is false because the context has already been constructed
   // directly within the behavior of the debugging tools (outside of style/class debugging,
   // the context is constructed during the first template pass).
-  const allowDirectStyling = _allowDirectStyling(tNode, isClassBased, false);
+  const allowDirectStyling = _allowDirectStyling(tNode, isClassBased);
   return {
       hasMapBindings,       //
       hasPropBindings,      //
@@ -522,4 +480,35 @@ function buildConfig(tNode: TStylingNode, isClassBased: boolean): DebugStylingCo
       hasHostBindings,      //
       allowDirectStyling,   //
   };
+}
+
+function generateStylingFromLView(
+    lView: LStylingData, tNode: TStylingNode, tData: TData, sanitizer: StyleSanitizeFn | null,
+    isClassBased: boolean) {
+  let values: {[key: string]: any} = {};
+
+  const bindingIndex = isClassBased ? tNode.classesBindingIndex : tNode.stylesBindingIndex;
+  const bindingIndices = generateStylingBindingIndices(tData, bindingIndex);
+
+  for (let i = 0; i < bindingIndices.length; i++) {
+    const bindingIndex = bindingIndices[i];
+    const prop = tData[bindingIndex] as string | null;
+    const value = getValue(lView, bindingIndex);
+    if (prop === null) {
+      const map = value as{[key: string]: any};
+      const keys = Object.keys(map);
+      for (let j = 0; j < keys.length; j++) {
+        const p = keys[j];
+        const v = map[p];
+        const valueToApply = sanitizer ? sanitizer(p, v, StyleSanitizeMode.ValidateAndSanitize) : v;
+        values[p] = valueToApply;
+      }
+    } else {
+      const valueToApply =
+          sanitizer ? sanitizer(prop, value, StyleSanitizeMode.ValidateAndSanitize) : value;
+      values[prop] = valueToApply;
+    }
+  }
+
+  return values;
 }

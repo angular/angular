@@ -137,20 +137,22 @@ describe('instructions', () => {
 
   describe('styleProp', () => {
     it('should automatically sanitize unless a bypass operation is applied', () => {
-      const t = new TemplateFixture(() => { return createDiv(); }, () => {}, 1);
-      t.update(() => {
-        ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
-        ɵɵstyleProp('background-image', 'url("http://server")');
-      });
-      // nothing is set because sanitizer suppresses it.
-      expect(t.html).toEqual('<div></div>');
+      const t = new TemplateFixture(
+          () => { return createDiv(); },
+          () => {
+            ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
+            ɵɵstyleProp('background-image', 'url("http://server")');
+          },
+          1);
+
+      const element = t.hostElement.firstChild as HTMLElement;
+      expect(element.style.getPropertyValue('background-image')).toEqual('');
 
       t.update(() => {
         ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
         ɵɵstyleProp('background-image', bypassSanitizationTrustStyle('url("http://server2")'));
       });
-      expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
-          .toEqual('url("http://server2")');
+      expect(element.style.getPropertyValue('background-image')).toEqual('url("http://server2")');
     });
   });
 
@@ -160,10 +162,12 @@ describe('instructions', () => {
     function createDivWithStyle() { ɵɵelement(0, 'div', 0); }
 
     it('should add style', () => {
-      const fixture = new TemplateFixture(
-          createDivWithStyle, () => {}, 1, 0, null, null, null, undefined, attrs);
-      fixture.update(() => { ɵɵstyleMap({'background-color': 'red'}); });
-      expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
+      const fixture = new TemplateFixture(createDivWithStyle, () => {
+        ɵɵstyleMap({'background-color': 'red'});
+      }, 1, 0, null, null, null, undefined, attrs);
+      fixture.update();
+      expect(fixture.html)
+          .toMatch(/<div style="background-color:\s*red;\s*height:\s*10px;?"><\/div>/);
     });
 
     it('should sanitize new styles that may contain `url` properties', () => {
@@ -199,7 +203,7 @@ describe('instructions', () => {
     it('should add class', () => {
       const fixture =
           new TemplateFixture(createDivWithStyling, () => { ɵɵclassMap('multiple classes'); }, 1);
-      expect(fixture.html).toEqual('<div class="classes multiple"></div>');
+      expect(fixture.html).toEqual('<div class="multiple classes"></div>');
     });
   });
 

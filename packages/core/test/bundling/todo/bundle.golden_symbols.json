@@ -15,6 +15,9 @@
     "name": "CHILD_TAIL"
   },
   {
+    "name": "CLASS_ENTRIES_SEPARATOR"
+  },
+  {
     "name": "CLEANUP"
   },
   {
@@ -64,6 +67,9 @@
   },
   {
     "name": "EMPTY_OBJ"
+  },
+  {
+    "name": "EMPTY_STRING"
   },
   {
     "name": "ERROR_DEBUG_CONTEXT"
@@ -211,6 +217,12 @@
   },
   {
     "name": "SANITIZER"
+  },
+  {
+    "name": "STYLE_ENTRIES_SEPARATOR"
+  },
+  {
+    "name": "STYLE_PROP_VALUE_SEPARATOR"
   },
   {
     "name": "STYLING_INDEX_FOR_MAP_BINDING"
@@ -372,10 +384,16 @@
     "name": "allocateNewContextEntry"
   },
   {
+    "name": "allowAttrWrite"
+  },
+  {
     "name": "allowDirectStyling"
   },
   {
     "name": "appendChild"
+  },
+  {
+    "name": "appendStrValue"
   },
   {
     "name": "applyContainer"
@@ -385,12 +403,6 @@
   },
   {
     "name": "applyProjectionRecursive"
-  },
-  {
-    "name": "applyStylingValue"
-  },
-  {
-    "name": "applyStylingValueDirectly"
   },
   {
     "name": "applyStylingViaContext"
@@ -432,6 +444,9 @@
     "name": "callHooks"
   },
   {
+    "name": "checkIfExternallyModified"
+  },
+  {
     "name": "checkNoChangesInternal"
   },
   {
@@ -442,6 +457,9 @@
   },
   {
     "name": "concatString"
+  },
+  {
+    "name": "concatStyle"
   },
   {
     "name": "createContainerRef"
@@ -519,6 +537,12 @@
     "name": "diPublicInInjector"
   },
   {
+    "name": "directWriteHasUpdates"
+  },
+  {
+    "name": "directWriteStylingFlush"
+  },
+  {
     "name": "domRendererFactory3"
   },
   {
@@ -567,7 +591,7 @@
     "name": "extractPipeDef"
   },
   {
-    "name": "findAndApplyMapValue"
+    "name": "fallbackToMergeAlgorithm"
   },
   {
     "name": "findAttrIndexInNode"
@@ -585,9 +609,6 @@
     "name": "flushStyling"
   },
   {
-    "name": "forceStylesAsString"
-  },
-  {
     "name": "forwardRef"
   },
   {
@@ -600,6 +621,9 @@
     "name": "generatePropertyAliases"
   },
   {
+    "name": "generateStylingBindingIndices"
+  },
+  {
     "name": "getActiveDirectiveId"
   },
   {
@@ -610,6 +634,12 @@
   },
   {
     "name": "getBindingsEnabled"
+  },
+  {
+    "name": "getCachedStr"
+  },
+  {
+    "name": "getCachedValue"
   },
   {
     "name": "getCheckNoChangesMode"
@@ -759,6 +789,9 @@
     "name": "getPipeDef"
   },
   {
+    "name": "getPreviousBindingIndex"
+  },
+  {
     "name": "getPreviousIndex"
   },
   {
@@ -846,6 +879,9 @@
     "name": "hyphenate"
   },
   {
+    "name": "hyphenate"
+  },
+  {
     "name": "includeViewProviders"
   },
   {
@@ -853,6 +889,9 @@
   },
   {
     "name": "incrementActiveDirectiveId"
+  },
+  {
+    "name": "incrementBindingIndex"
   },
   {
     "name": "incrementInitPhaseFlags"
@@ -927,6 +966,9 @@
     "name": "isDevMode"
   },
   {
+    "name": "isDirectSanitizationRequired"
+  },
+  {
     "name": "isDirectiveHost"
   },
   {
@@ -940,6 +982,9 @@
   },
   {
     "name": "isHostStylingActive"
+  },
+  {
+    "name": "isInitialValueOverlap"
   },
   {
     "name": "isJsObject"
@@ -975,7 +1020,16 @@
     "name": "isSanitizationRequired"
   },
   {
+    "name": "isSpaceChar"
+  },
+  {
     "name": "isStylingContext"
+  },
+  {
+    "name": "isStylingMap"
+  },
+  {
+    "name": "isStylingMapArray"
   },
   {
     "name": "isStylingValueDefined"
@@ -1032,6 +1086,9 @@
     "name": "matchTemplateAttribute"
   },
   {
+    "name": "modifyStyleEntryInString"
+  },
+  {
     "name": "nativeAppendChild"
   },
   {
@@ -1062,13 +1119,16 @@
     "name": "nextNgElementId"
   },
   {
+    "name": "nextStylingBindingIndex"
+  },
+  {
     "name": "noSideEffects"
   },
   {
     "name": "normalizeBitMaskValue"
   },
   {
-    "name": "objectToClassName"
+    "name": "normalizeIntoStylingMap"
   },
   {
     "name": "patchConfig"
@@ -1102,6 +1162,9 @@
   },
   {
     "name": "registerBinding"
+  },
+  {
+    "name": "registerBindingIntoTNode"
   },
   {
     "name": "registerInitialStylingOnTNode"
@@ -1152,6 +1215,9 @@
     "name": "renderView"
   },
   {
+    "name": "replaceStyleString"
+  },
+  {
     "name": "resetCurrentStyleSanitizer"
   },
   {
@@ -1195,6 +1261,9 @@
   },
   {
     "name": "setBindingRoot"
+  },
+  {
+    "name": "setCachedValue"
   },
   {
     "name": "setCheckNoChangesMode"
@@ -1254,6 +1323,9 @@
     "name": "setMapValue"
   },
   {
+    "name": "setPreviousBindingIndex"
+  },
+  {
     "name": "setPreviousOrParentTNode"
   },
   {
@@ -1266,6 +1338,9 @@
     "name": "setStyleAttr"
   },
   {
+    "name": "setStylingValue"
+  },
+  {
     "name": "setUpAttributes"
   },
   {
@@ -1273,6 +1348,9 @@
   },
   {
     "name": "shouldSearchParent"
+  },
+  {
+    "name": "splitOnWhitespace"
   },
   {
     "name": "storeCleanupFn"
@@ -1338,6 +1416,9 @@
     "name": "updateStyleViaContext"
   },
   {
+    "name": "updateStylingEntry"
+  },
+  {
     "name": "viewAttachedToChangeDetector"
   },
   {
@@ -1348,9 +1429,6 @@
   },
   {
     "name": "wrapListener"
-  },
-  {
-    "name": "writeStylingValueDirectly"
   },
   {
     "name": "ɵɵadvance"

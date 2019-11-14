@@ -19,7 +19,7 @@ import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {registerPostOrderHooks, registerPreOrderHooks} from './hooks';
 import {CLEAN_PROMISE, addToViewTree, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, renderView} from './instructions/shared';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
-import {TElementNode, TNode, TNodeType} from './interfaces/node';
+import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
@@ -212,6 +212,8 @@ export function createRootComponent<T>(
 
   const rootTNode = getPreviousOrParentTNode();
   if (tView.firstCreatePass && componentDef.hostBindings) {
+    rootTNode.flags |= TNodeFlags.hasHostBindings;
+
     const elementIndex = rootTNode.index - HEADER_OFFSET;
     setActiveHostElement(elementIndex);
     incrementActiveDirectiveId();

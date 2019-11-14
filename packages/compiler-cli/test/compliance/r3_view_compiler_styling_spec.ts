@@ -504,7 +504,7 @@ describe('compiler compliance: styling', () => {
               type: MyComponent,
               selectors:[["my-component"]],
               decls: 1,
-              vars: 5,
+              vars: 7,
               consts: [[${AttributeMarker.Styles}, "opacity", "1"]],
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
@@ -551,7 +551,7 @@ describe('compiler compliance: styling', () => {
             type: MyComponent,
             selectors: [["my-component"]],
             decls: 1,
-            vars: 1,
+            vars: 2,
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵelement(0, "div");
@@ -697,7 +697,7 @@ describe('compiler compliance: styling', () => {
               type: MyComponent,
               selectors:[["my-component"]],
               decls: 1,
-              vars: 5,
+              vars: 7,
               consts: [[${AttributeMarker.Classes}, "grape"]],
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
@@ -912,10 +912,10 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-              $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind2(1, 8, $ctx$.myStyleExp, 1000));
-              $r3$.ɵɵclassMap($r3$.ɵɵpureFunction0(20, _c0));
-              $r3$.ɵɵstyleProp("bar", $r3$.ɵɵpipeBind2(2, 11, $ctx$.barExp, 3000))("baz", $r3$.ɵɵpipeBind2(3, 14, $ctx$.bazExp, 4000));
-              $r3$.ɵɵclassProp("foo", $r3$.ɵɵpipeBind2(4, 17, $ctx$.fooExp, 2000));
+              $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind2(1, 11, $ctx$.myStyleExp, 1000));
+              $r3$.ɵɵclassMap($r3$.ɵɵpureFunction0(23, _c0));
+              $r3$.ɵɵstyleProp("bar", $r3$.ɵɵpipeBind2(2, 14, $ctx$.barExp, 3000))("baz", $r3$.ɵɵpipeBind2(3, 17, $ctx$.bazExp, 4000));
+              $r3$.ɵɵclassProp("foo", $r3$.ɵɵpipeBind2(4, 20, $ctx$.fooExp, 2000));
               $r3$.ɵɵadvance(5);
              $r3$.ɵɵtextInterpolate1(" ", $ctx$.item, "");
             }
@@ -1013,7 +1013,7 @@ describe('compiler compliance: styling', () => {
       const template = `
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵallocHostVars(6);
+              $r3$.ɵɵallocHostVars(8);
               $r3$.ɵɵelementHostAttrs($e0_attrs$);
             }
             if (rf & 2) {
@@ -1072,7 +1072,7 @@ describe('compiler compliance: styling', () => {
       const template = `
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵallocHostVars(8);
+              $r3$.ɵɵallocHostVars(12);
             }
             if (rf & 2) {
               $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
@@ -1145,7 +1145,7 @@ describe('compiler compliance: styling', () => {
          const hostBindings = `
             hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
               if (rf & 1) {
-                $r3$.ɵɵallocHostVars(6);
+                $r3$.ɵɵallocHostVars(8);
               }
               if (rf & 2) {
                 $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
@@ -1220,7 +1220,7 @@ describe('compiler compliance: styling', () => {
           …
           function WidthDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵallocHostVars(2);
+              $r3$.ɵɵallocHostVars(4);
             }
             if (rf & 2) {
               $r3$.ɵɵstyleProp("width", ctx.myWidth);
@@ -1230,7 +1230,7 @@ describe('compiler compliance: styling', () => {
           …
           function HeightDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵallocHostVars(2);
+              $r3$.ɵɵallocHostVars(4);
             }
             if (rf & 2) {
               $r3$.ɵɵstyleProp("height", ctx.myHeight);
@@ -1887,7 +1887,7 @@ describe('compiler compliance: styling', () => {
     const template = `
       hostBindings: function WidthDirective_HostBindings(rf, ctx, elIndex) {
         if (rf & 1) {
-          $r3$.ɵɵallocHostVars(4);
+          $r3$.ɵɵallocHostVars(6);
         }
         if (rf & 2) {
           $r3$.ɵɵhostProperty("id", ctx.id)("title", ctx.title);
@@ -2053,13 +2053,13 @@ describe('compiler compliance: styling', () => {
       const template = `
           hostBindings: function MyDir_HostBindings(rf, ctx, elIndex) {
             …
-            $r3$.ɵɵallocHostVars(9);
+            $r3$.ɵɵallocHostVars(10);
             …
             if (rf & 2) {
               $r3$.ɵɵhostProperty("title", ctx.title);
               $r3$.ɵɵupdateSyntheticHostBinding("@anim",
-                $r3$.ɵɵpureFunction2(6, _c1, ctx._animValue,
-                $r3$.ɵɵpureFunction2(3, _c0, ctx._animParam1, ctx._animParam2)));
+                $r3$.ɵɵpureFunction2(7, _c1, ctx._animValue,
+                $r3$.ɵɵpureFunction2(4, _c0, ctx._animParam1, ctx._animParam2)));
               $r3$.ɵɵclassProp("foo", ctx.foo);
             }
           }

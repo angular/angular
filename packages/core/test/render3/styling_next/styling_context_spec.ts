@@ -16,7 +16,7 @@ function registerBinding(
     value: any) {
   let tNode: TStylingNode = (context as any).tNode;
   if (!tNode) {
-    tNode = (context as any).tNode = {flags: 0};
+    tNode = (context as any).tNode = {flags: 0, classesBindingIndex: 0, stylesBindingIndex: 0};
   }
   _registerBinding(context, tNode, countId, sourceIndex, prop, value, false, false);
 }
@@ -122,7 +122,7 @@ describe('styling context', () => {
 
 function makeContextWithDebug(isClassBased: boolean) {
   const ctx = allocTStylingContext(null, false);
-  const tNode: TStylingNode = {flags: 0};
+  const tNode: TStylingNode = {flags: 0, classesBindingIndex: 0, stylesBindingIndex: 0};
   (ctx as any).tNode = ctx;
   return attachStylingDebugObject(ctx, tNode, isClassBased);
 }

@@ -32,11 +32,11 @@ import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DE
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {ActiveElementFlags, enterView, executeElementExitFn, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, hasActiveElementFlag, incrementActiveDirectiveId, leaveView, leaveViewProcessExit, setActiveHostElement, setBindingIndex, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
-import {renderStylingMap, writeStylingValueDirectly} from '../styling/bindings';
+import {renderStylingMap} from '../styling/bindings';
 import {NO_CHANGE} from '../tokens';
 import {isAnimationProp} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
-import {getInitialStylingValue} from '../util/styling_utils';
+import {getInitialStylingValue, setClassName, setStyleAttr} from '../util/styling_utils';
 import {getLViewParent} from '../util/view_traversal_utils';
 import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
 
@@ -810,7 +810,9 @@ export function createTNode(
                          tParent,    // parent: TElementNode|TContainerNode|null
                          null,       // projection: number|(ITNode|RNode[])[]|null
                          null,       // styles: TStylingContext|null
+                         0,          // stylesBindingIndex: number
                          null,       // classes: TStylingContext|null
+                         0,          // classesBindingIndex: number
                          ) :
                      {
                        type: type,
@@ -834,7 +836,9 @@ export function createTNode(
                        parent: tParent,
                        projection: null,
                        styles: null,
+                       stylesBindingIndex: 0,
                        classes: null,
+                       classesBindingIndex: 0,
                      };
 }
 
@@ -1909,7 +1913,7 @@ export function renderInitialStyling(
       renderStylingMap(renderer, native, tNode.classes, true);
     } else {
       const classes = getInitialStylingValue(tNode.classes);
-      writeStylingValueDirectly(renderer, native, classes, true, null);
+      setClassName(renderer, native, classes);
     }
   }
   if (tNode.styles !== null) {
@@ -1917,7 +1921,7 @@ export function renderInitialStyling(
       renderStylingMap(renderer, native, tNode.styles, false);
     } else {
       const styles = getInitialStylingValue(tNode.styles);
-      writeStylingValueDirectly(renderer, native, styles, false, null);
+      setStyleAttr(renderer, native, styles);
     }
   }
 }

@@ -7,11 +7,22 @@
 */
 import {unwrapSafeValue} from '../../sanitization/bypass';
 import {PropertyAliases, TNodeFlags} from '../interfaces/node';
-import {LStylingData, StylingMapArray, StylingMapArrayIndex, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags, TStylingNode} from '../interfaces/styling';
+import {RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
+import {ApplyStylingFn, LStylingData, StylingMapArray, StylingMapArrayIndex, TDataStylingFlags, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags, TStylingNode} from '../interfaces/styling';
+import {LView, TData} from '../interfaces/view';
 import {NO_CHANGE} from '../tokens';
 
 export const MAP_BASED_ENTRY_PROP_NAME = '[MAP]';
 export const TEMPLATE_DIRECTIVE_INDEX = 0;
+
+// classOne-SEPARATOR-classTwo
+export const CLASS_ENTRIES_SEPARATOR = ' ';
+
+// propAndValue-SEPARATOR-propAndValue
+export const STYLE_ENTRIES_SEPARATOR = '; ';
+
+// style-SEPARATOR-prop
+const STYLE_PROP_VALUE_SEPARATOR = ':';
 
 /**
  * Default fallback value for a styling binding.
@@ -70,31 +81,10 @@ export function hasConfig(tNode: TStylingNode, flag: TNodeFlags) {
  * 3. There are no collisions (i.e. properties with more than one binding) across multiple
  *    sources (i.e. template + directive, directive + directive, directive + component)
  */
-export function allowDirectStyling(
-    tNode: TStylingNode, isClassBased: boolean, firstUpdatePass: boolean): boolean {
-  let allow = false;
-
-  // if no directives are present then we do not need populate a context at all. This
-  // is because duplicate prop bindings cannot be registered through the template. If
-  // and when this happens we can safely apply the value directly without context
-  // resolution...
-  const hasDirectives = hasConfig(tNode, TNodeFlags.hasHostBindings);
-  if (!hasDirectives) {
-    // `ngDevMode` is required to be checked here because tests/debugging rely on the context being
-    // populated. If things are in production mode then there is no need to build a context
-    // therefore the direct apply can be allowed (even on the first update).
-    allow = ngDevMode ? !firstUpdatePass : true;
-  } else if (!firstUpdatePass) {
-    const duplicateStylingFlag =
-        isClassBased ? TNodeFlags.hasDuplicateClassBindings : TNodeFlags.hasDuplicateStyleBindings;
-    const hasDuplicates = hasConfig(tNode, duplicateStylingFlag);
-    const hasOnlyMapOrPropsFlag = isClassBased ? TNodeFlags.hasClassPropAndMapBindings :
-                                                 TNodeFlags.hasStylePropAndMapBindings;
-    const hasOnlyMapsOrOnlyProps = (tNode.flags & hasOnlyMapOrPropsFlag) !== hasOnlyMapOrPropsFlag;
-    allow = !hasDuplicates && hasOnlyMapsOrOnlyProps;
-  }
-
-  return allow;
+export function allowDirectStyling(tNode: TStylingNode, isClassBased: boolean): boolean {
+  const flagToCheck = TNodeFlags.hasHostBindings |
+      (isClassBased ? TNodeFlags.hasClassContextInUse : TNodeFlags.hasStyleContextInUse);
+  return (tNode.flags & flagToCheck) === 0;
 }
 
 export function patchConfig(tNode: TStylingNode, flag: TNodeFlags): void {
@@ -180,13 +170,16 @@ export function hasValueChangedUnwrapSafeValue(
 
 
 export function hasValueChanged(
-    a: NO_CHANGE | StylingMapArray | number | string | null | boolean | undefined | {},
-    b: NO_CHANGE | StylingMapArray | number | string | null | boolean | undefined | {}): boolean {
-  if (b === NO_CHANGE) return false;
+    oldValue: NO_CHANGE | StylingMapArray | number | string | null | boolean | undefined | {},
+    newValue: NO_CHANGE | StylingMapArray | number | string | null | boolean | undefined |
+        {}): boolean {
+  if (newValue === NO_CHANGE) return false;
 
-  const compareValueA = Array.isArray(a) ? a[StylingMapArrayIndex.RawValuePosition] : a;
-  const compareValueB = Array.isArray(b) ? b[StylingMapArrayIndex.RawValuePosition] : b;
-  return !Object.is(compareValueA, compareValueB);
+  const oldValueToCompare =
+      Array.isArray(oldValue) ? oldValue[StylingMapArrayIndex.RawValuePosition] : oldValue;
+  const newValueToCompare =
+      Array.isArray(newValue) ? newValue[StylingMapArrayIndex.RawValuePosition] : newValue;
+  return !Object.is(oldValueToCompare, newValueToCompare);
 }
 
 /**
@@ -232,7 +225,7 @@ export function isStylingContext(value: any): boolean {
       typeof value[1] !== 'string';
 }
 
-export function isStylingMapArray(value: any): boolean {
+export function isStylingMapArray(value: any): value is StylingMapArray {
   // the StylingMapArray is in the format of [initial, prop, string, prop, string]
   // and this is the defining value to distinguish between arrays
   return Array.isArray(value) &&
@@ -275,7 +268,7 @@ export function getMapValue(map: StylingMapArray, index: number): string|null {
 export function forceClassesAsString(classes: string | {[key: string]: any} | null | undefined):
     string {
   if (classes && typeof classes !== 'string') {
-    classes = Object.keys(classes).join(' ');
+    classes = Object.keys(classes).join(CLASS_ENTRIES_SEPARATOR);
   }
   return (classes as string) || '';
 }
@@ -291,7 +284,7 @@ export function forceStylesAsString(
       const propLabel = hyphenateProps ? hyphenate(prop) : prop;
       const value = styles[prop];
       if (value !== null) {
-        str = concatString(str, `${propLabel}:${value}`, ';');
+        str = concatString(str, concatStyle(propLabel, value), STYLE_ENTRIES_SEPARATOR);
       }
     }
   }
@@ -314,8 +307,9 @@ export function stylingMapToString(map: StylingMapArray, isClassBased: boolean):
        i += StylingMapArrayIndex.TupleSize) {
     const prop = getMapProp(map, i);
     const value = getMapValue(map, i) as string;
-    const attrValue = concatString(prop, isClassBased ? '' : value, ':');
-    str = concatString(str, attrValue, isClassBased ? ' ' : '; ');
+    const attrValue = isClassBased ? prop : concatStyle(prop, value);
+    str = concatString(
+        str, attrValue, isClassBased ? CLASS_ENTRIES_SEPARATOR : STYLE_ENTRIES_SEPARATOR);
   }
   return str;
 }
@@ -454,4 +448,193 @@ export function splitOnWhitespace(text: string): string[]|null {
 // `input('class') + classMap()` instructions.
 export function selectClassBasedInputName(inputs: PropertyAliases): string {
   return inputs.hasOwnProperty('class') ? 'class' : 'className';
+}
+
+/**
+ * Returns a style entry with the `prop` and `value` concatenated together
+ */
+export function concatStyle(prop: string, value: string) {
+  return `${prop}${STYLE_PROP_VALUE_SEPARATOR}${value}`;
+}
+
+/**
+ * Assigns a style value to a style property for the given element.
+ */
+export const setStyle: ApplyStylingFn =
+    (renderer: Renderer3 | null, native: RElement, prop: string, value: string | null) => {
+      if (renderer !== null) {
+        // Use `isStylingValueDefined` to account for falsy values that should be bound like 0.
+        if (isStylingValueDefined(value)) {
+          // opacity, z-index and flexbox all have number values
+          // and these need to be converted into strings so that
+          // they can be assigned properly.
+          value = value.toString();
+          ngDevMode && ngDevMode.rendererSetStyle++;
+          if (isProceduralRenderer(renderer)) {
+            renderer.setStyle(native, prop, value, RendererStyleFlags3.DashCase);
+          } else {
+            // The reason why native style may be `null` is either because
+            // it's a container element or it's a part of a test
+            // environment that doesn't have styling. In either
+            // case it's safe not to apply styling to the element.
+            const nativeStyle = native.style;
+            if (nativeStyle != null) {
+              nativeStyle.setProperty(prop, value);
+            }
+          }
+        } else {
+          ngDevMode && ngDevMode.rendererRemoveStyle++;
+
+          if (isProceduralRenderer(renderer)) {
+            renderer.removeStyle(native, prop, RendererStyleFlags3.DashCase);
+          } else {
+            const nativeStyle = native.style;
+            if (nativeStyle != null) {
+              nativeStyle.removeProperty(prop);
+            }
+          }
+        }
+      }
+    };
+
+/**
+ * Adds/removes the provided className value to the provided element.
+ */
+export const setClass: ApplyStylingFn =
+    (renderer: Renderer3 | null, native: RElement, className: string, value: any) => {
+      if (renderer !== null && className !== '') {
+        if (value) {
+          ngDevMode && ngDevMode.rendererAddClass++;
+          if (isProceduralRenderer(renderer)) {
+            renderer.addClass(native, className);
+          } else {
+            // the reason why classList may be `null` is either because
+            // it's a container element or it's a part of a test
+            // environment that doesn't have styling. In either
+            // case it's safe not to apply styling to the element.
+            const classList = native.classList;
+            if (classList != null) {
+              classList.add(className);
+            }
+          }
+        } else {
+          ngDevMode && ngDevMode.rendererRemoveClass++;
+          if (isProceduralRenderer(renderer)) {
+            renderer.removeClass(native, className);
+          } else {
+            const classList = native.classList;
+            if (classList != null) {
+              classList.remove(className);
+            }
+          }
+        }
+      }
+    };
+
+/**
+ * Sets the provided className value to the provided element's `className` property.
+ */
+export const setClassName = (renderer: Renderer3 | null, native: RElement, className: string) => {
+  if (renderer !== null) {
+    if (isProceduralRenderer(renderer)) {
+      renderer.setAttribute(native, 'class', className);
+    } else {
+      native.className = className;
+    }
+  }
+};
+
+/**
+ * Sets the provided style value to the provided element's `style` attribute.
+ */
+export const setStyleAttr = (renderer: Renderer3 | null, native: RElement, value: string) => {
+  if (renderer !== null) {
+    if (isProceduralRenderer(renderer)) {
+      renderer.setAttribute(native, 'style', value);
+    } else {
+      native.setAttribute('style', value);
+    }
+  }
+};
+
+export function isDirectSanitizationRequired(tData: TData, bindingIndex: number) {
+  return ((tData[bindingIndex + 1] as number) & TDataStylingFlags.SanitizationRequiredFlag) !== 0;
+}
+
+export function isInitialValueOverlap(tData: TData, bindingIndex: number) {
+  return ((tData[bindingIndex + 1] as number) & TDataStylingFlags.HasInitialValueOverlap) !== 0;
+}
+
+/**
+ * Gets the previous style/class index that was registered just before the provided `bindingIndex`
+ *
+ * A previous binding index points to the previous style/class binding entry
+ * (which is stored inside of `TData`). Previous binding indices are used to
+ * connect each of the style/class bindings together so that the direct-write
+ * algorithm can keep track of cached values.
+ *
+ * When a previous binding index is set, the first few bits will be reserved
+ * to keep track of styling flags. These flags are stripped out (using bit
+ * shifting) when this function is called.
+ */
+export function getPreviousBindingIndex(tData: TData, bindingIndex: number) {
+  const value = tData[bindingIndex + 1] as number;
+  return value >> TDataStylingFlags.TotalBits;
+}
+
+/**
+ * Sets the provided style/class binding entry to point to the provided `previousBindingIndex`
+ */
+export function setPreviousBindingIndex(
+    tData: TData, bindingIndex: number, previousBindingIndex: number, sanitizationRequired: boolean,
+    hasPotentialOverlap: boolean) {
+  let value = previousBindingIndex << TDataStylingFlags.TotalBits;
+  if (sanitizationRequired) {
+    value |= TDataStylingFlags.SanitizationRequiredFlag;
+  }
+  if (hasPotentialOverlap) {
+    value |= TDataStylingFlags.HasInitialValueOverlap;
+  }
+  tData[bindingIndex + 1] = value;
+}
+
+/**
+ * Gets the cached binding value for a binding location in the `LView`.
+ *
+ * Cached values are used in the direct-write styling algorithm to store
+ * an intermediate concatenated string value of all the binding entries
+ * that came before it.
+ *
+ * Given the following binding code:
+ *
+ * ```html
+ * <div [style.width]="'100px'" [style.height]="'200px'">..</div>
+ * ```
+ *
+ * Our `LView` will look like so:
+ *
+ * ```typescript
+ * LView = [
+ *   // ...
+ *   '100px', // width
+ *   'width:100px' // CACHED VALUE (in this case just `width`)
+ *
+ *   // ...
+ *   '200px', // BINDING VALUE
+ *   'width:100px; height:200px' // CACHED VALUE (in this case `width` and `height`)
+ * ]
+ * ```
+ */
+export function getCachedValue(lView: LView, bindingIndex: number): string {
+  const value = lView[bindingIndex + 1];
+  return typeof value === 'string' ? value : '';
+}
+
+/**
+ * Updates the cached binding value for a binding location in the `LView`.
+ *
+ * See [getCachedValue].
+ */
+export function setCachedValue(lView: LView, bindingIndex: number, value: string) {
+  lView[bindingIndex + 1] = value;
 }

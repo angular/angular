@@ -176,7 +176,9 @@ export const TNodeConstructor = class TNode implements ITNode {
       public parent: TElementNode|TContainerNode|null,                         //
       public projection: number|(ITNode|RNode[])[]|null,                       //
       public styles: TStylingContext|null,                                     //
+      public stylesBindingIndex: number,                                       //
       public classes: TStylingContext|null,                                    //
+      public classesBindingIndex: number,                                      //
       ) {}
 
   get type_(): string {
@@ -416,12 +418,12 @@ export function buildDebugNode(tNode: TNode, lView: LView, nodeIndex: number): D
   const rawValue = lView[nodeIndex];
   const native = unwrapRNode(rawValue);
   const componentLViewDebug = toDebug(readLViewValue(rawValue));
-  const styles = isStylingContext(tNode.styles) ?
-      new NodeStylingDebug(tNode.styles as any as TStylingContext, tNode, lView, false) :
-      null;
-  const classes = isStylingContext(tNode.classes) ?
-      new NodeStylingDebug(tNode.classes as any as TStylingContext, tNode, lView, true) :
-      null;
+  const tData = lView[TVIEW].data;
+  const stylesContext = isStylingContext(tNode.styles) ? (tNode.styles as TStylingContext) : null;
+  const styles = new NodeStylingDebug(stylesContext, tNode, tData, lView, false);
+  const classesContext =
+      isStylingContext(tNode.classes) ? (tNode.classes as TStylingContext) : null;
+  const classes = new NodeStylingDebug(classesContext, tNode, tData, lView, true);
   return {
     html: toHtml(native),
     native: native as any, styles, classes,

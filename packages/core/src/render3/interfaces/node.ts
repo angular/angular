@@ -78,29 +78,63 @@ export const enum TNodeFlags {
    */
   hasHostBindings = 0x80,
 
-  /** Bit #9 - This bit is set if the node has initial styling */
-  hasInitialStyling = 0x100,
+  /**
+   * Bit #9 - This bit is set if the node has any initial classes
+   *
+   * Tracking initial classes using this flag is important for performance
+   * reasons because it enables the class binding code to avoid certain
+   * operations (i.e. if a class value doesn't exist both in binding code
+   * and in the initial classes code then there is no need to search/replace
+   * the class out of the className string).
+   */
+  hasInitialClasses = 0x100,
 
   /**
-   * Bit #10 - Whether or not there are class-based map bindings present.
+   * Bit #10 - This bit is set if the node has any initial styles
+   *
+   * Tracking initial classes using this flag is important for performance
+   * reasons because it enables the style binding code to avoid certain
+   * operations (i.e. if a style entry doesn't exist both in binding code
+   * and in the initial styles code then there is no need to search/replace
+   * the class out of the style attribute string).
+   */
+  hasInitialStyles = 0x200,
+
+  /**
+   * Whether or not there are any initial styles or initial classes present
+   *
+   * This flag is a combination of both flags for tracking initial styles
+   * and classes. There are various cases in element creation that the
+   * initial styles and classes need to be rendered on screen, therefore,
+   * this flag allows for that check to be a single operation.
+   */
+  hasInitialStyling = hasInitialClasses | hasInitialStyles,
+
+  /**
+   * Bit #11 - Whether or not there are class-based map bindings present.
    *
    * Examples include:
    * 1. `<div [class]="x">`
    * 2. `@HostBinding('class') x`
    */
-  hasClassMapBindings = 0x200,
+  hasClassMapBindings = 0x400,
 
   /**
-   * Bit #11 - Whether or not there are any class-based prop bindings present.
+   * Bit #12 - Whether or not there are any class-based prop bindings present.
    *
    * Examples include:
    * 1. `<div [class.name]="x">`
    * 2. `@HostBinding('class.name') x`
    */
-  hasClassPropBindings = 0x400,
+  hasClassPropBindings = 0x800,
 
   /**
-   * Bit #12 - whether or not there are any active [class] and [class.name] bindings
+   * Whether or not there are any active [class] and [class.name] bindings
+   *
+   * This flag allows for the class binding code to determine if there are
+   * any potential class binding overlaps between map-based bindings and
+   * prop-based bindings (i.e. if both map and prop bindings exist then
+   * there is a chance the same property will show up in both bindings).
    */
   hasClassPropAndMapBindings = hasClassMapBindings | hasClassPropBindings,
 
@@ -111,7 +145,7 @@ export const enum TNodeFlags {
    * 1. `<div [class]="x">`
    * 2. `<div [class.name]="x">`
    */
-  hasTemplateClassBindings = 0x800,
+  hasTemplateClassBindings = 0x1000,
 
   /**
    * Bit #14 - Whether or not the context contains one or more class-based host bindings.
@@ -120,7 +154,7 @@ export const enum TNodeFlags {
    * 1. `@HostBinding('class') x`
    * 2. `@HostBinding('class.name') x`
    */
-  hasHostClassBindings = 0x1000,
+  hasHostClassBindings = 0x2000,
 
   /**
    * Bit #15 - Whether or not there are two or more sources for a class property in the context.
@@ -130,7 +164,7 @@ export const enum TNodeFlags {
    * 2. map + prop: `<div [class]="x" [class.foo]>`
    * 3. map + map: `<div [class]="x" dir-that-sets-class>`
    */
-  hasDuplicateClassBindings = 0x2000,
+  hasDuplicateClassBindings = 0x4000,
 
   /**
    * Bit #16 - Whether or not there are style-based map bindings present.
@@ -139,7 +173,7 @@ export const enum TNodeFlags {
    * 1. `<div [style]="x">`
    * 2. `@HostBinding('style') x`
    */
-  hasStyleMapBindings = 0x4000,
+  hasStyleMapBindings = 0x8000,
 
   /**
    * Bit #17 - Whether or not there are any style-based prop bindings present.
@@ -148,40 +182,67 @@ export const enum TNodeFlags {
    * 1. `<div [style.prop]="x">`
    * 2. `@HostBinding('style.prop') x`
    */
-  hasStylePropBindings = 0x8000,
+  hasStylePropBindings = 0x10000,
 
   /**
-   * Bit #18 - whether or not there are any active [style] and [style.prop] bindings
+   * whether or not there are any active [style] and [style.prop] bindings
+   *
+   * This flag allows for the style binding code to determine if there are
+   * any potential style binding overlaps between map-based bindings and
+   * prop-based bindings (i.e. if both map and prop bindings exist then
+   * there is a chance the same property will show up in both bindings).
    */
   hasStylePropAndMapBindings = hasStyleMapBindings | hasStylePropBindings,
 
   /**
-   * Bit #19 - Whether or not the context contains one or more style-based template bindings.
+   * Bit #18 - Whether or not the context contains one or more style-based template bindings.
    *
    * Examples include:
    * 1. `<div [style]="x">`
    * 2. `<div [style.prop]="x">`
    */
-  hasTemplateStyleBindings = 0x10000,
+  hasTemplateStyleBindings = 0x20000,
 
   /**
-   * Bit #20 - Whether or not the context contains one or more style-based host bindings.
+   * Bit #19 - Whether or not the context contains one or more style-based host bindings.
    *
    * Examples include:
    * 1. `@HostBinding('style') x`
    * 2. `@HostBinding('style.prop') x`
    */
-  hasHostStyleBindings = 0x20000,
+  hasHostStyleBindings = 0x40000,
 
   /**
-   * Bit #21 - Whether or not there are two or more sources for a style property in the context.
+   * Bit #20 - Whether or not there are two or more sources for a style property in the context.
    *
    * Examples include:
    * 1. prop + prop: `<div [style.width]="x" dir-that-sets-width>`
    * 2. map + prop: `<div [style]="x" [style.prop]>`
    * 3. map + map: `<div [style]="x" dir-that-sets-style>`
    */
-  hasDuplicateStyleBindings = 0x40000,
+  hasDuplicateStyleBindings = 0x80000,
+
+  /**
+   * Whether or not a `TStylingContext` instance is used for class bindings.
+   *
+   * The `TStylingContext` data-structure acts as a sophisticated lookup table
+   * for the styling merge algorithm. It is only used when duplicate bindings
+   * and host bindings are detected and will be used in favor of the direct-write
+   * algorithm. This flag helps the styling code detect whether or not the
+   * styling merge mode is active for class-based bindings.
+   */
+  hasClassContextInUse = 0x100000,
+
+  /**
+   * Whether or not a `TStylingContext` instance is used for styles (merge mode algorithm active)
+   *
+   * The `TStylingContext` data-structure acts as a sophisticated lookup table
+   * for the styling merge algorithm. It is only used when duplicate bindings
+   * and host bindings are detected and will be used in favor of the direct-write
+   * algorithm. This flag helps the styling code detect whether or not the
+   * styling merge mode is active for style-based bindings.
+   */
+  hasStyleContextInUse = 0x200000,
 }
 
 /**
@@ -581,6 +642,35 @@ export interface TNode {
   styles: StylingMapArray|TStylingContext|null;
 
   /**
+   * Last binding index for any `[style]` or `[style.prop]` bindings on this node.
+   *
+   * The `tNode.stylesBindingIndex` helps the styling algorithm determine the tail
+   * of all the style-binding indices. Using this value, the algorithm can iterate
+   * through all bindings and figure out what the final style value is for the
+   * direct-write styling algorithm. It also acts a quick lookup table for testing
+   * and debugging code to figure out what style bindings are present on an element.
+   *
+   * Let's imagine we have the following template binding code:
+   *
+   * ```
+   * <!-- style.width is stored at bindingIndex = 20 -->
+   * <!-- style.height is stored at bindingIndex = 22 -->
+   * <div [style.width]="x" [style.height]="y">
+   * ```
+   *
+   * Once the `style.width` is processed then the `tNode.stylesBindingIndex`
+   * will have a value of `20` (which points to the `[style.width]` binding).
+   *
+   * Then once the `style.height` is processed then the `tNode.stylesBindingIndex`
+   * will have a value of `22` (which points to the `[style.height]` binding).
+   *
+   * When style host bindings are present, the styling algorithm will easily be
+   * able to connect style bindings from the template code over to the host
+   * bindings code using this value.
+   */
+  stylesBindingIndex: number;
+
+  /**
    * A collection of all class bindings and/or static class values for an element.
    *
    * This field will be populated if and when:
@@ -599,6 +689,35 @@ export interface TNode {
    * will be placed into the initial styling slot in the newly created `TStylingContext`.
    */
   classes: StylingMapArray|TStylingContext|null;
+
+  /**
+   * Last binding index for any `[class]` or `[class.name]` bindings on this node.
+   *
+   * The `tNode.classesBindingIndex` helps the styling algorithm determine the tail
+   * of all the class-binding indices. Using this value, the algorithm can iterate
+   * through all bindings and figure out what the final className value is for the
+   * direct-write styling algorithm. It also acts a quick lookup table for testing
+   * and debugging code to figure out what class bindings are present on an element.
+   *
+   * Let's imagine we have the following template binding code:
+   *
+   * ```
+   * <!-- class.foo is stored at bindingIndex = 20 -->
+   * <!-- class.bar is stored at bindingIndex = 22 -->
+   * <div [class.foo]="x" [class.bar]="y">
+   * ```
+   *
+   * Once the `class.foo` is processed then the `tNode.classesBindingIndex`
+   * will have a value of `20` (which points to the `[class.foo]` binding).
+   *
+   * Then once the `class.bar` is processed then the `tNode.classesBindingIndex`
+   * will have a value of `22` (which points to the `[class.bar]` binding).
+   *
+   * When class host bindings are present, the styling algorithm will easily be
+   * able to connect class bindings from the template code over to the host
+   * bindings code using this value.
+   */
+  classesBindingIndex: number;
 }
 
 /** Static data for an element  */

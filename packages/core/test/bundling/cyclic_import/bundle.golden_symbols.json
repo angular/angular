@@ -12,6 +12,9 @@
     "name": "CHILD_TAIL"
   },
   {
+    "name": "CLASS_ENTRIES_SEPARATOR"
+  },
+  {
     "name": "CLEAN_PROMISE"
   },
   {
@@ -120,6 +123,12 @@
     "name": "SANITIZER"
   },
   {
+    "name": "STYLE_ENTRIES_SEPARATOR"
+  },
+  {
+    "name": "STYLE_PROP_VALUE_SEPARATOR"
+  },
+  {
     "name": "TVIEW"
   },
   {
@@ -190,6 +199,9 @@
   },
   {
     "name": "concatString"
+  },
+  {
+    "name": "concatStyle"
   },
   {
     "name": "createDirectivesInstances"
@@ -274,9 +286,6 @@
   },
   {
     "name": "findDirectiveMatches"
-  },
-  {
-    "name": "forceStylesAsString"
   },
   {
     "name": "generateExpandoInstructionBlock"
@@ -417,9 +426,6 @@
     "name": "hasTagAndTypeMatch"
   },
   {
-    "name": "hyphenate"
-  },
-  {
     "name": "includeViewProviders"
   },
   {
@@ -541,9 +547,6 @@
   },
   {
     "name": "noSideEffects"
-  },
-  {
-    "name": "objectToClassName"
   },
   {
     "name": "refreshChildComponents"
@@ -691,9 +694,6 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
-  },
-  {
-    "name": "writeStylingValueDirectly"
   },
   {
     "name": "ɵɵdefineComponent"

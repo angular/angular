@@ -64,7 +64,7 @@ export function ɵɵelementStart(
     }
   }
 
-  if ((tNode.flags & TNodeFlags.hasInitialStyling) === TNodeFlags.hasInitialStyling) {
+  if (tNode.flags & TNodeFlags.hasInitialStyling) {
     renderInitialStyling(renderer, native, tNode, false);
   }
 
