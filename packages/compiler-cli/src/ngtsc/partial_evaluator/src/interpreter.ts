@@ -160,7 +160,7 @@ export class StaticInterpreter {
     return array;
   }
 
-  private visitObjectLiteralExpression(node: ts.ObjectLiteralExpression, context: Context):
+  protected visitObjectLiteralExpression(node: ts.ObjectLiteralExpression, context: Context):
       ResolvedValue {
     const map: ResolvedValueMap = new Map<string, ResolvedValue>();
     for (let i = 0; i < node.properties.length; i++) {
