@@ -23,8 +23,7 @@ import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstr
 import {DebugNodeStyling, NodeStylingDebug} from '../styling/styling_debug';
 import {attachDebugObject} from '../util/debug_utils';
 import {isStylingContext} from '../util/styling_utils';
-import {getTNode, unwrapRNode} from '../util/view_utils';
-import {getLContainerActiveIndex} from './container';
+import {getLContainerActiveIndex, getTNode, unwrapRNode} from '../util/view_utils';
 
 const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNgDevMode());
 

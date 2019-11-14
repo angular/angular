@@ -15,8 +15,8 @@ import {CONTEXT, LView, LViewFlags, PARENT, TVIEW, TView, TViewType, T_HOST} fro
 import {assertNodeType} from '../node_assert';
 import {insertView, removeView} from '../node_manipulation';
 import {enterView, getIsParent, getLView, getPreviousOrParentTNode, leaveViewProcessExit, setIsParent, setPreviousOrParentTNode} from '../state';
-import {isCreationMode} from '../util/view_utils';
-import {getLContainerActiveIndex} from './container';
+import {getLContainerActiveIndex, isCreationMode} from '../util/view_utils';
+
 import {assignTViewNodeToLView, createLView, createTView, refreshView, renderView} from './shared';
 
 
