@@ -71,7 +71,6 @@ export class CssSelector {
     let inNot = false;
     _SELECTOR_REGEXP.lastIndex = 0;
     while (match = _SELECTOR_REGEXP.exec(selector)) {
-      debugger;
       if (match[SelectorRegexp.NOT]) {
         if (inNot) {
           throw new Error('Nesting :not in a selector is not allowed');
