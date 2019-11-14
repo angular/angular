@@ -12,14 +12,18 @@ buildTargetPackages "dist/packages-dist" "legacy" "Production"
 #       copied into the `dist/packages-dist/` directory (despite its source's being in `packages/`),
 #       because it is not published to npm under the `@angular` scope (as happens for the rest of
 #       the packages).
-echo "# Building zone.js npm package..."
+echo ""
+echo "##############################"
+echo "${script_path}:"
+echo "  Building zone.js npm package"
+echo "##############################"
 yarn --silent bazel build //packages/zone.js:npm_package
 
 # Copy artifacts to `dist/zone.js-dist/`, so they can be easier persisted on CI.
 readonly buildOutputDir="$base_dir/dist/bin/packages/zone.js/npm_package"
 readonly distTargetDir="$base_dir/dist/zone.js-dist/zone.js"
 
-echo "# Copying artifacts to '$distTargetDir'..."
+echo "# Copy artifacts to $distTargetDir"
 mkdir -p $distTargetDir
 rm -rf $distTargetDir
 cp -R $buildOutputDir $distTargetDir
