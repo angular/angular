@@ -15,10 +15,10 @@ import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootVie
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
 import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {isLContainer} from './interfaces/type_checks';
-import {CONTEXT, FLAGS, HOST, LView, LViewFlags, TVIEW, T_HOST} from './interfaces/view';
+import {CONTEXT, DECLARATION_COMPONENT_VIEW, FLAGS, HOST, LView, LViewFlags, TVIEW, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {destroyLView, renderDetachView} from './node_manipulation';
-import {findComponentView, getLViewParent} from './util/view_traversal_utils';
+import {getLViewParent} from './util/view_traversal_utils';
 import {unwrapRNode} from './util/view_utils';
 
 
@@ -331,7 +331,7 @@ function collectNativeNodes(
     if (tNodeType === TNodeType.ElementContainer || tNodeType === TNodeType.IcuContainer) {
       collectNativeNodes(lView, tNode.child, result);
     } else if (tNodeType === TNodeType.Projection) {
-      const componentView = findComponentView(lView);
+      const componentView = lView[DECLARATION_COMPONENT_VIEW];
       const componentHost = componentView[T_HOST] as TElementNode;
       const parentView = getLViewParent(componentView);
       let firstProjectedNode: TNode|null =

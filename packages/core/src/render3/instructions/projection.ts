@@ -8,12 +8,10 @@
 import {newArray} from '../../util/array_utils';
 import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {ProjectionSlots} from '../interfaces/projection';
-import {TVIEW, T_HOST} from '../interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, TVIEW, T_HOST} from '../interfaces/view';
 import {applyProjection} from '../node_manipulation';
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isSelectorInSelectorList} from '../node_selector_matcher';
 import {getLView, setIsNotParent} from '../state';
-import {findComponentView} from '../util/view_traversal_utils';
-
 import {getOrCreateTNode} from './shared';
 
 
@@ -75,7 +73,7 @@ export function matchingProjectionSlotIndex(tNode: TNode, projectionSlots: Proje
  * @codeGenApi
  */
 export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
-  const componentNode = findComponentView(getLView())[T_HOST] as TElementNode;
+  const componentNode = getLView()[DECLARATION_COMPONENT_VIEW][T_HOST] as TElementNode;
 
   if (!componentNode.projection) {
     // If no explicit projection slots are defined, fall back to a single

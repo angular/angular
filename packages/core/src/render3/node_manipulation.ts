@@ -20,7 +20,7 @@ import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRend
 import {isLContainer, isLView, isRootView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {findComponentView, getLViewParent} from './util/view_traversal_utils';
+import {getLViewParent} from './util/view_traversal_utils';
 import {getNativeByTNode, unwrapRNode} from './util/view_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
@@ -261,7 +261,7 @@ function trackMovedView(declarationContainer: LContainer, lView: LView) {
   const movedViews = declarationContainer[MOVED_VIEWS];
   const insertedLContainer = lView[PARENT] as LContainer;
   ngDevMode && assertLContainer(insertedLContainer);
-  const insertedComponentLView = insertedLContainer[PARENT] ![DECLARATION_COMPONENT_VIEW] !;
+  const insertedComponentLView = insertedLContainer[PARENT] ![DECLARATION_COMPONENT_VIEW];
   ngDevMode && assertDefined(insertedComponentLView, 'Missing insertedComponentLView');
   const insertedComponentIsOnPush =
       (insertedComponentLView[FLAGS] & LViewFlags.CheckAlways) !== LViewFlags.CheckAlways;
@@ -695,7 +695,7 @@ function getFirstNativeNode(lView: LView, tNode: TNode | null): RNode|null {
         return getNativeByTNode(tNode, lView);
       }
     } else {
-      const componentView = findComponentView(lView);
+      const componentView = lView[DECLARATION_COMPONENT_VIEW];
       const componentHost = componentView[T_HOST] as TElementNode;
       const parentView = getLViewParent(componentView);
       const firstProjectedTNode: TNode|null =
@@ -846,7 +846,7 @@ export function applyProjection(lView: LView, tProjectionNode: TProjectionNode) 
 function applyProjectionRecursive(
     renderer: Renderer3, action: WalkTNodeTreeAction, lView: LView,
     tProjectionNode: TProjectionNode, renderParent: RElement | null, beforeNode: RNode | null) {
-  const componentLView = findComponentView(lView);
+  const componentLView = lView[DECLARATION_COMPONENT_VIEW];
   const componentNode = componentLView[T_HOST] as TElementNode;
   ngDevMode &&
       assertEqual(typeof tProjectionNode.projection, 'number', 'expecting projection index');

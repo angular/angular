@@ -273,9 +273,6 @@
     "name": "findAttrIndexInNode"
   },
   {
-    "name": "findComponentView"
-  },
-  {
     "name": "findDirectiveMatches"
   },
   {

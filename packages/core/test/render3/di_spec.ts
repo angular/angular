@@ -223,7 +223,7 @@ describe('di', () => {
   describe('getOrCreateNodeInjector', () => {
     it('should handle initial undefined state', () => {
       const contentView = createLView(
-          null, createTView(TViewType.Embedded, -1, null, 1, 0, null, null, null, null, null), {},
+          null, createTView(TViewType.Component, -1, null, 1, 0, null, null, null, null, null), {},
           LViewFlags.CheckAlways, null, null, {} as any, {} as any);
       enterView(contentView, null);
       try {

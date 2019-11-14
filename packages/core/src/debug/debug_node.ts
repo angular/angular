@@ -10,17 +10,14 @@ import {Injector} from '../di';
 import {getViewComponent} from '../render3/global_utils_api';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
-import {StylingMapArray, TStylingContext} from '../render3/interfaces/styling';
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
-import {LView, PARENT, TData, TVIEW, T_HOST} from '../render3/interfaces/view';
-import {NodeStylingDebug} from '../render3/styling/styling_debug';
+import {DECLARATION_COMPONENT_VIEW, LView, PARENT, TData, TVIEW, T_HOST} from '../render3/interfaces/view';
 import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER, renderStringify} from '../render3/util/misc_utils';
-import {isStylingContext, stylingMapToStringMap} from '../render3/util/styling_utils';
-import {findComponentView} from '../render3/util/view_traversal_utils';
 import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
+
 import {createProxy} from './proxy';
 
 
@@ -533,7 +530,7 @@ function _queryNodeChildrenR3(
   } else if (tNode.type === TNodeType.Projection) {
     // Case 3: the TNode is a projection insertion point (i.e. a <ng-content>).
     // The nodes projected at this location all need to be processed.
-    const componentView = findComponentView(lView !);
+    const componentView = lView ![DECLARATION_COMPONENT_VIEW];
     const componentHost = componentView[T_HOST] as TElementNode;
     const head: TNode|null =
         (componentHost.projection as(TNode | null)[])[tNode.projection as number];
