@@ -228,9 +228,6 @@
     "name": "extractPipeDef"
   },
   {
-    "name": "findComponentView"
-  },
-  {
     "name": "generateExpandoInstructionBlock"
   },
   {
