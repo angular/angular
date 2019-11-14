@@ -9,7 +9,7 @@ import {assertDataInRange, assertEqual} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags, registerPostOrderHooks} from '../hooks';
-import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
+import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
 import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType, TViewNode} from '../interfaces/node';
 import {isDirectiveHost} from '../interfaces/type_checks';
@@ -17,7 +17,7 @@ import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TVIEW
 import {assertNodeType} from '../node_assert';
 import {appendChild, removeView} from '../node_manipulation';
 import {getBindingIndex, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
-import {getConstant, load} from '../util/view_utils';
+import {getConstant, getLContainerActiveIndex, load} from '../util/view_utils';
 
 import {addToViewTree, createDirectivesInstances, createLContainer, createTNode, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
@@ -193,12 +193,4 @@ function containerInternal(
 
   ngDevMode && assertNodeType(getPreviousOrParentTNode(), TNodeType.Container);
   return tNode;
-}
-
-export function getLContainerActiveIndex(lContainer: LContainer) {
-  return lContainer[ACTIVE_INDEX] >> ActiveIndexFlag.SHIFT;
-}
-
-export function setLContainerActiveIndex(lContainer: LContainer, index: number) {
-  lContainer[ACTIVE_INDEX] = index << ActiveIndexFlag.SHIFT;
 }

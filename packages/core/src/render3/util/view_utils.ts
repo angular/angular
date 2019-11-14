@@ -8,7 +8,7 @@
 
 import {assertDataInRange, assertDefined, assertDomNode, assertGreaterThan, assertLessThan} from '../../util/assert';
 import {assertTNodeForLView} from '../assert';
-import {LContainer, TYPE} from '../interfaces/container';
+import {ACTIVE_INDEX, ActiveIndexFlag, LContainer, TYPE} from '../interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from '../interfaces/context';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode, isProceduralRenderer} from '../interfaces/renderer';
@@ -187,4 +187,12 @@ export function getConstant<T>(consts: TConstants | null, index: number | null |
  */
 export function resetPreOrderHookFlags(lView: LView) {
   lView[PREORDER_HOOK_FLAGS] = 0;
+}
+
+export function getLContainerActiveIndex(lContainer: LContainer) {
+  return lContainer[ACTIVE_INDEX] >> ActiveIndexFlag.SHIFT;
+}
+
+export function setLContainerActiveIndex(lContainer: LContainer, index: number) {
+  lContainer[ACTIVE_INDEX] = index << ActiveIndexFlag.SHIFT;
 }
