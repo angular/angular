@@ -53,6 +53,7 @@ export abstract class MessageBus implements MessageBusSource, MessageBusSink {
 
 /**
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 export interface MessageBusSource {
   /**
@@ -79,6 +80,7 @@ export interface MessageBusSource {
 
 /**
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 export interface MessageBusSink {
   /**

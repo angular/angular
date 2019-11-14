@@ -11,6 +11,7 @@ export declare class ClientMessageBrokerFactory {
     createMessageBroker(channel: string, runInZone?: boolean): ClientMessageBroker;
 }
 
+/** @deprecated */
 export declare class FnArg {
     type: Type<any> | SerializerTypes;
     value: any;
@@ -25,12 +26,14 @@ export declare abstract class MessageBus implements MessageBusSource, MessageBus
     abstract to(channel: string): EventEmitter<any>;
 }
 
+/** @deprecated */
 export interface MessageBusSink {
     attachToZone(zone: NgZone): void;
     initChannel(channel: string, runInZone: boolean): void;
     to(channel: string): EventEmitter<any>;
 }
 
+/** @deprecated */
 export interface MessageBusSource {
     attachToZone(zone: NgZone): void;
     from(channel: string): EventEmitter<any>;
@@ -40,6 +43,7 @@ export interface MessageBusSource {
 /** @deprecated */
 export declare const platformWorkerApp: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
+/** @deprecated */
 export declare const platformWorkerUi: (extraProviders?: StaticProvider[] | undefined) => import("@angular/core").PlatformRef;
 
 /** @deprecated */
@@ -67,6 +71,7 @@ export declare class ServiceMessageBrokerFactory {
     createMessageBroker(channel: string, runInZone?: boolean): ServiceMessageBroker;
 }
 
+/** @deprecated */
 export declare class UiArguments {
     args?: FnArg[] | undefined;
     method: string;
