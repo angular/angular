@@ -675,7 +675,7 @@ describe('compiler compliance', () => {
       expectEmit(source, OtherDirectiveFactory, 'Incorrect OtherDirective.ɵfac');
     });
 
-    it('should convert #myApp selector to ["", "id", "myApp"]', () => {
+    it('should convert #my-app selector to ["", "id", "my-app"]', () => {
       const files = {
         app: {
           'spec.ts': `
