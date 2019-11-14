@@ -1529,7 +1529,7 @@ function refreshTransplantedViews(lContainer: LContainer, declaredComponentLView
           (insertedComponentLView[FLAGS] & LViewFlags.CheckAlways) === 0;
       if (insertionComponentIsOnPush) {
         // Here we know that the template has been transplanted across components and is
-        // on-push (not just moved within a component). If the insertion is marked dirty, than
+        // on-push (not just moved within a component). If the insertion is marked dirty, then
         // there is no need to CD here as we will do it again later when we get to insertion
         // point.
         const movedTView = movedLView[TVIEW];

@@ -211,10 +211,10 @@ export interface LView extends Array<any> {
    *  </div>
    * </#VIEW>
    * ```
-   * In the above case `DECLARATION_VIEW` for `myTmpl` points to the `LView` of `ngIf` where as
+   * In the above case `DECLARATION_VIEW` for `myTmpl` points to the `LView` of `ngIf` whereas
    * `DECLARATION_COMPONENT_VIEW` points to `LView` of the `myComp` which owns the template.
    *
-   * The reason for this is that all embedded views are always check-always where as the component
+   * The reason for this is that all embedded views are always check-always whereas the component
    * view can be check-always or on-push. When we have a transplanted view it is important to
    * determine if we have transplanted a view from check-always declaration to on-push insertion
    * point. In such a case the transplanted view needs to be added to the `LContainer` in the
