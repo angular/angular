@@ -265,7 +265,7 @@ export interface LView extends Array<any> {
    *   - `LView[DECLARATION_LCONTAINER]` similar problem for queries
    *   - `LContainer[MOVED_VIEWS]` similar problem for queries
    */
-  [DECLARATION_COMPONENT_VIEW]: LView|null;
+  [DECLARATION_COMPONENT_VIEW]: LView;
 
   /**
    * A declaration point of embedded views (ones instantiated based on the content of a
