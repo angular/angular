@@ -173,9 +173,11 @@ export function createLView<T>(
   lView[SANITIZER] = sanitizer || parentLView && parentLView[SANITIZER] || null !;
   lView[INJECTOR as any] = injector || parentLView && parentLView[INJECTOR] || null;
   lView[T_HOST] = tHostNode;
-  lView[DECLARATION_COMPONENT_VIEW] = tView.type == TViewType.Embedded ?
-      (parentLView === null ? null : parentLView ![DECLARATION_COMPONENT_VIEW]) :
-      lView;
+  ngDevMode && assertEqual(
+                   tView.type == TViewType.Embedded ? parentLView !== null : true, true,
+                   'Embedded views must have parentLView');
+  lView[DECLARATION_COMPONENT_VIEW] =
+      tView.type == TViewType.Embedded ? parentLView ![DECLARATION_COMPONENT_VIEW] : lView;
   ngDevMode && attachLViewDebug(lView);
   return lView;
 }
