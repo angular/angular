@@ -121,6 +121,7 @@ describe('Google3 missing injectable tslint rule', () => {
         export class MyServiceE {}
         export class MyServiceF {}
         export class MyServiceG {}
+        export class MyServiceH {}
             
         @${type}({${propName}: [
           WithPipe,
@@ -135,6 +136,7 @@ describe('Google3 missing injectable tslint rule', () => {
           {provide: null, useExisting: MyServiceE},
           {provide: MyServiceF, useFactory: () => null},
           {provide: MyServiceG, useValue: null},
+          {provide: MyServiceH, deps: []},
         ]})
         export class TestClass {}
       `);
@@ -149,11 +151,13 @@ describe('Google3 missing injectable tslint rule', () => {
           .toMatch(/WithDirective {}\s+@Component\(\)\s+export class WithComponent/);
       expect(getFile('/index.ts')).toMatch(/@Injectable\(\)\s+export class MyServiceA/);
       expect(getFile('/index.ts')).toMatch(/@Injectable\(\)\s+export class MyServiceB/);
-      expect(getFile('/index.ts')).toMatch(/@Injectable\(\)\s+export class MyServiceC/);
+      expect(getFile('/index.ts')).toMatch(/MyServiceB {}\s+export class MyServiceC/);
       expect(getFile('/index.ts')).toMatch(/@Injectable\(\)\s+export class MyServiceD/);
       expect(getFile('/index.ts')).toMatch(/MyServiceD {}\s+export class MyServiceE/);
       expect(getFile('/index.ts')).toMatch(/MyServiceE {}\s+export class MyServiceF/);
       expect(getFile('/index.ts')).toMatch(/MyServiceF {}\s+export class MyServiceG/);
+      expect(getFile('/index.ts')).toMatch(/MyServiceG {}\s+export class MyServiceH/);
+      expect(getFile('/index.ts')).toContain(`{ provide: MyServiceC, useValue: undefined },`);
     });
 
     it(`should migrate provider once if referenced in multiple ${type} definitions`, () => {

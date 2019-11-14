@@ -107,6 +107,10 @@ function runMissingInjectableMigration(
         treeRecorder.remove(namedBindings.getStart(), namedBindings.getWidth());
         treeRecorder.insertRight(namedBindings.getStart(), newNamedBindings);
       },
+      updateObjectLiteral(node: ts.ObjectLiteralExpression, newText: string) {
+        treeRecorder.remove(node.getStart(), node.getWidth());
+        treeRecorder.insertRight(node.getStart(), newText);
+      },
       commitUpdate() { tree.commitUpdate(treeRecorder); }
     };
     updateRecorders.set(sourceFile, recorder);
