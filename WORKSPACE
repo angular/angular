@@ -143,14 +143,14 @@ rbe_autoconfig(
     # Need to specify a base container digest in order to ensure that we can use the checked-in
     # platform configurations for the "ubuntu16_04" image. Otherwise the autoconfig rule would
     # need to pull the image and run it in order determine the toolchain configuration. See:
-    # https://github.com/bazelbuild/bazel-toolchains/blob/0.27.0/configs/ubuntu16_04_clang/versions.bzl
-    base_container_digest = "sha256:94d7d8552902d228c32c8c148cc13f0effc2b4837757a6e95b73fdc5c5e4b07b",
+    # https://github.com/bazelbuild/bazel-toolchains/blob/1.1.2/configs/ubuntu16_04_clang/versions.bzl
+    base_container_digest = "sha256:1ab40405810effefa0b2f45824d6d608634ccddbf06366760c341ef6fbead011",
     # Note that if you change the `digest`, you might also need to update the
     # `base_container_digest` to make sure marketplace.gcr.io/google/rbe-ubuntu16-04-webtest:<digest>
     # and marketplace.gcr.io/google/rbe-ubuntu16-04:<base_container_digest> have
     # the same Clang and JDK installed. Clang is needed because of the dependency on
     # @com_google_protobuf. Java is needed for the Bazel's test executor Java tool.
-    digest = "sha256:76e2e4a894f9ffbea0a0cb2fbde741b5d223d40f265dbb9bca78655430173990",
+    digest = "sha256:0b8fa87db4b8e5366717a7164342a029d1348d2feea7ecc4b18c780bc2507059",
     env = clang_env(),
     registry = "marketplace.gcr.io",
     # We can't use the default "ubuntu16_04" RBE image provided by the autoconfig because we need
