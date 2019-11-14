@@ -1,3 +1,13 @@
+# 9.0.0-rc.2 "neon-bubble" (2019-11-14)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **checkbox:** unknown property warning with Ivy during server-side rendering ([#17485](https://github.com/angular/components/issues/17485)) ([227c490](https://github.com/angular/components/commit/227c490)) |
+| bug fix |  **ng-update:** migrations not running for release candidate versions ([#17704](https://github.com/angular/components/issues/17704)) ([bfa88fd](https://github.com/angular/components/commit/bfa88fd)) |
+
+
 # 9.0.0-rc.1 "butane-bonanza" (2019-11-12)
 
 ### cdk
