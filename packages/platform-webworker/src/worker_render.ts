@@ -150,6 +150,7 @@ function initWebWorkerRenderPlatform(injector: Injector): () => void {
 
 /**
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 export const platformWorkerUi =
     createPlatformFactory(platformCore, 'workerUi', _WORKER_UI_PLATFORM_PROVIDERS);
