@@ -21,14 +21,13 @@ import {DirectiveDef, FactoryFn} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE, isFactory} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeProviderIndexes, TNodeType} from './interfaces/node';
 import {isComponentDef, isComponentHost} from './interfaces/type_checks';
-import {DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {enterDI, leaveDI} from './state';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils';
 import {stringifyForError} from './util/misc_utils';
 import {getInitialStylingValue} from './util/styling_utils';
-import {findComponentView} from './util/view_traversal_utils';
 
 
 
@@ -358,7 +357,7 @@ export function getOrCreateInjectable<T>(
       let injectorIndex = getInjectorIndex(tNode, lView);
       let parentLocation: RelativeInjectorLocation = NO_PARENT_INJECTOR;
       let hostTElementNode: TNode|null =
-          flags & InjectFlags.Host ? findComponentView(lView)[T_HOST] : null;
+          flags & InjectFlags.Host ? lView[DECLARATION_COMPONENT_VIEW][T_HOST] : null;
 
       // If we should skip this injector, or if there is no injector on this node, start by
       // searching
