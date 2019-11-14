@@ -20,7 +20,6 @@ import {assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
 
 import {assertLContainer} from './assert';
 import {NodeInjector, getParentInjectorLocation} from './di';
-import {setLContainerActiveIndex} from './instructions/container';
 import {addToViewTree, createLContainer, createLView, renderView} from './instructions/shared';
 import {ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
@@ -33,7 +32,7 @@ import {getParentInjectorTNode} from './node_util';
 import {getLView, getPreviousOrParentTNode} from './state';
 import {getParentInjectorView, hasParentInjector} from './util/injector_utils';
 import {findComponentView} from './util/view_traversal_utils';
-import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
+import {getComponentLViewByIndex, getNativeByTNode, setLContainerActiveIndex, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
 import {ViewRef} from './view_ref';
 
 
