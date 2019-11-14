@@ -330,25 +330,28 @@ export function createContainerRef(
     let commentNode: RComment;
     // If the host is an element container, the native host element is guaranteed to be a
     // comment and we can reuse that comment as anchor element for the new LContainer.
+    // The comment node in question is already part of the DOM structure so we don't need to append
+    // it again.
     if (hostTNode.type === TNodeType.ElementContainer) {
       commentNode = unwrapRNode(slotValue) as RComment;
     } else {
       ngDevMode && ngDevMode.rendererCreateComment++;
       commentNode = hostView[RENDERER].createComment(ngDevMode ? 'container' : '');
-    }
 
-    // A container can be created on the root (topmost / bootstrapped) component and in this case we
-    // can't use LTree to insert container's marker node (both parent of a comment node and the
-    // commend node itself is located outside of elements hold by LTree). In this specific case we
-    // use low-level DOM manipulation to insert container's marker (comment) node.
-    if (isRootView(hostView)) {
-      const renderer = hostView[RENDERER];
-      const hostNative = getNativeByTNode(hostTNode, hostView) !;
-      const parentOfHostNative = nativeParentNode(renderer, hostNative);
-      nativeInsertBefore(
-          renderer, parentOfHostNative !, commentNode, nativeNextSibling(renderer, hostNative));
-    } else {
-      appendChild(commentNode, hostTNode, hostView);
+      // A `ViewContainerRef` can be injected by the root (topmost / bootstrapped) component. In
+      // this case we can't use TView / TNode data structures to insert container's marker node
+      // (both a parent of a comment node and the comment node itself are not part of any view). In
+      // this specific case we use low-level DOM manipulation to insert container's marker (comment)
+      // node.
+      if (isRootView(hostView)) {
+        const renderer = hostView[RENDERER];
+        const hostNative = getNativeByTNode(hostTNode, hostView) !;
+        const parentOfHostNative = nativeParentNode(renderer, hostNative);
+        nativeInsertBefore(
+            renderer, parentOfHostNative !, commentNode, nativeNextSibling(renderer, hostNative));
+      } else {
+        appendChild(commentNode, hostTNode, hostView);
+      }
     }
 
     hostView[hostTNode.index] = lContainer =
