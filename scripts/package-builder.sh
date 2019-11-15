@@ -16,7 +16,7 @@ set -u -e -o pipefail
 cd "$(dirname "$0")"
 
 # basedir is the workspace root
-readonly base_dir="$(realpath "$(pwd)/..")"
+readonly base_dir="$(dirname "$(pwd)")"
 readonly bazel_bin="$(yarn run -s bazel info bazel-bin)"
 readonly script_path="$0"
 
