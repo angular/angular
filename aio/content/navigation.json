@@ -580,6 +580,32 @@
           "url": "guide/web-worker",
           "title": "Web Workers",
           "tooltip": "Using Web Workers with Angular CLI."
+        },
+        {
+          "title": "NativeScript",
+          "tooltip": "Add NativeScript to your existing web projects",
+          "children": [
+            {
+              "url": "guide/nativescript-intro",
+              "title": "Introduction",
+              "tooltip": "Oveview of NativeScript and Code Sharing"
+            },
+            {
+              "url": "guide/nativescript-getting-started",
+              "title": "Getting Started",
+              "tooltip": "Convert your web project to a Code-Sharing project"
+            },
+            {
+              "url": "guide/nativescript-prepare-app-module",
+              "title": "Prepare AppModule",
+              "tooltip": "Update you AppModule"
+            },
+            {
+              "url": "guide/nativescript-migrate-components",
+              "title": "Migrate Components",
+              "tooltip": "Update all components"
+            }
+          ]
         }
       ]
     },
