@@ -134,7 +134,51 @@ export class HammerGesturesRule extends MigrationRule<null> {
     const hasCustomGestureConfigSetup =
         this._hammerConfigTokenReferences.some(r => this._checkForCustomGestureConfigSetup(r));
 
-    if (this._usedInRuntime || this._usedInTemplate) {
+    /*
+      Possible scenarios and how the migration should change the project:
+        1. We detect that a custom HammerJS gesture config set up:
+            - Remove references to the Material gesture config if no event from the
+              Angular Material gesture config is used.
+            - Print a warning about ambiguous setup that cannot be handled completely.
+        2. We detect that HammerJS is *only* used at runtime:
+            - Remove references to GestureConfig of Material.
+            - Remove references to the "HammerModule" if present.
+        3. We detect that HammerJS is used in a template:
+            - Copy the Material gesture config into the app.
+            - Rewrite all gesture config references to the newly copied one.
+            - Setup the new gesture config in the root app module.
+        4. We detect no HammerJS usage at all:
+            - Remove Hammer imports
+            - Remove Material gesture config references
+            - Remove HammerModule setup if present.
+            - Remove Hammer script imports in "index.html" files.
+    */
+
+    if (hasCustomGestureConfigSetup) {
+      // If a custom gesture config is provided, we always assume that HammerJS is used.
+      HammerGesturesRule.globalUsesHammer = true;
+      if (!this._usedInTemplate && this._gestureConfigReferences.length) {
+        // If the Angular Material gesture events are not used and we found a custom
+        // gesture config, we can safely remove references to the Material gesture config
+        // since events provided by the Material gesture config are guaranteed to be unused.
+        this._removeMaterialGestureConfigSetup();
+        this.printInfo(
+          'The HammerJS v9 migration for Angular components detected that HammerJS is ' +
+          'manually set up in combination with references to the Angular Material gesture ' +
+          'config. This target cannot be migrated completely, but all references to the ' +
+          'deprecated Angular Material gesture have been removed.');
+      } else if (this._usedInTemplate && this._gestureConfigReferences.length) {
+        // Since there is a reference to the Angular Material gesture config, and we detected
+        // usage of a gesture event that could be provided by Angular Material, we *cannot*
+        // automatically remove references. This is because we do *not* know whether the
+        // event is actually provided by the custom config or by the Material config.
+        this.printInfo(
+          'The HammerJS v9 migration for Angular components detected that HammerJS is ' +
+          'manually set up in combination with references to the Angular Material gesture ' +
+          'config. This target cannot be migrated completely. Please manually remove references ' +
+          'to the deprecated Angular Material gesture config.');
+      }
+    } else if (this._usedInRuntime || this._usedInTemplate) {
       // We keep track of whether Hammer is used globally. This is necessary because we
       // want to only remove Hammer from the "package.json" if it is not used in any project
       // target. Just because it isn't used in one target doesn't mean that we can safely
@@ -150,24 +194,7 @@ export class HammerGesturesRule extends MigrationRule<null> {
         this._setupHammerGestureConfig();
       }
     } else {
-      // If HammerJS could not be detected, but we detected a custom gesture config
-      // setup, we only remove all references to the Angular Material gesture config.
-      if (hasCustomGestureConfigSetup) {
-        this._removeMaterialGestureConfigSetup();
-        // Print a message if we found a custom gesture config setup in combination with
-        // references to the Angular Material gesture config. This is ambiguous and the
-        // migration just removes the Material gesture config setup, but we still want
-        // to create an information message.
-        if (this._gestureConfigReferences.length) {
-          this.printInfo(
-              'The HammerJS v9 migration for Angular components detected that HammerJS is' +
-              'manually set up in combination with references to the Angular Material gesture ' +
-              'config. The migration is unable to perform the full migration for this target, ' +
-              'but removed all references to the deprecated Angular Material gesture config.');
-        }
-      } else {
-        this._removeHammerSetup();
-      }
+      this._removeHammerSetup();
     }
 
     // Record the changes collected in the import manager. Changes need to be applied
@@ -183,11 +210,11 @@ export class HammerGesturesRule extends MigrationRule<null> {
     // output could also be from a component having an output named similarly to a known
     // hammerjs event (e.g. "@Output() slide"). The usage is therefore somewhat ambiguous
     // and we want to print a message that developers might be able to remove Hammer manually.
-    if (!this._usedInRuntime && this._usedInTemplate) {
-      this.printInfo(chalk.yellow(
+    if (!hasCustomGestureConfigSetup && !this._usedInRuntime && this._usedInTemplate) {
+      this.printInfo(
           'The HammerJS v9 migration for Angular components migrated the ' +
           'project to keep HammerJS installed, but detected ambiguous usage of HammerJS. Please ' +
-          'manually check if you can remove HammerJS from your application.'));
+          'manually check if you can remove HammerJS from your application.');
     }
   }
 
@@ -763,15 +790,17 @@ export class HammerGesturesRule extends MigrationRule<null> {
    * from the "package.json" if it is not used in *any* project target.
    */
   static globalPostMigration(tree: Tree, context: SchematicContext): PostMigrationAction {
+    // Always notify the developer that the Hammer v9 migration does not migrate tests.
+    context.logger.info(chalk.yellow(
+      '\n⚠  General notice: The HammerJS v9 migration for Angular components is not able to ' +
+      'migrate tests. Please manually clean up tests in your project if they rely on ' +
+      (this.globalUsesHammer ? 'the deprecated Angular Material gesture config.' : 'HammerJS.')));
+
     if (!this.globalUsesHammer && this._removeHammerFromPackageJson(tree)) {
       // Since Hammer has been removed from the workspace "package.json" file,
       // we schedule a node package install task to refresh the lock file.
       return {runPackageManager: true};
     }
-
-    context.logger.info(chalk.yellow(
-        '⚠ The HammerJS v9 migration for Angular components is not able to migrate tests. ' +
-        'Please manually clean up tests in your project if they rely on HammerJS.'));
 
     // Clean global state once the workspace has been migrated. This is technically
     // not necessary in "ng update", but in tests we re-use the same rule class.

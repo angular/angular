@@ -51,7 +51,7 @@ class Walker extends Lint.RuleWalker {
   /** Gets the module import of the given identifier if imported. */
   private _getModuleImportOfIdentifier(node: ts.Identifier): string|null {
     const symbol = this._typeChecker.getSymbolAtLocation(node);
-    if (!symbol || !symbol.declarations.length) {
+    if (!symbol || !symbol.declarations || !symbol.declarations.length) {
       return null;
     }
     const decl = symbol.declarations[0];

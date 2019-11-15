@@ -50,7 +50,7 @@ export function getImportOfIdentifier(node: ts.Identifier, typeChecker: ts.TypeC
 function getSpecificImportOfIdentifier(node: ts.Identifier, typeChecker: ts.TypeChecker): Import|
     null {
   const symbol = typeChecker.getSymbolAtLocation(node);
-  if (!symbol || !symbol.declarations.length) {
+  if (!symbol || !symbol.declarations || !symbol.declarations.length) {
     return null;
   }
   const declaration = symbol.declarations[0];
@@ -74,7 +74,7 @@ function getSpecificImportOfIdentifier(node: ts.Identifier, typeChecker: ts.Type
 function getImportOfNamespacedIdentifier(node: ts.Identifier, typeChecker: ts.TypeChecker): string|
     null {
   const symbol = typeChecker.getSymbolAtLocation(node);
-  if (!symbol || !symbol.declarations.length) {
+  if (!symbol || !symbol.declarations || !symbol.declarations.length) {
     return null;
   }
   const declaration = symbol.declarations[0];
