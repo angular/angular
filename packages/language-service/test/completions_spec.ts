@@ -161,6 +161,26 @@ describe('completions', () => {
     expectContain(completions, CompletionKind.METHOD, ['$any']);
   });
 
+  it('should suggest attribute values', () => {
+    mockHost.override(TEST_TEMPLATE, `<div [id]="~{cursor}"></div>`);
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+    expectContain(completions, CompletionKind.PROPERTY, [
+      'title',
+      'hero',
+      'heroes',
+      'league',
+      'anyValue',
+    ]);
+  });
+
+  it('should suggest event handlers', () => {
+    mockHost.override(TEST_TEMPLATE, `<div (click)="~{cursor}"></div>`);
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+    expectContain(completions, CompletionKind.METHOD, ['myClick']);
+  });
+
   describe('in external template', () => {
     it('should be able to get entity completions in external template', () => {
       const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'entity-amp');
