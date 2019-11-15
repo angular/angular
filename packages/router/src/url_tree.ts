@@ -7,7 +7,7 @@
  */
 
 import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
-import {equalArraysOrString, forEach, shallowEqual} from './utils/collection';
+import {forEach, shallowEqual} from './utils/collection';
 
 export function createEmptyUrlTree() {
   return new UrlTree(new UrlSegmentGroup([], {}), {}, null);
@@ -41,7 +41,7 @@ function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGro
 function containsQueryParams(container: Params, containee: Params): boolean {
   // TODO: This does not handle array params correctly.
   return Object.keys(containee).length <= Object.keys(container).length &&
-      Object.keys(containee).every(key => equalArraysOrString(container[key], containee[key]));
+      Object.keys(containee).every(key => containee[key] === container[key]);
 }
 
 function containsSegmentGroup(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
