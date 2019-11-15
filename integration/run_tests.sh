@@ -24,12 +24,12 @@ if $CI; then
   # Determines the tests that need to be run for this shard index.
   TEST_DIRS=$(node ./get-sharded-tests.js --shardIndex ${SHARD_INDEX} --maxShards ${MAX_SHARDS})
 
-  # NB: we don't run build-packages-dist.sh because we expect that it was done
+  # NB: we don't run build-packages-dist.js because we expect that it was done
   # by an earlier job in the CircleCI workflow.
 else
   # Not on CircleCI so let's build the packages-dist directory.
   # This should be fast on incremental re-build.
-  ${basedir}/scripts/build-packages-dist.sh
+  node ${basedir}/scripts/build-packages-dist.js
 
   # If we aren't running on CircleCI, we do not shard tests because this would be the job of
   # Bazel eventually. For now, we just run all tests sequentially when running locally.
