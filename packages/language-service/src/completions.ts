@@ -442,6 +442,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
         name: s.name,
         kind: s.kind as ng.CompletionKind,
         sortText: s.name,
+        insertText: s.callable ? `${s.name}()` : s.name,
       });
     }
   }
