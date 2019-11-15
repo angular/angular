@@ -111,6 +111,15 @@ const verifyUniqueConsts = (output: string) => {
   return true;
 };
 
+/**
+ * Escape the template string for being placed inside a backtick string literal.
+ *
+ * * "\" would erroneously indicate a control character
+ * * "`" and "${" strings would erroneously indicate the end of a message part
+ */
+const escapeTemplate = (template: string) =>
+    template.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '$\\{');
+
 const getAppFilesWithTemplate = (template: string, args: any = {}) => ({
   app: {
     'spec.ts': `
@@ -120,7 +129,7 @@ const getAppFilesWithTemplate = (template: string, args: any = {}) => ({
         selector: 'my-component',
         ${args.preserveWhitespaces ? 'preserveWhitespaces: true,' : ''}
         ${args.interpolation ? 'interpolation: ' + JSON.stringify(args.interpolation) + ', ' : ''}
-        template: \`${template}\`
+        template: \`${escapeTemplate(template)}\`
       })
       export class MyComponent {}
 
@@ -180,7 +189,8 @@ describe('i18n support in the template compiler', () => {
         <div i18n-title="meaningD|descD" title="Title D">Content D</div>
         <div i18n-title="meaningE@@idE" title="Title E">Content E</div>
         <div i18n-title="@@idF" title="Title F">Content F</div>
-        <div i18n-title="[BACKUP_MESSAGE_ID:idH]desc@@idG" title="Title G">Content G</div>
+        <div i18n-title="[BACKUP_$\{MESSAGE}_ID:idH]\`desc@@idG" title="Title G">Content G</div>
+        <div i18n="Some text \\' [BACKUP_MESSAGE_ID: xxx]">Content H</div>
       `;
 
       const output = String.raw `
@@ -258,15 +268,28 @@ describe('i18n support in the template compiler', () => {
         var $I18N_23$;
         if (ngI18nClosureMode) {
             /**
-             * @desc [BACKUP_MESSAGE_ID:idH]desc
+             * @desc [BACKUP_$` +
+          String.raw `{MESSAGE}_ID:idH]` +
+          '`' + String.raw `desc
              */
             const $MSG_EXTERNAL_idG$$APP_SPEC_TS_24$ = goog.getMsg("Title G");
             $I18N_23$ = $MSG_EXTERNAL_idG$$APP_SPEC_TS_24$;
         }
         else {
-          $I18N_23$ = $localize \`:[BACKUP_MESSAGE_ID\:idH]desc@@idG:Title G\`;
+          $I18N_23$ = $localize \`:[BACKUP_$\{MESSAGE}_ID\:idH]\\\`desc@@idG:Title G\`;
         }
         const $_c25$ = ["title", $I18N_23$];
+        var $I18N_20$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc Some text \' [BACKUP_MESSAGE_ID: xxx]
+             */
+            const $MSG_EXTERNAL_idG$$APP_SPEC_TS_21$ = goog.getMsg("Content H");
+            $I18N_20$ = $MSG_EXTERNAL_idG$$APP_SPEC_TS_21$;
+        }
+        else {
+          $I18N_20$ = $localize \`:Some text \\' [BACKUP_MESSAGE_ID\: xxx]:Content H\`;
+        }
         …
         consts: [[${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -297,6 +320,9 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementStart(17, "div", 0);
             $r3$.ɵɵi18nAttributes(18, $_c25$);
             $r3$.ɵɵtext(19, "Content G");
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(20, "div");
+            $r3$.ɵɵi18n(21, $I18N_20$);
             $r3$.ɵɵelementEnd();
           }
         }
