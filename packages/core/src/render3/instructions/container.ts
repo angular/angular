@@ -74,10 +74,11 @@ export function ɵɵtemplate(
   // TODO: consider a separate node type for templates
   const tContainerNode = containerInternal(
       lView, index, tagName || null, getConstant<TAttributes>(tViewConsts, attrsIndex));
-  const localRefs = getConstant<string[]>(tViewConsts, localRefsIndex);
+
   if (tView.firstCreatePass) {
     ngDevMode && ngDevMode.firstCreatePass++;
-    resolveDirectives(tView, lView, tContainerNode, localRefs);
+    resolveDirectives(
+        tView, lView, tContainerNode, getConstant<string[]>(tViewConsts, localRefsIndex));
     registerPostOrderHooks(tView, tContainerNode);
 
     const embeddedTView = tContainerNode.tViews = createTView(
@@ -96,7 +97,8 @@ export function ɵɵtemplate(
   if (isDirectiveHost(tContainerNode)) {
     createDirectivesInstances(tView, lView, tContainerNode);
   }
-  if (localRefs != null) {
+
+  if (localRefsIndex !== null) {
     saveResolvedLocalsInData(lView, tContainerNode, localRefExtractor);
   }
 
