@@ -549,9 +549,9 @@ function visitLocalizedString(ast: LocalizedString, context: Context, visitor: E
   let template: ts.TemplateLiteral;
   const metaBlock = serializeI18nHead(ast.metaBlock, ast.messageParts[0]);
   if (ast.messageParts.length === 1) {
-    template = ts.createNoSubstitutionTemplateLiteral(metaBlock);
+    template = ts.createNoSubstitutionTemplateLiteral(metaBlock.cooked, metaBlock.raw);
   } else {
-    const head = ts.createTemplateHead(metaBlock);
+    const head = ts.createTemplateHead(metaBlock.cooked, metaBlock.raw);
     const spans: ts.TemplateSpan[] = [];
     for (let i = 1; i < ast.messageParts.length; i++) {
       const resolvedExpression = ast.expressions[i - 1].visitExpression(visitor, context);

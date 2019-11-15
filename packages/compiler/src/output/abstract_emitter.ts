@@ -364,7 +364,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
 
   visitLocalizedString(ast: o.LocalizedString, ctx: EmitterVisitorContext): any {
     const head = serializeI18nHead(ast.metaBlock, ast.messageParts[0]);
-    ctx.print(ast, '$localize `' + escapeBackticks(head));
+    ctx.print(ast, '$localize `' + escapeBackticks(head.raw));
     for (let i = 1; i < ast.messageParts.length; i++) {
       ctx.print(ast, '${');
       ast.expressions[i - 1].visitExpression(this, ctx);
