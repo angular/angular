@@ -682,7 +682,6 @@ function getFirstNativeNode(lView: LView, tNode: TNode | null): RNode|null {
                      TNodeType.IcuContainer, TNodeType.Projection);
 
     const tNodeType = tNode.type;
-
     if (tNodeType === TNodeType.Element) {
       return getNativeByTNode(tNode, lView);
     } else if (tNodeType === TNodeType.Container) {
@@ -692,7 +691,12 @@ function getFirstNativeNode(lView: LView, tNode: TNode | null): RNode|null {
       if (elIcuContainerChild !== null) {
         return getFirstNativeNode(lView, elIcuContainerChild);
       } else {
-        return getNativeByTNode(tNode, lView);
+        const rNodeOrLContainer = lView[tNode.index];
+        if (isLContainer(rNodeOrLContainer)) {
+          return getBeforeNodeForView(-1, rNodeOrLContainer);
+        } else {
+          return unwrapRNode(rNodeOrLContainer);
+        }
       }
     } else {
       const componentView = lView[DECLARATION_COMPONENT_VIEW];
