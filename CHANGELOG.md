@@ -48,7 +48,9 @@
 * fix(ivy): Only restore registered modules if user compiles modules with TestBed ([#32944](https://github.com/angular/angular/issues/32944)) ([#33663](https://github.com/angular/angular/issues/33663)) ([f8e9c1e](https://github.com/angular/angular/commit/f8e9c1e))
 * fix(ivy): R3TestBed should clean up registered modules after each test ([#32872](https://github.com/angular/angular/issues/32872)) ([#33663](https://github.com/angular/angular/issues/33663)) ([7c4366d](https://github.com/angular/angular/commit/7c4366d))
 
+### BREAKING CHANGES
 
+* **i18n:** The CLDR data has been updated to v36.0.0, which may cause some localized data strings to change. For example, the space separator used in numbers in the `fr` locales changed from `\xa0` to `\u202f` ([c1bd3bc](https://github.com/angular/angular/commit/c1bd3bc))
 
 <a name="9.0.0-rc.1"></a>
 # [9.0.0-rc.1](https://github.com/angular/angular/compare/9.0.0-rc.0...9.0.0-rc.1) (2019-11-06)
