@@ -486,17 +486,29 @@ export class R3TestBedCompiler {
   }
 
   private queueTypesFromModulesArray(arr: any[]): void {
-    for (const value of arr) {
-      if (Array.isArray(value)) {
-        this.queueTypesFromModulesArray(value);
-      } else if (hasNgModuleDef(value)) {
-        const def = value.ɵmod;
-        // Look through declarations, imports, and exports, and queue everything found there.
-        this.queueTypeArray(maybeUnwrapFn(def.declarations), value);
-        this.queueTypesFromModulesArray(maybeUnwrapFn(def.imports));
-        this.queueTypesFromModulesArray(maybeUnwrapFn(def.exports));
+    // Because we may encounter the same NgModule while processing the imports and exports of an
+    // NgModule tree, we cache them in this set so we can skip ones that have already been seen
+    // encountered. In some test setups, this caching resulted in 10X runtime improvement.
+    const processedNgModuleDefs = new Set();
+    const queueTypesFromModulesArrayRecur = (arr: any[]): void => {
+      for (const value of arr) {
+        if (Array.isArray(value)) {
+          queueTypesFromModulesArrayRecur(value);
+        } else if (hasNgModuleDef(value)) {
+          const def = value.ɵmod;
+          if (processedNgModuleDefs.has(def)) {
+            continue;
+          }
+          processedNgModuleDefs.add(def);
+          // Look through declarations, imports, and exports, and queue
+          // everything found there.
+          this.queueTypeArray(maybeUnwrapFn(def.declarations), value);
+          queueTypesFromModulesArrayRecur(maybeUnwrapFn(def.imports));
+          queueTypesFromModulesArrayRecur(maybeUnwrapFn(def.exports));
+        }
       }
-    }
+    };
+    queueTypesFromModulesArrayRecur(arr);
   }
 
   private maybeStoreNgDef(prop: string, type: Type<any>) {
