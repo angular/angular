@@ -25,7 +25,7 @@ export const PRIMARY_OUTLET = 'primary';
  * @publicApi
  */
 export type Params = {
-  [key: string]: any;
+  [key: string]: any
 };
 
 /**
