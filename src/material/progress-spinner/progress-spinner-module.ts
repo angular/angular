@@ -23,6 +23,4 @@ import {MatProgressSpinner, MatSpinner} from './progress-spinner';
     MatSpinner
   ],
 })
-class MatProgressSpinnerModule {}
-
-export {MatProgressSpinnerModule};
+export class MatProgressSpinnerModule {}

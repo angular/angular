@@ -29,6 +29,11 @@ export interface MatProgressSpinnerDefaultOptions {
     strokeWidth?: number;
 }
 
+export declare class MatProgressSpinnerModule {
+    static ɵinj: i0.ɵɵInjectorDef<MatProgressSpinnerModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatProgressSpinnerModule, [typeof i1.MatProgressSpinner, typeof i1.MatSpinner], [typeof i2.MatCommonModule, typeof i3.CommonModule], [typeof i1.MatProgressSpinner, typeof i1.MatSpinner, typeof i2.MatCommonModule]>;
+}
+
 export declare class MatSpinner extends MatProgressSpinner {
     constructor(elementRef: ElementRef<HTMLElement>, platform: Platform, document: any, animationMode: string, defaults?: MatProgressSpinnerDefaultOptions);
     static ngAcceptInputType_diameter: number | string | null | undefined;

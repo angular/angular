@@ -313,6 +313,7 @@
   "MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY": "progress-spinner",
   "MatProgressSpinner": "progress-spinner",
   "MatProgressSpinnerDefaultOptions": "progress-spinner",
+  "MatProgressSpinnerModule": "progress-spinner",
   "MatSpinner": "progress-spinner",
   "ProgressSpinnerMode": "progress-spinner",
   "MAT_RADIO_DEFAULT_OPTIONS": "radio",
