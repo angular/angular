@@ -15,7 +15,8 @@ const PACKAGE_JSON_REGEX = /^[^/]+\/package\.json$/;
 
 const ANGULAR_ROOT_DIR = path.resolve(__dirname, '../../..');
 const ANGULAR_DIST_PACKAGES = path.join(ANGULAR_ROOT_DIR, 'dist/packages-dist');
-const ANGULAR_DIST_PACKAGES_BUILD_CMD = path.join(ANGULAR_ROOT_DIR, 'scripts/build-packages-dist.sh');
+const ANGULAR_DIST_PACKAGES_BUILD_SCRIPT = path.join(ANGULAR_ROOT_DIR, 'scripts/build-packages-dist.js');
+const ANGULAR_DIST_PACKAGES_BUILD_CMD = `"${process.execPath}" "${ANGULAR_DIST_PACKAGES_BUILD_SCRIPT}"`;
 
 /**
  * A tool that can install Angular dependencies for a project from NPM or from the
@@ -173,13 +174,13 @@ class NgPackagesInstaller {
     const canBuild = process.platform !== 'win32';
 
     if (canBuild) {
-      this._log(`Building the Angular packages with: ${ANGULAR_DIST_PACKAGES_BUILD_CMD}`);
+      this._log(`Building the Angular packages with: ${ANGULAR_DIST_PACKAGES_BUILD_SCRIPT}`);
       shelljs.exec(ANGULAR_DIST_PACKAGES_BUILD_CMD);
     } else {
       this._warn([
         'Automatically building the local Angular packages is currently not supported on Windows.',
         `Please, ensure '${ANGULAR_DIST_PACKAGES}' exists and is up-to-date (e.g. by running ` +
-          `'${ANGULAR_DIST_PACKAGES_BUILD_CMD}' in Git Bash for Windows, Windows Subsystem for Linux or a Linux ` +
+          `'${ANGULAR_DIST_PACKAGES_BUILD_SCRIPT}' in Git Bash for Windows, Windows Subsystem for Linux or a Linux ` +
           'docker container or VM).',
         '',
         'Proceeding anyway...',
