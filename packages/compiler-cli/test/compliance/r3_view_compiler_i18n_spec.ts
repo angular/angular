@@ -264,7 +264,7 @@ describe('i18n support in the template compiler', () => {
             $I18N_23$ = $MSG_EXTERNAL_idG$$APP_SPEC_TS_24$;
         }
         else {
-          $I18N_23$ = $localize \`:[BACKUP_MESSAGE_ID\\:idH]desc@@idG:Title G\`;
+          $I18N_23$ = $localize \`:[BACKUP_MESSAGE_ID\:idH]desc@@idG:Title G\`;
         }
         const $_c25$ = ["title", $I18N_23$];
         …

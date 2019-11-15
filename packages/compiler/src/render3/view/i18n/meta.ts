@@ -235,13 +235,15 @@ export function parseI18nMeta(meta?: string): I18nMeta {
 }
 
 /**
- * Serialize the given `meta` and `messagePart` a string that can be used in a `$localize`
- * tagged string. The format of the metadata is the same as that parsed by `parseI18nMeta()`.
+ * Serialize the given `meta` and `messagePart` "cooked" and "raw" strings that can be used in a
+ * `$localize` tagged string. The format of the metadata is the same as that parsed by
+ * `parseI18nMeta()`.
  *
  * @param meta The metadata to serialize
  * @param messagePart The first part of the tagged string
  */
-export function serializeI18nHead(meta: I18nMeta, messagePart: string): string {
+export function serializeI18nHead(
+    meta: I18nMeta, messagePart: string): {cooked: string, raw: string} {
   let metaBlock = meta.description || '';
   if (meta.meaning) {
     metaBlock = `${meta.meaning}|${metaBlock}`;
@@ -251,9 +253,12 @@ export function serializeI18nHead(meta: I18nMeta, messagePart: string): string {
   }
   if (metaBlock === '') {
     // There is no metaBlock, so we must ensure that any starting colon is escaped.
-    return escapeStartingColon(messagePart);
+    return {cooked: messagePart, raw: escapeStartingColon(messagePart)};
   } else {
-    return `:${escapeColons(metaBlock)}:${messagePart}`;
+    return {
+      cooked: `:${metaBlock}:${messagePart}`,
+      raw: `:${escapeColons(metaBlock)}:${messagePart}`
+    };
   }
 }
 

@@ -210,26 +210,38 @@ describe('Utils', () => {
     });
 
     it('serializeI18nHead()', () => {
-      expect(serializeI18nHead(meta(), '')).toEqual('');
-      expect(serializeI18nHead(meta('', '', 'desc'), '')).toEqual(':desc:');
-      expect(serializeI18nHead(meta('id', '', 'desc'), '')).toEqual(':desc@@id:');
-      expect(serializeI18nHead(meta('', 'meaning', 'desc'), '')).toEqual(':meaning|desc:');
-      expect(serializeI18nHead(meta('id', 'meaning', 'desc'), '')).toEqual(':meaning|desc@@id:');
-      expect(serializeI18nHead(meta('id', '', ''), '')).toEqual(':@@id:');
+      expect(serializeI18nHead(meta(), '')).toEqual({cooked: '', raw: ''});
+      expect(serializeI18nHead(meta('', '', 'desc'), ''))
+          .toEqual({cooked: ':desc:', raw: ':desc:'});
+      expect(serializeI18nHead(meta('id', '', 'desc'), ''))
+          .toEqual({cooked: ':desc@@id:', raw: ':desc@@id:'});
+      expect(serializeI18nHead(meta('', 'meaning', 'desc'), ''))
+          .toEqual({cooked: ':meaning|desc:', raw: ':meaning|desc:'});
+      expect(serializeI18nHead(meta('id', 'meaning', 'desc'), ''))
+          .toEqual({cooked: ':meaning|desc@@id:', raw: ':meaning|desc@@id:'});
+      expect(serializeI18nHead(meta('id', '', ''), '')).toEqual({cooked: ':@@id:', raw: ':@@id:'});
 
       // Escaping colons (block markers)
       expect(serializeI18nHead(meta('id:sub_id', 'meaning', 'desc'), ''))
-          .toEqual(':meaning|desc@@id\\:sub_id:');
-      expect(serializeI18nHead(meta('id', 'meaning:sub_meaning', 'desc'), ''))
-          .toEqual(':meaning\\:sub_meaning|desc@@id:');
+          .toEqual({cooked: ':meaning|desc@@id:sub_id:', raw: ':meaning|desc@@id\\:sub_id:'});
+      expect(serializeI18nHead(meta('id', 'meaning:sub_meaning', 'desc'), '')).toEqual({
+        cooked: ':meaning:sub_meaning|desc@@id:',
+        raw: ':meaning\\:sub_meaning|desc@@id:'
+      });
       expect(serializeI18nHead(meta('id', 'meaning', 'desc:sub_desc'), ''))
-          .toEqual(':meaning|desc\\:sub_desc@@id:');
-      expect(serializeI18nHead(meta('id', 'meaning', 'desc'), 'message source'))
-          .toEqual(':meaning|desc@@id:message source');
-      expect(serializeI18nHead(meta('id', 'meaning', 'desc'), ':message source'))
-          .toEqual(':meaning|desc@@id::message source');
-      expect(serializeI18nHead(meta('', '', ''), 'message source')).toEqual('message source');
-      expect(serializeI18nHead(meta('', '', ''), ':message source')).toEqual('\\:message source');
+          .toEqual({cooked: ':meaning|desc:sub_desc@@id:', raw: ':meaning|desc\\:sub_desc@@id:'});
+      expect(serializeI18nHead(meta('id', 'meaning', 'desc'), 'message source')).toEqual({
+        cooked: ':meaning|desc@@id:message source',
+        raw: ':meaning|desc@@id:message source'
+      });
+      expect(serializeI18nHead(meta('id', 'meaning', 'desc'), ':message source')).toEqual({
+        cooked: ':meaning|desc@@id::message source',
+        raw: ':meaning|desc@@id::message source'
+      });
+      expect(serializeI18nHead(meta('', '', ''), 'message source'))
+          .toEqual({cooked: 'message source', raw: 'message source'});
+      expect(serializeI18nHead(meta('', '', ''), ':message source'))
+          .toEqual({cooked: ':message source', raw: '\\:message source'});
     });
 
     it('serializeI18nPlaceholderBlock()', () => {
