@@ -14,15 +14,15 @@ import {NgtscProgram} from '../../src/ngtsc/program';
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
 const OPERATOR =
-    /!|\?|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\./;
+    /!|\?|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\.|`|\\'/;
 const STRING = /'(\\'|[^'])*'|"(\\"|[^"])*"/;
-const BACKTICK_STRING = /\\`(([\s\S]*?)(\$\{[^}]*?\})?)*?\\`/;
+const BACKTICK_STRING = /\\`(([\s\S]*?)(\$\{[^}]*?\})?)*?[^\\]\\`/;
 const BACKTICK_INTERPOLATION = /(\$\{[^}]*\})/;
 const NUMBER = /\d+/;
 
 const ELLIPSIS = '…';
 const TOKEN = new RegExp(
-    `\\s*((${IDENTIFIER.source})|(${OPERATOR.source})|(${STRING.source})|(${BACKTICK_STRING.source})|${NUMBER.source}|${ELLIPSIS})\\s*`,
+    `\\s*((${IDENTIFIER.source})|(${BACKTICK_STRING.source})|(${OPERATOR.source})|(${STRING.source})|${NUMBER.source}|${ELLIPSIS})\\s*`,
     'y');
 
 type Piece = string | RegExp;
@@ -76,6 +76,9 @@ function tokenize(text: string): Piece[] {
  */
 function tokenizeBackTickString(str: string): Piece[] {
   const pieces: Piece[] = ['`'];
+  // Unescape backticks that are inside the backtick string
+  // (we had to double escape them in the test string so they didn't look like string markers)
+  str = str.replace(/\\\\\\`/, '\\`');
   const backTickPieces = str.slice(2, -2).split(BACKTICK_INTERPOLATION);
   backTickPieces.forEach((backTickPiece) => {
     if (BACKTICK_INTERPOLATION.test(backTickPiece)) {
