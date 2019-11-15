@@ -502,7 +502,7 @@ jobs:
       - setup_circleci_bazel_config
       - setup_bazel_rbe
 
-      - run: scripts/build-packages-dist.sh
+      - run: node scripts/build-packages-dist.js
 
       # Save the npm packages from //packages/... for other workflow jobs to read
       - persist_to_workspace:
@@ -530,7 +530,7 @@ jobs:
       - setup_circleci_bazel_config
       - setup_bazel_rbe
 
-      - run: scripts/build-ivy-npm-packages.sh
+      - run: node scripts/build-ivy-npm-packages.js
 
       # Save the npm packages from //packages/... for other workflow jobs to read
       - persist_to_workspace:
