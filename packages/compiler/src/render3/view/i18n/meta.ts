@@ -234,50 +234,6 @@ export function parseI18nMeta(meta?: string): I18nMeta {
   return {customId, meaning, description};
 }
 
-/**
- * Serialize the given `meta` and `messagePart` "cooked" and "raw" strings that can be used in a
- * `$localize` tagged string. The format of the metadata is the same as that parsed by
- * `parseI18nMeta()`.
- *
- * @param meta The metadata to serialize
- * @param messagePart The first part of the tagged string
- */
-export function serializeI18nHead(
-    meta: I18nMeta, messagePart: string): {cooked: string, raw: string} {
-  let metaBlock = meta.description || '';
-  if (meta.meaning) {
-    metaBlock = `${meta.meaning}|${metaBlock}`;
-  }
-  if (meta.customId || meta.legacyId) {
-    metaBlock = `${metaBlock}@@${meta.customId || meta.legacyId}`;
-  }
-  if (metaBlock === '') {
-    // There is no metaBlock, so we must ensure that any starting colon is escaped.
-    return {cooked: messagePart, raw: escapeStartingColon(messagePart)};
-  } else {
-    return {
-      cooked: `:${metaBlock}:${messagePart}`,
-      raw: `:${escapeColons(metaBlock)}:${messagePart}`
-    };
-  }
-}
-
-/**
- * Serialize the given `placeholderName` and `messagePart` into strings that can be used in a
- * `$localize` tagged string.
- *
- * @param placeholderName The placeholder name to serialize
- * @param messagePart The following message string after this placeholder
- */
-export function serializeI18nTemplatePart(placeholderName: string, messagePart: string): string {
-  if (placeholderName === '') {
-    // There is no placeholder name block, so we must ensure that any starting colon is escaped.
-    return escapeStartingColon(messagePart);
-  } else {
-    return `:${placeholderName}:${messagePart}`;
-  }
-}
-
 // Converts i18n meta information for a message (id, description, meaning)
 // to a JsDoc statement formatted as expected by the Closure compiler.
 export function i18nMetaToDocStmt(meta: I18nMeta): o.JSDocCommentStmt|null {
@@ -289,12 +245,4 @@ export function i18nMetaToDocStmt(meta: I18nMeta): o.JSDocCommentStmt|null {
     tags.push({tagName: o.JSDocTagName.Meaning, text: meta.meaning});
   }
   return tags.length == 0 ? null : new o.JSDocCommentStmt(tags);
-}
-
-export function escapeStartingColon(str: string): string {
-  return str.replace(/^:/, '\\:');
-}
-
-export function escapeColons(str: string): string {
-  return str.replace(/:/g, '\\:');
 }
