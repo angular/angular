@@ -213,6 +213,18 @@ describe('completions', () => {
     expectContain(completions, CompletionKind.METHOD, ['myClick']);
   });
 
+  it('for methods should include parentheses', () => {
+    mockHost.override(TEST_TEMPLATE, `<div (click)="~{cursor}"></div>`);
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+    expect(completions).toBeDefined();
+    expect(completions !.entries).toContain(jasmine.objectContaining({
+      name: 'myClick',
+      kind: CompletionKind.METHOD as any,
+      insertText: 'myClick()',
+    }));
+  });
+
   describe('in external template', () => {
     it('should be able to get entity completions in external template', () => {
       const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'entity-amp');
