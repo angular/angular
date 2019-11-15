@@ -223,6 +223,38 @@ runInEachFileSystem(() => {
          expect(esm5Contents).toContain(`export {InternalFooModule} from './src/internal';`);
        });
 
+    it('should use `$localize` calls rather than tagged templates in ES5 generated code', () => {
+      compileIntoFlatEs5Package('test-package', {
+        '/index.ts': `
+        import {Component, Input, NgModule} from '@angular/core';
+
+        @Component({
+          selector: '[foo]',
+          template: '<div i18n="some:\`description\`">A message</div>'
+        })
+        export class FooComponent {
+        }
+
+        @NgModule({
+          declarations: [FooComponent],
+        })
+        export class FooModule {}
+      `,
+      });
+
+      mainNgcc({
+        basePath: '/node_modules',
+        targetEntryPointPath: 'test-package',
+        propertiesToConsider: ['main'],
+      });
+
+      const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
+      expect(jsContents).not.toMatch(/\$localize\s*`/);
+      expect(jsContents)
+          .toMatch(
+              /\$localize\(ɵngcc\d+\.__makeTemplateObject\(\[":some:`description`:A message"], \[":some\\\\:\\\\`description\\\\`:A message"]\)\);/);
+    });
+
     describe('in async mode', () => {
       it('should run ngcc without errors for fesm2015', async() => {
         const promise = mainNgcc({
