@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {assertDataInRange, assertEqual} from '../../util/assert';
-import {assertHasParent} from '../assert';
+import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags, registerPostOrderHooks} from '../hooks';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
 import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType, TViewNode} from '../interfaces/node';
 import {isDirectiveHost} from '../interfaces/type_checks';
-import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TVIEW, TViewType, T_HOST} from '../interfaces/view';
+import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild, removeView} from '../node_manipulation';
 import {getBindingIndex, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
@@ -44,6 +44,36 @@ export function ɵɵcontainer(index: number): void {
   setIsNotParent();
 }
 
+function templateFirstCreatePass(
+    index: number, tView: TView, lView: LView, templateFn: ComponentTemplate<any>| null,
+    decls: number, vars: number, tagName?: string | null, attrsIndex?: number | null,
+    localRefsIndex?: number | null): TContainerNode {
+  ngDevMode && assertFirstCreatePass(tView);
+  ngDevMode && ngDevMode.firstCreatePass++;
+  const tViewConsts = tView.consts;
+  // TODO(pk): refactor getOrCreateTNode to have the "create" only version
+  const tNode = getOrCreateTNode(
+      tView, lView[T_HOST], index, TNodeType.Container, tagName || null,
+      getConstant<TAttributes>(tViewConsts, attrsIndex));
+
+  resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
+  registerPostOrderHooks(tView, tNode);
+
+  const embeddedTView = tNode.tViews = createTView(
+      TViewType.Embedded, -1, templateFn, decls, vars, tView.directiveRegistry, tView.pipeRegistry,
+      null, tView.schemas, tViewConsts);
+  const embeddedTViewNode = createTNode(tView, null, TNodeType.View, -1, null, null) as TViewNode;
+  embeddedTViewNode.injectorIndex = tNode.injectorIndex;
+  embeddedTView.node = embeddedTViewNode;
+
+  if (tView.queries !== null) {
+    tView.queries.template(tView, tNode);
+    embeddedTView.queries = tView.queries.embeddedTView(tNode);
+  }
+
+  return tNode;
+}
+
 /**
  * Creates an LContainer for an ng-template (dynamically-inserted view), e.g.
  *
@@ -69,40 +99,27 @@ export function ɵɵtemplate(
     localRefExtractor?: LocalRefExtractor) {
   const lView = getLView();
   const tView = lView[TVIEW];
-  const tViewConsts = tView.consts;
+  const adjustedIndex = index + HEADER_OFFSET;
 
-  // TODO: consider a separate node type for templates
-  const tContainerNode = containerInternal(
-      lView, index, tagName || null, getConstant<TAttributes>(tViewConsts, attrsIndex));
+  const tNode = tView.firstCreatePass ?
+      templateFirstCreatePass(
+          index, tView, lView, templateFn, decls, vars, tagName, attrsIndex, localRefsIndex) :
+      tView.data[adjustedIndex] as TContainerNode;
+  setPreviousOrParentTNode(tNode, false);
 
-  if (tView.firstCreatePass) {
-    ngDevMode && ngDevMode.firstCreatePass++;
-    resolveDirectives(
-        tView, lView, tContainerNode, getConstant<string[]>(tViewConsts, localRefsIndex));
-    registerPostOrderHooks(tView, tContainerNode);
+  const comment = lView[RENDERER].createComment(ngDevMode ? 'container' : '');
+  appendChild(comment, tNode, lView);
+  attachPatchData(comment, lView);
 
-    const embeddedTView = tContainerNode.tViews = createTView(
-        TViewType.Embedded, -1, templateFn, decls, vars, tView.directiveRegistry,
-        tView.pipeRegistry, null, tView.schemas, tViewConsts);
-    const embeddedTViewNode = createTNode(tView, null, TNodeType.View, -1, null, null) as TViewNode;
-    embeddedTViewNode.injectorIndex = tContainerNode.injectorIndex;
-    embeddedTView.node = embeddedTViewNode;
+  addToViewTree(lView, lView[adjustedIndex] = createLContainer(comment, lView, comment, tNode));
 
-    if (tView.queries !== null) {
-      tView.queries.template(tView, tContainerNode);
-      embeddedTView.queries = tView.queries.embeddedTView(tContainerNode);
-    }
+  if (isDirectiveHost(tNode)) {
+    createDirectivesInstances(tView, lView, tNode);
   }
 
-  if (isDirectiveHost(tContainerNode)) {
-    createDirectivesInstances(tView, lView, tContainerNode);
+  if (localRefsIndex != null) {
+    saveResolvedLocalsInData(lView, tNode, localRefExtractor);
   }
-
-  if (localRefsIndex !== null) {
-    saveResolvedLocalsInData(lView, tContainerNode, localRefExtractor);
-  }
-
-  setIsNotParent();
 }
 
 /**

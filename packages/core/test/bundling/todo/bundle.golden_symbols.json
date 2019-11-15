@@ -444,9 +444,6 @@
     "name": "concatString"
   },
   {
-    "name": "containerInternal"
-  },
-  {
     "name": "createContainerRef"
   },
   {
@@ -1300,6 +1297,9 @@
   },
   {
     "name": "syncViewWithBlueprint"
+  },
+  {
+    "name": "templateFirstCreatePass"
   },
   {
     "name": "textBindingInternal"
