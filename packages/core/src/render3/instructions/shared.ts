@@ -555,7 +555,7 @@ export function saveResolvedLocalsInData(
     viewData: LView, tNode: TDirectiveHostNode,
     localRefExtractor: LocalRefExtractor = getNativeByTNode): void {
   const localNames = tNode.localNames;
-  if (localNames) {
+  if (localNames !== null) {
     let localIndex = tNode.index + 1;
     for (let i = 0; i < localNames.length; i += 2) {
       const index = localNames[i + 1] as number;
