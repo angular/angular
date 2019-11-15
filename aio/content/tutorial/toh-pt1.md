@@ -129,6 +129,12 @@ Refactor the details area in the `HeroesComponent` template so it looks like thi
 
 <code-example path="toh-pt1/src/app/heroes/heroes.component.1.html" region="name-input" header="src/app/heroes/heroes.component.html (HeroesComponent's template)"></code-example>
 
+Add the following import to app.module.ts file: 
+
+import { FormsModule } from '@angular/forms';
+
+also, add FormsModule under imports in app.module.ts.
+
 **[(ngModel)]** is Angular's two-way data binding syntax.
 
 Here it binds the `hero.name` property to the HTML textbox so that data can flow _in both directions:_ from the `hero.name` property to the textbox, and from the textbox back to the `hero.name`.
