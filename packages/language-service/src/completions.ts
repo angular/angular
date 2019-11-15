@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, Text, findNode, getHtmlTagDefinition} from '@angular/compiler';
+import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, TemplateBinding, Text, findNode, getHtmlTagDefinition} from '@angular/compiler';
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {AstResult} from './common';
@@ -17,7 +17,6 @@ import {InlineTemplate} from './template';
 import * as ng from './types';
 import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getSelectors, hasTemplateReference, inSpan, spanOf} from './utils';
 
-const TEMPLATE_ATTR_PREFIX = '*';
 const HIDDEN_HTML_ELEMENTS: ReadonlySet<string> =
     new Set(['html', 'script', 'noscript', 'base', 'body', 'title', 'head', 'link']);
 const HTML_ELEMENTS: ReadonlyArray<ng.CompletionEntry> =
@@ -365,69 +364,36 @@ class ExpressionVisitor extends NullTemplateVisitor {
   visitEvent(ast: BoundEventAst): void { this.addAttributeValuesToCompletions(ast.handler); }
 
   visitElement(ast: ElementAst): void {
-    if (!this.attr || !this.attr.valueSpan || !this.attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
+    if (!this.attr || !this.attr.valueSpan) {
       return;
     }
 
-    // The value is a template expression but the expression AST was not produced when the
-    // TemplateAst was produce so do that now.
-    const key = this.attr.name.substr(TEMPLATE_ATTR_PREFIX.length);
-    // Find the selector
-    const selectorInfo = getSelectors(this.info);
-    const selectors = selectorInfo.selectors;
-    const selector =
-        selectors.filter(s => s.attrs.some((attr, i) => i % 2 === 0 && attr === key))[0];
-    if (!selector) {
-      return;
-    }
+    // The attribute value is a template expression but the expression AST
+    // was not produced when the TemplateAst was produced so do that here.
+    const {templateBindings} = this.info.expressionParser.parseTemplateBindings(
+        this.attr.name, this.attr.value, this.attr.sourceSpan.toString(),
+        this.attr.sourceSpan.start.offset);
 
-    const templateBindingResult =
-        this.info.expressionParser.parseTemplateBindings(key, this.attr.value, null, 0);
-
-    // find the template binding that contains the position
+    // Find where the cursor is relative to the start of the attribute value.
     const valueRelativePosition = this.position - this.attr.valueSpan.start.offset;
-    const bindings = templateBindingResult.templateBindings;
-    const binding =
-        bindings.find(
-            binding => inSpan(valueRelativePosition, binding.span, /* exclusive */ true)) ||
-        bindings.find(binding => inSpan(valueRelativePosition, binding.span));
+    // Find the template binding that contains the position
+    const binding = templateBindings.find(b => inSpan(valueRelativePosition, b.span));
 
-    if (binding) {
-      if (binding.keyIsVar) {
-        const equalLocation = this.attr.value.indexOf('=');
-        if (equalLocation >= 0 && valueRelativePosition >= equalLocation) {
-          // We are after the '=' in a let clause. The valid values here are the members of the
-          // template reference's type parameter.
-          const directiveMetadata = selectorInfo.map.get(selector);
-          if (directiveMetadata) {
-            const contextTable =
-                this.info.template.query.getTemplateContext(directiveMetadata.type.reference);
-            if (contextTable) {
-              this.addSymbolsToCompletions(contextTable.values());
-              return;
-            }
-          }
-        }
-      }
-      if ((binding.expression && inSpan(valueRelativePosition, binding.expression.ast.span)) ||
-          // If the position is in the expression or after the key or there is no key, return the
-          // expression completions
-          valueRelativePosition > binding.span.start + binding.key.length - key.length) {
-        const span = new ParseSpan(0, this.attr.value.length);
-        const offset = ast.sourceSpan.start.offset;
-        let expressionAst: AST;
-        if (binding.expression) {
-          expressionAst = binding.expression.ast;
-        } else {
-          const receiver = new ImplicitReceiver(span, span.toAbsolute(offset));
-          expressionAst = new PropertyRead(span, span.toAbsolute(offset), receiver, '');
-        }
-        this.addAttributeValuesToCompletions(expressionAst, this.position);
-        return;
-      }
+    if (!binding) {
+      return;
     }
 
-    this.addKeysToCompletions(selector, key);
+    if (this.attr.name.startsWith('*')) {
+      this.microSyntaxInAttributeValue(this.attr, binding);
+    } else if (valueRelativePosition >= 0) {
+      // If the position is in the expression or after the key or there is no key,
+      // return the expression completions
+      const span = new ParseSpan(0, this.attr.value.length);
+      const offset = ast.sourceSpan.start.offset;
+      const receiver = new ImplicitReceiver(span, span.toAbsolute(offset));
+      const expressionAst = new PropertyRead(span, span.toAbsolute(offset), receiver, '');
+      this.addAttributeValuesToCompletions(expressionAst, valueRelativePosition);
+    }
   }
 
   visitBoundText(ast: BoundTextAst) {
@@ -485,6 +451,63 @@ class ExpressionVisitor extends NullTemplateVisitor {
       return this.position;
     }
     return 0;
+  }
+
+  /**
+   * This method handles the completions of attribute values for directives that
+   * support the microsyntax format. Examples are *ngFor and *ngIf.
+   * These directives allows declaration of "let" variables, adds context-specific
+   * symbols like $implicit, index, count, among other behaviors.
+   * For a complete description of such format, see
+   * https://angular.io/guide/structural-directives#the-asterisk--prefix
+   *
+   * @param attr descriptor for attribute name and value pair
+   * @param binding template binding for the expression in the attribute
+   */
+  private microSyntaxInAttributeValue(attr: Attribute, binding: TemplateBinding) {
+    const key = attr.name.substring(1);  // remove leading asterisk
+
+    // Find the selector - eg ngFor, ngIf, etc
+    const selectorInfo = getSelectors(this.info);
+    const selector = selectorInfo.selectors.find(s => {
+      // attributes are listed in (attribute, value) pairs
+      for (let i = 0; i < s.attrs.length; i += 2) {
+        if (s.attrs[i] === key) {
+          return true;
+        }
+      }
+    });
+
+    if (!selector) {
+      return;
+    }
+
+    const valueRelativePosition = this.position - attr.valueSpan !.start.offset;
+
+    if (binding.keyIsVar) {
+      const equalLocation = attr.value.indexOf('=');
+      if (equalLocation >= 0 && valueRelativePosition >= equalLocation) {
+        // We are after the '=' in a let clause. The valid values here are the members of the
+        // template reference's type parameter.
+        const directiveMetadata = selectorInfo.map.get(selector);
+        if (directiveMetadata) {
+          const contextTable =
+              this.info.template.query.getTemplateContext(directiveMetadata.type.reference);
+          if (contextTable) {
+            // This adds symbols like $implicit, index, count, etc.
+            this.addSymbolsToCompletions(contextTable.values());
+            return;
+          }
+        }
+      }
+    }
+
+    if (binding.expression && inSpan(valueRelativePosition, binding.expression.ast.span)) {
+      this.addAttributeValuesToCompletions(binding.expression.ast, this.position);
+      return;
+    }
+
+    this.addKeysToCompletions(selector, key);
   }
 }
 
