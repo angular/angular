@@ -578,5 +578,37 @@ describe('view insertion', () => {
       expect(fixture.nativeElement.textContent).toBe('container start|test|container end|click');
     });
 
+    it('should properly insert before views in a ViewContainerRef injected on ng-container', () => {
+      @Component({
+        selector: 'app-root',
+        template: `            
+          <ng-template #parameterListItem let-parameter="parameter">
+            {{parameter}}
+          </ng-template>
+          <ng-container *ngFor="let parameter of items;"
+            [ngTemplateOutlet]="parameterListItem"
+            [ngTemplateOutletContext]="{parameter:parameter}">
+          </ng-container>
+        `
+      })
+      class AppComponent {
+        items = [1];
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [AppComponent],
+        imports: [CommonModule],
+      });
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toContain('1');
+
+      fixture.componentInstance.items = [2, 1];
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent.trim()).toContain('2  1');
+    });
+
   });
 });
