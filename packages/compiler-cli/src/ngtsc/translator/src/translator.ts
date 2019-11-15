@@ -262,13 +262,9 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   }
 
   visitLocalizedString(ast: LocalizedString, context: Context): ts.Expression {
-    if (this.scriptTarget < ts.ScriptTarget.ES2015) {
-      // This should never happen.
-      throw new Error(
-          'Unsupported mode: Visiting a localized string (which produces a tagged template ' +
-          `literal) ' while targeting ${ts.ScriptTarget[this.scriptTarget]}.`);
-    }
-    return visitLocalizedString(ast, context, this);
+    return this.scriptTarget >= ts.ScriptTarget.ES2015 ?
+        createLocalizedStringTaggedTemplate(ast, context, this) :
+        createLocalizedStringFunctionCall(ast, context, this, this.imports);
   }
 
   visitExternalExpr(ast: ExternalExpr, context: Context): ts.PropertyAccessExpression
@@ -467,7 +463,7 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
   }
 
   visitLocalizedString(ast: LocalizedString, context: Context): ts.Expression {
-    return visitLocalizedString(ast, context, this);
+    throw new Error('Method not implemented.');
   }
 
   visitExternalExpr(ast: ExternalExpr, context: Context): ts.TypeNode {
@@ -550,10 +546,11 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
 }
 
 /**
- * A helper to reduce duplication, since this functionality is required in both
- * `ExpressionTranslatorVisitor` and `TypeTranslatorVisitor`.
+ * Translate the `LocalizedString` node into a `TaggedTemplateExpression` for ES2015 formatted
+ * output.
  */
-function visitLocalizedString(ast: LocalizedString, context: Context, visitor: ExpressionVisitor) {
+function createLocalizedStringTaggedTemplate(
+    ast: LocalizedString, context: Context, visitor: ExpressionVisitor) {
   let template: ts.TemplateLiteral;
   const metaBlock = ast.serializeI18nHead();
   if (ast.messageParts.length === 1) {
@@ -574,4 +571,33 @@ function visitLocalizedString(ast: LocalizedString, context: Context, visitor: E
     template = ts.createTemplateExpression(head, spans);
   }
   return ts.createTaggedTemplate(ts.createIdentifier('$localize'), template);
+}
+
+/**
+ * Translate the `LocalizedString` node into a `$localize` call using the imported
+ * `__makeTemplateObject` helper for ES5 formatted output.
+ */
+function createLocalizedStringFunctionCall(
+    ast: LocalizedString, context: Context, visitor: ExpressionVisitor, imports: ImportManager) {
+  const messageParts = [ast.serializeI18nHead()];
+  const expressions: any[] = [];
+  for (let i = 1; i < ast.messageParts.length; i++) {
+    expressions.push(ast.expressions[i - 1].visitExpression(visitor, context));
+    messageParts.push(ast.serializeI18nTemplatePart(i));
+  }
+  const {moduleImport, symbol} = imports.generateNamedImport('tslib', '__makeTemplateObject');
+  const __makeTemplateObjectHelper = (moduleImport === null) ?
+      ts.createIdentifier(symbol) :
+      ts.createPropertyAccess(ts.createIdentifier(moduleImport), ts.createIdentifier(symbol));
+  return ts.createCall(ts.createIdentifier('$localize'), undefined, [
+    ts.createCall(
+        __makeTemplateObjectHelper, undefined,
+        [
+          ts.createArrayLiteral(
+              messageParts.map(messagePart => ts.createStringLiteral(messagePart.cooked))),
+          ts.createArrayLiteral(
+              messageParts.map(messagePart => ts.createStringLiteral(messagePart.raw))),
+        ]),
+    ...expressions,
+  ]);
 }
