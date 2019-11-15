@@ -51,6 +51,9 @@ describe('Style sanitizer', () => {
 
   it('accepts calc', () => { expectSanitize('calc(90%-123px)').toEqual('calc(90%-123px)'); });
 
+  it('accepts var',
+     () => { expectSanitize('var(--my-custom-var)').toEqual('var(--my-custom-var)'); });
+
   it('sanitizes URLs', () => {
     expectSanitize('url(foo/bar.png)').toEqual('url(foo/bar.png)');
     expectSanitize('url( foo/bar.png\n )').toEqual('url( foo/bar.png\n )');

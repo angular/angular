@@ -29,7 +29,7 @@ const VALUES = '[-,."\'%_!# a-zA-Z0-9]+';
 const TRANSFORMATION_FNS = '(?:matrix|translate|scale|rotate|skew|perspective)(?:X|Y|Z|3d)?';
 const COLOR_FNS = '(?:rgb|hsl)a?';
 const GRADIENTS = '(?:repeating-)?(?:linear|radial)-gradient';
-const CSS3_FNS = '(?:attr|calc)';
+const CSS3_FNS = '(?:attr|calc|var)';
 const FN_ARGS = '\\([-0-9.%, #a-zA-Z]+\\)';
 const SAFE_STYLE_VALUE = new RegExp(
     `^(${VALUES}|` +
