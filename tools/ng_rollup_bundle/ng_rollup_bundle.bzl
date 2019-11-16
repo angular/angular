@@ -391,7 +391,6 @@ def ng_rollup_bundle(name, **kwargs):
         # maintain the comments off behavior. We pass the --comments flag with
         # a regex that always evaluates to false to do this.
         "args": ["--comments", "/bogus_string_to_suppress_all_comments^/"],
-        "config_file": "//tools/ng_rollup_bundle:terser_config.json",
         "sourcemap": False,
     }
 
