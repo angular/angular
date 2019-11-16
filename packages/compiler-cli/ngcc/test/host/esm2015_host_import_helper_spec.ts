@@ -379,29 +379,13 @@ runInEachFileSystem(() => {
                  'TemplateRef',
                  null,
                ]);
+
+               const decorators = parameters ![2].decorators !;
+               expect(decorators.length).toEqual(1);
+               expect(decorators[0].name).toBe('Inject');
+               expect(decorators[0].import !.from).toBe('@angular/core');
+               expect(decorators[0].import !.name).toBe('Inject');
              });
-
-          describe('(returned parameters `decorators`)', () => {
-            it('should use `getImportOfIdentifier()` to retrieve import info', () => {
-              const mockImportInfo = {} as Import;
-              const spy = spyOn(Esm2015ReflectionHost.prototype, 'getImportOfIdentifier')
-                              .and.returnValue(mockImportInfo);
-
-              const {program} = makeTestBundleProgram(_('/some_directive.js'));
-              const host =
-                  new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
-              const classNode = getDeclaration(
-                  program, _('/some_directive.js'), 'SomeDirective', isNamedVariableDeclaration);
-              const parameters = host.getConstructorParameters(classNode);
-              const decorators = parameters ![2].decorators !;
-
-              expect(decorators.length).toEqual(1);
-              expect(decorators[0].import).toBe(mockImportInfo);
-
-              const typeIdentifier = spy.calls.mostRecent().args[0] as ts.Identifier;
-              expect(typeIdentifier.text).toBe('Inject');
-            });
-          });
         });
 
         describe('getDeclarationOfIdentifier', () => {
