@@ -130,7 +130,7 @@
   "devDependencies": {
     "@angular/cli": "^9.0.0-rc.0",
     "@bazel/bazel": "1.1.0",
-    "@bazel/buildifier": "^0.26.0",
+    "@bazel/buildifier": "^0.29.0",
     "@bazel/ibazel": "^0.10.3",
     "@types/minimist": "^1.2.0",
     "browserstacktunnel-wrapper": "2.0.1",
