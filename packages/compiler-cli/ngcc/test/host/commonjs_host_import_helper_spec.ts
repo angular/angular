@@ -68,6 +68,15 @@ __decorate([
   core.Input(),
 ], OtherDirective.prototype, "input2", void 0);
 exports.OtherDirective = OtherDirective;
+
+var AliasedDirective$1 = (function () {
+  function AliasedDirective() {}
+  return AliasedDirective;
+}());
+AliasedDirective$1 = __decorate([
+  core.Directive({ selector: '[someDirective]' }),
+], AliasedDirective$1);
+exports.AliasedDirective$1 = AliasedDirective$1;
 `
       };
     });
@@ -80,6 +89,27 @@ exports.OtherDirective = OtherDirective;
         const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
         const classNode = getDeclaration(
             program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+        const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+
+        expect(decorators.length).toEqual(1);
+
+        const decorator = decorators[0];
+        expect(decorator.name).toEqual('Directive');
+        expect(decorator.identifier !.getText()).toEqual('core.Directive');
+        expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+        expect(decorator.args !.map(arg => arg.getText())).toEqual([
+          '{ selector: \'[someDirective]\' }',
+        ]);
+      });
+
+      it('should find the decorators on an aliased class at the top level', () => {
+        loadFakeCore(getFileSystem());
+        loadTestFiles([TOPLEVEL_DECORATORS_FILE]);
+        const {program, host: compilerHost} = makeTestBundleProgram(TOPLEVEL_DECORATORS_FILE.name);
+        const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+        const classNode = getDeclaration(
+            program, TOPLEVEL_DECORATORS_FILE.name, 'AliasedDirective$1',
+            isNamedVariableDeclaration);
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators.length).toEqual(1);

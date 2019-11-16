@@ -931,8 +931,21 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     // has to be checked to actually correspond with the class symbol.
     const helperCalls = this.getHelperCallsForClass(classSymbol, ['__decorate']);
 
+    const outerDeclaration = classSymbol.declaration.valueDeclaration;
+    const innerDeclaration = classSymbol.implementation.valueDeclaration;
+    const matchesClass = (identifier: ts.Identifier) => {
+      const decl = this.getDeclarationOfIdentifier(identifier);
+      if (decl === null) {
+        return false;
+      }
+
+      // The identifier corresponds with the class if its declaration is either the outer or inner
+      // declaration.
+      return decl.node === outerDeclaration || decl.node === innerDeclaration;
+    };
+
     for (const helperCall of helperCalls) {
-      if (isClassDecorateCall(helperCall, classSymbol.name)) {
+      if (isClassDecorateCall(helperCall, matchesClass)) {
         // This `__decorate` call is targeting the class itself.
         const helperArgs = helperCall.arguments[0];
 
@@ -959,7 +972,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
                 (type, index) => getConstructorParamInfo(index).typeExpression = type);
           }
         }
-      } else if (isMemberDecorateCall(helperCall, classSymbol.name)) {
+      } else if (isMemberDecorateCall(helperCall, matchesClass)) {
         // The `__decorate` call is targeting a member of the class
         const helperArgs = helperCall.arguments[0];
         const memberName = helperCall.arguments[2].text;
@@ -1688,9 +1701,10 @@ export function isAssignment(node: ts.Node): node is ts.AssignmentExpression<ts.
  * ```
  *
  * @param call the call expression that is tested to represent a class decorator call.
- * @param className the name of the class that the call needs to correspond with.
+ * @param matches predicate function to test whether the call is associated with the desired class.
  */
-export function isClassDecorateCall(call: ts.CallExpression, className: string):
+export function isClassDecorateCall(
+    call: ts.CallExpression, matches: (identifier: ts.Identifier) => boolean):
     call is ts.CallExpression&{arguments: [ts.ArrayLiteralExpression, ts.Expression]} {
   const helperArgs = call.arguments[0];
   if (helperArgs === undefined || !ts.isArrayLiteralExpression(helperArgs)) {
@@ -1698,7 +1712,7 @@ export function isClassDecorateCall(call: ts.CallExpression, className: string):
   }
 
   const target = call.arguments[1];
-  return target !== undefined && ts.isIdentifier(target) && target.text === className;
+  return target !== undefined && ts.isIdentifier(target) && matches(target);
 }
 
 /**
@@ -1710,9 +1724,10 @@ export function isClassDecorateCall(call: ts.CallExpression, className: string):
  * ```
  *
  * @param call the call expression that is tested to represent a member decorator call.
- * @param className the name of the class that the call needs to correspond with.
+ * @param matches predicate function to test whether the call is associated with the desired class.
  */
-export function isMemberDecorateCall(call: ts.CallExpression, className: string):
+export function isMemberDecorateCall(
+    call: ts.CallExpression, matches: (identifier: ts.Identifier) => boolean):
     call is ts.CallExpression&
     {arguments: [ts.ArrayLiteralExpression, ts.StringLiteral, ts.StringLiteral]} {
   const helperArgs = call.arguments[0];
@@ -1722,7 +1737,7 @@ export function isMemberDecorateCall(call: ts.CallExpression, className: string)
 
   const target = call.arguments[1];
   if (target === undefined || !ts.isPropertyAccessExpression(target) ||
-      !ts.isIdentifier(target.expression) || target.expression.text !== className ||
+      !ts.isIdentifier(target.expression) || !matches(target.expression) ||
       target.name.text !== 'prototype') {
     return false;
   }
