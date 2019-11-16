@@ -10,8 +10,9 @@
     "preinstall": "node ../../../../tools/yarn/check-yarn.js",
     "postinstall": "yarn webdriver:update"
   },
+  "//engines-comment": "Keep this in sync with aio/package.json",
   "engines": {
-    "node": ">=10.9.0 <11.0.0",
+    "node": ">=10.9.0 <13.0.0",
     "yarn": ">=1.17.3 <=1.19.1"
   },
   "keywords": [],
