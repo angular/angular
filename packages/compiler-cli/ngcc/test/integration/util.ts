@@ -13,65 +13,75 @@ import {MockFileSystemPosix} from '../../../src/ngtsc/file_system/testing';
 
 import {loadStandardTestFiles} from '../../../test/helpers';
 
-export type NodeModulesDef = {
-  [name: string]: Package
-};
-
-export type Package = {
+export type PackageSources = {
   [path: string]: string;
 };
 
 /**
- * Compile one or more testing packages into the top-level `FileSystem`.
+ * Instead of writing packaged code by hand, and manually describing the layout of the package, this
+ * function transpiles the TypeScript sources into a flat file structure using the ES5 format. In
+ * this package layout, all compiled sources are at the root of the package, with .d.ts files next
+ * to the .js files. Each .js also has a corresponding .metadata.js file alongside with it.
  *
- * Instead of writing ESM5 code by hand, and manually describing the Angular Package Format
- * structure of that code in a mock NPM package, `genNodeModules` allows for the generation of one
- * or more NPM packages from TypeScript source code. Each named NPM package in `def` is
- * independently transpiled with `compileNodeModuleToFs` and written into `node_modules` in the
- * top-level filesystem, ready for use in testing ngcc.
+ * All generated code is written into the `node_modules` in the top-level filesystem, ready for use
+ * in testing ngcc.
+ *
+ * @param pkgName The name of the package to compile.
+ * @param sources The TypeScript sources to compile.
  */
-export function genNodeModules(def: NodeModulesDef): void {
-  const fs = getFileSystem();
-  for (const pkgName of Object.keys(def)) {
-    compileNodeModuleToFs(fs, pkgName, def[pkgName]);
-  }
+export function compileIntoFlatEs5Package(pkgName: string, sources: PackageSources): void {
+  compileIntoFlatPackage(pkgName, sources, {
+    target: ts.ScriptTarget.ES5,
+    module: ts.ModuleKind.ESNext,
+  });
+}
+
+export interface FlatLayoutOptions {
+  /**
+   * The script target version to compile into.
+   */
+  target: ts.ScriptTarget;
+
+  /**
+   * The module kind to use in the compiled result.
+   */
+  module: ts.ModuleKind;
 }
 
 /**
- * Takes the TypeScript project defined in the `Package` structure, compiles it to ESM5, and sets it
- * up as a package in `node_modules` in `fs`.
+ * Instead of writing packaged code by hand, and manually describing the layout of the package, this
+ * function transpiles the TypeScript sources into a flat file structure using a single format. In
+ * this package layout, all compiled sources are at the root of the package, with .d.ts files next
+ * to the .js files. Each .js also has a corresponding .metadata.js file alongside with it.
  *
- * TODO(alxhub): over time, expand this to other bundle formats and make it more faithful to the
- * shape of real NPM packages.
+ * All generated code is written into the `node_modules` in the top-level filesystem, ready for use
+ * in testing ngcc.
+ *
+ * @param pkgName The name of the package to compile.
+ * @param sources The TypeScript sources to compile.
+ * @param options Allows for configuration of how the sources are compiled.
  */
-function compileNodeModuleToFs(fs: FileSystem, pkgName: string, pkg: Package): void {
-  const compileFs = new MockFileSystemPosix(true);
-  compileFs.init(loadStandardTestFiles({fakeCore: false}));
+function compileIntoFlatPackage(
+    pkgName: string, sources: PackageSources, options: FlatLayoutOptions): void {
+  const fs = getFileSystem();
+  const {rootNames, compileFs} = setupCompileFs(sources);
 
-  const options: ts.CompilerOptions = {
-    declaration: true,
-    module: ts.ModuleKind.ESNext,
-    target: ts.ScriptTarget.ES5,
-    lib: [],
+  const emit = (options: ts.CompilerOptions) => {
+    const host = new MockCompilerHost(compileFs);
+    const program = ts.createProgram({host, rootNames, options});
+    program.emit();
   };
 
-  const rootNames = Object.keys(pkg);
-
-  for (const fileName of rootNames) {
-    compileFs.writeFile(compileFs.resolve(fileName), pkg[fileName]);
-  }
-
-  const host = new MockCompilerHost(compileFs);
-  const program = ts.createProgram({host, rootNames, options});
-  program.emit();
+  emit({declaration: true, module: options.module, target: options.target, lib: []});
 
   // Copy over the JS and .d.ts files, and add a .metadata.json for each .d.ts file.
-  for (const inFileTs of rootNames) {
-    const inFileBase = inFileTs.replace(/\.ts$/, '');
-    fs.writeFile(
-        fs.resolve(`/node_modules/${pkgName}/${inFileBase}.d.ts`),
-        compileFs.readFile(compileFs.resolve(`${inFileBase}.d.ts`)));
-    const jsContents = compileFs.readFile(compileFs.resolve(`${inFileBase}.js`));
+  for (const file of rootNames) {
+    const inFileBase = file.replace(/\.ts$/, '');
+
+    const dtsContents = compileFs.readFile(compileFs.resolve(`/${inFileBase}.d.ts`));
+    fs.writeFile(fs.resolve(`/node_modules/${pkgName}/${inFileBase}.d.ts`), dtsContents);
+
+    const jsContents = compileFs.readFile(compileFs.resolve(`/${inFileBase}.js`));
     fs.writeFile(fs.resolve(`/node_modules/${pkgName}/${inFileBase}.js`), jsContents);
     fs.writeFile(fs.resolve(`/node_modules/${pkgName}/${inFileBase}.metadata.json`), '{}');
   }
@@ -86,6 +96,109 @@ function compileNodeModuleToFs(fs: FileSystem, pkgName: string, pkg: Package): v
 
   fs.writeFile(
       fs.resolve(`/node_modules/${pkgName}/package.json`), JSON.stringify(pkgJson, null, 2));
+}
+
+/**
+ * Instead of writing packaged code by hand, and manually describing the layout of the package, this
+ * function transpiles the TypeScript sources into a package layout that of Angular Package Format.
+ * Both esm2015 and esm5 bundles are present in this layout. The .d.ts files reside in the /src
+ * directory and a public .d.ts file is present in the root, re-exporting /src/index.ts.
+ *
+ * Flat modules (fesm2015 and fesm5) and UMD bundles are not generated like they ought to be in APF.
+ *
+ * All generated code is written into the `node_modules` in the top-level filesystem, ready for use
+ * in testing ngcc.
+ */
+export function compileIntoApf(pkgName: string, sources: PackageSources): void {
+  const fs = getFileSystem();
+  const {rootNames, compileFs} = setupCompileFs(sources);
+
+  const emit = (options: ts.CompilerOptions) => {
+    const host = new MockCompilerHost(compileFs);
+    const program = ts.createProgram({host, rootNames, options});
+    program.emit();
+  };
+
+  // Compile esm2015 into /esm2015
+  compileFs.ensureDir(compileFs.resolve('esm2015'));
+  emit({
+    declaration: true,
+    outDir: './esm2015',
+    module: ts.ModuleKind.ESNext,
+    target: ts.ScriptTarget.ES2015,
+    lib: [],
+  });
+
+  fs.ensureDir(fs.resolve(`/node_modules/${pkgName}/src`));
+  fs.ensureDir(fs.resolve(`/node_modules/${pkgName}/esm2015/src`));
+  for (const file of rootNames) {
+    const inFileBase = file.replace(/\.ts$/, '');
+
+    // Copy declaration file into /src tree
+    const dtsContents = compileFs.readFile(compileFs.resolve(`/esm2015/${inFileBase}.d.ts`));
+    fs.writeFile(fs.resolve(`/node_modules/${pkgName}/src/${inFileBase}.d.ts`), dtsContents);
+
+    // Copy compiled source file into /esm2015/src tree
+    const jsContents = compileFs.readFile(compileFs.resolve(`/esm2015/${inFileBase}.js`));
+    fs.writeFile(fs.resolve(`/node_modules/${pkgName}/esm2015/src/${inFileBase}.js`), jsContents);
+  }
+  fs.writeFile(
+      fs.resolve(`/node_modules/${pkgName}/esm2015/index.js`), `export * from './src/index';`);
+
+  // Compile esm5 into /esm5
+  compileFs.ensureDir(compileFs.resolve('esm5'));
+  emit({
+    declaration: false,
+    outDir: './esm5',
+    module: ts.ModuleKind.ESNext,
+    target: ts.ScriptTarget.ES5,
+    lib: [],
+  });
+
+  fs.ensureDir(fs.resolve(`/node_modules/${pkgName}/esm5/src`));
+  for (const file of rootNames) {
+    const inFileBase = file.replace(/\.ts$/, '');
+
+    // Copy compiled source file into esm5/src tree
+    const jsContents = compileFs.readFile(compileFs.resolve(`/esm5/${inFileBase}.js`));
+    fs.writeFile(fs.resolve(`/node_modules/${pkgName}/esm5/src/${inFileBase}.js`), jsContents);
+  }
+  fs.writeFile(
+      fs.resolve(`/node_modules/${pkgName}/esm5/index.js`), `export * from './src/index';`);
+
+  // Write a main declaration and metadata file to the root
+  fs.writeFile(fs.resolve(`/node_modules/${pkgName}/index.d.ts`), `export * from './src/index';`);
+  fs.writeFile(fs.resolve(`/node_modules/${pkgName}/index.metadata.json`), '{}');
+
+  // Write the package.json
+  const pkgJson: unknown = {
+    name: pkgName,
+    version: '0.0.1',
+    esm5: './esm5/index.js',
+    esm2015: './esm2015/index.js',
+    module: './esm5/index.js',
+    typings: './index.d.ts',
+  };
+
+  fs.writeFile(
+      fs.resolve(`/node_modules/${pkgName}/package.json`), JSON.stringify(pkgJson, null, 2));
+}
+
+/**
+ * Prepares a mock filesystem that contains all provided source files, which can be used to emit
+ * compiled code into.
+ */
+function setupCompileFs(sources: PackageSources): {rootNames: string[], compileFs: FileSystem} {
+  const compileFs = new MockFileSystemPosix(true);
+  compileFs.init(loadStandardTestFiles({fakeCore: false}));
+
+  const rootNames = Object.keys(sources);
+
+  for (const fileName of rootNames) {
+    compileFs.writeFile(compileFs.resolve(fileName), sources[fileName]);
+  }
+
+  return {rootNames, compileFs};
 }
 
 /**
