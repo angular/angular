@@ -149,7 +149,7 @@ export class Transformer {
     const decorationAnalyses = decorationAnalyzer.analyzeProgram();
 
     const moduleWithProvidersAnalyzer =
-        bundle.dts && new ModuleWithProvidersAnalyzer(reflectionHost, referencesRegistry);
+        new ModuleWithProvidersAnalyzer(reflectionHost, referencesRegistry, bundle.dts !== null);
     const moduleWithProvidersAnalyses = moduleWithProvidersAnalyzer &&
         moduleWithProvidersAnalyzer.analyzeProgram(bundle.src.program);
 

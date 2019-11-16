@@ -175,6 +175,54 @@ runInEachFileSystem(() => {
       expect(jsContents).toMatch(/\bvar _c0 =/);
     });
 
+    it('should add generic type for ModuleWithProviders and generate exports for private modules',
+       () => {
+         compileIntoApf('test-package', {
+           '/index.ts': `
+              import {ModuleWithProviders} from '@angular/core';
+              import {InternalFooModule} from './internal';
+              
+              export class FooModule {
+                static forRoot(): ModuleWithProviders {
+                  return {
+                    ngModule: InternalFooModule,
+                  };
+                }
+              }
+            `,
+           '/internal.ts': `
+              import {NgModule} from '@angular/core';
+  
+              @NgModule()
+              export class InternalFooModule {}
+           `,
+         });
+
+         mainNgcc({
+           basePath: '/node_modules',
+           targetEntryPointPath: 'test-package',
+           propertiesToConsider: ['esm2015', 'esm5', 'module'],
+         });
+
+         // The .d.ts where FooModule is declared should have a generic type added
+         const dtsContents = fs.readFile(_(`/node_modules/test-package/src/index.d.ts`));
+         expect(dtsContents).toContain(`import * as ɵngcc0 from './internal';`);
+         expect(dtsContents)
+             .toContain(`static forRoot(): ModuleWithProviders<ɵngcc0.InternalFooModule>`);
+
+         // The public facing .d.ts should export the InternalFooModule
+         const entryDtsContents = fs.readFile(_(`/node_modules/test-package/index.d.ts`));
+         expect(entryDtsContents).toContain(`export {InternalFooModule} from './src/internal';`);
+
+         // The esm2015 index source should export the InternalFooModule
+         const esm2015Contents = fs.readFile(_(`/node_modules/test-package/esm2015/index.js`));
+         expect(esm2015Contents).toContain(`export {InternalFooModule} from './src/internal';`);
+
+         // The esm5 index source should also export the InternalFooModule
+         const esm5Contents = fs.readFile(_(`/node_modules/test-package/esm5/index.js`));
+         expect(esm5Contents).toContain(`export {InternalFooModule} from './src/internal';`);
+       });
+
     describe('in async mode', () => {
       it('should run ngcc without errors for fesm2015', async() => {
         const promise = mainNgcc({
