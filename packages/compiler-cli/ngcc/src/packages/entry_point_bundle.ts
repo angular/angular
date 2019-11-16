@@ -73,16 +73,20 @@ export function makeEntryPointBundle(
 function computePotentialDtsFilesFromJsFiles(
     fs: FileSystem, srcProgram: ts.Program, formatPath: AbsoluteFsPath,
     typingsPath: AbsoluteFsPath) {
-  const relativePath = fs.relative(fs.dirname(formatPath), fs.dirname(typingsPath));
+  const formatRoot = fs.dirname(formatPath);
+  const typingsRoot = fs.dirname(typingsPath);
   const additionalFiles: AbsoluteFsPath[] = [];
   for (const sf of srcProgram.getSourceFiles()) {
     if (!sf.fileName.endsWith('.js')) {
       continue;
     }
-    const dtsPath = fs.resolve(
-        fs.dirname(sf.fileName), relativePath, fs.basename(sf.fileName, '.js') + '.d.ts');
-    if (fs.exists(dtsPath)) {
-      additionalFiles.push(dtsPath);
+
+    // Given a source file at e.g. `esm2015/src/some/nested/index.js`, try to resolve the
+    // declaration file under the typings root in `src/some/nested/index.d.ts`.
+    const mirroredDtsPath =
+        fs.resolve(typingsRoot, fs.relative(formatRoot, sf.fileName.replace(/\.js$/, '.d.ts')));
+    if (fs.exists(mirroredDtsPath)) {
+      additionalFiles.push(mirroredDtsPath);
     }
   }
   return additionalFiles;
