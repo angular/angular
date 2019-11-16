@@ -19,7 +19,7 @@ import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTI
 import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 import {MockLogger} from '../helpers/mock_logger';
-import {genNodeModules} from './util';
+import {compileIntoApf, compileIntoFlatEs5Package} from './util';
 
 
 const testFiles = loadStandardTestFiles({fakeCore: false, rxjs: true});
@@ -113,23 +113,21 @@ runInEachFileSystem(() => {
     });
 
     it('should generate correct metadata for decorated getter/setter properties', () => {
-      genNodeModules({
-        'test-package': {
-          '/index.ts': `
-            import {Directive, Input, NgModule} from '@angular/core';
-
-            @Directive({selector: '[foo]'})
-            export class FooDirective {
-              @Input() get bar() { return 'bar'; }
-              set bar(value: string) {}
-            }
-
-            @NgModule({
-              declarations: [FooDirective],
-            })
-            export class FooModule {}
-          `,
-        },
+      compileIntoFlatEs5Package('test-package', {
+        '/index.ts': `
+          import {Directive, Input, NgModule} from '@angular/core';
+  
+          @Directive({selector: '[foo]'})
+          export class FooDirective {
+            @Input() get bar() { return 'bar'; }
+            set bar(value: string) {}
+          }
+  
+          @NgModule({
+            declarations: [FooDirective],
+          })
+          export class FooModule {}
+        `,
       });
 
       mainNgcc({
@@ -148,24 +146,22 @@ runInEachFileSystem(() => {
     });
 
     it('should not add `const` in ES5 generated code', () => {
-      genNodeModules({
-        'test-package': {
-          '/index.ts': `
-            import {Directive, Input, NgModule} from '@angular/core';
-
-            @Directive({
-              selector: '[foo]',
-              host: {bar: ''},
-            })
-            export class FooDirective {
-            }
-
-            @NgModule({
-              declarations: [FooDirective],
-            })
-            export class FooModule {}
-          `,
-        },
+      compileIntoFlatEs5Package('test-package', {
+        '/index.ts': `
+          import {Directive, Input, NgModule} from '@angular/core';
+  
+          @Directive({
+            selector: '[foo]',
+            host: {bar: ''},
+          })
+          export class FooDirective {
+          }
+  
+          @NgModule({
+            declarations: [FooDirective],
+          })
+          export class FooModule {}
+        `,
       });
 
       mainNgcc({
@@ -823,9 +819,8 @@ runInEachFileSystem(() => {
     describe('undecorated child class migration', () => {
       it('should generate a directive definition with CopyDefinitionFeature for an undecorated child directive',
          () => {
-           genNodeModules({
-             'test-package': {
-               '/index.ts': `
+           compileIntoFlatEs5Package('test-package', {
+             '/index.ts': `
               import {Directive, NgModule} from '@angular/core';
 
               @Directive({
@@ -840,7 +835,6 @@ runInEachFileSystem(() => {
               })
               export class Module {}
             `,
-             },
            });
 
            mainNgcc({
@@ -864,9 +858,8 @@ runInEachFileSystem(() => {
 
       it('should generate a component definition with CopyDefinitionFeature for an undecorated child component',
          () => {
-           genNodeModules({
-             'test-package': {
-               '/index.ts': `
+           compileIntoFlatEs5Package('test-package', {
+             '/index.ts': `
            import {Component, NgModule} from '@angular/core';
 
            @Component({
@@ -882,7 +875,6 @@ runInEachFileSystem(() => {
            })
            export class Module {}
          `,
-             },
            });
 
            mainNgcc({
@@ -906,9 +898,8 @@ runInEachFileSystem(() => {
 
       it('should generate directive definitions with CopyDefinitionFeature for undecorated child directives in a long inheritance chain',
          () => {
-           genNodeModules({
-             'test-package': {
-               '/index.ts': `
+           compileIntoFlatEs5Package('test-package', {
+             '/index.ts': `
            import {Directive, NgModule} from '@angular/core';
 
            @Directive({
@@ -927,7 +918,6 @@ runInEachFileSystem(() => {
            })
            export class Module {}
          `,
-             },
            });
 
            mainNgcc({
