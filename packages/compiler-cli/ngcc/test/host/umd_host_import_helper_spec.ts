@@ -61,6 +61,15 @@ runInEachFileSystem(() => {
     return SomeDirective;
   }());
   exports.SomeDirective = SomeDirective;
+  
+  var AliasedDirective$1 = /** @class */ (function () {
+    function AliasedDirective() {}
+    AliasedDirective = __decorate([
+      core.Directive({ selector: '[someDirective]' }),
+    ], AliasedDirective);
+    return AliasedDirective;
+  }());
+  exports.AliasedDirective$1 = AliasedDirective$1;
 })));`,
       };
     });
@@ -72,6 +81,26 @@ runInEachFileSystem(() => {
         const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
         const classNode = getDeclaration(
             program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+        const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+
+        expect(decorators).toBeDefined();
+        expect(decorators.length).toEqual(1);
+
+        const decorator = decorators[0];
+        expect(decorator.name).toEqual('Directive');
+        expect(decorator.identifier !.getText()).toEqual('core.Directive');
+        expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+        expect(decorator.args !.map(arg => arg.getText())).toEqual([
+          '{ selector: \'[someDirective]\' }',
+        ]);
+      });
+
+      it('should find the decorators on an aliased class', () => {
+        loadTestFiles([SOME_DIRECTIVE_FILE]);
+        const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const classNode = getDeclaration(
+            program, SOME_DIRECTIVE_FILE.name, 'AliasedDirective$1', isNamedVariableDeclaration);
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators).toBeDefined();

@@ -174,12 +174,27 @@ import { Directive } from '@angular/core';
 // Note that the IIFE is not in parentheses
 var SomeDirective = function () {
     function SomeDirective() {}
-    // Note that the decorator is combined with the return statment
+    // Note that the decorator is combined with the return statement
     return SomeDirective = tslib_1.__decorate([
         Directive({ selector: '[someDirective]' }),
     ], SomeDirective);
-}());
+}();
 export { SomeDirective };
+`,
+        },
+        {
+          name: _('/some_aliased_directive.js'),
+          contents: `
+import * as tslib_1 from 'tslib';
+import { Directive } from '@angular/core';
+var AliasedDirective$1 = /** @class */ (function () {
+    function AliasedDirective() {}
+    AliasedDirective = tslib_1.__decorate([
+        Directive({ selector: '[someDirective]' }),
+    ], AliasedDirective);
+    return AliasedDirective;
+}());
+export { AliasedDirective$1 };
 `,
         },
       ];
@@ -245,6 +260,26 @@ export { SomeDirective };
               '{ selector: \'[someDirective]\' }',
             ]);
 
+          });
+
+          it('should find the decorators on an aliased class', () => {
+            const {program} = makeTestBundleProgram(_('/some_aliased_directive.js'));
+            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+            const classNode = getDeclaration(
+                program, _('/some_aliased_directive.js'), 'AliasedDirective$1',
+                isNamedVariableDeclaration);
+            const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+
+            expect(decorators).toBeDefined();
+            expect(decorators.length).toEqual(1);
+
+            const decorator = decorators[0];
+            expect(decorator.name).toEqual('Directive');
+            expect(decorator.identifier !.getText()).toEqual('Directive');
+            expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+            expect(decorator.args !.map(arg => arg.getText())).toEqual([
+              '{ selector: \'[someDirective]\' }',
+            ]);
           });
 
           it('should find the decorators on a class when mixing `ctorParameters` and `__decorate`',
