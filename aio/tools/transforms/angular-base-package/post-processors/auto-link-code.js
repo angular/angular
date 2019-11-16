@@ -26,18 +26,17 @@ module.exports = function autoLinkCode(getDocFromAlias) {
   autoLinkCodeImpl.codeElements = ['code'];
   return autoLinkCodeImpl;
 
-  function autoLinkCodeImpl()  {
+  function autoLinkCodeImpl() {
     return (ast) => {
       visit(ast, 'element', (node, ancestors) => {
         // Only interested in code elements that are not inside links
-        if (autoLinkCodeImpl.codeElements.some(elementType =>
-            is(node, elementType)) &&
-            (!node.properties.className || node.properties.className.indexOf('no-auto-link') === -1) &&
+        if (autoLinkCodeImpl.codeElements.some(elementType => is(node, elementType)) &&
+            (!node.properties.className ||
+             node.properties.className.indexOf('no-auto-link') === -1) &&
             ancestors.every(ancestor => !is(ancestor, 'a'))) {
           visit(node, 'text', (node, ancestors) => {
             // Only interested in text nodes that are not inside links
             if (ancestors.every(ancestor => !is(ancestor, 'a'))) {
-
               const parent = ancestors[ancestors.length - 1];
               const index = parent.children.indexOf(node);
 
@@ -47,15 +46,20 @@ module.exports = function autoLinkCode(getDocFromAlias) {
                 parent.children.splice(index, 1, createLinkNode(docs[0], node.value));
               } else {
                 // Parse the text for words that we can convert to links
-                const nodes = textContent(node).split(/([A-Za-z0-9_.-]+)/)
-                  .filter(word => word.length)
-                  .map((word, index, words) => {
-                    // remove docs that fail the custom filter tests
-                    const filteredDocs = autoLinkCodeImpl.customFilters.reduce((docs, filter) => filter(docs, words, index), getDocFromAlias(word));
-                    return foundValidDoc(filteredDocs) ?
-                              createLinkNode(filteredDocs[0], word) : // Create a link wrapping the text node.
-                              { type: 'text', value: word };  // this is just text so push a new text node
-                  });
+                const nodes =
+                    textContent(node)
+                        .split(/([A-Za-z0-9_.-]+)/)
+                        .filter(word => word.length)
+                        .map((word, index, words) => {
+                          // remove docs that fail the custom filter tests
+                          const filteredDocs = autoLinkCodeImpl.customFilters.reduce(
+                              (docs, filter) => filter(docs, words, index), getDocFromAlias(word));
+                          return foundValidDoc(filteredDocs) ?
+                              // Create a link wrapping the text node.
+                              createLinkNode(filteredDocs[0], word) :
+                              // this is just text so push a new text node
+                              {type: 'text', value: word};
+                        });
 
                 // Replace the text node with the links and leftover text nodes
                 Array.prototype.splice.apply(parent.children, [index, 1].concat(nodes));
@@ -68,17 +72,16 @@ module.exports = function autoLinkCode(getDocFromAlias) {
   }
 
   function foundValidDoc(docs) {
-    return docs.length === 1 &&
-           !docs[0].internal &&
-           autoLinkCodeImpl.docTypes.indexOf(docs[0].docType) !== -1;
+    return docs.length === 1 && !docs[0].internal &&
+        autoLinkCodeImpl.docTypes.indexOf(docs[0].docType) !== -1;
   }
 
   function createLinkNode(doc, text) {
     return {
       type: 'element',
       tagName: 'a',
-      properties: { href: doc.path, class: 'code-anchor' },
-      children: [{ type: 'text', value: text }]
+      properties: {href: doc.path, class: 'code-anchor'},
+      children: [{type: 'text', value: text}]
     };
   }
 };
