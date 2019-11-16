@@ -24,15 +24,19 @@ module.exports = function autoLinkCode(getDocFromAlias) {
   autoLinkCodeImpl.docTypes = [];
   autoLinkCodeImpl.customFilters = [];
   autoLinkCodeImpl.codeElements = ['code'];
+  autoLinkCodeImpl.ignoredLanguages = ['bash', 'json'];
   return autoLinkCodeImpl;
 
   function autoLinkCodeImpl() {
     return (ast) => {
       visit(ast, 'element', (node, ancestors) => {
-        // Only interested in code elements that are not inside links
+        // Only interested in code elements that:
+        // * do not have `no-auto-link` class
+        // * do not have an ignored language
+        // * are not inside links
         if (autoLinkCodeImpl.codeElements.some(elementType => is(node, elementType)) &&
-            (!node.properties.className ||
-             node.properties.className.indexOf('no-auto-link') === -1) &&
+            (!node.properties.className || !node.properties.className.includes('no-auto-link')) &&
+            !autoLinkCodeImpl.ignoredLanguages.includes(node.properties.language) &&
             ancestors.every(ancestor => !is(ancestor, 'a'))) {
           visit(node, 'text', (node, ancestors) => {
             // Only interested in text nodes that are not inside links
