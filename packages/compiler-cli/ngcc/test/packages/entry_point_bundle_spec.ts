@@ -128,6 +128,26 @@ runInEachFileSystem(() => {
           name: _('/node_modules/other/es2015/public_api.js'),
           contents: 'export class OtherClass {};'
         },
+
+        // Mimic an AFP package with declaration files in a different tree than the sources
+        {name: _('/node_modules/internal/index.d.ts'), contents: 'export * from "./src/index";'},
+        {name: _('/node_modules/internal/src/index.d.ts'), contents: ''},
+        {
+          name: _('/node_modules/internal/src/internal.d.ts'),
+          contents: 'export declare function internal();'
+        },
+        {
+          name: _('/node_modules/internal/esm2015/index.js'),
+          contents: 'export * from "./src/index";'
+        },
+        {
+          name: _('/node_modules/internal/esm2015/src/index.js'),
+          contents: 'import {Internal} from "./internal";'
+        },
+        {
+          name: _('/node_modules/internal/esm2015/src/internal.js'),
+          contents: 'export function internal();'
+        },
       ]);
     }
 
@@ -201,6 +221,29 @@ runInEachFileSystem(() => {
              .toContain(absoluteFrom('/node_modules/test/internal.js'));
          expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
              .toContain(absoluteFrom('/node_modules/test/internal.d.ts'));
+       });
+
+    it('should include equivalently named, internally imported, src files in the typings program, if `mirrorDtsFromSrc` is true',
+       () => {
+         setupMockFileSystem();
+         const fs = getFileSystem();
+         const entryPoint: EntryPoint = {
+           name: 'internal',
+           packageJson: {name: 'internal'},
+           package: absoluteFrom('/node_modules/internal'),
+           path: absoluteFrom('/node_modules/internal'),
+           typings: absoluteFrom('/node_modules/internal/index.d.ts'),
+           compiledByAngular: true,
+           ignoreMissingDependencies: false,
+           generateDeepReexports: false,
+         };
+         const esm5bundle = makeEntryPointBundle(
+             fs, entryPoint, './esm2015/index.js', false, 'esm2015', /* transformDts */ true,
+             /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
+         expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
+             .toContain(absoluteFrom('/node_modules/internal/esm2015/src/internal.js'));
+         expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
+             .toContain(absoluteFrom('/node_modules/internal/src/internal.d.ts'));
        });
 
     it('should ignore, internally imported, src files in the typings program, if `mirrorDtsFromSrc` is false',
