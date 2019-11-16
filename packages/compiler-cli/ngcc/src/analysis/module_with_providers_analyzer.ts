@@ -30,7 +30,9 @@ export type ModuleWithProvidersAnalyses = Map<ts.SourceFile, ModuleWithProviders
 export const ModuleWithProvidersAnalyses = Map;
 
 export class ModuleWithProvidersAnalyzer {
-  constructor(private host: NgccReflectionHost, private referencesRegistry: ReferencesRegistry) {}
+  constructor(
+      private host: NgccReflectionHost, private referencesRegistry: ReferencesRegistry,
+      private processDts: boolean) {}
 
   analyzeProgram(program: ts.Program): ModuleWithProvidersAnalyses {
     const analyses = new ModuleWithProvidersAnalyses();
@@ -43,16 +45,19 @@ export class ModuleWithProvidersAnalyzer {
           this.referencesRegistry.add(fn.ngModule.node, new Reference(fn.ngModule.node));
         }
 
-        const dtsFn = this.getDtsDeclarationForFunction(fn);
-        const typeParam = dtsFn.type && ts.isTypeReferenceNode(dtsFn.type) &&
-                dtsFn.type.typeArguments && dtsFn.type.typeArguments[0] ||
-            null;
-        if (!typeParam || isAnyKeyword(typeParam)) {
-          const ngModule = this.resolveNgModuleReference(fn);
-          const dtsFile = dtsFn.getSourceFile();
-          const analysis = analyses.has(dtsFile) ? analyses.get(dtsFile) : [];
-          analysis.push({declaration: dtsFn, ngModule});
-          analyses.set(dtsFile, analysis);
+        // Only when processing the dts files do we need to determine which declaration to update.
+        if (this.processDts) {
+          const dtsFn = this.getDtsDeclarationForFunction(fn);
+          const typeParam = dtsFn.type && ts.isTypeReferenceNode(dtsFn.type) &&
+                  dtsFn.type.typeArguments && dtsFn.type.typeArguments[0] ||
+              null;
+          if (!typeParam || isAnyKeyword(typeParam)) {
+            const ngModule = this.resolveNgModuleReference(fn);
+            const dtsFile = dtsFn.getSourceFile();
+            const analysis = analyses.has(dtsFile) ? analyses.get(dtsFile) : [];
+            analysis.push({declaration: dtsFn, ngModule});
+            analyses.set(dtsFile, analysis);
+          }
         }
       });
     });
