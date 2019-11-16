@@ -223,26 +223,34 @@ function reportErrorsAndExit(
     allDiagnostics: Diagnostics, options?: api.CompilerOptions,
     consoleError: (s: string) => void = console.error): number {
   const errorsAndWarnings = filterErrorsAndWarnings(allDiagnostics);
-  if (errorsAndWarnings.length) {
-    const formatHost = getFormatDiagnosticsHost(options);
-    if (options && options.enableIvy !== false) {
-      const ngDiagnostics = errorsAndWarnings.filter(api.isNgDiagnostic);
-      const tsDiagnostics = errorsAndWarnings.filter(api.isTsDiagnostic);
-      consoleError(replaceTsWithNgInErrors(
-          ts.formatDiagnosticsWithColorAndContext(tsDiagnostics, formatHost)));
-      consoleError(formatDiagnostics(ngDiagnostics, formatHost));
-    } else {
-      consoleError(formatDiagnostics(errorsAndWarnings, formatHost));
-    }
-  }
+  printDiagnostics(errorsAndWarnings, options, consoleError);
   return exitCodeFromResult(allDiagnostics);
 }
 
 export function watchMode(
     project: string, options: api.CompilerOptions, consoleError: (s: string) => void) {
   return performWatchCompilation(createPerformWatchHost(project, diagnostics => {
-    consoleError(formatDiagnostics(diagnostics, getFormatDiagnosticsHost(options)));
+    printDiagnostics(diagnostics, options, consoleError);
   }, options, options => createEmitCallback(options)));
+}
+
+function printDiagnostics(
+    diagnostics: ReadonlyArray<ts.Diagnostic|api.Diagnostic>,
+    options: api.CompilerOptions | undefined, consoleError: (s: string) => void): void {
+  if (diagnostics.length === 0) {
+    return;
+  }
+
+  const formatHost = getFormatDiagnosticsHost(options);
+  if (options && options.enableIvy !== false) {
+    const ngDiagnostics = diagnostics.filter(api.isNgDiagnostic);
+    const tsDiagnostics = diagnostics.filter(api.isTsDiagnostic);
+    consoleError(replaceTsWithNgInErrors(
+        ts.formatDiagnosticsWithColorAndContext(tsDiagnostics, formatHost)));
+    consoleError(formatDiagnostics(ngDiagnostics, formatHost));
+  } else {
+    consoleError(formatDiagnostics(diagnostics, formatHost));
+  }
 }
 
 // CLI entry point
