@@ -248,7 +248,7 @@ export function createRootContext(
  * Example:
  *
  * ```
- * renderComponent(AppComponent, {features: [RootLifecycleHooks]});
+ * renderComponent(AppComponent, {hostFeatures: [LifecycleHooksFeature]});
  * ```
  */
 export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
