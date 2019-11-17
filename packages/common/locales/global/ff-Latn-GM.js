@@ -49,6 +49,7 @@
     'D',
     'Dalasi Gammbi',
     {'GMD': ['D'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

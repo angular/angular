@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'ig', [['A.M.', 'P.M.'], u, ['N’ụtụtụ', 'N’abali']], [['A.M.', 'P.M.'], u, u],
+  'ig',
+  [['A.M.', 'P.M.'], u, ['N’ụtụtụ', 'N’abali']],
+  [['A.M.', 'P.M.'], u, u],
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
     ['Ụka', 'Mọn', 'Tiu', 'Wen', 'Tọọ', 'Fraị', 'Sat'],
@@ -32,9 +34,18 @@ export default [
       'Ọgọọst', 'Septemba', 'Ọktoba', 'Novemba', 'Disemba'
     ]
   ],
-  u, [['T.K.', 'A.K.'], u, ['Tupu Kraist', 'Afọ Kraịst']], 1, [6, 0],
+  u,
+  [['T.K.', 'A.K.'], u, ['Tupu Kraist', 'Afọ Kraịst']],
+  1,
+  [6, 0],
   ['d/M/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'na\' {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1}, {0}', u, '{1} \'na\' {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₦', 'Naịra', {'NGN': ['₦']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  '₦',
+  'Naịra',
+  {'NGN': ['₦']},
+  'ltr',
+  plural
 ];

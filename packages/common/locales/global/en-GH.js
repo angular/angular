@@ -49,6 +49,7 @@
     'GH₵',
     'Ghanaian Cedi',
     {'GHS': ['GH₵'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

@@ -44,6 +44,7 @@
     '$',
     'Laibhiya Dala',
     {'JPY': ['JP¥', '¥'], 'LRD': ['$'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

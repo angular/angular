@@ -70,6 +70,7 @@
     '€',
     'eiro',
     {'AUD': ['AU$', '$'], 'LVL': ['Ls'], 'THB': ['฿'], 'TWD': ['NT$']},
+    'ltr',
     plural,
     [
       [

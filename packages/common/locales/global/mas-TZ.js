@@ -52,6 +52,7 @@
     'TSh',
     'Iropiyianí e Tanzania',
     {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'TZS': ['TSh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

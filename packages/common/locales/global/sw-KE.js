@@ -48,6 +48,7 @@
     'Ksh',
     'Shilingi ya Kenya',
     {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'THB': ['฿'], 'TWD': ['NT$'], 'TZS': ['TSh']},
+    'ltr',
     plural,
     [
       [

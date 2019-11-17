@@ -48,6 +48,7 @@
     '€',
     'Euro',
     {'ATS': ['öS']},
+    'ltr',
     plural,
     [
       [['Mitternacht', 'am Morge', 'zmittag', 'am Namittag', 'zaabig', 'znacht'], u, u],

@@ -98,6 +98,7 @@
       'XPF': ['FCFP'],
       'ZMW': [u, 'Kw']
     },
+    'ltr',
     plural,
     [
       [

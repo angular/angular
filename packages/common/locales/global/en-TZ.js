@@ -49,6 +49,7 @@
     'TSh',
     'Tanzanian Shilling',
     {'JPY': ['JP¥', '¥'], 'TZS': ['TSh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

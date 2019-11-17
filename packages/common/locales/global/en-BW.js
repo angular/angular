@@ -49,6 +49,7 @@
     'P',
     'Botswanan Pula',
     {'BWP': ['P'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'mas', [['Ɛnkakɛnyá', 'Ɛndámâ'], u, u], u,
+  'mas',
+  [['Ɛnkakɛnyá', 'Ɛndámâ'], u, u],
+  u,
   [
     ['2', '3', '4', '5', '6', '7', '1'], ['Jpi', 'Jtt', 'Jnn', 'Jtn', 'Alh', 'Iju', 'Jmo'],
     ['Jumapílí', 'Jumatátu', 'Jumane', 'Jumatánɔ', 'Alaámisi', 'Jumáa', 'Jumamósi'],
@@ -36,10 +38,18 @@ export default [
       'Kúshîn', 'Olgísan', 'Pʉshʉ́ka', 'Ntʉ́ŋʉ́s'
     ]
   ],
-  u, [['MY', 'EY'], u, ['Meínō Yɛ́sʉ', 'Eínō Yɛ́sʉ']], 0, [6, 0],
+  u,
+  [['MY', 'EY'], u, ['Meínō Yɛ́sʉ', 'Eínō Yɛ́sʉ']],
+  0,
+  [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Ksh', 'Iropiyianí e Kenya',
-  {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'Ksh',
+  'Iropiyianí e Kenya',
+  {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

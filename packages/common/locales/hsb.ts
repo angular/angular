@@ -23,7 +23,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'hsb', [['dop.', 'pop.'], ['dopołdnja', 'popołdnju'], u], [['dopołdnja', 'popołdnju'], u, u],
+  'hsb',
+  [['dop.', 'pop.'], ['dopołdnja', 'popołdnju'], u],
+  [['dopołdnja', 'popołdnju'], u, u],
   [
     ['n', 'p', 'w', 's', 'š', 'p', 's'], ['nje', 'pón', 'wut', 'srj', 'štw', 'pja', 'sob'],
     ['njedźela', 'póndźela', 'wutora', 'srjeda', 'štwórtk', 'pjatk', 'sobota'],
@@ -50,9 +52,16 @@ export default [
     ]
   ],
   [['př.Chr.n.', 'po Chr.n.'], u, ['před Chrystowym narodźenjom', 'po Chrystowym narodźenju']],
-  1, [6, 0], ['d.M.yy', 'd.M.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
-  ['H:mm \'hodź\'.', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  1,
+  [6, 0],
+  ['d.M.yy', 'd.M.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
+  ['H:mm \'hodź\'.', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro',
-  {'AUD': [u, '$'], 'PLN': ['zł'], 'THB': ['฿']}, plural
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  '€',
+  'euro',
+  {'AUD': [u, '$'], 'PLN': ['zł'], 'THB': ['฿']},
+  'ltr',
+  plural
 ];

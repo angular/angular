@@ -58,6 +58,7 @@
     '£',
     'Punt Steirling',
     {'THB': ['฿'], 'TWD': ['NT$'], 'XXX': []},
+    'ltr',
     plural,
     []
   ];

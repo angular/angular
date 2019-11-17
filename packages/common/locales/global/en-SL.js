@@ -49,6 +49,7 @@
     'Le',
     'Sierra Leonean Leone',
     {'JPY': ['JP¥', '¥'], 'SLL': ['Le'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'yo', [['Àárọ̀', 'Ọ̀sán'], u, u], u,
+  'yo',
+  [['Àárọ̀', 'Ọ̀sán'], u, u],
+  u,
   [
     ['À', 'A', 'Ì', 'Ọ', 'Ọ', 'Ẹ', 'À'],
     ['Àìk', 'Aj', 'Ìsẹ́g', 'Ọjọ́r', 'Ọjọ́b', 'Ẹt', 'Àbám'],
@@ -55,9 +57,17 @@ export default [
       'Ògún', 'Owewe', 'Ọ̀wàrà', 'Bélú', 'Ọ̀pẹ̀'
     ]
   ],
-  [['BCE', 'AD'], u, ['Saju Kristi', 'Lehin Kristi']], 1, [6, 0],
-  ['d/M/y', 'd MM y', 'd MMM y', 'EEEE, d MMM y'], ['H:m', 'H:m:s', 'H:mm:ss z', 'HH:mm:ss zzzz'],
-  ['{1} {0}', u, u, u], ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₦', 'Náìrà ti Orílẹ̀-èdè Nàìjíríà',
-  {'JPY': ['JP¥', '¥'], 'NGN': ['₦'], 'RUB': ['₽']}, plural
+  [['BCE', 'AD'], u, ['Saju Kristi', 'Lehin Kristi']],
+  1,
+  [6, 0],
+  ['d/M/y', 'd MM y', 'd MMM y', 'EEEE, d MMM y'],
+  ['H:m', 'H:m:s', 'H:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
+  ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  '₦',
+  'Náìrà ti Orílẹ̀-èdè Nàìjíríà',
+  {'JPY': ['JP¥', '¥'], 'NGN': ['₦'], 'RUB': ['₽']},
+  'ltr',
+  plural
 ];

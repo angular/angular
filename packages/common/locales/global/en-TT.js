@@ -49,6 +49,7 @@
     '$',
     'Trinidad & Tobago Dollar',
     {'JPY': ['JP¥', '¥'], 'TTD': ['$'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

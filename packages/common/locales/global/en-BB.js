@@ -49,6 +49,7 @@
     '$',
     'Barbadian Dollar',
     {'BBD': ['$'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

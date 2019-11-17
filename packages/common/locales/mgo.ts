@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'mgo', [['AM', 'PM'], u, u], u,
+  'mgo',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7'],
     ['Aneg 1', 'Aneg 2', 'Aneg 3', 'Aneg 4', 'Aneg 5', 'Aneg 6', 'Aneg 7'], u,
@@ -37,9 +39,18 @@ export default [
       'iməg zò', 'iməg krizmed'
     ]
   ],
-  u, [['BCE', 'CE'], u, u], 1, [6, 0], ['y-MM-dd', 'y MMM d', 'y MMMM d', 'EEEE, y MMMM dd'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  u,
+  [['BCE', 'CE'], u, u],
+  1,
+  [6, 0],
+  ['y-MM-dd', 'y MMM d', 'y MMMM d', 'EEEE, y MMMM dd'],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'FCFA', 'shirè',
-  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
+  'FCFA',
+  'shirè',
+  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

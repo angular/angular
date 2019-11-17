@@ -24,7 +24,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'hr', [['AM', 'PM'], u, u], u,
+  'hr',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['N', 'P', 'U', 'S', 'Č', 'P', 'S'], ['ned', 'pon', 'uto', 'sri', 'čet', 'pet', 'sub'],
     ['nedjelja', 'ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota'],
@@ -51,11 +53,17 @@ export default [
       'rujan', 'listopad', 'studeni', 'prosinac'
     ]
   ],
-  [['pr.n.e.', 'AD'], ['pr. Kr.', 'po. Kr.'], ['prije Krista', 'poslije Krista']], 1, [6, 0],
+  [['pr.n.e.', 'AD'], ['pr. Kr.', 'po. Kr.'], ['prije Krista', 'poslije Krista']],
+  1,
+  [6, 0],
   ['dd. MM. y.', 'd. MMM y.', 'd. MMMM y.', 'EEEE, d. MMMM y.'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss (zzzz)'], ['{1} {0}', u, '{1} \'u\' {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss (zzzz)'],
+  ['{1} {0}', u, '{1} \'u\' {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'HRK', 'hrvatska kuna', {
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'HRK',
+  'hrvatska kuna',
+  {
     'AUD': [u, '$'],
     'BRL': [u, 'R$'],
     'CAD': [u, '$'],
@@ -76,5 +84,6 @@ export default [
     'XPF': [],
     'XXX': []
   },
+  'ltr',
   plural
 ];

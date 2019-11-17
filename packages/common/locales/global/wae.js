@@ -48,6 +48,7 @@
     'CHF',
     'CHF',
     {},
+    'ltr',
     plural,
     []
   ];

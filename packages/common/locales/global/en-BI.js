@@ -49,6 +49,7 @@
     'FBu',
     'Burundian Franc',
     {'BIF': ['FBu']},
+    'ltr',
     plural,
     [
       [

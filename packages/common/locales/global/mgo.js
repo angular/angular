@@ -53,6 +53,7 @@
     'FCFA',
     'shirè',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

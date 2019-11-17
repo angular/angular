@@ -56,6 +56,7 @@
     'Ksh',
     'Shilingka Kenya',
     {'BBD': ['DBB', '$'], 'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'SOS': ['S'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

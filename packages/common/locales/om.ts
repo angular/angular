@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'om', [['WD', 'WB'], u, u], u,
+  'om',
+  [['WD', 'WB'], u, u],
+  u,
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Dil', 'Wix', 'Qib', 'Rob', 'Kam', 'Jim', 'San'],
     ['Dilbata', 'Wiixata', 'Qibxata', 'Roobii', 'Kamiisa', 'Jimaata', 'Sanbata'],
@@ -32,10 +34,18 @@ export default [
       'Hagayya', 'Fuulbana', 'Onkololeessa', 'Sadaasa', 'Muddee'
     ]
   ],
-  u, [['BCE', 'CE'], u, ['Dheengadda Jeesu', 'CE']], 0, [6, 0],
+  u,
+  [['BCE', 'CE'], u, ['Dheengadda Jeesu', 'CE']],
+  0,
+  [6, 0],
   ['dd/MM/yy', 'dd-MMM-y', 'dd MMMM y', 'EEEE, MMMM d, y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Br', 'Itoophiyaa Birrii',
-  {'ETB': ['Br'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'Br',
+  'Itoophiyaa Birrii',
+  {'ETB': ['Br'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'ia', [['AM', 'PM'], u, u], u,
+  'ia',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['d', 'l', 'm', 'm', 'j', 'v', 's'], ['dom', 'lun', 'mar', 'mer', 'jov', 'ven', 'sab'],
     ['dominica', 'lunedi', 'martedi', 'mercuridi', 'jovedi', 'venerdi', 'sabbato'],
@@ -39,10 +41,17 @@ export default [
       'octobre', 'novembre', 'decembre'
     ]
   ],
-  [['a.Chr.', 'p.Chr.'], u, ['ante Christo', 'post Christo']], 1, [6, 0],
+  [['a.Chr.', 'p.Chr.'], u, ['ante Christo', 'post Christo']],
+  1,
+  [6, 0],
   ['dd-MM-y', 'd MMM y', 'd \'de\' MMMM y', 'EEEE \'le\' d \'de\' MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, '{1} \'a\' {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, '{1} \'a\' {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], u, u,
-  {'JPY': ['JP¥', '¥'], 'NLG': ['ƒ'], 'RUB': ['₽'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
+  u,
+  u,
+  {'JPY': ['JP¥', '¥'], 'NLG': ['ƒ'], 'RUB': ['₽'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

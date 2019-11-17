@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'af-NA', [['v', 'n'], ['vm.', 'nm.'], u], u,
+  'af-NA',
+  [['v', 'n'], ['vm.', 'nm.'], u],
+  u,
   [
     ['S', 'M', 'D', 'W', 'D', 'V', 'S'], ['So.', 'Ma.', 'Di.', 'Wo.', 'Do.', 'Vr.', 'Sa.'],
     ['Sondag', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrydag', 'Saterdag'],
@@ -32,11 +34,18 @@ export default [
       'Oktober', 'November', 'Desember'
     ]
   ],
-  u, [['v.C.', 'n.C.'], u, ['voor Christus', 'na Christus']], 1, [6, 0],
+  u,
+  [['v.C.', 'n.C.'], u, ['voor Christus', 'na Christus']],
+  1,
+  [6, 0],
   ['y-MM-dd', 'dd MMM y', 'dd MMMM y', 'EEEE dd MMMM y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'R', 'Suid-Afrikaanse rand', {
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'R',
+  'Suid-Afrikaanse rand',
+  {
     'CAD': [u, '$'],
     'JPY': ['JP¥', '¥'],
     'MXN': [u, '$'],
@@ -47,5 +56,6 @@ export default [
     'USD': [u, '$'],
     'ZAR': ['R']
   },
+  'ltr',
   plural
 ];

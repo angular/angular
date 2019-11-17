@@ -49,6 +49,7 @@
     'MK',
     'Malawian Kwacha',
     {'JPY': ['JP¥', '¥'], 'MWK': ['MK'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

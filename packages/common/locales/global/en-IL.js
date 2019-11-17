@@ -49,6 +49,7 @@
     '₪',
     'Israeli New Shekel',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

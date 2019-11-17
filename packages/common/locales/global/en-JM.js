@@ -49,6 +49,7 @@
     '$',
     'Jamaican Dollar',
     {'JMD': ['$'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

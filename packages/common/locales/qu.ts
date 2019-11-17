@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'qu', [['a.m.', 'p.m.'], u, u], u,
+  'qu',
+  [['a.m.', 'p.m.'], u, u],
+  u,
   [
     ['D', 'L', 'M', 'X', 'J', 'V', 'S'], ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sab'],
     ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
@@ -31,11 +33,18 @@ export default [
       'Octubre', 'Noviembre', 'Diciembre'
     ]
   ],
-  u, [['BCE', 'dC'], ['BCE', 'd.C.'], u], 0, [6, 0],
+  u,
+  [['BCE', 'dC'], ['BCE', 'd.C.'], u],
+  0,
+  [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM, y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, '{0} {1}', '{1} {0}'],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, '{0} {1}', '{1} {0}'],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '¤ #,##0.00', '#E0'], 'S/', 'Sol Peruano', {
+  ['#,##0.###', '#,##0 %', '¤ #,##0.00', '#E0'],
+  'S/',
+  'Sol Peruano',
+  {
     'BBD': ['BBG', '$'],
     'BMD': ['DBM', '$'],
     'BZD': ['DBZ', '$'],
@@ -44,5 +53,6 @@ export default [
     'PEN': ['S/'],
     'USD': ['$US', '$']
   },
+  'ltr',
   plural
 ];

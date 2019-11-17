@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'en-ZW', [['a', 'p'], ['am', 'pm'], u], [['am', 'pm'], u, u],
+  'en-ZW',
+  [['a', 'p'], ['am', 'pm'], u],
+  [['am', 'pm'], u, u],
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
@@ -33,10 +35,18 @@ export default [
       'October', 'November', 'December'
     ]
   ],
-  u, [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 0, [6, 0],
+  u,
+  [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']],
+  0,
+  [6, 0],
   ['d/M/y', 'dd MMM,y', 'dd MMMM y', 'EEEE, dd MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'at\' {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1}, {0}', u, '{1} \'at\' {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'US$', 'US Dollar',
-  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'US$',
+  'US Dollar',
+  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

@@ -49,6 +49,7 @@
     '£',
     'UK Pound',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

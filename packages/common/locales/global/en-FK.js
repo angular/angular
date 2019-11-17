@@ -49,6 +49,7 @@
     '£',
     'Falkland Islands Pound',
     {'FKP': ['£'], 'GBP': ['GB£', '£'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

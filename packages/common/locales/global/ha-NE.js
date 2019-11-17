@@ -48,6 +48,7 @@
     'CFA',
     'Kuɗin Sefa na Afirka Ta Yamma',
     {'NGN': ['₦']},
+    'ltr',
     plural,
     []
   ];

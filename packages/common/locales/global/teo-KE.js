@@ -48,6 +48,7 @@
     'Ksh',
     'Ango’otol lok’ Kenya',
     {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'UGX': ['USh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

@@ -49,6 +49,7 @@
     'K',
     'Papua New Guinean Kina',
     {'JPY': ['JP¥', '¥'], 'PGK': ['K'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

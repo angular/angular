@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'lu', [['Dinda', 'Dilolo'], u, u], u,
+  'lu',
+  [['Dinda', 'Dilolo'], u, u],
+  u,
   [
     ['L', 'N', 'N', 'N', 'N', 'N', 'L'], ['Lum', 'Nko', 'Ndy', 'Ndg', 'Njw', 'Ngv', 'Lub'],
     ['Lumingu', 'Nkodya', 'Ndàayà', 'Ndangù', 'Njòwa', 'Ngòvya', 'Lubingu'],
@@ -31,10 +33,18 @@ export default [
       'Lùshìkà', 'Lutongolo', 'Lungùdi', 'Kaswèkèsè', 'Ciswà'
     ]
   ],
-  u, [['kmp. Y.K.', 'kny. Y. K.'], u, ['Kumpala kwa Yezu Kli', 'Kunyima kwa Yezu Kli']], 1, [6, 0],
+  u,
+  [['kmp. Y.K.', 'kny. Y. K.'], u, ['Kumpala kwa Yezu Kli', 'Kunyima kwa Yezu Kli']],
+  1,
+  [6, 0],
   ['d/M/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], 'FC', 'Nfalanga wa Kongu',
-  {'CDF': ['FC'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'],
+  'FC',
+  'Nfalanga wa Kongu',
+  {'CDF': ['FC'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

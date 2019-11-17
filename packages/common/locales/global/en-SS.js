@@ -49,6 +49,7 @@
     '£',
     'South Sudanese Pound',
     {'GBP': ['GB£', '£'], 'JPY': ['JP¥', '¥'], 'SSP': ['£'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

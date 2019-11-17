@@ -45,6 +45,7 @@
     'TSh',
     'Ihela ya Tansaniya',
     {'JPY': ['JP¥', '¥'], 'TZS': ['TSh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

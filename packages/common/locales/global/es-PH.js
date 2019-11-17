@@ -74,6 +74,7 @@
       'XCD': [u, '$'],
       'XOF': []
     },
+    'ltr',
     plural,
     [
       [['del mediodía', 'de la madrugada', 'de la mañana', 'de la tarde', 'de la noche'], u, u],

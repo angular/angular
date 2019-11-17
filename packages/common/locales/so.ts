@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'so', [['h', 'd'], ['GH', 'GD'], u], [['GH', 'GD'], u, u],
+  'so',
+  [['h', 'd'], ['GH', 'GD'], u],
+  [['GH', 'GD'], u, u],
   [
     ['A', 'I', 'T', 'A', 'Kh', 'J', 'S'], ['Axd', 'Isn', 'Tldo', 'Arbc', 'Khms', 'Jmc', 'Sbti'],
     ['Axad', 'Isniin', 'Talaado', 'Arbaco', 'Khamiis', 'Jimco', 'Sabti'],
@@ -41,10 +43,17 @@ export default [
       'Oktoobar', 'Nofembar', 'Desembar'
     ]
   ],
-  [['CH', 'CD'], u, ['Ciise Hortii', 'Ciise Dabadii']], 1, [6, 0],
+  [['CH', 'CD'], u, ['Ciise Hortii', 'Ciise Dabadii']],
+  1,
+  [6, 0],
   ['dd/MM/yy', 'dd-MMM-y', 'dd MMMM y', 'EEEE, MMMM dd, y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'MaL', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'S', 'Shilingka Soomaaliya',
-  {'BBD': ['DBB', '$'], 'JPY': ['JP¥', '¥'], 'SOS': ['S'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'S',
+  'Shilingka Soomaaliya',
+  {'BBD': ['DBB', '$'], 'JPY': ['JP¥', '¥'], 'SOS': ['S'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

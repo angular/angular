@@ -49,6 +49,7 @@
     'kr',
     'Swedish Krona',
     {'JPY': ['JP¥', '¥'], 'SEK': ['kr'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

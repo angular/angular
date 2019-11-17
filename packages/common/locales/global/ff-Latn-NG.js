@@ -49,6 +49,7 @@
     '₦',
     'Nayraa Nijeriyaa',
     {'JPY': ['JP¥', '¥'], 'NGN': ['₦'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

@@ -49,6 +49,7 @@
     '$',
     'Australian Dollar',
     {'AUD': ['$'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

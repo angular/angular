@@ -65,6 +65,7 @@
       'TWD': [u, 'NT$'],
       'XCD': [u, '$']
     },
+    'ltr',
     plural,
     [
       [

@@ -51,6 +51,7 @@
     'FBu',
     'Ifaranga ry’Uburundi',
     {'BIF': ['FBu'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];
