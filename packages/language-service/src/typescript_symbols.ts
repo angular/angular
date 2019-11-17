@@ -275,7 +275,7 @@ class TypeWrapper implements Symbol {
     // the former includes properties on the base class whereas the latter does
     // not. This provides properties like .bind(), .call(), .apply(), etc for
     // functions.
-    return new SymbolTableWrapper(this.tsType.getApparentProperties(), this.context);
+    return new SymbolTableWrapper(this.tsType.getApparentProperties(), this.context, this.tsType);
   }
 
   signatures(): Signature[] { return signaturesOf(this.tsType, this.context); }
@@ -302,15 +302,12 @@ class TypeWrapper implements Symbol {
 
 class SymbolWrapper implements Symbol {
   private symbol: ts.Symbol;
-  // TODO(issue/24571): remove '!'.
-  private _tsType !: ts.Type;
-  // TODO(issue/24571): remove '!'.
-  private _members !: SymbolTable;
+  private _members?: SymbolTable;
 
   public readonly nullable: boolean = false;
   public readonly language: string = 'typescript';
 
-  constructor(symbol: ts.Symbol, private context: TypeContext) {
+  constructor(symbol: ts.Symbol, private context: TypeContext, private _tsType?: ts.Type) {
     this.symbol = symbol && context && (symbol.flags & ts.SymbolFlags.Alias) ?
         context.checker.getAliasedSymbol(symbol) :
         symbol;
@@ -340,7 +337,7 @@ class SymbolWrapper implements Symbol {
         const typeWrapper = new TypeWrapper(declaredType, this.context);
         this._members = typeWrapper.members();
       } else {
-        this._members = new SymbolTableWrapper(this.symbol.members !, this.context);
+        this._members = new SymbolTableWrapper(this.symbol.members !, this.context, this.tsType);
       }
     }
     return this._members;
@@ -454,8 +451,16 @@ function toSymbols(symbolTable: ts.SymbolTable | undefined): ts.Symbol[] {
 class SymbolTableWrapper implements SymbolTable {
   private symbols: ts.Symbol[];
   private symbolTable: ts.SymbolTable;
+  private stringIndexType?: ts.Type;
 
-  constructor(symbols: ts.SymbolTable|ts.Symbol[]|undefined, private context: TypeContext) {
+  /**
+   * Creates a queryable table of symbols belonging to a TypeScript entity.
+   * @param symbols symbols to query belonging to the entity
+   * @param context program context
+   * @param type original TypeScript type of entity owning the symbols, if known
+   */
+  constructor(
+      symbols: ts.SymbolTable|ts.Symbol[], private context: TypeContext, private type?: ts.Type) {
     symbols = symbols || [];
 
     if (Array.isArray(symbols)) {
@@ -465,18 +470,41 @@ class SymbolTableWrapper implements SymbolTable {
       this.symbols = toSymbols(symbols);
       this.symbolTable = symbols;
     }
+
+    if (type) {
+      this.stringIndexType = type.getStringIndexType();
+    }
   }
 
   get size(): number { return this.symbols.length; }
 
   get(key: string): Symbol|undefined {
     const symbol = getFromSymbolTable(this.symbolTable, key);
-    return symbol ? new SymbolWrapper(symbol, this.context) : undefined;
+    if (symbol) {
+      return new SymbolWrapper(symbol, this.context);
+    }
+
+    if (this.stringIndexType) {
+      // If the key does not exist as an explicit symbol on the type, it may be accessing a string
+      // index signature using dot notation:
+      //
+      //   const obj<T>: { [key: string]: T };
+      //   obj.stringIndex // equivalent to obj['stringIndex'];
+      //
+      // In this case, return the type indexed by an arbitrary string key.
+      const symbol = this.stringIndexType.getSymbol();
+      if (symbol) {
+        return new SymbolWrapper(symbol, this.context, this.stringIndexType);
+      }
+    }
+
+    return undefined;
   }
 
   has(key: string): boolean {
     const table: any = this.symbolTable;
-    return (typeof table.has === 'function') ? table.has(key) : table[key] != null;
+    return ((typeof table.has === 'function') ? table.has(key) : table[key] != null) ||
+        this.stringIndexType !== undefined;
   }
 
   values(): Symbol[] { return this.symbols.map(s => new SymbolWrapper(s, this.context)); }
