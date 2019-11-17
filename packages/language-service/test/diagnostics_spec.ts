@@ -127,13 +127,35 @@ describe('diagnostics', () => {
     expect(diags).toEqual([]);
   });
 
-  it('should produce diagnostics for invalid index type property access', () => {
-    mockHost.override(TEST_TEMPLATE, `
+  describe('diagnostics for invalid indexed type property access', () => {
+    it('should work with numeric index signatures (arrays)', () => {
+      mockHost.override(TEST_TEMPLATE, `
         {{heroes[0].badProperty}}`);
-    const diags = ngLS.getDiagnostics(TEST_TEMPLATE);
-    expect(diags.length).toBe(1);
-    expect(diags[0].messageText)
-        .toBe(`Identifier 'badProperty' is not defined. 'Hero' does not contain such a member`);
+      const diags = ngLS.getDiagnostics(TEST_TEMPLATE);
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText)
+          .toBe(`Identifier 'badProperty' is not defined. 'Hero' does not contain such a member`);
+    });
+
+    describe('with string index signatures', () => {
+      it('should work with index notation', () => {
+        mockHost.override(TEST_TEMPLATE, `
+        {{heroesByName['Jacky'].badProperty}}`);
+        const diags = ngLS.getDiagnostics(TEST_TEMPLATE);
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(`Identifier 'badProperty' is not defined. 'Hero' does not contain such a member`);
+      });
+
+      it('should work with dot notation', () => {
+        mockHost.override(TEST_TEMPLATE, `
+        {{heroesByName.jacky.badProperty}}`);
+        const diags = ngLS.getDiagnostics(TEST_TEMPLATE);
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(`Identifier 'badProperty' is not defined. 'Hero' does not contain such a member`);
+      });
+    });
   });
 
   describe('in expression-cases.ts', () => {

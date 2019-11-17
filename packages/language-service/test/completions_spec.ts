@@ -117,18 +117,29 @@ describe('completions', () => {
     expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
   });
 
-  it('should be able to get property completions for members in an array', () => {
-    mockHost.override(TEST_TEMPLATE, `{{ heroes[0].~{heroes-number-index}}}`);
-    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-number-index');
-    const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
-    expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
-  });
+  describe('property completions for members of an indexed type', () => {
+    it('should work with numeric index signatures (arrays)', () => {
+      mockHost.override(TEST_TEMPLATE, `{{ heroes[0].~{heroes-number-index}}}`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-number-index');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
+    });
 
-  it('should be able to get property completions for members in an indexed type', () => {
-    mockHost.override(TEST_TEMPLATE, `{{ heroesByName['Jacky'].~{heroes-string-index}}}`);
-    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-string-index');
-    const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
-    expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
+    describe('with string index signatures', () => {
+      it('should work with index notation', () => {
+        mockHost.override(TEST_TEMPLATE, `{{ heroesByName['Jacky'].~{heroes-string-index}}}`);
+        const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-string-index');
+        const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+        expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
+      });
+
+      it('should work with dot notation', () => {
+        mockHost.override(TEST_TEMPLATE, `{{ heroesByName.jacky.~{heroes-string-index}}}`);
+        const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-string-index');
+        const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+        expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
+      });
+    });
   });
 
   it('should be able to return attribute names with an incompete attribute', () => {
