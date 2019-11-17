@@ -147,7 +147,7 @@ describe('diagnostics', () => {
         expect(diags[0].messageText)
             .toBe(`Identifier 'badProperty' is not defined. 'Hero' does not contain such a member`);
       });
-    })
+    });
   });
 
   it('should not produce errors on function.bind()', () => {

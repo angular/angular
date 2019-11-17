@@ -138,7 +138,7 @@ describe('completions', () => {
         const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-string-index');
         const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
         expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
-      })
+      });
     });
   });
 
