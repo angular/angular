@@ -15,7 +15,7 @@ Learn more about the [Compiler](https://www.youtube.com/watch?v=anphffaCZrQ) and
 
 AOT compilation with Ivy is faster and should be used by default.
 In the `angular.json` workspace configuration file, set the default build options for your project to always use AOT compilation.
-When using i18n with Ivy, [translation merging](guide/i18n#merge) also requires the use of AOT compilation.
+When using application internationalization (i18n) with Ivy, [translation merging](guide/i18n#merge) also requires the use of AOT compilation.
 
 <code-example language="json" header="angular.json">
 
