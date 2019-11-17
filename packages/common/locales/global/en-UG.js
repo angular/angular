@@ -49,6 +49,7 @@
     'USh',
     'Ugandan Shilling',
     {'JPY': ['JP¥', '¥'], 'UGX': ['USh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

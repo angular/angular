@@ -49,6 +49,7 @@
     'MOP$',
     'Macanese Pataca',
     {'JPY': ['JP¥', '¥'], 'MOP': ['MOP$'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

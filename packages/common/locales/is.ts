@@ -19,7 +19,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'is', [['f.', 'e.'], ['f.h.', 'e.h.'], u], [['f.h.', 'e.h.'], u, u],
+  'is',
+  [['f.', 'e.'], ['f.h.', 'e.h.'], u],
+  [['f.h.', 'e.h.'], u, u],
   [
     ['S', 'M', 'Þ', 'M', 'F', 'F', 'L'],
     ['sun.', 'mán.', 'þri.', 'mið.', 'fim.', 'fös.', 'lau.'],
@@ -41,11 +43,18 @@ export default [
       'október', 'nóvember', 'desember'
     ]
   ],
-  u, [['f.k.', 'e.k.'], ['f.Kr.', 'e.Kr.'], ['fyrir Krist', 'eftir Krist']], 1, [6, 0],
+  u,
+  [['f.k.', 'e.k.'], ['f.Kr.', 'e.Kr.'], ['fyrir Krist', 'eftir Krist']],
+  1,
+  [6, 0],
   ['d.M.y', 'd. MMM y', 'd. MMMM y', 'EEEE, d. MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'kl\'. {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1}, {0}', u, '{1} \'kl\'. {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'ISK', 'íslensk króna', {
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'ISK',
+  'íslensk króna',
+  {
     'AUD': [u, '$'],
     'BRL': [u, 'R$'],
     'CAD': [u, '$'],
@@ -60,5 +69,6 @@ export default [
     'USD': [u, '$'],
     'VND': [u, '₫']
   },
+  'ltr',
   plural
 ];

@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'nmg', [['maná', 'kugú'], u, u], u,
+  'nmg',
+  [['maná', 'kugú'], u, u],
+  u,
   [
     ['s', 'm', 's', 's', 's', 'm', 's'], ['sɔ́n', 'mɔ́n', 'smb', 'sml', 'smn', 'mbs', 'sas'],
     [
@@ -35,10 +37,18 @@ export default [
       'ngwɛn wum navǔr', 'krísimin'
     ]
   ],
-  u, [['BL', 'PB'], u, ['Bó Lahlɛ̄', 'Pfiɛ Burī']], 1, [6, 0],
+  u,
+  [['BL', 'PB'], u, ['Bó Lahlɛ̄', 'Pfiɛ Burī']],
+  1,
+  [6, 0],
   ['d/M/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'FCFA', 'Fraŋ CFA BEAC',
-  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'FCFA',
+  'Fraŋ CFA BEAC',
+  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

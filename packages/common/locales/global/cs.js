@@ -74,6 +74,7 @@
       'XEU': ['ECU'],
       'XXX': []
     },
+    'ltr',
     plural,
     [
       [

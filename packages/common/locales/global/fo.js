@@ -69,6 +69,7 @@
     'kr',
     'donsk króna',
     {'DKK': ['kr'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

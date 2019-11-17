@@ -55,6 +55,7 @@
     'soʻm',
     'O‘zbekiston so‘mi',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$'], 'UZS': ['soʻm']},
+    'ltr',
     plural,
     [
       [['yarim tun', 'tush payti', 'ertalab', 'kunduzi', 'kechqurun', 'kechasi'], u, u], u,

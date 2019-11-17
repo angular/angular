@@ -48,6 +48,7 @@
     'MTn',
     'Metical de Moçambique',
     {'JPY': ['JP¥', '¥'], 'MZN': ['MTn'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

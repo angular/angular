@@ -49,6 +49,7 @@
     'Rs',
     'Mauritian Rupee',
     {'JPY': ['JP¥', '¥'], 'MUR': ['Rs'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

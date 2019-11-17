@@ -53,6 +53,7 @@
     'FCFA',
     'Falánga CFA BEAC',
     {'CDF': ['FC'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

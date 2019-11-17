@@ -49,6 +49,7 @@
     'WS$',
     'Samoan Tala',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$'], 'WST': ['WS$']},
+    'ltr',
     plural,
     [
       [

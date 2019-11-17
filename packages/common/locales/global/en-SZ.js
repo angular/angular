@@ -49,6 +49,7 @@
     'E',
     'Swazi Lilangeni',
     {'JPY': ['JP¥', '¥'], 'SZL': ['E'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

@@ -49,6 +49,7 @@
     'CFA',
     'Mbuuɗu Seefaa BCEAO',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

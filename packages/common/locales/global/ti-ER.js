@@ -54,6 +54,7 @@
     'Nfk',
     'ERN',
     {'ERN': ['Nfk'], 'ETB': ['Br'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

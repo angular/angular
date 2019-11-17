@@ -49,6 +49,7 @@
     '$',
     'Bahamian Dollar',
     {'BSD': ['$'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

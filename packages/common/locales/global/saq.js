@@ -52,6 +52,7 @@
     'Ksh',
     'Njilingi eel Kenya',
     {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

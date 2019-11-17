@@ -52,6 +52,7 @@
     '$',
     'Canadian Dollar',
     {'CAD': ['$'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

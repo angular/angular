@@ -56,6 +56,7 @@
     'S',
     'Shilingka Soomaaliya',
     {'BBD': ['DBB', '$'], 'JPY': ['JP¥', '¥'], 'SOS': ['S'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

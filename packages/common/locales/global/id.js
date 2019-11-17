@@ -54,6 +54,7 @@
       'USD': ['US$', '$'],
       'XXX': []
     },
+    'ltr',
     plural,
     [
       [['tengah malam', 'tengah hari', 'pagi', 'siang', 'sore', 'malam'], u, u], u,

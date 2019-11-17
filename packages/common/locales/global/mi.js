@@ -48,6 +48,7 @@
     '$',
     'Tāra o Aotearoa',
     {'NZD': ['$'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

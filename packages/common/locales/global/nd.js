@@ -48,6 +48,7 @@
     'US$',
     'Dola yase Amelika',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

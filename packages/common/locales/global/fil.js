@@ -59,6 +59,7 @@
     '₱',
     'Piso ng Pilipinas',
     {'PHP': ['₱'], 'THB': ['฿'], 'TWD': ['NT$']},
+    'ltr',
     plural,
     [
       [

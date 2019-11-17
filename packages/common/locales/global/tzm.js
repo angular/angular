@@ -49,6 +49,7 @@
     'MAD',
     'Derhem Umeṛṛuki',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

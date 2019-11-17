@@ -49,6 +49,7 @@
     'RM',
     'Malaysian Ringgit',
     {'JPY': ['JP¥', '¥'], 'MYR': ['RM'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

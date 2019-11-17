@@ -96,6 +96,7 @@
       'UAH': ['₴'],
       'XXX': ['XXXX']
     },
+    'ltr',
     plural,
     [
       [

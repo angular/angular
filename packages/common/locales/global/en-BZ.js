@@ -49,6 +49,7 @@
     '$',
     'Belize Dollar',
     {'BZD': ['$'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

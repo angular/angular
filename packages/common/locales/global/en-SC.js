@@ -49,6 +49,7 @@
     'SR',
     'Seychellois Rupee',
     {'JPY': ['JP¥', '¥'], 'SCR': ['SR'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

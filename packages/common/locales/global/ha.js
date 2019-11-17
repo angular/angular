@@ -48,6 +48,7 @@
     '₦',
     'Nairar Najeriya',
     {'NGN': ['₦']},
+    'ltr',
     plural,
     []
   ];

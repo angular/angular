@@ -61,6 +61,7 @@
       'TWD': [u, 'NT$'],
       'USD': [u, '$']
     },
+    'ltr',
     plural,
     [
       [

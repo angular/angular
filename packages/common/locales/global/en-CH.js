@@ -49,6 +49,7 @@
     'CHF',
     'Swiss Franc',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

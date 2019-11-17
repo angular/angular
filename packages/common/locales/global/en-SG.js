@@ -49,6 +49,7 @@
     '$',
     'Singapore Dollar',
     {'JPY': ['JP¥', '¥'], 'SGD': ['$'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

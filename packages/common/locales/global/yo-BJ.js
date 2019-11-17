@@ -64,6 +64,7 @@
     'CFA',
     'Faransi ti Orílɛ́ède BIKEAO',
     {'JPY': ['JP¥', '¥'], 'NGN': ['₦'], 'RUB': ['₽']},
+    'ltr',
     plural,
     []
   ];

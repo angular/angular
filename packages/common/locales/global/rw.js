@@ -51,6 +51,7 @@
     'RF',
     'RWF',
     {'JPY': ['JP¥', '¥'], 'RWF': ['RF'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

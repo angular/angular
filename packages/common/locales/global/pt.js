@@ -65,6 +65,7 @@
       'TWD': ['NT$'],
       'USD': ['US$', '$']
     },
+    'ltr',
     plural,
     [
       [['meia-noite', 'meio-dia', 'da manhã', 'da tarde', 'da noite', 'da madrugada'], u, u],

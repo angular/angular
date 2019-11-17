@@ -49,6 +49,7 @@
     '₦',
     'Nigerian Naira',
     {'JPY': ['JP¥', '¥'], 'NGN': ['₦'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

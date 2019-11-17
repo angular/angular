@@ -50,6 +50,7 @@
     'DA',
     'Adinar Azzayri',
     {'DZD': ['DA'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

@@ -49,6 +49,7 @@
     '$',
     'Solomon Islands Dollar',
     {'JPY': ['JP¥', '¥'], 'SBD': ['$'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

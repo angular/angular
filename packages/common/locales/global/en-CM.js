@@ -49,6 +49,7 @@
     'FCFA',
     'Central African CFA Franc',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

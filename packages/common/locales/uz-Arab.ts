@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'uz-Arab', [['AM', 'PM'], u, u], u,
+  'uz-Arab',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['ی.', 'د.', 'س.', 'چ.', 'پ.', 'ج.', 'ش.'],
     [
@@ -37,9 +39,18 @@ export default [
       'اگست', 'سپتمبر', 'اکتوبر', 'نومبر', 'دسمبر'
     ]
   ],
-  u, [['BCE', 'CE'], u, u], 6, [4, 5], ['y-MM-dd', 'y MMM d', 'y MMMM d', 'y MMMM d, EEEE'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  u,
+  [['BCE', 'CE'], u, u],
+  6,
+  [4, 5],
+  ['y-MM-dd', 'y MMM d', 'y MMMM d', 'y MMMM d, EEEE'],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '\u200e+', '\u200e−', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '؋', 'افغانی',
-  {'AFN': ['؋'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
+  '؋',
+  'افغانی',
+  {'AFN': ['؋'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  'rtl',
+  plural
 ];

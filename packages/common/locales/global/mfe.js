@@ -45,6 +45,7 @@
     'Rs',
     'roupi morisien',
     {'JPY': ['JP¥', '¥'], 'MUR': ['Rs'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

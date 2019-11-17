@@ -80,6 +80,7 @@
       'XXX': [],
       'ZMW': [u, 'K']
     },
+    'ltr',
     plural,
     [
       [

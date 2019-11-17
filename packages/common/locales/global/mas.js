@@ -52,6 +52,7 @@
     'Ksh',
     'Iropiyianí e Kenya',
     {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

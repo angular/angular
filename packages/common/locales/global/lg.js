@@ -48,6 +48,7 @@
     'USh',
     'Silingi eya Yuganda',
     {'JPY': ['JP¥', '¥'], 'UGX': ['USh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

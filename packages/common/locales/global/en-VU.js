@@ -49,6 +49,7 @@
     'VT',
     'Vanuatu Vatu',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$'], 'VUV': ['VT']},
+    'ltr',
     plural,
     [
       [

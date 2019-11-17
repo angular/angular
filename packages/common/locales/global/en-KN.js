@@ -49,6 +49,7 @@
     '$',
     'East Caribbean Dollar',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$'], 'XCD': ['$']},
+    'ltr',
     plural,
     [
       [

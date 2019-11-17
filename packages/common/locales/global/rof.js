@@ -49,6 +49,7 @@
     'TSh',
     'heleri sa Tanzania',
     {'JPY': ['JP¥', '¥'], 'TZS': ['TSh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

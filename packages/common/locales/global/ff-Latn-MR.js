@@ -49,6 +49,7 @@
     'UM',
     'Ugiyya Muritani',
     {'JPY': ['JP¥', '¥'], 'MRU': ['UM'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

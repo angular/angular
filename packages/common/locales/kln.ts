@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'kln', [['krn', 'koosk'], u, ['karoon', 'kooskoliny']], [['krn', 'koosk'], u, u],
+  'kln',
+  [['krn', 'koosk'], u, ['karoon', 'kooskoliny']],
+  [['krn', 'koosk'], u, u],
   [
     ['T', 'T', 'O', 'S', 'A', 'M', 'L'], ['Kts', 'Kot', 'Koo', 'Kos', 'Koa', 'Kom', 'Kol'],
     ['Kotisap', 'Kotaai', 'Koaeng’', 'Kosomok', 'Koang’wan', 'Komuut', 'Kolo'],
@@ -31,10 +33,18 @@ export default [
       'Rooptui', 'Bureet', 'Epeeso', 'Kipsuunde ne taai', 'Kipsuunde nebo aeng’'
     ]
   ],
-  u, [['AM', 'KO'], u, ['Amait kesich Jesu', 'Kokakesich Jesu']], 0, [6, 0],
+  u,
+  [['AM', 'KO'], u, ['Amait kesich Jesu', 'Kokakesich Jesu']],
+  0,
+  [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Ksh', 'Silingitab ya Kenya',
-  {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'Ksh',
+  'Silingitab ya Kenya',
+  {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

@@ -56,6 +56,7 @@
     'Fdj',
     'Faran Jabuuti',
     {'BBD': ['DBB', '$'], 'DJF': ['Fdj'], 'JPY': ['JP¥', '¥'], 'SOS': ['S'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

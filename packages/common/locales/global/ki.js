@@ -46,6 +46,7 @@
     'Ksh',
     'Ciringi ya Kenya',
     {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'en-AU', [['am', 'pm'], u, u], u,
+  'en-AU',
+  [['am', 'pm'], u, u],
+  u,
   [
     ['Su.', 'M.', 'Tu.', 'W.', 'Th.', 'F.', 'Sa.'],
     ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
@@ -34,11 +36,18 @@ export default [
       'October', 'November', 'December'
     ]
   ],
-  u, [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 0, [6, 0],
+  u,
+  [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']],
+  0,
+  [6, 0],
   ['d/M/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1}, {0}', u, '{1} \'at\' {0}', u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1}, {0}', u, '{1} \'at\' {0}', u],
   ['.', ',', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'Australian Dollar', {
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  '$',
+  'Australian Dollar',
+  {
     'AUD': ['$'],
     'BDT': [u, 'Tk'],
     'BOB': [u, '$b'],
@@ -69,5 +78,6 @@ export default [
     'XOF': [],
     'XPF': ['CFP']
   },
+  'ltr',
   plural
 ];

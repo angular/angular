@@ -49,6 +49,7 @@
     'NAf.',
     'Netherlands Antillean Guilder',
     {'ANG': ['NAf.'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

@@ -49,6 +49,7 @@
     'Nfk',
     'Eritrean Nakfa',
     {'ERN': ['Nfk'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

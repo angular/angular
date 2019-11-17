@@ -50,6 +50,7 @@
     'FCFA',
     'CFA Fàlâŋ BEAC',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

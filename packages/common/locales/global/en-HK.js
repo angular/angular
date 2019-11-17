@@ -49,6 +49,7 @@
     'HK$',
     'Hong Kong Dollar',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

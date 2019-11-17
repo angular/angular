@@ -48,6 +48,7 @@
     'US$',
     'Dora re Amerika',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

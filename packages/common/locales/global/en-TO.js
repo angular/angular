@@ -49,6 +49,7 @@
     'T$',
     'Tongan Paʻanga',
     {'JPY': ['JP¥', '¥'], 'TOP': ['T$'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

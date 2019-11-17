@@ -49,6 +49,7 @@
     '$',
     'Cayman Islands Dollar',
     {'JPY': ['JP¥', '¥'], 'KYD': ['$'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

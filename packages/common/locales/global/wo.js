@@ -45,6 +45,7 @@
     'CFA',
     'Franc CFA bu Afrik Sowwu-jant',
     {'JPY': ['JP¥', '¥']},
+    'ltr',
     plural,
     []
   ];

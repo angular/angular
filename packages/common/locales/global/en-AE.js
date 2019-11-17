@@ -49,6 +49,7 @@
     'AED',
     'United Arab Emirates Dirham',
     {},
+    'ltr',
     plural,
     [
       [

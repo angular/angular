@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'kea', [['am', 'pm'], u, u], u,
+  'kea',
+  [['am', 'pm'], u, u],
+  u,
   [
     ['D', 'S', 'T', 'K', 'K', 'S', 'S'], ['dum', 'sig', 'ter', 'kua', 'kin', 'ses', 'sab'],
     ['dumingu', 'sigunda-fera', 'tersa-fera', 'kuarta-fera', 'kinta-fera', 'sesta-fera', 'sabadu'],
@@ -35,11 +37,18 @@ export default [
       'Otubru', 'Nuvenbru', 'Dizenbru'
     ]
   ],
-  u, [['AK', 'DK'], u, ['antis di Kristu', 'dispos di Kristu']], 1, [6, 0],
+  u,
+  [['AK', 'DK'], u, ['antis di Kristu', 'dispos di Kristu']],
+  1,
+  [6, 0],
   ['dd/MM/y', 'd MMM y', 'd \'di\' MMMM \'di\' y', 'EEEE, d \'di\' MMMM \'di\' y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1}, {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '​', 'Skudu Kabuverdianu',
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  '​',
+  'Skudu Kabuverdianu',
   {'AUD': ['AU$', '$'], 'CVE': ['​'], 'JPY': ['JP¥', '¥'], 'THB': ['฿'], 'USD': ['US$', '$']},
+  'ltr',
   plural
 ];

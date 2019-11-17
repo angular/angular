@@ -45,6 +45,7 @@
     '$',
     'US Dollar',
     {},
+    'ltr',
     plural,
     [
       [

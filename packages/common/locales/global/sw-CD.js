@@ -56,6 +56,7 @@
       'TZS': ['TSh'],
       'USD': ['US$', '$']
     },
+    'ltr',
     plural,
     [
       [

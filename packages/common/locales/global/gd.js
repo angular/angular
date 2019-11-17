@@ -65,6 +65,7 @@
     '£',
     'Punnd Sasannach',
     {'JPY': ['JP¥', '¥'], 'RON': [u, 'leu'], 'THB': ['฿'], 'TWD': ['NT$'], 'XXX': []},
+    'ltr',
     plural,
     []
   ];

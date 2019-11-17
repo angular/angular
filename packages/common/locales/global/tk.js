@@ -61,6 +61,7 @@
     'TMT',
     'Türkmen manady',
     {'EUR': [u, '€'], 'GBP': [u, '£'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

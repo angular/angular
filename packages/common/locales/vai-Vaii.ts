@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'vai-Vaii', [['AM', 'PM'], u, u], u,
+  'vai-Vaii',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
     [
@@ -38,9 +40,18 @@ export default [
       'ꖨꖕ ꕪꕴ ꗏꖺꕮꕊ'
     ]
   ],
-  u, [['BCE', 'CE'], u, u], 1, [6, 0], ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
+  u,
+  [['BCE', 'CE'], u, u],
+  1,
+  [6, 0],
+  ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'ꕞꔤꔫꕩ ꕜꕞꕌ',
-  {'JPY': ['JP¥', '¥'], 'LRD': ['$'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  '$',
+  'ꕞꔤꔫꕩ ꕜꕞꕌ',
+  {'JPY': ['JP¥', '¥'], 'LRD': ['$'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

@@ -49,6 +49,7 @@
     '$',
     'New Zealand Dollar',
     {'JPY': ['JP¥', '¥'], 'NZD': ['$'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

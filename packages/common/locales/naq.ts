@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'naq', [['ǁgoagas', 'ǃuias'], u, u], u,
+  'naq',
+  [['ǁgoagas', 'ǃuias'], u, u],
+  u,
   [
     ['S', 'M', 'E', 'W', 'D', 'F', 'A'], ['Son', 'Ma', 'De', 'Wu', 'Do', 'Fr', 'Sat'],
     [
@@ -37,10 +39,18 @@ export default [
       'Hôasoreǁkhâb'
     ]
   ],
-  u, [['BC', 'AD'], u, ['Xristub aiǃâ', 'Xristub khaoǃgâ']], 1, [6, 0],
+  u,
+  [['BC', 'AD'], u, ['Xristub aiǃâ', 'Xristub khaoǃgâ']],
+  1,
+  [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'ZAR', 'South African Randi',
-  {'JPY': ['JP¥', '¥'], 'NAD': ['$'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'ZAR',
+  'South African Randi',
+  {'JPY': ['JP¥', '¥'], 'NAD': ['$'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

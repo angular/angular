@@ -48,6 +48,7 @@
     'Br',
     'Itoophiyaa Birrii',
     {'ETB': ['Br'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

@@ -49,6 +49,7 @@
     '$',
     'Liberian Dollar',
     {'JPY': ['JP¥', '¥'], 'LRD': ['$'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

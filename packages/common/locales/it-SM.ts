@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'it-SM', [['m.', 'p.'], ['AM', 'PM'], u], u,
+  'it-SM',
+  [['m.', 'p.'], ['AM', 'PM'], u],
+  u,
   [
     ['D', 'L', 'M', 'M', 'G', 'V', 'S'], ['dom', 'lun', 'mar', 'mer', 'gio', 'ven', 'sab'],
     ['domenica', 'lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato'],
@@ -33,11 +35,18 @@ export default [
       'ottobre', 'novembre', 'dicembre'
     ]
   ],
-  u, [['aC', 'dC'], ['a.C.', 'd.C.'], ['avanti Cristo', 'dopo Cristo']], 1, [6, 0],
+  u,
+  [['aC', 'dC'], ['a.C.', 'd.C.'], ['avanti Cristo', 'dopo Cristo']],
+  1,
+  [6, 0],
   ['dd/MM/yy', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1}, {0}', u, '{1} {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro', {
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  '€',
+  'euro',
+  {
     'BRL': [u, 'R$'],
     'BYN': [u, 'Br'],
     'EGP': [u, '£E'],
@@ -50,5 +59,6 @@ export default [
     'TWD': [u, 'NT$'],
     'USD': [u, '$']
   },
+  'ltr',
   plural
 ];

@@ -48,6 +48,7 @@
     'CHF',
     'Schwiizer Franke',
     {'ATS': ['öS']},
+    'ltr',
     plural,
     [
       [['Mitternacht', 'am Morge', 'zmittag', 'am Namittag', 'zaabig', 'znacht'], u, u],

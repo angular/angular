@@ -49,6 +49,7 @@
     'RF',
     'Rwandan Franc',
     {'JPY': ['JP¥', '¥'], 'RWF': ['RF'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

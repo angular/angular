@@ -19,7 +19,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'da-GL', [['a', 'p'], ['AM', 'PM'], u], [['AM', 'PM'], u, u],
+  'da-GL',
+  [['a', 'p'], ['AM', 'PM'], u],
+  [['AM', 'PM'], u, u],
   [
     ['S', 'M', 'T', 'O', 'T', 'F', 'L'], ['søn.', 'man.', 'tir.', 'ons.', 'tor.', 'fre.', 'lør.'],
     ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag'],
@@ -38,11 +40,18 @@ export default [
       'oktober', 'november', 'december'
     ]
   ],
-  u, [['fKr', 'eKr'], ['f.Kr.', 'e.Kr.'], u], 1, [6, 0],
+  u,
+  [['fKr', 'eKr'], ['f.Kr.', 'e.Kr.'], u],
+  1,
+  [6, 0],
   ['dd.MM.y', 'd. MMM y', 'd. MMMM y', 'EEEE \'den\' d. MMMM y'],
-  ['HH.mm', 'HH.mm.ss', 'HH.mm.ss z', 'HH.mm.ss zzzz'], ['{1} {0}', u, '{1} \'kl\'. {0}', u],
+  ['HH.mm', 'HH.mm.ss', 'HH.mm.ss z', 'HH.mm.ss zzzz'],
+  ['{1} {0}', u, '{1} \'kl\'. {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', '.'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr.', 'dansk krone', {
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'kr.',
+  'dansk krone',
+  {
     'AUD': ['AU$', '$'],
     'DKK': ['kr.'],
     'ISK': [u, 'kr.'],
@@ -54,5 +63,6 @@ export default [
     'TWD': ['NT$'],
     'USD': ['US$', '$']
   },
+  'ltr',
   plural
 ];

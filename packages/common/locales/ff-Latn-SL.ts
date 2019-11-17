@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'ff-Latn-SL', [['subaka', 'kikiiɗe'], u, u], u,
+  'ff-Latn-SL',
+  [['subaka', 'kikiiɗe'], u, u],
+  u,
   [
     ['d', 'a', 'm', 'n', 'n', 'm', 'h'], ['dew', 'aaɓ', 'maw', 'nje', 'naa', 'mwd', 'hbi'],
     ['dewo', 'aaɓnde', 'mawbaare', 'njeslaare', 'naasaande', 'mawnde', 'hoore-biir'],
@@ -33,10 +35,18 @@ export default [
       'yarkomaa', 'jolal', 'bowte'
     ]
   ],
-  u, [['H-I', 'C-I'], u, ['Hade Iisa', 'Caggal Iisa']], 1, [6, 0],
+  u,
+  [['H-I', 'C-I'], u, ['Hade Iisa', 'Caggal Iisa']],
+  1,
+  [6, 0],
   ['d/M/y', 'd MMM, y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'Le', 'Lewoon Seraa Liyon',
-  {'JPY': ['JP¥', '¥'], 'SLL': ['Le'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'Le',
+  'Lewoon Seraa Liyon',
+  {'JPY': ['JP¥', '¥'], 'SLL': ['Le'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

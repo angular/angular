@@ -49,6 +49,7 @@
     '£',
     'St Helena Pound',
     {'GBP': ['GB£', '£'], 'JPY': ['JP¥', '¥'], 'SHP': ['£'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

@@ -49,6 +49,7 @@
     'kr.',
     'Danish Krone',
     {'DKK': ['kr.', 'kr'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

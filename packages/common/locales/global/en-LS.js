@@ -49,6 +49,7 @@
     'R',
     'South African Rand',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$'], 'ZAR': ['R']},
+    'ltr',
     plural,
     [
       [

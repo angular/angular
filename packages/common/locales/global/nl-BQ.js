@@ -62,6 +62,7 @@
       'XPF': [],
       'XXX': []
     },
+    'ltr',
     plural,
     [
       [['middernacht', '’s ochtends', '’s middags', '’s avonds', '’s nachts'], u, u],

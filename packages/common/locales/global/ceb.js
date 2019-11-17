@@ -45,6 +45,7 @@
     '₱',
     'Philippine Piso',
     {'JPY': ['JP¥', '¥'], 'PHP': ['₱'], 'USD': ['US $', '$']},
+    'ltr',
     plural,
     []
   ];

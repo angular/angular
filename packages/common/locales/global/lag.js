@@ -54,6 +54,7 @@
     'TSh',
     'Shilíingi ya Taansanía',
     {'JPY': ['JP¥', '¥'], 'TZS': ['TSh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

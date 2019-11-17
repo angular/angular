@@ -45,6 +45,7 @@
     'Rp',
     'Rupiah Indonesia',
     {'IDR': ['Rp'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];
