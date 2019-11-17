@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'se-FI', [['i', 'e'], ['ib', 'eb'], u], [['ib', 'eb'], u, u],
+  'se-FI',
+  [['i', 'e'], ['ib', 'eb'], u],
+  [['ib', 'eb'], u, u],
   [
     ['S', 'M', 'D', 'G', 'D', 'B', 'L'], ['so', 'má', 'di', 'ga', 'du', 'be', 'lá'],
     ['sotnabeaivi', 'mánnodat', 'disdat', 'gaskavahkku', 'duorastat', 'bearjadat', 'lávvordat'],
@@ -37,11 +39,18 @@ export default [
       'skábmamánnu', 'juovlamánnu'
     ]
   ],
-  u, [['oKr.', 'mKr.'], u, ['ovdal Kristusa', 'maŋŋel Kristusa']], 1, [6, 0],
+  u,
+  [['oKr.', 'mKr.'], u, ['ovdal Kristusa', 'maŋŋel Kristusa']],
+  1,
+  [6, 0],
   ['dd.MM.y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '−', '·10^', '·', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', {
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  '€',
+  'euro',
+  {
     'DKK': ['Dkr', 'kr'],
     'JPY': ['JP¥', '¥'],
     'NOK': ['kr'],
@@ -49,5 +58,6 @@ export default [
     'THB': ['฿'],
     'USD': ['US$', '$']
   },
+  'ltr',
   plural
 ];

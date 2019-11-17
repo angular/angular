@@ -49,6 +49,7 @@
     '£',
     'Gibraltar Pound',
     {'GBP': ['GB£', '£'], 'GIP': ['£'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

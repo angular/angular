@@ -48,6 +48,7 @@
     'Ar',
     'Ariary',
     {'JPY': ['JP¥', '¥'], 'MGA': ['Ar'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

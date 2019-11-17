@@ -56,6 +56,7 @@
       'UGX': ['USh'],
       'USD': ['US$', '$']
     },
+    'ltr',
     plural,
     [
       [

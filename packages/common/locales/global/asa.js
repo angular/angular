@@ -48,6 +48,7 @@
     'TSh',
     'shilingi ya Tandhania',
     {'JPY': ['JP¥', '¥'], 'TZS': ['TSh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

@@ -45,6 +45,7 @@
     'MAD',
     'adrim n lmɣrib',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

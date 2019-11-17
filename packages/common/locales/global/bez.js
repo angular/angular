@@ -53,6 +53,7 @@
     'TSh',
     'Shilingi ya Hutanzania',
     {'JPY': ['JP¥', '¥'], 'TZS': ['TSh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

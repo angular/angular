@@ -56,6 +56,7 @@
     'Br',
     'Birta Itoobbiya',
     {'BBD': ['DBB', '$'], 'ETB': ['Br'], 'JPY': ['JP¥', '¥'], 'SOS': ['S'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

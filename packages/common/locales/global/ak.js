@@ -50,6 +50,7 @@
     'GH₵',
     'Ghana Sidi',
     {'GHS': ['GH₵'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

@@ -45,6 +45,7 @@
     'FC',
     'Nfalanga wa Kongu',
     {'CDF': ['FC'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

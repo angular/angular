@@ -53,6 +53,7 @@
     'FC',
     'Falánga ya Kongó',
     {'CDF': ['FC'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

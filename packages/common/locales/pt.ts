@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'pt', [['AM', 'PM'], u, u], u,
+  'pt',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'], ['dom.', 'seg.', 'ter.', 'qua.', 'qui.', 'sex.', 'sáb.'],
     [
@@ -38,11 +40,18 @@ export default [
       'outubro', 'novembro', 'dezembro'
     ]
   ],
-  u, [['a.C.', 'd.C.'], u, ['antes de Cristo', 'depois de Cristo']], 0, [6, 0],
+  u,
+  [['a.C.', 'd.C.'], u, ['antes de Cristo', 'depois de Cristo']],
+  0,
+  [6, 0],
   ['dd/MM/y', 'd \'de\' MMM \'de\' y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'R$', 'Real brasileiro', {
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
+  'R$',
+  'Real brasileiro',
+  {
     'AUD': ['AU$', '$'],
     'JPY': ['JP¥', '¥'],
     'PTE': ['Esc.'],
@@ -52,5 +61,6 @@ export default [
     'TWD': ['NT$'],
     'USD': ['US$', '$']
   },
+  'ltr',
   plural
 ];

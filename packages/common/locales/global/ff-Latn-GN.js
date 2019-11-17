@@ -49,6 +49,7 @@
     'FG',
     'GNF',
     {'GNF': ['FG'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

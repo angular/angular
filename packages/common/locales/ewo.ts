@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'ewo', [['kíkíríg', 'ngəgógəle'], u, u], u,
+  'ewo',
+  [['kíkíríg', 'ngəgógəle'], u, u],
+  u,
   [
     ['s', 'm', 's', 's', 's', 'f', 's'], ['sɔ́n', 'mɔ́n', 'smb', 'sml', 'smn', 'fúl', 'sér'],
     [
@@ -35,10 +37,18 @@ export default [
       'ngɔn awóm ai bɛ̌'
     ]
   ],
-  u, [['oyk', 'ayk'], u, ['osúsúa Yésus kiri', 'ámvus Yésus Kirís']], 1, [6, 0],
+  u,
+  [['oyk', 'ayk'], u, ['osúsúa Yésus kiri', 'ámvus Yésus Kirís']],
+  1,
+  [6, 0],
   ['d/M/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'FCFA', 'Fəláŋ CFA (BEAC)',
-  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'FCFA',
+  'Fəláŋ CFA (BEAC)',
+  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

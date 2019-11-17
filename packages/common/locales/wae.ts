@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'wae', [['AM', 'PM'], u, u], u,
+  'wae',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['S', 'M', 'Z', 'M', 'F', 'F', 'S'], ['Sun', 'Män', 'Ziš', 'Mit', 'Fró', 'Fri', 'Sam'],
     ['Sunntag', 'Mäntag', 'Zištag', 'Mittwuč', 'Fróntag', 'Fritag', 'Samštag'],
@@ -32,9 +34,18 @@ export default [
       'Herbštmánet', 'Wímánet', 'Wintermánet', 'Chrištmánet'
     ]
   ],
-  u, [['v. Chr.', 'n. Chr'], u, u], 1, [6, 0],
+  u,
+  [['v. Chr.', 'n. Chr'], u, u],
+  1,
+  [6, 0],
   ['y-MM-dd', 'd. MMM y', 'd. MMMM y', 'EEEE, d. MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', '’', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'CHF', 'CHF', {}, plural
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
+  'CHF',
+  'CHF',
+  {},
+  'ltr',
+  plural
 ];

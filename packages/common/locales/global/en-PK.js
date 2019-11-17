@@ -49,6 +49,7 @@
     'Rs',
     'Pakistani Rupee',
     {'JPY': ['JP¥', '¥'], 'PKR': ['Rs'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

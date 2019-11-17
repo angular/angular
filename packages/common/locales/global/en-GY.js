@@ -49,6 +49,7 @@
     '$',
     'Guyanaese Dollar',
     {'GYD': ['$'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

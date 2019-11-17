@@ -20,7 +20,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'cs', [['dop.', 'odp.'], u, u], u,
+  'cs',
+  [['dop.', 'odp.'], u, u],
+  u,
   [
     ['N', 'P', 'Ú', 'S', 'Č', 'P', 'S'], ['ne', 'po', 'út', 'st', 'čt', 'pá', 'so'],
     ['neděle', 'pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota'],
@@ -47,10 +49,16 @@ export default [
     ['př.n.l.', 'n.l.'], ['př. n. l.', 'n. l.'],
     ['před naším letopočtem', 'našeho letopočtu']
   ],
-  1, [6, 0], ['dd.MM.yy', 'd. M. y', 'd. MMMM y', 'EEEE d. MMMM y'],
-  ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  1,
+  [6, 0],
+  ['dd.MM.yy', 'd. M. y', 'd. MMMM y', 'EEEE d. MMMM y'],
+  ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'Kč', 'česká koruna', {
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'Kč',
+  'česká koruna',
+  {
     'AUD': ['AU$', '$'],
     'CSK': ['Kčs'],
     'CZK': ['Kč'],
@@ -64,5 +72,6 @@ export default [
     'XEU': ['ECU'],
     'XXX': []
   },
+  'ltr',
   plural
 ];

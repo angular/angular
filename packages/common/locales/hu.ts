@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'hu', [['de.', 'du.'], u, u], u,
+  'hu',
+  [['de.', 'du.'], u, u],
+  u,
   [
     ['V', 'H', 'K', 'Sz', 'Cs', 'P', 'Sz'], ['V', 'H', 'K', 'Sze', 'Cs', 'P', 'Szo'],
     ['vasárnap', 'hétfő', 'kedd', 'szerda', 'csütörtök', 'péntek', 'szombat'],
@@ -35,11 +37,18 @@ export default [
       'szeptember', 'október', 'november', 'december'
     ]
   ],
-  u, [['ie.', 'isz.'], ['i. e.', 'i. sz.'], ['Krisztus előtt', 'időszámításunk szerint']], 1,
-  [6, 0], ['y. MM. dd.', 'y. MMM d.', 'y. MMMM d.', 'y. MMMM d., EEEE'],
-  ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  u,
+  [['ie.', 'isz.'], ['i. e.', 'i. sz.'], ['Krisztus előtt', 'időszámításunk szerint']],
+  1,
+  [6, 0],
+  ['y. MM. dd.', 'y. MMM d.', 'y. MMMM d.', 'y. MMMM d., EEEE'],
+  ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'Ft', 'magyar forint', {
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'Ft',
+  'magyar forint',
+  {
     'AUD': [u, '$'],
     'BRL': [u, 'R$'],
     'CAD': [u, '$'],
@@ -58,5 +67,6 @@ export default [
     'VND': [u, '₫'],
     'XCD': [u, '$']
   },
+  'ltr',
   plural
 ];

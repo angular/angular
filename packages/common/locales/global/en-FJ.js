@@ -49,6 +49,7 @@
     '$',
     'Fijian Dollar',
     {'FJD': ['$'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

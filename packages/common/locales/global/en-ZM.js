@@ -49,6 +49,7 @@
     'K',
     'Zambian Kwacha',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$'], 'ZMW': ['K', 'ZK']},
+    'ltr',
     plural,
     [
       [

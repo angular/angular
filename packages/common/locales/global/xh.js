@@ -48,6 +48,7 @@
     'R',
     'iRandi yaseMzanzi Afrika',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$'], 'ZAR': ['R']},
+    'ltr',
     plural,
     []
   ];

@@ -48,6 +48,7 @@
     '₺',
     'Türk Lirası',
     {'AUD': ['AU$', '$'], 'RON': [u, 'L'], 'THB': ['฿'], 'TRY': ['₺'], 'TWD': ['NT$']},
+    'ltr',
     plural,
     [
       [

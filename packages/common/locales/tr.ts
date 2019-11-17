@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'tr', [['öö', 'ös'], ['ÖÖ', 'ÖS'], u], [['ÖÖ', 'ÖS'], u, u],
+  'tr',
+  [['öö', 'ös'], ['ÖÖ', 'ÖS'], u],
+  [['ÖÖ', 'ÖS'], u, u],
   [
     ['P', 'P', 'S', 'Ç', 'P', 'C', 'C'], ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'],
     ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'],
@@ -32,10 +34,18 @@ export default [
       'Ekim', 'Kasım', 'Aralık'
     ]
   ],
-  u, [['MÖ', 'MS'], u, ['Milattan Önce', 'Milattan Sonra']], 1, [6, 0],
+  u,
+  [['MÖ', 'MS'], u, ['Milattan Önce', 'Milattan Sonra']],
+  1,
+  [6, 0],
   ['d.MM.y', 'd MMM y', 'd MMMM y', 'd MMMM y EEEE'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '%#,##0', '¤#,##0.00', '#E0'], '₺', 'Türk Lirası',
-  {'AUD': ['AU$', '$'], 'RON': [u, 'L'], 'THB': ['฿'], 'TRY': ['₺'], 'TWD': ['NT$']}, plural
+  ['#,##0.###', '%#,##0', '¤#,##0.00', '#E0'],
+  '₺',
+  'Türk Lirası',
+  {'AUD': ['AU$', '$'], 'RON': [u, 'L'], 'THB': ['฿'], 'TRY': ['₺'], 'TWD': ['NT$']},
+  'ltr',
+  plural
 ];

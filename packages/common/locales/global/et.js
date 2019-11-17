@@ -52,6 +52,7 @@
     '€',
     'euro',
     {'AUD': ['AU$', '$'], 'EEK': ['kr'], 'THB': ['฿'], 'TWD': ['NT$']},
+    'ltr',
     plural,
     [
       [['keskööl', 'keskpäeval', 'hommikul', 'pärastlõunal', 'õhtul', 'öösel'], u, u],

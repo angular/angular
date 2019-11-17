@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'so-KE', [['h', 'd'], ['GH', 'GD'], u], [['GH', 'GD'], u, u],
+  'so-KE',
+  [['h', 'd'], ['GH', 'GD'], u],
+  [['GH', 'GD'], u, u],
   [
     ['A', 'I', 'T', 'A', 'Kh', 'J', 'S'], ['Axd', 'Isn', 'Tldo', 'Arbc', 'Khms', 'Jmc', 'Sbti'],
     ['Axad', 'Isniin', 'Talaado', 'Arbaco', 'Khamiis', 'Jimco', 'Sabti'],
@@ -41,11 +43,17 @@ export default [
       'Oktoobar', 'Nofembar', 'Desembar'
     ]
   ],
-  [['CH', 'CD'], u, ['Ciise Hortii', 'Ciise Dabadii']], 0, [6, 0],
+  [['CH', 'CD'], u, ['Ciise Hortii', 'Ciise Dabadii']],
+  0,
+  [6, 0],
   ['dd/MM/yy', 'dd-MMM-y', 'dd MMMM y', 'EEEE, MMMM dd, y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'MaL', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Ksh', 'Shilingka Kenya',
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'Ksh',
+  'Shilingka Kenya',
   {'BBD': ['DBB', '$'], 'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'SOS': ['S'], 'USD': ['US$', '$']},
+  'ltr',
   plural
 ];

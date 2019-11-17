@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'tzm', [['Zdat azal', 'Ḍeffir aza'], u, u], u,
+  'tzm',
+  [['Zdat azal', 'Ḍeffir aza'], u, u],
+  u,
   [
     ['A', 'A', 'A', 'A', 'A', 'A', 'A'], ['Asa', 'Ayn', 'Asn', 'Akr', 'Akw', 'Asm', 'Asḍ'],
     ['Asamas', 'Aynas', 'Asinas', 'Akras', 'Akwas', 'Asimwas', 'Asiḍyas'],
@@ -33,10 +35,18 @@ export default [
       'Kṭuber', 'Nwanbir', 'Dujanbir'
     ]
   ],
-  u, [['ZƐ', 'ḌƐ'], u, ['Zdat Ɛisa (TAƔ)', 'Ḍeffir Ɛisa (TAƔ)']], 1, [6, 0],
+  u,
+  [['ZƐ', 'ḌƐ'], u, ['Zdat Ɛisa (TAƔ)', 'Ḍeffir Ɛisa (TAƔ)']],
+  1,
+  [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'MAD', 'Derhem Umeṛṛuki',
-  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'MAD',
+  'Derhem Umeṛṛuki',
+  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

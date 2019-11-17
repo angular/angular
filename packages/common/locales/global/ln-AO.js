@@ -53,6 +53,7 @@
     'Kz',
     'Kwanza ya Angóla',
     {'AOA': ['Kz'], 'CDF': ['FC'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

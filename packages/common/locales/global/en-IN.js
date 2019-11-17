@@ -49,6 +49,7 @@
     '₹',
     'Indian Rupee',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

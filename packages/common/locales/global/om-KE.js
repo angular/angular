@@ -55,6 +55,7 @@
     'Ksh',
     'KES',
     {'ETB': ['Br'], 'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

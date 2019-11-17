@@ -45,6 +45,7 @@
     'CFA',
     'seefa yati BCEAO',
     {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

@@ -46,6 +46,7 @@
     'Ksh',
     'Siling mar Kenya',
     {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

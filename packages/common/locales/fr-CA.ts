@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'fr-CA', [['a', 'p'], ['a.m.', 'p.m.'], u], [['a.m.', 'p.m.'], u, u],
+  'fr-CA',
+  [['a', 'p'], ['a.m.', 'p.m.'], u],
+  [['a.m.', 'p.m.'], u, u],
   [
     ['D', 'L', 'M', 'M', 'J', 'V', 'S'], ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
     ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],
@@ -36,7 +38,10 @@ export default [
       'octobre', 'novembre', 'décembre'
     ]
   ],
-  u, [['av. J.-C.', 'ap. J.-C.'], u, ['avant Jésus-Christ', 'après Jésus-Christ']], 0, [6, 0],
+  u,
+  [['av. J.-C.', 'ap. J.-C.'], u, ['avant Jésus-Christ', 'après Jésus-Christ']],
+  0,
+  [6, 0],
   ['y-MM-dd', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
   [
     'HH \'h\' mm', 'HH \'h\' mm \'min\' ss \'s\'', 'HH \'h\' mm \'min\' ss \'s\' z',
@@ -44,7 +49,10 @@ export default [
   ],
   ['{1} {0}', u, '{1} \'à\' {0}', u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '$', 'dollar canadien', {
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  '$',
+  'dollar canadien',
+  {
     'AUD': ['$ AU', '$'],
     'BEF': ['FB'],
     'BYN': [u, 'Br'],
@@ -77,5 +85,6 @@ export default [
     'XOF': [],
     'XPF': []
   },
+  'ltr',
   plural
 ];

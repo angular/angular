@@ -48,6 +48,7 @@
     'USh',
     'Ango’otol lok’ Uganda',
     {'JPY': ['JP¥', '¥'], 'UGX': ['USh'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];

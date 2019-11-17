@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'mer', [['RŨ', 'ŨG'], u, u], u,
+  'mer',
+  [['RŨ', 'ŨG'], u, u],
+  u,
   [
     ['K', 'M', 'W', 'W', 'W', 'W', 'J'], ['KIU', 'MRA', 'WAI', 'WET', 'WEN', 'WTN', 'JUM'],
     ['Kiumia', 'Muramuko', 'Wairi', 'Wethatu', 'Wena', 'Wetano', 'Jumamosi'],
@@ -31,10 +33,18 @@ export default [
       'Septemba', 'Oktũba', 'Novemba', 'Dicemba'
     ]
   ],
-  u, [['MK', 'NK'], u, ['Mbere ya Kristũ', 'Nyuma ya Kristũ']], 0, [6, 0],
+  u,
+  [['MK', 'NK'], u, ['Mbere ya Kristũ', 'Nyuma ya Kristũ']],
+  0,
+  [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Ksh', 'Shilingi ya Kenya',
-  {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'Ksh',
+  'Shilingi ya Kenya',
+  {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

@@ -48,6 +48,7 @@
     'GH₵',
     'GHS',
     {'GHS': ['GH₵'], 'NGN': ['₦']},
+    'ltr',
     plural,
     []
   ];

@@ -49,6 +49,7 @@
     '$',
     'Bermudan Dollar',
     {'BMD': ['$'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     [
       [

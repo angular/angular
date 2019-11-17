@@ -49,6 +49,7 @@
     'Le',
     'Lewoon Seraa Liyon',
     {'JPY': ['JP¥', '¥'], 'SLL': ['Le'], 'USD': ['US$', '$']},
+    'ltr',
     plural,
     []
   ];
