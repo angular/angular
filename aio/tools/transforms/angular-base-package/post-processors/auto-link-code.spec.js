@@ -169,7 +169,7 @@ describe('autoLinkCode post-processor', () => {
     expect(doc.renderedContent).toEqual('<code class="no-auto-link">MyClass</code>');
   });
 
-  it('should ignore code blocks that are marked with an "ignored" languages', () => {
+  it('should ignore code blocks that are marked with an "ignored" language', () => {
     aliasMap.addDoc({docType: 'class', id: 'MyClass', aliases: ['MyClass'], path: 'a/b/myclass'});
     const doc = {docType: 'test-doc', renderedContent: '<code language="bash">MyClass</code>'};
     processor.$process([doc]);

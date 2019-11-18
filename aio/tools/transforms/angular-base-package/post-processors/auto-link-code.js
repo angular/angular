@@ -24,7 +24,7 @@ module.exports = function autoLinkCode(getDocFromAlias) {
   autoLinkCodeImpl.docTypes = [];
   autoLinkCodeImpl.customFilters = [];
   autoLinkCodeImpl.codeElements = ['code'];
-  autoLinkCodeImpl.ignoredLanguages = ['bash', 'json'];
+  autoLinkCodeImpl.ignoredLanguages = ['bash', 'sh', 'shell', 'json', 'markdown'];
   return autoLinkCodeImpl;
 
   function autoLinkCodeImpl() {
