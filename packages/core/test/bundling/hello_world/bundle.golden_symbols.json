@@ -465,9 +465,6 @@
     "name": "setInjectImplementation"
   },
   {
-    "name": "setIsNotParent"
-  },
-  {
     "name": "setPreviousOrParentTNode"
   },
   {
