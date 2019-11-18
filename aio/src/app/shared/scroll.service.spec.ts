@@ -94,6 +94,22 @@ describe('ScrollService', () => {
     }
   });
 
+  it('should not break when cookies are disabled in the browser', () => {
+    // Simulate `window.sessionStorage` being inaccessible, when cookies are disabled.
+    spyOnProperty(window, 'sessionStorage', 'get').and.throwError('The operation is insecure');
+
+    expect(() => {
+      const platformLoc = platformLocation as PlatformLocation;
+      const service = new ScrollService(document, platformLoc, viewportScrollerStub, location);
+
+      service.updateScrollLocationHref();
+      expect(service.getStoredScrollLocationHref()).toBeNull();
+
+      service.removeStoredScrollInfo();
+      expect(service.getStoredScrollPosition()).toBeNull();
+    }).not.toThrow();
+  });
+
   describe('#topOffset', () => {
     it('should query for the top-bar by CSS selector', () => {
       expect(document.querySelector).not.toHaveBeenCalled();
