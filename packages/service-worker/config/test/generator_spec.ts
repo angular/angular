@@ -7,6 +7,7 @@
  */
 
 import {Generator} from '../src/generator';
+import {AssetGroup} from '../src/in';
 import {MockFilesystem} from '../testing/mock';
 
 describe('Generator', () => {
@@ -148,5 +149,36 @@ describe('Generator', () => {
       ],
       hashTable: {},
     });
+  });
+
+  it('throws if the obsolete `versionedFiles` is used', async() => {
+    const fs = new MockFilesystem({
+      '/index.html': 'This is a test',
+      '/main.js': 'This is a JS file',
+    });
+    const gen = new Generator(fs, '/test');
+
+    try {
+      await gen.process({
+        index: '/index.html',
+        assetGroups: [{
+          name: 'test',
+          resources: {
+            files: [
+              '/*.html',
+            ],
+            versionedFiles: [
+              '/*.js',
+            ],
+          } as AssetGroup['resources'] &
+              {versionedFiles: string[]},
+        }],
+      });
+      throw new Error('Processing should have failed due to \'versionedFiles\'.');
+    } catch (err) {
+      expect(err).toEqual(new Error(
+          'Asset-group \'test\' in \'ngsw-config.json\' uses the \'versionedFiles\' option, ' +
+          'which is no longer supported. Use \'files\' instead.'));
+    }
   });
 });
