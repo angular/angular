@@ -29,6 +29,13 @@ generates a file called `app-routing.module.ts`, which is one of
 the files you need for setting up lazy loading for your feature module.
 Navigate into the project by issuing the command `cd customer-app`.
 
+<div class="alert is-helpful">
+
+The `--routing` option requires Angular/CLI version 8.1 or higher.
+See [Keeping Up to Date](guide/updating).
+
+</div>
+
 ## Create a feature module with routing
 
 Next, you’ll need a feature module with a component to route to.
