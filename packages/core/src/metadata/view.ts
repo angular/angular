@@ -7,7 +7,7 @@
  */
 
 /**
- * Defines template and style encapsulation options available for Component's {@link Component}.
+ * Defines template and style encapsulation options available for Component's {@link View}.
  *
  * See {@link Component#encapsulation encapsulation}.
  *
