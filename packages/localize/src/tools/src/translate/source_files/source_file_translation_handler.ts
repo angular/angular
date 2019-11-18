@@ -10,12 +10,12 @@ import {File, Program} from '@babel/types';
 import {extname, join} from 'path';
 import {Diagnostics} from '../../diagnostics';
 import {FileUtils} from '../../file_utils';
+import {TranslatePluginOptions} from '../../source_file_utils';
 import {OutputPathFn} from '../output_path';
 import {TranslationBundle, TranslationHandler} from '../translator';
 import {makeEs2015TranslatePlugin} from './es2015_translate_plugin';
 import {makeEs5TranslatePlugin} from './es5_translate_plugin';
 import {makeLocalePlugin} from './locale_plugin';
-import {TranslatePluginOptions} from './source_file_utils';
 
 /**
  * Translate a file by inlining all messages tagged by `$localize` with the appropriate translated
