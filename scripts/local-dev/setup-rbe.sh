@@ -98,8 +98,3 @@ echo
 echo "The ${bold}remote${normal} flag enables RBE, builds run remotely when possible and caching"
 echo "occurs in the RBE context"
 add_flag "build --config=remote"
-
-# Remote HTTP Caching
-echo "The ${bold}remote-http-caching${normal} flag enables uploading build results to the http cache,"
-echo "but not does enable remote builds"
-add_flag "build --config=remote-http-caching"
