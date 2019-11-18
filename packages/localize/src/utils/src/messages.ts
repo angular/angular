@@ -152,7 +152,7 @@ export function parseMessage(
     cleanedMessageParts.push(messagePart);
   }
   const messageId = metadata.id || computeMsgId(messageString, metadata.meaning || '');
-  const legacyIds = metadata.legacyIds && metadata.legacyIds.filter(id => id !== messageId);
+  const legacyIds = metadata.legacyIds ? metadata.legacyIds.filter(id => id !== messageId) : [];
   return {
     id: messageId,
     legacyIds,
