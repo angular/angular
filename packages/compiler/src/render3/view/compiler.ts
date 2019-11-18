@@ -28,7 +28,7 @@ import {Render3ParseResult} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
-import {StylingBuilder, StylingInstruction} from './styling_builder';
+import {StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, TemplateDefinitionBuilder, ValueConverter, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn} from './template';
 import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, chainedInstruction, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
 
@@ -652,8 +652,12 @@ function createHostBindingsFunction(
   // collected earlier.
   const hostAttrs = convertAttributesToExpressions(hostBindingsMetadata.attributes);
   const hostInstruction = styleBuilder.buildHostAttrsInstruction(null, hostAttrs, constantPool);
-  if (hostInstruction) {
-    createStatements.push(createStylingStmt(hostInstruction, bindingContext, bindingFn));
+  if (hostInstruction && hostInstruction.calls.length > 0) {
+    createStatements.push(
+        chainedInstruction(
+            hostInstruction.reference,
+            hostInstruction.calls.map(call => convertStylingCall(call, bindingContext, bindingFn)))
+            .toStmt());
   }
 
   if (styleBuilder.hasBindings) {
@@ -661,11 +665,18 @@ function createHostBindingsFunction(
     // the update block of a component/directive templateFn/hostBindingsFn so that the bindings
     // are evaluated and updated for the element.
     styleBuilder.buildUpdateLevelInstructions(getValueConverter()).forEach(instruction => {
-      // we subtract a value of `1` here because the binding slot was already
-      // allocated at the top of this method when all the input bindings were
-      // counted.
-      totalHostVarsCount += Math.max(instruction.allocateBindingSlots - 1, 0);
-      updateStatements.push(createStylingStmt(instruction, bindingContext, bindingFn));
+      if (instruction.calls.length > 0) {
+        const calls: o.Expression[][] = [];
+
+        instruction.calls.forEach(call => {
+          // we subtract a value of `1` here because the binding slot was already allocated
+          // at the top of this method when all the input bindings were counted.
+          totalHostVarsCount += Math.max(call.allocateBindingSlots - 1, 0);
+          calls.push(convertStylingCall(call, bindingContext, bindingFn));
+        });
+
+        updateStatements.push(chainedInstruction(instruction.reference, calls).toStmt());
+      }
     });
   }
 
@@ -699,12 +710,9 @@ function bindingFn(implicit: any, value: AST) {
       null, implicit, value, 'b', BindingForm.TrySimple, () => error('Unexpected interpolation'));
 }
 
-function createStylingStmt(
-    instruction: StylingInstruction, bindingContext: any, bindingFn: Function): o.Statement {
-  const params = instruction.params(value => bindingFn(bindingContext, value).currValExpr);
-  return o.importExpr(instruction.reference, null, instruction.sourceSpan)
-      .callFn(params, instruction.sourceSpan)
-      .toStmt();
+function convertStylingCall(
+    call: StylingInstructionCall, bindingContext: any, bindingFn: Function) {
+  return call.params(value => bindingFn(bindingContext, value).currValExpr);
 }
 
 function getBindingNameAndInstruction(binding: ParsedProperty):
