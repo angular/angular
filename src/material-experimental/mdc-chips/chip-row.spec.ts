@@ -94,7 +94,8 @@ describe('MDC-based Row Chips', () => {
         chipInstance.remove();
         fixture.detectChanges();
 
-        const fakeEvent = Object.assign(createFakeEvent('transitionend'), {propertyName: 'width'});
+        const fakeEvent = createFakeEvent('transitionend');
+        (fakeEvent as any).propertyName = 'width';
         chipNativeElement.dispatchEvent(fakeEvent);
 
         expect(testComponent.chipRemove).toHaveBeenCalledWith({chip: chipInstance});
@@ -123,8 +124,8 @@ describe('MDC-based Row Chips', () => {
           chipInstance._keydown(DELETE_EVENT);
           fixture.detectChanges();
 
-          const fakeEvent = Object.assign(createFakeEvent('transitionend'),
-            {propertyName: 'width'});
+          const fakeEvent = createFakeEvent('transitionend');
+          (fakeEvent as any).propertyName = 'width';
           chipNativeElement.dispatchEvent(fakeEvent);
 
           expect(testComponent.chipRemove).toHaveBeenCalled();
@@ -138,8 +139,8 @@ describe('MDC-based Row Chips', () => {
           chipInstance._keydown(BACKSPACE_EVENT);
           fixture.detectChanges();
 
-          const fakeEvent = Object.assign(createFakeEvent('transitionend'),
-            {propertyName: 'width'});
+          const fakeEvent = createFakeEvent('transitionend');
+          (fakeEvent as any).propertyName = 'width';
           chipNativeElement.dispatchEvent(fakeEvent);
 
           expect(testComponent.chipRemove).toHaveBeenCalled();
@@ -160,8 +161,8 @@ describe('MDC-based Row Chips', () => {
           chipInstance._keydown(DELETE_EVENT);
           fixture.detectChanges();
 
-          const fakeEvent = Object.assign(createFakeEvent('transitionend'),
-            {propertyName: 'width'});
+          const fakeEvent = createFakeEvent('transitionend');
+          (fakeEvent as any).propertyName = 'width';
           chipNativeElement.dispatchEvent(fakeEvent);
 
           expect(testComponent.chipRemove).not.toHaveBeenCalled();
@@ -176,8 +177,8 @@ describe('MDC-based Row Chips', () => {
           chipInstance._keydown(BACKSPACE_EVENT);
           fixture.detectChanges();
 
-          const fakeEvent = Object.assign(createFakeEvent('transitionend'),
-            {propertyName: 'width'});
+          const fakeEvent = createFakeEvent('transitionend');
+          (fakeEvent as any).propertyName = 'width';
           chipNativeElement.dispatchEvent(fakeEvent);
 
           expect(testComponent.chipRemove).not.toHaveBeenCalled();

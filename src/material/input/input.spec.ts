@@ -829,8 +829,8 @@ describe('MatInput without forms', () => {
     expect(inputContainer._shouldAlwaysFloat).toBe(false);
     expect(inputContainer.floatLabel).toBe('always');
 
-    const fakeEvent = Object.assign(createFakeEvent('transitionend'), {propertyName: 'transform'});
-
+    const fakeEvent = createFakeEvent('transitionend');
+    (fakeEvent as any).propertyName = 'transform';
     label.dispatchEvent(fakeEvent);
     fixture.detectChanges();
 

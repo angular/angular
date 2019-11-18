@@ -35,7 +35,7 @@ export class MergeInheritedProperties implements Processor {
       // member doc for the destination class, we clone the member doc. It's important to keep
       // the prototype and reference because later, Dgeni identifies members and properties
       // by using an instance comparison.
-      const newMemberDoc = Object.assign(Object.create(memberDoc), memberDoc);
+      const newMemberDoc = {...Object.create(memberDoc), ...memberDoc};
       newMemberDoc.containerDoc = destination;
 
       destination.members.push(newMemberDoc);

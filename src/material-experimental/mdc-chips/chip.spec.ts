@@ -109,7 +109,8 @@ describe('MDC-based MatChip', () => {
       chipInstance.remove();
       fixture.detectChanges();
 
-      const fakeEvent = Object.assign(createFakeEvent('transitionend'), {propertyName: 'width'});
+      const fakeEvent = createFakeEvent('transitionend');
+      (fakeEvent as any).propertyName = 'width';
       chipNativeElement.dispatchEvent(fakeEvent);
 
       expect(testComponent.chipRemove).toHaveBeenCalledWith({chip: chipInstance});

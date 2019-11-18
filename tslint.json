@@ -86,7 +86,7 @@
       ["fdescribe"],
       ["xit"],
       ["xdescribe"],
-      {"name": "Object.assign", "message": "Use the spread operator instead."}
+      {"name": ["Object", "assign"], "message": "Use the spread operator instead."}
     ],
     // Avoids inconsistent linebreak styles in source files. Forces developers to use LF linebreaks.
     "linebreak-style": [true, "LF"],

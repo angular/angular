@@ -59,7 +59,8 @@ describe('MDC-based Chip Remove', () => {
       buttonElement.click();
       fixture.detectChanges();
 
-      const fakeEvent = Object.assign(createFakeEvent('transitionend'), {propertyName: 'width'});
+      const fakeEvent = createFakeEvent('transitionend');
+      (fakeEvent as any).propertyName = 'width';
       chipNativeElement.dispatchEvent(fakeEvent);
 
       expect(testChip.didRemove).toHaveBeenCalled();

@@ -565,7 +565,8 @@ describe('MDC-based MatChipGrid', () => {
       dispatchMouseEvent(chipRemoveDebugElements[2].nativeElement, 'click');
       fixture.detectChanges();
 
-      const fakeEvent = Object.assign(createFakeEvent('transitionend'), {propertyName: 'width'});
+      const fakeEvent = createFakeEvent('transitionend');
+      (fakeEvent as any).propertyName = 'width';
       chipElements[2].nativeElement.dispatchEvent(fakeEvent);
 
       fixture.detectChanges();
@@ -729,7 +730,8 @@ describe('MDC-based MatChipGrid', () => {
         chip.focus();
         dispatchKeyboardEvent(chip, 'keydown', BACKSPACE);
         fixture.detectChanges();
-        const fakeEvent = Object.assign(createFakeEvent('transitionend'), {propertyName: 'width'});
+        const fakeEvent = createFakeEvent('transitionend');
+        (fakeEvent as any).propertyName = 'width';
         chip.dispatchEvent(fakeEvent);
         fixture.detectChanges();
         tick();
