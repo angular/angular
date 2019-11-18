@@ -45,6 +45,12 @@ export class Generator {
       Promise<Object[]> {
     const seenMap = new Set<string>();
     return Promise.all((config.assetGroups || []).map(async(group) => {
+      if ((group.resources as any).versionedFiles) {
+        throw new Error(
+            `Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option, ` +
+            'which is no longer supported. Use \'files\' instead.');
+      }
+
       const fileMatcher = globListToMatcher(group.resources.files || []);
       const allFiles = await this.fs.list('/');
 
