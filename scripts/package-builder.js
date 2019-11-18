@@ -22,7 +22,7 @@ set('-e');
 const baseDir = resolve(`${__dirname}/..`);
 
 /** @type {string} The command to use for running bazel. */
-const bazelCmd = 'yarn --silent bazel';
+const bazelCmd = `yarn --cwd ${baseDir} --silent bazel`;
 
 /** @type {string} The absolute path to the bazel-bin directory. */
 const bazelBin = exec(`${bazelCmd} info bazel-bin`, true);
@@ -35,12 +35,7 @@ const bazelBin = exec(`${bazelCmd} info bazel-bin`, true);
 const scriptPath = relative(baseDir, require.main.filename);
 
 module.exports = {
-  baseDir,
-  bazelBin,
-  bazelCmd,
-  buildTargetPackages,
-  exec,
-  scriptPath,
+    baseDir, bazelBin, bazelCmd, buildTargetPackages, exec, scriptPath,
 };
 
 /**
@@ -60,7 +55,8 @@ function buildTargetPackages(destPath, compileMode, description) {
   // List of targets to build, e.g. core, common, compiler, etc. Note that we want to also remove
   // all carriage return (`\r`) characters form the query output, because otherwise the carriage
   // return is part of the bazel target name and bazel will complain.
-  const getTargetsCmd = `${bazelCmd} query --output=label "attr('tags', '\\[.*release-with-framework.*\\]', //packages/...) intersect kind('.*_package', //packages/...)"`;
+  const getTargetsCmd =
+      `${bazelCmd} query --output=label "attr('tags', '\\[.*release-with-framework.*\\]', //packages/...) intersect kind('.*_package', //packages/...)"`;
   const targets = exec(getTargetsCmd, true).split(/\r?\n/);
 
   // Use `--config=release` so that snapshot builds get published with embedded version info.
