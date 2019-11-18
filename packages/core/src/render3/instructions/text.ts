@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {assertDataInRange, assertEqual} from '../../util/assert';
-import {TNodeType} from '../interfaces/node';
+import {TElementNode, TNodeType} from '../interfaces/node';
 import {HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {appendChild, createTextNode} from '../node_manipulation';
-import {getBindingIndex, getLView, setIsNotParent} from '../state';
+import {getBindingIndex, getLView, setPreviousOrParentTNode} from '../state';
 
 import {getOrCreateTNode} from './shared';
 
@@ -25,14 +25,21 @@ import {getOrCreateTNode} from './shared';
  */
 export function ɵɵtext(index: number, value: string = ''): void {
   const lView = getLView();
+  const tView = lView[TVIEW];
+  const adjustedIndex = index + HEADER_OFFSET;
+
   ngDevMode && assertEqual(
-                   getBindingIndex(), lView[TVIEW].bindingStartIndex,
+                   getBindingIndex(), tView.bindingStartIndex,
                    'text nodes should be created before any bindings');
-  ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
-  const textNative = lView[index + HEADER_OFFSET] = createTextNode(value, lView[RENDERER]);
-  const tNode = getOrCreateTNode(lView[TVIEW], lView[T_HOST], index, TNodeType.Element, null, null);
+  ngDevMode && assertDataInRange(lView, adjustedIndex);
+
+  const tNode = tView.firstCreatePass ?
+      getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, null, null) :
+      tView.data[adjustedIndex] as TElementNode;
+
+  const textNative = lView[adjustedIndex] = createTextNode(value, lView[RENDERER]);
+  appendChild(textNative, tNode, lView);
 
   // Text nodes are self closing.
-  setIsNotParent();
-  appendChild(textNative, tNode, lView);
+  setPreviousOrParentTNode(tNode, false);
 }
