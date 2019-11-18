@@ -22,6 +22,8 @@ import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
  *   }
  * }
  * ```
+ *
+ * @see SimpleJsonTranslationSerializer
  */
 export class SimpleJsonTranslationParser implements TranslationParser<Object> {
   canParse(filePath: string, contents: string): Object|false {
