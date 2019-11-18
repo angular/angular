@@ -11,6 +11,10 @@
 // packages via `deps`. Until that works, we manually build the npm packages and then
 // copy the results to the appropriate `dist` location.
 
+// NOTE: this script may be run from any directory. The actions should be written to be independent
+// of the current working directory. For example, use absolute paths wherever possible, and pass a
+// working directory to tools like `yarn`.
+
 const {execSync} = require('child_process');
 const {resolve, relative} = require('path');
 const {chmod, cp, mkdir, rm, set, test} = require('shelljs');
@@ -22,7 +26,7 @@ set('-e');
 const baseDir = resolve(`${__dirname}/..`);
 
 /** @type {string} The command to use for running bazel. */
-const bazelCmd = 'yarn --silent bazel';
+const bazelCmd = `yarn --cwd "${baseDir}" --silent bazel`;
 
 /** @type {string} The absolute path to the bazel-bin directory. */
 const bazelBin = exec(`${bazelCmd} info bazel-bin`, true);
@@ -35,18 +39,14 @@ const bazelBin = exec(`${bazelCmd} info bazel-bin`, true);
 const scriptPath = relative(baseDir, require.main.filename);
 
 module.exports = {
-  baseDir,
-  bazelBin,
-  bazelCmd,
-  buildTargetPackages,
-  exec,
-  scriptPath,
+    baseDir, bazelBin, bazelCmd, buildTargetPackages, exec, scriptPath,
 };
 
 /**
  * Build the packages.
  *
  * @param {string} destPath Path to the output directory into which we copy the npm packages.
+ * This path should either be absolute or relative to the project root.
  * @param {'legacy' | 'aot'} compileMode Either `legacy` (view engine) or `aot` (ivy).
  * @param {string} description Human-readable description of the build.
  */
@@ -60,14 +60,15 @@ function buildTargetPackages(destPath, compileMode, description) {
   // List of targets to build, e.g. core, common, compiler, etc. Note that we want to also remove
   // all carriage return (`\r`) characters form the query output, because otherwise the carriage
   // return is part of the bazel target name and bazel will complain.
-  const getTargetsCmd = `${bazelCmd} query --output=label "attr('tags', '\\[.*release-with-framework.*\\]', //packages/...) intersect kind('.*_package', //packages/...)"`;
+  const getTargetsCmd =
+      `${bazelCmd} query --output=label "attr('tags', '\\[.*release-with-framework.*\\]', //packages/...) intersect kind('.*_package', //packages/...)"`;
   const targets = exec(getTargetsCmd, true).split(/\r?\n/);
 
   // Use `--config=release` so that snapshot builds get published with embedded version info.
   exec(`${bazelCmd} build --config=release --define=compile=${compileMode} ${targets.join(' ')}`);
 
   // Create the output directory.
-  const absDestPath = `${baseDir}/${destPath}`;
+  const absDestPath = resolve(baseDir, destPath);
   if (!test('-d', absDestPath)) mkdir('-p', absDestPath);
 
   targets.forEach(target => {
