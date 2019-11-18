@@ -513,8 +513,7 @@ describe('compiler compliance: styling', () => {
                 if (rf & 2) {
                   $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
                   $r3$.ɵɵstyleMap($ctx$.myStyleExp);
-                  $r3$.ɵɵstyleProp("width", $ctx$.myWidth);
-                  $r3$.ɵɵstyleProp("height", $ctx$.myHeight);
+                  $r3$.ɵɵstyleProp("width", $ctx$.myWidth)("height", $ctx$.myHeight);
                   $r3$.ɵɵattribute("style", "border-width: 10px", $r3$.ɵɵsanitizeStyle);
                 }
               },
@@ -706,8 +705,7 @@ describe('compiler compliance: styling', () => {
                 }
                 if (rf & 2) {
                   $r3$.ɵɵclassMap($ctx$.myClassExp);
-                  $r3$.ɵɵclassProp("apple", $ctx$.yesToApple);
-                  $r3$.ɵɵclassProp("orange", $ctx$.yesToOrange);
+                  $r3$.ɵɵclassProp("apple", $ctx$.yesToApple)("orange", $ctx$.yesToOrange);
                   $r3$.ɵɵattribute("class", "banana");
                 }
               },
@@ -916,8 +914,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind2(1, 8, $ctx$.myStyleExp, 1000));
               $r3$.ɵɵclassMap($r3$.ɵɵpureFunction0(20, _c0));
-              $r3$.ɵɵstyleProp("bar", $r3$.ɵɵpipeBind2(2, 11, $ctx$.barExp, 3000));
-              $r3$.ɵɵstyleProp("baz", $r3$.ɵɵpipeBind2(3, 14, $ctx$.bazExp, 4000));
+              $r3$.ɵɵstyleProp("bar", $r3$.ɵɵpipeBind2(2, 11, $ctx$.barExp, 3000))("baz", $r3$.ɵɵpipeBind2(3, 14, $ctx$.bazExp, 4000));
               $r3$.ɵɵclassProp("foo", $r3$.ɵɵpipeBind2(4, 17, $ctx$.fooExp, 2000));
               $r3$.ɵɵadvance(5);
              $r3$.ɵɵtextInterpolate1(" ", $ctx$.item, "");
@@ -1081,10 +1078,8 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵstyleMap(ctx.myStyle);
               $r3$.ɵɵclassMap(ctx.myClasses);
-              $r3$.ɵɵstyleProp("height", ctx.myHeightProp, "pt");
-              $r3$.ɵɵstyleProp("width", ctx.myWidthProp);
-              $r3$.ɵɵclassProp("bar", ctx.myBarClass);
-              $r3$.ɵɵclassProp("foo", ctx.myFooClass);
+              $r3$.ɵɵstyleProp("height", ctx.myHeightProp, "pt")("width", ctx.myWidthProp);
+              $r3$.ɵɵclassProp("bar", ctx.myBarClass)("foo", ctx.myFooClass);
             }
           },
           decls: 0,
@@ -1459,6 +1454,351 @@ describe('compiler compliance: styling', () => {
          expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
        });
 
+  });
+
+  describe('instruction chaining', () => {
+    it('should chain classProp instruction calls', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+             import {Component} from '@angular/core';
+
+             @Component({
+               template: \`<div [class.apple]="yesToApple"
+                                [class.orange]="yesToOrange"
+                                [class.tomato]="yesToTomato"></div>\`
+             })
+             export class MyComponent {
+               yesToApple = true;
+               yesToOrange = true;
+               tesToTomato = false;
+             }
+         `
+        }
+      };
+
+      const template = `
+       …
+       MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+        …
+        template: function MyComponent_Template(rf, $ctx$) {
+          …
+          if (rf & 2) {
+            $r3$.ɵɵclassProp("apple", $ctx$.yesToApple)("orange", $ctx$.yesToOrange)("tomato", $ctx$.yesToTomato);
+          }
+        },
+        encapsulation: 2
+      });
+     `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain styleProp instruction calls', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+             import {Component} from '@angular/core';
+
+             @Component({
+               template: \`<div [style.color]="color"
+                                [style.border]="border"
+                                [style.transition]="transition"></div>\`
+             })
+             export class MyComponent {
+               color = 'red';
+               border = '1px solid purple';
+               transition = 'all 1337ms ease';
+             }
+         `
+        }
+      };
+
+      const template = `
+       …
+       MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+        …
+        template: function MyComponent_Template(rf, $ctx$) {
+          …
+          if (rf & 2) {
+            $r3$.ɵɵstyleProp("color", $ctx$.color)("border", $ctx$.border)("transition", $ctx$.transition);
+          }
+        },
+        encapsulation: 2
+      });
+     `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain mixed styleProp and classProp calls', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+             import {Component} from '@angular/core';
+
+             @Component({
+               template: \`<div
+                                [class.apple]="yesToApple"
+                                [style.color]="color"
+                                [class.orange]="yesToOrange"
+                                [style.border]="border"
+                                [class.tomato]="yesToTomato"
+                                [style.transition]="transition"></div>\`
+             })
+             export class MyComponent {
+               color = 'red';
+               border = '1px solid purple';
+               transition = 'all 1337ms ease';
+               yesToApple = true;
+               yesToOrange = true;
+               tesToTomato = false;
+             }
+         `
+        }
+      };
+
+      const template = `
+       …
+       MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+        …
+        template: function MyComponent_Template(rf, $ctx$) {
+          …
+          if (rf & 2) {
+            $r3$.ɵɵstyleProp("color", $ctx$.color)("border", $ctx$.border)("transition", $ctx$.transition);
+            $r3$.ɵɵclassProp("apple", $ctx$.yesToApple)("orange", $ctx$.yesToOrange)("tomato", $ctx$.yesToTomato);
+          }
+        },
+        encapsulation: 2
+      });
+     `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain style interpolations of the same kind', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+             import {Component} from '@angular/core';
+
+             @Component({
+               template: \`<div
+                                style.color="a{{one}}b"
+                                style.border="a{{one}}b"
+                                style.transition="a{{one}}b"></div>\`
+             })
+             export class MyComponent {
+             }
+         `
+        }
+      };
+
+      const template = `
+       …
+       MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+        …
+        template: function MyComponent_Template(rf, $ctx$) {
+          …
+          if (rf & 2) {
+            $r3$.ɵɵstylePropInterpolate1("color", "a", ctx.one, "b")("border", "a", ctx.one, "b")("transition", "a", ctx.one, "b");
+          }
+        },
+        encapsulation: 2
+      });
+     `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain style interpolations of multiple kinds', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+             import {Component} from '@angular/core';
+
+             @Component({
+               template: \`<div
+                                style.color="a{{one}}b"
+                                style.border="a{{one}}b"
+                                style.transition="a{{one}}b{{two}}c"
+                                style.width="a{{one}}b{{two}}c"
+                                style.height="a{{one}}b{{two}}c{{three}}d"
+                                style.top="a{{one}}b{{two}}c{{three}}d"></div>\`
+             })
+             export class MyComponent {
+             }
+         `
+        }
+      };
+
+      const template = `
+       …
+       MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+        …
+        template: function MyComponent_Template(rf, $ctx$) {
+          …
+          if (rf & 2) {
+            $r3$.ɵɵstylePropInterpolate1("color", "a", ctx.one, "b")("border", "a", ctx.one, "b");
+            $r3$.ɵɵstylePropInterpolate2("transition", "a", ctx.one, "b", ctx.two, "c")("width", "a", ctx.one, "b", ctx.two, "c");
+            $r3$.ɵɵstylePropInterpolate3("height", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d")("top", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d");
+          }
+        },
+        encapsulation: 2
+      });
+     `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should break into multiple chains if there are other styling instructions in between',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+                  import {Component} from '@angular/core';
+
+                  @Component({
+                    template: \`<div
+                                      style.color="a{{one}}b"
+                                      style.border="a{{one}}b"
+                                      [class.apple]="yesToApple"
+                                      [style.transition]="transition"
+                                      [class.orange]="yesToOrange"
+                                      [style.width]="width"
+                                      style.height="a{{one}}b"
+                                      style.top="a{{one}}b"></div>\`
+                  })
+                  export class MyComponent {
+                    transition = 'all 1337ms ease';
+                    width = '42px';
+                    yesToApple = true;
+                    yesToOrange = true;
+                  }
+              `
+           }
+         };
+
+         const template = `
+            …
+            MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+              …
+              template: function MyComponent_Template(rf, $ctx$) {
+                …
+                if (rf & 2) {
+                  $r3$.ɵɵstylePropInterpolate1("color", "a", ctx.one, "b")("border", "a", ctx.one, "b");
+                  $r3$.ɵɵstyleProp("transition", ctx.transition)("width", ctx.width);
+                  $r3$.ɵɵstylePropInterpolate1("height", "a", ctx.one, "b")("top", "a", ctx.one, "b");
+                  $r3$.ɵɵclassProp("apple", ctx.yesToApple)("orange", ctx.yesToOrange);
+                }
+              },
+              encapsulation: 2
+            });
+          `;
+
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, template, 'Incorrect template');
+       });
+
+    it('should break into multiple chains if there are other styling interpolation instructions in between',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+                  import {Component} from '@angular/core';
+
+                  @Component({
+                    template: \`<div
+                                      style.color="a{{one}}b"
+                                      style.border="a{{one}}b"
+                                      style.transition="a{{one}}b{{two}}c"
+                                      style.width="a{{one}}b{{two}}c{{three}}d"
+                                      style.height="a{{one}}b"
+                                      style.top="a{{one}}b"></div>\`
+                  })
+                  export class MyComponent {
+                    transition = 'all 1337ms ease';
+                    width = '42px';
+                  }
+              `
+           }
+         };
+
+         const template = `
+            …
+            MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+              …
+              template: function MyComponent_Template(rf, $ctx$) {
+                …
+                if (rf & 2) {
+                  $r3$.ɵɵstylePropInterpolate1("color", "a", ctx.one, "b")("border", "a", ctx.one, "b");
+                  $r3$.ɵɵstylePropInterpolate2("transition", "a", ctx.one, "b", ctx.two, "c");
+                  $r3$.ɵɵstylePropInterpolate3("width", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d");
+                  $r3$.ɵɵstylePropInterpolate1("height", "a", ctx.one, "b")("top", "a", ctx.one, "b");
+                }
+              },
+              encapsulation: 2
+            });
+          `;
+
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, template, 'Incorrect template');
+       });
+
+    it('should chain styling instructions inside host bindings', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, HostBinding} from '@angular/core';
+
+            @Component({
+              template: '',
+              host: {
+                '[class.apple]': 'yesToApple',
+                '[style.color]': 'color',
+                '[class.tomato]': 'yesToTomato',
+                '[style.transition]': 'transition'
+              }
+            })
+            export class MyComponent {
+              color = 'red';
+              transition = 'all 1337ms ease';
+              yesToApple = true;
+              tesToTomato = false;
+
+              @HostBinding('style.border')
+              border = '1px solid purple';
+
+              @HostBinding('class.orange')
+              yesToOrange = true;
+            }
+           `
+        }
+      };
+
+      const template = `
+         …
+         MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+          …
+          hostBindings: function MyComponent_HostBindings(rf, $ctx$, elIndex) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵstyleProp("color", $ctx$.color)("transition", $ctx$.transition)("border", $ctx$.border);
+              $r3$.ɵɵclassProp("apple", $ctx$.yesToApple)("tomato", $ctx$.yesToTomato)("orange", $ctx$.yesToOrange);
+            }
+          },
+          …
+        });
+       `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
   });
 
   it('should count only non-style and non-class host bindings on Components', () => {
