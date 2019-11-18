@@ -6,7 +6,7 @@ This guide contains everything you need to know about updating to the next Angul
 
 If your application uses the CLI, you can update to version 9 automatically with the help of the `ng update` script:
 
-```bash
+```sh
 ng update @angular/core@8 @angular/cli@8
 git add .
 git commit --all -m "build: update Angular packages to latest 8.x version"
