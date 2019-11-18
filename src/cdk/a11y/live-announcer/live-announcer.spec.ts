@@ -138,6 +138,10 @@ describe('LiveAnnouncer', () => {
 
       expect(document.body.querySelectorAll('.cdk-live-announcer-element').length)
           .toBe(1, 'Expected only one live announcer element in the DOM.');
+
+      if (extraElement.parentNode) {
+        extraElement.parentNode.removeChild(extraElement);
+      }
     }));
 
     it('should clear any previous timers when a new one is started', fakeAsync(() => {

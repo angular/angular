@@ -28,7 +28,9 @@ describe('Clipboard', () => {
   });
 
   afterEach(() => {
-    focusedInput.remove();
+    if (focusedInput.parentNode) {
+      focusedInput.parentNode.removeChild(focusedInput);
+    }
   });
 
   describe('#beginCopy', () => {

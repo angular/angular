@@ -59,8 +59,11 @@ describe('OverlayContainer', () => {
     document.body.appendChild(extraContainer);
 
     overlayContainer.getContainerElement();
-
     expect(document.querySelectorAll('.cdk-overlay-container').length).toBe(1);
+
+    if (extraContainer.parentNode) {
+      extraContainer.parentNode.removeChild(extraContainer);
+    }
   });
 });
 

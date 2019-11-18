@@ -185,6 +185,10 @@ describe('AriaDescriber', () => {
 
     // Use `querySelectorAll` with an attribute since `getElementById` will stop at the first match.
     expect(document.querySelectorAll(`[id='${MESSAGES_CONTAINER_ID}']`).length).toBe(1);
+
+    if (extraContainer.parentNode) {
+      extraContainer.parentNode.removeChild(extraContainer);
+    }
   });
 
   it('should not describe messages that match up with the aria-label of the element', () => {
