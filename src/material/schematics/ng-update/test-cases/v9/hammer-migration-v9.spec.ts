@@ -63,7 +63,7 @@ describe('v9 HammerJS removal', () => {
 
       expect(tree.readContent('/projects/cdk-testing/src/main.ts')).not.toContain('hammerjs');
       expect(logOutput).toContain(
-        'General notice: The HammerJS v9 migration for Angular components is not able to ' +
+        'General notice: The HammerJS v9 migration for Angular Components is not able to ' +
         'migrate tests. Please manually clean up tests in your project if they rely on HammerJS.');
     });
 
@@ -317,7 +317,7 @@ describe('v9 HammerJS removal', () => {
 
       expect(tree.readContent('/projects/cdk-testing/src/main.ts')).toContain(`import 'hammerjs';`);
       expect(logOutput).toContain(
-        'General notice: The HammerJS v9 migration for Angular components is not able to ' +
+        'General notice: The HammerJS v9 migration for Angular Components is not able to ' +
         'migrate tests. Please manually clean up tests in your project if they rely on the ' +
         'deprecated Angular Material gesture config.');
     });
@@ -434,7 +434,7 @@ describe('v9 HammerJS removal', () => {
       const {logOutput} = await runMigration();
 
       expect(logOutput).toContain(
-          'The HammerJS v9 migration for Angular components migrated the project to ' +
+          'The HammerJS v9 migration for Angular Components migrated the project to ' +
           'keep HammerJS installed, but detected ambiguous usage of HammerJS. Please manually ' +
           'check if you can remove HammerJS from your application.');
     });
