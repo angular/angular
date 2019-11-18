@@ -279,7 +279,6 @@ changes to be accepted, the CLA must be signed. It's a quick process, we promise
 
 <hr>
 
-
 [angular-group]: https://groups.google.com/forum/#!forum/angular
 [coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
