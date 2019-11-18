@@ -166,8 +166,7 @@ To add a divider, use `<mat-divider>`.
 ```
 
 ### Accessibility
-The type of list used in any given situation depends on how the end-user will be interacting with
-the it.
+The type of list used in any given situation depends on how the end-user will be interacting with it.
 
 #### Navigation
 When the list-items navigate somewhere, `<mat-nav-list>` should be used with `<a mat-list-item>`
