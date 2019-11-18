@@ -237,11 +237,14 @@ Just as in the **subject**, use the imperative, present tense: "change" not "cha
 The body should include the motivation for the change and contrast this with previous behavior.
 
 ### Footer
-The footer should contain any information about **Breaking Changes** and is also the place to
-reference GitHub issues that this commit **Closes**.
+The footer should contain any information about **Breaking Changes** or **Deprecations** and
+is also the place to reference GitHub issues that this commit **Closes**.
 
 **Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines.
 The rest of the commit message is then used for this.
+
+**Deprecations** should start with the word `DEPRECATED:`. The rest of the commit message will be
+used as content for the note.
 
 A detailed explanation can be found in this [document][commit-message-format].
 

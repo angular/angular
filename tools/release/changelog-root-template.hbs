@@ -11,6 +11,14 @@ _Breaking changes:_
 {{/each}}
 
 {{/if}}
+{{#if deprecations.length}}
+_Deprecations:_
+
+{{#each deprecations}}
+* {{#if commit.scope}}**{{commit.scope}}:** {{/if}}{{text}}
+{{/each}}
+
+{{/if}}
 |            |                       |
 | ---------- | --------------------- |
 {{#each commits}}
