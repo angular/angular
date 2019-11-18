@@ -19,10 +19,7 @@ export interface OptionGroupHarnessFilters extends BaseHarnessFilters {
   labelText?: string;
 }
 
-/**
- * Harness for interacting with a the `mat-option` for a `mat-select` in tests.
- * @dynamic
- */
+/** Harness for interacting with a the `mat-option` for a `mat-select` in tests. */
 export class MatSelectOptionHarness extends ComponentHarness {
   // TODO(crisbeto): things to add here when adding a common option harness:
   // - isDisabled
@@ -50,10 +47,7 @@ export class MatSelectOptionHarness extends ComponentHarness {
   }
 }
 
-/**
- * Harness for interacting with a the `mat-optgroup` for a `mat-select` in tests.
- * @dynamic
- */
+/** Harness for interacting with a the `mat-optgroup` for a `mat-select` in tests. */
 export class MatSelectOptionGroupHarness extends ComponentHarness {
   private _label = this.locatorFor('.mat-optgroup-label');
   static hostSelector = '.mat-select-panel .mat-optgroup';

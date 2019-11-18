@@ -10,10 +10,7 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {RadioButtonHarnessFilters, RadioGroupHarnessFilters} from './radio-harness-filters';
 
-/**
- * Harness for interacting with a standard mat-radio-group in tests.
- * @dynamic
- */
+/** Harness for interacting with a standard mat-radio-group in tests. */
 export class MatRadioGroupHarness extends ComponentHarness {
   static hostSelector = 'mat-radio-group';
 
@@ -148,10 +145,7 @@ export class MatRadioGroupHarness extends ComponentHarness {
   }
 }
 
-/**
- * Harness for interacting with a standard mat-radio-button in tests.
- * @dynamic
- */
+/** Harness for interacting with a standard mat-radio-button in tests. */
 export class MatRadioButtonHarness extends ComponentHarness {
   static hostSelector = 'mat-radio-button';
 

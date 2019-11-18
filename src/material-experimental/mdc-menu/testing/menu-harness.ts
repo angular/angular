@@ -13,10 +13,7 @@ import {
   MenuItemHarnessFilters
 } from '@angular/material/menu/testing';
 
-/**
- * Harness for interacting with a MDC-based mat-menu in tests.
- * @dynamic
- */
+/** Harness for interacting with a MDC-based mat-menu in tests. */
 export class MatMenuHarness extends ComponentHarness {
   static hostSelector = '.mat-menu-trigger';
 
@@ -79,10 +76,7 @@ export class MatMenuHarness extends ComponentHarness {
 }
 
 
-/**
- * Harness for interacting with a standard mat-menu in tests.
- * @dynamic
- */
+/** Harness for interacting with a standard mat-menu in tests. */
 export class MatMenuItemHarness extends ComponentHarness {
   static hostSelector = '.mat-menu-item';
 

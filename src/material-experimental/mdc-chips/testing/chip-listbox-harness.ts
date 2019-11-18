@@ -10,10 +10,7 @@ import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {ChipListboxHarnessFilters} from './chip-harness-filters';
 import {MatChipOptionHarness} from './chip-option-harness';
 
-/**
- * Harness for interacting with a mat-chip-listbox in tests.
- * @dynamic
- */
+/** Harness for interacting with a mat-chip-listbox in tests. */
 export class MatChipListboxHarness extends ComponentHarness {
   static hostSelector = 'mat-chip-listbox';
 

@@ -10,10 +10,7 @@ import {ComponentHarness, HarnessPredicate, TestElement, TestKey} from '@angular
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MenuHarnessFilters, MenuItemHarnessFilters} from './menu-harness-filters';
 
-/**
- * Harness for interacting with a standard mat-menu in tests.
- * @dynamic
- */
+/** Harness for interacting with a standard mat-menu in tests. */
 export class MatMenuHarness extends ComponentHarness {
   static hostSelector = '.mat-menu-trigger';
 
@@ -113,10 +110,7 @@ export class MatMenuHarness extends ComponentHarness {
 }
 
 
-/**
- * Harness for interacting with a standard mat-menu-item in tests.
- * @dynamic
- */
+/** Harness for interacting with a standard mat-menu-item in tests. */
 export class MatMenuItemHarness extends ComponentHarness {
   static hostSelector = '.mat-menu-item';
 

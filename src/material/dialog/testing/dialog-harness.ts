@@ -10,10 +10,7 @@ import {ComponentHarness, HarnessPredicate, TestKey} from '@angular/cdk/testing'
 import {DialogRole} from '@angular/material/dialog';
 import {DialogHarnessFilters} from './dialog-harness-filters';
 
-/**
- * Harness for interacting with a standard MatDialog in tests.
- * @dynamic
- */
+/** Harness for interacting with a standard MatDialog in tests. */
 export class MatDialogHarness extends ComponentHarness {
   // Developers can provide a custom component or template for the
   // dialog. The canonical dialog parent is the "MatDialogContainer".

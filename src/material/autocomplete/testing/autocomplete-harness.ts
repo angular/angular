@@ -19,10 +19,7 @@ import {
 /** Selector for the autocomplete panel. */
 const PANEL_SELECTOR = '.mat-autocomplete-panel';
 
-/**
- * Harness for interacting with a standard mat-autocomplete in tests.
- * @dynamic
- */
+/** Harness for interacting with a standard mat-autocomplete in tests. */
 export class MatAutocompleteHarness extends ComponentHarness {
   private _documentRootLocator = this.documentRootLocatorFactory();
   private _optionalPanel = this._documentRootLocator.locatorForOptional(PANEL_SELECTOR);

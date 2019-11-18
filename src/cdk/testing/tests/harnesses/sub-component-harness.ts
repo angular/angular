@@ -14,7 +14,6 @@ export interface SubComponentHarnessFilters extends BaseHarnessFilters {
   itemCount?: number;
 }
 
-/** @dynamic */
 export class SubComponentHarness extends ComponentHarness {
   static readonly hostSelector = 'test-sub';
 

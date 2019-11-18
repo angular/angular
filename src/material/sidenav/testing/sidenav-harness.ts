@@ -10,10 +10,7 @@ import {HarnessPredicate} from '@angular/cdk/testing';
 import {MatDrawerHarness} from './drawer-harness';
 import {DrawerHarnessFilters} from './drawer-harness-filters';
 
-/**
- * Harness for interacting with a standard mat-sidenav in tests.
- * @dynamic
- */
+/** Harness for interacting with a standard mat-sidenav in tests. */
 export class MatSidenavHarness extends MatDrawerHarness {
   static hostSelector = '.mat-sidenav';
 

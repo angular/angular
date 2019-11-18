@@ -23,10 +23,8 @@ import {FormFieldHarnessFilters} from './form-field-harness-filters';
 // Also support chip list harness.
 /** Possible harnesses of controls which can be bound to a form-field. */
 export type FormFieldControlHarness = MatInputHarness|MatSelectHarness;
-/**
- * Harness for interacting with a standard Material form-field's in tests.
- * @dynamic
- */
+
+/** Harness for interacting with a standard Material form-field's in tests. */
 export class MatFormFieldHarness extends ComponentHarness {
   static hostSelector = '.mat-form-field';
 

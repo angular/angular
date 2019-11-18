@@ -11,10 +11,7 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SlideToggleHarnessFilters} from '@angular/material/slide-toggle/testing';
 
 
-/**
- * Harness for interacting with a MDC-based mat-slide-toggle in tests.
- * @dynamic
- */
+/** Harness for interacting with a MDC-based mat-slide-toggle in tests. */
 export class MatSlideToggleHarness extends ComponentHarness {
   static hostSelector = 'mat-slide-toggle';
 

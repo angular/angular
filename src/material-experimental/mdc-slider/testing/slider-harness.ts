@@ -10,10 +10,7 @@ import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {SliderHarnessFilters} from '@angular/material/slider/testing';
 
-/**
- * Harness for interacting with a MDC mat-slider in tests.
- * @dynamic
- */
+/** Harness for interacting with a MDC mat-slider in tests. */
 export class MatSliderHarness extends ComponentHarness {
   static hostSelector = 'mat-slider';
 

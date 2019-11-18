@@ -11,10 +11,7 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ButtonHarnessFilters} from './button-harness-filters';
 
 
-/**
- * Harness for interacting with a standard mat-button in tests.
- * @dynamic
- */
+/** Harness for interacting with a standard mat-button in tests. */
 export class MatButtonHarness extends ComponentHarness {
   // TODO(jelbourn) use a single class, like `.mat-button-base`
   static hostSelector = [

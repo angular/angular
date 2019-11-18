@@ -10,10 +10,7 @@ import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {CheckboxHarnessFilters} from '@angular/material/checkbox/testing';
 
-/**
- * Harness for interacting with a MDC-based mat-checkbox in tests.
- * @dynamic
- */
+/** Harness for interacting with a MDC-based mat-checkbox in tests. */
 export class MatCheckboxHarness extends ComponentHarness {
   static hostSelector = 'mat-checkbox';
 

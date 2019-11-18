@@ -16,10 +16,7 @@ import {MatSelectOptionHarness, MatSelectOptionGroupHarness} from './option-harn
 /** Selector for the select panel. */
 const PANEL_SELECTOR = '.mat-select-panel';
 
-/**
- * Harness for interacting with a standard mat-select in tests.
- * @dynamic
- */
+/** Harness for interacting with a standard mat-select in tests. */
 export class MatSelectHarness extends MatFormFieldControlHarness {
   private _documentRootLocator = this.documentRootLocatorFactory();
   private _panel = this._documentRootLocator.locatorFor(PANEL_SELECTOR);

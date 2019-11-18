@@ -11,10 +11,7 @@ import {ChipGridHarnessFilters} from './chip-harness-filters';
 import {MatChipInputHarness} from './chip-input-harness';
 import {MatChipRowHarness} from './chip-row-harness';
 
-/**
- * Harness for interacting with a mat-chip-grid in tests.
- * @dynamic
- */
+/** Harness for interacting with a mat-chip-grid in tests. */
 export class MatChipGridHarness extends ComponentHarness {
   static hostSelector = 'mat-chip-grid';
 

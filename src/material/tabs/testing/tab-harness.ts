@@ -9,10 +9,7 @@
 import {ComponentHarness, HarnessLoader, HarnessPredicate} from '@angular/cdk/testing';
 import {TabHarnessFilters} from './tab-harness-filters';
 
-/**
- * Harness for interacting with a standard Angular Material tab-label in tests.
- * @dynamic
- */
+/** Harness for interacting with a standard Angular Material tab-label in tests. */
 export class MatTabHarness extends ComponentHarness {
   static hostSelector = '.mat-tab-label';
 

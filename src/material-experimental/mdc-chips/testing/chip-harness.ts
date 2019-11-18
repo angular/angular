@@ -9,10 +9,7 @@
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {ChipHarnessFilters} from './chip-harness-filters';
 
-/**
- * Harness for interacting with a mat-chip in tests.
- * @dynamic
- */
+/** Harness for interacting with a mat-chip in tests. */
 export class MatChipHarness extends ComponentHarness {
   static hostSelector = 'mat-basic-chip, mat-chip';
 

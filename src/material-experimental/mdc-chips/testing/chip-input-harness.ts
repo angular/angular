@@ -9,10 +9,7 @@
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {ChipInputHarnessFilters} from './chip-harness-filters';
 
-/**
- * Harness for interacting with a grid's chip input in tests.
- * @dynamic
- */
+/** Harness for interacting with a grid's chip input in tests. */
 export class MatChipInputHarness extends ComponentHarness {
   static hostSelector = '.mat-mdc-chip-input';
 

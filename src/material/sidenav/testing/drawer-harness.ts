@@ -9,10 +9,7 @@
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {DrawerHarnessFilters} from './drawer-harness-filters';
 
-/**
- * Harness for interacting with a standard mat-drawer in tests.
- * @dynamic
- */
+/** Harness for interacting with a standard mat-drawer in tests. */
 export class MatDrawerHarness extends ComponentHarness {
   static hostSelector = '.mat-drawer';
 

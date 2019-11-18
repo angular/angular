@@ -12,10 +12,7 @@ import {
 } from '@angular/material-experimental/form-field/testing/control';
 import {InputHarnessFilters} from './input-harness-filters';
 
-/**
- * Harness for interacting with a standard Material inputs in tests.
- * @dynamic
- */
+/** Harness for interacting with a standard Material inputs in tests. */
 export class MatInputHarness extends MatFormFieldControlHarness {
   static hostSelector = '[matInput]';
 

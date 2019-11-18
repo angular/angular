@@ -19,10 +19,7 @@ export interface OptionGroupHarnessFilters extends BaseHarnessFilters {
   labelText?: string | RegExp;
 }
 
-/**
- * Harness for interacting with a the `mat-option` for a `mat-autocomplete` in tests.
- * @dynamic
- */
+/** Harness for interacting with a the `mat-option` for a `mat-autocomplete` in tests. */
 export class MatAutocompleteOptionHarness extends ComponentHarness {
   static hostSelector = '.mat-autocomplete-panel .mat-option';
 
@@ -43,10 +40,7 @@ export class MatAutocompleteOptionHarness extends ComponentHarness {
   }
 }
 
-/**
- * Harness for interacting with a the `mat-optgroup` for a `mat-autocomplete` in tests.
- * @dynamic
- */
+/** Harness for interacting with a the `mat-optgroup` for a `mat-autocomplete` in tests. */
 export class MatAutocompleteOptionGroupHarness extends ComponentHarness {
   private _label = this.locatorFor('.mat-optgroup-label');
   static hostSelector = '.mat-autocomplete-panel .mat-optgroup';
