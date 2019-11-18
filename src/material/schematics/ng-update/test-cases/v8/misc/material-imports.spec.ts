@@ -1,5 +1,5 @@
 import {createTestCaseSetup, readFileContent} from '@angular/cdk/schematics/testing';
-import {migrationCollection} from '../index.spec';
+import {migrationCollection} from '../../index.spec';
 
 describe('v8 material imports', () => {
   it('should re-map top-level material imports to the proper entry points', async () => {

@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import * as core from '@angular/core';
 import {By} from '@angular/platform-browser';
 
 const a = By.css('[cdkPortalHost]');
@@ -9,7 +10,7 @@ const b = By.css('[portalHost]');
 const c = 'cdkPortalHost';
 const d = 'portalHost';
 
-@Component({
+@core.Component({
   template: `
     <div cdkPortalHost="E"></div>
     <div [cdkPortalHost]="myPortal"></div>

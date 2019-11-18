@@ -19,7 +19,9 @@ import {
   MigrationRule,
   PostMigrationAction,
   ResolvedResource,
-  TargetVersion
+  TargetVersion,
+  Import,
+  getImportOfIdentifier,
 } from '@angular/cdk/schematics';
 import {
   addSymbolToNgModuleMetadata,
@@ -38,7 +40,6 @@ import {getProjectFromProgram} from './cli-workspace';
 import {findHammerScriptImportElements} from './find-hammer-script-tags';
 import {findMainModuleExpression} from './find-main-module';
 import {isHammerJsUsedInTemplate} from './hammer-template-check';
-import {getImportOfIdentifier, Import} from './identifier-imports';
 import {ImportManager} from './import-manager';
 import {removeElementFromArrayExpression} from './remove-array-element';
 import {removeElementFromHtml} from './remove-element-from-html';

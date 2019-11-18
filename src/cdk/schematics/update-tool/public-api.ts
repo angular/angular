@@ -11,3 +11,5 @@ export * from './target-version';
 export * from './version-changes';
 export * from './migration-rule';
 export * from './component-resource-collector';
+export * from './utils/imports';
+export * from './utils/decorators';

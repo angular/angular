@@ -23,6 +23,9 @@ const TEST_CASE_INPUT_SUFFIX = '_input.ts';
 /** Suffix that indicates whether a given file is an expected output of a test case. */
 const TEST_CASE_OUTPUT_SUFFIX = '_expected_output.ts';
 
+/** Name of the folder that can contain test case files which should not run automatically. */
+const MISC_FOLDER_NAME = 'misc';
+
 /** Reads the UTF8 content of the specified file. Normalizes the path and ensures that */
 export function readFileContent(filePath: string): string {
   return readFileSync(filePath, 'utf8');
@@ -135,7 +138,8 @@ export function findBazelVersionTestCases(basePath: string) {
   // test case files by using "glob" and store them in our result map.
   if (!manifestPath) {
     const runfilesBaseDir = join(runfilesDir!, basePath);
-    const inputFiles = globSync(`**/*${TEST_CASE_INPUT_SUFFIX}`, {cwd: runfilesBaseDir});
+    const inputFiles = globSync(`**/!(${MISC_FOLDER_NAME})/*${TEST_CASE_INPUT_SUFFIX}`,
+        {cwd: runfilesBaseDir});
 
     inputFiles.forEach(inputFile => {
       // The target version of an input file will be determined from the first
@@ -158,9 +162,13 @@ export function findBazelVersionTestCases(basePath: string) {
     // In case the mapped runfile starts with the specified base path and ends with "_input.ts",
     // we store it in our result map because we assume that this is a test case.
     if (runfilePath.startsWith(basePath) && runfilePath.endsWith(TEST_CASE_INPUT_SUFFIX)) {
+      const pathSegments = relative(basePath, runfilePath).split(sep);
+      if (pathSegments.includes(MISC_FOLDER_NAME)) {
+        return;
+      }
       // The target version of an input file will be determined from the first
       // path segment. (e.g. "v6/my_rule_input.ts" will be for "v6")
-      const targetVersion = relative(basePath, runfilePath).split(sep)[0];
+      const targetVersion = pathSegments[0];
       testCasesMap.set(targetVersion, (testCasesMap.get(targetVersion) || []).concat(realPath));
     }
   });

@@ -4,11 +4,11 @@ import {addPackageToPackageJson} from '@angular/cdk/schematics/ng-add/package-co
 import {createTestCaseSetup} from '@angular/cdk/schematics/testing';
 import {readFileSync} from 'fs';
 
-import {migrationCollection} from '../index.spec';
+import {migrationCollection} from '../../index.spec';
 
 describe('v9 HammerJS removal', () => {
   const GESTURE_CONFIG_TEMPLATE_PATH =
-      require.resolve('../../upgrade-rules/hammer-gestures-v9/gesture-config.template');
+      require.resolve('../../../upgrade-rules/hammer-gestures-v9/gesture-config.template');
 
   let runner: SchematicTestRunner;
   let tree: UnitTestTree;

@@ -17,7 +17,6 @@ export type CallExpressionDecorator = ts.Decorator&{
 export interface NgDecorator {
   name: string;
   node: CallExpressionDecorator;
-  importNode: ts.ImportDeclaration;
 }
 
 /**
@@ -27,23 +26,23 @@ export interface NgDecorator {
 export function getAngularDecorators(
     typeChecker: ts.TypeChecker, decorators: ReadonlyArray<ts.Decorator>): NgDecorator[] {
   return decorators.map(node => ({node, importData: getCallDecoratorImport(typeChecker, node)}))
-      .filter(({importData}) => importData && importData.importModule.startsWith('@angular/'))
-      .map(({node, importData}) => ({
-             node: node as CallExpressionDecorator,
-             name: importData!.name,
-             importNode: importData!.node
-           }));
+      .filter(({importData}) => importData && importData.moduleName.startsWith('@angular/'))
+      .map(
+          ({node, importData}) =>
+              ({node: node as CallExpressionDecorator, name: importData!.symbolName}));
 }
 
 export function getCallDecoratorImport(
     typeChecker: ts.TypeChecker, decorator: ts.Decorator): Import|null {
-  // Note that this does not cover the edge case where decorators are called from
-  // a namespace import: e.g. "@core.Component()". This is not handled by Ngtsc either.
-  if (!ts.isCallExpression(decorator.expression) ||
-      !ts.isIdentifier(decorator.expression.expression)) {
+  if (!ts.isCallExpression(decorator.expression)) {
     return null;
   }
-
-  const identifier = decorator.expression.expression;
-  return getImportOfIdentifier(typeChecker, identifier);
+  const valueExpr = decorator.expression.expression;
+  let identifier: ts.Identifier|null = null;
+  if (ts.isIdentifier(valueExpr)) {
+    identifier = valueExpr;
+  } else if (ts.isPropertyAccessExpression(valueExpr) && ts.isIdentifier(valueExpr.name)) {
+    identifier = valueExpr.name;
+  }
+  return identifier ? getImportOfIdentifier(identifier, typeChecker) : null;
 }
