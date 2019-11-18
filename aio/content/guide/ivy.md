@@ -119,6 +119,17 @@ To revert the compiler default, set the build option `aot: false` in the `angula
 
 </div>
 
+If you disable Ivy and the project uses internationalization, you can also remove the `@angular/localize` runtime component from the project's polyfills file located be default at `src/polyfills.ts`.
+
+To remove, delete the `import '@angular/localize/init';` line from the polyfills file. 
+
+<code-example language="typescript" header="polyfills.ts">
+/***************************************************************************************************
+ * Load `$localize` onto the global scope - used if i18n tags appear in Angular templates.
+ */
+import '@angular/localize/init';
+</code-example>
+
 {@a using-ssr-without-angular-ivy}
 ### Using SSR without Ivy
 
