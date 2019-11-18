@@ -133,17 +133,28 @@
     }],
     "validate-decorators": [true, {
       "Component": {
-        "!host": "\\[class\\]",
-        "!preserveWhitespaces": ".*",
-        "!styles": ".*",
-        "!moduleId": ".*",
-        "changeDetection": "\\.OnPush$",
-        "encapsulation": "\\.None$"
+        "argument": 0,
+        "properties": {
+          "!host": "\\[class\\]",
+          "!preserveWhitespaces": ".*",
+          "!styles": ".*",
+          "!moduleId": ".*",
+          "changeDetection": "\\.OnPush$",
+          "encapsulation": "\\.None$"
+        }
       },
       "Directive": {
-        "!host": "\\[class\\]"
+        "argument": 0,
+        "properties": {
+          "!host": "\\[class\\]"
+        }
       },
-      "NgModule": "^(?!\\s*$).+"
+      "NgModule": {
+        "argument": 0,
+        "properties": {
+          "*": "^(?!\\s*$).+"
+        }
+      }
     }, "src/!(a11y-demo|e2e-app|components-examples|universal-app|dev-app)/**/!(*.spec).ts"],
     "require-license-banner": [
       true,
