@@ -12,9 +12,8 @@
 // copy the results to the appropriate `dist` location.
 
 const {execSync} = require('child_process');
-const {existsSync, statSync} = require('fs');
 const {resolve, relative} = require('path');
-const {chmod, cp, mkdir, rm, set} = require('shelljs');
+const {chmod, cp, mkdir, rm, set, test} = require('shelljs');
 
 set('-e');
 
@@ -69,7 +68,7 @@ function buildTargetPackages(destPath, compileMode, description) {
 
   // Create the output directory.
   const absDestPath = `${baseDir}/${destPath}`;
-  if (!existsSync(absDestPath)) mkdir('-p', absDestPath);
+  if (!test('-d', absDestPath)) mkdir('-p', absDestPath);
 
   targets.forEach(target => {
     const pkg = target.replace(/\/\/packages\/(.*):npm_package/, '$1');
@@ -78,7 +77,7 @@ function buildTargetPackages(destPath, compileMode, description) {
     const srcDir = `${bazelBin}/packages/${pkg}/npm_package`;
     const destDir = `${absDestPath}/${pkg}`;
 
-    if (existsSync(srcDir) && statSync(srcDir).isDirectory()) {
+    if (test('-d', srcDir)) {
       console.log(`# Copy artifacts to ${destDir}`);
       rm('-rf', destDir);
       cp('-R', srcDir, destDir);
