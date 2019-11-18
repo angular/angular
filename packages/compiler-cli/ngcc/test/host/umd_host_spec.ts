@@ -1560,9 +1560,6 @@ runInEachFileSystem(() => {
 
           expect(decorators.length).toEqual(1);
           expect(decorators[0].import).toBe(mockImportInfo);
-
-          const typeIdentifier = spy.calls.mostRecent().args[0] as ts.Identifier;
-          expect(typeIdentifier.text).toBe('Inject');
         });
       });
 
