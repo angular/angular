@@ -54,11 +54,10 @@ runInEachFileSystem(() => {
       SOME_DIRECTIVE_FILE = {
         name: _('/some_directive.js'),
         contents: `
-    import { Directive, Inject, InjectionToken, Input, HostListener, HostBinding } from '@angular/core';
+    import { Directive, Inject, InjectionToken, Input, HostListener, HostBinding, ViewContainerRef, TemplateRef } from '@angular/core';
 
     const INJECTED_TOKEN = new InjectionToken('injected');
-    const ViewContainerRef = {};
-    const TemplateRef = {};
+    const TestToken = {};
 
     class SomeDirective {
       constructor(_viewContainer, _template, injected) {
@@ -196,6 +195,7 @@ runInEachFileSystem(() => {
     class NoArgsProperty {
     }
     NoArgsProperty.decorators = [
+
       { type: Directive },
     ];
 
@@ -1099,6 +1099,7 @@ runInEachFileSystem(() => {
 
     describe('getConstructorParameters()', () => {
       it('should find the decorated constructor parameters', () => {
+        loadFakeCore(getFileSystem());
         loadTestFiles([SOME_DIRECTIVE_FILE]);
         const {program} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
         const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
@@ -1111,7 +1112,7 @@ runInEachFileSystem(() => {
           '_viewContainer', '_template', 'injected'
         ]);
         expectTypeValueReferencesForParameters(
-            parameters, ['ViewContainerRef', 'TemplateRef', null]);
+            parameters, ['ViewContainerRef', 'TemplateRef', null], '@angular/core');
       });
 
       it('should accept `ctorParameters` as an array', () => {
@@ -1499,23 +1500,15 @@ runInEachFileSystem(() => {
 
     describe('getDeclarationOfIdentifier()', () => {
       it('should return the declaration of a locally defined identifier', () => {
+        loadFakeCore(getFileSystem());
         loadTestFiles([SOME_DIRECTIVE_FILE]);
         const {program} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
         const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
-        const ctrDecorators = host.getConstructorParameters(classNode) !;
-        const identifierOfViewContainerRef = (ctrDecorators[0].typeValueReference !as{
-                                               local: true,
-                                               expression: ts.Identifier,
-                                               defaultImportStatement: null,
-                                             }).expression;
-
-        const expectedDeclarationNode = getDeclaration(
-            program, SOME_DIRECTIVE_FILE.name, 'ViewContainerRef', isNamedVariableDeclaration);
-        const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfViewContainerRef);
+        const actualDeclaration = host.getDeclarationOfIdentifier(classNode.name);
         expect(actualDeclaration).not.toBe(null);
-        expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
+        expect(actualDeclaration !.node).toBe(classNode);
         expect(actualDeclaration !.viaModule).toBe(null);
       });
 

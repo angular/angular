@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, TypeScriptReflectionHost, isDecoratorIdentifier, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, TypeScriptReflectionHost, TypeValueReference, isDecoratorIdentifier, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
@@ -1357,12 +1357,34 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           constructorParamInfo[index] :
           {decorators: null, typeExpression: null};
       const nameNode = node.name;
+
+      let typeValueReference: TypeValueReference|null = null;
+      if (typeExpression !== null) {
+        // `typeExpression` is an expression in a "type" context. Resolve it to a declared value.
+        // Either it's a reference to an imported type, or a type declared locally. Distinguish the
+        // two cases with `getDeclarationOfExpression`.
+        const decl = this.getDeclarationOfExpression(typeExpression);
+        if (decl !== null && decl.node !== null && decl.viaModule !== null &&
+            isNamedDeclaration(decl.node)) {
+          typeValueReference = {
+            local: false,
+            valueDeclaration: decl.node,
+            moduleName: decl.viaModule,
+            name: decl.node.name.text,
+          };
+        } else {
+          typeValueReference = {
+            local: true,
+            expression: typeExpression,
+            defaultImportStatement: null,
+          };
+        }
+      }
+
       return {
         name: getNameText(nameNode),
         nameNode,
-        typeValueReference: typeExpression !== null ?
-            {local: true as true, expression: typeExpression, defaultImportStatement: null} :
-            null,
+        typeValueReference,
         typeNode: null, decorators
       };
     });
