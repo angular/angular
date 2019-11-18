@@ -708,8 +708,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const limit = stylingInstructions.length - 1;
     for (let i = 0; i <= limit; i++) {
       const instruction = stylingInstructions[i];
-      this._bindingSlots += instruction.allocateBindingSlots;
-      this.processStylingInstruction(elementIndex, instruction, false);
+      this._bindingSlots += this.processStylingUpdateInstruction(elementIndex, instruction);
     }
 
     // the reason why `undefined` is used is because the renderer understands this as a
@@ -1077,25 +1076,30 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
   }
 
-  private processStylingInstruction(
-      elementIndex: number, instruction: StylingInstruction|null, createMode: boolean) {
+  private processStylingUpdateInstruction(
+      elementIndex: number, instruction: StylingInstruction|null) {
+    let allocateBindingSlots = 0;
     if (instruction) {
-      if (createMode) {
-        this.creationInstruction(instruction.sourceSpan, instruction.reference, () => {
-          return instruction.params(value => this.convertPropertyBinding(value)) as o.Expression[];
-        });
-      } else {
-        this.updateInstructionWithAdvance(
-            elementIndex, instruction.sourceSpan, instruction.reference, () => {
-              return instruction
-                  .params(value => {
-                    return (instruction.supportsInterpolation && value instanceof Interpolation) ?
+      const calls: ChainableBindingInstruction[] = [];
+
+      instruction.calls.forEach(call => {
+        allocateBindingSlots += call.allocateBindingSlots;
+        calls.push({
+          sourceSpan: call.sourceSpan,
+          value: () => {
+            return call
+                .params(
+                    value => (call.supportsInterpolation && value instanceof Interpolation) ?
                         this.getUpdateInstructionArguments(value) :
-                        this.convertPropertyBinding(value);
-                  }) as o.Expression[];
-            });
-      }
+                        this.convertPropertyBinding(value)) as o.Expression[];
+          }
+        });
+      });
+
+      this.updateInstructionChainWithAdvance(elementIndex, instruction.reference, calls);
     }
+
+    return allocateBindingSlots;
   }
 
   private creationInstruction(
@@ -1133,8 +1137,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     this._updateCodeFns.push(() => {
       const calls = bindings.map(property => {
-        const fnParams = [property.value(), ...(property.params || [])];
+        const value = property.value();
+        const fnParams = Array.isArray(value) ? value : [value];
+        if (property.params) {
+          fnParams.push(...property.params);
+        }
         if (property.name) {
+          // We want the property name to always be the first function parameter.
           fnParams.unshift(o.literal(property.name));
         }
         return fnParams;
@@ -2049,7 +2058,7 @@ function hasTextChildrenOnly(children: t.Node[]): boolean {
 interface ChainableBindingInstruction {
   name?: string;
   sourceSpan: ParseSourceSpan|null;
-  value: () => o.Expression;
+  value: () => o.Expression | o.Expression[];
   params?: any[];
 }
 
