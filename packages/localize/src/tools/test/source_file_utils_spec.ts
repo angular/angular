@@ -10,7 +10,7 @@ import {NodePath, transformSync} from '@babel/core';
 import generate from '@babel/generator';
 import template from '@babel/template';
 import {Expression, Identifier, TaggedTemplateExpression, ExpressionStatement, FunctionDeclaration, CallExpression, isParenthesizedExpression, numericLiteral, binaryExpression, NumericLiteral} from '@babel/types';
-import {isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, isArrayOfExpressions, unwrapStringLiteralArray, unwrapMessagePartsFromLocalizeCall, wrapInParensIfNecessary, buildLocalizeReplacement, unwrapSubstitutionsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral} from '../../../src/translate/source_files/source_file_utils';
+import {isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, isArrayOfExpressions, unwrapStringLiteralArray, unwrapMessagePartsFromLocalizeCall, wrapInParensIfNecessary, buildLocalizeReplacement, unwrapSubstitutionsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral} from '../src/source_file_utils';
 
 describe('utils', () => {
   describe('isNamedIdentifier()', () => {
