@@ -8,7 +8,7 @@
 import {SafeValue} from '../../sanitization/bypass';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {throwErrorIfNoChangesMode} from '../errors';
-import {setInputsForProperty} from '../instructions/shared';
+import {TsickleIssue1009, setInputsForProperty} from '../instructions/shared';
 import {AttributeMarker, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {StylingMapArray, StylingMapArrayIndex, TStylingContext} from '../interfaces/styling';
@@ -77,8 +77,10 @@ export function ɵɵstyleSanitizer(sanitizer: StyleSanitizeFn | null): void {
  * @codeGenApi
  */
 export function ɵɵstyleProp(
-    prop: string, value: string | number | SafeValue | null, suffix?: string | null): void {
+    prop: string, value: string | number | SafeValue | null,
+    suffix?: string | null): TsickleIssue1009 {
   stylePropInternal(getSelectedIndex(), prop, value, suffix);
+  return ɵɵstyleProp;
 }
 
 /**
@@ -133,7 +135,7 @@ export function stylePropInternal(
  *
  * @codeGenApi
  */
-export function ɵɵclassProp(className: string, value: boolean | null): void {
+export function ɵɵclassProp(className: string, value: boolean | null): TsickleIssue1009 {
   // if a value is interpolated then it may render a `NO_CHANGE` value.
   // in this case we do not need to do anything, but the binding index
   // still needs to be incremented because all styling binding values
@@ -159,6 +161,7 @@ export function ɵɵclassProp(className: string, value: boolean | null): void {
       ngDevMode.classPropCacheMiss++;
     }
   }
+  return ɵɵclassProp;
 }
 
 /**

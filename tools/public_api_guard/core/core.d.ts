@@ -724,7 +724,7 @@ export declare function ɵɵclassMapInterpolate8(prefix: string, v0: any, i0: st
 
 export declare function ɵɵclassMapInterpolateV(values: any[]): void;
 
-export declare function ɵɵclassProp(className: string, value: boolean | null): void;
+export declare function ɵɵclassProp(className: string, value: boolean | null): TsickleIssue1009;
 
 export declare type ɵɵComponentDefWithMeta<T, Selector extends String, ExportAs extends string[], InputMap extends {
     [key: string]: string;
@@ -1033,7 +1033,7 @@ export declare function ɵɵstyleMap(styles: {
     [styleName: string]: any;
 } | NO_CHANGE | null): void;
 
-export declare function ɵɵstyleProp(prop: string, value: string | number | SafeValue | null, suffix?: string | null): void;
+export declare function ɵɵstyleProp(prop: string, value: string | number | SafeValue | null, suffix?: string | null): TsickleIssue1009;
 
 export declare function ɵɵstylePropInterpolate1(prop: string, prefix: string, v0: any, suffix: string, valueSuffix?: string | null): TsickleIssue1009;
 
