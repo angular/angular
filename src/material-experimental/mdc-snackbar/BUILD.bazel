@@ -1,0 +1,32 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
+load("//:packages.bzl", "CDK_TARGETS", "MATERIAL_TARGETS")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "mdc-snackbar",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    assets = [":snackbar_scss"] + glob(["**/*.html"]),
+    module_name = "@angular/material-experimental/mdc-snackbar",
+    deps = [
+        "@npm//material-components-web",
+    ] + CDK_TARGETS + MATERIAL_TARGETS,
+)
+
+sass_library(
+    name = "snackbar_scss_lib",
+    srcs = glob(["**/_*.scss"]),
+    deps = [
+        "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
+        "//src/material/core:core_scss_lib",
+    ],
+)
+
+sass_binary(
+    name = "snackbar_scss",
+    src = "snackbar.scss",
+)

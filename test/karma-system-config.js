@@ -184,6 +184,8 @@ System.config({
         'dist/packages/material-experimental/mdc-menu/index.js',
     '@angular/material-experimental/mdc-radio':
         'dist/packages/material-experimental/mdc-radio/index.js',
+    '@angular/material-experimental/mdc-snackbar':
+        'dist/packages/material-experimental/mdc-snackbar/index.js',
     '@angular/material-experimental/mdc-slide-toggle':
         'dist/packages/material-experimental/mdc-slide-toggle/index.js',
     '@angular/material-experimental/mdc-slider':
