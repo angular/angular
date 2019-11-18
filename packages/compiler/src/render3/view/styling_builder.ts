@@ -11,7 +11,6 @@ import {AST, ASTWithSource, BindingPipe, BindingType, Interpolation} from '../..
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import {isEmptyExpression} from '../../template_parser/template_parser';
-import {error} from '../../util';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 
@@ -25,10 +24,15 @@ const IMPORTANT_FLAG = '!important';
  * A styling expression summary that is to be processed by the compiler
  */
 export interface StylingInstruction {
-  sourceSpan: ParseSourceSpan|null;
   reference: o.ExternalReference;
-  allocateBindingSlots: number;
+  /** Calls to individual styling instructions. Used when chaining calls to the same instruction. */
+  calls: StylingInstructionCall[];
+}
+
+export interface StylingInstructionCall {
+  sourceSpan: ParseSourceSpan|null;
   supportsInterpolation?: boolean;
+  allocateBindingSlots: number;
   params: ((convertFn: (value: any) => o.Expression | o.Expression[]) => o.Expression[]);
 }
 
@@ -280,17 +284,19 @@ export class StylingBuilder {
       constantPool: ConstantPool): StylingInstruction|null {
     if (this._directiveExpr && (attrs.length || this._hasInitialValues)) {
       return {
-        sourceSpan,
         reference: R3.elementHostAttrs,
-        allocateBindingSlots: 0,
-        params: () => {
-          // params => elementHostAttrs(attrs)
-          this.populateInitialStylingAttrs(attrs);
-          const attrArray = !attrs.some(attr => attr instanceof o.WrappedNodeExpr) ?
-              getConstantLiteralFromArray(constantPool, attrs) :
-              o.literalArr(attrs);
-          return [attrArray];
-        }
+        calls: [{
+          sourceSpan,
+          allocateBindingSlots: 0,
+          params: () => {
+            // params => elementHostAttrs(attrs)
+            this.populateInitialStylingAttrs(attrs);
+            const attrArray = !attrs.some(attr => attr instanceof o.WrappedNodeExpr) ?
+                getConstantLiteralFromArray(constantPool, attrs) :
+                o.literalArr(attrs);
+            return [attrArray];
+          }
+        }]
       };
     }
     return null;
@@ -344,14 +350,16 @@ export class StylingBuilder {
     }
 
     return {
-      sourceSpan: stylingInput.sourceSpan,
       reference,
-      allocateBindingSlots: totalBindingSlotsRequired,
-      supportsInterpolation: isClassBased,
-      params: (convertFn: (value: any) => o.Expression | o.Expression[]) => {
-        const convertResult = convertFn(mapValue);
-        return Array.isArray(convertResult) ? convertResult : [convertResult];
-      }
+      calls: [{
+        supportsInterpolation: isClassBased,
+        sourceSpan: stylingInput.sourceSpan,
+        allocateBindingSlots: totalBindingSlotsRequired,
+        params: (convertFn: (value: any) => o.Expression | o.Expression[]) => {
+          const convertResult = convertFn(mapValue);
+          return Array.isArray(convertResult) ? convertResult : [convertResult];
+        }
+      }]
     };
   }
 
@@ -360,25 +368,27 @@ export class StylingBuilder {
       allowUnits: boolean, valueConverter: ValueConverter,
       getInterpolationExpressionFn?: (value: Interpolation) => o.ExternalReference):
       StylingInstruction[] {
-    let totalBindingSlotsRequired = 0;
-    return inputs.map(input => {
-      const value = input.value.visit(valueConverter);
+    const instructions: StylingInstruction[] = [];
 
-      // each styling binding value is stored in the LView
-      let totalBindingSlotsRequired = 1;
+    inputs.forEach(input => {
+      const previousInstruction: StylingInstruction|undefined =
+          instructions[instructions.length - 1];
+      const value = input.value.visit(valueConverter);
+      let referenceForCall = reference;
+      let totalBindingSlotsRequired = 1;  // each styling binding value is stored in the LView
 
       if (value instanceof Interpolation) {
         totalBindingSlotsRequired += value.expressions.length;
 
         if (getInterpolationExpressionFn) {
-          reference = getInterpolationExpressionFn(value);
+          referenceForCall = getInterpolationExpressionFn(value);
         }
       }
 
-      return {
+      const call = {
         sourceSpan: input.sourceSpan,
+        allocateBindingSlots: totalBindingSlotsRequired,
         supportsInterpolation: !!getInterpolationExpressionFn,
-        allocateBindingSlots: totalBindingSlotsRequired, reference,
         params: (convertFn: (value: any) => o.Expression | o.Expression[]) => {
           // params => stylingProp(propName, value)
           const params: o.Expression[] = [];
@@ -398,7 +408,20 @@ export class StylingBuilder {
           return params;
         }
       };
+
+      // If we ended up generating a call to the same instruction as the previous styling property
+      // we can chain the calls together safely to save some bytes, otherwise we have to generate
+      // a separate instruction call. This is primarily a concern with interpolation instructions
+      // where we may start off with one `reference`, but end up using another based on the
+      // number of interpolations.
+      if (previousInstruction && previousInstruction.reference === referenceForCall) {
+        previousInstruction.calls.push(call);
+      } else {
+        instructions.push({reference: referenceForCall, calls: [call]});
+      }
     });
+
+    return instructions;
   }
 
   private _buildClassInputs(valueConverter: ValueConverter): StylingInstruction[] {
@@ -420,10 +443,12 @@ export class StylingBuilder {
 
   private _buildSanitizerFn(): StylingInstruction {
     return {
-      sourceSpan: this._firstStylingInput ? this._firstStylingInput.sourceSpan : null,
       reference: R3.styleSanitizer,
-      allocateBindingSlots: 0,
-      params: () => [o.importExpr(R3.defaultStyleSanitizer)]
+      calls: [{
+        sourceSpan: this._firstStylingInput ? this._firstStylingInput.sourceSpan : null,
+        allocateBindingSlots: 0,
+        params: () => [o.importExpr(R3.defaultStyleSanitizer)]
+      }]
     };
   }
 
@@ -474,20 +499,6 @@ function isStyleSanitizable(prop: string): boolean {
 function getConstantLiteralFromArray(
     constantPool: ConstantPool, values: o.Expression[]): o.Expression {
   return values.length ? constantPool.getConstLiteral(o.literalArr(values), true) : o.NULL_EXPR;
-}
-
-/**
- * Simple helper function that adds a parameter or does nothing at all depending on the provided
- * predicate and totalExpectedArgs values
- */
-function addParam(
-    params: o.Expression[], predicate: any, value: o.Expression | null, argNumber: number,
-    totalExpectedArgs: number) {
-  if (predicate && value) {
-    params.push(value);
-  } else if (argNumber < totalExpectedArgs) {
-    params.push(o.NULL_EXPR);
-  }
 }
 
 export function parseProperty(name: string):
