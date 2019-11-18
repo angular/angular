@@ -486,6 +486,9 @@ export class R3TestBedCompiler {
   }
 
   private queueTypesFromModulesArray(arr: any[]): void {
+    // Because we may encounter the same NgModule while processing the imports and exports of an
+    // NgModule tree, we cache them in this set so we can skip ones that have already been seen
+    // encountered. In some test setups, this caching resulted in 10X runtime improvement.
     const processedNgModuleDefs = new Set();
     const queueTypesFromModulesArrayRecur = (arr: any[]): void => {
       for (const value of arr) {
