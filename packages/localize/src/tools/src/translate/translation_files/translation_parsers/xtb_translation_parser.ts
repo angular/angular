@@ -19,7 +19,11 @@ import {addParseDiagnostic, addParseError, canParseXml, getAttribute, parseInner
 
 
 /**
- * A translation parser that can load XB files.
+ * A translation parser that can load XTB files.
+ *
+ * http://cldr.unicode.org/development/development-process/design-proposals/xmb
+ *
+ * @see XmbTranslationSerializer
  */
 export class XtbTranslationParser implements TranslationParser<XmlTranslationParserHint> {
   canParse(filePath: string, contents: string): XmlTranslationParserHint|false {
