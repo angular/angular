@@ -5,22 +5,9 @@ workspace(
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# Uncomment for local bazel rules development
-#local_repository(
-#    name = "build_bazel_rules_nodejs",
-#    path = "../rules_nodejs",
-#)
-#local_repository(
-#    name = "npm_bazel_typescript",
-#    path = "../rules_typescript",
-#)
-
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    patch_args = ["-p1"],
-    # Patch https://github.com/bazelbuild/rules_nodejs/pull/903
-    patches = ["//tools:rollup_bundle_commonjs_ignoreGlobal.patch"],
     sha256 = "9901bc17138a79135048fb0c107ee7a56e91815ec6594c08cb9a17b80276d62b",
     urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.40.0/rules_nodejs-0.40.0.tar.gz"],
 )
