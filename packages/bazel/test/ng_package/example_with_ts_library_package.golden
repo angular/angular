@@ -984,3 +984,4 @@ export declare function dispatchFakeEvent(el: HTMLElement, ev: Event): void;
  */
 
 export * from './utils/index';
+
