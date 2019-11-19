@@ -1,1 +1,1 @@
-Supplies a testing module for basic Angular directives.
+Supplies infrastructure for testing functionality supplied by `@angular/common`.
