@@ -2410,6 +2410,53 @@ describe('styling', () => {
           .toEqual('url("https://i.imgur.com/4AiXzf8.jpg")');
     });
   });
+
+  onlyInIvy('only ivy supports CSS variables').describe('CSS variables', () => {
+    it('should sanitize all CSS variable values that contain url() content for [style.--prop] entries',
+       () => {
+         @Component({template: `<div [style.--prop]="propValue"></div>`})
+         class MyComp {
+           propValue = 'url(javascript:alert("hahaha"))';
+         }
+
+         const fixture =
+             TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+         fixture.detectChanges();
+
+         const div = fixture.nativeElement.querySelector('div') !;
+         expect(div.getAttribute('style')).toMatch(/--prop:\s*unsafe/);
+
+         fixture.componentInstance.propValue = 'something something';
+         fixture.detectChanges();
+
+         expect(div.getAttribute('style')).toMatch(/--prop:\s*something something/);
+       });
+
+    it('should sanitize all CSS variable values that contain url() content for [style] entries',
+       () => {
+         @Component({template: `<div [style]="entries"></div>`})
+         class MyComp {
+           entries: any = {
+             '--prop1': 'url(javascript:alert("hahaha"))',
+             '--prop2': 'something something',
+           };
+         }
+
+
+         const fixture =
+             TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+         fixture.detectChanges();
+
+         const div = fixture.nativeElement.querySelector('div') !;
+         expect(div.getAttribute('style')).toMatch(/--prop1:\s*unsafe/);
+         expect(div.getAttribute('style')).toMatch(/--prop2:\s*something something/);
+
+         fixture.componentInstance.entries = {'--prop1': 'something else'};
+         fixture.detectChanges();
+
+         expect(div.getAttribute('style')).toMatch(/--prop1:\s*something else/);
+       });
+  });
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {

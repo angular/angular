@@ -179,6 +179,8 @@ export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: 
   return getUrlSanitizer(tag, prop)(unsafeUrl);
 }
 
+const HYPHEN_CHAR = 45;
+
 /**
  * The default style sanitizer will handle sanitization for style properties by
  * sanitizing any CSS property that can include a `url` value (usually image-based properties)
@@ -190,9 +192,11 @@ export const ɵɵdefaultStyleSanitizer =
       mode = mode || StyleSanitizeMode.ValidateAndSanitize;
       let doSanitizeValue = true;
       if (mode & StyleSanitizeMode.ValidateProperty) {
-        doSanitizeValue = prop === 'background-image' || prop === 'background' ||
-            prop === 'border-image' || prop === 'filter' || prop === 'list-style' ||
-            prop === 'list-style-image' || prop === 'clip-path';
+        doSanitizeValue =
+            (prop.charCodeAt(0) === HYPHEN_CHAR && prop.charCodeAt(1) === HYPHEN_CHAR) ||
+            prop === 'background-image' || prop === 'background' || prop === 'border-image' ||
+            prop === 'filter' || prop === 'list-style' || prop === 'list-style-image' ||
+            prop === 'clip-path';
       }
 
       if (mode & StyleSanitizeMode.SanitizeOnly) {
