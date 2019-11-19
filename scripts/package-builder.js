@@ -26,7 +26,7 @@ set('-e');
 const baseDir = resolve(`${__dirname}/..`);
 
 /** @type {string} The command to use for running bazel. */
-const bazelCmd = `yarn --cwd ${baseDir} --silent bazel`;
+const bazelCmd = `yarn --cwd "${baseDir}" --silent bazel`;
 
 /** @type {string} The absolute path to the bazel-bin directory. */
 const bazelBin = exec(`${bazelCmd} info bazel-bin`, true);
@@ -75,8 +75,8 @@ function buildTargetPackages(destPath, compileMode, description) {
     const pkg = target.replace(/\/\/packages\/(.*):npm_package/, '$1');
 
     // Skip any that don't have an "npm_package" target.
-    const srcDir = resolve(bazelBin, 'packages', pkg, 'npm_package');
-    const destDir = resolve(absDestPath, pkg);
+    const srcDir = `${bazelBin}/packages/${pkg}/npm_package`;
+    const destDir = `${absDestPath}/${pkg}`;
 
     if (test('-d', srcDir)) {
       console.log(`# Copy artifacts to ${destDir}`);
