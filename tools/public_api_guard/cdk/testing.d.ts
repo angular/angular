@@ -15,12 +15,9 @@ export declare abstract class ComponentHarness {
     protected documentRootLocatorFactory(): LocatorFactory;
     protected forceStabilize(): Promise<void>;
     host(): Promise<TestElement>;
-    protected locatorFor(selector: string): AsyncFactoryFn<TestElement>;
-    protected locatorFor<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T>;
-    protected locatorForAll(selector: string): AsyncFactoryFn<TestElement[]>;
-    protected locatorForAll<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T[]>;
-    protected locatorForOptional(selector: string): AsyncFactoryFn<TestElement | null>;
-    protected locatorForOptional<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T | null>;
+    protected locatorFor<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T>>;
+    protected locatorForAll<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T>[]>;
+    protected locatorForOptional<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T> | null>;
     protected waitForTasksOutsideAngular(): Promise<void>;
 }
 
@@ -39,28 +36,25 @@ export declare abstract class HarnessEnvironment<E> implements HarnessLoader, Lo
     documentRootLocatorFactory(): LocatorFactory;
     abstract forceStabilize(): Promise<void>;
     getAllChildLoaders(selector: string): Promise<HarnessLoader[]>;
-    getAllHarnesses<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): Promise<T[]>;
+    getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]>;
     protected abstract getAllRawElements(selector: string): Promise<E[]>;
     getChildLoader(selector: string): Promise<HarnessLoader>;
     protected abstract getDocumentRoot(): E;
-    getHarness<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): Promise<T>;
+    getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T>;
     harnessLoaderFor(selector: string): Promise<HarnessLoader>;
     harnessLoaderForAll(selector: string): Promise<HarnessLoader[]>;
     harnessLoaderForOptional(selector: string): Promise<HarnessLoader | null>;
-    locatorFor(selector: string): AsyncFactoryFn<TestElement>;
-    locatorFor<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T>;
-    locatorForAll(selector: string): AsyncFactoryFn<TestElement[]>;
-    locatorForAll<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T[]>;
-    locatorForOptional(selector: string): AsyncFactoryFn<TestElement | null>;
-    locatorForOptional<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T | null>;
+    locatorFor<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T>>;
+    locatorForAll<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T>[]>;
+    locatorForOptional<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T> | null>;
     abstract waitForTasksOutsideAngular(): Promise<void>;
 }
 
 export interface HarnessLoader {
     getAllChildLoaders(selector: string): Promise<HarnessLoader[]>;
-    getAllHarnesses<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): Promise<T[]>;
+    getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]>;
     getChildLoader(selector: string): Promise<HarnessLoader>;
-    getHarness<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): Promise<T>;
+    getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T>;
 }
 
 export declare class HarnessPredicate<T extends ComponentHarness> {
@@ -75,6 +69,8 @@ export declare class HarnessPredicate<T extends ComponentHarness> {
     static stringMatches(s: string | Promise<string>, pattern: string | RegExp): Promise<boolean>;
 }
 
+export declare type HarnessQuery<T extends ComponentHarness> = ComponentHarnessConstructor<T> | HarnessPredicate<T>;
+
 export interface LocatorFactory {
     rootElement: TestElement;
     documentRootLocatorFactory(): LocatorFactory;
@@ -82,14 +78,17 @@ export interface LocatorFactory {
     harnessLoaderFor(selector: string): Promise<HarnessLoader>;
     harnessLoaderForAll(selector: string): Promise<HarnessLoader[]>;
     harnessLoaderForOptional(selector: string): Promise<HarnessLoader | null>;
-    locatorFor(selector: string): AsyncFactoryFn<TestElement>;
-    locatorFor<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T>;
-    locatorForAll(selector: string): AsyncFactoryFn<TestElement[]>;
-    locatorForAll<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T[]>;
-    locatorForOptional(selector: string): AsyncFactoryFn<TestElement | null>;
-    locatorForOptional<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T | null>;
+    locatorFor<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T>>;
+    locatorForAll<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T>[]>;
+    locatorForOptional<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T> | null>;
     waitForTasksOutsideAngular(): Promise<void>;
 }
+
+export declare type LocatorFnResult<T extends (HarnessQuery<any> | string)[]> = {
+    [I in keyof T]: T[I] extends new (...args: any[]) => infer C ? C : T[I] extends {
+        harnessType: new (...args: any[]) => infer C;
+    } ? C : T[I] extends string ? TestElement : never;
+}[number];
 
 export interface TestElement {
     blur(): Promise<void>;

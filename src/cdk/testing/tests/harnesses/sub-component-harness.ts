@@ -15,7 +15,7 @@ export interface SubComponentHarnessFilters extends BaseHarnessFilters {
 }
 
 export class SubComponentHarness extends ComponentHarness {
-  static readonly hostSelector = 'test-sub';
+  static readonly hostSelector: string = 'test-sub';
 
   static with(options: SubComponentHarnessFilters = {}) {
     return new HarnessPredicate(SubComponentHarness, options)
@@ -30,8 +30,17 @@ export class SubComponentHarness extends ComponentHarness {
   readonly getItems = this.locatorForAll('li');
   readonly globalElement = this.documentRootLocatorFactory().locatorFor('#username');
 
+  async titleText() {
+    return (await this.title()).text();
+  }
+
   async getItem(index: number): Promise<TestElement> {
     const items = await this.getItems();
     return items[index];
   }
+}
+
+/** @dynamic */
+export class SubComponentSpecialHarness extends SubComponentHarness {
+  static readonly hostSelector = 'test-sub.test-special';
 }

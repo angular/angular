@@ -8,7 +8,7 @@
 
 import {ComponentHarness} from '../../component-harness';
 import {TestElement, TestKey} from '../../test-element';
-import {SubComponentHarness} from './sub-component-harness';
+import {SubComponentHarness, SubComponentSpecialHarness} from './sub-component-harness';
 
 export class WrongComponentHarness extends ComponentHarness {
   static readonly hostSelector = 'wrong-selector';
@@ -72,6 +72,15 @@ export class MainComponentHarness extends ComponentHarness {
   readonly directAncestorSelectorSubcomponent =
       this.locatorForAll(SubComponentHarness.with({ancestor: '.other >'}));
 
+  readonly subcomponentHarnessesAndElements =
+      this.locatorForAll('#counter', SubComponentHarness);
+  readonly subcomponentHarnessAndElementsRedundant =
+      this.locatorForAll(
+          SubComponentHarness.with({title: /test/}), 'test-sub', SubComponentHarness, 'test-sub');
+  readonly subcomponentAndSpecialHarnesses =
+      this.locatorForAll(SubComponentHarness, SubComponentSpecialHarness);
+  readonly missingElementsAndHarnesses =
+      this.locatorFor('.not-found', SubComponentHarness.with({title: /not found/}));
 
   private _testTools = this.locatorFor(SubComponentHarness);
 

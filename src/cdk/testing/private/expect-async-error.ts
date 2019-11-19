@@ -10,7 +10,7 @@
  * Expects the asynchronous function to throw an error that matches
  * the specified expectation.
  */
-export async function expectAsyncError(fn: () => Promise<any>, expectation: RegExp) {
+export async function expectAsyncError(fn: () => Promise<any>, expectation: RegExp | string) {
   let error: string|null = null;
   try {
     await fn();
@@ -18,5 +18,9 @@ export async function expectAsyncError(fn: () => Promise<any>, expectation: RegE
     error = e.toString();
   }
   expect(error).not.toBe(null);
-  expect(error!).toMatch(expectation, 'Expected error to be thrown.');
+  if (expectation instanceof RegExp) {
+    expect(error!).toMatch(expectation, 'Expected error to be thrown.');
+  } else {
+    expect(error!).toBe(expectation, 'Expected error to be throw.');
+  }
 }

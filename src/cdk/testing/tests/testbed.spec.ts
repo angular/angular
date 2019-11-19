@@ -1,9 +1,15 @@
-import {HarnessLoader} from '@angular/cdk/testing';
+import {
+  ComponentHarness,
+  ComponentHarnessConstructor,
+  HarnessLoader,
+  TestElement
+} from '@angular/cdk/testing';
+import {expectAsyncError} from '@angular/cdk/testing/private';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {async, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {FakeOverlayHarness} from './harnesses/fake-overlay-harness';
 import {MainComponentHarness} from './harnesses/main-component-harness';
-import {SubComponentHarness} from './harnesses/sub-component-harness';
+import {SubComponentHarness, SubComponentSpecialHarness} from './harnesses/sub-component-harness';
 import {TestComponentsModule} from './test-components-module';
 import {TestMainComponent} from './test-main-component';
 
@@ -46,8 +52,9 @@ describe('TestbedHarnessEnvironment', () => {
         await loader.getChildLoader('error');
         fail('Expected to throw');
       } catch (e) {
-        expect(e.message)
-          .toBe('Expected to find element matching selector: "error", but none was found');
+        expect(e.message).toBe(
+            'Failed to find element matching one of the following queries:' +
+            '\n(HarnessLoader for element matching selector: "error")');
       }
     });
 
@@ -69,8 +76,8 @@ describe('TestbedHarnessEnvironment', () => {
         fail('Expected to throw');
       } catch (e) {
         expect(e.message).toBe(
-            'Expected to find element for SubComponentHarness matching selector:' +
-            ' "test-sub", but none was found');
+            'Failed to find element matching one of the following queries:' +
+            '\n(SubComponentHarness with host element matching selector: "test-sub")');
       }
     });
 
@@ -109,7 +116,8 @@ describe('TestbedHarnessEnvironment', () => {
         fail('Expected to throw');
       } catch (e) {
         expect(e.message).toBe(
-          'Expected to find element matching selector: "wrong locator", but none was found');
+            'Failed to find element matching one of the following queries:' +
+            '\n(TestElement for element matching selector: "wrong locator")');
       }
     });
 
@@ -142,8 +150,8 @@ describe('TestbedHarnessEnvironment', () => {
         fail('Expected to throw');
       } catch (e) {
         expect(e.message).toBe(
-            'Expected to find element for WrongComponentHarness matching selector:' +
-            ' "wrong-selector", but none was found');
+            'Failed to find element matching one of the following queries:' +
+            '\n(WrongComponentHarness with host element matching selector: "wrong-selector")');
       }
     });
 
@@ -214,9 +222,9 @@ describe('TestbedHarnessEnvironment', () => {
             fail('Expected to throw');
           } catch (e) {
             expect(e.message).toBe(
-                'Expected to find element for SubComponentHarness matching selector: "test-sub"' +
-                ' (with restrictions: has ancestor matching selector ".not-found"),' +
-                ' but none was found');
+                'Failed to find element matching one of the following queries:' +
+                '\n(SubComponentHarness with host element matching selector: "test-sub"' +
+                ' satisfying the constraints: has ancestor matching selector ".not-found")');
           }
         });
 
@@ -364,6 +372,75 @@ describe('TestbedHarnessEnvironment', () => {
       expect(await button.matchesSelector('button:not(.fake-class)')).toBe(true);
       expect(await button.matchesSelector('button:disabled')).toBe(false);
     });
+
+    it('should get TestElements and ComponentHarnesses', async () => {
+      const results = await harness.subcomponentHarnessesAndElements();
+      expect(results.length).toBe(5);
+
+      // The counter should appear in the DOM before the test-sub elements.
+      await checkIsElement(results[0], '#counter');
+
+      // Followed by the SubComponentHarness instances in the correct order.
+      await checkIsHarness(results[1], SubComponentHarness, async subHarness =>
+          expect(await subHarness.titleText()).toBe('List of test tools'));
+      await checkIsHarness(results[2], SubComponentHarness, async subHarness =>
+          expect(await subHarness.titleText()).toBe('List of test methods'));
+      await checkIsHarness(results[3], SubComponentHarness, async subHarness =>
+          expect(await subHarness.titleText()).toBe('List of other 1'));
+      await checkIsHarness(results[4], SubComponentHarness, async subHarness =>
+          expect(await subHarness.titleText()).toBe('List of other 2'));
+    });
+
+    it('should get TestElements and ComponentHarnesses with redundant queries', async () => {
+      const results = await harness.subcomponentHarnessAndElementsRedundant();
+      expect(results.length).toBe(8);
+
+      // Each subcomponent should have a TestElement result and a SubComponentHarness result.
+      // For the first two elements, the harness should come first, as it matches the first query
+      // to locatorForAll, the HarnessPredicate.
+      await checkIsHarness(results[0], SubComponentHarness, async subHarness =>
+          expect(await subHarness.titleText()).toBe('List of test tools'));
+      await checkIsElement(results[1], '.subcomponents test-sub:nth-child(1)');
+      await checkIsHarness(results[2], SubComponentHarness, async subHarness =>
+          expect(await subHarness.titleText()).toBe('List of test methods'));
+      await checkIsElement(results[3], '.subcomponents test-sub:nth-child(2)');
+
+      // For the last two elements, the harness should come second, as they do not match the first
+      // query, therefore the second query, the TestElement selector is the first to match.
+      await checkIsElement(results[4], '.other test-sub:nth-child(1)');
+      await checkIsHarness(results[5], SubComponentHarness, async subHarness =>
+          expect(await subHarness.titleText()).toBe('List of other 1'));
+      await checkIsElement(results[6], '.other test-sub:nth-child(2)');
+      await checkIsHarness(results[7], SubComponentHarness, async subHarness =>
+          expect(await subHarness.titleText()).toBe('List of other 2'));
+    });
+
+    it('should get harnesses of different types matching same element', async () => {
+      const results = await harness.subcomponentAndSpecialHarnesses();
+      expect(results.length).toBe(5);
+
+      // The first element should have a SubComponentHarness and a SubComponentSpecialHarness.
+      await checkIsHarness(results[0], SubComponentHarness, async subHarness =>
+          expect(await subHarness.titleText()).toBe('List of test tools'));
+      await checkIsHarness(results[1], SubComponentSpecialHarness, async subHarness =>
+          expect(await subHarness.titleText()).toBe('List of test tools'));
+
+      // The rest only have a SubComponentHarness.
+      await checkIsHarness(results[2], SubComponentHarness, async subHarness =>
+          expect(await subHarness.titleText()).toBe('List of test methods'));
+      await checkIsHarness(results[3], SubComponentHarness, async subHarness =>
+          expect(await subHarness.titleText()).toBe('List of other 1'));
+      await checkIsHarness(results[4], SubComponentHarness, async subHarness =>
+          expect(await subHarness.titleText()).toBe('List of other 2'));
+    });
+
+    it('should throw when multiple queries fail to match', async () => {
+      await expectAsyncError(() => harness.missingElementsAndHarnesses(),
+          'Error: Failed to find element matching one of the following queries:' +
+          '\n(TestElement for element matching selector: ".not-found"),' +
+          '\n(SubComponentHarness with host element matching selector: "test-sub" satisfying' +
+          ' the constraints: title = /not found/)');
+    });
   });
 
   describe('HarnessPredicate', () => {
@@ -409,10 +486,27 @@ describe('TestbedHarnessEnvironment', () => {
         fail('Expected to throw');
       } catch (e) {
         expect(e.message).toBe(
-            'Expected to find element for SubComponentHarness matching selector: "test-sub"' +
-            ' (with restrictions: title = "List of test tools", item count = 4),' +
-            ' but none was found');
+            'Failed to find element matching one of the following queries:' +
+            '\n(SubComponentHarness with host element matching selector: "test-sub" satisfying' +
+            ' the constraints: title = "List of test tools", item count = 4)');
       }
     });
   });
 });
+
+async function checkIsElement(result: ComponentHarness | TestElement, selector?: string) {
+  expect(result instanceof ComponentHarness).toBe(false);
+  if (selector) {
+    expect(await (result as TestElement).matchesSelector(selector)).toBe(true);
+  }
+}
+
+async function checkIsHarness<T extends ComponentHarness>(
+    result: ComponentHarness | TestElement,
+    harnessType: ComponentHarnessConstructor<T>,
+    finalCheck?: (harness: T) => Promise<unknown>) {
+  expect(result.constructor === harnessType).toBe(true);
+  if (finalCheck) {
+    await finalCheck(result as T);
+  }
+}
