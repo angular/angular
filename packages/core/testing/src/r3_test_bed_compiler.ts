@@ -497,7 +497,7 @@ export class R3TestBedCompiler {
         } else if (hasNgModuleDef(value)) {
           const def = value.ɵmod;
           if (processedNgModuleDefs.has(def)) {
-            return;
+            continue;
           }
           processedNgModuleDefs.add(def);
           // Look through declarations, imports, and exports, and queue
