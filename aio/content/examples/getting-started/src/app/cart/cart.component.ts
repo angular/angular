@@ -22,7 +22,9 @@ export class CartComponent {
   constructor(
     private cartService: CartService,
     private formBuilder: FormBuilder,
-  ) {
+  ) { }
+  
+  ngOnInit() {
 // #enddocregion inject-form-builder
     this.items = this.cartService.getItems();
 
