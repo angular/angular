@@ -49,6 +49,12 @@ export const DEFAULT_HEIGHT = '500px';
 export const DEFAULT_WIDTH = '500px';
 
 /**
+ * Whether we're currently rendering inside a browser. Equivalent of `Platform.isBrowser`,
+ * but copied over here so we don't have to add another dependency.
+ */
+const isBrowser = typeof window === 'object' && !!window;
+
+/**
  * Angular component that renders a Google Map via the Google Maps JavaScript
  * API.
  * @see https://developers.google.com/maps/documentation/javascript/reference/
@@ -200,13 +206,15 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   private readonly _destroy = new Subject<void>();
 
   constructor(private readonly _elementRef: ElementRef) {
-    const googleMapsWindow: GoogleMapsWindow = window;
-    if (!googleMapsWindow.google) {
-      throw Error(
-          'Namespace google not found, cannot construct embedded google ' +
-          'map. Please install the Google Maps JavaScript API: ' +
-          'https://developers.google.com/maps/documentation/javascript/' +
-          'tutorial#Loading_the_Maps_API');
+    if (isBrowser) {
+      const googleMapsWindow: GoogleMapsWindow = window;
+      if (!googleMapsWindow.google) {
+        throw Error(
+            'Namespace google not found, cannot construct embedded google ' +
+            'map. Please install the Google Maps JavaScript API: ' +
+            'https://developers.google.com/maps/documentation/javascript/' +
+            'tutorial#Loading_the_Maps_API');
+      }
     }
   }
 
@@ -215,21 +223,24 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this._mapEl = this._elementRef.nativeElement.querySelector('.map-container')!;
-    this._setSize();
+    // It should be a noop during server-side rendering.
+    if (isBrowser) {
+      this._mapEl = this._elementRef.nativeElement.querySelector('.map-container')!;
+      this._setSize();
 
-    const combinedOptionsChanges = this._combineOptions();
+      const combinedOptionsChanges = this._combineOptions();
 
-    this._googleMapChanges = this._initializeMap(combinedOptionsChanges);
-    this._googleMapChanges.subscribe((googleMap: google.maps.Map) => {
-      this._googleMap = googleMap as UpdatedGoogleMap;
+      this._googleMapChanges = this._initializeMap(combinedOptionsChanges);
+      this._googleMapChanges.subscribe((googleMap: google.maps.Map) => {
+        this._googleMap = googleMap as UpdatedGoogleMap;
 
-      this._initializeEventHandlers();
-    });
+        this._initializeEventHandlers();
+      });
 
-    this._watchForOptionsChanges();
-    this._watchForCenterChanges();
-    this._watchForZoomChanges();
+      this._watchForOptionsChanges();
+      this._watchForCenterChanges();
+      this._watchForZoomChanges();
+    }
   }
 
   ngOnDestroy() {
