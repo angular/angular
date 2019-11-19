@@ -11,6 +11,10 @@
 // packages via `deps`. Until that works, we manually build the npm packages and then
 // copy the results to the appropriate `dist` location.
 
+// NOTE: this script may be run from any directory. The actions should be written to be independent
+// of the current working directory. For example, use absolute paths wherever possible, and pass a
+// working directory to tools like `yarn`.
+
 const {execSync} = require('child_process');
 const {resolve, relative} = require('path');
 const {chmod, cp, mkdir, rm, set, test} = require('shelljs');
@@ -42,6 +46,7 @@ module.exports = {
  * Build the packages.
  *
  * @param {string} destPath Path to the output directory into which we copy the npm packages.
+ * This path should either be absolute or relative to the project root.
  * @param {'legacy' | 'aot'} compileMode Either `legacy` (view engine) or `aot` (ivy).
  * @param {string} description Human-readable description of the build.
  */
@@ -63,15 +68,15 @@ function buildTargetPackages(destPath, compileMode, description) {
   exec(`${bazelCmd} build --config=release --define=compile=${compileMode} ${targets.join(' ')}`);
 
   // Create the output directory.
-  const absDestPath = `${baseDir}/${destPath}`;
+  const absDestPath = resolve(baseDir, destPath);
   if (!test('-d', absDestPath)) mkdir('-p', absDestPath);
 
   targets.forEach(target => {
     const pkg = target.replace(/\/\/packages\/(.*):npm_package/, '$1');
 
     // Skip any that don't have an "npm_package" target.
-    const srcDir = `${bazelBin}/packages/${pkg}/npm_package`;
-    const destDir = `${absDestPath}/${pkg}`;
+    const srcDir = resolve(bazelBin, 'packages', pkg, 'npm_package');
+    const destDir = resolve(absDestPath, pkg);
 
     if (test('-d', srcDir)) {
       console.log(`# Copy artifacts to ${destDir}`);
