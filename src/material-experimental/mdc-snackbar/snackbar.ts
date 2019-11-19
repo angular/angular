@@ -9,7 +9,6 @@
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'mat-snackbar',
   templateUrl: 'snackbar.html',
   styleUrls: ['snackbar.css'],
