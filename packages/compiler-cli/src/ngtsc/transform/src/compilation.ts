@@ -14,13 +14,13 @@ import {ImportRewriter} from '../../imports';
 import {IncrementalDriver} from '../../incremental';
 import {IndexingContext} from '../../indexer';
 import {PerfRecorder} from '../../perf';
-import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration, reflectNameOfDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {TypeCheckContext} from '../../typecheck';
 import {getSourceFile, isExported} from '../../util/src/typescript';
 
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from './api';
-import {DtsFileTransformer} from './declaration';
+import {DtsTransformRegistry} from './declaration';
 
 const EMPTY_ARRAY: any = [];
 
@@ -54,18 +54,8 @@ export class IvyCompilation {
    */
   private ivyClasses = new Map<ClassDeclaration, IvyClass>();
 
-  /**
-   * Tracks factory information which needs to be generated.
-   */
-
-  /**
-   * Tracks the `DtsFileTransformer`s for each TS file that needs .d.ts transformations.
-   */
-  private dtsMap = new Map<string, DtsFileTransformer>();
-
   private reexportMap = new Map<string, Map<string, [string, string]>>();
   private _diagnostics: ts.Diagnostic[] = [];
-
 
   /**
    * @param handlers array of `DecoratorHandler`s which will be executed against each class in the
@@ -80,9 +70,8 @@ export class IvyCompilation {
       private handlers: DecoratorHandler<any, any>[], private reflector: ReflectionHost,
       private importRewriter: ImportRewriter, private incrementalDriver: IncrementalDriver,
       private perf: PerfRecorder, private sourceToFactorySymbols: Map<string, Set<string>>|null,
-      private scopeRegistry: LocalModuleScopeRegistry, private compileNonExportedClasses: boolean) {
-  }
-
+      private scopeRegistry: LocalModuleScopeRegistry, private compileNonExportedClasses: boolean,
+      private dtsTransforms: DtsTransformRegistry) {}
 
   get exportStatements(): Map<string, Map<string, [string, string]>> { return this.reexportMap; }
 
@@ -392,9 +381,8 @@ export class IvyCompilation {
 
     // Look up the .d.ts transformer for the input file and record that at least one field was
     // generated, which will allow the .d.ts to be transformed later.
-    const fileName = original.getSourceFile().fileName;
-    const dtsTransformer = this.getDtsTransformer(fileName);
-    dtsTransformer.recordStaticField(reflectNameOfDeclaration(node) !, res);
+    this.dtsTransforms.getIvyDeclarationTransform(original.getSourceFile())
+        .addFields(original, res);
 
     // Return the instruction to the transformer so the fields will be added.
     return res.length > 0 ? res : undefined;
@@ -424,30 +412,5 @@ export class IvyCompilation {
     return decorators;
   }
 
-  /**
-   * Process a declaration file and return a transformed version that incorporates the changes
-   * made to the source file.
-   */
-  transformedDtsFor(file: ts.SourceFile, context: ts.TransformationContext): ts.SourceFile {
-    // No need to transform if it's not a declarations file, or if no changes have been requested
-    // to the input file.
-    // Due to the way TypeScript afterDeclarations transformers work, the SourceFile path is the
-    // same as the original .ts.
-    // The only way we know it's actually a declaration file is via the isDeclarationFile property.
-    if (!file.isDeclarationFile || !this.dtsMap.has(file.fileName)) {
-      return file;
-    }
-
-    // Return the transformed source.
-    return this.dtsMap.get(file.fileName) !.transform(file, context);
-  }
-
   get diagnostics(): ReadonlyArray<ts.Diagnostic> { return this._diagnostics; }
-
-  private getDtsTransformer(tsFileName: string): DtsFileTransformer {
-    if (!this.dtsMap.has(tsFileName)) {
-      this.dtsMap.set(tsFileName, new DtsFileTransformer(this.importRewriter));
-    }
-    return this.dtsMap.get(tsFileName) !;
-  }
 }
