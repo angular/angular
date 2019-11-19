@@ -6,7 +6,7 @@ With your schematics, your users can use  `ng add` to install an initial version
 
 All three types of schematics can be part of a collection that you package with your library.
 
-Download the <live-example downloadOnly>library schematics project</live-example> for a completed example of the steps below.
+Download the <live-example downloadOnly>library schematics project</live-example> for a completed example of the steps below. **<-- this needs to be updated for angular 8.**
 
 ## Creating a schematics collection
 
