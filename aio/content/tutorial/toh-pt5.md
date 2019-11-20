@@ -373,7 +373,7 @@ Add the following imports:
 Inject the `ActivatedRoute`, `HeroService`, and `Location` services
 into the constructor, saving their values in private fields:
 
-<code-example path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" header="toh-pt5/src/app/hero-detail/hero-detail.component.ts" region="ctor">
+<code-example path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" header="src/app/hero-detail/hero-detail.component.ts" region="ctor">
 </code-example>
 
 The [`ActivatedRoute`](api/router/ActivatedRoute) holds information about the route to this instance of the `HeroDetailComponent`.
