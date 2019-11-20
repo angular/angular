@@ -13,22 +13,22 @@ import {
 } from '@angular-devkit/core';
 import {SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {
+  getImportOfIdentifier,
   getProjectIndexFiles,
   getProjectMainFile,
+  Import,
   MigrationFailure,
   MigrationRule,
   PostMigrationAction,
   ResolvedResource,
   TargetVersion,
-  Import,
-  getImportOfIdentifier,
 } from '@angular/cdk/schematics';
 import {
   addSymbolToNgModuleMetadata,
   getDecoratorMetadata,
   getMetadataField
 } from '@schematics/angular/utility/ast-utils';
-import {Change, InsertChange} from '@schematics/angular/utility/change';
+import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace} from '@schematics/angular/utility/config';
 import {WorkspaceProject} from '@schematics/angular/utility/workspace-models';
 import chalk from 'chalk';
@@ -59,9 +59,6 @@ const HAMMER_MODULE_SPECIFIER = 'hammerjs';
 const CANNOT_REMOVE_REFERENCE_ERROR =
     `Cannot remove reference to "GestureConfig". Please remove manually.`;
 
-const CANNOT_SETUP_APP_MODULE_ERROR = `Could not setup Hammer gestures in module. Please ` +
-    `manually ensure that the Hammer gesture config is set up.`;
-
 interface IdentifierReference {
   node: ts.Identifier;
   importData: Import;
@@ -80,8 +77,14 @@ export class HammerGesturesRule extends MigrationRule<null> {
   private _importManager = new ImportManager(this.getUpdateRecorder, this._printer);
   private _nodeFailures: {node: ts.Node, message: string}[] = [];
 
-  /** Whether HammerJS is explicitly used in any component template. */
-  private _usedInTemplate = false;
+  /**
+   * Whether custom HammerJS events provided by the Material gesture
+   * config are used in a template.
+   */
+  private _customEventsUsedInTemplate = false;
+
+  /** Whether standard HammerJS events are used in a template. */
+  private _standardEventsUsedInTemplate = false;
 
   /** Whether HammerJS is accessed at runtime. */
   private _usedInRuntime = false;
@@ -116,8 +119,10 @@ export class HammerGesturesRule extends MigrationRule<null> {
   private _deletedIdentifiers: ts.Identifier[] = [];
 
   visitTemplate(template: ResolvedResource): void {
-    if (!this._usedInTemplate && isHammerJsUsedInTemplate(template.content)) {
-      this._usedInTemplate = true;
+    if (!this._customEventsUsedInTemplate || !this._standardEventsUsedInTemplate) {
+      const {standardEvents, customEvents} = isHammerJsUsedInTemplate(template.content);
+      this._customEventsUsedInTemplate = this._customEventsUsedInTemplate || customEvents;
+      this._standardEventsUsedInTemplate = this._standardEventsUsedInTemplate || standardEvents;
     }
   }
 
@@ -134,21 +139,26 @@ export class HammerGesturesRule extends MigrationRule<null> {
     // is a potential custom gesture config setup.
     const hasCustomGestureConfigSetup =
         this._hammerConfigTokenReferences.some(r => this._checkForCustomGestureConfigSetup(r));
+    const usedInTemplate = this._standardEventsUsedInTemplate || this._customEventsUsedInTemplate;
 
     /*
       Possible scenarios and how the migration should change the project:
         1. We detect that a custom HammerJS gesture config is set up:
-            - Remove references to the Material gesture config if no event from the
-              Angular Material gesture config is used.
+            - Remove references to the Material gesture config if no HammerJS event is used.
             - Print a warning about ambiguous configuration that cannot be handled completely
               if there are references to the Material gesture config.
         2. We detect that HammerJS is only used programmatically:
             - Remove references to GestureConfig of Material.
             - Remove references to the "HammerModule" if present.
-        3. We detect that HammerJS is used in a template:
+        3. We detect that standard HammerJS events are used in a template:
+            - Set up the "HammerModule" from platform-browser.
+            - Remove all gesture config references.
+        4. We detect that custom HammerJS events provided by the Material gesture
+           config are used.
             - Copy the Material gesture config into the app.
             - Rewrite all gesture config references to the newly copied one.
             - Set up the new gesture config in the root app module.
+            - Set up the "HammerModule" from platform-browser.
         4. We detect no HammerJS usage at all:
             - Remove Hammer imports
             - Remove Material gesture config references
@@ -159,28 +169,28 @@ export class HammerGesturesRule extends MigrationRule<null> {
     if (hasCustomGestureConfigSetup) {
       // If a custom gesture config is provided, we always assume that HammerJS is used.
       HammerGesturesRule.globalUsesHammer = true;
-      if (!this._usedInTemplate && this._gestureConfigReferences.length) {
+      if (!usedInTemplate && this._gestureConfigReferences.length) {
         // If the Angular Material gesture events are not used and we found a custom
         // gesture config, we can safely remove references to the Material gesture config
         // since events provided by the Material gesture config are guaranteed to be unused.
         this._removeMaterialGestureConfigSetup();
         this.printInfo(
-          'The HammerJS v9 migration for Angular Components detected that HammerJS is ' +
-          'manually set up in combination with references to the Angular Material gesture ' +
-          'config. This target cannot be migrated completely, but all references to the ' +
-          'deprecated Angular Material gesture have been removed.');
-      } else if (this._usedInTemplate && this._gestureConfigReferences.length) {
+            'The HammerJS v9 migration for Angular Components detected that HammerJS is ' +
+            'manually set up in combination with references to the Angular Material gesture ' +
+            'config. This target cannot be migrated completely, but all references to the ' +
+            'deprecated Angular Material gesture have been removed.');
+      } else if (usedInTemplate && this._gestureConfigReferences.length) {
         // Since there is a reference to the Angular Material gesture config, and we detected
         // usage of a gesture event that could be provided by Angular Material, we *cannot*
         // automatically remove references. This is because we do *not* know whether the
         // event is actually provided by the custom config or by the Material config.
         this.printInfo(
-          'The HammerJS v9 migration for Angular Components detected that HammerJS is ' +
-          'manually set up in combination with references to the Angular Material gesture ' +
-          'config. This target cannot be migrated completely. Please manually remove references ' +
-          'to the deprecated Angular Material gesture config.');
+            'The HammerJS v9 migration for Angular Components detected that HammerJS is ' +
+            'manually set up in combination with references to the Angular Material gesture ' +
+            'config. This target cannot be migrated completely. Please manually remove ' +
+            'references to the deprecated Angular Material gesture config.');
       }
-    } else if (this._usedInRuntime || this._usedInTemplate) {
+    } else if (this._usedInRuntime || usedInTemplate) {
       // We keep track of whether Hammer is used globally. This is necessary because we
       // want to only remove Hammer from the "package.json" if it is not used in any project
       // target. Just because it isn't used in one target doesn't mean that we can safely
@@ -189,11 +199,13 @@ export class HammerGesturesRule extends MigrationRule<null> {
 
       // If hammer is only used at runtime, we don't need the gesture config or "HammerModule"
       // and can remove it (along with the hammer config token import if no longer needed).
-      if (!this._usedInTemplate) {
+      if (!usedInTemplate) {
         this._removeMaterialGestureConfigSetup();
         this._removeHammerModuleReferences();
+      } else if (this._standardEventsUsedInTemplate && !this._customEventsUsedInTemplate) {
+        this._setupHammerWithStandardEvents();
       } else {
-        this._setupHammerGestureConfig();
+        this._setupHammerWithCustomEvents();
       }
     } else {
       this._removeHammerSetup();
@@ -212,7 +224,7 @@ export class HammerGesturesRule extends MigrationRule<null> {
     // output could also be from a component having an output named similarly to a known
     // hammerjs event (e.g. "@Output() slide"). The usage is therefore somewhat ambiguous
     // and we want to print a message that developers might be able to remove Hammer manually.
-    if (!hasCustomGestureConfigSetup && !this._usedInRuntime && this._usedInTemplate) {
+    if (!hasCustomGestureConfigSetup && !this._usedInRuntime && usedInTemplate) {
       this.printInfo(
           'The HammerJS v9 migration for Angular Components migrated the ' +
           'project to keep HammerJS installed, but detected ambiguous usage of HammerJS. Please ' +
@@ -225,27 +237,45 @@ export class HammerGesturesRule extends MigrationRule<null> {
    * following steps are performed:
    *   1) Create copy of Angular Material gesture config.
    *   2) Rewrite all references to the Angular Material gesture config to the
-   *      newly copied gesture config.
-   *   3) Setup the HAMMER_GESTURE_CONFIG provider in the root app module
-   *      (if not done already).
+   *      new gesture config.
+   *   3) Setup the HAMMER_GESTURE_CONFIG in the root app module (if not done already).
+   *   4) Setup the "HammerModule" in the root app module (if not done already).
    */
-  private _setupHammerGestureConfig() {
+  private _setupHammerWithCustomEvents() {
     const project = this._getProjectOrThrow();
     const sourceRoot = devkitNormalize(project.sourceRoot || project.root);
-    const gestureConfigPath =
+    const newConfigPath =
         devkitJoin(sourceRoot, this._getAvailableGestureConfigFileName(sourceRoot));
 
     // Copy gesture config template into the CLI project.
     this.tree.create(
-        gestureConfigPath, readFileSync(require.resolve(GESTURE_CONFIG_TEMPLATE_PATH), 'utf8'));
+        newConfigPath, readFileSync(require.resolve(GESTURE_CONFIG_TEMPLATE_PATH), 'utf8'));
 
-    // Replace all references to the gesture config of Material.
+    // Replace all Material gesture config references to resolve to the
+    // newly copied gesture config.
     this._gestureConfigReferences.forEach(
-        i => this._replaceGestureConfigReference(i, gestureConfigPath));
+        i => this._replaceGestureConfigReference(
+            i, GESTURE_CONFIG_CLASS_NAME,
+            getModuleSpecifier(newConfigPath, i.node.getSourceFile().fileName)));
 
-    // Setup the gesture config provider and the "HammerModule" in the project app
-    // module if not done already.
-    this._setupHammerGesturesInAppModule(project, gestureConfigPath);
+    // Setup the gesture config provider and the "HammerModule" in the root module
+    // if not done already. The "HammerModule" is needed in v9 since it enables the
+    // Hammer event plugin that was previously enabled by default in v8.
+    this._setupNewGestureConfigInRootModule(project, newConfigPath);
+    this._setupHammerModuleInRootModule(project);
+  }
+
+  /**
+   * Sets up the standard hammer module in the project and removes all
+   * references to the deprecated Angular Material gesture config.
+   */
+  private _setupHammerWithStandardEvents() {
+    const project = this._getProjectOrThrow();
+
+    // Setup the HammerModule. The HammerModule enables support for
+    // the standard HammerJS events.
+    this._setupHammerModuleInRootModule(project);
+    this._removeMaterialGestureConfigSetup();
   }
 
   /**
@@ -467,15 +497,12 @@ export class HammerGesturesRule extends MigrationRule<null> {
     return `${possibleName + index}.ts`;
   }
 
-  /**
-   * Replaces a given gesture config reference by ensuring that it is imported
-   * from the new specified path.
-   */
+  /** Replaces a given gesture config reference with a new import. */
   private _replaceGestureConfigReference(
-      {node, importData, isImport}: IdentifierReference, newPath: string) {
+      {node, importData, isImport}: IdentifierReference, symbolName: string,
+      moduleSpecifier: string) {
     const sourceFile = node.getSourceFile();
     const recorder = this.getUpdateRecorder(sourceFile.fileName);
-    const newModuleSpecifier = getModuleSpecifier(newPath, sourceFile.fileName);
 
     // List of all identifiers referring to the gesture config in the current file. This
     // allows us to add an import for the copied gesture configuration without generating a
@@ -490,8 +517,7 @@ export class HammerGesturesRule extends MigrationRule<null> {
     // the config has been imported through a namespaced import.
     if (isNamespacedIdentifierAccess(node)) {
       const newExpression = this._importManager.addImportToSourceFile(
-          sourceFile, GESTURE_CONFIG_CLASS_NAME, newModuleSpecifier, false,
-          gestureIdentifiersInFile);
+          sourceFile, symbolName, moduleSpecifier, false, gestureIdentifiersInFile);
 
       recorder.remove(node.parent.getStart(), node.parent.getWidth());
       recorder.insertRight(node.parent.getStart(), this._printNode(newExpression, sourceFile));
@@ -508,8 +534,7 @@ export class HammerGesturesRule extends MigrationRule<null> {
     // to remove unused imports to the Material gesture config.
     if (!isImport) {
       const newExpression = this._importManager.addImportToSourceFile(
-          sourceFile, GESTURE_CONFIG_CLASS_NAME, newModuleSpecifier, false,
-          gestureIdentifiersInFile);
+          sourceFile, symbolName, moduleSpecifier, false, gestureIdentifiersInFile);
 
       recorder.remove(node.getStart(), node.getWidth());
       recorder.insertRight(node.getStart(), this._printNode(newExpression, sourceFile));
@@ -619,68 +644,44 @@ export class HammerGesturesRule extends MigrationRule<null> {
     });
   }
 
-  /** Sets up the Hammer gesture config provider in the app module if needed. */
-  private _setupHammerGesturesInAppModule(project: WorkspaceProject, gestureConfigPath: string) {
+  /** Sets up the Hammer gesture config in the root module if needed. */
+  private _setupNewGestureConfigInRootModule(project: WorkspaceProject, gestureConfigPath: string) {
     const mainFilePath = join(this.basePath, getProjectMainFile(project));
-    const mainFile = this.program.getSourceFile(mainFilePath);
-    if (!mainFile) {
+    const rootModuleSymbol = this._getRootModuleSymbol(mainFilePath);
+
+    if (rootModuleSymbol === null) {
       this.failures.push({
         filePath: mainFilePath,
-        message: CANNOT_SETUP_APP_MODULE_ERROR,
+        message: `Could not setup Hammer gestures in module. Please ` +
+            `manually ensure that the Hammer gesture config is set up.`,
       });
       return;
     }
 
-    const appModuleExpr = findMainModuleExpression(mainFile);
-    if (!appModuleExpr) {
-      this.failures.push({
-        filePath: mainFilePath,
-        message: CANNOT_SETUP_APP_MODULE_ERROR,
-      });
-      return;
-    }
-
-    const appModuleSymbol = this._getDeclarationSymbolOfNode(unwrapExpression(appModuleExpr));
-    if (!appModuleSymbol || !appModuleSymbol.valueDeclaration) {
-      this.failures.push({
-        filePath: mainFilePath,
-        message: CANNOT_SETUP_APP_MODULE_ERROR,
-      });
-      return;
-    }
-
-    const sourceFile = appModuleSymbol.valueDeclaration.getSourceFile();
+    const sourceFile = rootModuleSymbol.valueDeclaration.getSourceFile();
     const relativePath = relative(this.basePath, sourceFile.fileName);
-    const hammerModuleExpr = this._importManager.addImportToSourceFile(
-        sourceFile, HAMMER_MODULE_NAME, HAMMER_MODULE_IMPORT);
-    const hammerConfigTokenExpr = this._importManager.addImportToSourceFile(
-        sourceFile, HAMMER_CONFIG_TOKEN_NAME, HAMMER_CONFIG_TOKEN_MODULE);
-    const gestureConfigExpr = this._importManager.addImportToSourceFile(
-        sourceFile, GESTURE_CONFIG_CLASS_NAME,
-        getModuleSpecifier(gestureConfigPath, sourceFile.fileName), false,
-        this._getGestureConfigIdentifiersOfFile(sourceFile));
-
-    const recorder = this.getUpdateRecorder(sourceFile.fileName);
-    const newProviderNode = ts.createObjectLiteral([
-      ts.createPropertyAssignment('provide', hammerConfigTokenExpr),
-      ts.createPropertyAssignment('useClass', gestureConfigExpr)
-    ]);
-
-    // If no "NgModule" definition is found inside the source file, we just do nothing.
     const metadata = getDecoratorMetadata(sourceFile, 'NgModule', '@angular/core') as
         ts.ObjectLiteralExpression[];
+
+    // If no "NgModule" definition is found inside the source file, we just do nothing.
     if (!metadata.length) {
       return;
     }
 
+    const recorder = this.getUpdateRecorder(sourceFile.fileName);
     const providersField = getMetadataField(metadata[0], 'providers')[0];
-    const importsField = getMetadataField(metadata[0], 'imports')[0];
-
     const providerIdentifiers =
         providersField ? findMatchingChildNodes(providersField, ts.isIdentifier) : null;
-    const importIdentifiers =
-        importsField ? findMatchingChildNodes(importsField, ts.isIdentifier) : null;
-    const changeActions: Change[] = [];
+    const gestureConfigExpr = this._importManager.addImportToSourceFile(
+        sourceFile, GESTURE_CONFIG_CLASS_NAME,
+        getModuleSpecifier(gestureConfigPath, sourceFile.fileName), false,
+        this._getGestureConfigIdentifiersOfFile(sourceFile));
+    const hammerConfigTokenExpr = this._importManager.addImportToSourceFile(
+        sourceFile, HAMMER_CONFIG_TOKEN_NAME, HAMMER_CONFIG_TOKEN_MODULE);
+    const newProviderNode = ts.createObjectLiteral([
+      ts.createPropertyAssignment('provide', hammerConfigTokenExpr),
+      ts.createPropertyAssignment('useClass', gestureConfigExpr)
+    ]);
 
     // If the providers field exists and already contains references to the hammer gesture
     // config token and the gesture config, we naively assume that the gesture config is
@@ -688,25 +689,79 @@ export class HammerGesturesRule extends MigrationRule<null> {
     if (!providerIdentifiers ||
         !(this._hammerConfigTokenReferences.some(r => providerIdentifiers.includes(r.node)) &&
           this._gestureConfigReferences.some(r => providerIdentifiers.includes(r.node)))) {
-      changeActions.push(...addSymbolToNgModuleMetadata(
-          sourceFile, relativePath, 'providers', this._printNode(newProviderNode, sourceFile),
-          null));
+      addSymbolToNgModuleMetadata(
+          sourceFile, relativePath, 'providers', this._printNode(newProviderNode, sourceFile), null)
+          .forEach(change => {
+            if (change instanceof InsertChange) {
+              recorder.insertRight(change.pos, change.toAdd);
+            }
+          });
     }
+  }
+
+  /**
+   * Gets the TypeScript symbol of the root module by looking for the module
+   * bootstrap expression in the specified source file.
+   */
+  private _getRootModuleSymbol(mainFilePath: string): ts.Symbol|null {
+    const mainFile = this.program.getSourceFile(mainFilePath);
+    if (!mainFile) {
+      return null;
+    }
+
+    const appModuleExpr = findMainModuleExpression(mainFile);
+    if (!appModuleExpr) {
+      return null;
+    }
+
+    const appModuleSymbol = this._getDeclarationSymbolOfNode(unwrapExpression(appModuleExpr));
+    if (!appModuleSymbol || !appModuleSymbol.valueDeclaration) {
+      return null;
+    }
+    return appModuleSymbol;
+  }
+
+  /** Sets up the "HammerModule" in the root module of the project. */
+  private _setupHammerModuleInRootModule(project: WorkspaceProject) {
+    const mainFilePath = join(this.basePath, getProjectMainFile(project));
+    const rootModuleSymbol = this._getRootModuleSymbol(mainFilePath);
+
+    if (rootModuleSymbol === null) {
+      this.failures.push({
+        filePath: mainFilePath,
+        message: `Could not setup HammerModule. Please manually set up the "HammerModule" ` +
+            `from "@angular/platform-browser".`,
+      });
+      return;
+    }
+
+    const sourceFile = rootModuleSymbol.valueDeclaration.getSourceFile();
+    const relativePath = relative(this.basePath, sourceFile.fileName);
+    const metadata = getDecoratorMetadata(sourceFile, 'NgModule', '@angular/core') as
+        ts.ObjectLiteralExpression[];
+    if (!metadata.length) {
+      return;
+    }
+
+    const importsField = getMetadataField(metadata[0], 'imports')[0];
+    const importIdentifiers =
+        importsField ? findMatchingChildNodes(importsField, ts.isIdentifier) : null;
+    const recorder = this.getUpdateRecorder(sourceFile.fileName);
+    const hammerModuleExpr = this._importManager.addImportToSourceFile(
+        sourceFile, HAMMER_MODULE_NAME, HAMMER_MODULE_IMPORT);
 
     // If the "HammerModule" is not already imported in the app module, we set it up
-    // by adding it to the "imports" field.
+    // by adding it to the "imports" field of the app module.
     if (!importIdentifiers ||
         !this._hammerModuleReferences.some(r => importIdentifiers.includes(r.node))) {
-      changeActions.push(...addSymbolToNgModuleMetadata(
-          sourceFile, relativePath, 'imports', this._printNode(hammerModuleExpr, sourceFile),
-          null));
+      addSymbolToNgModuleMetadata(
+          sourceFile, relativePath, 'imports', this._printNode(hammerModuleExpr, sourceFile), null)
+          .forEach(change => {
+            if (change instanceof InsertChange) {
+              recorder.insertRight(change.pos, change.toAdd);
+            }
+          });
     }
-
-    changeActions.forEach(change => {
-      if (change instanceof InsertChange) {
-        recorder.insertRight(change.pos, change.toAdd);
-      }
-    });
   }
 
   /** Prints a given node within the specified source file. */
@@ -794,9 +849,9 @@ export class HammerGesturesRule extends MigrationRule<null> {
   static globalPostMigration(tree: Tree, context: SchematicContext): PostMigrationAction {
     // Always notify the developer that the Hammer v9 migration does not migrate tests.
     context.logger.info(chalk.yellow(
-      '\n⚠  General notice: The HammerJS v9 migration for Angular Components is not able to ' +
-      'migrate tests. Please manually clean up tests in your project if they rely on ' +
-      (this.globalUsesHammer ? 'the deprecated Angular Material gesture config.' : 'HammerJS.')));
+        '\n⚠  General notice: The HammerJS v9 migration for Angular Components is not able to ' +
+        'migrate tests. Please manually clean up tests in your project if they rely on ' +
+        (this.globalUsesHammer ? 'the deprecated Angular Material gesture config.' : 'HammerJS.')));
 
     if (!this.globalUsesHammer && this._removeHammerFromPackageJson(tree)) {
       // Since Hammer has been removed from the workspace "package.json" file,
