@@ -284,7 +284,7 @@ class TypeWrapper implements Symbol {
     return selectSignature(this.tsType, this.context, types);
   }
 
-  indexed(argument: Symbol): Symbol|undefined {
+  indexed(argument: Symbol, value: any): Symbol|undefined {
     const type = argument instanceof TypeWrapper ? argument : argument.type;
     if (!(type instanceof TypeWrapper)) return;
 
@@ -292,7 +292,14 @@ class TypeWrapper implements Symbol {
     switch (typeKind) {
       case BuiltinType.Number:
         const nType = this.tsType.getNumberIndexType();
-        return nType && new TypeWrapper(nType, this.context);
+        if (nType) {
+          // get the right tuple type by value, like 'var t: [number, string];'
+          if (nType.isUnion()) {
+            return new TypeWrapper(nType.types[value], this.context);
+          }
+          return new TypeWrapper(nType, this.context);
+        }
+        return undefined;
       case BuiltinType.String:
         const sType = this.tsType.getStringIndexType();
         return sType && new TypeWrapper(sType, this.context);
