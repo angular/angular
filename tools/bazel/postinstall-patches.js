@@ -8,17 +8,17 @@ const shelljs = require('shelljs');
 const path = require('path');
 const fs = require('fs');
 
+/**
+ * Version of the post install patch. Needs to be incremented when patches
+ * have been added or removed.
+ */
+const PATCH_VERSION = 1;
+
 /** Path to the project directory. */
 const projectDir = path.join(__dirname, '../..');
 
 shelljs.set('-e');
 shelljs.cd(projectDir);
-
-// Do not apply postinstall patches when running "postinstall" outside. The
-// "generate_build_file.js" file indicates that we run in Bazel managed node modules.
-if (!shelljs.test('-e', 'generate_build_file.js')) {
-  return;
-}
 
 // Workaround for https://github.com/angular/angular/issues/18810.
 shelljs.exec('ngc -p angular-tsconfig.json');
@@ -69,7 +69,7 @@ searchAndReplace(
   const hasFlatModuleBundle = fs.existsSync(filePath.replace('.d.ts', '.metadata.json'));
   if ((filePath.includes('node_modules/') || !hasFlatModuleBundle) && $1`,
     'node_modules/@angular/compiler-cli/src/transformers/compiler_host.js');
-shelljs.cat(path.join(__dirname, './flat_module_factory_resolution.patch')).exec('patch -p0');
+applyPatch(path.join(__dirname, './flat_module_factory_resolution.patch'));
 // The three replacements below ensure that metadata files can be read by NGC and
 // that metadata files are collected as Bazel action inputs.
 searchAndReplace(
@@ -90,7 +90,7 @@ searchAndReplace(
     'node_modules/@angular/bazel/src/ng_module.bzl');
 
 // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1208.
-shelljs.cat(path.join(__dirname, './manifest_externs_hermeticity.patch')).exec('patch -p0');
+applyPatch(path.join(__dirname, './manifest_externs_hermeticity.patch'));
 
 // Workaround for using Ngcc with "--create-ivy-entry-points". This is a special
 // issue for our repository since we want to run Ivy by default in the module resolution,
@@ -137,11 +137,33 @@ shelljs.rm('-rf', [
 ]);
 
 /**
+ * Applies the given patch if not done already. Throws if the patch does
+ * not apply cleanly.
+ */
+function applyPatch(patchFile) {
+  const patchMarkerFileName = `${path.basename(patchFile)}.patch_marker`;
+  const patchMarkerPath = path.join(projectDir, 'node_modules/', patchMarkerFileName);
+
+  if (hasFileBeenPatched(patchMarkerPath)) {
+    return;
+  }
+
+  writePatchMarker(patchMarkerPath);
+  shelljs.cat(patchFile).exec('patch -p0');
+}
+
+/**
  * Reads the specified file and replaces matches of the search expression
- * with the given replacement. Throws if no changes were made.
+ * with the given replacement. Throws if no changes were made and the
+ * patch has not been applied yet.
  */
 function searchAndReplace(search, replacement, relativeFilePath) {
   const filePath = path.join(projectDir, relativeFilePath);
+
+  if (hasFileBeenPatched(filePath)) {
+    return;
+  }
+
   const originalContent = fs.readFileSync(filePath, 'utf8');
   const newFileContent = originalContent.replace(search, replacement);
 
@@ -149,5 +171,18 @@ function searchAndReplace(search, replacement, relativeFilePath) {
     throw Error(`Could not perform replacement in: ${filePath}.`);
   }
 
+  writePatchMarker(filePath);
   fs.writeFileSync(filePath, newFileContent, 'utf8');
+}
+
+/** Marks the specified file as patched. */
+function writePatchMarker(filePath) {
+  shelljs.echo(PATCH_VERSION).to(`${filePath}.patch_marker`);
+}
+
+/** Checks if the given file has been patched. */
+function hasFileBeenPatched(filePath) {
+  const markerFilePath = `${filePath}.patch_marker`;
+  return shelljs.test('-e', markerFilePath) &&
+      shelljs.cat(markerFilePath).toString().trim() === `${PATCH_VERSION}`;
 }

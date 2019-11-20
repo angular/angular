@@ -1,4 +1,7 @@
-workspace(name = "angular_material")
+workspace(
+    name = "angular_material",
+    managed_directories = {"@npm": ["node_modules"]},
+)
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
@@ -42,20 +45,10 @@ node_repositories(
 
 yarn_install(
     name = "npm",
-    # Ensure that all resources are available when the "postinstall" or "preinstall" scripts
-    # are executed in the Bazel sandbox.
-    data = [
-        "//:angular-tsconfig.json",
-        "//:tools/bazel/flat_module_factory_resolution.patch",
-        "//:tools/bazel/manifest_externs_hermeticity.patch",
-        "//:tools/bazel/postinstall-patches.js",
-        "//:tools/npm/check-npm.js",
-    ],
+    # We add the postinstall patches file here so that Yarn will rerun whenever
+    # the patches script changes.
+    data = ["//:tools/bazel/postinstall-patches.js"],
     package_json = "//:package.json",
-    # Temporarily disable node_modules symlinking until the fix for
-    # https://github.com/bazelbuild/bazel/issues/8487 makes it into a
-    # future Bazel release
-    symlink_node_modules = False,
     yarn_lock = "//:yarn.lock",
 )
 
