@@ -28,9 +28,9 @@ describe('HeroesService', () => {
 
     // Inject the http, test controller, and service-under-test
     // as they will be referenced by each test.
-    httpClient = TestBed.inject(HttpClient);
-    httpTestingController = TestBed.inject(HttpTestingController);
-    heroService = TestBed.inject(HeroesService);
+    httpClient = TestBed.get(HttpClient);
+    httpTestingController = TestBed.get(HttpTestingController);
+    heroService = TestBed.get(HeroesService);
   });
 
   afterEach(() => {
@@ -44,7 +44,7 @@ describe('HeroesService', () => {
     let expectedHeroes: Hero[];
 
     beforeEach(() => {
-      heroService = TestBed.inject(HeroesService);
+      heroService = TestBed.get(HeroesService);
       expectedHeroes = [
         { id: 1, name: 'A' },
         { id: 2, name: 'B' },
