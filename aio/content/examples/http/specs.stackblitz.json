@@ -1,6 +1,7 @@
 {
   "description": "Http Guide Testing",
   "files":[
+    "src/app/heroes/hero.ts",
     "src/app/heroes/heroes.service.ts",
     "src/app/heroes/heroes.service.spec.ts",
 
