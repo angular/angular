@@ -27,7 +27,6 @@ export class CartComponent {
   ngOnInit() {
 // #enddocregion inject-form-builder
     this.items = this.cartService.getItems();
-
     this.checkoutForm = this.formBuilder.group({
       name: '',
       address: ''
