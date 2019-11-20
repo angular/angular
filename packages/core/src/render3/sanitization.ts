@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getDocument} from '../render3/interfaces/document';
-import {SANITIZER} from '../render3/interfaces/view';
-import {getLView} from '../render3/state';
-import {renderStringify} from '../render3/util/misc_utils';
+import {BypassType, allowSanitizationBypassAndThrow, unwrapSafeValue} from '../sanitization/bypass';
+import {_sanitizeHtml as _sanitizeHtml} from '../sanitization/html_sanitizer';
+import {SecurityContext} from '../sanitization/security';
+import {StyleSanitizeFn, StyleSanitizeMode, _sanitizeStyle as _sanitizeStyle} from '../sanitization/style_sanitizer';
+import {_sanitizeUrl as _sanitizeUrl, isStyleSanitizable} from '../sanitization/url_sanitizer';
+import {Sanitizer} from '../sanitizer/sanitizer';
 
-import {BypassType, allowSanitizationBypassAndThrow, unwrapSafeValue} from './bypass';
-import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
-import {Sanitizer} from './sanitizer';
-import {SecurityContext} from './security';
-import {StyleSanitizeFn, StyleSanitizeMode, _sanitizeStyle as _sanitizeStyle} from './style_sanitizer';
-import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
+import {getDocument} from './interfaces/document';
+import {SANITIZER} from './interfaces/view';
+import {getLView} from './state';
+import {renderStringify} from './util/misc_utils';
 
 
 
@@ -190,9 +190,7 @@ export const ɵɵdefaultStyleSanitizer =
       mode = mode || StyleSanitizeMode.ValidateAndSanitize;
       let doSanitizeValue = true;
       if (mode & StyleSanitizeMode.ValidateProperty) {
-        doSanitizeValue = prop === 'background-image' || prop === 'background' ||
-            prop === 'border-image' || prop === 'filter' || prop === 'list-style' ||
-            prop === 'list-style-image' || prop === 'clip-path';
+        doSanitizeValue = isStyleSanitizable(prop);
       }
 
       if (mode & StyleSanitizeMode.SanitizeOnly) {

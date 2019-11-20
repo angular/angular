@@ -205,7 +205,7 @@ export {
   ɵɵsanitizeUrl,
   ɵɵsanitizeResourceUrl,
   ɵɵsanitizeUrlOrResourceUrl,
-} from './sanitization/sanitization';
+} from './render3/sanitization';
 
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,

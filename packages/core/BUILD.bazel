@@ -16,6 +16,7 @@ ng_module(
         "//packages/core/src/di/interface",
         "//packages/core/src/interface",
         "//packages/core/src/reflection",
+        "//packages/core/src/sanitization",
         "//packages/core/src/util",
         "//packages/localize",
         "//packages/zone.js/lib:zone_d_ts",

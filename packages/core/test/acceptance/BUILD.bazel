@@ -17,6 +17,7 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler/testing",
         "//packages/core",
+        "//packages/core/src/sanitization",
         "//packages/core/src/util",
         "//packages/core/testing",
         "//packages/localize",

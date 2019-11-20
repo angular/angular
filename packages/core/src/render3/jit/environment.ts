@@ -8,8 +8,8 @@
 
 import {ɵɵinject} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵdefineInjector} from '../../di/interface/defs';
-import * as sanitization from '../../sanitization/sanitization';
 import * as r3 from '../index';
+import * as sanitization from '../sanitization';
 
 
 

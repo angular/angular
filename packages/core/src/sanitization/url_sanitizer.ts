@@ -36,9 +36,6 @@ import {isDevMode} from '../util/is_dev_mode';
  */
 const SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file):|[^&:/?#]*(?:[/?#]|$))/gi;
 
-/* A pattern that matches safe srcset values */
-const SAFE_SRCSET_PATTERN = /^(?:(?:https?|file):|[^&:/?#]*(?:[/?#]|$))/gi;
-
 /** A pattern that matches safe data URLs. Only matches image, video and audio types. */
 const DATA_URL_PATTERN =
     /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:mp3|oga|ogg|opus));base64,[a-z0-9+\/]+=*$/i;
@@ -57,4 +54,19 @@ export function _sanitizeUrl(url: string): string {
 export function sanitizeSrcset(srcset: string): string {
   srcset = String(srcset);
   return srcset.split(',').map((srcset) => _sanitizeUrl(srcset.trim())).join(', ');
+}
+
+/**
+ * Determines if a give style property is subject to sanitization.
+ *
+ * At runtime it is necessary to determine if a particular property needs to be sanitized. This is
+ * needed in case of `<div [style]="exp">` case since we can't know ahead of time if `exp` contains
+ * sanitizable properties
+ *
+ * @param prop style property name
+ */
+export function isStyleSanitizable(prop: string): boolean {
+  return prop === 'background-image' || prop === 'background' || prop === 'border-image' ||
+      prop === 'filter' || prop === 'list-style' || prop === 'list-style-image' ||
+      prop === 'clip-path';
 }
