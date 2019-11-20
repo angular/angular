@@ -196,7 +196,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
   private _googleMapChanges!: Observable<google.maps.Map>;
 
-  private readonly _listeners: google.maps.MapsEventListener[] = [];
+  private _listeners: google.maps.MapsEventListener[] = [];
 
   private readonly _options = new BehaviorSubject<google.maps.MapOptions>(DEFAULT_OPTIONS);
   private readonly _center =
@@ -246,9 +246,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   ngOnDestroy() {
     this._destroy.next();
     this._destroy.complete();
-    for (let listener of this._listeners) {
-      listener.remove();
-    }
+    this._clearListeners();
   }
 
   /**
@@ -449,6 +447,9 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   }
 
   private _initializeEventHandlers() {
+    // Ensure that we don't leak if called multiple times.
+    this._clearListeners();
+
     const eventHandlers = new Map<string, EventEmitter<void>>([
       ['bounds_changed', this.boundsChanged],
       ['center_changed', this.centerChanged],
@@ -492,5 +493,14 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
             this.mapClick.emit(event);
           }));
     }
+  }
+
+  /** Clears all currently-registered event listeners. */
+  private _clearListeners() {
+    for (let listener of this._listeners) {
+      listener.remove();
+    }
+
+    this._listeners = [];
   }
 }

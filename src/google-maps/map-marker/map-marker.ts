@@ -205,7 +205,7 @@ export class MapMarker implements OnInit, OnDestroy {
 
   private readonly _destroy = new Subject<void>();
 
-  private readonly _listeners: google.maps.MapsEventListener[] = [];
+  private _listeners: google.maps.MapsEventListener[] = [];
 
   _marker?: google.maps.Marker;
 
@@ -230,9 +230,7 @@ export class MapMarker implements OnInit, OnDestroy {
   ngOnDestroy() {
     this._destroy.next();
     this._destroy.complete();
-    for (let listener of this._listeners) {
-      listener.remove();
-    }
+    this._clearListeners();
     if (this._marker) {
       this._marker.setMap(null);
     }
@@ -390,6 +388,9 @@ export class MapMarker implements OnInit, OnDestroy {
   }
 
   private _initializeEventHandlers() {
+    // Ensure that we don't leak if called multiple times.
+    this._clearListeners();
+
     const eventHandlers = new Map<string, EventEmitter<void>>([
       ['animation_changed', this.animationChanged],
       ['clickable_changed', this.clickableChanged],
@@ -432,5 +433,14 @@ export class MapMarker implements OnInit, OnDestroy {
                 }));
           }
         });
+  }
+
+  /** Clears all currently-registered event listeners. */
+  private _clearListeners() {
+    for (let listener of this._listeners) {
+      listener.remove();
+    }
+
+    this._listeners = [];
   }
 }

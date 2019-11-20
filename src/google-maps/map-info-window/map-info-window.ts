@@ -80,7 +80,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
   private readonly _position =
       new BehaviorSubject<google.maps.LatLngLiteral|google.maps.LatLng|undefined>(undefined);
 
-  private readonly _listeners: google.maps.MapsEventListener[] = [];
+  private _listeners: google.maps.MapsEventListener[] = [];
 
   private readonly _destroy = new Subject<void>();
 
@@ -167,6 +167,9 @@ export class MapInfoWindow implements OnInit, OnDestroy {
   }
 
   private _initializeEventHandlers() {
+    // Ensure that we don't leak if called multiple times.
+    this._clearListeners();
+
     const eventHandlers = new Map<string, EventEmitter<void>>([
       ['closeclick', this.closeclick],
       ['content_changed', this.contentChanged],
@@ -181,5 +184,14 @@ export class MapInfoWindow implements OnInit, OnDestroy {
         }));
       }
     });
+  }
+
+  /** Clears all currently-registered event listeners. */
+  private _clearListeners() {
+    for (let listener of this._listeners) {
+      listener.remove();
+    }
+
+    this._listeners = [];
   }
 }
