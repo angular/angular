@@ -36,7 +36,7 @@ import {sortCategorizedMethodMembers, sortCategorizedPropertyMembers} from '../c
  */
 export class Categorizer implements Processor {
   name = 'categorizer';
-  $runBefore = ['docs-processed'];
+  $runBefore = ['docs-processed', 'entryPointGrouper'];
 
   $process(docs: DocCollection) {
     docs.filter(doc => doc.docType === 'class' || doc.docType === 'interface')

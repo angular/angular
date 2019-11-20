@@ -2,6 +2,7 @@ import {Package} from 'dgeni';
 import {Host} from 'dgeni-packages/typescript/services/ts-host/host';
 import {HighlightNunjucksExtension} from './nunjucks-tags/highlight';
 import {patchLogService} from './patch-log-service';
+import {AsyncReturnDescriptionProcessor} from './processors/async-return-description';
 import {DocsPrivateFilter} from './processors/docs-private-filter';
 import {Categorizer} from './processors/categorizer';
 import {FilterDuplicateExports} from './processors/filter-duplicate-exports';
@@ -49,6 +50,9 @@ apiDocsPackage.processor(new Categorizer());
 // Processor to group docs into top-level entry-points such as "tabs", "sidenav", etc.
 apiDocsPackage.processor(new EntryPointGrouper());
 
+// Processor that automatically adds a return description for async methods.
+apiDocsPackage.processor(new AsyncReturnDescriptionProcessor());
+
 // Configure the log level of the API docs dgeni package.
 apiDocsPackage.config(function(log: any) {
   return log.level = 'warning';
@@ -56,7 +60,7 @@ apiDocsPackage.config(function(log: any) {
 
 // Configure the processor for reading files from the file system.
 apiDocsPackage.config(function(readFilesProcessor: any) {
-  // Disable we currently only use the "readTypeScriptModules" processor
+  // Disabled since we only use the "readTypeScriptModules" processor
   readFilesProcessor.$enabled = false;
 });
 
