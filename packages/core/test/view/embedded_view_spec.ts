@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵgetDOM as getDOM} from '@angular/common';
 import {SecurityContext} from '@angular/core';
 import {ArgumentType, BindingFlags, NodeCheckFn, NodeFlags, Services, ViewData, anchorDef, asElementData, attachEmbeddedView, detachEmbeddedView, directiveDef, elementDef, moveEmbeddedView, rootRenderNodes} from '@angular/core/src/view/index';
 
