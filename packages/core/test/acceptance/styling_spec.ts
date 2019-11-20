@@ -1936,6 +1936,32 @@ describe('styling', () => {
     expect(div.classList.contains('bar')).toBeTruthy();
   });
 
+  it('should allow to reset style property value defined using ngStyle', () => {
+    @Component({
+      template: `
+        <div [ngStyle]="s"></div>
+      `
+    })
+    class Cmp {
+      s: any = {opacity: '1'};
+
+      clearStyle(): void { this.s = null; }
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    const comp = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const div = fixture.nativeElement.querySelector('div');
+    expect(div.style.opacity).toEqual('1');
+
+    comp.clearStyle();
+    fixture.detectChanges();
+
+    expect(div.style.opacity).toEqual('');
+  });
+
   it('should allow detectChanges to be run in a property change that causes additional styling to be rendered',
      () => {
        @Component({

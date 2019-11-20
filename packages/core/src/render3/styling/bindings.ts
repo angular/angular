@@ -1102,7 +1102,7 @@ function removeStylingValues(
     const value = getMapValue(arr, i);
     if (value) {
       const prop = getMapProp(arr, i);
-      applyFn(renderer, element, prop, false);
+      applyFn(renderer, element, prop, null);
     }
   }
 }
