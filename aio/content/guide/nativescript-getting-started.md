@@ -59,7 +59,7 @@ First you need to convert your project to a code-sharing structure.
 Run the following `ng add` command from the root of your project:
 
 ```sh
-ng add @nativescript/schematics@next
+ng add @nativescript/schematics
 ```
 
 This command adds the **NativeScript-specific**:
