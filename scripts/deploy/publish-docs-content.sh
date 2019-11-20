@@ -40,7 +40,6 @@ commitSha=$(git rev-parse --short HEAD)
 commitAuthorName=$(git --no-pager show -s --format='%an' HEAD)
 commitAuthorEmail=$(git --no-pager show -s --format='%ae' HEAD)
 commitMessage=$(git log --oneline -n 1)
-commitTag="${buildVersion}-${commitSha}"
 
 # Note that we cannot store the commit SHA in its own version segment
 # as it will not comply with the semver specification. For example:
