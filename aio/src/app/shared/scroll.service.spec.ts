@@ -463,7 +463,7 @@ describe('ScrollService', () => {
       expect(updateScrollLocationHrefSpy).not.toHaveBeenCalled();
     });
 
-    it('should stop scrolling on `hashchage` events', () => {
+    it('should stop scrolling on `hashchange` events', () => {
       const scrollToPositionSpy = spyOn(scrollService, 'scrollToPosition');
 
       location.simulateHashChange('foo');
