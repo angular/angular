@@ -579,25 +579,51 @@ function createLocalizedStringTaggedTemplate(
  */
 function createLocalizedStringFunctionCall(
     ast: LocalizedString, context: Context, visitor: ExpressionVisitor, imports: ImportManager) {
+  // A `$localize` message consists `messageParts` and `expressions`, which get interleaved
+  // together. The interleaved pieces look like:
+  // `[messagePart0, expression0, messagePart1, expression1, messagePart2]`
+  //
+  // Note that there is always a message part at the start and end, and so therefore
+  // `messageParts.length === expressions.length + 1`.
+  //
+  // Each message part may be prefixed with "metadata", which is wrapped in colons (:) delimiters.
+  // The metadata is attached to the first and subsequent message parts by calls to
+  // `serializeI18nHead()` and `serializeI18nTemplatePart()` respectively.
+
+  // The first message part (i.e. `ast.messageParts[0]`) is used to initialize `messageParts` array.
   const messageParts = [ast.serializeI18nHead()];
   const expressions: any[] = [];
+
+  // The rest of the `ast.messageParts` and each of the expressions are `ast.expressions` pushed
+  // into the arrays. Note that `ast.messagePart[i]` corresponds to `expressions[i-1]`
   for (let i = 1; i < ast.messageParts.length; i++) {
     expressions.push(ast.expressions[i - 1].visitExpression(visitor, context));
     messageParts.push(ast.serializeI18nTemplatePart(i));
   }
+
+  // The resulting downlevelled tagged template string uses a call to the `__makeTemplateObject()`
+  // helper, so we must ensure it has been imported.
   const {moduleImport, symbol} = imports.generateNamedImport('tslib', '__makeTemplateObject');
   const __makeTemplateObjectHelper = (moduleImport === null) ?
       ts.createIdentifier(symbol) :
       ts.createPropertyAccess(ts.createIdentifier(moduleImport), ts.createIdentifier(symbol));
-  return ts.createCall(ts.createIdentifier('$localize'), undefined, [
-    ts.createCall(
-        __makeTemplateObjectHelper, undefined,
-        [
-          ts.createArrayLiteral(
-              messageParts.map(messagePart => ts.createStringLiteral(messagePart.cooked))),
-          ts.createArrayLiteral(
-              messageParts.map(messagePart => ts.createStringLiteral(messagePart.raw))),
-        ]),
-    ...expressions,
-  ]);
+
+  // Generate the call in the form:
+  // `$localize(__makeTemplateObject(cookedMessageParts, rawMessageParts), ...expressions);`
+  return ts.createCall(
+      /* expression */ ts.createIdentifier('$localize'),
+      /* typeArguments */ undefined,
+      /* argumentsArray */[
+        ts.createCall(
+            /* expression */ __makeTemplateObjectHelper,
+            /* typeArguments */ undefined,
+            /* argumentsArray */
+            [
+              ts.createArrayLiteral(
+                  messageParts.map(messagePart => ts.createStringLiteral(messagePart.cooked))),
+              ts.createArrayLiteral(
+                  messageParts.map(messagePart => ts.createStringLiteral(messagePart.raw))),
+            ]),
+        ...expressions,
+      ]);
 }
