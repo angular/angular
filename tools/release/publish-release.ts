@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import {spawnSync} from 'child_process';
 import {readFileSync, unlinkSync} from 'fs';
 import {homedir} from 'os';
 import {join} from 'path';
@@ -14,6 +13,10 @@ import {promptForUpstreamRemote} from './prompt/upstream-remote-prompt';
 import {releasePackages} from './release-output/release-packages';
 import {CHANGELOG_FILE_NAME} from './stage-release';
 import {parseVersionName, Version} from './version-name/parse-version';
+
+// The package builder script is not written in TypeScript and needs to
+// be imported through a CommonJS import.
+const {defaultBuildReleasePackages} = require('../../scripts/build-packages-dist');
 
 /**
  * Class that can be instantiated in order to create a new release. The tasks requires user
@@ -87,7 +90,7 @@ class PublishReleaseTask extends BaseReleaseTask {
       await this._promptStableVersionForNextTag();
     }
 
-    this._buildReleasePackages();
+    defaultBuildReleasePackages();
     console.info(chalk.green(`  ✓   Built the release output.`));
 
     // Checks all release packages against release output validations before releasing.
@@ -147,16 +150,6 @@ class PublishReleaseTask extends BaseReleaseTask {
       console.error(chalk.red(`      Please stage the release using the staging script.`));
       process.exit(1);
     }
-  }
-
-  /** Builds all release packages that should be published. */
-  private _buildReleasePackages() {
-    const buildScript = join(this.projectDir, 'scripts/build-packages-dist.sh');
-
-    // TODO(devversion): I'd prefer disabling the output for those, but it might be only
-    // worth if we consider adding some terminal spinner library (like "ora").
-    return spawnSync('bash', [buildScript],
-      {cwd: this.projectDir, stdio: 'inherit', shell: true}).status === 0;
   }
 
   /**

@@ -297,7 +297,7 @@ jobs:
       - *yarn_install
       - *setup_bazel_binary
 
-      - run: ./scripts/build-packages-dist.sh
+      - run: yarn build
       - run: yarn check-release-output
 
       # TODO(devversion): replace this with bazel tests that run Madge. This is
