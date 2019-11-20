@@ -78,13 +78,14 @@ export class ScrollService implements OnDestroy {
         .pipe(takeUntil(this.onDestroy))
         .subscribe(() => this.updateScrollLocationHref());
 
-    // Change scroll restoration strategy to `manual` if it's supported
+    // Change scroll restoration strategy to `manual` if it's supported.
     if (this.supportManualScrollRestoration) {
       history.scrollRestoration = 'manual';
-      // we have to detect forward and back navigation thanks to popState event
-      this.location.subscribe((event: ScrollPositionPopStateEvent) => {
-        // the type is `hashchange` when the fragment identifier of the URL has changed. It allows us to go to position
-        // just before a click on an anchor
+
+      // We have to detect forward and back navigation thanks to popState event.
+      const locationSubscription = this.location.subscribe((event: ScrollPositionPopStateEvent) => {
+        // The type is `hashchange` when the fragment identifier of the URL has changed. It allows
+        // us to go to position just before a click on an anchor.
         if (event.type === 'hashchange') {
           this.scrollToPosition();
         } else {
@@ -96,6 +97,8 @@ export class ScrollService implements OnDestroy {
           this.poppedStateScrollPosition = event.state ? event.state.scrollPosition : null;
         }
       });
+
+      this.onDestroy.subscribe(() => locationSubscription.unsubscribe());
     }
 
     // If this was not a reload, discard the stored scroll info.
