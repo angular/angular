@@ -110,6 +110,9 @@ export class MockRequest extends MockBody implements Request {
     if (init.credentials !== undefined) {
       this.credentials = init.credentials;
     }
+    if (init.method !== undefined) {
+      this.method = init.method;
+    }
   }
 
   clone(): Request {
