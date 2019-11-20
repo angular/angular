@@ -670,11 +670,21 @@
     "groups": ["Collaborators", "GDE"],
     "mentor": "gkalpak"
   },
+  "tracylee": {
+    "name": "Tracy Lee",
+    "picture": "tracylee.jpg",
+    "groups": ["GDE"],
+    "twitter": "ladyleet",
+    "website": "https://www.thisdot.co/labs",
+    "bio": "Tracy is the Co-Founder of This Dot Labs, a consultancy focused on helping companies with digital transformations. She is also a Google Developer Expert, RxJS Core Team member, a Women Techmakers Lead, and a frequent keynote speaker at conferences. She heads up Community Relations for Node.js at OpenJS Foundation, is the host of the Modern Web podcast, organizer of This.JavaScript, Contributor Days, Google Developer Group Silicon Valley and Triangle, and RxWorkshop. You can find her on Twitter @ladyleet or at http://thisdot.co/labs."
+  },
   "jiali": {
     "name": "Jia Li",
     "groups": ["Collaborators"],
     "mentor": "mhevery",
     "picture": "JiaLiPassion.jpg",
+    "twitter": "Jialipassion",
+    "website": "https://github.com/JiaLiPassion",
     "bio": "A programmer with passion, angular/zone.js guy! Web frontend engineer @thisdot"
   },
   "cexbrayat": {
