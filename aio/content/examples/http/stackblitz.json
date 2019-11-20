@@ -5,7 +5,8 @@
     "!**/*.js",
 
     "!src/testing/*.*",
-    "!src/index-specs.html"
+    "!src/index-specs.html",
+    "!src/main-specs.ts"
   ],
   "tags": ["http"]
 }
