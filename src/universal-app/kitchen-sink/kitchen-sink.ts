@@ -2,7 +2,7 @@ import {FocusMonitor} from '@angular/cdk/a11y';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {ScrollingModule, ViewportRuler} from '@angular/cdk/scrolling';
 import {CdkTableModule, DataSource} from '@angular/cdk/table';
-import {Component, ElementRef, NgModule} from '@angular/core';
+import {Component, ElementRef, NgModule, ErrorHandler} from '@angular/core';
 import {MatNativeDateModule, MatRippleModule} from '@angular/material/core';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatButtonModule} from '@angular/material/button';
@@ -146,6 +146,17 @@ export class KitchenSink {
   declarations: [KitchenSink, TestEntryComponent],
   exports: [KitchenSink, TestEntryComponent],
   entryComponents: [TestEntryComponent],
+  providers: [{
+    // If an error is thrown asynchronously during server-side rendering it'll get logged to stderr,
+    // but it won't cause the build to fail. We still want to catch these errors so we provide an
+    // `ErrorHandler` that re-throws the error and causes the process to exit correctly.
+    provide: ErrorHandler,
+    useValue: {handleError: ERROR_HANDLER}
+  }]
 })
 export class KitchenSinkModule {
+}
+
+export function ERROR_HANDLER(error: Error) {
+  throw error;
 }
