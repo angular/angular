@@ -20,7 +20,11 @@ import {
   OnInit,
   Output,
   ViewEncapsulation,
+  Optional,
+  Inject,
+  PLATFORM_ID,
 } from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, shareReplay, take, takeUntil} from 'rxjs/operators';
 
@@ -47,12 +51,6 @@ export const DEFAULT_OPTIONS: google.maps.MapOptions = {
 export const DEFAULT_HEIGHT = '500px';
 /** Arbitrary default width for the map element */
 export const DEFAULT_WIDTH = '500px';
-
-/**
- * Whether we're currently rendering inside a browser. Equivalent of `Platform.isBrowser`,
- * but copied over here so we don't have to add another dependency.
- */
-const isBrowser = typeof window === 'object' && !!window;
 
 /**
  * Angular component that renders a Google Map via the Google Maps JavaScript
@@ -194,6 +192,8 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   private _mapEl: HTMLElement;
   _googleMap!: UpdatedGoogleMap;
 
+  /** Whether we're currently rendering inside a browser. */
+  private _isBrowser: boolean;
   private _googleMapChanges!: Observable<google.maps.Map>;
 
   private _listeners: google.maps.MapsEventListener[] = [];
@@ -205,8 +205,19 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
   private readonly _destroy = new Subject<void>();
 
-  constructor(private readonly _elementRef: ElementRef) {
-    if (isBrowser) {
+  constructor(
+    private readonly _elementRef: ElementRef,
+    /**
+     * @deprecated `platformId` parameter to become required.
+     * @breaking-change 10.0.0
+     */
+    @Optional() @Inject(PLATFORM_ID) platformId?: Object) {
+
+    // @breaking-change 10.0.0 Remove null check for `platformId`.
+    this._isBrowser =
+        platformId ? isPlatformBrowser(platformId) : typeof window === 'object' && !!window;
+
+    if (this._isBrowser) {
       const googleMapsWindow: GoogleMapsWindow = window;
       if (!googleMapsWindow.google) {
         throw Error(
@@ -224,7 +235,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
   ngOnInit() {
     // It should be a noop during server-side rendering.
-    if (isBrowser) {
+    if (this._isBrowser) {
       this._mapEl = this._elementRef.nativeElement.querySelector('.map-container')!;
       this._setSize();
 

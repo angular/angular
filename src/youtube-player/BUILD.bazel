@@ -19,6 +19,7 @@ ng_module(
     ),
     module_name = "@angular/youtube-player",
     deps = [
+        "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@types/youtube",
         "@npm//rxjs",

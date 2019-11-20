@@ -22,7 +22,11 @@ import {
   Output,
   ViewChild,
   ViewEncapsulation,
+  Optional,
+  Inject,
+  PLATFORM_ID,
 } from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
 
 import {
   combineLatest,
@@ -71,12 +75,6 @@ interface Player extends YT.Player {
 // The player isn't fully initialized when it's constructed.
 // The only field available is destroy and addEventListener.
 type UninitializedPlayer = Pick<Player, 'videoId' | 'destroy' | 'addEventListener'>;
-
-/**
- * Whether we're currently rendering inside a browser. Equivalent of `Platform.isBrowser`,
- * but copied over here so we don't have to add another dependency.
- */
-const isBrowser = typeof window === 'object' && !!window;
 
 /**
  * Angular component that renders a YouTube player via the YouTube player
@@ -158,15 +156,28 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   @ViewChild('youtubeContainer')
   youtubeContainer: ElementRef<HTMLElement>;
 
+  /** Whether we're currently rendering inside a browser. */
+  private _isBrowser: boolean;
   private _youtubeContainer = new EventEmitter<HTMLElement>();
   private _destroyed = new EventEmitter<undefined>();
   private _player: Player | undefined;
 
-  constructor(private _ngZone: NgZone) {}
+  constructor(
+    private _ngZone: NgZone,
+    /**
+     * @deprecated `platformId` parameter to become required.
+     * @breaking-change 10.0.0
+     */
+    @Optional() @Inject(PLATFORM_ID) platformId?: Object) {
+
+    // @breaking-change 10.0.0 Remove null check for `platformId`.
+    this._isBrowser =
+        platformId ? isPlatformBrowser(platformId) : typeof window === 'object' && !!window;
+  }
 
   ngOnInit() {
     // Don't do anything if we're not in a browser environment.
-    if (!isBrowser) {
+    if (!this._isBrowser) {
       return;
     }
 
@@ -340,7 +351,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
 
   /** See https://developers.google.com/youtube/iframe_api_reference#getPlayerState */
   getPlayerState(): YT.PlayerState | undefined {
-    if (!isBrowser || !window.YT) {
+    if (!this._isBrowser || !window.YT) {
       return undefined;
     }
 

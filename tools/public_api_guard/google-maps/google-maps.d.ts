@@ -27,7 +27,8 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
     width: string;
     zoom: number;
     zoomChanged: EventEmitter<void>;
-    constructor(_elementRef: ElementRef);
+    constructor(_elementRef: ElementRef,
+    platformId?: Object);
     fitBounds(bounds: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral, padding?: number | google.maps.Padding): void;
     getBounds(): google.maps.LatLngBounds | null;
     getCenter(): google.maps.LatLng;

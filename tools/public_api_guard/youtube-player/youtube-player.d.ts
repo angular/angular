@@ -13,7 +13,8 @@ export declare class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     videoId: string | undefined;
     width: number | undefined;
     youtubeContainer: ElementRef<HTMLElement>;
-    constructor(_ngZone: NgZone);
+    constructor(_ngZone: NgZone,
+    platformId?: Object);
     createEventsBoundInZone(): YT.Events;
     getAvailablePlaybackRates(): number[];
     getAvailableQualityLevels(): YT.SuggestedVideoQuality[];
