@@ -66,7 +66,10 @@ export function sanitizeSrcset(srcset: string): string {
  * @param prop style property name
  */
 export function isStyleSanitizable(prop: string): boolean {
-  return prop === 'background-image' || prop === 'background' || prop === 'border-image' ||
-      prop === 'filter' || prop === 'list-style' || prop === 'list-style-image' ||
-      prop === 'clip-path';
+  // Note that browsers support both the dash case and
+  // camel case property names when setting through JS.
+  return prop === 'background-image' || prop === 'backgroundImage' || prop === 'background' ||
+      prop === 'border-image' || prop === 'borderImage' || prop === 'filter' ||
+      prop === 'list-style' || prop === 'listStyle' || prop === 'list-style-image' ||
+      prop === 'listStyleImage' || prop === 'clip-path' || prop === 'clipPath';
 }

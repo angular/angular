@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {isStyleSanitizable} from '../../../../core/src/sanitization/url_sanitizer';
 import {ConstantPool} from '../../constant_pool';
 import {AttributeMarker} from '../../core';
 import {AST, ASTWithSource, BindingPipe, BindingType, Interpolation} from '../../expression_parser/ast';
@@ -481,15 +482,6 @@ function registerIntoMap(map: Map<string, number>, key: string) {
   if (!map.has(key)) {
     map.set(key, map.size);
   }
-}
-
-function isStyleSanitizable(prop: string): boolean {
-  // Note that browsers support both the dash case and
-  // camel case property names when setting through JS.
-  return prop === 'background-image' || prop === 'backgroundImage' || prop === 'background' ||
-      prop === 'border-image' || prop === 'borderImage' || prop === 'filter' ||
-      prop === 'list-style' || prop === 'listStyle' || prop === 'list-style-image' ||
-      prop === 'listStyleImage' || prop === 'clip-path' || prop === 'clipPath';
 }
 
 /**

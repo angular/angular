@@ -24,6 +24,7 @@ ts_library(
         "//packages/core",
         "//packages/core/src/di/interface",
         "//packages/core/src/interface",
+        "//packages/core/src/sanitization",
         "//packages/core/src/util",
         "//packages/core/testing",
         "//packages/platform-browser",

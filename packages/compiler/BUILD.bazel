@@ -10,6 +10,9 @@ ts_library(
             "src/**/*.ts",
         ],
     ),
+    deps = [
+        "//packages/core/src/sanitization",
+    ],
 )
 
 ng_package(
