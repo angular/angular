@@ -185,6 +185,26 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         fixture.componentInstance.state = 'case1';
         detectChangesAndExpectText('Foo');
       });
+
+      it('should handle null and undefined separtely', () => {
+        const template = '<ul [ngSwitch]="switchValue">' +
+            '<li *ngSwitchDefault>when default1;</li>' +
+            '<li *ngSwitchCase="null">when null;</li>' +
+            '<li *ngSwitchCase="undefined">when undefined;</li>' +
+            '</ul>';
+
+        fixture = createTestComponent(template);
+
+        fixture.componentInstance.switchValue = 'Foo';
+        detectChangesAndExpectText('when default1;');
+
+        fixture.componentInstance.switchValue = null;
+        detectChangesAndExpectText('when null;');
+
+        fixture.componentInstance.switchValue = undefined;
+        detectChangesAndExpectText('when undefined;');
+
+      });
     });
   });
 }

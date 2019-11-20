@@ -132,7 +132,7 @@ export class NgSwitch {
 
   /** @internal */
   _matchCase(value: any): boolean {
-    const matched = value == this._ngSwitch;
+    const matched = value === this._ngSwitch;
     this._lastCasesMatched = this._lastCasesMatched || matched;
     this._lastCaseCheckIndex++;
     if (this._lastCaseCheckIndex === this._caseCount) {
