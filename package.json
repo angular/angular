@@ -69,7 +69,7 @@
     "@angular/platform-server": "^9.0.0-rc.2",
     "@angular/router": "^9.0.0-rc.2",
     "@angular/upgrade": "^9.0.0-rc.2",
-    "@bazel/bazel": "1.0.0",
+    "@bazel/bazel": "^1.1.0",
     "@bazel/buildifier": "^0.29.0",
     "@bazel/ibazel": "^0.10.3",
     "@bazel/jasmine": "^0.39.1",
