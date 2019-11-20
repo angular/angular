@@ -129,7 +129,7 @@ def _flat_module_out_file(ctx):
     Returns:
       a basename used for the flat module out (no extension)
     """
-    if hasattr(ctx.attr, "flat_module_out_file") and ctx.attr.flat_module_out_file:
+    if getattr(ctx.attr, "flat_module_out_file", False):
         return ctx.attr.flat_module_out_file
     return "%s_public_index" % ctx.label.name
 
@@ -149,7 +149,7 @@ def _should_produce_dts_bundle(ctx):
     # At the moment we cannot use this with ngtsc compiler since it emits
     # import * as ___ from local modules which is not supported
     # see: https://github.com/Microsoft/web-build-tools/issues/1029
-    return _is_view_engine_enabled(ctx) and hasattr(ctx.attr, "bundle_dts") and ctx.attr.bundle_dts
+    return _is_view_engine_enabled(ctx) and getattr(ctx.attr, "bundle_dts", False)
 
 def _should_produce_r3_symbols_bundle(ctx):
     """Should we produce r3_symbols bundle.
