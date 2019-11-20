@@ -158,6 +158,23 @@ describe('diagnostics', () => {
     });
   });
 
+  it('should produce diagnostics for invalid tuple type property access', () => {
+    mockHost.override(TEST_TEMPLATE, `
+        {{tupleArray[1].badProperty}}`);
+    const diags = ngLS.getDiagnostics(TEST_TEMPLATE);
+    expect(diags.length).toBe(1);
+    expect(diags[0].messageText)
+        .toBe(`Identifier 'badProperty' is not defined. 'Hero' does not contain such a member`);
+  });
+
+  it('should not produce errors on function.bind()', () => {
+    mockHost.override(TEST_TEMPLATE, `
+      <test-comp (test)="myClick.bind(this)">
+      </test-comp>`);
+    const diags = ngLS.getDiagnostics(TEST_TEMPLATE);
+    expect(diags).toEqual([]);
+  });
+
   describe('in expression-cases.ts', () => {
     it('should report access to an unknown field', () => {
       const diags = ngLS.getDiagnostics(EXPRESSION_CASES).map(d => d.messageText);

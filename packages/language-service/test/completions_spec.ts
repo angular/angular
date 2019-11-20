@@ -125,6 +125,13 @@ describe('completions', () => {
       expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
     });
 
+    it('should work with numeric index signatures (tuple arrays)', () => {
+      mockHost.override(TEST_TEMPLATE, `{{ tupleArray[1].~{tuple-array-number-index}}}`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'tuple-array-number-index');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
+    });
+
     describe('with string index signatures', () => {
       it('should work with index notation', () => {
         mockHost.override(TEST_TEMPLATE, `{{ heroesByName['Jacky'].~{heroes-string-index}}}`);
