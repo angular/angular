@@ -25,6 +25,7 @@ web_test_archive(
         "@io_bazel_rules_webtesting//common/conditions:mac": "@org_chromium_chromium_macos//file",
         "@io_bazel_rules_webtesting//common/conditions:windows": "@org_chromium_chromium_windows//file",
     }),
+
     extract = "build",
     named_files = select({
         "@io_bazel_rules_webtesting//common/conditions:linux": {"CHROMIUM": "chrome-linux/chrome"},
