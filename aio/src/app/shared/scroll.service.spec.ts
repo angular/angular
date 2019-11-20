@@ -7,6 +7,13 @@ import { fakeAsync, tick } from '@angular/core/testing';
 import { ScrollService, topMargin } from './scroll.service';
 
 describe('ScrollService', () => {
+  const scrollServiceInstances: ScrollService[] = [];
+  const createScrollService = (...args: ConstructorParameters<typeof ScrollService>) => {
+    const instance = new ScrollService(...args);
+    scrollServiceInstances.push(instance);
+    return instance;
+  };
+
   const topOfPageElem = {} as Element;
   let injector: ReflectiveInjector;
   let document: MockDocument;
@@ -36,7 +43,11 @@ describe('ScrollService', () => {
 
   beforeEach(() => {
     injector = ReflectiveInjector.resolveAndCreate([
-        ScrollService,
+        {
+          provide: ScrollService,
+          useFactory: createScrollService,
+          deps: [DOCUMENT, PlatformLocation, ViewportScroller, Location],
+        },
         { provide: Location, useClass: SpyLocation },
         { provide: DOCUMENT, useClass: MockDocument },
         { provide: PlatformLocation, useClass: MockPlatformLocation },
@@ -51,7 +62,7 @@ describe('ScrollService', () => {
     spyOn(window, 'scrollBy');
   });
 
-  afterEach(() => scrollService.ngOnDestroy());
+  afterEach(() => scrollServiceInstances.forEach(instance => instance.ngOnDestroy()));
 
   it('should debounce `updateScrollPositonInHistory()`', fakeAsync(() => {
     const updateScrollPositionInHistorySpy = spyOn(scrollService, 'updateScrollPositionInHistory');
@@ -100,7 +111,7 @@ describe('ScrollService', () => {
 
     expect(() => {
       const platformLoc = platformLocation as PlatformLocation;
-      const service = new ScrollService(document, platformLoc, viewportScrollerStub, location);
+      const service = createScrollService(document, platformLoc, viewportScrollerStub, location);
 
       service.updateScrollLocationHref();
       expect(service.getStoredScrollLocationHref()).toBeNull();
