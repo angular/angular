@@ -5,6 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+// IMPORTANT: Please keep the import as '../../../../core/src/sanitization/url_sanitizer' NOT as '@angular/core/src/sanitization/url_sanitizer'.
+// - '@angular/core/src/sanitization/url_sanitizer' will not work because it expects such a package to exisit at runtime.
+// - '../../../../core/src/sanitization/url_sanitizer' works because rollup will pull relative imports into a single bundle.
 import {isStyleSanitizable} from '../../../../core/src/sanitization/url_sanitizer';
 import {ConstantPool} from '../../constant_pool';
 import {AttributeMarker} from '../../core';
