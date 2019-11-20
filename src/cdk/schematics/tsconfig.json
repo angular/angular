@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "composite": true,
     "declaration": true,
     "lib": ["es2017"],
     "module": "commonjs",
