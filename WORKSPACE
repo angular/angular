@@ -26,25 +26,10 @@ Try running `yarn bazel` instead.
     (If you did run that, check that you've got a fresh `yarn install`)
 
 """,
-    minimum_bazel_version = "0.27.0",
+    minimum_bazel_version = "1.1.0",
 )
 
-# The NodeJS rules version must be at least the following version because:
-#   - 0.15.2 Re-introduced the prod_only attribute on yarn_install
-#   - 0.15.3 Includes a fix for the `jasmine_node_test` rule ignoring target tags
-#   - 0.16.8 Supports npm installed bazel workspaces
-#   - 0.26.0 Fix for data files in yarn_install and npm_install
-#   - 0.27.12 Adds NodeModuleSources provider for transtive npm deps support
-#   - 0.30.0 yarn_install now uses symlinked node_modules with new managed directories Bazel 0.26.0 feature
-#   - 0.31.1 entry_point attribute of nodejs_binary & rollup_bundle is now a label
-#   - 0.32.0 yarn_install and npm_install no longer puts build files under symlinked node_modules
-#   - 0.32.1 remove override of @bazel/tsetse & exclude typescript lib declarations in node_module_library transitive_declarations
-#   - 0.32.2 resolves bug in @bazel/hide-bazel-files postinstall step
-#   - 0.34.0 introduces protractor rule
-#   - 0.37.1 windows fixes
-#   - 0.38.2 Adds NpmPackageInfo & JSNamedModuleInfo providers
-#   - 0.38.3 all providers loaded from //:providers.bzl
-check_rules_nodejs_version(minimum_version_string = "0.38.3")
+check_rules_nodejs_version(minimum_version_string = "0.40.0")
 
 # Setup the Node.js toolchain
 node_repositories(
