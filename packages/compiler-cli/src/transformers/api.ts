@@ -391,6 +391,12 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * support these future imports.
    */
   generateDeepReexports?: boolean;
+
+  /**
+   * Whether the compiler should avoid generating code for classes that haven't been exported.
+   * This is only active when building with `enableIvy: true`. Defaults to `true`.
+   */
+  compileNonExportedClasses?: boolean;
 }
 
 export interface CompilerHost extends ts.CompilerHost {
