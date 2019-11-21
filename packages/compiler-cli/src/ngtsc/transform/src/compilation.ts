@@ -17,7 +17,7 @@ import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration, reflectNameOfDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {TypeCheckContext} from '../../typecheck';
-import {getSourceFile} from '../../util/src/typescript';
+import {getSourceFile, isExported} from '../../util/src/typescript';
 
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from './api';
 import {DtsFileTransformer} from './declaration';
@@ -80,7 +80,8 @@ export class IvyCompilation {
       private handlers: DecoratorHandler<any, any>[], private reflector: ReflectionHost,
       private importRewriter: ImportRewriter, private incrementalDriver: IncrementalDriver,
       private perf: PerfRecorder, private sourceToFactorySymbols: Map<string, Set<string>>|null,
-      private scopeRegistry: LocalModuleScopeRegistry) {}
+      private scopeRegistry: LocalModuleScopeRegistry, private compileNonExportedClasses: boolean) {
+  }
 
 
   get exportStatements(): Map<string, Map<string, [string, string]>> { return this.reexportMap; }
@@ -90,6 +91,10 @@ export class IvyCompilation {
   analyzeAsync(sf: ts.SourceFile): Promise<void>|undefined { return this.analyze(sf, true); }
 
   private detectHandlersForClass(node: ClassDeclaration): IvyClass|null {
+    if (!this.compileNonExportedClasses && !isExported(node)) {
+      return null;
+    }
+
     // The first step is to reflect the decorators.
     const classDecorators = this.reflector.getDecoratorsOfDeclaration(node);
     let ivyClass: IvyClass|null = null;
