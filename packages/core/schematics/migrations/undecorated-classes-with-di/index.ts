@@ -24,7 +24,7 @@ import {UndecoratedClassesTransform} from './transform';
 import {UpdateRecorder} from './update_recorder';
 
 const MIGRATION_RERUN_MESSAGE = 'Migration can be rerun with: "ng update @angular/core ' +
-    '--from 8.0.0 --to 9.0.0 --migrate-only"';
+    '--migrate-only migration-v9-undecorated-classes-with-di"';
 
 const MIGRATION_AOT_FAILURE = 'This migration uses the Angular compiler internally and ' +
     'therefore projects that no longer build successfully after the update cannot run ' +
