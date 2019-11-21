@@ -946,6 +946,14 @@ testing/**                                                      @angular/fw-test
 
 
 # ================================================
+#  Size tracking
+# ================================================
+
+/aio/scripts/_payload-limits.json                               @kara @IgorMinar
+/integration/_payload-limits.json                               @kara @IgorMinar
+
+
+# ================================================
 #  Special cases
 # ================================================
 
