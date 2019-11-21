@@ -2,11 +2,11 @@
 
 set -eu -o pipefail
 
-readonly prNumber="$1"
-readonly prLastSha="${2:0:7}"
+readonly safeBranchName="$(echo $1 | sed 's/^pull\//pr/' | sed 's/[^A-Za-z0-9_.-]/_/g')"
+readonly shortLastSha="$(git rev-parse --short $2)"
 readonly inputDir="$PROJECT_ROOT/$3"
 readonly outputDir="$PROJECT_ROOT/$4"
-readonly fileSuffix="-pr$prNumber-$prLastSha.tgz"
+readonly fileSuffix="-$safeBranchName-$shortLastSha.tgz"
 
 echo "Creating compressed archives for packages in '$inputDir'."
 
