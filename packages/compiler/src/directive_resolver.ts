@@ -85,7 +85,8 @@ export class DirectiveResolver {
         if (hostBinding.hostPropertyName) {
           const startWith = hostBinding.hostPropertyName[0];
           if (startWith === '(') {
-            throw new Error(`@HostBinding can not bind to events. Use @HostListener instead.`);
+            throw new Error(
+                `@HostBinding can not bind to events. Use @HostListener instead. Host binding: "${hostBinding.hostPropertyName}" located at "${directiveType.name}" and bound to "${propName}" property`);
           } else if (startWith === '[') {
             throw new Error(
                 `@HostBinding parameter should be a property name, 'class.<name>', or 'attr.<name>'.`);

@@ -312,7 +312,8 @@ class SomeDirectiveWithoutMetadata {}
 
       it('should throw when @HostBinding name starts with "("', () => {
         expect(() => resolver.resolve(SomeDirectiveWithMalformedHostBinding1))
-            .toThrowError('@HostBinding can not bind to events. Use @HostListener instead.');
+            .toThrowError(
+                '@HostBinding can not bind to events. Use @HostListener instead. Host binding: "(a)" located at "SomeDirectiveWithMalformedHostBinding1" and bound to "onA" property');
       });
 
       it('should throw when @HostBinding name starts with "["', () => {
