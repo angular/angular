@@ -642,7 +642,8 @@ export class NgtscProgram implements api.Program {
 
     return new IvyCompilation(
         handlers, this.reflector, this.importRewriter, this.incrementalDriver, this.perfRecorder,
-        this.sourceToFactorySymbols, scopeRegistry);
+        this.sourceToFactorySymbols, scopeRegistry,
+        this.options.compileNonExportedClasses !== false);
   }
 
   private getI18nLegacyMessageFormat(): string {
