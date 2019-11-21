@@ -48,7 +48,7 @@
     "@bazel/terser": "0.40.0",
     "@bazel/typescript": "0.40.0",
     "@microsoft/api-extractor": "^7.3.9",
-    "@schematics/angular": "^8.0.0-beta.15",
+    "@schematics/angular": "^9.0.0-rc.3",
     "@types/angular": "^1.6.47",
     "@types/babel__core": "^7.1.3",
     "@types/base64-js": "1.2.5",
