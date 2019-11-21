@@ -178,7 +178,8 @@ export class HammerGesturesRule extends MigrationRule<null> {
             'The HammerJS v9 migration for Angular Components detected that HammerJS is ' +
             'manually set up in combination with references to the Angular Material gesture ' +
             'config. This target cannot be migrated completely, but all references to the ' +
-            'deprecated Angular Material gesture have been removed.');
+            'deprecated Angular Material gesture have been removed. Read more here: ' +
+            'https://git.io/ng-material-v9-hammer-ambiguous-usage');
       } else if (usedInTemplate && this._gestureConfigReferences.length) {
         // Since there is a reference to the Angular Material gesture config, and we detected
         // usage of a gesture event that could be provided by Angular Material, we *cannot*
@@ -188,7 +189,8 @@ export class HammerGesturesRule extends MigrationRule<null> {
             'The HammerJS v9 migration for Angular Components detected that HammerJS is ' +
             'manually set up in combination with references to the Angular Material gesture ' +
             'config. This target cannot be migrated completely. Please manually remove ' +
-            'references to the deprecated Angular Material gesture config.');
+            'references to the deprecated Angular Material gesture config. Read more here: ' +
+            'https://git.io/ng-material-v9-hammer-ambiguous-usage');
       }
     } else if (this._usedInRuntime || usedInTemplate) {
       // We keep track of whether Hammer is used globally. This is necessary because we
@@ -228,7 +230,8 @@ export class HammerGesturesRule extends MigrationRule<null> {
       this.printInfo(
           'The HammerJS v9 migration for Angular Components migrated the ' +
           'project to keep HammerJS installed, but detected ambiguous usage of HammerJS. Please ' +
-          'manually check if you can remove HammerJS from your application.');
+          'manually check if you can remove HammerJS from your application. More details: ' +
+          'https://git.io/ng-material-v9-hammer-ambiguous-usage');
     }
   }
 
@@ -852,6 +855,8 @@ export class HammerGesturesRule extends MigrationRule<null> {
         '\n⚠  General notice: The HammerJS v9 migration for Angular Components is not able to ' +
         'migrate tests. Please manually clean up tests in your project if they rely on ' +
         (this.globalUsesHammer ? 'the deprecated Angular Material gesture config.' : 'HammerJS.')));
+    context.logger.info(
+        'Read more about migrating tests: https://git.io/ng-material-v9-hammer-migrate-tests');
 
     if (!this.globalUsesHammer && this._removeHammerFromPackageJson(tree)) {
       // Since Hammer has been removed from the workspace "package.json" file,
