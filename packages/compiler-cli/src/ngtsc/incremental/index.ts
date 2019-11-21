@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {IncrementalState} from './src/state';
+export {IncrementalDriver} from './src/state';

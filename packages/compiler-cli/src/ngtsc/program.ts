@@ -19,7 +19,7 @@ import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
 import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from './file_system';
 import {AbsoluteModuleStrategy, AliasStrategy, AliasingHost, DefaultImportTracker, FileToModuleAliasingHost, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy} from './imports';
-import {IncrementalState} from './incremental';
+import {IncrementalDriver} from './incremental';
 import {IndexedComponent, IndexingContext} from './indexer';
 import {generateAnalysis} from './indexer/src/transform';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry, MetadataReader} from './metadata';
@@ -66,7 +66,7 @@ export class NgtscProgram implements api.Program {
   private defaultImportTracker: DefaultImportTracker;
   private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER;
   private perfTracker: PerfTracker|null = null;
-  private incrementalState: IncrementalState;
+  private incrementalDriver: IncrementalDriver;
   private typeCheckFilePath: AbsoluteFsPath;
 
   private modifiedResourceFiles: Set<string>|null;
@@ -183,10 +183,11 @@ export class NgtscProgram implements api.Program {
     this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver));
     this.defaultImportTracker = new DefaultImportTracker();
     if (oldProgram === undefined) {
-      this.incrementalState = IncrementalState.fresh();
+      this.incrementalDriver = IncrementalDriver.fresh(this.tsProgram);
     } else {
-      this.incrementalState = IncrementalState.reconcile(
-          oldProgram.reuseTsProgram, this.tsProgram, this.modifiedResourceFiles);
+      this.incrementalDriver = IncrementalDriver.reconcile(
+          oldProgram.reuseTsProgram, oldProgram.incrementalDriver, this.tsProgram,
+          this.modifiedResourceFiles);
     }
   }
 
@@ -253,6 +254,10 @@ export class NgtscProgram implements api.Program {
                           .filter((result): result is Promise<void> => result !== undefined));
     this.perfRecorder.stop(analyzeSpan);
     this.compilation.resolve();
+
+    // At this point, analysis is complete and the compiler can now calculate which files need to be
+    // emitted, so do that.
+    this.incrementalDriver.recordSuccessfulAnalysis();
   }
 
   listLazyRoutes(entryRoute?: string|undefined): api.LazyRoute[] {
@@ -315,6 +320,10 @@ export class NgtscProgram implements api.Program {
       });
       this.perfRecorder.stop(analyzeSpan);
       this.compilation.resolve();
+
+      // At this point, analysis is complete and the compiler can now calculate which files need to
+      // be emitted, so do that.
+      this.incrementalDriver.recordSuccessfulAnalysis();
     }
     return this.compilation;
   }
@@ -334,6 +343,17 @@ export class NgtscProgram implements api.Program {
         (fileName: string, data: string, writeByteOrderMark: boolean,
          onError: ((message: string) => void) | undefined,
          sourceFiles: ReadonlyArray<ts.SourceFile>| undefined) => {
+          if (sourceFiles !== undefined) {
+            // Record successful writes for any `ts.SourceFile` (that's not a declaration file)
+            // that's an input to this write.
+            for (const writtenSf of sourceFiles) {
+              if (writtenSf.isDeclarationFile) {
+                continue;
+              }
+
+              this.incrementalDriver.recordSuccessfulEmit(writtenSf);
+            }
+          }
           if (this.closureCompilerEnabled && fileName.endsWith('.js')) {
             data = nocollapseHack(data);
           }
@@ -377,7 +397,7 @@ export class NgtscProgram implements api.Program {
         continue;
       }
 
-      if (this.incrementalState.safeToSkip(targetSourceFile)) {
+      if (this.incrementalDriver.safeToSkipEmit(targetSourceFile)) {
         continue;
       }
 
@@ -571,7 +591,7 @@ export class NgtscProgram implements api.Program {
       this.aliasingHost = new FileToModuleAliasingHost(this.fileToModuleHost);
     }
 
-    const evaluator = new PartialEvaluator(this.reflector, checker, this.incrementalState);
+    const evaluator = new PartialEvaluator(this.reflector, checker, this.incrementalDriver);
     const dtsReader = new DtsMetadataReader(checker, this.reflector);
     const localMetaRegistry = new LocalMetadataRegistry();
     const localMetaReader: MetadataReader = localMetaRegistry;
@@ -605,7 +625,7 @@ export class NgtscProgram implements api.Program {
           this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds !== false,
           this.getI18nLegacyMessageFormat(), this.moduleResolver, this.cycleAnalyzer,
           this.refEmitter, this.defaultImportTracker, this.closureCompilerEnabled,
-          this.incrementalState),
+          this.incrementalDriver),
       new DirectiveDecoratorHandler(
           this.reflector, evaluator, metaRegistry, this.defaultImportTracker, this.isCore,
           this.closureCompilerEnabled),
@@ -621,7 +641,7 @@ export class NgtscProgram implements api.Program {
     ];
 
     return new IvyCompilation(
-        handlers, this.reflector, this.importRewriter, this.incrementalState, this.perfRecorder,
+        handlers, this.reflector, this.importRewriter, this.incrementalDriver, this.perfRecorder,
         this.sourceToFactorySymbols, scopeRegistry);
   }
 

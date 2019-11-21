@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportRewriter} from '../../imports';
-import {IncrementalState} from '../../incremental';
+import {IncrementalDriver} from '../../incremental';
 import {IndexingContext} from '../../indexer';
 import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration, reflectNameOfDeclaration} from '../../reflection';
@@ -78,7 +78,7 @@ export class IvyCompilation {
    */
   constructor(
       private handlers: DecoratorHandler<any, any>[], private reflector: ReflectionHost,
-      private importRewriter: ImportRewriter, private incrementalState: IncrementalState,
+      private importRewriter: ImportRewriter, private incrementalDriver: IncrementalDriver,
       private perf: PerfRecorder, private sourceToFactorySymbols: Map<string, Set<string>>|null,
       private scopeRegistry: LocalModuleScopeRegistry) {}
 
@@ -308,11 +308,11 @@ export class IvyCompilation {
 
       // A change to any dependency of the declaration causes the declaration to be invalidated,
       // which requires the NgModule to be invalidated as well.
-      const deps = this.incrementalState.getFileDependencies(file);
-      this.incrementalState.trackFileDependencies(deps, ngModuleFile);
+      const deps = this.incrementalDriver.getFileDependencies(file);
+      this.incrementalDriver.trackFileDependencies(deps, ngModuleFile);
 
       // A change to the NgModule file should cause the declaration itself to be invalidated.
-      this.incrementalState.trackFileDependency(ngModuleFile, file);
+      this.incrementalDriver.trackFileDependency(ngModuleFile, file);
 
       // A change to any directive/pipe in the compilation scope should cause the declaration to be
       // invalidated.
@@ -321,19 +321,19 @@ export class IvyCompilation {
 
         // When a directive in scope is updated, the declaration needs to be recompiled as e.g.
         // a selector may have changed.
-        this.incrementalState.trackFileDependency(dirSf, file);
+        this.incrementalDriver.trackFileDependency(dirSf, file);
 
         // When any of the dependencies of the declaration changes, the NgModule scope may be
         // affected so a component within scope must be recompiled. Only components need to be
         // recompiled, as directives are not dependent upon the compilation scope.
         if (directive.isComponent) {
-          this.incrementalState.trackFileDependencies(deps, dirSf);
+          this.incrementalDriver.trackFileDependencies(deps, dirSf);
         }
       });
       scope.pipes.forEach(pipe => {
         // When a pipe in scope is updated, the declaration needs to be recompiled as e.g.
         // the pipe's name may have changed.
-        this.incrementalState.trackFileDependency(pipe.ref.node.getSourceFile(), file);
+        this.incrementalDriver.trackFileDependency(pipe.ref.node.getSourceFile(), file);
       });
     });
     this.perf.stop(recordSpan);
