@@ -10,11 +10,11 @@ import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
-import {TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
+import {TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {StylingMapArray, TStylingContext} from '../interfaces/styling';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, LView, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
+import {HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {decreaseElementDepthCount, getBindingIndex, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
@@ -25,7 +25,29 @@ import {getConstant, getNativeByTNode, getTNode} from '../util/view_utils';
 import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, matchingSchemas, renderInitialStyling, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';
 import {registerInitialStylingOnTNode} from './styling';
 
+function elementStartFirstCreatePass(
+    index: number, tView: TView, lView: LView, native: RElement, name: string,
+    attrsIndex?: number | null, localRefsIndex?: number): TElementNode {
+  ngDevMode && ngDevMode.firstCreatePass++;
 
+  const tViewConsts = tView.consts;
+  const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
+  const tNode = getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, name, attrs);
+
+  if (attrs !== null) {
+    registerInitialStylingOnTNode(tNode, attrs, 0);
+  }
+
+  const hasDirectives =
+      resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
+  ngDevMode && validateElement(lView, native, tNode, hasDirectives);
+
+  if (tView.queries !== null) {
+    tView.queries.elementStart(tView, tNode);
+  }
+
+  return tNode;
+}
 
 /**
  * Create DOM element. The instruction must later be followed by `elementEnd()` call.
@@ -45,25 +67,26 @@ export function ɵɵelementStart(
     index: number, name: string, attrsIndex?: number | null, localRefsIndex?: number): void {
   const lView = getLView();
   const tView = lView[TVIEW];
-  const tViewConsts = tView.consts;
-  const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
-  const localRefs = getConstant<string[]>(tViewConsts, localRefsIndex);
+  const adjustedIndex = HEADER_OFFSET + index;
+
   ngDevMode && assertEqual(
                    getBindingIndex(), tView.bindingStartIndex,
                    'elements should be created before any bindings');
   ngDevMode && ngDevMode.rendererCreateElement++;
-  ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
+  ngDevMode && assertDataInRange(lView, adjustedIndex);
+
   const renderer = lView[RENDERER];
-  const native = lView[index + HEADER_OFFSET] = elementCreate(name, renderer, getNamespace());
-  const tNode = getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, name, attrs);
+  const native = lView[adjustedIndex] = elementCreate(name, renderer, getNamespace());
 
+  const tNode = tView.firstCreatePass ?
+      elementStartFirstCreatePass(index, tView, lView, native, name, attrsIndex, localRefsIndex) :
+      tView.data[adjustedIndex] as TElementNode;
+  setPreviousOrParentTNode(tNode, true);
+
+  const attrs = tNode.attrs;
   if (attrs != null) {
-    const lastAttrIndex = setUpAttributes(renderer, native, attrs);
-    if (tView.firstCreatePass) {
-      registerInitialStylingOnTNode(tNode, attrs, lastAttrIndex);
-    }
+    setUpAttributes(renderer, native, attrs);
   }
-
   if ((tNode.flags & TNodeFlags.hasInitialStyling) === TNodeFlags.hasInitialStyling) {
     renderInitialStyling(renderer, native, tNode, false);
   }
@@ -78,25 +101,12 @@ export function ɵɵelementStart(
   }
   increaseElementDepthCount();
 
-  // if a directive contains a host binding for "class" then all class-based data will
-  // flow through that (except for `[class.prop]` bindings). This also includes initial
-  // static class values as well. (Note that this will be fixed once map-based `[style]`
-  // and `[class]` bindings work for multiple directives.)
-  if (tView.firstCreatePass) {
-    ngDevMode && ngDevMode.firstCreatePass++;
-    const hasDirectives = resolveDirectives(tView, lView, tNode, localRefs);
-    ngDevMode && validateElement(lView, native, tNode, hasDirectives);
-
-    if (tView.queries !== null) {
-      tView.queries.elementStart(tView, tNode);
-    }
-  }
 
   if (isDirectiveHost(tNode)) {
     createDirectivesInstances(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
   }
-  if (localRefs != null) {
+  if (localRefsIndex != null) {
     saveResolvedLocalsInData(lView, tNode);
   }
 }

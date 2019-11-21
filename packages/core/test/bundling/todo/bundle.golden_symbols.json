@@ -528,6 +528,9 @@
     "name": "elementPropertyInternal"
   },
   {
+    "name": "elementStartFirstCreatePass"
+  },
+  {
     "name": "enterDI"
   },
   {
