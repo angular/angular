@@ -52,7 +52,7 @@ function testNonBazel() {
   # disable CLI's version check (if version is 0.0.0, then no version check happens)
   yarn --cwd node_modules/@angular/cli version --new-version 0.0.0 --no-git-tag-version
   # re-add build-angular
-  yarn add --dev @angular-devkit/build-angular@0.900.0-rc.0
+  yarn add --dev @angular-devkit/build-angular@0.900.0-rc.3
   yarn webdriver-manager update --gecko=false --standalone=false ${CI_CHROMEDRIVER_VERSION_ARG:---versions.chrome 2.45}
   ng build --progress=false
   ng test --progress=false --watch=false
