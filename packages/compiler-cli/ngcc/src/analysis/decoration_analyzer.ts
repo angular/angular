@@ -212,9 +212,12 @@ export class DecorationAnalyzer {
     analyzedFile.analyzedClasses.forEach(({declaration, matches}) => {
       matches.forEach(({handler, analysis}) => {
         if ((handler.resolve !== undefined) && analysis) {
-          const res = handler.resolve(declaration, analysis);
-          if (res.reexports !== undefined) {
-            this.addReexports(res.reexports, declaration);
+          const {reexports, diagnostics} = handler.resolve(declaration, analysis);
+          if (reexports !== undefined) {
+            this.addReexports(reexports, declaration);
+          }
+          if (diagnostics !== undefined) {
+            diagnostics.forEach(error => this.diagnosticHandler(error));
           }
         }
       });
