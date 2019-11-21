@@ -1859,4 +1859,46 @@ describe('di', () => {
 
     expect(fixture.nativeElement.innerHTML).toContain('Other value is: 2 (transformed)');
   });
+
+  it('should support dependencies in Pipes used inside i18n blocks', () => {
+    @Injectable()
+    class MyService {
+      transform(value: string): string { return `${value} (transformed)`; }
+    }
+
+    @Pipe({name: 'somePipe'})
+    class MyPipe {
+      constructor(private service: MyService) {}
+      transform(value: any): any { return this.service.transform(value); }
+    }
+
+    @Component({
+      template: `
+        <ng-template #source i18n>
+          {{count | somePipe}} <span>items</span>
+        </ng-template>
+        <ng-container #target></ng-container>
+      `
+    })
+    class MyComp {
+      count = '2';
+
+      @ViewChild('target', {read: ViewContainerRef}) target !: ViewContainerRef;
+      @ViewChild('source', {read: TemplateRef}) source !: TemplateRef<any>;
+
+      create() { this.target.createEmbeddedView(this.source); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [MyPipe, MyComp],
+      providers: [MyService],
+    });
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    fixture.componentInstance.create();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent.trim()).toBe('2 (transformed) items');
+  });
 });
