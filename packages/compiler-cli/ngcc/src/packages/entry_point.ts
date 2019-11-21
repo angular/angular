@@ -108,7 +108,7 @@ export function getEntryPointInfo(
   // We must have a typings property
   const typings = entryPointPackageJson.typings || entryPointPackageJson.types ||
       guessTypingsFromPackageJson(fs, entryPointPath, entryPointPackageJson);
-  if (!typings) {
+  if (typeof typings !== 'string') {
     return null;
   }
 
