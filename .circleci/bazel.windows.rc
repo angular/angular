@@ -11,4 +11,7 @@ import %workspace%/.circleci/bazel.common.rc
 build --repository_cache=C:/Users/circleci/bazel_repository_cache
 
 # All windows jobs run on master and should use http caching
-build --config=remote-http-caching
+build --remote_http_cache=https://storage.googleapis.com/angular-team-cache
+build --remote_accept_cached=true
+build --remote_upload_local_results=true
+build --google_default_credentials
