@@ -54,6 +54,31 @@ def compile_strategy(ctx):
 
     return strategy
 
+def _is_ivy_enabled(ctx):
+    """Determine if the ivy compiler should be used to by the ng_module.
+
+    Args:
+      ctx: skylark rule execution context
+
+    Returns:
+      Boolean, Whether the ivy compiler should be used.
+    """
+
+    # TODO(josephperrott): Remove configuration via compile=aot define flag.
+    if ctx.var.get("compile", None) == "aot":
+        return True
+
+    if ctx.var.get("angular_ivy_enabled", None) == "True":
+        return True
+
+    # Enable Angular targets extracted by Kythe Angular indexer to be compiled with the Ivy compiler architecture.
+    # TODO(ayazhafiz): remove once Ivy has landed as the default in g3.
+    if ctx.var.get("GROK_ELLIPSIS_BUILD", None) != None:
+        return True
+
+    # Return false to default to ViewEngine compiler
+    return False
+
 def _compiler_name(ctx):
     """Selects a user-visible name depending on the current compilation strategy.
 
@@ -61,36 +86,12 @@ def _compiler_name(ctx):
       ctx: skylark rule execution context
 
     Returns:
-      the name of the current compiler to be displayed in build output
+      The name of the current compiler to be displayed in build output
     """
 
-    strategy = compile_strategy(ctx)
-    if strategy == "legacy":
-        return "ngc"
-    elif strategy == "aot":
-        return "ngtsc"
-    else:
-        fail("unreachable")
+    return "ngtsc" if _is_ivy_enabled(ctx) else "ngc"
 
-def _enable_ivy_value(ctx):
-    """Determines the value of the enableIvy option in the generated tsconfig.
-
-    Args:
-      ctx: skylark rule execution context
-
-    Returns:
-      the value of enableIvy that needs to be set in angularCompilerOptions in the generated tsconfig
-    """
-
-    strategy = compile_strategy(ctx)
-    if strategy == "legacy":
-        return False
-    elif strategy == "aot":
-        return True
-    else:
-        fail("unreachable")
-
-def _is_legacy_ngc(ctx):
+def _is_view_engine_enabled(ctx):
     """Determines whether Angular outputs will be produced by the current compilation strategy.
 
     Args:
@@ -101,8 +102,7 @@ def _is_legacy_ngc(ctx):
       factory files), false otherwise
     """
 
-    strategy = compile_strategy(ctx)
-    return strategy == "legacy"
+    return not _is_ivy_enabled(ctx)
 
 def _basename_of(ctx, file):
     ext_len = len(".ts")
@@ -149,7 +149,7 @@ def _should_produce_dts_bundle(ctx):
     # At the moment we cannot use this with ngtsc compiler since it emits
     # import * as ___ from local modules which is not supported
     # see: https://github.com/Microsoft/web-build-tools/issues/1029
-    return _is_legacy_ngc(ctx) and hasattr(ctx.attr, "bundle_dts") and ctx.attr.bundle_dts
+    return _is_view_engine_enabled(ctx) and hasattr(ctx.attr, "bundle_dts") and ctx.attr.bundle_dts
 
 def _should_produce_r3_symbols_bundle(ctx):
     """Should we produce r3_symbols bundle.
@@ -168,7 +168,7 @@ def _should_produce_r3_symbols_bundle(ctx):
     # because ngcc relies on having this file.
     # see: https://github.com/angular/angular/blob/84406e4d6d93b28b23efbb1701bc5ae1084da67b/packages/compiler-cli/src/ngcc/src/packages/entry_point_bundle.ts#L56
     # todo: alan-agius4: remove when ngcc doesn't need this anymore
-    return _is_legacy_ngc(ctx) and ctx.attr.module_name == "@angular/core"
+    return _is_view_engine_enabled(ctx) and ctx.attr.module_name == "@angular/core"
 
 def _should_produce_flat_module_outs(ctx):
     """Should we produce flat module outputs.
@@ -188,7 +188,7 @@ def _should_produce_flat_module_outs(ctx):
 # in the library. Most of these will be produced as empty files but it is
 # unknown, without parsing, which will be empty.
 def _expected_outs(ctx):
-    is_legacy_ngc = _is_legacy_ngc(ctx)
+    is_legacy_ngc = _is_view_engine_enabled(ctx)
 
     devmode_js_files = []
     closure_js_files = []
@@ -295,7 +295,7 @@ def _expected_outs(ctx):
 
 def _ngc_tsconfig(ctx, files, srcs, **kwargs):
     outs = _expected_outs(ctx)
-    is_legacy_ngc = _is_legacy_ngc(ctx)
+    is_legacy_ngc = _is_view_engine_enabled(ctx)
     if "devmode_manifest" in kwargs:
         expected_outs = outs.devmode_js + outs.declarations + outs.summaries + outs.metadata
     else:
@@ -309,7 +309,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "generateNgSummaryShims": True,
         # Summaries are only enabled if Angular outputs are to be produced.
         "enableSummariesForJit": is_legacy_ngc,
-        "enableIvy": _enable_ivy_value(ctx),
+        "enableIvy": _is_ivy_enabled(ctx),
         "fullTemplateTypeCheck": ctx.attr.type_check,
         # TODO(alxhub/arick): template type-checking for Ivy needs to be tested in g3 before it can
         # be enabled here.
@@ -399,7 +399,7 @@ def ngc_compile_action(
       the parameters of the compilation which will be used to replay the ngc action for i18N.
     """
 
-    is_legacy_ngc = _is_legacy_ngc(ctx)
+    is_legacy_ngc = _is_view_engine_enabled(ctx)
 
     mnemonic = "AngularTemplateCompile"
     progress_message = "Compiling Angular templates (%s - %s) %s" % (_compiler_name(ctx), compile_mode, label)
@@ -578,7 +578,7 @@ def ng_module_impl(ctx, ts_compile_actions):
       conversion by ts_providers_dict_to_struct
     """
 
-    is_legacy_ngc = _is_legacy_ngc(ctx)
+    is_legacy_ngc = _is_view_engine_enabled(ctx)
 
     providers = ts_compile_actions(
         ctx,
