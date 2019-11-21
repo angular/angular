@@ -486,13 +486,12 @@ function registerIntoMap(map: Map<string, number>, key: string) {
 const HYPHEN_CHAR = 45;
 
 function isStyleSanitizable(prop: string): boolean {
-  // Note that browsers support both the dash case and
-  // camel case property names when setting through JS.
+  // before this function is called, the provided `prop` value should
+  // have already been converted from camel-case to hyphen-case.
   return (prop.charCodeAt(0) === HYPHEN_CHAR && prop.charCodeAt(1) === HYPHEN_CHAR) ||
-      prop === 'background-image' || prop === 'backgroundImage' || prop === 'background' ||
-      prop === 'border-image' || prop === 'borderImage' || prop === 'filter' ||
-      prop === 'list-style' || prop === 'listStyle' || prop === 'list-style-image' ||
-      prop === 'listStyleImage' || prop === 'clip-path' || prop === 'clipPath';
+      prop === 'background-image' || prop === 'background' || prop === 'border-image' ||
+      prop === 'filter' || prop === 'list-style' || prop === 'list-style-image' ||
+      prop === 'clip-path';
 }
 
 /**

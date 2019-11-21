@@ -190,15 +190,8 @@ const HYPHEN_CHAR = 45;
 export const ɵɵdefaultStyleSanitizer =
     (function(prop: string, value: string|null, mode?: StyleSanitizeMode): string | boolean | null {
       mode = mode || StyleSanitizeMode.ValidateAndSanitize;
-      let doSanitizeValue = true;
-      if (mode & StyleSanitizeMode.ValidateProperty) {
-        doSanitizeValue =
-            (prop.charCodeAt(0) === HYPHEN_CHAR && prop.charCodeAt(1) === HYPHEN_CHAR) ||
-            prop === 'background-image' || prop === 'background' || prop === 'border-image' ||
-            prop === 'filter' || prop === 'list-style' || prop === 'list-style-image' ||
-            prop === 'clip-path';
-      }
-
+      const doSanitizeValue =
+          (mode & StyleSanitizeMode.ValidateProperty) ? isStyleSanitizable(prop) : true;
       if (mode & StyleSanitizeMode.SanitizeOnly) {
         return doSanitizeValue ? ɵɵsanitizeStyle(value) : value;
       } else {
@@ -227,4 +220,13 @@ export function validateAgainstEventAttributes(name: string) {
 function getSanitizer(): Sanitizer|null {
   const lView = getLView();
   return lView && lView[SANITIZER];
+}
+
+function isStyleSanitizable(prop: string): boolean {
+  // before this function is called, the provided `prop` value should
+  // have already been converted from camel-case to hyphen-case.
+  return (prop.charCodeAt(0) === HYPHEN_CHAR && prop.charCodeAt(1) === HYPHEN_CHAR) ||
+      prop === 'background-image' || prop === 'background' || prop === 'border-image' ||
+      prop === 'filter' || prop === 'list-style' || prop === 'list-style-image' ||
+      prop === 'clip-path';
 }
