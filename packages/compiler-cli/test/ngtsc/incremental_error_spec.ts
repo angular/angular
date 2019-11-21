@@ -39,6 +39,9 @@ runInEachFileSystem(() => {
 
       // Validate that 2x the size of `files` have been written (one .d.ts, one .js) and no more.
       expect(set.size).toBe(2 * files.length);
+
+      // Reset for the next compilation.
+      env.flushWrittenFileTracking();
     }
 
     it('should handle an error in an unrelated file', () => {
@@ -54,12 +57,12 @@ runInEachFileSystem(() => {
 
       // Start with a clean compilation.
       env.driveMain();
+      env.flushWrittenFileTracking();
 
       // Introduce the error.
       env.write('other.ts', `
         export class Other // missing braces
       `);
-      env.flushWrittenFileTracking();
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].file !.fileName).toBe(_('/other.ts'));
@@ -69,10 +72,118 @@ runInEachFileSystem(() => {
       env.write('other.ts', `
         export class Other {}
       `);
-      env.flushWrittenFileTracking();
       env.driveMain();
 
       expectToHaveWritten(['/other.js']);
+    });
+
+    it('should emit all files after an error on the initial build', () => {
+      // Intentionally start with a broken compilation.
+      env.write('cmp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({selector: 'test-cmp', template: '...'})
+        export class TestCmp {}
+      `);
+      env.write('other.ts', `
+        export class Other // missing braces
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].file !.fileName).toBe(_('/other.ts'));
+      expectToHaveWritten([]);
+
+      // Remove the error. All files should be emitted.
+      env.write('other.ts', `
+        export class Other {}
+      `);
+      env.driveMain();
+
+      expectToHaveWritten(['/cmp.js', '/other.js', '/unrelated.js']);
+    });
+
+    it('should emit files introduced at the same time as an unrelated error', () => {
+      env.write('other.ts', `
+        // Needed so that the initial program contains @angular/core's .d.ts file.
+        import '@angular/core';
+
+        export class Other {}
+      `);
+
+      // Clean compile.
+      env.driveMain();
+      env.flushWrittenFileTracking();
+
+      env.write('cmp.ts', `
+        import {Component} from '@angular/core';
+        
+        @Component({selector: 'test-cmp', template: '...'})
+        export class TestCmp {}
+      `);
+      env.write('other.ts', `
+        export class Other // missing braces
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].file !.fileName).toBe(_('/other.ts'));
+      expectToHaveWritten([]);
+
+      // Remove the error. All files should be emitted.
+      env.write('other.ts', `
+        export class Other {}
+      `);
+      env.driveMain();
+
+      expectToHaveWritten(['/cmp.js', '/other.js']);
+    });
+
+    it('should emit dependent files even in the face of an error', () => {
+      env.write('cmp.ts', `
+        import {Component} from '@angular/core';
+        import {SELECTOR} from './selector';
+        
+        @Component({selector: SELECTOR, template: '...'})
+        export class TestCmp {}
+      `);
+      env.write('selector.ts', `
+        export const SELECTOR = 'test-cmp';
+      `);
+
+      env.write('other.ts', `
+        // Needed so that the initial program contains @angular/core's .d.ts file.
+        import '@angular/core';
+
+        export class Other {}
+      `);
+
+      // Clean compile.
+      env.driveMain();
+      env.flushWrittenFileTracking();
+
+      env.write('cmp.ts', `
+        import {Component} from '@angular/core';
+        
+        @Component({selector: 'test-cmp', template: '...'})
+        export class TestCmp {}
+      `);
+      env.write('other.ts', `
+        export class Other // missing braces
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].file !.fileName).toBe(_('/other.ts'));
+      expectToHaveWritten([]);
+
+      // Remove the error. All files should be emitted.
+      env.write('other.ts', `
+        export class Other {}
+      `);
+      env.driveMain();
+
+      expectToHaveWritten(['/cmp.js', '/other.js']);
     });
 
     it('should recover from an error in a component\'s metadata', () => {
@@ -85,18 +196,18 @@ runInEachFileSystem(() => {
 
       // Start with a clean compilation.
       env.driveMain();
+      env.flushWrittenFileTracking();
 
       // Introduce the error.
       env.write('test.ts', `
         import {Component} from '@angular/core';
 
-        @Component({selector: 'test-cmp', template: ...})
+        @Component({selector: 'test-cmp', template: ...}) // invalid template
         export class TestCmp {}
       `);
-      env.flushWrittenFileTracking();
       const diags = env.driveDiagnostics();
       expect(diags.length).toBeGreaterThan(0);
-      expect(env.getFilesWrittenSinceLastFlush()).not.toContain(_('/test.js'));
+      expectToHaveWritten([]);
 
       // Clear the error and verify that the compiler now emits test.js again.
       env.write('test.ts', `
@@ -106,9 +217,7 @@ runInEachFileSystem(() => {
         export class TestCmp {}
       `);
 
-      env.flushWrittenFileTracking();
       env.driveMain();
-
       expectToHaveWritten(['/test.js']);
     });
 
@@ -141,6 +250,7 @@ runInEachFileSystem(() => {
 
       // Start with a clean compilation.
       env.driveMain();
+      env.flushWrittenFileTracking();
 
       // Introduce the syntactic error.
       env.write('test.ts', `
@@ -149,7 +259,6 @@ runInEachFileSystem(() => {
         @Component({selector: ..., template: '...'}) // ... is not valid syntax
         export class TestCmp {}
       `);
-      env.flushWrittenFileTracking();
       const diags = env.driveDiagnostics();
       expect(diags.length).toBeGreaterThan(0);
       expectToHaveWritten([]);
@@ -162,7 +271,6 @@ runInEachFileSystem(() => {
         export class TestCmp {}
       `);
 
-      env.flushWrittenFileTracking();
       env.driveMain();
 
       expectToHaveWritten([
@@ -233,6 +341,7 @@ runInEachFileSystem(() => {
 
       // Start with a clean compilation.
       env.driveMain();
+      env.flushWrittenFileTracking();
 
       // Introduce the error in LibModule
       env.write('lib.ts', `
@@ -250,7 +359,6 @@ runInEachFileSystem(() => {
       })
       export class LibModule // missing braces
       `);
-      env.flushWrittenFileTracking();
       // env.driveMain();
       const diags = env.driveDiagnostics();
       expect(diags.length).toBeGreaterThan(0);
@@ -273,7 +381,6 @@ runInEachFileSystem(() => {
       export class LibModule {}
       `);
 
-      env.flushWrittenFileTracking();
       env.driveMain();
 
       expectToHaveWritten([
@@ -288,5 +395,136 @@ runInEachFileSystem(() => {
         '/lib.js',
       ]);
     });
+
+    describe('chained errors', () => {
+      it('should remember a change to a TS file across broken builds', () => {
+        // Two components, an NgModule, and a random file.
+        writeTwoComponentSystem(env);
+        writeRandomFile(env, 'other.ts');
+
+        // Start with a clean build.
+        env.driveMain();
+        env.flushWrittenFileTracking();
+
+        // Update ACmp to have a different selector, isn't matched in BCmp's template.
+        env.write('a.ts', `
+          import {Component} from '@angular/core';
+      
+          @Component({selector: 'not-a-cmp', template: '...'})
+          export class ACmp {}
+       `);
+
+        // Update the file to have an error, simultaneously.
+        writeRandomFile(env, 'other.ts', {error: true});
+
+        // This build should fail.
+        const diags = env.driveDiagnostics();
+        expect(diags.length).not.toBe(0);
+        expectToHaveWritten([]);
+
+        // Fix the error.
+        writeRandomFile(env, 'other.ts');
+
+        // Rebuild.
+        env.driveMain();
+
+        // If the compiler behaves correctly, it should remember that 'a.ts' was updated before, and
+        // should regenerate b.ts.
+        expectToHaveWritten([
+          // Because they directly changed
+          '/other.js',
+          '/a.js',
+
+          // Bcause they depend on a.ts
+          '/b.js',
+          '/module.js',
+        ]);
+      });
+
+      it('should remember a change to a template file across broken builds', () => {
+        // This is basically the same test as above, except a.html is changed instead of a.ts.
+
+        // Two components, an NgModule, and a random file.
+        writeTwoComponentSystem(env);
+        writeRandomFile(env, 'other.ts');
+
+        // Start with a clean build.
+        env.driveMain();
+        env.flushWrittenFileTracking();
+
+        // Invalidate ACmp's template.
+        env.write('a.html', 'Changed template');
+
+        // Update the file to have an error, simultaneously.
+        writeRandomFile(env, 'other.ts', {error: true});
+
+        // This build should fail.
+        const diags = env.driveDiagnostics();
+        expect(diags.length).not.toBe(0);
+        expectToHaveWritten([]);
+
+        // Fix the error.
+        writeRandomFile(env, 'other.ts');
+
+        // Rebuild.
+        env.flushWrittenFileTracking();
+        env.driveMain();
+
+        // If the compiler behaves correctly, it should remember that 'a.html' was updated before,
+        // and should regenerate a.js. Because the compiler knows a.html is a _resource_ dependency
+        // of a.ts, it should only regenerate a.js and not its module and dependent components (as
+        // it would if a.ts were itself changed like in the test above).
+        expectToHaveWritten([
+          // Because it directly changed.
+          '/other.js',
+
+          // Because a.html changed
+          '/a.js',
+
+          // b.js and module.js should not be re-emitted, because specifically when tracking
+          // resource dependencies, the compiler knows that a change to a resource file only affects
+          // the direct emit of dependent file.
+        ]);
+      });
+    });
   });
 });
+
+/**
+ * Two components, ACmp and BCmp, where BCmp depends on ACmp.
+ *
+ * ACmp has its template in a separate file.
+ */
+export function writeTwoComponentSystem(env: NgtscTestEnvironment): void {
+  env.write('a.html', 'This is the template for CmpA');
+  env.write('a.ts', `
+    import {Component} from '@angular/core';
+
+    @Component({selector: 'a-cmp', templateUrl: './a.html'})
+    export class ACmp {}
+  `);
+  env.write('b.ts', `
+    import {Component} from '@angular/core';
+
+    @Component({selector: 'b-cmp', template: '<a-cmp></a-cmp>'})
+    export class BCmp {}
+  `);
+  env.write('module.ts', `
+    import {NgModule} from '@angular/core';
+    import {ACmp} from './a';
+    import {BCmp} from './b';
+
+    @NgModule({
+      declarations: [ACmp, BCmp],
+    })
+    export class Module {}
+`);
+}
+
+export function writeRandomFile(
+    env: NgtscTestEnvironment, name: string, options: {error?: true} = {}): void {
+  env.write(name, `
+    // If options.error is set, this class has missing braces.
+    export class Other ${options.error !== true ? '{}' : ''}
+  `);
+}
