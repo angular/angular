@@ -375,7 +375,6 @@ runInEachFileSystem(() => {
 
         it('should report analyze and resolve diagnostics to the `diagnosticHandler` callback',
            () => {
-             debugger;
              const analyzer = setUpAnalyzer(
                  [
                    {
@@ -389,7 +388,6 @@ runInEachFileSystem(() => {
                  ],
                  {analyzeError: true, resolveError: true});
              analyzer.analyzeProgram();
-             console.log(diagnosticLogs);
              expect(diagnosticLogs.length).toEqual(2);
              expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999999}));
              expect(diagnosticLogs[1]).toEqual(jasmine.objectContaining({code: -999998}));
