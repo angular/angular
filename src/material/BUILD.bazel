@@ -14,7 +14,6 @@ load("//tools:defaults.bzl", "ng_package", "ts_library")
 ts_library(
     name = "material",
     srcs = ["index.ts"],
-    module_name = "@angular/material",
 )
 
 filegroup(
