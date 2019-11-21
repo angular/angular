@@ -3,13 +3,13 @@
 
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "9.0.0-next.10"
+  version "9.0.0-rc.1"
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "9.0.0-next.10"
+  version "9.0.0-rc.1"
 
 "@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
-  version "9.0.0-next.10"
+  version "9.0.0-rc.1"
   dependencies:
     canonical-path "1.0.0"
     chokidar "^2.1.1"
@@ -23,19 +23,19 @@
     yargs "13.1.0"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
-  version "9.0.0-next.10"
+  version "9.0.0-rc.1"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "9.0.0-next.10"
+  version "9.0.0-rc.1"
 
 "@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
-  version "9.0.0-next.10"
+  version "9.0.0-rc.1"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "9.0.0-next.10"
+  version "9.0.0-rc.1"
 
 "@angular/platform-server@file:../../dist/packages-dist/platform-server":
-  version "9.0.0-next.10"
+  version "9.0.0-rc.1"
   dependencies:
     domino "^2.1.2"
     xhr2 "^0.1.4"
@@ -45,10 +45,8 @@
   resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-2.5.41.tgz#d5e86161a0af80d52062b310a33ed65b051a0713"
   integrity sha1-1ehhYaCvgNUgYrMQoz7WWwUaBxM=
 
-"@types/node@10.11.x":
-  version "10.11.7"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.11.7.tgz#0e75ca9357d646ca754016ca1d68a127ad7e7300"
-  integrity sha512-yOxFfkN9xUFLyvWaeYj90mlqTJ41CsQzWKS3gXdOMOyPVacUsymejKxJ4/pMW7exouubuEeZLJawGgcNGYlTeg==
+"@types/node@file:../../node_modules/@types/node":
+  version "12.11.1"
 
 "@types/q@^0.0.32":
   version "0.0.32"
