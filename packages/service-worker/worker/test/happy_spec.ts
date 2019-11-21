@@ -1330,6 +1330,27 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
            server.assertSawRequestFor('/api-static/bar');
          });
 
+      it('keeps serving mutating api requests when failing to write to cache',
+         // sw can invalidate LRU cache entry and try to write to cache storage on mutating request
+         async() => {
+           // Initialize the SW.
+           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+           await driver.initialized;
+           server.clearRequests();
+
+           // Make the caches unwritable.
+           spyOn(MockCache.prototype, 'put').and.throwError('Can\'t touch this');
+           spyOn(driver.debugger, 'log');
+           expect(await makeRequest(scope, '/api/foo', 'default', {
+             method: 'post'
+           })).toEqual('this is api foo');
+           expect(driver.state).toBe(DriverReadyState.NORMAL);
+           // Since we are swallowing an error here, make sure it is at least properly logged
+           expect(driver.debugger.log)
+               .toHaveBeenCalledWith(new Error('Can\'t touch this'), 'DataGroup(api@42).syncLru()');
+           server.assertSawRequestFor('/api/foo');
+         });
+
       it('enters degraded mode when something goes wrong with the latest version', async() => {
         await driver.initialized;
 
