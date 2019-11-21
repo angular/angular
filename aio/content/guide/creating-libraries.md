@@ -109,11 +109,10 @@ To learn more, see [Schematics Overview](guide/schematics) and [Schematics for
 
 ## Publishing your library
 
-Use the Angular CLI and the npm package manager to build and publish your library as an npm package.
-Libraries are built in [AoT mode](guide/aot-compiler) by default, so you do not need to specify the `-prod` flag when building for publication.
+Use the Angular CLI and the npm package manager to build and publish your library as an npm package. It is not recommended to publish Ivy libraries to NPM repositories. Before publishing a library to NPM, build it using the `--prod` flag which will use the older compiler and runtime known as View Engine instead of Ivy.
 
 <code-example language="bash">
-ng build my-lib
+ng build my-lib --prod
 cd dist/my-lib
 npm publish
 </code-example>
