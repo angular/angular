@@ -13,7 +13,7 @@ const {
 
 
 // Build the legacy (view engine) npm packages into `dist/packages-dist/`.
-buildTargetPackages('dist/packages-dist', 'legacy', 'Production');
+buildTargetPackages('dist/packages-dist', false, 'Production');
 
 // Build the `zone.js` npm package (into `dist/bin/packages/zone.js/npm_package/`), because it might
 // be needed by other scripts/tests.

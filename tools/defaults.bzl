@@ -230,8 +230,7 @@ def ng_benchmark(**kwargs):
 def nodejs_binary(data = [], **kwargs):
     """Default values for nodejs_binary"""
     _nodejs_binary(
-        # Pass-thru --define=compile=foo as an environment variable
-        configuration_env_vars = ["compile"],
+        configuration_env_vars = ["angular_ivy_enabled"],
         data = data + ["@npm//source-map-support"],
         **kwargs
     )
@@ -250,8 +249,7 @@ def jasmine_node_test(deps = [], **kwargs):
     ]
     _jasmine_node_test(
         deps = deps,
-        # Pass-thru --define=compile=foo as an environment variable
-        configuration_env_vars = ["compile"],
+        configuration_env_vars = ["angular_ivy_enabled"],
         **kwargs
     )
 
