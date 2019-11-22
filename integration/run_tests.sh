@@ -64,7 +64,7 @@ for testDir in ${TEST_DIRS}; do
         yarn build
       fi
 
-      trackPayloadSize "$testDir" "dist/*.js" true false "${basedir}/integration/_payload-limits.json"
+      trackPayloadSize "$testDir" "dist/*.js" true "${basedir}/integration/_payload-limits.json"
     fi
 
     # remove the temporary node modules directory to keep the source folder clean.
@@ -73,5 +73,5 @@ for testDir in ${TEST_DIRS}; do
 done
 
 if $CI; then
-  trackPayloadSize "umd" "../dist/packages-dist/*/bundles/*.umd.min.js" false false
+  trackPayloadSize "umd" "../dist/packages-dist/*/bundles/*.umd.min.js" false
 fi
