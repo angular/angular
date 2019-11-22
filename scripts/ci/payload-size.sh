@@ -103,8 +103,9 @@ addChangeType() {
   elif [[ $allChangedFiles -gt 0 ]]; then
     change='application'
   else
-    # Nothing changed in aio/
-    exit 0
+    # Nothing changed inside $parentDir (but size may still be affected; e.g. when using the locally
+    # built packages)
+    change='other'
   fi
   payloadData="$payloadData\"change\": \"$change\", "
 }
