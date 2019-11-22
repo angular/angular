@@ -63,6 +63,8 @@ export declare function getLocaleDayNames(locale: string, formStyle: FormStyle, 
 
 export declare function getLocaleDayPeriods(locale: string, formStyle: FormStyle, width: TranslationWidth): [string, string];
 
+export declare function getLocaleDirection(locale: string): 'ltr' | 'rtl';
+
 export declare function getLocaleEraNames(locale: string, width: TranslationWidth): [string, string];
 
 export declare function getLocaleExtraDayPeriodRules(locale: string): (Time | [Time, Time])[];
