@@ -89,7 +89,7 @@ def _compiler_name(ctx):
       The name of the current compiler to be displayed in build output
     """
 
-    return "ngtsc" if _is_ivy_enabled(ctx) else "ngc"
+    return "Ivy" if _is_ivy_enabled(ctx) else "ViewEngine"
 
 def _is_view_engine_enabled(ctx):
     """Determines whether Angular outputs will be produced by the current compilation strategy.
