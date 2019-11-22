@@ -104,7 +104,7 @@ You also want to see those changes displayed properly in the doc viewer
 with a quick, edit/view cycle time.
 
 For this purpose, use the `yarn docs-watch` task, which watches for changes to source files and only
-re-processes the the files necessary to generate the docs that are related to the file that has changed.
+re-processes the files necessary to generate the docs that are related to the file that has changed.
 Since this task takes shortcuts, it is much faster (often less than 1 second) but it won't produce full
 fidelity content. For example, links to other docs and code examples may not render correctly. This is
 most particularly noticed in links to other docs and in the embedded examples, which may not always render
