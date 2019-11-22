@@ -41,12 +41,10 @@ ng_rollup_bundle(
 
 ts_devserver(
     name = "prodserver",
-    index_html = "index.html",
+    bootstrap = ["//packages/zone.js/dist:zone.js"],
     port = 4200,
-    static_files = [
-        ":bundle.min_debug.es2015.js",
-        "//packages/zone.js/dist:zone.js",
-    ],
+    static_files = ["index.html"],
+    deps = [":bundle.min_debug.es2015.js"],
 )
 
 benchmark_test(

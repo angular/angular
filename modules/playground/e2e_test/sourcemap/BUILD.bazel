@@ -1,11 +1,24 @@
 load("//modules/playground/e2e_test:example_test.bzl", "example_test")
 
+filegroup(
+    name = "protractor_web_test_data_workaroud",
+    srcs = ["//modules/playground/src/sourcemap:index.ts"],
+)
+# Work-around for protractor_web_test data not allowing files.
+# TODO(gregmagolan): remove this work-around once this is fixed in rules_nodejs
+# ```
+# ERROR: /Users/greg/google/angular-2/modules/playground/e2e_test/sourcemap/BUILD.bazel:8:1:
+# in data attribute of _protractor_web_test rule //modules/playground/e2e_test/sourcemap:protractor_tests_wrapped_test:
+# source file '//modules/playground/src/sourcemap:index.ts' is misplaced here (expected no files). Since this rule was
+# created by the macro 'example_test', the error might have been caused by the macro implementation
+# ```
+
 example_test(
     name = "sourcemap",
     srcs = glob(["**/*.ts"]),
     data = [
+        ":protractor_web_test_data_workaroud",
         "//modules/playground/src/sourcemap",
-        "//modules/playground/src/sourcemap:index.ts",
     ],
     server = "//modules/playground/src/sourcemap:devserver",
 )

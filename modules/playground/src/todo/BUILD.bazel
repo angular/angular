@@ -22,14 +22,13 @@ ng_module(
 
 ts_devserver(
     name = "devserver",
-    data = glob(["**/*.css"]),
-    entry_module = "angular/modules/playground/src/todo/index",
-    index_html = "index.html",
-    port = 4200,
-    scripts = ["@npm//:node_modules/tslib/tslib.js"],
-    static_files = [
+    bootstrap = [
         "//packages/zone.js/dist:zone.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
+    entry_module = "angular/modules/playground/src/todo/index",
+    port = 4200,
+    scripts = ["@npm//:node_modules/tslib/tslib.js"],
+    static_files = ["index.html"] + glob(["**/*.css"]),
     deps = [":todo"],
 )
