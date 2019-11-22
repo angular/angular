@@ -69,9 +69,7 @@ test --test_output=errors
 build --define=angular_ivy_enabled=False
 
 build:view-engine --define=angular_ivy_enabled=False
-build:ivy --define=angular_ivy_enabled=True --define=compile=aot
-
-build --define=compile=legacy
+build:ivy --define=angular_ivy_enabled=True
 
 ##################################
 # Remote Build Execution support #
