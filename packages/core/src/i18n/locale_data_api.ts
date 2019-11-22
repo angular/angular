@@ -119,6 +119,7 @@ export enum LocaleDataIndex {
   CurrencySymbol,
   CurrencyName,
   Currencies,
+  Directionality,
   PluralCase,
   ExtraData
 }

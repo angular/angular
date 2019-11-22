@@ -562,6 +562,18 @@ export function getLocaleExtraDayPeriods(
 }
 
 /**
+ * Retrieves the writing direction of a specified locale
+ * @param locale A locale code for the locale format rules to use.
+ * @publicApi
+ * @returns 'rtl' or 'ltr'
+ * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
+ */
+export function getLocaleDirection(locale: string): 'ltr'|'rtl' {
+  const data = ɵfindLocaleData(locale);
+  return data[ɵLocaleDataIndex.Directionality];
+}
+
+/**
  * Retrieves the first value that is defined in an array, going backwards from an index position.
  *
  * To avoid repeating the same data (as when the "format" and "standalone" forms are the same)

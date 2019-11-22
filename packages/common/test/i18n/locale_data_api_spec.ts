@@ -12,7 +12,8 @@ import localeEn from '@angular/common/locales/en';
 import localeFr from '@angular/common/locales/fr';
 import localeZh from '@angular/common/locales/zh';
 import localeEnAU from '@angular/common/locales/en-AU';
-import {getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNumberOfCurrencyDigits} from '../../src/i18n/locale_data_api';
+import localeHe from '@angular/common/locales/he';
+import {getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNumberOfCurrencyDigits, getLocaleDirection} from '../../src/i18n/locale_data_api';
 
 {
   describe('locale data api', () => {
@@ -21,6 +22,7 @@ import {getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNumberOfCurrency
       ɵregisterLocaleData(localeFr);
       ɵregisterLocaleData(localeZh);
       ɵregisterLocaleData(localeEnAU);
+      ɵregisterLocaleData(localeHe);
     });
 
     afterAll(() => { ɵunregisterLocaleData(); });
@@ -55,6 +57,14 @@ import {getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNumberOfCurrency
     describe('getLastDefinedValue', () => {
       it('should find the last defined date format when format not defined',
          () => { expect(getLocaleDateFormat('zh', FormatWidth.Long)).toEqual('y年M月d日'); });
+    });
+
+    describe('getDirectionality', () => {
+      it('should have correct direction for rtl languages',
+         () => { expect(getLocaleDirection('he')).toEqual('rtl'); });
+
+      it('should have correct direction for ltr languages',
+         () => { expect(getLocaleDirection('en')).toEqual('ltr'); });
     });
   });
 }

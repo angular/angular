@@ -50,7 +50,7 @@ module.exports = (gulp, done) => {
   const LOCALES = cldrData.availableLocales;
 
   console.log(`Loading CLDR data...`);
-  cldrJs.load(cldrData.all());
+  cldrJs.load(cldrData.all().concat(cldrData('scriptMetadata')));
 
   console.log(`Writing locale files`);
   if (!fs.existsSync(RELATIVE_I18N_FOLDER)) {
@@ -154,7 +154,7 @@ function generateBasicLocaleString(locale, localeData, baseCurrencies) {
           [
             locale, ...getDateTimeTranslations(localeData), ...getDateTimeSettings(localeData),
             ...getNumberSettings(localeData), ...getCurrencySettings(locale, localeData),
-            generateLocaleCurrencies(localeData, baseCurrencies)
+            generateLocaleCurrencies(localeData, baseCurrencies), getDirectionality(localeData),
           ],
           true)
           // We remove "undefined" added by spreading arrays when there is no value
@@ -531,6 +531,15 @@ function getCurrencySettings(locale, localeData) {
   }
 
   return currencySettings;
+}
+
+/**
+ * Returns the writing direction for a locale
+ * @returns 'rtl' | 'ltr'
+ */
+function getDirectionality(localeData) {
+  const rtl = localeData.get('scriptMetadata/{script}/rtl');
+  return rtl === 'YES' ? 'rtl' : 'ltr';
 }
 
 /**
