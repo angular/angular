@@ -54,7 +54,7 @@ def compile_strategy(ctx):
 
     return strategy
 
-def _is_ivy_enabled(ctx):
+def is_ivy_enabled(ctx):
     """Determine if the ivy compiler should be used to by the ng_module.
 
     Args:
@@ -89,7 +89,7 @@ def _compiler_name(ctx):
       The name of the current compiler to be displayed in build output
     """
 
-    return "Ivy" if _is_ivy_enabled(ctx) else "ViewEngine"
+    return "Ivy" if is_ivy_enabled(ctx) else "ViewEngine"
 
 def _is_view_engine_enabled(ctx):
     """Determines whether Angular outputs will be produced by the current compilation strategy.
@@ -102,7 +102,7 @@ def _is_view_engine_enabled(ctx):
       factory files), false otherwise
     """
 
-    return not _is_ivy_enabled(ctx)
+    return not is_ivy_enabled(ctx)
 
 def _basename_of(ctx, file):
     ext_len = len(".ts")
@@ -323,7 +323,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "generateNgSummaryShims": True if generate_ve_shims else False,
         # Summaries are only enabled if Angular outputs are to be produced.
         "enableSummariesForJit": is_legacy_ngc,
-        "enableIvy": _is_ivy_enabled(ctx),
+        "enableIvy": is_ivy_enabled(ctx),
         "fullTemplateTypeCheck": ctx.attr.type_check,
         # TODO(alxhub/arick): template type-checking for Ivy needs to be tested in g3 before it can
         # be enabled here.
