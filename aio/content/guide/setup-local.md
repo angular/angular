@@ -101,7 +101,7 @@ and rebuilds the app as you make changes to those files.
 The `--open` (or just `-o`) option automatically opens your browser
 to `http://localhost:4200/`.
 
-Your app greets you with a message:
+You will see:
 
 
 <div class="lightbox">
