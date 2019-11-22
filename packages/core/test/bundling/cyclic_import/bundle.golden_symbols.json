@@ -498,9 +498,6 @@
     "name": "isProceduralRenderer"
   },
   {
-    "name": "isRootView"
-  },
-  {
     "name": "isStylingContext"
   },
   {

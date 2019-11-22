@@ -17,7 +17,7 @@ import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
-import {isLContainer, isLView, isRootView} from './interfaces/type_checks';
+import {isLContainer, isLView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {getLViewParent} from './util/view_traversal_utils';
@@ -503,11 +503,6 @@ function executeOnDestroys(view: LView): void {
  *   into destination.
  */
 function getRenderParent(tNode: TNode, currentView: LView): RElement|null {
-  // Nodes of the top-most view can be inserted eagerly.
-  if (isRootView(currentView)) {
-    return nativeParentNode(currentView[RENDERER], getNativeByTNode(tNode, currentView));
-  }
-
   // Skip over element and ICU containers as those are represented by a comment node and
   // can't be used as a render parent.
   let parentTNode = tNode.parent;
