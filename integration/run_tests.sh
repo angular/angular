@@ -72,6 +72,6 @@ for testDir in ${TEST_DIRS}; do
   )
 done
 
-if $CI; then
+if $CI && [[ "$SHARD_INDEX" == "0" ]]; then
   trackPayloadSize "umd" "../dist/packages-dist/*/bundles/*.umd.min.js" false
 fi
