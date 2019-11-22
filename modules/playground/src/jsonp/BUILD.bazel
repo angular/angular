@@ -19,17 +19,19 @@ ng_module(
 
 ts_devserver(
     name = "devserver",
-    data = ["people.json"],
+    bootstrap = [
+        "//packages/zone.js/dist:zone.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+    ],
     entry_module = "angular/modules/playground/src/jsonp/index",
-    index_html = "index.html",
     port = 4200,
     scripts = [
         "@npm//:node_modules/tslib/tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
     static_files = [
-        "//packages/zone.js/dist:zone.js",
-        "@npm//:node_modules/reflect-metadata/Reflect.js",
+        "people.json",
+        "index.html",
     ],
     deps = [":jsonp"],
 )

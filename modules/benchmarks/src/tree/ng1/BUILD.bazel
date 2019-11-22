@@ -16,12 +16,10 @@ ts_library(
 
 ts_devserver(
     name = "devserver",
+    bootstrap = ["@npm//:node_modules/angular/angular.js"],
     entry_module = "angular/modules/benchmarks/src/tree/ng1/index",
-    index_html = "index.html",
     port = 4200,
-    static_files = [
-        "@npm//:node_modules/angular/angular.js",
-    ],
+    static_files = ["index.html"],
     deps = [":ng1"],
 )
 
