@@ -36,7 +36,7 @@ function addPolyfillDependency(): Rule {
 
 /** Adds the document-register-element.js to the polyfills file. */
 function addPolyfill(options: Schema): Rule {
-  return async(host, context) => {
+  return async(host: Tree, context: SchematicContext) => {
     const projectName = options.project;
 
     if (!projectName) {
@@ -47,11 +47,12 @@ function addPolyfill(options: Schema): Rule {
     const project = workspace.projects.get(projectName);
 
     if (!project) {
-      throw new SchematicsException(`Project is not defined in this workspace.`);
+      throw new SchematicsException(`Project ${projectName} is not defined in this workspace.`);
     }
 
     if (project.extensions['projectType'] !== 'application') {
-      throw new SchematicsException(`@angular/elements requires a project type of "application".`);
+      throw new SchematicsException(
+          `@angular/elements requires a project type of "application" but ${projectName} isn't.`);
     }
 
     const buildTarget = project.targets.get('build');
@@ -66,7 +67,7 @@ function addPolyfill(options: Schema): Rule {
 
     const content = host.read(polyfills).toString();
     if (!content.includes('document-register-element')) {
-      // Add string at the start of the file.
+      // Add string at the end of the file.
       const recorder = host.beginUpdate(polyfills);
       recorder.insertRight(content.length, `import 'document-register-element';\n`);
       host.commitUpdate(recorder);
