@@ -64,8 +64,13 @@ test --test_output=errors
 ################################
 # Temporary Settings for Ivy   #
 ################################
-# to determine if the compiler used should be Ivy or ViewEngine one can use `--define=compile=aot` on
-# any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
+# To determine if the compiler used should be Ivy instead of ViewEngine, one can use `--config=ivy`
+# on any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
+build --define=angular_ivy_enabled=False
+
+build:view-engine --define=angular_ivy_enabled=False
+build:ivy --define=angular_ivy_enabled=True --define=compile=aot
+
 build --define=compile=legacy
 
 ##################################

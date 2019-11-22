@@ -13,6 +13,7 @@ build --local_resources=14336,8.0,1.0
 
 # Use the Angular Ivy compiler
 # See https://github.com/angular/angular/blob/master/docs/BAZEL.md#various-flags-used-for-tests
+build --define=angular_ivy_enabled=True
 build --define=compile=aot
 
 # Temporary define while angular depends on the legacy rollup_bundle rule.
