@@ -16,7 +16,7 @@ ts_library(
 
 markdown_to_html(
     name = "overview",
-    srcs = ["testing.md"],
+    srcs = ["test-harnesses.md"],
 )
 
 filegroup(
