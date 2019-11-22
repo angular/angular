@@ -45,18 +45,20 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_module, assets = 
         name = "devserver",
         port = 4200,
         entry_module = entry_module,
-        static_files = [
+        additional_root_paths = ["angular/packages/examples"],
+        bootstrap = [
             "//packages/zone.js/dist:zone.js",
             "@npm//:node_modules/angular/angular.js",
             "@npm//:node_modules/reflect-metadata/Reflect.js",
         ],
-        index_html = "//packages/examples:index.html",
+        static_files = [
+            "//packages/examples:index.html",
+        ] + assets,
         scripts = [
             "@npm//:node_modules/tslib/tslib.js",
             "//tools/rxjs:rxjs_umd_modules",
         ],
         deps = [":%s_sources" % name],
-        data = assets,
     )
 
     protractor_web_test_suite(
@@ -65,7 +67,6 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_module, assets = 
         server = ":devserver",
         deps = [
             ":%s_e2e_lib" % name,
-            "@npm//protractor",
             "@npm//selenium-webdriver",
         ],
     )

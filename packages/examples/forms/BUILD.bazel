@@ -37,16 +37,15 @@ ts_library(
 
 ts_devserver(
     name = "devserver",
+    additional_root_paths = ["angular/packages/examples"],
+    bootstrap = ["//packages/zone.js/dist:zone.js"],
     entry_module = "@angular/examples/forms/main",
-    index_html = "//packages/examples:index.html",
     port = 4200,
     scripts = [
         "@npm//:node_modules/tslib/tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
-    static_files = [
-        "//packages/zone.js/dist:zone.js",
-    ],
+    static_files = ["//packages/examples:index.html"],
     deps = [":forms_examples"],
 )
 
@@ -56,7 +55,6 @@ protractor_web_test_suite(
     server = ":devserver",
     deps = [
         ":forms_e2e_tests_lib",
-        "@npm//protractor",
         "@npm//selenium-webdriver",
     ],
 )

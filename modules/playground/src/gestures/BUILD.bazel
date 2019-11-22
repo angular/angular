@@ -20,14 +20,14 @@ ng_module(
 
 ts_devserver(
     name = "devserver",
-    entry_module = "angular/modules/playground/src/gestures/index",
-    index_html = "index.html",
-    port = 4200,
-    scripts = ["@npm//:node_modules/tslib/tslib.js"],
-    static_files = [
+    bootstrap = [
         "@npm//:node_modules/hammerjs/hammer.js",
         "//packages/zone.js/dist:zone.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
+    entry_module = "angular/modules/playground/src/gestures/index",
+    port = 4200,
+    scripts = ["@npm//:node_modules/tslib/tslib.js"],
+    static_files = ["index.html"],
     deps = [":gestures"],
 )

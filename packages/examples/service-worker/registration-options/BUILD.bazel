@@ -35,17 +35,18 @@ ts_library(
 
 ts_devserver(
     name = "devserver",
+    additional_root_paths = ["angular/packages/examples"],
+    bootstrap = [
+        "//packages/zone.js/dist:zone.js",
+        "ngsw-worker.js",
+    ],
     entry_module = "@angular/examples/service-worker/registration-options/main",
-    index_html = "//packages/examples:index.html",
     port = 4200,
     scripts = [
         "//tools/rxjs:rxjs_umd_modules",
         "@npm//:node_modules/tslib/tslib.js",
     ],
-    static_files = [
-        "ngsw-worker.js",
-        "//packages/zone.js/dist:zone.js",
-    ],
+    static_files = ["//packages/examples:index.html"],
     deps = [":sw_registration_options_examples"],
 )
 
@@ -55,7 +56,6 @@ protractor_web_test_suite(
     server = ":devserver",
     deps = [
         ":sw_registration_options_e2e_tests_lib",
-        "@npm//protractor",
         "@npm//selenium-webdriver",
     ],
 )
