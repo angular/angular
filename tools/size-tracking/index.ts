@@ -26,14 +26,14 @@ if (require.main === module) {
 
 export function main(
     filePath: string, sourceMapPath: string, goldenSizeMapPath: string, writeGolden: boolean,
-    maxPercentageDiff: number, maxByteDiff: number, requiredCompileMode: string): boolean {
+    maxPercentageDiff: number, maxByteDiff: number, requiresIvy: string): boolean {
   const {sizeResult} = new SizeTracker(filePath, sourceMapPath);
-  const compileMode = process.env['compile'];
+  const ivyEnabled = process.env['angular_ivy_enabled'] == 'True';
 
-  if (requiredCompileMode && compileMode !== requiredCompileMode) {
+  if (requiresIvy && ivyEnabled) {
     console.error(chalk.red(
         `Expected the size-tracking tool to be run with: ` +
-        `--define=compile=${requiredCompileMode}`));
+        `--config=${requiresIvy ? 'ivy' : 'view-engine'}`));
     return false;
   }
 
@@ -60,9 +60,9 @@ export function main(
   });
 
   const bazelTargetName = process.env['TEST_TARGET'];
-  const defineFlag = (compileMode !== 'legacy') ? `--define=compile=${compileMode} ` : '';
 
   console.error(`\nThe golden file can be updated with the following command:`);
-  console.error(`    yarn bazel run ${defineFlag}${bazelTargetName}.accept`);
+  console.error(
+      `    yarn bazel run --config=${ivyEnabled ? 'ivy' : 'view-engine'} ${bazelTargetName}.accept`);
   return false;
 }
