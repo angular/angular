@@ -6,4 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import 'reflect-metadata';
+/**
+ * This variable shows if Ivy should be enabled at runtime.
+ */
+export const ivyEnabled = false;
