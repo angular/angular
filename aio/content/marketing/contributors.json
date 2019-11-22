@@ -864,5 +864,13 @@
     "website": "http://martina-kraus.io",
     "bio": "Martina is a software engineer and an Angular enthusiast. As a trainer, mentor and speaker she loves sharing knowledge about Web Technologies and Angular. She is Organizer of ngGirls and the local Angular Meetup",
     "groups": ["GDE"]
+  },
+  "santosh": {
+    "name": "Santosh Yadav",
+    "picture": "santoshyadav.jpg",
+    "twitter": "Santosh19742211",
+    "website": "https://www.santoshyadav.dev",
+    "bio": "Santosh is a GDE for Angular and Web Technologies and loves to contribute to Open Source. He is the creator of ng deploy for netlify and core team member for NestJS Addons. He writes for AngularInDepth, mentors for DotNetTricks, organizes Pune Tech Meetup, and conducts free workshops on Angular.",
+    "groups": ["GDE"]
   }
 }
