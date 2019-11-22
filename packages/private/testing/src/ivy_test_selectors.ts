@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {bazelDefineCompileValue} from './bazel_define_compile_value';
+import {ivyEnabled} from './angular_ivy_enabled';
 
 /**
  * A function to conditionally include a test or a block of tests only when tests run against Ivy.
@@ -24,7 +23,7 @@ import {bazelDefineCompileValue} from './bazel_define_compile_value';
  * ivyEnabled && it(...);
  * ```
  */
-export const ivyEnabled = 'aot' === (bazelDefineCompileValue as string);
+export {ivyEnabled};
 
 /**
  * A function to conditionally skip the execution of tests that are not relevant when
