@@ -106,7 +106,7 @@ The packages listed in the `devDependencies` section of `package.json` help you 
 To add a new `devDependency`, use either one of the following commands:
 
 <code-example language="sh" class="code-shell">
-  npm install --dev &lt;package-name&gt;
+  npm install --save-dev &lt;package-name&gt;
 </code-example>
 
 <code-example language="sh" class="code-shell">
