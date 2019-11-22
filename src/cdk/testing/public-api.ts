@@ -9,3 +9,4 @@
 export * from './component-harness';
 export * from './harness-environment';
 export * from './test-element';
+export * from './element-dimensions';

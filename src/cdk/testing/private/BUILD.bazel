@@ -10,7 +10,7 @@ ts_library(
     ),
     module_name = "@angular/cdk/testing/private",
     deps = [
-        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "@npm//@angular/core",
         "@npm//@types/jasmine",
     ],

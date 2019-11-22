@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ModifierKeys} from '@angular/cdk/testing';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from './dispatch-events';
 import {triggerFocus} from './element-focus';
-import {ModifierKeys} from './event-objects';
 
 /**
  * Checks whether the given Element is a text input element.

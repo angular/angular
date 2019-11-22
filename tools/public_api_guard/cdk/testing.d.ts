@@ -26,6 +26,13 @@ export interface ComponentHarnessConstructor<T extends ComponentHarness> {
     new (locatorFactory: LocatorFactory): T;
 }
 
+export interface ElementDimensions {
+    height: number;
+    left: number;
+    top: number;
+    width: number;
+}
+
 export declare abstract class HarnessEnvironment<E> implements HarnessLoader, LocatorFactory {
     protected rawRootElement: E;
     rootElement: TestElement;
@@ -89,6 +96,13 @@ export declare type LocatorFnResult<T extends (HarnessQuery<any> | string)[]> = 
         harnessType: new (...args: any[]) => infer C;
     } ? C : T[I] extends string ? TestElement : never;
 }[number];
+
+export interface ModifierKeys {
+    alt?: boolean;
+    control?: boolean;
+    meta?: boolean;
+    shift?: boolean;
+}
 
 export interface TestElement {
     blur(): Promise<void>;

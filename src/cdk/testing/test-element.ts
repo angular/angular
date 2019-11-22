@@ -7,7 +7,14 @@
  */
 
 import {ElementDimensions} from './element-dimensions';
-import {ModifierKeys} from './fake-events';
+
+/** Modifier keys that may be held while typing. */
+export interface ModifierKeys {
+  control?: boolean;
+  alt?: boolean;
+  shift?: boolean;
+  meta?: boolean;
+}
 
 /** An enum of non-text keys that can be used with the `sendKeys` method. */
 // NOTE: This is a separate enum from `@angular/cdk/keycodes` because we don't necessarily want to

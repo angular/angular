@@ -207,7 +207,7 @@ System.config({
     'rxjs/operators': {main: 'index'},
 
     // Needed for relative imports inside the testing package to work.
-    'dist/packages/cdk/testing/fake-events': {main: 'index'},
+    'dist/packages/cdk/testing/testbed/fake-events': {main: 'index'},
 
     // Set the default extension for the root package, because otherwise the tests can't
     // be built within the production mode. Due to missing file extensions.

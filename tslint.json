@@ -160,6 +160,13 @@
       true,
       "src/!(a11y-demo|e2e-app|components-examples|universal-app)/**/!(*.spec).ts"
     ],
+    "no-cross-entry-point-relative-imports": [
+      true,
+      "src/!(a11y-demo|e2e-app|components-examples|universal-app|dev-app)/**/!(*.spec).ts",
+      "!src/+(cdk|material)/schematics/**/*",
+      "!src/cdk/testing/+(private|tests)/**/*",
+      "!src/google-maps/testing/**/*"
+    ],
     "file-name-casing": [true, {
       // Exclude custom lint rule files since they have to always be camel-cased and end
       // with "Rule".

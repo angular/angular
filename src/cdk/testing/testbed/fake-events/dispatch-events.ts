@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ModifierKeys} from '@angular/cdk/testing';
 import {
   createFakeEvent,
   createKeyboardEvent,
   createMouseEvent,
   createTouchEvent,
-  ModifierKeys
 } from './event-objects';
 
 /**

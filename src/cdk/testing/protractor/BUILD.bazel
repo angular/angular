@@ -11,7 +11,6 @@ ts_library(
     module_name = "@angular/cdk/testing/protractor",
     deps = [
         "//src/cdk/testing",
-        "//src/cdk/testing/private",
         "@npm//protractor",
     ],
 )

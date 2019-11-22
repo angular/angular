@@ -6,12 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessEnvironment} from '@angular/cdk/testing';
+import {
+  ComponentHarness,
+  ComponentHarnessConstructor,
+  HarnessEnvironment,
+  HarnessLoader,
+  TestElement
+} from '@angular/cdk/testing';
 import {ComponentFixture, flush} from '@angular/core/testing';
 import {Observable} from 'rxjs';
 import {takeWhile} from 'rxjs/operators';
-import {ComponentHarness, ComponentHarnessConstructor, HarnessLoader} from '../component-harness';
-import {TestElement} from '../test-element';
 import {TaskState, TaskStateZoneInterceptor} from './task-state-zone-interceptor';
 import {UnitTestElement} from './unit-test-element';
 
