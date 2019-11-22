@@ -366,9 +366,6 @@
     "name": "isProceduralRenderer"
   },
   {
-    "name": "isRootView"
-  },
-  {
     "name": "leaveDI"
   },
   {
