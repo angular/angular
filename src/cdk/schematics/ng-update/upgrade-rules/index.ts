@@ -44,13 +44,16 @@ export const cdkMigrationRules: MigrationRuleType<RuleUpgradeData>[] = [
 
 type NullableMigrationRule = MigrationRuleType<RuleUpgradeData|null>;
 
+type PostMigrationFn = (context: SchematicContext, targetVersion: TargetVersion,
+                        hasFailure: boolean) => void;
+
 /**
  * Creates a Angular schematic rule that runs the upgrade for the
  * specified target version.
  */
 export function createUpgradeRule(
     targetVersion: TargetVersion, extraRules: NullableMigrationRule[], upgradeData: RuleUpgradeData,
-    onMigrationCompleteFn?: (targetVersion: TargetVersion, hasFailures: boolean) => void): Rule {
+    onMigrationCompleteFn?: PostMigrationFn): Rule {
   return async (tree: Tree, context: SchematicContext) => {
     const logger = context.logger;
     const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
@@ -99,7 +102,7 @@ export function createUpgradeRule(
     }
 
     if (onMigrationCompleteFn) {
-      onMigrationCompleteFn(targetVersion, hasRuleFailures);
+      onMigrationCompleteFn(context, targetVersion, hasRuleFailures);
     }
   };
 }

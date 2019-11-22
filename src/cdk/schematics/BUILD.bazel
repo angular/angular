@@ -36,7 +36,6 @@ ts_library(
         "@npm//glob",
         "@npm//parse5",
         "@npm//typescript",
-        "@npm//chalk",
     ],
 )
 

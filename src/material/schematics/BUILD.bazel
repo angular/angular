@@ -34,7 +34,6 @@ ts_library(
         "@npm//@types/node",
         "@npm//tslint",
         "@npm//typescript",
-        "@npm//chalk",
     ],
 )
 

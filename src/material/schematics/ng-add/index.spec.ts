@@ -14,10 +14,22 @@ import {getWorkspace} from '@schematics/angular/utility/config';
 describe('ng-add schematic', () => {
   let runner: SchematicTestRunner;
   let appTree: Tree;
+  let errorOutput: string[];
+  let warnOutput: string[];
 
   beforeEach(async () => {
     runner = new SchematicTestRunner('schematics', require.resolve('../collection.json'));
     appTree = await createTestApp(runner);
+
+    errorOutput = [];
+    warnOutput = [];
+    runner.logger.subscribe(e => {
+      if (e.level === 'error') {
+        errorOutput.push(e.message);
+      } else if (e.level === 'warn') {
+        warnOutput.push(e.message);
+      }
+    });
   });
 
   /** Expects the given file to be in the styles of the specified workspace project. */
@@ -164,12 +176,10 @@ describe('ng-add schematic', () => {
       addModuleImportToRootModule(
           appTree, 'NoopAnimationsModule', '@angular/platform-browser/animations', project);
 
-      spyOn(console, 'warn');
       await runner.runSchematicAsync('ng-add-setup-project', {}, appTree).toPromise();
 
-      expect(console.warn)
-          .toHaveBeenCalledWith(
-              jasmine.stringMatching(/Could not set up "BrowserAnimationsModule"/));
+      expect(errorOutput.length).toBe(1);
+      expect(errorOutput[0]).toMatch(/Could not set up "BrowserAnimationsModule"/);
     });
   });
 
@@ -231,12 +241,12 @@ describe('ng-add schematic', () => {
     it('should warn if the "test" target has been changed', async () => {
       overwriteTargetBuilder(appTree, 'test', 'thirdparty-test-builder');
 
-      spyOn(console, 'warn');
       await runner.runSchematicAsync('ng-add-setup-project', {}, appTree).toPromise();
 
-      expect(console.warn)
-          .toHaveBeenCalledWith(jasmine.stringMatching(
-              /not using the default builders.*cannot add the configured theme/));
+      expect(errorOutput.length).toBe(0);
+      expect(warnOutput.length).toBe(1);
+      expect(warnOutput[0]).toMatch(
+          /not using the default builders.*cannot add the configured theme/);
     });
   });
 
@@ -276,7 +286,6 @@ describe('ng-add schematic', () => {
     });
 
     it('should not replace existing custom theme files', async () => {
-      spyOn(console, 'warn');
       writeStyleFileToWorkspace(appTree, './projects/material/custom-theme.scss');
 
       const tree = await runner.runSchematicAsync('ng-add-setup-project', {}, appTree).toPromise();
@@ -286,8 +295,8 @@ describe('ng-add schematic', () => {
 
       expect(styles).not.toContain(
           defaultPrebuiltThemePath, 'Expected the default prebuilt theme to be not configured.');
-      expect(console.warn)
-          .toHaveBeenCalledWith(jasmine.stringMatching(/Could not add the selected theme/));
+      expect(errorOutput.length).toBe(1);
+      expect(errorOutput[0]).toMatch(/Could not add the selected theme/);
     });
 
     it('should not add a theme file multiple times', async () => {

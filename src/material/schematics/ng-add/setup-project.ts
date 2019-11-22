@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {chain, Rule, Tree} from '@angular-devkit/schematics';
+import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {
   addModuleImportToRootModule,
   getProjectFromWorkspace,
@@ -14,7 +14,6 @@ import {
   getProjectStyleFile,
   hasNgModuleImport,
 } from '@angular/cdk/schematics';
-import chalk from 'chalk';
 import {getWorkspace} from '@schematics/angular/utility/config';
 import {getAppModulePath} from '@schematics/angular/utility/ng-ast-utils';
 import {addFontsToIndex} from './fonts/material-fonts';
@@ -49,7 +48,7 @@ export default function(options: Schema): Rule {
  * components of Angular Material will throw an exception.
  */
 function addAnimationsModule(options: Schema) {
-  return (host: Tree) => {
+  return (host: Tree, context: SchematicContext) => {
     const workspace = getWorkspace(host);
     const project = getProjectFromWorkspace(workspace, options.project);
     const appModulePath = getAppModulePath(host, getProjectMainFile(project));
@@ -60,10 +59,11 @@ function addAnimationsModule(options: Schema) {
       // animations. If we would add the BrowserAnimationsModule while the NoopAnimationsModule
       // is already configured, we would cause unexpected behavior and runtime exceptions.
       if (hasNgModuleImport(host, appModulePath, noopAnimationsModuleName)) {
-        return console.warn(chalk.red(
-            `Could not set up "${chalk.bold(browserAnimationsModuleName)}" ` +
-            `because "${chalk.bold(noopAnimationsModuleName)}" is already imported. Please ` +
-            `manually set up browser animations.`));
+        context.logger.error(
+            `Could not set up "${browserAnimationsModuleName}" ` +
+            `because "${noopAnimationsModuleName}" is already imported.`);
+        context.logger.info(`Please manually set up browser animations.`);
+        return;
       }
 
       addModuleImportToRootModule(host, browserAnimationsModuleName,
@@ -84,23 +84,24 @@ function addAnimationsModule(options: Schema) {
  * and reset the default browser body margin.
  */
 function addMaterialAppStyles(options: Schema) {
-  return (host: Tree) => {
+  return (host: Tree, context: SchematicContext) => {
     const workspace = getWorkspace(host);
     const project = getProjectFromWorkspace(workspace, options.project);
     const styleFilePath = getProjectStyleFile(project);
+    const logger = context.logger;
 
     if (!styleFilePath) {
-      console.warn(chalk.red(`Could not find the default style file for this project.`));
-      console.warn(chalk.red(`Please consider manually setting up the Roboto font in your CSS.`));
+      logger.error(`Could not find the default style file for this project.`);
+      logger.info(`Please consider manually setting up the Roboto font in your CSS.`);
       return;
     }
 
     const buffer = host.read(styleFilePath);
 
     if (!buffer) {
-      console.warn(chalk.red(`Could not read the default style file within the project ` +
-        `(${chalk.italic(styleFilePath)})`));
-      console.warn(chalk.red(`Please consider manually setting up the Robot font.`));
+      logger.error(`Could not read the default style file within the project ` +
+        `(${styleFilePath})`);
+      logger.info(`Please consider manually setting up the Robot font.`);
       return;
     }
 

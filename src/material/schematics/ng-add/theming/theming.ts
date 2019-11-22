@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {normalize} from '@angular-devkit/core';
+import {normalize, logging} from '@angular-devkit/core';
 import {WorkspaceProject, WorkspaceSchema} from '@angular-devkit/core/src/experimental/workspace';
-import {SchematicsException, Tree} from '@angular-devkit/schematics';
+import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {
   addBodyClass,
   defaultTargetBuilders,
@@ -19,7 +19,6 @@ import {
 } from '@angular/cdk/schematics';
 import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace} from '@schematics/angular/utility/config';
-import chalk from 'chalk';
 import {join} from 'path';
 import {Schema} from '../schema';
 import {createCustomTheme} from './create-custom-theme';
@@ -31,16 +30,16 @@ const prebuiltThemePathSegment = '@angular/material/prebuilt-themes';
 const defaultCustomThemeFilename = 'custom-theme.scss';
 
 /** Add pre-built styles to the main project style file. */
-export function addThemeToAppStyles(options: Schema): (host: Tree) => Tree {
-  return function(host: Tree): Tree {
+export function addThemeToAppStyles(options: Schema): Rule {
+  return function(host: Tree, context: SchematicContext): Tree {
     const workspace = getWorkspace(host);
     const project = getProjectFromWorkspace(workspace, options.project);
     const themeName = options.theme || 'indigo-pink';
 
     if (themeName === 'custom') {
-      insertCustomTheme(project, options.project, host, workspace);
+      insertCustomTheme(project, options.project, host, workspace, context.logger);
     } else {
-      insertPrebuiltTheme(project, host, themeName, workspace);
+      insertPrebuiltTheme(project, host, themeName, workspace, context.logger);
     }
 
     return host;
@@ -69,7 +68,7 @@ export function addTypographyClass(options: Schema): (host: Tree) => Tree {
  * Scss file for the custom theme will be created.
  */
 function insertCustomTheme(project: WorkspaceProject, projectName: string, host: Tree,
-                           workspace: WorkspaceSchema) {
+                           workspace: WorkspaceSchema, logger: logging.LoggerApi) {
 
   const stylesPath = getProjectStyleFile(project, 'scss');
   const themeContent = createCustomTheme(projectName);
@@ -85,13 +84,13 @@ function insertCustomTheme(project: WorkspaceProject, projectName: string, host:
     const customThemePath = normalize(join(project.sourceRoot, defaultCustomThemeFilename));
 
     if (host.exists(customThemePath)) {
-      console.warn(chalk.yellow(`Cannot create a custom Angular Material theme because
-          ${chalk.bold(customThemePath)} already exists. Skipping custom theme generation.`));
+      logger.warn(`Cannot create a custom Angular Material theme because
+          ${customThemePath} already exists. Skipping custom theme generation.`);
       return;
     }
 
     host.create(customThemePath, themeContent);
-    addThemeStyleToTarget(project, 'build', host, customThemePath, workspace);
+    addThemeStyleToTarget(project, 'build', host, customThemePath, workspace, logger);
     return;
   }
 
@@ -104,20 +103,21 @@ function insertCustomTheme(project: WorkspaceProject, projectName: string, host:
 
 /** Insert a pre-built theme into the angular.json file. */
 function insertPrebuiltTheme(project: WorkspaceProject, host: Tree, theme: string,
-                             workspace: WorkspaceSchema) {
+                             workspace: WorkspaceSchema, logger: logging.LoggerApi) {
 
   // Path needs to be always relative to the `package.json` or workspace root.
   const themePath =  `./node_modules/@angular/material/prebuilt-themes/${theme}.css`;
 
-  addThemeStyleToTarget(project, 'build', host, themePath, workspace);
-  addThemeStyleToTarget(project, 'test', host, themePath, workspace);
+  addThemeStyleToTarget(project, 'build', host, themePath, workspace, logger);
+  addThemeStyleToTarget(project, 'test', host, themePath, workspace, logger);
 }
 
 /** Adds a theming style entry to the given project target options. */
 function addThemeStyleToTarget(project: WorkspaceProject, targetName: 'test' | 'build', host: Tree,
-                               assetPath: string, workspace: WorkspaceSchema) {
+                               assetPath: string, workspace: WorkspaceSchema,
+                               logger: logging.LoggerApi) {
   // Do not update the builder options in case the target does not use the default CLI builder.
-  if (!validateDefaultTargetBuilder(project, targetName)) {
+  if (!validateDefaultTargetBuilder(project, targetName, logger)) {
     return;
   }
 
@@ -139,11 +139,10 @@ function addThemeStyleToTarget(project: WorkspaceProject, targetName: 'test' | '
       // theme because these files can contain custom styles, while prebuilt themes are
       // always packaged and considered replaceable.
       if (stylePath.includes(defaultCustomThemeFilename)) {
-        console.warn(chalk.red(`Could not add the selected theme to the CLI project ` +
-            `configuration because there is already a custom theme file referenced.`));
-        console.warn(chalk.red(
-            `Please manually add the following style file to your configuration:`));
-        console.warn(chalk.yellow(`    ${chalk.bold(assetPath)}`));
+        logger.error(`Could not add the selected theme to the CLI project ` +
+            `configuration because there is already a custom theme file referenced.`);
+        logger.info(`Please manually add the following style file to your configuration:`);
+        logger.info(`    ${assetPath}`);
         return;
       } else if (stylePath.includes(prebuiltThemePathSegment)) {
         targetOptions.styles.splice(index, 1);
@@ -161,7 +160,8 @@ function addThemeStyleToTarget(project: WorkspaceProject, targetName: 'test' | '
  * provided by the Angular CLI. If the configured builder does not match the default builder,
  * this function can either throw or just show a warning.
  */
-function validateDefaultTargetBuilder(project: WorkspaceProject, targetName: 'build' | 'test') {
+function validateDefaultTargetBuilder(project: WorkspaceProject, targetName: 'build' | 'test',
+                                      logger: logging.LoggerApi) {
   const defaultBuilder = defaultTargetBuilders[targetName];
   const targetConfig = project.architect && project.architect[targetName] ||
                        project.targets && project.targets[targetName];
@@ -178,7 +178,9 @@ function validateDefaultTargetBuilder(project: WorkspaceProject, targetName: 'bu
       `"${targetName}". The Angular Material schematics cannot add a theme to the workspace ` +
       `configuration if the builder has been changed.`);
   } else if (!isDefaultBuilder) {
-    console.warn(`Your project is not using the default builders for "${targetName}". This ` +
+    // for non-build targets we gracefully report the error without actually aborting the
+    // setup schematic. This is because a theme is not mandatory for running tests.
+    logger.warn(`Your project is not using the default builders for "${targetName}". This ` +
       `means that we cannot add the configured theme to the "${targetName}" target.`);
   }
 

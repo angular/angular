@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import chalk from 'chalk';
 import * as ts from 'typescript';
 import {MigrationRule} from '../../update-tool/migration-rule';
 import {PropertyNameUpgradeData} from '../data/property-names';
@@ -54,9 +53,9 @@ export class ClassInheritanceRule extends MigrationRule<RuleUpgradeData> {
       if (data) {
         this.createFailureAtNode(
             node,
-            `Found class "${chalk.bold(className)}" which extends class ` +
-                `"${chalk.bold(typeName)}". Please note that the base class property ` +
-                `"${chalk.red(data.replace)}" has changed to "${chalk.green(data.replaceWith)}". ` +
+            `Found class "${className}" which extends class ` +
+                `"${typeName}". Please note that the base class property ` +
+                `"${data.replace}" has changed to "${data.replaceWith}". ` +
                 `You may need to update your class as well.`);
       }
     });

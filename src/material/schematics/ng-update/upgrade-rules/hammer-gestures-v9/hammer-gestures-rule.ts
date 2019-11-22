@@ -31,7 +31,6 @@ import {
 import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace} from '@schematics/angular/utility/config';
 import {WorkspaceProject} from '@schematics/angular/utility/workspace-models';
-import chalk from 'chalk';
 import {readFileSync} from 'fs';
 import {dirname, join, relative} from 'path';
 import * as ts from 'typescript';
@@ -851,10 +850,10 @@ export class HammerGesturesRule extends MigrationRule<null> {
    */
   static globalPostMigration(tree: Tree, context: SchematicContext): PostMigrationAction {
     // Always notify the developer that the Hammer v9 migration does not migrate tests.
-    context.logger.info(chalk.yellow(
+    context.logger.info(
         '\n⚠  General notice: The HammerJS v9 migration for Angular Components is not able to ' +
         'migrate tests. Please manually clean up tests in your project if they rely on ' +
-        (this.globalUsesHammer ? 'the deprecated Angular Material gesture config.' : 'HammerJS.')));
+        (this.globalUsesHammer ? 'the deprecated Angular Material gesture config.' : 'HammerJS.'));
     context.logger.info(
         'Read more about migrating tests: https://git.io/ng-material-v9-hammer-migrate-tests');
 
