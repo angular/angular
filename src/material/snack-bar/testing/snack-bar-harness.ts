@@ -13,6 +13,7 @@ import {SnackBarHarnessFilters} from './snack-bar-harness-filters';
 export class MatSnackBarHarness extends ComponentHarness {
   // Developers can provide a custom component or template for the
   // snackbar. The canonical snack-bar parent is the "MatSnackBarContainer".
+  /** The selector for the host element of a `MatSnackBar` instance. */
   static hostSelector = '.mat-snack-bar-container';
 
   private _simpleSnackBar = this.locatorForOptional('.mat-simple-snackbar');
@@ -21,12 +22,10 @@ export class MatSnackBarHarness extends ComponentHarness {
       this.locatorForOptional('.mat-simple-snackbar-action > button');
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a snack-bar with
-   * specific attributes.
-   * @param options Options for narrowing the search.
-   *   - `selector` finds a snack-bar that matches the given selector. Note that the
-   *                selector must match the snack-bar container element.
-   * @return `HarnessPredicate` configured with the given options.
+   * Gets a `HarnessPredicate` that can be used to search for a `MatSnackBarHarness` that meets
+   * certain criteria.
+   * @param options Options for filtering which snack bar instances are considered a match.
+   * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: SnackBarHarnessFilters = {}): HarnessPredicate<MatSnackBarHarness> {
     return new HarnessPredicate(MatSnackBarHarness, options);
@@ -41,8 +40,7 @@ export class MatSnackBarHarness extends ComponentHarness {
   }
 
   /**
-   * Gets whether the snack-bar has an action. Method cannot be
-   * used for snack-bar's with custom content.
+   * Whether the snack-bar has an action. Method cannot be used for snack-bar's with custom content.
    */
   async hasAction(): Promise<boolean> {
     await this._assertSimpleSnackBar();
@@ -50,8 +48,8 @@ export class MatSnackBarHarness extends ComponentHarness {
   }
 
   /**
-   * Gets the description of the snack-bar. Method cannot be
-   * used for snack-bar's without action or with custom content.
+   * Gets the description of the snack-bar. Method cannot be used for snack-bar's without action or
+   * with custom content.
    */
   async getActionDescription(): Promise<string> {
     await this._assertSimpleSnackBarWithAction();
@@ -60,8 +58,8 @@ export class MatSnackBarHarness extends ComponentHarness {
 
 
   /**
-   * Dismisses the snack-bar by clicking the action button. Method cannot
-   * be used for snack-bar's without action or with custom content.
+   * Dismisses the snack-bar by clicking the action button. Method cannot be used for snack-bar's
+   * without action or with custom content.
    */
   async dismissWithAction(): Promise<void> {
     await this._assertSimpleSnackBarWithAction();
@@ -69,8 +67,7 @@ export class MatSnackBarHarness extends ComponentHarness {
   }
 
   /**
-   * Gets the message of the snack-bar. Method cannot be used for
-   * snack-bar's with custom content.
+   * Gets the message of the snack-bar. Method cannot be used for snack-bar's with custom content.
    */
   async getMessage(): Promise<string> {
     await this._assertSimpleSnackBar();
@@ -78,7 +75,7 @@ export class MatSnackBarHarness extends ComponentHarness {
   }
 
   /**
-   * Asserts that the current snack-bar does not use custom content. Throws if
+   * Asserts that the current snack-bar does not use custom content. Promise rejects if
    * custom content is used.
    */
   private async _assertSimpleSnackBar(): Promise<void> {
@@ -89,7 +86,7 @@ export class MatSnackBarHarness extends ComponentHarness {
 
   /**
    * Asserts that the current snack-bar does not use custom content and has
-   * an action defined. Otherwise an error will be thrown.
+   * an action defined. Otherwise the promise will reject.
    */
   private async _assertSimpleSnackBarWithAction(): Promise<void> {
     await this._assertSimpleSnackBar();
@@ -98,7 +95,7 @@ export class MatSnackBarHarness extends ComponentHarness {
     }
   }
 
-  /** Gets whether the snack-bar is using the default content template. */
+  /** Whether the snack-bar is using the default content template. */
   private async _isSimpleSnackBar(): Promise<boolean> {
     return await this._simpleSnackBar() !== null;
   }

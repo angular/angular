@@ -8,7 +8,10 @@
 
 import {BaseHarnessFilters} from '@angular/cdk/testing';
 
+/** A set of criteria that can be used to filter a list of `MatCheckboxHarness` instances. */
 export interface CheckboxHarnessFilters extends BaseHarnessFilters {
+  /** Only find instances whose label matches the given value. */
   label?: string | RegExp;
+  /** Only find instances whose name attribute is the given value. */
   name?: string;
 }

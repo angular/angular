@@ -384,10 +384,11 @@ export interface ComponentHarnessConstructor<T extends ComponentHarness> {
   hostSelector: string;
 }
 
+/** A set of criteria that can be used to filter a list of `ComponentHarness` instances. */
 export interface BaseHarnessFilters {
-  /** Only find component instances whose host element matches the given selector. */
+  /** Only find instances whose host element matches the given selector. */
   selector?: string;
-  /** Only find component instances that are nested under an element with the given selector. */
+  /** Only find instances that are nested under an element with the given selector. */
   ancestor?: string;
 }
 

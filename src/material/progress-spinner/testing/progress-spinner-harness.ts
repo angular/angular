@@ -13,25 +13,28 @@ import {ProgressSpinnerHarnessFilters} from './progress-spinner-harness-filters'
 
 /** Harness for interacting with a standard mat-progress-spinner in tests. */
 export class MatProgressSpinnerHarness extends ComponentHarness {
+  /** The selector for the host element of a `MatProgressSpinner` instance. */
   static hostSelector = 'mat-progress-spinner';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a progress bar with specific
-   * attributes.
+   * Gets a `HarnessPredicate` that can be used to search for a `MatProgressSpinnerHarness` that
+   * meets certain criteria.
+   * @param options Options for filtering which progress spinner instances are considered a match.
+   * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: ProgressSpinnerHarnessFilters = {}):
       HarnessPredicate<MatProgressSpinnerHarness> {
     return new HarnessPredicate(MatProgressSpinnerHarness, options);
   }
 
-  /** Gets a promise for the progress spinner's value. */
+  /** Gets the progress spinner's value. */
   async getValue(): Promise<number|null> {
     const host = await this.host();
     const ariaValue = await host.getAttribute('aria-valuenow');
     return ariaValue ? coerceNumberProperty(ariaValue) : null;
   }
 
-  /** Gets a promise for the progress spinner's mode. */
+  /** Gets the progress spinner's mode. */
   async getMode(): Promise<ProgressSpinnerMode> {
     const modeAttr = (await this.host()).getAttribute('mode');
     return await modeAttr as ProgressSpinnerMode;

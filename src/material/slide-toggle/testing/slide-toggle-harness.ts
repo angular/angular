@@ -13,13 +13,13 @@ import {SlideToggleHarnessFilters} from './slide-toggle-harness-filters';
 
 /** Harness for interacting with a standard mat-slide-toggle in tests. */
 export class MatSlideToggleHarness extends ComponentHarness {
+  /** The selector for the host element of a `MatSlideToggle` instance. */
   static hostSelector = 'mat-slide-toggle';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a slide-toggle w/ specific attributes.
-   * @param options Options for narrowing the search:
-   *   - `selector` finds a slide-toggle whose host element matches the given selector.
-   *   - `label` finds a slide-toggle with specific label text.
+   * Gets a `HarnessPredicate` that can be used to search for a `MatSlideToggleHarness` that meets
+   * certain criteria.
+   * @param options Options for filtering which slide toggle instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: SlideToggleHarnessFilters = {}): HarnessPredicate<MatSlideToggleHarness> {
@@ -36,76 +36,68 @@ export class MatSlideToggleHarness extends ComponentHarness {
   private _input = this.locatorFor('input');
   private _inputContainer = this.locatorFor('.mat-slide-toggle-bar');
 
-  /** Gets a boolean promise indicating if the slide-toggle is checked. */
+  /** Whether the slide-toggle is checked. */
   async isChecked(): Promise<boolean> {
     const checked = (await this._input()).getProperty('checked');
     return coerceBooleanProperty(await checked);
   }
 
-  /** Gets a boolean promise indicating if the slide-toggle is disabled. */
+  /** Whether the slide-toggle is disabled. */
   async isDisabled(): Promise<boolean> {
     const disabled = (await this._input()).getAttribute('disabled');
     return coerceBooleanProperty(await disabled);
   }
 
-  /** Gets a boolean promise indicating if the slide-toggle is required. */
+  /** Whether the slide-toggle is required. */
   async isRequired(): Promise<boolean> {
     const required = (await this._input()).getAttribute('required');
     return coerceBooleanProperty(await required);
   }
 
-  /** Gets a boolean promise indicating if the slide-toggle is valid. */
+  /** Whether the slide-toggle is valid. */
   async isValid(): Promise<boolean> {
     const invalid = (await this.host()).hasClass('ng-invalid');
     return !(await invalid);
   }
 
-  /** Gets a promise for the slide-toggle's name. */
+  /** Gets the slide-toggle's name. */
   async getName(): Promise<string | null> {
     return (await this._input()).getAttribute('name');
   }
 
-  /** Gets a promise for the slide-toggle's aria-label. */
+  /** Gets the slide-toggle's aria-label. */
   async getAriaLabel(): Promise<string | null> {
     return (await this._input()).getAttribute('aria-label');
   }
 
-  /** Gets a promise for the slide-toggle's aria-labelledby. */
+  /** Gets the slide-toggle's aria-labelledby. */
   async getAriaLabelledby(): Promise<string | null> {
     return (await this._input()).getAttribute('aria-labelledby');
   }
 
-  /** Gets a promise for the slide-toggle's label text. */
+  /** Gets the slide-toggle's label text. */
   async getLabelText(): Promise<string> {
     return (await this._label()).text();
   }
 
-  /** Focuses the slide-toggle and returns a void promise that indicates action completion. */
+  /** Focuses the slide-toggle. */
   async focus(): Promise<void> {
     return (await this._input()).focus();
   }
 
-  /** Blurs the slide-toggle and returns a void promise that indicates action completion. */
+  /** Blurs the slide-toggle. */
   async blur(): Promise<void> {
     return (await this._input()).blur();
   }
 
-  /**
-   * Toggle the checked state of the slide-toggle and returns a void promise that indicates when the
-   * action is complete.
-   *
-   * Note: This toggles the slide-toggle as a user would, by clicking it.
-   */
+  /** Toggle the checked state of the slide-toggle. */
   async toggle(): Promise<void> {
     return (await this._inputContainer()).click();
   }
 
   /**
    * Puts the slide-toggle in a checked state by toggling it if it is currently unchecked, or doing
-   * nothing if it is already checked. Returns a void promise that indicates when the action is
-   * complete.
-   *
-   * Note: This attempts to check the slide-toggle as a user would, by clicking it.
+   * nothing if it is already checked.
    */
   async check(): Promise<void> {
     if (!(await this.isChecked())) {
@@ -115,10 +107,7 @@ export class MatSlideToggleHarness extends ComponentHarness {
 
   /**
    * Puts the slide-toggle in an unchecked state by toggling it if it is currently checked, or doing
-   * nothing if it is already unchecked. Returns a void promise that indicates when the action is
-   * complete.
-   *
-   * Note: This toggles the slide-toggle as a user would, by clicking it.
+   * nothing if it is already unchecked.
    */
   async uncheck(): Promise<void> {
     if (await this.isChecked()) {

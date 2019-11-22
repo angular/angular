@@ -1,6 +1,6 @@
 export declare class MatMenuHarness extends ComponentHarness {
     blur(): Promise<void>;
-    clickItem(filter: Omit<MenuItemHarnessFilters, 'ancestor'>, ...filters: Omit<MenuItemHarnessFilters, 'ancestor'>[]): Promise<void>;
+    clickItem(itemFilter: Omit<MenuItemHarnessFilters, 'ancestor'>, ...subItemFilters: Omit<MenuItemHarnessFilters, 'ancestor'>[]): Promise<void>;
     close(): Promise<void>;
     focus(): Promise<void>;
     getItems(filters?: Omit<MenuItemHarnessFilters, 'ancestor'>): Promise<MatMenuItemHarness[]>;

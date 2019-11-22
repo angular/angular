@@ -12,13 +12,14 @@ import {DrawerHarnessFilters} from './drawer-harness-filters';
 
 /** Harness for interacting with a standard mat-sidenav in tests. */
 export class MatSidenavHarness extends MatDrawerHarness {
+  /** The selector for the host element of a `MatSidenav` instance. */
   static hostSelector = '.mat-sidenav';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a sidenav with
-   * specific attributes.
-   * @param options Options for narrowing the search.
-   * @return `HarnessPredicate` configured with the given options.
+   * Gets a `HarnessPredicate` that can be used to search for a `MatSidenavHarness` that meets
+   * certain criteria.
+   * @param options Options for filtering which sidenav instances are considered a match.
+   * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: DrawerHarnessFilters = {}): HarnessPredicate<MatDrawerHarness> {
     return new HarnessPredicate(MatDrawerHarness, options)
@@ -26,7 +27,7 @@ export class MatSidenavHarness extends MatDrawerHarness {
             async (harness, position) => (await harness.getPosition()) === position);
   }
 
-  /** Gets whether the sidenav is fixed in the viewport. */
+  /** Whether the sidenav is fixed in the viewport. */
   async isFixedInViewport(): Promise<boolean> {
     return (await this.host()).hasClass('mat-sidenav-fixed');
   }
