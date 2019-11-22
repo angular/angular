@@ -549,4 +549,84 @@ may need to explicitly wait for tasks outside `NgZone`, as this does not happen 
 
 ### API for harness environment authors
 
-TODO(mmalerba): Fill in docs for harness environment authors
+Harness environment authors are developers who want to add support for using component harnesses in
+additional testing environments. Out-of-the-box, Angular CDK's component harnesses can be used in
+Protractor E2E tests and Karma unit tests. Developers can support additional environments by
+creating custom implementations of `TestElement` and `HarnessEnvironment`. 
+
+#### Creating a `TestElement` implementation for the environment
+
+The first step in adding support for a new testing environment is to create a `TestElement`
+implementation. The `TestElement` interface serves as an environment-agnostic representation of a
+DOM element; it lets harnesses interact with DOM elements regardless of the underlying environment.
+Because some environments don't support interacting with DOM elements synchronously
+(e.g. webdriver), all of `TestElement` methods are asynchronous, returning a `Promise` with the
+result of the operation.
+
+| Method | Description |
+| ------ | ----------- |
+| `blur(): Promise<void>` | Blurs the element. |
+| `clear(): Promise<void>` | Clears the text from an element (only applies for `<input>` and `<textarea>`). |
+| `click(relativeX?: number, relativeY?: number): Promise<void>` | Clicks an element at a point relative to it's top-left corner. |
+| `focus(): Promise<void>` | Focuses the element. |
+| `getCssValue(property: string): Promise<string>` | Gets the computed CSS value of the given property for the element. |
+| `hover(): Promise<void>` | Hovers the mouse over the element. |
+| `sendKeys(...keys: (string \| TestKey)[]): Promise<void>` | Sends a sequence of key events to the element. |
+| `sendKeys(modifiers: ModifierKeys, ...keys: (string \| TestKey)[]): Promise<void>` | Sends a sequence of key events to the element, while holding a set of modifier keys. |
+| `text(): Promise<string>` | Gets the text content of the element. |
+| `getAttribute(name: string): Promise<string \| null>` | Gets the value of the given HTML attribute for the element. |
+| `hasClass(name: string): Promise<boolean>` | Checks whether the element has the given class. |
+| `getDimensions(): Promise<ElementDimensions>` | Gets the dimensions of the element. |
+| `getProperty(name: string): Promise<any>` | Gets the value of the given property for the element. |
+| `matchesSelector(selector: string): Promise<boolean>` | Checks whether the given selector matches the element. |
+
+The `TestElement` interface consists largely of methods that resemble methods
+available on `HTMLElement`; similar methods exist in most test environments, which makes
+implementing the methods fairly straightforward. However, one important difference to note when
+implementing the `sendKeys` method, is that the key codes in the `TestKey`
+enum likely differ from the key codes used in the test environment. Environment authors should
+maintain a mapping from `TestKey` codes to the codes used in the particular testing environment.
+
+The 
+[`UnitTestElement`](https://github.com/angular/components/blob/master/src/cdk/testing/testbed/unit-test-element.ts#L57)
+and 
+[`ProtractorElement`](https://github.com/angular/components/blob/master/src/cdk/testing/protractor/protractor-element.ts#L67)
+implementations in Angular CDK serve as good examples of implementations of this interface.
+
+#### Creating a `HarnessEnvironemnt` implementation for the environment
+
+Test authors use `HarnessEnvironemnt` to create component harness instances for use in tests. 
+
+`HarnessEnvironment` is an abstract class that must be extended to create a concrete subclass for
+the new environment. When supporting a new test environment, you must create a `HarnessEnvironment`
+subclass that add concrete implementations for all abstract members.
+
+You will notice that `HarnessEnvironment` has a generic type parameter: `HarnessEnvironment<E>`.
+This parameter, `E`, represents the raw element type of the environment. For example, this parameter
+is `Element` for unit test environments.
+
+The following are the abstract methods that must be implemented:
+
+| Method | Description |
+| ------ | ----------- |
+| `abstract getDocumentRoot(): E` | Gets the root element for the environment (e.g. `document.body`). |
+| `abstract createTestElement(element: E): TestElement` | Creates a `TestElement` for the given raw element. |
+| `abstract createEnvironment(element: E): HarnessEnvironment` | Creates a `HarnessEnvironment` rooted at the given raw element. |
+| `abstract getAllRawElements(selector: string): Promise<E[]>` | Gets all of the raw elements under the root element of the environment matching the given selector. |
+| `abstract forceStabilize(): Promise<void>` | Gets a `Promise` that resolves when the `NgZone` is stable. Additionally, if applicable, tells `NgZone` to stabilize (e.g. calling `flush()` in a `fakeAsync` test). |
+| `abstract waitForTasksOutsideAngular(): Promise<void>` | Gets a `Promise` that resolves when the parent zone of `NgZone` is stable. |
+
+In addition to implementing the missing methods, this class should provide a way for test authors to
+get `ComponentHarness` instances. The recommended approach is to have a protected constructor and
+provide a static method called `loader` that returns a `HarnessLoader` instance. This allows test
+authors to write code like: `SomeHarnessEnvironment.loader().getHarness(...)`. Depending on the
+needs of the particular environment, the class may provide several different static methods or
+require arguments to be passed. (e.g. the `loader` method on `TestbedHarnessEnvironment` takes a
+`ComponentFixture`, and the class provides additional static methods called `documentRootLoader` and
+`harnessForFixture`).
+
+The 
+[`TestbedHarnessEnvironment`](https://github.com/angular/components/blob/master/src/cdk/testing/testbed/testbed-harness-environment.ts#L20)
+and 
+[`ProtractorHarnessEnvironment`](https://github.com/angular/components/blob/master/src/cdk/testing/protractor/protractor-harness-environment.ts#L16)
+implementations in Angular CDK serve as good examples of implementations of this interface.
