@@ -5,9 +5,9 @@ package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
 ts_devserver(
     name = "devserver",
-    index_html = "index.html",
+    bootstrap = ["largetable.js"],
     port = 4200,
-    static_files = ["largetable.js"],
+    static_files = ["index.html"],
 )
 
 benchmark_test(

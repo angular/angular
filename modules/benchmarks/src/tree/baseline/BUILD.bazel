@@ -17,8 +17,8 @@ ts_library(
 ts_devserver(
     name = "devserver",
     entry_module = "angular/modules/benchmarks/src/tree/baseline/index",
-    index_html = "index.html",
     port = 4200,
+    static_files = ["index.html"],
     deps = [":baseline"],
 )
 

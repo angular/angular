@@ -19,16 +19,16 @@ ng_module(
 
 ts_devserver(
     name = "devserver",
+    bootstrap = [
+        "//packages/zone.js/dist:zone.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+    ],
     entry_module = "angular/modules/playground/src/model_driven_forms/index",
-    index_html = "index.html",
     port = 4200,
     scripts = [
         "@npm//:node_modules/tslib/tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
-    static_files = [
-        "//packages/zone.js/dist:zone.js",
-        "@npm//:node_modules/reflect-metadata/Reflect.js",
-    ],
+    static_files = ["index.html"],
     deps = [":model_driven_forms"],
 )

@@ -8,8 +8,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "9901bc17138a79135048fb0c107ee7a56e91815ec6594c08cb9a17b80276d62b",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.40.0/rules_nodejs-0.40.0.tar.gz"],
+    sha256 = "8dc1466f8563f3aa4ac7ab7aa3c96651eb7764108219f40b2d1c918e1a81c601",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.41.0/rules_nodejs-0.41.0.tar.gz"],
 )
 
 # Check the bazel version and download npm dependencies
@@ -29,7 +29,7 @@ Try running `yarn bazel` instead.
     minimum_bazel_version = "1.1.0",
 )
 
-check_rules_nodejs_version(minimum_version_string = "0.40.0")
+check_rules_nodejs_version(minimum_version_string = "0.41.0")
 
 # Setup the Node.js toolchain
 node_repositories(

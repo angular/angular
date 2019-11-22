@@ -31,12 +31,10 @@ ng_rollup_bundle(
 
 ts_devserver(
     name = "devserver",
-    index_html = "index.html",
     port = 4200,
+    static_files = ["index.html"],
     tags = ["ivy-only"],
-    deps = [
-        ":bundle.min_debug.js",
-    ],
+    deps = [":bundle.min_debug.js"],
 )
 
 benchmark_test(
