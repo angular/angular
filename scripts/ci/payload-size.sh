@@ -80,36 +80,6 @@ addMessage() {
   payloadData="$payloadData\"message\": \"$message\", "
 }
 
-# Add change source: `application`, `dependencies`, or `application+dependencies`
-# Read from global variable `$parentDir`.
-# Update the change source in global variable `$payloadData`.
-#   $1: string - The commit range for this build (in `<SHA-1>...<SHA-2>` format).
-addChangeType() {
-  commitRange="$1"
-
-  yarnChanged=false
-  allChangedFiles=$(git diff --name-only $commitRange $parentDir | wc -l)
-  allChangedFileNames=$(git diff --name-only $commitRange $parentDir)
-
-  if [[ $allChangedFileNames == *"yarn.lock"* ]]; then
-    yarnChanged=true
-  fi
-
-  if [[ $allChangedFiles -eq 1 ]] && [[ "$yarnChanged" = true ]]; then
-    # only yarn.lock changed
-    change='dependencies'
-  elif [[ $allChangedFiles -gt 1 ]] && [[ "$yarnChanged" = true ]]; then
-    change='application+dependencies'
-  elif [[ $allChangedFiles -gt 0 ]]; then
-    change='application'
-  else
-    # Nothing changed inside $parentDir (but size may still be affected; e.g. when using the locally
-    # built packages)
-    change='other'
-  fi
-  payloadData="$payloadData\"change\": \"$change\", "
-}
-
 # Convert the current `payloadData` value to a JSON string.
 # (Basically remove trailing `,` and wrap in `{...}`.)
 payloadToJson() {
@@ -134,18 +104,17 @@ uploadData() {
 #   $1: string       - The name in database.
 #   $2: string       - The file path.
 #   $3: true | false - Whether to check the payload size and fail the test if it exceeds limit.
-#   $4: true | false - Whether to record the type of changes.
-#   $5: [string]     - The payload size limit file. Only necessary if `$3` is `true`.
+#   $4: [string]     - The payload size limit file. Only necessary if `$3` is `true`.
 trackPayloadSize() {
   name="$1"
   path="$2"
   checkSize="$3"
-  trackChangeType="$4"
-  limitFile="${5:-}"
+  limitFile="${4:-}"
 
   payloadData=""
 
   # Calculate the file sizes.
+  echo "Calculating sizes for files in '$path'..."
   for filename in $path; do
     calculateSize
   done
@@ -155,17 +124,20 @@ trackPayloadSize() {
 
   # If this is a non-PR build, upload the data to firebase.
   if [[ "$CI_PULL_REQUEST" == "false" ]]; then
-    if [[ $trackChangeType = true ]]; then
-      addChangeType $CI_COMMIT_RANGE
-    fi
+    echo "Uploading data for '$name'..."
     addTimestamp
     addBuildUrl $CI_BUILD_URL
     addMessage $CI_COMMIT_RANGE
     uploadData $name
+  else
+    echo "Skipped uploading data for '$name', because this is a pull request."
   fi
 
   # Check the file sizes against the specified limits.
   if [[ $checkSize = true ]]; then
+    echo "Verifying sizes against '$limitFile'..."
     checkSize $name $limitFile
+  else
+    echo "Skipped verifying sizes (checkSize: false)."
   fi
 }
