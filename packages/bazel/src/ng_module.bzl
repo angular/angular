@@ -26,34 +26,6 @@ load(
 _FLAT_DTS_FILE_SUFFIX = ".bundle.d.ts"
 _R3_SYMBOLS_DTS_FILE = "src/r3_symbols.d.ts"
 
-def compile_strategy(ctx):
-    """Detect which strategy should be used to implement ng_module.
-
-    Depending on the value of the 'compile' define flag, ng_module
-    can be implemented in various ways. This function reads the configuration passed by the user and
-    determines which mode is active.
-
-    Args:
-      ctx: skylark rule execution context
-
-    Returns:
-      one of 'legacy' or 'aot' depending on the configuration in ctx
-    """
-
-    strategy = "legacy"
-    if "compile" in ctx.var:
-        strategy = ctx.var["compile"]
-
-    # Enable Angular targets extracted by Kythe Angular indexer to be compiled with the Ivy compiler architecture.
-    # TODO(ayazhafiz): remove once Ivy has landed as the default in g3.
-    if ctx.var.get("GROK_ELLIPSIS_BUILD", None) != None:
-        strategy = "aot"
-
-    if strategy not in ["legacy", "aot"]:
-        fail("Unknown --define=compile value '%s'" % strategy)
-
-    return strategy
-
 def is_ivy_enabled(ctx):
     """Determine if the ivy compiler should be used to by the ng_module.
 
