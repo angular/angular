@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
 import {ClassRecord, TraitCompiler} from '../../transform';
 import {IncrementalBuild} from '../api';
 
@@ -52,7 +53,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
       state = {
         kind: BuildStateKind.Pending,
         pendingEmit: oldDriver.state.pendingEmit,
-        changedResourcePaths: new Set<string>(),
+        changedResourcePaths: new Set<AbsoluteFsPath>(),
         changedTsPaths: new Set<string>(),
         lastGood: oldDriver.state.lastGood,
       };
@@ -61,7 +62,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
     // Merge the freshly modified resource files with any prior ones.
     if (modifiedResourceFiles !== null) {
       for (const resFile of modifiedResourceFiles) {
-        state.changedResourcePaths.add(resFile);
+        state.changedResourcePaths.add(absoluteFrom(resFile));
       }
     }
 
@@ -153,7 +154,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
     const state: PendingBuildState = {
       kind: BuildStateKind.Pending,
       pendingEmit: new Set<string>(tsFiles.map(sf => sf.fileName)),
-      changedResourcePaths: new Set<string>(),
+      changedResourcePaths: new Set<AbsoluteFsPath>(),
       changedTsPaths: new Set<string>(),
       lastGood: null,
     };
@@ -287,7 +288,7 @@ interface PendingBuildState extends BaseBuildState {
   /**
    * Set of resource file paths which have changed since the last successfully analyzed build.
    */
-  changedResourcePaths: Set<string>;
+  changedResourcePaths: Set<AbsoluteFsPath>;
 }
 
 interface AnalyzedBuildState extends BaseBuildState {
