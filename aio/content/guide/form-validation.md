@@ -297,11 +297,11 @@ In the following section, validation is performed asynchronously to ensure that 
 
 To validate the potential alter ego, we need to consult a central database of all currently enlisted heroes. The process is asynchronous, so we need a special validator for that.
 
-Let's start by creating the validator class.
+Let's start by creating the directive:
 
-<code-example path="form-validation/src/app/shared/alter-ego.directive.ts" region="async-validator"></code-example>
+<code-example path="form-validation/src/app/shared/alter-ego.directive.ts" region="async-validator-directive"></code-example>
 
-As you can see, the `UniqueAlterEgoValidator` class implements the `AsyncValidator` interface. In the constructor, we inject the `HeroesService` that has the following interface:
+As you can see, the `UniqueAlterEgoValidatorDirective` class implements the `AsyncValidator` interface. The directive also registers itself with the `NG_ASYNC_VALIDATORS` provider, a provider with an extensible collection of asynchronous validators. In the constructor, we inject the `HeroesService` that has the following interface:
 
 ```typescript
 interface HeroesService {
