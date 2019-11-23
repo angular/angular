@@ -5159,13 +5159,16 @@ export const Foo = Foo__PRE_R3__;
         @Component({
           selector: 'test',
           template: '<style>h1 {font-size: larger}</style>',
+          styles: ['h2 {width: 10px}']
         })
         export class TestCmp {}
       `);
 
         env.driveMain();
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain('styles: ["h1[_ngcontent-%COMP%] {font-size: larger}"]');
+        expect(jsContents)
+            .toContain(
+                'styles: ["h2[_ngcontent-%COMP%] {width: 10px}", "h1[_ngcontent-%COMP%] {font-size: larger}"]');
       });
 
       it('should process inline <link> tags', () => {
