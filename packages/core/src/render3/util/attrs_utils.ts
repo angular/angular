@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {CharCode} from '../../util/char_code';
 import {AttributeMarker, TAttributes} from '../interfaces/node';
 import {CssSelector} from '../interfaces/projection';
 import {ProceduralRenderer3, RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
@@ -103,5 +104,5 @@ export function isAnimationProp(name: string): boolean {
   // Perf note: accessing charCodeAt to check for the first character of a string is faster as
   // compared to accessing a character at index 0 (ex. name[0]). The main reason for this is that
   // charCodeAt doesn't allocate memory to return a substring.
-  return name.charCodeAt(0) === 64;  // @
+  return name.charCodeAt(0) === CharCode.AT_SIGN;
 }

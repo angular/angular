@@ -30,7 +30,7 @@ export function parse(value: string): string[] {
   // we use a string array here instead of a string map
   // because a string-map is not guaranteed to retain the
   // order of the entries whereas a string array can be
-  // construted in a [key, value, key, value] format.
+  // constructed in a [key, value, key, value] format.
   const styles: string[] = [];
 
   let i = 0;
