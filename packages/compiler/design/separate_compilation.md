@@ -22,7 +22,7 @@ themselves, the generated factories. This is because, if any of there
 dependencies change, their factories would be invalid preventing them from
 using version ranges in their dependencies. To support producing factories
 from compiled source (already translated by TypeScript into JavaScript)
-libraries include metadata that describe the content of the the Angular
+libraries include metadata that describe the content of the Angular
 decorators.
 
 This document refers to this style of code generation as Renderer2 after the
@@ -503,7 +503,7 @@ character, including '`/`' and '`.`', replaced by '`_`'.
 
 The back-patch functions will call the back-patch function of any module they
 import. This means that only the application's module and lazy loaded modules
-back-patching functions needs to be called. If using the Renderer2 module factory
+back-patching functions need to be called. If using the Renderer2 module factory
 instances, this is performed automatically when the first application module
 instance is created.
 
@@ -527,7 +527,7 @@ factory.
 
 ### Recommended options
 
-The recommended options for producing a ivy application are
+The recommended options for producing an ivy application are
 
 | option                         | value    |             |
 |--------------------------------|----------|-------------|
@@ -559,7 +559,7 @@ also transform the `.metadata.json` file to reflect the new static fields added
 to the class.
 
 Once the static fields are added to the metadata, the ivy compiler no longer
-needs the the information in the decorator. When `"enableIvy"` is `true` this
+needs the information in the decorator. When `"enableIvy"` is `true` this
 information is removed from the `.metadata.json` file.
 
 ### Recommended options
@@ -773,7 +773,7 @@ interface ModuleScopeSummary {
 
 where `moduleName` is the name of the as it would appear in an import statement
 in a `.ts` file at the same relative location in the source tree. All the
-references in this file are also relative this location.
+references in this file are also relative to this location.
 
 ##### example
 
@@ -820,7 +820,7 @@ bazel run :server_ivy
 ```
 
 The `ng_experimental_ivy_srcs` rule is only needed when ivy is experimental. Once ivy
-is released the `ng_experimental_ivy_srcs`, dependent rules, can be removed.
+is released, the `ng_experimental_ivy_srcs` dependent rules can be removed.
 
 ---
 <a name="myfootnote1"><sup>1</sup></a> More correctly, it calls `performCompilation`
