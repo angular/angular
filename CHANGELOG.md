@@ -1,3 +1,12 @@
+# 9.0.0-rc.4 "samite-semicolon" (2019-11-22)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **schematics:** do not depend on external dependency for colors ([#17788](https://github.com/angular/components/issues/17788)) ([e02bb82](https://github.com/angular/components/commit/e02bb82)) |
+
+
 # 9.0.0-rc.3 "chocolate-chipmonk" (2019-11-20)
 
 ### cdk
