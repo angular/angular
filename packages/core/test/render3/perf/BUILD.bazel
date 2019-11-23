@@ -9,6 +9,7 @@ ts_library(
     ),
     deps = [
         "//packages/core",
+        "//packages/core/src/util",
         "@npm//@types/jasmine",
         "@npm//@types/node",
     ],
@@ -214,4 +215,17 @@ ng_rollup_bundle(
 ng_benchmark(
     name = "duplicate_map_based_style_and_class_bindings",
     bundle = ":duplicate_map_based_style_and_class_bindings_lib",
+)
+
+ng_rollup_bundle(
+    name = "split_class_list_lib",
+    entry_point = ":split_class_list.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_benchmark(
+    name = "split_class_list",
+    bundle = ":split_class_list_lib",
 )
