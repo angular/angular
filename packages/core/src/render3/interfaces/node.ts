@@ -519,6 +519,10 @@ export interface TNode {
    */
   parent: TElementNode|TContainerNode|null;
 
+  // -1 - delay insertion
+  //  0 - host
+  //  >= HEADER_OFFSET - actual parent - I might encode sth here to remove unwrapping
+  renderParentIndex: number;
   /**
    * List of projected TNodes for a given component host element OR index into the said nodes.
    *

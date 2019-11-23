@@ -800,6 +800,7 @@ export function createTNode(
                          null,       // projectionNext: ITNode|null
                          null,       // child: ITNode|null
                          tParent,    // parent: TElementNode|TContainerNode|null
+                         -1,         // renderParentIndex: number
                          null,       // projection: number|(ITNode|RNode[])[]|null
                          null,       // styles: TStylingContext|null
                          null,       // classes: TStylingContext|null
@@ -824,6 +825,7 @@ export function createTNode(
                        projectionNext: null,
                        child: null,
                        parent: tParent,
+                       renderParentIndex: -1,
                        projection: null,
                        styles: null,
                        classes: null,

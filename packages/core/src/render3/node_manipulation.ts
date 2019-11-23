@@ -18,7 +18,7 @@ import {TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, 
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {isLContainer, isLView} from './interfaces/type_checks';
-import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
+import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, TView, TViewType, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {getLViewParent} from './util/view_traversal_utils';
 import {getNativeByTNode, unwrapRNode} from './util/view_utils';
@@ -576,7 +576,7 @@ export function nativeInsertBefore(
   }
 }
 
-function nativeAppendChild(renderer: Renderer3, parent: RElement, child: RNode): void {
+export function nativeAppendChild(renderer: Renderer3, parent: RElement, child: RNode): void {
   ngDevMode && ngDevMode.rendererAppendChild++;
   ngDevMode && assertDefined(parent, 'parent node must be defined');
   if (isProceduralRenderer(renderer)) {
@@ -637,6 +637,44 @@ function getNativeAnchorNode(parentTNode: TNode, lView: LView): RNode|null {
     return getNativeByTNode(parentTNode, lView);
   }
   return null;
+}
+
+
+export function getRenderParentIndex(tView: TView, tNode: TNode): number {
+  // Skip over element and ICU containers as those are represented by a comment node and
+  // can't be used as a render parent.
+  let parentTNode = tNode.parent;
+  while (parentTNode != null && (parentTNode.type === TNodeType.ElementContainer ||
+                                 parentTNode.type === TNodeType.IcuContainer)) {
+    tNode = parentTNode;
+    parentTNode = tNode.parent;
+  }
+
+  if (parentTNode == null) {
+    // we are at the root of a component or an embedded view
+    // if it is a component view, we will return host
+    // if it is an embedded view we should not append
+    return tView.type === TViewType.Component ? 0 : -1;
+  } else {
+    ngDevMode && assertNodeType(parentTNode, TNodeType.Element);
+    if (parentTNode.flags & TNodeFlags.isComponentHost) {
+      const tData = tView.data;
+      const tNode = tData[parentTNode.index] as TNode;
+      const encapsulation = (tData[tNode.directiveStart] as ComponentDef<any>).encapsulation;
+
+      // We've got a parent which is an element in the current view. We just need to verify if the
+      // parent element is not a component. Component's content nodes are not inserted immediately
+      // because they will be projected, and so doing insert at this point would be wasteful.
+      // Since the projection would then move it to its final destination. Note that we can't
+      // make this assumption when using the Shadow DOM, because the native projection placeholders
+      // (<content> or <slot>) have to be in place as elements are being inserted.
+      if (encapsulation !== ViewEncapsulation.ShadowDom &&
+          encapsulation !== ViewEncapsulation.Native) {
+        return -1;
+      }
+    }
+    return parentTNode.index;
+  }
 }
 
 /**

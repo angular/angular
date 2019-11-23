@@ -106,6 +106,7 @@ export function ɵɵelementStart(
     createDirectivesInstances(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
   }
+
   if (localRefsIndex != null) {
     saveResolvedLocalsInData(lView, tNode);
   }
