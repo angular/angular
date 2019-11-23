@@ -273,7 +273,7 @@ export class ComponentDecoratorHandler implements
         const resourceStr = this.resourceLoader.load(resourceUrl);
         styles.push(resourceStr);
         if (this.depTracker !== null) {
-          this.depTracker.addResourceDependency(node.getSourceFile(), resourceUrl);
+          this.depTracker.addResourceDependency(node.getSourceFile(), absoluteFrom(resourceUrl));
         }
       }
     }
@@ -675,7 +675,7 @@ export class ComponentDecoratorHandler implements
       resourceUrl: string): ParsedTemplateWithSource {
     const templateStr = this.resourceLoader.load(resourceUrl);
     if (this.depTracker !== null) {
-      this.depTracker.addResourceDependency(node.getSourceFile(), resourceUrl);
+      this.depTracker.addResourceDependency(node.getSourceFile(), absoluteFrom(resourceUrl));
     }
 
     const template = this._parseTemplate(
