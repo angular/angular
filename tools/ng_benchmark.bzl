@@ -20,7 +20,7 @@ def ng_benchmark(name, bundle):
         name = name,
         data = [bundle],
         entry_point = bundle + ".min_debug.es2015.js",
-        tags = ["local"],
+        tags = ["local", "manual"],  # run benchmarks locally and never on CI
     )
 
     nodejs_binary(
@@ -28,5 +28,5 @@ def ng_benchmark(name, bundle):
         data = [bundle],
         entry_point = bundle + ".min_debug.es2015.js",
         args = ["--node_options=--no-turbo-inlining --node_options=--inspect-brk"],
-        tags = ["local"],
+        tags = ["local", "manual"],  # run benchmarks locally and never on CI
     )
