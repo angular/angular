@@ -16,7 +16,7 @@
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
-    "express": "^4.14.1",
+    "express": "4.16.4",
     "rxjs": "file:../../node_modules/rxjs",
     "typescript": "file:../../node_modules/typescript",
     "zone.js": "file:../../dist/zone.js-dist/zone.js"
@@ -24,13 +24,13 @@
   "devDependencies": {
     "@types/jasmine": "2.5.41",
     "@types/node": "file:../../node_modules/@types/node",
-    "babel-core": "^6.23.1",
-    "babel-loader": "^6.4.0",
-    "babel-preset-es2015": "^6.22.0",
+    "babel-core": "6.26.3",
+    "babel-loader": "6.4.1",
+    "babel-preset-es2015": "6.24.1",
     "concurrently": "3.1.0",
     "protractor": "file:../../node_modules/protractor",
-    "raw-loader": "^0.5.1",
-    "webpack": "^2.2.1"
+    "raw-loader": "0.5.1",
+    "webpack": "2.7.0"
   },
   "scripts": {
     "postinstall": "webdriver-manager update --gecko false --standalone false $CI_CHROMEDRIVER_VERSION_ARG",
