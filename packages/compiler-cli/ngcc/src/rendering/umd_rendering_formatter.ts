@@ -240,8 +240,24 @@ function isCommaExpression(value: ts.Node): value is ts.BinaryExpression {
   return ts.isBinaryExpression(value) && value.operatorToken.kind === ts.SyntaxKind.CommaToken;
 }
 
-function getGlobalIdentifier(i: Import) {
-  return i.specifier.replace('@angular/', 'ng.').replace(/^\//, '');
+/**
+ * Compute a global identifier for the given import (`i`).
+ *
+ * Import specifiers must be camelCase after converting path separators to dots, and special-casing
+ * `@angular`. For example
+ *
+ * * `@ns/package/entry-point` => `ns.package.entryPoint`
+ * * `@angular/common/testing` => `ng.common.testing`
+ * * `@angular/platform-browser-dynamic` => `ng.platformBrowserDynamic`
+ *
+ * @param i the import whose global identifier we want to compute.
+ */
+function getGlobalIdentifier(i: Import): string {
+  return i.specifier.replace(/^@angular\//, 'ng.')
+      .replace(/^@/, '')
+      .replace(/\//g, '.')
+      .replace(/[-_]+(.)?/g, (_, c) => c ? c.toUpperCase() : '')
+      .replace(/^./, c => c.toLowerCase());
 }
 
 function find<T>(node: ts.Node, test: (node: ts.Node) => node is ts.Node & T): T|undefined {
