@@ -15,9 +15,6 @@ http_archive(
 # Check the bazel version and download npm dependencies
 load("@build_bazel_rules_nodejs//:index.bzl", "check_bazel_version", "check_rules_nodejs_version", "node_repositories", "yarn_install")
 
-# Bazel version must be at least the following version because:
-#   - 0.26.0 managed_directories feature added which is required for nodejs rules 0.30.0
-#   - 0.27.0 has a fix for managed_directories after `rm -rf node_modules`
 check_bazel_version(
     message = """
 You no longer need to install Bazel on your machine.
@@ -26,7 +23,7 @@ Try running `yarn bazel` instead.
     (If you did run that, check that you've got a fresh `yarn install`)
 
 """,
-    minimum_bazel_version = "1.1.0",
+    minimum_bazel_version = "1.2.0",
 )
 
 check_rules_nodejs_version(minimum_version_string = "0.40.0")
@@ -113,7 +110,7 @@ rbe_autoconfig(
     # platform configurations for the "ubuntu16_04" image. Otherwise the autoconfig rule would
     # need to pull the image and run it in order determine the toolchain configuration. See:
     # https://github.com/bazelbuild/bazel-toolchains/blob/1.1.2/configs/ubuntu16_04_clang/versions.bzl
-    base_container_digest = "sha256:1ab40405810effefa0b2f45824d6d608634ccddbf06366760c341ef6fbead011",
+    base_container_digest = "sha256:87d0fa2c56558f2f0d05116e6142b29d9ee509776be5fa9794a57f281b75b14e",
     # Note that if you change the `digest`, you might also need to update the
     # `base_container_digest` to make sure marketplace.gcr.io/google/rbe-ubuntu16-04-webtest:<digest>
     # and marketplace.gcr.io/google/rbe-ubuntu16-04:<base_container_digest> have
