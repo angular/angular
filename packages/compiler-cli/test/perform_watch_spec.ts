@@ -64,7 +64,7 @@ describe('perform watch', () => {
     const watchResult = performWatchCompilation(host);
     expectNoDiagnostics(config.options, watchResult.firstCompileResult);
 
-    const htmlPath = path.posix.join(testSupport.basePath, 'src', 'main.html');
+    const htmlPath = path.join(testSupport.basePath, 'src', 'main.html');
     const genPath = ivyEnabled ? path.posix.join(outDir, 'src', 'main.js') :
                                  path.posix.join(outDir, 'src', 'main.ngfactory.js');
 

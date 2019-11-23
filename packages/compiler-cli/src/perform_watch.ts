@@ -246,11 +246,13 @@ export function performWatchCompilation(host: PerformWatchHost):
   }
 
   function watchedFileChanged(event: FileChangeEvent, fileName: string) {
+    const normalizedPath = path.normalize(fileName);
+
     if (cachedOptions && event === FileChangeEvent.Change &&
         // TODO(chuckj): validate that this is sufficient to skip files that were written.
         // This assumes that the file path we write is the same file path we will receive in the
         // change notification.
-        path.normalize(fileName) === path.normalize(cachedOptions.project)) {
+        normalizedPath === path.normalize(cachedOptions.project)) {
       // If the configuration file changes, forget everything and start the recompilation timer
       resetOptions();
     } else if (
@@ -263,12 +265,12 @@ export function performWatchCompilation(host: PerformWatchHost):
     if (event === FileChangeEvent.CreateDeleteDir) {
       fileCache.clear();
     } else {
-      fileCache.delete(path.normalize(fileName));
+      fileCache.delete(normalizedPath);
     }
 
-    if (!ignoreFilesForWatch.has(path.normalize(fileName))) {
+    if (!ignoreFilesForWatch.has(normalizedPath)) {
       // Ignore the file if the file is one that was written by the compiler.
-      startTimerForRecompilation(fileName);
+      startTimerForRecompilation(normalizedPath);
     }
   }
 
