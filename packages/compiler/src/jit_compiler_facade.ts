@@ -142,7 +142,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       selector: facade.selector || this.elementSchemaRegistry.getDefaultComponentElementName(),
       template,
       wrapDirectivesAndPipesInClosure: false,
-      styles: facade.styles || [],
+      styles: [...facade.styles, ...template.styles],
       encapsulation: facade.encapsulation as any,
       interpolation: interpolationConfig,
       changeDetection: facade.changeDetection,

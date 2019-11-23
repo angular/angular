@@ -2410,6 +2410,33 @@ describe('styling', () => {
           .toEqual('url("https://i.imgur.com/4AiXzf8.jpg")');
     });
   });
+
+  isBrowser && it('should process <style> tag contents extracted from template', () => {
+    @Component({
+      template: `
+        <style>
+          div { width: 10px; }
+        </style>
+        <div></div>
+      `,
+      styles: [
+        'div { width: 100px; }',
+      ]
+    })
+    class MyComp {
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [MyComp],
+    });
+
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    // `styles` array values are applied first, styles from <style> tags second.
+    const div = fixture.nativeElement.querySelector('div');
+    expect(getComputedStyle(div).width).toBe('10px');
+  });
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {
