@@ -240,6 +240,25 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
                 `(factory(global.file,global.someSideEffect,global.localDep,global.ng.core,global.ng.core,global.ng.common));`);
       });
 
+      it('should remap import identifiers to valid global properties', () => {
+        const {renderer, program} = setup(PROGRAM);
+        const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
+        const output = new MagicString(PROGRAM.contents);
+        renderer.addImports(
+            output,
+            [
+              {specifier: '@ngrx/store', qualifier: 'i0'},
+              {specifier: '@angular/platform-browser-dynamic', qualifier: 'i1'},
+              {specifier: '@angular/common/testing', qualifier: 'i2'},
+              {specifier: '@angular-foo/package', qualifier: 'i3'}
+            ],
+            file);
+        expect(output.toString())
+            .toContain(
+                `(factory(global.file,global.someSideEffect,global.localDep,global.ng.core,` +
+                `global.ngrx.store,global.ng.platformBrowserDynamic,global.ng.common.testing,global.angularFoo.package));`);
+      });
+
       it('should append the given imports into the global initialization, if it has a global/self initializer',
          () => {
            const {renderer, program} = setup(PROGRAM_WITH_GLOBAL_INITIALIZER);
@@ -256,6 +275,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
                .toContain(
                    `(global = global || self, factory(global.file,global.someSideEffect,global.localDep,global.ng.core,global.ng.core,global.ng.common));`);
          });
+
       it('should append the given imports as parameters into the factory function definition',
          () => {
            const {renderer, program} = setup(PROGRAM);
