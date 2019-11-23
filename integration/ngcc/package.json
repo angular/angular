@@ -4,7 +4,7 @@
   "license": "MIT",
   "dependencies": {
     "@angular/animations": "file:../../dist/packages-dist/animations",
-    "@angular/cdk": "^8.0.0",
+    "@angular/cdk": "8.0.0",
     "@angular/common": "file:../../dist/packages-dist/common",
     "@angular/compiler": "file:../../dist/packages-dist/compiler",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
