@@ -42,6 +42,7 @@ declare global {
     rendererSetClassName: number;
     rendererAddClass: number;
     rendererRemoveClass: number;
+    rendererCssText: number;
     rendererSetStyle: number;
     rendererRemoveStyle: number;
     rendererDestroy: number;
@@ -82,6 +83,7 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     rendererSetClassName: 0,
     rendererAddClass: 0,
     rendererRemoveClass: 0,
+    rendererCssText: 0,
     rendererSetStyle: 0,
     rendererRemoveStyle: 0,
     rendererDestroy: 0,
