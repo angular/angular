@@ -51,7 +51,7 @@ export function createDirectiveDecorator(
       metaArgs.push(property('selector', metadata.selector));
     }
     if (metadata.exportAs !== null) {
-      metaArgs.push(property('exportAs', metadata.exportAs));
+      metaArgs.push(property('exportAs', metadata.exportAs.join(', ')));
     }
     args.push(reifySourceFile(ts.createObjectLiteral(metaArgs)));
   }
@@ -77,7 +77,7 @@ export function createComponentDecorator(
     metaArgs.push(property('selector', metadata.selector));
   }
   if (metadata.exportAs !== null) {
-    metaArgs.push(property('exportAs', metadata.exportAs));
+    metaArgs.push(property('exportAs', metadata.exportAs.join(', ')));
   }
   return {
     name: 'Component',
@@ -105,13 +105,8 @@ export function createInjectableDecorator(clazz: ClassDeclaration): Decorator {
   };
 }
 
-function property(name: string, value: string | string[]): ts.PropertyAssignment {
-  if (typeof value === 'string') {
-    return ts.createPropertyAssignment(name, ts.createStringLiteral(value));
-  } else {
-    return ts.createPropertyAssignment(
-        name, ts.createArrayLiteral(value.map(v => ts.createStringLiteral(v))));
-  }
+function property(name: string, value: string): ts.PropertyAssignment {
+  return ts.createPropertyAssignment(name, ts.createStringLiteral(value));
 }
 
 const EMPTY_SF = ts.createSourceFile('(empty)', '', ts.ScriptTarget.Latest);
