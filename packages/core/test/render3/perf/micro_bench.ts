@@ -65,7 +65,7 @@ export function createBenchmark(benchmarkName: string): Benchmark {
           if (!runAgain) {
             // tslint:disable-next-line:no-console
             console.log(
-                `  ${formatTime(iterationTime_ms)} (count: ${profile.sampleCount}, iterations: ${profile.iterationCount})`);
+                `  ${formatTime(profile.bestTime)} (count: ${profile.sampleCount}, iterations: ${profile.iterationCount})`);
           }
         }
         iterationCounter = profile.iterationCount;
