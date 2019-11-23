@@ -6,6 +6,7 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {unwrapSafeValue} from '../../sanitization/bypass';
+import {CharCode} from '../../util/char_code';
 import {PropertyAliases, TNodeFlags} from '../interfaces/node';
 import {LStylingData, StylingMapArray, StylingMapArrayIndex, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags, TStylingNode} from '../interfaces/styling';
 import {NO_CHANGE} from '../tokens';
@@ -431,7 +432,7 @@ export function splitOnWhitespace(text: string): string[]|null {
   let foundChar = false;
   for (let i = 0; i < length; i++) {
     const char = text.charCodeAt(i);
-    if (char <= 32 /*' '*/) {
+    if (char <= CharCode.SPACE) {
       if (foundChar) {
         if (array === null) array = [];
         array.push(text.substring(start, i));
