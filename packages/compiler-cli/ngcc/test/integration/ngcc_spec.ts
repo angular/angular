@@ -972,6 +972,7 @@ runInEachFileSystem(() => {
 
               @Directive({
                 selector: '[base]',
+                exportAs: 'base1, base2',
               })
               export class BaseDir {}
 
@@ -994,13 +995,14 @@ runInEachFileSystem(() => {
            const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
            expect(jsContents)
                .toContain(
-                   'DerivedDir.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: DerivedDir, selectors: [["", "base", ""]], ' +
+                   'DerivedDir.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: DerivedDir, ' +
+                   'selectors: [["", "base", ""]], exportAs: ["base1", "base2"], ' +
                    'features: [ɵngcc0.ɵɵInheritDefinitionFeature, ɵngcc0.ɵɵCopyDefinitionFeature] });');
 
            const dtsContents = fs.readFile(_(`/node_modules/test-package/index.d.ts`));
            expect(dtsContents)
                .toContain(
-                   'static ɵdir: ɵngcc0.ɵɵDirectiveDefWithMeta<DerivedDir, "[base]", never, {}, {}, never>;');
+                   'static ɵdir: ɵngcc0.ɵɵDirectiveDefWithMeta<DerivedDir, "[base]", ["base1", "base2"], {}, {}, never>;');
          });
 
       it('should generate a component definition with CopyDefinitionFeature for an undecorated child component',
