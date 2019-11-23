@@ -51,7 +51,6 @@ gulp.task('validate-commit-messages', loadTask('validate-commit-message'));
 gulp.task('source-map-test', loadTask('source-map-test'));
 gulp.task('tools:build', loadTask('tools-build'));
 gulp.task('check-cycle', loadTask('check-cycle'));
-gulp.task('serve', loadTask('serve', 'default'));
 gulp.task('changelog', loadTask('changelog'));
 gulp.task('changelog:zonejs', loadTask('changelog-zonejs'));
 gulp.task('check-env', () => {/* this is a noop because the env test ran already above */});
