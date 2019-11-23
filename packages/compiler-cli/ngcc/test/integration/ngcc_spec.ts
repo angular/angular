@@ -116,13 +116,13 @@ runInEachFileSystem(() => {
       compileIntoFlatEs5Package('test-package', {
         '/index.ts': `
           import {Directive, Input, NgModule} from '@angular/core';
-  
+
           @Directive({selector: '[foo]'})
           export class FooDirective {
             @Input() get bar() { return 'bar'; }
             set bar(value: string) {}
           }
-  
+
           @NgModule({
             declarations: [FooDirective],
           })
@@ -149,14 +149,14 @@ runInEachFileSystem(() => {
       compileIntoFlatEs5Package('test-package', {
         '/index.ts': `
           import {Directive, Input, NgModule} from '@angular/core';
-  
+
           @Directive({
             selector: '[foo]',
             host: {bar: ''},
           })
           export class FooDirective {
           }
-  
+
           @NgModule({
             declarations: [FooDirective],
           })
@@ -210,7 +210,7 @@ runInEachFileSystem(() => {
       compileIntoFlatEs5Package('test-package', {
         '/index.ts': `
         import {Injectable, Pipe, PipeTransform} from '@angular/core';
-       
+
         @Injectable()
         @Pipe({
           name: 'myTestPipe'
@@ -759,13 +759,20 @@ runInEachFileSystem(() => {
             `,
           },
         ]);
-        expect(() => mainNgcc({
-                 basePath: '/node_modules',
-                 targetEntryPointPath: 'fatal-error',
-                 propertiesToConsider: ['es2015']
-               }))
-            .toThrowError(
-                /^Failed to compile entry-point fatal-error due to compilation errors:\nnode_modules\/fatal-error\/index\.js\(5,17\): error TS-992001: component is missing a template\r?\n$/);
+
+        try {
+          mainNgcc({
+            basePath: '/node_modules',
+            targetEntryPointPath: 'fatal-error',
+            propertiesToConsider: ['es2015']
+          });
+          fail('should have thrown');
+        } catch (e) {
+          expect(e.message).toContain(
+              'Failed to compile entry-point fatal-error due to compilation errors:');
+          expect(e.message).toContain('NG2001');
+          expect(e.message).toContain('component is missing a template');
+        }
       });
     });
 

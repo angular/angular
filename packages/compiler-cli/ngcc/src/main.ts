@@ -12,6 +12,7 @@ import {DepGraph} from 'dependency-graph';
 import * as os from 'os';
 import * as ts from 'typescript';
 
+import {replaceTsWithNgInErrors} from '../../src/ngtsc/diagnostics';
 import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, getFileSystem, resolve} from '../../src/ngtsc/file_system';
 
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
@@ -262,11 +263,13 @@ export function mainNgcc(
       const result = transformer.transform(bundle);
       if (result.success) {
         if (result.diagnostics.length > 0) {
-          logger.warn(ts.formatDiagnostics(result.diagnostics, bundle.src.host));
+          logger.warn(replaceTsWithNgInErrors(
+              ts.formatDiagnosticsWithColorAndContext(result.diagnostics, bundle.src.host)));
         }
         fileWriter.writeBundle(bundle, result.transformedFiles, formatPropertiesToMarkAsProcessed);
       } else {
-        const errors = ts.formatDiagnostics(result.diagnostics, bundle.src.host);
+        const errors = replaceTsWithNgInErrors(
+            ts.formatDiagnosticsWithColorAndContext(result.diagnostics, bundle.src.host));
         throw new Error(
             `Failed to compile entry-point ${entryPoint.name} due to compilation errors:\n${errors}`);
       }
