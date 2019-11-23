@@ -4,7 +4,7 @@ This directory contains end-to-end tests for Angular. Each directory is a self-c
 that exactly mimics how a user might expect Angular to work, so they allow high-fidelity
 reproductions of real-world issues.
 
-For this to work, we first build the Angular distribution just like we would publish it to npm, then
+For this to work, we first build the Angular distribution via `./scripts/build-packages-dist.js`, then
 install the distribution into each app.
 
 To test Angular CLI applications, we use the `cli-hello-world-*` integration tests.
@@ -15,10 +15,12 @@ When a significant change is released in the CLI, the applications should be upd
 $ cd integration/cli-hello-world[-*]
 $ yarn install
 $ yarn ng update @angular/cli @angular-devkit/build-angular
-# yarn build
-# yarn test
-# typescript version
+$ yarn build
+$ yarn test
 ```
+
+Afterwards the `@angular/cli` and `@angular-devkit/build-angular` should be reverted to the `file:../` urls
+and the main `package.json` should be updated with the new versions.
 
 ## Render3 tests
 
