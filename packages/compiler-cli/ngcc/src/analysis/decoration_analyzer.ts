@@ -160,7 +160,7 @@ export class DecorationAnalyzer {
   protected applyMigrations(analyzedFiles: AnalyzedFile[]): void {
     const migrationHost = new DefaultMigrationHost(
         this.reflectionHost, this.fullMetaReader, this.evaluator, this.handlers,
-        this.bundle.entryPoint.path, analyzedFiles);
+        this.bundle.entryPoint.path, analyzedFiles, this.diagnosticHandler);
 
     this.migrations.forEach(migration => {
       analyzedFiles.forEach(analyzedFile => {

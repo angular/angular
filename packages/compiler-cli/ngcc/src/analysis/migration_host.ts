@@ -27,7 +27,8 @@ export class DefaultMigrationHost implements MigrationHost {
   constructor(
       readonly reflectionHost: NgccReflectionHost, readonly metadata: MetadataReader,
       readonly evaluator: PartialEvaluator, private handlers: DecoratorHandler<any, any>[],
-      private entryPointPath: AbsoluteFsPath, private analyzedFiles: AnalyzedFile[]) {}
+      private entryPointPath: AbsoluteFsPath, private analyzedFiles: AnalyzedFile[],
+      private diagnosticHandler: (error: ts.Diagnostic) => void) {}
 
   injectSyntheticDecorator(clazz: ClassDeclaration, decorator: Decorator, flags?: HandlerFlags):
       void {
@@ -35,6 +36,12 @@ export class DefaultMigrationHost implements MigrationHost {
     const newAnalyzedClass = analyzeDecorators(classSymbol, [decorator], this.handlers, flags);
     if (newAnalyzedClass === null) {
       return;
+    }
+
+    if (newAnalyzedClass.diagnostics !== undefined) {
+      for (const diagnostic of newAnalyzedClass.diagnostics) {
+        this.diagnosticHandler(createMigrationDiagnostic(diagnostic, clazz, decorator));
+      }
     }
 
     const analyzedFile = getOrCreateAnalyzedFile(this.analyzedFiles, clazz.getSourceFile());
@@ -101,4 +108,44 @@ function mergeAnalyzedClasses(oldClass: AnalyzedClass, newClass: AnalyzedClass) 
       oldClass.diagnostics.push(...newClass.diagnostics);
     }
   }
+}
+
+/**
+ * Creates a diagnostic from another one, containing additional information about the synthetic
+ * decorator.
+ */
+function createMigrationDiagnostic(
+    diagnostic: ts.Diagnostic, source: ts.Node, decorator: Decorator): ts.Diagnostic {
+  const clone = {...diagnostic};
+
+  const chain: ts.DiagnosticMessageChain[] = [{
+    messageText: `Occurs for @${decorator.name} decorator inserted by an automatic migration`,
+    category: ts.DiagnosticCategory.Message,
+    code: 0,
+  }];
+
+  if (decorator.args !== null) {
+    const args = decorator.args.map(arg => arg.getText()).join(', ');
+    chain.push({
+      messageText: `@${decorator.name}(${args})`,
+      category: ts.DiagnosticCategory.Message,
+      code: 0,
+    });
+  }
+
+  if (typeof clone.messageText === 'string') {
+    clone.messageText = {
+      messageText: clone.messageText,
+      category: diagnostic.category,
+      code: diagnostic.code,
+      next: chain,
+    };
+  } else {
+    if (clone.messageText.next === undefined) {
+      clone.messageText.next = chain;
+    } else {
+      clone.messageText.next.push(...chain);
+    }
+  }
+  return clone;
 }

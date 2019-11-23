@@ -5,7 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ErrorCode} from '../../../src/ngtsc/diagnostics';
+import * as ts from 'typescript';
+
+import {ErrorCode, makeDiagnostic} from '../../../src/ngtsc/diagnostics';
 import {AbsoluteFsPath, absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
@@ -13,6 +15,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPr
 import {DefaultMigrationHost} from '../../src/analysis/migration_host';
 import {AnalyzedClass, AnalyzedFile} from '../../src/analysis/types';
 import {NgccClassSymbol} from '../../src/host/ngcc_host';
+import {createComponentDecorator} from '../../src/migrations/utils';
 
 runInEachFileSystem(() => {
   describe('DefaultMigrationHost', () => {
@@ -23,6 +26,7 @@ runInEachFileSystem(() => {
     let mockEvaluator: any = {};
     let mockClazz: any;
     let mockDecorator: any = {name: 'MockDecorator'};
+    let diagnosticHandler = () => {};
     beforeEach(() => {
       _ = absoluteFrom;
       entryPointPath = _('/node_modules/some-package/entry-point');
@@ -51,7 +55,8 @@ runInEachFileSystem(() => {
         const handler1 = new TestHandler('handler1', log);
         const handler2 = new TestHandler('handler2', log);
         const host = new DefaultMigrationHost(
-            mockHost, mockMetadata, mockEvaluator, [handler1, handler2], entryPointPath, []);
+            mockHost, mockMetadata, mockEvaluator, [handler1, handler2], entryPointPath, [],
+            diagnosticHandler);
         host.injectSyntheticDecorator(mockClazz, mockDecorator);
         expect(log).toEqual([
           `handler1:detect:MockClazz:MockDecorator`,
@@ -67,7 +72,7 @@ runInEachFileSystem(() => {
            const handler3 = new TestHandler('handler3', log);
            const host = new DefaultMigrationHost(
                mockHost, mockMetadata, mockEvaluator, [handler1, handler2, handler3],
-               entryPointPath, []);
+               entryPointPath, [], diagnosticHandler);
            host.injectSyntheticDecorator(mockClazz, mockDecorator);
            expect(log).toEqual([
              `handler1:detect:MockClazz:MockDecorator`,
@@ -82,7 +87,8 @@ runInEachFileSystem(() => {
         const handler = new AlwaysDetectHandler('handler', log);
         const analyzedFiles: AnalyzedFile[] = [];
         const host = new DefaultMigrationHost(
-            mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles);
+            mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles,
+            diagnosticHandler);
         host.injectSyntheticDecorator(mockClazz, mockDecorator);
         expect(analyzedFiles.length).toEqual(1);
         expect(analyzedFiles[0].analyzedClasses.length).toEqual(1);
@@ -99,7 +105,8 @@ runInEachFileSystem(() => {
           analyzedClasses: [DUMMY_CLASS_1, DUMMY_CLASS_2],
         }];
         const host = new DefaultMigrationHost(
-            mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles);
+            mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles,
+            diagnosticHandler);
         host.injectSyntheticDecorator(mockClazz, mockDecorator);
         expect(analyzedFiles.length).toEqual(1);
         expect(analyzedFiles[0].analyzedClasses.length).toEqual(3);
@@ -120,7 +127,8 @@ runInEachFileSystem(() => {
           analyzedClasses: [analyzedClass],
         }];
         const host = new DefaultMigrationHost(
-            mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles);
+            mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles,
+            diagnosticHandler);
         host.injectSyntheticDecorator(mockClazz, mockDecorator);
         expect(analyzedFiles.length).toEqual(1);
         expect(analyzedFiles[0].analyzedClasses.length).toEqual(1);
@@ -144,7 +152,8 @@ runInEachFileSystem(() => {
              analyzedClasses: [analyzedClass],
            }];
            const host = new DefaultMigrationHost(
-               mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles);
+               mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles,
+               diagnosticHandler);
            host.injectSyntheticDecorator(mockClazz, mockDecorator);
            expect(analyzedFiles.length).toEqual(1);
            expect(analyzedFiles[0].analyzedClasses.length).toEqual(1);
@@ -167,10 +176,33 @@ runInEachFileSystem(() => {
           analyzedClasses: [analyzedClass],
         }];
         const host = new DefaultMigrationHost(
-            mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles);
+            mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles,
+            diagnosticHandler);
         expect(() => host.injectSyntheticDecorator(mockClazz, mockDecorator))
             .toThrow(jasmine.objectContaining(
                 {code: ErrorCode.NGCC_MIGRATION_DECORATOR_INJECTION_ERROR}));
+      });
+
+      it('should report diagnostics from handlers', () => {
+        const log: string[] = [];
+        const handler = new DiagnosticProducingHandler('handler', log);
+        const analyzedFiles: AnalyzedFile[] = [];
+        const diagnostics: ts.Diagnostic[] = [];
+        const host = new DefaultMigrationHost(
+            mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles,
+            diagnostic => diagnostics.push(diagnostic));
+        mockClazz.getStart = () => 0;
+        mockClazz.getWidth = () => 0;
+
+        const decorator = createComponentDecorator(mockClazz, {selector: 'comp', exportAs: null});
+        host.injectSyntheticDecorator(mockClazz, decorator);
+
+        expect(diagnostics.length).toBe(1);
+        expect(ts.flattenDiagnosticMessageText(diagnostics[0].messageText, '\n'))
+            .toEqual(
+                `test diagnostic\n` +
+                `  Occurs for @Component decorator inserted by an automatic migration\n` +
+                `  @Component({ template: "", selector: "comp" })`);
       });
     });
 
@@ -180,7 +212,8 @@ runInEachFileSystem(() => {
         const handler = new AlwaysDetectHandler('handler', log);
         const analyzedFiles: AnalyzedFile[] = [];
         const host = new DefaultMigrationHost(
-            mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles);
+            mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles,
+            diagnosticHandler);
 
         const decorators = host.getAllDecorators(mockClazz);
         expect(decorators).toBeNull();
@@ -191,7 +224,8 @@ runInEachFileSystem(() => {
         const handler = new AlwaysDetectHandler('handler', log);
         const analyzedFiles: AnalyzedFile[] = [];
         const host = new DefaultMigrationHost(
-            mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles);
+            mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles,
+            diagnosticHandler);
 
         const sourceFile: any = {};
         const unrelatedClass: any = {
@@ -218,7 +252,8 @@ runInEachFileSystem(() => {
           analyzedClasses: [analyzedClass],
         }];
         const host = new DefaultMigrationHost(
-            mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles);
+            mockHost, mockMetadata, mockEvaluator, [handler], entryPointPath, analyzedFiles,
+            diagnosticHandler);
         host.injectSyntheticDecorator(mockClazz, mockDecorator);
 
         const decorators = host.getAllDecorators(mockClazz) !;
@@ -232,7 +267,8 @@ runInEachFileSystem(() => {
       it('should be true for nodes within the entry-point', () => {
         const analyzedFiles: AnalyzedFile[] = [];
         const host = new DefaultMigrationHost(
-            mockHost, mockMetadata, mockEvaluator, [], entryPointPath, analyzedFiles);
+            mockHost, mockMetadata, mockEvaluator, [], entryPointPath, analyzedFiles,
+            diagnosticHandler);
 
         const sourceFile: any = {
           fileName: _('/node_modules/some-package/entry-point/relative.js'),
@@ -246,7 +282,8 @@ runInEachFileSystem(() => {
       it('should be false for nodes outside the entry-point', () => {
         const analyzedFiles: AnalyzedFile[] = [];
         const host = new DefaultMigrationHost(
-            mockHost, mockMetadata, mockEvaluator, [], entryPointPath, analyzedFiles);
+            mockHost, mockMetadata, mockEvaluator, [], entryPointPath, analyzedFiles,
+            diagnosticHandler);
 
         const sourceFile: any = {
           fileName: _('/node_modules/some-package/other-entry/index.js'),
@@ -282,5 +319,12 @@ class AlwaysDetectHandler extends TestHandler {
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<any>|undefined {
     super.detect(node, decorators);
     return {trigger: node, metadata: {}};
+  }
+}
+
+class DiagnosticProducingHandler extends AlwaysDetectHandler {
+  analyze(node: ClassDeclaration): AnalysisOutput<any> {
+    super.analyze(node);
+    return {diagnostics: [makeDiagnostic(9999, node, 'test diagnostic')]};
   }
 }
