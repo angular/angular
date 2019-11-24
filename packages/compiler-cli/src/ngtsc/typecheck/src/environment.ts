@@ -10,12 +10,13 @@ import {ExpressionType, ExternalExpr, ReadVarExpr, Type} from '@angular/compiler
 import * as ts from 'typescript';
 
 import {NOOP_DEFAULT_IMPORT_RECORDER, Reference, ReferenceEmitter} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateType} from '../../translator';
 
 import {TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from './api';
 import {tsDeclareVariable} from './ts_util';
 import {generateTypeCtorDeclarationFn, requiresInlineTypeCtor} from './type_constructor';
+import {TypeParameterEmitter} from './type_parameter_emitter';
 
 /**
  * A context which hosts one or more Type Check Blocks (TCBs).
@@ -45,7 +46,8 @@ export class Environment {
 
   constructor(
       readonly config: TypeCheckingConfig, protected importManager: ImportManager,
-      private refEmitter: ReferenceEmitter, protected contextFile: ts.SourceFile) {}
+      private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
+      protected contextFile: ts.SourceFile) {}
 
   /**
    * Get an expression referring to a type constructor for the given directive.
@@ -60,7 +62,7 @@ export class Environment {
       return this.typeCtors.get(node) !;
     }
 
-    if (requiresInlineTypeCtor(node)) {
+    if (requiresInlineTypeCtor(node, this.reflector)) {
       // The constructor has already been created inline, we just need to construct a reference to
       // it.
       const ref = this.reference(dirRef);
@@ -84,7 +86,9 @@ export class Environment {
         },
         coercedInputFields: dir.coercedInputFields,
       };
-      const typeCtor = generateTypeCtorDeclarationFn(node, meta, nodeTypeRef.typeName, this.config);
+      const typeParams = this.emitTypeParameters(node);
+      const typeCtor = generateTypeCtorDeclarationFn(
+          node, meta, nodeTypeRef.typeName, typeParams, this.reflector);
       this.typeCtorStatements.push(typeCtor);
       const fnId = ts.createIdentifier(fnName);
       this.typeCtors.set(node, fnId);
@@ -213,12 +217,18 @@ export class Environment {
    *
    * This may involve importing the node into the file if it's not declared there already.
    */
-  referenceType(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.TypeNode {
+  referenceType(ref: Reference): ts.TypeNode {
     const ngExpr = this.refEmitter.emit(ref, this.contextFile);
 
     // Create an `ExpressionType` from the `Expression` and translate it via `translateType`.
     // TODO(alxhub): support references to types with generic arguments in a clean way.
     return translateType(new ExpressionType(ngExpr), this.importManager);
+  }
+
+  private emitTypeParameters(declaration: ClassDeclaration<ts.ClassDeclaration>):
+      ts.TypeParameterDeclaration[]|undefined {
+    const emitter = new TypeParameterEmitter(declaration.typeParameters, this.reflector);
+    return emitter.emit(ref => this.referenceType(ref));
   }
 
   /**
