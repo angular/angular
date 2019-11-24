@@ -763,14 +763,6 @@ export function storeCleanupFn(view: LView, cleanupFn: Function): void {
   }
 }
 
-// TODO: Remove this when the issue is resolved.
-/**
- * Tsickle has a bug where it creates an infinite loop for a function returning itself.
- * This is a temporary type that will be removed when the issue is resolved.
- * https://github.com/angular/tsickle/issues/1009)
- */
-export type TsickleIssue1009 = any;
-
 /**
  * Constructs a TNode object from the arguments.
  *

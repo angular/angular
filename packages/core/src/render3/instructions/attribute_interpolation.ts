@@ -10,7 +10,7 @@ import {getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
 import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
-import {TsickleIssue1009, elementAttributeInternal} from './shared';
+import {elementAttributeInternal} from './shared';
 
 
 
@@ -40,7 +40,7 @@ import {TsickleIssue1009, elementAttributeInternal} from './shared';
  */
 export function ɵɵattributeInterpolate1(
     attrName: string, prefix: string, v0: any, suffix: string, sanitizer?: SanitizerFn,
-    namespace?: string): TsickleIssue1009 {
+    namespace?: string): typeof ɵɵattributeInterpolate1 {
   const lView = getLView();
   const interpolatedValue = interpolation1(lView, prefix, v0, suffix);
   if (interpolatedValue !== NO_CHANGE) {
@@ -78,7 +78,7 @@ export function ɵɵattributeInterpolate1(
  */
 export function ɵɵattributeInterpolate2(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, suffix: string,
-    sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009 {
+    sanitizer?: SanitizerFn, namespace?: string): typeof ɵɵattributeInterpolate2 {
   const lView = getLView();
   const interpolatedValue = interpolation2(lView, prefix, v0, i0, v1, suffix);
   if (interpolatedValue !== NO_CHANGE) {
@@ -119,7 +119,7 @@ export function ɵɵattributeInterpolate2(
  */
 export function ɵɵattributeInterpolate3(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
-    suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009 {
+    suffix: string, sanitizer?: SanitizerFn, namespace?: string): typeof ɵɵattributeInterpolate3 {
   const lView = getLView();
   const interpolatedValue = interpolation3(lView, prefix, v0, i0, v1, i1, v2, suffix);
   if (interpolatedValue !== NO_CHANGE) {
@@ -162,7 +162,8 @@ export function ɵɵattributeInterpolate3(
  */
 export function ɵɵattributeInterpolate4(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
-    v3: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009 {
+    v3: any, suffix: string, sanitizer?: SanitizerFn,
+    namespace?: string): typeof ɵɵattributeInterpolate4 {
   const lView = getLView();
   const interpolatedValue = interpolation4(lView, prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
   if (interpolatedValue !== NO_CHANGE) {
@@ -208,7 +209,7 @@ export function ɵɵattributeInterpolate4(
 export function ɵɵattributeInterpolate5(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, suffix: string, sanitizer?: SanitizerFn,
-    namespace?: string): TsickleIssue1009 {
+    namespace?: string): typeof ɵɵattributeInterpolate5 {
   const lView = getLView();
   const interpolatedValue =
       interpolation5(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
@@ -257,7 +258,7 @@ export function ɵɵattributeInterpolate5(
 export function ɵɵattributeInterpolate6(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string, sanitizer?: SanitizerFn,
-    namespace?: string): TsickleIssue1009 {
+    namespace?: string): typeof ɵɵattributeInterpolate6 {
   const lView = getLView();
   const interpolatedValue =
       interpolation6(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
@@ -308,7 +309,7 @@ export function ɵɵattributeInterpolate6(
 export function ɵɵattributeInterpolate7(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string,
-    sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009 {
+    sanitizer?: SanitizerFn, namespace?: string): typeof ɵɵattributeInterpolate7 {
   const index = getSelectedIndex();
   const lView = getLView();
   const interpolatedValue =
@@ -361,7 +362,7 @@ export function ɵɵattributeInterpolate7(
 export function ɵɵattributeInterpolate8(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
-    suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009 {
+    suffix: string, sanitizer?: SanitizerFn, namespace?: string): typeof ɵɵattributeInterpolate8 {
   const lView = getLView();
   const interpolatedValue = interpolation8(
       lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
@@ -400,7 +401,7 @@ export function ɵɵattributeInterpolate8(
  */
 export function ɵɵattributeInterpolateV(
     attrName: string, values: any[], sanitizer?: SanitizerFn,
-    namespace?: string): TsickleIssue1009 {
+    namespace?: string): typeof ɵɵattributeInterpolateV {
   const lView = getLView();
   const interpolated = interpolationV(lView, values);
   if (interpolated !== NO_CHANGE) {

@@ -9,7 +9,7 @@ import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {getLView, getSelectedIndex, nextBindingIndex} from '../state';
 
-import {TsickleIssue1009, elementAttributeInternal} from './shared';
+import {elementAttributeInternal} from './shared';
 
 
 
@@ -28,7 +28,7 @@ import {TsickleIssue1009, elementAttributeInternal} from './shared';
  */
 export function ɵɵattribute(
     name: string, value: any, sanitizer?: SanitizerFn | null,
-    namespace?: string): TsickleIssue1009 {
+    namespace?: string): typeof ɵɵattribute {
   const lView = getLView();
   if (bindingUpdated(lView, nextBindingIndex(), value)) {
     elementAttributeInternal(getSelectedIndex(), name, value, lView, sanitizer, namespace);
