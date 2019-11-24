@@ -434,7 +434,7 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
   }
 
   visitExpressionType(type: ExpressionType, context: Context): ts.TypeReferenceType {
-    const expr: ts.Identifier|ts.QualifiedName = type.value.visitExpression(this, context);
+    const expr: ts.EntityName = type.value.visitExpression(this, context);
     const typeArgs = type.typeParams !== null ?
         type.typeParams.map(param => param.visitType(this, context)) :
         undefined;
@@ -494,7 +494,7 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     throw new Error('Method not implemented.');
   }
 
-  visitExternalExpr(ast: ExternalExpr, context: Context): ts.TypeNode {
+  visitExternalExpr(ast: ExternalExpr, context: Context): ts.Node {
     if (ast.value.moduleName === null || ast.value.name === null) {
       throw new Error(`Import unknown module or symbol`);
     }
@@ -503,13 +503,15 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     const symbolIdentifier = ts.createIdentifier(symbol);
 
     const typeName = moduleImport ?
-        ts.createPropertyAccess(ts.createIdentifier(moduleImport), symbolIdentifier) :
+        ts.createQualifiedName(ts.createIdentifier(moduleImport), symbolIdentifier) :
         symbolIdentifier;
 
-    const typeArguments =
-        ast.typeParams ? ast.typeParams.map(type => type.visitType(this, context)) : undefined;
+    if (ast.typeParams === null) {
+      return typeName;
+    }
 
-    return ts.createExpressionWithTypeArguments(typeArguments, typeName);
+    const typeArguments = ast.typeParams.map(type => type.visitType(this, context));
+    return ts.createTypeReferenceNode(typeName, typeArguments);
   }
 
   visitConditionalExpr(ast: ConditionalExpr, context: Context) {
