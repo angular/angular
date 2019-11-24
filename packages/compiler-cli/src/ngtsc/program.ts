@@ -542,7 +542,8 @@ export class NgtscProgram implements api.Program {
 
     // Execute the typeCheck phase of each decorator in the program.
     const prepSpan = this.perfRecorder.start('typeCheckPrep');
-    const ctx = new TypeCheckContext(typeCheckingConfig, this.refEmitter !, this.typeCheckFilePath);
+    const ctx = new TypeCheckContext(
+        typeCheckingConfig, this.refEmitter !, this.reflector, this.typeCheckFilePath);
     compilation.typeCheck(ctx);
     this.perfRecorder.stop(prepSpan);
 

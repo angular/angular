@@ -67,8 +67,9 @@ export function identifierOfNode(decl: ts.Node & {name?: ts.Node}): ts.Identifie
 }
 
 export function isDeclaration(node: ts.Node): node is ts.Declaration {
-  return false || ts.isEnumDeclaration(node) || ts.isClassDeclaration(node) ||
-      ts.isFunctionDeclaration(node) || ts.isVariableDeclaration(node);
+  return ts.isEnumDeclaration(node) || ts.isClassDeclaration(node) ||
+      ts.isFunctionDeclaration(node) || ts.isVariableDeclaration(node) ||
+      ts.isTypeAliasDeclaration(node);
 }
 
 export function isExported(node: ts.Declaration): boolean {
