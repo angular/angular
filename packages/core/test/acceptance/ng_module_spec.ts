@@ -194,69 +194,70 @@ describe('NgModule', () => {
          }).toThrowError(/'custom' is not a known element/);
        });
 
-    it('should not throw unknown element error for AOT-compiled components', () => {
-      /*
-       *  @Component({
-       *    selector: 'comp',
-       *    template: '<custom-el></custom-el>',
-       *  })
-       *  class MyComp {}
-       */
-      class MyComp {
-        static ɵfac = () => new MyComp();
-        static ɵcmp = defineComponent({
-          type: MyComp,
-          selectors: [['comp']],
-          decls: 1,
-          vars: 0,
-          template: function MyComp_Template(rf, ctx) {
-            if (rf & 1) {
-              element(0, 'custom-el');
-            }
-          },
-          encapsulation: 2
+    onlyInIvy('test relies on Ivy-specific AOT format')
+        .it('should not throw unknown element error for AOT-compiled components', () => {
+          /*
+           *  @Component({
+           *    selector: 'comp',
+           *    template: '<custom-el></custom-el>',
+           *  })
+           *  class MyComp {}
+           */
+          class MyComp {
+            static ɵfac = () => new MyComp();
+            static ɵcmp = defineComponent({
+              type: MyComp,
+              selectors: [['comp']],
+              decls: 1,
+              vars: 0,
+              template: function MyComp_Template(rf, ctx) {
+                if (rf & 1) {
+                  element(0, 'custom-el');
+                }
+              },
+              encapsulation: 2
+            });
+          }
+          setClassMetadata(
+              MyComp, [{
+                type: Component,
+                args: [{
+                  selector: 'comp',
+                  template: '<custom-el></custom-el>',
+                }]
+              }],
+              null, null);
+
+          /*
+           *  @NgModule({
+           *    declarations: [MyComp],
+           *    schemas: [NO_ERRORS_SCHEMA],
+           *  })
+           *  class MyModule {}
+           */
+          class MyModule {
+            static ɵmod = defineNgModule({type: MyModule});
+            static ɵinj = defineInjector({factory: () => new MyModule()});
+          }
+          setClassMetadata(
+              MyModule, [{
+                type: NgModule,
+                args: [{
+                  declarations: [MyComp],
+                  schemas: [NO_ERRORS_SCHEMA],
+                }]
+              }],
+              null, null);
+
+          TestBed.configureTestingModule({
+            imports: [MyModule],
+          });
+
+          expect(() => {
+            const fixture = TestBed.createComponent(MyComp);
+            fixture.detectChanges();
+          }).not.toThrow();
         });
-      }
-      setClassMetadata(
-          MyComp, [{
-            type: Component,
-            args: [{
-              selector: 'comp',
-              template: '<custom-el></custom-el>',
-            }]
-          }],
-          null, null);
-
-      /*
-       *  @NgModule({
-       *    declarations: [MyComp],
-       *    schemas: [NO_ERRORS_SCHEMA],
-       *  })
-       *  class MyModule {}
-       */
-      class MyModule {
-        static ɵmod = defineNgModule({type: MyModule});
-        static ɵinj = defineInjector({factory: () => new MyModule()});
-      }
-      setClassMetadata(
-          MyModule, [{
-            type: NgModule,
-            args: [{
-              declarations: [MyComp],
-              schemas: [NO_ERRORS_SCHEMA],
-            }]
-          }],
-          null, null);
-
-      TestBed.configureTestingModule({
-        imports: [MyModule],
-      });
-
-      expect(() => {
-        const fixture = TestBed.createComponent(MyComp);
-        fixture.detectChanges();
-      }).not.toThrow();
-    });
 
     it('should not throw unknown element error with CUSTOM_ELEMENTS_SCHEMA', () => {
       @Component({template: `<custom-el></custom-el>`})
