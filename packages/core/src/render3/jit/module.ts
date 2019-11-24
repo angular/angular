@@ -128,6 +128,13 @@ export function compileNgModuleDefs(
               schemas: ngModule.schemas ? flatten(ngModule.schemas) : null,
               id: ngModule.id || null,
             });
+        // Set `schemas` on ngModuleDef to an empty array in JIT mode to indicate that runtime
+        // should verify that there are no unknown elements in a template. In AOT mode, that check
+        // happens at compile time and `schemas` information is not present on Component and Module
+        // defs after compilation (so the check doesn't happen the second time at runtime).
+        if (!ngModuleDef.schemas) {
+          ngModuleDef.schemas = [];
+        }
       }
       return ngModuleDef;
     }
