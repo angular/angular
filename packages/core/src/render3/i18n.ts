@@ -18,7 +18,7 @@ import {bindingUpdated} from './bindings';
 import {attachPatchData} from './context_discovery';
 import {setDelayProjection} from './instructions/all';
 import {attachI18nOpCodesDebug} from './instructions/lview_debug';
-import {TsickleIssue1009, allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty, setNgReflectProperties, textBindingInternal} from './instructions/shared';
+import {allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty, setNgReflectProperties, textBindingInternal} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
 import {getDocument} from './interfaces/document';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
@@ -1050,7 +1050,7 @@ let shiftsCounter = 0;
  *
  * @codeGenApi
  */
-export function ɵɵi18nExp<T>(value: T): TsickleIssue1009 {
+export function ɵɵi18nExp<T>(value: T): typeof ɵɵi18nExp {
   const lView = getLView();
   if (bindingUpdated(lView, nextBindingIndex(), value)) {
     changeMask = changeMask | (1 << shiftsCounter);
