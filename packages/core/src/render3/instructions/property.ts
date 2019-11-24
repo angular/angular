@@ -10,7 +10,7 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {TVIEW} from '../interfaces/view';
 import {getLView, getSelectedIndex, nextBindingIndex} from '../state';
 
-import {TsickleIssue1009, elementPropertyInternal, storePropertyBindingMetadata} from './shared';
+import {elementPropertyInternal, storePropertyBindingMetadata} from './shared';
 
 
 /**
@@ -32,7 +32,7 @@ import {TsickleIssue1009, elementPropertyInternal, storePropertyBindingMetadata}
  * @codeGenApi
  */
 export function ɵɵproperty<T>(
-    propName: string, value: T, sanitizer?: SanitizerFn | null): TsickleIssue1009 {
+    propName: string, value: T, sanitizer?: SanitizerFn | null): typeof ɵɵproperty {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
