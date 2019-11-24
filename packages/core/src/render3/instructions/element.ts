@@ -255,6 +255,14 @@ function setDirectiveStylingInput(
 
 function validateElement(
     hostView: LView, element: RElement, tNode: TNode, hasDirectives: boolean): void {
+  const schemas = hostView[TVIEW].schemas;
+
+  // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
+  // mode where this check happens at compile time. In JIT mode, `schemas` is always present and
+  // defined as an array (as an empty array in case `schemas` field is not defined) and we should
+  // execute the check below.
+  if (schemas === null) return;
+
   const tagName = tNode.tagName;
 
   // If the element matches any directive, it's considered as valid.

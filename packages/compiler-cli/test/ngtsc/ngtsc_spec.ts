@@ -3009,6 +3009,44 @@ runInEachFileSystem(os => {
               `/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Service, [{ type: Injectable, args: [{ providedIn: 'root' }] }], null, null); })();`);
     });
 
+    it('should not include `schemas` in component and module defs', () => {
+      env.write('test.ts', `
+        import {Component, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
+
+        @Component({
+          selector: 'comp',
+          template: '<custom-el></custom-el>',
+          schemas: [NO_ERRORS_SCHEMA],
+        })
+        class MyComp {}
+
+        @NgModule({
+          declarations: [MyComp],
+          schemas: [NO_ERRORS_SCHEMA],
+        })
+        class MyModule {}
+      `);
+
+      env.driveMain();
+      const jsContents = trim(env.getContents('test.js'));
+      expect(jsContents).toContain(trim(`
+        MyComp.ɵcmp = i0.ɵɵdefineComponent({
+          type: MyComp,
+          selectors: [["comp"]],
+          decls: 1,
+          vars: 0,
+          template: function MyComp_Template(rf, ctx) {
+            if (rf & 1) {
+              i0.ɵɵelement(0, "custom-el");
+            }
+          },
+          encapsulation: 2
+        });
+      `));
+      expect(jsContents)
+          .toContain(trim('MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });'));
+    });
+
     it('should emit setClassMetadata calls for all types', () => {
       env.write('test.ts', `
       import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
