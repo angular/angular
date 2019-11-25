@@ -31,6 +31,7 @@ describe('MatAccordion', () => {
         AccordionWithTogglePosition,
         NestedPanel,
         SetOfItems,
+        NestedAccordions,
       ],
     });
     TestBed.compileComponents();
@@ -176,6 +177,23 @@ describe('MatAccordion', () => {
     }
   });
 
+  it('should not move focus into nested accordions', () => {
+    const fixture = TestBed.createComponent(NestedAccordions);
+    fixture.detectChanges();
+
+    const headerElements = fixture.debugElement.queryAll(By.css('mat-expansion-panel-header'));
+    const headers = fixture.componentInstance.headers.toArray();
+    const {firstInnerHeader, secondOuterHeader} = fixture.componentInstance;
+
+    focusMonitor.focusVia(headerElements[0].nativeElement, 'keyboard');
+    headers.forEach(header => spyOn(header, 'focus'));
+
+    dispatchKeyboardEvent(headerElements[0].nativeElement, 'keydown', DOWN_ARROW);
+    fixture.detectChanges();
+    expect(secondOuterHeader.focus).toHaveBeenCalledTimes(1);
+    expect(firstInnerHeader.focus).not.toHaveBeenCalled();
+  });
+
   it('should move focus to the next header when pressing the up arrow', () => {
     const fixture = TestBed.createComponent(SetOfItems);
     fixture.detectChanges();
@@ -300,6 +318,29 @@ class SetOfItems {
   @ViewChildren(MatExpansionPanelHeader) headers: QueryList<MatExpansionPanelHeader>;
 
   multi: boolean = false;
+}
+
+@Component({template: `
+  <mat-accordion>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>Summary 0</mat-expansion-panel-header>
+      Content 0
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header #firstInnerHeader>Summary 0-0</mat-expansion-panel-header>
+        Content 0-0
+      </mat-expansion-panel>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header #secondOuterHeader>Summary 1</mat-expansion-panel-header>
+      Content 1
+    </mat-expansion-panel>
+  </mat-accordion>`})
+class NestedAccordions {
+  @ViewChildren(MatExpansionPanelHeader) headers: QueryList<MatExpansionPanelHeader>;
+  @ViewChild('secondOuterHeader', {static: false}) secondOuterHeader: MatExpansionPanelHeader;
+  @ViewChild('firstInnerHeader', {static: false}) firstInnerHeader: MatExpansionPanelHeader;
 }
 
 @Component({template: `

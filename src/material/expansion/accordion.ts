@@ -11,6 +11,7 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {CdkAccordion} from '@angular/cdk/accordion';
 import {FocusKeyManager} from '@angular/cdk/a11y';
 import {HOME, END, hasModifierKey} from '@angular/cdk/keycodes';
+import {startWith} from 'rxjs/operators';
 import {
   MAT_ACCORDION,
   MatAccordionBase,
@@ -37,6 +38,10 @@ import {MatExpansionPanelHeader} from './expansion-panel-header';
 export class MatAccordion extends CdkAccordion implements MatAccordionBase, AfterContentInit {
   private _keyManager: FocusKeyManager<MatExpansionPanelHeader>;
 
+  /** Headers belonging to this accordion. */
+  private _ownHeaders = new QueryList<MatExpansionPanelHeader>();
+
+  /** All headers inside the accordion. Includes headers inside nested accordions. */
   @ContentChildren(MatExpansionPanelHeader, {descendants: true})
   _headers: QueryList<MatExpansionPanelHeader>;
 
@@ -60,7 +65,14 @@ export class MatAccordion extends CdkAccordion implements MatAccordionBase, Afte
   @Input() togglePosition: MatAccordionTogglePosition = 'after';
 
   ngAfterContentInit() {
-    this._keyManager = new FocusKeyManager(this._headers).withWrap();
+    this._headers.changes
+      .pipe(startWith(this._headers))
+      .subscribe((headers: QueryList<MatExpansionPanelHeader>) => {
+        this._ownHeaders.reset(headers.filter(header => header.panel.accordion === this));
+        this._ownHeaders.notifyOnChanges();
+      });
+
+    this._keyManager = new FocusKeyManager(this._ownHeaders).withWrap();
   }
 
   /** Handles keyboard events coming in from the panel headers. */
