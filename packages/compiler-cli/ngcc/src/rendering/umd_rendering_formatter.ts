@@ -243,12 +243,24 @@ function isCommaExpression(value: ts.Node): value is ts.BinaryExpression {
 /**
  * Compute a global identifier for the given import (`i`).
  *
- * Import specifiers must be camelCase after converting path separators to dots, and special-casing
- * `@angular`. For example
+ * The identifier used to access a package when using the "global" form of a UMD bundle usually
+ * follows a special format where snake-case is conveted to camelCase and path separators are
+ * converted to dots. In addition there are special cases such as `@angular` is mapped to `ng`.
+ *
+ * For example
  *
  * * `@ns/package/entry-point` => `ns.package.entryPoint`
  * * `@angular/common/testing` => `ng.common.testing`
  * * `@angular/platform-browser-dynamic` => `ng.platformBrowserDynamic`
+ *
+ * It is possible for packages to specify completely different identifiers for attaching the package
+ * to the global, and so there is no guaranteed way to compute this.
+ * Currently, this approach appears to work for the known scenarios; also it is not known how common
+ * it is to use globals for importing packages.
+ *
+ * If it turns out that there are packages that are being used via globals, where this approach
+ * fails, we should consider implementing a configuration based solution, similar to what would go
+ * in a rollup configuration for mapping import paths to global indentifiers.
  *
  * @param i the import whose global identifier we want to compute.
  */
@@ -256,7 +268,7 @@ function getGlobalIdentifier(i: Import): string {
   return i.specifier.replace(/^@angular\//, 'ng.')
       .replace(/^@/, '')
       .replace(/\//g, '.')
-      .replace(/[-_]+(.)?/g, (_, c) => c ? c.toUpperCase() : '')
+      .replace(/[-_]+(.?)/g, (_, c) => c.toUpperCase())
       .replace(/^./, c => c.toLowerCase());
 }
 
