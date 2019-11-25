@@ -281,7 +281,7 @@ function createResultForNode(lView: LView, tNode: TNode, matchingIdx: number, re
     return createSpecialToken(lView, tNode, read);
   } else {
     // read a token
-    return getNodeInjectable(lView[TVIEW].data, lView, matchingIdx, tNode as TElementNode);
+    return getNodeInjectable(lView, lView[TVIEW], matchingIdx, tNode as TElementNode);
   }
 }
 

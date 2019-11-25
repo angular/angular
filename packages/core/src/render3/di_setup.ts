@@ -215,13 +215,14 @@ function multiProvidersFactoryResolver(
  * This factory knows how to concatenate itself with the existing `multi` `providers`.
  */
 function multiViewProvidersFactoryResolver(
-    this: NodeInjectorFactory, _: undefined, tData: TData, lData: LView,
+    this: NodeInjectorFactory, _: undefined, tData: TData, lView: LView,
     tNode: TDirectiveHostNode): any[] {
   const factories = this.multi !;
   let result: any[];
   if (this.providerFactory) {
     const componentCount = this.providerFactory.componentProviders !;
-    const multiProviders = getNodeInjectable(tData, lData, this.providerFactory !.index !, tNode);
+    const multiProviders =
+        getNodeInjectable(lView, lView[TVIEW], this.providerFactory !.index !, tNode);
     // Copy the section of the array which contains `multi` `providers` from the component
     result = multiProviders.slice(0, componentCount);
     // Insert the `viewProvider` instances.
