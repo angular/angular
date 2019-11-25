@@ -15,6 +15,7 @@ import {InjectFlags} from '../di/interface/injector';
 import {Type} from '../interface/type';
 import {assertDefined, assertEqual} from '../util/assert';
 
+import {assertDirectiveDef} from './assert';
 import {getFactoryDef} from './definition';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
 import {registerPreOrderHooks} from './hooks';
@@ -472,7 +473,7 @@ function searchTokensOnInjector<T>(
   const injectableIdx = locateDirectiveOrProvider(
       tNode, currentTView, token, canAccessViewProviders, isHostSpecialCase);
   if (injectableIdx !== null) {
-    return getNodeInjectable(currentTView.data, lView, injectableIdx, tNode as TElementNode);
+    return getNodeInjectable(lView, currentTView, injectableIdx, tNode as TElementNode);
   } else {
     return NOT_FOUND;
   }
@@ -527,8 +528,9 @@ export function locateDirectiveOrProvider<T>(
 * instantiates the `injectable` and caches the value.
 */
 export function getNodeInjectable(
-    tData: TData, lView: LView, index: number, tNode: TDirectiveHostNode): any {
+    lView: LView, tView: TView, index: number, tNode: TDirectiveHostNode): any {
   let value = lView[index];
+  const tData = tView.data;
   if (isFactory(value)) {
     const factory: NodeInjectorFactory = value;
     if (factory.resolving) {
@@ -543,7 +545,6 @@ export function getNodeInjectable(
     enterDI(lView, tNode);
     try {
       value = lView[index] = factory.factory(undefined, tData, lView, tNode);
-      const tView = lView[TVIEW];
       // This code path is hit for both directives and providers.
       // For perf reasons, we want to avoid searching for hooks on providers.
       // It does no harm to try (the hooks just won't exist), but the extra
@@ -551,6 +552,7 @@ export function getNodeInjectable(
       // if the index of the dependency is in the directive range for this
       // tNode. If it's not, we know it's a provider and skip hook registration.
       if (tView.firstCreatePass && index >= tNode.directiveStart) {
+        ngDevMode && assertDirectiveDef(tData[index]);
         registerPreOrderHooks(index, tData[index] as DirectiveDef<any>, tView);
       }
     } finally {

@@ -683,6 +683,62 @@ describe('onChanges', () => {
 
   });
 
+  it('should be called on multiple directives in injection order', () => {
+
+    const events: any[] = [];
+
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      @Input()
+      dir = '';
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'dir', changes}); }
+    }
+
+    @Directive({
+      selector: '[injectionDir]',
+    })
+    class InjectionDir {
+      @Input()
+      injectionDir = '';
+
+      constructor(public dir: Dir) {}
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'injectionDir', changes}); }
+    }
+
+    @Component({
+      template: `<div [injectionDir]="val" [dir]="val"></div>`,
+    })
+    class App {
+      val = 'a';
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, InjectionDir, Dir],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      {
+        name: 'dir',
+        changes: {
+          dir: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'injectionDir',
+        changes: {
+          injectionDir: new SimpleChange(undefined, 'a', true),
+        }
+      }
+    ]);
+  });
+
+
   it('should be called on directives on an element', () => {
     const events: any[] = [];
 
@@ -1531,6 +1587,50 @@ describe('onInit', () => {
     expect(initialized).toEqual(['app', 'comp 1', 'dir 1', 'comp 2', 'dir 2']);
   });
 
+  it('should be called on multiple directives in injection order', () => {
+
+    const events: any[] = [];
+
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      @Input()
+      dir = '';
+
+      ngOnInit() { events.push('dir'); }
+    }
+
+    @Directive({
+      selector: '[injectionDir]',
+    })
+    class InjectionDir {
+      @Input()
+      injectionDir = '';
+
+      constructor(public dir: Dir) {}
+
+      ngOnInit() { events.push('injectionDir'); }
+    }
+
+    @Component({
+      template: `<div [injectionDir]="val" [dir]="val"></div>`,
+    })
+    class App {
+      val = 'a';
+
+      ngOnInit() { events.push('app'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, InjectionDir, Dir],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual(['app', 'dir', 'injectionDir']);
+  });
+
   it('should be called on directives before component if component injects directives', () => {
     const initialized: string[] = [];
 
@@ -1867,6 +1967,50 @@ describe('doCheck', () => {
     fixture.detectChanges();
 
     expect(doChecks).toEqual(['app', 'dir 1', 'comp 1', 'dir 2', 'comp 2']);
+  });
+
+  it('should be called on multiple directives in injection order', () => {
+
+    const events: any[] = [];
+
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      @Input()
+      dir = '';
+
+      ngDoCheck() { events.push('dir'); }
+    }
+
+    @Directive({
+      selector: '[injectionDir]',
+    })
+    class InjectionDir {
+      @Input()
+      injectionDir = '';
+
+      constructor(public dir: Dir) {}
+
+      ngDoCheck() { events.push('injectionDir'); }
+    }
+
+    @Component({
+      template: `<div [injectionDir]="val" [dir]="val"></div>`,
+    })
+    class App {
+      val = 'a';
+
+      ngDoCheck() { events.push('app'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, InjectionDir, Dir],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual(['app', 'dir', 'injectionDir']);
   });
 
   it('should be called on directives on an element', () => {

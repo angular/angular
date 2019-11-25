@@ -1063,7 +1063,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
           expect(fixture.componentInstance.myInput !.control).toBeDefined();
           expect(fixture.componentInstance.myInput !.control)
-              .toEqual(fixture.componentInstance.myInput !.cd.control);
+              .toEqual(fixture.componentInstance.myInput !.controlDir.control);
         });
       });
 
@@ -1371,9 +1371,9 @@ export class MyInput implements ControlValueAccessor {
 
   control: AbstractControl|null = null;
 
-  constructor(public cd: NgControl) { cd.valueAccessor = this; }
+  constructor(public controlDir: NgControl) { controlDir.valueAccessor = this; }
 
-  ngOnInit() { this.control = this.cd.control; }
+  ngOnInit() { this.control = this.controlDir.control; }
 
   writeValue(value: any) { this.value = `!${value}!`; }
 

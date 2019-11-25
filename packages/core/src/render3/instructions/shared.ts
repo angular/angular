@@ -1057,8 +1057,7 @@ export function instantiateRootComponent<T>(tView: TView, lView: LView, def: Com
     generateExpandoInstructionBlock(tView, rootTNode, 1);
     baseResolveDirective(tView, lView, def);
   }
-  const directive =
-      getNodeInjectable(tView.data, lView, lView.length - 1, rootTNode as TElementNode);
+  const directive = getNodeInjectable(lView, tView, lView.length - 1, rootTNode as TElementNode);
   attachPatchData(directive, lView);
   const native = getNativeByTNode(rootTNode, lView);
   if (native) {
@@ -1155,7 +1154,7 @@ function instantiateAllDirectives(
       addComponentLogic(lView, tNode as TElementNode, def as ComponentDef<any>);
     }
 
-    const directive = getNodeInjectable(tView.data, lView, i, tNode);
+    const directive = getNodeInjectable(lView, tView, i, tNode);
     attachPatchData(directive, lView);
 
     if (initialInputs !== null) {
