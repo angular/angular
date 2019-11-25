@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, EventEmitter, Input, Output, Type} from '@angular/core';
+import {Component, Directive, EventEmitter, Input, Output, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -1055,6 +1055,16 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              fixture.detectChanges();
              expect(fixture.componentInstance.control.status).toEqual('DISABLED');
            });
+
+        it('should populate control in ngOnInit when injecting NgControl', () => {
+          const fixture = initTest(MyInputForm, MyInput);
+          fixture.componentInstance.form = new FormGroup({'login': new FormControl('aa')});
+          fixture.detectChanges();
+
+          expect(fixture.componentInstance.myInput !.control).toBeDefined();
+          expect(fixture.componentInstance.myInput !.control)
+              .toEqual(fixture.componentInstance.myInput !.cd.control);
+        });
       });
 
       describe('in template-driven forms', () => {
@@ -1359,7 +1369,11 @@ export class MyInput implements ControlValueAccessor {
   // TODO(issue/24571): remove '!'.
   value !: string;
 
-  constructor(cd: NgControl) { cd.valueAccessor = this; }
+  control: AbstractControl|null = null;
+
+  constructor(public cd: NgControl) { cd.valueAccessor = this; }
+
+  ngOnInit() { this.control = this.cd.control; }
 
   writeValue(value: any) { this.value = `!${value}!`; }
 
@@ -1380,6 +1394,7 @@ export class MyInput implements ControlValueAccessor {
 export class MyInputForm {
   // TODO(issue/24571): remove '!'.
   form !: FormGroup;
+  @ViewChild(MyInput) myInput: MyInput|null = null;
 }
 
 @Component({

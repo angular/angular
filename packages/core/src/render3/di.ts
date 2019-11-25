@@ -17,6 +17,7 @@ import {assertDefined, assertEqual} from '../util/assert';
 
 import {getFactoryDef} from './definition';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
+import {registerPreOrderHooks} from './hooks';
 import {DirectiveDef, FactoryFn} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE, isFactory} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeProviderIndexes, TNodeType} from './interfaces/node';
@@ -519,7 +520,7 @@ export function locateDirectiveOrProvider<T>(
 }
 
 /**
-* Retrieve or instantiate the injectable from the `lData` at particular `index`.
+* Retrieve or instantiate the injectable from the `LView` at particular `index`.
 *
 * This function checks to see if the value has already been instantiated and if so returns the
 * cached `injectable`. Otherwise if it detects that the value is still a factory it
@@ -542,6 +543,16 @@ export function getNodeInjectable(
     enterDI(lView, tNode);
     try {
       value = lView[index] = factory.factory(undefined, tData, lView, tNode);
+      const tView = lView[TVIEW];
+      // This code path is hit for both directives and providers.
+      // For perf reasons, we want to avoid searching for hooks on providers.
+      // It does no harm to try (the hooks just won't exist), but the extra
+      // checks are unnecessary and this is a hot path. So we check to see
+      // if the index of the dependency is in the directive range for this
+      // tNode. If it's not, we know it's a provider and skip hook registration.
+      if (tView.firstCreatePass && index >= tNode.directiveStart) {
+        registerPreOrderHooks(index, tData[index] as DirectiveDef<any>, tView);
+      }
     } finally {
       if (factory.injectImpl) setInjectImplementation(previousInjectImplementation);
       setIncludeViewProviders(previousIncludeViewProviders);

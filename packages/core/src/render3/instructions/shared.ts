@@ -1097,14 +1097,11 @@ export function resolveDirectives(
       if (def.providersResolver) def.providersResolver(def);
     }
     generateExpandoInstructionBlock(tView, tNode, directives.length);
-    const initialPreOrderHooksLength = (tView.preOrderHooks && tView.preOrderHooks.length) || 0;
-    const initialPreOrderCheckHooksLength =
-        (tView.preOrderCheckHooks && tView.preOrderCheckHooks.length) || 0;
-    const nodeIndex = tNode.index - HEADER_OFFSET;
+    let preOrderHooksFound = false;
+    let preOrderCheckHooksFound = false;
     for (let i = 0; i < directives.length; i++) {
       const def = directives[i] as DirectiveDef<any>;
 
-      const directiveDefIdx = tView.data.length;
       baseResolveDirective(tView, lView, def);
 
       saveNameToExportMap(tView.data !.length - 1, def, exportsMap);
@@ -1112,11 +1109,21 @@ export function resolveDirectives(
       if (def.contentQueries !== null) tNode.flags |= TNodeFlags.hasContentQuery;
       if (def.hostBindings !== null) tNode.flags |= TNodeFlags.hasHostBindings;
 
-      // Init hooks are queued now so ngOnInit is called in host components before
-      // any projected components.
-      registerPreOrderHooks(
-          directiveDefIdx, def, tView, nodeIndex, initialPreOrderHooksLength,
-          initialPreOrderCheckHooksLength);
+      // Only push a node index into the preOrderHooks array if this is the first
+      // pre-order hook found on this node.
+      if (!preOrderHooksFound && (def.onChanges || def.onInit || def.doCheck)) {
+        // We will push the actual hook function into this array later during dir instantiation.
+        // We cannot do it now because we must ensure hooks are registered in the same
+        // order that directives are created (i.e. injection order).
+        (tView.preOrderHooks || (tView.preOrderHooks = [])).push(tNode.index - HEADER_OFFSET);
+        preOrderHooksFound = true;
+      }
+
+      if (!preOrderCheckHooksFound && (def.onChanges || def.doCheck)) {
+        (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = [
+         ])).push(tNode.index - HEADER_OFFSET);
+        preOrderCheckHooksFound = true;
+      }
     }
 
     initializeInputAndOutputAliases(tView, tNode);
