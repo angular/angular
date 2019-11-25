@@ -186,8 +186,18 @@ export function createCustomElement<P>(
   // contain property inputs, use all inputs by default.
   inputs.map(({propName}) => propName).forEach(property => {
     Object.defineProperty(NgElementImpl.prototype, property, {
-      get: function() { return this.ngElementStrategy.getInputValue(property); },
-      set: function(newValue: any) { this.ngElementStrategy.setInputValue(property, newValue); },
+      get: function() {
+            if (!this.ngElementStrategy) {
+                this.ngElementStrategy = strategyFactory.create(config.injector);
+            }
+            this.ngElementStrategy.getInputValue(property);
+        },
+      set: function (newValue) {
+            if (!this.ngElementStrategy) {
+                this.ngElementStrategy = strategyFactory.create(config.injector);
+            }
+            this.ngElementStrategy.setInputValue(property, newValue);
+        },
       configurable: true,
       enumerable: true,
     });
