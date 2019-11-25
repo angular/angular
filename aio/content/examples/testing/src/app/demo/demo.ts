@@ -11,7 +11,7 @@ import { delay } from 'rxjs/operators';
 
 ////////// The App: Services and Components for the tests. //////////////
 
-export class Hero {
+export interface Hero {
   name: string;
 }
 
