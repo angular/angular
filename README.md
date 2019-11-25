@@ -101,7 +101,7 @@ MDC Web ([see @jelbourn's ng-conf talk](https://youtu.be/4EXQKP-Sihw?t=891)).
 [16]: https://material.angular.io/components/slider/overview
 [17]: https://material.angular.io/components/menu/overview
 [18]: https://material.angular.io/components/tooltip/overview
-[19]: https://github.com/angular/components/blob/master/src/material/core/ripple/ripple.md
+[19]: https://material.angular.io/components/ripple/overview
 [20]: https://material.angular.io/guide/theming
 [21]: https://material.angular.io/components/snack-bar/overview
 [22]: https://material.angular.io/components/dialog/overview
