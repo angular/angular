@@ -374,7 +374,9 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
    */
   setElevation(depth: number): void {
     // The elevation starts at the base and increases by one for each level.
-    const newElevation = `mat-elevation-z${MAT_MENU_BASE_ELEVATION + depth}`;
+    // Capped at 24 because that's the maximum elevation defined in the Material design spec.
+    const elevation = Math.min(MAT_MENU_BASE_ELEVATION + depth, 24);
+    const newElevation = `mat-elevation-z${elevation}`;
     const customElevation = Object.keys(this._classList).find(c => c.startsWith('mat-elevation-z'));
 
     if (!customElevation || customElevation === this._previousElevation) {
