@@ -4,7 +4,7 @@ import { protractor, browser, element, by, ElementFinder } from 'protractor';
 
 const nameSuffix = 'X';
 
-class Hero {
+interface Hero {
   id: number;
   name: string;
 }
