@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReplaySubject} from 'rxjs';
+import {Subject} from 'rxjs';
 import {
   Directive,
   ElementRef,
@@ -41,7 +41,7 @@ export type PopoverEditClickOutBehavior = 'close' | 'submit' | 'noop';
   providers: [EditRef],
 })
 export class CdkEditControl<FormValue> implements OnDestroy, OnInit {
-  protected readonly destroyed = new ReplaySubject<void>();
+  protected readonly destroyed = new Subject<void>();
 
   /**
    * Specifies what should happen when the user clicks outside of the edit lens.

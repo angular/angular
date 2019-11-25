@@ -19,7 +19,7 @@ import {
   ViewContainerRef,
   HostListener,
 } from '@angular/core';
-import {fromEvent, fromEventPattern, merge, ReplaySubject} from 'rxjs';
+import {fromEvent, fromEventPattern, merge, Subject} from 'rxjs';
 import {
   filter,
   map,
@@ -65,7 +65,7 @@ const MOUSE_MOVE_THROTTLE_TIME_MS = 10;
   providers: [EditEventDispatcher, EditServices],
 })
 export class CdkEditable implements AfterViewInit, OnDestroy {
-  protected readonly destroyed = new ReplaySubject<void>();
+  protected readonly destroyed = new Subject<void>();
 
   constructor(
       protected readonly elementRef: ElementRef,
@@ -202,7 +202,7 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
 
   protected focusTrap?: FocusTrap;
   protected overlayRef?: OverlayRef;
-  protected readonly destroyed = new ReplaySubject<void>();
+  protected readonly destroyed = new Subject<void>();
 
   constructor(
       protected readonly services: EditServices, protected readonly elementRef: ElementRef,
@@ -374,7 +374,7 @@ export class CdkPopoverEditTabOut<C> extends CdkPopoverEdit<C> {
   selector: '[cdkRowHoverContent]',
 })
 export class CdkRowHoverContent implements AfterViewInit, OnDestroy {
-  protected readonly destroyed = new ReplaySubject<void>();
+  protected readonly destroyed = new Subject<void>();
   protected viewRef: EmbeddedViewRef<any>|null = null;
 
   private _row?: Element;
