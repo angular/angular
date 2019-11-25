@@ -417,6 +417,9 @@
     "name": "refreshView"
   },
   {
+    "name": "registerPreOrderHooks"
+  },
+  {
     "name": "renderChildComponents"
   },
   {
