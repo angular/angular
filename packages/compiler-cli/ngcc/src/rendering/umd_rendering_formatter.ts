@@ -261,8 +261,6 @@ function isCommaExpression(value: ts.Node): value is ts.BinaryExpression {
  * If it turns out that there are packages that are being used via globals, where this approach
  * fails, we should consider implementing a configuration based solution, similar to what would go
  * in a rollup configuration for mapping import paths to global indentifiers.
- *
- * @param i the import whose global identifier we want to compute.
  */
 function getGlobalIdentifier(i: Import): string {
   return i.specifier.replace(/^@angular\//, 'ng.')
