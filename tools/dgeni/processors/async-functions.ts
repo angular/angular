@@ -5,14 +5,18 @@ import {MethodMemberDoc} from 'dgeni-packages/typescript/api-doc-types/MethodMem
 import * as ts from 'typescript';
 
 /** Type describing a function-like API doc (i.e. a function, or a class method member). */
-type FunctionLikeDoc = (FunctionExportDoc|MethodMemberDoc) & {returns?: {description: string}};
+type FunctionLikeDoc = (FunctionExportDoc|MethodMemberDoc) & {
+  returns?: {description: string},
+  isAsync?: boolean;
+};
 
 /**
- * Processor that automatically sets the @return description for
- * asynchronous methods which do not return any value.
+ * Processor that marks documents for functions which are asynchronous. Additionally, the
+ * processor automatically sets the @return description for asynchronous methods which do
+ * not return any value.
  */
-export class AsyncReturnDescriptionProcessor implements Processor {
-  name = 'async-return-description';
+export class AsyncFunctionsProcessor implements Processor {
+  name = 'async-functions';
   $runBefore = ['categorizer'];
 
   $process(docs: DocCollection) {
@@ -21,6 +25,16 @@ export class AsyncReturnDescriptionProcessor implements Processor {
         return;
       }
       const typeString = getTypeOfFunctionLikeDoc(doc);
+
+      // Mark asynchronous function API documents. Async functions can be detected
+      // in multiple ways. Most commonly by checking the type symbol name and ensuring
+      // there is a type argument, or by just checking the stringified type. For simplicity,
+      // we just check the stringified type.
+      if (typeString && typeString.startsWith('Promise<')) {
+        doc.isAsync = true;
+      }
+
+      // Add a JSDoc @returns description for void asynchronous functions.
       if (!doc.returns && typeString === 'Promise<void>') {
         doc.returns = {description: 'Promise that resolves when the action completes.'};
       }
