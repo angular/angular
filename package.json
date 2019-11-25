@@ -133,6 +133,7 @@
     "@bazel/buildifier": "^0.29.0",
     "@bazel/ibazel": "^0.10.3",
     "@types/minimist": "^1.2.0",
+    "@yarnpkg/lockfile": "^1.1.0",
     "browserstacktunnel-wrapper": "2.0.1",
     "check-side-effects": "0.0.21",
     "clang-format": "1.0.41",
