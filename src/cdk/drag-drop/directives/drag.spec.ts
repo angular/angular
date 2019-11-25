@@ -3409,6 +3409,36 @@ describe('CdkDrag', () => {
           'Expected outer list to not be dragging.');
     }));
 
+    it('should be able to re-enable a disabled drop list', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const dragItems = fixture.componentInstance.dragItems;
+      const tryDrag = () => {
+        const firstItem = dragItems.first;
+        const thirdItemRect = dragItems.toArray()[2].element.nativeElement.getBoundingClientRect();
+        dragElementViaMouse(fixture, firstItem.element.nativeElement,
+          thirdItemRect.left + 1, thirdItemRect.top + 1);
+        flush();
+        fixture.detectChanges();
+      };
+
+      expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
+
+      fixture.componentInstance.dropInstance.disabled = true;
+      fixture.detectChanges();
+      tryDrag();
+
+      expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
+
+      fixture.componentInstance.dropInstance.disabled = false;
+      fixture.detectChanges();
+      tryDrag();
+
+      expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
+          .toEqual(['One', 'Two', 'Zero', 'Three']);
+    }));
   });
 
   describe('in a connected drop container', () => {
