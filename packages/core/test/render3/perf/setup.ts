@@ -19,8 +19,7 @@ const rendererFactory: RendererFactory3 =
     isBrowser ? domRendererFactory3 : new MicroBenchmarkRendererFactory;
 const renderer = rendererFactory.createRenderer(null, null);
 
-export function createAndRenderLView(
-    parentLView: LView | null, tView: TView, hostTNode: TViewNode) {
+export function createAndRenderLView(parentLView: LView, tView: TView, hostTNode: TViewNode) {
   const embeddedLView = createLView(
       parentLView, tView, {}, LViewFlags.CheckAlways, null, hostTNode, rendererFactory, renderer);
   renderView(embeddedLView, tView, null);
