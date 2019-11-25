@@ -307,7 +307,13 @@ class SymbolWrapper implements Symbol {
   public readonly nullable: boolean = false;
   public readonly language: string = 'typescript';
 
-  constructor(symbol: ts.Symbol, private context: TypeContext, private _tsType?: ts.Type) {
+  constructor(
+      symbol: ts.Symbol,
+      /** TypeScript type context of the symbol. */
+      private context: TypeContext,
+      /** Type of the TypeScript symbol, if known. If not provided, the type of the symbol
+      * will be determined dynamically; see `SymbolWrapper#tsType`. */
+      private _tsType?: ts.Type) {
     this.symbol = symbol && context && (symbol.flags & ts.SymbolFlags.Alias) ?
         context.checker.getAliasedSymbol(symbol) :
         symbol;
