@@ -556,7 +556,7 @@
             "url": "https://www.packtpub.com/web-development/architecting-angular-applications-redux"
           },
           "dwa": {
-            "desc": "Practical journey with Angular framework, ES6, TypeScript, Webpack and Angular CLI.",
+            "desc": "Practical journey with Angular framework, ES6, TypeScript, webpack and Angular CLI.",
             "rev": true,
             "title": "Developing with Angular",
             "url": "https://leanpub.com/developing-with-angular"
