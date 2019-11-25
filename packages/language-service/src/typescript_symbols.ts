@@ -271,7 +271,11 @@ class TypeWrapper implements Symbol {
   }
 
   members(): SymbolTable {
-    return new SymbolTableWrapper(this.tsType.getProperties(), this.context);
+    // Should call getApparentProperties() instead of getProperties() because
+    // the former includes properties on the base class whereas the latter does
+    // not. This provides properties like .bind(), .call(), .apply(), etc for
+    // functions.
+    return new SymbolTableWrapper(this.tsType.getApparentProperties(), this.context);
   }
 
   signatures(): Signature[] { return signaturesOf(this.tsType, this.context); }
