@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module", "protractor_web_test_suite", "ts_library")
-load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//tools:defaults.bzl", "ng_module", "protractor_web_test_suite", "ts_devserver", "ts_library")
 
 ng_module(
     name = "sw_registration_options_examples",

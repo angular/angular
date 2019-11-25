@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "ng_module")
-load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//tools:defaults.bzl", "ng_module", "ts_devserver")
 
 package(default_visibility = ["//modules/playground:__subpackages__"])
 
