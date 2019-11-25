@@ -55,6 +55,11 @@ for testDir in ${TEST_DIRS}; do
     cd $testDir
     rm -rf dist
 
+    # Ensure the versions of (non-local) dependencies are exact versions (not version ranges) and
+    # in-sync between `package.json` and the lockfile.
+    # (NOTE: This must be run before `yarn install`, which updates the lockfile.)
+    node ../check-dependencies .
+
     yarn install --cache-folder ../$cache
     yarn test || exit 1
 
