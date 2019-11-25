@@ -3,7 +3,7 @@
 load("@build_bazel_rules_nodejs//:index.bzl", _nodejs_binary = "nodejs_binary", _npm_package = "npm_package")
 load("@npm_bazel_jasmine//:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm_bazel_karma//:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
-load("@npm_bazel_typescript//:index.bzl", _ts_library = "ts_library")
+load("@npm_bazel_typescript//:index.bzl", _ts_devserver = "ts_devserver", _ts_library = "ts_library")
 load("@npm_bazel_protractor//:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//tools/ng_rollup_bundle:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
@@ -84,6 +84,14 @@ def _default_module_name(testonly):
         return "@angular/" + pkg[len("packages/"):]
 
     return None
+
+def ts_devserver(**kwargs):
+    """Default values for ts_devserver"""
+    serving_path = kwargs.pop("serving_path", "/app_bundle.js")
+    _ts_devserver(
+        serving_path = serving_path,
+        **kwargs
+    )
 
 def ts_library(tsconfig = None, testonly = False, deps = [], module_name = None, **kwargs):
     """Default values for ts_library"""
