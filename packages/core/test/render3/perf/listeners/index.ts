@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {TViewType} from '@angular/core/src/render3/interfaces/view';
 import {ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
 import {ɵɵlistener} from '../../../../src/render3/instructions/listener';
-import {createTNode, createTView} from '../../../../src/render3/instructions/shared';
+import {createLView, createTNode, createTView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {TNodeType, TViewNode} from '../../../../src/render3/interfaces/node';
+import {LViewFlags, TViewType} from '../../../../src/render3/interfaces/view';
 import {createBenchmark} from '../micro_bench';
 import {createAndRenderLView} from '../setup';
 
@@ -65,12 +65,16 @@ function testTemplate(rf: RenderFlags, ctx: any) {
   }
 }
 
+const rootLView = createLView(
+    null, createTView(TViewType.Root, -1, null, 0, 0, null, null, null, null, null), {},
+    LViewFlags.IsRoot, null, null);
+
 const viewTNode = createTNode(null !, null, TNodeType.View, -1, null, null) as TViewNode;
 const embeddedTView = createTView(
     TViewType.Embedded, -1, testTemplate, 11, 0, null, null, null, null, [[3, 'click', 'input']]);
 
-// create view once so we don't profile first template pass
-createAndRenderLView(null, embeddedTView, viewTNode);
+// create view once so we don't profile the first create pass
+createAndRenderLView(rootLView, embeddedTView, viewTNode);
 
 const listenersCreate = createBenchmark('listeners create');
 const createTime = listenersCreate('create');
@@ -78,7 +82,7 @@ const createTime = listenersCreate('create');
 // profile create views (run templates in creation mode)
 console.profile('create listeners');
 while (createTime()) {
-  createAndRenderLView(null, embeddedTView, viewTNode);
+  createAndRenderLView(rootLView, embeddedTView, viewTNode);
 }
 console.profileEnd();
 
