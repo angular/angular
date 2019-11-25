@@ -361,6 +361,16 @@ describe('Portals', () => {
       expect(spy).toHaveBeenCalled();
     });
 
+    it('should render inside outlet when component portal specifies view container ref', () => {
+      const hostContainer = fixture.nativeElement.querySelector('.portal-container');
+      const portal = new ComponentPortal(PizzaMsg, fixture.componentInstance.alternateContainer);
+
+      fixture.componentInstance.selectedPortal = portal;
+      fixture.detectChanges();
+
+      expect(hostContainer.textContent).toContain('Pizza');
+    });
+
   });
 
   describe('DomPortalOutlet', () => {
@@ -593,6 +603,8 @@ class ArbitraryViewContainerRefComponent {
     <ng-template [cdkPortalOutlet]="selectedPortal" (attached)="attachedSpy($event)"></ng-template>
   </div>
 
+  <ng-container #alternateContainer></ng-container>
+
   <ng-template cdk-portal>Cake</ng-template>
 
   <div *cdk-portal>Pie</div>
@@ -616,6 +628,8 @@ class PortalTestApp {
   @ViewChild(CdkPortalOutlet, {static: true}) portalOutlet: CdkPortalOutlet;
   @ViewChild('templateRef', {read: TemplateRef, static: true}) templateRef: TemplateRef<any>;
   @ViewChild('domPortalContent', {static: true}) domPortalContent: ElementRef<HTMLElement>;
+  @ViewChild('alternateContainer', {read: ViewContainerRef, static: true})
+  alternateContainer: ViewContainerRef;
 
   selectedPortal: Portal<any>|undefined;
   fruit: string = 'Banana';

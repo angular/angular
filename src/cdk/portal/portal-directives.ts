@@ -157,6 +157,13 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
         componentFactory, viewContainerRef.length,
         portal.injector || viewContainerRef.injector);
 
+    // If we're using a view container that's different from the injected one (e.g. when the portal
+    // specifies its own) we need to move the component into the outlet, otherwise it'll be rendered
+    // inside of the alternate view container.
+    if (viewContainerRef !== this._viewContainerRef) {
+      this._getRootNode().appendChild((ref.hostView as EmbeddedViewRef<any>).rootNodes[0]);
+    }
+
     super.setDisposeFn(() => ref.destroy());
     this._attachedPortal = portal;
     this._attachedRef = ref;
@@ -197,19 +204,26 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
 
     // Anchor used to save the element's previous position so
     // that we can restore it when the portal is detached.
-    let anchorNode = this._document.createComment('dom-portal');
-    let element = portal.element;
-    const nativeElement: Node = this._viewContainerRef.element.nativeElement;
-    const rootNode = nativeElement.nodeType === nativeElement.ELEMENT_NODE ?
-        nativeElement : nativeElement.parentNode!;
+    const anchorNode = this._document.createComment('dom-portal');
+    const element = portal.element;
 
     portal.setAttachedHost(this);
     element.parentNode!.insertBefore(anchorNode, element);
-    rootNode.appendChild(element);
+    this._getRootNode().appendChild(element);
 
     super.setDisposeFn(() => {
       anchorNode.parentNode!.replaceChild(element, anchorNode);
     });
+  }
+
+  /** Gets the root node of the portal outlet. */
+  private _getRootNode(): HTMLElement {
+    const nativeElement: Node = this._viewContainerRef.element.nativeElement;
+
+    // The directive could be set on a template which will result in a comment
+    // node being the root. Use the comment's parent node if that is the case.
+    return (nativeElement.nodeType === nativeElement.ELEMENT_NODE ?
+           nativeElement : nativeElement.parentNode!) as HTMLElement;
   }
 
   static ngAcceptInputType_portal: Portal<any> | null | undefined | '';
