@@ -271,8 +271,12 @@ export function createContainerRef(
           throw new Error('Cannot move a destroyed View in a ViewContainer!');
         }
         const index = this.indexOf(viewRef);
-        if (index !== -1) this.detach(index);
-        this.insert(viewRef, newIndex);
+        if (index === -1) {
+          this.insert(viewRef, newIndex);
+        } else if (index !== newIndex) {
+          this.detach(index);
+          this.insert(viewRef, newIndex);
+        }
         return viewRef;
       }
 
