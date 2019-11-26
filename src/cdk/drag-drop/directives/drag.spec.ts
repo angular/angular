@@ -800,6 +800,23 @@ describe('CdkDrag', () => {
         expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
       }));
 
+    it('should keep the old position if the boundary is invisible after a resize', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      const boundary: HTMLElement = fixture.nativeElement.querySelector('.wrapper');
+      fixture.componentInstance.boundary = boundary;
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      dragElementViaMouse(fixture, dragElement, 300, 300);
+      expect(dragElement.style.transform).toBe('translate3d(100px, 100px, 0px)');
+
+      boundary.style.display = 'none';
+      dispatchFakeEvent(window, 'resize');
+      tick(20);
+
+      expect(dragElement.style.transform).toBe('translate3d(100px, 100px, 0px)');
+    }));
+
     it('should handle the element and boundary dimensions changing between drag sequences',
       fakeAsync(() => {
         const fixture = createComponent(StandaloneDraggable);
