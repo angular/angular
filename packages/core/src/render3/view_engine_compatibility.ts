@@ -245,14 +245,14 @@ export function createContainerRef(
         }
         this.allocateContainerIfNeeded();
         const lView = (viewRef as ViewRef<any>)._lView !;
-        const adjustedIdx = this._adjustIndex(index);
 
         if (viewAttachedToContainer(lView)) {
           // If view is already attached, fall back to move() so we clean up
           // references appropriately.
-          return this.move(viewRef, adjustedIdx);
+          return this.move(viewRef, this._adjustIndex(index, -1));
         }
 
+        const adjustedIdx = this._adjustIndex(index);
         insertView(lView, this._lContainer, adjustedIdx);
 
         const beforeNode = getBeforeNodeForView(adjustedIdx, this._lContainer);
@@ -269,8 +269,16 @@ export function createContainerRef(
           throw new Error('Cannot move a destroyed View in a ViewContainer!');
         }
         const index = this.indexOf(viewRef);
-        if (index !== -1) this.detach(index);
-        this.insert(viewRef, newIndex);
+        if (index === -1) {
+          this.insert(viewRef, newIndex);
+        } else if (newIndex !== index) {
+          // Move a view only if it would end up at a different place
+          // (otherwise we would do unnecessary processing like DOM manipulation, query
+          // notifications etc.)
+          this.detach(index);
+          this.insert(viewRef, newIndex);
+        }
+
         return viewRef;
       }
 
