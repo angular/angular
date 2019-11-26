@@ -665,8 +665,9 @@ export class NgtscProgram implements api.Program {
       // being assignable to `unknown` when wrapped in `Readonly`).
       // clang-format off
       new DirectiveDecoratorHandler(
-          this.reflector, evaluator, metaRegistry, this.scopeRegistry, this.defaultImportTracker, injectableRegistry,
-          this.isCore, this.closureCompilerEnabled) as Readonly<DecoratorHandler<unknown, unknown, unknown>>,
+          this.reflector, evaluator, metaRegistry, this.scopeRegistry, this.metaReader,
+          this.defaultImportTracker, injectableRegistry, this.isCore, this.closureCompilerEnabled
+      ) as Readonly<DecoratorHandler<unknown, unknown, unknown>>,
       // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)

@@ -100,7 +100,7 @@ export class DecorationAnalyzer {
     // clang-format off
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.scopeRegistry,
-        NOOP_DEFAULT_IMPORT_RECORDER, this.injectableRegistry, this.isCore,
+        this.fullMetaReader, NOOP_DEFAULT_IMPORT_RECORDER, this.injectableRegistry, this.isCore,
         /* annotateForClosureCompiler */ false) as DecoratorHandler<unknown, unknown, unknown>,
     // clang-format on
     // Pipe handler must be before injectable handler in list so pipe factories are printed

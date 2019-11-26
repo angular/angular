@@ -2895,6 +2895,9 @@ runInEachFileSystem(os => {
       env.write(`test.ts`, `
         import {Directive} from '@angular/core';
 
+        @Directive({
+          selector: '[base]',
+        })
         class Base {}
 
         @Directive({
@@ -5129,6 +5132,245 @@ export const Foo = Foo__PRE_R3__;
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toContain('but 3.4.0 was found instead');
       });
+    });
+
+    describe('inherited directives', () => {
+      beforeEach(() => {
+        env.write('local.ts', `
+          import {Component, Directive, ElementRef} from '@angular/core';
+
+          export class BasePlain {}
+
+          export class BasePlainWithBlankConstructor {
+            constructor() {}
+          }
+
+          export class BasePlainWithConstructorParameters {
+            constructor(elementRef: ElementRef) {}
+          }
+
+          @Component({
+            selector: 'base-cmp',
+            template: 'BaseCmp',
+          })
+          export class BaseCmp {}
+
+          @Directive({
+            selector: '[base]',
+          })
+          export class BaseDir {}
+        `);
+
+        env.write('lib.d.ts', `
+          import {ɵɵComponentDefWithMeta, ɵɵDirectiveDefWithMeta, ElementRef} from '@angular/core';
+
+          export declare class BasePlain {}
+
+          export declare class BasePlainWithBlankConstructor {
+            constructor() {}
+          }
+
+          export declare class BasePlainWithConstructorParameters {
+            constructor(elementRef: ElementRef) {}
+          }
+
+          export declare class BaseCmp {
+            static ɵcmp: ɵɵComponentDefWithMeta<BaseCmp, "base-cmp", never, {}, {}, never>
+          }
+
+          export declare class BaseDir {
+            static ɵdir: ɵɵDirectiveDefWithMeta<BaseDir, '[base]', never, never, never, never>;
+          }
+        `);
+      });
+
+      it('should not error when inheriting a constructor from a decorated directive class', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {Directive, Component} from '@angular/core';
+          import {BaseDir, BaseCmp} from './local';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir extends BaseDir {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'TestCmp',
+          })
+          export class Cmp extends BaseCmp {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not error when inheriting a constructor without parameters', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {Directive, Component} from '@angular/core';
+          import {BasePlainWithBlankConstructor} from './local';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir extends BasePlainWithBlankConstructor {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'TestCmp',
+          })
+          export class Cmp extends BasePlainWithBlankConstructor {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not error when inheriting from a class without a constructor', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {Directive, Component} from '@angular/core';
+          import {BasePlain} from './local';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir extends BasePlain {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'TestCmp',
+          })
+          export class Cmp extends BasePlain {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should error when inheriting a constructor from an undecorated class', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {Directive, Component} from '@angular/core';
+          import {BasePlainWithConstructorParameters} from './local';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir extends BasePlainWithConstructorParameters {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'TestCmp',
+          })
+          export class Cmp extends BasePlainWithConstructorParameters {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toContain('Dir');
+        expect(diags[0].messageText).toContain('BasePlainWithConstructorParameters');
+        expect(diags[1].messageText).toContain('Cmp');
+        expect(diags[1].messageText).toContain('BasePlainWithConstructorParameters');
+      });
+
+      it('should error when inheriting a constructor from undecorated grand super class', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {Directive, Component} from '@angular/core';
+          import {BasePlainWithConstructorParameters} from './local';
+
+          class Parent extends BasePlainWithConstructorParameters {}
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir extends Parent {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'TestCmp',
+          })
+          export class Cmp extends Parent {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toContain('Dir');
+        expect(diags[0].messageText).toContain('BasePlainWithConstructorParameters');
+        expect(diags[1].messageText).toContain('Cmp');
+        expect(diags[1].messageText).toContain('BasePlainWithConstructorParameters');
+      });
+
+      it('should error when inheriting a constructor from undecorated grand grand super class',
+         () => {
+           env.tsconfig();
+           env.write('test.ts', `
+              import {Directive, Component} from '@angular/core';
+              import {BasePlainWithConstructorParameters} from './local';
+
+              class GrandParent extends BasePlainWithConstructorParameters {}
+
+              class Parent extends GrandParent {}
+
+              @Directive({
+                selector: '[dir]',
+              })
+              export class Dir extends Parent {}
+
+              @Component({
+                selector: 'test-cmp',
+                template: 'TestCmp',
+              })
+              export class Cmp extends Parent {}
+            `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(2);
+           expect(diags[0].messageText).toContain('Dir');
+           expect(diags[0].messageText).toContain('BasePlainWithConstructorParameters');
+           expect(diags[1].messageText).toContain('Cmp');
+           expect(diags[1].messageText).toContain('BasePlainWithConstructorParameters');
+         });
+
+      it('should not error when inheriting a constructor from decorated directive or component classes in a .d.ts file',
+         () => {
+           env.tsconfig();
+           env.write('test.ts', `
+              import {Component, Directive} from '@angular/core';
+              import {BaseDir, BaseCmp} from './lib';
+
+              @Directive({
+                selector: '[dir]',
+              })
+              export class Dir extends BaseDir {}
+
+              @Component({
+                selector: 'test-cmp',
+                template: 'TestCmp',
+              })
+              export class Cmp extends BaseCmp {}
+           `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+
+      it('should error when inheriting a constructor from an undecorated class in a .d.ts file',
+         () => {
+           env.tsconfig();
+           env.write('test.ts', `
+              import {Directive} from '@angular/core';
+
+              import {BasePlainWithConstructorParameters} from './lib';
+
+              @Directive({
+                selector: '[dir]',
+              })
+              export class Dir extends BasePlainWithConstructorParameters {}
+            `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText).toContain('Dir');
+           expect(diags[0].messageText).toContain('Base');
+         });
     });
 
     describe('inline resources', () => {
