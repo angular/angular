@@ -44,7 +44,6 @@ import {
   combineLatest as combineLatestOp,
   distinctUntilChanged,
   filter,
-  first,
   flatMap,
   map,
   publish,
@@ -236,15 +235,24 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   }
 
   createEventsBoundInZone(): YT.Events {
-    return {
-      onReady: this._runInZone((event) => this.ready.emit(event)),
-      onStateChange: this._runInZone((event) => this.stateChange.emit(event)),
-      onPlaybackQualityChange:
-          this._runInZone((event) => this.playbackQualityChange.emit(event)),
-      onPlaybackRateChange: this._runInZone((event) => this.playbackRateChange.emit(event)),
-      onError: this._runInZone((event) => this.error.emit(event)),
-      onApiChange: this._runInZone((event) => this.apiChange.emit(event)),
-    };
+    const output: YT.Events = {};
+    const events = new Map<keyof YT.Events, EventEmitter<any>>([
+      ['onReady', this.ready],
+      ['onStateChange', this.stateChange],
+      ['onPlaybackQualityChange', this.playbackQualityChange],
+      ['onPlaybackRateChange', this.playbackRateChange],
+      ['onError', this.error],
+      ['onApiChange', this.apiChange]
+    ]);
+
+    events.forEach((emitter, name) => {
+      // Since these events all trigger change detection, only bind them if something is subscribed.
+      if (emitter.observers.length) {
+        output[name] = this._runInZone(event => emitter.emit(event));
+      }
+    });
+
+    return output;
   }
 
   ngAfterViewInit() {
@@ -261,9 +269,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
 
   private _runInZone<T extends (...args: any[]) => void>(callback: T):
       (...args: Parameters<T>) => void {
-    return (...args: Parameters<T>) => {
-      this._ngZone.run(() => callback(...args));
-    };
+    return (...args: Parameters<T>) => this._ngZone.run(() => callback(...args));
   }
 
   /** Proxied methods. */
@@ -416,19 +422,18 @@ function bindSuggestedQualityToPlayer(
  * Returns an observable that emits the loaded player once it's ready. Certain properties/methods
  * won't be available until the iframe finishes loading.
  */
-function waitUntilReady()
-    : OperatorFunction<UninitializedPlayer | undefined, Player | undefined> {
+function waitUntilReady(): OperatorFunction<UninitializedPlayer | undefined, Player | undefined> {
   return flatMap(player => {
-      if (!player) {
-        return observableOf<Player|undefined>(undefined);
-      }
-      if ('getPlayerStatus' in player) {
-        return observableOf(player as Player);
-      }
-      // The player is not initialized fully until the ready is called.
-      return fromPlayerOnReady(player)
-          .pipe(first(), startWith(undefined));
-    });
+    if (!player) {
+      return observableOf<Player|undefined>(undefined);
+    }
+    if ('getPlayerStatus' in player) {
+      return observableOf(player as Player);
+    }
+    // The player is not initialized fully until the ready is called.
+    return fromPlayerOnReady(player)
+        .pipe(take(1), startWith(undefined));
+  });
 }
 
 /** Since removeEventListener is not on Player when it's initialized, we can't use fromEvent. */
