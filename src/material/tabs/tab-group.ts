@@ -172,7 +172,7 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
   private _groupId: number;
 
   constructor(elementRef: ElementRef,
-              private _changeDetectorRef: ChangeDetectorRef,
+              protected _changeDetectorRef: ChangeDetectorRef,
               @Inject(MAT_TABS_CONFIG) @Optional() defaultConfig?: MatTabsConfig,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super(elementRef);

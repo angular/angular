@@ -66,7 +66,10 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
   /** Whether the ink bar should fit its width to the size of the tab label content. */
   @Input()
   get fitInkBarToContent(): boolean { return this._fitInkBarToContent.value; }
-  set fitInkBarToContent(v: boolean) { this._fitInkBarToContent.next(coerceBooleanProperty(v)); }
+  set fitInkBarToContent(v: boolean) {
+    this._fitInkBarToContent.next(coerceBooleanProperty(v));
+    this._changeDetectorRef.markForCheck();
+  }
   _fitInkBarToContent = new BehaviorSubject(false);
 
   @ContentChildren(forwardRef(() => MatTabLink), {descendants: true}) _items: QueryList<MatTabLink>;

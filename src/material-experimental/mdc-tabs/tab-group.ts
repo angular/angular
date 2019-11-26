@@ -61,7 +61,10 @@ export class MatTabGroup extends _MatTabGroupBase {
   /** Whether the ink bar should fit its width to the size of the tab label content. */
   @Input()
   get fitInkBarToContent(): boolean { return this._fitInkBarToContent; }
-  set fitInkBarToContent(v: boolean) { this._fitInkBarToContent = coerceBooleanProperty(v); }
+  set fitInkBarToContent(v: boolean) {
+    this._fitInkBarToContent = coerceBooleanProperty(v);
+    this._changeDetectorRef.markForCheck();
+  }
   private _fitInkBarToContent = false;
 
   constructor(elementRef: ElementRef,

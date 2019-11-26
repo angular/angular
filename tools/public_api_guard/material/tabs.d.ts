@@ -32,6 +32,7 @@ export declare abstract class _MatTabBodyBase implements OnInit, OnDestroy {
 export declare abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements AfterContentInit, AfterContentChecked, OnDestroy, CanColor, CanDisableRipple {
     abstract _allTabs: QueryList<MatTab>;
     _animationMode?: string | undefined;
+    protected _changeDetectorRef: ChangeDetectorRef;
     abstract _tabBodyWrapper: ElementRef;
     abstract _tabHeader: MatTabGroupBaseHeader;
     _tabs: QueryList<MatTab>;
