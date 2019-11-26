@@ -56,7 +56,6 @@ export class MatChipSelectionChange {
     '(keydown)': '_keydown($event)',
     '(focus)': 'focus()',
     '(blur)': '_blur()',
-    '(transitionend)': '_chipFoundation.handleTransitionEnd($event)'
   },
   providers: [{provide: MatChip, useExisting: MatChipOption}],
   encapsulation: ViewEncapsulation.None,

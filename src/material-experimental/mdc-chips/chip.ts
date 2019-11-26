@@ -26,7 +26,7 @@ import {
   OnDestroy,
   Optional,
   Output,
-  ViewEncapsulation
+  ViewEncapsulation, HostListener
 } from '@angular/core';
 import {
   CanColor,
@@ -108,7 +108,6 @@ const _MatChipMixinBase:
     '[id]': 'id',
     '[attr.disabled]': 'disabled || null',
     '[attr.aria-disabled]': 'disabled.toString()',
-    '(transitionend)': '_chipFoundation.handleTransitionEnd($event)'
   },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -128,6 +127,16 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
 
     /** Whether animations for the chip are enabled. */
   _animationsDisabled: boolean;
+
+  // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
+  // In Ivy the `host` bindings will be merged when this class is extended, whereas in
+  // ViewEngine they're overwritten.
+  // TODO(mmalerba): we move this back into `host` once Ivy is turned on by default.
+  // tslint:disable-next-line:no-host-decorator-in-concrete
+  @HostListener('transitionend', ['$event'])
+  _handleTransitionEnd(event: TransitionEvent) {
+    this._chipFoundation.handleTransitionEnd(event);
+  }
 
   get _hasFocus() {
     return this._hasFocusInternal;

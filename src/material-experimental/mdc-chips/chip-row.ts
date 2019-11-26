@@ -41,7 +41,6 @@ import {GridKeyManagerRow, NAVIGATION_KEYS} from './grid-key-manager';
     '[tabIndex]': 'tabIndex',
     '(mousedown)': '_mousedown($event)',
     '(keydown)': '_keydown($event)',
-    '(transitionend)': '_chipFoundation.handleTransitionEnd($event)',
     '(focusin)': '_focusin()',
     '(focusout)': '_focusout()'
   },

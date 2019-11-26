@@ -7,7 +7,15 @@
  */
 
 import {Platform} from '@angular/cdk/platform';
-import {Directive, ElementRef, Inject, NgZone, Optional, ViewChild} from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  HostListener,
+  Inject,
+  NgZone,
+  Optional,
+  ViewChild
+} from '@angular/core';
 import {
   CanColor,
   CanColorCtor,
@@ -141,7 +149,6 @@ export const MAT_ANCHOR_HOST = {
   // though they have an index, they're not tabbable.
   '[attr.tabindex]': 'disabled ? -1 : (tabIndex || 0)',
   '[attr.aria-disabled]': 'disabled.toString()',
-  '(click)': '_haltDisabledEvents($event)',
   // MDC automatically applies the primary theme color to the button, but we want to support
   // an unthemed version. If color is undefined, apply a CSS class that makes it easy to
   // select and style this "theme".
@@ -161,6 +168,12 @@ export class MatAnchorBase extends MatButtonBase {
     super(elementRef, platform, ngZone, animationMode);
   }
 
+  // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
+  // In Ivy the `host` bindings will be merged when this class is extended, whereas in
+  // ViewEngine they're overwritten.
+  // TODO(mmalerba): we move this back into `host` once Ivy is turned on by default.
+  // tslint:disable-next-line:no-host-decorator-in-concrete
+  @HostListener('click', ['$event'])
   _haltDisabledEvents(event: Event) {
     // A disabled button shouldn't apply any actions
     if (this.disabled) {
