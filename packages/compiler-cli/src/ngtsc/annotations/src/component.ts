@@ -26,6 +26,7 @@ import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {SubsetOfKeys} from '../../util/src/typescript';
 
 import {ResourceLoader} from './api';
+import {getDirectiveDiagnostics} from './diagnostics';
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
@@ -495,7 +496,12 @@ export class ComponentDecoratorHandler implements
         this.scopeRegistry.setComponentAsRequiringRemoteScoping(node);
       }
     }
-    return {data};
+
+    const diagnostics = getDirectiveDiagnostics(node, this.metaReader, this.evaluator);
+    return {
+      data,
+      diagnostics: diagnostics !== null ? diagnostics : undefined,
+    };
   }
 
   compile(

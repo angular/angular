@@ -30,6 +30,10 @@ export class LocalMetadataRegistry implements MetadataRegistry, MetadataReader {
     return this.pipes.has(ref.node) ? this.pipes.get(ref.node) ! : null;
   }
 
+  forEachDirective(fn: (dir: ClassDeclaration, meta: DirectiveMeta) => void): void {
+    this.directives.forEach((meta, dir) => fn(dir, meta));
+  }
+
   registerDirectiveMetadata(meta: DirectiveMeta): void { this.directives.set(meta.ref.node, meta); }
   registerNgModuleMetadata(meta: NgModuleMeta): void { this.ngModules.set(meta.ref.node, meta); }
   registerPipeMetadata(meta: PipeMeta): void { this.pipes.set(meta.ref.node, meta); }

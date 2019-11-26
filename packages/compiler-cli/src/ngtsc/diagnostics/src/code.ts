@@ -117,7 +117,13 @@ export enum ErrorCode {
   /**
    * An injectable already has a `ɵprov` property.
    */
-  INJECTABLE_DUPLICATE_PROV = 9001
+  INJECTABLE_DUPLICATE_PROV = 9001,
+
+  /**
+   * Raised when a Directive inherits its constructor from a base class without an Angular
+   * decorator.
+   */
+  DIRECTIVE_INHERITS_UNDECORATED_CTOR = 10001,
 }
 
 export function ngErrorCode(code: ErrorCode): number {
