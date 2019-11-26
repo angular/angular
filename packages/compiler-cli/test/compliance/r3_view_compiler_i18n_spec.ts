@@ -956,20 +956,37 @@ describe('i18n support in the template compiler', () => {
 
     it('should properly escape quotes in content', () => {
       const input = `
-        <div i18n>Some text 'with single quotes', "with double quotes" and without quotes.</div>
+        <div i18n>Some text 'with single quotes', "with double quotes", \`with backticks\` and without quotes.</div>
       `;
 
       const output = String.raw `
         var $I18N_0$;
         if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_4924931801512133405$$APP_SPEC_TS_0$ = goog.getMsg("Some text 'with single quotes', \"with double quotes\" and without quotes.");
+            const $MSG_EXTERNAL_4924931801512133405$$APP_SPEC_TS_0$ = goog.getMsg("Some text 'with single quotes', \"with double quotes\", ` +
+          '`with backticks`' + String.raw ` and without quotes.");
             $I18N_0$ = $MSG_EXTERNAL_4924931801512133405$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $localize \`Some text 'with single quotes', "with double quotes" and without quotes.\`;
+            $I18N_0$ = $localize \`Some text 'with single quotes', "with double quotes", \\\`with backticks\\\` and without quotes.\`;
         }
       `;
 
+      verify(input, output);
+    });
+
+    it('should handle interpolations wrapped in backticks', () => {
+      const input = '<div i18n>`{{ count }}`</div>';
+      const output = String.raw `
+      var $I18N_0$;
+      if (ngI18nClosureMode) {
+          const $MSG_APP_SPEC_TS_1$ = goog.getMsg("` +
+          '`{$interpolation}`' + String.raw `", { "interpolation": "\uFFFD0\uFFFD" });
+          $I18N_0$ = $MSG_APP_SPEC_TS_1$;
+      }
+      else {
+          $I18N_0$ = $localize \`\\\`$` +
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\\\`\`;
+      }`;
       verify(input, output);
     });
 

@@ -78,7 +78,7 @@ function tokenizeBackTickString(str: string): Piece[] {
   const pieces: Piece[] = ['`'];
   // Unescape backticks that are inside the backtick string
   // (we had to double escape them in the test string so they didn't look like string markers)
-  str = str.replace(/\\\\\\`/, '\\`');
+  str = str.replace(/\\\\\\`/g, '\\`');
   const backTickPieces = str.slice(2, -2).split(BACKTICK_INTERPOLATION);
   backTickPieces.forEach((backTickPiece) => {
     if (BACKTICK_INTERPOLATION.test(backTickPiece)) {

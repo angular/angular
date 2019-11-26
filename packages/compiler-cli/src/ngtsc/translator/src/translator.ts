@@ -552,25 +552,47 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
 function createLocalizedStringTaggedTemplate(
     ast: LocalizedString, context: Context, visitor: ExpressionVisitor) {
   let template: ts.TemplateLiteral;
+  const length = ast.messageParts.length;
   const metaBlock = ast.serializeI18nHead();
-  if (ast.messageParts.length === 1) {
+  if (length === 1) {
     template = ts.createNoSubstitutionTemplateLiteral(metaBlock.cooked, metaBlock.raw);
   } else {
+    // Create the head part
     const head = ts.createTemplateHead(metaBlock.cooked, metaBlock.raw);
     const spans: ts.TemplateSpan[] = [];
-    for (let i = 1; i < ast.messageParts.length; i++) {
+    // Create the middle parts
+    for (let i = 1; i < length - 1; i++) {
       const resolvedExpression = ast.expressions[i - 1].visitExpression(visitor, context);
       const templatePart = ast.serializeI18nTemplatePart(i);
-      const templateMiddle = ts.createTemplateMiddle(templatePart.cooked, templatePart.raw);
+      const templateMiddle = createTemplateMiddle(templatePart.cooked, templatePart.raw);
       spans.push(ts.createTemplateSpan(resolvedExpression, templateMiddle));
     }
-    if (spans.length > 0) {
-      // The last span is supposed to have a tail rather than a middle
-      spans[spans.length - 1].literal.kind = ts.SyntaxKind.TemplateTail;
-    }
+    // Create the tail part
+    const resolvedExpression = ast.expressions[length - 2].visitExpression(visitor, context);
+    const templatePart = ast.serializeI18nTemplatePart(length - 1);
+    const templateTail = createTemplateTail(templatePart.cooked, templatePart.raw);
+    spans.push(ts.createTemplateSpan(resolvedExpression, templateTail));
+    // Put it all together
     template = ts.createTemplateExpression(head, spans);
   }
   return ts.createTaggedTemplate(ts.createIdentifier('$localize'), template);
+}
+
+
+// HACK: Use this in place of `ts.createTemplateMiddle()`.
+// Revert once https://github.com/microsoft/TypeScript/issues/35374 is fixed
+function createTemplateMiddle(cooked: string, raw: string): ts.TemplateMiddle {
+  const node: ts.TemplateLiteralLikeNode = ts.createTemplateHead(cooked, raw);
+  node.kind = ts.SyntaxKind.TemplateMiddle;
+  return node as ts.TemplateMiddle;
+}
+
+// HACK: Use this in place of `ts.createTemplateTail()`.
+// Revert once https://github.com/microsoft/TypeScript/issues/35374 is fixed
+function createTemplateTail(cooked: string, raw: string): ts.TemplateTail {
+  const node: ts.TemplateLiteralLikeNode = ts.createTemplateHead(cooked, raw);
+  node.kind = ts.SyntaxKind.TemplateTail;
+  return node as ts.TemplateTail;
 }
 
 /**
