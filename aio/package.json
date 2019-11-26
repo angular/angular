@@ -112,7 +112,7 @@
     "@types/jasmine": "^3.4.2",
     "@types/jasminewd2": "^2.0.8",
     "@types/lunr": "^2.3.2",
-    "@types/node": "^12.7.9",
+    "@types/node": "12.7.9",
     "@types/xregexp": "^3.0.30",
     "@yarnpkg/lockfile": "^1.1.0",
     "archiver": "^1.3.0",
