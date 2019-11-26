@@ -818,6 +818,18 @@ describe('Key managers', () => {
         expect(keyManager.activeItem).toBe(itemList.items[1]);
       }));
 
+      it('should expose whether the user is currently typing', fakeAsync(() => {
+        expect(keyManager.isTyping()).toBe(false);
+
+        keyManager.onKeydown(createKeyboardEvent('keydown', 79, 'o')); // types "o"
+
+        expect(keyManager.isTyping()).toBe(true);
+
+        tick(debounceInterval);
+
+        expect(keyManager.isTyping()).toBe(false);
+      }));
+
     });
 
   });

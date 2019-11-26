@@ -511,6 +511,31 @@ describe('MatSelect', () => {
             'Expected value from sixth option to have been set on the model.');
         }));
 
+        it('should not open the select when pressing space while typing', fakeAsync(() => {
+          const selectInstance = fixture.componentInstance.select;
+
+          fixture.componentInstance.typeaheadDebounceInterval = DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL;
+          fixture.detectChanges();
+
+          expect(selectInstance.panelOpen).toBe(false, 'Expected select to be closed on init.');
+
+          dispatchEvent(select, createKeyboardEvent('keydown', 80, 'p'));
+          tick(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL / 2);
+          fixture.detectChanges();
+
+          dispatchKeyboardEvent(select, 'keydown', SPACE);
+          fixture.detectChanges();
+
+          expect(selectInstance.panelOpen).toBe(false,
+              'Expected select to remain closed after space was pressed.');
+
+          tick(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL / 2);
+          fixture.detectChanges();
+
+          expect(selectInstance.panelOpen).toBe(false,
+              'Expected select to be closed when the timer runs out.');
+        }));
+
         it('should be able to customize the typeahead debounce interval', fakeAsync(() => {
           const formControl = fixture.componentInstance.control;
           const options = fixture.componentInstance.options.toArray();

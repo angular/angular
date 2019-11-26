@@ -721,7 +721,8 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     const manager = this._keyManager;
 
     // Open the select on ALT + arrow key to match the native <select>
-    if ((isOpenKey && !hasModifierKey(event)) || ((this.multiple || event.altKey) && isArrowKey)) {
+    if (!manager.isTyping() && (isOpenKey && !hasModifierKey(event)) ||
+      ((this.multiple || event.altKey) && isArrowKey)) {
       event.preventDefault(); // prevents the page from scrolling down when pressing space
       this.open();
     } else if (!this.multiple) {
@@ -747,9 +748,10 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** Handles keyboard events when the selected is open. */
   private _handleOpenKeydown(event: KeyboardEvent): void {
+    const manager = this._keyManager;
     const keyCode = event.keyCode;
     const isArrowKey = keyCode === DOWN_ARROW || keyCode === UP_ARROW;
-    const manager = this._keyManager;
+    const isTyping = manager.isTyping();
 
     if (keyCode === HOME || keyCode === END) {
       event.preventDefault();
@@ -758,11 +760,13 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       // Close the select on ALT + arrow key to match the native <select>
       event.preventDefault();
       this.close();
-    } else if ((keyCode === ENTER || keyCode === SPACE) && manager.activeItem &&
+      // Don't do anything in this case if the user is typing,
+      // because the typing sequence can include the space key.
+    } else if (!isTyping && (keyCode === ENTER || keyCode === SPACE) && manager.activeItem &&
       !hasModifierKey(event)) {
       event.preventDefault();
       manager.activeItem._selectViaInteraction();
-    } else if (this._multiple && keyCode === A && event.ctrlKey) {
+    } else if (!isTyping && this._multiple && keyCode === A && event.ctrlKey) {
       event.preventDefault();
       const hasDeselectedOptions = this.options.some(opt => !opt.disabled && !opt.selected);
 

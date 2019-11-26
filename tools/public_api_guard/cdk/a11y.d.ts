@@ -144,6 +144,7 @@ export declare class ListKeyManager<T extends ListKeyManagerOption> {
     change: Subject<number>;
     tabOut: Subject<void>;
     constructor(_items: QueryList<T> | T[]);
+    isTyping(): boolean;
     onKeydown(event: KeyboardEvent): void;
     setActiveItem(index: number): void;
     setActiveItem(item: T): void;

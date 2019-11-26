@@ -147,7 +147,7 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
     // and convert those letters back into a string. Afterwards find the first item that starts
     // with that string and select it.
     this._typeaheadSubscription = this._letterKeyStream.pipe(
-      tap(keyCode => this._pressedLetters.push(keyCode)),
+      tap(letter => this._pressedLetters.push(letter)),
       debounceTime(debounceInterval),
       filter(() => this._pressedLetters.length > 0),
       map(() => this._pressedLetters.join(''))
@@ -272,6 +272,11 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   /** The active item. */
   get activeItem(): T | null {
     return this._activeItem;
+  }
+
+  /** Gets whether the user is currently typing into the manager using the typeahead feature. */
+  isTyping(): boolean {
+    return this._pressedLetters.length > 0;
   }
 
   /** Sets the active item to the first enabled item in the list. */
