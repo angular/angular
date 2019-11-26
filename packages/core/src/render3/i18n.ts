@@ -12,7 +12,7 @@ import {SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS, getTemplateContent
 import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {addAllToArray} from '../util/array_utils';
-import {assertDataInRange, assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
+import {assertDataInRange, assertDefined, assertEqual} from '../util/assert';
 
 import {bindingUpdated} from './bindings';
 import {attachPatchData} from './context_discovery';
@@ -190,7 +190,6 @@ function parseICUBlock(pattern: string): IcuExpression {
     }
   }
 
-  assertGreaterThan(cases.indexOf('other'), -1, 'Missing key "other" in ICU statement.');
   // TODO(ocombe): support ICU expressions in attributes, see #21615
   return {type: icuType, mainBinding: mainBinding, cases, values};
 }
@@ -895,18 +894,21 @@ function readUpdateOpCodes(
                 // Update the active caseIndex
                 const caseIndex = getCaseIndex(tIcu, value);
                 icuTNode.activeCaseIndex = caseIndex !== -1 ? caseIndex : null;
-
-                // Add the nodes for the new case
-                readCreateOpCodes(-1, tIcu.create[caseIndex], viewData);
-                caseCreated = true;
+                if (caseIndex > -1) {
+                  // Add the nodes for the new case
+                  readCreateOpCodes(-1, tIcu.create[caseIndex], viewData);
+                  caseCreated = true;
+                }
                 break;
               case I18nUpdateOpCode.IcuUpdate:
                 tIcuIndex = updateOpCodes[++j] as number;
                 tIcu = icus ![tIcuIndex];
                 icuTNode = getTNode(nodeIndex, viewData) as TIcuContainerNode;
-                readUpdateOpCodes(
-                    tIcu.update[icuTNode.activeCaseIndex !], icus, bindingsStartIndex, changeMask,
-                    viewData, caseCreated);
+                if (icuTNode.activeCaseIndex !== null) {
+                  readUpdateOpCodes(
+                      tIcu.update[icuTNode.activeCaseIndex], icus, bindingsStartIndex, changeMask,
+                      viewData, caseCreated);
+                }
                 break;
             }
           }

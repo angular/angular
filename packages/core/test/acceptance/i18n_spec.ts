@@ -1094,6 +1094,110 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement.innerHTML).toContain('plus d\'un');
     });
+
+    it('should support ICUs without "other" cases', () => {
+      loadTranslations({
+        idA: '{VAR_SELECT, select, 1 {un (select)} 2 {deux (select)}}',
+        idB: '{VAR_PLURAL, plural, =1 {un (plural)} =2 {deux (plural)}}',
+      });
+
+      @Component({
+        selector: 'app',
+        template: `
+          <div i18n="@@idA">{count, select, 1 {one (select)} 2 {two (select)}}</div> -
+          <div i18n="@@idB">{count, plural, =1 {one (plural)} =2 {two (plural)}}</div>
+        `
+      })
+      class AppComponent {
+        count = 1;
+      }
+
+      TestBed.configureTestingModule({declarations: [AppComponent]});
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('un (select) - un (plural)');
+
+      fixture.componentInstance.count = 3;
+      fixture.detectChanges();
+      // there is no ICU case for count=3
+      expect(fixture.nativeElement.textContent.trim()).toBe('-');
+
+      fixture.componentInstance.count = 4;
+      fixture.detectChanges();
+      // there is no ICU case for count=4, making sure content is still empty
+      expect(fixture.nativeElement.textContent.trim()).toBe('-');
+
+      fixture.componentInstance.count = 2;
+      fixture.detectChanges();
+      // check switching to an existing case after processing an ICU without matching case
+      expect(fixture.nativeElement.textContent.trim()).toBe('deux (select) - deux (plural)');
+
+      fixture.componentInstance.count = 1;
+      fixture.detectChanges();
+      // check that we can go back to the first ICU case
+      expect(fixture.nativeElement.textContent).toBe('un (select) - un (plural)');
+    });
+
+    it('should support nested ICUs without "other" cases', () => {
+      loadTranslations({
+        idA: '{VAR_SELECT_1, select, A {{VAR_SELECT, select, ' +
+            '1 {un (select)} 2 {deux (select)}}} other {}}',
+        idB: '{VAR_SELECT, select, A {{VAR_PLURAL, plural, ' +
+            '=1 {un (plural)} =2 {deux (plural)}}} other {}}',
+      });
+
+      @Component({
+        selector: 'app',
+        template: `
+          <div i18n="@@idA">{
+            type, select,
+              A {{count, select, 1 {one (select)} 2 {two (select)}}}
+              other {}
+          }</div> -
+          <div i18n="@@idB">{
+            type, select,
+              A {{count, plural, =1 {one (plural)} =2 {two (plural)}}}
+              other {}
+          }</div>
+        `
+      })
+      class AppComponent {
+        type = 'A';
+        count = 1;
+      }
+
+      TestBed.configureTestingModule({declarations: [AppComponent]});
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('un (select) - un (plural)');
+
+      fixture.componentInstance.count = 3;
+      fixture.detectChanges();
+      // there is no case for count=3 in nested ICU
+      expect(fixture.nativeElement.textContent.trim()).toBe('-');
+
+      fixture.componentInstance.count = 4;
+      fixture.detectChanges();
+      // there is no case for count=4 in nested ICU, making sure content is still empty
+      expect(fixture.nativeElement.textContent.trim()).toBe('-');
+
+      fixture.componentInstance.count = 2;
+      fixture.detectChanges();
+      // check switching to an existing case after processing nested ICU without matching case
+      expect(fixture.nativeElement.textContent.trim()).toBe('deux (select) - deux (plural)');
+
+      fixture.componentInstance.count = 1;
+      fixture.detectChanges();
+      // check that we can go back to the first case in nested ICU
+      expect(fixture.nativeElement.textContent).toBe('un (select) - un (plural)');
+
+      fixture.componentInstance.type = 'B';
+      fixture.detectChanges();
+      // check that nested ICU is removed if root ICU case has changed
+      expect(fixture.nativeElement.textContent.trim()).toBe('-');
+    });
   });
 
   describe('should support attributes', () => {
