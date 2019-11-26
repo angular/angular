@@ -1,4 +1,5 @@
 @import '@material/chips/mixins';
+@import '../../material/core/style/layout-common';
 @import '../../material/core/style/noop-animation';
 @import '../../cdk/a11y/a11y';
 @import '../mdc-helpers/mdc-helpers';
@@ -28,22 +29,14 @@
 // The MDC chip styles related to hover and focus states are intertwined with the MDC ripple styles.
 // We currently don't use the MDC ripple due to size concerns, therefore we need to add some
 // additional styles to restore these states.
-.mat-mdc-chip:not(.mat-mdc-chip-disabled) {
-  &:hover, &:focus, div:focus {
-    .mdc-chip__text::after {
-      content: '';
-      position: absolute;
-      width: 100%;
-      height: 100%;
+.mdc-chip__ripple {
+  @include mdc-ripple-target-common($query: structure);
 
-      // Note that we use a `background` and `opacity`, instead of an `rgba` background, because
-      // `rgba` backgrounds get converted into solid colors in high contrast mode.
-      background: #000;
-      opacity: 0.2;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-    }
+  &::after, &::before {
+    @include mat-fill;
+    content: '';
+    pointer-events: none;
+    opacity: 0;
   }
 }
 
@@ -54,6 +47,11 @@
 
   .mat-mdc-chip-trailing-icon, .mat-chip-row-focusable-text-content {
     pointer-events: none;
+  }
+
+  // Do not show state interactions for disabled chips.
+  .mdc-chip__ripple::after, .mdc-chip__ripple::before {
+    display: none;
   }
 }
 
