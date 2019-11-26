@@ -50,8 +50,8 @@ runInEachFileSystem(() => {
           null);
       const injectableRegistry = new InjectableClassRegistry(reflectionHost);
       const handler = new DirectiveDecoratorHandler(
-          reflectionHost, evaluator, scopeRegistry, scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
-          injectableRegistry,
+          reflectionHost, evaluator, scopeRegistry, scopeRegistry, metaReader,
+          NOOP_DEFAULT_IMPORT_RECORDER, injectableRegistry,
           /* isCore */ false, /* annotateForClosureCompiler */ false);
 
       const analyzeDirective = (dirName: string) => {
