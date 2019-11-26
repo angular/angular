@@ -154,6 +154,13 @@
         "properties": {
           "*": "^(?!\\s*$).+"
         }
+      },
+      "ContentChildren": {
+        "argument": 1,
+        "required": true,
+        "properties": {
+          "descendants": "^(true|false)$"
+        }
       }
     }, "src/!(a11y-demo|e2e-app|components-examples|universal-app|dev-app)/**/!(*.spec).ts"],
     "require-license-banner": [

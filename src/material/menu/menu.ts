@@ -162,7 +162,7 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
    * @deprecated
    * @breaking-change 8.0.0
    */
-  @ContentChildren(MatMenuItem) items: QueryList<MatMenuItem>;
+  @ContentChildren(MatMenuItem, {descendants: false}) items: QueryList<MatMenuItem>;
 
   /**
    * Menu content that will be rendered lazily.

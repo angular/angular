@@ -50,7 +50,7 @@ import {MatInkBar} from './ink-bar';
   },
 })
 export class MatTabHeader extends _MatTabHeaderBase implements AfterContentInit {
-  @ContentChildren(MatTabLabelWrapper) _items: QueryList<MatTabLabelWrapper>;
+  @ContentChildren(MatTabLabelWrapper, {descendants: false}) _items: QueryList<MatTabLabelWrapper>;
   @ViewChild('tabListContainer', {static: true}) _tabListContainer: ElementRef;
   @ViewChild('tabList', {static: true}) _tabList: ElementRef;
   @ViewChild('nextPaginator') _nextPaginator: ElementRef<HTMLElement>;
