@@ -207,7 +207,7 @@ runInEachFileSystem(() => {
 
     it('should skip the base class if it is in a different package from the derived class', () => {
       const BASE_FILENAME = _('/node_modules/other-package/index.js');
-      const {program, analysis, errors} = setUpAndAnalyzeProgram([
+      const {errors} = setUpAndAnalyzeProgram([
         {
           name: INDEX_FILENAME,
           contents: `
@@ -232,9 +232,16 @@ runInEachFileSystem(() => {
       `
         }
       ]);
-      expect(errors).toEqual([]);
-      const file = analysis.get(program.getSourceFile(BASE_FILENAME) !);
-      expect(file).toBeUndefined();
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].messageText)
+          .toBe(
+              `The directive DerivedClass inherits its constructor ` +
+              `from BaseClass, but the latter does not have an Angular ` +
+              `decorator of its own. Dependency injection will not be ` +
+              `able to resolve the parameters of BaseClass's ` +
+              `constructor. Either add a @Directive decorator to ` +
+              `BaseClass, or add an explicit constructor to DerivedClass.`);
     });
   });
 

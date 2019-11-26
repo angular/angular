@@ -29,6 +29,12 @@ export enum ErrorCode {
   /** Raised when an undecorated class is passed in as a provider to a module or a directive. */
   UNDECORATED_PROVIDER = 2005,
 
+  /**
+   * Raised when a Directive inherits its constructor from a base class without an Angular
+   * decorator.
+   */
+  DIRECTIVE_INHERITS_UNDECORATED_CTOR = 2006,
+
   SYMBOL_NOT_EXPORTED = 3001,
   SYMBOL_EXPORTED_UNDER_DIFFERENT_NAME = 3002,
 
@@ -120,7 +126,7 @@ export enum ErrorCode {
   /**
    * An injectable already has a `ɵprov` property.
    */
-  INJECTABLE_DUPLICATE_PROV = 9001
+  INJECTABLE_DUPLICATE_PROV = 9001,
 }
 
 export function ngErrorCode(code: ErrorCode): number {
