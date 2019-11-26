@@ -245,14 +245,16 @@ export function createContainerRef(
         }
         this.allocateContainerIfNeeded();
         const lView = (viewRef as ViewRef<any>)._lView !;
-        const adjustedIdx = this._adjustIndex(index);
 
         if (viewAttachedToContainer(lView)) {
           // If view is already attached, fall back to move() so we clean up
           // references appropriately.
-          return this.move(viewRef, adjustedIdx);
+          // Note that we "shift" -1 because the move will involve inserting
+          // one view but also removing one view.
+          return this.move(viewRef, this._adjustIndex(index, -1));
         }
 
+        const adjustedIdx = this._adjustIndex(index);
         insertView(lView, this._lContainer, adjustedIdx);
 
         const beforeNode = getBeforeNodeForView(adjustedIdx, this._lContainer);

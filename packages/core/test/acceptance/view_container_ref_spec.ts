@@ -204,6 +204,22 @@ describe('ViewContainerRef', () => {
         expect(fixture.nativeElement.textContent).toEqual('102');
       }
     });
+
+    it('should do nothing when a view is re-inserted / moved at the same index', () => {
+      const fixture = TestBed.createComponent(ViewContainerRefApp);
+      fixture.detectChanges();
+
+      const templates = fixture.componentInstance.vcrComp.templates.toArray();
+      const viewContainerRef = fixture.componentInstance.vcrComp.vcr;
+
+      const ref0 = viewContainerRef.createEmbeddedView(templates[0]);
+
+      expect(fixture.nativeElement.textContent).toEqual('0');
+
+      // insert again at the same place but without specifying any index
+      viewContainerRef.insert(ref0);
+      expect(fixture.nativeElement.textContent).toEqual('0');
+    });
   });
 
   describe('move', () => {
