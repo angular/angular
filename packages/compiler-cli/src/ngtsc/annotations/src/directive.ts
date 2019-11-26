@@ -11,17 +11,17 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {InjectableClassRegistry, MetadataRegistry} from '../../metadata';
+import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {extractDirectiveGuards} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 
-import {getProviderDiagnostics} from './diagnostics';
+import {getDirectiveDiagnostics, getProviderDiagnostics} from './diagnostics';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getConstructorDependencies, isAngularDecorator, makeDuplicateDeclarationError, readBaseClass, resolveProvidersRequiringFactory, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
+import {findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 const FIELD_DECORATORS = [
@@ -46,7 +46,7 @@ export class DirectiveDecoratorHandler implements
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
-      private defaultImportRecorder: DefaultImportRecorder,
+      private metaReader: MetadataReader, private defaultImportRecorder: DefaultImportRecorder,
       private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
       private annotateForClosureCompiler: boolean) {}
 
@@ -140,10 +140,10 @@ export class DirectiveDecoratorHandler implements
       diagnostics.push(...providerDiagnostics);
     }
 
-    const duplicateDeclData = this.scopeRegistry.getDuplicateDeclarations(node);
-    if (duplicateDeclData !== null) {
-      // This directive was declared twice (or more).
-      diagnostics.push(makeDuplicateDeclarationError(node, duplicateDeclData, 'Directive'));
+    const directiveDiagnostics = getDirectiveDiagnostics(
+        node, this.metaReader, this.evaluator, this.reflector, this.scopeRegistry, 'Directive');
+    if (directiveDiagnostics !== null) {
+      diagnostics.push(...directiveDiagnostics);
     }
 
     return {diagnostics: diagnostics.length > 0 ? diagnostics : undefined};

@@ -26,7 +26,7 @@ import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {SubsetOfKeys} from '../../util/src/typescript';
 
 import {ResourceLoader} from './api';
-import {getProviderDiagnostics} from './diagnostics';
+import {getDirectiveDiagnostics, getProviderDiagnostics} from './diagnostics';
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
@@ -550,9 +550,10 @@ export class ComponentDecoratorHandler implements
       diagnostics.push(...viewProviderDiagnostics);
     }
 
-    const duplicateDeclData = this.scopeRegistry.getDuplicateDeclarations(node);
-    if (duplicateDeclData !== null) {
-      diagnostics.push(makeDuplicateDeclarationError(node, duplicateDeclData, 'Component'));
+    const directiveDiagnostics = getDirectiveDiagnostics(
+        node, this.metaReader, this.evaluator, this.reflector, this.scopeRegistry, 'Component');
+    if (directiveDiagnostics !== null) {
+      diagnostics.push(...directiveDiagnostics);
     }
 
     if (diagnostics.length > 0) {
