@@ -204,38 +204,6 @@ runInEachFileSystem(() => {
          expect(decorator.import).toEqual({from: '@angular/core', name: 'Directive'});
          expect(decorator.args !.length).toEqual(0);
        });
-
-    it('should skip the base class if it is in a different package from the derived class', () => {
-      const BASE_FILENAME = _('/node_modules/other-package/index.js');
-      const {program, analysis, errors} = setUpAndAnalyzeProgram([
-        {
-          name: INDEX_FILENAME,
-          contents: `
-       import {Directive, ViewContainerRef} from '@angular/core';
-       import {BaseClass} from 'other-package';
-       export class DerivedClass extends BaseClass {
-       }
-       DerivedClass.decorators = [
-         { type: Directive, args: [{ selector: '[dir]' }] }
-       ];
-     `
-        },
-        {
-          name: BASE_FILENAME,
-          contents: `
-          export class BaseClass {
-            constructor(private vcr: ViewContainerRef) {}
-          }
-          BaseClass.ctorParameters = () => [
-            { type: ViewContainerRef, }
-          ];
-      `
-        }
-      ]);
-      expect(errors).toEqual([]);
-      const file = analysis.get(program.getSourceFile(BASE_FILENAME) !);
-      expect(file).toBeUndefined();
-    });
   });
 
   function setUpAndAnalyzeProgram(testFiles: TestFile[]) {
