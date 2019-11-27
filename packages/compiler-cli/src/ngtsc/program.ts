@@ -629,6 +629,10 @@ export class NgtscProgram implements api.Program {
       new DirectiveDecoratorHandler(
           this.reflector, evaluator, metaRegistry, this.defaultImportTracker, this.isCore,
           this.closureCompilerEnabled),
+      // Pipe handler must be before injectable handler in list so pipe factories are printed
+      // before injectable factories (so injectable factories can delegate to them)
+      new PipeDecoratorHandler(
+          this.reflector, evaluator, metaRegistry, this.defaultImportTracker, this.isCore),
       new InjectableDecoratorHandler(
           this.reflector, this.defaultImportTracker, this.isCore,
           this.options.strictInjectionParameters || false),
@@ -636,8 +640,6 @@ export class NgtscProgram implements api.Program {
           this.reflector, evaluator, this.metaReader, metaRegistry, scopeRegistry,
           referencesRegistry, this.isCore, this.routeAnalyzer, this.refEmitter,
           this.defaultImportTracker, this.closureCompilerEnabled, this.options.i18nInLocale),
-      new PipeDecoratorHandler(
-          this.reflector, evaluator, metaRegistry, this.defaultImportTracker, this.isCore),
     ];
 
     return new IvyCompilation(

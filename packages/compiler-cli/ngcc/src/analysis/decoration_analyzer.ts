@@ -94,6 +94,11 @@ export class DecorationAnalyzer {
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
         this.isCore, /* annotateForClosureCompiler */ false),
+    // Pipe handler must be before injectable handler in list so pipe factories are printed
+    // before injectable factories (so injectable factories can delegate to them)
+    new PipeDecoratorHandler(
+        this.reflectionHost, this.evaluator, this.metaRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
+        this.isCore),
     new InjectableDecoratorHandler(
         this.reflectionHost, NOOP_DEFAULT_IMPORT_RECORDER, this.isCore,
         /* strictCtorDeps */ false, /* errorOnDuplicateProv */ false),
@@ -101,9 +106,6 @@ export class DecorationAnalyzer {
         this.reflectionHost, this.evaluator, this.fullMetaReader, this.fullRegistry,
         this.scopeRegistry, this.referencesRegistry, this.isCore, /* routeAnalyzer */ null,
         this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER, /* annotateForClosureCompiler */ false),
-    new PipeDecoratorHandler(
-        this.reflectionHost, this.evaluator, this.metaRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
-        this.isCore),
   ];
   migrations: Migration[] = [
     new UndecoratedParentMigration(),
