@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export {PLATFORM_SERVER_XHR} from './http';
 export {PlatformState} from './platform_state';
 export {ServerModule, platformDynamicServer, platformServer} from './server';
 export {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig} from './tokens';

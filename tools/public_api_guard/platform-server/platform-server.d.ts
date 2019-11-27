@@ -2,6 +2,8 @@ export declare const BEFORE_APP_SERIALIZED: InjectionToken<(() => void)[]>;
 
 export declare const INITIAL_CONFIG: InjectionToken<PlatformConfig>;
 
+export declare const PLATFORM_SERVER_XHR: any;
+
 export interface PlatformConfig {
     document?: string;
     url?: string;

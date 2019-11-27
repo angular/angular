@@ -121,3 +121,10 @@ export const SERVER_HTTP_PROVIDERS: Provider[] = [
     deps: [HttpBackend, Injector]
   }
 ];
+
+/**
+ * The instance of the XHR Client used in platform-server.
+ *
+ * @publicApi
+ */
+export const PLATFORM_SERVER_XHR = xhr2;
