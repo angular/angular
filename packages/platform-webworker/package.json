@@ -13,9 +13,9 @@
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
-    "@angular/common": "0.0.0-PLACEHOLDER",
-    "@angular/core": "0.0.0-PLACEHOLDER",
-    "@angular/platform-browser": "0.0.0-PLACEHOLDER",
+    "@angular/common": "8.2.14",
+    "@angular/core": "8.2.14",
+    "@angular/platform-browser": "8.2.14",
     "tslib": "^1.10.0"
   },
   "repository": {
