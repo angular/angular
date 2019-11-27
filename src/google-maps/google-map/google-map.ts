@@ -190,7 +190,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   @Output() zoomChanged = new EventEmitter<void>();
 
   private _mapEl: HTMLElement;
-  _googleMap!: UpdatedGoogleMap;
+  _googleMap: UpdatedGoogleMap;
 
   /** Whether we're currently rendering inside a browser. */
   private _isBrowser: boolean;
@@ -244,8 +244,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
       this._googleMapChanges = this._initializeMap(combinedOptionsChanges);
       this._googleMapChanges.subscribe((googleMap: google.maps.Map) => {
         this._googleMap = googleMap as UpdatedGoogleMap;
-
-        this._initializeEventHandlers();
+        this._initializeEventHandlers(this._googleMap);
       });
 
       this._watchForOptionsChanges();
@@ -267,6 +266,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   fitBounds(
       bounds: google.maps.LatLngBounds|google.maps.LatLngBoundsLiteral,
       padding?: number|google.maps.Padding) {
+    this._assertInitialized();
     this._googleMap.fitBounds(bounds, padding);
   }
 
@@ -275,6 +275,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.panBy
    */
   panBy(x: number, y: number) {
+    this._assertInitialized();
     this._googleMap.panBy(x, y);
   }
 
@@ -283,6 +284,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.panTo
    */
   panTo(latLng: google.maps.LatLng|google.maps.LatLngLiteral) {
+    this._assertInitialized();
     this._googleMap.panTo(latLng);
   }
 
@@ -293,6 +295,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   panToBounds(
       latLngBounds: google.maps.LatLngBounds|google.maps.LatLngBoundsLiteral,
       padding?: number|google.maps.Padding) {
+    this._assertInitialized();
     this._googleMap.panToBounds(latLngBounds, padding);
   }
 
@@ -301,6 +304,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getBounds
    */
   getBounds(): google.maps.LatLngBounds|null {
+    this._assertInitialized();
     return this._googleMap.getBounds() || null;
   }
 
@@ -309,6 +313,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getCenter
    */
   getCenter(): google.maps.LatLng {
+    this._assertInitialized();
     return this._googleMap.getCenter();
   }
 
@@ -317,6 +322,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getClickableIcons
    */
   getClickableIcons(): boolean {
+    this._assertInitialized();
     return this._googleMap.getClickableIcons();
   }
 
@@ -325,6 +331,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getHeading
    */
   getHeading(): number {
+    this._assertInitialized();
     return this._googleMap.getHeading();
   }
 
@@ -333,6 +340,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getMapTypeId
    */
   getMapTypeId(): google.maps.MapTypeId|string {
+    this._assertInitialized();
     return this._googleMap.getMapTypeId();
   }
 
@@ -341,6 +349,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getProjection
    */
   getProjection(): google.maps.Projection|null {
+    this._assertInitialized();
     return this._googleMap.getProjection();
   }
 
@@ -349,6 +358,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getStreetView
    */
   getStreetView(): google.maps.StreetViewPanorama {
+    this._assertInitialized();
     return this._googleMap.getStreetView();
   }
 
@@ -357,6 +367,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getTilt
    */
   getTilt(): number {
+    this._assertInitialized();
     return this._googleMap.getTilt();
   }
 
@@ -365,6 +376,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getZoom
    */
   getZoom(): number {
+    this._assertInitialized();
     return this._googleMap.getZoom();
   }
 
@@ -373,6 +385,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.controls
    */
   get controls(): Array<google.maps.MVCArray<Node>> {
+    this._assertInitialized();
     return this._googleMap.controls;
   }
 
@@ -381,6 +394,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.data
    */
   get data(): google.maps.Data {
+    this._assertInitialized();
     return this._googleMap.data;
   }
 
@@ -389,6 +403,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.mapTypes
    */
   get mapTypes(): google.maps.MapTypeRegistry {
+    this._assertInitialized();
     return this._googleMap.mapTypes;
   }
 
@@ -397,6 +412,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.overlayMapTypes
    */
   get overlayMapTypes(): google.maps.MVCArray<google.maps.MapType> {
+    this._assertInitialized();
     return this._googleMap.overlayMapTypes;
   }
 
@@ -423,9 +439,8 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   private _initializeMap(optionsChanges: Observable<google.maps.MapOptions>):
       Observable<google.maps.Map> {
     return optionsChanges.pipe(
-        take(1), map(options => {
-          return new google.maps.Map(this._mapEl, options);
-        }),
+        take(1),
+        map(options => new google.maps.Map(this._mapEl, options)),
         shareReplay(1));
   }
 
@@ -457,7 +472,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
         });
   }
 
-  private _initializeEventHandlers() {
+  private _initializeEventHandlers(googleMap: UpdatedGoogleMap) {
     // Ensure that we don't leak if called multiple times.
     this._clearListeners();
 
@@ -484,7 +499,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
     ]);
     eventHandlers.forEach((eventHandler: EventEmitter<void>, name: string) => {
       if (eventHandler.observers.length > 0) {
-        this._listeners.push(this._googleMap.addListener(name, () => {
+        this._listeners.push(googleMap.addListener(name, () => {
           eventHandler.emit();
         }));
       }
@@ -493,13 +508,13 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
         (eventHandler: EventEmitter<google.maps.MouseEvent>, name: string) => {
           if (eventHandler.observers.length > 0) {
             this._listeners.push(
-                this._googleMap.addListener(name, (event: google.maps.MouseEvent) => {
+                googleMap.addListener(name, (event: google.maps.MouseEvent) => {
                   eventHandler.emit(event);
                 }));
           }
         });
     if (this.mapClick.observers.length > 0) {
-      this._listeners.push(this._googleMap.addListener(
+      this._listeners.push(googleMap.addListener(
           'click', (event: google.maps.MouseEvent|google.maps.IconMouseEvent) => {
             this.mapClick.emit(event);
           }));
@@ -513,5 +528,12 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
     }
 
     this._listeners = [];
+  }
+
+  private _assertInitialized() {
+    if (!this._googleMap) {
+      throw Error('Cannot access Google Map information before the API has been initialized. ' +
+                  'Please wait for the API to load before trying to interact with it.');
+    }
   }
 }
