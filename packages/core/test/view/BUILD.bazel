@@ -17,7 +17,6 @@ ts_library(
         "//packages/core/testing",
         "//packages/platform-browser",
         "//packages/private/testing",
-        "@npm//rxjs",
     ],
 )
 

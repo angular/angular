@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleFactory, ɵisPromise as isPromise} from '@angular/core';
-import {Observable, from, isObservable, of } from 'rxjs';
+import {NgModuleFactory, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
+import {Observable, from, of } from 'rxjs';
 import {concatAll, last as lastValue, map} from 'rxjs/operators';
 
 import {PRIMARY_OUTLET, Params} from '../shared';
