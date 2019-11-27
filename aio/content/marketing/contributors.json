@@ -259,6 +259,14 @@
     "bio": "Ralph(Zhicheng Wang) is a senior consultant at ThoughtWorks and also a GDE. He is a technology enthusiast and he is a passionate advocate of 'Simplicity, Professionalism and Sharing'. In his eighteen years of R&D career, he worked as tester, R&D engineer, project manager, product manager and CTO. He is immersed in the excitement of the arrival of the baby.",
     "groups": ["GDE"]
   },
+  "manekinekko": {
+    "name": "Wassim Chegham",
+    "picture": "wassim.jpg",
+    "twitter": "manekinekko",
+    "website": "https://medium.com/@wassimchegham",
+    "bio": "Wassim (aka manekinekko on Twitter/Github) is a Developer Advocate at SFEIR, in Web technologies (Angular, Polymer, PWA, Web Components...). He is also a Developer Expert in Web technologies nominated by Google. He enjoys writing technical articles, meeting developers at events, speaking at conferences and contributing to open source projects. Wassim loves the Web Platform and works hard to move it forward.",
+    "groups": ["GDE"]
+  },
   "chrisnoring": {
     "name": "Christoffer Noring",
     "picture": "chrisnoring.jpg",
