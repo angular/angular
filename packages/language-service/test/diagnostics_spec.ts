@@ -837,4 +837,20 @@ describe('diagnostics', () => {
       expect(content.substring(start !, start ! + length !)).toBe(`line${i}`);
     }
   });
+
+  it('should not produce diagnostics for non-exported directives', () => {
+    const fileName = '/app/test.component.ts';
+    mockHost.addScript(fileName, `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: '<test-comp></test-comp>'
+      })
+      class TestHostComponent {}
+    `);
+    const tsDiags = tsLS.getSemanticDiagnostics(fileName);
+    expect(tsDiags).toEqual([]);
+    const ngDiags = ngLS.getDiagnostics(fileName);
+    expect(ngDiags).toEqual([]);
+  });
 });

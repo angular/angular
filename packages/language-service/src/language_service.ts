@@ -8,7 +8,6 @@
 
 import * as tss from 'typescript/lib/tsserverlibrary';
 
-import {isAstResult} from './common';
 import {getTemplateCompletions} from './completions';
 import {getDefinitionAndBoundSpan, getTsDefinitionAndBoundSpan} from './definitions';
 import {getDeclarationDiagnostics, getTemplateDiagnostics, ngDiagnosticToTsDiagnostic, uniqueBySpan} from './diagnostics';
@@ -34,11 +33,9 @@ class LanguageServiceImpl implements LanguageService {
     const templates = this.host.getTemplates(fileName);
 
     for (const template of templates) {
-      const astOrDiagnostic = this.host.getTemplateAst(template);
-      if (isAstResult(astOrDiagnostic)) {
-        results.push(...getTemplateDiagnostics(astOrDiagnostic));
-      } else {
-        results.push(astOrDiagnostic);
+      const ast = this.host.getTemplateAst(template);
+      if (ast) {
+        results.push(...getTemplateDiagnostics(ast));
       }
     }
 

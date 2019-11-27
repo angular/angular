@@ -11,11 +11,11 @@ import {SchemaMetadata, ViewEncapsulation, ɵConsole as Console} from '@angular/
 import * as ts from 'typescript';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
-import {AstResult, isAstResult} from './common';
+import {AstResult} from './common';
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
 import {ExternalTemplate, InlineTemplate, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './template';
-import {Declaration, DeclarationError, Diagnostic, DiagnosticKind, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
+import {Declaration, DeclarationError, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
 import {findTightestNode, getDirectiveClassLike} from './utils';
 
 
@@ -456,11 +456,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (!template) {
       return;
     }
-    const astResult = this.getTemplateAst(template);
-    if (!isAstResult(astResult)) {
-      return;
-    }
-    return astResult;
+    return this.getTemplateAst(template);
   }
 
   /**
@@ -505,57 +501,38 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   /**
-   * Parse the `template` and return its AST if there's no error. Otherwise
-   * return a Diagnostic message.
+   * Parse the `template` and return its AST, if any.
    * @param template template to be parsed
    */
-  getTemplateAst(template: TemplateSource): AstResult|Diagnostic {
+  getTemplateAst(template: TemplateSource): AstResult|undefined {
     const {type: classSymbol, fileName} = template;
-    try {
-      const data = this.resolver.getNonNormalizedDirectiveMetadata(classSymbol);
-      if (!data) {
-        return {
-          kind: DiagnosticKind.Error,
-          message: `No metadata found for '${classSymbol.name}' in ${fileName}.`,
-          span: template.span,
-        };
-      }
-      const htmlParser = new I18NHtmlParser(new HtmlParser());
-      const expressionParser = new Parser(new Lexer());
-      const parser = new TemplateParser(
-          new CompilerConfig(), this.reflector, expressionParser, new DomElementSchemaRegistry(),
-          htmlParser,
-          null !,  // console
-          []       // tranforms
-          );
-      const htmlResult = htmlParser.parse(template.source, fileName, {
-        tokenizeExpansionForms: true,
-        preserveLineEndings: true,  // do not convert CRLF to LF
-      });
-      const {directives, pipes, schemas} = this.getModuleMetadataForDirective(classSymbol);
-      const parseResult =
-          parser.tryParseHtml(htmlResult, data.metadata, directives, pipes, schemas);
-      if (!parseResult.templateAst) {
-        return {
-          kind: DiagnosticKind.Error,
-          message: `Failed to parse template for '${classSymbol.name}' in ${fileName}`,
-          span: template.span,
-        };
-      }
-      return {
-        htmlAst: htmlResult.rootNodes,
-        templateAst: parseResult.templateAst,
-        directive: data.metadata, directives, pipes,
-        parseErrors: parseResult.errors, expressionParser, template,
-      };
-    } catch (e) {
-      return {
-        kind: DiagnosticKind.Error,
-        message: e.message,
-        span:
-            e.fileName === fileName && template.query.getSpanAt(e.line, e.column) || template.span,
-      };
+    const data = this.resolver.getNonNormalizedDirectiveMetadata(classSymbol);
+    if (!data) {
+      return;
     }
+    const htmlParser = new I18NHtmlParser(new HtmlParser());
+    const expressionParser = new Parser(new Lexer());
+    const parser = new TemplateParser(
+        new CompilerConfig(), this.reflector, expressionParser, new DomElementSchemaRegistry(),
+        htmlParser,
+        null !,  // console
+        []       // tranforms
+        );
+    const htmlResult = htmlParser.parse(template.source, fileName, {
+      tokenizeExpansionForms: true,
+      preserveLineEndings: true,  // do not convert CRLF to LF
+    });
+    const {directives, pipes, schemas} = this.getModuleMetadataForDirective(classSymbol);
+    const parseResult = parser.tryParseHtml(htmlResult, data.metadata, directives, pipes, schemas);
+    if (!parseResult.templateAst) {
+      return;
+    }
+    return {
+      htmlAst: htmlResult.rootNodes,
+      templateAst: parseResult.templateAst,
+      directive: data.metadata, directives, pipes,
+      parseErrors: parseResult.errors, expressionParser, template,
+    };
   }
 
   /**
