@@ -167,6 +167,13 @@ describe('diagnostics', () => {
         .toBe(`Identifier 'badProperty' is not defined. 'Hero' does not contain such a member`);
   });
 
+  it('should not produce errors if tuple array index out of bound', () => {
+    mockHost.override(TEST_TEMPLATE, `
+        {{tupleArray[2].badProperty}}`);
+    const diags = ngLS.getDiagnostics(TEST_TEMPLATE);
+    expect(diags).toEqual([]);
+  });
+
   it('should not produce errors on function.bind()', () => {
     mockHost.override(TEST_TEMPLATE, `
       <test-comp (test)="myClick.bind(this)">
