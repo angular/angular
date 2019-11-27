@@ -193,7 +193,7 @@ export interface LanguageServiceHost {
   /**
    * Return the AST for both HTML and template for the contextFile.
    */
-  getTemplateAst(template: TemplateSource): AstResult|Diagnostic;
+  getTemplateAst(template: TemplateSource): AstResult|undefined;
 
   /**
    * Return the template AST for the node that corresponds to the position.
