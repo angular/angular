@@ -1,9 +1,10 @@
 package(default_visibility = ["//visibility:public"])
 
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
+load("@npm//history-server:index.bzl", "history_server")
+load("@npm//html-insert-assets:index.bzl", "html_insert_assets")
 load("@npm_angular_bazel//:index.bzl", "ng_module")
 load("@npm_bazel_karma//:index.bzl", "karma_web_test_suite")
-load("@build_bazel_rules_nodejs//internal/web_package:web_package.bzl", "web_package")
-load("@npm//history-server:index.bzl", "history_server")
 load("@npm_bazel_rollup//:index.bzl", "rollup_bundle")
 load("@npm_bazel_terser//:index.bzl", "terser_minified")
 load("@npm_bazel_typescript//:index.bzl", "ts_devserver", "ts_library")
@@ -64,18 +65,38 @@ terser_minified(
     src = ":bundle",
 )
 
-web_package(
+html_insert_assets(
+    name = "inject_scripts",
+    outs = ["_/index.html"],
+    args = [
+        "--html",
+        "$(location :index.html)",
+        "--out",
+        "$@",
+        "--roots",
+        "$(RULEDIR)",
+        "--assets",
+        "$(location :global_stylesheet.css)",
+        "$(location @npm//:node_modules/zone.js/dist/zone.min.js)",
+        "bundle.min.js",
+    ],
+    data = [
+        ":index.html",
+        ":global_stylesheet.css",
+        "@npm//:node_modules/zone.js/dist/zone.min.js",
+    ],
+)
+
+pkg_web(
     name = "prodapp",
-    assets = [
-        # do not sort
+    additional_root_paths = ["src/_"],
+    srcs = [
         "@npm//:node_modules/zone.js/dist/zone.min.js",
         ":bundle.min",
         ":global_stylesheet",
-    ],
-    data = [
+        ":inject_scripts",
         "favicon.ico",
     ],
-    index_html = "index.html",
 )
 
 history_server(
@@ -95,6 +116,7 @@ filegroup(
 
 ts_devserver(
     name = "devserver",
+    additional_root_paths = ["src/_"],
     port = 4200,
     entry_module = "project/src/main.dev",
     serving_path = "/bundle.min.js",
@@ -105,11 +127,9 @@ ts_devserver(
     static_files = [
         "@npm//:node_modules/zone.js/dist/zone.min.js",
         ":global_stylesheet",
-    ],
-    data = [
+        ":inject_scripts",
         "favicon.ico",
     ],
-    index_html = "index.html",
     deps = [":src"],
 )
 
@@ -158,6 +178,5 @@ karma_web_test_suite(
     deps = [
         ":rxjs_umd_modules",
         ":test_lib",
-        "@npm//karma-jasmine",
     ],
 )
