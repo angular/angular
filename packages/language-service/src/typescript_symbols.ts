@@ -295,7 +295,8 @@ class TypeWrapper implements Symbol {
         if (nType) {
           // get the right tuple type by value, like 'var t: [number, string];'
           if (nType.isUnion()) {
-            return new TypeWrapper(nType.types[value], this.context);
+            // return undefined if array index out of bound.
+            return nType.types[value] && new TypeWrapper(nType.types[value], this.context);
           }
           return new TypeWrapper(nType, this.context);
         }
