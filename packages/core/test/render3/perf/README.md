@@ -1,19 +1,19 @@
 ### Build
 
 ```
-yarn bazel build //packages/core/test/render3/perf:${BENCHMARK}.min_debug.es2015.js --config=ivy
+yarn bazel build //packages/core/test/render3/perf:${BENCHMARK}_lib.min_debug.es2015.js --config=ivy
 ```
 
 ### Run 
 
 ```
-node dist/bin/packages/core/test/render3/perf/${BENCHMARK}.min_debug.es2015.js
+node dist/bin/packages/core/test/render3/perf/${BENCHMARK}_lib.min_debug.es2015.js
 ```
 
 ### Profile
 
 ```
-node --no-turbo-inlining --inspect-brk dist/bin/packages/core/test/render3/perf/${BENCHMARK}.min_debug.es2015.js
+node --no-turbo-inlining --inspect-brk dist/bin/packages/core/test/render3/perf/${BENCHMARK}_lib.min_debug.es2015.js
 ```
 
 then connect with a debugger (the `--inspect-brk` option will make sure that benchmark execution doesn't start until a debugger is connected and the code execution is manually resumed). 
@@ -24,7 +24,7 @@ The actual benchmark code has calls that will start (`console.profile`) and stop
 
 ```
 yarn add deoptigate
-yarn deoptigate dist/bin/packages/core/test/render3/perf/${BENCHMARK}.min_debug.es2015.js
+yarn deoptigate dist/bin/packages/core/test/render3/perf/${BENCHMARK}_lib.min_debug.es2015.js
 ```
 
 ### Run All
