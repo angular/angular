@@ -20,7 +20,7 @@
     "@angular/platform-browser": "^8.0.0",
     "@angular/platform-browser-dynamic": "^8.0.0",
     "@angular/router": "^8.0.0",
-    "angular": "1.7.8",
+    "angular": "1.7.9",
     "angular-in-memory-web-api": "^0.8.0",
     "angular-route": "1.7.8",
     "core-js": "^2.5.4",
