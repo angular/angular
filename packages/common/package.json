@@ -15,7 +15,7 @@
   "locales": "locales",
   "peerDependencies": {
     "rxjs": "^6.5.3",
-    "@angular/core": "0.0.0-PLACEHOLDER",
+    "@angular/core": "0.0.0-7",
     "tslib": "^1.10.0"
   },
   "repository": {
