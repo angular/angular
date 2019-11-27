@@ -129,13 +129,14 @@ function getVarDeclarations(
 
 /**
  * Gets the type of an ngFor exported value, as enumerated in
- * https://angular.io/api/common/NgForOf#local-variables.
+ * https://angular.io/api/common/NgForOfContext
  * @param value exported value name
  * @param query type symbol query
  */
 function getNgForExportedValueType(value: string, query: SymbolQuery): Symbol|undefined {
   switch (value) {
     case 'index':
+    case 'count':
       return query.getBuiltinType(BuiltinType.Number);
     case 'first':
     case 'last':
