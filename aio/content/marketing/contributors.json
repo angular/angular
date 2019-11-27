@@ -821,5 +821,13 @@
     "bio": "Andrew is a software engineer at Google on the Angular Core team.",
     "groups": ["Angular"],
     "lead": "juleskremer"
+  },
+  "ManuMurthy": {
+    "name": "Manu Murthy",
+    "picture": "manumurthy.jpg",
+    "twitter": "manu_murthy",
+    "bio": "Manu heads technical program management for Angular at Google. Manu keeps the big picture in focus and works with cross-functional teams to plan, execute and usher programs through the entire lifecycle.",
+    "groups": ["Angular"],
+    "lead": "juleskremer"
   }
 }
