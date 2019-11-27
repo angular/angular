@@ -13,7 +13,7 @@
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
-    "@angular/common": "0.0.0-PLACEHOLDER",
+    "@angular/common": "0.0.0-7",
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
     "tslib": "^1.10.0"

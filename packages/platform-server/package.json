@@ -14,7 +14,7 @@
   "license": "MIT",
   "peerDependencies": {
     "@angular/animations": "0.0.0-PLACEHOLDER",
-    "@angular/common": "0.0.0-PLACEHOLDER",
+    "@angular/common": "0.0.0-7",
     "@angular/compiler": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
