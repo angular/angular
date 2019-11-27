@@ -12,15 +12,15 @@
 
 {%- macro renderMembers(doc) -%}
   {%- for member in doc.staticProperties %}{% if not member.internal %}
-  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  <a class="code-anchor {% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
   {% for member in doc.staticMethods %}{% if not member.internal %}
-  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  <a class="code-anchor {% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
   {% if doc.constructorDoc and not doc.constructorDoc.internal %}
-  <a class="code-anchor" href="{$ doc.path $}#{$ doc.constructorDoc.anchor | urlencode $}">{$ renderMemberSyntax(doc.constructorDoc, 1) $}</a>{% endif -%}
+  <a class="code-anchor {% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ doc.constructorDoc.anchor | urlencode $}">{$ renderMemberSyntax(doc.constructorDoc, 1) $}</a>{% endif -%}
   {% for member in doc.properties %}{% if not member.internal %}
-  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  <a class="code-anchor {% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
   {% for member in doc.methods %}{% if not member.internal %}
-  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  <a class="code-anchor {% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
 
   {%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
 
@@ -205,7 +205,7 @@
       <tr class="{$ propertyClass $}">
         <td>
           <a id="{$ property.anchor $}"></a>
-          <code>{$ renderMemberSyntax(property) $}</code>
+          <code class="{% if property.deprecated %} deprecated-api-item{% endif %}">{$ renderMemberSyntax(property) $}</code>
         </td>
         <td>
           {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}<span class='read-only-property'>Read-Only</span>{% endif %}
