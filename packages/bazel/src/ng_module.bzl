@@ -35,9 +35,10 @@ def is_ivy_enabled(ctx):
     Returns:
       Boolean, Whether the ivy compiler should be used.
     """
-
     # TODO(josephperrott): Remove configuration via compile=aot define flag.
     if ctx.var.get("compile", None) == "aot":
+        print("Setting ViewEngine/Ivy using the compile build variable (--define=compile=*) " +
+              "is deprecated, please use the angular_ivy_enabled build variable instead.")
         return True
 
     if ctx.var.get("angular_ivy_enabled", None) == "True":
