@@ -8,7 +8,6 @@
 
 import * as ts from 'typescript';
 
-import {isAstResult} from './common';
 import {createGlobalSymbolTable} from './global_symbols';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
@@ -73,7 +72,7 @@ abstract class BaseTemplate implements ng.TemplateSource {
         // TODO: There is circular dependency here between TemplateSource and
         // TypeScriptHost. Consider refactoring the code to break this cycle.
         const ast = this.host.getTemplateAst(this);
-        const pipes = isAstResult(ast) ? ast.pipes : [];
+        const pipes = (ast && ast.pipes) || [];
         return getPipesTable(sourceFile, program, typeChecker, pipes);
       });
     }
