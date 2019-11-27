@@ -814,5 +814,12 @@
     "twitter": "joeyperrott",
     "groups": ["Angular"],
     "lead": "igorminar"
+  },
+  "AndrewScott": {
+    "name": "Andrew Scott",
+    "picture": "andrewscott.jpg",
+    "bio": "Andrew is a software engineer at Google on the Angular Core team.",
+    "groups": ["Angular"],
+    "lead": "juleskremer"
   }
 }
