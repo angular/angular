@@ -115,7 +115,7 @@ function getVarDeclarations(
           // that have been declared so far are also in scope.
           info.query.createSymbolTable(results),
         ]);
-        symbol = refinedVariableType(symbolsInScope, info.query, current);
+        symbol = refinedVariableType(variable.value, symbolsInScope, info.query, current);
       }
       results.push({
         name: variable.name,
@@ -128,15 +128,35 @@ function getVarDeclarations(
 }
 
 /**
+ * Gets the type of an ngFor exported value, as enumerated in
+ * https://angular.io/api/common/NgForOf#local-variables.
+ * @param value exported value name
+ * @param query type symbol query
+ */
+function getNgForExportedValueType(value: string, query: SymbolQuery): Symbol|undefined {
+  switch (value) {
+    case 'index':
+      return query.getBuiltinType(BuiltinType.Number);
+    case 'first':
+    case 'last':
+    case 'even':
+    case 'odd':
+      return query.getBuiltinType(BuiltinType.Boolean);
+  }
+}
+
+/**
  * Resolve a more specific type for the variable in `templateElement` by inspecting
  * all variables that are in scope in the `mergedTable`. This function is a special
  * case for `ngFor` and `ngIf`. If resolution fails, return the `any` type.
+ * @param value variable value name
  * @param mergedTable symbol table for all variables in scope
  * @param query
  * @param templateElement
  */
 function refinedVariableType(
-    mergedTable: SymbolTable, query: SymbolQuery, templateElement: EmbeddedTemplateAst): Symbol {
+    value: string, mergedTable: SymbolTable, query: SymbolQuery,
+    templateElement: EmbeddedTemplateAst): Symbol {
   // Special case the ngFor directive
   const ngForDirective = templateElement.directives.find(d => {
     const name = identifierName(d.directive.type);
@@ -145,12 +165,17 @@ function refinedVariableType(
   if (ngForDirective) {
     const ngForOfBinding = ngForDirective.inputs.find(i => i.directiveName == 'ngForOf');
     if (ngForOfBinding) {
+      // Check if the variable value is a type exported by the ngFor statement.
+      let result = getNgForExportedValueType(value, query);
+
+      // Otherwise, check if there is a known type for the ngFor binding.
       const bindingType = new AstType(mergedTable, query, {}).getType(ngForOfBinding.value);
-      if (bindingType) {
-        const result = query.getElementType(bindingType);
-        if (result) {
-          return result;
-        }
+      if (!result && bindingType) {
+        result = query.getElementType(bindingType);
+      }
+
+      if (result) {
+        return result;
       }
     }
   }
