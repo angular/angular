@@ -68,7 +68,8 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
     } else if (useClassOnSelf) {
       result = compileFactoryFunction(factoryMeta);
     } else {
-      result = delegateToFactory(meta.useClass);
+      result = delegateToFactory(
+          meta.type as o.WrappedNodeExpr<any>, meta.useClass as o.WrappedNodeExpr<any>);
     }
   } else if (meta.useFactory !== undefined) {
     if (meta.userDeps !== undefined) {
@@ -99,7 +100,8 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
       expression: o.importExpr(Identifiers.inject).callFn([meta.useExisting]),
     });
   } else {
-    result = delegateToFactory(meta.internalType);
+    result = delegateToFactory(
+        meta.type as o.WrappedNodeExpr<any>, meta.internalType as o.WrappedNodeExpr<any>);
   }
 
   const token = meta.internalType;
@@ -117,11 +119,15 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
   };
 }
 
-function delegateToFactory(type: o.Expression) {
+function delegateToFactory(type: o.WrappedNodeExpr<any>, internalType: o.WrappedNodeExpr<any>) {
   return {
     statements: [],
-    // () => type.ɵfac(t)
-    factory: o.fn([new o.FnParam('t', o.DYNAMIC_TYPE)], [new o.ReturnStatement(type.callMethod(
-                                                            'ɵfac', [o.variable('t')]))])
+    // If types are the same, we can generate `factory: type.ɵfac`
+    // If types are different, we have to generate a wrapper function to ensure
+    // the internal type has been resolved (`factory: function(t) { return type.ɵfac(t); }`)
+    factory: type.node === internalType.node ?
+        internalType.prop('ɵfac') :
+        o.fn([new o.FnParam('t', o.DYNAMIC_TYPE)], [new o.ReturnStatement(internalType.callMethod(
+                                                       'ɵfac', [o.variable('t')]))])
   };
 }

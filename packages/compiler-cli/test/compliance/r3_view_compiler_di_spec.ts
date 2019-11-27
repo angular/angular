@@ -90,9 +90,7 @@ describe('compiler compliance: dependency injection', () => {
     const def = `
       MyService.ɵprov = $r3$.ɵɵdefineInjectable({
         token: MyService,
-        factory: function(t) {
-          return MyService.ɵfac(t);
-        },
+        factory: MyService.ɵfac,
         providedIn: null
       });
     `;
@@ -342,16 +340,22 @@ describe('compiler compliance: dependency injection', () => {
        const result = compile(files, angularFiles);
        const source = result.source;
 
-       const MyPipeFactory = `
-        MyPipe.ɵfac = function MyPipe_Factory(t) { return new (t || MyPipe)($r3$.ɵɵdirectiveInject(Service)); };
+       // The prov definition must be last so MyPipe.fac is defined
+       const MyPipeDefs = `
+        MyPipe.ɵfac = function MyPipe_Factory(t) { return new (t || MyPipe)(i0.ɵɵdirectiveInject(Service)); };
+        MyPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myPipe", type: MyPipe, pure: true });
+        MyPipe.ɵprov = i0.ɵɵdefineInjectable({ token: MyPipe, factory: MyPipe.ɵfac, providedIn: null });
       `;
 
-       const MyOtherPipeFactory = `
+       // The prov definition must be last so MyOtherPipe.fac is defined
+       const MyOtherPipeDefs = `
         MyOtherPipe.ɵfac = function MyOtherPipe_Factory(t) { return new (t || MyOtherPipe)($r3$.ɵɵdirectiveInject(Service)); };
+        MyOtherPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myOtherPipe", type: MyOtherPipe, pure: true });
+        MyOtherPipe.ɵprov = i0.ɵɵdefineInjectable({ token: MyOtherPipe, factory: MyOtherPipe.ɵfac, providedIn: null });
       `;
 
-       expectEmit(source, MyPipeFactory, 'Invalid pipe factory function');
-       expectEmit(source, MyOtherPipeFactory, 'Invalid pipe factory function');
+       expectEmit(source, MyPipeDefs, 'Invalid pipe factory function');
+       expectEmit(source, MyOtherPipeDefs, 'Invalid pipe factory function');
        expect(source.match(/MyPipe\.ɵfac =/g) !.length).toBe(1);
        expect(source.match(/MyOtherPipe\.ɵfac =/g) !.length).toBe(1);
      });
