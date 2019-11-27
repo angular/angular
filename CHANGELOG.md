@@ -1,3 +1,52 @@
+<a name="9.0.0-rc.4"></a>
+# [9.0.0-rc.4](https://github.com/angular/angular/compare/9.0.0-rc.3...9.0.0-rc.4) (2019-11-27)
+
+
+### Bug Fixes
+
+* **bazel:** ng_module should not emit shim files under bazel and Ivy ([#33765](https://github.com/angular/angular/issues/33765)) ([e24ed8d](https://github.com/angular/angular/commit/e24ed8d))
+* **bazel:** update to tsickle 0.37.1 to fix peerDep warnings ([#33788](https://github.com/angular/angular/issues/33788)) ([719ca1d](https://github.com/angular/angular/commit/719ca1d))
+* **core:** allow css custom variables/properties in the style sanitizer ([#33841](https://github.com/angular/angular/issues/33841)) ([61cc7a3](https://github.com/angular/angular/commit/61cc7a3)), closes [#23485](https://github.com/angular/angular/issues/23485) [#23485](https://github.com/angular/angular/issues/23485)
+* **core:** remove deprecated and defunct wtf* apis ([#33949](https://github.com/angular/angular/issues/33949)) ([cf42019](https://github.com/angular/angular/commit/cf42019))
+* **ivy:** avoid infinite recursion when evaluation source files ([#33772](https://github.com/angular/angular/issues/33772)) ([b12fde4](https://github.com/angular/angular/commit/b12fde4)), closes [#33734](https://github.com/angular/angular/issues/33734)
+* **ivy:** avoid using stale cache in TestBed if module overrides are defined ([#33787](https://github.com/angular/angular/issues/33787)) ([fbd2133](https://github.com/angular/angular/commit/fbd2133))
+* **ivy:** handle non-standard input/output names in template type checking ([#33741](https://github.com/angular/angular/issues/33741)) ([94257ac](https://github.com/angular/angular/commit/94257ac)), closes [#33590](https://github.com/angular/angular/issues/33590)
+* **ivy:** i18n - ensure that escaped chars are handled in localized strings ([#34065](https://github.com/angular/angular/issues/34065)) ([00f8d6a](https://github.com/angular/angular/commit/00f8d6a))
+* **ivy:** prevent unknown element check for AOT-compiled components ([#34024](https://github.com/angular/angular/issues/34024)) ([955a312](https://github.com/angular/angular/commit/955a312))
+* **ivy:** remove TNodeType assertion from `directiveInject` instruction ([#33948](https://github.com/angular/angular/issues/33948)) ([90a9043](https://github.com/angular/angular/commit/90a9043))
+* **ivy:** reset style property using ngStyle fix ([#33920](https://github.com/angular/angular/issues/33920)) ([b8ba6b0](https://github.com/angular/angular/commit/b8ba6b0))
+* **ivy:** run pre-order hooks in injection order ([#34026](https://github.com/angular/angular/issues/34026)) ([ebe3229](https://github.com/angular/angular/commit/ebe3229)), closes [#32522](https://github.com/angular/angular/issues/32522)
+* **ivy:** support ICUs without "other" cases ([#34042](https://github.com/angular/angular/issues/34042)) ([781003f](https://github.com/angular/angular/commit/781003f))
+* **ivy:** support inserting a `viewRef` that is already present ([#34052](https://github.com/angular/angular/issues/34052)) ([978b500](https://github.com/angular/angular/commit/978b500)), closes [#33924](https://github.com/angular/angular/issues/33924)
+* **ivy:** take styles extracted from template into account in JIT mode ([#34017](https://github.com/angular/angular/issues/34017)) ([b659aa3](https://github.com/angular/angular/commit/b659aa3))
+* **ivy:** track changes across failed builds ([#33971](https://github.com/angular/angular/issues/33971)) ([1ffbde1](https://github.com/angular/angular/commit/1ffbde1)), closes [#32214](https://github.com/angular/angular/issues/32214)
+* **ivy:** wrap functions from "providers" in parentheses in Closure mode ([#33609](https://github.com/angular/angular/issues/33609)) ([fc6ad19](https://github.com/angular/angular/commit/fc6ad19)), closes [/github.com/angular/tsickle/blob/d7974262571c8a17d684e5ba07680e1b1993afdd/src/jsdoc_transformer.ts#L1021](https://github.com//github.com/angular/tsickle/blob/d7974262571c8a17d684e5ba07680e1b1993afdd/src/jsdoc_transformer.ts/issues/L1021)
+* **language-service:** determine index types accessed using dot notation ([#33884](https://github.com/angular/angular/issues/33884)) ([e8ec296](https://github.com/angular/angular/commit/e8ec296)), closes [#29811](https://github.com/angular/angular/issues/29811) [#29811](https://github.com/angular/angular/issues/29811)
+* **language-service:** fix error of array-index out of bounds exception ([#33928](https://github.com/angular/angular/issues/33928)) ([b05ce85](https://github.com/angular/angular/commit/b05ce85))
+* **language-service:** function.bind() should not be an error ([#34041](https://github.com/angular/angular/issues/34041)) ([#34046](https://github.com/angular/angular/issues/34046)) ([d22f3d6](https://github.com/angular/angular/commit/d22f3d6))
+* **ngcc:** do not crash on packages that specify typings as an array ([#33973](https://github.com/angular/angular/issues/33973)) ([e456e58](https://github.com/angular/angular/commit/e456e58)), closes [#33646](https://github.com/angular/angular/issues/33646)
+* **ngcc:** do not output duplicate ɵprov properties ([#34085](https://github.com/angular/angular/issues/34085)) ([5a8d25d](https://github.com/angular/angular/commit/5a8d25d))
+* **ngcc:** render localized strings when in ES5 format ([#33857](https://github.com/angular/angular/issues/33857)) ([c6695fa](https://github.com/angular/angular/commit/c6695fa))
+* **ngcc:** render UMD global imports correctly ([#34012](https://github.com/angular/angular/issues/34012)) ([83989b8](https://github.com/angular/angular/commit/83989b8))
+* **ngcc:** report errors from `analyze` and `resolve` processing ([#33964](https://github.com/angular/angular/issues/33964)) ([ca5d772](https://github.com/angular/angular/commit/ca5d772)), closes [/github.com/angular/angular/issues/33685#issuecomment-557091719](https://github.com//github.com/angular/angular/issues/33685/issues/issuecomment-557091719)
+* **router:** make routerLinkActive work with query params which contain arrays ([#22666](https://github.com/angular/angular/issues/22666)) ([f1bf5b2](https://github.com/angular/angular/commit/f1bf5b2)), closes [#22223](https://github.com/angular/angular/issues/22223)
+* **service-worker:** allow creating post api requests after cache failure ([#33930](https://github.com/angular/angular/issues/33930)) ([63c9123](https://github.com/angular/angular/commit/63c9123)), closes [#33793](https://github.com/angular/angular/issues/33793)
+* **service-worker:** throw when using the unsupported `versionedFiles` option in config ([#33903](https://github.com/angular/angular/issues/33903)) ([250e6fd](https://github.com/angular/angular/commit/250e6fd))
+
+
+### Features
+
+* **language-service:** completions support for indexed types ([#34047](https://github.com/angular/angular/issues/34047)) ([8a565c8](https://github.com/angular/angular/commit/8a565c8)), closes [angular/vscode-ng-language-service#110](https://github.com/angular/vscode-ng-language-service/issues/110) [angular/vscode-ng-language-service#277](https://github.com/angular/vscode-ng-language-service/issues/277)
+* **language-service:** completions support for tuple array ([#33928](https://github.com/angular/angular/issues/33928)) ([7faa9bb](https://github.com/angular/angular/commit/7faa9bb))
+
+
+### Performance Improvements
+
+* **ivy:** do no work if moving a `viewRef` to the same position ([#34052](https://github.com/angular/angular/issues/34052)) ([d228801](https://github.com/angular/angular/commit/d228801))
+* **ivy:** fix creation time micro-benchmarks ([#34031](https://github.com/angular/angular/issues/34031)) ([457ac3a](https://github.com/angular/angular/commit/457ac3a))
+* **ivy:** R3TestBed - Do not process NgModuleDefs that have already been processed ([#33863](https://github.com/angular/angular/issues/33863)) ([05a18cc](https://github.com/angular/angular/commit/05a18cc))
+
+
 <a name="9.0.0-rc.3"></a>
 # [9.0.0-rc.3](https://github.com/angular/angular/compare/9.0.0-rc.2...9.0.0-rc.3) (2019-11-20)
 
