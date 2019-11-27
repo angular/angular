@@ -19,7 +19,7 @@
     "@angular/router": "file:../../dist/packages-dist/router",
     "@angular/service-worker": "file:../../dist/packages-dist/service-worker",
     "@angular/upgrade": "file:../../dist/packages-dist/upgrade",
-    "@types/jasmine": "2.5.41",
+    "@types/jasmine": "3.5.0",
     "rxjs": "file:../../node_modules/rxjs",
     "typescript": "3.6.4",
     "zone.js": "file:../../dist/zone.js-dist/zone.js"

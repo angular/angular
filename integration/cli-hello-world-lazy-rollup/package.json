@@ -28,7 +28,7 @@
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
     "@types/node": "10.14.21",
-    "@types/jasmine": "3.4.4",
+    "@types/jasmine": "3.5.0",
     "@types/jasminewd2": "2.0.8",
     "codelyzer": "5.1.2",
     "jasmine-core": "3.5.0",

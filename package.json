@@ -60,7 +60,7 @@
     "@types/fs-extra": "4.0.2",
     "@types/hammerjs": "2.0.35",
     "@types/inquirer": "^0.0.44",
-    "@types/jasmine": "^2.8.8",
+    "@types/jasmine": "^3.0.0",
     "@types/jasminewd2": "^2.0.6",
     "@types/minimist": "^1.2.0",
     "@types/node": "^12.11.1",
