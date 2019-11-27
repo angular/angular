@@ -15,11 +15,7 @@
 		"source-map",
 		"@types/node"
 	],
-	"packageFiles": [
-		"integration/cli-hello-world-ivy-compat/package.json",
-		"integration/cli-hello-world-ivy-minimal/package.json",
-		"integration/cli-hello-world/package.json"
-	],
+	"packageFiles": [],
 	"major": {
 		"devDependencies": {
 			"enabled": false
