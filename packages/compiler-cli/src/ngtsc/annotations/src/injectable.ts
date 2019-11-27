@@ -32,7 +32,14 @@ export class InjectableDecoratorHandler implements
     DecoratorHandler<InjectableHandlerData, Decorator> {
   constructor(
       private reflector: ReflectionHost, private defaultImportRecorder: DefaultImportRecorder,
-      private isCore: boolean, private strictCtorDeps: boolean) {}
+      private isCore: boolean, private strictCtorDeps: boolean,
+      /**
+       * What to do if the injectable already contains a ɵprov property.
+       *
+       * If true then an error diagnostic is reported.
+       * If false then there is no error and a new ɵprov property is not added.
+       */
+      private errorOnDuplicateProv = true) {}
 
   readonly precedence = HandlerPrecedence.SHARED;
 
@@ -93,11 +100,18 @@ export class InjectableDecoratorHandler implements
       results.push(factoryRes);
     }
 
-    results.push({
-      name: 'ɵprov',
-      initializer: res.expression, statements,
-      type: res.type,
-    });
+    const ɵprov = this.reflector.getMembersOfClass(node).find(member => member.name === 'ɵprov');
+    if (ɵprov !== undefined && this.errorOnDuplicateProv) {
+      throw new FatalDiagnosticError(
+          ErrorCode.INJECTABLE_DUPLICATE_PROV, ɵprov.nameNode || ɵprov.node || node,
+          'Injectables cannot contain a static ɵprov property, because the compiler is going to generate one.');
+    }
+
+    if (ɵprov === undefined) {
+      // Only add a new ɵprov if there is not one already
+      results.push({name: 'ɵprov', initializer: res.expression, statements, type: res.type});
+    }
+
 
     return results;
   }
