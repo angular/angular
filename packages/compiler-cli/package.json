@@ -23,7 +23,7 @@
     "yargs": "13.1.0"
   },
   "peerDependencies": {
-    "@angular/compiler": "0.0.0-PLACEHOLDER",
+    "@angular/compiler": "0.0.0-7",
     "tslib": "^1.10.0",
     "typescript": ">=3.6 <3.7"
   },
