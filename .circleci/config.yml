@@ -74,7 +74,7 @@ executors:
         type: string
         default: medium
     docker:
-      - image: circleci/node:10.16@sha256:75c05084fff4afa3683a03c5a04a4a3ad95c536ff2439d8fe14e7e1f5c58b09a
+      - image: circleci/node:10.16@sha256:55dbfc11ed2c3536b86d8b270d1c28a0a46c4bff1de89af73819e90238d18ba1
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
