@@ -88,7 +88,7 @@ executors:
       # needed for jobs that run tests without Bazel. Bazel runs tests with browsers that will be
       # fetched by the Webtesting rules. Therefore for jobs that run tests with Bazel, we don't need a
       # docker image with browsers pre-installed.
-      - image: circleci/node:10.16-browsers@sha256:d2a96fe1cbef51257ee626b5f645e64dade3e886f00ba9cb7e8ea65b4efe8db1
+      - image: circleci/node:10.16-browsers@sha256:ea7252257d0c385e986ef166d5f1b7518ad15b48cf8b44e4f7f0a146710ec20d
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
