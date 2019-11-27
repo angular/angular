@@ -175,6 +175,36 @@ runInEachFileSystem(() => {
       expect(jsContents).toMatch(/\bvar _c0 =/);
     });
 
+    it('should add ɵfac but not duplicate ɵprov properties on injectables', () => {
+      compileIntoFlatEs5Package('test-package', {
+        '/index.ts': `
+        import {Injectable, ɵɵdefineInjectable} from '@angular/core';
+        export const TestClassToken = 'TestClassToken';
+        @Injectable({providedIn: 'module'})
+        export class TestClass {
+          static ɵprov = ɵɵdefineInjectable({ factory: () => {}, token: TestClassToken, providedIn: "module" });
+        }
+        `,
+      });
+
+      const before = fs.readFile(_(`/node_modules/test-package/index.js`));
+      const originalProp = /ɵprov[^;]+/.exec(before) ![0];
+      mainNgcc({
+        basePath: '/node_modules',
+        targetEntryPointPath: 'test-package',
+        propertiesToConsider: ['main'],
+      });
+      const after = fs.readFile(_(`/node_modules/test-package/index.js`));
+
+      expect(before).toContain(originalProp);
+      expect(countOccurrences(before, 'ɵprov')).toEqual(1);
+      expect(countOccurrences(before, 'ɵfac')).toEqual(0);
+
+      expect(after).toContain(originalProp);
+      expect(countOccurrences(after, 'ɵprov')).toEqual(1);
+      expect(countOccurrences(after, 'ɵfac')).toEqual(1);
+    });
+
     it('should add generic type for ModuleWithProviders and generate exports for private modules',
        () => {
          compileIntoApf('test-package', {
@@ -1231,3 +1261,12 @@ runInEachFileSystem(() => {
     }
   });
 });
+
+function countOccurrences(haystack: string, needle: string): number {
+  const regex = new RegExp(needle, 'g');
+  let count = 0;
+  while (regex.exec(haystack)) {
+    count++;
+  }
+  return count;
+}

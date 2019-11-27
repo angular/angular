@@ -94,6 +94,11 @@ export enum ErrorCode {
    * No matching pipe was found for a
    */
   MISSING_PIPE = 8004,
+
+  /**
+   * An injectable already has a `ɵprov` property.
+   */
+  INJECTABLE_DUPLICATE_PROV = 9001
 }
 
 export function ngErrorCode(code: ErrorCode): number {

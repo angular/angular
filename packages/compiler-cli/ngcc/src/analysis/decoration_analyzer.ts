@@ -96,7 +96,7 @@ export class DecorationAnalyzer {
         this.isCore, /* annotateForClosureCompiler */ false),
     new InjectableDecoratorHandler(
         this.reflectionHost, NOOP_DEFAULT_IMPORT_RECORDER, this.isCore,
-        /* strictCtorDeps */ false),
+        /* strictCtorDeps */ false, /* errorOnDuplicateProv */ false),
     new NgModuleDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullMetaReader, this.fullRegistry,
         this.scopeRegistry, this.referencesRegistry, this.isCore, /* routeAnalyzer */ null,
