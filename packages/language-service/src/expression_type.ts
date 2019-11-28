@@ -7,18 +7,14 @@
  */
 
 import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, visitAstChildren} from '@angular/compiler';
+import * as ts from 'typescript';
 
-import {BuiltinType, Signature, Span, Symbol, SymbolQuery, SymbolTable} from './symbols';
+import {BuiltinType, Signature, Symbol, SymbolQuery, SymbolTable} from './symbols';
 
 export interface ExpressionDiagnosticsContext { event?: boolean; }
 
-export enum DiagnosticKind {
-  Error,
-  Warning,
-}
-
 export class TypeDiagnostic {
-  constructor(public kind: DiagnosticKind, public message: string, public ast: AST) {}
+  constructor(public kind: ts.DiagnosticCategory, public message: string, public ast: AST) {}
 }
 
 // AstType calculatetype of the ast given AST element.
@@ -412,14 +408,14 @@ export class AstType implements AstVisitor {
 
   private reportError(message: string, ast: AST): Symbol {
     if (this.diagnostics) {
-      this.diagnostics.push(new TypeDiagnostic(DiagnosticKind.Error, message, ast));
+      this.diagnostics.push(new TypeDiagnostic(ts.DiagnosticCategory.Error, message, ast));
     }
     return this.anyType;
   }
 
   private reportWarning(message: string, ast: AST): Symbol {
     if (this.diagnostics) {
-      this.diagnostics.push(new TypeDiagnostic(DiagnosticKind.Warning, message, ast));
+      this.diagnostics.push(new TypeDiagnostic(ts.DiagnosticCategory.Warning, message, ast));
     }
     return this.anyType;
   }
