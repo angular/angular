@@ -26,15 +26,16 @@ runInEachFileSystem(() => {
       env.write('node_modules/@angular/common/index.d.ts', `
 import * as i0 from '@angular/core';
 
-export declare class NgForOfContext<T> {
+export declare class NgForOfContext<T, U extends NgIterable<T>> {
   $implicit: T;
-  ngForOf: i0.NgIterable<T>;
-  index: number;
   count: number;
-  readonly first: boolean;
-  readonly last: boolean;
   readonly even: boolean;
+  readonly first: boolean;
+  index: number;
+  readonly last: boolean;
+  ngForOf: U;
   readonly odd: boolean;
+  constructor($implicit: T, ngForOf: U, index: number, count: number);
 }
 
 export declare class IndexPipe {
@@ -53,9 +54,13 @@ export declare class SlicePipe {
   static ɵpipe: i0.ɵPipeDefWithMeta<SlicePipe, 'slice'>;
 }
 
-export declare class NgForOf<T> {
-  ngForOf: i0.NgIterable<T>;
-  static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T>;
+export declare class NgForOf<T, U extends i0.NgIterable<T>> implements DoCheck {
+  ngForOf: (U & i0.NgIterable<T>) | undefined | null;
+  ngForTemplate: TemplateRef<NgForOfContext<T, U>>;
+  ngForTrackBy: TrackByFunction<T>;
+  constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T, U>>, _differs: IterableDiffers);
+  ngDoCheck(): void;
+  static ngTemplateContextGuard<T, U extends i0.NgIterable<T>>(dir: NgForOf<T, U>, ctx: any): ctx is NgForOfContext<T, U>;
   static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgForOf<any>, '[ngFor][ngForOf]', never, {'ngForOf': 'ngForOf'}, {}, never>;
 }
 
@@ -100,18 +105,18 @@ export declare class AnimationEvent {
           {fullTemplateTypeCheck: true, strictInputTypes: true, strictAttributeTypes: true});
       env.write('test.ts', `
         import {Component, Directive, NgModule, Input} from '@angular/core';
-    
+
         @Component({
           selector: 'test',
           template: '<div dir foo="2"></div>',
         })
         class TestCmp {}
-    
+
         @Directive({selector: '[dir]'})
         class TestDir {
           @Input() foo: number;
         }
-    
+
         @NgModule({
           declarations: [TestCmp, TestDir],
         })
@@ -128,7 +133,7 @@ export declare class AnimationEvent {
           {fullTemplateTypeCheck: true, strictInputTypes: true, strictOutputEventTypes: true});
       env.write('test.ts', `
         import {Component, Directive, NgModule, EventEmitter} from '@angular/core';
-    
+
         @Component({
           selector: 'test',
           template: '<div dir [some-input.xs]="2" (some-output)="handleEvent($event)"></div>',
@@ -136,7 +141,7 @@ export declare class AnimationEvent {
         class TestCmp {
           handleEvent(event: number): void {}
         }
-    
+
         @Directive({
           selector: '[dir]',
           inputs: ['some-input.xs'],
@@ -146,7 +151,7 @@ export declare class AnimationEvent {
           'some-input.xs': string;
           'some-output': EventEmitter<string>;
         }
-    
+
         @NgModule({
           declarations: [TestCmp, TestDir],
         })
@@ -164,7 +169,7 @@ export declare class AnimationEvent {
       env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
       env.write('test.ts', `
         import {Component, Directive, EventEmitter, NgModule, Output} from '@angular/core';
-    
+
         @Component({
           selector: 'test',
           template: '<div dir (update)="update($event); updated = true" (focus)="update($event); focused = true"></div>',
@@ -172,12 +177,12 @@ export declare class AnimationEvent {
         class TestCmp {
           update(data: string) {}
         }
-    
+
         @Directive({selector: '[dir]'})
         class TestDir {
           @Output() update = new EventEmitter<number>();
         }
-    
+
         @NgModule({
           declarations: [TestCmp, TestDir],
         })
@@ -589,7 +594,7 @@ export declare class AnimationEvent {
       beforeEach(() => {
         env.write('test.ts', `
           import {Component, NgModule} from '@angular/core';
-      
+
           @Component({
             selector: 'test',
             template: '<div (focus)="invalid; update($event)"></div>',
@@ -597,7 +602,7 @@ export declare class AnimationEvent {
           class TestCmp {
             update(data: string) {}
           }
-   
+
           @NgModule({
             declarations: [TestCmp],
           })
@@ -785,6 +790,31 @@ export declare class AnimationEvent {
       env.driveMain();
     });
 
+    it('should infer the context of NgFor', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+      env.write('test.ts', `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<div *ngFor="let user of users as all">{{all.length}}</div>',
+        })
+        class TestCmp {
+          users: {name: string}[];
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [CommonModule],
+        })
+        class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
     it('should report an error with an unknown local ref target', () => {
       env.write('test.ts', `
         import {Component, NgModule} from '@angular/core';
@@ -915,18 +945,18 @@ export declare class AnimationEvent {
         env.write('test.ts', `
           import {CommonModule} from '@angular/common';
           import {Component, NgModule} from '@angular/core';
-      
+
           @Component({
             selector: 'test',
             template: \`<div *ngFor="let foo of foos as foos">
-              {{foo.name}} of {{foos.length}}
+              {{foo.name}} of {{foos.nonExistingProp}}
             </div>
             \`,
           })
           export class TestCmp {
             foos: {name: string}[];
           }
-      
+
           @NgModule({
             declarations: [TestCmp],
             imports: [CommonModule],
@@ -947,8 +977,8 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText)
-            .toBe(`Property 'length' does not exist on type 'NgIterable<{ name: string; }>'.`);
+        expect(diags[0].messageText)
+            .toBe(`Property 'nonExistingProp' does not exist on type '{ name: string; }[]'.`);
       });
     });
 
@@ -1015,7 +1045,7 @@ export declare class AnimationEvent {
 
           static ɵdir: i0.ɵɵDirectiveDefWithMeta<BaseDir, '[base]', never, {'fromBase': 'fromBase'}, never, never>;
         }
-        
+
         export declare class ExternalModule {
           static ɵmod: i0.ɵɵNgModuleDefWithMeta<ExternalModule, [typeof BaseDir], never, [typeof BaseDir]>;
         }
@@ -1024,20 +1054,20 @@ export declare class AnimationEvent {
       env.write('test.ts', `
         import {Component, Directive, Input, NgModule} from '@angular/core';
         import {BaseDir, ExternalModule} from 'external';
-    
+
         @Directive({
           selector: '[child]',
         })
         class ChildDir extends BaseDir {
           @Input() fromChild!: boolean;
         }
-    
+
         @Component({
           selector: 'test',
           template: '<div child [fromAbstract]="true" [fromBase]="3" [fromChild]="4"></div>',
         })
         class TestCmp {}
-    
+
         @NgModule({
           declarations: [TestCmp, ChildDir],
           imports: [ExternalModule],
@@ -1260,13 +1290,13 @@ export declare class AnimationEvent {
          () => {
            env.write('test.ts', `
             import {Component, NgModule, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-      
+
             @Component({
               selector: 'blah',
               template: '<custom-element [foo]="1">test</custom-element>',
             })
             export class FooCmp {}
-      
+
             @NgModule({
               declarations: [FooCmp],
               schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -1280,13 +1310,13 @@ export declare class AnimationEvent {
       it('should not produce diagnostics when using the NO_ERRORS_SCHEMA', () => {
         env.write('test.ts', `
         import {Component, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
-  
+
         @Component({
           selector: 'blah',
           template: '<foo [bar]="1"></foo>',
         })
         export class FooCmp {}
-  
+
         @NgModule({
           declarations: [FooCmp],
           schemas: [NO_ERRORS_SCHEMA],
@@ -1314,7 +1344,7 @@ export declare class AnimationEvent {
         it('should be correct for direct templates', async() => {
           env.write('test.ts', `
           import {Component, NgModule} from '@angular/core';
-      
+
           @Component({
             selector: 'test',
             template: \`<p>
@@ -1334,7 +1364,7 @@ export declare class AnimationEvent {
         it('should be correct for indirect templates', async() => {
           env.write('test.ts', `
           import {Component, NgModule} from '@angular/core';
-      
+
           const TEMPLATE = \`<p>
             {{user.does_not_exist}}
           </p>\`;
@@ -1360,7 +1390,7 @@ export declare class AnimationEvent {
         </p>`);
           env.write('test.ts', `
           import {Component, NgModule} from '@angular/core';
-      
+
 
           @Component({
             selector: 'test',

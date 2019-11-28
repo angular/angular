@@ -205,7 +205,8 @@ describe('instructions', () => {
 
   describe('performance counters', () => {
     it('should create tViews only once for each nested level', () => {
-      function ToDoAppComponent_NgForOf_Template_0(rf: RenderFlags, ctx0: NgForOfContext<any>) {
+      function ToDoAppComponent_NgForOf_Template_0(
+          rf: RenderFlags, ctx0: NgForOfContext<any, any>) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'ul');
           ɵɵtemplate(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, 2, 1, 'li', 0);
@@ -219,7 +220,7 @@ describe('instructions', () => {
       }
 
       function ToDoAppComponent_NgForOf_NgForOf_Template_1(
-          rf: RenderFlags, ctx1: NgForOfContext<any>) {
+          rf: RenderFlags, ctx1: NgForOfContext<any, any>) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'li');
           ɵɵtext(1);
