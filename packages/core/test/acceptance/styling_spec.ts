@@ -757,15 +757,15 @@ describe('styling', () => {
       `
     })
     class Cmp {
-      one = 'one';
-      two = 'two';
-      three = 'three';
-      four = 'four';
-      five = 'five';
-      six = 'six';
-      seven = 'seven';
-      eight = 'eight';
-      nine = 'nine';
+      one = '1';
+      two = '2';
+      three = '3';
+      four = '4';
+      five = '5';
+      six = '6';
+      seven = '7';
+      eight = '8';
+      nine = '9';
     }
 
     TestBed.configureTestingModule({declarations: [Cmp]});
@@ -775,16 +775,16 @@ describe('styling', () => {
 
     const divs = fixture.nativeElement.querySelectorAll('div');
 
-    expect(divs[0].getAttribute('class')).toBe('aonebtwocthreedfourefivefsixgsevenheightininej');
-    expect(divs[1].getAttribute('class')).toBe('aonebtwocthreedfourefivefsixgsevenheighti');
-    expect(divs[2].getAttribute('class')).toBe('aonebtwocthreedfourefivefsixgsevenh');
-    expect(divs[3].getAttribute('class')).toBe('aonebtwocthreedfourefivefsixg');
-    expect(divs[4].getAttribute('class')).toBe('aonebtwocthreedfourefivef');
-    expect(divs[5].getAttribute('class')).toBe('aonebtwocthreedfoure');
-    expect(divs[6].getAttribute('class')).toBe('aonebtwocthreed');
-    expect(divs[7].getAttribute('class')).toBe('aonebtwoc');
-    expect(divs[8].getAttribute('class')).toBe('aoneb');
-    expect(divs[9].getAttribute('class')).toBe('one');
+    expect(divs[0].getAttribute('class')).toBe('a1b2c3d4e5f6g7h8i9j');
+    expect(divs[1].getAttribute('class')).toBe('a1b2c3d4e5f6g7h8i');
+    expect(divs[2].getAttribute('class')).toBe('a1b2c3d4e5f6g7h');
+    expect(divs[3].getAttribute('class')).toBe('a1b2c3d4e5f6g');
+    expect(divs[4].getAttribute('class')).toBe('a1b2c3d4e5f');
+    expect(divs[5].getAttribute('class')).toBe('a1b2c3d4e');
+    expect(divs[6].getAttribute('class')).toBe('a1b2c3d');
+    expect(divs[7].getAttribute('class')).toBe('a1b2c');
+    expect(divs[8].getAttribute('class')).toBe('a1b');
+    expect(divs[9].getAttribute('class')).toBe('1');
 
     instance.one = instance.two = instance.three = instance.four = instance.five = instance.six =
         instance.seven = instance.eight = instance.nine = '';
@@ -801,6 +801,69 @@ describe('styling', () => {
     expect(divs[8].getAttribute('class')).toBe('ab');
     expect(divs[9].getAttribute('class')).toBeFalsy();
   });
+
+  onlyInIvy('only Ivy supports style interpolation')
+      .it('should support interpolations inside a style binding', () => {
+        @Component({
+          template: `
+        <div style="content: &quot;a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i{{nine}}j&quot;"></div>
+        <div style="content: &quot;a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i&quot;"></div>
+        <div style="content: &quot;a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h&quot;"></div>
+        <div style="content: &quot;a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g&quot;"></div>
+        <div style="content: &quot;a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f&quot;"></div>
+        <div style="content: &quot;a{{one}}b{{two}}c{{three}}d{{four}}e&quot;"></div>
+        <div style="content: &quot;a{{one}}b{{two}}c{{three}}d&quot;"></div>
+        <div style="content: &quot;a{{one}}b{{two}}c&quot;"></div>
+        <div style="content: &quot;a{{one}}b&quot;"></div>
+        <div style="{{self}}"></div>
+      `
+        })
+        class Cmp {
+          self = 'content: "self"';
+          one = '1';
+          two = '2';
+          three = '3';
+          four = '4';
+          five = '5';
+          six = '6';
+          seven = '7';
+          eight = '8';
+          nine = '9';
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const instance = fixture.componentInstance;
+        fixture.detectChanges();
+
+        const divs = fixture.nativeElement.querySelectorAll('div');
+
+        expect(divs[0].style.getPropertyValue('content')).toBe('"a1b2c3d4e5f6g7h8i9j"');
+        expect(divs[1].style.getPropertyValue('content')).toBe('"a1b2c3d4e5f6g7h8i"');
+        expect(divs[2].style.getPropertyValue('content')).toBe('"a1b2c3d4e5f6g7h"');
+        expect(divs[3].style.getPropertyValue('content')).toBe('"a1b2c3d4e5f6g"');
+        expect(divs[4].style.getPropertyValue('content')).toBe('"a1b2c3d4e5f"');
+        expect(divs[5].style.getPropertyValue('content')).toBe('"a1b2c3d4e"');
+        expect(divs[6].style.getPropertyValue('content')).toBe('"a1b2c3d"');
+        expect(divs[7].style.getPropertyValue('content')).toBe('"a1b2c"');
+        expect(divs[8].style.getPropertyValue('content')).toBe('"a1b"');
+        expect(divs[9].style.getPropertyValue('content')).toBe('"self"');
+
+        instance.one = instance.two = instance.three = instance.four = instance.five =
+            instance.six = instance.seven = instance.eight = instance.nine = instance.self = '';
+        fixture.detectChanges();
+
+        expect(divs[0].style.getPropertyValue('content')).toBe('"abcdefghij"');
+        expect(divs[1].style.getPropertyValue('content')).toBe('"abcdefghi"');
+        expect(divs[2].style.getPropertyValue('content')).toBe('"abcdefgh"');
+        expect(divs[3].style.getPropertyValue('content')).toBe('"abcdefg"');
+        expect(divs[4].style.getPropertyValue('content')).toBe('"abcdef"');
+        expect(divs[5].style.getPropertyValue('content')).toBe('"abcde"');
+        expect(divs[6].style.getPropertyValue('content')).toBe('"abcd"');
+        expect(divs[7].style.getPropertyValue('content')).toBe('"abc"');
+        expect(divs[8].style.getPropertyValue('content')).toBe('"ab"');
+        expect(divs[9].style.getPropertyValue('content')).toBeFalsy();
+      });
 
   it('should support interpolations inside a class binding when other classes are present', () => {
     @Component({template: '<div class="zero i-{{one}} {{two}} three"></div>'})

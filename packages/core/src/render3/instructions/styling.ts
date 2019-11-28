@@ -655,7 +655,7 @@ export function toStylingKeyValueArray(
  * @param key Style key to add. (This key will be checked if it needs sanitization)
  * @param value The value to set (If key needs sanitization it will be sanitized)
  */
-function styleKeyValueArraySet(keyValueArray: KeyValueArray<any>, key: string, value: any) {
+export function styleKeyValueArraySet(keyValueArray: KeyValueArray<any>, key: string, value: any) {
   if (stylePropNeedsSanitization(key)) {
     value = ɵɵsanitizeStyle(value);
   }
