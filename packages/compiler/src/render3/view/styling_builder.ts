@@ -81,7 +81,7 @@ export interface StylingInstruction {
 
 export interface StylingInstructionCall {
   sourceSpan: ParseSourceSpan|null;
-  supportsInterpolation?: boolean;
+  supportsInterpolation: boolean;
   allocateBindingSlots: number;
   params: ((convertFn: (value: any) => o.Expression | o.Expression[]) => o.Expression[]);
 }
@@ -372,9 +372,10 @@ export class StylingBuilder {
     // pipes can be picked up in time before the template is built
     const mapValue = stylingInput.value.visit(valueConverter);
     let reference: o.ExternalReference;
-    if (mapValue instanceof Interpolation && isClassBased) {
+    if (mapValue instanceof Interpolation) {
       totalBindingSlotsRequired += mapValue.expressions.length;
-      reference = getClassMapInterpolationExpression(mapValue);
+      reference = isClassBased ? getClassMapInterpolationExpression(mapValue) :
+                                 getStyleMapInterpolationExpression(mapValue);
     } else {
       reference = isClassBased ? R3.classMap : R3.styleMap;
     }
@@ -382,18 +383,12 @@ export class StylingBuilder {
     return {
       reference,
       calls: [{
-        supportsInterpolation: isClassBased,
+        supportsInterpolation: true,
         sourceSpan: stylingInput.sourceSpan,
         allocateBindingSlots: totalBindingSlotsRequired,
         params: (convertFn: (value: any) => o.Expression | o.Expression[]) => {
           const convertResult = convertFn(mapValue);
           const params = Array.isArray(convertResult) ? convertResult : [convertResult];
-
-          // [style] instructions will sanitize all their values. For this reason we
-          // need to include the sanitizer as a param.
-          if (!isClassBased) {
-            params.push(o.importExpr(R3.defaultStyleSanitizer));
-          }
           return params;
         }
       }]
@@ -585,6 +580,35 @@ function getClassMapInterpolationExpression(interpolation: Interpolation): o.Ext
       return R3.classMapInterpolate8;
     default:
       return R3.classMapInterpolateV;
+  }
+}
+
+/**
+ * Gets the instruction to generate for an interpolated style map.
+ * @param interpolation An Interpolation AST
+ */
+function getStyleMapInterpolationExpression(interpolation: Interpolation): o.ExternalReference {
+  switch (getInterpolationArgsLength(interpolation)) {
+    case 1:
+      return R3.styleMap;
+    case 3:
+      return R3.styleMapInterpolate1;
+    case 5:
+      return R3.styleMapInterpolate2;
+    case 7:
+      return R3.styleMapInterpolate3;
+    case 9:
+      return R3.styleMapInterpolate4;
+    case 11:
+      return R3.styleMapInterpolate5;
+    case 13:
+      return R3.styleMapInterpolate6;
+    case 15:
+      return R3.styleMapInterpolate7;
+    case 17:
+      return R3.styleMapInterpolate8;
+    default:
+      return R3.styleMapInterpolateV;
   }
 }
 

@@ -469,9 +469,9 @@ export function ɵɵpropertyInterpolate8(
 }
 
 /**
- * Update an interpolated property on an element with 8 or more bound values surrounded by text.
+ * Update an interpolated property on an element with 9 or more bound values surrounded by text.
  *
- * Used when the number of interpolated values exceeds 7.
+ * Used when the number of interpolated values exceeds 8.
  *
  * ```html
  * <div
@@ -491,7 +491,7 @@ export function ɵɵpropertyInterpolate8(
  * be conducted at runtime so child components that add new `@Inputs` don't have to be re-compiled.
  *
  * @param propName The name of the property to update.
- * @param values The a collection of values and the strings inbetween those values, beginning with a
+ * @param values The collection of values and the strings inbetween those values, beginning with a
  * string prefix and ending with a string suffix.
  * (e.g. `['prefix', value0, '-', value1, '-', value2, ..., value99, 'suffix']`)
  * @param sanitizer An optional sanitizer function

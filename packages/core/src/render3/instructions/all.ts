@@ -46,5 +46,6 @@ export * from './styling';
 export * from './text';
 export * from './text_interpolation';
 export * from './class_map_interpolation';
+export * from './style_map_interpolation';
 export * from './style_prop_interpolation';
 export * from './host_property';
