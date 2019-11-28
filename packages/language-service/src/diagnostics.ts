@@ -54,13 +54,6 @@ function missingDirective(name: string, isComponent: boolean) {
 }
 
 /**
- * Logs an error for an impossible state with a certain message.
- */
-function logImpossibleState(message: string) {
-  console.error(`Impossible state: ${message}`);
-}
-
-/**
  * Performs a variety diagnostics on directive declarations.
  *
  * @param declarations Angular directive declarations
@@ -85,14 +78,14 @@ export function getDeclarationDiagnostics(
 
     const sf = host.getSourceFile(type.filePath);
     if (!sf) {
-      logImpossibleState(`directive ${type.name} exists but has no source file`);
+      host.error(`directive ${type.name} exists but has no source file`);
       return [];
     }
     // TypeScript identifier of the directive declaration annotation (e.g. "Component" or
     // "Directive") on a directive class.
     const directiveIdentifier = findTightestNode(sf, declarationSpan.start);
     if (!directiveIdentifier) {
-      logImpossibleState(`directive ${type.name} exists but has no identifier`);
+      host.error(`directive ${type.name} exists but has no identifier`);
       return [];
     }
 
@@ -138,7 +131,7 @@ export function getDeclarationDiagnostics(
         const templateUrlNode = findPropertyValueOfType(
             directiveIdentifier.parent, 'templateUrl', ts.isLiteralExpression);
         if (!templateUrlNode) {
-          logImpossibleState(`templateUrl ${templateUrl} exists but its TypeScript node doesn't`);
+          host.error(`templateUrl ${templateUrl} exists but its TypeScript node doesn't`);
           return [];
         }
 
@@ -151,7 +144,7 @@ export function getDeclarationDiagnostics(
         const styleUrlsNode = findPropertyValueOfType(
             directiveIdentifier.parent, 'styleUrls', ts.isArrayLiteralExpression);
         if (!styleUrlsNode) {
-          logImpossibleState(`styleUrls property exists but its TypeScript node doesn't'`);
+          host.error(`styleUrls property exists but its TypeScript node doesn't'`);
           return [];
         }
 
