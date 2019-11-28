@@ -182,7 +182,7 @@ ivyEnabled && describe('render3 jit', () => {
     }
 
     const injectorDef: ɵɵInjectorDef<Module> = (Module as any).ɵinj;
-    const instance = injectorDef.factory();
+    const instance = injectorDef.factory !();
 
     // Since the instance was created outside of an injector using the module, the
     // injection will use the default provider, not the provider from the module.

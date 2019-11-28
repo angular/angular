@@ -644,12 +644,12 @@ export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
     }) as any;
   }
 
-  let factory = getFactoryDef<T>(typeAny);
+  let factory: (() => T|null)|null = getFactoryDef<T>(typeAny);
   if (factory === null) {
     const injectorDef = getInjectorDef<T>(typeAny);
     factory = injectorDef && injectorDef.factory;
   }
-  return factory || null;
+  return factory as FactoryFn<T> || null;
 }
 
 /**

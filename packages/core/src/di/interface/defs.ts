@@ -68,7 +68,7 @@ export interface ɵɵInjectableDef<T> {
  * @publicApi
  */
 export interface ɵɵInjectorDef<T> {
-  factory: () => T;
+  factory: (() => T)|null;
 
   // TODO(alxhub): Narrow down the type here once decorators properly change the return type of the
   // class they are decorating (to add the ɵprov property for example).
@@ -179,7 +179,7 @@ export const defineInjectable = ɵɵdefineInjectable;
 export function ɵɵdefineInjector(options: {factory: () => any, providers?: any[], imports?: any[]}):
     never {
   return ({
-    factory: options.factory, providers: options.providers || [], imports: options.imports || [],
+    factory: options.factory || null, providers: options.providers || [], imports: options.imports || [],
   } as ɵɵInjectorDef<any>) as never;
 }
 

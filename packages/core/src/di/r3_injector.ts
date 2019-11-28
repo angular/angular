@@ -291,6 +291,11 @@ export class R3Injector {
 
     // Track the InjectorType and add a provider for it.
     this.injectorDefTypes.add(defType);
+
+    if (def.factory === null) {
+      def.factory = () => new defType();
+    }
+
     this.records.set(defType, makeRecord(def.factory, NOT_YET));
 
     // Add providers in the same way that @NgModule resolution did:
@@ -420,7 +425,7 @@ function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>
   // (`ɵinj`)
   const injectorDef = getInjectorDef(token);
   if (injectorDef !== null) {
-    return injectorDef.factory;
+    return injectorDef.factory || (() => new (token as any)());
   }
 
   // InjectionTokens should have an injectable def (ɵprov) and thus should be handled above.

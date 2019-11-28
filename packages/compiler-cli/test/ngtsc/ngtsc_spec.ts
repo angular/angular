@@ -843,8 +843,8 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
       expect(jsContents)
           .toContain(
-              `TestModule.ɵinj = i0.ɵɵdefineInjector({ factory: ` +
-              `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
+              `TestModule.ɵinj = i0.ɵɵdefineInjector({ ` +
+              `providers: [{ provide: ` +
               `Token, useValue: 'test' }], imports: [[OtherModule]] });`);
 
       const dtsContents = env.getContents('test.d.ts');
@@ -883,8 +883,8 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
       expect(jsContents)
           .toContain(
-              `TestModule.ɵinj = i0.ɵɵdefineInjector({ factory: ` +
-              `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
+              `TestModule.ɵinj = i0.ɵɵdefineInjector({ ` +
+              `providers: [{ provide: ` +
               `Token, useFactory: function () { return new Token(); } }], imports: [[OtherModule]] });`);
 
       const dtsContents = env.getContents('test.d.ts');
@@ -927,8 +927,8 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
       expect(jsContents)
           .toContain(
-              `TestModule.ɵinj = i0.ɵɵdefineInjector({ factory: ` +
-              `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
+              `TestModule.ɵinj = i0.ɵɵdefineInjector({ ` +
+              `providers: [{ provide: ` +
               `Token, useFactory: function (dep) { return new Token(dep); }, deps: [Dep] }], imports: [[OtherModule]] });`);
 
       const dtsContents = env.getContents('test.d.ts');

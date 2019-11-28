@@ -245,9 +245,16 @@ export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
     injectFn: R3.inject,
     target: R3FactoryTarget.NgModule,
   });
-  const definitionMap = {
-    factory: result.factory,
-  } as{factory: o.Expression, providers: o.Expression, imports: o.Expression};
+
+  const definitionMap = {} as{factory: o.Expression, providers: o.Expression, imports: o.Expression};
+
+  // If the module is using DI or is created using a different type than the host,
+  // create a custom factory.
+  // If not, skip the factory and the runtime will call new X()
+  if (meta.deps && meta.deps.length ||
+    (meta.type as o.WrappedNodeExpr<any>).node !== (meta.internalType as o.WrappedNodeExpr<any>).node) {
+    definitionMap.factory = result.factory;
+  }
 
   if (meta.providers !== null) {
     definitionMap.providers = meta.providers;

@@ -36,8 +36,8 @@ function getFactoryOf<T>(type: Type<any>): ((type?: Type<T>) => T)|null {
   }
 
   const def = getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);
-  if (!def || def.factory === undefined) {
+  if (!def || def.factory == undefined) {
     return null;
   }
-  return def.factory;
+  return def.factory as () => T;
 }
