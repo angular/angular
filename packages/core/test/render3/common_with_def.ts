@@ -7,11 +7,11 @@
  */
 
 import {NgForOf as NgForOfDef, NgIf as NgIfDef, NgTemplateOutlet as NgTemplateOutletDef} from '@angular/common';
-import {IterableDiffers, TemplateRef, ViewContainerRef} from '@angular/core';
+import {IterableDiffers, NgIterable, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {DirectiveType, ɵɵNgOnChangesFeature, ɵɵdefineDirective, ɵɵdirectiveInject} from '../../src/render3/index';
 
-export const NgForOf: DirectiveType<NgForOfDef<any>> = NgForOfDef as any;
+export const NgForOf: DirectiveType<NgForOfDef<any, NgIterable<any>>> = NgForOfDef as any;
 export const NgIf: DirectiveType<NgIfDef> = NgIfDef as any;
 export const NgTemplateOutlet: DirectiveType<NgTemplateOutletDef> = NgTemplateOutletDef as any;
 
