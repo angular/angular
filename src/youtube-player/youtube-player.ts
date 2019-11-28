@@ -93,48 +93,48 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   get videoId(): string | undefined { return this._videoId; }
   set videoId(videoId: string | undefined) {
     this._videoId = videoId;
-    this._videoIdObs.emit(videoId);
+    this._videoIdObs.next(videoId);
   }
   private _videoId: string | undefined;
-  private _videoIdObs = new EventEmitter<string | undefined>();
+  private _videoIdObs = new Subject<string | undefined>();
 
   /** Height of video player */
   @Input()
   get height(): number | undefined { return this._height; }
   set height(height: number | undefined) {
     this._height = height || DEFAULT_PLAYER_HEIGHT;
-    this._heightObs.emit(this._height);
+    this._heightObs.next(this._height);
   }
   private _height = DEFAULT_PLAYER_HEIGHT;
-  private _heightObs = new EventEmitter<number>();
+  private _heightObs = new Subject<number>();
 
   /** Width of video player */
   @Input()
   get width(): number | undefined { return this._width; }
   set width(width: number | undefined) {
     this._width = width || DEFAULT_PLAYER_WIDTH;
-    this._widthObs.emit(this._width);
+    this._widthObs.next(this._width);
   }
   private _width = DEFAULT_PLAYER_WIDTH;
-  private _widthObs = new EventEmitter<number>();
+  private _widthObs = new Subject<number>();
 
   /** The moment when the player is supposed to start playing */
   @Input() set startSeconds(startSeconds: number | undefined) {
-    this._startSeconds.emit(startSeconds);
+    this._startSeconds.next(startSeconds);
   }
-  private _startSeconds = new EventEmitter<number | undefined>();
+  private _startSeconds = new Subject<number | undefined>();
 
   /** The moment when the player is supposed to stop playing */
   @Input() set endSeconds(endSeconds: number | undefined) {
-    this._endSeconds.emit(endSeconds);
+    this._endSeconds.next(endSeconds);
   }
-  private _endSeconds = new EventEmitter<number | undefined>();
+  private _endSeconds = new Subject<number | undefined>();
 
   /** The suggested quality of the player */
   @Input() set suggestedQuality(suggestedQuality: YT.SuggestedVideoQuality | undefined) {
-    this._suggestedQuality.emit(suggestedQuality);
+    this._suggestedQuality.next(suggestedQuality);
   }
-  private _suggestedQuality = new EventEmitter<YT.SuggestedVideoQuality | undefined>();
+  private _suggestedQuality = new Subject<YT.SuggestedVideoQuality | undefined>();
 
   /**
    * Whether the iframe will attempt to load regardless of the status of the api on the
@@ -157,8 +157,8 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
 
   /** Whether we're currently rendering inside a browser. */
   private _isBrowser: boolean;
-  private _youtubeContainer = new EventEmitter<HTMLElement>();
-  private _destroyed = new EventEmitter<undefined>();
+  private _youtubeContainer = new Subject<HTMLElement>();
+  private _destroyed = new Subject<void>();
   private _player: Player | undefined;
 
   constructor(
@@ -215,7 +215,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
         this.createEventsBoundInZone(),
       ).pipe(waitUntilReady(), takeUntil(this._destroyed), publish());
 
-    /** Set up side effects to bind inputs to the player. */
+    // Set up side effects to bind inputs to the player.
     playerObs.subscribe(player => this._player = player);
 
     bindSizeToPlayer(playerObs, widthObs, heightObs);
@@ -256,15 +256,24 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   }
 
   ngAfterViewInit() {
-    this._youtubeContainer.emit(this.youtubeContainer.nativeElement);
+    this._youtubeContainer.next(this.youtubeContainer.nativeElement);
   }
 
   ngOnDestroy() {
     if (this._player) {
       this._player.destroy();
       window.onYouTubeIframeAPIReady = undefined;
-      this._destroyed.emit();
     }
+
+    this._videoIdObs.complete();
+    this._heightObs.complete();
+    this._widthObs.complete();
+    this._startSeconds.complete();
+    this._endSeconds.complete();
+    this._suggestedQuality.complete();
+    this._youtubeContainer.complete();
+    this._destroyed.next();
+    this._destroyed.complete();
   }
 
   private _runInZone<T extends (...args: any[]) => void>(callback: T):
@@ -521,7 +530,7 @@ function bindCueVideoCall(
   startSecondsObs: Observable<number | undefined>,
   endSecondsObs: Observable<number | undefined>,
   suggestedQualityObs: Observable<YT.SuggestedVideoQuality | undefined>,
-  destroyed: Observable<undefined>,
+  destroyed: Observable<void>,
 ) {
   const cueOptionsObs = combineLatest([startSecondsObs, endSecondsObs])
     .pipe(map(([startSeconds, endSeconds]) => ({startSeconds, endSeconds})));
