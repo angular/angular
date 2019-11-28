@@ -576,7 +576,7 @@ export function nativeInsertBefore(
   }
 }
 
-export function nativeAppendChild(renderer: Renderer3, parent: RElement, child: RNode): void {
+function nativeAppendChild(renderer: Renderer3, parent: RElement, child: RNode): void {
   ngDevMode && ngDevMode.rendererAppendChild++;
   ngDevMode && assertDefined(parent, 'parent node must be defined');
   if (isProceduralRenderer(renderer)) {
@@ -639,31 +639,26 @@ function getNativeAnchorNode(parentTNode: TNode, lView: LView): RNode|null {
   return null;
 }
 
-export function getNativeAnachorNodeIndex(tNode: TNode): number {
-  // TODO(pk): this is the same as in getRenderParentIndex so we need to mutualise 2 functions
+export function calculateRenderParentAndAnchorIndex(tView: TView, tNode: TNode): void {
+  let beforeNodeIndex = -1;
   let parentTNode = tNode.parent;
-  if (parentTNode !== null && (parentTNode.type === TNodeType.ElementContainer ||
-                               parentTNode.type === TNodeType.IcuContainer)) {
-    return parentTNode.index;
-  }
-  return -1;
-}
 
-export function getRenderParentIndex(tView: TView, tNode: TNode): number {
   // Skip over element and ICU containers as those are represented by a comment node and
   // can't be used as a render parent.
-  let parentTNode = tNode.parent;
   while (parentTNode != null && (parentTNode.type === TNodeType.ElementContainer ||
                                  parentTNode.type === TNodeType.IcuContainer)) {
-    tNode = parentTNode;
-    parentTNode = tNode.parent;
+    if (beforeNodeIndex === -1) beforeNodeIndex = parentTNode.index;
+    parentTNode = parentTNode.parent;
   }
 
   if (parentTNode == null) {
     // we are at the root of a component or an embedded view
     // if it is a component view, we will return host
     // if it is an embedded view we should not append
-    return tView.type === TViewType.Component ? 0 : -1;
+    if (tView.type === TViewType.Component) {
+      tNode.renderParentIndex = 0;
+      tNode.renderBeforeIndex = beforeNodeIndex;
+    }
   } else {
     ngDevMode && assertNodeType(parentTNode, TNodeType.Element);
     if (parentTNode.flags & TNodeFlags.isComponentHost) {
@@ -679,10 +674,28 @@ export function getRenderParentIndex(tView: TView, tNode: TNode): number {
       // (<content> or <slot>) have to be in place as elements are being inserted.
       if (encapsulation !== ViewEncapsulation.ShadowDom &&
           encapsulation !== ViewEncapsulation.Native) {
-        return -1;
+        return;
       }
     }
-    return parentTNode.index;
+    tNode.renderParentIndex = parentTNode.index;
+    tNode.renderBeforeIndex = beforeNodeIndex;
+  }
+}
+
+// TODO(pk): name it better!
+export function appendOrInsertBefore(
+    lView: LView, tNode: TNode, renderer: Renderer3, native: RNode): void {
+  const renderParentIdx = tNode.renderParentIndex;
+  if (renderParentIdx > -1) {
+    const nativeParent = unwrapRNode(lView[renderParentIdx]) as RElement;
+    // TODO(pk): encode presence of renderBeforeIndex in the renderParentIndex so we don't have to
+    // read renderBeforeIndex for nothing
+    const beforeNodeIndex = tNode.renderBeforeIndex;
+    if (beforeNodeIndex > 0) {
+      nativeInsertBefore(renderer, nativeParent, native, unwrapRNode(lView[beforeNodeIndex]));
+    } else {
+      nativeAppendChild(renderer, nativeParent, native);
+    }
   }
 }
 

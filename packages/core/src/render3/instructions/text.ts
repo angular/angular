@@ -7,11 +7,9 @@
  */
 import {assertDataInRange, assertEqual} from '../../util/assert';
 import {TElementNode, TNodeType} from '../interfaces/node';
-import {RElement} from '../interfaces/renderer';
 import {HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
-import {createTextNode, getNativeAnachorNodeIndex, getRenderParentIndex, nativeAppendChild, nativeInsertBefore} from '../node_manipulation';
+import {appendOrInsertBefore, calculateRenderParentAndAnchorIndex, createTextNode} from '../node_manipulation';
 import {getBindingIndex, getLView, setPreviousOrParentTNode} from '../state';
-import {unwrapRNode} from '../util/view_utils';
 import {getOrCreateTNode} from './shared';
 
 
@@ -38,23 +36,13 @@ export function ɵɵtext(index: number, value: string = ''): void {
   let tNode: TElementNode;
   if (tView.firstCreatePass) {
     tNode = getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, null, null);
-    tNode.renderParentIndex = getRenderParentIndex(tView, tNode);
-    tNode.renderBeforeIndex = getNativeAnachorNodeIndex(tNode);
+    calculateRenderParentAndAnchorIndex(tView, tNode);
   } else {
     tNode = tView.data[adjustedIndex] as TElementNode;
   }
 
   const textNative = lView[adjustedIndex] = createTextNode(value, renderer);
-  const renderParentIdx = tNode.renderParentIndex;
-  if (renderParentIdx > -1) {
-    const nativeParent = unwrapRNode(lView[renderParentIdx]) as RElement;
-    const beforeNodeIndex = tNode.renderBeforeIndex;
-    if (beforeNodeIndex > 0) {
-      nativeInsertBefore(renderer, nativeParent, textNative, unwrapRNode(lView[beforeNodeIndex]));
-    } else {
-      nativeAppendChild(renderer, nativeParent, textNative);
-    }
-  }
+  appendOrInsertBefore(lView, tNode, renderer, textNative);
 
   // Text nodes are self closing.
   setPreviousOrParentTNode(tNode, false);

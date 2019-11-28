@@ -16,11 +16,11 @@ import {StylingMapArray, TStylingContext} from '../interfaces/styling';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
-import {getRenderParentIndex, nativeAppendChild} from '../node_manipulation';
+import {appendOrInsertBefore, calculateRenderParentAndAnchorIndex} from '../node_manipulation';
 import {decreaseElementDepthCount, getBindingIndex, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {setUpAttributes} from '../util/attrs_utils';
 import {getInitialStylingValue, hasClassInput, hasStyleInput, selectClassBasedInputName} from '../util/styling_utils';
-import {getConstant, getNativeByTNode, getTNode, unwrapRNode} from '../util/view_utils';
+import {getConstant, getNativeByTNode, getTNode} from '../util/view_utils';
 
 import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, matchingSchemas, renderInitialStyling, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';
 import {registerInitialStylingOnTNode} from './styling';
@@ -33,7 +33,7 @@ function elementStartFirstCreatePass(
   const tViewConsts = tView.consts;
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
   const tNode = getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, name, attrs);
-  tNode.renderParentIndex = getRenderParentIndex(tView, tNode);
+  calculateRenderParentAndAnchorIndex(tView, tNode);
 
   if (attrs !== null) {
     registerInitialStylingOnTNode(tNode, attrs, 0);
@@ -92,10 +92,7 @@ export function ɵɵelementStart(
     renderInitialStyling(renderer, native, tNode, false);
   }
 
-  const renderParentIdx = tNode.renderParentIndex;
-  if (renderParentIdx > -1) {
-    nativeAppendChild(renderer, unwrapRNode(lView[renderParentIdx]) as RElement, native);
-  }
+  appendOrInsertBefore(lView, tNode, renderer, native);
 
   // any immediate children of a component or template container must be pre-emptively
   // monkey-patched with the component view data so that the element can be inspected
