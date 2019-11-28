@@ -105,10 +105,15 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
   }
 
   const token = meta.internalType;
-  const providedIn = meta.providedIn;
 
-  const expression = o.importExpr(Identifiers.ɵɵdefineInjectable).callFn([mapToMapExpression(
-      {token, factory: result.factory, providedIn})]);
+  // Only generate providedIn property if it has a non-null value
+  const injectableProps: {[key: string]: o.Expression} =
+      (meta.providedIn as o.LiteralExpr).value === null ?
+      {token, factory: result.factory} :
+      {token, factory: result.factory, providedIn: meta.providedIn};
+
+  const expression =
+      o.importExpr(Identifiers.ɵɵdefineInjectable).callFn([mapToMapExpression(injectableProps)]);
   const type = new o.ExpressionType(o.importExpr(
       Identifiers.InjectableDef, [typeWithParameters(meta.type, meta.typeArgumentCount)]));
 
