@@ -33,10 +33,11 @@ export class PartialEvaluator {
 
   evaluate(expr: ts.Expression, foreignFunctionResolver?: ForeignFunctionResolver): ResolvedValue {
     const interpreter = new StaticInterpreter(this.host, this.checker, this.dependencyTracker);
+    const sourceFile = expr.getSourceFile();
     return interpreter.visit(expr, {
-      originatingFile: expr.getSourceFile(),
+      originatingFile: sourceFile,
       absoluteModuleName: null,
-      resolutionContext: expr.getSourceFile().fileName,
+      resolutionContext: sourceFile.fileName,
       scope: new Map<ts.ParameterDeclaration, ResolvedValue>(), foreignFunctionResolver,
     });
   }
