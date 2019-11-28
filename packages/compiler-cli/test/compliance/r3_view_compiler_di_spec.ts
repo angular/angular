@@ -90,8 +90,7 @@ describe('compiler compliance: dependency injection', () => {
     const def = `
       MyService.ɵprov = $r3$.ɵɵdefineInjectable({
         token: MyService,
-        factory: MyService.ɵfac,
-        providedIn: null
+        factory: MyService.ɵfac
       });
     `;
 
@@ -146,8 +145,7 @@ describe('compiler compliance: dependency injection', () => {
             token: MyService,
             factory: function() {
               return alternateFactory();
-            },
-            providedIn: null
+            }
           });
         `;
 
@@ -186,8 +184,7 @@ describe('compiler compliance: dependency injection', () => {
                 r = (() => new MyAlternateFactory())($r3$.ɵɵinject(SomeDep));
               }
               return r;
-            },
-            providedIn: null
+            }
           });
         `;
 
@@ -219,8 +216,7 @@ describe('compiler compliance: dependency injection', () => {
             token: MyService,
             factory: function(t) {
               return MyAlternateService.ɵfac(t);
-            },
-            providedIn: null
+            }
           });
         `;
 
@@ -261,8 +257,7 @@ describe('compiler compliance: dependency injection', () => {
                 r = new MyAlternateService($r3$.ɵɵinject(SomeDep));
               }
               return r;
-            },
-            providedIn: null
+            }
           });
         `;
 
@@ -344,14 +339,14 @@ describe('compiler compliance: dependency injection', () => {
        const MyPipeDefs = `
         MyPipe.ɵfac = function MyPipe_Factory(t) { return new (t || MyPipe)(i0.ɵɵdirectiveInject(Service)); };
         MyPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myPipe", type: MyPipe, pure: true });
-        MyPipe.ɵprov = i0.ɵɵdefineInjectable({ token: MyPipe, factory: MyPipe.ɵfac, providedIn: null });
+        MyPipe.ɵprov = i0.ɵɵdefineInjectable({ token: MyPipe, factory: MyPipe.ɵfac });
       `;
 
        // The prov definition must be last so MyOtherPipe.fac is defined
        const MyOtherPipeDefs = `
         MyOtherPipe.ɵfac = function MyOtherPipe_Factory(t) { return new (t || MyOtherPipe)($r3$.ɵɵdirectiveInject(Service)); };
         MyOtherPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myOtherPipe", type: MyOtherPipe, pure: true });
-        MyOtherPipe.ɵprov = i0.ɵɵdefineInjectable({ token: MyOtherPipe, factory: MyOtherPipe.ɵfac, providedIn: null });
+        MyOtherPipe.ɵprov = i0.ɵɵdefineInjectable({ token: MyOtherPipe, factory: MyOtherPipe.ɵfac });
       `;
 
        expectEmit(source, MyPipeDefs, 'Invalid pipe factory function');
