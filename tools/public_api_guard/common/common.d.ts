@@ -214,25 +214,25 @@ export declare class NgComponentOutlet implements OnChanges, OnDestroy {
     ngOnDestroy(): void;
 }
 
-export declare class NgForOf<T> implements DoCheck {
-    ngForOf: NgIterable<T> | undefined | null;
-    ngForTemplate: TemplateRef<NgForOfContext<T>>;
+export declare class NgForOf<T, U extends NgIterable<T>> implements DoCheck {
+    ngForOf: (U & NgIterable<T>) | undefined | null;
+    ngForTemplate: TemplateRef<NgForOfContext<T, U>>;
     ngForTrackBy: TrackByFunction<T>;
-    constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T>>, _differs: IterableDiffers);
+    constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T, U>>, _differs: IterableDiffers);
     ngDoCheck(): void;
-    static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T>;
+    static ngTemplateContextGuard<T, U extends NgIterable<T>>(dir: NgForOf<T, U>, ctx: any): ctx is NgForOfContext<T, U>;
 }
 
-export declare class NgForOfContext<T> {
+export declare class NgForOfContext<T, U extends NgIterable<T>> {
     $implicit: T;
     count: number;
     readonly even: boolean;
     readonly first: boolean;
     index: number;
     readonly last: boolean;
-    ngForOf: NgIterable<T>;
+    ngForOf: U;
     readonly odd: boolean;
-    constructor($implicit: T, ngForOf: NgIterable<T>, index: number, count: number);
+    constructor($implicit: T, ngForOf: U, index: number, count: number);
 }
 
 export declare class NgIf {
