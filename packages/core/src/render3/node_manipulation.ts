@@ -639,6 +639,15 @@ function getNativeAnchorNode(parentTNode: TNode, lView: LView): RNode|null {
   return null;
 }
 
+export function getNativeAnachorNodeIndex(tNode: TNode): number {
+  // TODO(pk): this is the same as in getRenderParentIndex so we need to mutualise 2 functions
+  let parentTNode = tNode.parent;
+  if (parentTNode !== null && (parentTNode.type === TNodeType.ElementContainer ||
+                               parentTNode.type === TNodeType.IcuContainer)) {
+    return parentTNode.index;
+  }
+  return -1;
+}
 
 export function getRenderParentIndex(tView: TView, tNode: TNode): number {
   // Skip over element and ICU containers as those are represented by a comment node and

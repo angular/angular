@@ -523,6 +523,11 @@ export interface TNode {
   //  0 - host
   //  >= HEADER_OFFSET - actual parent - I might encode sth here to remove unwrapping
   renderParentIndex: number;
+
+
+  // -1 - append child
+  //  >= HEADER_OFFSET - a comment node to use as an anachor
+  renderBeforeIndex: number;
   /**
    * List of projected TNodes for a given component host element OR index into the said nodes.
    *
