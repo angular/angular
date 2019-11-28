@@ -1,4 +1,4 @@
-# Migration to Add Missing `@Injectable()` Decorators
+# Migration for missing `@Injectable()` decorators and incomplete provider definitions
 
 ### What does this schematic do?
 

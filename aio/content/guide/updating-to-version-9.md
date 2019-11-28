@@ -102,7 +102,7 @@ Read about the migrations the CLI handles for you automatically:
 
 - [Migrating from `Renderer` to `Renderer2`](guide/migration-renderer)
 - [Migrating undecorated classes](guide/migration-undecorated-classes)
-- [Migrating missing `@Injectable()` decorators](guide/migration-injectable)
+- [Migrating missing `@Injectable()` decorators and incomplete provider definitions](guide/migration-injectable)
 - [Migrating dynamic queries](guide/migration-dynamic-flag)
 - [Migrating to the new `$localize` i18n support](guide/migration-localize)
 - [Migrating `ModuleWithProviders`](guide/migration-module-with-providers)
