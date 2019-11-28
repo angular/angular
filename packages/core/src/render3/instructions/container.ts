@@ -12,12 +12,13 @@ import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags, re
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
 import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType, TViewNode} from '../interfaces/node';
+import {RElement} from '../interfaces/renderer';
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
-import {appendChild, removeView} from '../node_manipulation';
+import {appendChild, getRenderParentIndex, nativeAppendChild, removeView} from '../node_manipulation';
 import {getBindingIndex, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
-import {getConstant, getLContainerActiveIndex, load} from '../util/view_utils';
+import {getConstant, getLContainerActiveIndex, load, unwrapRNode} from '../util/view_utils';
 
 import {addToViewTree, createDirectivesInstances, createLContainer, createTNode, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
@@ -55,6 +56,7 @@ function templateFirstCreatePass(
   const tNode = getOrCreateTNode(
       tView, lView[T_HOST], index, TNodeType.Container, tagName || null,
       getConstant<TAttributes>(tViewConsts, attrsIndex));
+  tNode.renderParentIndex = getRenderParentIndex(tView, tNode);
 
   resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
   registerPostOrderHooks(tView, tNode);
@@ -100,6 +102,7 @@ export function ɵɵtemplate(
   const lView = getLView();
   const tView = lView[TVIEW];
   const adjustedIndex = index + HEADER_OFFSET;
+  const renderer = lView[RENDERER];
 
   const tNode = tView.firstCreatePass ?
       templateFirstCreatePass(
@@ -107,8 +110,12 @@ export function ɵɵtemplate(
       tView.data[adjustedIndex] as TContainerNode;
   setPreviousOrParentTNode(tNode, false);
 
-  const comment = lView[RENDERER].createComment(ngDevMode ? 'container' : '');
-  appendChild(comment, tNode, lView);
+  const comment = renderer.createComment(ngDevMode ? 'container' : '');
+
+  const renderParentIdx = tNode.renderParentIndex;
+  if (renderParentIdx > -1) {
+    nativeAppendChild(renderer, unwrapRNode(lView[renderParentIdx]) as RElement, comment);
+  }
   attachPatchData(comment, lView);
 
   addToViewTree(lView, lView[adjustedIndex] = createLContainer(comment, lView, comment, tNode));
