@@ -13,7 +13,7 @@ import {TAttributes, TElementContainerNode, TNodeType} from '../interfaces/node'
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
-import {appendChild} from '../node_manipulation';
+import {appendOrInsertBefore, calculateRenderParentAndAnchorIndex} from '../node_manipulation';
 import {getBindingIndex, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {getConstant} from '../util/view_utils';
 
@@ -29,6 +29,7 @@ function elementContainerStartFirstCreatePass(
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
   const tNode = getOrCreateTNode(
       tView, lView[T_HOST], index, TNodeType.ElementContainer, 'ng-container', attrs);
+  calculateRenderParentAndAnchorIndex(tView, tNode);
 
   // While ng-container doesn't necessarily support styling, we use the style context to identify
   // and execute directives on the ng-container.
@@ -77,9 +78,9 @@ export function ɵɵelementContainerStart(
   setPreviousOrParentTNode(tNode, true);
 
   ngDevMode && ngDevMode.rendererCreateComment++;
-  const native = lView[adjustedIndex] =
-      lView[RENDERER].createComment(ngDevMode ? 'ng-container' : '');
-  appendChild(native, tNode, lView);
+  const renderer = lView[RENDERER];
+  const native = lView[adjustedIndex] = renderer.createComment(ngDevMode ? 'ng-container' : '');
+  appendOrInsertBefore(lView, tNode, renderer, native);
   attachPatchData(native, lView);
 
   if (isDirectiveHost(tNode)) {
