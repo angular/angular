@@ -358,10 +358,10 @@ export function ɵɵstylePropInterpolate8(
 }
 
 /**
- * Update an interpolated style property on an element with 8 or more bound values surrounded by
+ * Update an interpolated style property on an element with 9 or more bound values surrounded by
  * text.
  *
- * Used when the number of interpolated values exceeds 7.
+ * Used when the number of interpolated values exceeds 8.
  *
  * ```html
  * <div
@@ -380,7 +380,7 @@ export function ɵɵstylePropInterpolate8(
  * @param styleIndex Index of style to update. This index value refers to the
  *        index of the style in the style bindings array that was passed into
  *        `styling`..
- * @param values The a collection of values and the strings in-between those values, beginning with
+ * @param values The collection of values and the strings in-between those values, beginning with
  * a string prefix and ending with a string suffix.
  * (e.g. `['prefix', value0, '-', value1, '-', value2, ..., value99, 'suffix']`)
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
