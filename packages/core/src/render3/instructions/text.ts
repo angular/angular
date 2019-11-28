@@ -7,10 +7,11 @@
  */
 import {assertDataInRange, assertEqual} from '../../util/assert';
 import {TElementNode, TNodeType} from '../interfaces/node';
+import {RElement} from '../interfaces/renderer';
 import {HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
-import {appendChild, createTextNode} from '../node_manipulation';
+import {createTextNode, getRenderParentIndex, nativeAppendChild} from '../node_manipulation';
 import {getBindingIndex, getLView, setPreviousOrParentTNode} from '../state';
-
+import {unwrapRNode} from '../util/view_utils';
 import {getOrCreateTNode} from './shared';
 
 
@@ -26,6 +27,7 @@ import {getOrCreateTNode} from './shared';
 export function ɵɵtext(index: number, value: string = ''): void {
   const lView = getLView();
   const tView = lView[TVIEW];
+  const renderer = lView[RENDERER];
   const adjustedIndex = index + HEADER_OFFSET;
 
   ngDevMode && assertEqual(
@@ -33,12 +35,19 @@ export function ɵɵtext(index: number, value: string = ''): void {
                    'text nodes should be created before any bindings');
   ngDevMode && assertDataInRange(lView, adjustedIndex);
 
-  const tNode = tView.firstCreatePass ?
-      getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, null, null) :
-      tView.data[adjustedIndex] as TElementNode;
+  let tNode: TElementNode;
+  if (tView.firstCreatePass) {
+    tNode = getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, null, null);
+    tNode.renderParentIndex = getRenderParentIndex(tView, tNode);
+  } else {
+    tNode = tView.data[adjustedIndex] as TElementNode;
+  }
 
-  const textNative = lView[adjustedIndex] = createTextNode(value, lView[RENDERER]);
-  appendChild(textNative, tNode, lView);
+  const textNative = lView[adjustedIndex] = createTextNode(value, renderer);
+  const renderParentIdx = tNode.renderParentIndex;
+  if (renderParentIdx > -1) {
+    nativeAppendChild(renderer, unwrapRNode(lView[renderParentIdx]) as RElement, textNative);
+  }
 
   // Text nodes are self closing.
   setPreviousOrParentTNode(tNode, false);
