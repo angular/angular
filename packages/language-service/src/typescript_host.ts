@@ -15,7 +15,7 @@ import {AstResult, isAstResult} from './common';
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
 import {ExternalTemplate, InlineTemplate, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './template';
-import {Declaration, DeclarationError, Diagnostic, DiagnosticKind, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
+import {Declaration, DeclarationError, Diagnostic, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
 import {findTightestNode, getDirectiveClassLike} from './utils';
 
 
@@ -515,7 +515,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       const data = this.resolver.getNonNormalizedDirectiveMetadata(classSymbol);
       if (!data) {
         return {
-          kind: DiagnosticKind.Error,
+          kind: ts.DiagnosticCategory.Error,
           message: `No metadata found for '${classSymbol.name}' in ${fileName}.`,
           span: template.span,
         };
@@ -537,7 +537,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
           parser.tryParseHtml(htmlResult, data.metadata, directives, pipes, schemas);
       if (!parseResult.templateAst) {
         return {
-          kind: DiagnosticKind.Error,
+          kind: ts.DiagnosticCategory.Error,
           message: `Failed to parse template for '${classSymbol.name}' in ${fileName}`,
           span: template.span,
         };
@@ -550,7 +550,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       };
     } catch (e) {
       return {
-        kind: DiagnosticKind.Error,
+        kind: ts.DiagnosticCategory.Error,
         message: e.message,
         span:
             e.fileName === fileName && template.query.getSpanAt(e.line, e.column) || template.span,
