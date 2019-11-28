@@ -51,6 +51,32 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
         this.commonJsExports, sourceFile, () => this.computeExportsOfCommonJsModule(sourceFile));
   }
 
+  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null {
+    const value = super.getVariableValue(declaration);
+
+    if (value === null) {
+      return null;
+    }
+
+    // In CommonJS, some helpers might be emitted in the format:
+    // `var __helperFn = (this && this.__helperFn) || function () { ... }`
+    // In that case, we only care about the function declaration.
+    const varName = ts.isIdentifier(declaration.name) ? declaration.name.text : null;
+    if ((varName !== null) && varName.startsWith('__') && ts.isBinaryExpression(value) &&
+        (value.operatorToken.kind === ts.SyntaxKind.BarBarToken) &&
+        ts.isParenthesizedExpression(value.left) && ts.isBinaryExpression(value.left.expression) &&
+        (value.left.expression.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) &&
+        (value.left.expression.left.kind === ts.SyntaxKind.ThisKeyword) &&
+        ts.isPropertyAccessExpression(value.left.expression.right) &&
+        (value.left.expression.right.expression.kind === ts.SyntaxKind.ThisKeyword) &&
+        (value.left.expression.right.name.text === varName) &&
+        ts.isFunctionExpression(value.right)) {
+      return value.right;
+    }
+
+    return value;
+  }
+
   /**
    * Search statements related to the given class for calls to the specified helper.
    *
