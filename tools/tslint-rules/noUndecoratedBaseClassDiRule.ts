@@ -25,19 +25,21 @@ class Walker extends Lint.RuleWalker {
   }
 
   visitClassDeclaration(node: ts.ClassDeclaration) {
-    if (!this.hasDirectiveDecorator(node)) {
-      return;
-    }
-
-    // If the class already has an explicit constructor, it's not required
-    // for base classes to be decorated.
-    if (this.hasExplicitConstructor(node)) {
+    // If the class isn't decorated or it has an explicit constructor we don't need to check it.
+    if (!this.hasDirectiveDecorator(node) || this.hasExplicitConstructor(node)) {
       return;
     }
 
     const baseClass = this.getConstructorBaseClass(node);
     if (baseClass && !this.hasDirectiveDecorator(baseClass)) {
-      this.addFailureAtNode(node, RULE_FAILURE);
+      const constructor = baseClass.members.find(ts.isConstructorDeclaration);
+
+      // If the base class constructor doesn't have parameters we don't need to flag it, because
+      // it can't be using DI. Note that technically we know the constructor exists because of
+      // `getConstructorBaseClass`, but we null check it to keep the compiler happy.
+      if (!constructor || constructor.parameters.length > 0) {
+        this.addFailureAtNode(node, RULE_FAILURE);
+      }
     }
   }
 
