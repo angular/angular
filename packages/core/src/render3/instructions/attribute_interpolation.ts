@@ -413,9 +413,9 @@ export function ɵɵattributeInterpolate8(
 }
 
 /**
- * Update an interpolated attribute on an element with 8 or more bound values surrounded by text.
+ * Update an interpolated attribute on an element with 9 or more bound values surrounded by text.
  *
- * Used when the number of interpolated values exceeds 7.
+ * Used when the number of interpolated values exceeds 8.
  *
  * ```html
  * <div
@@ -431,7 +431,7 @@ export function ɵɵattributeInterpolate8(
  * ```
  *
  * @param attrName The name of the attribute to update.
- * @param values The a collection of values and the strings in-between those values, beginning with
+ * @param values The collection of values and the strings in-between those values, beginning with
  * a string prefix and ending with a string suffix.
  * (e.g. `['prefix', value0, '-', value1, '-', value2, ..., value99, 'suffix']`)
  * @param sanitizer An optional sanitizer function
