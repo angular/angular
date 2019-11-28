@@ -17,8 +17,6 @@ function _random(max: number) {
   return Math.round(Math.random() * 1000) % max;
 }
 
-// TODO(pk): we probably need to support appending rows, but this would be hard(?) to test with
-// benchpress
 function buildData(count: number): Array<RowData> {
   const data: Array<RowData> = [];
   for (let i = 0; i < count; i++) {
