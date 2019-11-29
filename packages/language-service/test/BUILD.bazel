@@ -36,7 +36,8 @@ jasmine_node_test(
         "//packages/forms:npm_package",
     ],
     tags = [
-        "fixme-ivy-aot",
+        # the language service is not yet compatible with Ivy
+        "no-ivy-aot",
     ],
     deps = [
         ":test_lib",
