@@ -478,6 +478,24 @@ describe('ViewContainerRef', () => {
       vcRefDir.vcref.remove(0);
       expect(vcRefDir.vcref.indexOf(viewRef !)).toEqual(-1);
     });
+
+    it('should return -1 as indexOf when no views were inserted', () => {
+      const fixture = TestBed.createComponent(ViewContainerRefComp);
+      fixture.detectChanges();
+
+      const cmpt = fixture.componentInstance;
+      const viewRef = cmpt.templates.first.createEmbeddedView({});
+
+      // ViewContainerRef is empty and we've got a reference to a view that was not attached
+      // anywhere
+      expect(cmpt.vcr.indexOf(viewRef)).toBe(-1);
+
+      cmpt.vcr.insert(viewRef);
+      expect(cmpt.vcr.indexOf(viewRef)).toBe(0);
+
+      cmpt.vcr.remove(0);
+      expect(cmpt.vcr.indexOf(viewRef)).toBe(-1);
+    });
   });
 
   describe('move', () => {
