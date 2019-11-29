@@ -6,8 +6,6 @@ ng_module(
     name = "message_broker",
     srcs = glob(["**/*.ts"]),
     tsconfig = "//modules/playground:tsconfig-build.json",
-    # TODO: FW-1004 Type checking is currently not complete.
-    type_check = False,
     deps = [
         "//packages/core",
         "//packages/platform-webworker",

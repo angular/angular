@@ -12,8 +12,6 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_module, assets = 
         name = "%s_sources" % name,
         srcs = srcs,
         generate_ve_shims = True,
-        # TODO: FW-1004 Type checking is currently not complete.
-        type_check = False,
         deps = [
             "@npm//@types/angular",
             "@npm//@types/jasmine",
