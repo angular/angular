@@ -47,7 +47,7 @@ import {HttpHeaders} from '@angular/common/http/src/headers';
 
         expect(headers.getAll('foo')).toEqual(['second']);
       });
-      
+
       it('should initialize with null values', () => {
         const headers = new HttpHeaders({
           'X-Key-1': '1',
