@@ -1888,7 +1888,7 @@ export function setInputsForProperty(
 export function textBindingInternal(lView: LView, index: number, value: string): void {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'value should not be NO_CHANGE');
   ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
-  const element = getNativeByIndex(index, lView) as any as RText;
+  const element = lView[index + HEADER_OFFSET] as RText;
   ngDevMode && assertDefined(element, 'native element should exist');
   ngDevMode && ngDevMode.rendererSetText++;
   const renderer = lView[RENDERER];

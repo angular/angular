@@ -5,8 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {getLView, getSelectedIndex} from '../state';
+import {bindingUpdated} from '../bindings';
+import {getLView, getSelectedIndex, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
+import {renderStringify} from '../util/misc_utils';
 
 import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
 import {textBindingInternal} from './shared';
@@ -33,7 +35,10 @@ import {textBindingInternal} from './shared';
  * @codeGenApi
  */
 export function ɵɵtextInterpolate(v0: any): typeof ɵɵtextInterpolate {
-  ɵɵtextInterpolate1('', v0, '');
+  const lView = getLView();
+  if (bindingUpdated(lView, nextBindingIndex(), v0)) {
+    textBindingInternal(lView, getSelectedIndex(), renderStringify(v0));
+  }
   return ɵɵtextInterpolate;
 }
 
