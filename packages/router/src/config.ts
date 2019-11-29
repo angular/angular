@@ -161,6 +161,18 @@ export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParam
     ((from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot) => boolean);
 
 /**
+ *
+ * How to match the given path in the URL.
+ * One of:
+ * - `prefix` : Checks from the left to see if the URL matches a given path, and stops when there is a match. 
+ * - `full` : Matches against the entire URL.
+ *
+ * @see `Route#pathMatch`
+ * @publicApi
+ */
+export type PathMatch = 'prefix' | 'full';
+
+/**
  * A configuration object that defines a single route.
  * A set of routes are collected in a `Routes` array to define a `Router` configuration.
  * The router attempts to match segments of a given URL against each route,
@@ -408,7 +420,7 @@ export interface Route {
    * to the redirect destination, creating an endless loop.
    *
    */
-  pathMatch?: string;
+  pathMatch?: PathMatch;
   /**
    * A custom URL-matching function. Cannot be used together with `path`.
    */
