@@ -64,10 +64,19 @@ export declare class NgForOf<T, U extends i0.NgIterable<T>> implements DoCheck {
   static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgForOf<any>, '[ngFor][ngForOf]', never, {'ngForOf': 'ngForOf'}, {}, never>;
 }
 
-export declare class NgIf {
-  ngIf: any;
+export declare class NgIf<T> {
+  ngIf: T;
+  ngIfElse: TemplateRef<NgIfContext<T>> | null;
+  ngIfThen: TemplateRef<NgIfContext<T>> | null;
+  constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext<T>>);
   static ngTemplateGuard_ngIf: 'binding';
-  static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgForOf<any>, '[ngIf]', never, {'ngIf': 'ngIf'}, {}, never>;
+  static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<T>;
+  static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgIf<any>, '[ngIf]', never, {'ngIf': 'ngIf'}, {}, never>;
+}
+
+export declare class NgIfContext<T> {
+  $implicit: T;
+  ngIf: T;
 }
 
 export declare class CommonModule {
@@ -813,6 +822,33 @@ export declare class AnimationEvent {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(0);
+    });
+
+    it('should infer the context of NgIf', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+      env.write('test.ts', `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
+        @Component({
+          selector: 'test',
+          template: '<div *ngIf="getUser(); let user">{{user.nonExistingProp}}</div>',
+        })
+        class TestCmp {
+          getUser(): {name: string} {
+            return {name: 'frodo'};
+          }
+        }
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [CommonModule],
+        })
+        class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText)
+          .toBe(`Property 'nonExistingProp' does not exist on type '{ name: string; }'.`);
     });
 
     it('should report an error with an unknown local ref target', () => {
