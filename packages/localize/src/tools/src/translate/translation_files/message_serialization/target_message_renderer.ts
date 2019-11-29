@@ -35,7 +35,9 @@ export class TargetMessageRenderer implements MessageRenderer<ɵParsedTranslatio
     this.icuDepth--;
     this.text('}');
   }
+  private normalizePlaceholderName(name: string) { return name.replace(/-/g, '_'); }
   private renderPlaceholder(name: string) {
+    name = this.normalizePlaceholderName(name);
     if (this.icuDepth > 0) {
       this.text(`{${name}}`);
     } else {

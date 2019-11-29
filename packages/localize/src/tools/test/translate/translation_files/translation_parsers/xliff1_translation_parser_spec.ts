@@ -88,7 +88,7 @@ describe('Xliff1TranslationParser', () => {
        * Source HTML:
        *
        * ```
-       * <div i18n>translatable element <b>>with placeholders</b> {{ interpolation}}</div>
+       * <div i18n>translatable element <b>with placeholders</b> {{ interpolation}}</div>
        * ```
        */
       const XLIFF = `
@@ -115,6 +115,38 @@ describe('Xliff1TranslationParser', () => {
           .toEqual(ɵmakeParsedTranslation(
               ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
               ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']));
+    });
+
+    it('should extract translations with placeholders containing hyphens', () => {
+      /**
+       * Source HTML:
+       *
+       * ```
+       * <div i18n><app-my-component></app-my-component> Welcome</div>
+       * ```
+       */
+      const XLIFF = `
+      <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+        <file source-language="en" target-language="fr" datatype="plaintext" original="ng2.template">
+          <body>
+            <trans-unit id="2877147807876214810" datatype="html">
+              <source><x id="START_TAG_APP-MY-COMPONENT" ctype="x-app-my-component" equiv-text="&lt;app-my-component&gt;"/><x id="CLOSE_TAG_APP-MY-COMPONENT" ctype="x-app-my-component" equiv-text="&lt;/app-my-component&gt;"/> Welcome</source>
+              <context-group purpose="location">
+                <context context-type="sourcefile">src/app/app.component.html</context>
+                <context context-type="linenumber">1</context>
+              </context-group>
+              <target><x id="START_TAG_APP-MY-COMPONENT" ctype="x-app-my-component" equiv-text="&lt;app-my-component&gt;"/><x id="CLOSE_TAG_APP-MY-COMPONENT" ctype="x-app-my-component" equiv-text="&lt;/app-my-component&gt;"/> Translate</target>
+            </trans-unit>
+          </body>
+        </file>
+      </xliff>`;
+      const parser = new Xliff1TranslationParser();
+      const result = parser.parse('/some/file.xlf', XLIFF);
+      const id =
+          ɵcomputeMsgId('{$START_TAG_APP_MY_COMPONENT}{$CLOSE_TAG_APP_MY_COMPONENT} Welcome');
+      expect(result.translations[id]).toEqual(ɵmakeParsedTranslation(['', '', ' Translate'], [
+        'START_TAG_APP_MY_COMPONENT', 'CLOSE_TAG_APP_MY_COMPONENT'
+      ]));
     });
 
     it('should extract translations with simple ICU expressions', () => {
