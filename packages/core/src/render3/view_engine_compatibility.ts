@@ -281,9 +281,8 @@ export function createContainerRef(
       }
 
       indexOf(viewRef: viewEngine_ViewRef): number {
-        return this._lContainer[VIEW_REFS] !== null ?
-            this._lContainer[VIEW_REFS] !.indexOf(viewRef) :
-            0;
+        const viewRefsArr = this._lContainer[VIEW_REFS];
+        return viewRefsArr !== null ? viewRefsArr.indexOf(viewRef) : -1;
       }
 
       remove(index?: number): void {
