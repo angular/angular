@@ -16,16 +16,16 @@ import {ViewContainerRef as ViewEngine_ViewContainerRef} from '../linker/view_co
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
 import {Renderer2} from '../render/api';
 import {addToArray, removeFromArray} from '../util/array_utils';
-import {assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
+import {assertDefined, assertEqual, assertGreaterThan, assertLessThan} from '../util/assert';
 
 import {assertLContainer} from './assert';
 import {NodeInjector, getParentInjectorLocation} from './di';
 import {addToViewTree, createLContainer, createLView, renderView} from './instructions/shared';
 import {ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from './interfaces/container';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
+import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
 import {isComponentHost, isLContainer, isLView, isRootView} from './interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, LView, LViewFlags, PARENT, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
 import {getParentInjectorTNode} from './node_util';
@@ -240,18 +240,40 @@ export function createContainerRef(
       }
 
       insert(viewRef: viewEngine_ViewRef, index?: number): viewEngine_ViewRef {
+        const lView = (viewRef as ViewRef<any>)._lView !;
+
         if (viewRef.destroyed) {
           throw new Error('Cannot insert a destroyed View in a ViewContainer!');
         }
+
         this.allocateContainerIfNeeded();
-        const lView = (viewRef as ViewRef<any>)._lView !;
 
         if (viewAttachedToContainer(lView)) {
-          // If view is already attached, fall back to move() so we clean up
-          // references appropriately.
-          // Note that we "shift" -1 because the move will involve inserting
-          // one view but also removing one view.
-          return this.move(viewRef, this._adjustIndex(index, -1));
+          // If view is already attached, detach it first so we clean up references appropriately.
+
+          const prevIdx = this.indexOf(viewRef);
+
+          // A view might be attached either to this or a different container. The `prevIdx` for
+          // those cases will be:
+          // equal to -1 for views attached to this ViewContainerRef
+          // >= 0 for views attached to a different ViewContainerRef
+          if (prevIdx !== -1) {
+            this.detach(prevIdx);
+          } else {
+            const prevLContainer = lView[PARENT] as LContainer;
+            ngDevMode && assertEqual(
+                             isLContainer(prevLContainer), true,
+                             'An attached view should have its PARENT point to a container.');
+
+
+            // We need to re-create a R3ViewContainerRef instance since those are not stored on
+            // LView (nor anywhere else).
+            const prevVCRef = new R3ViewContainerRef(
+                prevLContainer, prevLContainer[T_HOST] as TDirectiveHostNode,
+                prevLContainer[PARENT]);
+
+            prevVCRef.detach(prevVCRef.indexOf(viewRef));
+          }
         }
 
         const adjustedIdx = this._adjustIndex(index);
@@ -270,14 +292,7 @@ export function createContainerRef(
         if (viewRef.destroyed) {
           throw new Error('Cannot move a destroyed View in a ViewContainer!');
         }
-        const index = this.indexOf(viewRef);
-        if (index === -1) {
-          this.insert(viewRef, newIndex);
-        } else if (index !== newIndex) {
-          this.detach(index);
-          this.insert(viewRef, newIndex);
-        }
-        return viewRef;
+        return this.insert(viewRef, newIndex);
       }
 
       indexOf(viewRef: viewEngine_ViewRef): number {
@@ -307,7 +322,7 @@ export function createContainerRef(
           return this.length + shift;
         }
         if (ngDevMode) {
-          assertGreaterThan(index, -1, 'index must be positive');
+          assertGreaterThan(index, -1, `ViewRef index must be positive, got ${index}`);
           // +1 because it's legal to insert at the end.
           assertLessThan(index, this.length + 1 + shift, 'index');
         }
