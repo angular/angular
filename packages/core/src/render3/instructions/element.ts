@@ -13,13 +13,13 @@ import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {StylingMapArray, TStylingContext} from '../interfaces/styling';
-import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
+import {isContentQueryHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendOrInsertBefore, calculateRenderParentAndAnchorIndex} from '../node_manipulation';
 import {decreaseElementDepthCount, getBindingIndex, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {setUpAttributes} from '../util/attrs_utils';
-import {getInitialStylingValue, hasClassInput, hasStyleInput, selectClassBasedInputName} from '../util/styling_utils';
+import {getInitialStylingValue, selectClassBasedInputName} from '../util/styling_utils';
 import {getConstant, getNativeByTNode, getTNode} from '../util/view_utils';
 
 import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, matchingSchemas, renderInitialStyling, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';
@@ -88,7 +88,9 @@ export function ɵɵelementStart(
   if (attrs != null) {
     setUpAttributes(renderer, native, attrs);
   }
-  if ((tNode.flags & TNodeFlags.hasInitialStyling) === TNodeFlags.hasInitialStyling) {
+
+  const flags = tNode.flags;
+  if ((flags & TNodeFlags.hasInitialStyling) === TNodeFlags.hasInitialStyling) {
     renderInitialStyling(renderer, native, tNode, false);
   }
 
@@ -103,7 +105,7 @@ export function ɵɵelementStart(
   increaseElementDepthCount();
 
 
-  if (isDirectiveHost(tNode)) {
+  if ((flags & TNodeFlags.isDirectiveHost) === TNodeFlags.isDirectiveHost) {
     createDirectivesInstances(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
   }
@@ -144,12 +146,13 @@ export function ɵɵelementEnd(): void {
     }
   }
 
-  if (hasClassInput(tNode)) {
+  const flags = tNode.flags;
+  if ((flags & TNodeFlags.hasClassInput) === TNodeFlags.hasClassInput) {
     const inputName: string = selectClassBasedInputName(tNode.inputs !);
     setDirectiveStylingInput(tNode.classes, lView, tNode.inputs ![inputName], inputName);
   }
 
-  if (hasStyleInput(tNode)) {
+  if ((flags & TNodeFlags.hasStyleInput) === TNodeFlags.hasStyleInput) {
     setDirectiveStylingInput(tNode.styles, lView, tNode.inputs !['style'], 'style');
   }
 }
