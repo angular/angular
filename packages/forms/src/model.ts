@@ -1787,15 +1787,11 @@ export class FormArray extends AbstractControl {
       return;
     }
 
-    const delta = to > from ? 1 : -1;
-    const controlToMove = this.at(from);
+    const controlToMove = this.controls.splice(from, 1)[0];
+    this.controls.splice(to, 0, controlToMove);
 
-    for (let i = from; i * delta < to * delta; i += delta) {
-      this._throwIfControlMissing(i + delta);
-      this.setControl(i, this.at(i + delta));
-    }
-
-    this.setControl(to, controlToMove);
+    this.updateValueAndValidity();
+    this._onCollectionChange();
   }
 
   /**
