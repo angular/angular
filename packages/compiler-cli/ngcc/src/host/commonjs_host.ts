@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
-import {Declaration, Import} from '../../../src/ngtsc/reflection';
+import {Declaration, Import, TsHelperFnKind} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {isDefined} from '../utils';
@@ -51,7 +51,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
         this.commonJsExports, sourceFile, () => this.computeExportsOfCommonJsModule(sourceFile));
   }
 
-  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null {
+  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|TsHelperFnKind|null {
     const value = super.getVariableValue(declaration);
 
     if (value === null) {
@@ -71,10 +71,47 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
         (value.left.expression.right.expression.kind === ts.SyntaxKind.ThisKeyword) &&
         (value.left.expression.right.name.text === varName) &&
         ts.isFunctionExpression(value.right)) {
-      return value.right;
+      switch (varName);
     }
 
     return value;
+  }
+
+  getTsHelperFnKind(node: ts.Node): TsHelperFnKind|null {
+    if (!ts.isFunctionDeclaration(node) && !ts.isMethodDeclaration(node) &&
+        !ts.isFunctionExpression(node) && !ts.isVariableDeclaration(node)) {
+      return null;
+    }
+
+    // In CommonJS, some helpers might be emitted in the format:
+    // `var __helperFn = (this && this.__helperFn) || function () { ... }`
+    // In that case, we only care about the function declaration.
+    const varName = ts.isIdentifier(declaration.name) ? declaration.name.text : null;
+    if ((varName !== null) && varName.startsWith('__') && ts.isBinaryExpression(value) &&
+        (value.operatorToken.kind === ts.SyntaxKind.BarBarToken) &&
+        ts.isParenthesizedExpression(value.left) && ts.isBinaryExpression(value.left.expression) &&
+        (value.left.expression.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) &&
+        (value.left.expression.left.kind === ts.SyntaxKind.ThisKeyword) &&
+        ts.isPropertyAccessExpression(value.left.expression.right) &&
+        (value.left.expression.right.expression.kind === ts.SyntaxKind.ThisKeyword) &&
+        (value.left.expression.right.name.text === varName) &&
+        ts.isFunctionExpression(value.right)) {
+      switch (varName);
+    }
+
+
+    const fnName = (node.name !== undefined) && ts.isIdentifier(node.name) ?
+      stripDollarSuffix(node.name.text) :
+      null;
+
+    switch (fnName) {
+      case '__spread':
+        return TsHelperFnKind.Spread;
+      case '__spreadArrays':
+        return TsHelperFnKind.SpreadArrays;
+      default:
+        return null;
+    }
   }
 
   /**

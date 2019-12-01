@@ -10,14 +10,14 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {OwningModule} from '../../imports/src/references';
-import {Declaration, InlineDeclaration, ReflectionHost} from '../../reflection';
+import {Declaration, InlineDeclaration, ReflectionHost, TsHelperFnKind} from '../../reflection';
 import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
 import {DependencyTracker, ForeignFunctionResolver} from './interface';
-import {BuiltinFn, EnumValue, ResolvedModule, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
-import {evaluateTsHelperInline} from './ts_helpers';
+import {BuiltinFn, EnumValue, ResolvedModule, ResolvedValue, ResolvedValueArray, ResolvedValueMap, TsHelperFn} from './result';
+import {getTsHelperFn} from './ts_helpers';
 
 
 
@@ -271,7 +271,9 @@ export class StaticInterpreter {
 
   private visitVariableDeclaration(node: ts.VariableDeclaration, context: Context): ResolvedValue {
     const value = this.host.getVariableValue(node);
-    if (value !== null) {
+    if (value instanceof TsHelperFnKind) {
+      return value;
+    } else if (ts.isNodeisExpressionStatement value !== null) {
       return this.visitExpression(value, context);
     } else if (isVariableDeclarationDeclared(node)) {
       return this.getReference(node, context);
@@ -403,6 +405,11 @@ export class StaticInterpreter {
       return lhs.evaluate(this.evaluateFunctionArguments(node, context));
     }
 
+    // If the call refers to a TS helper function, attempt to evaluate the function.
+    if (lhs instanceof TsHelperFn) {
+      return lhs.evaluate(this.evaluateFunctionArguments(node, context));
+    }
+
     if (!(lhs instanceof Reference)) {
       return DynamicValue.fromInvalidExpressionType(node.expression, lhs);
     }
@@ -412,6 +419,7 @@ export class StaticInterpreter {
       return DynamicValue.fromInvalidExpressionType(node.expression, lhs);
     }
 
+    // TODO: How to handle this?
     // If the function corresponds with a tslib helper function, evaluate it with custom logic.
     if (fn.helper !== null) {
       const args = this.evaluateFunctionArguments(node, context);
