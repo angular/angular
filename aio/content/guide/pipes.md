@@ -37,7 +37,7 @@ Focus on the component's template.
 
 
 
-Inside the interpolation expression, you flow the component's `birthday` value through the
+Inside the interpolation template expression, you flow the component's `birthday` value through the
 [pipe operator](guide/template-syntax#pipe) ( | ) to the [Date pipe](api/common/DatePipe)
 function on the right. All pipes work this way.
 
