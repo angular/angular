@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost, isDecoratorIdentifier} from './host';
+import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost, TsHelperFnKind, isDecoratorIdentifier} from './host';
 import {typeToValue} from './type_to_value';
 
 /**
@@ -160,7 +160,6 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return {
       node,
       body: node.body !== undefined ? Array.from(node.body.statements) : null,
-      helper: null,
       parameters: node.parameters.map(param => {
         const name = parameterName(param.name);
         const initializer = param.initializer || null;
@@ -185,6 +184,11 @@ export class TypeScriptReflectionHost implements ReflectionHost {
   getInternalNameOfClass(clazz: ClassDeclaration): ts.Identifier { return clazz.name; }
 
   getAdjacentNameOfClass(clazz: ClassDeclaration): ts.Identifier { return clazz.name; }
+
+  getTsHelperFnKind(node: ts.Node): TsHelperFnKind|null {
+    // Helpers are only used in transpiled code, not in TypeScript.
+    return null;
+  }
 
   protected getDirectImportOfIdentifier(id: ts.Identifier): Import|null {
     const symbol = this.checker.getSymbolAtLocation(id);

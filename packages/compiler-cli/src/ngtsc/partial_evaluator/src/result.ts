@@ -22,7 +22,8 @@ import {DynamicValue} from './dynamic';
  * available statically.
  */
 export type ResolvedValue = number | boolean | string | null | undefined | Reference | EnumValue |
-    ResolvedValueArray | ResolvedValueMap | ResolvedModule | BuiltinFn | DynamicValue<unknown>;
+    ResolvedValueArray | ResolvedValueMap | ResolvedModule | BuiltinFn | TsHelperFn |
+    DynamicValue<unknown>;
 
 /**
  * An array of `ResolvedValue`s.
@@ -79,3 +80,9 @@ export class EnumValue {
  * An implementation of a builtin function, such as `Array.prototype.slice`.
  */
 export abstract class BuiltinFn { abstract evaluate(args: ResolvedValueArray): ResolvedValue; }
+
+/**
+ * An implementation of a TypeScript helper function, sunc as `__spreadArrays()`, that can be
+ * evaluated statically.
+ */
+export abstract class TsHelperFn { abstract evaluate(args: ResolvedValueArray): ResolvedValue; }

@@ -317,28 +317,19 @@ export interface FunctionDefinition {
   body: ts.Statement[]|null;
 
   /**
-   * The type of tslib helper function, if the function is determined to represent a tslib helper
-   * function. Otherwise, this will be null.
-   */
-  helper: TsHelperFn|null;
-
-  /**
    * Metadata regarding the function's parameters, including possible default value expressions.
    */
   parameters: Parameter[];
 }
 
 /**
- * Possible functions from TypeScript's helper library.
+ * The different kinds of TypeScript helper functions (that can be statically evaluated).
  */
-export enum TsHelperFn {
-  /**
-   * Indicates the `__spread` function.
-   */
+export enum TsHelperFnKind {
+  /** Indicates the `__spread` function. */
   Spread,
-  /**
-   * Indicates the `__spreadArrays` function.
-   */
+
+  /** Indicates the `__spreadArrays` function. */
   SpreadArrays,
 }
 
@@ -646,4 +637,14 @@ export interface ReflectionHost {
    * have a different name than it does externally.
    */
   getAdjacentNameOfClass(clazz: ClassDeclaration): ts.Identifier;
+
+  /**
+   * Check whether the given `ts.Node` corresponds to a TypeScript helper function (such as
+   * `__spread()`) and return its kind.
+   *
+   * @param node a TypeScript `ts.Node` to check.
+   * @returns the kind of the TypeScript helper function (`TsHelperFnKind`), or `null` if the node
+   *     does not correspond to a supported helper kind.
+   */
+  getTsHelperFnKind(node: ts.Node): TsHelperFnKind|null;
 }

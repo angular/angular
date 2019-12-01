@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, TypeScriptReflectionHost, TypeValueReference, isDecoratorIdentifier, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, TsHelperFnKind, TypeScriptReflectionHost, TypeValueReference, isDecoratorIdentifier, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
@@ -427,6 +427,12 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
         }
       }
     }
+    return null;
+  }
+
+  getTsHelperFnKind(node: ts.Node): TsHelperFnKind|null {
+    // The kinds of helpers we are currently interested in are not emitted in ES2015 code, since
+    // they are natively supported.
     return null;
   }
 
@@ -1555,6 +1561,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
          !ts.isFunctionExpression(implementation))) {
       return null;
     }
+
     const declaration = implementation;
     const definition = this.getDefinitionOfFunction(declaration);
     if (definition === null) {
