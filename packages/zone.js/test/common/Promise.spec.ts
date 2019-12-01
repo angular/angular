@@ -103,11 +103,21 @@ describe(
         }).toThrowError('Must be an instanceof Promise.');
       });
 
-      xit('should allow subclassing', () => {
+      it('should allow subclassing with Promise.specices', () => {
         class MyPromise extends Promise<any> {
           constructor(fn: any) { super(fn); }
+
+          static get[Symbol.species]() { return MyPromise; }
         }
-        expect(new MyPromise(null).then(() => null) instanceof MyPromise).toBe(true);
+        expect(new MyPromise(() => {}).then(() => null) instanceof MyPromise).toBe(true);
+      });
+
+      it('Promise.specices should return ZoneAwarePromise', () => {
+        const empty = function() {};
+        const promise = Promise.resolve(1);
+        const FakePromise = ((promise.constructor = {} as any) as any)[Symbol.species] = function(
+            exec: any) { exec(empty, empty); };
+        expect(promise.then(empty) instanceof FakePromise).toBe(true);
       });
 
       it('should intercept scheduling of resolution and then', (done) => {
