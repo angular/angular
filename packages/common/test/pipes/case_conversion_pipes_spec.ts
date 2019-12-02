@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from '@angular/common';
+import {CamelCasePipe, LowerCasePipe, TitleCasePipe, UpperCasePipe} from '@angular/common';
+import {KebabCasePipe} from '@angular/common/src/pipes/case_conversion_pipes';
 
 {
   describe('LowerCasePipe', () => {
@@ -81,6 +82,46 @@ import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from '@angular/common';
       expect(pipe.transform('foo')).toEqual('FOO');
       expect(pipe.transform('bar')).toEqual('BAR');
     });
+
+    it('should not support other objects',
+       () => { expect(() => pipe.transform(<any>{})).toThrowError(); });
+  });
+
+  describe('CamelCasePipe', () => {
+    let pipe: CamelCasePipe;
+
+    beforeEach(() => { pipe = new CamelCasePipe(); });
+
+    it('should return camelcase', () => { expect(pipe.transform('foo bar')).toEqual('fooBar'); });
+
+    it('should camelcase when there is a new value',
+       () => { expect(pipe.transform('foo bar')).toEqual('fooBar'); });
+
+    it('should camelcase when there is a new value',
+       () => { expect(pipe.transform('foo-bar', '-')).toEqual('fooBar'); });
+
+    it('should camelcase when there is a new value',
+       () => { expect(pipe.transform('foo*bar', '*')).toEqual('fooBar'); });
+
+    it('should not support other objects',
+       () => { expect(() => pipe.transform(<any>{})).toThrowError(); });
+  });
+
+  describe('KebabCasePipe', () => {
+    let pipe: KebabCasePipe;
+
+    beforeEach(() => { pipe = new KebabCasePipe(); });
+
+    it('should return kebabCase', () => { expect(pipe.transform('foo bar')).toEqual('foo-bar'); });
+
+    it('should kebabCase when there is a new value',
+       () => { expect(pipe.transform('foo bar')).toEqual('foo-bar'); });
+
+    it('should kebabCase when there is a new value',
+       () => { expect(pipe.transform('FOO-BAR', '-')).toEqual('foo-bar'); });
+
+    it('should kebabCase when there is a new value',
+       () => { expect(pipe.transform('foo*bar', '*')).toEqual('foo-bar'); });
 
     it('should not support other objects',
        () => { expect(() => pipe.transform(<any>{})).toThrowError(); });

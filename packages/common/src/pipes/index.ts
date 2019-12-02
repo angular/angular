@@ -12,7 +12,7 @@
  * This module provides a set of common Pipes.
  */
 import {AsyncPipe} from './async_pipe';
-import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from './case_conversion_pipes';
+import {CamelCasePipe, KebabCasePipe, LowerCasePipe, TitleCasePipe, UpperCasePipe} from './case_conversion_pipes';
 import {DatePipe} from './date_pipe';
 import {I18nPluralPipe} from './i18n_plural_pipe';
 import {I18nSelectPipe} from './i18n_select_pipe';
@@ -36,6 +36,8 @@ export {
   SlicePipe,
   TitleCasePipe,
   UpperCasePipe,
+  CamelCasePipe,
+  KebabCasePipe,
 };
 
 
@@ -56,4 +58,6 @@ export const COMMON_PIPES = [
   I18nPluralPipe,
   I18nSelectPipe,
   KeyValuePipe,
+  CamelCasePipe,
+  KebabCasePipe,
 ];

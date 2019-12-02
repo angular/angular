@@ -10,6 +10,7 @@ import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {AsyncObservablePipeComponent, AsyncPromisePipeComponent} from './async_pipe';
+import {CamelKebabPipeComponent} from './camelkebab_pipe';
 import {CurrencyPipeComponent, DeprecatedCurrencyPipeComponent} from './currency_pipe';
 import {DatePipeComponent, DeprecatedDatePipeComponent} from './date_pipe';
 import {I18nPluralPipeComponent, I18nSelectPipeComponent} from './i18n_pipe';
@@ -57,6 +58,9 @@ import {TitleCasePipeComponent} from './titlecase_pipe';
 
     <h2><code>keyvalue</code></h2>
     <keyvalue-pipe></keyvalue-pipe>
+    
+    <h2><code>keyvalue</code></h2>
+    <camelkebab-pipe></camelkebab-pipe>
   `
 })
 export class AppComponent {
@@ -64,12 +68,26 @@ export class AppComponent {
 
 @NgModule({
   declarations: [
-    AsyncPromisePipeComponent, AsyncObservablePipeComponent, AppComponent, JsonPipeComponent,
-    DatePipeComponent, DeprecatedDatePipeComponent, LowerUpperPipeComponent, TitleCasePipeComponent,
-    NumberPipeComponent, DeprecatedNumberPipeComponent, PercentPipeComponent,
-    DeprecatedPercentPipeComponent, CurrencyPipeComponent, DeprecatedCurrencyPipeComponent,
-    SlicePipeStringComponent, SlicePipeListComponent, I18nPluralPipeComponent,
-    I18nSelectPipeComponent, KeyValuePipeComponent
+    AsyncPromisePipeComponent,
+    AsyncObservablePipeComponent,
+    AppComponent,
+    JsonPipeComponent,
+    DatePipeComponent,
+    DeprecatedDatePipeComponent,
+    LowerUpperPipeComponent,
+    TitleCasePipeComponent,
+    NumberPipeComponent,
+    DeprecatedNumberPipeComponent,
+    PercentPipeComponent,
+    DeprecatedPercentPipeComponent,
+    CurrencyPipeComponent,
+    DeprecatedCurrencyPipeComponent,
+    SlicePipeStringComponent,
+    SlicePipeListComponent,
+    I18nPluralPipeComponent,
+    I18nSelectPipeComponent,
+    KeyValuePipeComponent,
+    CamelKebabPipeComponent
   ],
   imports: [BrowserModule],
 })

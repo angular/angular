@@ -12,8 +12,10 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 /**
  * Transforms text to all lower case.
  *
- * @see `UpperCasePipe`
  * @see `TitleCasePipe`
+ * @see `CamelCasePipe`
+ * @see `UpperCasePipe`
+ * @see `KebabCasePipe`
  * @usageNotes
  *
  * The following example defines a view that allows the user to enter
@@ -57,7 +59,9 @@ const unicodeWordMatch =
  * Words are delimited by any whitespace character, such as a space, tab, or line-feed character.
  *
  * @see `LowerCasePipe`
+ * @see `CamelCasePipe`
  * @see `UpperCasePipe`
+ * @see `KebabCasePipe`
  *
  * @usageNotes
  * The following example shows the result of transforming various strings into title case.
@@ -87,7 +91,8 @@ export class TitleCasePipe implements PipeTransform {
  * Transforms text to all upper case.
  * @see `LowerCasePipe`
  * @see `TitleCasePipe`
- *
+ * @see `CamelCasePipe`
+ * @see `KebabCasePipe`
  * @ngModule CommonModule
  * @publicApi
  */
@@ -102,5 +107,82 @@ export class UpperCasePipe implements PipeTransform {
       throw invalidPipeArgumentError(UpperCasePipe, value);
     }
     return value.toUpperCase();
+  }
+}
+
+/**
+ * Transforms text to all camel case.
+ * 
+ * @see `LowerCasePipe`
+ * @see `TitleCasePipe`
+ * @see `UpperCasePipe`
+ * @see `KebabCasePipe`
+ * 
+ * 
+ * @usageNotes
+ * The following example shows the result of transforming various strings into kebab case.
+ *
+ * <code-example path="common/pipes/ts/camelkebab_pipe.ts" region='CamelKebabPipe'></code-example>
+ * 
+ * @ngModule CommonModule
+ * @publicApi
+ */
+
+@Pipe({name: 'camelcase'})
+export class CamelCasePipe implements PipeTransform {
+  /**
+   * @param value The string to transform to camelCase
+   * @param separator The char to split the words for camelCase. If no separator provided, by
+   * defualt space will be used to split the words.
+   *
+   */
+  transform(value: string, separator?: string): string {
+    if (!value) return value;
+    if (typeof value !== 'string') {
+      throw invalidPipeArgumentError(CamelCasePipe, value);
+    }
+    const words = value.split(separator ? separator : ' ');
+    const camelCaseWords = words.map((word, index) => {
+      return index === 0 ? word.toLowerCase() :
+                           word[0].toUpperCase() + word.substr(1).toLowerCase();
+    });
+    return camelCaseWords.join('');
+  }
+}
+
+/**
+ * Transforms text to all kebab-case.
+ *
+ * @see `LowerCasePipe`
+ * @see `TitleCasePipe`
+ * @see `UpperCasePipe`
+ * @see `CamelCasePipe`
+ * 
+ * 
+ * @usageNotes
+ * The following example shows the result of transforming various strings into kebab case.
+ *
+ * <code-example path="common/pipes/ts/camelkebab_pipe.ts" region='CamelKebabPipe'></code-example>
+ * 
+ * @ngModule CommonModule
+ * @publicApi
+ */
+
+@Pipe({name: 'kebabCase'})
+export class KebabCasePipe implements PipeTransform {
+  /**
+   * @param value The string to transform to kebab-case
+   * @param separator The char to split the words for kebabCase. If no separator provided, by
+   * defualt space will be used to split the words.
+   *
+   */
+  transform(value: string, separator?: string): string {
+    if (!value) return value;
+    if (typeof value !== 'string') {
+      throw invalidPipeArgumentError(KebabCasePipe, value);
+    }
+    const words = value.split(separator ? separator : ' ');
+    const lowerCaseWords = words.map((word) => word.toLowerCase());
+    return lowerCaseWords.join('-');
   }
 }

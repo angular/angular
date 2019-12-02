@@ -413,6 +413,14 @@ export declare class UpperCasePipe implements PipeTransform {
     transform(value: string): string;
 }
 
+export declare class CamelCasePipe implements PipeTransform {
+    transform(value: string): string;
+}
+
+export declare class KebabCasePipe implements PipeTransform {
+    transform(value: string): string;
+}
+
 export declare const VERSION: Version;
 
 export declare abstract class ViewportScroller {
