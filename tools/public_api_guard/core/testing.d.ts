@@ -134,7 +134,9 @@ export declare type TestModuleMetadata = {
     aotSummaries?: () => any[];
 };
 
-export declare function tick(millis?: number): void;
+export declare function tick(millis?: number, tickOptions?: {
+    processNewMacroTasksSynchronously: boolean;
+}): void;
 
 export declare function withModule(moduleDef: TestModuleMetadata): InjectSetupWrapper;
 export declare function withModule(moduleDef: TestModuleMetadata, fn: Function): () => any;

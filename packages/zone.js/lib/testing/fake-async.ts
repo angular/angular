@@ -117,7 +117,9 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
    *
    * @experimental
    */
-  function tick(millis: number = 0): void { _getFakeAsyncZoneSpec().tick(millis); }
+  function tick(millis: number = 0, ignoreNestedTimeout = false): void {
+    _getFakeAsyncZoneSpec().tick(millis, null, ignoreNestedTimeout);
+  }
 
   /**
    * Simulates the asynchronous passage of time for the timers in the fakeAsync zone by
