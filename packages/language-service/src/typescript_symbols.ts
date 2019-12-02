@@ -246,7 +246,13 @@ class TypeWrapper implements Symbol {
 
   get name(): string {
     const symbol = this.tsType.symbol;
-    return (symbol && symbol.name) || '<anonymous>';
+    if (symbol) {
+      return symbol.name;
+    } else {
+      // the js primitive type(e.g. 'string') doesn't have Symbol.
+      // use the ts.TypeChecker to get the type name.
+      return this.context.checker.typeToString(this.tsType);
+    }
   }
 
   public readonly kind: DeclarationKind = 'type';
