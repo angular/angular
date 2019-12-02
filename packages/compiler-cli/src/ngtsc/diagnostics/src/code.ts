@@ -39,6 +39,7 @@ export enum ErrorCode {
   SYMBOL_EXPORTED_UNDER_DIFFERENT_NAME = 3002,
 
   CONFIG_FLAT_MODULE_NO_INDEX = 4001,
+  CONFIG_STRICT_TEMPLATES_IMPLIES_FULL_TEMPLATE_TYPECHECK = 4002,
 
   /**
    * Raised when a host expression has a parse error, such as a host listener or host binding

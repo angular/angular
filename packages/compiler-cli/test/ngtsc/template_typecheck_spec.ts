@@ -1552,6 +1552,41 @@ export declare class AnimationEvent {
         });
       });
     });
+
+    describe('option compatibility verification', () => {
+      beforeEach(() => env.write('index.ts', `export const a = 1;`));
+
+      it('should error if "fullTemplateTypeCheck" is false when "strictTemplates" is true', () => {
+        env.tsconfig({fullTemplateTypeCheck: false, strictTemplates: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain(
+                'Angular compiler option "strictTemplates" is enabled, however "fullTemplateTypeCheck" is disabled.');
+      });
+      it('should not error if "fullTemplateTypeCheck" is false when "strictTemplates" is false',
+         () => {
+           env.tsconfig({fullTemplateTypeCheck: false, strictTemplates: false});
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+      it('should not error if "fullTemplateTypeCheck" is not set when "strictTemplates" is true',
+         () => {
+           env.tsconfig({strictTemplates: true});
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+      it('should not error if "fullTemplateTypeCheck" is true set when "strictTemplates" is true',
+         () => {
+           env.tsconfig({strictTemplates: true});
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+    });
   });
 });
 
