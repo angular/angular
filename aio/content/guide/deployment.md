@@ -487,21 +487,23 @@ Differential loading is a strategy that allows your web application to support m
 
 ### Differential builds
 
-When you deploy using the Angular CLI build process, you can choose to how and when to support differential loading.
+When you deploy using the Angular CLI build process, you can choose how and when to support differential loading.
 The [`ng build`](cli/build) command queries the browser configuration and the build `target` to determine if support for legacy browsers is required, and whether the build should produce the necessary bundles used for differential loading.
 
 The following configurations to determine your requirements.
 
 * Browsers list
+
    The `browserslist` configuration file is included in your application [project structure](guide/file-structure#application-configuration-files) and provides the minimum browsers your application supports. See the [Browserslist spec](https://github.com/browserslist/browserslist) for complete configuration options.
 
 * TypeScript configuration
-   In the TypeScript configuration file, `tsconfig.json`, the `target` in the `compilerOptions` section determines the ECMAScript target version that the code is compiled to.
+
+   In the TypeScript configuration file, `tsconfig.json`, the "target" option in the `compilerOptions` section determines the ECMAScript target version that the code is compiled to.
    Modern browsers support ES2015 natively, while ES5 is more commonly used to support legacy browsers.
 
 <div class="alert is-helpful">
 
-   Differential loading is currently only supported when using `es2015` as a compilation `target`. When used with targets higher than `es2015`, the build process emits a warning.
+   Differential loading is currently only supported when using `es2015` as a compilation target. When used with targets higher than `es2015`, the build process emits a warning.
 
 </div>
 
@@ -586,7 +588,7 @@ The default configuration creates two builds, with differential loading enabled.
 
 The `browserslist` configuration allows you to ignore browsers without ES2015 support. In this case, a single build is produced.
 
-If you `browserslist` configuration includes support for any browsers without ES2015 support, the build `target` in the TypeScript configuration determines whether the build will support differential loading.
+If your `browserslist` configuration includes support for any legacy browsers, the build target in the TypeScript configuration determines whether the build will support differential loading.
 
 {@a configuration-table }
 
@@ -603,8 +605,8 @@ Differential loading can be explicitly disabled if it causes unexpected issues, 
 
 To explicitly disable differential loading and create an ES5 build:
 
-- Enable the `dead` or `IE` browsers in the `browserslist` config file by removing the `not` keyword in front of them.
-- Set the `target` in the `compilerOptions` to `es5`.
+- Enable the `dead` or `IE` browsers in the `browserslist` configuration file by removing the `not` keyword in front of them.
+- To create a single ES5 build, set the target in the `compilerOptions` to `es5`.
 
 {@a test-and-serve}
 
