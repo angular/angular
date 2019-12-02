@@ -841,6 +841,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   visitTemplate(template: t.Template) {
     const NG_TEMPLATE_TAG_NAME = 'ng-template';
     const templateIndex = this.allocateDataSlot();
+    let ngProjectAsAttr: t.TextAttribute|undefined;
 
     if (this.i18n) {
       this.i18n.appendTemplate(template.i18n !, templateIndex);
@@ -864,10 +865,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // prepare attributes parameter (including attributes used for directive matching)
     const attrsExprs: o.Expression[] = [];
-    template.attributes.forEach(
-        (a: t.TextAttribute) => { attrsExprs.push(asLiteral(a.name), asLiteral(a.value)); });
+    template.attributes.forEach((attr: t.TextAttribute) => {
+      if (attr.name === NG_PROJECT_AS_ATTR_NAME) {
+        ngProjectAsAttr = attr;
+      }
+      attrsExprs.push(asLiteral(attr.name), asLiteral(attr.value));
+    });
     attrsExprs.push(...this.prepareNonRenderAttrs(
-        template.inputs, template.outputs, undefined, template.templateAttrs));
+        template.inputs, template.outputs, undefined, template.templateAttrs, undefined,
+        ngProjectAsAttr));
     parameters.push(this.addAttrsToConsts(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)

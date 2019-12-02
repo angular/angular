@@ -1510,6 +1510,51 @@ describe('compiler compliance', () => {
             result.source, SimpleComponentDefinition, 'Incorrect SimpleComponent definition');
       });
 
+      it('should include parsed ngProjectAs selectors into template attrs', () => {
+        const files = {
+          app: {
+            'spec.ts': `
+              import {Component} from '@angular/core';
+
+              @Component({
+                selector: 'my-app',
+                template: '<div *ngIf="show" ngProjectAs=".someclass"></div>'
+              })
+              export class MyApp {
+                show = true;
+              }
+            `
+          }
+        };
+
+        const SimpleComponentDefinition = `
+          MyApp.ɵcmp = i0.ɵɵdefineComponent({
+            type: MyApp,
+            selectors: [
+                ["my-app"]
+            ],
+            decls: 1,
+            vars: 1,
+            consts: [
+                ["ngProjectAs", ".someclass", ${AttributeMarker.Template}, "ngIf", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"]],
+                ["ngProjectAs", ".someclass", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"]]
+            ],
+            template: function MyApp_Template(rf, ctx) {
+                if (rf & 1) {
+                    i0.ɵɵtemplate(0, MyApp_div_0_Template, 1, 0, "div", 0);
+                }
+                if (rf & 2) {
+                    i0.ɵɵproperty("ngIf", ctx.show);
+                }
+            },
+            encapsulation: 2
+          });
+        `;
+
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, SimpleComponentDefinition, 'Incorrect MyApp definition');
+      });
+
     });
 
     describe('queries', () => {
