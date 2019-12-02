@@ -1362,6 +1362,55 @@ export declare class AnimationEvent {
         const diags = env.driveDiagnostics();
         expect(diags).toEqual([]);
       });
+
+      it('should allow HTML elements inside SVG foreignObject', () => {
+        env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: \`
+            <svg>
+              <svg:foreignObject>
+                <xhtml:div>Hello</xhtml:div>
+              </svg:foreignObject>
+            </svg>
+          \`,
+        })
+        export class FooCmp {}
+        @NgModule({
+          declarations: [FooCmp],
+        })
+        export class FooModule {}
+      `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should check for unknown elements inside an SVG foreignObject', () => {
+        env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: \`
+            <svg>
+              <svg:foreignObject>
+                <xhtml:foo>Hello</xhtml:foo>
+              </svg:foreignObject>
+            </svg>
+          \`,
+        })
+        export class FooCmp {}
+        @NgModule({
+          declarations: [FooCmp],
+        })
+        export class FooModule {}
+      `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(`'foo' is not a known element:
+1. If 'foo' is an Angular component, then verify that it is part of this module.
+2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
+      });
     });
 
     // Test both sync and async compilations, see https://github.com/angular/angular/issues/32538
