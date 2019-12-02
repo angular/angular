@@ -583,10 +583,10 @@ Compare to [NgModule](#ngmodule).
 
 {@a ngcc}
 
-## ngcc (Angular Compatability Compiler)
+## ngcc
 
-The CLI automatically runs the `ngcc` process to compile all your libraries with [Ivy](#ivy).
-If your app uses Ivy, but depends on libraries that don't use Ivy, `ngcc` automatically updates the dependent libraries to use Ivy when you compile your app.
+Angular compatability compiler.
+If you build your app using [Ivy](#ivy), but it depends on libraries have not been compiled with Ivy, the CLI uses `ngcc` to automatically update the dependent libraries to use Ivy.
 
 
 {@a ngmodule}

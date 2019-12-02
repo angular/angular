@@ -468,7 +468,6 @@
 # ================================================
 
 /packages/compiler-cli/ngcc/**                                  @angular/fw-ngcc @angular/framework-global-approvers
-/aio/content/guide/ngcc.md                                      @angular/fw-ngcc @angular/framework-global-approvers
 
 
 
