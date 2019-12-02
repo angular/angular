@@ -180,6 +180,14 @@ describe('diagnostics', () => {
         expect(diags[0].messageText)
             .toBe(`Identifier 'badProperty' is not defined. 'Hero' does not contain such a member`);
       });
+
+      it('should not produce errors with dot notation if stringIndexType is js primitive type',
+         () => {
+           mockHost.override(TEST_TEMPLATE, `
+        {{primitiveType.test}}`);
+           const diags = ngLS.getDiagnostics(TEST_TEMPLATE);
+           expect(diags.length).toBe(0);
+         });
     });
   });
 

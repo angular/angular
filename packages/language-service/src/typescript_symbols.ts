@@ -308,6 +308,10 @@ class TypeWrapper implements Symbol {
   }
 }
 
+class StringIndexTypeWrappr extends TypeWrapper {
+  public readonly type = new TypeWrapper(this.tsType, this.context);
+}
+
 class SymbolWrapper implements Symbol {
   private symbol: ts.Symbol;
   private _members?: SymbolTable;
@@ -506,10 +510,11 @@ class SymbolTableWrapper implements SymbolTable {
       //   obj.stringIndex // equivalent to obj['stringIndex'];
       //
       // In this case, return the type indexed by an arbitrary string key.
-      const symbol = this.stringIndexType.getSymbol();
-      if (symbol) {
-        return new SymbolWrapper(symbol, this.context, this.stringIndexType);
-      }
+
+      // if stringIndexType is js primitive type(e.g. 'string'), the Symbol is undefined;
+      // and In AstType.resolvePropertyRead method, the Symbol.type should get the right type.
+      // so I add a new Symbol type, 'StringIndexTypeWrappr'
+      return new StringIndexTypeWrappr(this.stringIndexType, this.context);
     }
 
     return undefined;
