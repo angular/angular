@@ -1165,6 +1165,53 @@ describe('projection', () => {
       expect(fixture.nativeElement).toHaveText('inline()ng-template(onetwothree)');
     });
 
+    it('should project template content with `ngProjectAs` defined', () => {
+      @Component({
+        selector: 'projector-app',
+        template: `
+          Projected
+          <ng-content select="foo"></ng-content>
+          <ng-content select="[foo]"></ng-content>
+          <ng-content select=".foo"></ng-content>
+        `,
+      })
+      class ProjectorApp {
+      }
+
+      @Component({
+        selector: 'root-comp',
+        template: `
+          <projector-app>
+            <div *ngIf="show" ngProjectAs="foo">as element</div>
+            <div *ngIf="show" ngProjectAs="[foo]">as attribute</div>
+            <div *ngIf="show" ngProjectAs=".foo">as class</div>
+          </projector-app>
+        `,
+      })
+      class RootComp {
+        show = true;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [ProjectorApp, RootComp],
+      });
+      const fixture = TestBed.createComponent(RootComp);
+      fixture.detectChanges();
+
+      let content = fixture.nativeElement.textContent;
+      expect(content).toContain('as element');
+      expect(content).toContain('as attribute');
+      expect(content).toContain('as class');
+
+      fixture.componentInstance.show = false;
+      fixture.detectChanges();
+
+      content = fixture.nativeElement.textContent;
+      expect(content).not.toContain('as element');
+      expect(content).not.toContain('as attribute');
+      expect(content).not.toContain('as class');
+    });
+
     describe('on containers', () => {
       it('should work when matching attributes', () => {
         let xDirectives = 0;
