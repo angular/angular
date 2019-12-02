@@ -1,4 +1,4 @@
-# AoT metadata errors
+# AOT metadata errors
 
 The following are metadata errors you may encounter, with explanations and suggested corrections.
 

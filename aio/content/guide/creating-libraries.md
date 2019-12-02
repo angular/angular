@@ -1,4 +1,4 @@
-﻿# Creating Libraries
+﻿# Creating libraries
 
 You can create and publish new libraries to extend Angular functionality. If you find that you need to solve the same problem in more than one app (or want to share your solution with other developers), you have a candidate for a library.
 

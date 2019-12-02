@@ -39,7 +39,7 @@ When using application internationalization (i18n) with Ivy, [translation mergin
 
 Ivy applications can be built with libraries that were created with the View Engine compiler.
 This compatibility is provided by a tool known as the Angular compatibility compiler (`ngcc`).
-CLI commands run `ngcc` as needed performing an Angular build.
+CLI commands run `ngcc` as needed when performing an Angular build.
 
 {@a speeding-up-ngcc-compilation}
 ### Speeding up ngcc compilation
@@ -142,7 +142,7 @@ To revert the compiler default, set the build option `aot: false` in the `angula
 
 If you disable Ivy and the project uses internationalization, you can also remove the `@angular/localize` runtime component from the project's polyfills file located be default at `src/polyfills.ts`.
 
-To remove, delete the `import '@angular/localize/init';` line from the polyfills file. 
+To remove, delete the `import '@angular/localize/init';` line from the polyfills file.
 
 <code-example language="typescript" header="polyfills.ts">
 /***************************************************************************************************

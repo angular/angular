@@ -1,4 +1,4 @@
-# Template Syntax
+# Template syntax
 
 <style>
   h4 {font-size: 17px !important; text-transform: none !important;}

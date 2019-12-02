@@ -1,4 +1,4 @@
-# Feature Modules
+# Feature modules
 
 Feature modules are NgModules for the purpose of organizing code.
 

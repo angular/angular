@@ -1,4 +1,4 @@
-# Ivy Compatibility Guide
+# Ivy compatibility guide
 
 The Angular team has worked hard to ensure Ivy is as backwards-compatible with the previous rendering engine ("View Engine") as possible.
 However, in rare cases, minor changes were necessary to ensure that the Angular's behavior was predictable and consistent, correcting issues in the View Engine implementation.
@@ -6,7 +6,7 @@ In order to smooth the transition, we have provided [automated migrations](guide
 That said, some applications will likely need to apply some manual updates.
 
 {@a debugging}
-## How to Debug Errors with Ivy
+## How to debug errors with Ivy
 
 In version 9, [a few deprecated APIs have been removed](guide/updating-to-version-9#removals) and there are a [few breaking changes](guide/updating-to-version-9#breaking-changes) unrelated to Ivy.
 If you're seeing errors after updating to version 9, you'll first want to rule those changes out.
@@ -19,16 +19,16 @@ If the errors are gone, switch back to Ivy by removing the changes to the `tscon
 
 
 {@a common-changes}
-### Changes You May See
+### Changes you may see
 
-* By default, `@ContentChildren` queries will only search direct child nodes in the DOM hierarchy (previously, they would search any nesting level in the DOM as long as another directive wasn't matched above it). [details](guide/ivy-compatibility-examples#content-children-descendants)
+* By default, `@ContentChildren` queries will only search direct child nodes in the DOM hierarchy (previously, they would search any nesting level in the DOM as long as another directive wasn't matched above it). See further [details](guide/ivy-compatibility-examples#content-children-descendants).
 
-* All classes that use Angular DI must have an Angular decorator like `@Directive()` or `@Injectable` (previously, undecorated classes were allowed in AOT mode only or if injection flags were used). [details](guide/ivy-compatibility-examples#undecorated-classes)
+* All classes that use Angular DI must have an Angular decorator like `@Directive()` or `@Injectable` (previously, undecorated classes were allowed in AOT mode only or if injection flags were used). See further [details](guide/ivy-compatibility-examples#undecorated-classes).
 
 * Unbound inputs for directives (e.g. name in `<my-comp name="">`) are now set upon creation of the view, before change detection runs (previously, all inputs were set during change detection).
 
 {@a less-common-changes}
-### Less Common Changes
+### Less common changes
 
 * Properties like `host` inside `@Component` and `@Directive` decorators can be inherited (previously, only properties with explicit field decorators like `@HostBinding` would be inherited).
 

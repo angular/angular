@@ -1,4 +1,4 @@
-# Dependency Injection in Action
+# Dependency injection in action
 
 This section explores many of the features of dependency injection (DI) in Angular.
 {@a toc}

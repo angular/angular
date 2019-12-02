@@ -1,4 +1,4 @@
-# Lazy Loading Feature Modules
+# Lazy-loading feature modules
 
 ## High level view
 

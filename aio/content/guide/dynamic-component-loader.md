@@ -1,4 +1,4 @@
-# Dynamic Component Loader
+# Dynamic component loader
 
 Component templates are not always fixed. An application may need to load new components at runtime.
 

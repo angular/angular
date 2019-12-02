@@ -1,4 +1,4 @@
-# Angular Elements Overview
+# Angular elements overview
 
 _Angular elements_ are Angular components packaged as _custom elements_ (also called Web Components), a web standard for defining new HTML elements in a framework-agnostic way.
 

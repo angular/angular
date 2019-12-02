@@ -1,4 +1,4 @@
-# Server-side Rendering (SSR): An intro to Angular Universal
+# Server-side rendering (SSR) with Angular Universal
 
 This guide describes **Angular Universal**, a technology that renders Angular applications on the server.
 

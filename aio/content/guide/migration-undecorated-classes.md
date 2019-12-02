@@ -1,4 +1,4 @@
-# Missing `@Directive()`/`@Component()` Decorator Migration
+# Missing `@Directive()`/`@Component()` decorator migration
 
 ## What does this migration do?
 
@@ -185,4 +185,4 @@ You can either add `@Directive()` with a selector or move the Angular-specific f
 
 ## What about applications using non-migrated libraries?
 
-`ngcc` should transform any non-migrated libraries to generate the proper code.
+The [Angular compatibility compiler](guide/glossary#ngcc) (`ngcc`) should automatically transform any non-migrated libraries to generate the proper code.
