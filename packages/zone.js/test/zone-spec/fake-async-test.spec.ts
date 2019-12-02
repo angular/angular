@@ -145,6 +145,22 @@ describe('FakeAsyncTestZoneSpec', () => {
          });
        }));
 
+    it('should not queue new macro task on tick with processNewMacroTasksSynchronously=false',
+       () => {
+         function nestedTimer(callback: () => any): void {
+           setTimeout(() => setTimeout(() => callback()));
+         }
+         fakeAsyncTestZone.run(() => {
+           const callback = jasmine.createSpy('callback');
+           nestedTimer(callback);
+           expect(callback).not.toHaveBeenCalled();
+           testZoneSpec.tick(0, null, {processNewMacroTasksSynchronously: false});
+           expect(callback).not.toHaveBeenCalled();
+           testZoneSpec.flush();
+           expect(callback).toHaveBeenCalled();
+         });
+       });
+
     it('should run queued timer after sufficient clock ticks', () => {
       fakeAsyncTestZone.run(() => {
         let ran = false;

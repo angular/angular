@@ -1266,7 +1266,8 @@ You do have to call [tick()](api/core/testing/tick) to advance the (virtual) clo
 Calling [tick()](api/core/testing/tick) simulates the passage of time until all pending asynchronous activities finish.
 In this case, it waits for the error handler's `setTimeout()`.
 
-The [tick()](api/core/testing/tick) function accepts milliseconds as a parameter (defaults to 0 if not provided). The parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback.
+The [tick()](api/core/testing/tick) function accepts milliseconds and tickOptions as parameters, the millisecond (defaults to 0 if not provided) parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback. The tickOptions is an optional parameter with a property called processNewMacroTasksSynchronously (defaults is true) represents whether to invoke
+new generated macro tasks when ticking.
 
 <code-example
   path="testing/src/app/demo/async-helper.spec.ts"
@@ -1275,6 +1276,22 @@ The [tick()](api/core/testing/tick) function accepts milliseconds as a parameter
 
 The [tick()](api/core/testing/tick) function is one of the Angular testing utilities that you import with `TestBed`.
 It's a companion to `fakeAsync()` and you can only call it within a `fakeAsync()` body.
+
+#### tickOptions
+
+<code-example
+  path="testing/src/app/demo/async-helper.spec.ts"
+  region="fake-async-test-tick-new-macro-task-sync">
+</code-example>
+
+In this example, we have a new macro task (nested setTimeout), by default, when we `tick`, the setTimeout `outside` and `nested` will both be triggered.
+
+<code-example
+  path="testing/src/app/demo/async-helper.spec.ts"
+  region="fake-async-test-tick-new-macro-task-async">
+</code-example>
+
+And in some case, we don't want to trigger the new maco task when ticking, we can use `tick(milliseconds, {processNewMacroTasksSynchronously: false})` to not invoke new maco task.
 
 #### Comparing dates inside fakeAsync()
 
