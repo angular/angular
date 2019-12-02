@@ -408,7 +408,7 @@ function createViewRef(tNode: TNode, lView: LView, isPipe: boolean): ViewEngine_
     return new ViewRef(componentView, componentView);
   } else if (
       tNode.type === TNodeType.Element || tNode.type === TNodeType.Container ||
-      tNode.type === TNodeType.ElementContainer) {
+      tNode.type === TNodeType.ElementContainer || tNode.type === TNodeType.IcuContainer) {
     // The LView represents the location where the injection is requested from.
     // We need to locate the containing LView (in case where the `lView` is an embedded view)
     const hostComponentView = lView[DECLARATION_COMPONENT_VIEW];  // look up
