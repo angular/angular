@@ -46,7 +46,7 @@ The following still have type `any`.
 ### Strict mode
 
 Angular version 9 maintains the behavior of the `fullTemplateTypeCheck` flag, and introduces a third "strict mode".
-Strict mode is accessed by setting both `fullTemplateTypeCheck` and the `strictTemplates` flag to `true`.
+Strict mode is a superset of full mode, and is accessed by setting the `strictTemplates` flag to true. This flag supersedes the `fullTemplateTypeCheck` flag.
 In strict mode, Angular version 9 adds checks that go beyond the version 8 type-checker.
 Note that strict mode is only available if using Ivy.
 
