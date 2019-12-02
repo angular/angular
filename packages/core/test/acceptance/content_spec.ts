@@ -1165,6 +1165,77 @@ describe('projection', () => {
       expect(fixture.nativeElement).toHaveText('inline()ng-template(onetwothree)');
     });
 
+    it('should project template content with `ngProjectAs` defined', () => {
+      @Component({
+        selector: 'projector-app',
+        template: `
+            App selector: <ng-content select="app-selector"></ng-content>
+            Attribute-based: <ng-content select="[foo]"></ng-content>
+            Class-based: <ng-content select=".bar"></ng-content>
+            Other: <ng-content></ng-content>
+          `,
+      })
+      class ProjectorApp {
+      }
+
+      @Component({
+        selector: 'app-selector',
+        template: ' App {{ marker }} ',
+      })
+      class ChildApp {
+        @Input() marker: string = '';
+      }
+
+      @Component({
+        selector: 'root-comp',
+        template: `
+          <projector-app>
+            <div>Text content with no selectors</div>
+
+            <div *ngIf="show" foo> Attr A </div>
+            <ng-container *ngIf="show" ngProjectAs="[foo]">
+              <div foo> Attr B </div>
+            </ng-container>
+
+            <div *ngIf="show" class="bar"> Class A </div>
+            <ng-container *ngIf="show" ngProjectAs=".bar">
+              <div class="bar"> Class B </div>
+            </ng-container>
+
+            <app-selector *ngIf="show" marker="A"></app-selector>
+            <ng-container *ngIf="show" ngProjectAs="app-selector">
+              <app-selector marker="B"></app-selector>
+            </ng-container>
+
+          </projector-app>
+        `,
+      })
+      class RootComp {
+        show = true;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [ChildApp, ProjectorApp, RootComp],
+      });
+      const fixture = TestBed.createComponent(RootComp);
+      fixture.detectChanges();
+
+      let content = fixture.nativeElement.textContent;
+      expect(content).toContain('App selector:  App A  App B');
+      expect(content).toContain('Attribute-based:  Attr A  Attr B');
+      expect(content).toContain('Class-based:  Class A  Class B');
+      expect(content).toContain('Other: Text content with no selectors');
+
+      fixture.componentInstance.show = false;
+      fixture.detectChanges();
+
+      content = fixture.nativeElement.textContent;
+      expect(content).not.toContain('App selector:  App A  App B');
+      expect(content).not.toContain('Attribute-based:  Attr A  Attr B');
+      expect(content).not.toContain('Class-based:  Class A  Class B');
+      expect(content).toContain('Other: Text content with no selectors');
+    });
+
     describe('on containers', () => {
       it('should work when matching attributes', () => {
         let xDirectives = 0;
