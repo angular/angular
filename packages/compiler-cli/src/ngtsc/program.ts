@@ -82,6 +82,11 @@ export class NgtscProgram implements api.Program {
       verifySupportedTypeScriptVersion();
     }
 
+    const incompatibleTypeCheckOptionsDiagnostic = verifyCompatibleTypeCheckOptions(options);
+    if (incompatibleTypeCheckOptionsDiagnostic !== null) {
+      this.constructionDiagnostics.push(incompatibleTypeCheckOptionsDiagnostic);
+    }
+
     if (shouldEnablePerfTracing(options)) {
       this.perfTracker = PerfTracker.zeroedToNow();
       this.perfRecorder = this.perfTracker;
@@ -827,6 +832,37 @@ function isAngularCorePackage(program: ts.Program): boolean {
       return true;
     });
   });
+}
+
+/**
+ * Since "strictTemplates" is a true superset of type checking capabilities compared to
+ * "strictTemplateTypeCheck", it is required that the latter is not explicitly disabled if the
+ * former is enabled.
+ */
+function verifyCompatibleTypeCheckOptions(options: api.CompilerOptions): ts.Diagnostic|null {
+  if (options.fullTemplateTypeCheck === false && options.strictTemplates === true) {
+    return {
+      category: ts.DiagnosticCategory.Error,
+      code: ngErrorCode(ErrorCode.CONFIG_STRICT_TEMPLATES_IMPLIES_FULL_TEMPLATE_TYPECHECK),
+      file: undefined,
+      start: undefined,
+      length: undefined,
+      messageText:
+          `Angular compiler option "strictTemplates" is enabled, however "fullTemplateTypeCheck" is disabled.
+
+Having the "strictTemplates" flag enabled implies that "fullTemplateTypeCheck" is also enabled, so
+the latter can not be explicitly disabled.
+
+One of the following actions is required:
+1. Remove the "fullTemplateTypeCheck" option.
+2. Remove "strictTemplates" or set it to 'false'.
+
+More information about the template type checking compiler options can be found in the documentation:
+https://v9.angular.io/guide/template-typecheck#template-type-checking`,
+    };
+  }
+
+  return null;
 }
 
 export class ReferenceGraphAdapter implements ReferencesRegistry {
