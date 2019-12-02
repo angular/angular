@@ -14,6 +14,7 @@ import {ErrorCode} from '../../diagnostics';
 import {TcbSourceResolver, makeTemplateDiagnostic} from './diagnostics';
 
 const REGISTRY = new DomElementSchemaRegistry();
+const REMOVE_XHTML_REGEX = /^:xhtml:/;
 
 /**
  * Checks every non-Angular element/property processed in a template and potentially produces
@@ -69,15 +70,20 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
   constructor(private resolver: TcbSourceResolver) {}
 
   checkElement(id: string, element: TmplAstElement, schemas: SchemaMetadata[]): void {
-    if (!REGISTRY.hasElement(element.name, schemas)) {
+    // HTML elements inside an SVG `foreignObject` are declared in the `xhtml` namespace.
+    // We need to strip it before handing it over to the registry because all HTML tag names
+    // in the registry are without a namespace.
+    const name = element.name.replace(REMOVE_XHTML_REGEX, '');
+
+    if (!REGISTRY.hasElement(name, schemas)) {
       const mapping = this.resolver.getSourceMapping(id);
 
-      let errorMsg = `'${element.name}' is not a known element:\n`;
+      let errorMsg = `'${name}' is not a known element:\n`;
       errorMsg +=
-          `1. If '${element.name}' is an Angular component, then verify that it is part of this module.\n`;
-      if (element.name.indexOf('-') > -1) {
+          `1. If '${name}' is an Angular component, then verify that it is part of this module.\n`;
+      if (name.indexOf('-') > -1) {
         errorMsg +=
-            `2. If '${element.name}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
+            `2. If '${name}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
       } else {
         errorMsg +=
             `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;

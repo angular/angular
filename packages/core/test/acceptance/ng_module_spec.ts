@@ -311,5 +311,30 @@ describe('NgModule', () => {
       }).not.toThrow();
     });
 
+    it('should not throw for HTML elements inside an SVG foreignObject', () => {
+      @Component({
+        template: `
+          <svg>
+            <svg:foreignObject>
+              <xhtml:div>Hello</xhtml:div>
+            </svg:foreignObject>
+          </svg>
+        `,
+      })
+      class MyComp {
+      }
+
+      @NgModule({declarations: [MyComp]})
+      class MyModule {
+      }
+
+      TestBed.configureTestingModule({imports: [MyModule]});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
+
   });
 });
