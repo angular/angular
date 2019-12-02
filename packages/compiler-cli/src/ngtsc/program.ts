@@ -462,9 +462,15 @@ export class NgtscProgram implements api.Program {
   }
 
   private getTemplateDiagnostics(): ReadonlyArray<ts.Diagnostic> {
+    // Determine the strictness level of type checking based on compiler options. As
+    // `strictTemplates` is a superset of `fullTemplateTypeCheck`, the former implies the latter.
+    // Also see `verifyCompatibleTypeCheckOptions` where it is verified that `fullTemplateTypeCheck`
+    // is not disabled when `strictTemplates` is enabled.
+    const strictTemplates = !!this.options.strictTemplates;
+    const fullTemplateTypeCheck = strictTemplates || !!this.options.fullTemplateTypeCheck;
+
     // Skip template type-checking if it's disabled.
-    if (this.options.ivyTemplateTypeCheck === false &&
-        this.options.fullTemplateTypeCheck !== true) {
+    if (this.options.ivyTemplateTypeCheck === false && !fullTemplateTypeCheck) {
       return [];
     }
 
@@ -475,8 +481,7 @@ export class NgtscProgram implements api.Program {
     // First select a type-checking configuration, based on whether full template type-checking is
     // requested.
     let typeCheckingConfig: TypeCheckingConfig;
-    if (this.options.fullTemplateTypeCheck) {
-      const strictTemplates = !!this.options.strictTemplates;
+    if (fullTemplateTypeCheck) {
       typeCheckingConfig = {
         applyTemplateContextGuards: strictTemplates,
         checkQueries: false,
