@@ -1,4 +1,4 @@
-# Routing & Navigation
+# Routing and navigation
 
 The Angular **`Router`** enables navigation from one [view](guide/glossary#view) to the next
 as users perform application tasks.

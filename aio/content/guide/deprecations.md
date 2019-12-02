@@ -1,4 +1,4 @@
-# Deprecated APIs and Features
+# Deprecated APIs and features
 
 Angular strives to balance innovation and stability.
 Sometimes, APIs and features become obsolete and need to be removed or replaced so that Angular can stay current with new best practices, changing dependencies, or changes in the (web) platform itself.

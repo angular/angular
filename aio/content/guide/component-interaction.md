@@ -1,4 +1,4 @@
-# Component Interaction
+# Component interaction
 
 {@a top}
 

@@ -1,4 +1,4 @@
-# Sharing Modules
+# Sharing modules
 
 Creating shared modules allows you to organize and streamline your code. You can put commonly
 used directives, pipes, and components into one module and then import just that module wherever
