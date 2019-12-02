@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, ContentChild, ContentChildren, Directive, ElementRef, Input, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, forwardRef} from '@angular/core';
+import {AfterViewInit, Component, ContentChild, ContentChildren, Directive, ElementRef, Input, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, ViewRef, forwardRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -749,11 +749,13 @@ describe('query logic', () => {
       class ViewContainerManipulatorDirective {
         constructor(private _vcRef: ViewContainerRef) {}
 
-        insertTpl(tpl: TemplateRef<{}>, ctx: {}, idx?: number) {
-          this._vcRef.createEmbeddedView(tpl, ctx, idx);
+        insertTpl(tpl: TemplateRef<{}>, ctx: {}, idx?: number): ViewRef {
+          return this._vcRef.createEmbeddedView(tpl, ctx, idx);
         }
 
         remove(index?: number) { this._vcRef.remove(index); }
+
+        move(viewRef: ViewRef, index: number) { this._vcRef.move(viewRef, index); }
       }
 
       it('should report results in views inserted / removed by ngIf', () => {
@@ -821,6 +823,59 @@ describe('query logic', () => {
         expect(queryList.first.nativeElement.id).toBe('a');
         expect(queryList.last.nativeElement.id).toBe('c');
       });
+
+      /**
+       * ViewContainerRef API allows "moving" a view to the same (previous) index. Such operation
+       * has no observable effect on the rendered UI (displays stays the same) but internally we've
+       * got 2 implementation choices when it comes to "moving" a view:
+       * - systematically detach and insert a view - this would result in unnecessary processing
+       * when the previous and new indexes for the move operation are the same;
+       * - detect the situation where the indexes are the same and do no processing in such case.
+       *
+       * This tests asserts on the implementation choices done by the VE (detach and insert) so we
+       * can replicate the same behaviour in ivy.
+       */
+      it('should notify on changes when a given view is removed and re-inserted at the same index',
+         () => {
+
+           @Component({
+             selector: 'test-comp',
+             template: `
+              <ng-template #tpl><div #foo>match</div></ng-template>
+              <ng-template vc></ng-template>
+            `,
+           })
+           class TestComponent implements AfterViewInit {
+             queryListNotificationCounter = 0;
+
+             @ViewChild(ViewContainerManipulatorDirective)
+             vc !: ViewContainerManipulatorDirective;
+             @ViewChild('tpl') tpl !: TemplateRef<any>;
+             @ViewChildren('foo') query !: QueryList<any>;
+
+             ngAfterViewInit() {
+               this.query.changes.subscribe(() => this.queryListNotificationCounter++);
+             }
+           }
+
+           TestBed.configureTestingModule(
+               {declarations: [ViewContainerManipulatorDirective, TestComponent]});
+           const fixture = TestBed.createComponent(TestComponent);
+           fixture.detectChanges();
+
+           const queryList = fixture.componentInstance.query;
+           const {tpl, vc} = fixture.componentInstance;
+
+           const viewRef = vc.insertTpl(tpl, {}, 0);
+           fixture.detectChanges();
+           expect(queryList.length).toBe(1);
+           expect(fixture.componentInstance.queryListNotificationCounter).toBe(1);
+
+           vc.move(viewRef, 0);
+           fixture.detectChanges();
+           expect(queryList.length).toBe(1);
+           expect(fixture.componentInstance.queryListNotificationCounter).toBe(2);
+         });
 
       it('should support a mix of content queries from the declaration and embedded view', () => {
         @Directive({selector: '[query-for-lots-of-content]'})
