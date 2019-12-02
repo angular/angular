@@ -547,6 +547,11 @@
               "url": "guide/creating-libraries",
               "title": "Creating Libraries",
               "tooltip": "Extend Angular by creating, publishing, and using your own libraries."
+            },
+            {
+              "url": "guide/library-asset-guide",
+              "title": "Libraries Overview",
+              "tooltip": "Understand how to include assets and style with your libraries."
             }
           ]
         },
