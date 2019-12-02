@@ -8,7 +8,7 @@
 // Make the `$localize()` global function available to the compiled templates, and the direct calls
 // below. This would normally be done inside the application `polyfills.ts` file.
 import '@angular/localize/init';
-import {registerLocaleData} from '@angular/common';
+import {CommonModule, registerLocaleData} from '@angular/common';
 import localeRo from '@angular/common/locales/ro';
 import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, Pipe, PipeTransform, NO_ERRORS_SCHEMA} from '@angular/core';
 import {setDelayProjection} from '@angular/core/src/render3/instructions/projection';
@@ -18,6 +18,7 @@ import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
 import {computeMsgId} from '@angular/compiler';
+import {BehaviorSubject} from 'rxjs';
 
 
 onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
@@ -1197,6 +1198,41 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       fixture.detectChanges();
       // check that nested ICU is removed if root ICU case has changed
       expect(fixture.nativeElement.textContent.trim()).toBe('-');
+    });
+
+    it('should support ICUs with pipes', () => {
+      loadTranslations({
+        idA: '{VAR_SELECT, select, 1 {{INTERPOLATION} article} 2 {deux articles}}',
+      });
+
+      @Component({
+        selector: 'app',
+        template: `
+          <div i18n="@@idA">{count$ | async, select, 1 {{{count$ | async}} item} 2 {two items}}</div>
+        `
+      })
+      class AppComponent {
+        count$ = new BehaviorSubject<number>(1);
+      }
+
+      TestBed.configureTestingModule({
+        imports: [CommonModule],
+        declarations: [AppComponent],
+      });
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('1 article');
+
+      fixture.componentInstance.count$.next(3);
+      fixture.detectChanges();
+      // there is no ICU case for count=3, expecting empty content
+      expect(fixture.nativeElement.textContent.trim()).toBe('');
+
+      fixture.componentInstance.count$.next(2);
+      fixture.detectChanges();
+      // checking the second ICU case
+      expect(fixture.nativeElement.textContent.trim()).toBe('deux articles');
     });
   });
 
