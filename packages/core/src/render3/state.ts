@@ -302,7 +302,7 @@ function setActiveElementFlag(flag: ActiveElementFlags) {
  * @param elementIndex the element index value for the host element where
  *                     the directive/component instance lives
  */
-export function setActiveHostElement(elementIndex: number | null = null) {
+export function setActiveHostElement(elementIndex: number | null) {
   if (hasActiveElementFlag(ActiveElementFlags.RunExitFn)) {
     executeElementExitFn();
   }
@@ -330,7 +330,7 @@ export function executeElementExitFn() {
  */
 export function setElementExitFn(fn: () => void): void {
   setActiveElementFlag(ActiveElementFlags.RunExitFn);
-  if (instructionState.elementExitFn == null) {
+  if (instructionState.elementExitFn === null) {
     instructionState.elementExitFn = fn;
   }
   ngDevMode &&
@@ -592,9 +592,10 @@ export function leaveView() {
   instructionState.lFrame = instructionState.lFrame.parent;
 }
 
-export function nextContextImpl<T = any>(level: number = 1): T {
-  instructionState.lFrame.contextLView = walkUpViews(level, instructionState.lFrame.contextLView !);
-  return instructionState.lFrame.contextLView[CONTEXT] as T;
+export function nextContextImpl<T = any>(level: number): T {
+  const contextLView = instructionState.lFrame.contextLView =
+      walkUpViews(level, instructionState.lFrame.contextLView !);
+  return contextLView[CONTEXT] as T;
 }
 
 function walkUpViews(nestingLevel: number, currentView: LView): LView {
