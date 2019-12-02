@@ -1,4 +1,4 @@
-# Dependency Providers
+# Dependency providers
 
 A dependency [provider](guide/glossary#provider) configures an injector
 with a [DI token](guide/glossary#di-token),

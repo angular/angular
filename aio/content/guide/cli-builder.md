@@ -1,4 +1,4 @@
-# Angular CLI Builders
+# Angular CLI builders
 
 A number of Angular CLI commands run a complex process on your code, such as linting, building, or testing.
 The commands use an internal tool called Architect to run *CLI builders*, which apply another tool to accomplish the desired task.

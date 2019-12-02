@@ -1,4 +1,4 @@
-# User Input
+# User input
 
 User actions such as clicking a link, pushing a button, and entering
 text raise DOM events.
