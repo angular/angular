@@ -889,5 +889,13 @@
     "twitter": "joeyperrott",
     "groups": ["Angular"],
     "lead": "igorminar"
+  },
+  "kwintenpisman": {
+    "name": "Kwinten Pisman",
+    "picture": "kwintenpisman.jpg",
+    "twitter": "KwintenP",
+    "website": "https://strongbrew.io",
+    "bio": "Kwinten is a GDE for Angular with a passion for reactive coding. He works as a software engineer for Stackblitz. He shares his passion for Angular and coding through blogposts and training sessions with the company he co-founded called Strongbrew.",
+    "groups": ["GDE"]
   }
 }
