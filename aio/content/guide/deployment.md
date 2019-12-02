@@ -488,9 +488,9 @@ Differential loading is a strategy that allows your web application to support m
 ### Differential builds
 
 When you deploy using the Angular CLI build process, you can choose how and when to support differential loading.
-The [`ng build`](cli/build) command queries the browser configuration and the build `target` to determine if support for legacy browsers is required, and whether the build should produce the necessary bundles used for differential loading.
+The [`ng build` CLI command](cli/build) queries the browser configuration and the configured build target to determine if support for legacy browsers is required, and whether the build should produce the necessary bundles used for differential loading.
 
-The following configurations to determine your requirements.
+The following configurations determine your requirements.
 
 * Browsers list
 
@@ -509,7 +509,7 @@ The following configurations to determine your requirements.
 
 For a development build, the output produced by `ng build` is simpler and easier to debug, allowing you to rely less on sourcemaps of compiled code.
 
-For a production build, your configuration determines which the bundles are created for deployment of your application.
+For a production build, your configuration determines which bundles are created for deployment of your application.
 When needed, the `index.html` file is also modified during the build process to include script tags that enable differential loading, as shown in the following example.
 
 <code-example language="html" header="index.html">
@@ -543,7 +543,7 @@ For each application project in your workspace, you can configure how builds are
 
 For a newly created Angular application, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015.
 
-<code-example language="none" header="browserlist">
+<code-example language="none" header="browserslist">
 > 0.5%
 last 2 versions
 Firefox ESR
