@@ -72,6 +72,8 @@
     private _currentTime: number = 0;
     // Current real time in millis.
     private _currentRealTime: number = OriginalDate.now();
+    // track requeuePeriodicTimer
+    private _currentTickRequeuePeriodicEntries: any[] = [];
 
     constructor() {}
 
@@ -81,10 +83,24 @@
 
     setCurrentRealTime(realTime: number) { this._currentRealTime = realTime; }
 
-    scheduleFunction(
-        cb: Function, delay: number, args: any[] = [], isPeriodic: boolean = false,
-        isRequestAnimationFrame: boolean = false, id: number = -1): number {
-      let currentId: number = id < 0 ? Scheduler.nextId++ : id;
+    scheduleFunction(cb: Function, delay: number, options?: {
+      args?: any[],
+      isPeriodic?: boolean,
+      isRequestAnimationFrame?: boolean,
+      id?: number,
+      isRequeuePeriodic?: boolean
+    }): number {
+      options = {
+        ...{
+          args: [],
+          isPeriodic: false,
+          isRequestAnimationFrame: false,
+          id: -1,
+          isRequeuePeriodic: false
+        },
+        ...options
+      };
+      let currentId = options.id ! < 0 ? Scheduler.nextId++ : options.id !;
       let endTime = this._currentTime + delay;
 
       // Insert so that scheduler queue remains sorted by end time.
@@ -92,11 +108,14 @@
         endTime: endTime,
         id: currentId,
         func: cb,
-        args: args,
+        args: options.args !,
         delay: delay,
-        isPeriodic: isPeriodic,
-        isRequestAnimationFrame: isRequestAnimationFrame
+        isPeriodic: options.isPeriodic !,
+        isRequestAnimationFrame: options.isRequestAnimationFrame !
       };
+      if (options.isRequeuePeriodic !) {
+        this._currentTickRequeuePeriodicEntries.push(newEntry);
+      }
       let i = 0;
       for (; i < this._schedulerQueue.length; i++) {
         let currentEntry = this._schedulerQueue[i];
@@ -117,21 +136,37 @@
       }
     }
 
-    tick(millis: number = 0, doTick?: (elapsed: number) => void): void {
+    tick(millis: number = 0, doTick?: (elapsed: number) => void, tickOptions: {
+      processNewMacroTasksSynchronously: boolean
+    } = {processNewMacroTasksSynchronously: true}): void {
       let finalTime = this._currentTime + millis;
       let lastCurrentTime = 0;
-      if (this._schedulerQueue.length === 0 && doTick) {
+      // we need to copy the schedulerQueue so nested timeout
+      // will not be wrongly called in the current tick
+      // https://github.com/angular/angular/issues/33799
+      const schedulerQueue = tickOptions.processNewMacroTasksSynchronously ?
+          this._schedulerQueue :
+          this._schedulerQueue.slice();
+      if (schedulerQueue.length === 0 && doTick) {
         doTick(millis);
         return;
       }
-      while (this._schedulerQueue.length > 0) {
-        let current = this._schedulerQueue[0];
+      while (schedulerQueue.length > 0) {
+        // clear requeueEntries before each loop
+        this._currentTickRequeuePeriodicEntries = [];
+        let current = schedulerQueue[0];
         if (finalTime < current.endTime) {
           // Done processing the queue since it's sorted by endTime.
           break;
         } else {
           // Time to run scheduled function. Remove it from the head of queue.
-          let current = this._schedulerQueue.shift() !;
+          let current = schedulerQueue.shift() !;
+          if (!tickOptions.processNewMacroTasksSynchronously) {
+            const idx = this._schedulerQueue.indexOf(current);
+            if (idx >= 0) {
+              this._schedulerQueue.splice(idx, 1);
+            }
+          }
           lastCurrentTime = this._currentTime;
           this._currentTime = current.endTime;
           if (doTick) {
@@ -142,6 +177,21 @@
           if (!retval) {
             // Uncaught exception in the current scheduled function. Stop processing the queue.
             break;
+          }
+
+          // check is there any requeue periodic entry is added in
+          // current loop, if there is, we need to add to current loop
+          if (!tickOptions.processNewMacroTasksSynchronously) {
+            this._currentTickRequeuePeriodicEntries.forEach(newEntry => {
+              let i = 0;
+              for (; i < schedulerQueue.length; i++) {
+                const currentEntry = schedulerQueue[i];
+                if (newEntry.endTime < currentEntry.endTime) {
+                  break;
+                }
+              }
+              schedulerQueue.splice(i, 0, newEntry);
+            });
           }
         }
       }
@@ -274,7 +324,8 @@
       return () => {
         // Requeue the timer callback if it's not been canceled.
         if (this.pendingPeriodicTimers.indexOf(id) !== -1) {
-          this._scheduler.scheduleFunction(fn, interval, args, true, false, id);
+          this._scheduler.scheduleFunction(
+              fn, interval, {args, isPeriodic: true, id, isRequeuePeriodic: true});
         }
       };
     }
@@ -287,7 +338,8 @@
       let removeTimerFn = this._dequeueTimer(Scheduler.nextId);
       // Queue the callback and dequeue the timer on success and error.
       let cb = this._fnAndFlush(fn, {onSuccess: removeTimerFn, onError: removeTimerFn});
-      let id = this._scheduler.scheduleFunction(cb, delay, args, false, !isTimer);
+      let id =
+          this._scheduler.scheduleFunction(cb, delay, {args, isRequestAnimationFrame: !isTimer});
       if (isTimer) {
         this.pendingTimers.push(id);
       }
@@ -308,7 +360,7 @@
       completers.onSuccess = this._requeuePeriodicTimer(cb, interval, args, id);
 
       // Queue the callback and dequeue the periodic timer only on error.
-      this._scheduler.scheduleFunction(cb, interval, args, true);
+      this._scheduler.scheduleFunction(cb, interval, {args, isPeriodic: true});
       this.pendingPeriodicTimers.push(id);
       return id;
     }
@@ -380,10 +432,12 @@
       FakeAsyncTestZoneSpec.resetDate();
     }
 
-    tick(millis: number = 0, doTick?: (elapsed: number) => void): void {
+    tick(millis: number = 0, doTick?: (elapsed: number) => void, tickOptions: {
+      processNewMacroTasksSynchronously: boolean
+    } = {processNewMacroTasksSynchronously: true}): void {
       FakeAsyncTestZoneSpec.assertInZone();
       this.flushMicrotasks();
-      this._scheduler.tick(millis, doTick);
+      this._scheduler.tick(millis, doTick, tickOptions);
       if (this._lastError !== null) {
         this._resetLastErrorAndThrow();
       }
