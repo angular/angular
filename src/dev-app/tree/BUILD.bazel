@@ -9,10 +9,6 @@ ng_module(
         "**/*.html",
     ]) + [
         ":tree_demo_scss",
-        ":checklist_nested_tree_demo_scss",
-        ":checklist_tree_demo_scss",
-        ":dynamic_tree_demo_scss",
-        ":loadmore_tree_demo_scss",
     ],
     deps = [
         "//src/cdk/tree",
@@ -33,24 +29,4 @@ ng_module(
 sass_binary(
     name = "tree_demo_scss",
     src = "tree-demo.scss",
-)
-
-sass_binary(
-    name = "checklist_nested_tree_demo_scss",
-    src = "checklist-tree-demo/checklist-nested-tree-demo.scss",
-)
-
-sass_binary(
-    name = "checklist_tree_demo_scss",
-    src = "checklist-tree-demo/checklist-tree-demo.scss",
-)
-
-sass_binary(
-    name = "dynamic_tree_demo_scss",
-    src = "dynamic-tree-demo/dynamic-tree-demo.scss",
-)
-
-sass_binary(
-    name = "loadmore_tree_demo_scss",
-    src = "loadmore-tree-demo/loadmore-tree-demo.scss",
 )
