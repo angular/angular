@@ -14,6 +14,7 @@ export class DynamicFlatNode {
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
  * the descendants data from the database.
  */
+@Injectable({providedIn: 'root'})
 export class DynamicDatabase {
   dataMap = new Map<string, string[]>([
     ['Fruits', ['Apple', 'Orange', 'Banana']],
@@ -44,7 +45,6 @@ export class DynamicDatabase {
  * The input will be a json object string, and the output is a list of `FileNode` with nested
  * structure.
  */
-@Injectable()
 export class DynamicDataSource implements DataSource<DynamicFlatNode> {
 
   dataChange = new BehaviorSubject<DynamicFlatNode[]>([]);
@@ -118,8 +118,7 @@ export class DynamicDataSource implements DataSource<DynamicFlatNode> {
 @Component({
   selector: 'tree-dynamic-example',
   templateUrl: 'tree-dynamic-example.html',
-  styleUrls: ['tree-dynamic-example.css'],
-  providers: [DynamicDatabase]
+  styleUrls: ['tree-dynamic-example.css']
 })
 export class TreeDynamicExample {
   constructor(database: DynamicDatabase) {
