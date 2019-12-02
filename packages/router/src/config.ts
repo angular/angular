@@ -166,11 +166,12 @@ export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParam
  * One of:
  * - `prefix` : Checks from the left to see if the URL matches a given path, and stops when there is a match. 
  * - `full` : Matches against the entire URL.
- *
+ * Default is 'prefix'.
+ * 
  * @see `Route#pathMatch`
  * @publicApi
  */
-export type PathMatch = 'prefix' | 'full';
+export type PathMatch = 'prefix' | 'full' | undefined;
 
 /**
  * A configuration object that defines a single route.
