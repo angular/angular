@@ -245,7 +245,7 @@ export declare class AnimationEvent {
       });
 
       it('should check expressions and their type when overall strictness is enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+        env.tsconfig({strictTemplates: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -303,7 +303,7 @@ export declare class AnimationEvent {
 
       it('should check expressions and their nullability when overall strictness is enabled',
          () => {
-           env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+           env.tsconfig({strictTemplates: true});
 
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(2);
@@ -366,10 +366,7 @@ export declare class AnimationEvent {
 
       it('should infer result type for safe navigation expressions when overall strictness is enabled',
          () => {
-           env.tsconfig({
-             fullTemplateTypeCheck: true,
-             strictTemplates: true,
-           });
+           env.tsconfig({strictTemplates: true});
 
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(2);
@@ -429,7 +426,7 @@ export declare class AnimationEvent {
       });
 
       it('should expressions and infer type of $event when overall strictness is enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+        env.tsconfig({strictTemplates: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -483,7 +480,7 @@ export declare class AnimationEvent {
 
       it('should check expressions and let $event be of type AnimationEvent when overall strictness is enabled',
          () => {
-           env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+           env.tsconfig({strictTemplates: true});
 
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(2);
@@ -532,7 +529,7 @@ export declare class AnimationEvent {
       });
 
       it('should infer the type of DOM references when overall strictness is enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+        env.tsconfig({strictTemplates: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -583,7 +580,7 @@ export declare class AnimationEvent {
       });
 
       it('should produce an error for text attributes when overall strictness is enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+        env.tsconfig({strictTemplates: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -633,7 +630,7 @@ export declare class AnimationEvent {
 
       it('should check expressions and infer type of $event when overall strictness is enabled',
          () => {
-           env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+           env.tsconfig({strictTemplates: true});
 
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(2);
@@ -776,7 +773,7 @@ export declare class AnimationEvent {
     });
 
     it('should accept NgFor iteration over a QueryList', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+      env.tsconfig({strictTemplates: true});
       env.write('test.ts', `
         import {CommonModule} from '@angular/common';
         import {Component, NgModule, QueryList} from '@angular/core';
@@ -800,7 +797,7 @@ export declare class AnimationEvent {
     });
 
     it('should infer the context of NgFor', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+      env.tsconfig({strictTemplates: true});
       env.write('test.ts', `
         import {CommonModule} from '@angular/common';
         import {Component, NgModule} from '@angular/core';
@@ -825,7 +822,7 @@ export declare class AnimationEvent {
     });
 
     it('should infer the context of NgIf', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+      env.tsconfig({strictTemplates: true});
       env.write('test.ts', `
         import {CommonModule} from '@angular/common';
         import {Component, NgModule} from '@angular/core';
@@ -1009,7 +1006,7 @@ export declare class AnimationEvent {
       });
 
       it('should be correctly inferred under strictTemplates', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+        env.tsconfig({strictTemplates: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
