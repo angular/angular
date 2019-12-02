@@ -17,7 +17,7 @@ import {isContentQueryHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendOrInsertBefore, calculateRenderParentAndAnchorIndex} from '../node_manipulation';
-import {decreaseElementDepthCount, getBindingIndex, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {getBindingIndex, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {setUpAttributes} from '../util/attrs_utils';
 import {getInitialStylingValue, selectClassBasedInputName} from '../util/styling_utils';
 import {getConstant, getNativeByTNode, getTNode} from '../util/view_utils';
@@ -96,18 +96,15 @@ export function ɵɵelementStart(
 
   appendOrInsertBefore(lView, tNode, renderer, native);
 
-  // any immediate children of a component or template container must be pre-emptively
-  // monkey-patched with the component view data so that the element can be inspected
-  // later on using any element discovery utility methods (see `element_discovery.ts`)
-  if (getElementDepthCount() === 0) {
-    attachPatchData(native, lView);
-  }
-  increaseElementDepthCount();
-
-
   if ((flags & TNodeFlags.isDirectiveHost) === TNodeFlags.isDirectiveHost) {
     createDirectivesInstances(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
+  } else if (tNode.renderParentIndex <= 0) {
+    // We only need to patch:
+    // - elements at the root of a view (render-wise);
+    // - elements that are not host for any directive (directive creation process will patch the
+    // host node);
+    attachPatchData(native, lView);
   }
 
   if (localRefsIndex != null) {
@@ -136,8 +133,6 @@ export function ɵɵelementEnd(): void {
 
   const lView = getLView();
   const tView = lView[TVIEW];
-
-  decreaseElementDepthCount();
 
   if (tView.firstCreatePass) {
     registerPostOrderHooks(tView, previousOrParentTNode);

@@ -76,14 +76,6 @@ interface LFrame {
   contextLView: LView;
 
   /**
-   * Store the element depth count. This is used to identify the root elements of the template
-   * so that we can then attach patch data `LView` to only those elements. We know that those
-   * are the only places where the patch data could change, this way we will save on number
-   * of places where tha patching occurs.
-   */
-  elementDepthCount: number;
-
-  /**
    * Current namespace to be used when creating elements
    */
   currentNamespace: string|null;
@@ -180,19 +172,6 @@ export const instructionState: InstructionState = {
   elementExitFn: null,
   checkNoChangesMode: false,
 };
-
-
-export function getElementDepthCount() {
-  return instructionState.lFrame.elementDepthCount;
-}
-
-export function increaseElementDepthCount() {
-  instructionState.lFrame.elementDepthCount++;
-}
-
-export function decreaseElementDepthCount() {
-  instructionState.lFrame.elementDepthCount--;
-}
 
 export function getCurrentDirectiveDef(): DirectiveDef<any>|ComponentDef<any>|null {
   return instructionState.lFrame.currentDirectiveDef;
@@ -498,7 +477,6 @@ export function enterDI(newView: LView, tNode: TNode) {
     newLFrame.isParent = DEV_MODE_VALUE;
     newLFrame.selectedIndex = DEV_MODE_VALUE;
     newLFrame.contextLView = DEV_MODE_VALUE;
-    newLFrame.elementDepthCount = DEV_MODE_VALUE;
     newLFrame.currentNamespace = DEV_MODE_VALUE;
     newLFrame.currentSanitizer = DEV_MODE_VALUE;
     newLFrame.currentDirectiveDef = DEV_MODE_VALUE;
@@ -539,7 +517,6 @@ export function enterView(newView: LView, tNode: TNode | null): void {
   newLFrame.lView = newView;
   newLFrame.selectedIndex = 0;
   newLFrame.contextLView = newView !;
-  newLFrame.elementDepthCount = 0;
   newLFrame.currentNamespace = null;
   newLFrame.currentSanitizer = null;
   newLFrame.currentDirectiveDef = null;
@@ -566,7 +543,6 @@ function createLFrame(parent: LFrame | null): LFrame {
     lView: null !,                  //
     selectedIndex: 0,               //
     contextLView: null !,           //
-    elementDepthCount: 0,           //
     currentNamespace: null,         //
     currentSanitizer: null,         //
     currentDirectiveDef: null,      //
