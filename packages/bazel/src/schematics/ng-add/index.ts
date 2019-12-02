@@ -59,7 +59,7 @@ function addDevDependenciesToPackageJson(options: Schema) {
       'rollup': '^1.25.2',
       'rollup-plugin-commonjs': '^10.1.0',
       'rollup-plugin-node-resolve': '^5.2.0',
-      'terser': '^4.3.9',
+      'terser': '4.4.0',
     };
 
     const recorder = host.beginUpdate(packageJson);

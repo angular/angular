@@ -51,8 +51,13 @@ function testNonBazel() {
   rm -rf dist src/main.dev.ts src/main.prod.ts
   # disable CLI's version check (if version is 0.0.0, then no version check happens)
   yarn --cwd node_modules/@angular/cli version --new-version 0.0.0 --no-git-tag-version
-  # re-add build-angular
+
+  # Work-around for https://github.com/terser/terser/issues/527 which should be fixed in terser 4.4.2
+  # This will cause a hoisting issue since terser is a direct dependency of terser-webpack-plugin
+  sed -i '$s/}/,\n"resolutions":{"terser":"4.4.0"}}/' package.json
+
   yarn add --dev @angular-devkit/build-angular@0.900.0-rc.3
+
   yarn webdriver-manager update --gecko=false --standalone=false ${CI_CHROMEDRIVER_VERSION_ARG:---versions.chrome 2.45}
   ng build --progress=false
   ng test --progress=false --watch=false
