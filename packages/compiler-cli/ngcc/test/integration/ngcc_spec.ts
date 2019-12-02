@@ -205,13 +205,43 @@ runInEachFileSystem(() => {
       expect(countOccurrences(after, 'ɵfac')).toEqual(1);
     });
 
+    // This is necessary to ensure XPipeDef.fac is defined when delegated from injectable def
+    it('should always generate factory def (fac) before injectable def (prov)', () => {
+      compileIntoFlatEs5Package('test-package', {
+        '/index.ts': `
+        import {Injectable, Pipe, PipeTransform} from '@angular/core';
+       
+        @Injectable()
+        @Pipe({
+          name: 'myTestPipe'
+        })
+        export class TestClass implements PipeTransform {
+          transform(value: any) { return value; }
+        }
+        `,
+      });
+
+      mainNgcc({
+        basePath: '/node_modules',
+        targetEntryPointPath: 'test-package',
+        propertiesToConsider: ['main'],
+      });
+
+      const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
+      expect(jsContents)
+          .toContain(
+              `TestClass.ɵfac = function TestClass_Factory(t) { return new (t || TestClass)(); };\n` +
+              `TestClass.ɵpipe = ɵngcc0.ɵɵdefinePipe({ name: "myTestPipe", type: TestClass, pure: true });\n` +
+              `TestClass.ɵprov = ɵngcc0.ɵɵdefineInjectable({`);
+    });
+
     it('should add generic type for ModuleWithProviders and generate exports for private modules',
        () => {
          compileIntoApf('test-package', {
            '/index.ts': `
               import {ModuleWithProviders} from '@angular/core';
               import {InternalFooModule} from './internal';
-              
+
               export class FooModule {
                 static forRoot(): ModuleWithProviders {
                   return {
@@ -222,7 +252,7 @@ runInEachFileSystem(() => {
             `,
            '/internal.ts': `
               import {NgModule} from '@angular/core';
-  
+
               @NgModule()
               export class InternalFooModule {}
            `,
