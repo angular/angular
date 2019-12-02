@@ -709,6 +709,23 @@ import {of } from 'rxjs';
         expect(g.valid).toEqual(false);
         expect(g.errors).toEqual({'broken': true});
       });
+
+      it('should run the validator after a control has been moved', () => {
+        const simpleValidator = (c: FormArray) =>
+            c.controls[0].value != 'correct' ? {'broken': true} : null;
+
+        const c1 = new FormControl(null);
+        const c2 = new FormControl('correct');
+        const g = new FormArray([c1, c2], simpleValidator as ValidatorFn);
+
+        g.moveControl(0, 1);
+        expect(g.valid).toEqual(true);
+        expect(g.errors).toEqual(null);
+
+        g.moveControl(0, 1);
+        expect(g.valid).toEqual(false);
+        expect(g.errors).toEqual({'broken': true});
+      });
     });
 
 
@@ -728,6 +745,21 @@ import {of } from 'rxjs';
 
         expect(a.dirty).toEqual(true);
       });
+
+      it('should not effect dirty after a control has been moved', () => {
+        const c1 = new FormControl('value1');
+        a.push(c1);
+
+        a.markAsPristine();
+        a.moveControl(0, 1);
+        expect(a.dirty).toEqual(false);
+        expect(a.pristine).toEqual(true);
+
+        a.markAsDirty();
+        a.moveControl(0, 1);
+        expect(a.dirty).toEqual(true);
+        expect(a.pristine).toEqual(false);
+      });
     });
 
     describe('touched', () => {
@@ -744,6 +776,19 @@ import {of } from 'rxjs';
       it('should be true after child control is marked as touched', () => {
         c.markAsTouched();
 
+        expect(a.touched).toEqual(true);
+      });
+
+      it('should not effect touched after a control has been moved', () => {
+        const c1 = new FormControl('value1');
+        a.push(c1);
+
+        a.markAsUntouched();
+        a.moveControl(0, 1);
+        expect(a.touched).toEqual(false);
+
+        a.markAsTouched();
+        a.moveControl(0, 1);
         expect(a.touched).toEqual(true);
       });
     });
@@ -816,6 +861,28 @@ import {of } from 'rxjs';
         c1 = new FormControl('old1');
         c2 = new FormControl('old2');
         a = new FormArray([c1, c2]);
+      });
+
+      it('should fire an event after a control has been moved',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           a.valueChanges.subscribe({
+             next: (value: any) => {
+               expect(a.value).toEqual(['old2', 'old1']);
+               expect(value).toEqual(['old2', 'old1']);
+               async.done();
+             }
+           });
+           a.moveControl(0, 1);
+         }));
+
+      it('should only emit an event once after a control has been moved', () => {
+        const logger: string[] = [];
+        const c3 = new FormControl('new3!');
+        a.push(c2);
+        a.push(c3);
+        a.valueChanges.subscribe(() => logger.push('change!'));
+        a.moveControl(0, 2);
+        expect(logger).toEqual(['change!']);
       });
 
       it('should fire an event after the value has been updated',
