@@ -114,6 +114,8 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * whether embedded views are checked.
    *
    * For maximum type-checking, set this to `true`, and set `strictTemplates` to `true`.
+   *
+   * It is an error for this flag to be `false`, while `strictTemplates` is set to `true`.
    */
   fullTemplateTypeCheck?: boolean;
 
