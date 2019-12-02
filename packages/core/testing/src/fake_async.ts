@@ -62,13 +62,54 @@ export function fakeAsync(fn: Function): (...args: any[]) => any {
  *
  * {@example core/testing/ts/fake_async.ts region='basic'}
  *
+ * @param millis, the number of millisecond to advance the virtual timer
+ * @param tickOptions, the options of tick with a flag called
+ * processNewMacroTasksSynchronously, whether to invoke the new macroTasks, by default is
+ * false, means the new macroTasks will be invoked
+ *
+ * For example,
+ *
+ * it ('test with nested setTimeout', fakeAsync(() => {
+ *   let nestedTimeoutInvoked = false;
+ *   function funcWithNestedTimeout() {
+ *     setTimeout(() => {
+ *       nestedTimeoutInvoked = true;
+ *     });
+ *   };
+ *   setTimeout(funcWithNestedTimeout);
+ *   tick();
+ *   expect(nestedTimeoutInvoked).toBe(true);
+ * }));
+ *
+ * in this case, we have a nested timeout (new macroTask), when we tick, both the
+ * funcWithNestedTimeout and the nested timeout both will be invoked.
+ *
+ * it ('test with nested setTimeout', fakeAsync(() => {
+ *   let nestedTimeoutInvoked = false;
+ *   function funcWithNestedTimeout() {
+ *     setTimeout(() => {
+ *       nestedTimeoutInvoked = true;
+ *     });
+ *   };
+ *   setTimeout(funcWithNestedTimeout);
+ *   tick(0, {processNewMacroTasksSynchronously: false});
+ *   expect(nestedTimeoutInvoked).toBe(false);
+ * }));
+ *
+ * if we pass the tickOptions with processNewMacroTasksSynchronously to be false, the nested timeout
+ * will not be invoked.
+ *
+ *
  * @publicApi
  */
-export function tick(millis: number = 0): void {
+export function tick(
+    millis: number = 0, tickOptions: {processNewMacroTasksSynchronously: boolean} = {
+      processNewMacroTasksSynchronously: true
+    }): void {
   if (fakeAsyncTestModule) {
-    return fakeAsyncTestModule.tick(millis);
+    return fakeAsyncTestModule.tick(millis, tickOptions);
   } else {
-    return tickFallback(millis);
+    return tickFallback(millis, tickOptions);
   }
 }
 
