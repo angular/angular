@@ -1,4 +1,4 @@
-# Displaying Data
+# Displaying data
 
 You can display data by binding controls in an HTML template to properties of an Angular component.
 
@@ -361,4 +361,3 @@ Here's the final code:
   </code-pane>
 
 </code-tabs>
-

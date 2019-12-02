@@ -74,5 +74,4 @@ Libraries should add the generic type to any usages of the `ModuleWithProviders`
 
 ## What about applications using non-migrated libraries?
 
-`ngcc` should transform any non-migrated libraries to generate the proper code.
-For more information on `ngcc` see the [ngcc guide](guide/ngcc).
+The [Angular compatibility compiler](guide/glossary#ngcc) (`ngcc`) should automatically transform any non-migrated libraries to generate the proper code.

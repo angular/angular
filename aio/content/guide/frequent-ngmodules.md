@@ -1,4 +1,4 @@
-# Frequently Used Modules
+# Frequently-used modules
 
 An Angular app needs at least one module that serves as the root module.
 As you add features to your app, you can add them in modules.

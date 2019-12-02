@@ -1,4 +1,4 @@
-# Updating to Angular Version 9
+# Updating to Angular version 9
 
 This guide contains everything you need to know about updating to the next Angular version.
 

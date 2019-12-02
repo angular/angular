@@ -1,4 +1,4 @@
-# Attribute Directives
+# Attribute directives
 
 An **Attribute** directive changes the appearance or behavior of a DOM element.
 

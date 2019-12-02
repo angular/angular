@@ -1,4 +1,4 @@
-# Style Guide
+# Angular coding style guide
 
 Looking for an opinionated guide to Angular syntax, conventions, and application structure?
 Step right in!
