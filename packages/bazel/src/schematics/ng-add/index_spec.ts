@@ -73,7 +73,7 @@ describe('ng-add schematic', () => {
       message = e.message;
     }
 
-    expect(message).toBe('Could not find package.json');
+    expect(message).toBe('Could not read package.json.');
   });
 
   it('throws if angular.json is not found', async() => {
@@ -104,7 +104,6 @@ describe('ng-add schematic', () => {
     expect(Object.keys(json)).toContain('devDependencies');
     expect(Object.keys(json.dependencies)).toContain(core);
     expect(Object.keys(json.devDependencies)).toContain(bazel);
-    expect(json.dependencies[core]).toBe(json.devDependencies[bazel]);
   });
 
   it('should add @bazel/* dev dependencies', async() => {
@@ -273,9 +272,9 @@ describe('ng-add schematic', () => {
       ['~6.3.3', true],
       ['^6.3.3', true],
       ['~6.3.11', true],
-      ['6.4.0', false],
-      ['~6.4.0', false],
-      ['~6.4.1', false],
+      ['6.4.0', true],
+      ['~6.4.0', true],
+      ['~6.4.1', true],
       ['6.5.0', false],
       ['~6.5.0', false],
       ['^6.5.0', false],
@@ -298,7 +297,7 @@ describe('ng-add schematic', () => {
         const content = host.readContent('/package.json');
         const json = JSON.parse(content);
         if (upgrade) {
-          expect(json.dependencies.rxjs).toBe('~6.4.0');
+          expect(json.dependencies.rxjs).toBe('~6.5.3');
         } else {
           expect(json.dependencies.rxjs).toBe(version);
         }
