@@ -13,8 +13,7 @@ import {computeClassChanges, splitClassList} from '../../../src/render3/styling/
 describe('class differ', () => {
   describe('computeClassChanges', () => {
     function expectComputeClassChanges(oldValue: string, newValue: string) {
-      const changes: ArrayMap<boolean|null> = [] as any;
-      computeClassChanges(oldValue, newValue, changes);
+      const changes: ArrayMap<boolean|null> = computeClassChanges(oldValue, newValue);
       return expect(changes);
     }
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {parseKeyValue, parseStyleValue} from '@angular/core/src/render3/styling/style_differ';
+import {StyleChangesArrayMap, StyleChangesArrayMapEnum, parseKeyValue, parseStyleValue} from '@angular/core/src/render3/styling/style_differ';
 import {ArrayMap} from '@angular/core/src/util/array_utils';
 
 describe('style differ', () => {
@@ -53,16 +53,18 @@ describe('style differ', () => {
     });
 
     it('should prase single style', () => {
-      expectParseKeyValue('width: 100px').toEqual(['width', '100px']);
-      expectParseKeyValue(' width : 100px ;').toEqual(['width', '100px']);
+      expectParseKeyValue('width: 100px').toEqual(['width', false, '100px', null]);
+      expectParseKeyValue(' width : 100px ;').toEqual(['width', false, '100px', null]);
     });
 
     it('should prase multi style', () => {
       expectParseKeyValue('width: 100px; height: 200px').toEqual([
-        'height', '200px', 'width', '100px'
+        'height', false, '200px', null,  //
+        'width', false, '100px', null,   //
       ]);
       expectParseKeyValue(' height : 200px ; width : 100px ').toEqual([
-        'height', '200px', 'width', '100px'
+        'height', false, '200px', null,  //
+        'width', false, '100px', null    //
       ]);
     });
   });
@@ -76,15 +78,15 @@ function expectParseValue(
      * and asserts that the parsing ends at that location.
      */
     text: string) {
-  const removals: ArrayMap<string> = [] as any;
+  const changes: StyleChangesArrayMap = [] as any;
   let stopIndex = text.indexOf('🛑') - 1;
   if (stopIndex < 0) stopIndex = text.length;
-  expect(parseStyleValue(removals, null, '', text, 0)).toBe(stopIndex);
-  return expect(removals[1] || '');
+  expect(parseStyleValue(changes, '', text, 0, false)).toBe(stopIndex);
+  return expect(changes[StyleChangesArrayMapEnum.oldValue] || '');
 }
 
 function expectParseKeyValue(text: string) {
-  const arrayMap: ArrayMap<string> = [] as any;
-  parseKeyValue(text, arrayMap, null);
-  return expect(arrayMap);
+  const changes: StyleChangesArrayMap = [] as any;
+  parseKeyValue(text, changes, false);
+  return expect(changes);
 }
