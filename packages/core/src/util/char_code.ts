@@ -17,6 +17,8 @@ export const enum CharCode {
   OPEN_PAREN = 40,    // "("
   CLOSE_PAREN = 41,   // ")"
   COLON = 58,         // ":"
+  DASH = 45,          // "-"
+  UNDERSCORE = 95,    // "_"
   SEMI_COLON = 59,    // ";"
   BACK_SLASH = 92,    // "\\"
   AT_SIGN = 64,       // "@"
@@ -24,6 +26,7 @@ export const enum CharCode {
   U = 85,             // "U"
   R = 82,             // "R"
   L = 76,             // "L"
+  Z = 90,             // "A"
   a = 97,             // "a"
   z = 122,            // "z"
 }

@@ -8,6 +8,7 @@
 
 import {ArrayMap, arrayInsert2, arrayMapIndexOf, arrayMapSet} from '../../util/array_utils';
 import {CharCode} from '../../util/char_code';
+import {consumeClassToken, consumeWhitespace} from './styling_parser';
 
 /**
  * Computes the diff between two class-list strings.
@@ -35,7 +36,7 @@ export function computeClassChanges(oldValue: string, newValue: string): ArrayMa
 
 /**
  * Splits the class list into array, ignoring whitespace and add it to corresponding categories
- * (addition/removals).
+ * `changes`.
  *
  * @param text Class list to split
  * @param changes ArrayMap which will be filled with changes. (`false` - remove; `null` - noop;
@@ -44,22 +45,15 @@ export function computeClassChanges(oldValue: string, newValue: string): ArrayMa
  */
 export function splitClassList(
     text: string, changes: ArrayMap<boolean|null>, isNewValue: boolean): void {
-  let start = 0;         // starting character of token
-  let hasChars = false;  // If we have seen at least one character.
-  let i = 0;
-  for (; i < text.length; i++) {
-    if (text.charCodeAt(i) <= CharCode.SPACE) {
-      if (hasChars) {
-        consumeClassToken(changes, text.substring(start, i), isNewValue);
-        hasChars = false;
-      }
-      start = i + 1;
-    } else {
-      hasChars = true;
+  const end = text.length;
+  let index = 0;
+  while (index < end) {
+    index = consumeWhitespace(text, index, end);
+    const tokenEnd = consumeClassToken(text, index, end);
+    if (tokenEnd !== index) {
+      processClassToken(changes, text.substring(index, tokenEnd), isNewValue);
     }
-  }
-  if (hasChars) {
-    consumeClassToken(changes, text.substring(start, i), isNewValue);
+    index = tokenEnd;
   }
 }
 
@@ -78,7 +72,7 @@ export function splitClassList(
  *          with same key already exists with `false` then the resulting token is `null` (no
  *          change.) If no token exist than the new token value is `true` (add it.)
  */
-export function consumeClassToken(
+export function processClassToken(
     changes: ArrayMap<boolean|null>, token: string, isNewValue: boolean) {
   if (isNewValue) {
     // This code path is executed when we are iterating over new values.
@@ -99,4 +93,37 @@ export function consumeClassToken(
     // This means that we store the tokens in `changes` with `false` (removals).
     arrayMapSet(changes, token, false);
   }
+}
+
+/**
+ * Removes a class from a `className` string.
+ *
+ * @param className A string containing classes (whitespace separated)
+ * @param classToRemove A class name to remove from the `className`
+ * @returns a new class-list which does not have `classToRemove`
+ */
+export function removeClass(className: string, classToRemove: string): string {
+  let start = 0;
+  let end = className.length;
+  while (start < end) {
+    start = className.indexOf(classToRemove, start);
+    if (start === -1) {
+      // we did not find anything, so just bail.
+      break;
+    }
+    const removeLength = classToRemove.length;
+    const hasLeadingWhiteSpace = start === 0 || className.charCodeAt(start - 1) <= CharCode.SPACE;
+    const hasTrailingWhiteSpace = start + removeLength === end ||
+        className.charCodeAt(start + removeLength) <= CharCode.SPACE;
+    if (hasLeadingWhiteSpace && hasTrailingWhiteSpace) {
+      // Cut out the class which should be removed.
+      const endWhitespace = consumeWhitespace(className, start + removeLength, end);
+      className = className.substring(0, start) + className.substring(endWhitespace, end);
+      end = className.length;
+    } else {
+      // in this case we are only a substring of the actual class, move on.
+      start = start + removeLength;
+    }
+  }
+  return className;
 }

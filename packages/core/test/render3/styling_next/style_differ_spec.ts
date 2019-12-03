@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StyleChangesArrayMap, StyleChangesArrayMapEnum, parseKeyValue, parseStyleValue} from '@angular/core/src/render3/styling/style_differ';
-import {ArrayMap} from '@angular/core/src/util/array_utils';
+import {StyleChangesArrayMap, parseKeyValue, removeStyle} from '@angular/core/src/render3/styling/style_differ';
+import {consumeStyleKeySeparator, consumeStyleValue, consumeStyleValueSeparator} from '@angular/core/src/render3/styling/styling_parser';
 
 describe('style differ', () => {
   describe('parseStyleValue', () => {
@@ -29,6 +29,7 @@ describe('style differ', () => {
 
     it('should parse quoted values', () => {
       expectParseValue(':""').toBe('""');
+      expectParseValue(':"\\\\"').toBe('"\\\\"');
       expectParseValue(': ""').toBe('""');
       expectParseValue(': ""  ').toBe('""');
       expectParseValue(':"text"').toBe('"text"');
@@ -68,6 +69,27 @@ describe('style differ', () => {
       ]);
     });
   });
+
+  describe('removeStyle', () => {
+    it('should remove no style', () => {
+      expect(removeStyle('', 'foo')).toEqual('');
+      expect(removeStyle('abc: bar', 'a')).toEqual('abc: bar');
+      expect(removeStyle('abc: bar', 'b')).toEqual('abc: bar');
+      expect(removeStyle('abc: bar', 'c')).toEqual('abc: bar');
+      expect(removeStyle('abc: bar', 'bar')).toEqual('abc: bar');
+    });
+
+    it('should remove all style', () => {
+      expect(removeStyle('foo: bar', 'foo')).toEqual('');
+      expect(removeStyle('foo: bar; foo: bar;', 'foo')).toEqual('');
+    });
+
+    it('should remove some of the style', () => {
+      expect(removeStyle('a: a; foo: bar; b: b', 'foo')).toEqual('a: a; b: b');
+      expect(removeStyle('a: a; foo: bar; b: b; foo: bar; c: c', 'foo'))
+          .toEqual('a: a; b: b; c: c');
+    });
+  });
 });
 
 function expectParseValue(
@@ -79,10 +101,13 @@ function expectParseValue(
      */
     text: string) {
   const changes: StyleChangesArrayMap = [] as any;
-  let stopIndex = text.indexOf('🛑') - 1;
+  let stopIndex = text.indexOf('🛑');
   if (stopIndex < 0) stopIndex = text.length;
-  expect(parseStyleValue(changes, '', text, 0, false)).toBe(stopIndex);
-  return expect(changes[StyleChangesArrayMapEnum.oldValue] || '');
+  const valueStart = consumeStyleKeySeparator(text, 0, text.length);
+  const valueEnd = consumeStyleValue(text, valueStart, text.length);
+  const valueSep = consumeStyleValueSeparator(text, valueEnd, text.length);
+  expect(valueSep).toBe(stopIndex);
+  return expect(text.substring(valueStart, valueEnd));
 }
 
 function expectParseKeyValue(text: string) {

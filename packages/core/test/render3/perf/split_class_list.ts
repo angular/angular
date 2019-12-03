@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {consumeClassToken, splitClassList} from '@angular/core/src/render3/styling/class_differ';
-import {ArrayMap, arrayInsert} from '@angular/core/src/util/array_utils';
+import {processClassToken, splitClassList} from '@angular/core/src/render3/styling/class_differ';
+import {ArrayMap} from '@angular/core/src/util/array_utils';
 
 import {createBenchmark} from './micro_bench';
 
@@ -32,7 +32,7 @@ while (splitTime()) {
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i];
     if (part !== '') {
-      consumeClassToken(changes, part, false);
+      processClassToken(changes, part, false);
     }
   }
   if (index === CLASSES.length) index = 0;
@@ -46,7 +46,7 @@ while (splitRegexpTime()) {
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i];
     if (part !== '') {
-      consumeClassToken(changes, part, false);
+      processClassToken(changes, part, false);
     }
   }
   if (index === CLASSES.length) index = 0;
