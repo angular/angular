@@ -312,7 +312,7 @@ runInEachFileSystem(() => {
       expect(jsContents).not.toMatch(/\$localize\s*`/);
       expect(jsContents)
           .toMatch(
-              /\$localize\(ɵngcc\d+\.__makeTemplateObject\(\[":some:`description`:A message"], \[":some\\\\:\\\\`description\\\\`:A message"]\)\);/);
+              /\$localize\(ɵngcc\d+\.__makeTemplateObject\(\[":some:`description`\\u241Fefc92f285b3c24b083a8a594f62c7fccf3118766\\u241F3806630072763809030:A message"], \[":some\\\\:\\\\`description\\\\`\\u241Fefc92f285b3c24b083a8a594f62c7fccf3118766\\u241F3806630072763809030:A message"]\)\);/);
     });
 
     describe('in async mode', () => {
@@ -1217,6 +1217,62 @@ runInEachFileSystem(() => {
         expect(dtsContents.match(/ɵngExportɵFooModuleɵFoo/g) !.length).toBe(1);
         expect(dtsContents).not.toContain(`ɵngExportɵFooModuleɵLocalDir`);
       });
+    });
+
+    describe('legacy message ids', () => {
+      it('should render legacy message ids when compiling i18n tags in component templates', () => {
+        compileIntoApf('test-package', {
+          '/index.ts': `
+           import {Component} from '@angular/core';
+
+           @Component({
+             selector: '[base]',
+             template: '<div i18n>Some message</div>'
+           })
+           export class AppComponent {}
+         `,
+        });
+
+        mainNgcc({
+          basePath: '/node_modules',
+          targetEntryPointPath: 'test-package',
+          propertiesToConsider: ['esm2015'],
+        });
+
+
+        const jsContents = fs.readFile(_(`/node_modules/test-package/esm2015/src/index.js`));
+        expect(jsContents)
+            .toContain(
+                '$localize `:␟888aea0e46f7e9dddbd95fc1ef380a3ff70ada9d␟1812794354835616626:Some message');
+      });
+
+      it('should not render legacy message ids when compiling i18n tags in component templates if `enableI18nLegacyMessageIdFormat` is false',
+         () => {
+           compileIntoApf('test-package', {
+             '/index.ts': `
+           import {Component} from '@angular/core';
+
+           @Component({
+             selector: '[base]',
+             template: '<div i18n>Some message</div>'
+           })
+           export class AppComponent {}
+         `,
+           });
+
+           mainNgcc({
+             basePath: '/node_modules',
+             targetEntryPointPath: 'test-package',
+             propertiesToConsider: ['esm2015'],
+             enableI18nLegacyMessageIdFormat: false,
+           });
+
+
+           const jsContents = fs.readFile(_(`/node_modules/test-package/esm2015/src/index.js`));
+           expect(jsContents).not.toContain('␟888aea0e46f7e9dddbd95fc1ef380a3ff70ada9d');
+           expect(jsContents).not.toContain('␟1812794354835616626');
+           expect(jsContents).not.toContain('␟');
+         });
     });
 
     function loadPackage(
