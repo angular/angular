@@ -51,6 +51,12 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
             ]);
       });
 
+      it('should trim whitespace from custom ids (but not meanings)', () => {
+        expect(extract('<div i18n="\n   m1|d1@@i1\n   ">test</div>')).toEqual([
+          [['test'], '\n   m1', 'd1', 'i1'],
+        ]);
+      });
+
       it('should extract from attributes without meaning and with id', () => {
         expect(
             extract(
