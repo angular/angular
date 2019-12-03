@@ -1920,17 +1920,14 @@ export interface ParseTemplateOptions {
   leadingTriviaChars?: string[];
 
   /**
-   * Render `$localize` message ids with the specified legacy format (xlf, xlf2 or xmb).
+   * Render `$localize` message ids with additional legacy message ids.
    *
-   * Use this option when use are using the `$localize` based localization messages but
-   * have not migrated the translation files to use the new `$localize` message id format.
+   * This option defaults to `true` but in the future the defaul will be flipped.
    *
-   * @deprecated
-   * `i18nLegacyMessageIdFormat` should only be used while migrating from legacy message id
-   * formatted translation files and will be removed at the same time as ViewEngine support is
-   * removed.
+   * For now set this option to false if you have migrated the translation files to use the new
+   * `$localize` message id format and you are not using compile time translation merging.
    */
-  i18nLegacyMessageIdFormat?: string;
+  enableI18nLegacyMessageIdFormat?: boolean;
 }
 
 /**
@@ -1943,7 +1940,7 @@ export interface ParseTemplateOptions {
 export function parseTemplate(
     template: string, templateUrl: string, options: ParseTemplateOptions = {}):
     {errors?: ParseError[], nodes: t.Node[], styleUrls: string[], styles: string[]} {
-  const {interpolationConfig, preserveWhitespaces, i18nLegacyMessageIdFormat} = options;
+  const {interpolationConfig, preserveWhitespaces, enableI18nLegacyMessageIdFormat} = options;
   const bindingParser = makeBindingParser(interpolationConfig);
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(
@@ -1961,7 +1958,8 @@ export function parseTemplate(
   // extraction process (ng xi18n) relies on a raw content to generate
   // message ids
   const i18nMetaVisitor = new I18nMetaVisitor(
-      interpolationConfig, /* keepI18nAttrs */ !preserveWhitespaces, i18nLegacyMessageIdFormat);
+      interpolationConfig, /* keepI18nAttrs */ !preserveWhitespaces,
+      enableI18nLegacyMessageIdFormat);
   rootNodes = html.visitAll(i18nMetaVisitor, rootNodes);
 
   if (!preserveWhitespaces) {

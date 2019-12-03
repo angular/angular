@@ -2458,82 +2458,23 @@ runInEachFileSystem(os => {
       expect(jsContents).not.toContain('MSG_EXTERNAL_');
     });
 
-    it('should render legacy id when `enableI18nLegacyMessageIdFormat` is not false and `i18nInFormat` is set to "xlf"',
-       () => {
-         env.tsconfig({i18nInFormat: 'xlf'});
-         env.write(`test.ts`, `
+    it('should render legacy ids when `enableI18nLegacyMessageIdFormat` is not false', () => {
+      env.tsconfig({});
+      env.write(`test.ts`, `
         import {Component} from '@angular/core';
         @Component({
           selector: 'test',
           template: '<div i18n>Some text</div>'
         })
         class FooCmp {}`);
-         env.driveMain();
-         const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain(':@@5dbba0a3da8dff890e20cf76eb075d58900fbcd3:Some text');
-       });
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents)
+          .toContain(
+              '":\\u241F5dbba0a3da8dff890e20cf76eb075d58900fbcd3\\u241F8321000940098097247:Some text"');
+    });
 
-    it('should render legacy id when `enableI18nLegacyMessageIdFormat` is not false and `i18nInFormat` is set to "xliff"',
-       () => {
-         env.tsconfig({i18nInFormat: 'xliff'});
-         env.write(`test.ts`, `
-        import {Component} from '@angular/core';
-        @Component({
-          selector: 'test',
-          template: '<div i18n>Some text</div>'
-        })
-        class FooCmp {}`);
-         env.driveMain();
-         const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain(':@@5dbba0a3da8dff890e20cf76eb075d58900fbcd3:Some text');
-       });
-
-    it('should render legacy id when `enableI18nLegacyMessageIdFormat` is not false and `i18nInFormat` is set to "xlf2"',
-       () => {
-         env.tsconfig({i18nInFormat: 'xlf2'});
-         env.write(`test.ts`, `
-        import {Component} from '@angular/core';
-        @Component({
-          selector: 'test',
-          template: '<div i18n>Some text</div>'
-        })
-        class FooCmp {}`);
-         env.driveMain();
-         const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain(':@@8321000940098097247:Some text');
-       });
-
-    it('should render legacy id when `enableI18nLegacyMessageIdFormat` is not false and `i18nInFormat` is set to "xliff2"',
-       () => {
-         env.tsconfig({i18nInFormat: 'xliff2'});
-         env.write(`test.ts`, `
-        import {Component} from '@angular/core';
-        @Component({
-          selector: 'test',
-          template: '<div i18n>Some text</div>'
-        })
-        class FooCmp {}`);
-         env.driveMain();
-         const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain(':@@8321000940098097247:Some text');
-       });
-
-    it('should render legacy id when `enableI18nLegacyMessageIdFormat` is not false and `i18nInFormat` is set to "xmb"',
-       () => {
-         env.tsconfig({i18nInFormat: 'xmb'});
-         env.write(`test.ts`, `
-        import {Component} from '@angular/core';
-        @Component({
-          selector: 'test',
-          template: '<div i18n>Some text</div>'
-        })
-        class FooCmp {}`);
-         env.driveMain();
-         const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain(':@@8321000940098097247:Some text');
-       });
-
-    it('should render custom id even if `enableI18nLegacyMessageIdFormat` is not false and `i18nInFormat` is set',
+    it('should render custom id and legacy ids if `enableI18nLegacyMessageIdFormat` is not false',
        () => {
          env.tsconfig({i18nFormatIn: 'xlf'});
          env.write(`test.ts`, `
@@ -2545,25 +2486,28 @@ runInEachFileSystem(os => {
         class FooCmp {}`);
          env.driveMain();
          const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain(':@@custom:Some text');
+         expect(jsContents)
+             .toContain(
+                 ':@@custom\\u241F5dbba0a3da8dff890e20cf76eb075d58900fbcd3\\u241F8321000940098097247:Some text');
        });
 
-    it('should not render legacy id when `enableI18nLegacyMessageIdFormat` is set to false', () => {
-      env.tsconfig({enableI18nLegacyMessageIdFormat: false, i18nInFormat: 'xmb'});
-      env.write(`test.ts`, `
+    it('should not render legacy ids when `enableI18nLegacyMessageIdFormat` is set to false',
+       () => {
+         env.tsconfig({enableI18nLegacyMessageIdFormat: false, i18nInFormat: 'xmb'});
+         env.write(`test.ts`, `
      import {Component} from '@angular/core';
      @Component({
        selector: 'test',
        template: '<div i18n>Some text</div>'
      })
      class FooCmp {}`);
-      env.driveMain();
-      const jsContents = env.getContents('test.js');
-      // Note that the colon would only be there if there is an id attached to the string.
-      expect(jsContents).not.toContain(':Some text');
-    });
+         env.driveMain();
+         const jsContents = env.getContents('test.js');
+         // Note that the colon would only be there if there is an id attached to the string.
+         expect(jsContents).not.toContain(':Some text');
+       });
 
-    it('should also render legacy id for ICUs when normal messages are using legacy ids', () => {
+    it('should also render legacy ids for ICUs when normal messages are using legacy ids', () => {
       env.tsconfig({i18nInFormat: 'xliff'});
       env.write(`test.ts`, `
      import {Component} from '@angular/core';
@@ -2576,8 +2520,10 @@ runInEachFileSystem(os => {
       const jsContents = env.getContents('test.js');
       expect(jsContents)
           .toContain(
-              ':@@720ba589d043a0497ac721ff972f41db0c919efb:{VAR_PLURAL, plural, 10 {ten} other {other}}');
-      expect(jsContents).toContain(':@@custom:Some text');
+              ':\\u241F720ba589d043a0497ac721ff972f41db0c919efb\\u241F3221232817843005870:{VAR_PLURAL, plural, 10 {ten} other {other}}');
+      expect(jsContents)
+          .toContain(
+              ':@@custom\\u241Fdcb6170595f5d548a3d00937e87d11858f51ad04\\u241F7419139165339437596:Some text');
     });
 
     it('@Component\'s `interpolation` should override default interpolation config', () => {
