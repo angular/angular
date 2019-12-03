@@ -23,7 +23,7 @@ import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
  * @docs-private
  */
 @Directive({
-  selector: 'mat-card-content',
+  selector: 'mat-card-content, [mat-card-content], [matCardContent]',
   host: {'class': 'mat-card-content'}
 })
 export class MatCardContent {}
