@@ -47,15 +47,14 @@ export function makeEntryPointBundle(
     mirrorDtsFromSrc: boolean = false,
     enableI18nLegacyMessageIdFormat: boolean = true): EntryPointBundle {
   // Create the TS program and necessary helpers.
+  const rootDir = entryPoint.package;
   const options: ts.CompilerOptions = {
     allowJs: true,
     maxNodeModuleJsDepth: Infinity,
-    noLib: true,
-    rootDir: entryPoint.path, ...pathMappings
+    noLib: true, rootDir, ...pathMappings
   };
   const srcHost = new NgccSourcesCompilerHost(fs, options, entryPoint.path);
   const dtsHost = new NgtscCompilerHost(fs, options);
-  const rootDirs = [absoluteFrom(entryPoint.path)];
 
   // Create the bundle programs, as necessary.
   const absFormatPath = fs.resolve(entryPoint.path, formatPath);
@@ -71,8 +70,11 @@ export function makeEntryPointBundle(
                              null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
 
-  return {entryPoint, format, rootDirs, isCore,
-          isFlatCore, src,    dts,      enableI18nLegacyMessageIdFormat};
+  return {
+    entryPoint,
+    format,
+    rootDirs: [rootDir], isCore, isFlatCore, src, dts, enableI18nLegacyMessageIdFormat
+  };
 }
 
 function computePotentialDtsFilesFromJsFiles(

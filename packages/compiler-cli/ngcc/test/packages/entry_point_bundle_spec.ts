@@ -148,6 +148,16 @@ runInEachFileSystem(() => {
           name: _('/node_modules/internal/esm2015/src/internal.js'),
           contents: 'export function internal();'
         },
+
+        // A package with a secondary entry-point that has source files in a different tree
+        {
+          name: _('/node_modules/primary/secondary/index.d.ts'),
+          contents: 'export declare function secondary();'
+        },
+        {
+          name: _('/node_modules/primary/esm2015/secondary/index.js'),
+          contents: 'export function secondary();'
+        },
       ]);
     }
 
@@ -268,5 +278,24 @@ runInEachFileSystem(() => {
          expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
              .not.toContain(absoluteFrom('/node_modules/test/internal.d.ts'));
        });
+
+    it('should set the `rootDir` to the package path not the entry-point path', () => {
+      setupMockFileSystem();
+      const fs = getFileSystem();
+      const entryPoint: EntryPoint = {
+        name: 'secondary',
+        packageJson: {name: 'secondary'},
+        package: absoluteFrom('/node_modules/primary'),
+        path: absoluteFrom('/node_modules/primary/secondary'),
+        typings: absoluteFrom('/node_modules/primary/secondary/index.d.ts'),
+        compiledByAngular: true,
+        ignoreMissingDependencies: false,
+        generateDeepReexports: false,
+      };
+      const bundle = makeEntryPointBundle(
+          fs, entryPoint, './index.js', false, 'esm2015', /* transformDts */ true,
+          /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
+      expect(bundle.rootDirs).toEqual([absoluteFrom('/node_modules/primary')]);
+    });
   });
 });
