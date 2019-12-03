@@ -49,7 +49,8 @@ export function _localeFactory(locale?: string): string {
  * * Ivy enabled: use `$localize.locale`
  */
 export function getGlobalLocale(): string {
-  if (ngI18nClosureMode && typeof goog !== 'undefined' && goog.LOCALE !== 'en') {
+  if (typeof ngI18nClosureMode !== 'undefined' && ngI18nClosureMode &&
+      typeof goog !== 'undefined' && goog.LOCALE !== 'en') {
     // * The default `goog.LOCALE` value is `en`, while Angular used `en-US`.
     // * In order to preserve backwards compatibility, we use Angular default value over
     //   Closure Compiler's one.
