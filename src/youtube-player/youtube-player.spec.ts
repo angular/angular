@@ -37,6 +37,7 @@ describe('YoutubePlayer', () => {
 
     afterEach(() => {
       delete window.YT;
+      window.onYouTubeIframeAPIReady = undefined;
     });
 
     it('initializes a youtube player', () => {
@@ -281,17 +282,18 @@ describe('YoutubePlayer', () => {
     beforeEach(() => {
       api = window.YT;
       delete window.YT;
-
-      fixture = TestBed.createComponent(TestApp);
-      testComponent = fixture.debugElement.componentInstance;
-      fixture.detectChanges();
     });
 
     afterEach(() => {
       delete window.YT;
+      window.onYouTubeIframeAPIReady = undefined;
     });
 
     it('waits until the api is ready before initializing', () => {
+      fixture = TestBed.createComponent(TestApp);
+      testComponent = fixture.debugElement.componentInstance;
+      fixture.detectChanges();
+
       expect(playerCtorSpy).not.toHaveBeenCalled();
 
       window.YT = api!;
@@ -305,6 +307,22 @@ describe('YoutubePlayer', () => {
           width: DEFAULT_PLAYER_WIDTH,
           height: DEFAULT_PLAYER_HEIGHT,
         }));
+    });
+
+    it('should not override any pre-existing API loaded callbacks', () => {
+      const spy = jasmine.createSpy('other API loaded spy');
+      window.onYouTubeIframeAPIReady = spy;
+
+      fixture = TestBed.createComponent(TestApp);
+      testComponent = fixture.debugElement.componentInstance;
+      fixture.detectChanges();
+
+      expect(playerCtorSpy).not.toHaveBeenCalled();
+
+      window.YT = api!;
+      window.onYouTubeIframeAPIReady!();
+
+      expect(spy).toHaveBeenCalled();
     });
   });
 

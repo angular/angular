@@ -160,6 +160,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   private _youtubeContainer = new Subject<HTMLElement>();
   private _destroyed = new Subject<void>();
   private _player: Player | undefined;
+  private _existingApiReadyCallback: (() => void) | undefined;
 
   constructor(
     private _ngZone: NgZone,
@@ -189,7 +190,12 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
       }
 
       const iframeApiAvailableSubject = new Subject<boolean>();
+      this._existingApiReadyCallback = window.onYouTubeIframeAPIReady;
+
       window.onYouTubeIframeAPIReady = () => {
+        if (this._existingApiReadyCallback) {
+          this._existingApiReadyCallback();
+        }
         this._ngZone.run(() => iframeApiAvailableSubject.next(true));
       };
       iframeApiAvailableObs = iframeApiAvailableSubject.pipe(take(1), startWith(false));
@@ -262,7 +268,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   ngOnDestroy() {
     if (this._player) {
       this._player.destroy();
-      window.onYouTubeIframeAPIReady = undefined;
+      window.onYouTubeIframeAPIReady = this._existingApiReadyCallback;
     }
 
     this._videoIdObs.complete();
