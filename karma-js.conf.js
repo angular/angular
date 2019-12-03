@@ -127,6 +127,9 @@ module.exports = function(config) {
       idleTimeout: 600,
       commandTimeout: 600,
       maxDuration: 5400,
+      connectOptions: {
+        noSslBumpDomains: 'all',
+      },
     },
 
     browserStack: {
@@ -150,44 +153,35 @@ module.exports = function(config) {
   // When running under Bazel with karma_web_test, SAUCE_TUNNEL_IDENTIFIER and KARMA_WEB_TEST_MODE
   // will only be available when `--config=saucelabs` is set. See //:test_web_all target
   // and /.bazelrc.
-  if (process.env['SAUCE_TUNNEL_IDENTIFIER']) {
-    console.log(`SAUCE_TUNNEL_IDENTIFIER: ${process.env.SAUCE_TUNNEL_IDENTIFIER}`);
+  if (process.env['SAUCE_TUNNEL_IDENTIFIER'] ||
+      (process.env.TEST_BINARY && process.env.TEST_BINARY.endsWith('_saucelabs'))) {
+    const credentials = require('./saucelabs-credentials.json');
+    if (!credentials.username || !credentials.accessKey) {
+      console.error(`
+  ========================FAILED TO CONNECT TO SAUCELABS========================
+  Saucelabs credentials not provided, please provide your username and accessKey
+  in the saucelabs-credentials.json file.
 
-    const tunnelIdentifier = process.env['SAUCE_TUNNEL_IDENTIFIER'];
+  Example:
+  {
+    "username": "myusername",
+    "accessKey": "my-access-key-value"
+  }`);
+      process.exit(1);
+    }
+    const tunnelIdentifier = `angular-framework`;
 
     // Setup the Saucelabs plugin so that it can launch browsers using the proper tunnel.
-    conf.sauceLabs.build = tunnelIdentifier;
+    conf.sauceLabs.build = `${tunnelIdentifier}-${Math.floor(Math.random()*1000)}`;
+    conf.sauceLabs.testName = process.env.TEST_TARGET;
+    conf.sauceLabs.startConnect = true
+    conf.sauceLabs.username = credentials.username;
+    conf.sauceLabs.accessKey = credentials.accessKey;
     conf.sauceLabs.tunnelIdentifier = tunnelIdentifier;
 
-    // Setup the Browserstack plugin so that it can launch browsers using the proper tunnel.
-    // TODO: This is currently not used because BS doesn't run on the CI. Consider removing.
-    conf.browserStack.build = tunnelIdentifier;
-    conf.browserStack.tunnelIdentifier = tunnelIdentifier;
+    conf.browsers = browserProvidersConf.sauceAliases.CI_REQUIRED;
   }
-
-  if (process.env.KARMA_WEB_TEST_MODE) {
-    // KARMA_WEB_TEST_MODE is used to setup karma to run in
-    // SauceLabs or Browserstack
-    console.log(`KARMA_WEB_TEST_MODE: ${process.env.KARMA_WEB_TEST_MODE}`);
-
-    switch (process.env.KARMA_WEB_TEST_MODE) {
-      case 'SL_REQUIRED':
-        conf.browsers = browserProvidersConf.sauceAliases.CI_REQUIRED;
-        break;
-      case 'SL_OPTIONAL':
-        conf.browsers = browserProvidersConf.sauceAliases.CI_OPTIONAL;
-        break;
-      case 'BS_REQUIRED':
-        conf.browsers = browserProvidersConf.browserstackAliases.CI_REQUIRED;
-        break;
-      case 'BS_OPTIONAL':
-        conf.browsers = browserProvidersConf.browserstackAliases.CI_OPTIONAL;
-        break;
-      default:
-        throw new Error(
-            `Unrecognized process.env.KARMA_WEB_TEST_MODE: ${process.env.KARMA_WEB_TEST_MODE}`);
-    }
-  } else {
+  else {
     // Run the test locally
     conf.browsers = [process.env['DISPLAY'] ? 'Chrome' : 'ChromeHeadless'];
   }

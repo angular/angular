@@ -27,6 +27,7 @@ modules/.vscode
 
 # Don't check in secret files
 *secret.js
+saucelab-credentials.json
 
 # Ignore npm/yarn debug log
 npm-debug.log

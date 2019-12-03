@@ -111,6 +111,12 @@ build:remote --project_id=internal-200822
 build:remote --remote_cache=remotebuildexecution.googleapis.com
 build:remote --remote_executor=remotebuildexecution.googleapis.com
 
+build:saucelabs --test_tag_filters=saucelabs,-no-saucelabs
+build:saucelabs --build_tests_only
+build:saucelabs --local_test_jobs=1
+test:saucelabs --remote_executor=""
+test:saucelabs --remote_upload_local_results=true
+
 ###############################
 # NodeJS rules settings
 # These settings are required for rules_nodejs

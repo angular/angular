@@ -27,6 +27,9 @@ jasmine_node_test(
 
 karma_web_test_suite(
     name = "test_web",
+    tags = [
+        "no-saucelabs",
+    ],
     deps = [
         ":test_lib",
     ],

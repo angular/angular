@@ -80,3 +80,6 @@ setPublicVar MATERIAL_REPO_COMMIT "a5cad10cf9ca5db84c307d38d5594c3f1d89ae2b"
 
 # Source `$BASH_ENV` to make the variables available immediately.
 source $BASH_ENV;
+
+# Create saucelabs-credentials.json file, after all variables have been made available in the env.
+echo "{\"username\": \"$SAUCE_USERNAME\",\"accessKey\": \"$(echo $SAUCE_ACCESS_KEY | rev)\"}" > $projectDir/saucelabs-credentials.json;

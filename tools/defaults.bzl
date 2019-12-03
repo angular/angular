@@ -176,39 +176,13 @@ def npm_package(name, replacements = {}, **kwargs):
         **kwargs
     )
 
-def karma_web_test(bootstrap = [], deps = [], data = [], runtime_deps = [], **kwargs):
-    """Default values for karma_web_test"""
+def karma_web_test_suite(name, bootstrap = [], deps = [], data = [], runtime_deps = [], tags = [], **kwargs):
+    """Default values for karma_web_test_suite"""
     if not bootstrap:
         bootstrap = ["//:web_test_bootstrap_scripts"]
     local_deps = [
         "@npm//karma-browserstack-launcher",
         "@npm//karma-sauce-launcher",
-        "@npm//:node_modules/tslib/tslib.js",
-        "//tools/rxjs:rxjs_umd_modules",
-        "//packages/zone.js:npm_package",
-    ] + deps
-    local_runtime_deps = [
-        "//tools/testing:browser",
-    ] + runtime_deps
-
-    _karma_web_test(
-        runtime_deps = local_runtime_deps,
-        bootstrap = bootstrap,
-        config_file = "//:karma-js.conf.js",
-        deps = local_deps,
-        data = data + [
-            "//:browser-providers.conf.js",
-            "//tools:jasmine-seed-generator.js",
-        ],
-        configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
-        **kwargs
-    )
-
-def karma_web_test_suite(bootstrap = [], deps = [], runtime_deps = [], **kwargs):
-    """Default values for karma_web_test_suite"""
-    if not bootstrap:
-        bootstrap = ["//:web_test_bootstrap_scripts"]
-    local_deps = [
         "@npm//:node_modules/tslib/tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ] + deps
@@ -217,10 +191,32 @@ def karma_web_test_suite(bootstrap = [], deps = [], runtime_deps = [], **kwargs)
     ] + runtime_deps
 
     _karma_web_test_suite(
+        name = name,
         runtime_deps = local_runtime_deps,
         bootstrap = bootstrap,
         deps = local_deps,
         browsers = ["//tools/browsers:chromium"],
+        tags = tags,
+        **kwargs
+    )
+
+    _karma_web_test(
+        name = name + "_saucelabs",
+        runtime_deps = local_runtime_deps,
+        bootstrap = bootstrap,
+        config_file = "//:karma-js.conf.js",
+        deps = local_deps,
+        data = data + [
+            "//:browser-providers.conf.js",
+            "//tools:jasmine-seed-generator.js",
+            "//:saucelabs-credentials.json",
+        ],
+        tags = tags + [
+            "maunal",
+            "saucelabs",
+            "no-remote-exec",
+            "requires-network",
+        ],
         **kwargs
     )
 

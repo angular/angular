@@ -35,6 +35,9 @@ karma_web_test_suite(
     bootstrap = [
         ":elements_test_bootstrap_scripts",
     ],
+    tags = [
+        "no-saucelabs",
+    ],
     # do not sort
     deps = [
         ":test_lib",
