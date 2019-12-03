@@ -8,5 +8,5 @@
 
 export * from './src/api';
 export {IvyCompilation} from './src/compilation';
-export {declarationTransformFactory, DtsTransformRegistry, IvyDeclarationDtsTransform} from './src/declaration';
+export {declarationTransformFactory, DtsTransformRegistry, IvyDeclarationDtsTransform, ReturnTypeTransform} from './src/declaration';
 export {ivyTransformFactory} from './src/transform';

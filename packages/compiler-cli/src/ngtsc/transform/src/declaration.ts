@@ -21,13 +21,21 @@ import {addImports} from './utils';
  * have their declaration file transformed.
  */
 export class DtsTransformRegistry {
-  private ivyDeclarationTransforms = new Map<string, IvyDeclarationDtsTransform>();
+  private ivyDeclarationTransforms = new Map<ts.SourceFile, IvyDeclarationDtsTransform>();
+  private returnTypeTransforms = new Map<ts.SourceFile, ReturnTypeTransform>();
 
   getIvyDeclarationTransform(sf: ts.SourceFile): IvyDeclarationDtsTransform {
-    if (!this.ivyDeclarationTransforms.has(sf.fileName)) {
-      this.ivyDeclarationTransforms.set(sf.fileName, new IvyDeclarationDtsTransform());
+    if (!this.ivyDeclarationTransforms.has(sf)) {
+      this.ivyDeclarationTransforms.set(sf, new IvyDeclarationDtsTransform());
     }
-    return this.ivyDeclarationTransforms.get(sf.fileName) !;
+    return this.ivyDeclarationTransforms.get(sf) !;
+  }
+
+  getReturnTypeTransform(sf: ts.SourceFile): ReturnTypeTransform {
+    if (!this.returnTypeTransforms.has(sf)) {
+      this.returnTypeTransforms.set(sf, new ReturnTypeTransform());
+    }
+    return this.returnTypeTransforms.get(sf) !;
   }
 
   /**
@@ -42,11 +50,16 @@ export class DtsTransformRegistry {
     if (!sf.isDeclarationFile) {
       return null;
     }
+    const originalSf = ts.getOriginalNode(sf) as ts.SourceFile;
 
     let transforms: DtsTransform[]|null = null;
-    if (this.ivyDeclarationTransforms.has(sf.fileName)) {
+    if (this.ivyDeclarationTransforms.has(originalSf)) {
       transforms = [];
-      transforms.push(this.ivyDeclarationTransforms.get(sf.fileName) !);
+      transforms.push(this.ivyDeclarationTransforms.get(originalSf) !);
+    }
+    if (this.returnTypeTransforms.has(originalSf)) {
+      transforms = transforms || [];
+      transforms.push(this.returnTypeTransforms.get(originalSf) !);
     }
     return transforms;
   }
@@ -209,5 +222,63 @@ export class IvyDeclarationDtsTransform implements DtsTransform {
         /* typeParameters */ clazz.typeParameters,
         /* heritageClauses */ clazz.heritageClauses,
         /* members */[...members, ...newMembers]);
+  }
+}
+
+export class ReturnTypeTransform implements DtsTransform {
+  private typeReplacements = new Map<ts.Declaration, Type>();
+
+  addTypeReplacement(declaration: ts.Declaration, type: Type): void {
+    this.typeReplacements.set(declaration, type);
+  }
+
+  transformClassElement(element: ts.ClassElement, imports: ImportManager): ts.ClassElement {
+    if (!ts.isMethodSignature(element)) {
+      return element;
+    }
+
+    const original = ts.getOriginalNode(element) as ts.MethodDeclaration;
+    if (!this.typeReplacements.has(original)) {
+      return element;
+    }
+    const returnType = this.typeReplacements.get(original) !;
+    const tsReturnType = translateType(returnType, imports);
+
+    const methodSignature = ts.updateMethodSignature(
+        /* node */ element,
+        /* typeParameters */ element.typeParameters,
+        /* parameters */ element.parameters,
+        /* type */ tsReturnType,
+        /* name */ element.name,
+        /* questionToken */ element.questionToken);
+
+    // Copy over any modifiers, these cannot be set during the `ts.updateMethodSignature` call.
+    methodSignature.modifiers = element.modifiers;
+
+    // A bug in the TypeScript declaration causes `ts.MethodSignature` not to be assignable to
+    // `ts.ClassElement`. Since `element` was a `ts.MethodSignature` already, transforming it into
+    // this type is actually correct.
+    return methodSignature as unknown as ts.ClassElement;
+  }
+
+  transformFunctionDeclaration(element: ts.FunctionDeclaration, imports: ImportManager):
+      ts.FunctionDeclaration {
+    const original = ts.getOriginalNode(element) as ts.FunctionDeclaration;
+    if (!this.typeReplacements.has(original)) {
+      return element;
+    }
+    const returnType = this.typeReplacements.get(original) !;
+    const tsReturnType = translateType(returnType, imports);
+
+    return ts.updateFunctionDeclaration(
+        /* node */ element,
+        /* decorators */ element.decorators,
+        /* modifiers */ element.modifiers,
+        /* asteriskToken */ element.asteriskToken,
+        /* name */ element.name,
+        /* typeParameters */ element.typeParameters,
+        /* parameters */ element.parameters,
+        /* type */ tsReturnType,
+        /* body */ element.body);
   }
 }
