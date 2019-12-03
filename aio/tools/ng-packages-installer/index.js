@@ -70,8 +70,12 @@ class NgPackagesInstaller {
   installLocalDependencies() {
     if (this.force || !this._checkLocalMarker()) {
       const pathToPackageConfig = path.resolve(this.projectDir, PACKAGE_JSON);
+      const packageConfigFile = fs.readFileSync(pathToPackageConfig, 'utf8');
+      const packageConfig = JSON.parse(packageConfigFile);
+
       const pathToLockfile = path.resolve(this.projectDir, YARN_LOCK);
       const parsedLockfile = this._parseLockfile(pathToLockfile);
+
       const packages = this._getDistPackages();
 
       try {
@@ -96,11 +100,11 @@ class NgPackagesInstaller {
             });
           });
 
+          // Overwrite the package's version to avoid version mismatch errors with the CLI.
+          this._overwritePackageVersion(key, tmpConfig, packageConfig, parsedLockfile);
+
           fs.writeFileSync(pkg.packageJsonPath, JSON.stringify(tmpConfig, null, 2));
         });
-
-        const packageConfigFile = fs.readFileSync(pathToPackageConfig, 'utf8');
-        const packageConfig = JSON.parse(packageConfigFile);
 
         const [dependencies, peers] = this._collectDependencies(packageConfig.dependencies || {}, packages);
         const [devDependencies, devPeers] = this._collectDependencies(packageConfig.devDependencies || {}, packages);
@@ -262,6 +266,35 @@ class NgPackagesInstaller {
       const indent = ' '.repeat(header.length);
       const message = messages.join(' ');
       console.info(`${header}${message.split('\n').join(`\n${indent}`)}`);
+    }
+  }
+
+  /**
+   * Update a package's version with the fake version based on the package's original version in the projects's
+   * lockfile.
+   *
+   * **Background:**
+   * This helps avoid version mismatch errors with the CLI.
+   * Since the version set by bazel on the locally built packages is determined based on the latest tag for a commit on
+   * the current branch, it is often the case that this version is older than what the current `@angular/cli` version is
+   * compatible with (e.g. if the user has not fetched the latest tags from `angular/angular` or the branch has not been
+   * rebased recently.
+   *
+   * @param {string} packageName - The name of the package we are updating (e.g. `'@angular/core'`).
+   * @param {{[key: string]: any}} packageConfig - The package's parsed `package.json`.
+   * @param {{[key: string]: any}} projectConfig - The project's parsed `package.json`.
+   * @param {import('@yarnpkg/lockfile').LockFileObject} projectLockfile - The projects's parsed `yarn.lock`.
+   */
+  _overwritePackageVersion(packageName, packageConfig, projectConfig, projectLockfile) {
+    const originalVersionRange = (projectConfig.dependencies || {})[packageName] ||
+                                 (projectConfig.devDependencies || {})[packageName];
+    const originalVersion =
+      (projectLockfile[`${packageName}@${originalVersionRange}`] || {}).version;
+
+    if (originalVersion !== undefined) {
+      const newVersion = `${originalVersion}+locally-overwritten-by-ngPackagesInstaller`;
+      this._log(`Overwriting the version of '${packageName}': ${packageConfig.version} --> ${newVersion}`);
+      packageConfig.version = newVersion;
     }
   }
 
