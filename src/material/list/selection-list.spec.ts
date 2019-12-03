@@ -1,4 +1,4 @@
-import {DOWN_ARROW, SPACE, ENTER, UP_ARROW, HOME, END, A} from '@angular/cdk/keycodes';
+import {DOWN_ARROW, SPACE, ENTER, UP_ARROW, HOME, END, A, D} from '@angular/cdk/keycodes';
 import {
   createKeyboardEvent,
   dispatchFakeEvent,
@@ -499,6 +499,44 @@ describe('MatSelectionList without forms', () => {
       tick(200);
 
       expect(manager.activeItemIndex).toBe(3);
+    }));
+
+    it('should be able to skip to an item by typing', fakeAsync(() => {
+      const manager = selectionList.componentInstance._keyManager;
+
+      expect(manager.activeItemIndex).not.toBe(3);
+
+      const event = createKeyboardEvent('keydown', D, 'd');
+      selectionList.componentInstance._keydown(event);
+      fixture.detectChanges();
+      tick(200);
+
+      expect(manager.activeItemIndex).toBe(3);
+    }));
+
+    it('should not select items while using the typeahead', fakeAsync(() => {
+      const manager = selectionList.componentInstance._keyManager;
+      const testListItem = listOptions[1].nativeElement as HTMLElement;
+      const model =
+          selectionList.injector.get<MatSelectionList>(MatSelectionList).selectedOptions;
+
+      dispatchFakeEvent(testListItem, 'focus');
+      fixture.detectChanges();
+
+      expect(manager.activeItemIndex).toBe(1);
+      expect(model.isEmpty()).toBe(true);
+
+      selectionList.componentInstance._keydown(createKeyboardEvent('keydown', D, 'd'));
+      fixture.detectChanges();
+      tick(100); // Tick only half the typeahead timeout.
+
+      selectionList.componentInstance._keydown(
+        createKeyboardEvent('keydown', SPACE, undefined, testListItem));
+      fixture.detectChanges();
+      tick(100); // Tick the rest of the timeout.
+
+      expect(manager.activeItemIndex).toBe(3);
+      expect(model.isEmpty()).toBe(true);
     }));
 
     it('should be able to select all options', () => {

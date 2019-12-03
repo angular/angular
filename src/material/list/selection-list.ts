@@ -490,7 +490,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
     switch (keyCode) {
       case SPACE:
       case ENTER:
-        if (!hasModifier) {
+        if (!hasModifier && !manager.isTyping()) {
           this._toggleFocusedOption();
           // Always prevent space from scrolling the page since the list has focus
           event.preventDefault();
@@ -504,7 +504,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
         }
         break;
       case A:
-        if (hasModifierKey(event, 'ctrlKey')) {
+        if (hasModifierKey(event, 'ctrlKey') && !manager.isTyping()) {
           this.options.find(option => !option.selected) ? this.selectAll() : this.deselectAll();
           event.preventDefault();
         }
