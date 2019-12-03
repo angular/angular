@@ -25,6 +25,8 @@ describe('style differ', () => {
       expectParseValue(': text2 ;🛑').toBe('text2');
       expectParseValue(':text3;🛑').toBe('text3');
       expectParseValue(':  text3 ;🛑').toBe('text3');
+      expectParseValue(':  text1 text2;🛑').toBe('text1 text2');
+      expectParseValue(':  text1 text2  ;🛑').toBe('text1 text2');
     });
 
     it('should parse quoted values', () => {
@@ -32,6 +34,7 @@ describe('style differ', () => {
       expectParseValue(':"\\\\"').toBe('"\\\\"');
       expectParseValue(': ""').toBe('""');
       expectParseValue(': ""  ').toBe('""');
+      expectParseValue(': "text1" text2   ').toBe('"text1" text2');
       expectParseValue(':"text"').toBe('"text"');
       expectParseValue(': \'hello world\'').toBe('\'hello world\'');
       expectParseValue(':"some \n\t\r text ,;";🛑').toBe('"some \n\t\r text ,;"');
@@ -42,6 +45,7 @@ describe('style differ', () => {
       expectParseValue(':url(:;)').toBe('url(:;)');
       expectParseValue(':URL(some :; text)').toBe('URL(some :; text)');
       expectParseValue(': url(text);🛑').toBe('url(text)');
+      expectParseValue(': url(text) more text;🛑').toBe('url(text) more text');
       expectParseValue(':url(;"\':\\))').toBe('url(;"\':\\))');
       expectParseValue(': url(;"\':\\)) ;🛑').toBe('url(;"\':\\))');
     });
@@ -88,6 +92,11 @@ describe('style differ', () => {
       expect(removeStyle('a: a; foo: bar; b: b', 'foo')).toEqual('a: a; b: b');
       expect(removeStyle('a: a; foo: bar; b: b; foo: bar; c: c', 'foo'))
           .toEqual('a: a; b: b; c: c');
+    });
+
+    it('should remove trailing ;', () => {
+      expect(removeStyle('a: a; foo: bar', 'foo')).toEqual('a: a');
+      expect(removeStyle('a: a ; foo: bar ; ', 'foo')).toEqual('a: a');
     });
   });
 });
