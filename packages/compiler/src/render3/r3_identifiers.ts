@@ -260,6 +260,11 @@ export class Identifiers {
     moduleName: CORE,
   };
 
+  static ModuleWithProviders: o.ExternalReference = {
+    name: 'ModuleWithProviders',
+    moduleName: CORE,
+  };
+
   static defineNgModule: o.ExternalReference = {name: 'ɵɵdefineNgModule', moduleName: CORE};
   static setNgModuleScope: o.ExternalReference = {name: 'ɵɵsetNgModuleScope', moduleName: CORE};
 
