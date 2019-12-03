@@ -1169,44 +1169,22 @@ describe('projection', () => {
       @Component({
         selector: 'projector-app',
         template: `
-            App selector: <ng-content select="app-selector"></ng-content>
-            Attribute-based: <ng-content select="[foo]"></ng-content>
-            Class-based: <ng-content select=".bar"></ng-content>
-            Other: <ng-content></ng-content>
-          `,
+          Projected
+          <ng-content select="foo"></ng-content>
+          <ng-content select="[foo]"></ng-content>
+          <ng-content select=".foo"></ng-content>
+        `,
       })
       class ProjectorApp {
-      }
-
-      @Component({
-        selector: 'app-selector',
-        template: ' App {{ marker }} ',
-      })
-      class ChildApp {
-        @Input() marker: string = '';
       }
 
       @Component({
         selector: 'root-comp',
         template: `
           <projector-app>
-            <div>Text content with no selectors</div>
-
-            <div *ngIf="show" foo> Attr A </div>
-            <ng-container *ngIf="show" ngProjectAs="[foo]">
-              <div foo> Attr B </div>
-            </ng-container>
-
-            <div *ngIf="show" class="bar"> Class A </div>
-            <ng-container *ngIf="show" ngProjectAs=".bar">
-              <div class="bar"> Class B </div>
-            </ng-container>
-
-            <app-selector *ngIf="show" marker="A"></app-selector>
-            <ng-container *ngIf="show" ngProjectAs="app-selector">
-              <app-selector marker="B"></app-selector>
-            </ng-container>
-
+            <div *ngIf="show" ngProjectAs="foo">as element</div>
+            <div *ngIf="show" ngProjectAs="[foo]">as attribute</div>
+            <div *ngIf="show" ngProjectAs=".foo">as class</div>
           </projector-app>
         `,
       })
@@ -1215,25 +1193,23 @@ describe('projection', () => {
       }
 
       TestBed.configureTestingModule({
-        declarations: [ChildApp, ProjectorApp, RootComp],
+        declarations: [ProjectorApp, RootComp],
       });
       const fixture = TestBed.createComponent(RootComp);
       fixture.detectChanges();
 
       let content = fixture.nativeElement.textContent;
-      expect(content).toContain('App selector:  App A  App B');
-      expect(content).toContain('Attribute-based:  Attr A  Attr B');
-      expect(content).toContain('Class-based:  Class A  Class B');
-      expect(content).toContain('Other: Text content with no selectors');
+      expect(content).toContain('as element');
+      expect(content).toContain('as attribute');
+      expect(content).toContain('as class');
 
       fixture.componentInstance.show = false;
       fixture.detectChanges();
 
       content = fixture.nativeElement.textContent;
-      expect(content).not.toContain('App selector:  App A  App B');
-      expect(content).not.toContain('Attribute-based:  Attr A  Attr B');
-      expect(content).not.toContain('Class-based:  Class A  Class B');
-      expect(content).toContain('Other: Text content with no selectors');
+      expect(content).not.toContain('as element');
+      expect(content).not.toContain('as attribute');
+      expect(content).not.toContain('as class');
     });
 
     describe('on containers', () => {
