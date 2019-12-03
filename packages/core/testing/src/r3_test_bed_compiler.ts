@@ -129,10 +129,10 @@ export class R3TestBedCompiler {
     this.resolvers.module.addOverride(ngModule, override);
     const metadata = this.resolvers.module.resolve(ngModule);
     if (metadata === null) {
-      throw new Error(`${ngModule.name} is not an @NgModule or is missing metadata`);
+      throw invalidTypeError(ngModule.name, 'NgModule');
     }
 
-    this.recompileNgModule(ngModule);
+    this.recompileNgModule(ngModule, metadata);
 
     // At this point, the module has a valid module def (ɵmod), but the override may have introduced
     // new declarations or imported modules. Ingest any possible new types and add them to the
@@ -306,7 +306,10 @@ export class R3TestBedCompiler {
     let needsAsyncResources = false;
     this.pendingComponents.forEach(declaration => {
       needsAsyncResources = needsAsyncResources || isComponentDefPendingResolution(declaration);
-      const metadata = this.resolvers.component.resolve(declaration) !;
+      const metadata = this.resolvers.component.resolve(declaration);
+      if (metadata === null) {
+        throw invalidTypeError(declaration.name, 'Component');
+      }
       this.maybeStoreNgDef(NG_COMP_DEF, declaration);
       compileComponent(declaration, metadata);
     });
@@ -314,13 +317,19 @@ export class R3TestBedCompiler {
 
     this.pendingDirectives.forEach(declaration => {
       const metadata = this.resolvers.directive.resolve(declaration);
+      if (metadata === null) {
+        throw invalidTypeError(declaration.name, 'Directive');
+      }
       this.maybeStoreNgDef(NG_DIR_DEF, declaration);
       compileDirective(declaration, metadata);
     });
     this.pendingDirectives.clear();
 
     this.pendingPipes.forEach(declaration => {
-      const metadata = this.resolvers.pipe.resolve(declaration) !;
+      const metadata = this.resolvers.pipe.resolve(declaration);
+      if (metadata === null) {
+        throw invalidTypeError(declaration.name, 'Pipe');
+      }
       this.maybeStoreNgDef(NG_PIPE_DEF, declaration);
       compilePipe(declaration, metadata);
     });
@@ -434,11 +443,7 @@ export class R3TestBedCompiler {
     }
   }
 
-  private recompileNgModule(ngModule: Type<any>): void {
-    const metadata = this.resolvers.module.resolve(ngModule);
-    if (metadata === null) {
-      throw new Error(`Unable to resolve metadata for NgModule: ${ngModule.name}`);
-    }
+  private recompileNgModule(ngModule: Type<any>, metadata: NgModule): void {
     // Cache the initial ngModuleDef as it will be overwritten.
     this.maybeStoreNgDef(NG_MOD_DEF, ngModule);
     this.maybeStoreNgDef(NG_INJ_DEF, ngModule);
@@ -749,6 +754,10 @@ function forEachRight<T>(values: T[], fn: (value: T, idx: number) => void): void
   for (let idx = values.length - 1; idx >= 0; idx--) {
     fn(values[idx], idx);
   }
+}
+
+function invalidTypeError(name: string, expectedType: string): Error {
+  return new Error(`${name} class doesn't have @${expectedType} decorator or is missing metadata.`);
 }
 
 class R3TestCompiler implements Compiler {
