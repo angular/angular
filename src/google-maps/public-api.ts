@@ -7,6 +7,7 @@
  */
 
 export {GoogleMap} from './google-map/google-map';
-export {MapMarker} from './map-marker/map-marker';
 export {GoogleMapsModule} from './google-maps-module';
 export {MapInfoWindow} from './map-info-window/map-info-window';
+export {MapMarker} from './map-marker/map-marker';
+export {MapPolyline} from './map-polyline/map-polyline';

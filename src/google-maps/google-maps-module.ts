@@ -11,11 +11,13 @@ import {NgModule} from '@angular/core';
 import {GoogleMap} from './google-map/google-map';
 import {MapInfoWindow} from './map-info-window/map-info-window';
 import {MapMarker} from './map-marker/map-marker';
+import {MapPolyline} from './map-polyline/map-polyline';
 
 const COMPONENTS = [
   GoogleMap,
   MapInfoWindow,
   MapMarker,
+  MapPolyline,
 ];
 
 @NgModule({

@@ -51,7 +51,7 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
 export declare class GoogleMapsModule {
     static ɵinj: i0.ɵɵInjectorDef<GoogleMapsModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapInfoWindow, typeof i3.MapMarker], never, [typeof i1.GoogleMap, typeof i2.MapInfoWindow, typeof i3.MapMarker]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapInfoWindow, typeof i3.MapMarker, typeof i4.MapPolyline], never, [typeof i1.GoogleMap, typeof i2.MapInfoWindow, typeof i3.MapMarker, typeof i4.MapPolyline]>;
 }
 
 export declare class MapInfoWindow implements OnInit, OnDestroy {
@@ -119,4 +119,30 @@ export declare class MapMarker implements OnInit, OnDestroy {
     ngOnInit(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MapMarker, "map-marker", never, { 'options': "options", 'title': "title", 'position': "position", 'label': "label", 'clickable': "clickable" }, { 'animationChanged': "animationChanged", 'mapClick': "mapClick", 'clickableChanged': "clickableChanged", 'cursorChanged': "cursorChanged", 'mapDblclick': "mapDblclick", 'mapDrag': "mapDrag", 'mapDragend': "mapDragend", 'draggableChanged': "draggableChanged", 'mapDragstart': "mapDragstart", 'flatChanged': "flatChanged", 'iconChanged': "iconChanged", 'mapMousedown': "mapMousedown", 'mapMouseout': "mapMouseout", 'mapMouseover': "mapMouseover", 'mapMouseup': "mapMouseup", 'positionChanged': "positionChanged", 'mapRightclick': "mapRightclick", 'shapeChanged': "shapeChanged", 'titleChanged': "titleChanged", 'visibleChanged': "visibleChanged", 'zindexChanged': "zindexChanged" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MapMarker>;
+}
+
+export declare class MapPolyline implements OnInit, OnDestroy {
+    _polyline: google.maps.Polyline;
+    options: google.maps.PolylineOptions;
+    path: google.maps.MVCArray<google.maps.LatLng> | google.maps.LatLng[] | google.maps.LatLngLiteral[];
+    polylineClick: EventEmitter<google.maps.PolyMouseEvent>;
+    polylineDblclick: EventEmitter<google.maps.PolyMouseEvent>;
+    polylineDrag: EventEmitter<google.maps.MouseEvent>;
+    polylineDragend: EventEmitter<google.maps.MouseEvent>;
+    polylineDragstart: EventEmitter<google.maps.MouseEvent>;
+    polylineMousedown: EventEmitter<google.maps.PolyMouseEvent>;
+    polylineMousemove: EventEmitter<google.maps.PolyMouseEvent>;
+    polylineMouseout: EventEmitter<google.maps.PolyMouseEvent>;
+    polylineMouseover: EventEmitter<google.maps.PolyMouseEvent>;
+    polylineMouseup: EventEmitter<google.maps.PolyMouseEvent>;
+    polylineRightclick: EventEmitter<google.maps.PolyMouseEvent>;
+    constructor(_map: GoogleMap);
+    getDraggable(): boolean;
+    getEditable(): boolean;
+    getPath(): google.maps.MVCArray<google.maps.LatLng>;
+    getVisible(): boolean;
+    ngOnDestroy(): void;
+    ngOnInit(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapPolyline, "map-polyline", never, { 'options': "options", 'path': "path" }, { 'polylineClick': "polylineClick", 'polylineDblclick': "polylineDblclick", 'polylineDrag': "polylineDrag", 'polylineDragend': "polylineDragend", 'polylineDragstart': "polylineDragstart", 'polylineMousedown': "polylineMousedown", 'polylineMousemove': "polylineMousemove", 'polylineMouseout': "polylineMouseout", 'polylineMouseover': "polylineMouseover", 'polylineMouseup': "polylineMouseup", 'polylineRightclick': "polylineRightclick" }, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MapPolyline>;
 }

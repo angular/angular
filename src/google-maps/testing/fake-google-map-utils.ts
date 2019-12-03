@@ -15,6 +15,7 @@ export interface TestingWindow extends Window {
       Map?: jasmine.Spy;
       Marker?: jasmine.Spy;
       InfoWindow?: jasmine.Spy;
+      Polyline?: jasmine.Spy;
     };
   };
 }
@@ -108,4 +109,35 @@ export function createInfoWindowConstructorSpy(
     };
   }
   return infoWindowConstructorSpy;
+}
+
+/** Creates a jasmine.SpyObj for a google.maps.Polyline */
+export function createPolylineSpy(options: google.maps.PolylineOptions):
+    jasmine.SpyObj<google.maps.Polyline> {
+  const polylineSpy = jasmine.createSpyObj('google.maps.Polyline', [
+    'addListener', 'getDraggable', 'getEditable', 'getPath', 'getVisible', 'setMap', 'setOptions',
+    'setPath'
+  ]);
+  polylineSpy.addListener.and.returnValue({remove: () => {}});
+  return polylineSpy;
+}
+
+/** Creates a jasmine.Spy to watch for the constructor of a google.maps.Polyline */
+export function createPolylineConstructorSpy(polylineSpy: jasmine.SpyObj<google.maps.Polyline>):
+    jasmine.Spy {
+  const polylineConstructorSpy =
+      jasmine.createSpy('Polyline constructor', (_options: google.maps.PolylineOptions) => {
+        return polylineSpy;
+      });
+  const testingWindow: TestingWindow = window;
+  if (testingWindow.google && testingWindow.google.maps) {
+    testingWindow.google.maps['Polyline'] = polylineConstructorSpy;
+  } else {
+    testingWindow.google = {
+      maps: {
+        'Polyline': polylineConstructorSpy,
+      },
+    };
+  }
+  return polylineConstructorSpy;
 }
