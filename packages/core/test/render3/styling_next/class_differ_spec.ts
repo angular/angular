@@ -8,7 +8,7 @@
 
 import {ArrayMap} from '@angular/core/src/util/array_utils';
 
-import {computeClassChanges, splitClassList} from '../../../src/render3/styling/class_differ';
+import {computeClassChanges, removeClass, splitClassList} from '../../../src/render3/styling/class_differ';
 
 describe('class differ', () => {
   describe('computeClassChanges', () => {
@@ -39,7 +39,6 @@ describe('class differ', () => {
     it('should detect removals', () => {
       expectComputeClassChanges('A B C', 'A B').toEqual(['A', null, 'B', null, 'C', false]);
       expectComputeClassChanges('B A C', 'B A').toEqual(['A', null, 'B', null, 'C', false]);
-      debugger;
       expectComputeClassChanges('C B A', 'A B').toEqual(['A', null, 'B', null, 'C', false]);
     });
 
@@ -78,6 +77,23 @@ describe('class differ', () => {
       expectSplitClassList('A B B A').toEqual(['A', false, 'B', false]);
       expectSplitClassList('Alpha Bravo Bravo Alpha').toEqual(['Alpha', false, 'Bravo', false]);
     });
+  });
 
+  describe('removeClass', () => {
+    it('should remove class name from a class-list string', () => {
+      expect(removeClass('', '')).toEqual('');
+      expect(removeClass('A', 'A')).toEqual('');
+      expect(removeClass('AB', 'AB')).toEqual('');
+      expect(removeClass('A B', 'A')).toEqual('B');
+      expect(removeClass('A    B', 'A')).toEqual('B');
+    });
+
+    it('should not remove a sub-string', () => {
+      expect(removeClass('ABC', 'A')).toEqual('ABC');
+      expect(removeClass('ABC', 'B')).toEqual('ABC');
+      expect(removeClass('ABC', 'C')).toEqual('ABC');
+      expect(removeClass('ABC', 'AB')).toEqual('ABC');
+      expect(removeClass('ABC', 'BC')).toEqual('ABC');
+    });
   });
 });
