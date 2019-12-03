@@ -97,6 +97,19 @@ export interface SyncNgccOptions {
    * Default: `false` (i.e. run synchronously)
    */
   async?: false;
+
+  /**
+   * Render `$localize` messages with legacy format ids.
+   *
+   * The default value is `true`. Only set this to `false` if you do not want legacy message ids to
+   * be rendered. For example, if you are not using legacy message ids in your translation files
+   * AND are not doing compile-time inlining of translations, in which case the extra message ids
+   * would add unwanted size to the final source bundle.
+   *
+   * It is safe to leave this set to true if you are doing compile-time inlining because the extra
+   * legacy message ids will all be stripped during translation.
+   */
+  enableI18nLegacyMessageIdFormat?: boolean;
 }
 
 /**
@@ -124,8 +137,8 @@ export function mainNgcc(options: SyncNgccOptions): void;
 export function mainNgcc(
     {basePath, targetEntryPointPath, propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
      compileAllFormats = true, createNewEntryPointFormats = false,
-     logger = new ConsoleLogger(LogLevel.info), pathMappings, async = false}: NgccOptions): void|
-    Promise<void> {
+     logger = new ConsoleLogger(LogLevel.info), pathMappings, async = false,
+     enableI18nLegacyMessageIdFormat = true}: NgccOptions): void|Promise<void> {
   // Execute in parallel, if async execution is acceptable and there are more than 1 CPU cores.
   const inParallel = async && (os.cpus().length > 1);
 
@@ -242,7 +255,7 @@ export function mainNgcc(
 
       const bundle = makeEntryPointBundle(
           fileSystem, entryPoint, formatPath, isCore, format, processDts, pathMappings, true,
-          false);
+          enableI18nLegacyMessageIdFormat);
 
       logger.info(`Compiling ${entryPoint.name} : ${formatProperty} as ${format}`);
 
