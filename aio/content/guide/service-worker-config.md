@@ -7,16 +7,17 @@ A basic understanding of the following:
 
 <hr />
 
-The `src/ngsw-config.json` configuration file specifies which files and data URLs the Angular
-service worker should cache and how it should update the cached files and data. The
-[Angular CLI](cli) processes the configuration file during `ng build --prod`. Manually, you can process
-it with the `ngsw-config` tool:
+The `ngsw-config.json` configuration file specifies which files and data URLs the Angular service
+worker should cache and how it should update the cached files and data. The [Angular CLI](cli)
+processes the configuration file during `ng build --prod`. Manually, you can process it with the
+`ngsw-config` tool (where `<project-name>` is the name of the project being built):
 
-```sh
-ngsw-config dist src/ngsw-config.json /base/href
-```
+<code-example language="sh">
+./node_modules/.bin/ngsw-config ./dist/&lt;project-name&gt; ./ngsw-config.json [/base/href]
+</code-example>
 
-The configuration file uses the JSON format. All file paths must begin with `/`, which is the deployment directory&mdash;usually `dist` in CLI projects.
+The configuration file uses the JSON format. All file paths must begin with `/`, which corresponds
+to the deployment directory&mdash;usually `dist/<project-name>` in CLI projects.
 
 {@a glob-patterns}
 Unless otherwise noted, patterns use a limited glob format:
