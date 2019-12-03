@@ -79,6 +79,13 @@
     "groups": ["Angular"],
     "lead": "igorminar"
   },
+  "aikidave": {
+    "name": "Dave Shevitz",
+    "picture": "daveshevitz.jpg",
+    "bio": "Dave is a technical writer focused on creating a great documentation experience for Angular developers. When he isn't writing, he's toying with new technologies. His favorite motto is: 'What could possibly go wrong?'",
+    "groups": ["Angular"],
+    "lead": "igorminar"
+  },
   "kyliau": {
     "name": "Keen Yee Liau",
     "groups": ["Angular"],
