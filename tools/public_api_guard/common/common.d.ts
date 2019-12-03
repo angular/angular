@@ -214,7 +214,7 @@ export declare class NgComponentOutlet implements OnChanges, OnDestroy {
     ngOnDestroy(): void;
 }
 
-export declare class NgForOf<T, U extends NgIterable<T>> implements DoCheck {
+export declare class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
     ngForOf: (U & NgIterable<T>) | undefined | null;
     ngForTemplate: TemplateRef<NgForOfContext<T, U>>;
     ngForTrackBy: TrackByFunction<T>;
@@ -223,7 +223,7 @@ export declare class NgForOf<T, U extends NgIterable<T>> implements DoCheck {
     static ngTemplateContextGuard<T, U extends NgIterable<T>>(dir: NgForOf<T, U>, ctx: any): ctx is NgForOfContext<T, U>;
 }
 
-export declare class NgForOfContext<T, U extends NgIterable<T>> {
+export declare class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
     $implicit: T;
     count: number;
     readonly even: boolean;
@@ -235,7 +235,7 @@ export declare class NgForOfContext<T, U extends NgIterable<T>> {
     constructor($implicit: T, ngForOf: U, index: number, count: number);
 }
 
-export declare class NgIf<T> {
+export declare class NgIf<T = unknown> {
     ngIf: T;
     ngIfElse: TemplateRef<NgIfContext<T>> | null;
     ngIfThen: TemplateRef<NgIfContext<T>> | null;
@@ -244,7 +244,7 @@ export declare class NgIf<T> {
     static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<T>;
 }
 
-export declare class NgIfContext<T> {
+export declare class NgIfContext<T = unknown> {
     $implicit: T;
     ngIf: T;
 }
