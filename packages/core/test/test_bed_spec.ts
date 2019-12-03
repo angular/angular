@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, ModuleWithProviders, NgModule, Optional, Pipe, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
+import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -714,6 +714,36 @@ describe('TestBed', () => {
             // template.
             expect(fixture.nativeElement.innerHTML).toEqual('<outer><inner>Inner</inner></outer>');
           });
+
+  onlyInIvy('Ivy-specific errors').describe('checking types before compiling them', () => {
+    @Directive({
+      selector: 'my-dir',
+    })
+    class MyDir {
+    }
+
+    @NgModule()
+    class MyModule {
+    }
+
+    // [decorator, type, overrideFn]
+    const cases: [string, Type<any>, string][] = [
+      ['Component', MyDir, 'overrideComponent'],
+      ['NgModule', MyDir, 'overrideModule'],
+      ['Pipe', MyModule, 'overridePipe'],
+      ['Directive', MyModule, 'overrideDirective'],
+    ];
+    cases.forEach(([decorator, type, overrideFn]) => {
+      it(`should throw an error in case invalid type is used in ${overrideFn} function`, () => {
+        TestBed.configureTestingModule({declarations: [MyDir]});
+        expect(() => {
+          (TestBed as any)[overrideFn](type, {});
+          TestBed.createComponent(type);
+        }).toThrowError(new RegExp(`class doesn't have @${decorator} decorator`, 'g'));
+      });
+    });
+  });
+
 
   onlyInIvy('TestBed should handle AOT pre-compiled Components')
       .describe('AOT pre-compiled components', () => {
