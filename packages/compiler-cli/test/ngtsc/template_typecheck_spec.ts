@@ -26,7 +26,7 @@ runInEachFileSystem(() => {
       env.write('node_modules/@angular/common/index.d.ts', `
 import * as i0 from '@angular/core';
 
-export declare class NgForOfContext<T, U extends NgIterable<T>> {
+export declare class NgForOfContext<T, U extends i0.NgIterable<T> = i0.NgIterable<T>> {
   $implicit: T;
   count: number;
   readonly even: boolean;
@@ -54,7 +54,7 @@ export declare class SlicePipe {
   static ɵpipe: i0.ɵPipeDefWithMeta<SlicePipe, 'slice'>;
 }
 
-export declare class NgForOf<T, U extends i0.NgIterable<T>> implements DoCheck {
+export declare class NgForOf<T, U extends i0.NgIterable<T> = i0.NgIterable<T>> implements DoCheck {
   ngForOf: (U & i0.NgIterable<T>) | undefined | null;
   ngForTemplate: TemplateRef<NgForOfContext<T, U>>;
   ngForTrackBy: TrackByFunction<T>;
@@ -64,7 +64,7 @@ export declare class NgForOf<T, U extends i0.NgIterable<T>> implements DoCheck {
   static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgForOf<any>, '[ngFor][ngForOf]', never, {'ngForOf': 'ngForOf'}, {}, never>;
 }
 
-export declare class NgIf<T> {
+export declare class NgIf<T = unknown> {
   ngIf: T;
   ngIfElse: TemplateRef<NgIfContext<T>> | null;
   ngIfThen: TemplateRef<NgIfContext<T>> | null;
@@ -74,7 +74,7 @@ export declare class NgIf<T> {
   static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgIf<any>, '[ngIf]', never, {'ngIf': 'ngIf'}, {}, never>;
 }
 
-export declare class NgIfContext<T> {
+export declare class NgIfContext<T = unknown> {
   $implicit: T;
   ngIf: T;
 }

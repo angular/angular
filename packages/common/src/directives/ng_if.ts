@@ -149,7 +149,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  * @publicApi
  */
 @Directive({selector: '[ngIf]'})
-export class NgIf<T> {
+export class NgIf<T = unknown> {
   private _context: NgIfContext<T> = new NgIfContext<T>();
   private _thenTemplateRef: TemplateRef<NgIfContext<T>>|null = null;
   private _elseTemplateRef: TemplateRef<NgIfContext<T>>|null = null;
@@ -238,7 +238,7 @@ export class NgIf<T> {
 /**
  * @publicApi
  */
-export class NgIfContext<T> {
+export class NgIfContext<T = unknown> {
   public $implicit: T = null !;
   public ngIf: T = null !;
 }

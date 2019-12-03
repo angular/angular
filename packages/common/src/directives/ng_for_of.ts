@@ -11,7 +11,7 @@ import {Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, Iterab
 /**
  * @publicApi
  */
-export class NgForOfContext<T, U extends NgIterable<T>> {
+export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
   constructor(public $implicit: T, public ngForOf: U, public index: number, public count: number) {}
 
   get first(): boolean { return this.index === 0; }
@@ -121,7 +121,7 @@ export class NgForOfContext<T, U extends NgIterable<T>> {
  * @publicApi
  */
 @Directive({selector: '[ngFor][ngForOf]'})
-export class NgForOf<T, U extends NgIterable<T>> implements DoCheck {
+export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
   /**
    * The value of the iterable expression, which can be used as a
    * [template input variable](guide/structural-directives#template-input-variable).
