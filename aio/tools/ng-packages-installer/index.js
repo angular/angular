@@ -286,13 +286,12 @@ class NgPackagesInstaller {
    * @param {import('@yarnpkg/lockfile').LockFileObject} projectLockfile - The projects's parsed `yarn.lock`.
    */
   _overwritePackageVersion(packageName, packageConfig, projectConfig, projectLockfile) {
-    const originalVersionRange = (projectConfig.dependencies || {})[packageName] ||
-                                 (projectConfig.devDependencies || {})[packageName];
-    const originalVersion =
-      (projectLockfile[`${packageName}@${originalVersionRange}`] || {}).version;
+    const projectVersionRange = (projectConfig.dependencies || {})[packageName] ||
+                                (projectConfig.devDependencies || {})[packageName];
+    const projectVersion = (projectLockfile[`${packageName}@${projectVersionRange}`] || {}).version;
 
-    if (originalVersion !== undefined) {
-      const newVersion = `${originalVersion}+locally-overwritten-by-ngPackagesInstaller`;
+    if (projectVersion !== undefined) {
+      const newVersion = `${projectVersion}+locally-overwritten-by-ngPackagesInstaller`;
       this._log(`Overwriting the version of '${packageName}': ${packageConfig.version} --> ${newVersion}`);
       packageConfig.version = newVersion;
     }
