@@ -42,3 +42,20 @@ export const MEANING_SEPARATOR = '|';
  * ```
  */
 export const ID_SEPARATOR = '@@';
+
+/**
+ * The marker used to separate legacy message ids from the rest of a metadata block.
+ *
+ * For example:
+ *
+ * ```ts
+ * $localize `:@@custom-id␟2df64767cd895a8fabe3e18b94b5b6b6f9e2e3f0: Welcome!`;
+ * ```
+ *
+ * Note that this character is the "symbol for the unit separator" (␟) not the "unit separator
+ * character" itself, since that has no visual representation. See https://graphemica.com/%E2%90%9F.
+ *
+ * Here is some background for the original "unit separator character":
+ * https://stackoverflow.com/questions/8695118/whats-the-file-group-record-unit-separator-control-characters-and-its-usage
+ */
+export const LEGACY_ID_INDICATOR = '\u241F';
