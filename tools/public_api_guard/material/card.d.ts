@@ -17,7 +17,7 @@ export declare class MatCardAvatar {
 }
 
 export declare class MatCardContent {
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatCardContent, "mat-card-content", never, {}, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatCardContent, "mat-card-content, [mat-card-content], [matCardContent]", never, {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatCardContent>;
 }
 

@@ -2,7 +2,7 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
 <div [style.height.px]="topHeightCtrl.value"></div>
 <div class="demo-autocomplete">
   <mat-card *ngIf="(reactiveStates | async) as tempStates">
-    Reactive length: {{ tempStates.length }}
+    Reactive length: {{ tempStates?.length }}
     <div>Reactive value: {{ stateCtrl.value | json }}</div>
     <div>Reactive dirty: {{ stateCtrl.dirty }}</div>
 
