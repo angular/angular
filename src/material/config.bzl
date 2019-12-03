@@ -16,6 +16,7 @@ entryPoints = [
     "dialog/testing",
     "divider",
     "expansion",
+    "expansion/testing",
     "form-field",
     "grid-list",
     "icon",

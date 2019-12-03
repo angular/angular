@@ -73,7 +73,7 @@ export declare class HarnessPredicate<T extends ComponentHarness> {
     filter(harnesses: T[]): Promise<T[]>;
     getDescription(): string;
     getSelector(): string;
-    static stringMatches(s: string | Promise<string>, pattern: string | RegExp): Promise<boolean>;
+    static stringMatches(value: string | null | Promise<string | null>, pattern: string | RegExp | null): Promise<boolean>;
 }
 
 export declare type HarnessQuery<T extends ComponentHarness> = ComponentHarnessConstructor<T> | HarnessPredicate<T>;

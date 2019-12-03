@@ -32,7 +32,10 @@ import {MatExpansionPanelHeader} from './expansion-panel-header';
     useExisting: MatAccordion
   }],
   host: {
-    class: 'mat-accordion'
+    class: 'mat-accordion',
+    // Class binding which is only used by the test harness as there is no other
+    // way for the harness to detect if multiple panel support is enabled.
+    '[class.mat-accordion-multi]': 'this.multi',
   }
 })
 export class MatAccordion extends CdkAccordion implements MatAccordionBase, AfterContentInit {
