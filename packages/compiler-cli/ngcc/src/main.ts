@@ -241,7 +241,8 @@ export function mainNgcc(
       }
 
       const bundle = makeEntryPointBundle(
-          fileSystem, entryPoint, formatPath, isCore, format, processDts, pathMappings, true);
+          fileSystem, entryPoint, formatPath, isCore, format, processDts, pathMappings, true,
+          false);
 
       logger.info(`Compiling ${entryPoint.name} : ${formatProperty} as ${format}`);
 

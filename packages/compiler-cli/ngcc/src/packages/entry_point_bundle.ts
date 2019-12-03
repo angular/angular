@@ -24,6 +24,7 @@ export interface EntryPointBundle {
   rootDirs: AbsoluteFsPath[];
   src: BundleProgram;
   dts: BundleProgram|null;
+  enableI18nLegacyMessageIdFormat: boolean;
 }
 
 /**
@@ -37,11 +38,14 @@ export interface EntryPointBundle {
  * @param pathMappings An optional set of mappings to use when compiling files.
  * @param mirrorDtsFromSrc If true then the `dts` program will contain additional files that
  * were guessed by mapping the `src` files to `dts` files.
+ * @param enableI18nLegacyMessageIdFormat Whether to render legacy message ids for i18n messages in
+ * component templates.
  */
 export function makeEntryPointBundle(
     fs: FileSystem, entryPoint: EntryPoint, formatPath: string, isCore: boolean,
     format: EntryPointFormat, transformDts: boolean, pathMappings?: PathMappings,
-    mirrorDtsFromSrc: boolean = false): EntryPointBundle {
+    mirrorDtsFromSrc: boolean = false,
+    enableI18nLegacyMessageIdFormat: boolean = true): EntryPointBundle {
   // Create the TS program and necessary helpers.
   const options: ts.CompilerOptions = {
     allowJs: true,
@@ -67,7 +71,8 @@ export function makeEntryPointBundle(
                              null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
 
-  return {entryPoint, format, rootDirs, isCore, isFlatCore, src, dts};
+  return {entryPoint, format, rootDirs, isCore,
+          isFlatCore, src,    dts,      enableI18nLegacyMessageIdFormat};
 }
 
 function computePotentialDtsFilesFromJsFiles(

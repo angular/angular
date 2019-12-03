@@ -16,7 +16,7 @@ import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, Loc
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {ClassDeclaration} from '../../../src/ngtsc/reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
-import {CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
+import {CompileResult, DecoratorHandler} from '../../../src/ngtsc/transform';
 import {NgccClassSymbol, NgccReflectionHost} from '../host/ngcc_host';
 import {Migration} from '../migrations/migration';
 import {MissingInjectableMigration} from '../migrations/missing_injectable_migration';
@@ -88,8 +88,8 @@ export class DecorationAnalyzer {
         this.reflectionHost, this.evaluator, this.fullRegistry, this.fullMetaReader,
         this.scopeRegistry, this.scopeRegistry, this.isCore, this.resourceManager, this.rootDirs,
         /* defaultPreserveWhitespaces */ false,
-        /* i18nUseExternalIds */ true, /* i18nLegacyMessageIdFormat */ '', this.moduleResolver,
-        this.cycleAnalyzer, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER,
+        /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
+        this.moduleResolver, this.cycleAnalyzer, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER,
         /* annotateForClosureCompiler */ false),
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
