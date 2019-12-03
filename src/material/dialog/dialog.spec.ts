@@ -613,6 +613,21 @@ describe('MatDialog', () => {
     expect(dialogRef.componentInstance.directionality.value).toBe('ltr');
   });
 
+  it('should use the passed in ViewContainerRef from the config', fakeAsync(() => {
+    const dialogRef = dialog.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
+    viewContainerFixture.detectChanges();
+    flush();
+
+    // One view ref is for the container and one more for the component with the content.
+    expect(testViewContainerRef.length).toBe(2);
+
+    dialogRef.close();
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(testViewContainerRef.length).toBe(0);
+  }));
+
   it('should close all of the dialogs', fakeAsync(() => {
     dialog.open(PizzaMsg);
     dialog.open(PizzaMsg);
