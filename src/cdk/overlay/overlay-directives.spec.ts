@@ -480,6 +480,29 @@ describe('Overlay directives', () => {
       expect(pane.style.height).toBe('100px');
     });
 
+    it('should be able to set transform origin selector', () => {
+      const trigger = fixture.nativeElement.querySelector('#trigger');
+
+      trigger.style.position = 'fixed';
+      trigger.style.top = '200px';
+      trigger.style.left = '200px';
+
+      fixture.componentInstance.positionOverrides = [{
+        originX: 'start',
+        originY: 'top',
+        overlayX: 'start',
+        overlayY: 'bottom',
+      }];
+
+      fixture.componentInstance.transformOriginSelector = '.cdk-test-panel-class';
+      fixture.componentInstance.isOpen = true;
+      fixture.detectChanges();
+
+      const target = overlayContainerElement.querySelector('.cdk-test-panel-class')! as HTMLElement;
+
+      expect(target.style.transformOrigin).toContain('left bottom');
+    });
+
   });
 
   describe('outputs', () => {
@@ -569,7 +592,8 @@ describe('Overlay directives', () => {
             (overlayKeydown)="keydownHandler($event)"
             [cdkConnectedOverlayMinWidth]="minWidth"
             [cdkConnectedOverlayMinHeight]="minHeight"
-            [cdkConnectedOverlayPositions]="positionOverrides">
+            [cdkConnectedOverlayPositions]="positionOverrides"
+            [cdkConnectedOverlayTransformOriginOn]="transformOriginSelector">
     <p>Menu content</p>
   </ng-template>`,
 })
@@ -601,6 +625,7 @@ class ConnectedOverlayDirectiveTest {
   });
   detachHandler = jasmine.createSpy('detachHandler');
   attachResult: HTMLElement;
+  transformOriginSelector: string;
 }
 
 @Component({

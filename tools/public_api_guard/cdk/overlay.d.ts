@@ -29,6 +29,7 @@ export declare class CdkConnectedOverlay implements OnDestroy, OnChanges {
     positions: ConnectedPosition[];
     push: boolean;
     scrollStrategy: ScrollStrategy;
+    transformOriginSelector: string;
     viewportMargin: number;
     width: number | string;
     constructor(_overlay: Overlay, templateRef: TemplateRef<any>, viewContainerRef: ViewContainerRef, scrollStrategyFactory: any, _dir: Directionality);

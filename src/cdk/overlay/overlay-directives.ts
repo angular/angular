@@ -171,6 +171,9 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   /** Whether the overlay is open. */
   @Input('cdkConnectedOverlayOpen') open: boolean = false;
 
+  /** CSS selector which to set the transform origin. */
+  @Input('cdkConnectedOverlayTransformOriginOn') transformOriginSelector: string;
+
   /** Whether or not the overlay should attach a backdrop. */
   @Input('cdkConnectedOverlayHasBackdrop')
   get hasBackdrop() { return this._hasBackdrop; }
@@ -338,7 +341,8 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
       .withPush(this.push)
       .withGrowAfterOpen(this.growAfterOpen)
       .withViewportMargin(this.viewportMargin)
-      .withLockedPosition(this.lockPosition);
+      .withLockedPosition(this.lockPosition)
+      .withTransformOriginOn(this.transformOriginSelector);
   }
 
   /** Returns the position strategy of the overlay to be set on the overlay config */
