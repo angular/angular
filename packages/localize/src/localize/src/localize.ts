@@ -159,25 +159,12 @@ const BLOCK_MARKER = ':';
  * escaped with a backslash, `\:`. This function checks for this by looking at the `raw`
  * messagePart, which should still contain the backslash.
  *
- * ---
- *
- * If the template literal was synthesized and downleveled by TypeScript to ES5 then its
- * raw array will only contain empty strings. This is because the current TypeScript compiler uses
- * the original source code to find the raw text and in the case of synthesized AST nodes, there is
- * no source code to draw upon.
- *
- * The workaround in this function is to assume that the template literal did not contain an escaped
- * placeholder name, and fall back on checking the cooked array instead.
- * This is a limitation if compiling to ES5 in TypeScript but is not a problem if the TypeScript
- * output is ES2015 and the code is downleveled by a separate tool as happens in the Angular CLI.
- *
  * @param messagePart The cooked message part to process.
  * @param rawMessagePart The raw message part to check.
  * @returns the message part with the placeholder name stripped, if found.
  * @throws an error if the block is unterminated
  */
 function stripBlock(messagePart: string, rawMessagePart: string) {
-  rawMessagePart = rawMessagePart || messagePart;
   return rawMessagePart.charAt(0) === BLOCK_MARKER ?
       messagePart.substring(findEndOfBlock(messagePart, rawMessagePart) + 1) :
       messagePart;
