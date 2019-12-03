@@ -10,7 +10,7 @@ import {mapLiteral} from '../../../output/map_util';
 import * as o from '../../../output/output_ast';
 
 import {serializeIcuNode} from './icu_serializer';
-import {i18nMetaToDocStmt, metaFromI18nMessage} from './meta';
+import {i18nMetaToDocStmt} from './meta';
 import {formatI18nPlaceholderName} from './util';
 
 /** Closure uses `goog.getMsg(message)` to lookup translations */
@@ -32,7 +32,7 @@ export function createGoogleGetMsgStatements(
   // const MSG_... = goog.getMsg(..);
   // I18N_X = MSG_...;
   const statements = [];
-  const jsdocComment = i18nMetaToDocStmt(metaFromI18nMessage(message));
+  const jsdocComment = i18nMetaToDocStmt(message);
   if (jsdocComment !== null) {
     statements.push(jsdocComment);
   }

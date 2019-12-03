@@ -153,7 +153,7 @@ export class I18nMetaVisitor implements html.Visitor {
    */
   private _parseMetadata(meta: string|i18n.I18nMeta): I18nMeta {
     return typeof meta === 'string' ? parseI18nMeta(meta) :
-                                      meta instanceof i18n.Message ? metaFromI18nMessage(meta) : {};
+                                      meta instanceof i18n.Message ? meta : {};
   }
 
   /**
@@ -185,16 +185,6 @@ export class I18nMetaVisitor implements html.Visitor {
       message.legacyIds = previousMessage ? previousMessage.legacyIds : [];
     }
   }
-}
-
-export function metaFromI18nMessage(message: i18n.Message, id: string | null = null): I18nMeta {
-  return {
-    id: typeof id === 'string' ? id : message.id || '',
-    customId: message.customId,
-    legacyIds: message.legacyIds,
-    meaning: message.meaning || '',
-    description: message.description || ''
-  };
 }
 
 /** I18n separators for metadata **/
