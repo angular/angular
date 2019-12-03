@@ -32,12 +32,20 @@ export function INJECTOR_IMPL__POST_R3__(
 export const INJECTOR_IMPL = INJECTOR_IMPL__PRE_R3__;
 
 /**
- * Concrete injectors implement this interface.
+ * Concrete injectors implement this interface. Injectors are configured
+ * with [providers](guide/glossary#provider) that associate
+ * dependencies of various types with [injection tokens](guide/glossary#di-token).
  *
- * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
+ * @see ["DI Providers"](guide/dependency-injection-providers).
+ * @see `StaticProvider`
  *
  * @usageNotes
- * ### Example
+ *
+ *  The following example creates a service injector instance.
+ *
+ * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
+ *
+ * ### Usage example
  *
  * {@example core/di/ts/injector_spec.ts region='Injector'}
  *
@@ -69,16 +77,21 @@ export abstract class Injector {
    */
   static create(providers: StaticProvider[], parent?: Injector): Injector;
 
+  /**
+   * Creates a new injector instance that provides one or more dependencies,
+   * according to a given type or types of `StaticProvider`.
+   *
+   * @param options An object with the following properties:
+   * * `providers`: An array of providers of the [StaticProvider type](api/core/StaticProvider).
+   * * `parent`: (optional) A parent injector.
+   * * `name`: (optional) A developer-defined identifying name for the new injector.
+   *
+   * @returns The new injector instance.
+   *
+   */
   static create(options: {providers: StaticProvider[], parent?: Injector, name?: string}): Injector;
 
-  /**
-   * Create a new Injector which is configure using `StaticProvider`s.
-   *
-   * @usageNotes
-   * ### Example
-   *
-   * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
-   */
+
   static create(
       options: StaticProvider[]|{providers: StaticProvider[], parent?: Injector, name?: string},
       parent?: Injector): Injector {
