@@ -1293,10 +1293,6 @@ runInEachFileSystem(() => {
 });
 
 function countOccurrences(haystack: string, needle: string): number {
-  const regex = new RegExp(needle, 'g');
-  let count = 0;
-  while (regex.exec(haystack)) {
-    count++;
-  }
-  return count;
+  const matches = haystack.match(new RegExp(needle, 'g'));
+  return matches !== null ? matches.length : 0;
 }
