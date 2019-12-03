@@ -40,6 +40,7 @@ entryPoints = [
     "snack-bar",
     "snack-bar/testing",
     "sort",
+    "sort/testing",
     "stepper",
     "table",
     "tabs",

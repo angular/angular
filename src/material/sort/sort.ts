@@ -64,6 +64,7 @@ const _MatSortMixinBase: HasInitializedCtor & CanDisableCtor & typeof MatSortBas
 @Directive({
   selector: '[matSort]',
   exportAs: 'matSort',
+  host: {'class': 'mat-sort'},
   inputs: ['disabled: matSortDisabled']
 })
 export class MatSort extends _MatSortMixinBase

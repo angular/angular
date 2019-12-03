@@ -73,6 +73,7 @@ interface MatSortHeaderColumnDef {
   templateUrl: 'sort-header.html',
   styleUrls: ['sort-header.css'],
   host: {
+    'class': 'mat-sort-header',
     '(click)': '_handleClick()',
     '(mouseenter)': '_setIndicatorHintVisible(true)',
     '(mouseleave)': '_setIndicatorHintVisible(false)',

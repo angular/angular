@@ -150,6 +150,8 @@ System.config({
     '@angular/material/snack-bar/testing': 'dist/packages/material/snack-bar/testing/index.js',
     '@angular/material/snack-bar/testing/shared.spec': 'dist/packages/material/snack-bar/testing/shared.spec.js',
     '@angular/material/sort': 'dist/packages/material/sort/index.js',
+    '@angular/material/sort/testing': 'dist/packages/material/sort/testing/index.js',
+    '@angular/material/sort/testing/shared.spec': 'dist/packages/material/sort/testing/shared.spec.js',
     '@angular/material/stepper': 'dist/packages/material/stepper/index.js',
     '@angular/material/table': 'dist/packages/material/table/index.js',
     '@angular/material/tabs': 'dist/packages/material/tabs/index.js',
