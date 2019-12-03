@@ -61,12 +61,6 @@ describe('messages utils', () => {
       expect(message.messageId).toEqual('2623373088949454037');
     });
 
-    it('should handle raw values that are empty (from synthesized AST)', () => {
-      const message =
-          parseMessage(makeTemplateObject(['a', ':one:b', ':two:c'], ['', '', '']), [1, 2]);
-      expect(message.messageId).toEqual('8865273085679272414');
-    });
-
     it('should extract the meaning, description and placeholder names', () => {
       const message1 = parseMessage(makeTemplateObject(['abc'], ['abc']), []);
       expect(message1.messageParts).toEqual(['abc']);
@@ -128,10 +122,6 @@ describe('messages utils', () => {
                  ':block with escaped : in it:abc def', ':block with escaped \\: in it:abc def'))
           .toEqual({text: 'abc def', block: 'block with escaped : in it'});
     });
-
-    it('should handle the empty raw part', () => {
-      expect(splitBlock(':block info:abc def', '')).toEqual({text: 'abc def', block: 'block info'});
-    });
   });
 
   describe('findEndOfBlock()', () => {
@@ -192,12 +182,6 @@ describe('messages utils', () => {
             description: undefined,
             id: undefined
           });
-    });
-
-    it('should handle the empty raw part', () => {
-      expect(parseMetadata(':description:abc def', ''))
-          .toEqual(
-              {text: 'abc def', meaning: undefined, description: 'description', id: undefined});
     });
   });
 });
