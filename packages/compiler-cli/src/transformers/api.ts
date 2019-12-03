@@ -263,11 +263,10 @@ export interface CompilerOptions extends ts.CompilerOptions {
   i18nUseExternalIds?: boolean;
 
   /**
-   * Render `$localize` message ids with the legacy format (xlf, xlf2 or xmb) specified in
-   * `i18nInFormat`.
+   * Render `$localize` messages with legacy format ids.
    *
-   * This is only active if we are building with `enableIvy: true` and a valid
-   * `i18nInFormat` has been provided. The default value for now is `true`.
+   * This is only active if we are building with `enableIvy: true`.
+   * The default value for now is `true`.
    *
    * Use this option when use are using the `$localize` based localization messages but
    * have not migrated the translation files to use the new `$localize` message id format.

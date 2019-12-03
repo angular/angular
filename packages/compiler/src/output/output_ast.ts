@@ -509,12 +509,20 @@ export class LocalizedString extends Expression {
    * @param messagePart The first part of the tagged string
    */
   serializeI18nHead(): {cooked: string, raw: string} {
+    const MEANING_SEPARATOR = '|';
+    const ID_SEPARATOR = '@@';
+    const LEGACY_ID_INDICATOR = '␟';
+
     let metaBlock = this.metaBlock.description || '';
     if (this.metaBlock.meaning) {
-      metaBlock = `${this.metaBlock.meaning}|${metaBlock}`;
+      metaBlock = `${this.metaBlock.meaning}${MEANING_SEPARATOR}${metaBlock}`;
     }
-    if (this.metaBlock.customId || this.metaBlock.legacyId) {
-      metaBlock = `${metaBlock}@@${this.metaBlock.customId || this.metaBlock.legacyId}`;
+    if (this.metaBlock.customId) {
+      metaBlock = `${metaBlock}${ID_SEPARATOR}${this.metaBlock.customId}`;
+    }
+    if (this.metaBlock.legacyIds) {
+      this.metaBlock.legacyIds.forEach(
+          legacyId => { metaBlock = `${metaBlock}${LEGACY_ID_INDICATOR}${legacyId}`; });
     }
     return createCookedRawString(metaBlock, this.messageParts[0]);
   }

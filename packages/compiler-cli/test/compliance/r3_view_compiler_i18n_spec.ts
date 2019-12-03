@@ -3457,6 +3457,38 @@ describe('i18n support in the template compiler', () => {
     });
   });
 
+  describe('$localize legacy message ids', () => {
+    it('should add legacy message ids if `enableI18nLegacyMessageIdFormat` is true', () => {
+      const input = `<div i18n>Some Message</div>`;
+
+      const output = String.raw `
+        var $I18N_0$;
+        if (ngI18nClosureMode) { … }
+        else {
+            $I18N_0$ = $localize \`:␟ec93160d6d6a8822214060dd7938bf821c22b226␟6795333002533525253:Some Message\`;
+        }
+        …
+        `;
+
+      verify(input, output, {compilerOptions: {enableI18nLegacyMessageIdFormat: true}});
+    });
+
+    it('should add legacy message ids if `enableI18nLegacyMessageIdFormat` is undefined', () => {
+      const input = `<div i18n>Some Message</div>`;
+
+      const output = String.raw `
+        var $I18N_0$;
+        if (ngI18nClosureMode) { … }
+        else {
+            $I18N_0$ = $localize \`:␟ec93160d6d6a8822214060dd7938bf821c22b226␟6795333002533525253:Some Message\`;
+        }
+        …
+        `;
+
+      verify(input, output, {compilerOptions: {enableI18nLegacyMessageIdFormat: undefined}});
+    });
+  });
+
   describe('errors', () => {
     const verifyNestedSectionsError = (errorThrown: any, expectedErrorText: string) => {
       expect(errorThrown.ngParseErrors.length).toBe(1);
