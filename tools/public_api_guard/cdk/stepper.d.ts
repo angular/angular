@@ -48,7 +48,6 @@ export declare class CdkStepper implements AfterViewInit, OnDestroy {
     protected _orientation: StepperOrientation;
     _stepHeader: QueryList<FocusableOption>;
     _steps: QueryList<CdkStep>;
-    _stepsArray: CdkStep[];
     linear: boolean;
     selected: CdkStep;
     selectedIndex: number;

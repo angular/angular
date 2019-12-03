@@ -9,7 +9,7 @@
        role="tab"
        matTabLabelWrapper
        cdkMonitorElementFocus
-       *ngFor="let tab of _tabsArray; let i = index"
+       *ngFor="let tab of _tabs; let i = index"
        [id]="_getTabLabelId(i)"
        [attr.tabIndex]="_getTabIndex(tab, i)"
        [attr.aria-posinset]="i + 1"
@@ -51,7 +51,7 @@
   [class._mat-animation-noopable]="_animationMode === 'NoopAnimations'"
   #tabBodyWrapper>
   <mat-tab-body role="tabpanel"
-               *ngFor="let tab of _tabsArray; let i = index"
+               *ngFor="let tab of _tabs; let i = index"
                [id]="_getTabContentId(i)"
                [attr.aria-labelledby]="_getTabLabelId(i)"
                [class.mat-mdc-tab-body-active]="selectedIndex == i"

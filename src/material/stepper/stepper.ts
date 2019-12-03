@@ -112,12 +112,10 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
   _animationDone = new Subject<AnimationEvent>();
 
   ngAfterContentInit() {
-    this._stepsArray = this.steps.toArray();
     this._icons.forEach(({name, templateRef}) => this._iconOverrides[name] = templateRef);
 
     // Mark the component for change detection whenever the content children query changes
     this._steps.changes.pipe(takeUntil(this._destroyed)).subscribe(() => {
-      this._stepsArray = this.steps.toArray();
       this._stateChanged();
     });
 
