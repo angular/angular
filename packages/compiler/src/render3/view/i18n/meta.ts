@@ -205,11 +205,12 @@ const I18N_ID_SEPARATOR = '@@';
  * @param meta String that represents i18n meta
  * @returns Object with id, meaning and description fields
  */
-export function parseI18nMeta(meta?: string): I18nMeta {
+export function parseI18nMeta(meta: string = ''): I18nMeta {
   let customId: string|undefined;
   let meaning: string|undefined;
   let description: string|undefined;
 
+  meta = meta.trim();
   if (meta) {
     const idIndex = meta.indexOf(I18N_ID_SEPARATOR);
     const descIndex = meta.indexOf(I18N_MEANING_SEPARATOR);
