@@ -38,7 +38,8 @@ export function isMissingTranslationError(e: any): e is MissingTranslationError 
  * `substitutions`) using the given `translations`.
  *
  * The tagged-string is parsed to extract its `messageId` which is used to find an appropriate
- * `ParsedTranslation`.
+ * `ParsedTranslation`. If this doesn't match and there are legacy ids then try matching a
+ * translation using those.
  *
  * If one is found then it is used to translate the message into a new set of `messageParts` and
  * `substitutions`.
@@ -52,7 +53,12 @@ export function translate(
     translations: Record<string, ParsedTranslation>, messageParts: TemplateStringsArray,
     substitutions: readonly any[]): [TemplateStringsArray, readonly any[]] {
   const message = parseMessage(messageParts, substitutions);
-  const translation = translations[message.messageId];
+  // Look up the translation using the messageId, and then the legacyId if available.
+  let translation = translations[message.messageId];
+  // If the messageId did not match a translation, try matching the legacy ids instead
+  for (let i = 0; i < message.legacyIds.length && translation === undefined; i++) {
+    translation = translations[message.legacyIds[i]];
+  }
   if (translation === undefined) {
     throw new MissingTranslationError(message);
   }
