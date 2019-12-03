@@ -23,6 +23,7 @@ import {IncrementalDriver} from './incremental';
 import {IndexedComponent, IndexingContext} from './indexer';
 import {generateAnalysis} from './indexer/src/transform';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry, MetadataReader} from './metadata';
+import {ModuleWithProvidersScanner} from './modulewithproviders';
 import {PartialEvaluator} from './partial_evaluator';
 import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
 import {TypeScriptReflectionHost} from './reflection';
@@ -71,6 +72,7 @@ export class NgtscProgram implements api.Program {
   private typeCheckFilePath: AbsoluteFsPath;
   private modifiedResourceFiles: Set<string>|null;
   private dtsTransforms: DtsTransformRegistry|null = null;
+  private mwpScanner: ModuleWithProvidersScanner|null = null;
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
@@ -623,6 +625,8 @@ export class NgtscProgram implements api.Program {
 
     this.dtsTransforms = new DtsTransformRegistry();
 
+    this.mwpScanner = new ModuleWithProvidersScanner(this.reflector, evaluator, this.refEmitter);
+
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers = [
       new ComponentDecoratorHandler(
@@ -651,7 +655,7 @@ export class NgtscProgram implements api.Program {
     return new IvyCompilation(
         handlers, this.reflector, this.importRewriter, this.incrementalDriver, this.perfRecorder,
         this.sourceToFactorySymbols, scopeRegistry,
-        this.options.compileNonExportedClasses !== false, this.dtsTransforms);
+        this.options.compileNonExportedClasses !== false, this.dtsTransforms, this.mwpScanner);
   }
 
   private get reflector(): TypeScriptReflectionHost {
