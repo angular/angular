@@ -207,6 +207,13 @@ describe('Utils', () => {
       expect(parseI18nMeta('meaning|desc')).toEqual(meta('', 'meaning', 'desc'));
       expect(parseI18nMeta('meaning|desc@@id')).toEqual(meta('id', 'meaning', 'desc'));
       expect(parseI18nMeta('@@id')).toEqual(meta('id', '', ''));
+
+      expect(parseI18nMeta('\n   ')).toEqual(meta());
+      expect(parseI18nMeta('\n   desc\n   ')).toEqual(meta('', '', 'desc'));
+      expect(parseI18nMeta('\n   desc@@id\n   ')).toEqual(meta('id', '', 'desc'));
+      expect(parseI18nMeta('\n   meaning|desc\n   ')).toEqual(meta('', 'meaning', 'desc'));
+      expect(parseI18nMeta('\n   meaning|desc@@id\n   ')).toEqual(meta('id', 'meaning', 'desc'));
+      expect(parseI18nMeta('\n   @@id\n   ')).toEqual(meta('id', '', ''));
     });
 
     it('serializeI18nHead()', () => {
