@@ -182,6 +182,7 @@ def karma_web_test(bootstrap = [], deps = [], data = [], runtime_deps = [], **kw
         bootstrap = ["//:web_test_bootstrap_scripts"]
     local_deps = [
         "@npm//karma-browserstack-launcher",
+        "@npm//karma-sauce-launcher",
         "@npm//:node_modules/tslib/tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
         "//packages/zone.js:npm_package",
