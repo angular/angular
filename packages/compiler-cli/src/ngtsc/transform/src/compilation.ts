@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool} from '@angular/compiler';
+import {ConstantPool, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportRewriter} from '../../imports';
 import {IncrementalDriver} from '../../incremental';
 import {IndexingContext} from '../../indexer';
+import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
@@ -71,7 +72,8 @@ export class IvyCompilation {
       private importRewriter: ImportRewriter, private incrementalDriver: IncrementalDriver,
       private perf: PerfRecorder, private sourceToFactorySymbols: Map<string, Set<string>>|null,
       private scopeRegistry: LocalModuleScopeRegistry, private compileNonExportedClasses: boolean,
-      private dtsTransforms: DtsTransformRegistry) {}
+      private dtsTransforms: DtsTransformRegistry, private mwpScanner: ModuleWithProvidersScanner) {
+  }
 
   get exportStatements(): Map<string, Map<string, [string, string]>> { return this.reexportMap; }
 
@@ -234,6 +236,14 @@ export class IvyCompilation {
     };
 
     visit(sf);
+
+    this.mwpScanner.scan(sf, {
+      addTypeReplacement: (node: ts.Declaration, type: Type): void => {
+        // Only obtain the return type transform for the source file once there's a type to replace,
+        // so that no transform is allocated when there's nothing to do.
+        this.dtsTransforms.getReturnTypeTransform(sf).addTypeReplacement(node, type);
+      }
+    });
 
     if (preanalyze && promises.length > 0) {
       return Promise.all(promises).then(() => undefined);
