@@ -113,24 +113,28 @@ export function consumeStyleValue(text: string, startIndex: number, endIndex: nu
   let ch2 = -1;  // 2nd previous character
   let ch3 = -1;  // 3rd previous character
   let i = startIndex;
+  let lastChIndex = i;
   while (i < endIndex) {
     const ch: number = text.charCodeAt(i++);
-    if (ch === CharCode.SEMI_COLON || ch <= CharCode.SPACE) {
-      return i - 1;
+    if (ch === CharCode.SEMI_COLON) {
+      return lastChIndex;
     } else if (ch === CharCode.DOUBLE_QUOTE || ch === CharCode.SINGLE_QUOTE) {
-      return consumeQuotedText(text, ch, i, endIndex);
+      lastChIndex = i = consumeQuotedText(text, ch, i, endIndex);
     } else if (
         startIndex ===
             i - 4 &&  // We have seen only 4 characters so far "URL(" (Ignore "foo_URL()")
         ch3 === CharCode.U &&
         ch2 === CharCode.R && ch1 === CharCode.L && ch === CharCode.OPEN_PAREN) {
-      return consumeQuotedText(text, CharCode.CLOSE_PAREN, i, endIndex);
+      lastChIndex = i = consumeQuotedText(text, CharCode.CLOSE_PAREN, i, endIndex);
+    } else if (ch > CharCode.SPACE) {
+      // if we have a non-whitespace character than capture its location
+      lastChIndex = i;
     }
     ch3 = ch2;
     ch2 = ch1;
     ch1 = ch & CharCode.UPPER_CASE;
   }
-  return i;
+  return lastChIndex;
 }
 
 /**

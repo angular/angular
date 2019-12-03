@@ -141,6 +141,7 @@ function processStyleKeyValue(
 export function removeStyle(cssText: string, styleToRemove: string): string {
   let start = 0;
   let end = cssText.length;
+  let lastValueEnd = 0;
   while (start < end) {
     const possibleKeyIndex = cssText.indexOf(styleToRemove, start);
     if (possibleKeyIndex === -1) {
@@ -159,15 +160,21 @@ export function removeStyle(cssText: string, styleToRemove: string): string {
       if (valueStart !== valueEnd) {
         const valueEndSep = consumeStyleValueSeparator(cssText, valueEnd, end);
         if (keyStart == possibleKeyIndex && keyEnd === possibleKeyIndex + styleToRemove.length) {
-          cssText = cssText.substring(0, keyStart) + cssText.substring(valueEndSep, end);
+          if (valueEndSep == end) {
+            // This is a special case when we are the last key in a list, we than chop of the
+            // trailing separator as well.
+            cssText = cssText.substring(0, lastValueEnd);
+          } else {
+            cssText = cssText.substring(0, keyStart) + cssText.substring(valueEndSep, end);
+          }
           end = cssText.length;
           start = keyStart;
-          break;  // rescan
+          break;  // rescan.
         } else {
           // This was not the item we are looking for, keep going.
           start = valueEndSep;
         }
-
+        lastValueEnd = valueEnd;
       } else {
         // We don't have a value, this style is malformed, error.
         throw new Error('Malformed style: ' + cssText);
