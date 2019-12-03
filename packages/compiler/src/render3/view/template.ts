@@ -2045,7 +2045,7 @@ const NG_I18N_CLOSURE_MODE = 'ngI18nClosureMode';
  *
  * ```
  * var I18N_1;
- * if (ngI18nClosureMode) {
+ * if (typeof ngI18nClosureMode !== undefined && ngI18nClosureMode) {
  *     var MSG_EXTERNAL_XXX = goog.getMsg(
  *          "Some message with {$interpolation}!",
  *          { "interpolation": "\uFFFD0\uFFFD" }
@@ -2073,10 +2073,9 @@ export function getTranslationDeclStmts(
   const statements: o.Statement[] = [
     declareI18nVariable(variable),
     o.ifStmt(
-        o.variable(NG_I18N_CLOSURE_MODE),
-        createGoogleGetMsgStatements(
-            variable, message, closureVar,
-            i18nFormatPlaceholderNames(params, /* useCamelCase */ true)),
+        createClosureModeGuard(), createGoogleGetMsgStatements(
+                                      variable, message, closureVar,
+                                      i18nFormatPlaceholderNames(params, /* useCamelCase */ true)),
         createLocalizeStatements(
             variable, message, i18nFormatPlaceholderNames(params, /* useCamelCase */ false))),
   ];
@@ -2086,4 +2085,18 @@ export function getTranslationDeclStmts(
   }
 
   return statements;
+}
+
+/**
+ * Create the expression that will be used to guard the closure mode block
+ * It is equivalent to:
+ *
+ * ```
+ * typeof ngI18nClosureMode !== undefined && ngI18nClosureMode
+ * ```
+ */
+function createClosureModeGuard(): o.BinaryOperatorExpr {
+  return o.typeofExpr(o.variable(NG_I18N_CLOSURE_MODE))
+      .notIdentical(o.literal('undefined', o.STRING_TYPE))
+      .and(o.variable(NG_I18N_CLOSURE_MODE));
 }
