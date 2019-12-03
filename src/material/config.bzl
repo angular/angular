@@ -4,6 +4,7 @@ entryPoints = [
     "badge",
     "badge/testing",
     "bottom-sheet",
+    "bottom-sheet/testing",
     "button",
     "button/testing",
     "button-toggle",
