@@ -7,6 +7,9 @@
 # Only exists if Bazel was run
 /bazel-out
 
+# extracted i18n messages
+src/locale
+
 # dependencies
 /node_modules
 
