@@ -1950,6 +1950,56 @@ export class FormArray extends AbstractControl {
     this.updateValueAndValidity();
   }
 
+  /**
+   * Replace all controls with new ones.
+   *
+   * @usageNotes
+   * ### Replace controls of a FormArray
+   *
+   * ```typescript
+   * const arr = new FormArray([
+   *   new FormControl(0),
+   *   new FormControl(1),
+   *   new FormControl(2)
+   * ]);
+   * console.log(arr.value);   // [1, 2, 0]
+   *
+   * arr.replaceControls([new FormControl(2)]);
+   * console.log(arr.value);   // [2]
+   * ```
+   *
+   * @param controls The new controls which will replace the old ones
+   */
+  replaceControls(controls: AbstractControl[]): void {
+    if (!controls || !Array.isArray(controls)) {
+      throw new Error(
+          `Replacing controls requires an array of AbstractControl elements (e.g. instances of FormControl).`);
+    }
+
+    const invalidControls = controls.reduce(
+        (invalidControls, control, index) =>
+            control instanceof AbstractControl ? invalidControls : [...invalidControls, index],
+        [] as number[]);
+
+    if (invalidControls.length > 0) {
+      throw new Error(
+          `Can not replace controls. There are invalid controls at positions ${JSON.stringify(invalidControls)}.`);
+    }
+
+    if (this.controls.length) {
+      this.controls.forEach(control => control._registerOnCollectionChange(() => undefined));
+      this.controls.splice(0);
+    }
+
+    controls.forEach(control => {
+      this.controls.push(control);
+      this._registerControl(control);
+    });
+
+    this.updateValueAndValidity();
+    this._onCollectionChange();
+  }
+
   /** @internal */
   _syncPendingControls(): boolean {
     let subtreeUpdated = this.controls.reduce((updated: boolean, child: AbstractControl) => {

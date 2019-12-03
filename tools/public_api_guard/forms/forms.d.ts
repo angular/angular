@@ -179,6 +179,7 @@ export declare class FormArray extends AbstractControl {
     }): void;
     push(control: AbstractControl): void;
     removeAt(index: number): void;
+    replaceControls(controls: AbstractControl[]): void;
     reset(value?: any, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;

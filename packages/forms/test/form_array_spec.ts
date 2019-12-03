@@ -390,6 +390,61 @@ import {of } from 'rxjs';
       });
     });
 
+    describe('replaceControl', () => {
+      let c1: FormControl, c2: FormControl, a: FormArray;
+
+      beforeEach(() => {
+        c1 = new FormControl('new1');
+        c2 = new FormControl('new2');
+        a = new FormArray([c1, c2]);
+      });
+
+      it('should replace array form controls', () => {
+        const c3 = new FormControl('c3');
+
+        expect(a.value).toEqual(['new1', 'new2']);
+        a.replaceControls([c3]);
+        expect(a.value).toEqual(['c3']);
+      });
+
+      it('should replace non-empty array with an empty array', () => {
+        a.replaceControls([]);
+        expect(a.value).toEqual([]);
+      });
+
+      it('should replace an empty array with a non-empty array', () => {
+        a = new FormArray([]);
+        const c = new FormControl('c');
+
+        a.replaceControls([c]);
+        expect(a.value).toEqual(['c']);
+      });
+
+      it('should throw an error if it is not an array of form controls', () => {
+        expect(() => a.replaceControls([1, new FormControl(1), null, 'test', undefined] as any))
+            .toThrowError(new RegExp(
+                `Can not replace controls. There are invalid controls at positions \\\[0,2,3,4\\\].`));
+      });
+
+      it('should throw an error if parameter is null', () => {
+        expect(() => a.replaceControls(null as any))
+            .toThrowError(new RegExp(
+                `Replacing controls requires an array of AbstractControl elements \\\(e.g. instances of FormControl\\\).`));
+      });
+
+      it('should throw an error if parameter is undefined', () => {
+        expect(() => a.replaceControls(undefined as any))
+            .toThrowError(new RegExp(
+                `Replacing controls requires an array of AbstractControl elements \\\(e.g. instances of FormControl\\\).`));
+      });
+
+      it('should throw an error if parameter is not an array', () => {
+        expect(() => a.replaceControls(1 as any))
+            .toThrowError(new RegExp(
+                `Replacing controls requires an array of AbstractControl elements \\\(e.g. instances of FormControl\\\).`));
+      });
+    });
+
     describe('reset()', () => {
       let c: FormControl, c2: FormControl, a: FormArray;
 
@@ -657,6 +712,16 @@ import {of } from 'rxjs';
 
         expect(a.dirty).toEqual(true);
       });
+
+      it('should not effect dirty after controls have been replaced', () => {
+        a.markAsPristine();
+        a.replaceControls([new FormControl('new1')]);
+        expect(a.dirty).toBe(false);
+
+        a.markAsDirty();
+        a.replaceControls([new FormControl('new2')]);
+        expect(a.dirty).toBe(true);
+      });
     });
 
     describe('touched', () => {
@@ -674,6 +739,16 @@ import {of } from 'rxjs';
         c.markAsTouched();
 
         expect(a.touched).toEqual(true);
+      });
+
+      it('should not effect touched after controls have been replaced', () => {
+        a.markAsTouched();
+        a.replaceControls([new FormControl('new1')]);
+        expect(a.touched).toBe(true);
+
+        a.markAsUntouched();
+        a.replaceControls([new FormControl('new2')]);
+        expect(a.touched).toBe(false);
       });
     });
 
@@ -746,6 +821,18 @@ import {of } from 'rxjs';
         c2 = new FormControl('old2');
         a = new FormArray([c1, c2]);
       });
+
+      it('should fire an event after the value has been replaced',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           a.valueChanges.subscribe({
+             next: (value: any) => {
+               expect(a.value).toEqual(['new1']);
+               expect(value).toEqual(['new1']);
+               async.done();
+             }
+           });
+           a.replaceControls([new FormControl('new1')]);
+         }));
 
       it('should fire an event after the value has been updated',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -890,6 +977,16 @@ import {of } from 'rxjs';
 
         a.setValue(['correct']);
         expect(a.valid).toBe(true);
+      });
+
+      it('should update validators after replaceControl', () => {
+        const a = new FormArray([new FormControl('')], {validators: [simpleValidator]});
+        expect(a.valid).toBe(false);
+        expect(a.errors).toEqual({'broken': true});
+
+        a.replaceControls([new FormControl('correct')]);
+        expect(a.valid).toBe(true);
+        expect(a.errors).toBe(null);
       });
     });
 
