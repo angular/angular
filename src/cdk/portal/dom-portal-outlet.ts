@@ -115,17 +115,23 @@ export class DomPortalOutlet extends BasePortalOutlet {
       throw Error('Cannot attach DOM portal without _document constructor parameter');
     }
 
+    const element = portal.element;
+    if (!element.parentNode) {
+      throw Error('DOM portal content must be attached to a parent node.');
+    }
+
     // Anchor used to save the element's previous position so
     // that we can restore it when the portal is detached.
-    let anchorNode = this._document.createComment('dom-portal');
-    let element = portal.element;
+    const anchorNode = this._document.createComment('dom-portal');
 
-    element.parentNode!.insertBefore(anchorNode, element);
+    element.parentNode.insertBefore(anchorNode, element);
     this.outletElement.appendChild(element);
 
     super.setDisposeFn(() => {
       // We can't use `replaceWith` here because IE doesn't support it.
-      anchorNode.parentNode!.replaceChild(element, anchorNode);
+      if (anchorNode.parentNode) {
+        anchorNode.parentNode.replaceChild(element, anchorNode);
+      }
     });
   }
 

@@ -107,6 +107,33 @@ describe('Portals', () => {
           .toBe(false, 'Expected content to be removed from outlet on detach.');
     });
 
+    it('should throw when trying to load an element without a parent into a DOM portal', () => {
+      const testAppComponent = fixture.componentInstance;
+      const element = document.createElement('div');
+      const domPortal = new DomPortal(element);
+
+      expect(() => {
+        testAppComponent.selectedPortal = domPortal;
+        fixture.detectChanges();
+      }).toThrowError('DOM portal content must be attached to a parent node.');
+    });
+
+    it('should not throw when restoring if the outlet element was cleared', () => {
+      const testAppComponent = fixture.componentInstance;
+      const parent = fixture.nativeElement.querySelector('.dom-portal-parent');
+      const domPortal = new DomPortal(testAppComponent.domPortalContent);
+
+      testAppComponent.selectedPortal = domPortal;
+      fixture.detectChanges();
+
+      parent.innerHTML = '';
+
+      expect(() => {
+        testAppComponent.selectedPortal = undefined;
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
+
     it('should project template context bindings in the portal', () => {
       let testAppComponent = fixture.componentInstance;
       let hostContainer = fixture.nativeElement.querySelector('.portal-container');
@@ -558,6 +585,29 @@ describe('Portals', () => {
       expect(someDomElement.textContent!.trim()).toBe('');
     });
 
+    it('should throw when trying to load an element without a parent into a DOM portal', () => {
+      const fixture = TestBed.createComponent(PortalTestApp);
+      fixture.detectChanges();
+      const element = document.createElement('div');
+      const portal = new DomPortal(element);
+
+      expect(() => {
+        portal.attach(host);
+        fixture.detectChanges();
+      }).toThrowError('DOM portal content must be attached to a parent node.');
+    });
+
+    it('should not throw when restoring if the outlet element was cleared', () => {
+      const fixture = TestBed.createComponent(PortalTestApp);
+      fixture.detectChanges();
+      const portal = new DomPortal(fixture.componentInstance.domPortalContent);
+
+      portal.attach(host);
+      host.outletElement.innerHTML = '';
+
+      expect(() => host.detach()).not.toThrow();
+    });
+
   });
 });
 
@@ -618,8 +668,10 @@ class ArbitraryViewContainerRefComponent {
 
   <ng-template #templateRef let-data> {{fruit}} - {{ data?.status }}!</ng-template>
 
-  <div #domPortalContent>
-    <p class="dom-portal-inner-content">Hello there</p>
+  <div class="dom-portal-parent">
+    <div #domPortalContent>
+      <p class="dom-portal-inner-content">Hello there</p>
+    </div>
   </div>
   `,
 })
