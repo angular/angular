@@ -41,17 +41,17 @@ if (module === require.main) {
  * output directory.
  */
 function defaultBuildReleasePackages() {
-  buildReleasePackages('legacy', join(projectDir, 'dist/releases'));
+  buildReleasePackages(false, join(projectDir, 'dist/releases'));
 }
 
 /**
  * Builds the release packages with the given compile mode and copies
  * the package output into the given directory.
  */
-function buildReleasePackages(compileMode, distPath) {
+function buildReleasePackages(useIvy, distPath) {
   console.log('######################################');
   console.log('  Building release packages...');
-  console.log(`  Compile mode: ${compileMode}`);
+  console.log(`  Compiling with Ivy: ${useIvy}`);
   console.log('######################################');
 
   // List of targets to build. e.g. "src/cdk:npm_package", or "src/material:npm_package".
@@ -73,7 +73,7 @@ function buildReleasePackages(compileMode, distPath) {
 
   // Build with "--config=release" so that Bazel runs the workspace stamping script. The
   // stamping script ensures that the version placeholder is populated in the release output.
-  exec(`${bazelCmd} build --config=release --define=compile=${compileMode} ${targets.join(' ')}`);
+  exec(`${bazelCmd} build --config=release --config=${useIvy ? 'ivy' : 'view-engine'} ${targets.join(' ')}`);
 
   // Delete the distribution directory so that the output is guaranteed to be clean. Re-create
   // the empty directory so that we can copy the release packages into it later.

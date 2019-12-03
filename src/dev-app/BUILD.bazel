@@ -99,7 +99,7 @@ sass_binary(
 
 expand_template(
     name = "system-config",
-    configuration_env_vars = ["compile"],
+    configuration_env_vars = ["angular_ivy_enabled"],
     output_name = "system-config.js",
     substitutions = {
         "$CDK_ENTRYPOINTS_TMPL": str(CDK_ENTRYPOINTS),

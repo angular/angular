@@ -40,9 +40,11 @@ build:release --workspace_status_command="node ./tools/bazel-stamp-vars.js"
 ################################
 # View Engine / Ivy toggle     #
 ################################
+build:view-engine --define=angular_ivy_enabled=False
+build:ivy --define=angular_ivy_enabled=True
 
-# Use "legacy" for ViewEngine and "aot" for Ivy
-build --define=compile=aot
+# Set Ivy as the default
+build --config=ivy
 
 #######################
 # Remote HTTP Caching #

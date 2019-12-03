@@ -17,6 +17,6 @@ platform(
 config_setting(
     name = "view_engine_mode",
     values = {
-        "define": "compile=legacy",
+        "define": "angular_ivy_enabled=False",
     },
 )

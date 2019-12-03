@@ -16,7 +16,7 @@ var MATERIAL_PACKAGES = $MATERIAL_ENTRYPOINTS_TMPL;
 var MATERIAL_EXPERIMENTAL_PACKAGES = $MATERIAL_EXPERIMENTAL_ENTRYPOINTS_TMPL;
 
 /** Whether the dev-app is served with Ivy enabled. */
-var isRunningWithIvy = '$COMPILE_TMPL' === 'aot';
+var isRunningWithIvy = '$ANGULAR_IVY_ENABLED_TMPL'.toString() === 'True';
 
 /** Bazel runfile path referring to the "src/" folder of the project. */
 var srcRunfilePath = 'angular_material/src';

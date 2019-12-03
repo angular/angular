@@ -403,8 +403,8 @@ jobs:
       - *setup_bazel_binary
 
       # Run project tests with NGC and View Engine.
-      - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --define=compile=legacy
-      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --define=compile=legacy
+      - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --config=view-engine
+      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel tests against View Engine from angular/angular#master.
@@ -426,8 +426,8 @@ jobs:
       # Setup Angular snapshots by installing the artifacts from the Github repositories.
       - run: node ./scripts/circleci/setup-angular-snapshots.js --tag master
       # Run project tests with NGC and View Engine.
-      - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --define=compile=legacy
-      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --define=compile=legacy
+      - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --config=view-engine
+      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel tests against material-components-web#master.

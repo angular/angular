@@ -39,7 +39,8 @@ ANGULAR_LIBRARY_IVY_UMDS = ANGULAR_NO_NGCC_BUNDLES + [
 
 """
   Gets the list of targets for the Angular library UMD bundles. Conditionally
-  switches between View Engine or Ivy UMD bundles based on the "--define=compile" flag.
+  switches between View Engine or Ivy UMD bundles based on the 
+  "--config={ivy,view-engine}" flag.
 """
 
 def getAngularUmdTargets():
