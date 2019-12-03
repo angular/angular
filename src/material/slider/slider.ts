@@ -475,6 +475,9 @@ export class MatSlider extends _MatSliderMixinBase
     return (this._dir && this._dir.value == 'rtl') ? 'rtl' : 'ltr';
   }
 
+  /** Keeps track of the last pointer event that was captured by the slider. */
+  private _lastPointerEvent: MouseEvent | TouchEvent | null;
+
   constructor(elementRef: ElementRef,
               private _focusMonitor: FocusMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
@@ -513,6 +516,7 @@ export class MatSlider extends _MatSliderMixinBase
     const element = this._elementRef.nativeElement;
     element.removeEventListener('mousedown', this._pointerDown, activeEventOptions);
     element.removeEventListener('touchstart', this._pointerDown, activeEventOptions);
+    this._lastPointerEvent = null;
     this._removeGlobalEvents();
     this._focusMonitor.stopMonitoring(this._elementRef);
     this._dirChangeSubscription.unsubscribe();
@@ -611,6 +615,7 @@ export class MatSlider extends _MatSliderMixinBase
       const oldValue = this.value;
       const pointerPosition = getPointerPositionOnPage(event);
       this._isSliding = true;
+      this._lastPointerEvent = event;
       event.preventDefault();
       this._focusHostElement();
       this._onMouseenter(); // Simulate mouseenter in case this is a mobile device.
@@ -637,6 +642,7 @@ export class MatSlider extends _MatSliderMixinBase
       // Prevent the slide from selecting anything else.
       event.preventDefault();
       const oldValue = this.value;
+      this._lastPointerEvent = event;
       this._updateValueFromPosition(getPointerPositionOnPage(event));
 
       // Native range elements always emit `input` events when the value changed while sliding.
@@ -654,7 +660,7 @@ export class MatSlider extends _MatSliderMixinBase
 
       event.preventDefault();
       this._removeGlobalEvents();
-      this._valueOnSlideStart = this._pointerPositionOnStart = null;
+      this._valueOnSlideStart = this._pointerPositionOnStart = this._lastPointerEvent = null;
       this._isSliding = false;
 
       if (this._valueOnSlideStart != this.value && !this.disabled &&
@@ -662,6 +668,15 @@ export class MatSlider extends _MatSliderMixinBase
           pointerPositionOnStart.y !== currentPointerPosition.y)) {
         this._emitChangeEvent();
       }
+    }
+  }
+
+  /** Called when the window has lost focus. */
+  private _windowBlur = () => {
+    // If the window is blurred while dragging we need to stop dragging because the
+    // browser won't dispatch the `mouseup` and `touchend` events anymore.
+    if (this._lastPointerEvent) {
+      this._pointerUp(this._lastPointerEvent);
     }
   }
 
@@ -683,6 +698,9 @@ export class MatSlider extends _MatSliderMixinBase
         body.addEventListener('touchcancel', this._pointerUp, activeEventOptions);
       }
     }
+    if (typeof window !== 'undefined' && window) {
+      window.addEventListener('blur', this._windowBlur);
+    }
   }
 
   /** Removes any global event listeners that we may have added. */
@@ -694,6 +712,9 @@ export class MatSlider extends _MatSliderMixinBase
       body.removeEventListener('touchmove', this._pointerMove, activeEventOptions);
       body.removeEventListener('touchend', this._pointerUp, activeEventOptions);
       body.removeEventListener('touchcancel', this._pointerUp, activeEventOptions);
+    }
+    if (typeof window !== 'undefined' && window) {
+      window.removeEventListener('blur', this._windowBlur);
     }
   }
 

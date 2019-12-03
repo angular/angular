@@ -139,6 +139,27 @@ describe('MatSlider', () => {
       expect(sliderNativeElement.classList).not.toContain('mat-slider-sliding');
     });
 
+    it('should stop dragging if the page loses focus', () => {
+      const classlist = sliderNativeElement.classList;
+
+      expect(classlist).not.toContain('mat-slider-sliding');
+
+      dispatchSlideStartEvent(sliderNativeElement, 0);
+      fixture.detectChanges();
+
+      expect(classlist).toContain('mat-slider-sliding');
+
+      dispatchSlideEvent(sliderNativeElement, 0.34);
+      fixture.detectChanges();
+
+      expect(classlist).toContain('mat-slider-sliding');
+
+      dispatchFakeEvent(window, 'blur');
+      fixture.detectChanges();
+
+      expect(classlist).not.toContain('mat-slider-sliding');
+    });
+
     it('should reset active state upon blur', () => {
       sliderInstance._isActive = true;
 
