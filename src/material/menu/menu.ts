@@ -328,16 +328,24 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
    * @param origin Action from which the focus originated. Used to set the correct styling.
    */
   focusFirstItem(origin: FocusOrigin = 'program'): void {
-    const manager = this._keyManager;
-
     // When the content is rendered lazily, it takes a bit before the items are inside the DOM.
     if (this.lazyContent) {
       this._ngZone.onStable.asObservable()
         .pipe(take(1))
-        .subscribe(() => manager.setFocusOrigin(origin).setFirstItemActive());
+        .subscribe(() => this._focusFirstItem(origin));
     } else {
-      manager.setFocusOrigin(origin).setFirstItemActive();
+      this._focusFirstItem(origin);
     }
+  }
+
+  /**
+   * Actual implementation that focuses the first item. Needs to be separated
+   * out so we don't repeat the same logic in the public `focusFirstItem` method.
+   */
+  private _focusFirstItem(origin: FocusOrigin) {
+    const manager = this._keyManager;
+
+    manager.setFocusOrigin(origin).setFirstItemActive();
 
     // If there's no active item at this point, it means that all the items are disabled.
     // Move focus to the menu panel so keyboard events like Escape still work. Also this will

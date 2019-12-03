@@ -801,6 +801,16 @@ describe('MatMenu', () => {
     expect(document.activeElement).toBe(overlayContainerElement.querySelector('.mat-menu-panel'));
   }));
 
+  it('should focus the menu panel if all items are disabled inside lazy content', fakeAsync(() => {
+    const fixture = createComponent(SimpleMenuWithRepeaterInLazyContent, [], [FakeIcon]);
+    fixture.componentInstance.items.forEach(item => item.disabled = true);
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+
+    expect(document.activeElement).toBe(overlayContainerElement.querySelector('.mat-menu-panel'));
+  }));
+
   describe('lazy rendering', () => {
     it('should be able to render the menu content lazily', fakeAsync(() => {
       const fixture = createComponent(SimpleLazyMenu);
@@ -2432,6 +2442,25 @@ class MenuWithCheckboxItems {
 class SimpleMenuWithRepeater {
   @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   @ViewChild(MatMenu) menu: MatMenu;
+  items = [{label: 'Pizza', disabled: false}, {label: 'Pasta', disabled: false}];
+}
+
+@Component({
+  template: `
+    <button [matMenuTriggerFor]="menu">Toggle menu</button>
+    <mat-menu #menu="matMenu">
+      <ng-template matMenuContent>
+        <button
+          *ngFor="let item of items"
+          [disabled]="item.disabled"
+          mat-menu-item>{{item.label}}</button>
+      </ng-template>
+    </mat-menu>
+  `
+})
+class SimpleMenuWithRepeaterInLazyContent {
+  @ViewChild(MatMenuTrigger, {static: false}) trigger: MatMenuTrigger;
+  @ViewChild(MatMenu, {static: false}) menu: MatMenu;
   items = [{label: 'Pizza', disabled: false}, {label: 'Pasta', disabled: false}];
 }
 
