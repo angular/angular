@@ -249,8 +249,8 @@ class TypeWrapper implements Symbol {
     if (symbol) {
       return symbol.name;
     } else {
-      // the js primitive type(e.g. 'string') doesn't have Symbol.
-      // use the ts.TypeChecker to get the type name.
+      // A primitive type (e.g. 'string') doesn't have Symbol,
+      // so use the ts.TypeChecker to get the type name.
       return this.context.checker.typeToString(this.tsType);
     }
   }
@@ -314,7 +314,9 @@ class TypeWrapper implements Symbol {
   }
 }
 
-class StringIndexTypeWrappr extends TypeWrapper {
+// If stringIndexType a primitive type(e.g. 'string'), the Symbol is undefined;
+// and in AstType.resolvePropertyRead method, the Symbol.type should get the right type.
+class StringIndexTypeWrapper extends TypeWrapper {
   public readonly type = new TypeWrapper(this.tsType, this.context);
 }
 
@@ -516,11 +518,7 @@ class SymbolTableWrapper implements SymbolTable {
       //   obj.stringIndex // equivalent to obj['stringIndex'];
       //
       // In this case, return the type indexed by an arbitrary string key.
-
-      // if stringIndexType is js primitive type(e.g. 'string'), the Symbol is undefined;
-      // and In AstType.resolvePropertyRead method, the Symbol.type should get the right type.
-      // so I add a new Symbol type, 'StringIndexTypeWrappr'
-      return new StringIndexTypeWrappr(this.stringIndexType, this.context);
+      return new StringIndexTypeWrapper(this.stringIndexType, this.context);
     }
 
     return undefined;
