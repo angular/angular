@@ -146,6 +146,13 @@ describe('completions', () => {
         const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
         expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
       });
+
+      it('should work with dot notation if stringIndexType is a primitive type', () => {
+        mockHost.override(TEST_TEMPLATE, `{{ primitiveIndexType.test.~{string-primitive-type}}}`);
+        const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'string-primitive-type');
+        const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+        expectContain(completions, CompletionKind.METHOD, ['substring']);
+      });
     });
   });
 
