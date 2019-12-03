@@ -12,8 +12,10 @@ $mat-tooltip-handset-vertical-padding:
     ($mat-tooltip-handset-target-height - $mat-tooltip-handset-font-size) / 2;
 
 @mixin mat-tooltip-theme($theme) {
+  $background: map-get($theme, background);
+
   .mat-tooltip {
-    background: mat-color($mat-grey, 700, 0.9);
+    background: mat-color($background, tooltip, 0.9);
   }
 }
 

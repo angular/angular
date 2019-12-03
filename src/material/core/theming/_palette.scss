@@ -686,6 +686,7 @@ $mat-light-theme-background: (
   disabled-button-toggle: map_get($mat-grey, 200),
   unselected-chip: map_get($mat-grey, 300),
   disabled-list-option: map_get($mat-grey, 200),
+  tooltip: map_get($mat-grey, 700),
 );
 
 // Background palette for dark themes.
@@ -704,6 +705,7 @@ $mat-dark-theme-background: (
   disabled-button-toggle: black,
   unselected-chip: map_get($mat-grey, 700),
   disabled-list-option: black,
+  tooltip: map_get($mat-grey, 700),
 );
 
 // Foreground palette for light themes.
