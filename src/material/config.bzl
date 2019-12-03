@@ -2,6 +2,7 @@ entryPoints = [
     "autocomplete",
     "autocomplete/testing",
     "badge",
+    "badge/testing",
     "bottom-sheet",
     "button",
     "button/testing",

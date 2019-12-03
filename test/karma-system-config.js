@@ -101,6 +101,8 @@ System.config({
     '@angular/material/autocomplete/testing': 'dist/packages/material/autocomplete/testing/index.js',
     '@angular/material/autocomplete/testing/shared.spec': 'dist/packages/material/autocomplete/testing/shared.spec.js',
     '@angular/material/badge': 'dist/packages/material/badge/index.js',
+    '@angular/material/badge/testing': 'dist/packages/material/badge/testing/index.js',
+    '@angular/material/badge/testing/shared.spec': 'dist/packages/material/badge/testing/shared.spec.js',
     '@angular/material/bottom-sheet': 'dist/packages/material/bottom-sheet/index.js',
     '@angular/material/button': 'dist/packages/material/button/index.js',
     '@angular/material/button/testing': 'dist/packages/material/button/testing/index.js',
