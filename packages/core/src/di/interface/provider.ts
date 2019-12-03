@@ -247,8 +247,11 @@ export interface FactoryProvider extends FactorySansProvider {
 }
 
 /**
- * Describes how the `Injector` should be configured as static (that is, without reflection).
- * @see ["Dependency Injection Guide"](guide/dependency-injection).
+ * Describes how an `Injector` should be configured as static (that is, without reflection).
+ * A static provider provides tokens to an injector for various types of dependencies.
+ *
+ * @see [Injector.create()](/api/core/Injector#create).
+ * @see ["Dependency Injection Guide"](guide/dependency-injection-providers).
  *
  * @publicApi
  */

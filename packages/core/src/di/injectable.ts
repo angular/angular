@@ -65,13 +65,13 @@ export interface InjectableDecorator {
 export interface Injectable {
   /**
    * Determines which injectors will provide the injectable,
-   * by either associating it with an @NgModule or other `InjectorType`,
-   * or by specifying that this injectable should be provided in the:
-   * - 'root' injector, which will be the application-level injector in most apps.
-   * - 'platform' injector, which would be the special singleton platform injector shared by all
+   * by either associating it with an `@NgModule` or other `InjectorType`,
+   * or by specifying that this injectable should be provided in one of the following injectors:
+   * - 'root' : The application-level injector in most apps.
+   * - 'platform' : A special singleton platform injector shared by all
    * applications on the page.
-   * - 'any' injector, which would be the injector which receives the resolution. (Note this only
-   * works on NgModule Injectors and not on Element Injector)
+   * - 'any' : The NgModule injector that receives the resolution.
+   *
    */
   providedIn?: Type<any>|'root'|'platform'|'any'|null;
 }
