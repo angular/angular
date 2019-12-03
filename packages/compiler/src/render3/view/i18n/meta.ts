@@ -18,7 +18,7 @@ import {I18N_ATTR, I18N_ATTR_PREFIX, hasI18nAttrs, icuFromI18nMessage} from './u
 export type I18nMeta = {
   id?: string,
   customId?: string,
-  legacyId?: string,
+  legacyIds?: string[],
   description?: string,
   meaning?: string
 };
@@ -52,7 +52,7 @@ export class I18nMetaVisitor implements html.Visitor {
 
   constructor(
       private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
-      private keepI18nAttrs: boolean = false, private i18nLegacyMessageIdFormat: string = '') {}
+      private keepI18nAttrs = false, private enableI18nLegacyMessageIdFormat = false) {}
 
   private _generateI18nMessage(
       nodes: html.Node[], meta: string|i18n.I18nMeta = '',
@@ -60,7 +60,7 @@ export class I18nMetaVisitor implements html.Visitor {
     const {meaning, description, customId} = this._parseMetadata(meta);
     const message = this._createI18nMessage(nodes, meaning, description, customId, visitNodeFn);
     this._setMessageId(message, meta);
-    this._setLegacyId(message, meta);
+    this._setLegacyIds(message, meta);
     return message;
   }
 
@@ -171,13 +171,9 @@ export class I18nMetaVisitor implements html.Visitor {
    * @param message the message whose legacy id should be set
    * @param meta information about the message being processed
    */
-  private _setLegacyId(message: i18n.Message, meta: string|i18n.I18nMeta): void {
-    if (this.i18nLegacyMessageIdFormat === 'xlf' || this.i18nLegacyMessageIdFormat === 'xliff') {
-      message.legacyId = computeDigest(message);
-    } else if (
-        this.i18nLegacyMessageIdFormat === 'xlf2' || this.i18nLegacyMessageIdFormat === 'xliff2' ||
-        this.i18nLegacyMessageIdFormat === 'xmb') {
-      message.legacyId = computeDecimalDigest(message);
+  private _setLegacyIds(message: i18n.Message, meta: string|i18n.I18nMeta): void {
+    if (this.enableI18nLegacyMessageIdFormat) {
+      message.legacyIds = [computeDigest(message), computeDecimalDigest(message)];
     } else if (typeof meta !== 'string') {
       // This occurs if we are doing the 2nd pass after whitespace removal (see `parseTemplate()` in
       // `packages/compiler/src/render3/view/template.ts`).
@@ -186,7 +182,7 @@ export class I18nMetaVisitor implements html.Visitor {
       const previousMessage = meta instanceof i18n.Message ?
           meta :
           meta instanceof i18n.IcuPlaceholder ? meta.previousMessage : undefined;
-      message.legacyId = previousMessage && previousMessage.legacyId;
+      message.legacyIds = previousMessage ? previousMessage.legacyIds : [];
     }
   }
 }
@@ -195,7 +191,7 @@ export function metaFromI18nMessage(message: i18n.Message, id: string | null = n
   return {
     id: typeof id === 'string' ? id : message.id || '',
     customId: message.customId,
-    legacyId: message.legacyId,
+    legacyIds: message.legacyIds,
     meaning: message.meaning || '',
     description: message.description || ''
   };

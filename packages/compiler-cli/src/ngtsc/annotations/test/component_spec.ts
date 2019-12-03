@@ -63,7 +63,7 @@ runInEachFileSystem(() => {
           reflectionHost, evaluator, metaRegistry, metaReader, scopeRegistry, scopeRegistry,
           /* isCore */ false, new NoopResourceLoader(), /* rootDirs */[''],
           /* defaultPreserveWhitespaces */ false, /* i18nUseExternalIds */ true,
-          /* i18nLegacyMessageIdFormat */ '', moduleResolver, cycleAnalyzer, refEmitter,
+          /* enableI18nLegacyMessageIdFormat */ false, moduleResolver, cycleAnalyzer, refEmitter,
           NOOP_DEFAULT_IMPORT_RECORDER, /* annotateForClosureCompiler */ false);
       const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
       const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));

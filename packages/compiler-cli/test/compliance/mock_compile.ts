@@ -210,7 +210,8 @@ export function compile(
       scripts, {
         target: ts.ScriptTarget.ES2015,
         module: ts.ModuleKind.ES2015,
-        moduleResolution: ts.ModuleResolutionKind.NodeJs, ...options,
+        moduleResolution: ts.ModuleResolutionKind.NodeJs,
+        enableI18nLegacyMessageIdFormat: false, ...options,
       },
       mockCompilerHost);
   program.emit();
