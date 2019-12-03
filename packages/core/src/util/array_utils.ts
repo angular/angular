@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertLessThanOrEqual} from './assert';
+import {assertEqual, assertGreaterThan, assertLessThanOrEqual} from './assert';
+
+
 
 /**
 * Equivalent to ES6 spread, add each item to an array.
@@ -140,11 +142,8 @@ export function arrayInsert2(array: any[], index: number, value1: any, value2: a
   if (end == index) {
     // inserting at the end.
     array.push(value1, value2);
-  } else if (end === 1) {
-    // corner case when we have less items in array than we have items to insert.
-    array.push(value2, array[0]);
-    array[0] = value1;
   } else {
+    ngDevMode && assertEqual(array.length & ~1, array.length, 'Expecting array multiple of 2.');
     end--;
     array.push(array[end - 1], array[end]);
     while (end > index) {
@@ -153,6 +152,42 @@ export function arrayInsert2(array: any[], index: number, value1: any, value2: a
     }
     array[index] = value1;
     array[index + 1] = value2;
+  }
+}
+
+/**
+ * Same as `Array.splice(index, 0, value1, value2)` but faster.
+ *
+ * `Array.splice()` is not fast because it has to allocate an array for the elements which were
+ * removed. This causes memory pressure and slows down code when most of the time we don't
+ * care about the deleted items array.
+ *
+ * https://jsperf.com/fast-array-splice (About 20x faster)
+ *
+ * @param array Array to splice.
+ * @param index Index in array where the `value` should be added.
+ * @param value1 Value to add to array.
+ * @param value2 Value to add to array.
+ */
+export function arrayInsert4(
+    array: any[], index: number, value1: any, value2: any, value3: any, value4: any): void {
+  ngDevMode && assertLessThanOrEqual(index, array.length, 'Can\'t insert past array end.');
+  let end = array.length;
+  if (end == index) {
+    // inserting at the end.
+    array.push(value1, value2, value3, value4);
+  } else {
+    ngDevMode && assertEqual(array.length & ~3, array.length, 'Expecting array multiple of 4.');
+    end--;
+    array.push(array[end - 3], array[end - 2], array[end - 1], array[end]);
+    while (end > index) {
+      array[end] = array[end - 4];
+      end--;
+    }
+    array[index] = value1;
+    array[index + 1] = value2;
+    array[index + 2] = value3;
+    array[index + 3] = value4;
   }
 }
 
@@ -232,6 +267,23 @@ export function arrayIndexOfSorted(array: string[], value: string): number {
 export interface ArrayMap<VALUE> extends Array<VALUE|string> { __brand__: 'array-map'; }
 
 /**
+ * `ArrayMap3` is an array where every 4th positions contain keys and remaining positions contain 3
+ * values.
+ *
+ * `ArrayMap3` provides a very efficient way of iterating over its contents. For small
+ * sets (~10) the cost of binary searching an `ArrayMap3` has about the same performance
+ * characteristics that of a `Map` with significantly better memory footprint.
+ *
+ * If used as a `Map` the keys are stored in alphabetical order so that they can be binary searched
+ * for retrieval.
+ *
+ * See: `ArrayMap`.
+ */
+export interface ArrayMap3<VALUE1, VALUE2, VALUE3> extends Array<VALUE1|VALUE2|VALUE3|string> {
+  __brand__: 'array-map-3';
+}
+
+/**
  * Set a `value` for a `key`.
  *
  * @param arrayMap to modify.
@@ -282,6 +334,20 @@ export function arrayMapIndexOf<V>(arrayMap: ArrayMap<V>, key: string): number {
 }
 
 /**
+ * Retrieve a `key` index value in the array or `-1` if not found.
+ *
+ * @param arrayMap to search.
+ * @param key The key to locate.
+ * @returns index of where the key is (or should have been.)
+ *   - positive (even) index if key found.
+ *   - negative index if key not found. (`~index` (even) to get the index where it should have
+ *     been inserted.)
+ */
+export function arrayMap3IndexOf<V1, V2, V3>(arrayMap: ArrayMap3<V1, V2, V3>, key: string): number {
+  return _arrayIndexOfSorted(arrayMap as string[], key, 2);
+}
+
+/**
  * Delete a `key` (and `value`) from the `ArrayMap`.
  *
  * @param arrayMap to modify.
@@ -302,7 +368,7 @@ export function arrayMapDelete<V>(arrayMap: ArrayMap<V>, key: string): number {
 
 
 /**
- * INTERNAL: Get an index of an `value` in a sorted `array` by grouping search by `shift`.
+ * INTERNAL: Get an index of a `value` in a sorted `array` by grouping search by `shift`.
  *
  * NOTE:
  * - This uses binary search algorithm for fast removals.

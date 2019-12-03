@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ArrayMap, arrayIndexOfSorted, arrayInsert, arrayInsert2, arrayInsertSorted, arrayMapDelete, arrayMapGet, arrayMapIndexOf, arrayMapSet, arrayRemove, arrayRemoveSorted, flatten} from '../../src/util/array_utils';
+import {ArrayMap, arrayIndexOfSorted, arrayInsert, arrayInsert2, arrayInsert4, arrayInsertSorted, arrayMapDelete, arrayMapGet, arrayMapIndexOf, arrayMapSet, arrayRemove, arrayRemoveSorted, flatten} from '../../src/util/array_utils';
 
 describe('array_utils', () => {
 
@@ -50,6 +50,12 @@ describe('array_utils', () => {
       return expect(array);
     }
 
+    function expectArrayInsert4(
+        array: any[], index: number, value1: any, value2: any, value3: any, value4: any) {
+      arrayInsert4(array, index, value1, value2, value3, value4);
+      return expect(array);
+    }
+
     it('should insert items', () => {
       expectArrayInsert([], 0, 'A').toEqual(['A']);
       expectArrayInsert([0], 0, 'A').toEqual(['A', 0]);
@@ -60,19 +66,35 @@ describe('array_utils', () => {
       expectArrayInsert([0, 1, 2], 3, 'A').toEqual([0, 1, 2, 'A']);
     });
 
-    it('should insert items', () => {
+    it('should insert items 2', () => {
       expectArrayInsert2([], 0, 'A', 'B').toEqual(['A', 'B']);
-      expectArrayInsert2([0], 0, 'A', 'B').toEqual(['A', 'B', 0]);
-      expectArrayInsert2([0], 1, 'A', 'B').toEqual([0, 'A', 'B']);
-      expectArrayInsert2([0, 1, 2], 0, 'A', 'B').toEqual(['A', 'B', 0, 1, 2]);
-      expectArrayInsert2([0, 1, 2], 1, 'A', 'B').toEqual([0, 'A', 'B', 1, 2]);
-      expectArrayInsert2([0, 1, 2], 2, 'A', 'B').toEqual([0, 1, 'A', 'B', 2]);
-      expectArrayInsert2([0, 1, 2], 3, 'A', 'B').toEqual([0, 1, 2, 'A', 'B']);
+      expectArrayInsert2([0, 1], 0, 'A', 'B').toEqual(['A', 'B', 0, 1]);
+      expectArrayInsert2([0, 1], 1, 'A', 'B').toEqual([0, 'A', 'B', 1]);
+      expectArrayInsert2([0, 1], 2, 'A', 'B').toEqual([0, 1, 'A', 'B']);
       expectArrayInsert2([0, 1, 2, 3], 0, 'A', 'B').toEqual(['A', 'B', 0, 1, 2, 3]);
       expectArrayInsert2([0, 1, 2, 3], 1, 'A', 'B').toEqual([0, 'A', 'B', 1, 2, 3]);
       expectArrayInsert2([0, 1, 2, 3], 2, 'A', 'B').toEqual([0, 1, 'A', 'B', 2, 3]);
       expectArrayInsert2([0, 1, 2, 3], 3, 'A', 'B').toEqual([0, 1, 2, 'A', 'B', 3]);
       expectArrayInsert2([0, 1, 2, 3], 4, 'A', 'B').toEqual([0, 1, 2, 3, 'A', 'B']);
+    });
+
+    it('should insert items 4', () => {
+      expectArrayInsert4([], 0, 'A', 'B', 'C', 'D').toEqual(['A', 'B', 'C', 'D']);
+      expectArrayInsert4([0, 1, 2, 3], 0, 'A', 'B', 'C', 'D').toEqual([
+        'A', 'B', 'C', 'D', 0, 1, 2, 3
+      ]);
+      expectArrayInsert4([0, 1, 2, 3], 1, 'A', 'B', 'C', 'D').toEqual([
+        0, 'A', 'B', 'C', 'D', 1, 2, 3
+      ]);
+      expectArrayInsert4([0, 1, 2, 3], 2, 'A', 'B', 'C', 'D').toEqual([
+        0, 1, 'A', 'B', 'C', 'D', 2, 3
+      ]);
+      expectArrayInsert4([0, 1, 2, 3], 3, 'A', 'B', 'C', 'D').toEqual([
+        0, 1, 2, 'A', 'B', 'C', 'D', 3
+      ]);
+      expectArrayInsert4([0, 1, 2, 3], 4, 'A', 'B', 'C', 'D').toEqual([
+        0, 1, 2, 3, 'A', 'B', 'C', 'D'
+      ]);
     });
   });
 
@@ -146,7 +168,7 @@ describe('array_utils', () => {
     it('should support basic operations', () => {
       const map: ArrayMap<number> = [] as any;
 
-      expect(arrayMapIndexOf(map, 'A')).toEqual(~0);
+      expect(arrayMapIndexOf(map, 'A')).toEqual(~0 /** not found, expected at 0 */);
 
       expect(arrayMapSet(map, 'B', 1)).toEqual(0);
       expect(map).toEqual(['B', 1]);
@@ -155,7 +177,7 @@ describe('array_utils', () => {
       expect(arrayMapSet(map, 'A', 0)).toEqual(0);
       expect(map).toEqual(['A', 0, 'B', 1]);
       expect(arrayMapIndexOf(map, 'B')).toEqual(2);
-      expect(arrayMapIndexOf(map, 'AA')).toEqual(~2);
+      expect(arrayMapIndexOf(map, 'AA')).toEqual(~2 /** not found, expected at 2 */);
 
       expect(arrayMapSet(map, 'C', 2)).toEqual(4);
       expect(map).toEqual(['A', 0, 'B', 1, 'C', 2]);
@@ -168,7 +190,7 @@ describe('array_utils', () => {
       expect(arrayMapSet(map, 'B', -1)).toEqual(2);
       expect(map).toEqual(['A', 0, 'B', -1, 'C', 2]);
 
-      expect(arrayMapDelete(map, 'AA')).toEqual(~2);
+      expect(arrayMapDelete(map, 'AA')).toEqual(~2 /** not found, expected at 2 */);
       expect(arrayMapDelete(map, 'B')).toEqual(2);
       expect(map).toEqual(['A', 0, 'C', 2]);
       expect(arrayMapDelete(map, 'A')).toEqual(0);
