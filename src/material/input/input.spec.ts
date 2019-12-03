@@ -16,7 +16,7 @@ import {
   ViewEncapsulation,
   ElementRef,
 } from '@angular/core';
-import {ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 import {
   FormControl,
   FormGroup,
@@ -1445,7 +1445,7 @@ describe('MatInput with appearance', () => {
     fakeDirectionality.value = 'rtl';
     fakeDirectionality.change.next('rtl');
     outlineFixture.detectChanges();
-    flush();
+    tick(16.6); // Angular replaces requestAnimationFrame calls with 16.6ms timeouts in tests.
     outlineFixture.detectChanges();
 
     expect(outlineFixture.componentInstance.formField.updateOutlineGap).toHaveBeenCalled();
@@ -1480,7 +1480,7 @@ describe('MatInput with appearance', () => {
       fakeDirectionality.value = 'rtl';
       fakeDirectionality.change.next('rtl');
       outlineFixture.detectChanges();
-      flush();
+      tick(16.6); // Angular replaces requestAnimationFrame calls with 16.6ms timeouts in tests.
       outlineFixture.detectChanges();
 
       let wrapperElement = outlineFixture.nativeElement;
@@ -1494,7 +1494,7 @@ describe('MatInput with appearance', () => {
       fakeDirectionality.value = 'ltr';
       fakeDirectionality.change.next('ltr');
       outlineFixture.detectChanges();
-      flush();
+      tick(16.6);
       outlineFixture.detectChanges();
 
       wrapperElement = outlineFixture.nativeElement;
