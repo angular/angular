@@ -17,8 +17,8 @@ describe('Clipboard', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
 
-    clipboard = TestBed.get(Clipboard);
-    document = TestBed.get(DOCUMENT);
+    clipboard = TestBed.inject(Clipboard);
+    document = TestBed.inject(DOCUMENT);
     execCommand = spyOn(document, 'execCommand').and.returnValue(true);
     body = document.body;
 

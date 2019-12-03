@@ -39,7 +39,7 @@ describe('CdkCopyToClipboard', () => {
 
     const host = fixture.componentInstance;
     host.content = COPY_CONTENT;
-    clipboard = TestBed.get(Clipboard);
+    clipboard = TestBed.inject(Clipboard);
     fixture.detectChanges();
   });
 

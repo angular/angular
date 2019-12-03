@@ -48,7 +48,7 @@ describe('FocusTrap', () => {
       // focus event handler directly.
       const result = focusTrapInstance.focusLastTabbableElement();
 
-      const platformId = TestBed.get(PLATFORM_ID);
+      const platformId = TestBed.inject(PLATFORM_ID);
       // In iOS button elements are never tabbable, so the last element will be the input.
       const lastElement = new Platform(platformId).IOS ? 'input' : 'button';
 

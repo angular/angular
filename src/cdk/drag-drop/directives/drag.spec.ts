@@ -3217,7 +3217,7 @@ describe('CdkDrag', () => {
 
       const cleanup = makePageScrollable();
       const item = fixture.componentInstance.dragItems.first.element.nativeElement;
-      const viewportRuler: ViewportRuler = TestBed.get(ViewportRuler);
+      const viewportRuler = TestBed.inject(ViewportRuler);
       const viewportSize = viewportRuler.getViewportSize();
 
       expect(viewportRuler.getViewportScrollPosition().top).toBe(0);
@@ -3238,7 +3238,7 @@ describe('CdkDrag', () => {
 
       const cleanup = makePageScrollable();
       const item = fixture.componentInstance.dragItems.first.element.nativeElement;
-      const viewportRuler: ViewportRuler = TestBed.get(ViewportRuler);
+      const viewportRuler = TestBed.inject(ViewportRuler);
       const viewportSize = viewportRuler.getViewportSize();
 
       scrollTo(0, viewportSize.height * 5);
@@ -3261,7 +3261,7 @@ describe('CdkDrag', () => {
 
       const cleanup = makePageScrollable('horizontal');
       const item = fixture.componentInstance.dragItems.first.element.nativeElement;
-      const viewportRuler: ViewportRuler = TestBed.get(ViewportRuler);
+      const viewportRuler = TestBed.inject(ViewportRuler);
       const viewportSize = viewportRuler.getViewportSize();
 
       expect(viewportRuler.getViewportScrollPosition().left).toBe(0);
@@ -3282,7 +3282,7 @@ describe('CdkDrag', () => {
 
       const cleanup = makePageScrollable('horizontal');
       const item = fixture.componentInstance.dragItems.first.element.nativeElement;
-      const viewportRuler: ViewportRuler = TestBed.get(ViewportRuler);
+      const viewportRuler = TestBed.inject(ViewportRuler);
       const viewportSize = viewportRuler.getViewportSize();
 
       scrollTo(viewportSize.width * 5, 0);
@@ -3305,7 +3305,7 @@ describe('CdkDrag', () => {
         fixture.detectChanges();
 
         const list = fixture.componentInstance.dropInstance.element.nativeElement;
-        const viewportRuler: ViewportRuler = TestBed.get(ViewportRuler);
+        const viewportRuler = TestBed.inject(ViewportRuler);
         const item = fixture.componentInstance.dragItems.first.element.nativeElement;
 
         // Position the list so that its top aligns with the viewport top. That way the pointer
@@ -3343,7 +3343,7 @@ describe('CdkDrag', () => {
         fixture.detectChanges();
 
         const list = fixture.componentInstance.dropInstance.element.nativeElement;
-        const viewportRuler: ViewportRuler = TestBed.get(ViewportRuler);
+        const viewportRuler = TestBed.inject(ViewportRuler);
         const item = fixture.componentInstance.dragItems.first.element.nativeElement;
 
         // Position the list so that its top aligns with the viewport top. That way the pointer
