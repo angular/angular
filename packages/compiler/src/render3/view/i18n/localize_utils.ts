@@ -9,7 +9,6 @@ import * as i18n from '../../../i18n/i18n_ast';
 import * as o from '../../../output/output_ast';
 
 import {serializeIcuNode} from './icu_serializer';
-import {metaFromI18nMessage} from './meta';
 import {formatI18nPlaceholderName} from './util';
 
 export function createLocalizeStatements(
@@ -18,9 +17,8 @@ export function createLocalizeStatements(
   const statements = [];
 
   const {messageParts, placeHolders} = serializeI18nMessageForLocalize(message);
-  statements.push(new o.ExpressionStatement(variable.set(o.localizedString(
-      metaFromI18nMessage(message), messageParts, placeHolders,
-      placeHolders.map(ph => params[ph])))));
+  statements.push(new o.ExpressionStatement(variable.set(
+      o.localizedString(message, messageParts, placeHolders, placeHolders.map(ph => params[ph])))));
 
   return statements;
 }
