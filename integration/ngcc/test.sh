@@ -92,18 +92,18 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
 
 
 # Did it generate a base factory call for synthesized constructors correctly?
-  grep "const ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm2015/table.js
+  grep "const ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm2015/table/table.js
   assertSucceeded "Expected 'ngcc' to generate a base factory for 'MatTable' in '@angular/material' (esm2015)."
 
-  grep "var ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm5/table.es5.js
+  grep "var ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm5/table/table.js
   assertSucceeded "Expected 'ngcc' to generate a base factory for 'MatTable' in '@angular/material' (esm5)."
 
 
 # Did it generate an abstract directive definition for undecorated classes with inputs and view queries?
-  grep "_MatMenuBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: _MatMenuBase" node_modules/@angular/material/esm2015/menu.js
+  grep "_MatMenuBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: _MatMenuBase" node_modules/@angular/material/esm2015/menu/menu.js
   assertSucceeded "Expected 'ngcc' to generate an abstract directive definition for 'MatMenuBase' in '@angular/material' (esm2015)."
 
-  grep "_MatMenuBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: _MatMenuBase" node_modules/@angular/material/esm5/menu.es5.js
+  grep "_MatMenuBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: _MatMenuBase" node_modules/@angular/material/esm5/menu/menu.js
   assertSucceeded "Expected 'ngcc' to generate an abstract directive definition for 'MatMenuBase' in '@angular/material' (esm5)."
 
 
@@ -117,7 +117,7 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
 
 
 # Did it handle namespace imported decorators in UMD using static properties?
-  grep "type: core.Injectable," node_modules/@angular/cdk/bundles/cdk-a11y.umd.js
+  grep "type: i0.Injectable," node_modules/@angular/cdk/bundles/cdk-a11y.umd.js
   assertSucceeded "Expected 'ngcc' to correctly handle decorators via static properties in '@angular/cdk/a11y' (umd)."
 
   # (and ensure the @angular/cdk/a11y package is indeed using static properties)
