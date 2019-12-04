@@ -73,6 +73,27 @@ By having all libraries continue to use View Engine, you will maintain compatibi
 See the [Creating Libraries](guide/creating-libraries) guide for more on how to compile or bundle your Angular library.
 When you use the tools integrated into the Angular CLI or `ng-packagr`, your library will always be built the right way automatically.
 
+{@a ivy-and-universal-app-shell}
+## Ivy and Universal/App shell
+In version 9, the server builder which is used for [App shell](guide/app-shell) and [Angular Universal](guide/universal) has the `bundleDependencies` option enabled by default.
+If you opt-out of bundling dependencies you will need to run the standalone Angular compatibility compiler (`ngcc`). This is needed because otherwise Node will be unable to resolve the Ivy version of the packages.
+
+You can run `ngcc` after each installation of node_modules by adding a `postinstall` [npm script](https://docs.npmjs.com/misc/scripts):
+
+<code-example language="json" header="package.json">
+{
+  "scripts": {
+    "postinstall": "ngcc"
+  }
+}
+</code-example>
+
+<div class="alert is-important">
+
+Don't use `--create-ivy-entry-points` as this will cause Node not to resolve the Ivy version of the packages correctly.
+
+</div>
+
 {@a opting-out-of-angular-ivy}
 ## Opting out of Ivy in version 9
 
