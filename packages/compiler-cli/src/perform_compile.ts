@@ -8,7 +8,10 @@
 
 import {Position, isSyntaxError} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {AbsoluteFsPath, absoluteFrom, getFileSystem, relative, resolve} from '../src/ngtsc/file_system';
+
+import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
 import * as api from './transformers/api';
 import * as ng from './transformers/entry_points';
 import {createMessageDiagnostic} from './transformers/util';
@@ -94,7 +97,8 @@ export function formatDiagnostics(
     return diags
         .map(diagnostic => {
           if (api.isTsDiagnostic(diagnostic)) {
-            return ts.formatDiagnostics([diagnostic], host);
+            return replaceTsWithNgInErrors(
+                ts.formatDiagnosticsWithColorAndContext([diagnostic], host));
           } else {
             return formatDiagnostic(diagnostic, host);
           }
