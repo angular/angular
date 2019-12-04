@@ -755,4 +755,29 @@ describe('compiler compliance: template', () => {
 
     expectEmit(result.source, template, 'Incorrect template');
   });
+
+  it('should safely nest ternary operations', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`
+                {{a?.b ? 1 : 2 }}\`
+            })
+            export class MyComponent {}
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+        `
+      }
+    };
+
+    const template = `i0.ɵɵtextInterpolate1(" ", (ctx.a == null ? null : ctx.a.b) ? 1 : 2, "")`;
+
+    const result = compile(files, angularFiles);
+    expectEmit(result.source, template, 'Incorrect template');
+  });
 });
