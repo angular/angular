@@ -15,7 +15,7 @@ import {AstResult} from './common';
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
 import {ExternalTemplate, InlineTemplate, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './template';
-import {Declaration, DeclarationError, Diagnostic, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
+import {Declaration, DeclarationError, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
 import {findTightestNode, getDirectiveClassLike} from './utils';
 
 
@@ -65,7 +65,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private readonly fileVersions = new Map<string, string>();
 
   private lastProgram: ts.Program|undefined = undefined;
-  private templateReferences: string[] = [];
   private analyzedModules: NgAnalyzedModules = {
     files: [],
     ngModuleByPipeOrDirective: new Map(),
@@ -144,11 +143,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return this.resolver.getReflector() as StaticReflector;
   }
 
-  getTemplateReferences(): string[] {
-    this.getAnalyzedModules();
-    return [...this.templateReferences];
-  }
-
   /**
    * Checks whether the program has changed and returns all analyzed modules.
    * If program has changed, invalidate all caches and update fileToComponent
@@ -166,7 +160,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     }
 
     // Invalidate caches
-    this.templateReferences = [];
     this.fileToComponent.clear();
     this.collectedErrors.clear();
     this.resolver.clearCache();
@@ -186,7 +179,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
               this.reflector.componentModuleUrl(directive.reference),
               metadata.template.templateUrl);
           this.fileToComponent.set(templateName, directive.reference);
-          this.templateReferences.push(templateName);
         }
       }
     }

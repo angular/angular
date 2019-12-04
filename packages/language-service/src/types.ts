@@ -186,11 +186,6 @@ export interface LanguageServiceHost {
   getAnalyzedModules(): NgAnalyzedModules;
 
   /**
-   * Return a list all the template files referenced by the project.
-   */
-  getTemplateReferences(): string[];
-
-  /**
    * Return the AST for both HTML and template for the contextFile.
    */
   getTemplateAst(template: TemplateSource): AstResult|undefined;

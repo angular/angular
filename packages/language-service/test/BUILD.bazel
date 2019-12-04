@@ -12,7 +12,6 @@ ts_library(
         "html_info_spec.ts",
         "language_service_spec.ts",
         "reflector_host_spec.ts",
-        "template_references_spec.ts",
         "template_spec.ts",
         "test_utils.ts",
         "ts_plugin_spec.ts",
