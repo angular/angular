@@ -12,7 +12,7 @@ import * as angular from '../../../src/common/src/angular1';
 import {$INJECTOR, INJECTOR_KEY, UPGRADE_APP_TYPE_KEY} from '../../../src/common/src/constants';
 import {UpgradeAppType} from '../../../src/common/src/util';
 
-export let $injector: angular.IInjectorService|null = null;
+let $injector: angular.IInjectorService|null = null;
 let injector: Injector;
 
 export function $injectorFactory() {
