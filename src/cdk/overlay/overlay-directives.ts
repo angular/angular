@@ -122,6 +122,12 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   /** Registered connected position pairs. */
   @Input('cdkConnectedOverlayPositions') positions: ConnectedPosition[];
 
+  /**
+   * This input overrides the positions input if specified. It lets users pass
+   * in arbitrary positioning strategies.
+   */
+  @Input('cdkConnectedOverlayPositionStrategy') positionStrategy: FlexibleConnectedPositionStrategy;
+
   /** The offset in pixels for the overlay connection point on the x-axis */
   @Input('cdkConnectedOverlayOffsetX')
   get offsetX(): number { return this._offsetX; }
@@ -287,7 +293,8 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
 
   /** Builds the overlay config based on the directive's inputs */
   private _buildConfig(): OverlayConfig {
-    const positionStrategy = this._position = this._createPositionStrategy();
+    const positionStrategy = this._position =
+      this.positionStrategy || this._createPositionStrategy();
     const overlayConfig = new OverlayConfig({
       direction: this._dir,
       positionStrategy,

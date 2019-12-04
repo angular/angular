@@ -26,6 +26,7 @@ export declare class CdkConnectedOverlay implements OnDestroy, OnChanges {
     readonly overlayRef: OverlayRef;
     panelClass: string | string[];
     positionChange: EventEmitter<ConnectedOverlayPositionChange>;
+    positionStrategy: FlexibleConnectedPositionStrategy;
     positions: ConnectedPosition[];
     push: boolean;
     scrollStrategy: ScrollStrategy;
@@ -40,7 +41,7 @@ export declare class CdkConnectedOverlay implements OnDestroy, OnChanges {
     static ngAcceptInputType_hasBackdrop: boolean | string | null | undefined;
     static ngAcceptInputType_lockPosition: boolean | string | null | undefined;
     static ngAcceptInputType_push: boolean | string | null | undefined;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkConnectedOverlay, "[cdk-connected-overlay], [connected-overlay], [cdkConnectedOverlay]", ["cdkConnectedOverlay"], { 'origin': "cdkConnectedOverlayOrigin", 'positions': "cdkConnectedOverlayPositions", 'offsetX': "cdkConnectedOverlayOffsetX", 'offsetY': "cdkConnectedOverlayOffsetY", 'width': "cdkConnectedOverlayWidth", 'height': "cdkConnectedOverlayHeight", 'minWidth': "cdkConnectedOverlayMinWidth", 'minHeight': "cdkConnectedOverlayMinHeight", 'backdropClass': "cdkConnectedOverlayBackdropClass", 'panelClass': "cdkConnectedOverlayPanelClass", 'viewportMargin': "cdkConnectedOverlayViewportMargin", 'scrollStrategy': "cdkConnectedOverlayScrollStrategy", 'open': "cdkConnectedOverlayOpen", 'transformOriginSelector': "cdkConnectedOverlayTransformOriginOn", 'hasBackdrop': "cdkConnectedOverlayHasBackdrop", 'lockPosition': "cdkConnectedOverlayLockPosition", 'flexibleDimensions': "cdkConnectedOverlayFlexibleDimensions", 'growAfterOpen': "cdkConnectedOverlayGrowAfterOpen", 'push': "cdkConnectedOverlayPush" }, { 'backdropClick': "backdropClick", 'positionChange': "positionChange", 'attach': "attach", 'detach': "detach", 'overlayKeydown': "overlayKeydown" }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkConnectedOverlay, "[cdk-connected-overlay], [connected-overlay], [cdkConnectedOverlay]", ["cdkConnectedOverlay"], { 'origin': "cdkConnectedOverlayOrigin", 'positions': "cdkConnectedOverlayPositions", 'positionStrategy': "cdkConnectedOverlayPositionStrategy", 'offsetX': "cdkConnectedOverlayOffsetX", 'offsetY': "cdkConnectedOverlayOffsetY", 'width': "cdkConnectedOverlayWidth", 'height': "cdkConnectedOverlayHeight", 'minWidth': "cdkConnectedOverlayMinWidth", 'minHeight': "cdkConnectedOverlayMinHeight", 'backdropClass': "cdkConnectedOverlayBackdropClass", 'panelClass': "cdkConnectedOverlayPanelClass", 'viewportMargin': "cdkConnectedOverlayViewportMargin", 'scrollStrategy': "cdkConnectedOverlayScrollStrategy", 'open': "cdkConnectedOverlayOpen", 'transformOriginSelector': "cdkConnectedOverlayTransformOriginOn", 'hasBackdrop': "cdkConnectedOverlayHasBackdrop", 'lockPosition': "cdkConnectedOverlayLockPosition", 'flexibleDimensions': "cdkConnectedOverlayFlexibleDimensions", 'growAfterOpen': "cdkConnectedOverlayGrowAfterOpen", 'push': "cdkConnectedOverlayPush" }, { 'backdropClick': "backdropClick", 'positionChange': "positionChange", 'attach': "attach", 'detach': "detach", 'overlayKeydown': "overlayKeydown" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkConnectedOverlay>;
 }
 
