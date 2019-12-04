@@ -6,10 +6,10 @@
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
-  "//engines-comment": "Keep this in sync with aio/package.json",
+  "//engines-comment": "Keep this in sync with /aio/package.json and /aio/tools/examples/shared/package.json",
   "engines": {
     "node": ">=10.9.0 <13.0.0",
-    "yarn": ">=1.17.3 <1.20.0"
+    "yarn": ">=1.17.3 <2"
   },
   "repository": {
     "type": "git",

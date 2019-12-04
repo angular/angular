@@ -80,10 +80,10 @@
     "post~~build": "yarn build-404-page",
     "~~light-server": "light-server --bind=localhost --historyindex=/index.html --no-reload"
   },
-  "//engines-comment": "Keep this in sync with ../package.json",
+  "//engines-comment": "Keep this in sync with /package.json and /aio/tools/examples/shared/package.json",
   "engines": {
     "node": ">=10.9.0 <13.0.0",
-    "yarn": ">=1.17.3 <1.20.0"
+    "yarn": ">=1.17.3 <2"
   },
   "private": true,
   "dependencies": {
