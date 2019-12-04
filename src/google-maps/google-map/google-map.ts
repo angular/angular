@@ -13,7 +13,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  EventEmitter,
   Input,
   OnChanges,
   OnDestroy,
@@ -27,6 +26,7 @@ import {
 import {isPlatformBrowser} from '@angular/common';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, shareReplay, take, takeUntil} from 'rxjs/operators';
+import {MapEventManager} from '../map-event-manager';
 
 interface GoogleMapsWindow extends Window {
   google?: typeof google;
@@ -64,6 +64,20 @@ export const DEFAULT_WIDTH = '500px';
   encapsulation: ViewEncapsulation.None,
 })
 export class GoogleMap implements OnChanges, OnInit, OnDestroy {
+  private _eventManager = new MapEventManager();
+
+  /** Whether we're currently rendering inside a browser. */
+  private _isBrowser: boolean;
+  private _googleMapChanges: Observable<google.maps.Map>;
+
+  private readonly _options = new BehaviorSubject<google.maps.MapOptions>(DEFAULT_OPTIONS);
+  private readonly _center =
+      new BehaviorSubject<google.maps.LatLngLiteral|google.maps.LatLng|undefined>(undefined);
+  private readonly _zoom = new BehaviorSubject<number|undefined>(undefined);
+  private readonly _destroy = new Subject<void>();
+  private _mapEl: HTMLElement;
+  _googleMap: UpdatedGoogleMap;
+
   @Input() height = DEFAULT_HEIGHT;
 
   @Input() width = DEFAULT_WIDTH;
@@ -85,125 +99,127 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.bounds_changed
    */
-  @Output() boundsChanged = new EventEmitter<void>();
+  @Output()
+  boundsChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('bounds_changed');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.center_changed
    */
-  @Output() centerChanged = new EventEmitter<void>();
+  @Output()
+  centerChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('center_changed');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.click
    */
-  @Output() mapClick = new EventEmitter<google.maps.MouseEvent|google.maps.IconMouseEvent>();
+  @Output()
+  mapClick: Observable<google.maps.MouseEvent|google.maps.IconMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MouseEvent|google.maps.IconMouseEvent>('click');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.dblclick
    */
-  @Output() mapDblclick = new EventEmitter<google.maps.MouseEvent>();
+  @Output()
+  mapDblclick: Observable<google.maps.MouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('dblclick');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.drag
    */
-  @Output() mapDrag = new EventEmitter<void>();
+  @Output() mapDrag: Observable<void> = this._eventManager.getLazyEmitter<void>('drag');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.dragend
    */
-  @Output() mapDragend = new EventEmitter<void>();
+  @Output() mapDragend: Observable<void> = this._eventManager.getLazyEmitter<void>('dragend');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.dragstart
    */
-  @Output() mapDragstart = new EventEmitter<void>();
+  @Output() mapDragstart: Observable<void> = this._eventManager.getLazyEmitter<void>('dragstart');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.heading_changed
    */
-  @Output() headingChanged = new EventEmitter<void>();
+  @Output()
+  headingChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('heading_changed');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.idle
    */
-  @Output() idle = new EventEmitter<void>();
+  @Output() idle: Observable<void> = this._eventManager.getLazyEmitter<void>('idle');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.maptypeid_changed
    */
-  @Output() maptypeidChanged = new EventEmitter<void>();
+  @Output()
+  maptypeidChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('maptypeid_changed');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.mousemove
    */
-  @Output() mapMousemove = new EventEmitter<google.maps.MouseEvent>();
+  @Output()
+  mapMousemove: Observable<google.maps.MouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('mousemove');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.mouseout
    */
-  @Output() mapMouseout = new EventEmitter<google.maps.MouseEvent>();
+  @Output()
+  mapMouseout: Observable<google.maps.MouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('mouseout');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.mouseover
    */
-  @Output() mapMouseover = new EventEmitter<google.maps.MouseEvent>();
+  @Output()
+  mapMouseover: Observable<google.maps.MouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('mouseover');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/map#Map.projection_changed
    */
-  @Output() projectionChanged = new EventEmitter<void>();
+  @Output()
+  projectionChanged: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('projection_changed');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.rightclick
    */
-  @Output() mapRightclick = new EventEmitter<google.maps.MouseEvent>();
+  @Output()
+  mapRightclick: Observable<google.maps.MouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('rightclick');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.tilesloaded
    */
-  @Output() tilesloaded = new EventEmitter<void>();
+  @Output() tilesloaded: Observable<void> = this._eventManager.getLazyEmitter<void>('tilesloaded');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.tilt_changed
    */
-  @Output() tiltChanged = new EventEmitter<void>();
+  @Output() tiltChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('tilt_changed');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.zoom_changed
    */
-  @Output() zoomChanged = new EventEmitter<void>();
-
-  private _mapEl: HTMLElement;
-  _googleMap: UpdatedGoogleMap;
-
-  /** Whether we're currently rendering inside a browser. */
-  private _isBrowser: boolean;
-  private _googleMapChanges!: Observable<google.maps.Map>;
-
-  private _listeners: google.maps.MapsEventListener[] = [];
-
-  private readonly _options = new BehaviorSubject<google.maps.MapOptions>(DEFAULT_OPTIONS);
-  private readonly _center =
-      new BehaviorSubject<google.maps.LatLngLiteral|google.maps.LatLng|undefined>(undefined);
-  private readonly _zoom = new BehaviorSubject<number|undefined>(undefined);
-
-  private readonly _destroy = new Subject<void>();
+  @Output() zoomChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('zoomChanged');
 
   constructor(
     private readonly _elementRef: ElementRef,
@@ -238,13 +254,10 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
     if (this._isBrowser) {
       this._mapEl = this._elementRef.nativeElement.querySelector('.map-container')!;
       this._setSize();
-
-      const combinedOptionsChanges = this._combineOptions();
-
-      this._googleMapChanges = this._initializeMap(combinedOptionsChanges);
+      this._googleMapChanges = this._initializeMap(this._combineOptions());
       this._googleMapChanges.subscribe((googleMap: google.maps.Map) => {
         this._googleMap = googleMap as UpdatedGoogleMap;
-        this._initializeEventHandlers(this._googleMap);
+        this._eventManager.setTarget(this._googleMap);
       });
 
       this._watchForOptionsChanges();
@@ -254,9 +267,9 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this._eventManager.destroy();
     this._destroy.next();
     this._destroy.complete();
-    this._clearListeners();
   }
 
   /**
@@ -472,64 +485,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
         });
   }
 
-  private _initializeEventHandlers(googleMap: UpdatedGoogleMap) {
-    // Ensure that we don't leak if called multiple times.
-    this._clearListeners();
-
-    const eventHandlers = new Map<string, EventEmitter<void>>([
-      ['bounds_changed', this.boundsChanged],
-      ['center_changed', this.centerChanged],
-      ['drag', this.mapDrag],
-      ['dragend', this.mapDragend],
-      ['dragstart', this.mapDragstart],
-      ['heading_changed', this.headingChanged],
-      ['idle', this.idle],
-      ['maptypeid_changed', this.maptypeidChanged],
-      ['projection_changed', this.projectionChanged],
-      ['tilesloaded', this.tilesloaded],
-      ['tilt_changed', this.tiltChanged],
-      ['zoomChanged', this.zoomChanged],
-    ]);
-    const mouseEventHandlers = new Map<string, EventEmitter<google.maps.MouseEvent>>([
-      ['dblclick', this.mapDblclick],
-      ['mousemove', this.mapMousemove],
-      ['mouseout', this.mapMouseout],
-      ['mouseover', this.mapMouseover],
-      ['rightclick', this.mapRightclick],
-    ]);
-    eventHandlers.forEach((eventHandler: EventEmitter<void>, name: string) => {
-      if (eventHandler.observers.length > 0) {
-        this._listeners.push(googleMap.addListener(name, () => {
-          eventHandler.emit();
-        }));
-      }
-    });
-    mouseEventHandlers.forEach(
-        (eventHandler: EventEmitter<google.maps.MouseEvent>, name: string) => {
-          if (eventHandler.observers.length > 0) {
-            this._listeners.push(
-                googleMap.addListener(name, (event: google.maps.MouseEvent) => {
-                  eventHandler.emit(event);
-                }));
-          }
-        });
-    if (this.mapClick.observers.length > 0) {
-      this._listeners.push(googleMap.addListener(
-          'click', (event: google.maps.MouseEvent|google.maps.IconMouseEvent) => {
-            this.mapClick.emit(event);
-          }));
-    }
-  }
-
-  /** Clears all currently-registered event listeners. */
-  private _clearListeners() {
-    for (let listener of this._listeners) {
-      listener.remove();
-    }
-
-    this._listeners = [];
-  }
-
+  /** Asserts that the map has been initialized. */
   private _assertInitialized() {
     if (!this._googleMap) {
       throw Error('Cannot access Google Map information before the API has been initialized. ' +

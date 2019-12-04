@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {async, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -108,20 +108,39 @@ describe('MapPolyline', () => {
     const polylineSpy = createPolylineSpy(polylineOptions);
     createPolylineConstructorSpy(polylineSpy).and.callThrough();
 
+    const addSpy = polylineSpy.addListener;
     const fixture = TestBed.createComponent(TestApp);
     fixture.detectChanges();
 
-    expect(polylineSpy.addListener).toHaveBeenCalledWith('click', jasmine.any(Function));
-    expect(polylineSpy.addListener).not.toHaveBeenCalledWith('dblclick', jasmine.any(Function));
-    expect(polylineSpy.addListener).not.toHaveBeenCalledWith('drag', jasmine.any(Function));
-    expect(polylineSpy.addListener).not.toHaveBeenCalledWith('dragend', jasmine.any(Function));
-    expect(polylineSpy.addListener).not.toHaveBeenCalledWith('dragstart', jasmine.any(Function));
-    expect(polylineSpy.addListener).not.toHaveBeenCalledWith('mousedown', jasmine.any(Function));
-    expect(polylineSpy.addListener).not.toHaveBeenCalledWith('mousemove', jasmine.any(Function));
-    expect(polylineSpy.addListener).not.toHaveBeenCalledWith('mouseout', jasmine.any(Function));
-    expect(polylineSpy.addListener).not.toHaveBeenCalledWith('mouseover', jasmine.any(Function));
-    expect(polylineSpy.addListener).not.toHaveBeenCalledWith('mouseup', jasmine.any(Function));
-    expect(polylineSpy.addListener).toHaveBeenCalledWith('rightclick', jasmine.any(Function));
+    expect(addSpy).toHaveBeenCalledWith('click', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('dblclick', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('drag', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('dragend', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('dragstart', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('mousedown', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('mousemove', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('mouseout', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('mouseover', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('mouseup', jasmine.any(Function));
+    expect(addSpy).toHaveBeenCalledWith('rightclick', jasmine.any(Function));
+  });
+
+  it('should be able to add an event listener after init', () => {
+    const polylineSpy = createPolylineSpy(polylineOptions);
+    createPolylineConstructorSpy(polylineSpy).and.callThrough();
+
+    const addSpy = polylineSpy.addListener;
+    const fixture = TestBed.createComponent(TestApp);
+    fixture.detectChanges();
+
+    expect(addSpy).not.toHaveBeenCalledWith('dragend', jasmine.any(Function));
+
+    // Pick an event that isn't bound in the template.
+    const subscription = fixture.componentInstance.polyline.polylineDragend.subscribe();
+    fixture.detectChanges();
+
+    expect(addSpy).toHaveBeenCalledWith('dragend', jasmine.any(Function));
+    subscription.unsubscribe();
   });
 });
 
@@ -136,6 +155,7 @@ describe('MapPolyline', () => {
             </google-map>`,
 })
 class TestApp {
+  @ViewChild(MapPolyline) polyline: MapPolyline;
   options?: google.maps.PolylineOptions;
   path?: google.maps.LatLngLiteral[];
 

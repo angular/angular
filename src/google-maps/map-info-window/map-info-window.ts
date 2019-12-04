@@ -12,7 +12,6 @@
 import {
   Directive,
   ElementRef,
-  EventEmitter,
   Input,
   OnDestroy,
   OnInit,
@@ -23,6 +22,7 @@ import {map, takeUntil} from 'rxjs/operators';
 
 import {GoogleMap} from '../google-map/google-map';
 import {MapMarker} from '../map-marker/map-marker';
+import {MapEventManager} from '../map-event-manager';
 
 /**
  * Angular component that renders a Google Maps info window via the Google Maps JavaScript API.
@@ -33,6 +33,13 @@ import {MapMarker} from '../map-marker/map-marker';
   host: {'style': 'display: none'},
 })
 export class MapInfoWindow implements OnInit, OnDestroy {
+  private _eventManager = new MapEventManager();
+  private readonly _options = new BehaviorSubject<google.maps.InfoWindowOptions>({});
+  private readonly _position =
+      new BehaviorSubject<google.maps.LatLngLiteral|google.maps.LatLng|undefined>(undefined);
+  private readonly _destroy = new Subject<void>();
+  private _infoWindow?: google.maps.InfoWindow;
+
   @Input()
   set options(options: google.maps.InfoWindowOptions) {
     this._options.next(options || {});
@@ -47,44 +54,37 @@ export class MapInfoWindow implements OnInit, OnDestroy {
    * See
    * developers.google.com/maps/documentation/javascript/reference/info-window#InfoWindow.closeclick
    */
-  @Output() closeclick = new EventEmitter<void>();
+  @Output() closeclick: Observable<void> = this._eventManager.getLazyEmitter<void>('closeclick');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/info-window
    * #InfoWindow.content_changed
    */
-  @Output() contentChanged = new EventEmitter<void>();
+  @Output()
+  contentChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('content_changed');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/info-window#InfoWindow.domready
    */
-  @Output() domready = new EventEmitter<void>();
+  @Output() domready: Observable<void> = this._eventManager.getLazyEmitter<void>('domready');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/info-window
    * #InfoWindow.position_changed
    */
-  @Output() positionChanged = new EventEmitter<void>();
+  @Output()
+  positionChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('position_changed');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/info-window
    * #InfoWindow.zindex_changed
    */
-  @Output() zindexChanged = new EventEmitter<void>();
-
-  private readonly _options = new BehaviorSubject<google.maps.InfoWindowOptions>({});
-  private readonly _position =
-      new BehaviorSubject<google.maps.LatLngLiteral|google.maps.LatLng|undefined>(undefined);
-
-  private _listeners: google.maps.MapsEventListener[] = [];
-
-  private readonly _destroy = new Subject<void>();
-
-  private _infoWindow?: google.maps.InfoWindow;
+  @Output()
+  zindexChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('zindex_changed');
 
   constructor(private readonly _googleMap: GoogleMap,
               private _elementRef: ElementRef<HTMLElement>) {}
@@ -95,17 +95,15 @@ export class MapInfoWindow implements OnInit, OnDestroy {
         this._infoWindow.setOptions(options);
       } else {
         this._infoWindow = new google.maps.InfoWindow(options);
-        this._initializeEventHandlers();
+        this._eventManager.setTarget(this._infoWindow);
       }
     });
   }
 
   ngOnDestroy() {
+    this._eventManager.destroy();
     this._destroy.next();
     this._destroy.complete();
-    for (let listener of this._listeners) {
-      listener.remove();
-    }
     this.close();
   }
 
@@ -164,34 +162,5 @@ export class MapInfoWindow implements OnInit, OnDestroy {
       };
       return combinedOptions;
     }));
-  }
-
-  private _initializeEventHandlers() {
-    // Ensure that we don't leak if called multiple times.
-    this._clearListeners();
-
-    const eventHandlers = new Map<string, EventEmitter<void>>([
-      ['closeclick', this.closeclick],
-      ['content_changed', this.contentChanged],
-      ['domready', this.domready],
-      ['position_changed', this.positionChanged],
-      ['zindex_changed', this.zindexChanged],
-    ]);
-    eventHandlers.forEach((eventHandler: EventEmitter<void>, name: string) => {
-      if (eventHandler.observers.length > 0) {
-        this._listeners.push(this._infoWindow!.addListener(name, () => {
-          eventHandler.emit();
-        }));
-      }
-    });
-  }
-
-  /** Clears all currently-registered event listeners. */
-  private _clearListeners() {
-    for (let listener of this._listeners) {
-      listener.remove();
-    }
-
-    this._listeners = [];
   }
 }

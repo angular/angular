@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {async, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -217,28 +217,46 @@ describe('GoogleMap', () => {
     mapSpy = createMapSpy(DEFAULT_OPTIONS);
     createMapConstructorSpy(mapSpy).and.callThrough();
 
+    const addSpy = mapSpy.addListener;
     const fixture = TestBed.createComponent(TestApp);
     fixture.detectChanges();
 
-    expect(mapSpy.addListener).toHaveBeenCalledWith('click', jasmine.any(Function));
-    expect(mapSpy.addListener).toHaveBeenCalledWith('center_changed', jasmine.any(Function));
-    expect(mapSpy.addListener).toHaveBeenCalledWith('rightclick', jasmine.any(Function));
-    expect(mapSpy.addListener).not.toHaveBeenCalledWith('bounds_changed', jasmine.any(Function));
-    expect(mapSpy.addListener).not.toHaveBeenCalledWith('dblclick', jasmine.any(Function));
-    expect(mapSpy.addListener).not.toHaveBeenCalledWith('drag', jasmine.any(Function));
-    expect(mapSpy.addListener).not.toHaveBeenCalledWith('dragend', jasmine.any(Function));
-    expect(mapSpy.addListener).not.toHaveBeenCalledWith('dragstart', jasmine.any(Function));
-    expect(mapSpy.addListener).not.toHaveBeenCalledWith('heading_changed', jasmine.any(Function));
-    expect(mapSpy.addListener).not.toHaveBeenCalledWith('idle', jasmine.any(Function));
-    expect(mapSpy.addListener).not.toHaveBeenCalledWith('maptypeid_changed', jasmine.any(Function));
-    expect(mapSpy.addListener).not.toHaveBeenCalledWith('mousemove', jasmine.any(Function));
-    expect(mapSpy.addListener).not.toHaveBeenCalledWith('mouseout', jasmine.any(Function));
-    expect(mapSpy.addListener).not.toHaveBeenCalledWith('mouseover', jasmine.any(Function));
-    expect(mapSpy.addListener)
-        .not.toHaveBeenCalledWith('projection_changed', jasmine.any(Function));
-    expect(mapSpy.addListener).not.toHaveBeenCalledWith('tilesloaded', jasmine.any(Function));
-    expect(mapSpy.addListener).not.toHaveBeenCalledWith('tilt_changed', jasmine.any(Function));
-    expect(mapSpy.addListener).not.toHaveBeenCalledWith('zoom_changed', jasmine.any(Function));
+    expect(addSpy).toHaveBeenCalledWith('click', jasmine.any(Function));
+    expect(addSpy).toHaveBeenCalledWith('center_changed', jasmine.any(Function));
+    expect(addSpy).toHaveBeenCalledWith('rightclick', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('bounds_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('dblclick', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('drag', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('dragend', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('dragstart', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('heading_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('idle', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('maptypeid_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('mousemove', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('mouseout', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('mouseover', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('projection_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('tilesloaded', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('tilt_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('zoom_changed', jasmine.any(Function));
+  });
+
+  it('should be able to add an event listener after init', () => {
+    mapSpy = createMapSpy(DEFAULT_OPTIONS);
+    createMapConstructorSpy(mapSpy).and.callThrough();
+
+    const addSpy = mapSpy.addListener;
+    const fixture = TestBed.createComponent(TestApp);
+    fixture.detectChanges();
+
+    expect(addSpy).not.toHaveBeenCalledWith('projection_changed', jasmine.any(Function));
+
+    // Pick an event that isn't bound in the template.
+    const subscription = fixture.componentInstance.map.projectionChanged.subscribe();
+    fixture.detectChanges();
+
+    expect(addSpy).toHaveBeenCalledWith('projection_changed', jasmine.any(Function));
+    subscription.unsubscribe();
   });
 });
 
@@ -255,6 +273,7 @@ describe('GoogleMap', () => {
             </google-map>`,
 })
 class TestApp {
+  @ViewChild(GoogleMap) map: GoogleMap;
   height?: string;
   width?: string;
   center?: google.maps.LatLngLiteral;
@@ -262,8 +281,6 @@ class TestApp {
   options?: google.maps.MapOptions;
 
   handleClick(event: google.maps.MouseEvent) {}
-
   handleCenterChanged() {}
-
   handleRightclick(event: google.maps.MouseEvent) {}
 }

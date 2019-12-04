@@ -11,7 +11,6 @@
 
 import {
   Directive,
-  EventEmitter,
   Input,
   OnDestroy,
   OnInit,
@@ -21,6 +20,7 @@ import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
 
 import {GoogleMap} from '../google-map/google-map';
+import {MapEventManager} from '../map-event-manager';
 
 /**
  * Angular component that renders a Google Maps Polyline via the Google Maps JavaScript API.
@@ -30,6 +30,17 @@ import {GoogleMap} from '../google-map/google-map';
   selector: 'map-polyline',
 })
 export class MapPolyline implements OnInit, OnDestroy {
+  private _eventManager = new MapEventManager();
+  private readonly _options = new BehaviorSubject<google.maps.PolylineOptions>({});
+  private readonly _path =
+      new BehaviorSubject<google.maps.MVCArray<google.maps.LatLng>|google.maps.LatLng[]|
+                          google.maps.LatLngLiteral[]|undefined>(undefined);
+
+  private readonly _destroyed = new Subject<void>();
+  private readonly _listeners: google.maps.MapsEventListener[] = [];
+
+  _polyline: google.maps.Polyline; // initialized in ngOnInit
+
   @Input()
   set options(options: google.maps.PolylineOptions) {
     this._options.next(options || {});
@@ -44,68 +55,79 @@ export class MapPolyline implements OnInit, OnDestroy {
   /**
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.click
    */
-  @Output() polylineClick = new EventEmitter<google.maps.PolyMouseEvent>();
+  @Output()
+  polylineClick: Observable<google.maps.PolyMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('click');
 
   /**
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.dblclick
    */
-  @Output() polylineDblclick = new EventEmitter<google.maps.PolyMouseEvent>();
+  @Output()
+  polylineDblclick: Observable<google.maps.PolyMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('dblclick');
 
   /**
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.drag
    */
-  @Output() polylineDrag = new EventEmitter<google.maps.MouseEvent>();
+  @Output()
+  polylineDrag: Observable<google.maps.MouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('drag');
 
   /**
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.dragend
    */
-  @Output() polylineDragend = new EventEmitter<google.maps.MouseEvent>();
+  @Output()
+  polylineDragend: Observable<google.maps.MouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('dragend');
 
   /**
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.dragstart
    */
-  @Output() polylineDragstart = new EventEmitter<google.maps.MouseEvent>();
+  @Output()
+  polylineDragstart: Observable<google.maps.MouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('dragstart');
 
   /**
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mousedown
    */
-  @Output() polylineMousedown = new EventEmitter<google.maps.PolyMouseEvent>();
+  @Output()
+  polylineMousedown: Observable<google.maps.PolyMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('mousedown');
 
   /**
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mousemove
    */
-  @Output() polylineMousemove = new EventEmitter<google.maps.PolyMouseEvent>();
+  @Output()
+  polylineMousemove: Observable<google.maps.PolyMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('mousemove');
 
   /**
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mouseout
    */
-  @Output() polylineMouseout = new EventEmitter<google.maps.PolyMouseEvent>();
+  @Output()
+  polylineMouseout: Observable<google.maps.PolyMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('mouseout');
 
   /**
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mouseover
    */
-  @Output() polylineMouseover = new EventEmitter<google.maps.PolyMouseEvent>();
+  @Output()
+  polylineMouseover: Observable<google.maps.PolyMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('mouseover');
 
   /**
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mouseup
    */
-  @Output() polylineMouseup = new EventEmitter<google.maps.PolyMouseEvent>();
+  @Output()
+  polylineMouseup: Observable<google.maps.PolyMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('mouseup');
 
   /**
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.rightclick
    */
-  @Output() polylineRightclick = new EventEmitter<google.maps.PolyMouseEvent>();
-
-  private readonly _options = new BehaviorSubject<google.maps.PolylineOptions>({});
-  private readonly _path =
-      new BehaviorSubject<google.maps.MVCArray<google.maps.LatLng>|google.maps.LatLng[]|
-                          google.maps.LatLngLiteral[]|undefined>(undefined);
-
-  private readonly _destroyed = new Subject<void>();
-
-  private readonly _listeners: google.maps.MapsEventListener[] = [];
-
-  _polyline!: google.maps.Polyline; // initialized in ngOnInit
+  @Output()
+  polylineRightclick: Observable<google.maps.PolyMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('rightclick');
 
   constructor(private readonly _map: GoogleMap) {}
 
@@ -115,7 +137,7 @@ export class MapPolyline implements OnInit, OnDestroy {
     combinedOptionsChanges.pipe(take(1)).subscribe(options => {
       this._polyline = new google.maps.Polyline(options);
       this._polyline.setMap(this._map._googleMap);
-      this._initializeEventHandlers();
+      this._eventManager.setTarget(this._polyline);
     });
 
     this._watchForOptionsChanges();
@@ -123,6 +145,7 @@ export class MapPolyline implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this._eventManager.destroy();
     this._destroyed.next();
     this._destroyed.complete();
     for (let listener of this._listeners) {
@@ -182,43 +205,5 @@ export class MapPolyline implements OnInit, OnDestroy {
         this._polyline.setPath(path);
       }
     });
-  }
-
-  private _initializeEventHandlers() {
-    const mouseEventHandlers = new Map<string, EventEmitter<google.maps.MouseEvent>>([
-      ['drag', this.polylineDrag],
-      ['dragend', this.polylineDragend],
-      ['dragstart', this.polylineDragstart],
-    ]);
-    const polyMouseEventHandlers = new Map<string, EventEmitter<google.maps.PolyMouseEvent>>([
-      ['click', this.polylineClick],
-      ['dblclick', this.polylineDblclick],
-      ['mousedown', this.polylineMousedown],
-      ['mousemove', this.polylineMousemove],
-      ['mouseout', this.polylineMouseout],
-      ['mouseover', this.polylineMouseover],
-      ['mouseup', this.polylineMouseup],
-      ['rightclick', this.polylineRightclick],
-    ]);
-
-    mouseEventHandlers.forEach(
-        (eventHandler: EventEmitter<google.maps.MouseEvent>, name: string) => {
-          if (eventHandler.observers.length > 0) {
-            this._listeners.push(
-                this._polyline.addListener(name, (event: google.maps.MouseEvent) => {
-                  eventHandler.emit(event);
-                }));
-          }
-        });
-
-    polyMouseEventHandlers.forEach(
-        (eventHandler: EventEmitter<google.maps.PolyMouseEvent>, name: string) => {
-          if (eventHandler.observers.length > 0) {
-            this._listeners.push(
-                this._polyline.addListener(name, (event: google.maps.PolyMouseEvent) => {
-                  eventHandler.emit(event);
-                }));
-          }
-        });
   }
 }

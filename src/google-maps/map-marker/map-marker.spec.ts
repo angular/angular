@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {async, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -170,34 +170,49 @@ describe('MapMarker', () => {
     const markerSpy = createMarkerSpy(DEFAULT_MARKER_OPTIONS);
     createMarkerConstructorSpy(markerSpy).and.callThrough();
 
+    const addSpy = markerSpy.addListener;
     const fixture = TestBed.createComponent(TestApp);
     fixture.detectChanges();
 
-    expect(markerSpy.addListener)
-        .not.toHaveBeenCalledWith('animation_changed', jasmine.any(Function));
-    expect(markerSpy.addListener).toHaveBeenCalledWith('click', jasmine.any(Function));
-    expect(markerSpy.addListener)
-        .not.toHaveBeenCalledWith('clickable_changed', jasmine.any(Function));
-    expect(markerSpy.addListener).not.toHaveBeenCalledWith('cursor_changed', jasmine.any(Function));
-    expect(markerSpy.addListener).not.toHaveBeenCalledWith('dblclick', jasmine.any(Function));
-    expect(markerSpy.addListener).not.toHaveBeenCalledWith('drag', jasmine.any(Function));
-    expect(markerSpy.addListener).not.toHaveBeenCalledWith('dragend', jasmine.any(Function));
-    expect(markerSpy.addListener)
-        .not.toHaveBeenCalledWith('draggable_changed', jasmine.any(Function));
-    expect(markerSpy.addListener).not.toHaveBeenCalledWith('dragstart', jasmine.any(Function));
-    expect(markerSpy.addListener).not.toHaveBeenCalledWith('flat_changed', jasmine.any(Function));
-    expect(markerSpy.addListener).not.toHaveBeenCalledWith('icon_changed', jasmine.any(Function));
-    expect(markerSpy.addListener).not.toHaveBeenCalledWith('mousedown', jasmine.any(Function));
-    expect(markerSpy.addListener).not.toHaveBeenCalledWith('mouseout', jasmine.any(Function));
-    expect(markerSpy.addListener).not.toHaveBeenCalledWith('mouseover', jasmine.any(Function));
-    expect(markerSpy.addListener).not.toHaveBeenCalledWith('mouseup', jasmine.any(Function));
-    expect(markerSpy.addListener).toHaveBeenCalledWith('position_changed', jasmine.any(Function));
-    expect(markerSpy.addListener).not.toHaveBeenCalledWith('rightclick', jasmine.any(Function));
-    expect(markerSpy.addListener).not.toHaveBeenCalledWith('shape_changed', jasmine.any(Function));
-    expect(markerSpy.addListener).not.toHaveBeenCalledWith('title_changed', jasmine.any(Function));
-    expect(markerSpy.addListener)
-        .not.toHaveBeenCalledWith('visible_changed', jasmine.any(Function));
-    expect(markerSpy.addListener).not.toHaveBeenCalledWith('zindex_changed', jasmine.any(Function));
+    expect(addSpy).toHaveBeenCalledWith('click', jasmine.any(Function));
+    expect(addSpy).toHaveBeenCalledWith('position_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('animation_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('clickable_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('cursor_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('dblclick', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('drag', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('dragend', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('draggable_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('dragstart', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('flat_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('icon_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('mousedown', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('mouseout', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('mouseover', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('mouseup', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('rightclick', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('shape_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('title_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('visible_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('zindex_changed', jasmine.any(Function));
+  });
+
+  it('should be able to add an event listener after init', () => {
+    const markerSpy = createMarkerSpy(DEFAULT_MARKER_OPTIONS);
+    createMarkerConstructorSpy(markerSpy).and.callThrough();
+
+    const addSpy = markerSpy.addListener;
+    const fixture = TestBed.createComponent(TestApp);
+    fixture.detectChanges();
+
+    expect(addSpy).not.toHaveBeenCalledWith('flat_changed', jasmine.any(Function));
+
+    // Pick an event that isn't bound in the template.
+    const subscription = fixture.componentInstance.marker.flatChanged.subscribe();
+    fixture.detectChanges();
+
+    expect(addSpy).toHaveBeenCalledWith('flat_changed', jasmine.any(Function));
+    subscription.unsubscribe();
   });
 });
 
@@ -215,6 +230,7 @@ describe('MapMarker', () => {
              </google-map>`,
 })
 class TestApp {
+  @ViewChild(MapMarker) marker: MapMarker;
   title?: string;
   position?: google.maps.LatLng|google.maps.LatLngLiteral;
   label?: string|google.maps.MarkerLabel;

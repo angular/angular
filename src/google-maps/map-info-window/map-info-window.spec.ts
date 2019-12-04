@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {async, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -151,17 +151,33 @@ describe('MapInfoWindow', () => {
     const infoWindowSpy = createInfoWindowSpy({});
     createInfoWindowConstructorSpy(infoWindowSpy).and.callThrough();
 
+    const addSpy = infoWindowSpy.addListener;
     const fixture = TestBed.createComponent(TestApp);
     fixture.detectChanges();
 
-    expect(infoWindowSpy.addListener).toHaveBeenCalledWith('closeclick', jasmine.any(Function));
-    expect(infoWindowSpy.addListener)
-        .not.toHaveBeenCalledWith('content_changed', jasmine.any(Function));
-    expect(infoWindowSpy.addListener).not.toHaveBeenCalledWith('domready', jasmine.any(Function));
-    expect(infoWindowSpy.addListener)
-        .not.toHaveBeenCalledWith('position_changed', jasmine.any(Function));
-    expect(infoWindowSpy.addListener)
-        .not.toHaveBeenCalledWith('zindex_changed', jasmine.any(Function));
+    expect(addSpy).toHaveBeenCalledWith('closeclick', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('content_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('domready', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('position_changed', jasmine.any(Function));
+    expect(addSpy).not.toHaveBeenCalledWith('zindex_changed', jasmine.any(Function));
+  });
+
+  it('should be able to add an event listener after init', () => {
+    const infoWindowSpy = createInfoWindowSpy({});
+    createInfoWindowConstructorSpy(infoWindowSpy).and.callThrough();
+
+    const addSpy = infoWindowSpy.addListener;
+    const fixture = TestBed.createComponent(TestApp);
+    fixture.detectChanges();
+
+    expect(addSpy).not.toHaveBeenCalledWith('zindex_changed', jasmine.any(Function));
+
+    // Pick an event that isn't bound in the template.
+    const subscription = fixture.componentInstance.infoWindow.zindexChanged.subscribe();
+    fixture.detectChanges();
+
+    expect(addSpy).toHaveBeenCalledWith('zindex_changed', jasmine.any(Function));
+    subscription.unsubscribe();
   });
 });
 
@@ -176,6 +192,7 @@ describe('MapInfoWindow', () => {
              </google-map>`,
 })
 class TestApp {
+  @ViewChild(MapInfoWindow) infoWindow: MapInfoWindow;
   position?: google.maps.LatLngLiteral;
   options?: google.maps.InfoWindowOptions;
 
