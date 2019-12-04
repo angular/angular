@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectorRef, Component, ComponentFactoryResolver, ContentChildren, Directive, Input, NgModule, OnChanges, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, ContentChildren, Directive, EmbeddedViewRef, Injector, Input, NgModule, OnChanges, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {SimpleChange} from '@angular/core/src/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -3736,6 +3736,55 @@ describe('onDestroy', () => {
     fixture.detectChanges();
 
     expect(events).toEqual(['dir']);
+  });
+
+  it('destroys views attached to elements outside the angular context', () => {
+    const elementsToCleanUpAfterTest: HTMLElement[] = [];
+    const template = `<span>hello, I am your component</span>`;
+    @Component({template})
+    class MyComponent {
+    }
+
+
+    @NgModule({declarations: [MyComponent], exports: [MyComponent], entryComponents: [MyComponent]})
+    class MyModule {
+    }
+
+    @Component({template: ''})
+    class App {
+      componentRef !: ComponentRef<MyComponent>;
+      constructor(
+          private readonly viewContainerRef: ViewContainerRef,
+          readonly resolver: ComponentFactoryResolver, private readonly injector: Injector) {}
+
+      ngOnInit() {
+        const factory = this.resolver.resolveComponentFactory(MyComponent);
+        const div = document.createElement('div');
+        elementsToCleanUpAfterTest.push(div);
+        document.body.appendChild(div);
+        this.componentRef = this.viewContainerRef.createComponent(
+            factory, this.viewContainerRef.length, this.injector || this.viewContainerRef.injector);
+        div.appendChild((this.componentRef.hostView as EmbeddedViewRef<any>).rootNodes[0]);
+      }
+
+      ngOnDestroy() { this.componentRef.destroy(); }
+    }
+
+    @Component({template: ''})
+    class Empty {
+    }
+
+    const fixture =
+        TestBed.configureTestingModule({imports: [MyModule], declarations: [App, Empty]})
+            .createComponent(App);
+    fixture.detectChanges();
+    expect(document.body.innerHTML).toContain(template);
+    fixture.destroy();
+    TestBed.createComponent(Empty).detectChanges();
+    expect(document.body.innerHTML).not.toContain(template);
+    for (const element of elementsToCleanUpAfterTest) {
+      document.body.removeChild(element);
+    }
   });
 });
 

@@ -253,7 +253,7 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
     if (this.destroyCbs) {
       this.destroyCbs.forEach(fn => fn());
       this.destroyCbs = null;
-      !this.hostView.destroyed && this.hostView.destroy();
+      this.hostView.destroy();
     }
   }
 
