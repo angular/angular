@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {create, getExternalFiles} from '../src/ts_plugin';
+import {create} from '../src/ts_plugin';
 import {CompletionKind} from '../src/types';
 
 import {MockTypescriptHost} from './test_utils';
@@ -63,11 +63,6 @@ describe('plugin', () => {
       const semanticDiags = tsLS.getSemanticDiagnostics(fileName);
       expect(semanticDiags).toEqual([]);
     }
-  });
-
-  it('should return external templates as external files', () => {
-    const externalFiles = getExternalFiles(mockProject);
-    expect(externalFiles).toEqual(['/app/test.ng']);
   });
 
   it('should not report template errors on tour of heroes', () => {
