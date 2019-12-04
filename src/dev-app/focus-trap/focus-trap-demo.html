@@ -1,0 +1,119 @@
+<div>
+  <mat-card class="demo-mat-card">
+    <mat-toolbar color="primary">Basic</mat-toolbar>
+    <mat-card-content class="demo-mat-card-content">
+      <button mat-raised-button (click)="toggleFocus(basicFocusTrap)">
+        {{basicFocusTrap && basicFocusTrap.enabled ? "Disable" : "Enable"}} FocusTrap
+      </button>
+      <div class="demo-focus-trap-region" #basicDemoRegion
+        [class.demo-focus-trap-enabled]="(basicFocusTrap && basicFocusTrap.enabled) || false">
+        <textarea class="demo-focus-trap-element" placeholder="One"></textarea>
+        <textarea class="demo-focus-trap-element" placeholder="Two"></textarea>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="demo-mat-card">
+    <mat-toolbar color="primary">Nested</mat-toolbar>
+    <mat-card-content class="demo-mat-card-content">
+      <button mat-raised-button (click)="toggleFocus(nestedOuterFocusTrap)">
+        {{nestedOuterFocusTrap && nestedOuterFocusTrap.enabled ? "Disable" : "Enable"}} outer FocusTrap
+      </button>
+      <div class="demo-focus-trap-region" #nestedOuterDemoRegion
+        [class.demo-focus-trap-enabled]="(nestedOuterFocusTrap && nestedOuterFocusTrap.enabled) || false">
+        <textarea class="demo-focus-trap-element" placeholder="One"></textarea>
+        <textarea class="demo-focus-trap-element" placeholder="Two"></textarea>
+        <button mat-raised-button class="demo-focus-trap-element"
+          (click)="toggleFocus(nestedInnerFocusTrap)">
+          {{nestedInnerFocusTrap && nestedInnerFocusTrap.enabled ? "Disable" : "Enable"}} inner FocusTrap
+        </button>
+        <div class="demo-focus-trap-region" #nestedInnerDemoRegion
+          [class.demo-focus-trap-enabled]="(nestedInnerFocusTrap && nestedInnerFocusTrap.enabled) || false">
+          <textarea class="demo-focus-trap-element" placeholder="Three"></textarea>
+          <textarea class="demo-focus-trap-element" placeholder="Four"></textarea>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="demo-mat-card">
+    <mat-toolbar color="primary">Tabindex > 0</mat-toolbar>
+      <mat-card-content class="demo-mat-card-content">
+      <button mat-raised-button (click)="toggleFocus(tabIndexFocusTrap)">
+        {{tabIndexFocusTrap && tabIndexFocusTrap.enabled ? "Disable" : "Enable"}} FocusTrap
+       </button>
+      <div class="demo-focus-trap-region" #tabIndexDemoRegion
+        [class.demo-focus-trap-enabled]="(tabIndexFocusTrap && tabIndexFocusTrap.enabled) || false">
+        <textarea class="demo-focus-trap-element" tabindex="1"
+          placeholder="I have tabindex 1"></textarea>
+        <textarea class="demo-focus-trap-element" placeholder="One"></textarea>
+        <textarea class="demo-focus-trap-element" placeholder="Two"></textarea>
+      </div>
+      <textarea class="demo-focus-trap-element" tabindex="1"
+        placeholder="I have tabindex 1"></textarea>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="demo-mat-card">
+    <mat-toolbar color="primary">Shadow DOMs</mat-toolbar>
+    <mat-card-content class="demo-mat-card-content">
+      <button mat-raised-button (click)="toggleFocus(shadowDomFocusTrap)">
+        {{shadowDomFocusTrap && shadowDomFocusTrap.enabled ? "Disable" : "Enable"}} FocusTrap
+      </button>
+      <div class="demo-focus-trap-region" #shadowDomDemoRegion
+           [class.demo-focus-trap-enabled]="(shadowDomFocusTrap && shadowDomFocusTrap.enabled) || false">
+        <shadow-dom-demo>
+          <textarea placeholder="I am in a shadow DOM"></textarea>
+        </shadow-dom-demo>
+        <textarea class="demo-focus-trap-element" placeholder="One"></textarea>
+        <textarea class="demo-focus-trap-element" placeholder="Two"></textarea>
+      </div>
+      <shadow-dom-demo>
+        <textarea class="demo-focus-trap-element" placeholder="I am in a shadow DOM"></textarea>
+      </shadow-dom-demo>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="demo-mat-card">
+    <mat-toolbar color="primary">iframes</mat-toolbar>
+    <mat-card-content class="demo-mat-card-content">
+      <button mat-raised-button (click)="toggleFocus(iframeFocusTrap)">
+        {{iframeFocusTrap && iframeFocusTrap.enabled ? "Disable" : "Enable"}} FocusTrap
+      </button>
+      <div class="demo-focus-trap-region" #iframeDemoRegion
+           [class.demo-focus-trap-enabled]="(iframeFocusTrap && iframeFocusTrap.enabled) || false">
+        <iframe class="demo-focus-trap-element"
+          srcdoc="<textarea placeholder='I am in an iframe'></textarea>">
+        </iframe>
+        <textarea class="demo-focus-trap-element" placeholder="One"></textarea>
+        <textarea class="demo-focus-trap-element" placeholder="Two"></textarea>
+      </div>
+      <iframe srcdoc="<textarea placeholder='I am in an iframe'></textarea>"></iframe>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="demo-mat-card">
+    <mat-toolbar color="primary">Dynamic page content</mat-toolbar>
+    <mat-card-content class="demo-mat-card-content">
+      <button mat-raised-button (click)="toggleFocus(dynamicFocusTrap)">
+        {{dynamicFocusTrap && dynamicFocusTrap.enabled ? "Disable" : "Enable"}} FocusTrap
+      </button>
+      <div class="demo-focus-trap-region" #dynamicDemoRegion
+           [class.demo-focus-trap-enabled]="(dynamicFocusTrap && dynamicFocusTrap.enabled) || false">
+        <textarea class="demo-focus-trap-element" placeholder="One"></textarea>
+        <textarea class="demo-focus-trap-element" placeholder="Two"></textarea>
+        <button mat-raised-button class="demo-focus-trap-element" (click)="addNewElement()">
+          Click to add more focusable elements to the page
+        </button>
+      </div>
+      <div #newElements></div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="demo-mat-card">
+    <mat-toolbar color="primary">Dialog-on-dialog</mat-toolbar>
+    <mat-card-content class="demo-mat-card-content">
+      <button mat-raised-button (click)="openDialog()">Open dialog</button>
+    </mat-card-content>
+  </mat-card>
+</div>

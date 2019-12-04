@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Dialog {{id}}</h2>
+
+<mat-dialog-content>
+  <textarea class="demo-dialog-textarea" placeholder="One"></textarea>
+  <textarea class="demo-dialog-textarea" placeholder="Two"></textarea>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-raised-button mat-dialog-close>
+    Close
+  </button>
+
+  <button mat-raised-button (click)="openAnotherDialog()">
+    Open another dialog
+  </button>
+</mat-dialog-actions>

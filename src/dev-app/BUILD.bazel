@@ -37,6 +37,7 @@ ng_module(
         "//src/dev-app/examples-page",
         "//src/dev-app/expansion",
         "//src/dev-app/focus-origin",
+        "//src/dev-app/focus-trap",
         "//src/dev-app/google-map",
         "//src/dev-app/grid-list",
         "//src/dev-app/icon",

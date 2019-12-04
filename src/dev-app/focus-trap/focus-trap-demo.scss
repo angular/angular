@@ -1,0 +1,34 @@
+.demo-focus-trap-region {
+  outline: 2px dashed lightgray;
+  padding: 4px;
+  margin: 12px 0;
+
+
+  &.demo-focus-trap-enabled {
+    outline: 2px solid red;
+  }
+
+  .demo-focus-trap-element, .demo-focus-trap-shadow-root {
+    display: block;
+    margin: 4px;
+  }
+
+  .demo-focus-trap-region {
+    margin: 12px 4px;
+  }
+}
+
+.demo-focus-trap-shadow-root {
+  display: block;
+  padding: 4px;
+  background-color: lightgrey;
+}
+
+.demo-mat-card {
+  padding: 0;
+  margin: 16px;
+
+  & .demo-mat-card-content {
+    padding: 24px;
+  }
+}
