@@ -91,6 +91,7 @@ export interface MatMenuDefaultOptions {
 }
 
 export declare class MatMenuItem extends _MatMenuItemMixinBase implements FocusableOption, CanDisable, CanDisableRipple, OnDestroy {
+    readonly _focused: Subject<MatMenuItem>;
     _highlighted: boolean;
     readonly _hovered: Subject<MatMenuItem>;
     _parentMenu?: MatMenuPanel<MatMenuItem> | undefined;

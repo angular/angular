@@ -817,6 +817,37 @@ describe('MDC-based MatMenu', () => {
       flush();
     }));
 
+  it('should sync the focus order when an item is focused programmatically', fakeAsync(() => {
+    const fixture = createComponent(SimpleMenuWithRepeater);
+
+    // Add some more items to work with.
+    for (let i = 0; i < 5; i++) {
+      fixture.componentInstance.items.push({label: `Extra ${i}`, disabled: false});
+    }
+
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+    tick(500);
+
+    const menuPanel = document.querySelector('.mat-mdc-menu-panel')!;
+    const items = menuPanel.querySelectorAll('.mat-mdc-menu-panel [mat-menu-item]');
+
+    expect(document.activeElement).toBe(items[0], 'Expected first item to be focused on open');
+
+    fixture.componentInstance.itemInstances.toArray()[3].focus();
+    fixture.detectChanges();
+
+    expect(document.activeElement).toBe(items[3], 'Expected fourth item to be focused');
+
+    dispatchKeyboardEvent(menuPanel, 'keydown', DOWN_ARROW);
+    fixture.detectChanges();
+    tick();
+
+    expect(document.activeElement).toBe(items[4], 'Expected fifth item to be focused');
+    flush();
+  }));
+
   it('should focus the menu panel if all items are disabled', fakeAsync(() => {
     const fixture = createComponent(SimpleMenuWithRepeater, [], [FakeIcon]);
     fixture.componentInstance.items.forEach(item => item.disabled = true);
@@ -2454,6 +2485,7 @@ class MenuWithCheckboxItems {
 class SimpleMenuWithRepeater {
   @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   @ViewChild(MatMenu) menu: MatMenu;
+  @ViewChildren(MatMenuItem) itemInstances: QueryList<MatMenuItem>;
   items = [{label: 'Pizza', disabled: false}, {label: 'Pasta', disabled: false}];
 }
 

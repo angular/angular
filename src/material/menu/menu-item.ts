@@ -66,6 +66,9 @@ export class MatMenuItem extends _MatMenuItemMixinBase
   /** Stream that emits when the menu item is hovered. */
   readonly _hovered: Subject<MatMenuItem> = new Subject<MatMenuItem>();
 
+  /** Stream that emits when the menu item is focused. */
+  readonly _focused = new Subject<MatMenuItem>();
+
   /** Whether the menu item is highlighted. */
   _highlighted: boolean = false;
 
@@ -102,6 +105,8 @@ export class MatMenuItem extends _MatMenuItemMixinBase
     } else {
       this._getHostElement().focus(options);
     }
+
+    this._focused.next(this);
   }
 
   ngOnDestroy() {
@@ -114,6 +119,7 @@ export class MatMenuItem extends _MatMenuItemMixinBase
     }
 
     this._hovered.complete();
+    this._focused.complete();
   }
 
   /** Used to set the `tabindex`. */
