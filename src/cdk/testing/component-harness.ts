@@ -412,7 +412,7 @@ export class HarnessPredicate<T extends ComponentHarness> {
    * @param pattern The pattern the value is expected to match. If `pattern` is a string,
    *   `value` is expected to match exactly. If `pattern` is a regex, a partial match is
    *   allowed. If `pattern` is `null`, the value is expected to be `null`.
-   * @return A Promise that resolves to whether the value matches the pattern.
+   * @return Whether the value matches the pattern.
    */
   static async stringMatches(value: string | null | Promise<string | null>,
                              pattern: string | RegExp | null): Promise<boolean> {
