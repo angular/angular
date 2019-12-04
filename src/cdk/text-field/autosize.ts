@@ -15,6 +15,7 @@ import {
   DoCheck,
   OnDestroy,
   NgZone,
+  HostListener,
 } from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
 import {auditTime, takeUntil} from 'rxjs/operators';
@@ -30,7 +31,6 @@ import {fromEvent, Subject} from 'rxjs';
     // Textarea elements that have the directive applied should have a single row by default.
     // Browsers normally show two rows by default and therefore this limits the minRows binding.
     'rows': '1',
-    '(input)': '_noopInputHandler()',
   },
 })
 export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
@@ -250,6 +250,11 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     this._textareaElement.style.height = this._initialHeight;
   }
 
+  // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
+  // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
+  // can move this back into `host`.
+  // tslint:disable:no-host-decorator-in-concrete
+  @HostListener('input')
   _noopInputHandler() {
     // no-op handler that ensures we're running change detection on input events.
   }
