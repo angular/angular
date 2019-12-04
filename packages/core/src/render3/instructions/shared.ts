@@ -380,8 +380,9 @@ export function renderView<T>(lView: LView, tView: TView, context: T): void {
 export function refreshView<T>(
     lView: LView, tView: TView, templateFn: ComponentTemplate<{}>| null, context: T) {
   ngDevMode && assertEqual(isCreationMode(lView), false, 'Should be run in update mode');
-  enterView(lView, lView[T_HOST]);
   const flags = lView[FLAGS];
+  if ((flags & LViewFlags.Destroyed) === LViewFlags.Destroyed) return;
+  enterView(lView, lView[T_HOST]);
   try {
     resetPreOrderHookFlags(lView);
 
