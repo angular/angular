@@ -35,6 +35,11 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE)).toContain('((ctx).a)[(ctx).b];');
   });
 
+  it('should handle nested ternary expressions', () => {
+    const TEMPLATE = `{{a ? b : c ? d : e}}`;
+    expect(tcb(TEMPLATE)).toContain('((ctx).a ? (ctx).b : ((ctx).c ? (ctx).d : (ctx).e))');
+  });
+
   it('should handle attribute values for directive inputs', () => {
     const TEMPLATE = `<div dir inputA="value"></div>`;
     const DIRECTIVES: TestDeclaration[] = [{

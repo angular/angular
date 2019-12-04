@@ -292,8 +292,36 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   }
 
   visitConditionalExpr(ast: ConditionalExpr, context: Context): ts.ConditionalExpression {
+    let cond: ts.Expression = ast.condition.visitExpression(this, context);
+
+    // Ordinarily the ternary operator is right-associative. The following are equivalent:
+    //   `a ? b : c ? d : e` => `a ? b : (c ? d : e)`
+    //
+    // However, occasionally Angular needs to produce a left-associative conditional, such as in
+    // the case of a null-safe navigation production: `{{a?.b ? c : d}}`. This template produces
+    // a ternary of the form:
+    //   `a == null ? null : rest of expression`
+    // If the rest of the expression is also a ternary though, this would produce the form:
+    //   `a == null ? null : a.b ? c : d`
+    // which, if left as right-associative, would be incorrectly associated as:
+    //   `a == null ? null : (a.b ? c : d)`
+    //
+    // In such cases, the left-associativity needs to be enforced with parentheses:
+    //   `(a == null ? null : a.b) ? c : d`
+    //
+    // Such parentheses could always be included in the condition (guaranteeing correct behavior) in
+    // all cases, but this has a code size cost. Instead, parentheses are added only when a
+    // conditional expression is directly used as the condition of another.
+    //
+    // TODO(alxhub): investigate better logic for precendence of conditional operators
+    if (ast.condition instanceof ConditionalExpr) {
+      // The condition of this ternary needs to be wrapped in parentheses to maintain
+      // left-associativity.
+      cond = ts.createParen(cond);
+    }
+
     return ts.createConditional(
-        ast.condition.visitExpression(this, context), ast.trueCase.visitExpression(this, context),
+        cond, ast.trueCase.visitExpression(this, context),
         ast.falseCase !.visitExpression(this, context));
   }
 
