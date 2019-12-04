@@ -244,16 +244,7 @@ class TypeWrapper implements Symbol {
     }
   }
 
-  get name(): string {
-    const symbol = this.tsType.symbol;
-    if (symbol) {
-      return symbol.name;
-    } else {
-      // A primitive type (e.g. 'string') doesn't have Symbol,
-      // so use the ts.TypeChecker to get the type name.
-      return this.context.checker.typeToString(this.tsType);
-    }
-  }
+  get name(): string { return this.context.checker.typeToString(this.tsType); }
 
   public readonly kind: DeclarationKind = 'type';
 
@@ -617,15 +608,10 @@ class PipeSymbol implements Symbol {
         let resultType: ts.Type|undefined = undefined;
         switch (this.name) {
           case 'async':
-            switch (parameterType.name) {
-              case 'Observable':
-              case 'Promise':
-              case 'EventEmitter':
-                resultType = getTypeParameterOf(parameterType.tsType, parameterType.name);
-                break;
-              default:
-                resultType = getTsTypeFromBuiltinType(BuiltinType.Any, this.context);
-                break;
+            // Get symbol of 'Observable', 'Promise', or 'EventEmitter' type.
+            const symbol = parameterType.tsType.symbol;
+            if (symbol) {
+              resultType = getTypeParameterOf(parameterType.tsType, symbol.name);
             }
             break;
           case 'slice':
