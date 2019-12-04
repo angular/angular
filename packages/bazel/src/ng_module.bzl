@@ -42,6 +42,11 @@ def is_ivy_enabled(ctx):
             attr = "ng_module",
         )
 
+    # This attribute is only defined in google's private ng_module rule and not
+    # available externally. For external users, this is effectively a no-op.
+    if hasattr(ctx.attr, "ivy") and ctx.attr.ivy == True:
+        return True
+
     # TODO(josephperrott): Remove configuration via compile=aot define flag.
     if ctx.var.get("compile", None) == "aot":
         # buildifier: disable=print
