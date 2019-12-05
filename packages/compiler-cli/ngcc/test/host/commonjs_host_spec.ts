@@ -118,7 +118,7 @@ exports.SomeDirective = SomeDirective;
         contents: `
         var core = require('@angular/core');
         var CtorDecoratedAsArray = (function() {
-        function CtorDecoratedAsArray(arg1) {
+          function CtorDecoratedAsArray(arg1) {
           }
           CtorDecoratedAsArray.ctorParameters = [{ type: ParamType, decorators: [{ type: Inject },] }];
           return CtorDecoratedAsArray;
@@ -511,6 +511,7 @@ var c = file_a.a;
           var b_module = require('./b_module');
           var xtra_module = require('./xtra_module');
           var wildcard_reexports = require('./wildcard_reexports');
+          var wildcard_reexports_imported_helpers = require('./wildcard_reexports_imported_helpers');
           `
         },
         {
@@ -554,13 +555,22 @@ exports.xtra2 = xtra2;
         {
           name: _('/wildcard_reexports.js'),
           contents: `
-    function __export(m) {
-      for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-    }
-    var b_module = require("./b_module");
-    __export(b_module);
-    __export(require("./xtra_module"));
-    `
+function __export(m) {
+  for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+var b_module = require("./b_module");
+__export(b_module);
+__export(require("./xtra_module"));
+`,
+        },
+        {
+          name: _('/wildcard_reexports_imported_helpers.js'),
+          contents: `
+var tslib_1 = require("tslib");
+var b_module = require("./b_module");
+tslib_1.__exportStar(b_module, exports);
+tslib_1.__exportStar(require("./xtra_module"), exports);
+`,
         },
       ];
 
@@ -1763,12 +1773,41 @@ exports.ExternalModule = ExternalModule;
               ]);
         });
 
-        it('should handle wildcard re-exports of other modules', () => {
+        it('should handle wildcard re-exports of other modules (with emitted helpers)', () => {
           loadFakeCore(getFileSystem());
           loadTestFiles(EXPORTS_FILES);
           const bundle = makeTestBundleProgram(_('/index.js'));
           const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const file = getSourceFileOrError(bundle.program, _('/wildcard_reexports.js'));
+          const exportDeclarations = host.getExportsOfModule(file);
+          expect(exportDeclarations).not.toBe(null);
+          expect(Array.from(exportDeclarations !.entries())
+                     .map(entry => [entry[0], entry[1].node !.getText(), entry[1].viaModule]))
+              .toEqual([
+                ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
+                ['a', `a = 'a'`, _('/b_module')],
+                ['b', `b = a_module.a`, _('/b_module')],
+                ['c', `a = 'a'`, _('/b_module')],
+                ['d', `b = a_module.a`, _('/b_module')],
+                ['e', `e = 'e'`, _('/b_module')],
+                ['DirectiveX', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
+                [
+                  'SomeClass',
+                  `SomeClass = (function() {\n  function SomeClass() {}\n  return SomeClass;\n}())`,
+                  _('/b_module')
+                ],
+                ['xtra1', `xtra1 = 'xtra1'`, _('/xtra_module')],
+                ['xtra2', `xtra2 = 'xtra2'`, _('/xtra_module')],
+              ]);
+        });
+
+        it('should handle wildcard re-exports of other modules (with imported helpers)', () => {
+          loadFakeCore(getFileSystem());
+          loadTestFiles(EXPORTS_FILES);
+          const bundle = makeTestBundleProgram(_('/index.js'));
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+          const file =
+              getSourceFileOrError(bundle.program, _('/wildcard_reexports_imported_helpers.js'));
           const exportDeclarations = host.getExportsOfModule(file);
           expect(exportDeclarations).not.toBe(null);
           expect(Array.from(exportDeclarations !.entries())
