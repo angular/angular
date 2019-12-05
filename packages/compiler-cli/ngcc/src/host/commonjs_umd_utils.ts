@@ -19,6 +19,21 @@ export interface ExportStatement extends ts.ExpressionStatement {
   expression: ts.BinaryExpression&{left: ts.PropertyAccessExpression & {expression: ts.Identifier}};
 }
 
+/**
+ * A CommonJS or UMD re-export statement.
+ *
+ * In CommonJS/UMD, re-export statements can have several forms (depending, for example, on whether
+ * the TypeScript helpers are imported or emitted inline). The expression can have one of the
+ * following forms:
+ * - `__export(firstArg)`
+ * - `__exportStar(firstArg)`
+ * - `tslib.__export(firstArg, exports)`
+ * - `tslib.__exportStar(firstArg, exports)`
+ *
+ * In all cases, we only care about `firstApp`, which is the first argument of the re-export call
+ * expression and can be either a `require('...')` call or an identifier (initialized via a
+ * `require('...')` call).
+ */
 export interface ReexportStatement extends ts.ExpressionStatement { expression: ts.CallExpression; }
 
 export interface RequireCall extends ts.CallExpression {
@@ -66,12 +81,47 @@ export function isExportStatement(stmt: ts.Statement): stmt is ExportStatement {
 
 /**
  * Check whether the specified `ts.Statement` is a re-export statement, i.e. an expression statement
- * of the form: `__export(<foo>)`
+ * of one of the following forms:
+ * - `__export(<foo>)`
+ * - `__exportStar(<foo>)`
+ * - `tslib.__export(<foo>, exports)`
+ * - `tslib.__exportStar(<foo>, exports)`
  */
 export function isReexportStatement(stmt: ts.Statement): stmt is ReexportStatement {
-  return ts.isExpressionStatement(stmt) && ts.isCallExpression(stmt.expression) &&
-      ts.isIdentifier(stmt.expression.expression) &&
-      stmt.expression.expression.text === '__export' && stmt.expression.arguments.length === 1;
+  // Ensure it is a call expression statement.
+  if (!ts.isExpressionStatement(stmt) || !ts.isCallExpression(stmt.expression)) {
+    return false;
+  }
+
+  // Get the called function identifier.
+  // NOTE: Currently, it seems that `__export()` is used when emitting helpers inline and
+  //       `__exportStar()` when importing them
+  //       ([source](https://github.com/microsoft/TypeScript/blob/d7c83f023/src/compiler/transformers/module/module.ts#L1796-L1797)).
+  //       So, theoretically, we only care about the formats `__export(<foo>)` and
+  //       `tslib.__exportStar(<foo>, exports)`.
+  //       The current implementation accepts the other two formats (`__exportStar(...)` and
+  //       `tslib.__export(...)`) as well to be more future-proof (given that it is unlikely that
+  //       they will introduce false positives).
+  let fnName: string|null = null;
+  if (ts.isIdentifier(stmt.expression.expression)) {
+    // Statement of the form `someFn(...)`.
+    fnName = stmt.expression.expression.text;
+  } else if (
+      ts.isPropertyAccessExpression(stmt.expression.expression) &&
+      ts.isIdentifier(stmt.expression.expression.name)) {
+    // Statement of the form `tslib.someFn(...)`.
+    fnName = stmt.expression.expression.name.text;
+  }
+
+  // Ensure the called function is either `__export()` or `__exportStar()`.
+  if ((fnName !== '__export') && (fnName !== '__exportStar')) {
+    return false;
+  }
+
+  // Ensure there is at least one argument.
+  // (The first argument is the exported thing and there will be a second `exports` argument in the
+  // case of imported helpers).
+  return stmt.expression.arguments.length > 0;
 }
 
 /**
