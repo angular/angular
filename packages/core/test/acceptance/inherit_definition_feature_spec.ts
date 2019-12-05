@@ -4293,7 +4293,7 @@ describe('inheritance', () => {
         fixture.debugElement.query(By.directive(component)).nativeElement.click();
       });
       expect(events).toEqual(
-          ['BaseComponent.clicked', 'ChildComponent.clicked', 'GrandChildComponent.clicked'])
+          ['BaseComponent.clicked', 'ChildComponent.clicked', 'GrandChildComponent.clicked']);
     });
 
     xdescribe(
