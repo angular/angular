@@ -374,7 +374,7 @@ When a page contains multiple instances of a particular component, you may want 
 some property of the component to get a particular component instance. For example, you may want
 a button with some specific text, or a menu with a specific ID. The `HarnessPredicate`
 class can capture criteria like this for a `ComponentHarness` subclass. While the
-test author is able to construct `HarnessPredicate` instances manually, its easier when the
+test author is able to construct `HarnessPredicate` instances manually, it's easier when the
 `ComponentHarness` subclass provides a helper method to construct predicates for common filters.
 
 The recommended approach to providing this helper is to create a static `with` method on each
