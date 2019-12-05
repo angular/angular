@@ -235,13 +235,54 @@ function findNamespaceOfIdentifier(id: ts.Identifier): ts.Identifier|null {
       null;
 }
 
+/**
+ * A CommonJS re-export statement.
+ *
+ * In CommonJS, re-export statement can have several formats (depending, for example, on whether the
+ * TypeScript helpers are imported or emitted inline). The expression can have one of the following
+ * formats:
+ * - `__export(require('...'))`
+ * - `__exportStar(require('...'))`
+ * - `tslib.__export(require('...'), exports)`
+ * - `tslib.__exportStar(require('...'), exports)`
+ *
+ * In all cases, we only care about the `require()` call, which is the first argument of the
+ * re-export call expression.)
+ */
 type ReexportStatement = ts.ExpressionStatement & {expression: {arguments: [RequireCall]}};
 function isReexportStatement(statement: ts.Statement): statement is ReexportStatement {
-  return ts.isExpressionStatement(statement) && ts.isCallExpression(statement.expression) &&
-      ts.isIdentifier(statement.expression.expression) &&
-      statement.expression.expression.text === '__export' &&
-      statement.expression.arguments.length === 1 &&
-      isRequireCall(statement.expression.arguments[0]);
+  // Ensure it is a call expression statement.
+  if (!ts.isExpressionStatement(statement) || !ts.isCallExpression(statement.expression)) {
+    return false;
+  }
+
+  // Get the called function identifier.
+  // NOTE: Currently, it seems that `__export()` is used when emitting helpers inline and
+  //       `__exportStar()` when importing them
+  //       ([source](https://github.com/microsoft/TypeScript/blob/d7c83f023/src/compiler/transformers/module/module.ts#L1796-L1797)).
+  //       So, theoretically, we only care about the formats `__export(require('...'))` and
+  //       `tslib.__exportStar(require('...'), exports)`.
+  //       The accepts the other two formats (`__exportStar(...)` and `tslib.__export(...)`) to be
+  //       more future-proof (given that it is unlikely that they will introduce false positives).
+  let fnName: string|null = null;
+  if (ts.isIdentifier(statement.expression.expression)) {
+    // Statement of the form `someFn(...)`.
+    fnName = statement.expression.expression.text;
+  } else if (
+      ts.isPropertyAccessExpression(statement.expression.expression) &&
+      ts.isIdentifier(statement.expression.expression.name)) {
+    // Statement of the form `tslib.someFn(...)`.
+    fnName = statement.expression.expression.name.text;
+  }
+
+  // Esnure the called function is either `__export()` or `__exportStar()`.
+  if ((fnName !== '__export') && (fnName !== '__exportStar')) {
+    return false;
+  }
+
+  // Ensure the first argument is a `require()` call.
+  const args = statement.expression.arguments;
+  return (args.length > 0) && isRequireCall(args[0]);
 }
 
 function stripExtension(fileName: string): string {
