@@ -249,8 +249,8 @@ function findNamespaceOfIdentifier(id: ts.Identifier): ts.Identifier|null {
  * In all cases, we only care about the `require()` call, which is the first argument of the
  * re-export call expression.)
  */
-type ReexportStatement = ts.ExpressionStatement & {expression: {arguments: [RequireCall]}};
-function isReexportStatement(statement: ts.Statement): statement is ReexportStatement {
+export type ReexportStatement = ts.ExpressionStatement & {expression: {arguments: [RequireCall]}};
+export function isReexportStatement(statement: ts.Statement): statement is ReexportStatement {
   // Ensure it is a call expression statement.
   if (!ts.isExpressionStatement(statement) || !ts.isCallExpression(statement.expression)) {
     return false;
