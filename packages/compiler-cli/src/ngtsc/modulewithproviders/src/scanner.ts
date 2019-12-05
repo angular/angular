@@ -78,27 +78,32 @@ export class ModuleWithProvidersScanner {
     }
 
     const value = this.evaluator.evaluate(retValue);
-    if (value instanceof Map && isModuleWithProvidersType(value)) {
-      // Definitively a MWP.
-      const ngModule = value.get('ngModule');
-      if (!(ngModule instanceof Reference) || !ts.isClassDeclaration(ngModule.node)) {
-        return;
-      }
-
-      const ngModuleExpr =
-          this.emitter.emit(ngModule, decl.getSourceFile(), ImportMode.ForceNewImport);
-      const ngModuleType = new ExpressionType(ngModuleExpr);
-
-      const mwpNgType = new ExpressionType(
-          new ExternalExpr(Identifiers.ModuleWithProviders), null, [ngModuleType]);
-
-      dts.addTypeReplacement(decl, mwpNgType);
-    } else if (returnType === ReturnType.MWP_NO_TYPE) {
-      return;
-    } else {
-      // Not a MWP function after all.
+    if (!(value instanceof Map) || !value.has('ngModule')) {
+      // The return value does not provide sufficient information to be able to add a generic type.
       return;
     }
+
+    if (returnType === ReturnType.INFERRED && !isModuleWithProvidersType(value)) {
+      // The return type is inferred but the returned object is not of the correct shape, so we
+      // shouldn's modify the return type to become `ModuleWithProviders`.
+      return;
+    }
+
+    // The return type has been verified to represent the `ModuleWithProviders` type, but either the
+    // return type is inferred or the generic type argument is missing. In both cases, a new return
+    // type is created where the `ngModule` type is included as generic type argument.
+    const ngModule = value.get('ngModule');
+    if (!(ngModule instanceof Reference) || !ts.isClassDeclaration(ngModule.node)) {
+      return;
+    }
+
+    const ngModuleExpr =
+        this.emitter.emit(ngModule, decl.getSourceFile(), ImportMode.ForceNewImport);
+    const ngModuleType = new ExpressionType(ngModuleExpr);
+    const mwpNgType = new ExpressionType(
+        new ExternalExpr(Identifiers.ModuleWithProviders), /* modifiers */ null, [ngModuleType]);
+
+    dts.addTypeReplacement(decl, mwpNgType);
   }
 
   private returnTypeOf(decl: ts.FunctionDeclaration|ts.MethodDeclaration|
@@ -147,8 +152,8 @@ enum ReturnType {
 
 /** Whether the resolved value map represents a ModuleWithProviders object */
 function isModuleWithProvidersType(value: ResolvedValueMap): boolean {
-  const ngModule = value.get('ngModule') !== undefined;
-  const providers = value.get('providers') !== undefined;
+  const ngModule = value.has('ngModule');
+  const providers = value.has('providers');
 
   return ngModule && (value.size === 1 || (providers && value.size === 2));
 }

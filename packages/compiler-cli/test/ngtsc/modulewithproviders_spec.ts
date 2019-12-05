@@ -131,6 +131,26 @@ runInEachFileSystem(() => {
       expect(dtsContents).toContain('static forRoot(): i0.ModuleWithProviders<TestModule>;');
     });
 
+    it('should add a generic type when missing the generic type parameter (qualified name)', () => {
+      env.write('test.ts', `
+        import * as ng from '@angular/core';
+
+        @ng.NgModule()
+        export class TestModule {
+          static forRoot(): ng.ModuleWithProviders {
+            return {
+              ngModule: TestModule,
+            };
+          }
+        }
+      `);
+
+      env.driveMain();
+
+      const dtsContents = trim(env.getContents('test.d.ts'));
+      expect(dtsContents).toContain('static forRoot(): i0.ModuleWithProviders<TestModule>;');
+    });
+
     it('should add a generic type and add an import for external references', () => {
       env.write('test.ts', `
         import {ModuleWithProviders} from '@angular/core';

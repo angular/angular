@@ -237,13 +237,13 @@ export class IvyCompilation {
 
     visit(sf);
 
-    if (!preanalyze) {
-      this.mwpScanner.scan(sf, {
-        addTypeReplacement: (node: ts.Declaration, type: Type): void => {
-          this.dtsTransforms.getReturnTypeTransform(sf).addTypeReplacement(node, type);
-        }
-      });
-    }
+    this.mwpScanner.scan(sf, {
+      addTypeReplacement: (node: ts.Declaration, type: Type): void => {
+        // Only obtain the return type transform for the source file once there's a type to replace,
+        // so that no transform is allocated when there's nothing to do.
+        this.dtsTransforms.getReturnTypeTransform(sf).addTypeReplacement(node, type);
+      }
+    });
 
     if (preanalyze && promises.length > 0) {
       return Promise.all(promises).then(() => undefined);

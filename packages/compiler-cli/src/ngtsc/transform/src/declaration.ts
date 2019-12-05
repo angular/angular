@@ -21,21 +21,21 @@ import {addImports} from './utils';
  * have their declaration file transformed.
  */
 export class DtsTransformRegistry {
-  private ivyDeclarationTransforms = new Map<string, IvyDeclarationDtsTransform>();
-  private returnTypeTransforms = new Map<string, ReturnTypeTransform>();
+  private ivyDeclarationTransforms = new Map<ts.SourceFile, IvyDeclarationDtsTransform>();
+  private returnTypeTransforms = new Map<ts.SourceFile, ReturnTypeTransform>();
 
   getIvyDeclarationTransform(sf: ts.SourceFile): IvyDeclarationDtsTransform {
-    if (!this.ivyDeclarationTransforms.has(sf.fileName)) {
-      this.ivyDeclarationTransforms.set(sf.fileName, new IvyDeclarationDtsTransform());
+    if (!this.ivyDeclarationTransforms.has(sf)) {
+      this.ivyDeclarationTransforms.set(sf, new IvyDeclarationDtsTransform());
     }
-    return this.ivyDeclarationTransforms.get(sf.fileName) !;
+    return this.ivyDeclarationTransforms.get(sf) !;
   }
 
   getReturnTypeTransform(sf: ts.SourceFile): ReturnTypeTransform {
-    if (!this.returnTypeTransforms.has(sf.fileName)) {
-      this.returnTypeTransforms.set(sf.fileName, new ReturnTypeTransform());
+    if (!this.returnTypeTransforms.has(sf)) {
+      this.returnTypeTransforms.set(sf, new ReturnTypeTransform());
     }
-    return this.returnTypeTransforms.get(sf.fileName) !;
+    return this.returnTypeTransforms.get(sf) !;
   }
 
   /**
@@ -50,15 +50,16 @@ export class DtsTransformRegistry {
     if (!sf.isDeclarationFile) {
       return null;
     }
+    const originalSf = ts.getOriginalNode(sf) as ts.SourceFile;
 
     let transforms: DtsTransform[]|null = null;
-    if (this.ivyDeclarationTransforms.has(sf.fileName)) {
+    if (this.ivyDeclarationTransforms.has(originalSf)) {
       transforms = [];
-      transforms.push(this.ivyDeclarationTransforms.get(sf.fileName) !);
+      transforms.push(this.ivyDeclarationTransforms.get(originalSf) !);
     }
-    if (this.returnTypeTransforms.has(sf.fileName)) {
+    if (this.returnTypeTransforms.has(originalSf)) {
       transforms = transforms || [];
-      transforms.push(this.returnTypeTransforms.get(sf.fileName) !);
+      transforms.push(this.returnTypeTransforms.get(originalSf) !);
     }
     return transforms;
   }
