@@ -1,5 +1,8 @@
 .showcase {
   width: 80%;
+  @media (max-width: 600px) {
+    width: 100%;
+  }
 }
 
 .c-resource-nav {
