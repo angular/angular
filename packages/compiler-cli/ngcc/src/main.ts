@@ -274,6 +274,8 @@ export function mainNgcc(
             `Failed to compile entry-point ${entryPoint.name} due to compilation errors:\n${errors}`);
       }
 
+      logger.debug(`  Successfully compiled ${entryPoint.name} : ${formatProperty}`);
+
       onTaskCompleted(task, TaskProcessingOutcome.Processed);
     };
   };
