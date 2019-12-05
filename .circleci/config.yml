@@ -240,8 +240,8 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     environment:
-      SAUCE_USERNAME: "angular-ci"
-      SAUCE_ACCESS_KEY: "9b988f434ff8-fbca-8aa4-4ae3-35442987"
+      SAUCE_USERNAME: "angular-components"
+      SAUCE_ACCESS_KEY: "63348201a846-eeb9-3ee4-300f-ea990b8a"
       # Note: This number should not be too high because otherwise we might run into
       # a rate limit exception.
       KARMA_PARALLEL_BROWSERS: 2
