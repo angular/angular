@@ -12,7 +12,7 @@ import {RElement} from '../interfaces/renderer';
 import {RENDERER, TVIEW} from '../interfaces/view';
 import {getActiveDirectiveId, getCheckNoChangesMode, getCurrentStyleSanitizer, getLView, getSelectedIndex, resetCurrentStyleSanitizer, setCurrentStyleSanitizer, setElementExitFn} from '../state';
 import {registerBinding} from '../styling/binding_registration';
-import {flushBindings, updateBindingValue} from '../styling/direct_write_algorithm';
+import {flushBindings, updateBindingValue} from '../styling/binding_concatenation';
 import {getStylingState, resetStylingState} from '../styling/state';
 import {NO_CHANGE} from '../tokens';
 import {checkStylingValueNoChanges, getValue, hasDirectiveInput, isHostStylingActive, isSanitizationRequired, nextStylingBindingIndex, updateDirectiveInputValue} from '../util/styling_utils';
@@ -139,7 +139,7 @@ import {getNativeByTNode, getTNode} from '../util/view_utils';
  * - When `foo=false`
  *   => `bar baz`
  *
- * See `styling/direct_write_algorithm.ts` for more information.
+ * See `styling/binding_concatenation.ts` for more information.
  *
  * --------
  */

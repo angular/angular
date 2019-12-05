@@ -12,7 +12,7 @@ import {LStylingData, TStylingNode} from '../interfaces/styling';
 import {TData} from '../interfaces/view';
 import {getConcatenatedValue, getStylingHead, getStylingTail, hasConfig, isStylingValueDefined} from '../util/styling_utils';
 
-import {processStylingBindingsUpToPoint} from './direct_write_algorithm';
+import {processStylingBindingsUpToPoint} from './binding_concatenation';
 import {StyleChangesArrayMapEnum, parseKeyValue} from './style_differ';
 import {printStylingTable} from './styling_debug_utils';
 
