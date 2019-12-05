@@ -752,7 +752,7 @@ export type HookData = (number | (() => void))[];
  */
 export type TData =
     (TNode | PipeDef<any>| DirectiveDef<any>| ComponentDef<any>| number | Type<any>|
-     InjectionToken<any>| TI18n | I18nUpdateOpCodes | null | string)[];
+     InjectionToken<any>| TI18n | I18nUpdateOpCodes | null | string | {})[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

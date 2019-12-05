@@ -7,7 +7,10 @@
 */
 
 import {ArrayMap3, arrayInsert4, arrayMap3IndexOf} from '../../util/array_utils';
+import {CharCode} from '../../util/char_code';
+
 import {consumeStyleKey, consumeStyleKeySeparator, consumeStyleValue, consumeStyleValueSeparator, consumeWhitespace} from './styling_parser';
+
 
 
 /**

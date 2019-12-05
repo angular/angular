@@ -89,7 +89,9 @@ describe('style differ', () => {
     });
 
     it('should remove some of the style', () => {
+      expect(removeStyle('a: a; foo: b', 'foo')).toEqual('a: a');
       expect(removeStyle('a: a; foo: bar; b: b', 'foo')).toEqual('a: a; b: b');
+      expect(removeStyle('a: a; foo: bar 123 123; b: b', 'foo')).toEqual('a: a; b: b');
       expect(removeStyle('a: a; foo: bar; b: b; foo: bar; c: c', 'foo'))
           .toEqual('a: a; b: b; c: c');
     });

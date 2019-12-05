@@ -642,16 +642,10 @@
     "name": "getBindingPropName"
   },
   {
-    "name": "getBindingPropUnit"
+    "name": "getBindingPropSuffix"
   },
   {
     "name": "getBindingsEnabled"
-  },
-  {
-    "name": "getCachedStr"
-  },
-  {
-    "name": "getCachedValue"
   },
   {
     "name": "getCheckNoChangesMode"
@@ -670,6 +664,12 @@
   },
   {
     "name": "getComponentViewByInstance"
+  },
+  {
+    "name": "getConcatenatedStr"
+  },
+  {
+    "name": "getConcatenatedValue"
   },
   {
     "name": "getConstant"
@@ -723,10 +723,13 @@
     "name": "getLViewParent"
   },
   {
-    "name": "getLastSourceBindingIndex"
+    "name": "getMinBindingIndex"
   },
   {
-    "name": "getLastSourceIndex"
+    "name": "getMinSourceAndBindingIndex"
+  },
+  {
+    "name": "getMinSourceIndex"
   },
   {
     "name": "getNameOnlyMarkerIndex"
@@ -792,7 +795,7 @@
     "name": "getPreviousBindingIndex"
   },
   {
-    "name": "getPreviousCachedStr"
+    "name": "getPreviousConcatenatedStr"
   },
   {
     "name": "getPreviousIndex"
@@ -1107,10 +1110,10 @@
     "name": "noSideEffects"
   },
   {
-    "name": "normalizeConcatValue"
+    "name": "normalizeStylingDirectiveInputValue"
   },
   {
-    "name": "normalizeStylingDirectiveInputValue"
+    "name": "normalizeValueForConcatenation"
   },
   {
     "name": "parseKeyValue"
@@ -1272,9 +1275,6 @@
     "name": "setBindingRoot"
   },
   {
-    "name": "setCachedValue"
-  },
-  {
     "name": "setCheckNoChangesMode"
   },
   {
@@ -1282,6 +1282,9 @@
   },
   {
     "name": "setClassName"
+  },
+  {
+    "name": "setConcatenatedValue"
   },
   {
     "name": "setCurrentDirectiveDef"
@@ -1318,9 +1321,6 @@
   },
   {
     "name": "setLContainerActiveIndex"
-  },
-  {
-    "name": "setLastSource"
   },
   {
     "name": "setPreviousOrParentTNode"

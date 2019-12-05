@@ -21,6 +21,56 @@ import {getInterpolationArgsLength} from './util';
 const IMPORTANT_FLAG = '!important';
 
 /**
+ * Minimum amount of binding slots required in the runtime for style/class bindings.
+ *
+ * Styling in Angular uses up two slots in the runtime LView/TData data structures to
+ * record binding data, property information and metadata.
+ *
+ * When a binding is registered it will place the following information in the `LView`:
+ *
+ * slot 1) binding value
+ * slot 2) cached value (all other values collected before it in string form)
+ *
+ * When a binding is registered it will place the following information in the `TData`:
+ *
+ * slot 1) prop name
+ * slot 2) binding index that points to the previous style/class binding (and some extra config
+ * values)
+ *
+ * Let's imagine we have a binding that looks like so:
+ *
+ * ```
+ * <div [style.width]="x" [style.height]="y">
+ * ```
+ *
+ * Our `LView` and `TData` data-structures look like so:
+ *
+ * ```typescript
+ * LView = [
+ *   // ...
+ *   x, // value of x
+ *   "width: x",
+ *
+ *   y, // value of y
+ *   "width: x; height: y",
+ *   // ...
+ * ];
+ *
+ * TData = [
+ *   // ...
+ *   "width", // binding slot 20
+ *   0,
+ *
+ *   "height",
+ *   20,
+ *   // ...
+ * ];
+ * ```
+ *
+ * */
+export const MIN_STYLING_BINDING_SLOTS_REQUIRED = 2;
+
+/**
  * A styling expression summary that is to be processed by the compiler
  */
 export interface StylingInstruction {
@@ -335,7 +385,7 @@ export class StylingBuilder {
     // map-based bindings allocate two slots: one for the
     // previous binding value and another for the previous
     // className or style attribute value.
-    let totalBindingSlotsRequired = 2;
+    let totalBindingSlotsRequired = MIN_STYLING_BINDING_SLOTS_REQUIRED;
 
     // these values must be outside of the update block so that they can
     // be evaluated (the AST visit call) during creation time so that any
@@ -375,7 +425,14 @@ export class StylingBuilder {
           instructions[instructions.length - 1];
       const value = input.value.visit(valueConverter);
       let referenceForCall = reference;
-      let totalBindingSlotsRequired = 1;  // each styling binding value is stored in the LView
+
+      // each styling binding value is stored in the LView
+      // but there are two values stored for each binding:
+      //   1) the value itself
+      //   2) an intermediate value (concatenation of style up to this point).
+      //      We need to store the intermediate value so that we don't allocate
+      //      the strings on each CD.
+      let totalBindingSlotsRequired = MIN_STYLING_BINDING_SLOTS_REQUIRED;
 
       if (value instanceof Interpolation) {
         totalBindingSlotsRequired += value.expressions.length;

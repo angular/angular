@@ -6,7 +6,6 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {RElement} from '../interfaces/renderer';
-import {StylingMapArray} from '../interfaces/styling';
 import {TEMPLATE_DIRECTIVE_INDEX} from '../util/styling_utils';
 
 /**
@@ -24,18 +23,13 @@ import {TEMPLATE_DIRECTIVE_INDEX} from '../util/styling_utils';
  * exited in change detection (once all the instructions are run for
  * that element).
  *
- * To learn more about the algorithm see `TStylingContext`.
+ * To learn more about the algorithm see `instructions/styling.ts`.
  *
  * --------
  */
 
 /**
  * Used as a state reference for update values between style/class binding instructions.
- *
- * In addition to storing the element and bit-mask related values, the state also
- * stores the `sourceIndex` value. The `sourceIndex` value is an incremented value
- * that identifies what "source" (i.e. the template, a specific directive by index or
- * component) is currently applying its styling bindings to the element.
  */
 export interface StylingState {
   /** The element that is currently being processed */
@@ -47,56 +41,49 @@ export interface StylingState {
   /** The source (column) index that is currently active (`0` === template) */
   sourceIndex: number;
 
-  /** The classes update bit mask value that is processed during each class binding */
-  classesBitMask: number;
+  /** The current classes tail of the binding source (the last class binding for a
+   * template/directive) */
+  sourceClassTail: number;
 
-  /** The classes update bit index value that is processed during each class binding */
-  classesIndex: number;
+  /** The current styles tail of the binding source (the last style binding for a
+   * template/directive) */
+  sourceStyleTail: number;
 
-  /** The styles update bit mask value that is processed during each style binding */
-  stylesBitMask: number;
+  /** The current classes head of the binding source (the first class binding for a
+   * template/directive) */
+  sourceClassHead: number;
 
-  /** The styles update bit index value that is processed during each style binding */
-  stylesIndex: number;
+  /** The current styles head of the binding source (the first style binding for a
+   * template/directive) */
+  sourceStyleHead: number;
 
-  /**
-   * The last class map that was applied (i.e. `[class]="x"`).
-   *
-   * Note that this property is only populated when direct class values are applied
-   * (i.e. context resolution is not used).
-   *
-   * See `allowDirectStyling` for more info.
-  */
-  lastDirectClassMap: StylingMapArray|null;
+  /** The last class binding index that was applied */
+  lastClassBindingIndex: number;
 
-  /**
-   * The last style map that was applied (i.e. `[style]="x"`)
-   *
-   * Note that this property is only populated when direct style values are applied
-   * (i.e. context resolution is not used).
-   *
-   * See `allowDirectStyling` for more info.
-  */
-  lastDirectStyleMap: StylingMapArray|null;
+  /** The last style binding index that was applied */
+  lastStyleBindingIndex: number;
 }
 
-// these values will get filled in the very first time this is accessed...
-const _state: StylingState = {
-  element: null,
-  directiveIndex: -1,
-  sourceIndex: -1,
-  classesBitMask: -1,
-  classesIndex: -1,
-  stylesBitMask: -1,
-  stylesIndex: -1,
-  lastDirectClassMap: null,
-  lastDirectStyleMap: null,
-};
+/**
+ * Creates a new instance of a `StylingState` object.
+ */
+function createStylingState(): StylingState {
+  // these values will get filled in the very first time this is accessed...
+  return {
+    element: null,
+    directiveIndex: -1,
+    sourceIndex: -1,
+    lastClassBindingIndex: 0,
+    lastStyleBindingIndex: 0,
+    sourceClassTail: 0,
+    sourceStyleTail: 0,
+    sourceClassHead: 0,
+    sourceStyleHead: 0,
+  };
+}
 
-const BIT_MASK_START_VALUE = 0;
-
-// the `0` start value is reserved for [map]-based entries
-const INDEX_START_VALUE = 1;
+/* tslint:disable */
+const _state = createStylingState();
 
 /**
  * Returns (or instantiates) the styling state for the given element.
@@ -114,19 +101,19 @@ const INDEX_START_VALUE = 1;
  * to apply its styling host bindings to the element).
  */
 export function getStylingState(element: RElement, directiveIndex: number): StylingState {
-  if (_state.element !== element) {
-    _state.element = element;
-    _state.directiveIndex = directiveIndex;
-    _state.sourceIndex = directiveIndex === TEMPLATE_DIRECTIVE_INDEX ? 0 : 1;
-    _state.classesBitMask = BIT_MASK_START_VALUE;
-    _state.classesIndex = INDEX_START_VALUE;
-    _state.stylesBitMask = BIT_MASK_START_VALUE;
-    _state.stylesIndex = INDEX_START_VALUE;
-    _state.lastDirectClassMap = null;
-    _state.lastDirectStyleMap = null;
-  } else if (_state.directiveIndex !== directiveIndex) {
-    _state.directiveIndex = directiveIndex;
-    _state.sourceIndex++;
+  if (_state.element !== element || _state.directiveIndex !== directiveIndex) {
+    if (_state.element !== element) {
+      _state.element = element;
+      _state.directiveIndex = directiveIndex;
+      _state.sourceIndex = directiveIndex === TEMPLATE_DIRECTIVE_INDEX ? 0 : 1;
+      _state.lastClassBindingIndex = 0;
+      _state.lastStyleBindingIndex = 0;
+    } else {
+      _state.directiveIndex = directiveIndex;
+      _state.sourceIndex++;
+    }
+    _state.sourceClassHead = _state.sourceClassTail = _state.sourceStyleHead =
+        _state.sourceStyleTail = 0;
   }
   return _state;
 }

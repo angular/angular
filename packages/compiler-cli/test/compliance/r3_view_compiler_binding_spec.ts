@@ -878,7 +878,7 @@ describe('compiler compliance: bindings', () => {
           selectors: [["", "hostAttributeDir", ""]],
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵallocHostVars(2);
+              $r3$.ɵɵallocHostVars(4);
               $r3$.ɵɵelementHostAttrs($c1$);
               …
             }
