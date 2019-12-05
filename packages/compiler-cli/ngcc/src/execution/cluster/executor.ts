@@ -39,7 +39,7 @@ export class ClusterExecutor implements Executor {
       return master.run();
     } else {
       // This process is a cluster worker.
-      const worker = new ClusterWorker(createCompileFn);
+      const worker = new ClusterWorker(this.logger, createCompileFn);
       return worker.run();
     }
   }
