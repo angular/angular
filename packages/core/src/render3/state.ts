@@ -672,18 +672,3 @@ export function namespaceHTMLInternal() {
 export function getNamespace(): string|null {
   return instructionState.lFrame.currentNamespace;
 }
-
-export function setCurrentStyleSanitizer(sanitizer: StyleSanitizeFn | null) {
-  instructionState.lFrame.currentSanitizer = sanitizer;
-}
-
-export function resetCurrentStyleSanitizer() {
-  setCurrentStyleSanitizer(null);
-}
-
-export function getCurrentStyleSanitizer() {
-  // TODO(misko): This should throw when there is no LView, but it turns out we can get here from
-  // `NodeStyleDebug` hence we return `null`. This should be fixed
-  const lFrame = instructionState.lFrame;
-  return lFrame === null ? null : lFrame.currentSanitizer;
-}

@@ -3,6 +3,12 @@
     "name": "ACTIVE_INDEX"
   },
   {
+    "name": "BINDING_START_BITS"
+  },
+  {
+    "name": "BINDING_START_MASK"
+  },
+  {
     "name": "BLOOM_MASK"
   },
   {
@@ -91,12 +97,6 @@
   },
   {
     "name": "IterableDiffers"
-  },
-  {
-    "name": "LAST_BINDING_INDEX_BITS"
-  },
-  {
-    "name": "LAST_BINDING_INDEX_MASK"
   },
   {
     "name": "LOWERCASE_CHAR_BIT"
@@ -267,6 +267,9 @@
     "name": "TodoStore"
   },
   {
+    "name": "UNSET_VALUE"
+  },
+  {
     "name": "VIEW_REFS"
   },
   {
@@ -334,6 +337,9 @@
   },
   {
     "name": "addComponentLogic"
+  },
+  {
+    "name": "addRemoveStylingEntryInConcatString"
   },
   {
     "name": "addRemoveViewFromContainer"
@@ -444,6 +450,9 @@
     "name": "concatStylingEntry"
   },
   {
+    "name": "concatenateAndGetPrevious"
+  },
+  {
     "name": "consumeClassToken"
   },
   {
@@ -493,9 +502,6 @@
   },
   {
     "name": "createRootContext"
-  },
-  {
-    "name": "createStylingState"
   },
   {
     "name": "createTNode"
@@ -594,13 +600,13 @@
     "name": "extractPipeDef"
   },
   {
-    "name": "fastForwardStylingBindings"
-  },
-  {
     "name": "findAttrIndexInNode"
   },
   {
     "name": "findDirectiveMatches"
+  },
+  {
+    "name": "findEndOfComponentBindings"
   },
   {
     "name": "findExistingListener"
@@ -610,6 +616,9 @@
   },
   {
     "name": "flushBindings"
+  },
+  {
+    "name": "flushStyleOrClassBindings"
   },
   {
     "name": "flushStyling"
@@ -639,19 +648,22 @@
     "name": "getBeforeNodeForView"
   },
   {
+    "name": "getBindingConfigAndPointers"
+  },
+  {
     "name": "getBindingPropName"
   },
   {
-    "name": "getBindingPropUnit"
+    "name": "getBindingSanitizer"
+  },
+  {
+    "name": "getBindingSourceMode"
+  },
+  {
+    "name": "getBindingStartIndex"
   },
   {
     "name": "getBindingsEnabled"
-  },
-  {
-    "name": "getCachedStr"
-  },
-  {
-    "name": "getCachedValue"
   },
   {
     "name": "getCheckNoChangesMode"
@@ -672,6 +684,12 @@
     "name": "getComponentViewByInstance"
   },
   {
+    "name": "getConcatenatedStr"
+  },
+  {
+    "name": "getConcatenatedValue"
+  },
+  {
     "name": "getConstant"
   },
   {
@@ -681,13 +699,13 @@
     "name": "getContextLView"
   },
   {
-    "name": "getCurrentStyleSanitizer"
-  },
-  {
     "name": "getDebugContext"
   },
   {
     "name": "getDirectiveDef"
+  },
+  {
+    "name": "getDirectiveStartIndex"
   },
   {
     "name": "getDocument"
@@ -721,12 +739,6 @@
   },
   {
     "name": "getLViewParent"
-  },
-  {
-    "name": "getLastSourceBindingIndex"
-  },
-  {
-    "name": "getLastSourceIndex"
   },
   {
     "name": "getNameOnlyMarkerIndex"
@@ -792,7 +804,7 @@
     "name": "getPreviousBindingIndex"
   },
   {
-    "name": "getPreviousCachedStr"
+    "name": "getPreviousConcatenatedStr"
   },
   {
     "name": "getPreviousIndex"
@@ -805,6 +817,9 @@
   },
   {
     "name": "getSelectedIndex"
+  },
+  {
+    "name": "getStyleBindingSuffix"
   },
   {
     "name": "getStylingHead"
@@ -948,6 +963,9 @@
     "name": "isComponentHost"
   },
   {
+    "name": "isComponentHostBinding"
+  },
+  {
     "name": "isContentQueryHost"
   },
   {
@@ -958,9 +976,6 @@
   },
   {
     "name": "isDevMode"
-  },
-  {
-    "name": "isDirectSanitizationRequired"
   },
   {
     "name": "isDirectiveHost"
@@ -1009,9 +1024,6 @@
   },
   {
     "name": "isRootView"
-  },
-  {
-    "name": "isSanitizationRequired"
   },
   {
     "name": "isStylingMap"
@@ -1065,6 +1077,9 @@
     "name": "markDirtyIfOnPush"
   },
   {
+    "name": "markLocationFromWhichStylesNeedToBeRecomputed"
+  },
+  {
     "name": "markViewDirty"
   },
   {
@@ -1107,10 +1122,10 @@
     "name": "noSideEffects"
   },
   {
-    "name": "normalizeConcatValue"
+    "name": "normalizeStylingDirectiveInputValue"
   },
   {
-    "name": "normalizeStylingDirectiveInputValue"
+    "name": "normalizeValueForConcatenation"
   },
   {
     "name": "parseKeyValue"
@@ -1128,7 +1143,7 @@
     "name": "processStylingBinding"
   },
   {
-    "name": "processStylingBindingsUpToPoint"
+    "name": "processStylingBindingsUpToEnd"
   },
   {
     "name": "readPatchedData"
@@ -1215,9 +1230,6 @@
     "name": "renderView"
   },
   {
-    "name": "resetCurrentStyleSanitizer"
-  },
-  {
     "name": "resetPreOrderHookFlags"
   },
   {
@@ -1266,13 +1278,10 @@
     "name": "setBindingPointer"
   },
   {
-    "name": "setBindingPropName"
+    "name": "setBindingProp"
   },
   {
     "name": "setBindingRoot"
-  },
-  {
-    "name": "setCachedValue"
   },
   {
     "name": "setCheckNoChangesMode"
@@ -1284,13 +1293,16 @@
     "name": "setClassName"
   },
   {
+    "name": "setConcatenatedValue"
+  },
+  {
     "name": "setCurrentDirectiveDef"
   },
   {
     "name": "setCurrentQueryIndex"
   },
   {
-    "name": "setCurrentStyleSanitizer"
+    "name": "setDirectiveAndBindingStartIndices"
   },
   {
     "name": "setDirectiveStylingInput"
@@ -1320,9 +1332,6 @@
     "name": "setLContainerActiveIndex"
   },
   {
-    "name": "setLastSource"
-  },
-  {
     "name": "setPreviousOrParentTNode"
   },
   {
@@ -1348,9 +1357,6 @@
   },
   {
     "name": "splitClassList"
-  },
-  {
-    "name": "splitOnWhitespace"
   },
   {
     "name": "storeCleanupFn"
@@ -1393,9 +1399,6 @@
   },
   {
     "name": "updateDirectiveInputValue"
-  },
-  {
-    "name": "updateStylingEntry"
   },
   {
     "name": "viewAttachedToChangeDetector"

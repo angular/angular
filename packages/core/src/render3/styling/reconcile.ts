@@ -7,9 +7,12 @@
 */
 
 import {ArrayMap} from '../../util/array_utils';
-import {ProceduralRenderer3, RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
+import {RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
+import {setClass, setClassName, setStyle, setStyleAttr} from '../util/styling_utils';
+
 import {computeClassChanges} from './class_differ';
 import {computeStyleChanges} from './style_differ';
+
 
 
 /**
@@ -44,19 +47,16 @@ import {computeStyleChanges} from './style_differ';
  * @param newValue The new class list to write.
  */
 export function writeAndReconcileClass(
-    renderer: Renderer3, element: RElement, expectedValue: string, newValue: string): void {
-  if (element.className === expectedValue) {
-    // This is the simple/fast case where no one has written into element without our knowledge.
-    if (isProceduralRenderer(renderer)) {
-      (renderer as ProceduralRenderer3).setAttribute(element, 'class', newValue);
-    } else {
-      element.className = newValue;
-    }
+    renderer: Renderer3, element: RElement, expectedValue: string, newValue: string): string|null {
+  if ((element.className || '') === expectedValue) {
+    setClassName(renderer, element, newValue);
+    return element.className;
   } else {
     // The expected value is not the same as last value. Something changed the DOM element without
     // our knowledge so we need to do reconciliation instead.
     reconcileClassNames(renderer, element, expectedValue, newValue);
   }
+  return null;
 }
 
 /**
@@ -88,20 +88,17 @@ export function writeAndReconcileClass(
 * @param newValue The new class list to write
 */
 export function writeAndReconcileStyle(
-    renderer: Renderer3, element: RElement, expectedValue: string, newValue: string): void {
-  const style = (element as HTMLElement).style;
-  if (style != null && style.cssText === expectedValue) {
-    // This is the simple/fast case where no one has written into element without our knowledge.
-    if (isProceduralRenderer(renderer)) {
-      (renderer as ProceduralRenderer3).setAttribute(element, 'style', newValue);
-    } else {
-      style.cssText = newValue;
-    }
+    renderer: Renderer3, element: RElement, expectedValue: string, newValue: string): string|null {
+  const elm = element as HTMLElement;
+  if (elm.getAttribute && ((elm.getAttribute('style') || '') === expectedValue)) {
+    setStyleAttr(renderer, elm, newValue);
+    return elm.getAttribute('style');
   } else {
     // The expected value is not the same as last value. Something changed the DOM element without
     // our knowledge so we need to do reconciliation instead.
     reconcileStyleNames(renderer, element, expectedValue, newValue);
   }
+  return null;
 }
 
 /**
@@ -118,23 +115,12 @@ export function writeAndReconcileStyle(
  */
 function reconcileClassNames(
     renderer: Renderer3, element: RElement, oldValue: string, newValue: string) {
-  const isProcedural = isProceduralRenderer(renderer);
   const changes = computeClassChanges(oldValue, newValue);
   for (let i = 0; i < changes.length; i++) {
     const className = changes[i++] as string;
     const classValue = changes[i] as boolean | null;
-    if (classValue === true) {
-      if (isProcedural) {
-        (renderer as ProceduralRenderer3).addClass(element, className);
-      } else {
-        (element as HTMLElement).classList.add(className);
-      }
-    } else if (classValue === false) {
-      if (isProcedural) {
-        (renderer as ProceduralRenderer3).removeClass(element, className);
-      } else {
-        (element as HTMLElement).classList.remove(className);
-      }
+    if (classValue !== null) {  // null means nothing needs to change
+      setClass(renderer, element, className, classValue);
     }
   }
 }
@@ -153,25 +139,15 @@ function reconcileClassNames(
  */
 function reconcileStyleNames(
     renderer: Renderer3, element: RElement, oldValue: string, newValue: string) {
-  const isProcedural = isProceduralRenderer(renderer);
   const changes = computeStyleChanges(oldValue, newValue);
   for (let i = 0; i < changes.length; i = i + 4) {
     const styleName = changes[i] as string;
     const operation = changes[i | 1] as boolean | null;
     if (operation === false) {
-      if (isProcedural) {
-        (renderer as ProceduralRenderer3).removeStyle(element, styleName);
-      } else {
-        (element as HTMLElement).style.removeProperty(styleName);
-      }
-
+      setStyle(renderer, element, styleName, null);
     } else if (operation === true) {
       const styleValue = changes[i | 3] as string;
-      if (isProcedural) {
-        (renderer as ProceduralRenderer3).setStyle(element, styleName, styleValue);
-      } else {
-        (element as HTMLElement).style.setProperty(styleName, styleValue);
-      }
+      setStyle(renderer, element, styleName, styleValue);
     }
   }
 }

@@ -1085,8 +1085,8 @@ describe('acceptance integration tests', () => {
            const styles = fixture.componentInstance.mockStyleDirective.stylesVal;
 
            // Use `toContain` since Ivy and ViewEngine have some slight differences in formatting.
-           expect(styles).toContain('width:100px');
-           expect(styles).toContain('height:200px');
+           expect(styles).toMatch(/width:\s?100px/);
+           expect(styles).toMatch(/height:\s?200px/);
          });
 
       it('should update `[class]` and bindings in the provided directive if the input is matched',

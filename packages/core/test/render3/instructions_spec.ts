@@ -9,7 +9,7 @@
 import {NgForOfContext} from '@angular/common';
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
+import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, getSanitizationBypassType, unwrapSafeValue} from '../../src/sanitization/bypass';
 import {ɵɵdefaultStyleSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
@@ -137,20 +137,22 @@ describe('instructions', () => {
 
   describe('styleProp', () => {
     it('should automatically sanitize unless a bypass operation is applied', () => {
-      const t = new TemplateFixture(() => { return createDiv(); }, () => {}, 1);
-      t.update(() => {
-        ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
-        ɵɵstyleProp('background-image', 'url("http://server")');
-      });
-      // nothing is set because sanitizer suppresses it.
-      expect(t.html).toEqual('<div></div>');
+      const t = new TemplateFixture(
+          () => { return createDiv(); },
+          () => {
+            ɵɵstyleProp('background-image', 'url("http://server")', ɵɵdefaultStyleSanitizer);
+          },
+          1);
+
+      const element = t.hostElement.firstChild as HTMLElement;
+      expect(element.style.getPropertyValue('background-image')).toEqual('');
 
       t.update(() => {
-        ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
-        ɵɵstyleProp('background-image', bypassSanitizationTrustStyle('url("http://server2")'));
+        ɵɵstyleProp(
+            'background-image', bypassSanitizationTrustStyle('url("http://server2")'),
+            ɵɵdefaultStyleSanitizer);
       });
-      expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
-          .toEqual('url("http://server2")');
+      expect(element.style.getPropertyValue('background-image')).toEqual('url("http://server2")');
     });
   });
 
@@ -160,10 +162,12 @@ describe('instructions', () => {
     function createDivWithStyle() { ɵɵelement(0, 'div', 0); }
 
     it('should add style', () => {
-      const fixture = new TemplateFixture(
-          createDivWithStyle, () => {}, 1, 0, null, null, null, undefined, attrs);
-      fixture.update(() => { ɵɵstyleMap({'background-color': 'red'}); });
-      expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
+      const fixture = new TemplateFixture(createDivWithStyle, () => {
+        ɵɵstyleMap({'background-color': 'red'});
+      }, 1, 0, null, null, null, undefined, attrs);
+      fixture.update();
+      expect(fixture.html)
+          .toMatch(/<div style="background-color:\s*red;\s*height:\s*10px;?"><\/div>/);
     });
 
     it('should sanitize new styles that may contain `url` properties', () => {
@@ -173,16 +177,17 @@ describe('instructions', () => {
       const fixture = new TemplateFixture(
           () => { return createDiv(); },  //
           () => {
-            ɵɵstyleSanitizer(sanitizerInterceptor.getStyleSanitizer());
-            ɵɵstyleMap({
-              'background-image': 'background-image',
-              'background': 'background',
-              'border-image': 'border-image',
-              'list-style': 'list-style',
-              'list-style-image': 'list-style-image',
-              'filter': 'filter',
-              'width': 'width'
-            });
+            ɵɵstyleMap(
+                {
+                  'background-image': 'background-image',
+                  'background': 'background',
+                  'border-image': 'border-image',
+                  'list-style': 'list-style',
+                  'list-style-image': 'list-style-image',
+                  'filter': 'filter',
+                  'width': 'width'
+                },
+                sanitizerInterceptor.getStyleSanitizer());
           },
           1, 0, null, null, sanitizerInterceptor);
 
@@ -199,7 +204,7 @@ describe('instructions', () => {
     it('should add class', () => {
       const fixture =
           new TemplateFixture(createDivWithStyling, () => { ɵɵclassMap('multiple classes'); }, 1);
-      expect(fixture.html).toEqual('<div class="classes multiple"></div>');
+      expect(fixture.html).toEqual('<div class="multiple classes"></div>');
     });
   });
 

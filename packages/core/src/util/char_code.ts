@@ -22,6 +22,7 @@ export const enum CharCode {
   SEMI_COLON = 59,    // ";"
   BACK_SLASH = 92,    // "\\"
   AT_SIGN = 64,       // "@"
+  HYPHEN = 45,        // "-"
   A = 65,             // "A"
   U = 85,             // "U"
   R = 82,             // "R"

@@ -113,8 +113,6 @@ export class Identifiers {
   static stylePropInterpolateV:
       o.ExternalReference = {name: 'ɵɵstylePropInterpolateV', moduleName: CORE};
 
-  static styleSanitizer: o.ExternalReference = {name: 'ɵɵstyleSanitizer', moduleName: CORE};
-
   static elementHostAttrs: o.ExternalReference = {name: 'ɵɵelementHostAttrs', moduleName: CORE};
 
   static containerCreate: o.ExternalReference = {name: 'ɵɵcontainer', moduleName: CORE};

@@ -1033,29 +1033,27 @@ export declare function ɵɵstaticViewQuery<T>(predicate: Type<any> | string[], 
 
 export declare function ɵɵstyleMap(styles: {
     [styleName: string]: any;
-} | NO_CHANGE | null): void;
+} | NO_CHANGE | null, sanitizer?: StyleSanitizeFn | null): void;
 
-export declare function ɵɵstyleProp(prop: string, value: string | number | SafeValue | null, suffix?: string | null): typeof ɵɵstyleProp;
+export declare function ɵɵstyleProp(prop: string, value: string | number | SafeValue | null, suffixOrSanitizer?: StyleSanitizeFn | string | null): typeof ɵɵstyleProp;
 
-export declare function ɵɵstylePropInterpolate1(prop: string, prefix: string, v0: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate1;
+export declare function ɵɵstylePropInterpolate1(prop: string, prefix: string, v0: any, suffix: string, valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate1;
 
-export declare function ɵɵstylePropInterpolate2(prop: string, prefix: string, v0: any, i0: string, v1: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate2;
+export declare function ɵɵstylePropInterpolate2(prop: string, prefix: string, v0: any, i0: string, v1: any, suffix: string, valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate2;
 
-export declare function ɵɵstylePropInterpolate3(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate3;
+export declare function ɵɵstylePropInterpolate3(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string, valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate3;
 
-export declare function ɵɵstylePropInterpolate4(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate4;
+export declare function ɵɵstylePropInterpolate4(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, suffix: string, valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate4;
 
-export declare function ɵɵstylePropInterpolate5(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate5;
+export declare function ɵɵstylePropInterpolate5(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, suffix: string, valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate5;
 
-export declare function ɵɵstylePropInterpolate6(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate6;
+export declare function ɵɵstylePropInterpolate6(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string, valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate6;
 
-export declare function ɵɵstylePropInterpolate7(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate7;
+export declare function ɵɵstylePropInterpolate7(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string, valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate7;
 
-export declare function ɵɵstylePropInterpolate8(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate8;
+export declare function ɵɵstylePropInterpolate8(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any, suffix: string, valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate8;
 
-export declare function ɵɵstylePropInterpolateV(prop: string, values: any[], valueSuffix?: string | null): typeof ɵɵstylePropInterpolateV;
-
-export declare function ɵɵstyleSanitizer(sanitizer: StyleSanitizeFn | null): void;
+export declare function ɵɵstylePropInterpolateV(prop: string, values: any[], valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolateV;
 
 export declare function ɵɵtemplate(index: number, templateFn: ComponentTemplate<any> | null, decls: number, vars: number, tagName?: string | null, attrsIndex?: number | null, localRefsIndex?: number | null, localRefExtractor?: LocalRefExtractor): void;
 

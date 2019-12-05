@@ -18,11 +18,9 @@ import {PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNo
 import {SelectorFlags} from '../interfaces/projection';
 import {TQueries} from '../interfaces/query';
 import {RComment, RElement, RNode} from '../interfaces/renderer';
-import {TStylingContext} from '../interfaces/styling';
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, TViewType, T_HOST} from '../interfaces/view';
 import {DebugNodeStyling, NodeStylingDebug} from '../styling/styling_debug';
 import {attachDebugObject} from '../util/debug_utils';
-import {isStylingContext} from '../util/styling_utils';
 import {getLContainerActiveIndex, getTNode, unwrapRNode} from '../util/view_utils';
 
 const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNgDevMode());
@@ -175,8 +173,11 @@ export const TNodeConstructor = class TNode implements ITNode {
       public child: ITNode|null,                                               //
       public parent: TElementNode|TContainerNode|null,                         //
       public projection: number|(ITNode|RNode[])[]|null,                       //
-      public styles: TStylingContext|null,                                     //
-      public classes: TStylingContext|null,                                    //
+      public initialStyleNames: string[]|null,                                 //
+      public styles: string|null,                                              //
+      public stylesBindingIndex: number,                                       //
+      public classes: string|null,                                             //
+      public classesBindingIndex: number,                                      //
       ) {}
 
   get type_(): string {
@@ -203,7 +204,6 @@ export const TNodeConstructor = class TNode implements ITNode {
     if (this.flags & TNodeFlags.hasClassInput) flags.push('TNodeFlags.hasClassInput');
     if (this.flags & TNodeFlags.hasContentQuery) flags.push('TNodeFlags.hasContentQuery');
     if (this.flags & TNodeFlags.hasStyleInput) flags.push('TNodeFlags.hasStyleInput');
-    if (this.flags & TNodeFlags.hasInitialStyling) flags.push('TNodeFlags.hasInitialStyling');
     if (this.flags & TNodeFlags.hasHostBindings) flags.push('TNodeFlags.hasHostBindings');
     if (this.flags & TNodeFlags.isComponentHost) flags.push('TNodeFlags.isComponentHost');
     if (this.flags & TNodeFlags.isDirectiveHost) flags.push('TNodeFlags.isDirectiveHost');
@@ -416,12 +416,9 @@ export function buildDebugNode(tNode: TNode, lView: LView, nodeIndex: number): D
   const rawValue = lView[nodeIndex];
   const native = unwrapRNode(rawValue);
   const componentLViewDebug = toDebug(readLViewValue(rawValue));
-  const styles = isStylingContext(tNode.styles) ?
-      new NodeStylingDebug(tNode.styles as any as TStylingContext, tNode, lView, false) :
-      null;
-  const classes = isStylingContext(tNode.classes) ?
-      new NodeStylingDebug(tNode.classes as any as TStylingContext, tNode, lView, true) :
-      null;
+  const tData = lView[TVIEW].data;
+  const styles = new NodeStylingDebug(tNode, tData, lView, false);
+  const classes = new NodeStylingDebug(tNode, tData, lView, true);
   return {
     html: toHtml(native),
     native: native as any, styles, classes,

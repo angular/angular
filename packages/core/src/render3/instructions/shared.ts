@@ -32,11 +32,9 @@ import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DE
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {ActiveElementFlags, enterView, executeElementExitFn, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, hasActiveElementFlag, incrementActiveDirectiveId, leaveView, leaveViewProcessExit, setActiveHostElement, setBindingIndex, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
-import {renderStylingMap, writeStylingValueDirectly} from '../styling/bindings';
 import {NO_CHANGE} from '../tokens';
 import {isAnimationProp} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
-import {getInitialStylingValue} from '../util/styling_utils';
 import {getLViewParent} from '../util/view_traversal_utils';
 import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
 
@@ -803,8 +801,11 @@ export function createTNode(
                          null,       // child: ITNode|null
                          tParent,    // parent: TElementNode|TContainerNode|null
                          null,       // projection: number|(ITNode|RNode[])[]|null
-                         null,       // styles: TStylingContext|null
-                         null,       // classes: TStylingContext|null
+                         null,       // initialStyleNames: string[]|null
+                         null,       // styles: string
+                         0,          // stylesBindingIndex: number
+                         null,       // classes: string
+                         0,          // classesBindingIndex: number
                          ) :
                      {
                        type: type,
@@ -827,8 +828,11 @@ export function createTNode(
                        child: null,
                        parent: tParent,
                        projection: null,
+                       initialStyleNames: null,
                        styles: null,
+                       stylesBindingIndex: 0,
                        classes: null,
+                       classesBindingIndex: 0,
                      };
 }
 
@@ -1900,33 +1904,4 @@ export function textBindingInternal(lView: LView, index: number, value: string):
   ngDevMode && ngDevMode.rendererSetText++;
   const renderer = lView[RENDERER];
   isProceduralRenderer(renderer) ? renderer.setValue(element, value) : element.textContent = value;
-}
-
-/**
- * Renders all initial styling (class and style values) on to the element from the tNode.
- *
- * All initial styling data (i.e. any values extracted from the `style` or `class` attributes
- * on an element) are collected into the `tNode.styles` and `tNode.classes` data structures.
- * These values are populated during the creation phase of an element and are then later
- * applied once the element is instantiated. This function applies each of the static
- * style and class entries to the element.
- */
-export function renderInitialStyling(
-    renderer: Renderer3, native: RElement, tNode: TNode, append: boolean) {
-  if (tNode.classes !== null) {
-    if (append) {
-      renderStylingMap(renderer, native, tNode.classes, true);
-    } else {
-      const classes = getInitialStylingValue(tNode.classes);
-      writeStylingValueDirectly(renderer, native, classes, true, null);
-    }
-  }
-  if (tNode.styles !== null) {
-    if (append) {
-      renderStylingMap(renderer, native, tNode.styles, false);
-    } else {
-      const styles = getInitialStylingValue(tNode.styles);
-      writeStylingValueDirectly(renderer, native, styles, false, null);
-    }
-  }
 }

@@ -12,18 +12,16 @@ import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
-import {StylingMapArray, TStylingContext} from '../interfaces/styling';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {decreaseElementDepthCount, getBindingIndex, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {setUpAttributes} from '../util/attrs_utils';
-import {getInitialStylingValue, hasClassInput, hasStyleInput, selectClassBasedInputName} from '../util/styling_utils';
+import {hasClassInput, hasInitialStyling, hasStyleInput, registerAndRenderInitialStyling, renderInitialStyling, selectClassBasedInputName} from '../util/styling_utils';
 import {getConstant, getNativeByTNode, getTNode} from '../util/view_utils';
 
-import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, matchingSchemas, renderInitialStyling, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';
-import {registerInitialStylingOnTNode} from './styling';
+import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, matchingSchemas, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';
 
 function elementStartFirstCreatePass(
     index: number, tView: TView, lView: LView, native: RElement, name: string,
@@ -34,8 +32,9 @@ function elementStartFirstCreatePass(
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
   const tNode = getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, name, attrs);
 
-  if (attrs !== null) {
-    registerInitialStylingOnTNode(tNode, attrs, 0);
+  if (Array.isArray(attrs)) {
+    const renderer = lView[RENDERER];
+    registerAndRenderInitialStyling(renderer, tNode, native, attrs, 0, false);
   }
 
   const hasDirectives =
@@ -87,7 +86,11 @@ export function ɵɵelementStart(
   if (attrs != null) {
     setUpAttributes(renderer, native, attrs);
   }
-  if ((tNode.flags & TNodeFlags.hasInitialStyling) === TNodeFlags.hasInitialStyling) {
+
+  // we don't need to render render the styling on the first create
+  // pass because it was already set in the tNode creation code above
+  if (!tView.firstCreatePass &&
+      (hasInitialStyling(tNode, false) || hasInitialStyling(tNode, true))) {
     renderInitialStyling(renderer, native, tNode, false);
   }
 
@@ -142,12 +145,12 @@ export function ɵɵelementEnd(): void {
     }
   }
 
-  if (hasClassInput(tNode)) {
+  if (hasClassInput(tNode) && typeof tNode.classes === 'string') {
     const inputName: string = selectClassBasedInputName(tNode.inputs !);
     setDirectiveStylingInput(tNode.classes, lView, tNode.inputs ![inputName], inputName);
   }
 
-  if (hasStyleInput(tNode)) {
+  if (hasStyleInput(tNode) && typeof tNode.styles === 'string') {
     setDirectiveStylingInput(tNode.styles, lView, tNode.inputs !['style'], 'style');
   }
 }
@@ -221,32 +224,14 @@ export function ɵɵelementHostAttrs(attrs: TAttributes) {
     const native = getNativeByTNode(tNode, lView) as RElement;
     const lastAttrIndex = setUpAttributes(lView[RENDERER], native, attrs);
     if (tView.firstCreatePass) {
-      const stylingNeedsToBeRendered = registerInitialStylingOnTNode(tNode, attrs, lastAttrIndex);
-
-      // this is only called during the first template pass in the
-      // event that this current directive assigned initial style/class
-      // host attribute values to the element. Because initial styling
-      // values are applied before directives are first rendered (within
-      // `createElement`) this means that initial styling for any directives
-      // still needs to be applied. Note that this will only happen during
-      // the first template pass and not each time a directive applies its
-      // attribute values to the element.
-      if (stylingNeedsToBeRendered) {
-        const renderer = lView[RENDERER];
-        renderInitialStyling(renderer, native, tNode, true);
-      }
+      const renderer = lView[RENDERER];
+      registerAndRenderInitialStyling(renderer, tNode, native, attrs, lastAttrIndex, true);
     }
   }
 }
 
 function setDirectiveStylingInput(
-    context: TStylingContext | StylingMapArray | null, lView: LView,
-    stylingInputs: (string | number)[], propName: string) {
-  // older versions of Angular treat the input as `null` in the
-  // event that the value does not exist at all. For this reason
-  // we can't have a styling value be an empty string.
-  const value = (context && getInitialStylingValue(context)) || null;
-
+    value: string | null, lView: LView, stylingInputs: (string | number)[], propName: string) {
   // Ivy does an extra `[class]` write with a falsy value since the value
   // is applied during creation mode. This is a deviation from VE and should
   // be (Jira Issue = FW-1467).

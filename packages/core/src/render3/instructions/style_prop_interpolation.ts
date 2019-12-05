@@ -5,10 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {getLView, getSelectedIndex} from '../state';
 
 import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
-import {stylePropInternal} from './styling';
+import {stylePropInternal, stylingBindingInternal} from './styling';
 
 
 
@@ -34,16 +35,17 @@ import {stylePropInternal} from './styling';
  * @param prefix Static value used for concatenation only.
  * @param v0 Value checked for change.
  * @param suffix Static value used for concatenation only.
- * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
+ * @param valueSuffixOrSanitizer Optional suffix or sanitizer function. Used with scalar values to
+ * add unit such as `px`.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate1(
     prop: string, prefix: string, v0: any, suffix: string,
-    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate1 {
+    valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate1 {
   const lView = getLView();
   const interpolatedValue = interpolation1(lView, prefix, v0, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  stylePropLocal(prop, interpolatedValue as string, valueSuffixOrSanitizer);
   return ɵɵstylePropInterpolate1;
 }
 
@@ -71,16 +73,17 @@ export function ɵɵstylePropInterpolate1(
  * @param i0 Static value used for concatenation only.
  * @param v1 Value checked for change.
  * @param suffix Static value used for concatenation only.
- * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
+ * @param valueSuffixOrSanitizer Optional suffix or sanitizer function. Used with scalar values to
+ * add unit such as `px`.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate2(
     prop: string, prefix: string, v0: any, i0: string, v1: any, suffix: string,
-    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate2 {
+    valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate2 {
   const lView = getLView();
   const interpolatedValue = interpolation2(lView, prefix, v0, i0, v1, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  stylePropLocal(prop, interpolatedValue as string, valueSuffixOrSanitizer);
   return ɵɵstylePropInterpolate2;
 }
 
@@ -110,16 +113,17 @@ export function ɵɵstylePropInterpolate2(
  * @param i1 Static value used for concatenation only.
  * @param v2 Value checked for change.
  * @param suffix Static value used for concatenation only.
- * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
+ * @param valueSuffixOrSanitizer Optional suffix or sanitizer function. Used with scalar values to
+ * add unit such as `px`.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate3(
     prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string,
-    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate3 {
+    valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate3 {
   const lView = getLView();
   const interpolatedValue = interpolation3(lView, prefix, v0, i0, v1, i1, v2, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  stylePropLocal(prop, interpolatedValue as string, valueSuffixOrSanitizer);
   return ɵɵstylePropInterpolate3;
 }
 
@@ -151,16 +155,18 @@ export function ɵɵstylePropInterpolate3(
  * @param i2 Static value used for concatenation only.
  * @param v3 Value checked for change.
  * @param suffix Static value used for concatenation only.
- * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
+ * @param valueSuffixOrSanitizer Optional suffix or sanitizer function. Used with scalar values to
+ * add unit such as `px`.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate4(
     prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
-    v3: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate4 {
+    v3: any, suffix: string,
+    valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate4 {
   const lView = getLView();
   const interpolatedValue = interpolation4(lView, prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  stylePropLocal(prop, interpolatedValue as string, valueSuffixOrSanitizer);
   return ɵɵstylePropInterpolate4;
 }
 
@@ -194,18 +200,19 @@ export function ɵɵstylePropInterpolate4(
  * @param i3 Static value used for concatenation only.
  * @param v4 Value checked for change.
  * @param suffix Static value used for concatenation only.
- * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
+ * @param valueSuffixOrSanitizer Optional suffix or sanitizer function. Used with scalar values to
+ * add unit such as `px`.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate5(
     prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, suffix: string,
-    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate5 {
+    valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate5 {
   const lView = getLView();
   const interpolatedValue =
       interpolation5(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  stylePropLocal(prop, interpolatedValue as string, valueSuffixOrSanitizer);
   return ɵɵstylePropInterpolate5;
 }
 
@@ -241,18 +248,19 @@ export function ɵɵstylePropInterpolate5(
  * @param i4 Static value used for concatenation only.
  * @param v5 Value checked for change.
  * @param suffix Static value used for concatenation only.
- * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
+ * @param valueSuffixOrSanitizer Optional suffix or sanitizer function. Used with scalar values to
+ * add unit such as `px`.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate6(
     prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string,
-    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate6 {
+    valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate6 {
   const lView = getLView();
   const interpolatedValue =
       interpolation6(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  stylePropLocal(prop, interpolatedValue as string, valueSuffixOrSanitizer);
   return ɵɵstylePropInterpolate6;
 }
 
@@ -291,18 +299,19 @@ export function ɵɵstylePropInterpolate6(
  * @param i5 Static value used for concatenation only.
  * @param v6 Value checked for change.
  * @param suffix Static value used for concatenation only.
- * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
+ * @param valueSuffixOrSanitizer Optional suffix or sanitizer function. Used with scalar values to
+ * add unit such as `px`.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate7(
     prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string,
-    valueSuffix?: string | null): typeof ɵɵstylePropInterpolate7 {
+    valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate7 {
   const lView = getLView();
   const interpolatedValue =
       interpolation7(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  stylePropLocal(prop, interpolatedValue as string, valueSuffixOrSanitizer);
   return ɵɵstylePropInterpolate7;
 }
 
@@ -343,18 +352,19 @@ export function ɵɵstylePropInterpolate7(
  * @param i6 Static value used for concatenation only.
  * @param v7 Value checked for change.
  * @param suffix Static value used for concatenation only.
- * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
+ * @param valueSuffixOrSanitizer Optional suffix or sanitizer function. Used with scalar values to
+ * add unit such as `px`.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate8(
     prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
-    suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate8 {
+    suffix: string, valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolate8 {
   const lView = getLView();
   const interpolatedValue = interpolation8(
       lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  stylePropLocal(prop, interpolatedValue as string, valueSuffixOrSanitizer);
   return ɵɵstylePropInterpolate8;
 }
 
@@ -384,14 +394,20 @@ export function ɵɵstylePropInterpolate8(
  * @param values The a collection of values and the strings in-between those values, beginning with
  * a string prefix and ending with a string suffix.
  * (e.g. `['prefix', value0, '-', value1, '-', value2, ..., value99, 'suffix']`)
- * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
+ * @param valueSuffixOrSanitizer Optional suffix or sanitizer function. Used with scalar values to
+ * add unit such as `px`.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolateV(
-    prop: string, values: any[], valueSuffix?: string | null): typeof ɵɵstylePropInterpolateV {
+    prop: string, values: any[],
+    valueSuffixOrSanitizer?: string | null): typeof ɵɵstylePropInterpolateV {
   const lView = getLView();
   const interpolatedValue = interpolationV(lView, values);
-  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
+  stylePropLocal(prop, interpolatedValue as string, valueSuffixOrSanitizer);
   return ɵɵstylePropInterpolateV;
+}
+
+function stylePropLocal(prop: string, value: string, suffixOrSanitizer: string | null | undefined) {
+  stylePropInternal(getSelectedIndex(), prop, value, suffixOrSanitizer);
 }

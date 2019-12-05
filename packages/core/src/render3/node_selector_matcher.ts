@@ -13,7 +13,6 @@ import {assertDefined, assertNotEqual} from '../util/assert';
 import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
-import {getInitialStylingValue} from './util/styling_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2;
 
@@ -107,8 +106,7 @@ export function isNodeMatchingSelector(
       // special case for matching against classes when a tNode has been instantiated with
       // class and style values as separate attribute values (e.g. ['title', CLASS, 'foo'])
       if ((mode & SelectorFlags.CLASS) && tNode.classes) {
-        if (!isCssClassMatching(
-                getInitialStylingValue(tNode.classes), selectorAttrValue as string)) {
+        if (!isCssClassMatching(tNode.classes, selectorAttrValue as string)) {
           if (isPositive(mode)) return false;
           skipToNextSelector = true;
         }

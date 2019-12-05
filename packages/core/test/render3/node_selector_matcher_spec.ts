@@ -334,11 +334,11 @@ describe('css selector matching', () => {
 
            // <div class="abc"> (with attrs but without styling context)
            tNode.attrs = ['class', 'abc'];
-           tNode.classes = null;
+           tNode.classes = '';
            expect(isMatching('div', tNode, selector)).toBeTruthy();
 
            // <div class="abc"> (with styling context but without attrs)
-           tNode.classes = ['abc', 'abc', true];
+           tNode.classes = 'abc';
            tNode.attrs = null;
            expect(isMatching('div', tNode, selector)).toBeTruthy();
          });
