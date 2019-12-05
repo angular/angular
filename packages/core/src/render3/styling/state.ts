@@ -5,8 +5,6 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
-import {RElement} from '../interfaces/renderer';
-import {TEMPLATE_DIRECTIVE_INDEX} from '../util/styling_utils';
 
 /**
  * --------
@@ -32,14 +30,8 @@ import {TEMPLATE_DIRECTIVE_INDEX} from '../util/styling_utils';
  * Used as a state reference for update values between style/class binding instructions.
  */
 export interface StylingState {
-  /** The element that is currently being processed */
-  element: RElement|null;
-
   /** The directive index that is currently active (`0` === template) */
   directiveIndex: number;
-
-  /** The source (column) index that is currently active (`0` === template) */
-  sourceIndex: number;
 
   /** The current classes tail of the binding source (the last class binding for a
    * template/directive) */
@@ -64,11 +56,11 @@ export interface StylingState {
   lastStyleBindingIndex: number;
 }
 
+const UNSET_VALUE = -1;
+
 /* tslint:disable */
 const _state: StylingState = {
-  element: null,
-  directiveIndex: -1,
-  sourceIndex: -1,
+  directiveIndex: UNSET_VALUE,
   lastClassBindingIndex: 0,
   lastStyleBindingIndex: 0,
   sourceClassTail: 0,
@@ -92,18 +84,13 @@ const _state: StylingState = {
  * the styling code (or, in other words, another directive or component has started
  * to apply its styling host bindings to the element).
  */
-export function getStylingState(element: RElement, directiveIndex: number): StylingState {
-  if (_state.element !== element || _state.directiveIndex !== directiveIndex) {
-    if (_state.element !== element) {
-      _state.element = element;
-      _state.directiveIndex = directiveIndex;
-      _state.sourceIndex = directiveIndex === TEMPLATE_DIRECTIVE_INDEX ? 0 : 1;
+export function getStylingState(directiveIndex: number): StylingState {
+  if (_state.directiveIndex !== directiveIndex) {
+    if (_state.directiveIndex === UNSET_VALUE) {
       _state.lastClassBindingIndex = 0;
       _state.lastStyleBindingIndex = 0;
-    } else {
-      _state.directiveIndex = directiveIndex;
-      _state.sourceIndex++;
     }
+    _state.directiveIndex = directiveIndex;
     _state.sourceClassHead = _state.sourceClassTail = _state.sourceStyleHead =
         _state.sourceStyleTail = 0;
   }
@@ -114,5 +101,5 @@ export function getStylingState(element: RElement, directiveIndex: number): Styl
  * Clears the styling state so that it can be used by another element's styling code.
  */
 export function resetStylingState() {
-  _state.element = null;
+  _state.directiveIndex = UNSET_VALUE;
 }

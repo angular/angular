@@ -55,8 +55,8 @@ export function updateBindingValue(
   if (updated) {
     setValue(lView, bindingIndex, value);
     if (isBindingRegistered(tData, bindingIndex) &&
-        getMinSourceIndex(state, isClassBased) !== state.sourceIndex) {
-      getMinSourceAndBindingIndex(state, state.sourceIndex, bindingIndex, isClassBased);
+        getDirectiveStartIndex(state, isClassBased) !== state.directiveIndex) {
+      setDirectiveAndBindingStartIndices(state, state.directiveIndex, bindingIndex, isClassBased);
     }
   }
 
@@ -71,30 +71,59 @@ export function updateBindingValue(
  * fail. This function is used to determine if that happened for a
  * given binding.
  */
-function isBindingRegistered(tData: TData, bindingIndex: number) {
+function isBindingRegistered(tData: TData, bindingIndex: number): boolean {
   return tData[bindingIndex] !== null;
 }
 
 /**
  * Returns the currently concatenated string value at the given bindingIndex.
  */
-function getConcatenatedStr(lView: LStylingData, bindingIndex: number, initialValue: string) {
+function getConcatenatedStr(
+    lView: LStylingData, bindingIndex: number, initialValue: string): string {
   return bindingIndex === 0 ? initialValue : getConcatenatedValue(lView, bindingIndex);
 }
 
 /**
  * Whether or not any style/class bindings are queued for flushing
  */
-export function hasBindingsToFlush(state: StylingState) {
+export function hasBindingsToFlush(state: StylingState): boolean {
   return state.lastStyleBindingIndex !== 0 || state.lastClassBindingIndex !== 0;
 }
 
-const LAST_BINDING_INDEX_BITS = 16;
-const LAST_BINDING_INDEX_MASK = (1 << LAST_BINDING_INDEX_BITS) - 1;
-function getMinSourceAndBindingIndex(
-    state: StylingState, sourceIndex: number, bindingIndex: number, isClassBased: boolean) {
-  const value =
-      (sourceIndex + 1) << LAST_BINDING_INDEX_BITS | (bindingIndex & LAST_BINDING_INDEX_MASK);
+/**
+ * Total amount of bits used to store the start directive and binding index values.
+ *
+ * Each time a binding is processed, the algorithm needs to know whether or not
+ * that binding is the earliest binding to start the style/className concatenation
+ * from. The earliest binding in case refers to what binding will take place
+ * at the start of the concatenation string.
+ *
+ * ```
+ * <div
+ *    [style.width]="w"    // this binding will be concatenated last
+ *    dir-that-sets-width> // this binding will be concatenated first (=> start index)
+ * ```
+ *
+ * A 32-bit number is used to track both the starting directive and binding index
+ * values used by the flushing algorithm for concatenation.
+ */
+const BINDING_START_BITS = 16;
+
+/**
+ * Bit mask for track the start directive and binding index values.
+ *
+ * See [BINDING_START_BITS] for more info.
+ */
+const BINDING_START_MASK = (1 << BINDING_START_BITS) - 1;
+
+/**
+ * Updates the start directive index and binding index.
+ *
+ * See [BINDING_START_BITS] for more info.
+ */
+function setDirectiveAndBindingStartIndices(
+    state: StylingState, sourceIndex: number, bindingIndex: number, isClassBased: boolean): void {
+  const value = (sourceIndex + 1) << BINDING_START_BITS | (bindingIndex & BINDING_START_MASK);
   if (isClassBased) {
     state.lastClassBindingIndex = value;
   } else {
@@ -103,21 +132,21 @@ function getMinSourceAndBindingIndex(
 }
 
 /**
- * Returns the minimum bindingIndex value which is used to mark where to start concatenating
+ * Returns the binding start index value which is used to mark where to start concatenating
  * style/class values.
  */
-function getMinBindingIndex(state: StylingState, isClassBased: boolean) {
+function getBindingStartIndex(state: StylingState, isClassBased: boolean) {
   const value = isClassBased ? state.lastClassBindingIndex : state.lastStyleBindingIndex;
-  return value & LAST_BINDING_INDEX_MASK;
+  return value & BINDING_START_MASK;
 }
 
 /**
- * Returns the minimum source index value which is used to help decide what source is used to start
- * concatenating style/class values.
+ * Returns the directive start index value which is used to mark where to start concatenating
+ * style/class values.
  */
-function getMinSourceIndex(state: StylingState, isClassBased: boolean) {
+function getDirectiveStartIndex(state: StylingState, isClassBased: boolean) {
   const value = isClassBased ? state.lastClassBindingIndex : state.lastStyleBindingIndex;
-  return (value >> LAST_BINDING_INDEX_BITS) - 1;
+  return (value >> BINDING_START_BITS) - 1;
 }
 
 /**
@@ -133,10 +162,10 @@ function getMinSourceIndex(state: StylingState, isClassBased: boolean) {
 export function flushBindings(
     renderer: any, native: RElement, lView: LView, tNode: TNode, tData: TData, state: StylingState,
     sanitizer: StyleSanitizeFn | null, firstUpdatePass: boolean, hostBindingsMode: boolean): void {
-  const lastStyleBindingIndex = getMinBindingIndex(state, false);
+  const lastStyleBindingIndex = getBindingStartIndex(state, false);
   if (lastStyleBindingIndex !== 0) {
     const stylesTail = getStylingTail(tNode, false);
-    const previousStyleValue = fastForwardStylingBindings(
+    const previousStyleValue = concatenateAndGetPrevious(
         tData, lView, tNode, lastStyleBindingIndex, stylesTail, sanitizer, firstUpdatePass, false,
         hostBindingsMode);
     const newStyleValue = getConcatenatedValue(lView, stylesTail);
@@ -152,10 +181,10 @@ export function flushBindings(
     }
   }
 
-  const lastClassBindingIndex = getMinBindingIndex(state, true);
+  const lastClassBindingIndex = getBindingStartIndex(state, true);
   if (lastClassBindingIndex) {
     const classesTail = getStylingTail(tNode, true);
-    const previousClassValue = fastForwardStylingBindings(
+    const previousClassValue = concatenateAndGetPrevious(
         tData, lView, tNode, lastClassBindingIndex, classesTail, null, firstUpdatePass, true,
         hostBindingsMode);
     const newClassValue = getConcatenatedValue(lView, classesTail);
@@ -175,9 +204,11 @@ export function flushBindings(
 /**
  * Constructs the concatenated style/class binding string and returns the previous
  * binding value that was applied to the element.
+ *
+ * @returns the previous style/class value that was applied to the element.
  */
-function fastForwardStylingBindings(
-    tData: TData, lView: LView, tNode: TNode, bindingIndex: number, tail: number,
+function concatenateAndGetPrevious(
+    tData: TData, lView: LView, tNode: TNode, startIndex: number, tailIndex: number,
     sanitizer: StyleSanitizeFn | null, firstUpdatePass: boolean, isClassBased: boolean,
     hostBindingsMode: boolean): string {
   const initialValue = isClassBased ? tNode.classes : tNode.styles;
@@ -185,11 +216,11 @@ function fastForwardStylingBindings(
       isClassBased ? TNodeFlags.hasTemplateClassBindings : TNodeFlags.hasTemplateStyleBindings;
   const hasTemplateBindings = hasConfig(tNode, templateBindingsFlag);
   const templateBindingsWereJustApplied = hasTemplateBindings && hostBindingsMode;
-  const previousConcatenatedValue = getConcatenatedStr(lView, tail, initialValue);
+  const previousConcatenatedValue = getConcatenatedStr(lView, tailIndex, initialValue);
 
   // even though we have the previous value we should build up the concat string
   // up to the final point so that it can be applied to element afterwards.
-  processStylingBindingsUpToPoint(lView, tData, tNode, bindingIndex, sanitizer, isClassBased);
+  processStylingBindingsUpToPoint(lView, tData, tNode, startIndex, sanitizer, isClassBased);
 
   // the previous value is what was applied to the element during the
   // last styling flush. If we are dealing with the first template pass
@@ -199,9 +230,12 @@ function fastForwardStylingBindings(
   return concatenatedValueIsPreviousValue ? previousConcatenatedValue : initialValue;
 }
 
+/**
+ * The concatenation string value that lives in the binding just before the provided `bindingIndex`
+ */
 function getPreviousConcatenatedStr(
     lView: LStylingData, tData: TData, tNode: TStylingNode, bindingIndex: number,
-    isClassBased: boolean) {
+    isClassBased: boolean): string {
   const previousBindingIndex = getPreviousBindingIndex(tData, bindingIndex);
   return getConcatenatedStr(
       lView, previousBindingIndex, isClassBased ? tNode.classes : tNode.styles);
@@ -225,7 +259,8 @@ export function processStylingBindingsUpToPoint(
  * Updates the provided style/class value into the provided `LView` instance.
  *
  * This function is called for each binding in the `LView` that will be
- * concatenated together into a single style or className string.
+ * concatenated together into a single style or className string (during
+ * the styling flush operation).
  *
  * When called, this function will resolve the concatenated style/class value
  * for this binding value and all other binding values up to this point.
@@ -248,7 +283,7 @@ export function processStylingBindingsUpToPoint(
  * ]
  * ```
  *
- * Once all bindings are processed then teh final concatenated style or className value
+ * Once all bindings are processed then the final concatenated style or className value
  * will exist at the tail end of the `LView` (see [TNode.stylesIndex] and [TNode.classesIndex]).
  */
 function processStylingBinding(
@@ -263,7 +298,7 @@ function processStylingBinding(
   if (typeof prop === 'string') {  // prop-based entry
     const valueToApply =
         normalizeValueForConcatenation(prop, value, suffix, sanitizerToUse, false, isClassBased);
-    concatenatedStr = updateStylingEntry(
+    concatenatedStr = addRemoveStylingEntryInConcatString(
         concatenatedStr, prop, valueToApply, isClassBased, isDuplicateOfPrevious);
   } else {  // map-based entry
     const isMap = isStylingMap(value);
@@ -278,7 +313,7 @@ function processStylingBinding(
           prop, valueToApply, suffix, sanitizerToUse, true, isClassBased);
 
       const propToApply = isClassBased ? prop : hyphenate(prop);
-      concatenatedStr = updateStylingEntry(
+      concatenatedStr = addRemoveStylingEntryInConcatString(
           concatenatedStr, propToApply, valueToApply, isClassBased, isDuplicateOfPrevious);
     }
   }
@@ -286,6 +321,12 @@ function processStylingBinding(
   setConcatenatedValue(lView, bindingIndex, concatenatedStr);
 }
 
+/**
+ * Sanitizes and normalizes the value that will be placed in the concatenation string.
+ *
+ * @returns a string value (when the value is allowed to be concatenated), otherwise a falsy
+ *          value (which signals that the value should not be concatenated).
+ */
 function normalizeValueForConcatenation(
     prop: string, value: string | number | boolean | null, suffix: string,
     sanitizer: StyleSanitizeFn | null, validateAndSanitize: boolean, isClassBased: boolean): string|
@@ -318,7 +359,7 @@ function normalizeValueForConcatenation(
  *
  * @returns the final style or className string
  */
-export function updateStylingEntry(
+export function addRemoveStylingEntryInConcatString(
     str: string, prop: string, value: string | null | boolean, isClassBased: boolean,
     isDuplicateOfPrevious: boolean): string {
   if (isStylingValueDefined(value)) {
@@ -337,7 +378,7 @@ export function updateStylingEntry(
  * Determines whether or not to write the style/class value to the element.
  */
 function allowValueToBeApplied(
-    tNode: TNode, previousValue: string, newValue: string, firstUpdatePass: boolean) {
+    tNode: TNode, previousValue: string, newValue: string, firstUpdatePass: boolean): boolean {
   // <ng-container> instances or comment nodes may show up in the algorithm.
   // if and when this happens it's fine to process styling, but adding the
   // styles/classes to the element won't be possible
@@ -354,30 +395,4 @@ function allowValueToBeApplied(
   // we want to avoid having an empty string be set during the
   // first update pass because there is no need to apply that.
   return newValue.length === 0 ? !firstUpdatePass : true;
-}
-
-/**
- * Returns an array of all style/class binding indices in order.
- */
-export function generateStylingBindingIndices(tData: TData, tailBindingIndex: number): number[] {
-  const bindingIndices: number[] = [];
-
-  // we have the `typeof` check here in the event that a non-zero number
-  // ends up filling the space in the TData (this is a failsafe in the
-  // event that an error is thrown during binding registration).
-  let bindingIndex = tailBindingIndex;
-  while (typeof bindingIndex === 'number' && bindingIndex !== 0) {
-    bindingIndices.push(0);
-    bindingIndex = getPreviousBindingIndex(tData, bindingIndex);
-  }
-
-  // the list of entries is in reverse order so we need to populate the
-  // array backwards
-  bindingIndex = tailBindingIndex;
-  for (let i = bindingIndices.length - 1; i >= 0; i--) {
-    bindingIndices[i] = bindingIndex;
-    bindingIndex = getPreviousBindingIndex(tData, bindingIndex);
-  }
-
-  return bindingIndices;
 }

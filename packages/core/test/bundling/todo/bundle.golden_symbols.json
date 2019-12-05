@@ -3,6 +3,12 @@
     "name": "ACTIVE_INDEX"
   },
   {
+    "name": "BINDING_START_BITS"
+  },
+  {
+    "name": "BINDING_START_MASK"
+  },
+  {
     "name": "BLOOM_MASK"
   },
   {
@@ -91,12 +97,6 @@
   },
   {
     "name": "IterableDiffers"
-  },
-  {
-    "name": "LAST_BINDING_INDEX_BITS"
-  },
-  {
-    "name": "LAST_BINDING_INDEX_MASK"
   },
   {
     "name": "LOWERCASE_CHAR_BIT"
@@ -267,6 +267,9 @@
     "name": "TodoStore"
   },
   {
+    "name": "UNSET_VALUE"
+  },
+  {
     "name": "VIEW_REFS"
   },
   {
@@ -334,6 +337,9 @@
   },
   {
     "name": "addComponentLogic"
+  },
+  {
+    "name": "addRemoveStylingEntryInConcatString"
   },
   {
     "name": "addRemoveViewFromContainer"
@@ -444,6 +450,9 @@
     "name": "concatStylingEntry"
   },
   {
+    "name": "concatenateAndGetPrevious"
+  },
+  {
     "name": "consumeClassToken"
   },
   {
@@ -493,9 +502,6 @@
   },
   {
     "name": "createRootContext"
-  },
-  {
-    "name": "createStylingState"
   },
   {
     "name": "createTNode"
@@ -594,9 +600,6 @@
     "name": "extractPipeDef"
   },
   {
-    "name": "fastForwardStylingBindings"
-  },
-  {
     "name": "findAttrIndexInNode"
   },
   {
@@ -639,10 +642,13 @@
     "name": "getBeforeNodeForView"
   },
   {
+    "name": "getBindingConfigAndPointers"
+  },
+  {
     "name": "getBindingPropName"
   },
   {
-    "name": "getBindingPropSuffix"
+    "name": "getBindingStartIndex"
   },
   {
     "name": "getBindingsEnabled"
@@ -690,6 +696,9 @@
     "name": "getDirectiveDef"
   },
   {
+    "name": "getDirectiveStartIndex"
+  },
+  {
     "name": "getDocument"
   },
   {
@@ -721,15 +730,6 @@
   },
   {
     "name": "getLViewParent"
-  },
-  {
-    "name": "getMinBindingIndex"
-  },
-  {
-    "name": "getMinSourceAndBindingIndex"
-  },
-  {
-    "name": "getMinSourceIndex"
   },
   {
     "name": "getNameOnlyMarkerIndex"
@@ -808,6 +808,9 @@
   },
   {
     "name": "getSelectedIndex"
+  },
+  {
+    "name": "getStyleBindingSuffix"
   },
   {
     "name": "getStylingHead"
@@ -1296,6 +1299,9 @@
     "name": "setCurrentStyleSanitizer"
   },
   {
+    "name": "setDirectiveAndBindingStartIndices"
+  },
+  {
     "name": "setDirectiveStylingInput"
   },
   {
@@ -1393,9 +1399,6 @@
   },
   {
     "name": "updateDirectiveInputValue"
-  },
-  {
-    "name": "updateStylingEntry"
   },
   {
     "name": "viewAttachedToChangeDetector"

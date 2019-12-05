@@ -9,14 +9,16 @@ import {SafeValue} from '../../sanitization/bypass';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {TNode} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
-import {RENDERER, TVIEW} from '../interfaces/view';
+import {LView, RENDERER, TVIEW} from '../interfaces/view';
 import {getActiveDirectiveId, getCheckNoChangesMode, getCurrentStyleSanitizer, getLView, getSelectedIndex, resetCurrentStyleSanitizer, setCurrentStyleSanitizer, setElementExitFn} from '../state';
-import {registerBinding} from '../styling/binding_registration';
 import {flushBindings, updateBindingValue} from '../styling/binding_concatenation';
+import {registerBinding} from '../styling/binding_registration';
 import {getStylingState, resetStylingState} from '../styling/state';
 import {NO_CHANGE} from '../tokens';
-import {checkStylingValueNoChanges, getValue, hasDirectiveInput, isHostStylingActive, isSanitizationRequired, nextStylingBindingIndex, updateDirectiveInputValue} from '../util/styling_utils';
+import {checkStylingValueNoChanges, getValue, hasDirectiveInput, hasValueChanged, isHostStylingActive, isSanitizationRequired, isStylingValueDefined, nextStylingBindingIndex, normalizeStylingDirectiveInputValue, selectClassBasedInputName, setValue} from '../util/styling_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
+
+import {setInputsForProperty} from './shared';
 
 
 
@@ -294,8 +296,7 @@ export function stylingBindingInternal(
   } else {
     const tData = tView.data;
     const directiveIndex = getActiveDirectiveId();
-    const native = getNativeByTNode(tNode, lView) as RElement;
-    const state = getStylingState(native, directiveIndex);
+    const state = getStylingState(directiveIndex);
 
     if (firstUpdatePass) {
       const sanitizationRequired = isSanitizationRequired(prop, isClassBased);
@@ -338,7 +339,7 @@ function flushStyling(): void {
   const tNode = getTNode(elementIndex, lView);
   const native = getNativeByTNode(tNode, lView) as RElement;
   const directiveIndex = getActiveDirectiveId();
-  const state = getStylingState(native, directiveIndex);
+  const state = getStylingState(directiveIndex);
   const sanitizer = getCurrentStyleSanitizer();
   const renderer = lView[RENDERER];
   const tData = tView.data;
@@ -388,5 +389,37 @@ function updateDevModeCounters(
     if (wasUpdated) {
       isClassBased ? devMode.classPropCacheMiss : devMode.stylePropCacheMiss++;
     }
+  }
+}
+
+/**
+ * Writes a value to a directive's `style` or `class` input binding (if it has changed).
+ *
+ * If a directive has a `@Input` binding that is set on `style` or `class` then that value
+ * will take priority over the underlying style/class styling bindings. This value will
+ * be updated for the binding each time during change detection.
+ *
+ * When this occurs this function will attempt to write the value to the input binding
+ * depending on the following situations:
+ *
+ * - If `oldValue !== newValue`
+ * - If `newValue` is `null` (but this is skipped if it is during the first update pass)
+ */
+export function updateDirectiveInputValue(
+    lView: LView, tNode: TNode, bindingIndex: number, newValue: any, isClassBased: boolean,
+    firstUpdatePass: boolean): void {
+  const oldValue = getValue(lView, bindingIndex);
+  if (hasValueChanged(oldValue, newValue)) {
+    // even if the value has changed we may not want to emit it to the
+    // directive input(s) in the event that it is falsy during the
+    // first update pass.
+    if (isStylingValueDefined(newValue) || !firstUpdatePass) {
+      const inputName: string = isClassBased ? selectClassBasedInputName(tNode.inputs !) : 'style';
+      const inputs = tNode.inputs ![inputName] !;
+      const initialValue = isClassBased ? tNode.classes : tNode.styles;
+      const value = normalizeStylingDirectiveInputValue(initialValue, newValue, isClassBased);
+      setInputsForProperty(lView, inputs, inputName, value);
+    }
+    setValue(lView, bindingIndex, newValue);
   }
 }

@@ -9,11 +9,10 @@ import {unwrapSafeValue} from '../../sanitization/bypass';
 import {StyleSanitizeMode} from '../../sanitization/style_sanitizer';
 import {CharCode} from '../../util/char_code';
 import {throwErrorIfNoChangesMode} from '../errors';
-import {setInputsForProperty} from '../instructions/shared';
 import {AttributeMarker, PropertyAliases, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
 import {RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 import {LStylingData, PropAndSuffixEntry, TDataStylingFlags, TDataStylingIndex, TStylingNode} from '../interfaces/styling';
-import {LView, TData} from '../interfaces/view';
+import {TData} from '../interfaces/view';
 import {getCurrentStyleSanitizer, incrementBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
@@ -822,38 +821,6 @@ export function normalizeStylingDirectiveInputValue(
     }
   }
   return value;
-}
-
-/**
- * Writes a value to a directive's `style` or `class` input binding (if it has changed).
- *
- * If a directive has a `@Input` binding that is set on `style` or `class` then that value
- * will take priority over the underlying style/class styling bindings. This value will
- * be updated for the binding each time during change detection.
- *
- * When this occurs this function will attempt to write the value to the input binding
- * depending on the following situations:
- *
- * - If `oldValue !== newValue`
- * - If `newValue` is `null` (but this is skipped if it is during the first update pass)
- */
-export function updateDirectiveInputValue(
-    lView: LView, tNode: TNode, bindingIndex: number, newValue: any, isClassBased: boolean,
-    firstUpdatePass: boolean): void {
-  const oldValue = getValue(lView, bindingIndex);
-  if (hasValueChanged(oldValue, newValue)) {
-    // even if the value has changed we may not want to emit it to the
-    // directive input(s) in the event that it is falsy during the
-    // first update pass.
-    if (isStylingValueDefined(newValue) || !firstUpdatePass) {
-      const inputName: string = isClassBased ? selectClassBasedInputName(tNode.inputs !) : 'style';
-      const inputs = tNode.inputs ![inputName] !;
-      const initialValue = isClassBased ? tNode.classes : tNode.styles;
-      const value = normalizeStylingDirectiveInputValue(initialValue, newValue, isClassBased);
-      setInputsForProperty(lView, inputs, inputName, value);
-    }
-    setValue(lView, bindingIndex, newValue);
-  }
 }
 
 /**
