@@ -143,6 +143,142 @@ runInEachFileSystem(() => {
         expect(dependencies.has(_('/node_modules/lib_1/sub_1'))).toBe(true);
       });
 
+      it('should recognize imports in a variable declaration list', () => {
+        loadTestFiles([
+          {
+            name: _('/test/index.js'),
+            contents: commonJs({
+              varDeclarations: [
+                ['lib_1/sub_1', 'lib_1/sub_2'],
+              ],
+            }),
+          },
+          {name: _('/test/package.json'), contents: '{"main": "./index.js"}'},
+          {name: _('/test/index.metadata.json'), contents: 'MOCK METADATA'},
+        ]);
+
+        const {dependencies, missing, deepImports} = createDependencyInfo();
+        host.collectDependencies(_('/test/index.js'), {dependencies, missing, deepImports});
+
+        expect(dependencies.size).toBe(2);
+        expect(missing.size).toBe(0);
+        expect(deepImports.size).toBe(0);
+        expect(dependencies.has(_('/node_modules/lib_1/sub_1'))).toBe(true);
+        expect(dependencies.has(_('/node_modules/lib_1/sub_2'))).toBe(true);
+      });
+
+      it('should recognize imports as property assignments (on existing object)', () => {
+        loadTestFiles([
+          {
+            name: _('/test/index.js'),
+            contents: commonJs({
+              propAssignment: ['lib_1/sub_1', 'lib_1/sub_2'],
+            }),
+          },
+          {name: _('/test/package.json'), contents: '{"main": "./index.js"}'},
+          {name: _('/test/index.metadata.json'), contents: 'MOCK METADATA'},
+        ]);
+
+        const {dependencies, missing, deepImports} = createDependencyInfo();
+        host.collectDependencies(_('/test/index.js'), {dependencies, missing, deepImports});
+
+        expect(dependencies.size).toBe(2);
+        expect(missing.size).toBe(0);
+        expect(deepImports.size).toBe(0);
+        expect(dependencies.has(_('/node_modules/lib_1/sub_1'))).toBe(true);
+        expect(dependencies.has(_('/node_modules/lib_1/sub_2'))).toBe(true);
+      });
+
+      it('should recognize imports as property assignments (in object literal)', () => {
+        loadTestFiles([
+          {
+            name: _('/test/index.js'),
+            contents: commonJs({
+              inObjectLiteral: ['lib_1/sub_1', 'lib_1/sub_2'],
+            }),
+          },
+          {name: _('/test/package.json'), contents: '{"main": "./index.js"}'},
+          {name: _('/test/index.metadata.json'), contents: 'MOCK METADATA'},
+        ]);
+
+        const {dependencies, missing, deepImports} = createDependencyInfo();
+        host.collectDependencies(_('/test/index.js'), {dependencies, missing, deepImports});
+
+        expect(dependencies.size).toBe(2);
+        expect(missing.size).toBe(0);
+        expect(deepImports.size).toBe(0);
+        expect(dependencies.has(_('/node_modules/lib_1/sub_1'))).toBe(true);
+        expect(dependencies.has(_('/node_modules/lib_1/sub_2'))).toBe(true);
+      });
+
+      it('should recognize imports used for their side-effects only', () => {
+        loadTestFiles([
+          {
+            name: _('/test/index.js'),
+            contents: commonJs({
+              forSideEffects: ['lib_1/sub_1', 'lib_1/sub_2'],
+            }),
+          },
+          {name: _('/test/package.json'), contents: '{"main": "./index.js"}'},
+          {name: _('/test/index.metadata.json'), contents: 'MOCK METADATA'},
+        ]);
+
+        const {dependencies, missing, deepImports} = createDependencyInfo();
+        host.collectDependencies(_('/test/index.js'), {dependencies, missing, deepImports});
+
+        expect(dependencies.size).toBe(2);
+        expect(missing.size).toBe(0);
+        expect(deepImports.size).toBe(0);
+        expect(dependencies.has(_('/node_modules/lib_1/sub_1'))).toBe(true);
+        expect(dependencies.has(_('/node_modules/lib_1/sub_2'))).toBe(true);
+      });
+
+      it('should recognize star re-exports (with both emitted and imported helpers)', () => {
+        loadTestFiles([
+          {
+            name: _('/test/index.js'),
+            contents: commonJs({
+              reExportsWithEmittedHelper: ['lib_1', 'lib_1/sub_1'],
+              reExportsWithImportedHelper: ['lib_1', 'lib_1/sub_2'],
+            }),
+          },
+          {name: _('/test/package.json'), contents: '{"main": "./index.js"}'},
+          {name: _('/test/index.metadata.json'), contents: 'MOCK METADATA'},
+        ]);
+
+        const {dependencies, missing, deepImports} = createDependencyInfo();
+        host.collectDependencies(_('/test/index.js'), {dependencies, missing, deepImports});
+
+        expect(dependencies.size).toBe(3);
+        expect(missing.size).toBe(0);
+        expect(deepImports.size).toBe(0);
+        expect(dependencies.has(_('/node_modules/lib_1'))).toBe(true);
+        expect(dependencies.has(_('/node_modules/lib_1/sub_1'))).toBe(true);
+        expect(dependencies.has(_('/node_modules/lib_1/sub_2'))).toBe(true);
+      });
+
+      it('should not get confused by re-exports with a separate `require()` call', () => {
+        loadTestFiles([
+          {
+            name: _('/test/index.js'),
+            contents: commonJs({
+              reExportsWithoutRequire: ['lib_1', 'lib_1/sub_2'],
+            }),
+          },
+          {name: _('/test/package.json'), contents: '{"main": "./index.js"}'},
+          {name: _('/test/index.metadata.json'), contents: 'MOCK METADATA'},
+        ]);
+
+        const {dependencies, missing, deepImports} = createDependencyInfo();
+        host.collectDependencies(_('/test/index.js'), {dependencies, missing, deepImports});
+
+        expect(dependencies.size).toBe(2);
+        expect(missing.size).toBe(0);
+        expect(deepImports.size).toBe(0);
+        expect(dependencies.has(_('/node_modules/lib_1'))).toBe(true);
+        expect(dependencies.has(_('/node_modules/lib_1/sub_2'))).toBe(true);
+      });
+
       it('should capture missing external imports', () => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
         host.collectDependencies(
@@ -224,16 +360,102 @@ runInEachFileSystem(() => {
     });
   });
 
-  function commonJs(importPaths: string[], exportNames: string[] = []) {
-    const commonJsRequires =
-        importPaths
-            .map(
-                p =>
-                    `var ${p.replace('@angular/', '').replace(/\.?\.?\//g, '').replace(/@/,'')} = require('${p}');`)
-            .join('\n');
+  interface ImportsPerType {
+    // var foo = require('...');
+    varDeclaration?: string[];
+
+    // var foo = require('...'), bar = require('...');
+    varDeclarations?: string[][];
+
+    // exports.foo = require('...');
+    propAssignment?: string[];
+
+    // module.exports = {foo: require('...')};
+    inObjectLiteral?: string[];
+
+    // require('...');
+    forSideEffects?: string[];
+
+    // __export(require('...'));
+    reExportsWithEmittedHelper?: string[];
+
+    // tslib_1.__exportStar(require('...'), exports);
+    reExportsWithImportedHelper?: string[];
+
+    // var foo = require('...');
+    // __export(foo);
+    reExportsWithoutRequire?: string[];
+  }
+
+  function commonJs(importsPerType: ImportsPerType | string[], exportNames: string[] = []): string {
+    if (Array.isArray(importsPerType)) {
+      importsPerType = {varDeclaration: importsPerType};
+    }
+
+    const importStatements = generateImportStatements(importsPerType);
     const exportStatements =
-        exportNames.map(e => `  exports.${e.replace(/.+\./, '')} = ${e};`).join('\n');
-    return `${commonJsRequires}
-${exportStatements}`;
+        exportNames.map(e => `exports.${e.replace(/.+\./, '')} = ${e};`).join('\n');
+
+    return `${importStatements}\n\n${exportStatements}`;
+  }
+
+  function generateImportStatements(importsPerType: ImportsPerType): string {
+    const importStatements: string[] = [];
+
+    const {
+      varDeclaration: importsOfTypeVarDeclaration = [],
+      varDeclarations: importsOfTypeVarDeclarations = [],
+      propAssignment: importsOfTypePropAssignment = [],
+      inObjectLiteral: importsOfTypeInObjectLiteral = [],
+      forSideEffects: importsOfTypeForSideEffects = [],
+      reExportsWithEmittedHelper: importsOfTypeReExportsWithEmittedHelper = [],
+      reExportsWithImportedHelper: importsOfTypeReExportsWithImportedHelper = [],
+      reExportsWithoutRequire: importsOfTypeReExportsWithoutRequire = [],
+    } = importsPerType;
+
+    // var foo = require('...');
+    importsOfTypeVarDeclaration.forEach(
+        p => { importStatements.push(`var ${pathToVarName(p)} = require('${p}');`); });
+
+    // var foo = require('...'), bar = require('...');
+    importsOfTypeVarDeclarations.forEach(pp => {
+      const declarations = pp.map(p => `${pathToVarName(p)} = require('${p}')`);
+      importStatements.push(`var ${declarations.join(', ')};`);
+    });
+
+    // exports.foo = require('...');
+    importsOfTypePropAssignment.forEach(
+        p => { importStatements.push(`exports.${pathToVarName(p)} = require('${p}');`); });
+
+    // module.exports = {foo: require('...')};
+    const propAssignments =
+        importsOfTypeInObjectLiteral.map(p => `\n  ${pathToVarName(p)}: require('${p}')`)
+            .join(', ');
+    importStatements.push(`module.exports = {${propAssignments}\n};`);
+
+    // require('...');
+    importsOfTypeForSideEffects.forEach(p => { importStatements.push(`require('${p}');`); });
+
+    // __export(require('...'));
+    importsOfTypeReExportsWithEmittedHelper.forEach(
+        p => { importStatements.push(`__export(require('${p}'));`); });
+
+    // tslib_1.__exportStar(require('...'), exports);
+    importsOfTypeReExportsWithImportedHelper.forEach(
+        p => { importStatements.push(`tslib_1.__exportStar(require('${p}'), exports);`); });
+
+    // var foo = require('...');
+    // __export(foo);
+    importsOfTypeReExportsWithoutRequire.forEach(p => {
+      const varName = pathToVarName(p);
+      importStatements.push(`var ${varName} = require('${p}');`);
+      importStatements.push(`__export(varName);`);
+    });
+
+    return importStatements.join('\n');
+  }
+
+  function pathToVarName(path: string): string {
+    return path.replace(/^@(angular\/)?/, '').replace(/\.{0,2}\//g, '');
   }
 });
