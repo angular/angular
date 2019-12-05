@@ -17,7 +17,7 @@ ng_module(
 
 ng_rollup_bundle(
     name = "bundle",
-    entry_point = ":index.ts",
+    entry_point = ":index_aot.ts",
     deps = [
         ":ng2",
         "@npm//rxjs",
