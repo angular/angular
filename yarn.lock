@@ -6008,7 +6008,16 @@ karma-requirejs@1.1.0:
   resolved "https://registry.yarnpkg.com/karma-requirejs/-/karma-requirejs-1.1.0.tgz#fddae2cb87d7ebc16fb0222893564d7fee578798"
   integrity sha1-/driy4fX68FvsCIok1ZNf+5Xh5g=
 
-karma-sauce-launcher@2.0.2, karma-sauce-launcher@^2.0.2:
+karma-sauce-launcher@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/karma-sauce-launcher/-/karma-sauce-launcher-2.0.1.tgz#1d370ce7244b9cc804529ea373e848ad2f3da64a"
+  integrity sha512-hwMxGZNO6mJvvtm84ghY1SyPbb79P7dUX+RI4XVSfvPyjMSnOfgFbiUnm6MY2+P+sC+I78eMl4lA+p6BeZ/+9Q==
+  dependencies:
+    sauce-connect-launcher "^1.2.4"
+    saucelabs "^1.5.0"
+    selenium-webdriver "^4.0.0-alpha.1"
+
+karma-sauce-launcher@2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/karma-sauce-launcher/-/karma-sauce-launcher-2.0.2.tgz#dbf98e70d86bf287b03a537cf637eb7aefa975c3"
   integrity sha512-jLUFaJhHMcKpxFWUesyWYihzM5FvQiJsDwGcCtKeOy2lsWhkVw0V0Byqb1d+wU6myU1mribBtsIcub23HS4kWA==
