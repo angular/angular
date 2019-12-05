@@ -15,6 +15,15 @@ import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignme
 import {NgccClassSymbol} from './ngcc_host';
 
 /**
+ * A mapping of TypeScript helper function names to the corresponding `TsHelperFn` value.
+ * (Only helper functions that ngtsc/ngcc can handle are included.)
+ */
+const KNOWN_TS_HELPER_FNS: {[key: string]: TsHelperFn} = {
+  __spread: TsHelperFn.Spread,
+  __spreadArrays: TsHelperFn.SpreadArrays,
+};
+
+/**
  * ESM5 packages contain ECMAScript IIFE functions that act like classes. For example:
  *
  * ```
@@ -207,6 +216,40 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
 
     if (!declaration || declaration.node === null) {
       return declaration;
+    }
+
+    // Get the declaration of an emitted TypeScript helper (if any).
+    if (isEmittedTsHelperDeclaration(declaration.node)) {
+      // This is a variable declaration of an emitted TypeScript helper function that ngtsc/ngcc
+      // know how to handle. If we continued as usual, returning the declaration, the interpreter
+      // would try to evaluate the initializer (which is of the form
+      // `(this && this.__<fn>) || function () { ... };`) and categorize it as a `DynamicValue`.
+      //
+      // Instead, we return a function declaration of the same shape as the one that would have been
+      // returned if the helper was instead imported from `tslib`:
+      // `export declare function __<fn>(...args: any[][]): any[];`
+      //
+      // This will allow the interpreter to correctly recognize it as a TypeScript helper function
+      // and evaluate it accordingly.
+      return {
+        node: ts.createFunctionDeclaration(
+            undefined,
+            [
+              ts.createModifier(ts.SyntaxKind.ExportKeyword),
+              ts.createModifier(ts.SyntaxKind.DeclareKeyword),
+            ],
+            undefined, id.text, undefined,
+            [
+              ts.createParameter(
+                  undefined, undefined, ts.createToken(ts.SyntaxKind.DotDotDotToken),
+                  ts.createIdentifier('args'), undefined,
+                  ts.createArrayTypeNode(
+                      ts.createArrayTypeNode(ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword))),
+                  undefined),
+            ],
+            ts.createArrayTypeNode(ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)), undefined),
+        viaModule: null,
+      };
     }
 
     if (!ts.isVariableDeclaration(declaration.node) || declaration.node.initializer !== undefined ||
@@ -645,6 +688,58 @@ function reflectArrayElement(element: ts.Expression) {
 }
 
 /**
+ * Detect whether `node` corresponds to the declaration of a known TypeScript helper function.
+ *
+ * When TypeScript helpers are emitted (instead of imported from `tslib`), they are emitted as
+ * variable declaration of the form:
+ *
+ * ```ts
+ * var __helperfn = (this && this.__helperFn) || function () {
+ *   ...
+ * };
+ * ```
+ *
+ * We need to detect this, in order to handle it specially (i.e. handle it as a helper function
+ * instead of trying to evaluate the `||` expression).
+ *
+ * @param node The node to check.
+ * @return Whether `node` corresponds to an emitted TypeScript helper function.
+ */
+function isEmittedTsHelperDeclaration(node: ts.Declaration): boolean {
+  // Ensure `node` is a variable declarations with an identifier and an initializer.
+  if (!ts.isVariableDeclaration(node) || !ts.isIdentifier(node.name) ||
+      (node.initializer === undefined)) {
+    return false;
+  }
+
+  const varName = stripDollarSuffix(node.name.text);
+  const valueExpr = node.initializer;
+
+  // Ensure the identifier name matches a known helper function.
+  if (!KNOWN_TS_HELPER_FNS.hasOwnProperty(varName)) {
+    return false;
+  }
+
+  // Ensure the value is of the form `<left> || <right>`, where `<left>` is parenthesized and
+  // `<right>` is a function declaration.
+  if (!ts.isBinaryExpression(valueExpr) ||
+      (valueExpr.operatorToken.kind !== ts.SyntaxKind.BarBarToken) ||
+      !ts.isParenthesizedExpression(valueExpr.left) || !ts.isFunctionExpression(valueExpr.right)) {
+    return false;
+  }
+
+  const leftInnerExpr = valueExpr.left.expression;
+
+  // Ensure the left parenthesized expression is of the form `this && this.__<varName>`.
+  return ts.isBinaryExpression(leftInnerExpr) &&
+      (leftInnerExpr.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) &&
+      (leftInnerExpr.left.kind === ts.SyntaxKind.ThisKeyword) &&
+      ts.isPropertyAccessExpression(leftInnerExpr.right) &&
+      (leftInnerExpr.right.expression.kind === ts.SyntaxKind.ThisKeyword) &&
+      (stripDollarSuffix(leftInnerExpr.right.name.text) === varName);
+}
+
+/**
  * Inspects a function declaration to determine if it corresponds with a TypeScript helper function,
  * returning its kind if so or null if the declaration does not seem to correspond with such a
  * helper.
@@ -654,14 +749,8 @@ function getTsHelperFn(node: ts.NamedDeclaration): TsHelperFn|null {
       stripDollarSuffix(node.name.text) :
       null;
 
-  switch (name) {
-    case '__spread':
-      return TsHelperFn.Spread;
-    case '__spreadArrays':
-      return TsHelperFn.SpreadArrays;
-    default:
-      return null;
-  }
+  return ((name !== null) && KNOWN_TS_HELPER_FNS.hasOwnProperty(name)) ? KNOWN_TS_HELPER_FNS[name] :
+                                                                         null;
 }
 
 /**

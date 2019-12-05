@@ -1743,6 +1743,68 @@ exports.ExternalModule = ExternalModule;
           const importOfIdent = host.getDeclarationOfIdentifier(identifier !) !;
           expect(importOfIdent.viaModule).toBe('lib');
         });
+
+        it('should return a function declaration for known TS helpers', () => {
+          const PROGRAM_FILE: TestFile = {
+            name: _('/test.js'),
+            contents: `
+              // A known emitted TS helper.
+              var __spread = (this && this.__spread) || function () {
+                // ...
+              };
+
+              // A known emitted TS helper with a dollar suffix.
+              var __spreadArrays$42 = (this && this.__spreadArrays) || function () {
+                // ...
+              };
+
+              // An unknown emitted helper.
+              var __whoAreYou = (this && this.__whoAreYou) || function () {
+                // ...
+              };
+
+              var foo = __spread([]);
+              var bar = __spreadArrays$42([]);
+              var baz = __whoAreYou([]);
+            `,
+          };
+          const getHelperIdentifier = (varName: string): ts.Identifier => {
+            const decl =
+                getDeclaration(program, PROGRAM_FILE.name, varName, ts.isVariableDeclaration);
+
+            if (!decl.initializer || !ts.isCallExpression(decl.initializer) ||
+                !ts.isIdentifier(decl.initializer.expression)) {
+              throw new Error(`Unable to retrieve helper identifier for variable '${varName}'.`);
+            }
+
+            return decl.initializer.expression;
+          };
+
+          loadTestFiles([PROGRAM_FILE]);
+          const {program, host: compilerHost} = makeTestBundleProgram(PROGRAM_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+
+          const spreadIdent = getHelperIdentifier('foo');
+          const spreadArraysIdent = getHelperIdentifier('bar');
+          const whoAreYouIdent = getHelperIdentifier('baz');
+
+          const spreadDecl = host.getDeclarationOfIdentifier(spreadIdent) !;
+          const spreadArraysDecl = host.getDeclarationOfIdentifier(spreadArraysIdent) !;
+          const whoAreYouDecl = host.getDeclarationOfIdentifier(whoAreYouIdent) !;
+
+          // `__spread()` should be recognized as a known helper function.
+          expect(spreadDecl.viaModule).toBeNull();
+          expect(ts.isFunctionDeclaration(spreadDecl.node !)).toBe(true);
+
+          // `__spreadArrays()` should be recognized as a known helper function.
+          expect(spreadArraysDecl.viaModule).toBeNull();
+          expect(ts.isFunctionDeclaration(spreadArraysDecl.node !)).toBe(true);
+
+          // `__whoAreYou()` should not be recognized as a known helper function.
+          expect(whoAreYouDecl.viaModule).toBeNull();
+          expect(ts.isFunctionDeclaration(whoAreYouDecl.node !)).toBe(false);
+          expect(ts.isVariableDeclaration(whoAreYouDecl.node !)).toBe(true);
+        });
       });
 
       describe('getExportsOfModule()', () => {
