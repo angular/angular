@@ -1664,763 +1664,746 @@ runInEachFileSystem(() => {
            expect(quxDef.parameters[0].name).toEqual('x');
            expect(quxDef.parameters[0].initializer).toBe(null);
          });
+    });
 
-      describe('getImportOfIdentifier', () => {
-        it('should find the import of an identifier', () => {
-          loadTestFiles(IMPORTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const variableNode =
-              getDeclaration(program, _('/file_b.js'), 'b', isNamedVariableDeclaration);
-          const identifier = (variableNode.initializer &&
-                              ts.isPropertyAccessExpression(variableNode.initializer)) ?
-              variableNode.initializer.name :
-              null;
+    describe('getImportOfIdentifier', () => {
+      it('should find the import of an identifier', () => {
+        loadTestFiles(IMPORTS_FILES);
+        const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const variableNode =
+            getDeclaration(program, _('/file_b.js'), 'b', isNamedVariableDeclaration);
+        const identifier =
+            (variableNode.initializer && ts.isPropertyAccessExpression(variableNode.initializer)) ?
+            variableNode.initializer.name :
+            null;
 
-          expect(identifier).not.toBe(null);
-          const importOfIdent = host.getImportOfIdentifier(identifier !);
-          expect(importOfIdent).toEqual({name: 'a', from: './file_a'});
-        });
-
-        it('should find the import of an identifier in a declaration file', () => {
-          loadTestFiles([
-            {
-              name: _('/index.d.ts'),
-              contents: `
-                import {MyClass} from './myclass.d.ts';
-                export declare const a: MyClass;`
-            },
-            {
-              name: _('/myclass.d.ts'),
-              contents: `export declare class MyClass {}`,
-            }
-          ]);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.d.ts'));
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const variableNode =
-              getDeclaration(program, _('/index.d.ts'), 'a', isNamedVariableDeclaration);
-          const identifier =
-              ((variableNode.type as ts.TypeReferenceNode).typeName as ts.Identifier);
-
-          const importOfIdent = host.getImportOfIdentifier(identifier !);
-          expect(importOfIdent).toEqual({name: 'MyClass', from: './myclass.d.ts'});
-        });
-
-        it('should return null if the identifier was not imported', () => {
-          loadTestFiles(IMPORTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const variableNode =
-              getDeclaration(program, _('/file_b.js'), 'd', isNamedVariableDeclaration);
-          const importOfIdent =
-              host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
-
-          expect(importOfIdent).toBeNull();
-        });
-
-        it('should handle factory functions not wrapped in parentheses', () => {
-          loadTestFiles(IMPORTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const variableNode =
-              getDeclaration(program, _('/file_c.js'), 'c', isNamedVariableDeclaration);
-          const identifier = (variableNode.initializer &&
-                              ts.isPropertyAccessExpression(variableNode.initializer)) ?
-              variableNode.initializer.name :
-              null;
-
-          expect(identifier).not.toBe(null);
-          const importOfIdent = host.getImportOfIdentifier(identifier !);
-          expect(importOfIdent).toEqual({name: 'a', from: './file_a'});
-        });
+        expect(identifier).not.toBe(null);
+        const importOfIdent = host.getImportOfIdentifier(identifier !);
+        expect(importOfIdent).toEqual({name: 'a', from: './file_a'});
       });
 
-      describe('getDeclarationOfIdentifier', () => {
-        it('should return the declaration of a locally defined identifier', () => {
-          loadTestFiles([SOME_DIRECTIVE_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const classNode = getDeclaration(
-              program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
-          const ctrDecorators = host.getConstructorParameters(classNode) !;
-          const identifierOfViewContainerRef = (ctrDecorators[0].typeValueReference !as{
-                                                 local: true,
-                                                 expression: ts.Identifier,
-                                                 defaultImportStatement: null,
-                                               }).expression;
+      it('should find the import of an identifier in a declaration file', () => {
+        loadTestFiles([
+          {
+            name: _('/index.d.ts'),
+            contents: `
+              import {MyClass} from './myclass.d.ts';
+              export declare const a: MyClass;`
+          },
+          {
+            name: _('/myclass.d.ts'),
+            contents: `export declare class MyClass {}`,
+          }
+        ]);
+        const {program, host: compilerHost} = makeTestBundleProgram(_('/index.d.ts'));
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const variableNode =
+            getDeclaration(program, _('/index.d.ts'), 'a', isNamedVariableDeclaration);
+        const identifier = ((variableNode.type as ts.TypeReferenceNode).typeName as ts.Identifier);
 
-          const expectedDeclarationNode = getDeclaration(
-              program, SOME_DIRECTIVE_FILE.name, 'ViewContainerRef', isNamedVariableDeclaration);
-          const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfViewContainerRef);
-          expect(actualDeclaration).not.toBe(null);
-          expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
-          expect(actualDeclaration !.viaModule).toBe(null);
-        });
+        const importOfIdent = host.getImportOfIdentifier(identifier !);
+        expect(importOfIdent).toEqual({name: 'MyClass', from: './myclass.d.ts'});
+      });
 
-        it('should return the source-file of an import namespace', () => {
-          loadFakeCore(getFileSystem());
-          loadTestFiles([SOME_DIRECTIVE_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const classNode = getDeclaration(
-              program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
-          const classDecorators = host.getDecoratorsOfDeclaration(classNode) !;
-          const identifierOfDirective = (((classDecorators[0].node as ts.ObjectLiteralExpression)
-                                              .properties[0] as ts.PropertyAssignment)
-                                             .initializer as ts.PropertyAccessExpression)
-                                            .expression as ts.Identifier;
+      it('should return null if the identifier was not imported', () => {
+        loadTestFiles(IMPORTS_FILES);
+        const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const variableNode =
+            getDeclaration(program, _('/file_b.js'), 'd', isNamedVariableDeclaration);
+        const importOfIdent = host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
 
-          const expectedDeclarationNode =
-              getSourceFileOrError(program, _('/node_modules/@angular/core/index.d.ts'));
-          const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfDirective);
-          expect(actualDeclaration).not.toBe(null);
-          expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
-          expect(actualDeclaration !.viaModule).toBe('@angular/core');
-        });
+        expect(importOfIdent).toBeNull();
+      });
 
-        it('should return the correct declaration of an identifier imported in a typings file',
-           () => {
+      it('should handle factory functions not wrapped in parentheses', () => {
+        loadTestFiles(IMPORTS_FILES);
+        const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const variableNode =
+            getDeclaration(program, _('/file_c.js'), 'c', isNamedVariableDeclaration);
+        const identifier =
+            (variableNode.initializer && ts.isPropertyAccessExpression(variableNode.initializer)) ?
+            variableNode.initializer.name :
+            null;
 
-             const FILES = [
-               {
-                 name: _('/node_modules/test-package/index.d.ts'),
-                 contents: `
+        expect(identifier).not.toBe(null);
+        const importOfIdent = host.getImportOfIdentifier(identifier !);
+        expect(importOfIdent).toEqual({name: 'a', from: './file_a'});
+      });
+    });
+
+    describe('getDeclarationOfIdentifier', () => {
+      it('should return the declaration of a locally defined identifier', () => {
+        loadTestFiles([SOME_DIRECTIVE_FILE]);
+        const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const classNode = getDeclaration(
+            program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+        const ctrDecorators = host.getConstructorParameters(classNode) !;
+        const identifierOfViewContainerRef = (ctrDecorators[0].typeValueReference !as{
+                                               local: true,
+                                               expression: ts.Identifier,
+                                               defaultImportStatement: null,
+                                             }).expression;
+
+        const expectedDeclarationNode = getDeclaration(
+            program, SOME_DIRECTIVE_FILE.name, 'ViewContainerRef', isNamedVariableDeclaration);
+        const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfViewContainerRef);
+        expect(actualDeclaration).not.toBe(null);
+        expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
+        expect(actualDeclaration !.viaModule).toBe(null);
+      });
+
+      it('should return the source-file of an import namespace', () => {
+        loadFakeCore(getFileSystem());
+        loadTestFiles([SOME_DIRECTIVE_FILE]);
+        const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const classNode = getDeclaration(
+            program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+        const classDecorators = host.getDecoratorsOfDeclaration(classNode) !;
+        const identifierOfDirective = (((classDecorators[0].node as ts.ObjectLiteralExpression)
+                                            .properties[0] as ts.PropertyAssignment)
+                                           .initializer as ts.PropertyAccessExpression)
+                                          .expression as ts.Identifier;
+
+        const expectedDeclarationNode =
+            getSourceFileOrError(program, _('/node_modules/@angular/core/index.d.ts'));
+        const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfDirective);
+        expect(actualDeclaration).not.toBe(null);
+        expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
+        expect(actualDeclaration !.viaModule).toBe('@angular/core');
+      });
+
+      it('should return the correct declaration of an identifier imported in a typings file',
+         () => {
+
+           const FILES = [
+             {
+               name: _('/node_modules/test-package/index.d.ts'),
+               contents: `
               import {SubModule} from 'sub_module';
               export const x = SubModule;
               `,
-               },
-               {
-                 name: _('/node_modules/packages.json'),
-                 contents: '{ "typings: "index.d.ts" }',
-               },
-               {
-                 name: _('/node_modules/sub_module/index.d.ts'),
-                 contents: `export class SubModule {}`,
-               }
-             ];
-             loadTestFiles(FILES);
-             const {program, host: compilerHost} = makeTestBundleProgram(FILES[0].name);
-             const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-             const expectedDeclaration =
-                 getDeclaration(program, FILES[2].name, 'SubModule', isNamedClassDeclaration);
-             const x = getDeclaration(program, FILES[0].name, 'x', isNamedVariableDeclaration);
-             if (x.initializer === undefined || !ts.isIdentifier(x.initializer)) {
-               return fail('Expected constant `x` to have an identifer as an initializer.');
+             },
+             {
+               name: _('/node_modules/packages.json'),
+               contents: '{ "typings: "index.d.ts" }',
+             },
+             {
+               name: _('/node_modules/sub_module/index.d.ts'),
+               contents: `export class SubModule {}`,
              }
-             const decl = host.getDeclarationOfIdentifier(x.initializer);
-             if (decl === null) {
-               return fail('Expected to find a declaration for ' + x.initializer.getText());
-             }
-             expect(decl.viaModule).toEqual('sub_module');
-             expect(decl.node).toBe(expectedDeclaration);
-           });
-      });
+           ];
+           loadTestFiles(FILES);
+           const {program, host: compilerHost} = makeTestBundleProgram(FILES[0].name);
+           const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+           const expectedDeclaration =
+               getDeclaration(program, FILES[2].name, 'SubModule', isNamedClassDeclaration);
+           const x = getDeclaration(program, FILES[0].name, 'x', isNamedVariableDeclaration);
+           if (x.initializer === undefined || !ts.isIdentifier(x.initializer)) {
+             return fail('Expected constant `x` to have an identifer as an initializer.');
+           }
+           const decl = host.getDeclarationOfIdentifier(x.initializer);
+           if (decl === null) {
+             return fail('Expected to find a declaration for ' + x.initializer.getText());
+           }
+           expect(decl.viaModule).toEqual('sub_module');
+           expect(decl.node).toBe(expectedDeclaration);
+         });
+    });
 
-      describe('getExportsOfModule()', () => {
-        it('should return a map of all the exports from a given module', () => {
-          loadFakeCore(getFileSystem());
-          loadTestFiles(EXPORTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const file = getSourceFileOrError(program, _('/b_module.js'));
-          const exportDeclarations = host.getExportsOfModule(file);
-          expect(exportDeclarations).not.toBe(null);
-          expect(Array.from(exportDeclarations !.entries())
-                     .map(entry => [entry[0], entry[1].node !.getText(), entry[1].viaModule]))
-              .toEqual([
-                ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, '@angular/core'],
-                ['a', `a = 'a'`, '/a_module'],
-                ['b', `b = a_module.a`, null],
-                ['c', `a = 'a'`, '/a_module'],
-                ['d', `b = a_module.a`, null],
-                ['e', `e = 'e'`, null],
-                ['DirectiveX', `Directive: FnWithArg<(clazz: any) => any>`, '@angular/core'],
-                [
-                  'SomeClass', `SomeClass = (function() {
+    describe('getExportsOfModule()', () => {
+      it('should return a map of all the exports from a given module', () => {
+        loadFakeCore(getFileSystem());
+        loadTestFiles(EXPORTS_FILES);
+        const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const file = getSourceFileOrError(program, _('/b_module.js'));
+        const exportDeclarations = host.getExportsOfModule(file);
+        expect(exportDeclarations).not.toBe(null);
+        expect(Array.from(exportDeclarations !.entries())
+                   .map(entry => [entry[0], entry[1].node !.getText(), entry[1].viaModule]))
+            .toEqual([
+              ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, '@angular/core'],
+              ['a', `a = 'a'`, '/a_module'],
+              ['b', `b = a_module.a`, null],
+              ['c', `a = 'a'`, '/a_module'],
+              ['d', `b = a_module.a`, null],
+              ['e', `e = 'e'`, null],
+              ['DirectiveX', `Directive: FnWithArg<(clazz: any) => any>`, '@angular/core'],
+              [
+                'SomeClass', `SomeClass = (function() {
     function SomeClass() {}
     return SomeClass;
   }())`,
-                  null
-                ],
-              ]);
-        });
-
-        // Currently we do not support UMD versions of `export * from 'x';`
-        // because it gets compiled to something like:
-        //
-        //     __export(m) {
-        //       for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-        //     }
-        //     __export(x);
-        //
-        // So far all UMD formatted entry-points are flat so this should not occur.
-        // If it does later then we should implement parsing.
+                null
+              ],
+            ]);
       });
 
-      describe('getClassSymbol()', () => {
-        it('should return the class symbol for an ES2015 class', () => {
-          loadTestFiles([SIMPLE_ES2015_CLASS_FILE]);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(SIMPLE_ES2015_CLASS_FILE.name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const node = getDeclaration(
-              program, SIMPLE_ES2015_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
-          const classSymbol = host.getClassSymbol(node);
+      // Currently we do not support UMD versions of `export * from 'x';`
+      // because it gets compiled to something like:
+      //
+      //     __export(m) {
+      //       for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+      //     }
+      //     __export(x);
+      //
+      // So far all UMD formatted entry-points are flat so this should not occur.
+      // If it does later then we should implement parsing.
+    });
 
-          expect(classSymbol).toBeDefined();
-          expect(classSymbol !.declaration.valueDeclaration).toBe(node);
-          expect(classSymbol !.implementation.valueDeclaration).toBe(node);
-        });
+    describe('getClassSymbol()', () => {
+      it('should return the class symbol for an ES2015 class', () => {
+        loadTestFiles([SIMPLE_ES2015_CLASS_FILE]);
+        const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_ES2015_CLASS_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const node = getDeclaration(
+            program, SIMPLE_ES2015_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
+        const classSymbol = host.getClassSymbol(node);
 
-        it('should return the class symbol for an ES5 class (outer variable declaration)', () => {
-          loadTestFiles([SIMPLE_CLASS_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const outerNode = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-          const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
-          const classSymbol = host.getClassSymbol(outerNode);
-
-          expect(classSymbol).toBeDefined();
-          expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
-          expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
-        });
-
-        it('should return the class symbol for an ES5 class (inner function declaration)', () => {
-          loadTestFiles([SIMPLE_CLASS_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const outerNode = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-          const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
-          const classSymbol = host.getClassSymbol(innerNode);
-
-          expect(classSymbol).toBeDefined();
-          expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
-          expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
-        });
-
-        it('should return the same class symbol (of the outer declaration) for outer and inner declarations',
-           () => {
-             loadTestFiles([SIMPLE_CLASS_FILE]);
-             const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-             const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-             const outerNode = getDeclaration(
-                 program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-             const innerNode =
-                 getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
-
-             const innerSymbol = host.getClassSymbol(innerNode) !;
-             const outerSymbol = host.getClassSymbol(outerNode) !;
-             expect(innerSymbol.declaration).toBe(outerSymbol.declaration);
-             expect(innerSymbol.implementation).toBe(outerSymbol.implementation);
-           });
-
-        it('should return the class symbol for an ES5 class whose IIFE is not wrapped in parens',
-           () => {
-             loadTestFiles([SIMPLE_CLASS_FILE]);
-             const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-             const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-             const outerNode = getDeclaration(
-                 program, SIMPLE_CLASS_FILE.name, 'NoParensClass', isNamedVariableDeclaration);
-             const innerNode =
-                 getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
-             const classSymbol = host.getClassSymbol(outerNode);
-
-             expect(classSymbol).toBeDefined();
-             expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
-             expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
-           });
-
-        it('should return the class symbol for an ES5 class whose IIFE is not wrapped with inner parens',
-           () => {
-             loadTestFiles([SIMPLE_CLASS_FILE]);
-             const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-             const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-             const outerNode = getDeclaration(
-                 program, SIMPLE_CLASS_FILE.name, 'InnerParensClass', isNamedVariableDeclaration);
-             const innerNode =
-                 getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
-             const classSymbol = host.getClassSymbol(outerNode);
-
-             expect(classSymbol).toBeDefined();
-             expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
-             expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
-           });
-
-        it('should return undefined if node is not an ES5 class', () => {
-          loadTestFiles([FOO_FUNCTION_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const node =
-              getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
-          const classSymbol = host.getClassSymbol(node);
-
-          expect(classSymbol).toBeUndefined();
-        });
-
-        it('should return undefined if variable declaration is not initialized using an IIFE',
-           () => {
-             const testFile = {
-               name: _('/test.js'),
-               contents: `var MyClass = null;`,
-             };
-             loadTestFiles([testFile]);
-             const {program, host: compilerHost} = makeTestBundleProgram(testFile.name);
-             const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-             const node =
-                 getDeclaration(program, testFile.name, 'MyClass', isNamedVariableDeclaration);
-             const classSymbol = host.getClassSymbol(node);
-
-             expect(classSymbol).toBeUndefined();
-           });
+        expect(classSymbol).toBeDefined();
+        expect(classSymbol !.declaration.valueDeclaration).toBe(node);
+        expect(classSymbol !.implementation.valueDeclaration).toBe(node);
       });
 
-      describe('isClass()', () => {
-        it('should return true if a given node is a TS class declaration', () => {
-          loadTestFiles([SIMPLE_ES2015_CLASS_FILE]);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(SIMPLE_ES2015_CLASS_FILE.name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const node = getDeclaration(
-              program, SIMPLE_ES2015_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
-          expect(host.isClass(node)).toBe(true);
-        });
+      it('should return the class symbol for an ES5 class (outer variable declaration)', () => {
+        loadTestFiles([SIMPLE_CLASS_FILE]);
+        const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const outerNode = getDeclaration(
+            program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+        const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
+        const classSymbol = host.getClassSymbol(outerNode);
 
-        it('should return true if a given node is the outer variable declaration of a class',
-           () => {
-             loadTestFiles([SIMPLE_CLASS_FILE]);
-             const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-             const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-             const node = getDeclaration(
-                 program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
-             expect(host.isClass(node)).toBe(true);
-           });
-
-        it('should return true if a given node is the inner variable declaration of a class',
-           () => {
-             loadTestFiles([SIMPLE_CLASS_FILE]);
-             const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-             const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-             const outerNode = getDeclaration(
-                 program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
-             const innerNode =
-                 getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
-             expect(host.isClass(innerNode)).toBe(true);
-           });
-
-        it('should return false if a given node is a function declaration', () => {
-          loadTestFiles([FOO_FUNCTION_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const node =
-              getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
-          expect(host.isClass(node)).toBe(false);
-        });
+        expect(classSymbol).toBeDefined();
+        expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
+        expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
       });
 
-      describe('hasBaseClass()', () => {
-        function hasBaseClass(source: string) {
-          const file = {
-            name: _('/synthesized_constructors.js'),
-            contents: source,
-          };
+      it('should return the class symbol for an ES5 class (inner function declaration)', () => {
+        loadTestFiles([SIMPLE_CLASS_FILE]);
+        const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const outerNode = getDeclaration(
+            program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+        const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
+        const classSymbol = host.getClassSymbol(innerNode);
 
-          loadTestFiles([file]);
-          const {program, host: compilerHost} = makeTestBundleProgram(file.name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const classNode =
-              getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
-          return host.hasBaseClass(classNode);
+        expect(classSymbol).toBeDefined();
+        expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
+        expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
+      });
+
+      it('should return the same class symbol (of the outer declaration) for outer and inner declarations',
+         () => {
+           loadTestFiles([SIMPLE_CLASS_FILE]);
+           const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+           const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+           const outerNode = getDeclaration(
+               program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+           const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
+
+           const innerSymbol = host.getClassSymbol(innerNode) !;
+           const outerSymbol = host.getClassSymbol(outerNode) !;
+           expect(innerSymbol.declaration).toBe(outerSymbol.declaration);
+           expect(innerSymbol.implementation).toBe(outerSymbol.implementation);
+         });
+
+      it('should return the class symbol for an ES5 class whose IIFE is not wrapped in parens',
+         () => {
+           loadTestFiles([SIMPLE_CLASS_FILE]);
+           const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+           const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+           const outerNode = getDeclaration(
+               program, SIMPLE_CLASS_FILE.name, 'NoParensClass', isNamedVariableDeclaration);
+           const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
+           const classSymbol = host.getClassSymbol(outerNode);
+
+           expect(classSymbol).toBeDefined();
+           expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
+           expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
+         });
+
+      it('should return the class symbol for an ES5 class whose IIFE is not wrapped with inner parens',
+         () => {
+           loadTestFiles([SIMPLE_CLASS_FILE]);
+           const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+           const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+           const outerNode = getDeclaration(
+               program, SIMPLE_CLASS_FILE.name, 'InnerParensClass', isNamedVariableDeclaration);
+           const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
+           const classSymbol = host.getClassSymbol(outerNode);
+
+           expect(classSymbol).toBeDefined();
+           expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
+           expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
+         });
+
+      it('should return undefined if node is not an ES5 class', () => {
+        loadTestFiles([FOO_FUNCTION_FILE]);
+        const {program, host: compilerHost} = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const node =
+            getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
+        const classSymbol = host.getClassSymbol(node);
+
+        expect(classSymbol).toBeUndefined();
+      });
+
+      it('should return undefined if variable declaration is not initialized using an IIFE', () => {
+        const testFile = {
+          name: _('/test.js'),
+          contents: `var MyClass = null;`,
+        };
+        loadTestFiles([testFile]);
+        const {program, host: compilerHost} = makeTestBundleProgram(testFile.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const node = getDeclaration(program, testFile.name, 'MyClass', isNamedVariableDeclaration);
+        const classSymbol = host.getClassSymbol(node);
+
+        expect(classSymbol).toBeUndefined();
+      });
+    });
+
+    describe('isClass()', () => {
+      it('should return true if a given node is a TS class declaration', () => {
+        loadTestFiles([SIMPLE_ES2015_CLASS_FILE]);
+        const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_ES2015_CLASS_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const node = getDeclaration(
+            program, SIMPLE_ES2015_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
+        expect(host.isClass(node)).toBe(true);
+      });
+
+      it('should return true if a given node is the outer variable declaration of a class', () => {
+        loadTestFiles([SIMPLE_CLASS_FILE]);
+        const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const node =
+            getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
+        expect(host.isClass(node)).toBe(true);
+      });
+
+      it('should return true if a given node is the inner variable declaration of a class', () => {
+        loadTestFiles([SIMPLE_CLASS_FILE]);
+        const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const outerNode =
+            getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
+        const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
+        expect(host.isClass(innerNode)).toBe(true);
+      });
+
+      it('should return false if a given node is a function declaration', () => {
+        loadTestFiles([FOO_FUNCTION_FILE]);
+        const {program, host: compilerHost} = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const node =
+            getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
+        expect(host.isClass(node)).toBe(false);
+      });
+    });
+
+    describe('hasBaseClass()', () => {
+      function hasBaseClass(source: string) {
+        const file = {
+          name: _('/synthesized_constructors.js'),
+          contents: source,
+        };
+
+        loadTestFiles([file]);
+        const {program, host: compilerHost} = makeTestBundleProgram(file.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const classNode =
+            getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
+        return host.hasBaseClass(classNode);
+      }
+
+      it('should consider an IIFE with _super parameter as having a base class', () => {
+        const result = hasBaseClass(`
+      var TestClass = /** @class */ (function (_super) {
+        __extends(TestClass, _super);
+        function TestClass() {}
+        return TestClass;
+      }(null));`);
+        expect(result).toBe(true);
+      });
+
+      it('should consider an IIFE with a unique name generated for the _super parameter as having a base class',
+         () => {
+           const result = hasBaseClass(`
+      var TestClass = /** @class */ (function (_super_1) {
+        __extends(TestClass, _super_1);
+        function TestClass() {}
+        return TestClass;
+      }(null));`);
+           expect(result).toBe(true);
+         });
+
+      it('should not consider an IIFE without parameter as having a base class', () => {
+        const result = hasBaseClass(`
+      var TestClass = /** @class */ (function () {
+        __extends(TestClass, _super);
+        function TestClass() {}
+        return TestClass;
+      }(null));`);
+        expect(result).toBe(false);
+      });
+    });
+
+    describe('getBaseClassExpression()', () => {
+      function getBaseClassIdentifier(source: string): ts.Identifier|null {
+        const file = {
+          name: _('/synthesized_constructors.js'),
+          contents: source,
+        };
+
+        loadTestFiles([file]);
+        const {program, host: compilerHost} = makeTestBundleProgram(file.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const classNode =
+            getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
+        const expression = host.getBaseClassExpression(classNode);
+        if (expression !== null && !ts.isIdentifier(expression)) {
+          throw new Error(
+              'Expected class to inherit via an identifier but got: ' + expression.getText());
         }
+        return expression;
+      }
 
-        it('should consider an IIFE with _super parameter as having a base class', () => {
-          const result = hasBaseClass(`
+      it('should find the base class of an IIFE with _super parameter', () => {
+        const identifier = getBaseClassIdentifier(`
+        var BaseClass = /** @class */ (function () {
+          function BaseClass() {}
+          return BaseClass;
+        }());
         var TestClass = /** @class */ (function (_super) {
           __extends(TestClass, _super);
           function TestClass() {}
           return TestClass;
-        }(null));`);
-          expect(result).toBe(true);
-        });
+        }(BaseClass));`);
+        expect(identifier !.text).toBe('BaseClass');
+      });
 
-        it('should consider an IIFE with a unique name generated for the _super parameter as having a base class',
-           () => {
-             const result = hasBaseClass(`
+      it('should find the base class of an IIFE with a unique name generated for the _super parameter',
+         () => {
+           const identifier = getBaseClassIdentifier(`
+        var BaseClass = /** @class */ (function () {
+          function BaseClass() {}
+          return BaseClass;
+        }());
         var TestClass = /** @class */ (function (_super_1) {
           __extends(TestClass, _super_1);
           function TestClass() {}
           return TestClass;
-        }(null));`);
-             expect(result).toBe(true);
-           });
+        }(BaseClass));`);
+           expect(identifier !.text).toBe('BaseClass');
+         });
 
-        it('should not consider an IIFE without parameter as having a base class', () => {
-          const result = hasBaseClass(`
+      it('should not find a base class for an IIFE without parameter', () => {
+        const identifier = getBaseClassIdentifier(`
+        var BaseClass = /** @class */ (function () {
+          function BaseClass() {}
+          return BaseClass;
+        }());
         var TestClass = /** @class */ (function () {
           __extends(TestClass, _super);
           function TestClass() {}
           return TestClass;
-        }(null));`);
-          expect(result).toBe(false);
-        });
+        }(BaseClass));`);
+        expect(identifier).toBe(null);
       });
 
-      describe('getBaseClassExpression()', () => {
-        function getBaseClassIdentifier(source: string): ts.Identifier|null {
-          const file = {
-            name: _('/synthesized_constructors.js'),
-            contents: source,
-          };
-
-          loadTestFiles([file]);
-          const {program, host: compilerHost} = makeTestBundleProgram(file.name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const classNode =
-              getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
-          const expression = host.getBaseClassExpression(classNode);
-          if (expression !== null && !ts.isIdentifier(expression)) {
-            throw new Error(
-                'Expected class to inherit via an identifier but got: ' + expression.getText());
-          }
-          return expression;
-        }
-
-        it('should find the base class of an IIFE with _super parameter', () => {
-          const identifier = getBaseClassIdentifier(`
+      it('should find a dynamic base class expression of an IIFE', () => {
+        const file = {
+          name: _('/synthesized_constructors.js'),
+          contents: `
           var BaseClass = /** @class */ (function () {
             function BaseClass() {}
             return BaseClass;
           }());
+          function foo() { return BaseClass; }
           var TestClass = /** @class */ (function (_super) {
             __extends(TestClass, _super);
             function TestClass() {}
             return TestClass;
-          }(BaseClass));`);
-          expect(identifier !.text).toBe('BaseClass');
-        });
+          }(foo()));`,
+        };
 
-        it('should find the base class of an IIFE with a unique name generated for the _super parameter',
-           () => {
-             const identifier = getBaseClassIdentifier(`
-          var BaseClass = /** @class */ (function () {
-            function BaseClass() {}
-            return BaseClass;
-          }());
-          var TestClass = /** @class */ (function (_super_1) {
-            __extends(TestClass, _super_1);
-            function TestClass() {}
-            return TestClass;
-          }(BaseClass));`);
-             expect(identifier !.text).toBe('BaseClass');
-           });
+        loadTestFiles([file]);
+        const {program, host: compilerHost} = makeTestBundleProgram(file.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const classNode =
+            getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
+        const expression = host.getBaseClassExpression(classNode) !;
+        expect(expression.getText()).toBe('foo()');
+      });
+    });
 
-        it('should not find a base class for an IIFE without parameter', () => {
-          const identifier = getBaseClassIdentifier(`
-          var BaseClass = /** @class */ (function () {
-            function BaseClass() {}
-            return BaseClass;
-          }());
-          var TestClass = /** @class */ (function () {
-            __extends(TestClass, _super);
-            function TestClass() {}
-            return TestClass;
-          }(BaseClass));`);
-          expect(identifier).toBe(null);
-        });
+    describe('findClassSymbols()', () => {
+      it('should return an array of all classes in the given source file', () => {
+        loadTestFiles(DECORATED_FILES);
+        const {program, host: compilerHost} = makeTestBundleProgram(DECORATED_FILES[0].name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const primaryFile = getSourceFileOrError(program, DECORATED_FILES[0].name);
+        const secondaryFile = getSourceFileOrError(program, DECORATED_FILES[1].name);
 
-        it('should find a dynamic base class expression of an IIFE', () => {
-          const file = {
-            name: _('/synthesized_constructors.js'),
-            contents: `
-            var BaseClass = /** @class */ (function () {
-              function BaseClass() {}
-              return BaseClass;
-            }());
-            function foo() { return BaseClass; }
-            var TestClass = /** @class */ (function (_super) {
-              __extends(TestClass, _super);
-              function TestClass() {}
-              return TestClass;
-            }(foo()));`,
-          };
+        const classSymbolsPrimary = host.findClassSymbols(primaryFile);
+        expect(classSymbolsPrimary.length).toEqual(2);
+        expect(classSymbolsPrimary.map(c => c.name)).toEqual(['A', 'B']);
 
-          loadTestFiles([file]);
-          const {program, host: compilerHost} = makeTestBundleProgram(file.name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const classNode =
-              getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
-          const expression = host.getBaseClassExpression(classNode) !;
-          expect(expression.getText()).toBe('foo()');
-        });
+        const classSymbolsSecondary = host.findClassSymbols(secondaryFile);
+        expect(classSymbolsSecondary.length).toEqual(1);
+        expect(classSymbolsSecondary.map(c => c.name)).toEqual(['D']);
+      });
+    });
+
+    describe('getDecoratorsOfSymbol()', () => {
+      it('should return decorators of class symbol', () => {
+        loadTestFiles(DECORATED_FILES);
+        const {program, host: compilerHost} = makeTestBundleProgram(DECORATED_FILES[0].name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const primaryFile = getSourceFileOrError(program, DECORATED_FILES[0].name);
+        const secondaryFile = getSourceFileOrError(program, DECORATED_FILES[1].name);
+
+        const classSymbolsPrimary = host.findClassSymbols(primaryFile);
+        const classDecoratorsPrimary = classSymbolsPrimary.map(s => host.getDecoratorsOfSymbol(s));
+        expect(classDecoratorsPrimary.length).toEqual(2);
+        expect(classDecoratorsPrimary[0] !.map(d => d.name)).toEqual(['Directive']);
+        expect(classDecoratorsPrimary[1] !.map(d => d.name)).toEqual(['Directive']);
+
+        const classSymbolsSecondary = host.findClassSymbols(secondaryFile);
+        const classDecoratorsSecondary =
+            classSymbolsSecondary.map(s => host.getDecoratorsOfSymbol(s));
+        expect(classDecoratorsSecondary.length).toEqual(1);
+        expect(classDecoratorsSecondary[0] !.map(d => d.name)).toEqual(['Directive']);
+      });
+    });
+
+    describe('getDtsDeclarationsOfClass()', () => {
+      it('should find the dts declaration that has the same relative path to the source file',
+         () => {
+           loadTestFiles(TYPINGS_SRC_FILES);
+           loadTestFiles(TYPINGS_DTS_FILES);
+           const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+           const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
+           const class1 =
+               getDeclaration(program, _('/src/class1.js'), 'Class1', ts.isVariableDeclaration);
+           const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
+
+           const dtsDeclaration = host.getDtsDeclaration(class1);
+           expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/class1.d.ts'));
+         });
+
+      it('should find the dts declaration for exported functions', () => {
+        loadTestFiles(TYPINGS_SRC_FILES);
+        loadTestFiles(TYPINGS_DTS_FILES);
+        const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+        const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
+        const mooFn =
+            getDeclaration(program, _('/src/func1.js'), 'mooFn', ts.isFunctionDeclaration);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
+
+        const dtsDeclaration = host.getDtsDeclaration(mooFn);
+        expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/func1.d.ts'));
       });
 
-      describe('findClassSymbols()', () => {
-        it('should return an array of all classes in the given source file', () => {
-          loadTestFiles(DECORATED_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(DECORATED_FILES[0].name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const primaryFile = getSourceFileOrError(program, DECORATED_FILES[0].name);
-          const secondaryFile = getSourceFileOrError(program, DECORATED_FILES[1].name);
+      it('should return null if there is no matching class in the matching dts file', () => {
+        loadTestFiles(TYPINGS_SRC_FILES);
+        loadTestFiles(TYPINGS_DTS_FILES);
+        const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+        const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
+        const missingClass =
+            getDeclaration(program, _('/src/class1.js'), 'MissingClass1', ts.isVariableDeclaration);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
 
-          const classSymbolsPrimary = host.findClassSymbols(primaryFile);
-          expect(classSymbolsPrimary.length).toEqual(2);
-          expect(classSymbolsPrimary.map(c => c.name)).toEqual(['A', 'B']);
-
-          const classSymbolsSecondary = host.findClassSymbols(secondaryFile);
-          expect(classSymbolsSecondary.length).toEqual(1);
-          expect(classSymbolsSecondary.map(c => c.name)).toEqual(['D']);
-        });
+        expect(host.getDtsDeclaration(missingClass)).toBe(null);
       });
 
-      describe('getDecoratorsOfSymbol()', () => {
-        it('should return decorators of class symbol', () => {
-          loadTestFiles(DECORATED_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(DECORATED_FILES[0].name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const primaryFile = getSourceFileOrError(program, DECORATED_FILES[0].name);
-          const secondaryFile = getSourceFileOrError(program, DECORATED_FILES[1].name);
+      it('should return null if there is no matching dts file', () => {
+        loadTestFiles(TYPINGS_SRC_FILES);
+        loadTestFiles(TYPINGS_DTS_FILES);
+        const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+        const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
+        const missingClass = getDeclaration(
+            program, _('/src/missing-class.js'), 'MissingClass2', ts.isVariableDeclaration);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
 
-          const classSymbolsPrimary = host.findClassSymbols(primaryFile);
-          const classDecoratorsPrimary =
-              classSymbolsPrimary.map(s => host.getDecoratorsOfSymbol(s));
-          expect(classDecoratorsPrimary.length).toEqual(2);
-          expect(classDecoratorsPrimary[0] !.map(d => d.name)).toEqual(['Directive']);
-          expect(classDecoratorsPrimary[1] !.map(d => d.name)).toEqual(['Directive']);
-
-          const classSymbolsSecondary = host.findClassSymbols(secondaryFile);
-          const classDecoratorsSecondary =
-              classSymbolsSecondary.map(s => host.getDecoratorsOfSymbol(s));
-          expect(classDecoratorsSecondary.length).toEqual(1);
-          expect(classDecoratorsSecondary[0] !.map(d => d.name)).toEqual(['Directive']);
-        });
+        expect(host.getDtsDeclaration(missingClass)).toBe(null);
       });
 
-      describe('getDtsDeclarationsOfClass()', () => {
-        it('should find the dts declaration that has the same relative path to the source file',
-           () => {
-             loadTestFiles(TYPINGS_SRC_FILES);
-             loadTestFiles(TYPINGS_DTS_FILES);
-             const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-             const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
-             const class1 =
-                 getDeclaration(program, _('/src/class1.js'), 'Class1', ts.isVariableDeclaration);
-             const host =
-                 new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
+      it('should find the dts file that contains a matching class declaration, even if the source files do not match',
+         () => {
+           loadTestFiles(TYPINGS_SRC_FILES);
+           loadTestFiles(TYPINGS_DTS_FILES);
+           const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+           const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
+           const class1 =
+               getDeclaration(program, _('/src/flat-file.js'), 'Class1', ts.isVariableDeclaration);
+           const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
 
-             const dtsDeclaration = host.getDtsDeclaration(class1);
-             expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/class1.d.ts'));
-           });
+           const dtsDeclaration = host.getDtsDeclaration(class1);
+           expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/class1.d.ts'));
+         });
 
-        it('should find the dts declaration for exported functions', () => {
-          loadTestFiles(TYPINGS_SRC_FILES);
-          loadTestFiles(TYPINGS_DTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-          const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
-          const mooFn =
-              getDeclaration(program, _('/src/func1.js'), 'mooFn', ts.isFunctionDeclaration);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
+      it('should find aliased exports', () => {
+        loadTestFiles(TYPINGS_SRC_FILES);
+        loadTestFiles(TYPINGS_DTS_FILES);
+        const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+        const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
+        const class3 =
+            getDeclaration(program, _('/src/flat-file.js'), 'Class3', ts.isVariableDeclaration);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
 
-          const dtsDeclaration = host.getDtsDeclaration(mooFn);
-          expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/func1.d.ts'));
-        });
-
-        it('should return null if there is no matching class in the matching dts file', () => {
-          loadTestFiles(TYPINGS_SRC_FILES);
-          loadTestFiles(TYPINGS_DTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-          const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
-          const missingClass = getDeclaration(
-              program, _('/src/class1.js'), 'MissingClass1', ts.isVariableDeclaration);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
-
-          expect(host.getDtsDeclaration(missingClass)).toBe(null);
-        });
-
-        it('should return null if there is no matching dts file', () => {
-          loadTestFiles(TYPINGS_SRC_FILES);
-          loadTestFiles(TYPINGS_DTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-          const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
-          const missingClass = getDeclaration(
-              program, _('/src/missing-class.js'), 'MissingClass2', ts.isVariableDeclaration);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
-
-          expect(host.getDtsDeclaration(missingClass)).toBe(null);
-        });
-
-        it('should find the dts file that contains a matching class declaration, even if the source files do not match',
-           () => {
-             loadTestFiles(TYPINGS_SRC_FILES);
-             loadTestFiles(TYPINGS_DTS_FILES);
-             const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-             const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
-             const class1 = getDeclaration(
-                 program, _('/src/flat-file.js'), 'Class1', ts.isVariableDeclaration);
-             const host =
-                 new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
-
-             const dtsDeclaration = host.getDtsDeclaration(class1);
-             expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/class1.d.ts'));
-           });
-
-        it('should find aliased exports', () => {
-          loadTestFiles(TYPINGS_SRC_FILES);
-          loadTestFiles(TYPINGS_DTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-          const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
-          const class3 =
-              getDeclaration(program, _('/src/flat-file.js'), 'Class3', ts.isVariableDeclaration);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
-
-          const dtsDeclaration = host.getDtsDeclaration(class3);
-          expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/class3.d.ts'));
-        });
-
-        it('should find the dts file that contains a matching class declaration, even if the class is not publicly exported',
-           () => {
-             loadTestFiles(TYPINGS_SRC_FILES);
-             loadTestFiles(TYPINGS_DTS_FILES);
-             const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-             const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
-             const internalClass = getDeclaration(
-                 program, _('/src/internal.js'), 'InternalClass', ts.isVariableDeclaration);
-             const host =
-                 new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
-
-             const dtsDeclaration = host.getDtsDeclaration(internalClass);
-             expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/internal.d.ts'));
-           });
-
-        it('should prefer the publicly exported class if there are multiple classes with the same name',
-           () => {
-             loadTestFiles(TYPINGS_SRC_FILES);
-             loadTestFiles(TYPINGS_DTS_FILES);
-             const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-             const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
-             const class2 =
-                 getDeclaration(program, _('/src/class2.js'), 'Class2', ts.isVariableDeclaration);
-             const internalClass2 =
-                 getDeclaration(program, _('/src/internal.js'), 'Class2', ts.isVariableDeclaration);
-             const host =
-                 new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
-
-             const class2DtsDeclaration = host.getDtsDeclaration(class2);
-             expect(class2DtsDeclaration !.getSourceFile().fileName)
-                 .toEqual(_('/typings/class2.d.ts'));
-
-             const internalClass2DtsDeclaration = host.getDtsDeclaration(internalClass2);
-             expect(internalClass2DtsDeclaration !.getSourceFile().fileName)
-                 .toEqual(_('/typings/class2.d.ts'));
-           });
+        const dtsDeclaration = host.getDtsDeclaration(class3);
+        expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/class3.d.ts'));
       });
 
-      describe('getInternalNameOfClass()', () => {
-        it('should return the name of the inner class declaration', () => {
-          loadTestFiles([SIMPLE_CLASS_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+      it('should find the dts file that contains a matching class declaration, even if the class is not publicly exported',
+         () => {
+           loadTestFiles(TYPINGS_SRC_FILES);
+           loadTestFiles(TYPINGS_DTS_FILES);
+           const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+           const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
+           const internalClass = getDeclaration(
+               program, _('/src/internal.js'), 'InternalClass', ts.isVariableDeclaration);
+           const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
 
-          const emptyClass = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-          expect(host.getInternalNameOfClass(emptyClass).text).toEqual('EmptyClass');
+           const dtsDeclaration = host.getDtsDeclaration(internalClass);
+           expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/internal.d.ts'));
+         });
 
-          const class1 = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'OuterClass1', isNamedVariableDeclaration);
-          expect(host.getInternalNameOfClass(class1).text).toEqual('InnerClass1');
+      it('should prefer the publicly exported class if there are multiple classes with the same name',
+         () => {
+           loadTestFiles(TYPINGS_SRC_FILES);
+           loadTestFiles(TYPINGS_DTS_FILES);
+           const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+           const dts = makeTestBundleProgram(_('/typings/index.d.ts'));
+           const class2 =
+               getDeclaration(program, _('/src/class2.js'), 'Class2', ts.isVariableDeclaration);
+           const internalClass2 =
+               getDeclaration(program, _('/src/internal.js'), 'Class2', ts.isVariableDeclaration);
+           const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost, dts);
 
-          const class2 = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'OuterClass2', isNamedVariableDeclaration);
-          expect(host.getInternalNameOfClass(class2).text).toEqual('InnerClass2');
+           const class2DtsDeclaration = host.getDtsDeclaration(class2);
+           expect(class2DtsDeclaration !.getSourceFile().fileName)
+               .toEqual(_('/typings/class2.d.ts'));
 
-          const childClass = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'ChildClass', isNamedVariableDeclaration);
-          expect(host.getInternalNameOfClass(childClass).text).toEqual('InnerChildClass');
-        });
+           const internalClass2DtsDeclaration = host.getDtsDeclaration(internalClass2);
+           expect(internalClass2DtsDeclaration !.getSourceFile().fileName)
+               .toEqual(_('/typings/class2.d.ts'));
+         });
+    });
+
+    describe('getInternalNameOfClass()', () => {
+      it('should return the name of the inner class declaration', () => {
+        loadTestFiles([SIMPLE_CLASS_FILE]);
+        const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+
+        const emptyClass = getDeclaration(
+            program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+        expect(host.getInternalNameOfClass(emptyClass).text).toEqual('EmptyClass');
+
+        const class1 = getDeclaration(
+            program, SIMPLE_CLASS_FILE.name, 'OuterClass1', isNamedVariableDeclaration);
+        expect(host.getInternalNameOfClass(class1).text).toEqual('InnerClass1');
+
+        const class2 = getDeclaration(
+            program, SIMPLE_CLASS_FILE.name, 'OuterClass2', isNamedVariableDeclaration);
+        expect(host.getInternalNameOfClass(class2).text).toEqual('InnerClass2');
+
+        const childClass = getDeclaration(
+            program, SIMPLE_CLASS_FILE.name, 'ChildClass', isNamedVariableDeclaration);
+        expect(host.getInternalNameOfClass(childClass).text).toEqual('InnerChildClass');
       });
+    });
 
-      describe('getAdjacentNameOfClass()', () => {
-        it('should return the name of the inner class declaration', () => {
-          loadTestFiles([SIMPLE_CLASS_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+    describe('getAdjacentNameOfClass()', () => {
+      it('should return the name of the inner class declaration', () => {
+        loadTestFiles([SIMPLE_CLASS_FILE]);
+        const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
 
-          const emptyClass = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-          expect(host.getAdjacentNameOfClass(emptyClass).text).toEqual('EmptyClass');
+        const emptyClass = getDeclaration(
+            program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+        expect(host.getAdjacentNameOfClass(emptyClass).text).toEqual('EmptyClass');
 
-          const class1 = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'OuterClass1', isNamedVariableDeclaration);
-          expect(host.getAdjacentNameOfClass(class1).text).toEqual('InnerClass1');
+        const class1 = getDeclaration(
+            program, SIMPLE_CLASS_FILE.name, 'OuterClass1', isNamedVariableDeclaration);
+        expect(host.getAdjacentNameOfClass(class1).text).toEqual('InnerClass1');
 
-          const class2 = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'OuterClass2', isNamedVariableDeclaration);
-          expect(host.getAdjacentNameOfClass(class2).text).toEqual('InnerClass2');
+        const class2 = getDeclaration(
+            program, SIMPLE_CLASS_FILE.name, 'OuterClass2', isNamedVariableDeclaration);
+        expect(host.getAdjacentNameOfClass(class2).text).toEqual('InnerClass2');
 
-          const childClass = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'ChildClass', isNamedVariableDeclaration);
-          expect(host.getAdjacentNameOfClass(childClass).text).toEqual('InnerChildClass');
-        });
+        const childClass = getDeclaration(
+            program, SIMPLE_CLASS_FILE.name, 'ChildClass', isNamedVariableDeclaration);
+        expect(host.getAdjacentNameOfClass(childClass).text).toEqual('InnerChildClass');
       });
+    });
 
-      describe('getModuleWithProvidersFunctions', () => {
-        it('should find every exported function that returns an object that looks like a ModuleWithProviders object',
-           () => {
-             loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-             const {program, host: compilerHost} =
-                 makeTestBundleProgram(getRootFiles(MODULE_WITH_PROVIDERS_PROGRAM)[0]);
-             const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-             const file = getSourceFileOrError(program, _('/src/functions.js'));
-             const fns = host.getModuleWithProvidersFunctions(file);
-             expect(fns.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text]))
-                 .toEqual([
-                   ['ngModuleIdentifier', 'InternalModule'],
-                   ['ngModuleWithEmptyProviders', 'InternalModule'],
-                   ['ngModuleWithProviders', 'InternalModule'],
-                   ['externalNgModule', 'ExternalModule'],
-                 ]);
-           });
+    describe('getModuleWithProvidersFunctions', () => {
+      it('should find every exported function that returns an object that looks like a ModuleWithProviders object',
+         () => {
+           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
+           const {program, host: compilerHost} =
+               makeTestBundleProgram(getRootFiles(MODULE_WITH_PROVIDERS_PROGRAM)[0]);
+           const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+           const file = getSourceFileOrError(program, _('/src/functions.js'));
+           const fns = host.getModuleWithProvidersFunctions(file);
+           expect(fns.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text]))
+               .toEqual([
+                 ['ngModuleIdentifier', 'InternalModule'],
+                 ['ngModuleWithEmptyProviders', 'InternalModule'],
+                 ['ngModuleWithProviders', 'InternalModule'],
+                 ['externalNgModule', 'ExternalModule'],
+               ]);
+         });
 
-        it('should find every static method on exported classes that return an object that looks like a ModuleWithProviders object',
-           () => {
-             loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-             const {program, host: compilerHost} =
-                 makeTestBundleProgram(getRootFiles(MODULE_WITH_PROVIDERS_PROGRAM)[0]);
-             const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-             const file = getSourceFileOrError(program, _('/src/methods.js'));
-             const fn = host.getModuleWithProvidersFunctions(file);
-             expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
-               [
-                 'function() { return { ngModule: InternalModule }; }',
-                 'InternalModule',
-               ],
-               [
-                 'function() { return { ngModule: InternalModule, providers: [] }; }',
-                 'InternalModule',
-               ],
-               [
-                 'function() { return { ngModule: InternalModule, providers: [SomeService] }; }',
-                 'InternalModule',
-               ],
-               [
-                 'function() { return { ngModule: module.ExternalModule }; }',
-                 'ExternalModule',
-               ],
-             ]);
-           });
+      it('should find every static method on exported classes that return an object that looks like a ModuleWithProviders object',
+         () => {
+           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
+           const {program, host: compilerHost} =
+               makeTestBundleProgram(getRootFiles(MODULE_WITH_PROVIDERS_PROGRAM)[0]);
+           const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+           const file = getSourceFileOrError(program, _('/src/methods.js'));
+           const fn = host.getModuleWithProvidersFunctions(file);
+           expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
+             [
+               'function() { return { ngModule: InternalModule }; }',
+               'InternalModule',
+             ],
+             [
+               'function() { return { ngModule: InternalModule, providers: [] }; }',
+               'InternalModule',
+             ],
+             [
+               'function() { return { ngModule: InternalModule, providers: [SomeService] }; }',
+               'InternalModule',
+             ],
+             [
+               'function() { return { ngModule: module.ExternalModule }; }',
+               'ExternalModule',
+             ],
+           ]);
+         });
 
-        // https://github.com/angular/angular/issues/29078
-        it('should resolve aliased module references to their original declaration', () => {
-          loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(getRootFiles(MODULE_WITH_PROVIDERS_PROGRAM)[0]);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-          const file = getSourceFileOrError(program, _('/src/aliased_class.js'));
-          const fn = host.getModuleWithProvidersFunctions(file);
-          expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
-            ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],
-          ]);
-        });
+      // https://github.com/angular/angular/issues/29078
+      it('should resolve aliased module references to their original declaration', () => {
+        loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
+        const {program, host: compilerHost} =
+            makeTestBundleProgram(getRootFiles(MODULE_WITH_PROVIDERS_PROGRAM)[0]);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const file = getSourceFileOrError(program, _('/src/aliased_class.js'));
+        const fn = host.getModuleWithProvidersFunctions(file);
+        expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
+          ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],
+        ]);
       });
     });
   });
