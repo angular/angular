@@ -282,12 +282,15 @@ export function stylingBindingInternal(
   const bindingIndex = nextStylingBindingIndex();
   const tView = lView[TVIEW];
   const firstUpdatePass = tView.firstUpdatePass;
-
   let updated = false;
-  // todo (matsko): comment here
+
+  // map-based [style] and [class] properties are always delegated to a directive
+  // if that directive has any `@Input('class')` or `@Input('style')` inputs.
+  // This basically means that the directive will intercept said input values.
+  // Note that this only happens for template-level properties (and not host
+  // bindings).
   if (bindingBelongsToDirectiveInput(tNode, prop, isClassBased)) {
-    updated =
-        updateDirectiveInputValue(lView, tNode, bindingIndex, value, isClassBased, firstUpdatePass);
+    updateDirectiveInputValue(lView, tNode, bindingIndex, value, isClassBased, firstUpdatePass);
   } else {
     const tData = tView.data;
     const directiveIndex = getActiveDirectiveId();
@@ -306,14 +309,17 @@ export function stylingBindingInternal(
     }
 
     updated = updateBindingValue(lView, tData, state, value, bindingIndex, isClassBased);
-  }
-
-  if (updated) {
-    setElementExitFn(flushStyling);
+    if (updated) {
+      // style/class bindings are not flushed to the element until the element
+      // has processed all style/class bindings. For this reason we need to
+      // schedule a "flush styling" operation to run once the element has
+      // fully exited out of change detection.
+      setElementExitFn(flushStyling);
+    }
   }
 
   if (ngDevMode) {
-    updateDevModeCounters(updated, prop === null, isClassBased);
+    updateDevModeCounters(ngDevMode, updated, prop === null, isClassBased);
   }
 }
 
@@ -361,24 +367,26 @@ function isHostStyling(): boolean {
  *
  * @returns true when the style or class binding belongs to a directive input value.
  */
-function bindingBelongsToDirectiveInput(tNode: TNode, prop: string | null, isClassBased: boolean) {
+function bindingBelongsToDirectiveInput(
+    tNode: TNode, prop: string | null, isClassBased: boolean): boolean {
   return prop === null && !isHostStyling() && hasDirectiveInput(tNode, isClassBased);
 }
 
 /**
  * Increments various ngDevMode counters when a style/class value is updated
  */
-function updateDevModeCounters(wasUpdated: boolean, isMapBased: boolean, isClassBased: boolean) {
-  const d = ngDevMode !;
+function updateDevModeCounters(
+    devMode: NgDevModePerfCounters, wasUpdated: boolean, isMapBased: boolean,
+    isClassBased: boolean): void {
   if (isMapBased) {
-    isClassBased ? d.classMap : d.styleMap++;
+    isClassBased ? devMode.classMap : devMode.styleMap++;
     if (wasUpdated) {
-      isClassBased ? d.classMapCacheMiss : d.styleMapCacheMiss++;
+      isClassBased ? devMode.classMapCacheMiss : devMode.styleMapCacheMiss++;
     }
   } else {
-    isClassBased ? d.classProp : d.styleProp++;
+    isClassBased ? devMode.classProp : devMode.styleProp++;
     if (wasUpdated) {
-      isClassBased ? d.classPropCacheMiss : d.stylePropCacheMiss++;
+      isClassBased ? devMode.classPropCacheMiss : devMode.stylePropCacheMiss++;
     }
   }
 }

@@ -12,11 +12,29 @@ import {throwErrorIfNoChangesMode} from '../errors';
 import {setInputsForProperty} from '../instructions/shared';
 import {AttributeMarker, PropertyAliases, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
 import {RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
-import {LStylingData, TDataStylingFlags, TDataStylingIndex, TStylingNode} from '../interfaces/styling';
+import {LStylingData, PropAndSuffixEntry, TDataStylingFlags, TDataStylingIndex, TStylingNode} from '../interfaces/styling';
 import {LView, TData} from '../interfaces/view';
 import {getCurrentStyleSanitizer, incrementBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
+
+/**
+ * --------
+ *
+ * This file contains various utilities for styling in Angular.
+ *
+ * To learn more about the algorithm see `instructions/styling.ts`.
+ *
+ * --------
+ */
+
+/**
+ * Used to help determine whether or not a template is being processed in change detection.
+ *
+ * If and when any binding code is processed it is helpful to know whether the
+ * template or hostBindings are being processed. This constant helps determine
+ * whether or not that is true for templates.
+ */
 export const TEMPLATE_DIRECTIVE_INDEX = 0;
 
 // classOne-wSEPARATOR-classTwo
@@ -28,29 +46,46 @@ export const STYLE_ENTRIES_SEPARATOR = '; ';
 // prop-SEPARATOR-value
 const STYLE_PROP_VALUE_SEPARATOR = ': ';
 
-export function hasConfig(tNode: TStylingNode, flag: TNodeFlags) {
+/**
+ * Whether or not a specific styling config flag is set to true on a `tNode`
+ */
+export function hasConfig(tNode: TStylingNode, flag: TNodeFlags): boolean {
   return (tNode.flags & flag) !== 0;
 }
 
+/**
+ * Sets (turns on) one or more styling flags to true on the provided `tNode`
+ */
 export function patchConfig(tNode: TStylingNode, flag: TNodeFlags): void {
   tNode.flags |= flag;
 }
 
-export function setValue(data: LStylingData, bindingIndex: number, value: any) {
+/**
+ * Updates the provided `value` in the `LStylingData` at the given `bindingIndex`
+ */
+export function setValue(data: LStylingData, bindingIndex: number, value: any): void {
   data[bindingIndex] = value;
 }
 
+/**
+ * Returns the value set at the provided `bindingIndex` in the `LStylingData` array
+ */
 export function getValue<T = any>(data: LStylingData, bindingIndex: number): T|null {
   return bindingIndex !== 0 ? data[bindingIndex] as T : null;
 }
 
+/**
+ * Unwraps both values and determines whether or not there is a value change
+ */
 export function hasValueChangedUnwrapSafeValue(
     a: NO_CHANGE | number | String | string | null | boolean | undefined | {},
     b: NO_CHANGE | number | String | string | null | boolean | undefined | {}): boolean {
   return hasValueChanged(unwrapSafeValue(a), unwrapSafeValue(b));
 }
 
-
+/**
+ * Determines whether or not there is a value change
+ */
 export function hasValueChanged(
     a: NO_CHANGE | number | string | null | boolean | undefined | {},
     b: NO_CHANGE | number | string | null | boolean | undefined | {}): boolean {
@@ -59,7 +94,7 @@ export function hasValueChanged(
 }
 
 /**
- * Determines whether the provided styling value is truthy or falsy.
+ * Determines whether the provided styling value is truthy or falsy
  */
 export function isStylingValueDefined<T extends string|number|{}|null|undefined>(value: T):
     value is NonNullable<T> {
@@ -71,13 +106,32 @@ export function isStylingValueDefined<T extends string|number|{}|null|undefined>
   return value != null && value !== '';
 }
 
+/**
+ * Combines both strings together with the provided separator
+ *
+ * @returns the concatenated string value
+ */
 export function concatString(a: string, b: string, separator = CLASS_ENTRIES_SEPARATOR): string {
   return a + ((b.length && a.length) ? separator : '') + b;
 }
 
+/**
+ * Used to compare upper and lowercase values without using `toUpperCase()`/`toLowerCase()`
+ */
 const LOWERCASE_CHAR_BIT = 32;
 
-export function hyphenate(str: string) {
+/**
+ * Converts all camelCase words into hyphenated strings.
+ *
+ * For example:
+ *
+ * ```typescript
+ * hyphenate('foo') // foo
+ * hyphenate('fooBar') // foo-bar
+ * hyphenate('fooBarBaz') // foo-bar-baz
+ * ```
+ */
+export function hyphenate(str: string): string {
   let lastSlicePoint = 0;
   let returnStr: string|null = null;
   for (let i = 0, j = 1; j < str.length; i++, j++) {
@@ -96,14 +150,23 @@ export function hyphenate(str: string) {
   return returnStr !== null ? (returnStr + str.substr(lastSlicePoint)) : str;
 }
 
-export function hasClassInput(tNode: TStylingNode) {
+/**
+ * Whether or not the provided `tNode` is marked with having any `@Input('class')` input setters
+ */
+export function hasClassInput(tNode: TStylingNode): boolean {
   return (tNode.flags & TNodeFlags.hasClassInput) !== 0;
 }
 
-export function hasStyleInput(tNode: TStylingNode) {
+/**
+ * Whether or not the provided `tNode` is marked with having any `@Input('style')` input setters
+ */
+export function hasStyleInput(tNode: TStylingNode): boolean {
   return (tNode.flags & TNodeFlags.hasStyleInput) !== 0;
 }
 
+/**
+ * Converts a `{key:value}` map of classes into a className string
+ */
 export function forceClassesAsString(classes: string | {[key: string]: any} | null | undefined):
     string {
   if (classes && typeof classes !== 'string') {
@@ -112,6 +175,18 @@ export function forceClassesAsString(classes: string | {[key: string]: any} | nu
   return (classes as string) || '';
 }
 
+/**
+ * Converts a `{key:value}` map of styles into a style string
+ *
+ * For example:
+ *
+ * ```typescript
+ * fn({})                               // ""
+ * fn({key:'value'})                    // "key: value"
+ * fn({key1:'value1', "key2: 'value2'}) // "key1: value1; key2: value2"
+ * fn({key1:'value1', "key2: 'a b c'})  // "key1: value1; key2: a b c"
+ * ```
+ */
 export function forceStylesAsString(
     styles: {[key: string]: any} | string | null | undefined, hyphenateProps: boolean): string {
   if (typeof styles == 'string') return styles;
@@ -130,10 +205,16 @@ export function forceStylesAsString(
   return str;
 }
 
+/**
+ * Whether or not the current source being processed is a directive or component
+ */
 export function isHostStylingActive(directiveOrSourceId: number): boolean {
   return directiveOrSourceId !== TEMPLATE_DIRECTIVE_INDEX;
 }
 
+/**
+ * Tokenizes the provided `text` value by spaces into an array
+ */
 export function splitOnWhitespace(text: string): string[]|null {
   let array: string[]|null = null;
   let length = text.length;
@@ -169,7 +250,7 @@ export function selectClassBasedInputName(inputs: PropertyAliases): string {
 /**
  * Returns a style entry with the `prop` and `value` concatenated together
  */
-export function concatStyle(prop: string, value: string) {
+export function concatStyle(prop: string, value: string): string {
   return `${prop}${STYLE_PROP_VALUE_SEPARATOR}${value}`;
 }
 
@@ -177,7 +258,7 @@ export function concatStyle(prop: string, value: string) {
  * Appends a style/class entry (className or prop:value) to the provided `str` value
  */
 export function concatStylingEntry(
-    lhs: string, prop: string, value: string | boolean, isClassBased: boolean) {
+    lhs: string, prop: string, value: string | boolean, isClassBased: boolean): string {
   const separator = isClassBased ? CLASS_ENTRIES_SEPARATOR : STYLE_ENTRIES_SEPARATOR;
   const entry = isClassBased ? prop : concatStyle(prop, value as string);
   return `${lhs}${lhs.length !== 0 ? separator : ''}${entry}`;
@@ -185,9 +266,11 @@ export function concatStylingEntry(
 
 /**
  * Assigns a style value to a style property for the given element.
+ *
+ * If `value` is `null` then the provided `prop` will be deleted from the element's style values.
  */
 export function setStyle(
-    renderer: Renderer3, native: RElement, prop: string, value: string | null) {
+    renderer: Renderer3, native: RElement, prop: string, value: string | null): void {
   // Use `isStylingValueDefined` to account for falsy values that should be bound like 0.
   if (isStylingValueDefined(value)) {
     // opacity, z-index and flexbox all have number values
@@ -223,8 +306,11 @@ export function setStyle(
 
 /**
  * Adds/removes the provided className value to the provided element.
+ *
+ * If `value` is `null` then the provided `className` will be deleted from the element's classList.
  */
-export function setClass(renderer: Renderer3, native: RElement, className: string, value: any) {
+export function setClass(
+    renderer: Renderer3, native: RElement, className: string, value: any): void {
   if (value) {
     ngDevMode && ngDevMode.rendererAddClass++;
     if (isProceduralRenderer(renderer)) {
@@ -255,68 +341,113 @@ export function setClass(renderer: Renderer3, native: RElement, className: strin
 /**
  * Sets the provided className value to the provided element's `className` property.
  */
-export const setClassName = (renderer: Renderer3, native: RElement, className: string) => {
+export function setClassName(renderer: Renderer3, native: RElement, className: string): void {
   ngDevMode && ngDevMode.rendererSetClassName++;
   if (isProceduralRenderer(renderer)) {
     renderer.setAttribute(native, 'class', className);
   } else {
     native.className = className;
   }
-};
+}
 
 /**
  * Sets the provided style value to the provided element's `style` attribute.
  */
-export const setStyleAttr = (renderer: Renderer3, native: RElement, value: string) => {
+export function setStyleAttr(renderer: Renderer3, native: RElement, value: string): void {
   ngDevMode && ngDevMode.rendererSetStyle++;
   if (isProceduralRenderer(renderer)) {
     renderer.setAttribute(native, 'style', value);
   } else {
     native.setAttribute('style', value);
   }
-};
-
-export function isDirectSanitizationRequired(tData: TData, bindingIndex: number) {
-  return ((tData[bindingIndex + 1] as number) & TDataStylingFlags.SanitizationRequiredFlag) !== 0;
-}
-
-export function isHostBinding(tData: TData, bindingIndex: number) {
-  return ((tData[bindingIndex + 1] as number) & TDataStylingFlags.IsHostBinding) !== 0;
-}
-
-export function isDuplicateBinding(tData: TData, bindingIndex: number) {
-  return ((tData[bindingIndex + 1] as number) & TDataStylingFlags.IsDuplicateBinding) !== 0;
 }
 
 /**
- * Gets the previous style/class index that was registered just before the provided `bindingIndex`
+ * Returns the configuration value for a styling binding that was registered into `TData`.
+ *
+ * Each time a styling binding is registered, the entry will take up two slots
+ * within the `TData` array. The second slot is used for pointers and
+ * configuration data. This function returns that value.
+ */
+function getBindingConfigAndPointers(tData: TData, bindingIndex: number): number {
+  return tData[bindingIndex + 1] as number;
+}
+
+/**
+ * Whether or not the styling entry requires sanitization.
+ */
+export function isDirectSanitizationRequired(tData: TData, bindingIndex: number): boolean {
+  return (getBindingConfigAndPointers(tData, bindingIndex) &
+          TDataStylingFlags.SanitizationRequiredFlag) !== 0;
+}
+
+/**
+ * Whether or not the styling entry is a host binding.
+ */
+export function isHostBinding(tData: TData, bindingIndex: number): boolean {
+  return (getBindingConfigAndPointers(tData, bindingIndex) & TDataStylingFlags.IsHostBinding) !== 0;
+}
+
+/**
+ * Whether or not the styling entry is a duplicate of another binding.
+ *
+ * Duplicate styling bindings are tracked so that the concatenation algorithm
+ * can efficiently decide whether or not to parse existing style/class values
+ * out of the concatenation string.
+ */
+export function isDuplicateBinding(tData: TData, bindingIndex: number): boolean {
+  return (getBindingConfigAndPointers(tData, bindingIndex) &
+          TDataStylingFlags.IsDuplicateBinding) !== 0;
+}
+
+/**
+ * Gets the previous style/class index that was registered just before the provided `bindingIndex`.
  *
  * A previous binding index points to the previous style/class binding entry
  * (which is stored inside of `TData`). Previous binding indices are used to
- * connect each of the style/class bindings together so that the direct-write
- * algorithm can keep track of concatenated values.
+ * connect each of the style/class bindings together so that the style/class
+ * concatenation algorithm can keep track of concatenated values.
  *
  * When a previous binding index is set, the first few bits will be reserved
  * to keep track of styling flags. These flags are stripped out (using bit
  * shifting) when this function is called.
  */
-export function getPreviousBindingIndex(tData: TData, bindingIndex: number) {
-  const value = tData[bindingIndex + 1] as number;
+export function getPreviousBindingIndex(tData: TData, bindingIndex: number): number {
+  const value = getBindingConfigAndPointers(tData, bindingIndex);
   return (value & TDataStylingIndex.PreviousIndexMask) >>
       TDataStylingIndex.TotalBitsBeforePreviousIndex;
 }
 
-export function getNextBindingIndex(tData: TData, bindingIndex: number) {
-  const value = tData[bindingIndex + 1] as number;
+/**
+ * Gets the next style/class index that was registered just before the provided `bindingIndex`.
+ *
+ * A next binding index points to the next style/class binding entry
+ * (which is stored inside of `TData`). Next binding indices are used to
+ * connect each of the style/class bindings together so that the style/class
+ * concatenation algorithm can keep track of concatenated values.
+ *
+ * When a next binding index is set, the first few bits will be reserved
+ * to keep track of styling flags. These flags are stripped out (using bit
+ * shifting) when this function is called.
+ */
+export function getNextBindingIndex(tData: TData, bindingIndex: number): number {
+  const value = getBindingConfigAndPointers(tData, bindingIndex);
   return (value & TDataStylingIndex.NextIndexMask) >> TDataStylingIndex.TotalBitsBeforeNextIndex;
 }
 
 /**
- * Sets the provided style/class binding entry to point to the provided `previousBindingIndex`
+ * Registers the the configuration and next/previous pointer values for a styling binding
+ *
+ * @param tData the `TData` array used to house the values
+ * @param bindingIndex the index location where the values will be stored
+ * @param nextIndex the next style/class binding in `TData` that this binding links to
+ * @param previousIndex the previous style/class binding in `TData` that this binding links to
+ * @param sanitizationRequired whether or not sanitization is required for this binding
+ * @param hostBindingsMode whether or not this binding is a host binding
  */
 export function setBindingConfigAndPointers(
     tData: TData, bindingIndex: number, nextIndex: number, previousIndex: number,
-    sanitizationRequired: boolean, hostBindingsMode: boolean) {
+    sanitizationRequired: boolean, hostBindingsMode: boolean): void {
   tData[bindingIndex + 1] = TDataStylingFlags.Initial;
   if (sanitizationRequired) {
     setBindingConfig(tData, bindingIndex, TDataStylingFlags.SanitizationRequiredFlag);
@@ -332,31 +463,49 @@ export function setBindingConfigAndPointers(
   }
 }
 
-interface PropAndSuffixEntry {
-  prop: string|null;
-  suffix: string;
-}
-
+/**
+ * Registers the the binding prop name and suffix in the `TData` at the provided index
+ */
 export function setBindingPropName(
     tData: TData, bindingIndex: number, prop: string | null, suffix: string | null,
-    isClassBased: boolean) {
+    isClassBased: boolean): void {
   prop = (!isClassBased && prop !== null) ? hyphenate(prop) : prop;
   const value = suffix || !prop ? {prop, suffix} : prop;
   tData[bindingIndex] = value;
 }
 
-export function getBindingPropName(tData: TData, bindingIndex: number) {
+/**
+ * Returns the property name at the given index within the `TData`.
+ *
+ * Bindings that contain suffix values or `null` properties are stored as objects
+ * within `TData`. This function will return the property name (so that the object
+ * doesn't have to be looked at).
+ */
+export function getBindingPropName(tData: TData, bindingIndex: number): string|null {
   const result = tData[bindingIndex];
-  return typeof result !== 'string' ? (result as PropAndSuffixEntry).prop : result;
+  return typeof result === 'string' ? result : (result as PropAndSuffixEntry).prop;
 }
 
-export function getBindingPropSuffix(tData: TData, bindingIndex: number) {
+/**
+ * Returns the suffix value at the given index within the `TData`.
+ *
+ * Bindings that contain suffix values or `null` properties are stored as objects
+ * within `TData`. This function will return the suffix value (so that the object
+ * doesn't have to be looked at).
+ *
+ * The suffix value refers to any style binding that contains a suffix (unit)
+ * value for its property (e.g. `<div [style.width.px]="w">`).
+ */
+export function getStyleBindingSuffix(tData: TData, bindingIndex: number): string {
   const result = tData[bindingIndex];
-  return typeof result !== 'string' ? (result as PropAndSuffixEntry).suffix : '';
+  return typeof result === 'string' ? '' : (result as PropAndSuffixEntry).suffix;
 }
 
+/**
+ * Sets the next or previous pointer index for an entry in `TData` at the given index.
+ */
 export function setBindingPointer(
-    tData: TData, bindingIndex: number, indexValue: number, isPreviousIndex: boolean) {
+    tData: TData, bindingIndex: number, indexValue: number, isPreviousIndex: boolean): void {
   let value = tData[bindingIndex + 1] as number;
   value &= isPreviousIndex ?
       ~TDataStylingIndex.PreviousIndexMask :
@@ -367,14 +516,18 @@ export function setBindingPointer(
   tData[bindingIndex + 1] = value;
 }
 
-export function setBindingConfig(tData: TData, bindingIndex: number, flags: TDataStylingFlags) {
+/**
+ * Sets the configuration values for an entry in `TData` at the given index.
+ */
+export function setBindingConfig(
+    tData: TData, bindingIndex: number, flags: TDataStylingFlags): void {
   (tData[bindingIndex + 1] as number) |= flags & TDataStylingFlags.Mask;
 }
 
 /**
  * Gets the concatenated binding value for a binding location in the `LView`.
  *
- * Concatenated values are used in the direct-write styling algorithm to store
+ * Concatenated values are used in the concatenation styling algorithm to store
  * an intermediate concatenated string value of all the binding entries
  * that came before it.
  *
@@ -400,6 +553,9 @@ export function setBindingConfig(tData: TData, bindingIndex: number, flags: TDat
  */
 export function getConcatenatedValue(lView: LStylingData, bindingIndex: number): string {
   const value = lView[bindingIndex + 1];
+
+  // `TData` may store `NO_CHANGE` entries in the cells at a given spot
+  // for this reason we need to verify it's a string value.
   return typeof value === 'string' ? value : '';
 }
 
@@ -408,10 +564,26 @@ export function getConcatenatedValue(lView: LStylingData, bindingIndex: number):
  *
  * See [getConcatenatedValue].
  */
-export function setConcatenatedValue(lView: LStylingData, bindingIndex: number, value: string) {
+export function setConcatenatedValue(
+    lView: LStylingData, bindingIndex: number, value: string): void {
   lView[bindingIndex + 1] = value;
 }
 
+/**
+ * Registers and renders all style and class values contained within the provided `attrs` array.
+ *
+ * When an element is created it will be created with a list of attributes that
+ * include properties, inputs and bindings. Within these attribute entries there
+ * may be style and class values. This function will loop over the attrs array,
+ * find each class/style entry and render them on the element. It will also
+ * concatenate together a final className/style string value and place that
+ * on the `tNode/classes` or `tNode.styles` value.
+ *
+ * The reason why this function does both registration and rendering is to avoid
+ * having to store all "new" style/class values (values that are not already
+ * apart of `tNode.classes` or `tNode.styles`) in an array. What will happen
+ * instead is they will be applied to the element as soon as they are encountered.
+ */
 export function registerAndRenderInitialStyling(
     renderer: Renderer3, tNode: TNode, native: RElement | null, attrs: TAttributes,
     startIndex: number, appendOnly: boolean): void {
@@ -469,28 +641,74 @@ export function registerAndRenderInitialStyling(
   }
 }
 
-export function hasInitialStyle(tNode: TNode, prop: string) {
+/**
+ * Whether or not the provided `prop` has an initial value.
+ *
+ * For example:
+ *
+ * ```html
+ * <!-- fn(tNode, 'width') returns true -->
+ * <div style="width:200px"></div>
+ *
+ * <!-- fn(tNode, 'width') returns false -->
+ * <divc class="height:400px"></div>
+ * ```
+ */
+export function hasInitialStyle(tNode: TNode, prop: string): boolean {
   return tNode.initialStyleNames ? tNode.initialStyleNames.indexOf(prop) !== -1 : false;
 }
 
-export function hasInitialClass(tNode: TNode, prop: string) {
+/**
+ * Whether or not the provided `className` is apart of the elements initial classes list.
+ *
+ * For example:
+ *
+ * ```html
+ * <!-- fn(tNode, 'foo') returns true -->
+ * <div class="foo"></div>
+ *
+ * <!-- fn(tNode, 'foo') returns false -->
+ * <div class="bar"></div>
+ * ```
+ */
+export function hasInitialClass(tNode: TNode, prop: string): boolean {
   return tNode.classes.length !== 0 ? tNode.classes.indexOf(` ${prop} `) !== -1 : false;
 }
 
+/**
+ * Total bits used for a head or tail index value in `tNode.classesBindingIndex` or
+ * `tNode.stylesBindingIndex`
+ */
 const STYLING_INDEX_BITS = 16;
+
+/**
+ * A bit mask of 16 bits used to track the head or tail index value in `tNode.classesBindingIndex`
+ * or `tNode.stylesBindingIndex`
+ */
 const STYLING_INDEX_MASK = 0xFFFF;
+
+/**
+ * Returns the head index value used for all style/class bindings on the provided `tNode`
+ */
 export function getStylingHead(tNode: TStylingNode, isClassBased: boolean) {
   const index = isClassBased ? tNode.classesBindingIndex : tNode.stylesBindingIndex;
   return (index >> STYLING_INDEX_BITS) & STYLING_INDEX_MASK;
 }
 
+/**
+ * Returns the tail index value used for all style/class bindings on the provided `tNode`
+ */
 export function getStylingTail(tNode: TStylingNode, isClassBased: boolean) {
   const index = isClassBased ? tNode.classesBindingIndex : tNode.stylesBindingIndex;
   return index & STYLING_INDEX_MASK;
 }
 
+/**
+ * Marks `tNode.classes` or `tNode.styles` with the head and tail index for the style/class bindings
+ * list
+ */
 export function setStylingHeadTail(
-    tNode: TNode, head: number, tail: number, isClassBased: boolean) {
+    tNode: TNode, head: number, tail: number, isClassBased: boolean): void {
   const value = ((head & STYLING_INDEX_MASK) << STYLING_INDEX_BITS) | (tail & STYLING_INDEX_MASK);
   if (isClassBased) {
     tNode.classesBindingIndex = value;
@@ -518,96 +736,31 @@ export function renderInitialStyling(
   }
 }
 
-export function isStylingMap(value: any): value is {} {
+/**
+ * Whether or not the provided `value` is a key/value map or not
+ */
+export function isStylingMap(value: {} | string | null): value is {} {
   return value !== null && typeof value !== 'string';
 }
 
+/**
+ * Whether or not there are any initial style and/or class values present on the provided `tNode`
+ */
 export function hasInitialStyling(tNode: TNode, isClassBased: boolean): boolean {
   return (isClassBased ? tNode.classes : tNode.styles).length !== 0;
 }
 
-export function isMapBasedBinding(tData: TData, bindingIndex: number) {
+/**
+ * Whether or not the registered styling binding within `tData` is a map-based entry or not
+ */
+export function isMapBasedBinding(tData: TData, bindingIndex: number): boolean {
   return getBindingPropName(tData, bindingIndex) === null;
 }
 
 /**
- * Used to print each of the style/class bindings attached to the given node.
+ * Whether or not sanitization should be performed for the given property
  */
-export function printStylingSources(
-    tNode: TStylingNode, tData: TData, isClassBased: boolean): void {
-  let bindingIndex = getStylingHead(tNode, isClassBased);
-  let hostBindingsMode = false;
-  let isFirstItem = true;
-  let str = '';
-  while (bindingIndex !== 0) {
-    if (!hostBindingsMode && isHostBinding(tData, bindingIndex)) {
-      hostBindingsMode = true;
-      isFirstItem = true;
-    }
-    if (isFirstItem) {
-      if (hostBindingsMode) {
-        str += '\n\nHOST BINDINGS:\n';
-      } else {
-        str += '\n\nTEMPLATE BINDINGS:\n';
-      }
-    }
-
-    isFirstItem = false;
-    const prop = getBindingPropName(tData, bindingIndex) || 'MAP';
-    const suffix = getBindingPropSuffix(tData, bindingIndex);
-    const name = suffix ? `${prop}.${suffix}` : prop;
-    str += `  ${getPrintedBindingName(name, hostBindingsMode)}: ${bindingIndex}\n`;
-    bindingIndex = getNextBindingIndex(tData, bindingIndex);
-  }
-
-  /* tslint:disable */
-  console.log(str);
-}
-
-function getPrintedBindingName(name: string, isHostBinding: boolean) {
-  return isHostBinding ? `@HostBinding("${name}")` : `[${name}]`;
-}
-
-export function printStylingTable(
-    tData: TData, tNode: TStylingNode, lView: LStylingData, isClassBased: boolean) {
-  const head = getStylingHead(tNode, isClassBased);
-  const tail = getStylingTail(tNode, isClassBased);
-
-  let bindingIndex = head;
-  const entries = [];
-
-  const initial = isClassBased ? tNode.classes : tNode.styles;
-  entries.push({prop: 'HEAD', index: null, value: head});
-  entries.push({prop: 'TAIL', index: null, value: tail});
-
-  entries.push({prop: 'INITIAL', index: null, value: initial});
-
-  entries.push({});
-
-  while (bindingIndex !== 0) {
-    const next = getNextBindingIndex(tData, bindingIndex);
-    let prop = tData[bindingIndex] as string || '[MAP]';
-    if (isHostBinding(tData, bindingIndex)) {
-      prop = `*${prop}`;
-    }
-
-    const previous = getPreviousBindingIndex(tData, bindingIndex);
-    entries.push({
-      prop,
-      index: bindingIndex,
-      value: getValue(lView, bindingIndex),
-      concatenatedValue: getConcatenatedValue(lView, bindingIndex),
-      indices: `${previous} | ${next}`,
-    });
-
-    bindingIndex = next;
-  }
-
-  /* tslint:disable */
-  console.table(entries);
-}
-
-export function isSanitizationRequired(prop: string | null, isClassBased: boolean) {
+export function isSanitizationRequired(prop: string | null, isClassBased: boolean): boolean {
   let required: boolean;
   if (isClassBased) {
     // Case #1: classes cannot be sanitized
@@ -623,18 +776,27 @@ export function isSanitizationRequired(prop: string | null, isClassBased: boolea
   return required;
 }
 
-export function hasDirectiveInput(tNode: TNode, isClassBased: boolean) {
+/**
+ * Whether or not the "class" or "style" properties are used by a directive on the provided `tNode`.
+ *
+ * If a directive is attached to an element that contains input bindings for
+ * `[style]` or `[class]` properties then the `tNode` that houses that element
+ * will be marked as having style and/or class properties. This function helps
+ * determine whether that's true or false for the provided `tNode`.
+ */
+export function hasDirectiveInput(tNode: TNode, isClassBased: boolean): boolean {
   return isClassBased ? hasClassInput(tNode) : hasStyleInput(tNode);
 }
 
 /**
  * Returns the next style/class binding index value and rolls the cursor forward by two slots.
  *
- * All style/class bindings use two slots within the
- * lView: one for the value and another for an intermediate
- * value that is constructed after each binding runs.
+ * All style/class bindings use two slots within the lView:
+ * - slot 1) the binding value
+ * - slot 2) the style/class concatenation value that is
+ *   constructed when styling is flushed to the element
  */
-export function nextStylingBindingIndex() {
+export function nextStylingBindingIndex(): number {
   return incrementBindingIndex(2);
 }
 
@@ -647,7 +809,7 @@ export function nextStylingBindingIndex() {
  */
 export function normalizeStylingDirectiveInputValue(
     initialValue: string, bindingValue: string | {[key: string]: any} | null,
-    isClassBased: boolean) {
+    isClassBased: boolean): string|{[key: string]: any}|null {
   let value = bindingValue;
 
   // we only concat values if there is an initial value, otherwise we return the value as is.
@@ -677,8 +839,7 @@ export function normalizeStylingDirectiveInputValue(
  */
 export function updateDirectiveInputValue(
     lView: LView, tNode: TNode, bindingIndex: number, newValue: any, isClassBased: boolean,
-    firstUpdatePass: boolean): boolean {
-  let flushRequired = false;
+    firstUpdatePass: boolean): void {
   const oldValue = getValue(lView, bindingIndex);
   if (hasValueChanged(oldValue, newValue)) {
     // even if the value has changed we may not want to emit it to the
@@ -690,14 +851,17 @@ export function updateDirectiveInputValue(
       const initialValue = isClassBased ? tNode.classes : tNode.styles;
       const value = normalizeStylingDirectiveInputValue(initialValue, newValue, isClassBased);
       setInputsForProperty(lView, inputs, inputName, value);
-      flushRequired = true;
     }
     setValue(lView, bindingIndex, newValue);
   }
-  return flushRequired;
 }
 
-export function checkStylingValueNoChanges(prop: string | null, oldValue: any, newValue: any) {
+/**
+ * Checks whether or not there is a value change between the provided values and throws an error if
+ * true
+ */
+export function checkStylingValueNoChanges(
+    prop: string | null, oldValue: any, newValue: any): void {
   const valueHasChanged = prop === null ? hasValueChanged(oldValue, newValue) :
                                           hasValueChangedUnwrapSafeValue(oldValue, newValue);
   if (valueHasChanged) {

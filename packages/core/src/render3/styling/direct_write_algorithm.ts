@@ -11,7 +11,7 @@ import {RElement} from '../interfaces/renderer';
 import {LStylingData, TStylingNode} from '../interfaces/styling';
 import {LView, TData} from '../interfaces/view';
 import {renderStringify} from '../util/misc_utils';
-import {concatStylingEntry, getBindingPropName, getBindingPropSuffix, getConcatenatedValue, getNextBindingIndex, getPreviousBindingIndex, getStylingTail, getValue, hasConfig, hasValueChanged, hyphenate, isDirectSanitizationRequired, isDuplicateBinding, isStylingMap, isStylingValueDefined, setConcatenatedValue, setValue, splitOnWhitespace} from '../util/styling_utils';
+import {concatStylingEntry, getBindingPropName, getConcatenatedValue, getNextBindingIndex, getPreviousBindingIndex, getStyleBindingSuffix, getStylingTail, getValue, hasConfig, hasValueChanged, hyphenate, isDirectSanitizationRequired, isDuplicateBinding, isStylingMap, isStylingValueDefined, setConcatenatedValue, setValue, splitOnWhitespace} from '../util/styling_utils';
 
 import {removeClass} from './class_differ';
 import {writeAndReconcileClass, writeAndReconcileStyle} from './reconcile';
@@ -255,7 +255,7 @@ function processStylingBinding(
     lView: LStylingData, tNode: TStylingNode, tData: TData, value: any, bindingIndex: number,
     sanitizer: StyleSanitizeFn | null, isClassBased: boolean): void {
   const prop = getBindingPropName(tData, bindingIndex);
-  const suffix = getBindingPropSuffix(tData, bindingIndex);
+  const suffix = getStyleBindingSuffix(tData, bindingIndex);
   const isDuplicateOfPrevious = isDuplicateBinding(tData, bindingIndex);
   const sanitizerToUse = isDirectSanitizationRequired(tData, bindingIndex) ? sanitizer : null;
 

@@ -192,3 +192,8 @@ export const enum TDataStylingIndex {
    */
   PreviousIndexMask = IndexMask << TotalBitsBeforePreviousIndex,
 }
+
+export interface PropAndSuffixEntry {
+  prop: string|null;
+  suffix: string;
+}

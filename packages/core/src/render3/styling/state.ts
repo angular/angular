@@ -64,26 +64,18 @@ export interface StylingState {
   lastStyleBindingIndex: number;
 }
 
-/**
- * Creates a new instance of a `StylingState` object.
- */
-function createStylingState(): StylingState {
-  // these values will get filled in the very first time this is accessed...
-  return {
-    element: null,
-    directiveIndex: -1,
-    sourceIndex: -1,
-    lastClassBindingIndex: 0,
-    lastStyleBindingIndex: 0,
-    sourceClassTail: 0,
-    sourceStyleTail: 0,
-    sourceClassHead: 0,
-    sourceStyleHead: 0,
-  };
-}
-
 /* tslint:disable */
-const _state = createStylingState();
+const _state: StylingState = {
+  element: null,
+  directiveIndex: -1,
+  sourceIndex: -1,
+  lastClassBindingIndex: 0,
+  lastStyleBindingIndex: 0,
+  sourceClassTail: 0,
+  sourceStyleTail: 0,
+  sourceClassHead: 0,
+  sourceStyleHead: 0,
+};
 
 /**
  * Returns (or instantiates) the styling state for the given element.

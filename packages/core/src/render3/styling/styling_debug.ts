@@ -7,13 +7,15 @@
 */
 import {createProxy} from '../../debug/proxy';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-import {TNode, TNodeFlags} from '../interfaces/node';
+import {TNodeFlags} from '../interfaces/node';
 import {LStylingData, TStylingNode} from '../interfaces/styling';
 import {TData} from '../interfaces/view';
-import {getBindingPropName, getBindingPropSuffix, getConcatenatedValue, getNextBindingIndex, getPreviousBindingIndex, getStylingHead, getStylingTail, getValue, hasConfig, isHostBinding, isStylingValueDefined, printStylingTable} from '../util/styling_utils';
+import {getConcatenatedValue, getStylingHead, getStylingTail, hasConfig, isStylingValueDefined} from '../util/styling_utils';
 
 import {processStylingBindingsUpToPoint} from './direct_write_algorithm';
 import {StyleChangesArrayMapEnum, parseKeyValue} from './style_differ';
+import {printStylingTable} from './styling_debug_utils';
+
 
 
 /**
@@ -66,7 +68,6 @@ export interface DebugStylingConfig {
   hasHostBindings: boolean;      //
 }
 
-
 /**
  * A debug/testing-oriented summary of a styling entry.
  *
@@ -103,7 +104,7 @@ export class NodeStylingDebug implements DebugNodeStyling {
    * Returns a detailed summary of each styling entry in the context and
    * what their runtime representation is.
    *
-   * See `DebugNodeStylingEntry`.
+   * See [DebugNodeStylingEntry].
    */
   get summary(): {[key: string]: DebugNodeStylingEntry} {
     const entries = this.values;
@@ -134,10 +135,15 @@ export class NodeStylingDebug implements DebugNodeStyling {
     });
   }
 
+  /**
+   * Various configurations that are used by styles or classes on this node.
+   *
+   * See [DebugStylingConfig].
+   */
   get config() { return buildConfig(this._tNode, this._isClassBased); }
 
   /**
-   * Returns a key/value map of all the styles/classes that were last applied to the element.
+   * Returns a key/value map of all the styles/classes that were last applied to the element
    */
   get values(): {[key: string]: any} {
     const entries: {[key: string]: any} = {};
@@ -171,6 +177,10 @@ export class NodeStylingDebug implements DebugNodeStyling {
   print(): void { printStylingTable(this._tData, this._tNode, this._data, this._isClassBased); }
 }
 
+/**
+ * Returns a key/value map of styling configuration flags which are obtained from the provided
+ * `tNode`
+ */
 function buildConfig(tNode: TStylingNode, isClassBased: boolean): DebugStylingConfig {
   const hasMapBindings = hasConfig(
       tNode, isClassBased ? TNodeFlags.hasClassMapBindings : TNodeFlags.hasStyleMapBindings);
