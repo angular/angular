@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ContentChildren, Directive, EventEmitter, HostBinding, Input, OnChanges, Output, QueryList, ViewChildren} from '@angular/core';
+import {Component, ContentChildren, Directive, EventEmitter, HostBinding, HostListener, Input, OnChanges, Output, QueryList, ViewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {onlyInIvy} from '@angular/private/testing';
@@ -4223,6 +4223,77 @@ describe('inheritance', () => {
       fixture.detectChanges();
 
       expect(foundQueryList !.length).toBe(5);
+    });
+
+    it('should inherit host listeners from base class once', () => {
+      const events: string[] = [];
+
+      @Component({
+        selector: 'app-base',
+        template: 'base',
+      })
+      class BaseComponent {
+        @HostListener('click')
+        clicked() {
+          events.push('BaseComponent.clicked');  //
+        }
+      }
+
+      @Component({
+        selector: 'app-child',
+        template: 'child',
+      })
+      class ChildComponent extends BaseComponent {
+        // additional host listeners are defined here to have `hostBindings` function generated on
+        // component def, which would trigger `hostBindings` functions merge operation in
+        // InheritDefinitionFeature logic (merging Child and Base host binding functions)
+        @HostListener('focus')
+        focused() {}
+
+        clicked() {
+          events.push('ChildComponent.clicked');  //
+        }
+      }
+
+      @Component({
+        selector: 'app-grand-child',
+        template: 'grand-child',
+      })
+      class GrandChildComponent extends ChildComponent {
+        // additional host listeners are defined here to have `hostBindings` function generated on
+        // component def, which would trigger `hostBindings` functions merge operation in
+        // InheritDefinitionFeature logic (merging GrandChild and Child host binding functions)
+        @HostListener('blur')
+        focused() {}
+
+        clicked() {
+          events.push('GrandChildComponent.clicked');  //
+        }
+      }
+
+      @Component({
+        selector: 'root-app',
+        template: `
+          <app-base></app-base>
+          <app-child></app-child>
+          <app-grand-child></app-grand-child>
+        `,
+      })
+      class RootApp {
+      }
+
+      const components = [BaseComponent, ChildComponent, GrandChildComponent];
+      TestBed.configureTestingModule({
+        declarations: [RootApp, ...components],
+      });
+      const fixture = TestBed.createComponent(RootApp);
+      fixture.detectChanges();
+
+      components.forEach(component => {
+        fixture.debugElement.query(By.directive(component)).nativeElement.click();
+      });
+      expect(events).toEqual(
+          ['BaseComponent.clicked', 'ChildComponent.clicked', 'GrandChildComponent.clicked'])
     });
 
     xdescribe(
