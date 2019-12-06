@@ -196,7 +196,7 @@ export const ɵɵdefaultStyleSanitizer =
       }
 
       if (mode & StyleSanitizeMode.SanitizeOnly) {
-        return doSanitizeValue ? ɵɵsanitizeStyle(value) : value;
+        return doSanitizeValue ? ɵɵsanitizeStyle(value) : unwrapSafeValue(value);
       } else {
         return doSanitizeValue;
       }
