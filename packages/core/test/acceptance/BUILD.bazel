@@ -8,6 +8,8 @@ ts_library(
     srcs = glob(
         ["**/*.ts"],
     ),
+    # Visible to //:saucelabs_unit_tests
+    visibility = ["//:__pkg__"],
     deps = [
         "//packages/animations",
         "//packages/animations/browser",

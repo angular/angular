@@ -158,9 +158,9 @@ set +e
   cd $GIT_ROOT_DIR && \
   # Run bazel command with saucelabs specific environment variables passed to the action
   # The KARMA_WEB_TEST_MODE and SAUCE_TUNNEL_IDENTIFIER environment variables provide
-  # envirnment variables to be read in the karma configuration file to set correct
+  # environment variables to be read in the karma configuration file to set correct
   # configurations for karma saucelabs and browser configs.
-  # Usage of these envirnment variables can be seen in this repo in
+  # Usage of these environment variables can be seen in this repo in
   # /karma-js.conf.js and /browser-providers.conf.js
   eval "$USER_COMMAND --define=KARMA_WEB_TEST_MODE=SL_REQUIRED \
                       --action_env=SAUCE_USERNAME=$SAUCE_USERNAME \

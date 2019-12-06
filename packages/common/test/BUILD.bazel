@@ -6,7 +6,7 @@ ts_library(
     srcs = glob(
         ["**/*.ts"],
     ),
-    # Visible to //:test_web_all target
+    # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
         "//packages/common",
