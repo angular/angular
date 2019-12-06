@@ -2712,6 +2712,78 @@ describe('styling', () => {
         expect(() => fixture.detectChanges()).not.toThrow();
       });
 
+  onlyInIvy('only ivy treats [class] in concert with other class bindings')
+      .it('should prioritize host bindings for templates first, then directives and finally components',
+          () => {
+            @Component({selector: 'my-comp-with-styling'})
+            class MyCompWithStyling {
+              @HostBinding('style')
+              myStyles: any = {width: '300px'};
+
+              @HostBinding('style.height')
+              myHeight: any = '300px';
+            }
+
+            @Directive({selector: '[my-dir-with-styling]'})
+            class MyDirWithStyling {
+              @HostBinding('style')
+              myStyles: any = {width: '200px'};
+
+              @HostBinding('style.height')
+              myHeight: any = '200px';
+            }
+
+            @Component({
+              template: `
+        <my-comp-with-styling
+          style="height:1px; width:1px"
+          #child
+          my-dir-with-styling
+          [style.height]="myHeight"
+          [style]="myStyles"></my-comp-with-styling>
+      `
+            })
+            class MyComp {
+              myStyles: any = {width: '100px'};
+              myHeight: any = '100px';
+
+              @ViewChild('child', {read: MyDirWithStyling}) public dir !: MyDirWithStyling;
+
+              @ViewChild('child', {read: MyCompWithStyling}) public comp !: MyCompWithStyling;
+            }
+
+            const fixture = TestBed
+                                .configureTestingModule({
+                                  declarations: [MyComp, MyCompWithStyling, MyDirWithStyling],
+                                })
+                                .createComponent(MyComp);
+
+            fixture.detectChanges();
+
+            const elm = fixture.nativeElement.querySelector('my-comp-with-styling') !;
+            expect(elm.style.width).toEqual('100px');
+            expect(elm.style.height).toEqual('100px');
+
+            const comp = fixture.componentInstance;
+            comp.myStyles = {};
+            comp.myHeight = null;
+            fixture.detectChanges();
+            expect(elm.style.width).toEqual('200px');
+            expect(elm.style.height).toEqual('200px');
+
+            comp.dir.myStyles = {};
+            comp.dir.myHeight = null;
+            fixture.detectChanges();
+            expect(elm.style.width).toEqual('300px');
+            expect(elm.style.height).toEqual('300px');
+
+            comp.comp.myStyles = {};
+            comp.comp.myHeight = null;
+            fixture.detectChanges();
+            expect(elm.style.width).toEqual('1px');
+            expect(elm.style.height).toEqual('1px');
+          });
+
   /*
 onlyInIvy('only ivy treats [class] in concert with other class bindings')
   .xit('should hang onto custom classes in combination with ngClass', () => {

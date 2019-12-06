@@ -8,9 +8,10 @@
 import {TNode, TNodeFlags} from '../interfaces/node';
 import {TDataStylingFlags} from '../interfaces/styling';
 import {TData} from '../interfaces/view';
-import {TEMPLATE_DIRECTIVE_INDEX, getBindingPropName, getNextBindingIndex, getPreviousBindingIndex, getStylingHead, getStylingTail, hasInitialClass, hasInitialStyle, hasInitialStyling, patchConfig, setBindingConfig, setBindingConfigAndPointers, setBindingPointer, setBindingPropName, setStylingHeadTail} from '../util/styling_utils';
+import {getBindingPropName, getNextBindingIndex, getPreviousBindingIndex, getStylingHead, getStylingTail, hasInitialClass, hasInitialStyle, hasInitialStyling, isComponentHostBinding, patchConfig, setBindingConfig, setBindingPointer, setBindingPropName, setStylingHeadTail} from '../util/styling_utils';
 
 import {StylingState} from './state';
+
 
 /**
  * --------
@@ -36,20 +37,33 @@ import {StylingState} from './state';
  */
 export function registerBinding(
     tNode: TNode, tData: TData, bindingIndex: number, state: StylingState, prop: string | null,
-    suffix: string | null, sanitizationRequired: boolean, hostBindingsMode: boolean,
-    isClassBased: boolean): void {
+    suffix: string | null, sanitizationRequired: boolean, isClassBased: boolean): void {
+  const mode = getBindingSourceMode(tNode, state.directiveIndex);
   registerBindingIntoTData(
-      tNode, tData, prop, bindingIndex, isClassBased, state, sanitizationRequired, suffix);
+      tNode, tData, prop, bindingIndex, isClassBased, state, sanitizationRequired, suffix, mode);
 
   let flagsToUpdate = prop === null ?
       (isClassBased ? TNodeFlags.hasClassMapBindings : TNodeFlags.hasStyleMapBindings) :
       (isClassBased ? TNodeFlags.hasClassPropBindings : TNodeFlags.hasStylePropBindings);
 
-  flagsToUpdate |= hostBindingsMode ?
+  flagsToUpdate |= mode !== BindingSourceMode.Template ?
       (isClassBased ? TNodeFlags.hasHostClassBindings : TNodeFlags.hasHostStyleBindings) :
       (isClassBased ? TNodeFlags.hasTemplateClassBindings : TNodeFlags.hasTemplateStyleBindings);
 
   patchConfig(tNode, flagsToUpdate);
+}
+
+function getBindingSourceMode(tNode: TNode, directiveIndex: number) {
+  if (directiveIndex === 0) return BindingSourceMode.Template;
+  const hasComponentOnHost = tNode.flags & TNodeFlags.isComponentHost;
+  return directiveIndex === 1 && hasComponentOnHost ? BindingSourceMode.Component :
+                                                      BindingSourceMode.Directive;
+}
+
+const enum BindingSourceMode {
+  Template = 0,
+  Component = 1,
+  Directive = 2,
 }
 
 /**
@@ -124,8 +138,9 @@ export function registerBinding(
  */
 export function registerBindingIntoTData(
     tNode: TNode, tData: TData, prop: string | null, bindingIndex: number, isClassBased: boolean,
-    state: StylingState, sanitizationRequired: boolean, suffix: string | null): void {
-  const hostBindingsMode = state.directiveIndex !== TEMPLATE_DIRECTIVE_INDEX;
+    state: StylingState, sanitizationRequired: boolean, suffix: string | null,
+    mode: BindingSourceMode): void {
+  const hostBindingsMode = mode > 0;
   let head = getStylingHead(tNode, isClassBased);
   let tail = getStylingTail(tNode, isClassBased);
   let sourceTail = isClassBased ? state.sourceClassTail : state.sourceStyleTail;
@@ -140,8 +155,17 @@ export function registerBindingIntoTData(
   // then we need to make sure that each of the bindings are situated before the
   // already registered bindings.
   if (isFirstBindingInSource) {
-    nextPointer = sourceHead;
-    head = sourceHead = bindingIndex;
+    if (isComponentHostBinding(tData, head)) {
+      // all follow-up directives are placed after the component host bindings
+      const lastComponentIndex = findEndOfComponentBindings(tData, head);
+      nextPointer = getNextBindingIndex(tData, lastComponentIndex);
+      previousPointer = lastComponentIndex;
+      sourceTail = sourceHead = bindingIndex;
+    } else {
+      nextPointer = sourceHead;
+      sourceHead = bindingIndex;
+      head = bindingIndex;
+    }
   } else {
     nextPointer = getNextBindingIndex(tData, sourceTail);
     previousPointer = sourceTail;
@@ -158,7 +182,7 @@ export function registerBindingIntoTData(
   // set for this binding
   setBindingPropName(tData, bindingIndex, prop, suffix, isClassBased);
   setBindingConfigAndPointers(
-      tData, bindingIndex, nextPointer, previousPointer, sanitizationRequired, hostBindingsMode);
+      tData, bindingIndex, nextPointer, previousPointer, sanitizationRequired, mode);
 
   // depending on where this binding is set, we want each entry to be in order
   // of styling priority. Therefore the bindings will change their order when
@@ -180,6 +204,15 @@ export function registerBindingIntoTData(
   }
 
   checkAndMarkBindingAsDuplicate(tNode, tData, prop, bindingIndex, isClassBased, hostBindingsMode);
+}
+
+function findEndOfComponentBindings(tData: TData, index: number): number {
+  let endIndex = 0;
+  while (index !== 0 && isComponentHostBinding(tData, index)) {
+    endIndex = index;
+    index = getNextBindingIndex(tData, index);
+  }
+  return endIndex;
 }
 
 /**
@@ -261,5 +294,37 @@ function checkAndMarkBindingAsDuplicate(
       }
       i = getNextBindingIndex(tData, i);
     }
+  }
+}
+
+/**
+ * Registers the the configuration and next/previous pointer values for a styling binding
+ *
+ * @param tData the `TData` array used to house the values
+ * @param bindingIndex the index location where the values will be stored
+ * @param nextIndex the next style/class binding in `TData` that this binding links to
+ * @param previousIndex the previous style/class binding in `TData` that this binding links to
+ * @param sanitizationRequired whether or not sanitization is required for this binding
+ * @param hostBindingsMode whether or not this binding is a host binding
+ */
+export function setBindingConfigAndPointers(
+    tData: TData, bindingIndex: number, nextIndex: number, previousIndex: number,
+    sanitizationRequired: boolean, mode: BindingSourceMode): void {
+  tData[bindingIndex + 1] = TDataStylingFlags.Initial;
+  if (sanitizationRequired) {
+    setBindingConfig(tData, bindingIndex, TDataStylingFlags.SanitizationRequiredFlag);
+  }
+
+  if (mode === BindingSourceMode.Directive) {
+    setBindingConfig(tData, bindingIndex, TDataStylingFlags.IsDirectiveHostBinding);
+  } else if (mode === BindingSourceMode.Component) {
+    setBindingConfig(tData, bindingIndex, TDataStylingFlags.IsComponentHostBinding);
+  }
+
+  if (previousIndex !== 0) {
+    setBindingPointer(tData, bindingIndex, previousIndex, true);
+  }
+  if (nextIndex !== 0) {
+    setBindingPointer(tData, bindingIndex, nextIndex, false);
   }
 }

@@ -606,6 +606,9 @@
     "name": "findDirectiveMatches"
   },
   {
+    "name": "findEndOfComponentBindings"
+  },
+  {
     "name": "findExistingListener"
   },
   {
@@ -646,6 +649,9 @@
   },
   {
     "name": "getBindingPropName"
+  },
+  {
+    "name": "getBindingSourceMode"
   },
   {
     "name": "getBindingStartIndex"
@@ -954,6 +960,9 @@
     "name": "isComponentHost"
   },
   {
+    "name": "isComponentHostBinding"
+  },
+  {
     "name": "isContentQueryHost"
   },
   {
@@ -1069,6 +1078,9 @@
   },
   {
     "name": "markDirtyIfOnPush"
+  },
+  {
+    "name": "markLocationFromWhichStylesNeedToBeRecomputed"
   },
   {
     "name": "markViewDirty"

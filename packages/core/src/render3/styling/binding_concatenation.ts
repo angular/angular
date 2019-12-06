@@ -11,12 +11,13 @@ import {RElement} from '../interfaces/renderer';
 import {LStylingData, TStylingNode} from '../interfaces/styling';
 import {LView, TData} from '../interfaces/view';
 import {renderStringify} from '../util/misc_utils';
-import {concatStylingEntry, getBindingPropName, getConcatenatedValue, getNextBindingIndex, getPreviousBindingIndex, getStyleBindingSuffix, getStylingTail, getValue, hasConfig, hasValueChanged, hyphenate, isDirectSanitizationRequired, isDuplicateBinding, isStylingMap, isStylingValueDefined, setConcatenatedValue, setValue, splitOnWhitespace} from '../util/styling_utils';
+import {concatStylingEntry, getBindingPropName, getConcatenatedValue, getNextBindingIndex, getPreviousBindingIndex, getStyleBindingSuffix, getStylingTail, getValue, hasConfig, hasValueChanged, hyphenate, isComponentHostBinding, isDirectSanitizationRequired, isDirectiveHostBinding, isDuplicateBinding, isStylingMap, isStylingValueDefined, setConcatenatedValue, setValue, splitOnWhitespace} from '../util/styling_utils';
 
 import {removeClass} from './class_differ';
 import {writeAndReconcileClass, writeAndReconcileStyle} from './reconcile';
 import {StylingState} from './state';
 import {removeStyle} from './style_differ';
+import {printStylingTable} from './styling_debug_utils';
 
 
 
@@ -54,13 +55,24 @@ export function updateBindingValue(
   const updated = hasValueChanged(previousValue, value);
   if (updated) {
     setValue(lView, bindingIndex, value);
-    if (isBindingRegistered(tData, bindingIndex) &&
-        getDirectiveStartIndex(state, isClassBased) !== state.directiveIndex) {
-      setDirectiveAndBindingStartIndices(state, state.directiveIndex, bindingIndex, isClassBased);
-    }
+    markLocationFromWhichStylesNeedToBeRecomputed(
+        state, tData, bindingIndex, state.directiveIndex, isClassBased);
   }
 
   return updated;
+}
+
+function markLocationFromWhichStylesNeedToBeRecomputed(
+    state: StylingState, tData: TData, bindingIndex: number, directiveIndex: number,
+    isClassBased: boolean) {
+  if (isBindingRegistered(tData, bindingIndex)) {
+    const currentStartIndex = getBindingStartIndex(state, isClassBased);
+    const currentDirectiveIndex = getDirectiveStartIndex(state, isClassBased);
+    if (currentDirectiveIndex !== directiveIndex &&
+        !isComponentHostBinding(tData, currentStartIndex)) {
+      setDirectiveAndBindingStartIndices(state, state.directiveIndex, bindingIndex, isClassBased);
+    }
+  }
 }
 
 /**

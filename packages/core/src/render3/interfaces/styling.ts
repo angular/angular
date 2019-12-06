@@ -103,9 +103,19 @@ export const enum TDataStylingFlags {
   Initial = 0b0000,
 
   /**
-   * Whether or not the binding is a host binding
+   * Whether or not the binding is a component host binding
    */
-  IsHostBinding = 0b0001,
+  IsComponentHostBinding = 0b0001,
+
+  /**
+   * Whether or not the binding is a directive host binding
+   */
+  IsDirectiveHostBinding = 0b0010,
+
+  /**
+   * Whether or not the binding is a directive or component host binding
+   */
+  IsHostBinding = IsComponentHostBinding | IsDirectiveHostBinding,
 
   /**
    * Whether or not the binding has a matching binding defined elsewhere in the `tData`.
@@ -116,7 +126,7 @@ export const enum TDataStylingFlags {
    * algorithm to help decide what values to search/replace and what values to append into
    * the final style/class string.
    */
-  IsDuplicateBinding = 0b0010,
+  IsDuplicateBinding = 0b0100,
 
   /**
    * Whether or not this binding requires sanitization.
@@ -125,7 +135,7 @@ export const enum TDataStylingFlags {
    * by default. The reason for this is because there is no way to know ahead of time
    * what entries are populated into the map.
    */
-  SanitizationRequiredFlag = 0b0100,
+  SanitizationRequiredFlag = 0b1000,
 
   /**
    * All configuration bits set to `1`
@@ -193,7 +203,50 @@ export const enum TDataStylingIndex {
   PreviousIndexMask = IndexMask << TotalBitsBeforePreviousIndex,
 }
 
+/**
+ * The key/value structure used to store styling information in `TData`.
+ *
+ * If a binding contains a suffix (e.g. `[style.width.px`]) or if the property
+ * is null (i.e. when map-based bindings like `[style]` are used) then this
+ * object will be constructed and stored in the `TData` as a representation
+ * of that binding.
+ *
+ * For example:
+ * ```html
+ * <div [style.width.px]="w" [style.height]="h" [style]="s">
+ * ```
+ *
+ * Is stored as:
+ *
+ * ```typescript
+ * tData = [
+ *   //..
+ *
+ *   {prop: null, suffix: ''}, // [style]
+ *   XXXXX,  //config
+ *
+ *   {prop: 'width', suffix: 'px'}, // [style.width.px]
+ *   XXXXX,  //config
+ *
+ *   'height', // [style.height]
+ *   XXXXX,  //config
+ *
+ *   //..
+ * ];
+ * ```
+ */
 export interface PropAndSuffixEntry {
+  /**
+   * The style name or class name property.
+   *
+   * There are two different types used here for this value:
+   * - `string` when a prop-based property is used (e.g. `[style.width]`)
+   * - `null` when a map-based property is used (e.g. `[style]`)
+   */
   prop: string|null;
+
+  /**
+   * The suffix (unit) for the property (e.g. `[style.width.px]` will have `px` as the suffix)
+   */
   suffix: string;
 }

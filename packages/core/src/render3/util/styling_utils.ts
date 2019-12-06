@@ -388,6 +388,22 @@ export function isHostBinding(tData: TData, bindingIndex: number): boolean {
 }
 
 /**
+ * Whether or not the styling entry is a directive host binding.
+ */
+export function isDirectiveHostBinding(tData: TData, bindingIndex: number): boolean {
+  return (getBindingConfigAndPointers(tData, bindingIndex) &
+          TDataStylingFlags.IsDirectiveHostBinding) !== 0;
+}
+
+/**
+ * Whether or not the styling entry is a component host binding.
+ */
+export function isComponentHostBinding(tData: TData, bindingIndex: number): boolean {
+  return (getBindingConfigAndPointers(tData, bindingIndex) &
+          TDataStylingFlags.IsComponentHostBinding) !== 0;
+}
+
+/**
  * Whether or not the styling entry is a duplicate of another binding.
  *
  * Duplicate styling bindings are tracked so that the concatenation algorithm
@@ -432,34 +448,6 @@ export function getPreviousBindingIndex(tData: TData, bindingIndex: number): num
 export function getNextBindingIndex(tData: TData, bindingIndex: number): number {
   const value = getBindingConfigAndPointers(tData, bindingIndex);
   return (value & TDataStylingIndex.NextIndexMask) >> TDataStylingIndex.TotalBitsBeforeNextIndex;
-}
-
-/**
- * Registers the the configuration and next/previous pointer values for a styling binding
- *
- * @param tData the `TData` array used to house the values
- * @param bindingIndex the index location where the values will be stored
- * @param nextIndex the next style/class binding in `TData` that this binding links to
- * @param previousIndex the previous style/class binding in `TData` that this binding links to
- * @param sanitizationRequired whether or not sanitization is required for this binding
- * @param hostBindingsMode whether or not this binding is a host binding
- */
-export function setBindingConfigAndPointers(
-    tData: TData, bindingIndex: number, nextIndex: number, previousIndex: number,
-    sanitizationRequired: boolean, hostBindingsMode: boolean): void {
-  tData[bindingIndex + 1] = TDataStylingFlags.Initial;
-  if (sanitizationRequired) {
-    setBindingConfig(tData, bindingIndex, TDataStylingFlags.SanitizationRequiredFlag);
-  }
-  if (hostBindingsMode) {
-    setBindingConfig(tData, bindingIndex, TDataStylingFlags.IsHostBinding);
-  }
-  if (previousIndex !== 0) {
-    setBindingPointer(tData, bindingIndex, previousIndex, true);
-  }
-  if (nextIndex !== 0) {
-    setBindingPointer(tData, bindingIndex, nextIndex, false);
-  }
 }
 
 /**

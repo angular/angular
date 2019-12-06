@@ -7,7 +7,8 @@
 */
 import {LStylingData, TStylingNode} from '../interfaces/styling';
 import {TData} from '../interfaces/view';
-import {getBindingPropName, getConcatenatedValue, getNextBindingIndex, getPreviousBindingIndex, getStyleBindingSuffix, getStylingHead, getStylingTail, getValue, isHostBinding} from '../util/styling_utils';
+import {getBindingPropName, getConcatenatedValue, getNextBindingIndex, getPreviousBindingIndex, getStyleBindingSuffix, getStylingHead, getStylingTail, getValue, isComponentHostBinding, isDirectiveHostBinding, isHostBinding} from '../util/styling_utils';
+
 
 
 /**
@@ -95,9 +96,14 @@ export function printStylingTable(
   while (bindingIndex !== 0) {
     const next = getNextBindingIndex(tData, bindingIndex);
     let prop = tData[bindingIndex] as string || '[MAP]';
-    if (isHostBinding(tData, bindingIndex)) {
-      prop = `*${prop}`;
+    let letter = 'Tpl';
+    if (isDirectiveHostBinding(tData, bindingIndex)) {
+      letter = 'Dir';
     }
+    if (isComponentHostBinding(tData, bindingIndex)) {
+      letter = 'Cmp';
+    }
+    prop = `${letter} - ${prop}`;
 
     const previous = getPreviousBindingIndex(tData, bindingIndex);
     entries.push({

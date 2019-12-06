@@ -301,8 +301,7 @@ export function stylingBindingInternal(
     if (firstUpdatePass) {
       const sanitizationRequired = isSanitizationRequired(prop, isClassBased);
       registerBinding(
-          tNode, tData, bindingIndex, state, prop, suffix, sanitizationRequired, isHostStyling(),
-          isClassBased);
+          tNode, tData, bindingIndex, state, prop, suffix, sanitizationRequired, isClassBased);
     }
 
     if (ngDevMode && getCheckNoChangesMode()) {
