@@ -27,7 +27,7 @@ import {isDefined} from '../utils';
 
 import {DefaultMigrationHost} from './migration_host';
 import {AnalyzedClass, AnalyzedFile, CompiledClass, CompiledFile, DecorationAnalyses} from './types';
-import {analyzeDecorators, isWithinPackage} from './util';
+import {NOOP_DEPENDENCY_TRACKER, analyzeDecorators, isWithinPackage} from './util';
 
 
 /**
@@ -79,7 +79,8 @@ export class DecorationAnalyzer {
   scopeRegistry = new LocalModuleScopeRegistry(
       this.metaRegistry, this.dtsModuleScopeResolver, this.refEmitter, this.aliasingHost);
   fullRegistry = new CompoundMetadataRegistry([this.metaRegistry, this.scopeRegistry]);
-  evaluator = new PartialEvaluator(this.reflectionHost, this.typeChecker);
+  evaluator =
+      new PartialEvaluator(this.reflectionHost, this.typeChecker, /* dependencyTracker */ null);
   moduleResolver = new ModuleResolver(this.program, this.options, this.host);
   importGraph = new ImportGraph(this.moduleResolver);
   cycleAnalyzer = new CycleAnalyzer(this.importGraph);
@@ -90,9 +91,9 @@ export class DecorationAnalyzer {
         /* defaultPreserveWhitespaces */ false,
         /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
         this.moduleResolver, this.cycleAnalyzer, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER,
-        /* annotateForClosureCompiler */ false),
+        NOOP_DEPENDENCY_TRACKER, /* annotateForClosureCompiler */ false),
     // clang-format off
-    // See the note in ngtsc about why this cast is needed.
+        // See the note in ngtsc about why this cast is needed.
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
         this.isCore, /* annotateForClosureCompiler */ false) as DecoratorHandler<unknown, unknown, unknown>,

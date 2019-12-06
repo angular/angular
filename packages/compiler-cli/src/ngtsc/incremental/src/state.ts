@@ -8,13 +8,15 @@
 
 import * as ts from 'typescript';
 
-import {DependencyTracker} from '../../partial_evaluator';
-import {ResourceDependencyRecorder} from '../../util/src/resource_recorder';
+import {ClassRecord, TraitCompiler} from '../../transform';
+import {IncrementalBuild} from '../api';
+
+import {FileDependencyGraph} from './dependency_tracking';
 
 /**
  * Drives an incremental build, by tracking changes and determining which files need to be emitted.
  */
-export class IncrementalDriver implements DependencyTracker, ResourceDependencyRecorder {
+export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
   /**
    * State of the current build.
    *
@@ -22,12 +24,9 @@ export class IncrementalDriver implements DependencyTracker, ResourceDependencyR
    */
   private state: BuildState;
 
-  /**
-   * Tracks metadata related to each `ts.SourceFile` in the program.
-   */
-  private metadata = new Map<ts.SourceFile, FileMetadata>();
-
-  private constructor(state: PendingBuildState, private allTsFiles: Set<ts.SourceFile>) {
+  private constructor(
+      state: PendingBuildState, private allTsFiles: Set<ts.SourceFile>,
+      readonly depGraph: FileDependencyGraph, private logicalChanges: Set<string>|null) {
     this.state = state;
   }
 
@@ -55,6 +54,7 @@ export class IncrementalDriver implements DependencyTracker, ResourceDependencyR
         pendingEmit: oldDriver.state.pendingEmit,
         changedResourcePaths: new Set<string>(),
         changedTsPaths: new Set<string>(),
+        lastGood: oldDriver.state.lastGood,
       };
     }
 
@@ -101,7 +101,7 @@ export class IncrementalDriver implements DependencyTracker, ResourceDependencyR
       }
     }
 
-    // The last step is to remove any deleted files from the state.
+    // The next step is to remove any deleted files from the state.
     for (const filePath of deletedTsPaths) {
       state.pendingEmit.delete(filePath);
 
@@ -110,8 +110,29 @@ export class IncrementalDriver implements DependencyTracker, ResourceDependencyR
       state.changedTsPaths.delete(filePath);
     }
 
-    // `state` now reflects the initial compilation state of the current
-    return new IncrementalDriver(state, new Set<ts.SourceFile>(tsOnlyFiles(newProgram)));
+    // Now, changedTsPaths contains physically changed TS paths. Use the previous program's logical
+    // dependency graph to determine logically changed files.
+    const depGraph = new FileDependencyGraph();
+
+    // If a previous compilation exists, use its dependency graph to determine the set of logically
+    // changed files.
+    let logicalChanges: Set<string>|null = null;
+    if (state.lastGood !== null) {
+      // Extract the set of logically changed files. At the same time, this operation populates the
+      // current (fresh) dependency graph with information about those files which have not
+      // logically changed.
+      logicalChanges = depGraph.updateWithPhysicalChanges(
+          state.lastGood.depGraph, state.changedTsPaths, deletedTsPaths,
+          state.changedResourcePaths);
+      for (const fileName of state.changedTsPaths) {
+        logicalChanges.add(fileName);
+      }
+    }
+
+    // `state` now reflects the initial pending state of the current compilation.
+
+    return new IncrementalDriver(
+        state, new Set<ts.SourceFile>(tsOnlyFiles(newProgram)), depGraph, logicalChanges);
   }
 
   static fresh(program: ts.Program): IncrementalDriver {
@@ -124,12 +145,14 @@ export class IncrementalDriver implements DependencyTracker, ResourceDependencyR
       pendingEmit: new Set<string>(tsFiles.map(sf => sf.fileName)),
       changedResourcePaths: new Set<string>(),
       changedTsPaths: new Set<string>(),
+      lastGood: null,
     };
 
-    return new IncrementalDriver(state, new Set(tsFiles));
+    return new IncrementalDriver(
+        state, new Set(tsFiles), new FileDependencyGraph(), /* logicalChanges */ null);
   }
 
-  recordSuccessfulAnalysis(): void {
+  recordSuccessfulAnalysis(traitCompiler: TraitCompiler): void {
     if (this.state.kind !== BuildStateKind.Pending) {
       // Changes have already been incorporated.
       return;
@@ -140,12 +163,7 @@ export class IncrementalDriver implements DependencyTracker, ResourceDependencyR
     const state: PendingBuildState = this.state;
 
     for (const sf of this.allTsFiles) {
-      // It's safe to skip emitting a file if:
-      // 1) it hasn't changed
-      // 2) none if its resource dependencies have changed
-      // 3) none of its source dependencies have changed
-      if (state.changedTsPaths.has(sf.fileName) || this.hasChangedResourceDependencies(sf) ||
-          this.getFileDependencies(sf).some(dep => state.changedTsPaths.has(dep.fileName))) {
+      if (this.depGraph.isStale(sf, state.changedTsPaths, state.changedResourcePaths)) {
         // Something has changed which requires this file be re-emitted.
         pendingEmit.add(sf.fileName);
       }
@@ -155,6 +173,13 @@ export class IncrementalDriver implements DependencyTracker, ResourceDependencyR
     this.state = {
       kind: BuildStateKind.Analyzed,
       pendingEmit,
+
+      // Since this compilation was successfully analyzed, update the "last good" artifacts to the
+      // ones from the current compilation.
+      lastGood: {
+        depGraph: this.depGraph,
+        traitCompiler: traitCompiler,
+      }
     };
   }
 
@@ -162,58 +187,19 @@ export class IncrementalDriver implements DependencyTracker, ResourceDependencyR
 
   safeToSkipEmit(sf: ts.SourceFile): boolean { return !this.state.pendingEmit.has(sf.fileName); }
 
-  trackFileDependency(dep: ts.SourceFile, src: ts.SourceFile) {
-    const metadata = this.ensureMetadata(src);
-    metadata.fileDependencies.add(dep);
-  }
-
-  trackFileDependencies(deps: ts.SourceFile[], src: ts.SourceFile) {
-    const metadata = this.ensureMetadata(src);
-    for (const dep of deps) {
-      metadata.fileDependencies.add(dep);
+  priorWorkFor(sf: ts.SourceFile): ClassRecord[]|null {
+    if (this.state.lastGood === null || this.logicalChanges === null) {
+      // There is no previous good build, so no prior work exists.
+      return null;
+    } else if (this.logicalChanges.has(sf.fileName)) {
+      // Prior work might exist, but would be stale as the file in question has logically changed.
+      return null;
+    } else {
+      // Prior work might exist, and if it does then it's usable!
+      return this.state.lastGood.traitCompiler.recordsFor(sf);
     }
-  }
-
-  getFileDependencies(file: ts.SourceFile): ts.SourceFile[] {
-    if (!this.metadata.has(file)) {
-      return [];
-    }
-    const meta = this.metadata.get(file) !;
-    return Array.from(meta.fileDependencies);
-  }
-
-  recordResourceDependency(file: ts.SourceFile, resourcePath: string): void {
-    const metadata = this.ensureMetadata(file);
-    metadata.resourcePaths.add(resourcePath);
-  }
-
-  private ensureMetadata(sf: ts.SourceFile): FileMetadata {
-    const metadata = this.metadata.get(sf) || new FileMetadata();
-    this.metadata.set(sf, metadata);
-    return metadata;
-  }
-
-  private hasChangedResourceDependencies(sf: ts.SourceFile): boolean {
-    if (!this.metadata.has(sf)) {
-      return false;
-    }
-    const resourceDeps = this.metadata.get(sf) !.resourcePaths;
-    return Array.from(resourceDeps.keys())
-        .some(
-            resourcePath => this.state.kind === BuildStateKind.Pending &&
-                this.state.changedResourcePaths.has(resourcePath));
   }
 }
-
-/**
- * Information about the whether a source file can have analysis or emission can be skipped.
- */
-class FileMetadata {
-  /** A set of source files that this file depends upon. */
-  fileDependencies = new Set<ts.SourceFile>();
-  resourcePaths = new Set<string>();
-}
-
 
 type BuildState = PendingBuildState | AnalyzedBuildState;
 
@@ -247,6 +233,26 @@ interface BaseBuildState {
    * See the README.md for more information on this algorithm.
    */
   pendingEmit: Set<string>;
+
+
+  /**
+   * Specific aspects of the last compilation which successfully completed analysis, if any.
+   */
+  lastGood: {
+    /**
+     * The dependency graph from the last successfully analyzed build.
+     *
+     * This is used to determine the logical impact of physical file changes.
+     */
+    depGraph: FileDependencyGraph;
+
+    /**
+     * The `TraitCompiler` from the last successfully analyzed build.
+     *
+     * This is used to extract "prior work" which might be reusable in this compilation.
+     */
+    traitCompiler: TraitCompiler;
+  }|null;
 }
 
 /**

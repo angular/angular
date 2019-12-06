@@ -257,13 +257,8 @@ export class NgtscProgram implements api.Program {
     await Promise.all(promises);
 
     this.perfRecorder.stop(analyzeSpan);
-    this.compilation.resolve();
 
-    this.recordNgModuleScopeDependencies();
-
-    // At this point, analysis is complete and the compiler can now calculate which files need to be
-    // emitted, so do that.
-    this.incrementalDriver.recordSuccessfulAnalysis();
+    this.resolveCompilation(this.compilation);
   }
 
   listLazyRoutes(entryRoute?: string|undefined): api.LazyRoute[] {
@@ -339,15 +334,20 @@ export class NgtscProgram implements api.Program {
         this.perfRecorder.stop(analyzeFileSpan);
       }
       this.perfRecorder.stop(analyzeSpan);
-      this.compilation.resolve();
 
-      this.recordNgModuleScopeDependencies();
-
-      // At this point, analysis is complete and the compiler can now calculate which files need to
-      // be emitted, so do that.
-      this.incrementalDriver.recordSuccessfulAnalysis();
+      this.resolveCompilation(this.compilation);
     }
     return this.compilation;
+  }
+
+  private resolveCompilation(compilation: TraitCompiler): void {
+    compilation.resolve();
+
+    this.recordNgModuleScopeDependencies();
+
+    // At this point, analysis is complete and the compiler can now calculate which files need to
+    // be emitted, so do that.
+    this.incrementalDriver.recordSuccessfulAnalysis(compilation);
   }
 
   emit(opts?: {
@@ -616,7 +616,8 @@ export class NgtscProgram implements api.Program {
       this.aliasingHost = new FileToModuleAliasingHost(this.fileToModuleHost);
     }
 
-    const evaluator = new PartialEvaluator(this.reflector, checker, this.incrementalDriver);
+    const evaluator =
+        new PartialEvaluator(this.reflector, checker, this.incrementalDriver.depGraph);
     const dtsReader = new DtsMetadataReader(checker, this.reflector);
     const localMetaRegistry = new LocalMetadataRegistry();
     const localMetaReader: MetadataReader = localMetaRegistry;
@@ -654,7 +655,7 @@ export class NgtscProgram implements api.Program {
           this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false, this.moduleResolver,
           this.cycleAnalyzer, this.refEmitter, this.defaultImportTracker,
-          this.closureCompilerEnabled, this.incrementalDriver),
+          this.incrementalDriver.depGraph, this.closureCompilerEnabled),
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null` not
       // being assignable to `unknown` when wrapped in `Readonly`).
       new DirectiveDecoratorHandler(
@@ -674,7 +675,7 @@ export class NgtscProgram implements api.Program {
     ];
 
     return new TraitCompiler(
-        handlers, this.reflector, this.perfRecorder,
+        handlers, this.reflector, this.perfRecorder, this.incrementalDriver,
         this.options.compileNonExportedClasses !== false, this.dtsTransforms);
   }
 
@@ -684,38 +685,39 @@ export class NgtscProgram implements api.Program {
    */
   private recordNgModuleScopeDependencies() {
     const recordSpan = this.perfRecorder.start('recordDependencies');
+    const depGraph = this.incrementalDriver.depGraph;
+
     for (const scope of this.scopeRegistry !.getCompilationScopes()) {
       const file = scope.declaration.getSourceFile();
       const ngModuleFile = scope.ngModule.getSourceFile();
 
       // A change to any dependency of the declaration causes the declaration to be invalidated,
       // which requires the NgModule to be invalidated as well.
-      const deps = this.incrementalDriver.getFileDependencies(file);
-      this.incrementalDriver.trackFileDependencies(deps, ngModuleFile);
+      depGraph.addTransitiveDependency(ngModuleFile, file);
 
       // A change to the NgModule file should cause the declaration itself to be invalidated.
-      this.incrementalDriver.trackFileDependency(ngModuleFile, file);
+      depGraph.addDependency(file, ngModuleFile);
 
-      // A change to any directive/pipe in the compilation scope should cause the declaration to be
-      // invalidated.
-      for (const directive of scope.directives) {
-        const dirSf = directive.ref.node.getSourceFile();
+      const meta = this.metaReader !.getDirectiveMetadata(new Reference(scope.declaration));
+      if (meta !== null && meta.isComponent) {
+        // If a component's template changes, it might have affected the import graph, and thus the
+        // remote scoping feature which is activated in the event of potential import cycles. Thus,
+        // the module depends not only on the transitive dependencies of the component, but on its
+        // resources as well.
+        depGraph.addTransitiveResources(ngModuleFile, file);
 
-        // When a directive in scope is updated, the declaration needs to be recompiled as e.g.
-        // a selector may have changed.
-        this.incrementalDriver.trackFileDependency(dirSf, file);
-
-        // When any of the dependencies of the declaration changes, the NgModule scope may be
-        // affected so a component within scope must be recompiled. Only components need to be
-        // recompiled, as directives are not dependent upon the compilation scope.
-        if (directive.isComponent) {
-          this.incrementalDriver.trackFileDependencies(deps, dirSf);
+        // A change to any directive/pipe in the compilation scope should cause the component to be
+        // invalidated.
+        for (const directive of scope.directives) {
+          // When a directive in scope is updated, the component needs to be recompiled as e.g. a
+          // selector may have changed.
+          depGraph.addTransitiveDependency(file, directive.ref.node.getSourceFile());
         }
-      }
-      for (const pipe of scope.pipes) {
-        // When a pipe in scope is updated, the declaration needs to be recompiled as e.g.
-        // the pipe's name may have changed.
-        this.incrementalDriver.trackFileDependency(pipe.ref.node.getSourceFile(), file);
+        for (const pipe of scope.pipes) {
+          // When a pipe in scope is updated, the component needs to be recompiled as e.g. the
+          // pipe's name may have changed.
+          depGraph.addTransitiveDependency(file, pipe.ref.node.getSourceFile());
+        }
       }
     }
     this.perfRecorder.stop(recordSpan);

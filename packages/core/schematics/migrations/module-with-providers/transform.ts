@@ -24,8 +24,9 @@ const TODO_COMMENT = 'TODO: The following node requires a generic type for `Modu
 
 export class ModuleWithProvidersTransform {
   private printer = ts.createPrinter();
-  private partialEvaluator: PartialEvaluator =
-      new PartialEvaluator(new TypeScriptReflectionHost(this.typeChecker), this.typeChecker);
+  private partialEvaluator: PartialEvaluator = new PartialEvaluator(
+      new TypeScriptReflectionHost(this.typeChecker), this.typeChecker,
+      /* dependencyTracker */ null);
 
   constructor(
       private typeChecker: ts.TypeChecker,

@@ -13,6 +13,7 @@ import {CycleAnalyzer} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {absoluteFrom, relative} from '../../file_system';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
+import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
 import {DirectiveMeta, MetadataReader, MetadataRegistry, extractDirectiveGuards} from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
@@ -21,7 +22,6 @@ import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from 
 import {ComponentScopeReader, LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck';
-import {NoopResourceDependencyRecorder, ResourceDependencyRecorder} from '../../util/src/resource_recorder';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {SubsetOfKeys} from '../../util/src/typescript';
 
@@ -73,9 +73,7 @@ export class ComponentDecoratorHandler implements
       private enableI18nLegacyMessageIdFormat: boolean, private moduleResolver: ModuleResolver,
       private cycleAnalyzer: CycleAnalyzer, private refEmitter: ReferenceEmitter,
       private defaultImportRecorder: DefaultImportRecorder,
-      private annotateForClosureCompiler: boolean,
-      private resourceDependencies:
-          ResourceDependencyRecorder = new NoopResourceDependencyRecorder()) {}
+      private depTracker: DependencyTracker|null, private annotateForClosureCompiler: boolean) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -88,6 +86,7 @@ export class ComponentDecoratorHandler implements
   private preanalyzeTemplateCache = new Map<ts.Declaration, PreanalyzedTemplate>();
 
   readonly precedence = HandlerPrecedence.PRIMARY;
+  readonly name = ComponentDecoratorHandler.name;
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
@@ -255,7 +254,9 @@ export class ComponentDecoratorHandler implements
         const resourceUrl = this.resourceLoader.resolve(styleUrl, containingFile);
         const resourceStr = this.resourceLoader.load(resourceUrl);
         styles.push(resourceStr);
-        this.resourceDependencies.recordResourceDependency(node.getSourceFile(), resourceUrl);
+        if (this.depTracker !== null) {
+          this.depTracker.addResourceDependency(node.getSourceFile(), resourceUrl);
+        }
       }
     }
     if (component.has('styles')) {
@@ -638,7 +639,9 @@ export class ComponentDecoratorHandler implements
     templateSourceMapping: TemplateSourceMapping
   } {
     const templateStr = this.resourceLoader.load(resourceUrl);
-    this.resourceDependencies.recordResourceDependency(node.getSourceFile(), resourceUrl);
+    if (this.depTracker !== null) {
+      this.depTracker.addResourceDependency(node.getSourceFile(), resourceUrl);
+    }
     const parseTemplate = (options?: ParseTemplateOptions) => this._parseTemplate(
         component, templateStr, sourceMapUrl(resourceUrl),
         /* templateRange */ undefined,

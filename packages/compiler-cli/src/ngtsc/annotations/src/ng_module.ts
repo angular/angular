@@ -36,13 +36,15 @@ export interface NgModuleAnalysis {
   factorySymbolName: string;
 }
 
+export interface NgModuleResolution { injectorImports: Expression[]; }
+
 /**
  * Compiles @NgModule annotations to ngModuleDef fields.
  *
  * TODO(alxhub): handle injector side of things as well.
  */
 export class NgModuleDecoratorHandler implements
-    DecoratorHandler<Decorator, NgModuleAnalysis, unknown> {
+    DecoratorHandler<Decorator, NgModuleAnalysis, NgModuleResolution> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaReader: MetadataReader, private metaRegistry: MetadataRegistry,
@@ -54,6 +56,7 @@ export class NgModuleDecoratorHandler implements
       private annotateForClosureCompiler: boolean, private localeId?: string) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
+  readonly name = NgModuleDecoratorHandler.name;
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
@@ -270,9 +273,13 @@ export class NgModuleDecoratorHandler implements
     }
   }
 
-  resolve(node: ClassDeclaration, analysis: Readonly<NgModuleAnalysis>): ResolveResult<unknown> {
+  resolve(node: ClassDeclaration, analysis: Readonly<NgModuleAnalysis>):
+      ResolveResult<NgModuleResolution> {
     const scope = this.scopeRegistry.getScopeOfModule(node);
     const diagnostics = this.scopeRegistry.getDiagnosticsOfModule(node) || undefined;
+    const data: NgModuleResolution = {
+      injectorImports: [],
+    };
 
     if (scope !== null) {
       // Using the scope information, extend the injector's imports using the modules that are
@@ -280,7 +287,7 @@ export class NgModuleDecoratorHandler implements
       const context = getSourceFile(node);
       for (const exportRef of analysis.exports) {
         if (isNgModule(exportRef.node, scope.compilation)) {
-          analysis.inj.imports.push(this.refEmitter.emit(exportRef, context));
+          data.injectorImports.push(this.refEmitter.emit(exportRef, context));
         }
       }
 
@@ -296,17 +303,25 @@ export class NgModuleDecoratorHandler implements
     }
 
     if (scope === null || scope.reexports === null) {
-      return {diagnostics};
+      return {data, diagnostics};
     } else {
       return {
+        data,
         diagnostics,
         reexports: scope.reexports,
       };
     }
   }
 
-  compile(node: ClassDeclaration, analysis: Readonly<NgModuleAnalysis>): CompileResult[] {
-    const ngInjectorDef = compileInjector(analysis.inj);
+  compile(
+      node: ClassDeclaration, analysis: Readonly<NgModuleAnalysis>,
+      resolution: Readonly<NgModuleResolution>): CompileResult[] {
+    //  Merge the injector imports (which are 'exports' that were later found to be NgModules)
+    //  computed during resolution with the ones from analysis.
+    const ngInjectorDef = compileInjector({
+      ...analysis.inj,
+      imports: [...analysis.inj.imports, ...resolution.injectorImports],
+    });
     const ngModuleDef = compileNgModule(analysis.mod);
     const ngModuleStatements = ngModuleDef.additionalStatements;
     if (analysis.metadataStmt !== null) {
