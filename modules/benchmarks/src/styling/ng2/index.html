@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+
+<head>
+  <!-- Prevent the browser from requesting any favicon. -->
+  <link rel="icon" href="data:,">
+</head>
+
+<body>
+
+  <h2>Styling bindings benchmark</h2>
+  <p>
+    <select id="scenario-select">
+      <option value="0">(0) [title]="exp" (no styling involved)</option>
+      <option value="1">(1) class="foo" (static class)</option>
+      <option value="2">(2) class="foo {{exp}}" (className binding)</option>
+      <option value="3">(3) [class.foo]="boolExp" binding</option>
+      <option value="4">(4) class="foo" [class.bar]="boolExp" (mix of static and class. bindings</option>
+      <option value="5">(5) class="foo" [ngClass]="{bar: boolExp}" (mix of static class and ngClass binding)</option>
+      <option value="6">(6) class="foo" [ngStyle]="{width: 10px}" [style.background-color]="exp" (Sierpinski's triangle)
+      </option>
+    </select>
+
+    <button id="create">create</button>
+    <button id="detectChanges">detect changes</button>
+    <button id="destroy">destroy</button>
+    <button id="profile">profile detect changes</button>
+    <button id="modify">modify externally</button>
+  </p>
+
+  <div>
+    <styling-bindings id="root">Loading...</styling-bindings>
+  </div>
+
+  <!--load location for ts_devserver-->
+  <script src="/app_bundle.js"></script>
+</body>
+
+</html>
