@@ -356,6 +356,31 @@ jobs:
       - notify_webhook_on_fail:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
+  saucelabs_ivy:
+    executor:
+      name: default-executor
+      # In order to avoid the bottleneck of having a slow host machine, we acquire a better
+      # container for this job. This is necessary because we launch a lot of browsers concurrently
+      # and therefore the tunnel and Karma need to process a lot of file requests and tests.
+      resource_class: xlarge
+    steps:
+      - custom_attach_workspace
+      - init_environment
+      - setup_circleci_bazel_config
+      - setup_bazel_rbe
+      - run:
+          name: Run Bazel tests on Saucelabs
+          # Runs the //:saucelabs_tests target with Saucelabs and Ivy. Note that we also
+          # pass "--flaky_test_attempts=default" because we don't want Bazel to rerun
+          # the test in case of an error. The retry mechanism is already part of Karma.
+          command:  |
+            ./scripts/saucelabs/run-bazel-via-tunnel.sh \
+              --tunnel-id angular-${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_INDEX} \
+              --username $SAUCE_USERNAME \
+              --key $(echo $SAUCE_ACCESS_KEY | rev) \
+              -- yarn bazel test //:saucelabs_tests --config=ivy --flaky_test_attempts=default
+          no_output_timeout: 20m
+
   test_aio:
     # Needed because the AIO tests and the PWA score test depend on Chrome being available.
     executor: browsers-executor
@@ -815,6 +840,9 @@ workflows:
       - legacy-unit-tests-saucelabs:
           requires:
             - setup
+      - saucelabs_ivy:
+            requires:
+              - setup
       - test_saucelabs_bazel:
           # This job is currently a PoC and a subset of `legacy-unit-tests-saucelabs`. Running on
           # master only to avoid wasting resources.

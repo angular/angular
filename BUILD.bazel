@@ -47,6 +47,21 @@ filegroup(
     ],
 )
 
+# We combine all tests into a single "karma_web_test" target because running them as separate
+# targets in parallel can result in to too many browsers being acquired at the same time. This
+# will then result in tests being flaky.
+karma_web_test(
+    name = "saucelabs_tests",
+    tags = [
+        "local",
+        "manual",
+        "saucelabs",
+    ],
+    deps = [
+        "//packages/core/test/acceptance:acceptance_lib",
+    ],
+)
+
 # To run a karma_web_test target locally on SauceLabs:
 # 1) have SAUCE_USERNAME, SAUCE_ACCESS_KEY (and optionally a SAUCE_TUNNEL_IDENTIFIER) set in your environment
 # 2) open a sauce connection with `./scripts/saucelabs/start-tunnel.sh`

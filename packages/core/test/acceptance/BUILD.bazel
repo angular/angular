@@ -8,6 +8,7 @@ ts_library(
     srcs = glob(
         ["**/*.ts"],
     ),
+    visibility = ["//:__pkg__"],
     deps = [
         "//packages/animations",
         "//packages/animations/browser",
