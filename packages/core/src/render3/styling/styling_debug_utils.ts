@@ -5,7 +5,8 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
-import {LStylingData, TStylingNode} from '../interfaces/styling';
+import {TNode} from '../interfaces/node';
+import {LStylingData} from '../interfaces/styling';
 import {TData} from '../interfaces/view';
 import {getBindingPropName, getConcatenatedValue, getNextBindingIndex, getPreviousBindingIndex, getStyleBindingSuffix, getStylingHead, getStylingTail, getValue, isComponentHostBinding, isDirectiveHostBinding, isHostBinding} from '../util/styling_utils';
 
@@ -32,8 +33,7 @@ import {getBindingPropName, getConcatenatedValue, getNextBindingIndex, getPrevio
 /**
  * Used to print each of the style/class bindings attached to the given node.
  */
-export function printStylingSources(
-    tNode: TStylingNode, tData: TData, isClassBased: boolean): void {
+export function printStylingSources(tNode: TNode, tData: TData, isClassBased: boolean): void {
   let bindingIndex = getStylingHead(tNode, isClassBased);
   let hostBindingsMode = false;
   let isFirstItem = true;
@@ -78,7 +78,7 @@ function getPrintedBindingName(name: string, isHostBinding: boolean): string {
  * and `lView` arrays
  */
 export function printStylingTable(
-    tData: TData, tNode: TStylingNode, lView: LStylingData, isClassBased: boolean): void {
+    tData: TData, tNode: TNode, lView: LStylingData, isClassBased: boolean): void {
   const head = getStylingHead(tNode, isClassBased);
   const tail = getStylingTail(tNode, isClassBased);
 

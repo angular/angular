@@ -8,7 +8,7 @@
 import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
 import {TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
-import {LStylingData, TStylingNode} from '../interfaces/styling';
+import {LStylingData} from '../interfaces/styling';
 import {LView, TData} from '../interfaces/view';
 import {renderStringify} from '../util/misc_utils';
 import {concatStylingEntry, getBindingPropName, getConcatenatedValue, getNextBindingIndex, getPreviousBindingIndex, getStyleBindingSuffix, getStylingTail, getValue, hasConfig, hasValueChanged, hyphenate, isComponentHostBinding, isDirectSanitizationRequired, isDirectiveHostBinding, isDuplicateBinding, isStylingMap, isStylingValueDefined, setConcatenatedValue, setValue, splitOnWhitespace} from '../util/styling_utils';
@@ -17,8 +17,6 @@ import {removeClass} from './class_differ';
 import {writeAndReconcileClass, writeAndReconcileStyle} from './reconcile';
 import {StylingState} from './state';
 import {removeStyle} from './style_differ';
-import {printStylingTable} from './styling_debug_utils';
-
 
 
 /**
@@ -244,7 +242,7 @@ function concatenateAndGetPrevious(
  * The concatenation string value that lives in the binding just before the provided `bindingIndex`
  */
 function getPreviousConcatenatedStr(
-    lView: LStylingData, tData: TData, tNode: TStylingNode, bindingIndex: number,
+    lView: LStylingData, tData: TData, tNode: TNode, bindingIndex: number,
     isClassBased: boolean): string {
   const previousBindingIndex = getPreviousBindingIndex(tData, bindingIndex);
   return getConcatenatedStr(
@@ -256,7 +254,7 @@ function getPreviousConcatenatedStr(
  * until the tail).
  */
 export function processStylingBindingsUpToEnd(
-    lView: LStylingData, tData: TData, tNode: TStylingNode, bindingIndex: number,
+    lView: LStylingData, tData: TData, tNode: TNode, bindingIndex: number,
     sanitizer: StyleSanitizeFn | null, isClassBased: boolean): void {
   while (bindingIndex !== 0) {
     const value = getValue(lView, bindingIndex);
@@ -297,7 +295,7 @@ export function processStylingBindingsUpToEnd(
  * will exist at the tail end of the `LView` (see [TNode.stylesIndex] and [TNode.classesIndex]).
  */
 function processStylingBinding(
-    lView: LStylingData, tNode: TStylingNode, tData: TData, value: any, bindingIndex: number,
+    lView: LStylingData, tNode: TNode, tData: TData, value: any, bindingIndex: number,
     sanitizer: StyleSanitizeFn | null, isClassBased: boolean): void {
   const prop = getBindingPropName(tData, bindingIndex);
   const suffix = getStyleBindingSuffix(tData, bindingIndex);

@@ -5,7 +5,6 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
-import {TNode, TNodeFlags} from './node';
 import {LView} from './view';
 
 
@@ -28,70 +27,6 @@ import {LView} from './view';
  * an instance of `LView` doesn't need to be constructed for tests.
  */
 export type LStylingData = LView | (string | number | boolean | null)[];
-
-/**
- * Simplified `TNode` interface for styling-related code.
- *
- * The original `TNode` data-structure contains various properties that are not
- * used within the styling algorithm code. Having to create an empty `TNode` with
- * each of these values and place those into tests and debugging code adds mental
- * overhead. This data-structure is a simplified `TNode` that is only used for
- * styling code and will only contain the properties that are necessary for the
- * styling algorithm to function.
- */
-export interface TStylingNode {
-  /**
-   * A string representation of all initial styles on this node.
-   *
-   * See [TNode.styles].
-   */
-  styles: string;
-
-  /**
-   * A list of all the initial style properties on this node.
-   *
-   * See [TNode.initialStyleNames].
-   */
-  initialStyleNames: string[]|null;
-
-  /**
-   * A string representation of all initial classes on this node.
-   *
-   * See [TNode.classes].
-   */
-  classes: string;
-
-  /**
-   * Last binding index for any `[class]` or `[class.name]` bindings on this node.
-   *
-   * See [TNode.classesBindingIndex].
-   */
-  classesBindingIndex: number;
-
-  /**
-   * Last binding index for any `[style]` or `[style.name]` bindings on this node.
-   *
-   * See [TNode.stylesBindingIndex].
-   */
-  stylesBindingIndex: number;
-
-  /**
-   * Various flags used in `TNode` some of which are used for styling purposes.
-   *
-   * See [TNode.flags].
-   */
-  flags: TNodeFlags;
-}
-
-/**
- * This function acts as a hack to compare the type structure of `TStylingNode` against `TNode`.
- *
- * Do not use.
- */
-function tStylingNodeAndTNodeTypeCheck(x: TNode) {
-  const y: TStylingNode = x;
-  return true;
-}
 
 /**
  * Various flags used for each style/class binding entry stored inside of `TData`.

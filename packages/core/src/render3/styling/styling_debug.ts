@@ -7,8 +7,8 @@
 */
 import {createProxy} from '../../debug/proxy';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-import {TNodeFlags} from '../interfaces/node';
-import {LStylingData, TStylingNode} from '../interfaces/styling';
+import {TNode, TNodeFlags} from '../interfaces/node';
+import {LStylingData} from '../interfaces/styling';
 import {TData} from '../interfaces/view';
 import {getConcatenatedValue, getStylingHead, getStylingTail, hasConfig, isStylingValueDefined} from '../util/styling_utils';
 
@@ -92,7 +92,7 @@ export class NodeStylingDebug implements DebugNodeStyling {
   private _sanitizer: StyleSanitizeFn|null = null;
 
   constructor(
-      private _tNode: TStylingNode, private _tData: TData, private _data: LStylingData,
+      private _tNode: TNode, private _tData: TData, private _data: LStylingData,
       private _isClassBased: boolean) {}
 
   /**
@@ -181,7 +181,7 @@ export class NodeStylingDebug implements DebugNodeStyling {
  * Returns a key/value map of styling configuration flags which are obtained from the provided
  * `tNode`
  */
-function buildConfig(tNode: TStylingNode, isClassBased: boolean): DebugStylingConfig {
+function buildConfig(tNode: TNode, isClassBased: boolean): DebugStylingConfig {
   const hasMapBindings = hasConfig(
       tNode, isClassBased ? TNodeFlags.hasClassMapBindings : TNodeFlags.hasStyleMapBindings);
   const hasPropBindings = hasConfig(

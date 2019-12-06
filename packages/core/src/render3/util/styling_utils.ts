@@ -11,7 +11,7 @@ import {CharCode} from '../../util/char_code';
 import {throwErrorIfNoChangesMode} from '../errors';
 import {AttributeMarker, PropertyAliases, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
 import {RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
-import {LStylingData, PropAndSuffixEntry, TDataStylingFlags, TDataStylingIndex, TStylingNode} from '../interfaces/styling';
+import {LStylingData, PropAndSuffixEntry, TDataStylingFlags, TDataStylingIndex} from '../interfaces/styling';
 import {TData} from '../interfaces/view';
 import {getCurrentStyleSanitizer, incrementBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
@@ -48,14 +48,14 @@ const STYLE_PROP_VALUE_SEPARATOR = ': ';
 /**
  * Whether or not a specific styling config flag is set to true on a `tNode`
  */
-export function hasConfig(tNode: TStylingNode, flag: TNodeFlags): boolean {
+export function hasConfig(tNode: TNode, flag: TNodeFlags): boolean {
   return (tNode.flags & flag) !== 0;
 }
 
 /**
  * Sets (turns on) one or more styling flags to true on the provided `tNode`
  */
-export function patchConfig(tNode: TStylingNode, flag: TNodeFlags): void {
+export function patchConfig(tNode: TNode, flag: TNodeFlags): void {
   tNode.flags |= flag;
 }
 
@@ -152,14 +152,14 @@ export function hyphenate(str: string): string {
 /**
  * Whether or not the provided `tNode` is marked with having any `@Input('class')` input setters
  */
-export function hasClassInput(tNode: TStylingNode): boolean {
+export function hasClassInput(tNode: TNode): boolean {
   return (tNode.flags & TNodeFlags.hasClassInput) !== 0;
 }
 
 /**
  * Whether or not the provided `tNode` is marked with having any `@Input('style')` input setters
  */
-export function hasStyleInput(tNode: TStylingNode): boolean {
+export function hasStyleInput(tNode: TNode): boolean {
   return (tNode.flags & TNodeFlags.hasStyleInput) !== 0;
 }
 
@@ -677,7 +677,7 @@ const STYLING_INDEX_MASK = 0xFFFF;
 /**
  * Returns the head index value used for all style/class bindings on the provided `tNode`
  */
-export function getStylingHead(tNode: TStylingNode, isClassBased: boolean) {
+export function getStylingHead(tNode: TNode, isClassBased: boolean) {
   const index = isClassBased ? tNode.classesBindingIndex : tNode.stylesBindingIndex;
   return (index >> STYLING_INDEX_BITS) & STYLING_INDEX_MASK;
 }
@@ -685,7 +685,7 @@ export function getStylingHead(tNode: TStylingNode, isClassBased: boolean) {
 /**
  * Returns the tail index value used for all style/class bindings on the provided `tNode`
  */
-export function getStylingTail(tNode: TStylingNode, isClassBased: boolean) {
+export function getStylingTail(tNode: TNode, isClassBased: boolean) {
   const index = isClassBased ? tNode.classesBindingIndex : tNode.stylesBindingIndex;
   return index & STYLING_INDEX_MASK;
 }
