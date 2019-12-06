@@ -47,13 +47,7 @@ export function getDirectiveDiagnostics(
 export function checkInheritanceOfDirective(
     node: ClassDeclaration, reader: MetadataReader, evaluator: PartialEvaluator): ts.Diagnostic|
     null {
-  if (!ts.isClassDeclaration(node) || node.heritageClauses === undefined) {
-    return null;
-  }
-
-  const extendsClause =
-      node.heritageClauses.find(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
-  if (extendsClause === undefined) {
+  if (!ts.isClassDeclaration(node)) {
     return null;
   }
 
@@ -66,36 +60,69 @@ export function checkInheritanceOfDirective(
   // The extends clause is an expression which can be as dynamic as the user wants. Try to
   // evaluate it, but fall back on ignoring the clause if it can't be understood. This is a View
   // Engine compatibility hack: View Engine ignores 'extends' expressions that it cannot understand.
-  const type = extendsClause.types[0];
-  const baseClass = evaluator.evaluate(type.expression);
-  if (!(baseClass instanceof Reference) || !isNamedClassDeclaration(baseClass.node)) {
+  let parentClass = getParentClass(node, evaluator);
+
+  if (!parentClass) {
     return null;
   }
 
-  // If the base class doesn't have a constructor or the constructor
-  // doesn't have parameters, it won't be using DI so we can skip it.
-  const baseClassConstructor = getConstructor(baseClass.node);
-  if (baseClassConstructor === undefined || baseClassConstructor.parameters.length === 0) {
-    return null;
-  }
+  while (parentClass && isNamedClassDeclaration(parentClass.node)) {
+    // We can skip the base class if it has metadata.
+    const baseClassMeta = reader.getDirectiveMetadata(parentClass as Reference<ClassDeclaration>);
+    if (baseClassMeta !== null) {
+      return null;
+    }
 
-  // We can skip the base class if it has metadata.
-  const baseClassMeta = reader.getDirectiveMetadata(baseClass as Reference<ClassDeclaration>);
-  if (baseClassMeta !== null) {
-    return null;
+    // If the base class has a blank constructor we can skip it since it can't be using DI.
+    const baseClassConstructor = getConstructor(parentClass.node);
+    if (baseClassConstructor) {
+      if (baseClassConstructor.parameters.length === 0) {
+        return null;
+      } else {
+        break;
+      }
+    }
+
+    const newParentClass = getParentClass(parentClass.node, evaluator);
+    if (newParentClass) {
+      // If we found another parent class, keep going.
+      parentClass = newParentClass;
+    } else if (!baseClassConstructor) {
+      // If this is the last class in the chain and it doesn't have
+      // a constructor, it can't be using DI so we shouldn't throw.
+      return null;
+    } else {
+      // Otherwise break the loop and let it log the diagnostic below.
+      break;
+    }
   }
 
   const subclassMeta = reader.getDirectiveMetadata(new Reference(node)) !;
   const dirOrComp = subclassMeta.isComponent ? 'Component' : 'Directive';
+  const baseClassName = parentClass.debugName;
 
   return makeDiagnostic(
-      ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR, type,
-      `The ${dirOrComp.toLowerCase()} ${node.name.text} inherits its constructor from ${baseClass.debugName}, ` +
+      ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR, node,
+      `The ${dirOrComp.toLowerCase()} ${node.name.text} inherits its constructor from ${baseClassName}, ` +
           `but the latter does not have an Angular decorator of its own. Dependency injection will not be able to ` +
-          `resolve the parameters of ${baseClass.debugName}'s constructor. Either add a @Directive decorator ` +
-          `to ${baseClass.debugName}, or add an explicit constructor to ${node.name.text}.`);
+          `resolve the parameters of ${baseClassName}'s constructor. Either add a @Directive decorator ` +
+          `to ${baseClassName}, or add an explicit constructor to ${node.name.text}.`);
 }
 
+function getParentClass(node: ts.ClassDeclaration, evaluator: PartialEvaluator): Reference|null {
+  const extendsClause = node.heritageClauses &&
+      node.heritageClauses.find(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
+
+  if (extendsClause && extendsClause.types.length > 0) {
+    const result = evaluator.evaluate(extendsClause.types[0].expression);
+
+    if (result instanceof Reference) {
+      return result;
+    }
+  }
+
+  return null;
+}
 
 /** Gets the constructor of a class declaration. */
 function getConstructor(node: ts.ClassDeclaration): ts.ConstructorDeclaration|undefined {

@@ -5272,6 +5272,65 @@ export const Foo = Foo__PRE_R3__;
         expect(diags[1].messageText).toContain('BasePlainWithConstructorParameters');
       });
 
+      it('should error when inheriting a constructor from undecorated grand super class', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {Directive, Component} from '@angular/core';
+          import {BasePlainWithConstructorParameters} from './local';
+
+          class Parent extends BasePlainWithConstructorParameters {}
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir extends Parent {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'TestCmp',
+          })
+          export class Cmp extends Parent {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toContain('Dir');
+        expect(diags[0].messageText).toContain('BasePlainWithConstructorParameters');
+        expect(diags[1].messageText).toContain('Cmp');
+        expect(diags[1].messageText).toContain('BasePlainWithConstructorParameters');
+      });
+
+      it('should error when inheriting a constructor from undecorated grand grand super class',
+         () => {
+           env.tsconfig();
+           env.write('test.ts', `
+              import {Directive, Component} from '@angular/core';
+              import {BasePlainWithConstructorParameters} from './local';
+
+              class GrandParent extends BasePlainWithConstructorParameters {}
+
+              class Parent extends GrandParent {}
+
+              @Directive({
+                selector: '[dir]',
+              })
+              export class Dir extends Parent {}
+
+              @Component({
+                selector: 'test-cmp',
+                template: 'TestCmp',
+              })
+              export class Cmp extends Parent {}
+            `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(2);
+           expect(diags[0].messageText).toContain('Dir');
+           expect(diags[0].messageText).toContain('BasePlainWithConstructorParameters');
+           expect(diags[1].messageText).toContain('Cmp');
+           expect(diags[1].messageText).toContain('BasePlainWithConstructorParameters');
+         });
+
       it('should not error when inheriting a constructor from decorated directive or component classes in a .d.ts file',
          () => {
            env.tsconfig();
