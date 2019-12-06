@@ -6,6 +6,7 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
+import {assertNotEqual} from '../../util/assert';
 import {TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {LStylingData} from '../interfaces/styling';
@@ -197,6 +198,9 @@ function flushStyleOrClassBindings(
         hostBindingsMode);
     const newValue = getConcatenatedValue(lView, tailIndex);
     if (allowValueToBeApplied(tNode, previousValue, newValue, firstUpdatePass)) {
+      ngDevMode &&
+          assertNotEqual(
+              newValue, previousValue, `Expected ${newValue} not to match ${previousValue}`);
       // the write operation may apply the value directly to the element's className
       // or style value. Some browsers may reorder the style/class values on said
       // property, therefore, the previous value will need to be updated with this entry.
@@ -396,7 +400,7 @@ function allowValueToBeApplied(
 
   // the new value may just be the same as the initial value
   // (which was set during element creation)
-  if (firstUpdatePass && newValue === previousValue) {
+  if (newValue === previousValue) {
     return false;
   }
 

@@ -1303,7 +1303,7 @@ describe('styling', () => {
             ngDevModeResetPerfCounters();
             fixture.detectChanges();
 
-            expect(ngDevMode !.rendererSetStyle).toEqual(1);
+            expect(ngDevMode !.rendererSetStyle).toEqual(0);
             assertStyle(element, 'width', '123px');
             assertStyle(element, 'height', '123px');
 
