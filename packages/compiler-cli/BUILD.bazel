@@ -2,6 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "npm_package", "ts_library")
 load("@npm_bazel_typescript//:index.bzl", "ts_config")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
 ts_config(
     name = "tsconfig",
@@ -50,6 +51,15 @@ ts_library(
         "@npm//tsickle",
         "@npm//typescript",
     ],
+)
+
+nodejs_binary(
+    name = "bin",
+    data = [
+        ":compiler-cli",
+        "@npm//chokidar",
+    ],
+    entry_point = "src/main.ts",
 )
 
 npm_package(

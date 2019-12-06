@@ -1,0 +1,40 @@
+// Tsconfig that builds all packages except "@angular/core". The core package will be built
+// in a separate compilation unit. See "packages/tsconfig-core-package.json".
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "paths": {
+      "zone.js": ["./dist/all/@angular/zone.js"],
+      "@angular/core": ["./dist/all/@angular/core"],
+      "@angular/*": ["./packages/*"]
+    }
+  },
+  "files": [
+    // Include global zone.js types.
+    "../dist/all/@angular/zone.js/lib/zone.d.ts"
+  ],
+  "include": [
+    "types.d.ts",
+    "*/**/*.ts"
+  ],
+  "exclude": [
+    "**/test/**",
+    "**/testing/**",
+    "**/integrationtest/**",
+    "**/schematics",
+    // Exclude "core" and "zone.js package that are built separately.
+    "core/**",
+    "zone.js/**",
+    // Requires "types": ["node"] which we don't want to be available for other code
+    "localize/src/tools",
+    // Deprecated packages
+    "http/**",
+    "platform-webworker/**",
+    "platform-webworker-dynamic/**",
+    // Packages which are not required for building tests.
+    "examples/**",
+    "benchpress/**",
+    "bazel/**"
+  ]
+}

@@ -1,0 +1,19 @@
+// Tsconfig that builds "@angular/core" separately from all other packages. This is necessary
+// because "ngtsc" has special logic for building the core package. Read more about this in the
+// "packages/core/src/r3_symbols.ts" file.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true
+  },
+  "include": [
+    "types.d.ts",
+    "core/**/*.ts",
+    "zone.js/**/*"
+  ],
+  "exclude": [
+    "core/testing/**",
+    "core/schematics/**",
+    "**/test/**"
+  ]
+}

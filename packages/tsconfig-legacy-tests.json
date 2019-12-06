@@ -1,0 +1,31 @@
+// Tsconfig that builds all test files of non-excluded packages. References to files of
+// release packages will be automatically resolved to the previous compilations done with ngtsc.
+// This ensures that all PRE_R3 and POST_R3 switches are updated, and that tests run with Ivy.
+{
+  "extends": "./tsconfig.json",
+  "references": [
+    { "path": "./tsconfig-core-package.json" },
+    { "path": "./tsconfig-packages.json" }
+  ],
+  "include": [
+    "**/*.d.ts",
+    "**/test/**/*",
+    "**/testing/**/*"
+  ],
+  "exclude": [
+    // AOT test file will not compile in standard tsc compilation.
+    "router/test/aot_ngsummary_test",
+    // Packages for which cross-browser tests are not needed.
+    "bazel/**",
+    "benchpress/**",
+    "language-service/test/project/**",
+    "**/schematics/**",
+    "**/integrationtest/**",
+    // Deprecated packages.
+    "http/**",
+    "platform-webworker/**",
+    "platform-webworker-dynamic/**",
+    // Requires "types": ["node"] which we don't want to be available for other code
+    "localize/src/tools"
+  ]
+}

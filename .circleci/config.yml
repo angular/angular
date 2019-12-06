@@ -667,6 +667,7 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
+      - setup_bazel_rbe
       - run:
           name: Preparing environment for running tests on Saucelabs.
           command: |
@@ -676,9 +677,9 @@ jobs:
           name: Starting Saucelabs tunnel
           command: ./scripts/saucelabs/start-tunnel.sh
           background: true
-      - run: yarn tsc -p packages
-      - run: yarn tsc -p modules
-      - run: yarn bazel build //packages/zone.js:npm_package
+      - run: $(yarn bin bazel) run packages/compiler-cli:bin -- -p $PWD/packages/tsconfig-core-package.json
+      - run: $(yarn bin bazel) run packages/compiler-cli:bin -- -p $PWD/packages/tsconfig-packages.json
+      - run: yarn tsc -p packages/tsconfig-legacy-tests.json
         # Waits for the Saucelabs tunnel to be ready. This ensures that we don't run tests
         # too early without Saucelabs not being ready.
       - run: ./scripts/saucelabs/wait-for-tunnel.sh
