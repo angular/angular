@@ -13,3 +13,8 @@ test --flaky_test_attempts=2
 
 # More details on failures
 build --verbose_failures=true
+
+# For saucelabs tests we don't want to enable flaky test attempts. Karma has its own integrated
+# retry mechanism and we do not want to retry unnecessarily if Karma already tried multiple times.
+# Setting the option to "default" is necessary because the option is set above.
+test:saucelabs --flaky_test_attempts=default
