@@ -42,13 +42,13 @@ export function propertyPatch() {
     return obj;
   };
 
-  Object.create = <any>function(obj: any, proto: any) {
-    if (typeof proto === 'object' && !Object.isFrozen(proto)) {
-      Object.keys(proto).forEach(function(prop) {
-        proto[prop] = rewriteDescriptor(obj, prop, proto[prop]);
+  Object.create = <any>function(proto: any, propertiesObject: any) {
+    if (typeof propertiesObject === 'object' && !Object.isFrozen(propertiesObject)) {
+      Object.keys(propertiesObject).forEach(function(prop) {
+        propertiesObject[prop] = rewriteDescriptor(proto, prop, propertiesObject[prop]);
       });
     }
-    return _create(obj, proto);
+    return _create(proto, propertiesObject);
   };
 
   Object.getOwnPropertyDescriptor = function(obj, prop) {
