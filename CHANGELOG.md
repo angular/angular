@@ -1,3 +1,39 @@
+<a name="9.0.0-rc.5"></a>
+# [9.0.0-rc.5](https://github.com/angular/angular/compare/9.0.0-rc.4...9.0.0-rc.5) (2019-12-04)
+
+
+### Bug Fixes
+
+* **bazel:** don't rely on [@angular](https://github.com/angular)/core being as a depedency to install [@angular](https://github.com/angular)/bazel ([#34181](https://github.com/angular/angular/issues/34181)) ([716fc84](https://github.com/angular/angular/commit/716fc84)), closes [#34164](https://github.com/angular/angular/issues/34164)
+* **bazel:** reenable template type checking in ng_module ([#34144](https://github.com/angular/angular/issues/34144)) ([572e731](https://github.com/angular/angular/commit/572e731)), closes [/github.com/angular/angular/blob/168abc6d6f52713383411b14980e104c99bfeef5/packages/compiler-cli/src/ngtsc/program.ts#L430-L434](https://github.com//github.com/angular/angular/blob/168abc6d6f52713383411b14980e104c99bfeef5/packages/compiler-cli/src/ngtsc/program.ts/issues/L430-L434)
+* **common:** reflect input type in NgForOf context ([#33997](https://github.com/angular/angular/issues/33997)) ([b640d38](https://github.com/angular/angular/commit/b640d38))
+* **common:** reflect input type in NgIf context ([#33997](https://github.com/angular/angular/issues/33997)) ([7504543](https://github.com/angular/angular/commit/7504543)), closes [#31556](https://github.com/angular/angular/issues/31556)
+* **compiler:** i18n - trim whitespace from i18n custom ids ([#34154](https://github.com/angular/angular/issues/34154)) ([64317c6](https://github.com/angular/angular/commit/64317c6)), closes [#34147](https://github.com/angular/angular/issues/34147)
+* **compiler-cli:** ensure that `ngI18nClosureMode` is guarded in generated code ([#34211](https://github.com/angular/angular/issues/34211)) ([4d02556](https://github.com/angular/angular/commit/4d02556))
+* **core:** ensure that `ngI18nClosureMode` is guarded ([#34211](https://github.com/angular/angular/issues/34211)) ([2546261](https://github.com/angular/angular/commit/2546261))
+* **ivy:** allow insertion of views attached to a different container ([#34156](https://github.com/angular/angular/issues/34156)) ([65cd811](https://github.com/angular/angular/commit/65cd811)), closes [#34152](https://github.com/angular/angular/issues/34152)
+* **ivy:** consistenly return -1 from ViewContainerRef.indexOf for non-inserted view ([#34156](https://github.com/angular/angular/issues/34156)) ([0044c66](https://github.com/angular/angular/commit/0044c66))
+* **ivy:** correctly support `ngProjectAs` on templates ([#34200](https://github.com/angular/angular/issues/34200)) ([41ea3c2](https://github.com/angular/angular/commit/41ea3c2))
+* **ivy:** i18n - correctly parse XLIFF placeholders ([#34155](https://github.com/angular/angular/issues/34155)) ([d5a48b2](https://github.com/angular/angular/commit/d5a48b2)), closes [#34151](https://github.com/angular/angular/issues/34151)
+* **ivy:** i18n - trim whitespace when parsing metadata ([#34154](https://github.com/angular/angular/issues/34154)) ([f4d714c](https://github.com/angular/angular/commit/f4d714c))
+* **ivy:** incorrectly validating html foreign objects inside svg ([#34178](https://github.com/angular/angular/issues/34178)) ([4836fe0](https://github.com/angular/angular/commit/4836fe0)), closes [#34171](https://github.com/angular/angular/issues/34171)
+* **ivy:** support ICUs with pipes ([#34198](https://github.com/angular/angular/issues/34198)) ([eae541b](https://github.com/angular/angular/commit/eae541b))
+* **language-service:** determine correct type for ngFor exported values ([#34089](https://github.com/angular/angular/issues/34089)) ([12e4aa0](https://github.com/angular/angular/commit/12e4aa0))
+* **language-service:** Do not produce diagnostics if metadata for NgModule not found ([#34113](https://github.com/angular/angular/issues/34113)) ([29de8d3](https://github.com/angular/angular/commit/29de8d3))
+* implement Symbol.specics of Promise ([#34162](https://github.com/angular/angular/issues/34162)) ([1bab8c2](https://github.com/angular/angular/commit/1bab8c2)), closes [#34105](https://github.com/angular/angular/issues/34105) [#33989](https://github.com/angular/angular/issues/33989)
+* **language-service:** Insert parentheses for method completion ([#33860](https://github.com/angular/angular/issues/33860)) ([fb22f18](https://github.com/angular/angular/commit/fb22f18))
+* **language-service:** Make missing module suggestion instead of error ([#34115](https://github.com/angular/angular/issues/34115)) ([#34193](https://github.com/angular/angular/issues/34193)) ([d2538ca](https://github.com/angular/angular/commit/d2538ca))
+* **language-service:** use host.error() instead of console.error() ([#34114](https://github.com/angular/angular/issues/34114)) ([7a7e999](https://github.com/angular/angular/commit/7a7e999))
+* **ngcc:** render legacy i18n message ids by default ([#34135](https://github.com/angular/angular/issues/34135)) ([93ac362](https://github.com/angular/angular/commit/93ac362)), closes [#34056](https://github.com/angular/angular/issues/34056)
+
+
+### Performance Improvements
+
+* add js-web-frameworks benchmark ([#34034](https://github.com/angular/angular/issues/34034)) ([bf16b0e](https://github.com/angular/angular/commit/bf16b0e))
+* **ivy:** avoid duplicate state lookup and default function parameters ([#34183](https://github.com/angular/angular/issues/34183)) ([00f7372](https://github.com/angular/angular/commit/00f7372))
+
+
+
 <a name="9.0.0-rc.4"></a>
 # [9.0.0-rc.4](https://github.com/angular/angular/compare/9.0.0-rc.3...9.0.0-rc.4) (2019-11-27)
 
