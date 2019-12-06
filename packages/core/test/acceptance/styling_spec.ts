@@ -493,23 +493,18 @@ describe('styling', () => {
          }
        }
 
-       // Ivy does an extra `[class]` write with a falsy value since the value
-       // is applied during creation mode. This is a deviation from VE and should
-       // be (Jira Issue = FW-1467).
-       let totalWrites = ivyEnabled ? 1 : 0;
-
        TestBed.configureTestingModule({declarations: [Cmp, MyClassDir]});
        const fixture = TestBed.createComponent(Cmp);
-       expect(capturedClassBindingCount).toEqual(totalWrites++);
+       expect(capturedClassBindingCount).toEqual(0);
        fixture.detectChanges();
 
-       expect(capturedClassBindingCount).toEqual(totalWrites++);
+       expect(capturedClassBindingCount).toEqual(1);
        expect(capturedClassBindingValue as any).toEqual('bar');
 
        fixture.componentInstance.c = 'dynamic-bar';
        fixture.detectChanges();
 
-       expect(capturedClassBindingCount).toEqual(totalWrites++);
+       expect(capturedClassBindingCount).toEqual(2);
        expect(capturedClassBindingValue !).toEqual('dynamic-bar');
      });
 
@@ -634,7 +629,24 @@ describe('styling', () => {
             @Directive({selector: '[my-class-dir]'})
             class MyClassDir {
               @Input('class')
-              set classVal(v: string) {
+              set classVal(v: string|null) {
+                switch (capturedClassBindingCount) {
+                  case 0:
+                    // Called as part of `ɵɵelement()` instruction.
+                    // At this point there is no way to know if there is a binding, and so we must
+                    // call it with initial static value.
+                    // (we could queue it up for later, but it would be complex/bloat the code base)
+                    expect(v).toEqual('static-val');
+                    break;
+                  case 1:
+                    // Called as part of the `ɵɵstyleMap()` instruction to set a new value.
+                    // In this case there is no change so we set it with same value.
+                    expect(v).toEqual('static-val');
+                    break;
+                  case 2:
+                    expect(v).toEqual('static-val dynamic-val');
+                    break;
+                }
                 capturedClassBindingCount++;
                 capturedClassBindingValue = v;
               }
@@ -650,7 +662,7 @@ describe('styling', () => {
             const fixture = TestBed.createComponent(Cmp);
             fixture.detectChanges();
 
-            expect(capturedClassBindingCount).toEqual(1);
+            expect(capturedClassBindingCount).toEqual(2);
             expect(capturedClassBindingValue !).toEqual('static-val');
             expect(capturedMyClassBindingCount).toEqual(1);
             expect(capturedMyClassBindingValue !).toEqual('foo');
@@ -658,7 +670,7 @@ describe('styling', () => {
             fixture.componentInstance.c = 'dynamic-val';
             fixture.detectChanges();
 
-            expect(capturedClassBindingCount).toEqual(2);
+            expect(capturedClassBindingCount).toEqual(3);
             expect(capturedClassBindingValue !).toEqual('static-val dynamic-val');
             expect(capturedMyClassBindingCount).toEqual(1);
             expect(capturedMyClassBindingValue !).toEqual('foo');

@@ -9,7 +9,6 @@ import {TNode, TNodeFlags} from '../interfaces/node';
 import {TDataStylingFlags} from '../interfaces/styling';
 import {TData} from '../interfaces/view';
 import {getBindingPropName, getNextBindingIndex, getPreviousBindingIndex, getStylingHead, getStylingTail, hasInitialClass, hasInitialStyle, hasInitialStyling, isComponentHostBinding, patchConfig, setBindingConfig, setBindingPointer, setBindingPropName, setStylingHeadTail} from '../util/styling_utils';
-
 import {StylingState} from './state';
 
 

@@ -12,7 +12,6 @@ import {LStylingData} from '../interfaces/styling';
 import {LView, TData} from '../interfaces/view';
 import {renderStringify} from '../util/misc_utils';
 import {concatStylingEntry, getBindingPropName, getConcatenatedValue, getNextBindingIndex, getPreviousBindingIndex, getStyleBindingSuffix, getStylingTail, getValue, hasConfig, hasValueChanged, hyphenate, isComponentHostBinding, isDirectSanitizationRequired, isDirectiveHostBinding, isDuplicateBinding, isStylingMap, isStylingValueDefined, setConcatenatedValue, setValue, splitOnWhitespace} from '../util/styling_utils';
-
 import {removeClass} from './class_differ';
 import {writeAndReconcileClass, writeAndReconcileStyle} from './reconcile';
 import {StylingState} from './state';
@@ -219,7 +218,8 @@ function concatenateAndGetPrevious(
     tData: TData, lView: LView, tNode: TNode, startIndex: number, tailIndex: number,
     sanitizer: StyleSanitizeFn | null, firstUpdatePass: boolean, isClassBased: boolean,
     hostBindingsMode: boolean): string {
-  const initialValue = isClassBased ? tNode.classes : tNode.styles;
+  const styling = isClassBased ? tNode.classes : tNode.styles;
+  const initialValue = styling === null ? '' : styling;
   const templateBindingsFlag =
       isClassBased ? TNodeFlags.hasTemplateClassBindings : TNodeFlags.hasTemplateStyleBindings;
   const hasTemplateBindings = hasConfig(tNode, templateBindingsFlag);
@@ -245,8 +245,8 @@ function getPreviousConcatenatedStr(
     lView: LStylingData, tData: TData, tNode: TNode, bindingIndex: number,
     isClassBased: boolean): string {
   const previousBindingIndex = getPreviousBindingIndex(tData, bindingIndex);
-  return getConcatenatedStr(
-      lView, previousBindingIndex, isClassBased ? tNode.classes : tNode.styles);
+  const styling = isClassBased ? tNode.classes : tNode.styles;
+  return getConcatenatedStr(lView, previousBindingIndex, styling === null ? '' : styling);
 }
 
 /**

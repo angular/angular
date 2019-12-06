@@ -801,9 +801,9 @@ export function createTNode(
                          tParent,    // parent: TElementNode|TContainerNode|null
                          null,       // projection: number|(ITNode|RNode[])[]|null
                          null,       // initialStyleNames: string[]|null
-                         '',         // styles: string
+                         null,       // styles: string
                          0,          // stylesBindingIndex: number
-                         '',         // classes: string
+                         null,       // classes: string
                          0,          // classesBindingIndex: number
                          ) :
                      {
@@ -828,9 +828,9 @@ export function createTNode(
                        parent: tParent,
                        projection: null,
                        initialStyleNames: null,
-                       styles: '',
+                       styles: null,
                        stylesBindingIndex: 0,
-                       classes: '',
+                       classes: null,
                        classesBindingIndex: 0,
                      };
 }

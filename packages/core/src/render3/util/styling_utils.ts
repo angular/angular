@@ -11,7 +11,7 @@ import {CharCode} from '../../util/char_code';
 import {throwErrorIfNoChangesMode} from '../errors';
 import {AttributeMarker, PropertyAliases, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
 import {RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
-import {LStylingData, PropAndSuffixEntry, TDataStylingFlags, TDataStylingIndex} from '../interfaces/styling';
+import {LStylingData, TDataStylingFlags, TDataStylingIndex, TStyleProperty} from '../interfaces/styling';
 import {TData} from '../interfaces/view';
 import {getCurrentStyleSanitizer, incrementBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
@@ -110,8 +110,10 @@ export function isStylingValueDefined<T extends string|number|{}|null|undefined>
  *
  * @returns the concatenated string value
  */
-export function concatString(a: string, b: string, separator = CLASS_ENTRIES_SEPARATOR): string {
-  return a + ((b.length && a.length) ? separator : '') + b;
+export function concatString(a: string, b: string | null, separator: string): string {
+  if (b === null || b === '') return a;
+  if (a === '') return b;
+  return a + separator + b;
 }
 
 /**
@@ -469,8 +471,8 @@ export function setBindingPropName(
  * doesn't have to be looked at).
  */
 export function getBindingPropName(tData: TData, bindingIndex: number): string|null {
-  const result = tData[bindingIndex];
-  return typeof result === 'string' ? result : (result as PropAndSuffixEntry).prop;
+  const result = tData[bindingIndex] as null | string | TStyleProperty;
+  return result !== null && typeof result === 'object' ? result.prop : result;
 }
 
 /**
@@ -485,7 +487,7 @@ export function getBindingPropName(tData: TData, bindingIndex: number): string|n
  */
 export function getStyleBindingSuffix(tData: TData, bindingIndex: number): string {
   const result = tData[bindingIndex];
-  return typeof result === 'string' ? '' : (result as PropAndSuffixEntry).suffix;
+  return typeof result === 'string' ? '' : (result as TStyleProperty).suffix || '';
 }
 
 /**
@@ -659,7 +661,19 @@ export function hasInitialStyle(tNode: TNode, prop: string): boolean {
  * ```
  */
 export function hasInitialClass(tNode: TNode, prop: string): boolean {
-  return tNode.classes.length !== 0 ? tNode.classes.indexOf(` ${prop} `) !== -1 : false;
+  const classes = tNode.classes;
+  if (classes === null || classes === '') return false;
+  const index = classes === null ? -1 : classes.indexOf(prop);
+  if (index >= 0) {
+    // we found it now check to make sure we are not a substring.
+    let end = index + prop.length;
+    return (  // word break before
+               index === 0 || classes.charCodeAt(index - 1) <= CharCode.SPACE) &&
+        (  // word break after
+               end === classes.length || classes.charCodeAt(end + 1) <= CharCode.SPACE);
+  } else {
+    return false;
+  }
 }
 
 /**
@@ -716,10 +730,10 @@ export function setStylingHeadTail(
 export function renderInitialStyling(
     renderer: Renderer3, native: RElement, tNode: TNode, append: boolean) {
   if (hasInitialStyling(tNode, true)) {
-    setClassName(renderer, native, tNode.classes);
+    setClassName(renderer, native, tNode.classes !);
   }
   if (hasInitialStyling(tNode, false)) {
-    setStyleAttr(renderer, native, tNode.styles);
+    setStyleAttr(renderer, native, tNode.styles !);
   }
 }
 
@@ -727,14 +741,15 @@ export function renderInitialStyling(
  * Whether or not the provided `value` is a key/value map or not
  */
 export function isStylingMap(value: {} | string | null): value is {} {
-  return value !== null && typeof value !== 'string';
+  return value !== null && typeof value === 'object';
 }
 
 /**
  * Whether or not there are any initial style and/or class values present on the provided `tNode`
  */
 export function hasInitialStyling(tNode: TNode, isClassBased: boolean): boolean {
-  return (isClassBased ? tNode.classes : tNode.styles).length !== 0;
+  const value = isClassBased ? tNode.classes : tNode.styles;
+  return value !== null;
 }
 
 /**
@@ -795,15 +810,16 @@ export function nextStylingBindingIndex(): number {
  * will be stringified and concatenated).
  */
 export function normalizeStylingDirectiveInputValue(
-    initialValue: string, bindingValue: string | {[key: string]: any} | null,
+    initialValue: string | null, bindingValue: string | {[key: string]: any} | null,
     isClassBased: boolean): string|{[key: string]: any}|null {
   let value = bindingValue;
 
   // we only concat values if there is an initial value, otherwise we return the value as is.
   // Note that this is to satisfy backwards-compatibility in Angular.
-  if (initialValue.length) {
+  if (initialValue !== null && initialValue !== '') {
     if (isClassBased) {
-      value = concatString(initialValue, forceClassesAsString(bindingValue));
+      value =
+          concatString(initialValue, forceClassesAsString(bindingValue), CLASS_ENTRIES_SEPARATOR);
     } else {
       value = concatString(initialValue, forceStylesAsString(bindingValue, true), ';');
     }

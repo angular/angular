@@ -174,9 +174,9 @@ export const TNodeConstructor = class TNode implements ITNode {
       public parent: TElementNode|TContainerNode|null,                         //
       public projection: number|(ITNode|RNode[])[]|null,                       //
       public initialStyleNames: string[]|null,                                 //
-      public styles: string,                                                   //
+      public styles: string|null,                                              //
       public stylesBindingIndex: number,                                       //
-      public classes: string,                                                  //
+      public classes: string|null,                                             //
       public classesBindingIndex: number,                                      //
       ) {}
 

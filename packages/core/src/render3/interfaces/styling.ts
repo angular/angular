@@ -170,7 +170,7 @@ export const enum TDataStylingIndex {
  * ];
  * ```
  */
-export interface PropAndSuffixEntry {
+export interface TStyleProperty {
   /**
    * The style name or class name property.
    *
@@ -183,5 +183,5 @@ export interface PropAndSuffixEntry {
   /**
    * The suffix (unit) for the property (e.g. `[style.width.px]` will have `px` as the suffix)
    */
-  suffix: string;
+  suffix: string|null;
 }

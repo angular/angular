@@ -145,13 +145,13 @@ export function ɵɵelementEnd(): void {
     }
   }
 
-  if (hasClassInput(tNode)) {
+  if (hasClassInput(tNode) && typeof tNode.classes === 'string') {
     const inputName: string = selectClassBasedInputName(tNode.inputs !);
-    setDirectiveStylingInput(tNode.classes || null, lView, tNode.inputs ![inputName], inputName);
+    setDirectiveStylingInput(tNode.classes, lView, tNode.inputs ![inputName], inputName);
   }
 
-  if (hasStyleInput(tNode)) {
-    setDirectiveStylingInput(tNode.styles || null, lView, tNode.inputs !['style'], 'style');
+  if (hasStyleInput(tNode) && typeof tNode.styles === 'string') {
+    setDirectiveStylingInput(tNode.styles, lView, tNode.inputs !['style'], 'style');
   }
 }
 

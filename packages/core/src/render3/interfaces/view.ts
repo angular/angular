@@ -11,14 +11,14 @@ import {Injector} from '../../di/injector';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata';
 import {Sanitizer} from '../../sanitization/sanitizer';
-
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
 import {I18nUpdateOpCodes, TI18n} from './i18n';
-import {TAttributes, TConstants, TElementNode, TNode, TViewNode} from './node';
+import {TConstants, TElementNode, TNode, TViewNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
+import {TStyleProperty} from './styling';
 
 
 
@@ -752,7 +752,7 @@ export type HookData = (number | (() => void))[];
  */
 export type TData =
     (TNode | PipeDef<any>| DirectiveDef<any>| ComponentDef<any>| number | Type<any>|
-     InjectionToken<any>| TI18n | I18nUpdateOpCodes | null | string | {})[];
+     InjectionToken<any>| TI18n | I18nUpdateOpCodes | null | string | TStyleProperty)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

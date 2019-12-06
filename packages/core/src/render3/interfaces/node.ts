@@ -545,9 +545,14 @@ export interface TNode {
    * This value will be the initial style value that will be applied to the
    * `element.attributes.style` attribute once its created. If there are multiple
    * style entries then they will be concatenated together. If there are no initial
-   * style entries this then value will be an empty string.
+   * style entries this then value will be an `null`.
+   *
+   * - `<div>` => `null`
+   * - `<div styles> => `""` (empty string)
+   * - `<div styles=""> => `""` (empty string)
+   * - `<div styles="color: blue"> => `"color: blue"`
    */
-  styles: string;
+  styles: string|null;
 
   /**
    * Last binding index for any `[style]` or `[style.prop]` bindings on this node.
@@ -584,9 +589,14 @@ export interface TNode {
    * This value will be the initial className value that will be applied to the
    * `element.className` property once its created. If there are multiple
    * class entries then they will be concatenated together. If there are no initial
-   * class entries this then value will be an empty string.
+   * class entries this then value will be an `null`.
+   *
+   * - `<div>` => `null`
+   * - `<div classes> => `""` (empty string)
+   * - `<div classes=""> => `""` (empty string)
+   * - `<div classes="something"> => `"something"`
    */
-  classes: string;
+  classes: string|null;
 
   /**
    * Last binding index for any `[class]` or `[class.name]` bindings on this node.
