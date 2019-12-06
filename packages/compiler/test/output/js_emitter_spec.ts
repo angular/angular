@@ -200,6 +200,15 @@ const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'some
       ].join('\n'));
     });
 
+    it('should support ES5 localized strings', () => {
+      expect(emitStmt(new o.ExpressionStatement(o.localizedString(
+                 {}, ['ab\\:c', 'd"e\'f'], ['ph1'],
+                 [o.literal(7, o.NUMBER_TYPE).plus(o.literal(8, o.NUMBER_TYPE))]))))
+          .toEqual(
+              String.raw
+              `$localize((this&&this.__makeTemplateObject||function(e,t){return Object.defineProperty?Object.defineProperty(e,"raw",{value:t}):e.raw=t,e})(['ab\\:c', ':ph1:d"e\'f'], ['ab\\\\:c', ':ph1:d"e\'f']), (7 + 8));`);
+    });
+
     it('should support try/catch', () => {
       const bodyStmt = o.variable('body').callFn([]).toStmt();
       const catchStmt =

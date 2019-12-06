@@ -7,7 +7,7 @@
  */
 
 
-import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext} from './abstract_emitter';
+import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext, escapeIdentifier} from './abstract_emitter';
 import * as o from './output_ast';
 
 export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
@@ -147,6 +147,24 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     this.visitAllStatements(catchStmts, ctx);
     ctx.decIndent();
     ctx.println(stmt, `}`);
+    return null;
+  }
+
+  visitLocalizedString(ast: o.LocalizedString, ctx: EmitterVisitorContext): any {
+    ctx.print(
+        ast,
+        '$localize((this&&this.__makeTemplateObject||function(e,t){return Object.defineProperty?Object.defineProperty(e,"raw",{value:t}):e.raw=t,e})(');
+    const parts = [ast.serializeI18nHead()];
+    for (let i = 1; i < ast.messageParts.length; i++) {
+      parts.push(ast.serializeI18nTemplatePart(i));
+    }
+    ctx.print(ast, `[${parts.map(part => escapeIdentifier(part.cooked, false)).join(', ')}], `);
+    ctx.print(ast, `[${parts.map(part => escapeIdentifier(part.raw, false)).join(', ')}])`);
+    ast.expressions.forEach(expression => {
+      ctx.print(ast, ', ');
+      expression.visitExpression(this, ctx);
+    });
+    ctx.print(ast, ')');
     return null;
   }
 
