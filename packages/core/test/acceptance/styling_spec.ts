@@ -1598,7 +1598,7 @@ describe('styling', () => {
     const comp = fixture.componentInstance;
     const style = fixture.nativeElement.firstChild.style;
 
-    expect(style.background).toBe('url("/1.png")');
+    expect(style.background).toContain('url("/1.png")');
     expect(style.width).toBe('calc(20%)');
     expect(style.height).toBe('10px');
     expect(style.color).toBe('red');
@@ -1610,7 +1610,7 @@ describe('styling', () => {
 
     fixture.detectChanges();
 
-    expect(style.background).toBe('url("/2.png")');
+    expect(style.background).toContain('url("/2.png")');
     expect(style.width).toBe('5px');
     expect(style.height).toBe('100%');
     expect(style.color).toBe('green');
