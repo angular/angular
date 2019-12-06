@@ -73,6 +73,8 @@ export enum HandlerFlags {
  * @param `R` The type of resolution metadata produced by `resolve`.
  */
 export interface DecoratorHandler<D, A, R> {
+  readonly name: string;
+
   /**
    * The precedence of a handler controls how it interacts with other handlers that match the same
    * class.

@@ -32,6 +32,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
       private isCore: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
+  readonly name = PipeDecoratorHandler.name;
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {

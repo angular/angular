@@ -82,8 +82,8 @@ function runUndecoratedClassesMigration(
 
   const {program, compiler} = programData;
   const typeChecker = program.getTypeChecker();
-  const partialEvaluator =
-      new PartialEvaluator(new TypeScriptReflectionHost(typeChecker), typeChecker);
+  const partialEvaluator = new PartialEvaluator(
+      new TypeScriptReflectionHost(typeChecker), typeChecker, /* dependencyTracker */ null);
   const declarationCollector = new NgDeclarationCollector(typeChecker, partialEvaluator);
   const sourceFiles = program.getSourceFiles().filter(
       s => !s.isDeclarationFile && !program.isSourceFileFromExternalLibrary(s));

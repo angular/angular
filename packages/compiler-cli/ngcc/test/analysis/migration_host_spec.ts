@@ -298,7 +298,7 @@ runInEachFileSystem(() => {
 });
 
 class TestHandler implements DecoratorHandler<unknown, unknown, unknown> {
-  constructor(protected name: string, protected log: string[]) {}
+  constructor(readonly name: string, protected log: string[]) {}
 
   precedence = HandlerPrecedence.PRIMARY;
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<unknown>|undefined {

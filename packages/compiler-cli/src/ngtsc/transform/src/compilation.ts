@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportRewriter} from '../../imports';
+import {IncrementalBuild} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
 import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PerfRecorder} from '../../perf';
@@ -22,10 +23,11 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPr
 import {DtsTransformRegistry} from './declaration';
 import {Trait, TraitState} from './trait';
 
+
 /**
  * Records information about a specific class that has matched traits.
  */
-interface ClassRecord {
+export interface ClassRecord {
   /**
    * The `ClassDeclaration` of the class which has Angular traits applied.
    */
@@ -59,7 +61,13 @@ interface ClassRecord {
 /**
  * The heart of Angular compilation.
  *
- * The `TraitCompiler` is responsible for processing all classes in the program and
+ * The `TraitCompiler` is responsible for processing all classes in the program. Any time a
+ * `DecoratorHandler` matches a class, a "trait" is created to represent that Angular aspect of the
+ * class (such as the class having a component definition).
+ *
+ * The `TraitCompiler` transitions each trait through the various phases of compilation, culminating
+ * in the production of `CompileResult`s instructing the compiler to apply various mutations to the
+ * class (like adding fields or type declarations).
  */
 export class TraitCompiler {
   /**
@@ -76,19 +84,17 @@ export class TraitCompiler {
 
   private reexportMap = new Map<string, Map<string, [string, string]>>();
 
-  /**
-   * @param handlers array of `DecoratorHandler`s which will be executed against each class in the
-   * program
-   * @param checker TypeScript `TypeChecker` instance for the program
-   * @param reflector `ReflectionHost` through which all reflection operations will be performed
-   * @param coreImportsFrom a TypeScript `SourceFile` which exports symbols needed for Ivy imports
-   * when compiling @angular/core, or `null` if the current program is not @angular/core. This is
-   * `null` in most cases.
-   */
+  private handlersByName = new Map<string, DecoratorHandler<unknown, unknown, unknown>>();
+
   constructor(
       private handlers: DecoratorHandler<unknown, unknown, unknown>[],
       private reflector: ReflectionHost, private perf: PerfRecorder,
-      private compileNonExportedClasses: boolean, private dtsTransforms: DtsTransformRegistry) {}
+      private incrementalBuild: IncrementalBuild<ClassRecord>,
+      private compileNonExportedClasses: boolean, private dtsTransforms: DtsTransformRegistry) {
+    for (const handler of handlers) {
+      this.handlersByName.set(handler.name, handler);
+    }
+  }
 
   analyzeSync(sf: ts.SourceFile): void { this.analyze(sf, false); }
 
@@ -100,6 +106,16 @@ export class TraitCompiler {
     // analyze() really wants to return `Promise<void>|void`, but TypeScript cannot narrow a return
     // type of 'void', so `undefined` is used instead.
     const promises: Promise<void>[] = [];
+
+    const priorWork = this.incrementalBuild.priorWorkFor(sf);
+    if (priorWork !== null) {
+      for (const priorRecord of priorWork) {
+        this.adopt(priorRecord);
+      }
+
+      // Skip the rest of analysis, as this file's prior traits are being reused.
+      return;
+    }
 
     const visit = (node: ts.Node): void => {
       if (isNamedClassDeclaration(node)) {
@@ -115,6 +131,60 @@ export class TraitCompiler {
     } else {
       return undefined;
     }
+  }
+
+  recordsFor(sf: ts.SourceFile): ClassRecord[]|null {
+    if (!this.fileToClasses.has(sf)) {
+      return null;
+    }
+    const records: ClassRecord[] = [];
+    for (const clazz of this.fileToClasses.get(sf) !) {
+      records.push(this.classes.get(clazz) !);
+    }
+    return records;
+  }
+
+  /**
+   * Import a `ClassRecord` from a previous compilation.
+   *
+   * Traits from the `ClassRecord` have accurate metadata, but the `handler` is from the old program
+   * and needs to be updated (matching is done by name). A new pending trait is created and then
+   * transitioned to analyzed using the previous analysis. If the trait is in the errored state,
+   * instead the errors are copied over.
+   */
+  private adopt(priorRecord: ClassRecord): void {
+    const record: ClassRecord = {
+      hasPrimaryHandler: priorRecord.hasPrimaryHandler,
+      hasWeakHandlers: priorRecord.hasWeakHandlers,
+      metaDiagnostics: priorRecord.metaDiagnostics,
+      node: priorRecord.node,
+      traits: [],
+    };
+
+    for (const priorTrait of priorRecord.traits) {
+      const handler = this.handlersByName.get(priorTrait.handler.name) !;
+      let trait: Trait<unknown, unknown, unknown> = Trait.pending(handler, priorTrait.detected);
+
+      if (priorTrait.state === TraitState.ANALYZED || priorTrait.state === TraitState.RESOLVED) {
+        trait = trait.toAnalyzed(priorTrait.analysis);
+        if (trait.handler.register !== undefined) {
+          trait.handler.register(record.node, trait.analysis);
+        }
+      } else if (priorTrait.state === TraitState.SKIPPED) {
+        trait = trait.toSkipped();
+      } else if (priorTrait.state === TraitState.ERRORED) {
+        trait = trait.toErrored(priorTrait.diagnostics);
+      }
+
+      record.traits.push(trait);
+    }
+
+    this.classes.set(record.node, record);
+    const sf = record.node.getSourceFile();
+    if (!this.fileToClasses.has(sf)) {
+      this.fileToClasses.set(sf, new Set<ClassDeclaration>());
+    }
+    this.fileToClasses.get(sf) !.add(record.node);
   }
 
   private scanClassForTraits(clazz: ClassDeclaration): ClassRecord|null {

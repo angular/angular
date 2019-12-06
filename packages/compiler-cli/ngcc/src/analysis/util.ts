@@ -9,8 +9,9 @@ import * as ts from 'typescript';
 
 import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
 import {AbsoluteFsPath, absoluteFromSourceFile, relative} from '../../../src/ngtsc/file_system';
+import {DependencyTracker} from '../../../src/ngtsc/incremental/api';
 import {Decorator} from '../../../src/ngtsc/reflection';
-import {DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence} from '../../../src/ngtsc/transform';
+import {DecoratorHandler, HandlerFlags, HandlerPrecedence} from '../../../src/ngtsc/transform';
 import {NgccClassSymbol} from '../host/ngcc_host';
 
 import {AnalyzedClass, MatchingHandler} from './types';
@@ -103,3 +104,12 @@ export function analyzeDecorators(
     diagnostics: allDiagnostics.length > 0 ? allDiagnostics : undefined,
   };
 }
+
+class NoopDependencyTracker implements DependencyTracker {
+  addDependency(): void {}
+  addResourceDependency(): void {}
+  addTransitiveDependency(): void {}
+  addTransitiveResources(): void {}
+}
+
+export const NOOP_DEPENDENCY_TRACKER: DependencyTracker = new NoopDependencyTracker();

@@ -42,7 +42,7 @@ runInEachFileSystem(() => {
 
       const checker = program.getTypeChecker();
       const reflectionHost = new TestReflectionHost(checker);
-      const evaluator = new PartialEvaluator(reflectionHost, checker);
+      const evaluator = new PartialEvaluator(reflectionHost, checker, /* dependencyTracker */ null);
       const metaReader = new LocalMetadataRegistry();
       const dtsReader = new DtsMetadataReader(checker, reflectionHost);
       const scopeRegistry = new LocalModuleScopeRegistry(

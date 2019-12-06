@@ -160,7 +160,7 @@ runInEachFileSystem(() => {
       expect(written).toContain('/bar_directive.js');
       expect(written).toContain('/bar_component.js');
       expect(written).toContain('/bar_module.js');
-      expect(written).not.toContain('/foo_component.js');
+      expect(written).toContain('/foo_component.js');
       expect(written).not.toContain('/foo_pipe.js');
       expect(written).not.toContain('/foo_module.js');
     });
@@ -251,7 +251,7 @@ runInEachFileSystem(() => {
       expect(written).toContain('/foo_module.js');
     });
 
-    it('should rebuild only a Component (but with the correct CompilationScope) if its template has changed',
+    it('should rebuild only a Component (but with the correct CompilationScope) and its module if its template has changed',
        () => {
          setupFooBarProgram(env);
 
@@ -262,7 +262,9 @@ runInEachFileSystem(() => {
          const written = env.getFilesWrittenSinceLastFlush();
          expect(written).not.toContain('/bar_directive.js');
          expect(written).toContain('/bar_component.js');
-         expect(written).not.toContain('/bar_module.js');
+         // /bar_module.js should also be re-emitted, because remote scoping of BarComponent might
+         // have been affected.
+         expect(written).toContain('/bar_module.js');
          expect(written).not.toContain('/foo_component.js');
          expect(written).not.toContain('/foo_pipe.js');
          expect(written).not.toContain('/foo_module.js');

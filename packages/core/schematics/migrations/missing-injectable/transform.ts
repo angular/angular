@@ -41,8 +41,8 @@ export class MissingInjectableTransform {
   constructor(
       private typeChecker: ts.TypeChecker,
       private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder) {
-    this.providersEvaluator =
-        new ProvidersEvaluator(new TypeScriptReflectionHost(typeChecker), typeChecker);
+    this.providersEvaluator = new ProvidersEvaluator(
+        new TypeScriptReflectionHost(typeChecker), typeChecker, /* dependencyTracker */ null);
   }
 
   recordChanges() { this.importManager.recordChanges(); }

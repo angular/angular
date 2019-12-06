@@ -57,7 +57,7 @@ runInEachFileSystem(() => {
       ]);
       const checker = program.getTypeChecker();
       const reflectionHost = new TypeScriptReflectionHost(checker);
-      const evaluator = new PartialEvaluator(reflectionHost, checker);
+      const evaluator = new PartialEvaluator(reflectionHost, checker, /* dependencyTracker */ null);
       const referencesRegistry = new NoopReferencesRegistry();
       const metaRegistry = new LocalMetadataRegistry();
       const metaReader = new CompoundMetadataReader([metaRegistry]);
