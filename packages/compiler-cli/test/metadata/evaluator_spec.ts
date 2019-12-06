@@ -159,7 +159,7 @@ describe('Evaluator', () => {
     });
   });
 
-  it('should support referene to a declared module type', () => {
+  it('should support reference to a declared module type', () => {
     const declared = program.getSourceFile('declared.ts') !;
     const aDecl = findVar(declared, 'a') !;
     expect(evaluator.evaluateNode(aDecl.type !)).toEqual({

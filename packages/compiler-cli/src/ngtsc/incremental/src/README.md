@@ -2,11 +2,40 @@
 
 This package contains logic related to incremental compilation in ngtsc.
 
-In particular, it tracks dependencies between `ts.SourceFile`s, so the compiler can make intelligent decisions about when it's safe to skip certain operations. The main class performing this task is the `IncrementalDriver`.
+In particular, it tracks dependencies between `ts.SourceFile`s, so the compiler can make intelligent decisions about when it's safe to skip certain operations.
 
 # What optimizations are made?
 
-ngtsc makes a decision to skip the emit of a file if it can prove that the contents of the file will not have changed. To prove this, two conditions must be true.
+ngtsc currently makes two optimizations: reuse of prior analysis work, and the skipping of file emits.
+
+## Reuse of analyses
+
+If a build has succeeded previously, ngtsc has available the analyses of all Angular classes in the prior program, as well as the dependency graph which outlines inter-file dependencies. This is known as the "last good compilation".
+
+When the next build begins, ngtsc follows a simple algorithm which reuses prior work where possible:
+
+1) For each input file, ngtsc makes a determination as to whether the file is "logically changed".
+
+"Logically changed" means that either:
+
+* The file itself has physically changed on disk, or
+* One of the file's dependencies has physically changed on disk.
+
+Either of these conditions invalidates the previous analysis of the file.
+
+2) ngtsc begins constructing a new dependency graph.
+
+For each logically unchanged file, its dependencies are copied wholesale into the new graph.
+
+3) ngtsc begins analyzing each file in the program.
+
+If the file is logically unchanged, ngtsc will reuse the previous analysis and only call the 'register' phase of compilation, to apply any necessary side effects.
+
+If the file is logically changed, ngtsc will re-analyze it.
+
+## Skipping emit
+
+ngtsc makes a decision to skip the emit of a file if it can prove that the contents of the file will not have changed since the last good compilation. To prove this, two conditions must be true.
 
 * The input file itself must not have changed since the previous compilation.
 
@@ -15,6 +44,14 @@ ngtsc makes a decision to skip the emit of a file if it can prove that the conte
 The second condition is challenging to prove, as Angular allows statically evaluated expressions in lots of contexts that could result in changes from file to file. For example, the `name` of an `@Pipe` could be a reference to a constant in a different file. As part of analyzing the program, the compiler keeps track of such dependencies in order to answer this question.
 
 The emit of a file is the most expensive part of TypeScript/Angular compilation, so skipping emits when they are not necessary is one of the most valuable things the compiler can do to improve incremental build performance.
+
+## The two dependency graphs
+
+For both of the above optimizations, ngtsc makes use of dependency information extracted from the program. But these usages are subtly different.
+
+To reuse previous analyses, ngtsc uses the _prior_ compilation's dependency graph, plus the information about which files have changed, to determine whether it's safe to reuse the prior compilation's work.
+
+To skip emit, ngtsc uses the _current_ compilation's dependency graph, coupled with the information about which files have changed since the last successful build, to determine the set of outputs that need to be re-emitted.
 
 # How does incremental compilation work?
 
@@ -28,7 +65,7 @@ This information is leveraged in two major ways:
 
 2) An `IncrementalDriver` instance is constructed from the old and new `ts.Program`s, and the previous program's `IncrementalDriver`.
 
-The compiler then proceeds normally, analyzing all of the Angular code within the program. As a part of this process, the compiler maps out all of the dependencies between files in the `IncrementalDriver`.
+The compiler then proceeds normally, using the `IncrementalDriver` to manage the reuse of any pertinent information while processing the new program. As a part of this process, the compiler (again) maps out all of the dependencies between files.
 
 ## Determination of files to emit
 
@@ -51,9 +88,10 @@ On every invocation, the compiler receives (or can easily determine) several pie
 
 With this information, the compiler can perform rebuild optimizations:
 
-1. The compiler analyzes the full program and generates a dependency graph, which describes the relationships between files in the program.
-2. Based on this graph, the compiler can make a determination for each TS file whether it needs to be re-emitted or can safely be skipped. This produces a set called `pendingEmit` of every file which requires a re-emit.
-3. The compiler cycles through the files and emits those which are necessary, removing them from `pendingEmit`.
+1. The compiler uses the last good compilation's dependency graph to determine which parts of its analysis work can be reused.
+2. The compiler analyzes the rest of the program and generates an updated dependency graph, which describes the relationships between files in the program as they are currently.
+3. Based on this graph, the compiler can make a determination for each TS file whether it needs to be re-emitted or can safely be skipped. This produces a set called `pendingEmit` of every file which requires a re-emit.
+4. The compiler cycles through the files and emits those which are necessary, removing them from `pendingEmit`.
 
 Theoretically, after this process `pendingEmit` should be empty. As a precaution against errors which might happen in the future, `pendingEmit` is also passed into future compilations, so any files which previously were determined to need an emit (but have not been successfully produced yet) will be retried on subsequent compilations. This is mostly relevant if a client of `ngtsc` attempts to implement emit-on-error functionality.
 
@@ -79,10 +117,6 @@ If a new build is started after a successful build, only `pendingEmit` from the 
 
 There is plenty of room for improvement here, with diminishing returns for the work involved.
 
-## Optimization of re-analysis
-
-Currently, the compiler re-analyzes the entire `ts.Program` on each compilation. Under certain circumstances it may be possible for the compiler to reuse parts of the previous compilation's analysis rather than repeat the work, if it can be proven to be safe.
-
 ## Semantic dependency tracking
 
 Currently the compiler tracks dependencies only at the file level, and will re-emit dependent files if they _may_ have been affected by a change. Often times a change though does _not_ require updates to dependent files.
@@ -92,3 +126,16 @@ For example, today a component's `NgModule` and all of the other components whic
 In contrast, if the component's _selector_ changes, then all those dependent files do need to be updated since their `directiveDefs` might have changed.
 
 Currently the compiler does not distinguish these two cases, and conservatively always re-emits the entire NgModule chain. It would be possible to break the dependency graph down into finer-grained nodes and distinguish between updates that affect the component, vs updates that affect its dependents. This would be a huge win, but is exceedingly complex.
+
+## Skipping template type-checking
+
+For certain kinds of changes, it may be possible to avoid the cost of generating and checking the template type-checking file. Several levels of this can be imagined.
+
+For resource-only changes, only the component(s) which have changed resources need to be re-checked. No other components could be affected, so previously produced diagnostics are still valid.
+
+For arbitrary source changes, things get a bit more complicated. A change to any .ts file could affect types anywhere in the program (think `declare global ...`). If a set of affected components can be determined (perhaps via the import graph that the cycle analyzer extracts?) and it can be proven that the change does not impact any global types (exactly how to do this is left as an exercise for  the reader), then type-checking could be skipped for other components in the mix.
+
+If the above is too complex, then certain kinds of type changes might allow for the reuse of the text of the template type-checking file, if it can be proven that none of the inputs to its generation have changed. This is useful for two very important reasons.
+
+1) Generating (and subsequently parsing) the template type-checking file itself is expensive.
+2) Under ideal conditions, after an initial template type-checking program is created, it may be possible to reuse it for emit _and_ type-checking in subsequent builds. This would be a pretty advanced optimization but would save creation of a second `ts.Program` on each valid rebuild.
