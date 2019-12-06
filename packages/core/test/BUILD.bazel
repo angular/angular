@@ -11,7 +11,7 @@ ts_library(
             "**/*_node_only_spec.ts",
         ],
     ),
-    # Visible to //:test_web_all target
+    # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
         "//packages/animations",

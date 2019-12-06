@@ -330,7 +330,7 @@ jobs:
   # [BUILD.bazel](https://github.com/angular/angular/blob/ef44f51d5/BUILD.bazel#L66-L92)).
   #
   # NOTE: This is currently limited to master builds only. See the `default_workflow` configuration.
-  test_saucelabs_bazel:
+  saucelabs_view_engine:
     executor:
       name: default-executor
       # In order to avoid the bottleneck of having a slow host machine, we acquire a better
@@ -344,9 +344,9 @@ jobs:
       - setup_bazel_rbe
       - run:
           name: Run Bazel tests in saucelabs
-          # All web tests are contained within a single //:test_web_all target for Saucelabs
-          # as running each set of tests as a separate target will attempt to acquire too
-          # many browsers on Saucelabs (7 per target currently) and some tests will always
+          # All web tests are contained within a single //:saucelabs_unit_tests_poc target
+          # for Saucelabs as running each set of tests as a separate target will attempt to acquire
+          # too many browsers on Saucelabs (7 per target currently) and some tests will always
           # fail to acquire browsers. For example:
           # 14 02 2019 19:52:33.170:WARN [launcher]: chrome beta on SauceLabs have not captured in 180000 ms, killing.
           # //packages/forms/test:web_test_sauce TIMEOUT in 315.0s
@@ -355,10 +355,33 @@ jobs:
               --tunnel-id angular-${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_INDEX} \
               --username $SAUCE_USERNAME \
               --key $(echo $SAUCE_ACCESS_KEY | rev) \
-              yarn bazel test //:test_web_all
+              yarn bazel test //:saucelabs_unit_tests_poc --config=saucelabs
           no_output_timeout: 20m
       - notify_webhook_on_fail:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
+
+  saucelabs_ivy:
+    executor:
+      name: default-executor
+      # In order to avoid the bottleneck of having a slow host machine, we acquire a better
+      # container for this job. This is necessary because we launch a lot of browsers concurrently
+      # and therefore the tunnel and Karma need to process a lot of file requests and tests.
+      resource_class: xlarge
+    steps:
+      - custom_attach_workspace
+      - init_environment
+      - setup_circleci_bazel_config
+      - setup_bazel_rbe
+      - run:
+          name: Run Bazel tests on Saucelabs
+          # Runs the //:saucelabs_tests target with Saucelabs and Ivy.
+          command:  |
+            ./scripts/saucelabs/run-bazel-via-tunnel.sh \
+              --tunnel-id angular-${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_INDEX} \
+              --username $SAUCE_USERNAME \
+              --key $(echo $SAUCE_ACCESS_KEY | rev) \
+              -- yarn bazel test //:saucelabs_unit_tests --config=ivy --config=saucelabs
+          no_output_timeout: 20m
 
   test_aio:
     # Needed because the AIO tests and the PWA score test depend on Chrome being available.
@@ -819,11 +842,14 @@ workflows:
       - legacy-unit-tests-saucelabs:
           requires:
             - setup
-      - test_saucelabs_bazel:
+      - saucelabs_ivy:
+            requires:
+              - test_ivy_aot
+      - saucelabs_view_engine:
           # This job is currently a PoC and a subset of `legacy-unit-tests-saucelabs`. Running on
           # master only to avoid wasting resources.
-          #
-          # TODO: Run this job on all branches (including PRs) as soon as it is not a PoC.
+          # TODO: Run this job on all branches (including PRs) as soon as it is not a PoC and
+          # we can remove the legacy saucelabs job.
           <<: *only_on_master
           requires:
             - setup
@@ -876,6 +902,7 @@ workflows:
             - test
             - test_ivy_aot
             - integration_test
+            - saucelabs_ivy
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
             - test_aio_local
             - test_aio_local_viewengine
