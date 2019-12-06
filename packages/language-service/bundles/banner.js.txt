@@ -4,20 +4,25 @@
  * License: MIT
  */
 
-var $reflect = {defineMetadata: function() {}, getOwnMetadata: function() {}};
-var Reflect = (typeof global !== 'undefined' ? global : {})['Reflect'] || {};
-Object.keys($reflect).forEach(function(key) { Reflect[key] = Reflect[key] || $reflect[key]; });
-var $deferred, $resolved, $provided;
-function $getModule(name) {
-  if (name === 'typescript/lib/tsserverlibrary') return $provided['typescript'] || require(name);
-  return $provided[name] || require(name);
+let $deferred;
+function define(modules, callback) {
+  $deferred = { modules, callback };
 }
-function define(modules, cb) { $deferred = { modules: modules, cb: cb }; }
 module.exports = function(provided) {
-  if ($resolved) return $resolved;
-  var result = {};
-  $provided = Object.assign({'reflect-metadata': $reflect}, provided || {}, { exports: result });
-  $deferred.cb.apply(this, $deferred.modules.map($getModule));
-  $resolved = result;
-  return result;
+  const ts = provided['typescript'];
+  if (!ts) {
+    throw new Error('Caller does not provide typescript module');
+  }
+  const results = {};
+  const resolvedModules = $deferred.modules.map(m => {
+    if (m === 'exports') {
+      return results;
+    }
+    if (m === 'typescript' || m === 'typescript/lib/tsserverlibrary') {
+      return ts;
+    }
+    return require(m);
+  })
+  $deferred.callback(...resolvedModules);
+  return results;
 }
