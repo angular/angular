@@ -38,6 +38,7 @@ import {
   OperatorFunction,
   pipe,
   Subject,
+  of,
 } from 'rxjs';
 
 import {
@@ -210,7 +211,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     const endSecondsObs = this._endSeconds.pipe(startWith(undefined));
     const suggestedQualityObs = this._suggestedQuality.pipe(startWith(undefined));
 
-    /** An observable of the currently loaded player. */
+    // An observable of the currently loaded player.
     const playerObs =
       createPlayerObservable(
         this._youtubeContainer,
@@ -219,6 +220,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
         widthObs,
         heightObs,
         this.createEventsBoundInZone(),
+        this._ngZone
       ).pipe(waitUntilReady(), takeUntil(this._destroyed), publish());
 
     // Set up side effects to bind inputs to the player.
@@ -480,6 +482,7 @@ function createPlayerObservable(
   widthObs: Observable<number>,
   heightObs: Observable<number>,
   events: YT.Events,
+  ngZone: NgZone
 ): Observable<UninitializedPlayer | undefined> {
 
   const playerOptions =
@@ -489,7 +492,7 @@ function createPlayerObservable(
       map(([videoId, [width, height]]) => videoId ? ({videoId, width, height, events}) : undefined),
     );
 
-  return combineLatest([youtubeContainer, playerOptions])
+  return combineLatest([youtubeContainer, playerOptions, of(ngZone)])
       .pipe(
         skipUntilRememberLatest(iframeApiAvailableObs),
         scan(syncPlayerState, undefined),
@@ -507,7 +510,7 @@ function skipUntilRememberLatest<T>(notifier: Observable<boolean>): MonoTypeOper
 /** Destroy the player if there are no options, or create the player if there are options. */
 function syncPlayerState(
   player: UninitializedPlayer | undefined,
-  [container, videoOptions]: [HTMLElement, YT.PlayerOptions | undefined],
+  [container, videoOptions, ngZone]: [HTMLElement, YT.PlayerOptions | undefined, NgZone],
 ): UninitializedPlayer | undefined {
   if (!videoOptions) {
     if (player) {
@@ -519,7 +522,10 @@ function syncPlayerState(
     return player;
   }
 
-  const newPlayer: UninitializedPlayer = new YT.Player(container, videoOptions);
+  // Important! We need to create the Player object outside of the `NgZone`, because it kicks
+  // off a 250ms setInterval which will continually trigger change detection if we don't.
+  const newPlayer: UninitializedPlayer =
+      ngZone.runOutsideAngular(() => new YT.Player(container, videoOptions));
   // Bind videoId for future use.
   newPlayer.videoId = videoOptions.videoId;
   return newPlayer;
