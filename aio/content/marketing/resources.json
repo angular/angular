@@ -110,6 +110,12 @@
       "Data Libraries": {
         "order": 3,
         "resources": {
+           "rx-web":{
+            "desc":"RxWeb Reactive Form Validators provides all types of complex, conditional, cross field, and dynamic validation on validator-based reactive forms, model-based reactive forms, and template driven forms.",
+            "rev": true,
+            "title": "RxWeb Reactive Form Validators",
+            "url": "https://www.rxweb.io"
+          },
           "-KLIzHDRfiB3d7W7vk-e": {
             "desc": "Reactive Extensions for Angular",
             "rev": true,
