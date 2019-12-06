@@ -80,7 +80,7 @@ the current state and value through the component class or the component templat
 You can display the value in these ways:
 
 * Through the `valueChanges` observable where you can listen for changes in the form's value in the template using `AsyncPipe` or in the component class using the `subscribe()` method.
-* With the `value` property. which gives you a snapshot of the current value.
+* With the `value` property, which gives you a snapshot of the current value.
 
 The following example shows you how to display the current value using interpolation in the template.
 
