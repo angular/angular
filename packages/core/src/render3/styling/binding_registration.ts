@@ -53,6 +53,9 @@ export function registerBinding(
   patchConfig(tNode, flagsToUpdate);
 }
 
+/**
+ * Determines the mode that the binding is being applied in
+ */
 function getBindingSourceMode(tNode: TNode, directiveIndex: number) {
   if (directiveIndex === 0) return BindingSourceMode.Template;
   const hasComponentOnHost = tNode.flags & TNodeFlags.isComponentHost;
@@ -60,9 +63,23 @@ function getBindingSourceMode(tNode: TNode, directiveIndex: number) {
                                                       BindingSourceMode.Directive;
 }
 
+/**
+ * Simple enum used to express what mode the bindings are being applied in
+ */
 const enum BindingSourceMode {
+  /**
+   * Template-based bindings (e.g. `<div [style.width]>`)
+   */
   Template = 0,
+
+  /**
+   * Component-based host bindings (e.g. `@HostBinding('style.width')`)
+   */
   Component = 1,
+
+  /**
+   * Directive-based host bindings (e.g. `@HostBinding('style.width')`)
+   */
   Directive = 2,
 }
 

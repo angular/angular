@@ -12,7 +12,7 @@ import {LStylingData, TStylingNode} from '../interfaces/styling';
 import {TData} from '../interfaces/view';
 import {getConcatenatedValue, getStylingHead, getStylingTail, hasConfig, isStylingValueDefined} from '../util/styling_utils';
 
-import {processStylingBindingsUpToPoint} from './binding_concatenation';
+import {processStylingBindingsUpToEnd} from './binding_concatenation';
 import {StyleChangesArrayMapEnum, parseKeyValue} from './style_differ';
 import {printStylingTable} from './styling_debug_utils';
 
@@ -153,7 +153,7 @@ export class NodeStylingDebug implements DebugNodeStyling {
 
     const tail = getStylingTail(tNode, isClassBased);
     const head = getStylingHead(tNode, isClassBased);
-    processStylingBindingsUpToPoint(data, this._tData, tNode, head, this._sanitizer, isClassBased);
+    processStylingBindingsUpToEnd(data, this._tData, tNode, head, this._sanitizer, isClassBased);
     const concatStr = getConcatenatedValue(data, tail);
 
     if (isClassBased) {

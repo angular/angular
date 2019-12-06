@@ -135,6 +135,7 @@ const BINDING_START_MASK = (1 << BINDING_START_BITS) - 1;
  */
 function setDirectiveAndBindingStartIndices(
     state: StylingState, sourceIndex: number, bindingIndex: number, isClassBased: boolean): void {
+  // +1 is added because we can't bit shift zero
   const value = (sourceIndex + 1) << BINDING_START_BITS | (bindingIndex & BINDING_START_MASK);
   if (isClassBased) {
     state.lastClassBindingIndex = value;
@@ -158,6 +159,9 @@ function getBindingStartIndex(state: StylingState, isClassBased: boolean) {
  */
 function getDirectiveStartIndex(state: StylingState, isClassBased: boolean) {
   const value = isClassBased ? state.lastClassBindingIndex : state.lastStyleBindingIndex;
+
+  // -1 is used because +1 is added when the directive index is set
+  // because bit shifting zero value won't do anything
   return (value >> BINDING_START_BITS) - 1;
 }
 
@@ -174,40 +178,34 @@ function getDirectiveStartIndex(state: StylingState, isClassBased: boolean) {
 export function flushBindings(
     renderer: any, native: RElement, lView: LView, tNode: TNode, tData: TData, state: StylingState,
     sanitizer: StyleSanitizeFn | null, firstUpdatePass: boolean, hostBindingsMode: boolean): void {
-  const lastStyleBindingIndex = getBindingStartIndex(state, false);
-  if (lastStyleBindingIndex !== 0) {
-    const stylesTail = getStylingTail(tNode, false);
-    const previousStyleValue = concatenateAndGetPrevious(
-        tData, lView, tNode, lastStyleBindingIndex, stylesTail, sanitizer, firstUpdatePass, false,
+  flushStyleOrClassBindings(
+      renderer, native, state, tNode, tData, lView, firstUpdatePass, hostBindingsMode, false,
+      sanitizer, writeAndReconcileStyle);
+  flushStyleOrClassBindings(
+      renderer, native, state, tNode, tData, lView, firstUpdatePass, hostBindingsMode, true, null,
+      writeAndReconcileClass);
+}
+
+function flushStyleOrClassBindings(
+    renderer: any, native: RElement, state: StylingState, tNode: TNode, tData: TData, lView: LView,
+    firstUpdatePass: boolean, hostBindingsMode: boolean, isClassBased: boolean,
+    sanitizer: StyleSanitizeFn | null,
+    reconcileFn: (renderer: any, native: RElement, previousValue: string, newValue: string) =>
+        string | null): void {
+  const startIndex = getBindingStartIndex(state, isClassBased);
+  if (startIndex !== 0) {
+    const tailIndex = getStylingTail(tNode, isClassBased);
+    const previousValue = concatenateAndGetPrevious(
+        tData, lView, tNode, startIndex, tailIndex, sanitizer, firstUpdatePass, isClassBased,
         hostBindingsMode);
-    const newStyleValue = getConcatenatedValue(lView, stylesTail);
-    if (allowValueToBeApplied(tNode, previousStyleValue, newStyleValue, firstUpdatePass)) {
-      const result = writeAndReconcileStyle(renderer, native, previousStyleValue, newStyleValue);
-
-      // the write operation may apply the value directly to the element's style
-      // attribute. Some browsers may reorder the style values on said property, therefore,
-      // the previous value will need to be updated with this entry.
-      if (result !== null) {
-        setConcatenatedValue(lView, stylesTail, result);
-      }
-    }
-  }
-
-  const lastClassBindingIndex = getBindingStartIndex(state, true);
-  if (lastClassBindingIndex) {
-    const classesTail = getStylingTail(tNode, true);
-    const previousClassValue = concatenateAndGetPrevious(
-        tData, lView, tNode, lastClassBindingIndex, classesTail, null, firstUpdatePass, true,
-        hostBindingsMode);
-    const newClassValue = getConcatenatedValue(lView, classesTail);
-    if (allowValueToBeApplied(tNode, previousClassValue, newClassValue, firstUpdatePass)) {
-      const result = writeAndReconcileClass(renderer, native, previousClassValue, newClassValue);
-
+    const newValue = getConcatenatedValue(lView, tailIndex);
+    if (allowValueToBeApplied(tNode, previousValue, newValue, firstUpdatePass)) {
       // the write operation may apply the value directly to the element's className
-      // value. Some browsers may reorder the class values on said property, therefore,
-      // the previous value will need to be updated with this entry.
+      // or style value. Some browsers may reorder the style/class values on said
+      // property, therefore, the previous value will need to be updated with this entry.
+      const result = reconcileFn(renderer, native, previousValue, newValue);
       if (result !== null) {
-        setConcatenatedValue(lView, classesTail, result);
+        setConcatenatedValue(lView, tailIndex, result);
       }
     }
   }
@@ -232,7 +230,7 @@ function concatenateAndGetPrevious(
 
   // even though we have the previous value we should build up the concat string
   // up to the final point so that it can be applied to element afterwards.
-  processStylingBindingsUpToPoint(lView, tData, tNode, startIndex, sanitizer, isClassBased);
+  processStylingBindingsUpToEnd(lView, tData, tNode, startIndex, sanitizer, isClassBased);
 
   // the previous value is what was applied to the element during the
   // last styling flush. If we are dealing with the first template pass
@@ -257,7 +255,7 @@ function getPreviousConcatenatedStr(
  * Applies (or reapplies) each style/class binding entry into the provided `LView` (all the way
  * until the tail).
  */
-export function processStylingBindingsUpToPoint(
+export function processStylingBindingsUpToEnd(
     lView: LStylingData, tData: TData, tNode: TStylingNode, bindingIndex: number,
     sanitizer: StyleSanitizeFn | null, isClassBased: boolean): void {
   while (bindingIndex !== 0) {

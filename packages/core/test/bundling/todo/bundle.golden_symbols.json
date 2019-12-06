@@ -618,6 +618,9 @@
     "name": "flushBindings"
   },
   {
+    "name": "flushStyleOrClassBindings"
+  },
+  {
     "name": "flushStyling"
   },
   {
@@ -1146,7 +1149,7 @@
     "name": "processStylingBinding"
   },
   {
-    "name": "processStylingBindingsUpToPoint"
+    "name": "processStylingBindingsUpToEnd"
   },
   {
     "name": "readPatchedData"

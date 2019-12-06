@@ -411,7 +411,9 @@ export function updateDirectiveInputValue(
   if (hasValueChanged(oldValue, newValue)) {
     // even if the value has changed we may not want to emit it to the
     // directive input(s) in the event that it is falsy during the
-    // first update pass.
+    // first update pass. The reason for this is because an original
+    // falsy value is always emitted when the element is first created
+    // (if there are any class/style input bindings).
     if (isStylingValueDefined(newValue) || !firstUpdatePass) {
       const inputName: string = isClassBased ? selectClassBasedInputName(tNode.inputs !) : 'style';
       const inputs = tNode.inputs ![inputName] !;
