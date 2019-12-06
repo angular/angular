@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {CommonModule} from '@angular/common';
 import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, HostBinding, Input, NgModule, Renderer2, ViewChild, ViewContainerRef} from '@angular/core';
 import {getDebugNode} from '@angular/core/src/render3/util/discovery_utils';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
@@ -1561,6 +1562,64 @@ describe('styling', () => {
     // Note that check the raw HTML, because (at the time of writing) the Node-based renderer
     // that we use to run tests doesn't support `clip-path` in `CSSStyleDeclaration`.
     expect(html).toMatch(/style=["|']clip-path:\s*url\(.*#test.*\)/);
+  });
+
+  it('should handle values wrapped into SafeValue', () => {
+    @Component({
+      template: `
+        <!-- Verify sanitizable style prop values wrapped in SafeValue -->
+        <div [style.background]="getBackgroundSafe()"></div>
+
+        <!-- Verify regular style prop values wrapped in SafeValue -->
+        <p [style.width]="getWidthSafe()" [style.height]="getHeightSafe()"></p>
+
+        <!-- Verify regular style prop values not wrapped in SafeValue -->
+        <span [style.color]="getColorUnsafe()"></span>
+      `,
+    })
+    class MyComp {
+      constructor(private sanitizer: DomSanitizer) {}
+      public width: string = 'calc(20%)';
+      public height: string = '10px';
+      public background: string = '1.png';
+      public color: string = 'red';
+
+      private getSafeStyle(value: string) { return this.sanitizer.bypassSecurityTrustStyle(value); }
+
+      getBackgroundSafe() { return this.getSafeStyle(`url("/${this.background}")`); }
+      getWidthSafe() { return this.getSafeStyle(this.width); }
+      getHeightSafe() { return this.getSafeStyle(this.height); }
+      getColorUnsafe() { return this.color; }
+    }
+
+    TestBed.configureTestingModule({
+      imports: [CommonModule],
+      declarations: [MyComp],
+    });
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    const comp = fixture.componentInstance;
+    const div = fixture.nativeElement.querySelector('div');
+    const p = fixture.nativeElement.querySelector('p');
+    const span = fixture.nativeElement.querySelector('span');
+
+    expect(div.style.background).toContain('url("/1.png")');
+    expect(p.style.width).toBe('calc(20%)');
+    expect(p.style.height).toBe('10px');
+    expect(span.style.color).toBe('red');
+
+    comp.background = '2.png';
+    comp.width = '5px';
+    comp.height = '100%';
+    comp.color = 'green';
+
+    fixture.detectChanges();
+
+    expect(div.style.background).toContain('url("/2.png")');
+    expect(p.style.width).toBe('5px');
+    expect(p.style.height).toBe('100%');
+    expect(span.style.color).toBe('green');
   });
 
   onlyInIvy('only ivy has style/class bindings debugging support')
