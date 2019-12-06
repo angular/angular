@@ -24,6 +24,8 @@ module.exports =
         .processor(require('./processors/extractPipeParams'))
         .processor(require('./processors/matchUpDirectiveDecorators'))
         .processor(require('./processors/addMetadataAliases'))
+        .processor(require('./processors/addGlobalApiData'))
+        .processor(require('./processors/updateGlobalApiPath'))
         .processor(require('./processors/computeApiBreadCrumbs'))
         .processor(require('./processors/filterContainedDocs'))
         .processor(require('./processors/processClassLikeMembers'))
@@ -95,6 +97,7 @@ module.exports =
             'common/testing/index.ts',
             'common/upgrade/index.ts',
             'core/index.ts',
+            'core/global.ts',
             'core/testing/index.ts',
             'elements/index.ts',
             'forms/index.ts',
