@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {CommonModule} from '@angular/common';
 import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, HostBinding, Input, NgModule, Renderer2, ViewChild, ViewContainerRef} from '@angular/core';
 import {getDebugNode} from '@angular/core/src/render3/util/discovery_utils';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
@@ -1561,6 +1562,58 @@ describe('styling', () => {
     // Note that check the raw HTML, because (at the time of writing) the Node-based renderer
     // that we use to run tests doesn't support `clip-path` in `CSSStyleDeclaration`.
     expect(html).toMatch(/style=["|']clip-path:\s*url\(.*#test.*\)/);
+  });
+
+  it('should not throw when bound to SafeValue', () => {
+    @Component({
+      template: `
+        <div
+          [style.background]="getBackgroundSafe()"
+          [style.width]="getWidthSafe()"
+          [style.height]="getHeightSafe()"
+          [style.color]="getColorUnsafe()"></div>`,
+    })
+    class MyComp {
+      constructor(private sanitizer: DomSanitizer) {}
+      public width: string = 'calc(20%)';
+      public height: string = '10px';
+      public background: string = '1.png';
+      public color: string = 'red';
+
+      private getSafeStyle(value: string) { return this.sanitizer.bypassSecurityTrustStyle(value); }
+
+      getBackgroundSafe() { return this.getSafeStyle(`url("/${this.background}")`); }
+      getWidthSafe() { return this.getSafeStyle(this.width); }
+      getHeightSafe() { return this.getSafeStyle(this.height); }
+      getColorUnsafe() { return this.color; }
+    }
+
+    TestBed.configureTestingModule({
+      imports: [CommonModule],
+      declarations: [MyComp],
+    });
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    const comp = fixture.componentInstance;
+    const style = fixture.nativeElement.firstChild.style;
+
+    expect(style.background).toBe('url("/1.png")');
+    expect(style.width).toBe('calc(20%)');
+    expect(style.height).toBe('10px');
+    expect(style.color).toBe('red');
+
+    comp.background = '2.png';
+    comp.width = '5px';
+    comp.height = '100%';
+    comp.color = 'green';
+
+    fixture.detectChanges();
+
+    expect(style.background).toBe('url("/2.png")');
+    expect(style.width).toBe('5px');
+    expect(style.height).toBe('100%');
+    expect(style.color).toBe('green');
   });
 
   onlyInIvy('only ivy has style/class bindings debugging support')
