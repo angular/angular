@@ -35,6 +35,8 @@ def is_ivy_enabled(ctx):
     Returns:
       Boolean, Whether the ivy compiler should be used.
     """
+
+    # TODO(josephperott): Remove after ~Feb 2020, to allow local script migrations
     if "compile" in ctx.var and ctx.workspace_name == "angular":
         fail(
             msg = "Setting ViewEngine/Ivy using --define=compile is deprecated, please use " +
@@ -45,13 +47,6 @@ def is_ivy_enabled(ctx):
     # This attribute is only defined in google's private ng_module rule and not
     # available externally. For external users, this is effectively a no-op.
     if hasattr(ctx.attr, "ivy") and ctx.attr.ivy == True:
-        return True
-
-    # TODO(josephperrott): Remove configuration via compile=aot define flag.
-    if ctx.var.get("compile", None) == "aot":
-        # buildifier: disable=print
-        print("Setting ViewEngine/Ivy using the compile build variable (--define=compile=*) " +
-              "is deprecated, please use the --define=angular_ivy_enabled=True instead.")
         return True
 
     if ctx.var.get("angular_ivy_enabled", None) == "True":
