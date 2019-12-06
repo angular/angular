@@ -8,7 +8,6 @@
 
 import {AotSummaryResolver, CompileDirectiveSummary, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, I18NHtmlParser, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, isFormattedError} from '@angular/compiler';
 import {SchemaMetadata, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
-import * as ts from 'typescript';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {AstResult} from './common';
@@ -23,7 +22,7 @@ import {findTightestNode, getDirectiveClassLike} from './utils';
  * Create a `LanguageServiceHost`
  */
 export function createLanguageServiceFromTypescript(
-    host: ts.LanguageServiceHost, service: ts.LanguageService): LanguageService {
+    host: tss.LanguageServiceHost, service: tss.LanguageService): LanguageService {
   const ngHost = new TypeScriptServiceHost(host, service);
   const ngServer = createLanguageService(ngHost);
   return ngServer;
@@ -64,7 +63,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private readonly collectedErrors = new Map<string, any[]>();
   private readonly fileVersions = new Map<string, string>();
 
-  private lastProgram: ts.Program|undefined = undefined;
+  private lastProgram: tss.Program|undefined = undefined;
   private analyzedModules: NgAnalyzedModules = {
     files: [],
     ngModuleByPipeOrDirective: new Map(),
@@ -72,7 +71,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   };
 
   constructor(
-      readonly tsLsHost: ts.LanguageServiceHost, private readonly tsLS: ts.LanguageService) {
+      readonly tsLsHost: tss.LanguageServiceHost, private readonly tsLS: tss.LanguageService) {
     this.summaryResolver = new AotSummaryResolver(
         {
           loadSummary(filePath: string) { return null; },
@@ -249,17 +248,17 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     const results: TemplateSource[] = [];
     if (fileName.endsWith('.ts')) {
       // Find every template string in the file
-      const visit = (child: ts.Node) => {
+      const visit = (child: tss.Node) => {
         const template = this.getInternalTemplate(child);
         if (template) {
           results.push(template);
         } else {
-          ts.forEachChild(child, visit);
+          tss.forEachChild(child, visit);
         }
       };
       const sourceFile = this.getSourceFile(fileName);
       if (sourceFile) {
-        ts.forEachChild(sourceFile, visit);
+        tss.forEachChild(sourceFile, visit);
       }
     } else {
       const template = this.getExternalTemplate(fileName);
@@ -286,7 +285,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       return [];
     }
     const results: Declaration[] = [];
-    const visit = (child: ts.Node) => {
+    const visit = (child: tss.Node) => {
       const candidate = getDirectiveClassLike(child);
       if (candidate) {
         const {decoratorId, classDecl} = candidate;
@@ -311,19 +310,19 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         child.forEachChild(visit);
       }
     };
-    ts.forEachChild(sourceFile, visit);
+    tss.forEachChild(sourceFile, visit);
 
     return results;
   }
 
-  getSourceFile(fileName: string): ts.SourceFile|undefined {
+  getSourceFile(fileName: string): tss.SourceFile|undefined {
     if (!fileName.endsWith('.ts')) {
       throw new Error(`Non-TS source file requested: ${fileName}`);
     }
     return this.program.getSourceFile(fileName);
   }
 
-  get program(): ts.Program {
+  get program(): tss.Program {
     const program = this.tsLS.getProgram();
     if (!program) {
       // Program is very very unlikely to be undefined.
@@ -345,8 +344,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
    *
    * @param node Potential template node
    */
-  private getInternalTemplate(node: ts.Node): TemplateSource|undefined {
-    if (!ts.isStringLiteralLike(node)) {
+  private getInternalTemplate(node: tss.Node): TemplateSource|undefined {
+    if (!tss.isStringLiteralLike(node)) {
       return;
     }
     const tmplAsgn = getPropertyAssignmentFromValue(node);
@@ -386,7 +385,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     // TODO: This only considers top-level class declarations in a source file.
     // This would not find a class declaration in a namespace, for example.
     const classDecl = sourceFile.forEachChild((child) => {
-      if (ts.isClassDeclaration(child) && child.name && child.name.text === classSymbol.name) {
+      if (tss.isClassDeclaration(child) && child.name && child.name.text === classSymbol.name) {
         return child;
       }
     });
@@ -407,7 +406,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     }
   }
 
-  private getCollectedErrors(defaultSpan: Span, sourceFile: ts.SourceFile): DeclarationError[] {
+  private getCollectedErrors(defaultSpan: Span, sourceFile: tss.SourceFile): DeclarationError[] {
     const errors = this.collectedErrors.get(sourceFile.fileName);
     if (!errors) {
       return [];
@@ -580,21 +579,21 @@ function findSuitableDefaultModule(modules: NgAnalyzedModules): CompileNgModuleM
   return result;
 }
 
-function spanOf(node: ts.Node): Span {
+function spanOf(node: tss.Node): Span {
   return {start: node.getStart(), end: node.getEnd()};
 }
 
-function spanAt(sourceFile: ts.SourceFile, line: number, column: number): Span|undefined {
+function spanAt(sourceFile: tss.SourceFile, line: number, column: number): Span|undefined {
   if (line != null && column != null) {
-    const position = ts.getPositionOfLineAndCharacter(sourceFile, line, column);
-    const findChild = function findChild(node: ts.Node): ts.Node | undefined {
-      if (node.kind > ts.SyntaxKind.LastToken && node.pos <= position && node.end > position) {
-        const betterNode = ts.forEachChild(node, findChild);
+    const position = tss.getPositionOfLineAndCharacter(sourceFile, line, column);
+    const findChild = function findChild(node: tss.Node): tss.Node | undefined {
+      if (node.kind > tss.SyntaxKind.LastToken && node.pos <= position && node.end > position) {
+        const betterNode = tss.forEachChild(node, findChild);
         return betterNode || node;
       }
     };
 
-    const node = ts.forEachChild(sourceFile, findChild);
+    const node = tss.forEachChild(sourceFile, findChild);
     if (node) {
       return {start: node.getStart(), end: node.getEnd()};
     }
