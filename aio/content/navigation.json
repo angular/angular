@@ -439,6 +439,11 @@
               "tooltip": "Animate route transitions."
             }
           ]
+        },
+        {
+          "url": "guide/change-detection",
+          "title": "Change Detection",
+          "tooltip": "Change Detection in angular app."
         }
       ]
     },
