@@ -141,9 +141,6 @@
     "name": "TodoStore"
   },
   {
-    "name": "ViewEngineTemplateRef"
-  },
-  {
     "name": "VE_ViewContainerRef"
   },
   {
@@ -151,6 +148,9 @@
   },
   {
     "name": "ViewEncapsulation"
+  },
+  {
+    "name": "ViewEngineTemplateRef"
   },
   {
     "name": "ViewRef"
