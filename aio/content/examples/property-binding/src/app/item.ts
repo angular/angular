@@ -1,5 +1,5 @@
 // #docregion item-class
-export class Item {
+export interface Item {
   id: number;
   name: string;
 }
