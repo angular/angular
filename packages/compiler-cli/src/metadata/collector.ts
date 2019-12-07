@@ -230,7 +230,7 @@ export class MetadataCollector {
             const property = <ts.PropertyDeclaration>member;
             if (isStatic(property)) {
               const name = evaluator.nameOf(property.name);
-              if (!isMetadataError(name)) {
+              if (!isMetadataError(name) && !shouldIgnoreStaticMember(name)) {
                 if (property.initializer) {
                   const value = evaluator.evaluateNode(property.initializer);
                   recordStaticMember(name, value);
@@ -742,6 +742,10 @@ function namesOf(parameters: ts.NodeArray<ts.ParameterDeclaration>): string[] {
   }
 
   return result;
+}
+
+function shouldIgnoreStaticMember(memberName: string): boolean {
+  return memberName.startsWith('ngAcceptInputType_') || memberName.startsWith('ngTemplateGuard_');
 }
 
 function expandedMessage(error: any): string {
