@@ -757,7 +757,7 @@ export class ComponentDecoratorHandler implements
     }
 
     // Figure out what file is being imported.
-    return this.moduleResolver.resolveModuleName(expr.value.moduleName !, origin);
+    return this.moduleResolver.resolveModule(expr.value.moduleName !, origin.fileName);
   }
 
   private _isCyclicImport(expr: Expression, origin: ts.SourceFile): boolean {
