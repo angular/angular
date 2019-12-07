@@ -115,7 +115,6 @@ export function writeAndReconcileStyle(
  */
 function reconcileClassNames(
     renderer: Renderer3, element: RElement, oldValue: string, newValue: string) {
-  const isProcedural = isProceduralRenderer(renderer);
   const changes = computeClassChanges(oldValue, newValue);
   for (let i = 0; i < changes.length; i++) {
     const className = changes[i++] as string;
@@ -140,7 +139,6 @@ function reconcileClassNames(
  */
 function reconcileStyleNames(
     renderer: Renderer3, element: RElement, oldValue: string, newValue: string) {
-  const isProcedural = isProceduralRenderer(renderer);
   const changes = computeStyleChanges(oldValue, newValue);
   for (let i = 0; i < changes.length; i = i + 4) {
     const styleName = changes[i] as string;

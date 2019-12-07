@@ -6,17 +6,19 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
-import {assertNotEqual} from '../../util/assert';
+import {assertEqual, assertNotEqual} from '../../util/assert';
 import {TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {LStylingData} from '../interfaces/styling';
 import {LView, TData} from '../interfaces/view';
 import {renderStringify} from '../util/misc_utils';
-import {concatStylingEntry, getBindingPropName, getConcatenatedValue, getNextBindingIndex, getPreviousBindingIndex, getStyleBindingSuffix, getStylingTail, getValue, hasConfig, hasValueChanged, hyphenate, isComponentHostBinding, isDirectSanitizationRequired, isDirectiveHostBinding, isDuplicateBinding, isStylingMap, isStylingValueDefined, setConcatenatedValue, setValue, splitOnWhitespace} from '../util/styling_utils';
+import {concatString, concatStylingEntry, getBindingPropName, getConcatenatedValue, getNextBindingIndex, getPreviousBindingIndex, getStyleBindingSuffix, getStylingTail, getValue, hasConfig, hasValueChanged, hyphenate, isComponentHostBinding, isDirectSanitizationRequired, isDirectiveHostBinding, isDuplicateBinding, isStylingMap, isStylingValueDefined, setConcatenatedValue, setValue, splitOnWhitespace} from '../util/styling_utils';
+
 import {removeClass} from './class_differ';
 import {writeAndReconcileClass, writeAndReconcileStyle} from './reconcile';
 import {StylingState} from './state';
 import {removeStyle} from './style_differ';
+import {consumeClassToken, consumeWhitespace} from './styling_parser';
 
 
 /**
@@ -312,21 +314,34 @@ function processStylingBinding(
         normalizeValueForConcatenation(prop, value, suffix, sanitizerToUse, false, isClassBased);
     concatenatedStr = addRemoveStylingEntryInConcatString(
         concatenatedStr, prop, valueToApply, isClassBased, isDuplicateOfPrevious);
-  } else {  // map-based entry
-    const isMap = isStylingMap(value);
-    const props = isStylingValueDefined(value) ?
-        (isMap ? Object.keys(value) : splitOnWhitespace(value)) :
-        null;
-    const length = props ? props.length : 0;
-    for (let i = 0; i < length; i++) {
-      let prop = props ![i];
-      let valueToApply = isMap ? (value as{[key: string]: string | null})[prop] : true;
-      valueToApply = normalizeValueForConcatenation(
-          prop, valueToApply, suffix, sanitizerToUse, true, isClassBased);
+  } else if (isStylingMap(value)) {  // map-based entry
+    if (isStylingValueDefined(value)) {
+      const props = Object.keys(value);
+      const length = props ? props.length : 0;
+      for (let i = 0; i < length; i++) {
+        let prop = props ![i];
+        let valueToApply: string|false|null = (value as{[key: string]: string | null})[prop];
+        valueToApply = normalizeValueForConcatenation(
+            prop, valueToApply, suffix, sanitizerToUse, true, isClassBased);
 
-      const propToApply = isClassBased ? prop : hyphenate(prop);
-      concatenatedStr = addRemoveStylingEntryInConcatString(
-          concatenatedStr, propToApply, valueToApply, isClassBased, isDuplicateOfPrevious);
+        const propToApply = isClassBased ? prop : hyphenate(prop);
+        concatenatedStr = addRemoveStylingEntryInConcatString(
+            concatenatedStr, propToApply, valueToApply, isClassBased, isDuplicateOfPrevious);
+      }
+    }
+  } else if (typeof value === 'string') {
+    ngDevMode && assertEqual(isClassBased, true, 'Expecting to process class');
+    let start = 0;
+    const end = value.length;
+    while (start < end) {
+      const tokenStart = consumeWhitespace(value, start, end);
+      const tokenEnd = consumeClassToken(value, tokenStart, end);
+      const token = value.substring(tokenStart, tokenEnd);
+      if (concatenatedStr.indexOf(token) === -1) {
+        // we don't have it so add it.
+        concatenatedStr = concatString(concatenatedStr, token, ' ');
+      }
+      start = tokenEnd;
     }
   }
 

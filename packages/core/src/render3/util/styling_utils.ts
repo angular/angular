@@ -262,7 +262,8 @@ export function concatStylingEntry(
     lhs: string, prop: string, value: string | boolean, isClassBased: boolean): string {
   const separator = isClassBased ? CLASS_ENTRIES_SEPARATOR : STYLE_ENTRIES_SEPARATOR;
   const entry = isClassBased ? prop : concatStyle(prop, value as string);
-  return `${lhs}${lhs.length !== 0 ? separator : ''}${entry}`;
+  if (lhs === '') return entry;
+  return lhs + separator + entry;
 }
 
 /**
@@ -345,6 +346,8 @@ export function setClass(
 export function setClassName(renderer: Renderer3, native: RElement, className: string): void {
   ngDevMode && ngDevMode.rendererSetClassName++;
   if (isProceduralRenderer(renderer)) {
+    // Writing to `className` seems to be faster than `setAttribute`
+    // renderer.setProperty(native, 'className', className);
     renderer.setAttribute(native, 'class', className);
   } else {
     native.className = className;
