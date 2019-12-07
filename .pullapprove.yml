@@ -643,7 +643,8 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
-          'packages/zone.js/**'
+          'packages/zone.js/**',
+          'aio/content/guide/zone.md'
           ])
     reviewers:
       users:
