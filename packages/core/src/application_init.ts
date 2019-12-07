@@ -33,10 +33,8 @@ export const APP_INITIALIZER = new InjectionToken<Array<() => void>>('Applicatio
  */
 @Injectable()
 export class ApplicationInitStatus {
-  // TODO(issue/24571): remove '!'.
-  private resolve !: Function;
-  // TODO(issue/24571): remove '!'.
-  private reject !: Function;
+  private resolve = () => {};
+  private reject = (error: any) => {};
   private initialized = false;
   public readonly donePromise: Promise<any>;
   public readonly done = false;
