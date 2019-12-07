@@ -439,6 +439,11 @@
               "tooltip": "Animate route transitions."
             }
           ]
+        },
+        {
+	        "url": "guide/zone",
+          "title": "NgZone",
+          "tooltip": "How NgZone works"
         }
       ]
     },
