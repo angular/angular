@@ -55,13 +55,14 @@ const _CLEAN_PROMISE = (() => Promise.resolve(null))();
 export function setHostBindings(tView: TView, lView: LView): void {
   const selectedIndex = getSelectedIndex();
   try {
-    if (tView.expandoInstructions !== null) {
+    const expandoInstructions = tView.expandoInstructions;
+    if (expandoInstructions !== null) {
       let bindingRootIndex = setBindingIndex(tView.expandoStartIndex);
       setBindingRoot(bindingRootIndex);
       let currentDirectiveIndex = -1;
       let currentElementIndex = -1;
-      for (let i = 0; i < tView.expandoInstructions.length; i++) {
-        const instruction = tView.expandoInstructions[i];
+      for (let i = 0; i < expandoInstructions.length; i++) {
+        const instruction = expandoInstructions[i];
         if (typeof instruction === 'number') {
           if (instruction <= 0) {
             // Negative numbers mean that we are starting new EXPANDO block and need to update
@@ -70,7 +71,7 @@ export function setHostBindings(tView: TView, lView: LView): void {
             setActiveHostElement(currentElementIndex);
 
             // Injector block and providers are taken into account.
-            const providerCount = (tView.expandoInstructions[++i] as number);
+            const providerCount = (expandoInstructions[++i] as number);
             bindingRootIndex += INJECTOR_BLOOM_PARENT_SIZE + providerCount;
 
             currentDirectiveIndex = bindingRootIndex;
