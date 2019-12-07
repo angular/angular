@@ -8,13 +8,14 @@
 import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {LogicalFileSystem, LogicalProjectPath, PathSegment, absoluteFrom, absoluteFromSourceFile, basename, dirname, relative, resolve} from '../../file_system';
+import {LogicalFileSystem, LogicalProjectPath, PathSegment, absoluteFromSourceFile, dirname, relative} from '../../file_system';
 import {stripExtension} from '../../file_system/src/util';
 import {ReflectionHost} from '../../reflection';
-import {getSourceFile, getSourceFileOrNull, isDeclaration, nodeNameForError, resolveModuleName} from '../../util/src/typescript';
+import {getSourceFile, isDeclaration, nodeNameForError} from '../../util/src/typescript';
 
 import {findExportedNameOfNode} from './find_export';
 import {ImportMode, Reference} from './references';
+import {ModuleResolver} from './resolver';
 
 
 
@@ -118,8 +119,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
 
   constructor(
       protected program: ts.Program, protected checker: ts.TypeChecker,
-      protected options: ts.CompilerOptions, protected host: ts.CompilerHost,
-      private reflectionHost: ReflectionHost) {}
+      protected moduleResolver: ModuleResolver, private reflectionHost: ReflectionHost) {}
 
   emit(ref: Reference<ts.Node>, context: ts.SourceFile, importMode: ImportMode): Expression|null {
     if (ref.bestGuessOwningModule === null) {
@@ -165,13 +165,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
   protected enumerateExportsOfModule(specifier: string, fromFile: string):
       Map<ts.Declaration, string>|null {
     // First, resolve the module specifier to its entry point, and get the ts.Symbol for it.
-    const resolvedModule = resolveModuleName(specifier, fromFile, this.options, this.host);
-    if (resolvedModule === undefined) {
-      return null;
-    }
-
-    const entryPointFile =
-        getSourceFileOrNull(this.program, absoluteFrom(resolvedModule.resolvedFileName));
+    const entryPointFile = this.moduleResolver.resolveModule(specifier, fromFile);
     if (entryPointFile === null) {
       return null;
     }

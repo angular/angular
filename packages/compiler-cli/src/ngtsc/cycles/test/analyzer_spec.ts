@@ -62,9 +62,11 @@ runInEachFileSystem(() => {
 
   function makeAnalyzer(graph: string): {program: ts.Program, analyzer: CycleAnalyzer} {
     const {program, options, host} = makeProgramFromGraph(getFileSystem(), graph);
+    const moduleResolver =
+        new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
     return {
       program,
-      analyzer: new CycleAnalyzer(new ImportGraph(new ModuleResolver(program, options, host))),
+      analyzer: new CycleAnalyzer(new ImportGraph(moduleResolver)),
     };
   }
 });

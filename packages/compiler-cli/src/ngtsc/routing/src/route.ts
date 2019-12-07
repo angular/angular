@@ -39,7 +39,7 @@ export class RouterEntryPointManager {
     if (moduleName === undefined) {
       return null;
     }
-    const resolvedSf = this.moduleResolver.resolveModuleName(relativeFile, context);
+    const resolvedSf = this.moduleResolver.resolveModule(relativeFile, context.fileName);
     if (resolvedSf === null) {
       return null;
     }

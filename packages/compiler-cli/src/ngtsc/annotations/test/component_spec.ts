@@ -48,7 +48,8 @@ runInEachFileSystem(() => {
       const checker = program.getTypeChecker();
       const reflectionHost = new TypeScriptReflectionHost(checker);
       const evaluator = new PartialEvaluator(reflectionHost, checker, /* dependencyTracker */ null);
-      const moduleResolver = new ModuleResolver(program, options, host);
+      const moduleResolver =
+          new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
       const importGraph = new ImportGraph(moduleResolver);
       const cycleAnalyzer = new CycleAnalyzer(importGraph);
       const metaRegistry = new LocalMetadataRegistry();
