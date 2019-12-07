@@ -2014,13 +2014,14 @@ export function parseTemplate(
   return {nodes, styleUrls, styles};
 }
 
+const elementRegistry = new DomElementSchemaRegistry();
+
 /**
  * Construct a `BindingParser` with a default configuration.
  */
 export function makeBindingParser(
     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): BindingParser {
-  return new BindingParser(
-      new Parser(new Lexer()), interpolationConfig, new DomElementSchemaRegistry(), null, []);
+  return new BindingParser(new Parser(new Lexer()), interpolationConfig, elementRegistry, null, []);
 }
 
 export function resolveSanitizationFn(context: core.SecurityContext, isAttribute?: boolean) {
