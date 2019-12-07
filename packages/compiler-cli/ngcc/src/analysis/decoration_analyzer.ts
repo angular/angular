@@ -59,6 +59,8 @@ export class DecorationAnalyzer {
    * Map of NgModule declarations to the re-exports for that NgModule.
    */
   private reexportMap = new Map<ts.Declaration, Map<string, [string, string]>>();
+  moduleResolver =
+      new ModuleResolver(this.program, this.options, this.host, /* moduleResolutionCache */ null);
   resourceManager = new NgccResourceLoader(this.fs);
   metaRegistry = new LocalMetadataRegistry();
   dtsMetaReader = new DtsMetadataReader(this.typeChecker, this.reflectionHost);
@@ -66,7 +68,7 @@ export class DecorationAnalyzer {
   refEmitter = new ReferenceEmitter([
     new LocalIdentifierStrategy(),
     new AbsoluteModuleStrategy(
-        this.program, this.typeChecker, this.options, this.host, this.reflectionHost),
+        this.program, this.typeChecker, this.moduleResolver, this.reflectionHost),
     // TODO(alxhub): there's no reason why ngcc needs the "logical file system" logic here, as ngcc
     // projects only ever have one rootDir. Instead, ngcc should just switch its emitted import
     // based on whether a bestGuessOwningModule is present in the Reference.
@@ -81,7 +83,6 @@ export class DecorationAnalyzer {
   fullRegistry = new CompoundMetadataRegistry([this.metaRegistry, this.scopeRegistry]);
   evaluator =
       new PartialEvaluator(this.reflectionHost, this.typeChecker, /* dependencyTracker */ null);
-  moduleResolver = new ModuleResolver(this.program, this.options, this.host);
   importGraph = new ImportGraph(this.moduleResolver);
   cycleAnalyzer = new CycleAnalyzer(this.importGraph);
   handlers: DecoratorHandler<unknown, unknown, unknown>[] = [

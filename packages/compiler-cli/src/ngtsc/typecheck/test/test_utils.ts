@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, Reference, ReferenceEmitter} from '../../imports';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
@@ -29,7 +29,7 @@ export function typescriptLibDts(): TestFile {
       type Partial<T> = { [P in keyof T]?: T[P]; };
       type Pick<T, K extends keyof T> = { [P in K]: T[P]; };
       type NonNullable<T> = T extends null | undefined ? never : T;
-      
+
       // The following native type declarations are required for proper type inference
       declare interface Function {
         call(...args: any[]): any;
@@ -40,7 +40,7 @@ export function typescriptLibDts(): TestFile {
       declare interface String {
         length: number;
       }
-      
+
       declare interface Event {
         preventDefault(): void;
       }
@@ -48,7 +48,7 @@ export function typescriptLibDts(): TestFile {
         readonly x: number;
         readonly y: number;
       }
-      
+
       declare interface HTMLElementEventMap {
         "click": MouseEvent;
       }
@@ -88,7 +88,7 @@ export function angularCoreDts(): TestFile {
       abstract readonly elementRef: unknown;
       abstract createEmbeddedView(context: C): unknown;
     }
-    
+
     export declare class EventEmitter<T> {
       subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown;
     }
@@ -131,7 +131,7 @@ export function ngForDts(): TestFile {
     export interface TrackByFunction<T> {
       (index: number, item: T): any;
     }
-    
+
     export declare class NgForOfContext<T> {
       $implicit: T;
       index: number;
@@ -249,10 +249,12 @@ export function typecheck(
   const checker = program.getTypeChecker();
   const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
   const reflectionHost = new TypeScriptReflectionHost(checker);
+  const moduleResolver =
+      new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
   const emitter = new ReferenceEmitter([
     new LocalIdentifierStrategy(),
     new AbsoluteModuleStrategy(
-        program, checker, options, host, new TypeScriptReflectionHost(checker)),
+        program, checker, moduleResolver, new TypeScriptReflectionHost(checker)),
     new LogicalProjectStrategy(reflectionHost, logicalFs),
   ]);
   const ctx = new TypeCheckContext({...ALL_ENABLED_CONFIG, ...config}, emitter, typeCheckFilePath);
