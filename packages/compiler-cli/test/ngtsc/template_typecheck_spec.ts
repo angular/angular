@@ -1123,9 +1123,7 @@ export declare class AnimationEvent {
 
     describe('input coercion', () => {
       beforeEach(() => {
-        env.tsconfig({
-          'fullTemplateTypeCheck': true,
-        });
+        env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
         env.write('node_modules/@angular/material/index.d.ts', `
         import * as i0 from '@angular/core';
 
@@ -1164,10 +1162,42 @@ export declare class AnimationEvent {
         expect(diags.length).toBe(0);
       });
 
+      it('should apply coercion members of base classes', () => {
+        env.write('test.ts', `
+          import {Component, Directive, Input, NgModule} from '@angular/core';
+
+          @Directive()
+          export class BaseDir {
+            @Input()
+            value: string;
+
+            static ngAcceptInputType_value: string|number;
+          }
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class MyDir extends BaseDir {}
+
+          @Component({
+            selector: 'blah',
+            template: '<input dir [value]="someNumber">',
+          })
+          export class FooCmp {
+            someNumber = 3;
+          }
+
+          @NgModule({
+            declarations: [MyDir, FooCmp],
+          })
+          export class FooModule {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
       it('should give an error if the binding expression type is not accepted by the coercion function',
          () => {
-           env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
-
            env.write('test.ts', `
             import {Component, NgModule} from '@angular/core';
             import {MatInputModule} from '@angular/material';
