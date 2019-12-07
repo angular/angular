@@ -177,7 +177,10 @@ export class NgtscProgram implements api.Program {
     this.reuseTsProgram = this.tsProgram;
 
     this.entryPoint = entryPoint !== null ? getSourceFileOrNull(this.tsProgram, entryPoint) : null;
-    this.moduleResolver = new ModuleResolver(this.tsProgram, options, this.host);
+    const moduleResolutionCache = ts.createModuleResolutionCache(
+        this.host.getCurrentDirectory(), fileName => this.host.getCanonicalFileName(fileName));
+    this.moduleResolver =
+        new ModuleResolver(this.tsProgram, options, this.host, moduleResolutionCache);
     this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver));
     this.defaultImportTracker = new DefaultImportTracker();
     if (oldProgram === undefined) {
@@ -287,7 +290,8 @@ export class NgtscProgram implements api.Program {
       // of the root files.
       const containingFile = this.tsProgram.getRootFileNames()[0];
       const [entryPath, moduleName] = entryRoute.split('#');
-      const resolvedModule = resolveModuleName(entryPath, containingFile, this.options, this.host);
+      const resolvedModule =
+          resolveModuleName(entryPath, containingFile, this.options, this.host, undefined);
 
       if (resolvedModule) {
         entryRoute = entryPointKeyFor(resolvedModule.resolvedFileName, moduleName);
@@ -587,8 +591,7 @@ export class NgtscProgram implements api.Program {
         // First, try to use local identifiers if available.
         new LocalIdentifierStrategy(),
         // Next, attempt to use an absolute import.
-        new AbsoluteModuleStrategy(
-            this.tsProgram, checker, this.options, this.host, this.reflector),
+        new AbsoluteModuleStrategy(this.tsProgram, checker, this.moduleResolver, this.reflector),
         // Finally, check if the reference is being written into a file within the project's .ts
         // sources, and use a relative import if so. If this fails, ReferenceEmitter will throw
         // an error.

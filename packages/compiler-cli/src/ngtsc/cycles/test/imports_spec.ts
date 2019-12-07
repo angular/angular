@@ -55,9 +55,11 @@ runInEachFileSystem(() => {
 
   function makeImportGraph(graph: string): {program: ts.Program, graph: ImportGraph} {
     const {program, options, host} = makeProgramFromGraph(getFileSystem(), graph);
+    const moduleResolver =
+        new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
     return {
       program,
-      graph: new ImportGraph(new ModuleResolver(program, options, host)),
+      graph: new ImportGraph(moduleResolver),
     };
   }
 
