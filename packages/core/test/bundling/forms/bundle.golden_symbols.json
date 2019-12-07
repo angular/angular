@@ -627,9 +627,6 @@
     "name": "VERSION"
   },
   {
-    "name": "ViewEngineTemplateRef"
-  },
-  {
     "name": "VE_ViewContainerRef"
   },
   {
@@ -643,6 +640,9 @@
   },
   {
     "name": "ViewEncapsulation"
+  },
+  {
+    "name": "ViewEngineTemplateRef"
   },
   {
     "name": "ViewRef"
@@ -1390,6 +1390,9 @@
   },
   {
     "name": "noSideEffects"
+  },
+  {
+    "name": "noop"
   },
   {
     "name": "noop"

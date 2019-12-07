@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPromise} from '../src/util/lang';
-
 import {Inject, Injectable, InjectionToken, Optional} from './di';
+import {isPromise} from './util/lang';
+import {noop} from './util/noop';
 
 
 /**
@@ -37,10 +37,8 @@ export const APP_INITIALIZER = new InjectionToken<Array<() => void>>('Applicatio
  */
 @Injectable()
 export class ApplicationInitStatus {
-  // TODO(issue/24571): remove '!'.
-  private resolve!: Function;
-  // TODO(issue/24571): remove '!'.
-  private reject!: Function;
+  private resolve = noop;
+  private reject = noop;
   private initialized = false;
   public readonly donePromise: Promise<any>;
   public readonly done = false;
