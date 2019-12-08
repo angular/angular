@@ -153,7 +153,7 @@ export class Parser {
         // fixed string
         strings.push(part);
         offset += part.length;
-      } else if (part.trim().length > 0) {
+      } else if (part.trim().length > 0 && part.trim().substring(0, 2) !== '//') {
         offset += interpolationConfig.start.length;
         expressions.push(part);
         offsets.push(offset);
