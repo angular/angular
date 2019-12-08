@@ -23,6 +23,15 @@ export class TemplateBindingParseResult {
       public errors: ParserError[]) {}
 }
 
+const defaultInterpolateRegExp = _createInterpolateRegExp(DEFAULT_INTERPOLATION_CONFIG);
+function _getInterpolateRegExp(config: InterpolationConfig): RegExp {
+  if (config === DEFAULT_INTERPOLATION_CONFIG) {
+    return defaultInterpolateRegExp;
+  } else {
+    return _createInterpolateRegExp(config);
+  }
+}
+
 function _createInterpolateRegExp(config: InterpolationConfig): RegExp {
   const pattern = escapeRegExp(config.start) + '([\\s\\S]*?)' + escapeRegExp(config.end);
   return new RegExp(pattern, 'g');
@@ -138,7 +147,7 @@ export class Parser {
       input: string, location: string,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): SplitInterpolation
       |null {
-    const regexp = _createInterpolateRegExp(interpolationConfig);
+    const regexp = _getInterpolateRegExp(interpolationConfig);
     const parts = input.split(regexp);
     if (parts.length <= 1) {
       return null;
@@ -201,7 +210,7 @@ export class Parser {
 
   private _checkNoInterpolation(
       input: string, location: any, interpolationConfig: InterpolationConfig): void {
-    const regexp = _createInterpolateRegExp(interpolationConfig);
+    const regexp = _getInterpolateRegExp(interpolationConfig);
     const parts = input.split(regexp);
     if (parts.length > 1) {
       this._reportError(
