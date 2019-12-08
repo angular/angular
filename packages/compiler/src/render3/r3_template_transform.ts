@@ -154,7 +154,8 @@ class HtmlAstToIvyAst implements html.Visitor {
         const absoluteValueOffset = attribute.valueSpan ?
             attribute.valueSpan.start.offset :
             // If there is no value span the attribute does not have a value, like `attr` in
-            //`<div attr></div>`. In this case, point to one beyond the attribute name.
+            //`<div attr></div>`. In this case, point to one character beyond the last character of
+            // the attribute name.
             attribute.sourceSpan.start.offset + attribute.name.length;
 
         this.bindingParser.parseInlineTemplateBinding(
