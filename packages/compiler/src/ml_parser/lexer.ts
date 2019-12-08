@@ -242,7 +242,7 @@ class _Tokenizer {
     this._currentTokenType = type;
   }
 
-  private _endToken(parts: string[], end = this._cursor.clone()): Token {
+  private _endToken(parts: string[], end?: CharacterCursor): Token {
     if (this._currentTokenStart === null) {
       throw new TokenError(
           'Programming error - attempted to end a token when there was no start to the token',
@@ -350,8 +350,7 @@ class _Tokenizer {
   private _requireCharCodeUntilFn(predicate: (code: number) => boolean, len: number) {
     const start = this._cursor.clone();
     this._attemptCharCodeUntilFn(predicate);
-    const end = this._cursor.clone();
-    if (end.diff(start) < len) {
+    if (this._cursor.diff(start) < len) {
       throw this._createError(
           _unexpectedCharacterErrorMsg(this._cursor.peek()), this._cursor.getSpan(start));
     }
@@ -821,7 +820,18 @@ class PlainCharacterCursor implements CharacterCursor {
       this.file = fileOrCursor.file;
       this.input = fileOrCursor.input;
       this.end = fileOrCursor.end;
-      this.state = {...fileOrCursor.state};
+
+      const state = fileOrCursor.state;
+      // Note: avoid using `{...fileOrCursor.state}` here as that has a severe performance penalty.
+      // In ES5 bundles the object spread operator is translated into the `__assign` helper, which
+      // is not optimized by VMs as efficiently as a raw object literal. Since this constructor is
+      // called in tight loops, this difference matters.
+      this.state = {
+        peek: state.peek,
+        offset: state.offset,
+        line: state.line,
+        column: state.column,
+      };
     } else {
       if (!range) {
         throw new Error(
@@ -851,9 +861,13 @@ class PlainCharacterCursor implements CharacterCursor {
 
   getSpan(start?: this, leadingTriviaCodePoints?: number[]): ParseSourceSpan {
     start = start || this;
+    let cloned = false;
     if (leadingTriviaCodePoints) {
-      start = start.clone() as this;
       while (this.diff(start) > 0 && leadingTriviaCodePoints.indexOf(start.peek()) !== -1) {
+        if (!cloned) {
+          start = start.clone() as this;
+          cloned = true;
+        }
         start.advance();
       }
     }
