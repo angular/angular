@@ -63,12 +63,7 @@ export function checkInheritanceOfDirective(
   let baseClass = readBaseClass(node, reflector, evaluator);
 
   while (baseClass) {
-    if (baseClass === 'dynamic') {
-      // return getInheritedUndecoratedCtorDiagnostic(node, baseClass, reader);
-      return null;
-    }
-
-    if (!isNamedClassDeclaration(baseClass.node)) {
+    if (baseClass === 'dynamic' || !isNamedClassDeclaration(baseClass.node)) {
       return null;
     }
 
@@ -112,32 +107,13 @@ function getConstructor(node: ts.ClassDeclaration): ts.ConstructorDeclaration|un
 }
 
 function getInheritedUndecoratedCtorDiagnostic(
-    node: ClassDeclaration & ts.ClassDeclaration, baseClass: Reference | 'dynamic',
-    reader: MetadataReader) {
+    node: ClassDeclaration & ts.ClassDeclaration, baseClass: Reference, reader: MetadataReader) {
   const subclassMeta = reader.getDirectiveMetadata(new Reference(node)) !;
   const dirOrComp = subclassMeta.isComponent ? 'Component' : 'Directive';
-  let baseClassName: string;
-
-  if (baseClass instanceof Reference) {
-    baseClassName = baseClass.debugName !;
-  } else {
-    // If we weren't able to resolve the base class, fall back to picking out the name
-    // for the diagnostic from the type that is part of the `extends` clause.
-    const extendsClause = node.heritageClauses &&
-        node.heritageClauses.find(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
-    const extendedType = extendsClause && extendsClause.types[0];
-
-    if (extendedType && ts.isIdentifier(extendedType.expression)) {
-      baseClassName = extendedType.expression.text;
-    } else {
-      // We should be guaranteed to have a name from the logic above, but just in case,
-      // use `<dynamic>` if something went wrong. This looks better than `undefined`.
-      baseClassName = '<dynamic>';
-    }
-  }
+  const baseClassName = baseClass.debugName;
 
   return makeDiagnostic(
-      ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR, node,
+      ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR, node.name,
       `The ${dirOrComp.toLowerCase()} ${node.name.text} inherits its constructor from ${baseClassName}, ` +
           `but the latter does not have an Angular decorator of its own. Dependency injection will not be able to ` +
           `resolve the parameters of ${baseClassName}'s constructor. Either add a @Directive decorator ` +
