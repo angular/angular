@@ -144,6 +144,24 @@ For example, "convert_link_mode".
 * UPPER_UNDERSCORE_CASE (or UPPER_SNAKE_CASE, or SCREAMING_SNAKE_CASE): Traditional for constants (acceptable, but prefer camelCase).
 Upper snake case uses words in all capital letters connected with underscores. For example, "FIX_ME".
 
+{@a change-detection}
+
+## change detection
+
+The mechanism by which the Angular framework synchronizes state of an application's UI with the state of the data.
+The change detector checks the current state of the data model whenever it runs, and maintains it as the previous state to compare on the next iteration.
+
+As the application logic updates component data, values that are bound to DOM properties in the view can change.
+The change detector is responsible for updating the view to reflect the current data model.
+Similarly, the user can interact with the UI, causing events that change the state of the data model.
+These events can trigger change detection.
+
+Using the default change-detection strategy, the change detector goes through the [view hierarchy](#view-tree) on each VM turn to check every [data-bound property](#data-binding) in the template. It compares the current state of the dependent data with the previous state, and collects changes.
+In the second phase, it updates the page DOM to reflect any new data values.
+
+If you set the [`OnPush` change-detection strategy](api/core/ChangeDetectionStrategy#OnPush)`, the change detector runs only when explicitly invoked, which can improve performance. For more information, see [Optimize Angular's change detection](https://web.dev/faster-angular-change-detection/).
+
+
 {@a class-decorator}
 
 ## class decorator
