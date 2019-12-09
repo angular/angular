@@ -60,8 +60,20 @@
 export class StylingDiffer<T> {
   public readonly value: T|null = null;
 
-  private _lastSetValue: {[key: string]: any}|string|string[]|null = null;
+  /**
+   * The last set value that was applied via `setValue()`
+   */
+  private _lastSetValue: {[key: string]: any}|string|string[]|undefined|null = undefined;
+
+  /**
+   * The type of value that the `_lastSetValue` variable is
+   */
   private _lastSetValueType: StylingDifferValueTypes = StylingDifferValueTypes.Null;
+
+  /**
+   * Whether or not the last value change occurred because the variable itself changed reference
+   * (identity)
+   */
   private _lastSetValueIdentityChange = false;
 
   constructor(private _name: string, private _options: StylingDifferOptions) {}
@@ -75,21 +87,29 @@ export class StylingDiffer<T> {
    * @param value the new styling value provided from the ngClass/ngStyle binding
    */
   setValue(value: {[key: string]: any}|string[]|string|null) {
-    if (Array.isArray(value)) {
-      this._lastSetValueType = StylingDifferValueTypes.Array;
-    } else if (value instanceof Set) {
-      this._lastSetValueType = StylingDifferValueTypes.Set;
-    } else if (value && typeof value === 'string') {
-      if (!(this._options & StylingDifferOptions.AllowStringValue)) {
-        throw new Error(this._name + ' string values are not allowed');
+    if (value !== this._lastSetValue) {
+      let type: StylingDifferValueTypes;
+      if (!value) {  // matches empty strings, null, false and undefined
+        type = StylingDifferValueTypes.Null;
+        value = null;
+      } else if (Array.isArray(value)) {
+        type = StylingDifferValueTypes.Array;
+      } else if (value instanceof Set) {
+        type = StylingDifferValueTypes.Set;
+      } else if (typeof value === 'string') {
+        if (!(this._options & StylingDifferOptions.AllowStringValue)) {
+          throw new Error(this._name + ' string values are not allowed');
+        }
+        type = StylingDifferValueTypes.String;
+      } else {
+        type = StylingDifferValueTypes.StringMap;
       }
-      this._lastSetValueType = StylingDifferValueTypes.String;
-    } else {
-      this._lastSetValueType = value ? StylingDifferValueTypes.Map : StylingDifferValueTypes.Null;
-    }
 
-    this._lastSetValueIdentityChange = true;
-    this._lastSetValue = value || null;
+      this._lastSetValueType = type;
+      this._lastSetValueIdentityChange = true;
+      this._lastSetValue = value;
+      this._processValueChange(true);
+    }
   }
 
   /**
@@ -104,8 +124,28 @@ export class StylingDiffer<T> {
    */
   hasValueChanged(): boolean {
     let valueHasChanged = this._lastSetValueIdentityChange;
-    if (!valueHasChanged && !(this._lastSetValueType & StylingDifferValueTypes.Collection))
-      return false;
+    if (!valueHasChanged && (this._lastSetValueType & StylingDifferValueTypes.Collection)) {
+      valueHasChanged = this._processValueChange(false);
+    } else {
+      // this is set to false in the event that the value is a collection.
+      // This way (if the identity hasn't changed), then the algorithm can
+      // diff the collection value to see if the contents have mutated
+      // (otherwise the value change was processed during the time when
+      // the variable changed).
+      this._lastSetValueIdentityChange = false;
+    }
+    return valueHasChanged;
+  }
+
+  /**
+   * Examines the last set value to see if there was a change in data.
+   *
+   * @param hasIdentityChange whether or not the last set value changed in identity or not
+   *
+   * @returns true when the value has changed (either by identity or by shape if its a collection).
+   */
+  private _processValueChange(hasIdentityChange: boolean) {
+    let valueHasChanged = hasIdentityChange;
 
     let finalValue: {[key: string]: any}|string|null = null;
     const trimValues = (this._options & StylingDifferOptions.TrimProperties) ? true : false;
@@ -117,25 +157,27 @@ export class StylingDiffer<T> {
       case StylingDifferValueTypes.String:
         const tokens = (this._lastSetValue as string).split(/\s+/g);
         if (this._options & StylingDifferOptions.ForceAsMap) {
-          finalValue = {};
-          tokens.forEach((token, i) => (finalValue as{[key: string]: any})[token] = true);
+          finalValue = {} as{[key: string]: any};
+          for (let i = 0; i < tokens.length; i++) {
+            finalValue[tokens[i]] = true;
+          }
         } else {
-          finalValue = tokens.reduce((str, token, i) => str + (i ? ' ' : '') + token);
+          finalValue = '';
+          for (let i = 0; i < tokens.length; i++) {
+            finalValue += (i !== 0 ? ' ' : '') + tokens[i];
+          }
         }
         break;
 
       // case 2: [input]="{key:value}"
-      case StylingDifferValueTypes.Map:
+      case StylingDifferValueTypes.StringMap:
         const map: {[key: string]: any} = this._lastSetValue as{[key: string]: any};
         const keys = Object.keys(map);
         if (!valueHasChanged) {
-          if (this.value) {
-            // we know that the classExp value exists and that it is
-            // a map (otherwise an identity change would have occurred)
-            valueHasChanged = mapHasChanged(keys, this.value as{[key: string]: any}, map);
-          } else {
-            valueHasChanged = true;
-          }
+          // we know that the classExp value exists and that it is
+          // a map (otherwise an identity change would have occurred)
+          valueHasChanged =
+              this.value ? mapHasChanged(keys, this.value as{[key: string]: any}, map) : true;
         }
 
         if (valueHasChanged) {
@@ -174,27 +216,27 @@ export class StylingDiffer<T> {
 }
 
 /**
- * Various options that are consumed by the [StylingDiffer] class.
+ * Various options that are consumed by the [StylingDiffer] class
  */
 export const enum StylingDifferOptions {
-  None = 0b00000,
-  TrimProperties = 0b00001,
-  AllowSubKeys = 0b00010,
-  AllowStringValue = 0b00100,
-  AllowUnits = 0b01000,
-  ForceAsMap = 0b10000,
+  None = 0b00000,              //
+  TrimProperties = 0b00001,    //
+  AllowSubKeys = 0b00010,      //
+  AllowStringValue = 0b00100,  //
+  AllowUnits = 0b01000,        //
+  ForceAsMap = 0b10000,        //
 }
 
 /**
  * The different types of inputs that the [StylingDiffer] can deal with
  */
 const enum StylingDifferValueTypes {
-  Null = 0b0000,
-  String = 0b0001,
-  Map = 0b0010,
-  Array = 0b0100,
-  Set = 0b1000,
-  Collection = 0b1110,
+  Null = 0b0000,        //
+  String = 0b0001,      //
+  StringMap = 0b0010,   //
+  Array = 0b0100,       //
+  Set = 0b1000,         //
+  Collection = 0b1110,  //
 }
 
 
