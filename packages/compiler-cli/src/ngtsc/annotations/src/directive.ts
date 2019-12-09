@@ -36,7 +36,7 @@ export interface DirectiveHandlerData {
   metadataStmt: Statement|null;
 }
 export class DirectiveDecoratorHandler implements
-    DecoratorHandler<DirectiveHandlerData, Decorator|null> {
+    DecoratorHandler<Decorator|null, DirectiveHandlerData, unknown> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private defaultImportRecorder: DefaultImportRecorder,
@@ -72,7 +72,7 @@ export class DirectiveDecoratorHandler implements
     }
   }
 
-  analyze(node: ClassDeclaration, decorator: Decorator|null, flags = HandlerFlags.NONE):
+  analyze(node: ClassDeclaration, decorator: Readonly<Decorator|null>, flags = HandlerFlags.NONE):
       AnalysisOutput<DirectiveHandlerData> {
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.defaultImportRecorder, this.isCore,
@@ -108,8 +108,9 @@ export class DirectiveDecoratorHandler implements
     };
   }
 
-  compile(node: ClassDeclaration, analysis: DirectiveHandlerData, pool: ConstantPool):
-      CompileResult[] {
+  compile(
+      node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
+      resolution: Readonly<unknown>, pool: ConstantPool): CompileResult[] {
     const meta = analysis.meta;
     const res = compileDirectiveFromMetadata(meta, pool, makeBindingParser());
     const factoryRes = compileNgFactoryDefField(
@@ -135,7 +136,7 @@ export class DirectiveDecoratorHandler implements
  * the module.
  */
 export function extractDirectiveMetadata(
-    clazz: ClassDeclaration, decorator: Decorator | null, reflector: ReflectionHost,
+    clazz: ClassDeclaration, decorator: Readonly<Decorator|null>, reflector: ReflectionHost,
     evaluator: PartialEvaluator, defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
     flags: HandlerFlags, annotateForClosureCompiler: boolean,
     defaultSelector: string | null = null): {

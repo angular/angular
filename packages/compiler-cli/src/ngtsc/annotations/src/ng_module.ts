@@ -37,7 +37,8 @@ export interface NgModuleAnalysis {
  *
  * TODO(alxhub): handle injector side of things as well.
  */
-export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalysis, Decorator> {
+export class NgModuleDecoratorHandler implements
+    DecoratorHandler<Decorator, NgModuleAnalysis, unknown> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaReader: MetadataReader, private metaRegistry: MetadataRegistry,
@@ -64,7 +65,8 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     }
   }
 
-  analyze(node: ClassDeclaration, decorator: Decorator): AnalysisOutput<NgModuleAnalysis> {
+  analyze(node: ClassDeclaration, decorator: Readonly<Decorator>):
+      AnalysisOutput<NgModuleAnalysis> {
     const name = node.name.text;
     if (decorator.args === null || decorator.args.length > 1) {
       throw new FatalDiagnosticError(
@@ -256,7 +258,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     };
   }
 
-  resolve(node: ClassDeclaration, analysis: NgModuleAnalysis): ResolveResult {
+  resolve(node: ClassDeclaration, analysis: Readonly<NgModuleAnalysis>): ResolveResult<unknown> {
     const scope = this.scopeRegistry.getScopeOfModule(node);
     const diagnostics = this.scopeRegistry.getDiagnosticsOfModule(node) || undefined;
 
@@ -291,7 +293,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     }
   }
 
-  compile(node: ClassDeclaration, analysis: NgModuleAnalysis): CompileResult[] {
+  compile(node: ClassDeclaration, analysis: Readonly<NgModuleAnalysis>): CompileResult[] {
     const ngInjectorDef = compileInjector(analysis.inj);
     const ngModuleDef = compileNgModule(analysis.mod);
     const ngModuleStatements = ngModuleDef.additionalStatements;

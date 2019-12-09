@@ -14,7 +14,7 @@ import {Decorator, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateStatement} from '../../translator';
 import {VisitListEntryResult, Visitor, visit} from '../../util/src/visitor';
 
-import {IvyCompilation} from './compilation';
+import {TraitCompiler} from './compilation';
 import {addImports} from './utils';
 
 const NO_DECORATORS = new Set<ts.Decorator>();
@@ -31,7 +31,7 @@ interface FileOverviewMeta {
 }
 
 export function ivyTransformFactory(
-    compilation: IvyCompilation, reflector: ReflectionHost, importRewriter: ImportRewriter,
+    compilation: TraitCompiler, reflector: ReflectionHost, importRewriter: ImportRewriter,
     defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
     isClosureCompilerEnabled: boolean): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
@@ -45,7 +45,7 @@ export function ivyTransformFactory(
 
 class IvyVisitor extends Visitor {
   constructor(
-      private compilation: IvyCompilation, private reflector: ReflectionHost,
+      private compilation: TraitCompiler, private reflector: ReflectionHost,
       private importManager: ImportManager, private defaultImportRecorder: DefaultImportRecorder,
       private isCore: boolean, private constantPool: ConstantPool) {
     super();
@@ -55,9 +55,9 @@ class IvyVisitor extends Visitor {
       VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
     // Determine if this class has an Ivy field that needs to be added, and compile the field
     // to an expression if so.
-    const res = this.compilation.compileIvyFieldFor(node, this.constantPool);
+    const res = this.compilation.compile(node, this.constantPool);
 
-    if (res !== undefined) {
+    if (res !== null) {
       // There is at least one field to add.
       const statements: ts.Statement[] = [];
       const members = [...node.members];
@@ -86,7 +86,7 @@ class IvyVisitor extends Visitor {
       node = ts.updateClassDeclaration(
           node,
           // Remove the decorator which triggered this compilation, leaving the others alone.
-          maybeFilterDecorator(node.decorators, this.compilation.ivyDecoratorsFor(node)),
+          maybeFilterDecorator(node.decorators, this.compilation.decoratorsFor(node)),
           node.modifiers, node.name, node.typeParameters, node.heritageClauses || [],
           // Map over the class members and remove any Angular decorators from them.
           members.map(member => this._stripAngularDecorators(member)));
@@ -206,7 +206,7 @@ class IvyVisitor extends Visitor {
  * A transformer which operates on ts.SourceFiles and applies changes from an `IvyCompilation`.
  */
 function transformIvySourceFile(
-    compilation: IvyCompilation, context: ts.TransformationContext, reflector: ReflectionHost,
+    compilation: TraitCompiler, context: ts.TransformationContext, reflector: ReflectionHost,
     importRewriter: ImportRewriter, file: ts.SourceFile, isCore: boolean,
     isClosureCompilerEnabled: boolean,
     defaultImportRecorder: DefaultImportRecorder): ts.SourceFile {
