@@ -113,7 +113,17 @@ export class BindingParser {
     }
   }
 
-  // Parse an inline template binding. ie `<tag *tplKey="<tplValue>">`
+  /**
+   * Parses an inline template binding, e.g.
+   *    <tag *tplKey="<tplValue>">
+   * @param tplKey template binding name
+   * @param tplValue template binding value
+   * @param sourceSpan span of template binding relative to entire the template
+   * @param absoluteValueOffset start of the tplValue relative to the entire template
+   * @param targetMatchableAttrs potential attributes to match in the template
+   * @param targetProps target property bindings in the template
+   * @param targetVars target variables in the template
+   */
   parseInlineTemplateBinding(
       tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteValueOffset: number,
       targetMatchableAttrs: string[][], targetProps: ParsedProperty[],
@@ -137,6 +147,14 @@ export class BindingParser {
     }
   }
 
+  /**
+   * Parses the bindings in an inline template binding, e.g.
+   *    <tag *tplKey="let value1 = prop; let value2 = localVar">
+   * @param tplKey template binding name
+   * @param tplValue template binding value
+   * @param sourceSpan span of template binding relative to entire the template
+   * @param absoluteValueOffset start of the tplValue relative to the entire template
+   */
   private _parseTemplateBindings(
       tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan,
       absoluteValueOffset: number): TemplateBinding[] {
