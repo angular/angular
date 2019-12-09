@@ -1220,7 +1220,7 @@ export function generateExpandoInstructionBlock(
   // Important: In JS `-x` and `0-x` is not the same! If `x===0` then `-x` will produce `-0` which
   // requires non standard math arithmetic and it can prevent VM optimizations.
   // `0-0` will always produce `0` and will not cause a potential deoptimization in VM.
-  const elementIndex = 0 - tNode.index - HEADER_OFFSET;
+  const elementIndex = HEADER_OFFSET - tNode.index;
   const providerStartIndex = tNode.providerIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
   const providerCount = tView.data.length - providerStartIndex;
   (tView.expandoInstructions || (tView.expandoInstructions = [
