@@ -25,7 +25,7 @@ export interface PipeHandlerData {
   metadataStmt: Statement|null;
 }
 
-export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, Decorator> {
+export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHandlerData, unknown> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private defaultImportRecorder: DefaultImportRecorder,
@@ -48,7 +48,8 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     }
   }
 
-  analyze(clazz: ClassDeclaration, decorator: Decorator): AnalysisOutput<PipeHandlerData> {
+  analyze(clazz: ClassDeclaration, decorator: Readonly<Decorator>):
+      AnalysisOutput<PipeHandlerData> {
     const name = clazz.name.text;
     const type = new WrappedNodeExpr(clazz.name);
     const internalType = new WrappedNodeExpr(this.reflector.getInternalNameOfClass(clazz));
@@ -110,7 +111,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     };
   }
 
-  compile(node: ClassDeclaration, analysis: PipeHandlerData): CompileResult[] {
+  compile(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): CompileResult[] {
     const meta = analysis.meta;
     const res = compilePipeFromMetadata(meta);
     const factoryRes = compileNgFactoryDefField({

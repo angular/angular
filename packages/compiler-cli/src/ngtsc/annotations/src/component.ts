@@ -23,6 +23,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFl
 import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck';
 import {NoopResourceDependencyRecorder, ResourceDependencyRecorder} from '../../util/src/resource_recorder';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
+import {SubsetOfKeys} from '../../util/src/typescript';
 
 import {ResourceLoader} from './api';
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
@@ -33,19 +34,34 @@ import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReferen
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
 
-export interface ComponentHandlerData {
-  meta: R3ComponentMetadata;
+/**
+ * These fields of `R3ComponentMetadata` are updated in the `resolve` phase.
+ *
+ * The `keyof R3ComponentMetadata &` condition ensures that only fields of `R3ComponentMetadata` can
+ * be included here.
+ */
+export type ComponentMetadataResolvedFields =
+    SubsetOfKeys<R3ComponentMetadata, 'directives'|'pipes'|'wrapDirectivesAndPipesInClosure'>;
+
+export interface ComponentAnalysisData {
+  /**
+   * `meta` includes those fields of `R3ComponentMetadata` which are calculated at `analyze` time
+   * (not during resolve).
+   */
+  meta: Omit<R3ComponentMetadata, ComponentMetadataResolvedFields>;
   parsedTemplate: ParsedTemplate;
   templateSourceMapping: TemplateSourceMapping;
   metadataStmt: Statement|null;
   parseTemplate: (options?: ParseTemplateOptions) => ParsedTemplate;
 }
 
+export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadataResolvedFields>;
+
 /**
  * `DecoratorHandler` which handles the `@Component` annotation.
  */
 export class ComponentDecoratorHandler implements
-    DecoratorHandler<ComponentHandlerData, Decorator> {
+    DecoratorHandler<Decorator, ComponentAnalysisData, ComponentResolutionData> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private metaReader: MetadataReader,
@@ -86,7 +102,7 @@ export class ComponentDecoratorHandler implements
     }
   }
 
-  preanalyze(node: ClassDeclaration, decorator: Decorator): Promise<void>|undefined {
+  preanalyze(node: ClassDeclaration, decorator: Readonly<Decorator>): Promise<void>|undefined {
     // In preanalyze, resource URLs associated with the component are asynchronously preloaded via
     // the resourceLoader. This is the only time async operations are allowed for a component.
     // These resources are:
@@ -138,8 +154,9 @@ export class ComponentDecoratorHandler implements
     }
   }
 
-  analyze(node: ClassDeclaration, decorator: Decorator, flags: HandlerFlags = HandlerFlags.NONE):
-      AnalysisOutput<ComponentHandlerData> {
+  analyze(
+      node: ClassDeclaration, decorator: Readonly<Decorator>,
+      flags: HandlerFlags = HandlerFlags.NONE): AnalysisOutput<ComponentAnalysisData> {
     const containingFile = node.getSourceFile().fileName;
     this.literalCache.delete(decorator);
 
@@ -283,7 +300,7 @@ export class ComponentDecoratorHandler implements
       animations = new WrappedNodeExpr(component.get('animations') !);
     }
 
-    const output = {
+    const output: AnalysisOutput<ComponentAnalysisData> = {
       analysis: {
         meta: {
           ...metadata,
@@ -294,12 +311,9 @@ export class ComponentDecoratorHandler implements
 
           // These will be replaced during the compilation step, after all `NgModule`s have been
           // analyzed and the full compilation scope for the component can be realized.
-          pipes: EMPTY_MAP,
-          directives: EMPTY_ARRAY,
-          wrapDirectivesAndPipesInClosure: false,  //
           animations,
           viewProviders,
-          i18nUseExternalIds: this.i18nUseExternalIds, relativeContextFilePath
+          i18nUseExternalIds: this.i18nUseExternalIds, relativeContextFilePath,
         },
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore,
@@ -309,12 +323,13 @@ export class ComponentDecoratorHandler implements
       typeCheck: true,
     };
     if (changeDetection !== null) {
-      (output.analysis.meta as R3ComponentMetadata).changeDetection = changeDetection;
+      output.analysis !.meta.changeDetection = changeDetection;
     }
     return output;
   }
 
-  index(context: IndexingContext, node: ClassDeclaration, analysis: ComponentHandlerData) {
+  index(
+      context: IndexingContext, node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>) {
     // The component template may have been previously parsed without preserving whitespace or with
     // `leadingTriviaChar`s, both of which may manipulate the AST into a form not representative of
     // the source code, making it unsuitable for indexing. The template is reparsed with preserving
@@ -347,7 +362,8 @@ export class ComponentDecoratorHandler implements
     });
   }
 
-  typeCheck(ctx: TypeCheckContext, node: ClassDeclaration, meta: ComponentHandlerData): void {
+  typeCheck(ctx: TypeCheckContext, node: ClassDeclaration, meta: Readonly<ComponentAnalysisData>):
+      void {
     if (!ts.isClassDeclaration(node)) {
       return;
     }
@@ -393,12 +409,20 @@ export class ComponentDecoratorHandler implements
         new Reference(node), bound, pipes, schemas, meta.templateSourceMapping, template.file);
   }
 
-  resolve(node: ClassDeclaration, analysis: ComponentHandlerData): ResolveResult {
+  resolve(node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>):
+      ResolveResult<ComponentResolutionData> {
     const context = node.getSourceFile();
     // Check whether this component was registered with an NgModule. If so, it should be compiled
     // under that module's compilation scope.
     const scope = this.scopeReader.getScopeForComponent(node);
-    let metadata = analysis.meta;
+    let metadata = analysis.meta as Readonly<R3ComponentMetadata>;
+
+    const data: ComponentResolutionData = {
+      directives: EMPTY_ARRAY,
+      pipes: EMPTY_MAP,
+      wrapDirectivesAndPipesInClosure: false,
+    };
+
     if (scope !== null) {
       // Replace the empty components and directives from the analyze() step with a fully expanded
       // scope. This is possible now because during resolve() the whole compilation unit has been
@@ -479,9 +503,9 @@ export class ComponentDecoratorHandler implements
         // actually used (though the two should agree perfectly).
         //
         // TODO(alxhub): switch TemplateDefinitionBuilder over to using R3TargetBinder directly.
-        metadata.directives = directives;
-        metadata.pipes = pipes;
-        metadata.wrapDirectivesAndPipesInClosure = wrapDirectivesAndPipesInClosure;
+        data.directives = directives;
+        data.pipes = pipes;
+        data.wrapDirectivesAndPipesInClosure = wrapDirectivesAndPipesInClosure;
       } else {
         // Declaring the directiveDefs/pipeDefs arrays directly would require imports that would
         // create a cycle. Instead, mark this component as requiring remote scoping, so that the
@@ -489,12 +513,13 @@ export class ComponentDecoratorHandler implements
         this.scopeRegistry.setComponentAsRequiringRemoteScoping(node);
       }
     }
-    return {};
+    return {data};
   }
 
-  compile(node: ClassDeclaration, analysis: ComponentHandlerData, pool: ConstantPool):
-      CompileResult[] {
-    const meta = analysis.meta;
+  compile(
+      node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>,
+      resolution: Readonly<ComponentResolutionData>, pool: ConstantPool): CompileResult[] {
+    const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};
     const res = compileComponentFromMetadata(meta, pool, makeBindingParser());
     const factoryRes = compileNgFactoryDefField(
         {...meta, injectFn: Identifiers.directiveInject, target: R3FactoryTarget.Component});

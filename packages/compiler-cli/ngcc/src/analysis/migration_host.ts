@@ -26,7 +26,8 @@ import {analyzeDecorators, isWithinPackage} from './util';
 export class DefaultMigrationHost implements MigrationHost {
   constructor(
       readonly reflectionHost: NgccReflectionHost, readonly metadata: MetadataReader,
-      readonly evaluator: PartialEvaluator, private handlers: DecoratorHandler<any, any>[],
+      readonly evaluator: PartialEvaluator,
+      private handlers: DecoratorHandler<unknown, unknown, unknown>[],
       private entryPointPath: AbsoluteFsPath, private analyzedFiles: AnalyzedFile[],
       private diagnosticHandler: (error: ts.Diagnostic) => void) {}
 

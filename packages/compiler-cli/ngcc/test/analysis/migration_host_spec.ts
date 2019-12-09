@@ -297,15 +297,15 @@ runInEachFileSystem(() => {
   });
 });
 
-class TestHandler implements DecoratorHandler<any, any> {
+class TestHandler implements DecoratorHandler<unknown, unknown, unknown> {
   constructor(protected name: string, protected log: string[]) {}
 
   precedence = HandlerPrecedence.PRIMARY;
-  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<any>|undefined {
+  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<unknown>|undefined {
     this.log.push(`${this.name}:detect:${node.name.text}:${decorators !.map(d => d.name)}`);
     return undefined;
   }
-  analyze(node: ClassDeclaration): AnalysisOutput<any> {
+  analyze(node: ClassDeclaration): AnalysisOutput<unknown> {
     this.log.push(this.name + ':analyze:' + node.name.text);
     return {};
   }
@@ -316,7 +316,7 @@ class TestHandler implements DecoratorHandler<any, any> {
 }
 
 class AlwaysDetectHandler extends TestHandler {
-  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<any>|undefined {
+  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<unknown>|undefined {
     super.detect(node, decorators);
     return {trigger: node, metadata: {}};
   }

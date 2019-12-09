@@ -122,3 +122,8 @@ export function resolveModuleName(
         .resolvedModule;
   }
 }
+
+/**
+ * Asserts that the keys `K` form a subset of the keys of `T`.
+ */
+export type SubsetOfKeys<T, K extends keyof T> = K;

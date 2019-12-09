@@ -67,8 +67,12 @@ export enum HandlerFlags {
  * The decorator compilers in @angular/compiler do not depend on Typescript. The handler is
  * responsible for extracting the information required to perform compilation from the decorators
  * and Typescript source, invoking the decorator compiler, and returning the result.
+ *
+ * @param `D` The type of decorator metadata produced by `detect`.
+ * @param `A` The type of analysis metadata produced by `analyze`.
+ * @param `R` The type of resolution metadata produced by `resolve`.
  */
-export interface DecoratorHandler<A, M> {
+export interface DecoratorHandler<D, A, R> {
   /**
    * The precedence of a handler controls how it interacts with other handlers that match the same
    * class.
@@ -81,30 +85,33 @@ export interface DecoratorHandler<A, M> {
    * Scan a set of reflected decorators and determine if this handler is responsible for compilation
    * of one of them.
    */
-  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<M>|undefined;
+  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<D>|undefined;
 
 
   /**
    * Asynchronously perform pre-analysis on the decorator/class combination.
    *
-   * `preAnalyze` is optional and is not guaranteed to be called through all compilation flows. It
+   * `preanalyze` is optional and is not guaranteed to be called through all compilation flows. It
    * will only be called if asynchronicity is supported in the CompilerHost.
    */
-  preanalyze?(node: ClassDeclaration, metadata: M): Promise<void>|undefined;
+  preanalyze?(node: ClassDeclaration, metadata: Readonly<D>): Promise<void>|undefined;
 
   /**
    * Perform analysis on the decorator/class combination, producing instructions for compilation
    * if successful, or an array of diagnostic messages if the analysis fails or the decorator
    * isn't valid.
    */
-  analyze(node: ClassDeclaration, metadata: M, handlerFlags?: HandlerFlags): AnalysisOutput<A>;
+  analyze(node: ClassDeclaration, metadata: Readonly<D>, handlerFlags?: HandlerFlags):
+      AnalysisOutput<A>;
 
   /**
    * Registers information about the decorator for the indexing phase in a
    * `IndexingContext`, which stores information about components discovered in the
    * program.
    */
-  index?(context: IndexingContext, node: ClassDeclaration, metadata: A): void;
+  index?
+      (context: IndexingContext, node: ClassDeclaration, analysis: Readonly<A>,
+       resolution: Readonly<R>): void;
 
   /**
    * Perform resolution on the given decorator along with the result of analysis.
@@ -113,21 +120,24 @@ export interface DecoratorHandler<A, M> {
    * `DecoratorHandler` a chance to leverage information from the whole compilation unit to enhance
    * the `analysis` before the emit phase.
    */
-  resolve?(node: ClassDeclaration, analysis: A): ResolveResult;
+  resolve?(node: ClassDeclaration, analysis: Readonly<A>): ResolveResult<R>;
 
-  typeCheck?(ctx: TypeCheckContext, node: ClassDeclaration, metadata: A): void;
+  typeCheck?
+      (ctx: TypeCheckContext, node: ClassDeclaration, analysis: Readonly<A>,
+       resolution: Readonly<R>): void;
 
   /**
    * Generate a description of the field which should be added to the class, including any
    * initialization code to be generated.
    */
-  compile(node: ClassDeclaration, analysis: A, constantPool: ConstantPool): CompileResult
-      |CompileResult[];
+  compile(
+      node: ClassDeclaration, analysis: Readonly<A>, resolution: Readonly<R>,
+      constantPool: ConstantPool): CompileResult|CompileResult[];
 }
 
 export interface DetectResult<M> {
   trigger: ts.Node|null;
-  metadata: M;
+  metadata: Readonly<M>;
 }
 
 /**
@@ -136,7 +146,7 @@ export interface DetectResult<M> {
  * analysis.
  */
 export interface AnalysisOutput<A> {
-  analysis?: A;
+  analysis?: Readonly<A>;
   diagnostics?: ts.Diagnostic[];
   factorySymbolName?: string;
   typeCheck?: boolean;
@@ -153,9 +163,10 @@ export interface CompileResult {
   type: Type;
 }
 
-export interface ResolveResult {
+export interface ResolveResult<R> {
   reexports?: Reexport[];
   diagnostics?: ts.Diagnostic[];
+  data?: Readonly<R>;
 }
 
 export interface DtsTransform {

@@ -21,8 +21,8 @@ import {Migration, MigrationHost} from '../../src/migrations/migration';
 import {MockLogger} from '../helpers/mock_logger';
 import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
-type DecoratorHandlerWithResolve = DecoratorHandler<any, any>& {
-  resolve: NonNullable<DecoratorHandler<any, any>['resolve']>;
+type DecoratorHandlerWithResolve = DecoratorHandler<unknown, unknown, unknown>& {
+  resolve: NonNullable<DecoratorHandler<unknown, unknown, unknown>['resolve']>;
 };
 
 runInEachFileSystem(() => {
@@ -49,7 +49,7 @@ runInEachFileSystem(() => {
         ]);
         // Only detect the Component and Directive decorators
         handler.detect.and.callFake(
-            (node: ts.Declaration, decorators: Decorator[] | null): DetectResult<any>|
+            (node: ts.Declaration, decorators: Decorator[] | null): DetectResult<unknown>|
                 undefined => {
               const className = (node as any).name.text;
               if (decorators === null) {
