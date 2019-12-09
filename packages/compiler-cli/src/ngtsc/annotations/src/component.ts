@@ -497,7 +497,8 @@ export class ComponentDecoratorHandler implements
       }
     }
 
-    const diagnostics = getDirectiveDiagnostics(node, this.metaReader, this.evaluator);
+    const diagnostics =
+        getDirectiveDiagnostics(node, this.metaReader, this.reflector, this.evaluator);
     return {
       data,
       diagnostics: diagnostics !== null ? diagnostics : undefined,

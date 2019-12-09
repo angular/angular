@@ -26,6 +26,12 @@ export enum ErrorCode {
   PARAM_MISSING_TOKEN = 2003,
   DIRECTIVE_MISSING_SELECTOR = 2004,
 
+  /**
+   * Raised when a Directive inherits its constructor from a base class without an Angular
+   * decorator.
+   */
+  DIRECTIVE_INHERITS_UNDECORATED_CTOR = 2005,
+
   SYMBOL_NOT_EXPORTED = 3001,
   SYMBOL_EXPORTED_UNDER_DIFFERENT_NAME = 3002,
 
@@ -118,12 +124,6 @@ export enum ErrorCode {
    * An injectable already has a `ɵprov` property.
    */
   INJECTABLE_DUPLICATE_PROV = 9001,
-
-  /**
-   * Raised when a Directive inherits its constructor from a base class without an Angular
-   * decorator.
-   */
-  DIRECTIVE_INHERITS_UNDECORATED_CTOR = 10001,
 }
 
 export function ngErrorCode(code: ErrorCode): number {

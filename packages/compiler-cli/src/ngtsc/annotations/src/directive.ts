@@ -119,8 +119,8 @@ export class DirectiveDecoratorHandler implements
   }
 
   resolve(node: ClassDeclaration, analysis: DirectiveHandlerData): ResolveResult<unknown> {
-    const diagnostics =
-        getDirectiveDiagnostics(node, this.metaReader, this.evaluator, this.scopeRegistry);
+    const diagnostics = getDirectiveDiagnostics(
+        node, this.metaReader, this.evaluator, this.reflector, this.scopeRegistry);
 
     return {
       diagnostics: diagnostics !== null ? diagnostics : undefined,

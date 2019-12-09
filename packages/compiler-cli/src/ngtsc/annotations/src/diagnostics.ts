@@ -12,13 +12,14 @@ import {ErrorCode, makeDiagnostic} from '../../diagnostics';
 import {Reference} from '../../imports';
 import {MetadataReader} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
-import {ClassDeclaration, isNamedClassDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
-import {makeDuplicateDeclarationError} from './util';
+
+import {makeDuplicateDeclarationError, readBaseClass} from './util';
 
 export function getDirectiveDiagnostics(
     node: ClassDeclaration, reader: MetadataReader, evaluator: PartialEvaluator,
-    scopeRegistry: LocalModuleScopeRegistry): ts.Diagnostic[]|null {
+    reflector: ReflectionHost, scopeRegistry: LocalModuleScopeRegistry): ts.Diagnostic[]|null {
   let diagnostics: ts.Diagnostic[]|null = [];
 
   const addDiagnostics = (more: ts.Diagnostic | ts.Diagnostic[] | null) => {
@@ -39,14 +40,13 @@ export function getDirectiveDiagnostics(
     addDiagnostics(makeDuplicateDeclarationError(node, duplicateDeclarations, 'Directive'));
   }
 
-  addDiagnostics(checkInheritanceOfDirective(node, reader, evaluator));
-
+  addDiagnostics(checkInheritanceOfDirective(node, reader, reflector, evaluator));
   return diagnostics;
 }
 
 export function checkInheritanceOfDirective(
-    node: ClassDeclaration, reader: MetadataReader, evaluator: PartialEvaluator): ts.Diagnostic|
-    null {
+    node: ClassDeclaration, reader: MetadataReader, reflector: ReflectionHost,
+    evaluator: PartialEvaluator): ts.Diagnostic|null {
   if (!ts.isClassDeclaration(node)) {
     return null;
   }
@@ -60,64 +60,45 @@ export function checkInheritanceOfDirective(
   // The extends clause is an expression which can be as dynamic as the user wants. Try to
   // evaluate it, but fall back on ignoring the clause if it can't be understood. This is a View
   // Engine compatibility hack: View Engine ignores 'extends' expressions that it cannot understand.
-  let parentClass = getParentClass(node, evaluator);
+  let baseClass = readBaseClass(node, reflector, evaluator);
 
-  if (!parentClass) {
-    return null;
-  }
+  while (baseClass) {
+    if (baseClass === 'dynamic') {
+      // return getInheritedUndecoratedCtorDiagnostic(node, baseClass, reader);
+      return null;
+    }
 
-  while (parentClass && isNamedClassDeclaration(parentClass.node)) {
+    if (!isNamedClassDeclaration(baseClass.node)) {
+      return null;
+    }
+
     // We can skip the base class if it has metadata.
-    const baseClassMeta = reader.getDirectiveMetadata(parentClass as Reference<ClassDeclaration>);
+    const baseClassMeta = reader.getDirectiveMetadata(baseClass);
     if (baseClassMeta !== null) {
       return null;
     }
 
     // If the base class has a blank constructor we can skip it since it can't be using DI.
-    const baseClassConstructor = getConstructor(parentClass.node);
+    const baseClassConstructor = getConstructor(baseClass.node);
     if (baseClassConstructor) {
       if (baseClassConstructor.parameters.length === 0) {
         return null;
       } else {
-        break;
+        return getInheritedUndecoratedCtorDiagnostic(node, baseClass, reader);
       }
     }
 
-    const newParentClass = getParentClass(parentClass.node, evaluator);
+    const newParentClass = readBaseClass(baseClass.node, reflector, evaluator);
     if (newParentClass) {
       // If we found another parent class, keep going.
-      parentClass = newParentClass;
+      baseClass = newParentClass;
     } else if (!baseClassConstructor) {
       // If this is the last class in the chain and it doesn't have
       // a constructor, it can't be using DI so we shouldn't throw.
       return null;
     } else {
-      // Otherwise break the loop and let it log the diagnostic below.
-      break;
-    }
-  }
-
-  const subclassMeta = reader.getDirectiveMetadata(new Reference(node)) !;
-  const dirOrComp = subclassMeta.isComponent ? 'Component' : 'Directive';
-  const baseClassName = parentClass.debugName;
-
-  return makeDiagnostic(
-      ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR, node,
-      `The ${dirOrComp.toLowerCase()} ${node.name.text} inherits its constructor from ${baseClassName}, ` +
-          `but the latter does not have an Angular decorator of its own. Dependency injection will not be able to ` +
-          `resolve the parameters of ${baseClassName}'s constructor. Either add a @Directive decorator ` +
-          `to ${baseClassName}, or add an explicit constructor to ${node.name.text}.`);
-}
-
-function getParentClass(node: ts.ClassDeclaration, evaluator: PartialEvaluator): Reference|null {
-  const extendsClause = node.heritageClauses &&
-      node.heritageClauses.find(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
-
-  if (extendsClause && extendsClause.types.length > 0) {
-    const result = evaluator.evaluate(extendsClause.types[0].expression);
-
-    if (result instanceof Reference) {
-      return result;
+      // Otherwise log the diagnostic.
+      return getInheritedUndecoratedCtorDiagnostic(node, baseClass, reader);
     }
   }
 
@@ -128,4 +109,37 @@ function getParentClass(node: ts.ClassDeclaration, evaluator: PartialEvaluator):
 function getConstructor(node: ts.ClassDeclaration): ts.ConstructorDeclaration|undefined {
   const constructor = node.members.find(member => ts.isConstructorDeclaration(member));
   return constructor as ts.ConstructorDeclaration | undefined;
+}
+
+function getInheritedUndecoratedCtorDiagnostic(
+    node: ClassDeclaration & ts.ClassDeclaration, baseClass: Reference | 'dynamic',
+    reader: MetadataReader) {
+  const subclassMeta = reader.getDirectiveMetadata(new Reference(node)) !;
+  const dirOrComp = subclassMeta.isComponent ? 'Component' : 'Directive';
+  let baseClassName: string;
+
+  if (baseClass instanceof Reference) {
+    baseClassName = baseClass.debugName !;
+  } else {
+    // If we weren't able to resolve the base class, fall back to picking out the name
+    // for the diagnostic from the type that is part of the `extends` clause.
+    const extendsClause = node.heritageClauses &&
+        node.heritageClauses.find(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
+    const extendedType = extendsClause && extendsClause.types[0];
+
+    if (extendedType && ts.isIdentifier(extendedType.expression)) {
+      baseClassName = extendedType.expression.text;
+    } else {
+      // We should be guaranteed to have a name from the logic above, but just in case,
+      // use `<dynamic>` if something went wrong. This looks better than `undefined`.
+      baseClassName = '<dynamic>';
+    }
+  }
+
+  return makeDiagnostic(
+      ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR, node,
+      `The ${dirOrComp.toLowerCase()} ${node.name.text} inherits its constructor from ${baseClassName}, ` +
+          `but the latter does not have an Angular decorator of its own. Dependency injection will not be able to ` +
+          `resolve the parameters of ${baseClassName}'s constructor. Either add a @Directive decorator ` +
+          `to ${baseClassName}, or add an explicit constructor to ${node.name.text}.`);
 }
