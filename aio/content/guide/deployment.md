@@ -367,7 +367,7 @@ Bundlers don't know about the router configuration and can't create separate bun
 You would have to create these bundles manually.
 
 The CLI runs the
-[Angular Ahead-of-Time Webpack Plugin](https://github.com/angular/angular-cli/tree/master/packages/%40ngtools/webpack)
+[Angular Ahead-of-Time Webpack Plugin](https://github.com/angular/angular-cli/tree/master/packages/ngtools/webpack)
 which automatically recognizes lazy-loaded `NgModules` and creates separate bundles for them.
 
 </div>
