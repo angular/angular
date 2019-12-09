@@ -32,7 +32,7 @@ import {NgModuleRouteAnalyzer, entryPointKeyFor} from './routing';
 import {ComponentScopeReader, CompoundComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from './scope';
 import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, ShimGenerator, SummaryGenerator, TypeCheckShimGenerator, generatedFactoryTransform} from './shims';
 import {ivySwitchTransform} from './switch';
-import {DtsTransformRegistry, IvyCompilation, declarationTransformFactory, ivyTransformFactory} from './transform';
+import {DecoratorHandler, DtsTransformRegistry, TraitCompiler, declarationTransformFactory, ivyTransformFactory} from './transform';
 import {aliasTransformFactory} from './transform/src/alias';
 import {TypeCheckContext, TypeCheckingConfig, typeCheckFilePath} from './typecheck';
 import {normalizeSeparators} from './util/src/path';
@@ -42,7 +42,7 @@ export class NgtscProgram implements api.Program {
   private tsProgram: ts.Program;
   private reuseTsProgram: ts.Program;
   private resourceManager: HostResourceLoader;
-  private compilation: IvyCompilation|undefined = undefined;
+  private compilation: TraitCompiler|undefined = undefined;
   private factoryToSourceInfo: Map<string, FactoryInfo>|null = null;
   private sourceToFactorySymbols: Map<string, Set<string>>|null = null;
   private _coreImportsFrom: ts.SourceFile|null|undefined = undefined;
@@ -239,21 +239,26 @@ export class NgtscProgram implements api.Program {
       this.compilation = this.makeCompilation();
     }
     const analyzeSpan = this.perfRecorder.start('analyze');
-    await Promise.all(this.tsProgram.getSourceFiles()
-                          .filter(file => !file.fileName.endsWith('.d.ts'))
-                          .map(file => {
+    const promises: Promise<void>[] = [];
+    for (const sf of this.tsProgram.getSourceFiles()) {
+      if (sf.isDeclarationFile) {
+        continue;
+      }
 
-                            const analyzeFileSpan = this.perfRecorder.start('analyzeFile', file);
-                            let analysisPromise = this.compilation !.analyzeAsync(file);
-                            if (analysisPromise === undefined) {
-                              this.perfRecorder.stop(analyzeFileSpan);
-                            } else if (this.perfRecorder.enabled) {
-                              analysisPromise = analysisPromise.then(
-                                  () => this.perfRecorder.stop(analyzeFileSpan));
-                            }
-                            return analysisPromise;
-                          })
-                          .filter((result): result is Promise<void> => result !== undefined));
+      const analyzeFileSpan = this.perfRecorder.start('analyzeFile', sf);
+      let analysisPromise = this.compilation !.analyzeAsync(sf);
+      if (analysisPromise === undefined) {
+        this.perfRecorder.stop(analyzeFileSpan);
+      } else if (this.perfRecorder.enabled) {
+        analysisPromise = analysisPromise.then(() => this.perfRecorder.stop(analyzeFileSpan));
+      }
+      if (analysisPromise !== undefined) {
+        promises.push(analysisPromise);
+      }
+    }
+
+    await Promise.all(promises);
+
     this.perfRecorder.stop(analyzeSpan);
     this.compilation.resolve();
 
@@ -311,15 +316,18 @@ export class NgtscProgram implements api.Program {
     throw new Error('Method not implemented.');
   }
 
-  private ensureAnalyzed(): IvyCompilation {
+  private ensureAnalyzed(): TraitCompiler {
     if (this.compilation === undefined) {
       const analyzeSpan = this.perfRecorder.start('analyze');
       this.compilation = this.makeCompilation();
-      this.tsProgram.getSourceFiles().filter(file => !file.isDeclarationFile).forEach(file => {
-        const analyzeFileSpan = this.perfRecorder.start('analyzeFile', file);
-        this.compilation !.analyzeSync(file);
+      for (const sf of this.tsProgram.getSourceFiles()) {
+        if (sf.isDeclarationFile) {
+          continue;
+        }
+        const analyzeFileSpan = this.perfRecorder.start('analyzeFile', sf);
+        this.compilation !.analyzeSync(sf);
         this.perfRecorder.stop(analyzeFileSpan);
-      });
+      }
       this.perfRecorder.stop(analyzeSpan);
       this.compilation.resolve();
 
@@ -538,7 +546,7 @@ export class NgtscProgram implements api.Program {
     return generateAnalysis(context);
   }
 
-  private makeCompilation(): IvyCompilation {
+  private makeCompilation(): TraitCompiler {
     const checker = this.tsProgram.getTypeChecker();
 
     // Construct the ReferenceEmitter.
@@ -627,7 +635,7 @@ export class NgtscProgram implements api.Program {
     this.mwpScanner = new ModuleWithProvidersScanner(this.reflector, evaluator, this.refEmitter);
 
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
-    const handlers = [
+    const handlers: DecoratorHandler<unknown, unknown, unknown>[] = [
       new ComponentDecoratorHandler(
           this.reflector, evaluator, metaRegistry, this.metaReader !, scopeReader, scopeRegistry,
           this.isCore, this.resourceManager, this.rootDirs,
@@ -635,9 +643,11 @@ export class NgtscProgram implements api.Program {
           this.options.enableI18nLegacyMessageIdFormat !== false, this.moduleResolver,
           this.cycleAnalyzer, this.refEmitter, this.defaultImportTracker,
           this.closureCompilerEnabled, this.incrementalDriver),
+      // TODO(alxhub): understand why the cast here is necessary (something to do with `null` not
+      // being assignable to `unknown` when wrapped in `Readonly`).
       new DirectiveDecoratorHandler(
           this.reflector, evaluator, metaRegistry, this.defaultImportTracker, this.isCore,
-          this.closureCompilerEnabled),
+          this.closureCompilerEnabled) as Readonly<DecoratorHandler<unknown, unknown, unknown>>,
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
       new PipeDecoratorHandler(
@@ -651,7 +661,7 @@ export class NgtscProgram implements api.Program {
           this.defaultImportTracker, this.closureCompilerEnabled, this.options.i18nInLocale),
     ];
 
-    return new IvyCompilation(
+    return new TraitCompiler(
         handlers, this.reflector, this.importRewriter, this.incrementalDriver, this.perfRecorder,
         this.sourceToFactorySymbols, scopeRegistry,
         this.options.compileNonExportedClasses !== false, this.dtsTransforms, this.mwpScanner);
