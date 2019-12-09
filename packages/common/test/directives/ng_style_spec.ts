@@ -158,27 +158,22 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
          expectNativeEl(fixture).toHaveCssStyle({'font-size': '12px'});
        }));
 
-    it('should skip keys that are set to undefined values', async(() => {
-         const template = `<div [ngStyle]="expr"></div>`;
+    it('should not write to native node when a bound expression doesnt change', () => {
 
-         fixture = createTestComponent(template);
+      const template = `<div [ngStyle]="{'color': 'red'}"></div>`;
 
-         getComponent().expr = {
-           'border-top-color': undefined,
-           'border-top-style': undefined,
-           'border-color': 'red',
-           'border-style': 'solid',
-           'border-width': '1rem',
-         };
+      fixture = createTestComponent(template);
 
-         fixture.detectChanges();
+      fixture.detectChanges();
+      expectNativeEl(fixture).toHaveCssStyle({'color': 'red'});
 
-         expectNativeEl(fixture).toHaveCssStyle({
-           'border-color': 'red',
-           'border-style': 'solid',
-           'border-width': '1rem',
-         });
-       }));
+      // Overwrite native styles to make sure that ngClass is not doing any DOM manipulation (as
+      // there was no change to the expression bound to [ngStyle]).
+      fixture.debugElement.children[0].nativeElement.style.color = 'blue';
+      fixture.detectChanges();
+      expectNativeEl(fixture).toHaveCssStyle({'color': 'blue'});
+
+    });
 
   });
 }
