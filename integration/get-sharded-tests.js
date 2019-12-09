@@ -43,7 +43,7 @@ const integrationTests = fs.readdirSync(__dirname).filter(
 const manualTestShards = [
   // The first shard should only run the bazel integration tests because these take up
   // a lot of time and shouldn't be split up automatically.
-  ['bazel', 'bazel-schematics']
+  ['bazel']
 ];
 
 // Tests which haven't been assigned manually to a shard. These tests will be automatically
