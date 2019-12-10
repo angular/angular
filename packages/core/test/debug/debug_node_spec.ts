@@ -354,7 +354,7 @@ class TestCmptWithPropInterpolation {
       const bankElem = fixture.debugElement.children[0];
 
       expect(bankElem.classes['closed']).toBe(true);
-      expect(bankElem.classes['open']).toBe(false);
+      expect(bankElem.classes['open']).toBeFalsy();
     });
 
     it('should get element classes from host bindings', () => {
@@ -365,7 +365,7 @@ class TestCmptWithPropInterpolation {
       expect(debugElement.classes['present-class'])
           .toBe(true, 'Expected bound host CSS class "present-class" to be present');
       expect(debugElement.classes['absent-class'])
-          .toBe(false, 'Expected bound host CSS class "absent-class" to be absent');
+          .toBeFalsy('Expected bound host CSS class "absent-class" to be absent');
     });
 
     it('should list element styles', () => {
