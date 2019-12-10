@@ -136,12 +136,6 @@ export function runHarnessTests(
     expect(await select.isOpen()).toBe(false);
   });
 
-  it('should be able to get the select panel', async () => {
-    const select = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
-    await select.open();
-    expect(await select.getPanel()).toBeTruthy();
-  });
-
   it('should be able to get the select options', async () => {
     const select = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
     await select.open();

@@ -1,5 +1,5 @@
-import {MatInputHarness} from '@angular/material-experimental/input/testing';
-import {MatSelectHarness} from '@angular/material-experimental/select/testing';
+import {MatInputHarness} from '@angular/material/input/testing';
+import {MatSelectHarness} from '@angular/material/select/testing';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';

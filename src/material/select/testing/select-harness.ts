@@ -6,34 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate, TestElement} from '@angular/cdk/testing';
-import {
-  MatFormFieldControlHarness
-} from '@angular/material-experimental/form-field/testing/control';
+import {HarnessPredicate} from '@angular/cdk/testing';
+import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
 import {SelectHarnessFilters} from './select-harness-filters';
-import {MatSelectOptionHarness, MatSelectOptionGroupHarness} from './option-harness';
-
-/** Selector for the select panel. */
-const PANEL_SELECTOR = '.mat-select-panel';
+import {
+  MatSelectOptionHarness,
+  MatSelectOptionGroupHarness,
+  OptionHarnessFilters,
+  OptionGroupHarnessFilters,
+} from './option-harness';
 
 /** Harness for interacting with a standard mat-select in tests. */
 export class MatSelectHarness extends MatFormFieldControlHarness {
   private _documentRootLocator = this.documentRootLocatorFactory();
-  private _panel = this._documentRootLocator.locatorFor(PANEL_SELECTOR);
   private _backdrop = this._documentRootLocator.locatorFor('.cdk-overlay-backdrop');
-  private _optionalPanel = this._documentRootLocator.locatorForOptional(PANEL_SELECTOR);
-  private _options = this._documentRootLocator.locatorForAll(MatSelectOptionHarness);
-  private _groups = this._documentRootLocator.locatorForAll(MatSelectOptionGroupHarness);
+  private _optionalPanel = this._documentRootLocator.locatorForOptional('.mat-select-panel');
   private _trigger = this.locatorFor('.mat-select-trigger');
   private _value = this.locatorFor('.mat-select-value');
 
   static hostSelector = '.mat-select';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a select with
-   * specific attributes.
-   * @param options Options for narrowing the search.
-   * @return `HarnessPredicate` configured with the given options.
+   * Gets a `HarnessPredicate` that can be used to search for a `MatSelectHarness` that meets
+   * certain criteria.
+   * @param options Options for filtering which select instances are considered a match.
+   * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: SelectHarnessFilters = {}): HarnessPredicate<MatSelectHarness> {
     return new HarnessPredicate(MatSelectHarness, options);
@@ -80,19 +77,15 @@ export class MatSelectHarness extends MatFormFieldControlHarness {
     return (await this.host()).blur();
   }
 
-  /** Gets the select panel. */
-  async getPanel(): Promise<TestElement> {
-    return this._panel();
-  }
-
   /** Gets the options inside the select panel. */
-  async getOptions(): Promise<MatSelectOptionHarness[]> {
-    return this._options();
+  async getOptions(filter: OptionHarnessFilters = {}): Promise<MatSelectOptionHarness[]> {
+    return this._documentRootLocator.locatorForAll(MatSelectOptionHarness.with(filter))();
   }
 
   /** Gets the groups of options inside the panel. */
-  async getOptionGroups(): Promise<MatSelectOptionGroupHarness[]> {
-    return this._groups();
+  async getOptionGroups(filter: OptionGroupHarnessFilters = {}):
+      Promise<MatSelectOptionGroupHarness[]> {
+    return this._documentRootLocator.locatorForAll(MatSelectOptionGroupHarness.with(filter))();
   }
 
   /** Gets whether the select is open. */
@@ -104,6 +97,26 @@ export class MatSelectHarness extends MatFormFieldControlHarness {
   async open(): Promise<void> {
     if (!await this.isOpen()) {
       return (await this._trigger()).click();
+    }
+  }
+
+  /**
+   * Clicks the options that match the passed-in filter. If the select is in multi-selection
+   * mode all options will be clicked, otherwise the harness will pick the first matching option.
+   */
+  async clickOptions(filter: OptionHarnessFilters = {}): Promise<void> {
+    await this.open();
+
+    const [isMultiple, options] = await Promise.all([this.isMultiple(), this.getOptions(filter)]);
+
+    if (options.length === 0) {
+      throw Error('Select does not have options matching the specified filter');
+    }
+
+    if (isMultiple) {
+      await Promise.all(options.map(option => option.click()));
+    } else {
+      await options[0].click();
     }
   }
 

@@ -53,13 +53,17 @@ entryPoints = [
     "toolbar",
     "tooltip",
     "tree",
+    "form-field/testing",
+    "form-field/testing/control",
+    "input/testing",
+    "select/testing",
 ]
 
 # List of all non-testing entry-points of the Angular Material package.
 MATERIAL_ENTRYPOINTS = [
     ep
     for ep in entryPoints
-    if not ep.endswith("/testing")
+    if not "/testing" in ep
 ]
 
 # List of all testing entry-points of the Angular Material package.

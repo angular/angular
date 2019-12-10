@@ -7,9 +7,7 @@
  */
 
 import {HarnessPredicate} from '@angular/cdk/testing';
-import {
-  MatFormFieldControlHarness
-} from '@angular/material-experimental/form-field/testing/control';
+import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
 import {InputHarnessFilters} from './input-harness-filters';
 
 /** Harness for interacting with a standard Material inputs in tests. */
@@ -17,18 +15,19 @@ export class MatInputHarness extends MatFormFieldControlHarness {
   static hostSelector = '[matInput]';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for an input with
-   * specific attributes.
-   * @param options Options for narrowing the search:
-   *   - `name` finds an input with specific name.
-   *   - `id` finds an input with specific id.
-   *   - `value` finds an input with specific value.
+   * Gets a `HarnessPredicate` that can be used to search for a `MatInputHarness` that meets
+   * certain criteria.
+   * @param options Options for filtering which input instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: InputHarnessFilters = {}): HarnessPredicate<MatInputHarness> {
     return new HarnessPredicate(MatInputHarness, options)
-        .addOption(
-            'value', options.value, async (harness, value) => (await harness.getValue()) === value);
+        .addOption('value', options.value, async (harness, value) => {
+          return (await harness.getValue()) === value;
+        })
+        .addOption('placeholder', options.placeholder, async (harness, placeholder) => {
+          return (await harness.getPlaceholder()) === placeholder;
+        });
   }
 
   /** Whether the input is disabled. */
@@ -67,7 +66,7 @@ export class MatInputHarness extends MatFormFieldControlHarness {
     return (await (await this.host()).getProperty('type'))!;
   }
 
-  /** Gets the placeholder of the input. / */
+  /** Gets the placeholder of the input. */
   async getPlaceholder(): Promise<string> {
     // The "placeholder" property of the native input is never undefined.
     return (await (await this.host()).getProperty('placeholder'))!;

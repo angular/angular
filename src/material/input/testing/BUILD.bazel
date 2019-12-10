@@ -8,12 +8,17 @@ ts_library(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/material-experimental/input/testing",
+    module_name = "@angular/material/input/testing",
     deps = [
         "//src/cdk/coercion",
         "//src/cdk/testing",
-        "//src/material-experimental/form-field/testing/control",
+        "//src/material/form-field/testing/control",
     ],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )
 
 ng_test_library(

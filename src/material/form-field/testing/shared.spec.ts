@@ -166,25 +166,25 @@ export function runHarnessTests(
 
   it('should be able to get error messages of form-field', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
-    expect(await formFields[1].getErrorMessages()).toEqual([]);
+    expect(await formFields[1].getTextErrors()).toEqual([]);
 
     fixture.componentInstance.requiredControl.setValue('');
     dispatchFakeEvent(fixture.nativeElement.querySelector('#with-errors input'), 'blur');
-    expect(await formFields[1].getErrorMessages()).toEqual(['Error 1', 'Error 2']);
+    expect(await formFields[1].getTextErrors()).toEqual(['Error 1', 'Error 2']);
   });
 
   it('should be able to get hint messages of form-field', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
-    expect(await formFields[1].getHintMessages()).toEqual(['Hint 1', 'Hint 2']);
+    expect(await formFields[1].getTextHints()).toEqual(['Hint 1', 'Hint 2']);
 
     fixture.componentInstance.requiredControl.setValue('');
     dispatchFakeEvent(fixture.nativeElement.querySelector('#with-errors input'), 'blur');
-    expect(await formFields[1].getHintMessages()).toEqual([]);
+    expect(await formFields[1].getTextHints()).toEqual([]);
   });
 
   it('should be able to get prefix container of form-field', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
-    const prefixContainers = await Promise.all(formFields.map(f => f.getPrefixContainer()));
+    const prefixContainers = await Promise.all(formFields.map(f => f.getHarnessLoaderForPrefix()));
     expect(prefixContainers[0]).not.toBe(null);
     expect(await prefixContainers[0]!.text()).toBe('prefix_textprefix_text_2');
     expect(prefixContainers[1]).toBe(null);
@@ -192,7 +192,7 @@ export function runHarnessTests(
 
   it('should be able to get suffix container of form-field', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
-    const suffixContainer = await Promise.all(formFields.map(f => f.getSuffixContainer()));
+    const suffixContainer = await Promise.all(formFields.map(f => f.getHarnessLoaderForSuffix()));
     expect(suffixContainer[0]).not.toBe(null);
     expect(await suffixContainer[0]!.text()).toBe('suffix_text');
     expect(suffixContainer[1]).toBe(null);

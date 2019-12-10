@@ -8,12 +8,18 @@ ts_library(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/material-experimental/select/testing",
+    module_name = "@angular/material/form-field/testing",
     deps = [
-        "//src/cdk/coercion",
         "//src/cdk/testing",
-        "//src/material-experimental/form-field/testing/control",
+        "//src/material/form-field/testing/control",
+        "//src/material/input/testing",
+        "//src/material/select/testing",
     ],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )
 
 ng_test_library(
@@ -21,11 +27,9 @@ ng_test_library(
     srcs = ["shared.spec.ts"],
     deps = [
         ":testing",
-        "//src/cdk/overlay",
         "//src/cdk/testing",
+        "//src/cdk/testing/private",
         "//src/cdk/testing/testbed",
-        "//src/material/form-field",
-        "//src/material/select",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
     ],
@@ -40,7 +44,12 @@ ng_test_library(
     deps = [
         ":harness_tests_lib",
         ":testing",
+        "//src/material/autocomplete",
+        "//src/material/form-field",
+        "//src/material/input",
+        "//src/material/input/testing",
         "//src/material/select",
+        "//src/material/select/testing",
     ],
 )
 

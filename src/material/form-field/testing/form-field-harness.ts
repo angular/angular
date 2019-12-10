@@ -13,11 +13,9 @@ import {
   HarnessQuery,
   TestElement
 } from '@angular/cdk/testing';
-import {
-  MatFormFieldControlHarness
-} from '@angular/material-experimental/form-field/testing/control';
-import {MatInputHarness} from '@angular/material-experimental/input/testing';
-import {MatSelectHarness} from '@angular/material-experimental/select/testing';
+import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
+import {MatInputHarness} from '@angular/material/input/testing';
+import {MatSelectHarness} from '@angular/material/select/testing';
 import {FormFieldHarnessFilters} from './form-field-harness-filters';
 
 // TODO(devversion): support datepicker harness once developed (COMP-203).
@@ -30,21 +28,24 @@ export class MatFormFieldHarness extends ComponentHarness {
   static hostSelector = '.mat-form-field';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for an form-field with
-   * specific attributes.
-   * @param options Options for narrowing the search:
-   *   - `selector` finds a form-field that matches the given selector.
+   * Gets a `HarnessPredicate` that can be used to search for a `MatFormFieldHarness` that meets
+   * certain criteria.
+   * @param options Options for filtering which form field instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: FormFieldHarnessFilters = {}): HarnessPredicate<MatFormFieldHarness> {
-    return new HarnessPredicate(MatFormFieldHarness, options);
+    return new HarnessPredicate(MatFormFieldHarness, options)
+      .addOption('floatingLabelText', options.floatingLabelText, async (harness, text) =>
+          HarnessPredicate.stringMatches(await harness.getLabel(), text))
+      .addOption('hasErrors', options.hasErrors, async (harness, hasErrors) =>
+          await harness.hasErrors() === hasErrors);
   }
 
   private _prefixContainer = this.locatorForOptional('.mat-form-field-prefix');
   private _suffixContainer = this.locatorForOptional('.mat-form-field-suffix');
   private _label = this.locatorForOptional('.mat-form-field-label');
   private _errors = this.locatorForAll('.mat-error');
-  private _hints = this.locatorForAll('mat-hint,.mat-hint');
+  private _hints = this.locatorForAll('mat-hint, .mat-hint');
 
   private _inputControl = this.locatorForOptional(MatInputHarness);
   private _selectControl = this.locatorForOptional(MatSelectHarness);
@@ -117,6 +118,11 @@ export class MatFormFieldHarness extends ComponentHarness {
     return (await this.host()).hasClass('mat-form-field-can-float');
   }
 
+  /** Whether the form-field has errors. */
+  async hasErrors(): Promise<boolean> {
+    return (await this.getTextErrors()).length > 0;
+  }
+
   /** Whether the label is currently floating. */
   async isLabelFloating(): Promise<boolean> {
     return (await this.host()).hasClass('mat-form-field-should-float');
@@ -146,12 +152,12 @@ export class MatFormFieldHarness extends ComponentHarness {
   }
 
   /** Gets error messages which are currently displayed in the form-field. */
-  async getErrorMessages(): Promise<string[]> {
+  async getTextErrors(): Promise<string[]> {
     return Promise.all((await this._errors()).map(e => e.text()));
   }
 
   /** Gets hint messages which are currently displayed in the form-field. */
-  async getHintMessages(): Promise<string[]> {
+  async getTextHints(): Promise<string[]> {
     return Promise.all((await this._hints()).map(e => e.text()));
   }
 
@@ -159,7 +165,7 @@ export class MatFormFieldHarness extends ComponentHarness {
    * Gets a reference to the container element which contains all projected
    * prefixes of the form-field.
    */
-  async getPrefixContainer(): Promise<TestElement|null> {
+  async getHarnessLoaderForPrefix(): Promise<TestElement|null> {
     return this._prefixContainer();
   }
 
@@ -167,7 +173,7 @@ export class MatFormFieldHarness extends ComponentHarness {
    * Gets a reference to the container element which contains all projected
    * suffixes of the form-field.
    */
-  async getSuffixContainer(): Promise<TestElement|null> {
+  async getHarnessLoaderForSuffix(): Promise<TestElement|null> {
     return this._suffixContainer();
   }
 

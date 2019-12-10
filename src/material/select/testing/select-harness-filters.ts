@@ -8,4 +8,5 @@
 
 import {BaseHarnessFilters} from '@angular/cdk/testing';
 
-export interface FormFieldHarnessFilters extends BaseHarnessFilters {}
+/** A set of criteria that can be used to filter a list of `MatSelectHarness` instances. */
+export interface SelectHarnessFilters extends BaseHarnessFilters {}
