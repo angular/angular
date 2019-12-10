@@ -32,6 +32,8 @@ const LIFECYCLE_HOOKS = new Set([
 ]);
 
 export interface DirectiveHandlerData {
+  baseClass: Reference<ClassDeclaration>|'dynamic'|null;
+  guards: ReturnType<typeof extractDirectiveGuards>;
   meta: R3DirectiveMetadata;
   metadataStmt: Statement|null;
 }
@@ -83,29 +85,33 @@ export class DirectiveDecoratorHandler implements
       return {};
     }
 
-    // Register this directive's information with the `MetadataRegistry`. This ensures that
-    // the information about the directive is available during the compile() phase.
-    const ref = new Reference(node);
-    this.metaRegistry.registerDirectiveMetadata({
-      ref,
-      name: node.name.text,
-      selector: analysis.selector,
-      exportAs: analysis.exportAs,
-      inputs: analysis.inputs,
-      outputs: analysis.outputs,
-      queries: analysis.queries.map(query => query.propertyName),
-      isComponent: false, ...extractDirectiveGuards(node, this.reflector),
-      baseClass: readBaseClass(node, this.reflector, this.evaluator),
-    });
-
     return {
       analysis: {
         meta: analysis,
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
+        baseClass: readBaseClass(node, this.reflector, this.evaluator),
+        guards: extractDirectiveGuards(node, this.reflector),
       }
     };
+  }
+
+  register(node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>): void {
+    // Register this directive's information with the `MetadataRegistry`. This ensures that
+    // the information about the directive is available during the compile() phase.
+    const ref = new Reference(node);
+    this.metaRegistry.registerDirectiveMetadata({
+      ref,
+      name: node.name.text,
+      selector: analysis.meta.selector,
+      exportAs: analysis.meta.exportAs,
+      inputs: analysis.meta.inputs,
+      outputs: analysis.meta.outputs,
+      queries: analysis.meta.queries.map(query => query.propertyName),
+      isComponent: false,
+      baseClass: analysis.baseClass, ...analysis.guards,
+    });
   }
 
   compile(

@@ -97,12 +97,28 @@ export interface DecoratorHandler<D, A, R> {
   preanalyze?(node: ClassDeclaration, metadata: Readonly<D>): Promise<void>|undefined;
 
   /**
-   * Perform analysis on the decorator/class combination, producing instructions for compilation
-   * if successful, or an array of diagnostic messages if the analysis fails or the decorator
-   * isn't valid.
+   * Perform analysis on the decorator/class combination, extracting information from the class
+   * required for compilation.
+   *
+   * Returns analyzed metadata if successful, or an array of diagnostic messages if the analysis
+   * fails or the decorator isn't valid.
+   *
+   * Analysis should always be a "pure" operation, with no side effects. This is because the
+   * detect/analysis steps might be skipped for files which have not changed during incremental
+   * builds. Any side effects required for compilation (e.g. registration of metadata) should happen
+   * in the `register` phase, which is guaranteed to run even for incremental builds.
    */
   analyze(node: ClassDeclaration, metadata: Readonly<D>, handlerFlags?: HandlerFlags):
       AnalysisOutput<A>;
+
+  /**
+   * Post-process the analysis of a decorator/class combination and record any necessary information
+   * in the larger compilation.
+   *
+   * Registration always occurs for a given decorator/class, regardless of whether analysis was
+   * performed directly or whether the analysis results were reused from the previous program.
+   */
+  register?(node: ClassDeclaration, analysis: A): void;
 
   /**
    * Registers information about the decorator for the indexing phase in a
@@ -148,8 +164,6 @@ export interface DetectResult<M> {
 export interface AnalysisOutput<A> {
   analysis?: Readonly<A>;
   diagnostics?: ts.Diagnostic[];
-  factorySymbolName?: string;
-  typeCheck?: boolean;
 }
 
 /**

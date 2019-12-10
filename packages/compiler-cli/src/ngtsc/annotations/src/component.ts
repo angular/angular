@@ -49,6 +49,8 @@ export interface ComponentAnalysisData {
    * (not during resolve).
    */
   meta: Omit<R3ComponentMetadata, ComponentMetadataResolvedFields>;
+  baseClass: Reference<ClassDeclaration>|'dynamic'|null;
+  guards: ReturnType<typeof extractDirectiveGuards>;
   parsedTemplate: ParsedTemplate;
   templateSourceMapping: TemplateSourceMapping;
   metadataStmt: Statement|null;
@@ -239,21 +241,6 @@ export class ComponentDecoratorHandler implements
           `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);
     }
 
-    // Register this component's information with the `MetadataRegistry`. This ensures that
-    // the information about the component is available during the compile() phase.
-    const ref = new Reference(node);
-    this.metaRegistry.registerDirectiveMetadata({
-      ref,
-      name: node.name.text,
-      selector: metadata.selector,
-      exportAs: metadata.exportAs,
-      inputs: metadata.inputs,
-      outputs: metadata.outputs,
-      queries: metadata.queries.map(query => query.propertyName),
-      isComponent: true, ...extractDirectiveGuards(node, this.reflector),
-      baseClass: readBaseClass(node, this.reflector, this.evaluator),
-    });
-
     // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
     // precede inline styles, and styles defined in the template override styles defined in the
     // component.
@@ -302,6 +289,7 @@ export class ComponentDecoratorHandler implements
 
     const output: AnalysisOutput<ComponentAnalysisData> = {
       analysis: {
+        baseClass: readBaseClass(node, this.reflector, this.evaluator),
         meta: {
           ...metadata,
           template,
@@ -315,17 +303,34 @@ export class ComponentDecoratorHandler implements
           viewProviders,
           i18nUseExternalIds: this.i18nUseExternalIds, relativeContextFilePath,
         },
+        guards: extractDirectiveGuards(node, this.reflector),
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
         parsedTemplate: template, parseTemplate, templateSourceMapping,
       },
-      typeCheck: true,
     };
     if (changeDetection !== null) {
       output.analysis !.meta.changeDetection = changeDetection;
     }
     return output;
+  }
+
+  register(node: ClassDeclaration, analysis: ComponentAnalysisData): void {
+    // Register this component's information with the `MetadataRegistry`. This ensures that
+    // the information about the component is available during the compile() phase.
+    const ref = new Reference(node);
+    this.metaRegistry.registerDirectiveMetadata({
+      ref,
+      name: node.name.text,
+      selector: analysis.meta.selector,
+      exportAs: analysis.meta.exportAs,
+      inputs: analysis.meta.inputs,
+      outputs: analysis.meta.outputs,
+      queries: analysis.meta.queries.map(query => query.propertyName),
+      isComponent: true,
+      baseClass: analysis.baseClass, ...analysis.guards,
+    });
   }
 
   index(
