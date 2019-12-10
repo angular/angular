@@ -80,8 +80,6 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, pipeNameExpr, `@Pipe.name must be a string`);
     }
-    const ref = new Reference(clazz);
-    this.metaRegistry.registerPipeMetadata({ref, name: pipeName});
 
     let pure = true;
     if (pipe.has('pure')) {
@@ -109,6 +107,11 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
             clazz, this.reflector, this.defaultImportRecorder, this.isCore),
       },
     };
+  }
+
+  register(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): void {
+    const ref = new Reference(node);
+    this.metaRegistry.registerPipeMetadata({ref, name: analysis.meta.pipeName});
   }
 
   compile(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): CompileResult[] {

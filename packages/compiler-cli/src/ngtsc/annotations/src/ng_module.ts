@@ -16,6 +16,7 @@ import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
+import {FactoryTracker} from '../../shims';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {getSourceFile} from '../../util/src/typescript';
 
@@ -28,8 +29,11 @@ export interface NgModuleAnalysis {
   inj: R3InjectorMetadata;
   metadataStmt: Statement|null;
   declarations: Reference<ClassDeclaration>[];
+  schemas: SchemaMetadata[];
+  imports: Reference<ClassDeclaration>[];
   exports: Reference<ClassDeclaration>[];
   id: Expression|null;
+  factorySymbolName: string;
 }
 
 /**
@@ -45,6 +49,7 @@ export class NgModuleDecoratorHandler implements
       private scopeRegistry: LocalModuleScopeRegistry,
       private referencesRegistry: ReferencesRegistry, private isCore: boolean,
       private routeAnalyzer: NgModuleRouteAnalyzer|null, private refEmitter: ReferenceEmitter,
+      private factoryTracker: FactoryTracker|null,
       private defaultImportRecorder: DefaultImportRecorder,
       private annotateForClosureCompiler: boolean, private localeId?: string) {}
 
@@ -166,18 +171,6 @@ export class NgModuleDecoratorHandler implements
 
     const id: Expression|null =
         ngModule.has('id') ? new WrappedNodeExpr(ngModule.get('id') !) : null;
-
-    // Register this module's information with the LocalModuleScopeRegistry. This ensures that
-    // during the compile() phase, the module's metadata is available for selector scope
-    // computation.
-    this.metaRegistry.registerNgModuleMetadata({
-      ref: new Reference(node),
-      schemas,
-      declarations: declarationRefs,
-      imports: importRefs,
-      exports: exportRefs,
-    });
-
     const valueContext = node.getSourceFile();
 
     let typeContext = valueContext;
@@ -246,16 +239,35 @@ export class NgModuleDecoratorHandler implements
     return {
       analysis: {
         id,
+        schemas: schemas,
         mod: ngModuleDef,
         inj: ngInjectorDef,
         declarations: declarationRefs,
+        imports: importRefs,
         exports: exportRefs,
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
+        factorySymbolName: node.name.text,
       },
-      factorySymbolName: node.name.text,
     };
+  }
+
+  register(node: ClassDeclaration, analysis: NgModuleAnalysis): void {
+    // Register this module's information with the LocalModuleScopeRegistry. This ensures that
+    // during the compile() phase, the module's metadata is available for selector scope
+    // computation.
+    this.metaRegistry.registerNgModuleMetadata({
+      ref: new Reference(node),
+      schemas: analysis.schemas,
+      declarations: analysis.declarations,
+      imports: analysis.imports,
+      exports: analysis.exports,
+    });
+
+    if (this.factoryTracker !== null) {
+      this.factoryTracker.track(node.getSourceFile(), analysis.factorySymbolName);
+    }
   }
 
   resolve(node: ClassDeclaration, analysis: Readonly<NgModuleAnalysis>): ResolveResult<unknown> {

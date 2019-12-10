@@ -80,7 +80,12 @@ export function analyzeDecorators(
       if (diagnostics !== undefined) {
         allDiagnostics.push(...diagnostics);
       }
-      match.analysis = analysis !;
+      if (analysis !== undefined) {
+        match.analysis = analysis;
+        if (match.handler.register !== undefined) {
+          match.handler.register(declaration, analysis);
+        }
+      }
       matches.push(match);
     } catch (e) {
       if (isFatalDiagnosticError(e)) {

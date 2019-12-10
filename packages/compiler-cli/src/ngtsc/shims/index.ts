@@ -9,6 +9,7 @@
 /// <reference types="node" />
 
 export {FactoryGenerator, FactoryInfo, generatedFactoryTransform} from './src/factory_generator';
+export {FactoryTracker} from './src/factory_tracker';
 export {GeneratedShimsHostWrapper, ShimGenerator} from './src/host';
 export {SummaryGenerator} from './src/summary_generator';
 export {TypeCheckShimGenerator} from './src/typecheck_shim';

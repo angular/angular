@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GeneratedFile} from '@angular/compiler';
+import {GeneratedFile, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import * as api from '../transformers/api';
@@ -30,7 +30,7 @@ import {TypeScriptReflectionHost} from './reflection';
 import {HostResourceLoader} from './resource_loader';
 import {NgModuleRouteAnalyzer, entryPointKeyFor} from './routing';
 import {ComponentScopeReader, CompoundComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from './scope';
-import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, ShimGenerator, SummaryGenerator, TypeCheckShimGenerator, generatedFactoryTransform} from './shims';
+import {FactoryGenerator, FactoryTracker, GeneratedShimsHostWrapper, ShimGenerator, SummaryGenerator, TypeCheckShimGenerator, generatedFactoryTransform} from './shims';
 import {ivySwitchTransform} from './switch';
 import {DecoratorHandler, DtsTransformRegistry, TraitCompiler, declarationTransformFactory, ivyTransformFactory} from './transform';
 import {aliasTransformFactory} from './transform/src/alias';
@@ -43,8 +43,6 @@ export class NgtscProgram implements api.Program {
   private reuseTsProgram: ts.Program;
   private resourceManager: HostResourceLoader;
   private compilation: TraitCompiler|undefined = undefined;
-  private factoryToSourceInfo: Map<string, FactoryInfo>|null = null;
-  private sourceToFactorySymbols: Map<string, Set<string>>|null = null;
   private _coreImportsFrom: ts.SourceFile|null|undefined = undefined;
   private _importRewriter: ImportRewriter|undefined = undefined;
   private _reflector: TypeScriptReflectionHost|undefined = undefined;
@@ -55,6 +53,7 @@ export class NgtscProgram implements api.Program {
   private exportReferenceGraph: ReferenceGraph|null = null;
   private flatIndexGenerator: FlatIndexGenerator|null = null;
   private routeAnalyzer: NgModuleRouteAnalyzer|null = null;
+  private scopeRegistry: LocalModuleScopeRegistry|null = null;
 
   private constructionDiagnostics: ts.Diagnostic[] = [];
   private moduleResolver: ModuleResolver;
@@ -69,6 +68,8 @@ export class NgtscProgram implements api.Program {
   private perfTracker: PerfTracker|null = null;
   private incrementalDriver: IncrementalDriver;
   private typeCheckFilePath: AbsoluteFsPath;
+  private factoryTracker: FactoryTracker|null = null;
+
   private modifiedResourceFiles: Set<string>|null;
   private dtsTransforms: DtsTransformRegistry|null = null;
   private mwpScanner: ModuleWithProvidersScanner|null = null;
@@ -117,17 +118,12 @@ export class NgtscProgram implements api.Program {
       // Factory generation.
       const factoryGenerator = FactoryGenerator.forRootFiles(normalizedRootNames);
       const factoryFileMap = factoryGenerator.factoryFileMap;
-      this.factoryToSourceInfo = new Map<string, FactoryInfo>();
-      this.sourceToFactorySymbols = new Map<string, Set<string>>();
-      factoryFileMap.forEach((sourceFilePath, factoryPath) => {
-        const moduleSymbolNames = new Set<string>();
-        this.sourceToFactorySymbols !.set(sourceFilePath, moduleSymbolNames);
-        this.factoryToSourceInfo !.set(factoryPath, {sourceFilePath, moduleSymbolNames});
-      });
 
       const factoryFileNames = Array.from(factoryFileMap.keys());
       rootFiles.push(...factoryFileNames);
       generators.push(factoryGenerator);
+
+      this.factoryTracker = new FactoryTracker(factoryGenerator);
     }
 
     // Done separately to preserve the order of factory files before summary files in rootFiles.
@@ -247,6 +243,7 @@ export class NgtscProgram implements api.Program {
 
       const analyzeFileSpan = this.perfRecorder.start('analyzeFile', sf);
       let analysisPromise = this.compilation !.analyzeAsync(sf);
+      this.scanForMwp(sf);
       if (analysisPromise === undefined) {
         this.perfRecorder.stop(analyzeFileSpan);
       } else if (this.perfRecorder.enabled) {
@@ -261,6 +258,8 @@ export class NgtscProgram implements api.Program {
 
     this.perfRecorder.stop(analyzeSpan);
     this.compilation.resolve();
+
+    this.recordNgModuleScopeDependencies();
 
     // At this point, analysis is complete and the compiler can now calculate which files need to be
     // emitted, so do that.
@@ -316,6 +315,16 @@ export class NgtscProgram implements api.Program {
     throw new Error('Method not implemented.');
   }
 
+  private scanForMwp(sf: ts.SourceFile): void {
+    this.mwpScanner !.scan(sf, {
+      addTypeReplacement: (node: ts.Declaration, type: Type): void => {
+        // Only obtain the return type transform for the source file once there's a type to replace,
+        // so that no transform is allocated when there's nothing to do.
+        this.dtsTransforms !.getReturnTypeTransform(sf).addTypeReplacement(node, type);
+      }
+    });
+  }
+
   private ensureAnalyzed(): TraitCompiler {
     if (this.compilation === undefined) {
       const analyzeSpan = this.perfRecorder.start('analyze');
@@ -326,10 +335,13 @@ export class NgtscProgram implements api.Program {
         }
         const analyzeFileSpan = this.perfRecorder.start('analyzeFile', sf);
         this.compilation !.analyzeSync(sf);
+        this.scanForMwp(sf);
         this.perfRecorder.stop(analyzeFileSpan);
       }
       this.perfRecorder.stop(analyzeSpan);
       this.compilation.resolve();
+
+      this.recordNgModuleScopeDependencies();
 
       // At this point, analysis is complete and the compiler can now calculate which files need to
       // be emitted, so do that.
@@ -391,9 +403,9 @@ export class NgtscProgram implements api.Program {
       afterDeclarationsTransforms.push(aliasTransformFactory(compilation.exportStatements));
     }
 
-    if (this.factoryToSourceInfo !== null) {
+    if (this.factoryTracker !== null) {
       beforeTransforms.push(
-          generatedFactoryTransform(this.factoryToSourceInfo, this.importRewriter));
+          generatedFactoryTransform(this.factoryTracker.sourceInfo, this.importRewriter));
     }
     beforeTransforms.push(ivySwitchTransform);
     if (customTransforms && customTransforms.beforeTs) {
@@ -609,10 +621,10 @@ export class NgtscProgram implements api.Program {
     const localMetaRegistry = new LocalMetadataRegistry();
     const localMetaReader: MetadataReader = localMetaRegistry;
     const depScopeReader = new MetadataDtsModuleScopeResolver(dtsReader, this.aliasingHost);
-    const scopeRegistry = new LocalModuleScopeRegistry(
+    this.scopeRegistry = new LocalModuleScopeRegistry(
         localMetaReader, depScopeReader, this.refEmitter, this.aliasingHost);
-    const scopeReader: ComponentScopeReader = scopeRegistry;
-    const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, scopeRegistry]);
+    const scopeReader: ComponentScopeReader = this.scopeRegistry;
+    const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, this.scopeRegistry]);
 
     this.metaReader = new CompoundMetadataReader([localMetaReader, dtsReader]);
 
@@ -637,8 +649,8 @@ export class NgtscProgram implements api.Program {
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers: DecoratorHandler<unknown, unknown, unknown>[] = [
       new ComponentDecoratorHandler(
-          this.reflector, evaluator, metaRegistry, this.metaReader !, scopeReader, scopeRegistry,
-          this.isCore, this.resourceManager, this.rootDirs,
+          this.reflector, evaluator, metaRegistry, this.metaReader !, scopeReader,
+          this.scopeRegistry, this.isCore, this.resourceManager, this.rootDirs,
           this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false, this.moduleResolver,
           this.cycleAnalyzer, this.refEmitter, this.defaultImportTracker,
@@ -656,15 +668,57 @@ export class NgtscProgram implements api.Program {
           this.reflector, this.defaultImportTracker, this.isCore,
           this.options.strictInjectionParameters || false),
       new NgModuleDecoratorHandler(
-          this.reflector, evaluator, this.metaReader, metaRegistry, scopeRegistry,
-          referencesRegistry, this.isCore, this.routeAnalyzer, this.refEmitter,
+          this.reflector, evaluator, this.metaReader, metaRegistry, this.scopeRegistry,
+          referencesRegistry, this.isCore, this.routeAnalyzer, this.refEmitter, this.factoryTracker,
           this.defaultImportTracker, this.closureCompilerEnabled, this.options.i18nInLocale),
     ];
 
     return new TraitCompiler(
-        handlers, this.reflector, this.importRewriter, this.incrementalDriver, this.perfRecorder,
-        this.sourceToFactorySymbols, scopeRegistry,
-        this.options.compileNonExportedClasses !== false, this.dtsTransforms, this.mwpScanner);
+        handlers, this.reflector, this.perfRecorder,
+        this.options.compileNonExportedClasses !== false, this.dtsTransforms);
+  }
+
+  /**
+   * Reifies the inter-dependencies of NgModules and the components within their compilation scopes
+   * into the `IncrementalDriver`'s dependency graph.
+   */
+  private recordNgModuleScopeDependencies() {
+    const recordSpan = this.perfRecorder.start('recordDependencies');
+    for (const scope of this.scopeRegistry !.getCompilationScopes()) {
+      const file = scope.declaration.getSourceFile();
+      const ngModuleFile = scope.ngModule.getSourceFile();
+
+      // A change to any dependency of the declaration causes the declaration to be invalidated,
+      // which requires the NgModule to be invalidated as well.
+      const deps = this.incrementalDriver.getFileDependencies(file);
+      this.incrementalDriver.trackFileDependencies(deps, ngModuleFile);
+
+      // A change to the NgModule file should cause the declaration itself to be invalidated.
+      this.incrementalDriver.trackFileDependency(ngModuleFile, file);
+
+      // A change to any directive/pipe in the compilation scope should cause the declaration to be
+      // invalidated.
+      for (const directive of scope.directives) {
+        const dirSf = directive.ref.node.getSourceFile();
+
+        // When a directive in scope is updated, the declaration needs to be recompiled as e.g.
+        // a selector may have changed.
+        this.incrementalDriver.trackFileDependency(dirSf, file);
+
+        // When any of the dependencies of the declaration changes, the NgModule scope may be
+        // affected so a component within scope must be recompiled. Only components need to be
+        // recompiled, as directives are not dependent upon the compilation scope.
+        if (directive.isComponent) {
+          this.incrementalDriver.trackFileDependencies(deps, dirSf);
+        }
+      }
+      for (const pipe of scope.pipes) {
+        // When a pipe in scope is updated, the declaration needs to be recompiled as e.g.
+        // the pipe's name may have changed.
+        this.incrementalDriver.trackFileDependency(pipe.ref.node.getSourceFile(), file);
+      }
+    }
+    this.perfRecorder.stop(recordSpan);
   }
 
   private get reflector(): TypeScriptReflectionHost {

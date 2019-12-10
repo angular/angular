@@ -108,7 +108,9 @@ export class DecorationAnalyzer {
     new NgModuleDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullMetaReader, this.fullRegistry,
         this.scopeRegistry, this.referencesRegistry, this.isCore, /* routeAnalyzer */ null,
-        this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER, /* annotateForClosureCompiler */ false),
+        this.refEmitter,
+        /* factoryTracker */ null, NOOP_DEFAULT_IMPORT_RECORDER,
+        /* annotateForClosureCompiler */ false),
   ];
   migrations: Migration[] = [
     new UndecoratedParentMigration(),
