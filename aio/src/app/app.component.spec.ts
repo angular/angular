@@ -957,7 +957,7 @@ describe('AppComponent', () => {
         triggerDocViewerEvent('docRendered');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(false);
-        expect(toolbar.classes['transitioning']).toBe(false);
+        expect(toolbar.classes['transitioning']).toBeFalsy();
 
         // While a document is being rendered, `isTransitoning` is set to true.
         triggerDocViewerEvent('docReady');
@@ -968,7 +968,7 @@ describe('AppComponent', () => {
         triggerDocViewerEvent('docRendered');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(false);
-        expect(toolbar.classes['transitioning']).toBe(false);
+        expect(toolbar.classes['transitioning']).toBeFalsy();
       });
 
       it('should update the sidenav state as soon as a new document is inserted (but not before)', () => {
