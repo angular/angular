@@ -63,11 +63,11 @@ parsedConfig.fileNames.forEach(fileName => {
 if (failures.size) {
   console.error(chalk.red('  ✘   Rollup globals are not up-to-date.'));
   console.error();
-
   failures.forEach((missingGlobals, fileName) => {
     console.error(chalk.yellow(`  ⮑   ${fileName}:`));
     missingGlobals.forEach(g => console.error(`      - ${g}`));
   });
+  process.exit(1);
 } else {
   console.info(chalk.green('  ✓   Rollup globals are up-to-date.'));
 }
