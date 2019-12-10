@@ -3,9 +3,7 @@
      [class.mat-sort-header-position-before]="arrowPosition == 'before'">
   <button class="mat-sort-header-button" type="button"
           [attr.disabled]="_isDisabled() || null"
-          [attr.aria-label]="_intl.sortButtonLabel(id)"
-          (focus)="_setIndicatorHintVisible(true)"
-          (blur)="_setIndicatorHintVisible(false)">
+          [attr.aria-label]="_intl.sortButtonLabel(id)">
     <ng-content></ng-content>
   </button>
 

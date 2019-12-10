@@ -32,6 +32,13 @@ $mat-sort-header-arrow-hint-opacity: 0.38;
   font: inherit;
   color: currentColor;
 
+  // Usually we could rely on the arrow showing up to be focus indication, but if a header is
+  // active, the arrow will always be shown so the user has no way of telling the difference.
+  [mat-sort-header].cdk-keyboard-focused &,
+  [mat-sort-header].cdk-program-focused & {
+    border-bottom: solid 1px currentColor;
+  }
+
   // The `outline: 0` from above works on all browsers, however Firefox also
   // adds a special `focus-inner` which we have to disable explicitly. See:
   // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#Firefox

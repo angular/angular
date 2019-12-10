@@ -19,6 +19,7 @@ ng_module(
     assets = [":sort-header.css"] + glob(["**/*.html"]),
     module_name = "@angular/material/sort",
     deps = [
+        "//src/cdk/a11y",
         "//src/cdk/coercion",
         "//src/material/core",
         "@npm//@angular/animations",
