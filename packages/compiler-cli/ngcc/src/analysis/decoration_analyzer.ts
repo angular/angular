@@ -93,8 +93,8 @@ export class DecorationAnalyzer {
         /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
         this.moduleResolver, this.cycleAnalyzer, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER,
         NOOP_DEPENDENCY_TRACKER, /* annotateForClosureCompiler */ false),
+    // See the note in ngtsc about why this cast is needed.
     // clang-format off
-        // See the note in ngtsc about why this cast is needed.
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
         this.isCore, /* annotateForClosureCompiler */ false) as DecoratorHandler<unknown, unknown, unknown>,
