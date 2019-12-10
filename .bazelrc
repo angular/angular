@@ -17,6 +17,10 @@ build --nolegacy_external_runfiles
 run --nolegacy_external_runfiles
 test --nolegacy_external_runfiles
 
+# This flag is needed to so that the bazel cache is not invalidated
+# when running bazel via `yarn bazel`.
+build --incompatible_strict_action_env
+
 ###############################
 # Output control              #
 ###############################
