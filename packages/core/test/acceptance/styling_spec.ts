@@ -1564,14 +1564,18 @@ describe('styling', () => {
     expect(html).toMatch(/style=["|']clip-path:\s*url\(.*#test.*\)/);
   });
 
-  it('should not throw when bound to SafeValue', () => {
+  it('should handle values wrapped into SafeValue', () => {
     @Component({
       template: `
-        <div
-          [style.background]="getBackgroundSafe()"
-          [style.width]="getWidthSafe()"
-          [style.height]="getHeightSafe()"
-          [style.color]="getColorUnsafe()"></div>`,
+        <!-- Verify sanitizable style prop values wrapped in SafeValue -->
+        <div [style.background]="getBackgroundSafe()"></div>
+
+        <!-- Verify regular style prop values wrapped in SafeValue -->
+        <p [style.width]="getWidthSafe()" [style.height]="getHeightSafe()"></p>
+
+        <!-- Verify regular style prop values not wrapped in SafeValue -->
+        <span [style.color]="getColorUnsafe()"></span>
+      `,
     })
     class MyComp {
       constructor(private sanitizer: DomSanitizer) {}
@@ -1596,12 +1600,14 @@ describe('styling', () => {
     fixture.detectChanges();
 
     const comp = fixture.componentInstance;
-    const style = fixture.nativeElement.firstChild.style;
+    const div = fixture.nativeElement.querySelector('div');
+    const p = fixture.nativeElement.querySelector('p');
+    const span = fixture.nativeElement.querySelector('span');
 
-    expect(style.background).toContain('url("/1.png")');
-    expect(style.width).toBe('calc(20%)');
-    expect(style.height).toBe('10px');
-    expect(style.color).toBe('red');
+    expect(div.style.background).toContain('url("/1.png")');
+    expect(p.style.width).toBe('calc(20%)');
+    expect(p.style.height).toBe('10px');
+    expect(span.style.color).toBe('red');
 
     comp.background = '2.png';
     comp.width = '5px';
@@ -1610,10 +1616,10 @@ describe('styling', () => {
 
     fixture.detectChanges();
 
-    expect(style.background).toContain('url("/2.png")');
-    expect(style.width).toBe('5px');
-    expect(style.height).toBe('100%');
-    expect(style.color).toBe('green');
+    expect(div.style.background).toContain('url("/2.png")');
+    expect(p.style.width).toBe('5px');
+    expect(p.style.height).toBe('100%');
+    expect(span.style.color).toBe('green');
   });
 
   onlyInIvy('only ivy has style/class bindings debugging support')
