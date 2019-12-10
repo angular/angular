@@ -111,6 +111,9 @@ build:remote --project_id=internal-200822
 build:remote --remote_cache=remotebuildexecution.googleapis.com
 build:remote --remote_executor=remotebuildexecution.googleapis.com
 
+# When building remotely, runfile trees are created from in-memory manifests
+build:remote --build_runfile_manifests=false
+
 ###############################
 # NodeJS rules settings
 # These settings are required for rules_nodejs
