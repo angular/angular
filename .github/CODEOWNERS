@@ -867,6 +867,7 @@ testing/**                                                      @angular/fw-test
 /aio/content/guide/observables.md                               @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/observables/**                            @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/comparing-observables.md                     @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/comparing-observables/**                  @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/observables-in-angular.md                    @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/observables-in-angular/**                 @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/practical-observable-usage.md                @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
