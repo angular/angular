@@ -11,20 +11,16 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportRewriter} from '../../imports';
-import {IncrementalDriver} from '../../incremental';
 import {IndexingContext} from '../../indexer';
 import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration} from '../../reflection';
-import {LocalModuleScopeRegistry} from '../../scope';
 import {TypeCheckContext} from '../../typecheck';
 import {getSourceFile, isExported} from '../../util/src/typescript';
 
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from './api';
 import {DtsTransformRegistry} from './declaration';
 import {Trait, TraitState} from './trait';
-
-const EMPTY_ARRAY: any = [];
 
 /**
  * Records information about a specific class that has matched traits.
@@ -91,20 +87,18 @@ export class TraitCompiler {
    */
   constructor(
       private handlers: DecoratorHandler<unknown, unknown, unknown>[],
-      private reflector: ReflectionHost, private importRewriter: ImportRewriter,
-      private incrementalDriver: IncrementalDriver, private perf: PerfRecorder,
-      private sourceToFactorySymbols: Map<string, Set<string>>|null,
-      private scopeRegistry: LocalModuleScopeRegistry, private compileNonExportedClasses: boolean,
-      private dtsTransforms: DtsTransformRegistry, private mwpScanner: ModuleWithProvidersScanner) {
-  }
+      private reflector: ReflectionHost, private perf: PerfRecorder,
+      private compileNonExportedClasses: boolean, private dtsTransforms: DtsTransformRegistry) {}
 
   analyzeSync(sf: ts.SourceFile): void { this.analyze(sf, false); }
 
-  analyzeAsync(sf: ts.SourceFile): Promise<void>|void { return this.analyze(sf, true); }
+  analyzeAsync(sf: ts.SourceFile): Promise<void>|undefined { return this.analyze(sf, true); }
 
   private analyze(sf: ts.SourceFile, preanalyze: false): void;
-  private analyze(sf: ts.SourceFile, preanalyze: true): Promise<void>|void;
-  private analyze(sf: ts.SourceFile, preanalyze: boolean): Promise<void>|void {
+  private analyze(sf: ts.SourceFile, preanalyze: true): Promise<void>|undefined;
+  private analyze(sf: ts.SourceFile, preanalyze: boolean): Promise<void>|undefined {
+    // analyze() really wants to return `Promise<void>|void`, but TypeScript cannot narrow a return
+    // type of 'void', so `undefined` is used instead.
     const promises: Promise<void>[] = [];
 
     const visit = (node: ts.Node): void => {
@@ -116,18 +110,10 @@ export class TraitCompiler {
 
     visit(sf);
 
-    this.mwpScanner.scan(sf, {
-      addTypeReplacement: (node: ts.Declaration, type: Type): void => {
-        // Only obtain the return type transform for the source file once there's a type to replace,
-        // so that no transform is allocated when there's nothing to do.
-        this.dtsTransforms.getReturnTypeTransform(sf).addTypeReplacement(node, type);
-      }
-    });
-
     if (preanalyze && promises.length > 0) {
       return Promise.all(promises).then(() => undefined as void);
     } else {
-      return;
+      return undefined;
     }
   }
 
@@ -260,13 +246,13 @@ export class TraitCompiler {
     if (result.diagnostics !== undefined) {
       trait = trait.toErrored(result.diagnostics);
     } else if (result.analysis !== undefined) {
-      trait = trait.toAnalyzed(result.analysis);
-
-      const sf = clazz.getSourceFile();
-      if (result.factorySymbolName !== undefined && this.sourceToFactorySymbols !== null &&
-          this.sourceToFactorySymbols.has(sf.fileName)) {
-        this.sourceToFactorySymbols.get(sf.fileName) !.add(result.factorySymbolName);
+      // Analysis was successful. Trigger registration.
+      if (trait.handler.register !== undefined) {
+        trait.handler.register(clazz, result.analysis);
       }
+
+      // Successfully analyzed and registered.
+      trait = trait.toAnalyzed(result.analysis);
     } else {
       trait = trait.toSkipped();
     }
@@ -329,8 +315,6 @@ export class TraitCompiler {
         }
       }
     }
-
-    this.recordNgModuleScopeDependencies();
   }
 
   typeCheck(ctx: TypeCheckContext): void {
@@ -443,43 +427,4 @@ export class TraitCompiler {
   }
 
   get exportStatements(): Map<string, Map<string, [string, string]>> { return this.reexportMap; }
-
-  private recordNgModuleScopeDependencies() {
-    const recordSpan = this.perf.start('recordDependencies');
-    for (const scope of this.scopeRegistry.getCompilationScopes()) {
-      const file = scope.declaration.getSourceFile();
-      const ngModuleFile = scope.ngModule.getSourceFile();
-
-      // A change to any dependency of the declaration causes the declaration to be invalidated,
-      // which requires the NgModule to be invalidated as well.
-      const deps = this.incrementalDriver.getFileDependencies(file);
-      this.incrementalDriver.trackFileDependencies(deps, ngModuleFile);
-
-      // A change to the NgModule file should cause the declaration itself to be invalidated.
-      this.incrementalDriver.trackFileDependency(ngModuleFile, file);
-
-      // A change to any directive/pipe in the compilation scope should cause the declaration to be
-      // invalidated.
-      for (const directive of scope.directives) {
-        const dirSf = directive.ref.node.getSourceFile();
-
-        // When a directive in scope is updated, the declaration needs to be recompiled as e.g.
-        // a selector may have changed.
-        this.incrementalDriver.trackFileDependency(dirSf, file);
-
-        // When any of the dependencies of the declaration changes, the NgModule scope may be
-        // affected so a component within scope must be recompiled. Only components need to be
-        // recompiled, as directives are not dependent upon the compilation scope.
-        if (directive.isComponent) {
-          this.incrementalDriver.trackFileDependencies(deps, dirSf);
-        }
-      }
-      for (const pipe of scope.pipes) {
-        // When a pipe in scope is updated, the declaration needs to be recompiled as e.g.
-        // the pipe's name may have changed.
-        this.incrementalDriver.trackFileDependency(pipe.ref.node.getSourceFile(), file);
-      }
-    }
-    this.perf.stop(recordSpan);
-  }
 }
