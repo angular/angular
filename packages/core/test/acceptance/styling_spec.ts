@@ -2238,9 +2238,9 @@ describe('styling', () => {
       constructor(public elementRef: ElementRef, public renderer: Renderer2) { dirInstance = this; }
 
       setStyles() {
-        this.renderer.setStyle(
-            this.elementRef.nativeElement, 'transform', 'translate3d(0px, 0px, 0px)');
-        this.renderer.addClass(this.elementRef.nativeElement, 'my-class');
+        const nativeEl = this.elementRef.nativeElement;
+        this.renderer.setStyle(nativeEl, 'transform', 'translate3d(0px, 0px, 0px)');
+        this.renderer.addClass(nativeEl, 'my-class');
       }
     }
 
@@ -2258,16 +2258,6 @@ describe('styling', () => {
     const div = fixture.debugElement.children[0];
     expect(div.styles.transform).toMatch(/translate3d\(0px\s*,\s*0px\s*,\s*0px\)/);
     expect(div.classes['my-class']).toBe(true);
-
-    div.classes['other-class'] = true;
-    div.styles['width'] = '200px';
-    expect(div.styles.width).toEqual('200px');
-    expect(div.classes['other-class']).toBe(true);
-
-    if (ivyEnabled) {
-      expect(div.nativeElement.classList.contains('other-class')).toBeTruthy();
-      expect(div.nativeElement.style['width']).toEqual('200px');
-    }
   });
 
   it('should not set classes when falsy value is passed while a sanitizer is present', () => {
