@@ -1,6 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
+load("@npm//html-insert-assets:index.bzl", "html_insert_assets")
 load("@npm//http-server:index.bzl", "http_server")
 load("@npm_angular_bazel//:index.bzl", "ng_module")
 load("@npm_bazel_rollup//:index.bzl", "rollup_bundle")
@@ -34,9 +35,37 @@ filegroup(
     ],
 )
 
+html_insert_assets(
+    name = "inject_scripts",
+    # We can't output "index.html" since that collides with the input file.
+    # We output "_/index.html" instead and remap in ts_devserver & pkg_web
+    # using additional_root_paths.
+    outs = ["_/index.html"],
+    args = [
+        "--html",
+        "$(location :index.html)",
+        "--out",
+        "$@",
+        "--assets",
+        # We load zone.js outside the bundle. That's because it's a "polyfill"
+        # which speculates that such features might be available in a browser.
+        # Also it's tricky to configure dead code elimination to understand that
+        # zone.js is used, given that we don't have any import statement that
+        # imports from it.
+        "$(location @npm//:node_modules/zone.js/dist/zone.min.js)",
+        # Bundle path for both prodapp & devserver
+        "bundle.min.js",
+    ],
+    data = [
+        ":index.html",
+        "@npm//:node_modules/zone.js/dist/zone.min.js",
+    ],
+)
+
 ts_devserver(
     name = "devserver",
-    additional_root_paths = ["npm/node_modules/zone.js/dist"],
+    # Remap "_/index.html" => "index.html"
+    additional_root_paths = ["src/_"],
     entry_module = "bazel_integration_test/src/main",
     scripts = [
         ":rxjs_umd_modules",
@@ -45,7 +74,7 @@ ts_devserver(
     # an index.html file.
     serving_path = "/bundle.min.js",
     static_files = [
-        "index.html",
+        ":inject_scripts",
         "@npm//:node_modules/zone.js/dist/zone.min.js",
     ],
     deps = ["//src"],
@@ -70,11 +99,12 @@ terser_minified(
 pkg_web(
     name = "prodapp",
     srcs = [
-        "index.html",
         ":bundle.min",
+        ":inject_scripts",
         "@npm//:node_modules/zone.js/dist/zone.min.js",
     ],
-    additional_root_paths = ["npm/node_modules/zone.js/dist"],
+    # Remap "_/index.html" => "index.html"
+    additional_root_paths = ["src/_"],
 )
 
 http_server(
