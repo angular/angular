@@ -363,7 +363,7 @@ export class TraitCompiler {
           }
         }
 
-        if (result.diagnostics !== undefined) {
+        if (result.diagnostics !== undefined && result.diagnostics.length > 0) {
           trait = trait.toErrored(result.diagnostics);
         } else {
           if (result.data !== undefined) {
