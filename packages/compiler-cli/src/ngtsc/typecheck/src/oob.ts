@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, BindingPipe, TmplAstReference} from '@angular/compiler';
+import {AbsoluteSourceSpan, BindingPipe, PropertyWrite, TmplAstReference, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
@@ -49,6 +49,10 @@ export interface OutOfBandDiagnosticRecorder {
    * plus span of the larger expression context.
    */
   missingPipe(templateId: string, ast: BindingPipe, sourceSpan: AbsoluteSourceSpan): void;
+
+  illegalAssignmentToTemplateVar(
+      templateId: string, assignment: PropertyWrite, assignmentSpan: AbsoluteSourceSpan,
+      target: TmplAstVariable): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -81,5 +85,25 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     this._diagnostics.push(makeTemplateDiagnostic(
         mapping, sourceSpan, ts.DiagnosticCategory.Error, ngErrorCode(ErrorCode.MISSING_PIPE),
         errorMsg));
+  }
+
+  illegalAssignmentToTemplateVar(
+      templateId: string, assignment: PropertyWrite, assignmentSpan: AbsoluteSourceSpan,
+      target: TmplAstVariable): void {
+    const mapping = this.resolver.getSourceMapping(templateId);
+    const errorMsg =
+        `Cannot use variable '${assignment.name}' as the left-hand side of an assignment expression. Template variables are read-only.`;
+
+    const location = absoluteSourceSpanToSourceLocation(templateId, assignmentSpan);
+    const sourceSpan = this.resolver.sourceLocationToSpan(location);
+    if (sourceSpan === null) {
+      throw new Error(`Assertion failure: no SourceLocation found for property binding.`);
+    }
+    this._diagnostics.push(makeTemplateDiagnostic(
+        mapping, sourceSpan, ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.WRITE_TO_READ_ONLY_VARIABLE), errorMsg, {
+          text: `The variable ${assignment.name} is declared here.`,
+          span: target.valueSpan || target.sourceSpan,
+        }));
   }
 }

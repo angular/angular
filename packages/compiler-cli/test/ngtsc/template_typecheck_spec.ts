@@ -1121,6 +1121,34 @@ export declare class AnimationEvent {
       expect(getSourceCodeForDiagnostic(diags[2])).toEqual('[fromChild]="4"');
     });
 
+    it('should detect an illegal write to a template variable', () => {
+      env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({
+          selector: 'test',
+          template: \`
+            <div *ngIf="x as y">
+              <button (click)="y = !y">Toggle</button>
+            </div>
+          \`,
+        })
+        export class TestCmp {
+          x!: boolean;
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [CommonModule],
+        })
+        export class Module {}
+      `);
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toEqual(1);
+      expect(getSourceCodeForDiagnostic(diags[0])).toEqual('y = !y');
+    });
+
     describe('input coercion', () => {
       beforeEach(() => {
         env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});

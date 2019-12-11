@@ -96,6 +96,20 @@ export enum ErrorCode {
   MISSING_PIPE = 8004,
 
   /**
+   * The left-hand side of an assignment expression was a template variable. Effectively, the
+   * template looked like:
+   *
+   * ```
+   * <ng-template let-something>
+   *   <button (click)="something = ...">...</button>
+   * </ng-template>
+   * ```
+   *
+   * Template variables are read-only.
+   */
+  WRITE_TO_READ_ONLY_VARIABLE = 8005,
+
+  /**
    * An injectable already has a `ɵprov` property.
    */
   INJECTABLE_DUPLICATE_PROV = 9001

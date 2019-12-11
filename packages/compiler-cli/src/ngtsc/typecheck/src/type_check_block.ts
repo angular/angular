@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, DYNAMIC_TYPE, ImplicitReceiver, MethodCall, ParseSourceSpan, ParseSpan, ParsedEventType, PropertyRead, SchemaMetadata, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, DYNAMIC_TYPE, ImplicitReceiver, MethodCall, ParseSourceSpan, ParseSpan, ParsedEventType, PropertyRead, PropertyWrite, SchemaMetadata, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -18,6 +18,7 @@ import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {NULL_AS_ANY, astToTypescript} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
+import {ExpressionSemanticVisitor} from './template_semantics';
 import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateVariable, tsDeclareVariable} from './ts_util';
 
 
@@ -491,6 +492,10 @@ class TcbDirectiveOutputsOp extends TcbOp {
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Any);
         this.scope.addStatement(ts.createExpressionStatement(handler));
       }
+
+      ExpressionSemanticVisitor.visit(
+          output.handler, output.handlerSpan, this.tcb.id, this.tcb.boundTarget,
+          this.tcb.oobRecorder);
     }
 
     return null;
@@ -549,6 +554,10 @@ class TcbUnclaimedOutputsOp extends TcbOp {
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Any);
         this.scope.addStatement(ts.createExpressionStatement(handler));
       }
+
+      ExpressionSemanticVisitor.visit(
+          output.handler, output.handlerSpan, this.tcb.id, this.tcb.boundTarget,
+          this.tcb.oobRecorder);
     }
 
     return null;
@@ -972,6 +981,16 @@ class TcbExpressionTranslator {
       // returned here to let it fall through resolution so it will be caught when the
       // `ImplicitReceiver` is resolved in the branch below.
       return this.resolveTarget(ast);
+    } else if (ast instanceof PropertyWrite && ast.receiver instanceof ImplicitReceiver) {
+      const target = this.resolveTarget(ast);
+      if (target === null) {
+        return null;
+      }
+
+      const expr = this.translate(ast.value);
+      const result = ts.createParen(ts.createBinary(target, ts.SyntaxKind.EqualsToken, expr));
+      addParseSpanInfo(result, toAbsoluteSpan(ast.span, this.sourceSpan));
+      return result;
     } else if (ast instanceof ImplicitReceiver) {
       // AST instances representing variables and references look very similar to property reads
       // or method calls from the component context: both have the shape

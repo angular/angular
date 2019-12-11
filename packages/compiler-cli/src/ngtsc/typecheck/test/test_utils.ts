@@ -389,4 +389,5 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   get diagnostics(): ReadonlyArray<ts.Diagnostic> { return []; }
   missingReferenceTarget(): void {}
   missingPipe(): void {}
+  illegalAssignmentToTemplateVar(): void {}
 }
