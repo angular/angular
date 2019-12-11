@@ -291,6 +291,40 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
            expect(output.toString())
                .toContain(`(function (exports,someSideEffect,localDep,core,i0,i1) {'use strict';`);
          });
+
+      it('should handle the case where there were no prior imports nor exports', () => {
+        const PROGRAM: TestFile = {
+          name: _('/node_modules/test-package/some/file.js'),
+          contents: `
+          /* A copyright notice */
+          (function (global, factory) {
+          typeof exports === 'object' && typeof module !== 'undefined' ? factory() :
+          typeof define === 'function' && define.amd ? define('file', factory) :
+          (factory());
+          }(this, (function () {'use strict';
+            var index = '';
+            return index;
+          })));`,
+        };
+        const {renderer, program} = setup(PROGRAM);
+        const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
+        const output = new MagicString(PROGRAM.contents);
+        renderer.addImports(
+            output,
+            [
+              {specifier: '@angular/core', qualifier: 'i0'},
+              {specifier: '@angular/common', qualifier: 'i1'}
+            ],
+            file);
+        const outputSrc = output.toString();
+
+        expect(outputSrc).toContain(
+            `typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('@angular/core'),require('@angular/common')) :`);
+        expect(outputSrc).toContain(
+            `typeof define === 'function' && define.amd ? define('file',['@angular/core','@angular/common'], factory) :`);
+        expect(outputSrc).toContain(`(factory(global.ng.core,global.ng.common));`);
+        expect(outputSrc).toContain(`(function (i0,i1) {'use strict';`);
+      });
     });
 
     describe('addExports', () => {
