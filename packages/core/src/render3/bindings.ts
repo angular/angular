@@ -8,7 +8,8 @@
 
 import {devModeEqual} from '../change_detection/change_detection_util';
 import {assertDataInRange, assertLessThan, assertNotSame} from '../util/assert';
-import {throwErrorIfNoChangesMode} from './errors';
+
+import {getExpressionChangedErrorDetails, throwErrorIfNoChangesMode} from './errors';
 import {LView} from './interfaces/view';
 import {getCheckNoChangesMode} from './state';
 import {NO_CHANGE} from './tokens';
@@ -44,7 +45,10 @@ export function bindingUpdated(lView: LView, bindingIndex: number, value: any): 
       // (before the change detection was run).
       const oldValueToCompare = oldValue !== NO_CHANGE ? oldValue : undefined;
       if (!devModeEqual(oldValueToCompare, value)) {
-        throwErrorIfNoChangesMode(oldValue === NO_CHANGE, oldValueToCompare, value);
+        const details =
+            getExpressionChangedErrorDetails(lView, bindingIndex, oldValueToCompare, value);
+        throwErrorIfNoChangesMode(
+            oldValue === NO_CHANGE, details.oldValue, details.newValue, details.propName);
       }
     }
     lView[bindingIndex] = value;

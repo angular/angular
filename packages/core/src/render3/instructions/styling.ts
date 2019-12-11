@@ -20,7 +20,7 @@ import {activateStylingMapFeature} from '../styling/map_based_bindings';
 import {attachStylingDebugObject} from '../styling/styling_debug';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
-import {addItemToStylingMap, allocStylingMapArray, allocTStylingContext, allowDirectStyling, concatString, forceClassesAsString, forceStylesAsString, getInitialStylingValue, getStylingMapArray, getValue, hasClassInput, hasStyleInput, hasValueChanged, hasValueChangedUnwrapSafeValue, isHostStylingActive, isStylingContext, isStylingValueDefined, normalizeIntoStylingMap, patchConfig, selectClassBasedInputName, setValue, stylingMapToString} from '../util/styling_utils';
+import {addItemToStylingMap, allocStylingMapArray, allocTStylingContext, allowDirectStyling, concatString, forceClassesAsString, forceStylesAsString, getInitialStylingValue, getStylingMapArray, getValue, hasClassInput, hasStyleInput, hasValueChanged, hasValueChangedUnwrapSafeValue, isHostStylingActive, isStylingContext, isStylingMapArray, isStylingValueDefined, normalizeIntoStylingMap, patchConfig, selectClassBasedInputName, setValue, stylingMapToString} from '../util/styling_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
 
 
@@ -191,7 +191,8 @@ function stylingProp(
   if (ngDevMode && getCheckNoChangesMode()) {
     const oldValue = getValue(lView, bindingIndex);
     if (hasValueChangedUnwrapSafeValue(oldValue, value)) {
-      throwErrorIfNoChangesMode(false, oldValue, value);
+      const field = isClassBased ? `class.${prop}` : `style.${prop}`;
+      throwErrorIfNoChangesMode(false, oldValue, value, field);
     }
   }
 
@@ -369,7 +370,11 @@ function stylingMap(
   // For this reason, the checkNoChanges situation must also be handled here
   // as well.
   if (ngDevMode && valueHasChanged && getCheckNoChangesMode()) {
-    throwErrorIfNoChangesMode(false, oldValue, value);
+    // check if the value is a StylingMapArray, in which case take the first value (which stores raw
+    // value) from the array
+    const previousValue =
+        isStylingMapArray(oldValue) ? oldValue[StylingMapArrayIndex.RawValuePosition] : oldValue;
+    throwErrorIfNoChangesMode(false, previousValue, value);
   }
 
   // Direct Apply Case: bypass context resolution and apply the
