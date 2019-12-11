@@ -2,6 +2,7 @@
 @import '../mdc-card/mdc-card';
 @import '../mdc-checkbox/mdc-checkbox';
 @import '../mdc-chips/mdc-chips';
+@import '../mdc-list/mdc-list';
 @import '../mdc-menu/mdc-menu';
 @import '../mdc-radio/mdc-radio';
 @import '../mdc-slide-toggle/mdc-slide-toggle';
@@ -20,6 +21,7 @@
   @include mat-card-typography-mdc($config);
   @include mat-checkbox-typography-mdc($config);
   @include mat-chips-typography-mdc($config);
+  @include mat-list-typography-mdc($config);
   @include mat-menu-typography-mdc($config);
   @include mat-radio-typography-mdc($config);
   @include mat-slide-toggle-typography-mdc($config);

@@ -2,6 +2,7 @@
 @import '../mdc-card/mdc-card';
 @import '../mdc-checkbox/mdc-checkbox';
 @import '../mdc-chips/mdc-chips';
+@import '../mdc-list/mdc-list';
 @import '../mdc-menu/mdc-menu';
 @import '../mdc-radio/mdc-radio';
 @import '../mdc-slide-toggle/mdc-slide-toggle';
@@ -15,6 +16,7 @@
   @include mat-card-theme-mdc($theme);
   @include mat-checkbox-theme-mdc($theme);
   @include mat-chips-theme-mdc($theme);
+  @include mat-list-theme-mdc($theme);
   @include mat-menu-theme-mdc($theme);
   @include mat-progress-bar-theme-mdc($theme);
   @include mat-radio-theme-mdc($theme);

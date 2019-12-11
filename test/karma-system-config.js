@@ -188,6 +188,8 @@ System.config({
         'dist/packages/material-experimental/mdc-chips/index.js',
     '@angular/material-experimental/mdc-helpers':
         'dist/packages/material-experimental/mdc-helpers/index.js',
+    '@angular/material-experimental/mdc-list':
+        'dist/packages/material-experimental/mdc-list/index.js',
     '@angular/material-experimental/mdc-menu':
         'dist/packages/material-experimental/mdc-menu/index.js',
     '@angular/material-experimental/mdc-radio':

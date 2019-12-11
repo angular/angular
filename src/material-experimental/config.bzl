@@ -8,6 +8,7 @@ entryPoints = [
     "mdc-chips",
     "mdc-chips/testing",
     "mdc-helpers",
+    "mdc-list",
     "mdc-menu",
     "mdc-menu/testing",
     "mdc-progress-bar",
