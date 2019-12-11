@@ -147,7 +147,8 @@ export class RippleRenderer {
     ripple.style.width = `${radius * 2}px`;
 
     // If the color is not set, the default CSS color will be used.
-    ripple.style.backgroundColor = config.color || null;
+    // TODO(TS3.7): Type 'string | null' is not assignable to type 'string'.
+    ripple.style.backgroundColor = (config.color || null) as any;
     ripple.style.transitionDuration = `${duration}ms`;
 
     this._containerElement.appendChild(ripple);
