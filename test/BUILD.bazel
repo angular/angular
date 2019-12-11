@@ -2,6 +2,8 @@ package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "ts_library")
 
+exports_files(["bazel-karma-local-config.js"])
+
 # Common set-up for all Angular Material and CDK tests.
 ts_library(
     name = "angular_test_init",
