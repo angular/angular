@@ -237,16 +237,15 @@ You're free to change anything, anywhere, during this turn of the event loop.
 
 Like template expressions, template *statements* use a language that looks like JavaScript.
 The template statement parser differs from the template expression parser and
-specifically supports both basic assignment (`=`) and chaining expressions
-(with <code>;</code> or <code>,</code>).
+specifically supports both basic assignment (`=`) and chaining expressions with <code>;</code>.
 
-However, certain JavaScript syntax is not allowed:
+However, certain JavaScript and template expression syntax is not allowed:
 
 * <code>new</code>
 * increment and decrement operators, `++` and `--`
 * operator assignment, such as `+=` and `-=`
-* the bitwise operators `|` and `&`
-* the [template expression operators](guide/template-syntax#expression-operators)
+* the bitwise operators, such as `|` and `&`
+* the [pipe operator](guide/template-syntax#pipe)
 
 ### Statement context
 
