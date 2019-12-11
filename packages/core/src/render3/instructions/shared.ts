@@ -1011,8 +1011,14 @@ function validateProperty(
     hostView: LView, element: RElement | RComment, propName: string, tNode: TNode): boolean {
   // The property is considered valid if the element matches the schema, it exists on the element
   // or it is synthetic, and we are in a browser context (web worker nodes should be skipped).
-  return matchingSchemas(hostView, tNode.tagName) || propName in element ||
-      isAnimationProp(propName) || typeof Node !== 'function' || !(element instanceof Node);
+  if (matchingSchemas(hostView, tNode.tagName) || propName in element ||
+      isAnimationProp(propName)) {
+    return true;
+  }
+
+  // Note: `typeof Node` returns 'function' in most browsers, but on IE it is 'object' so we
+  // need to account for both here, while being careful for `typeof null` also returning 'object'.
+  return typeof Node === 'undefined' || Node === null || !(element instanceof Node);
 }
 
 export function matchingSchemas(hostView: LView, tagName: string | null): boolean {

@@ -271,7 +271,10 @@ function validateElement(
     // as a custom element. Note that unknown elements with a dash in their name won't be instances
     // of HTMLUnknownElement in browsers that support web components.
     const isUnknown =
-        (typeof HTMLUnknownElement === 'function' && element instanceof HTMLUnknownElement) ||
+        // Note that we can't check for `typeof HTMLUnknownElement === 'function'`,
+        // because while most browsers return 'function', IE returns 'object'.
+        (typeof HTMLUnknownElement !== 'undefined' && HTMLUnknownElement &&
+         element instanceof HTMLUnknownElement) ||
         (typeof customElements !== 'undefined' && tagName.indexOf('-') > -1 &&
          !customElements.get(tagName));
 
