@@ -12,7 +12,7 @@ import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, C
 import {AfterContentChecked, AfterViewChecked} from '@angular/core/src/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ivyEnabled} from '@angular/private/testing';
+import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
 
 describe('change detection', () => {
@@ -1247,6 +1247,171 @@ describe('change detection', () => {
       log.length = 0;
       expect(trim(fixture.nativeElement.textContent)).toEqual('InsertComp(Hello) Hello Angular!');
     });
+  });
+
+  describe('ExpressionChangedAfterItHasBeenCheckedError', () => {
+    @Component({template: '...'})
+    class MyApp {
+      a: string = 'a';
+      b: string = 'b';
+      c: string = 'c';
+      unstableBooleanExpression: boolean = true;
+      unstableStringExpression: string = 'initial';
+      unstableColorExpression: string = 'red';
+      unstableStyleMapExpression: {[key: string]: string;} = {'color': 'red', 'margin': '10px'};
+      unstableClassMapExpression: {[key: string]: boolean;} = {'classA': true, 'classB': false};
+
+      ngAfterViewChecked() {
+        this.unstableBooleanExpression = false;
+        this.unstableStringExpression = 'changed';
+        this.unstableColorExpression = 'green';
+        this.unstableStyleMapExpression = {'color': 'green', 'margin': '20px'};
+        this.unstableClassMapExpression = {'classA': false, 'classB': true};
+      }
+    }
+
+    function initComponent(overrides: {[key: string]: any}): ComponentFixture<MyApp> {
+      TestBed.configureTestingModule({declarations: [MyApp]});
+      TestBed.overrideComponent(MyApp, {set: overrides});
+      const fixture = TestBed.createComponent(MyApp);
+      fixture.detectChanges();
+      return fixture;
+    }
+
+    function initWithTemplate(template: string) { return initComponent({template}); }
+    function initWithHostBindings(bindings: {[key: string]: string}) {
+      return initComponent({host: bindings});
+    }
+
+    it('should include field name in case of property binding', () => {
+      const message = ivyEnabled ? `Previous value for 'id': 'initial'. Current value: 'changed'` :
+                                   `Previous value: 'id: initial'. Current value: 'id: changed'`;
+      expect(() => initWithTemplate('<div [id]="unstableStringExpression"></div>'))
+          .toThrowError(new RegExp(message));
+    });
+
+    it('should include field name in case of property interpolation', () => {
+      const message = ivyEnabled ?
+          `Previous value for 'id': 'Expressions: a and initial!'. Current value: 'Expressions: a and changed!'` :
+          `Previous value: 'id: Expressions: a and initial!'. Current value: 'id: Expressions: a and changed!'`;
+      expect(
+          () => initWithTemplate(
+              '<div id="Expressions: {{ a }} and {{ unstableStringExpression }}!"></div>'))
+          .toThrowError(new RegExp(message));
+    });
+
+    it('should include field name in case of attribute binding', () => {
+      // TODO(akushnir): improve error message and include attr name in Ivy
+      const message = ivyEnabled ? `Previous value: 'initial'. Current value: 'changed'` :
+                                   `Previous value: 'id: initial'. Current value: 'id: changed'`;
+      expect(() => initWithTemplate('<div [attr.id]="unstableStringExpression"></div>'))
+          .toThrowError(new RegExp(message));
+    });
+
+    it('should include field name in case of attribute interpolation', () => {
+      // TODO(akushnir): improve error message and include attr name and entire expression in Ivy
+      const message = ivyEnabled ?
+          `Previous value: 'initial'. Current value: 'changed'` :
+          `Previous value: 'id: Expressions: a and initial!'. Current value: 'id: Expressions: a and changed!'`;
+      expect(
+          () => initWithTemplate(
+              '<div attr.id="Expressions: {{ a }} and {{ unstableStringExpression }}!"></div>'))
+          .toThrowError(new RegExp(message));
+    });
+
+    it('should only display a value of an expression that was changed in text interpolation',
+       () => {
+         expect(() => initWithTemplate('Expressions: {{ a }} and {{ unstableStringExpression }}!'))
+             .toThrowError(/Previous value: '.*?initial'. Current value: '.*?changed'/);
+       });
+
+    it('should only display a value of an expression that was changed in text interpolation ' +
+           'that follows an element with property interpolation',
+       () => {
+         expect(() => {
+           initWithTemplate(`
+             <div id="Prop interpolation: {{ aVal }}"></div>
+             Text interpolation: {{ unstableStringExpression }}.
+           `);
+         }).toThrowError(/Previous value: '.*?initial'. Current value: '.*?changed'/);
+       });
+
+    it('should include style prop name in case of style binding', () => {
+      const message = ivyEnabled ?
+          `Previous value for 'style.color': 'red'. Current value: 'green'` :
+          `Previous value: 'color: red'. Current value: 'color: green'`;
+      expect(() => initWithTemplate('<div [style.color]="unstableColorExpression"></div>'))
+          .toThrowError(new RegExp(message));
+    });
+
+    it('should include class name in case of class binding', () => {
+      const message = ivyEnabled ?
+          `Previous value for 'class.someClass': 'true'. Current value: 'false'` :
+          `Previous value: 'someClass: true'. Current value: 'someClass: false'`;
+      expect(() => initWithTemplate('<div [class.someClass]="unstableBooleanExpression"></div>'))
+          .toThrowError(new RegExp(message));
+    });
+
+    it('should only display a value of an expression that was changed in text interpolation inside i18n block',
+       () => {
+         expect(
+             () => initWithTemplate('<div i18n>Expression: {{ unstableStringExpression }}</div>'))
+             .toThrowError(/Previous value: '.*?initial'. Current value: '.*?changed'/);
+       });
+
+    it('should only display a value of an expression for interpolation inside an i18n property',
+       () => {
+         expect(
+             () => initWithTemplate(
+                 '<div i18n-title title="Expression: {{ unstableStringExpression }}"></div>'))
+             .toThrowError(/Previous value: '.*?initial'. Current value: '.*?changed'/);
+       });
+
+    it('should include field name in case of host property binding', () => {
+      const message = ivyEnabled ? `Previous value for 'id': 'initial'. Current value: 'changed'` :
+                                   `Previous value: 'id: initial'. Current value: 'id: changed'`;
+      expect(() => initWithHostBindings({'[id]': 'unstableStringExpression'}))
+          .toThrowError(new RegExp(message));
+    });
+
+    it('should include style prop name in case of host style bindings', () => {
+      const message = ivyEnabled ?
+          `Previous value for 'style.color': 'red'. Current value: 'green'` :
+          `Previous value: 'color: red'. Current value: 'color: green'`;
+      expect(() => initWithHostBindings({'[style.color]': 'unstableColorExpression'}))
+          .toThrowError(new RegExp(message));
+    });
+
+    it('should include class name in case of host class bindings', () => {
+      const message = ivyEnabled ?
+          `Previous value for 'class.someClass': 'true'. Current value: 'false'` :
+          `Previous value: 'someClass: true'. Current value: 'someClass: false'`;
+      expect(() => initWithHostBindings({'[class.someClass]': 'unstableBooleanExpression'}))
+          .toThrowError(new RegExp(message));
+    });
+
+    // Note: the tests below currently fail in Ivy, but not in VE. VE behavior is correct and Ivy's
+    // logic should be fixed by the upcoming styling refactor, we keep these tests to verify that.
+    //
+    // it('should not throw for style maps', () => {
+    //  expect(() => initWithTemplate('<div [style]="unstableStyleMapExpression"></div>'))
+    //      .not.toThrowError();
+    // });
+    //
+    // it('should not throw for class maps', () => {
+    //   expect(() => initWithTemplate('<div [class]="unstableClassMapExpression"></div>'))
+    //       .not.toThrowError();
+    // });
+    //
+    // it('should not throw for style maps as host bindings', () => {
+    //   expect(() => initWithHostBindings({'[style]': 'unstableStyleMapExpression'}))
+    //       .not.toThrowError();
+    // });
+    //
+    // it('should not throw for class maps as host binding', () => {
+    //   expect(() => initWithHostBindings({'[class]': 'unstableClassMapExpression'}))
+    //       .not.toThrowError();
+    // });
   });
 });
 
