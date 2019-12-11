@@ -40,6 +40,7 @@ test --test_output=errors
 # Configures script to do version stamping.
 # See https://docs.bazel.build/versions/master/user-manual.html#flag--workspace_status_command
 build:release --workspace_status_command="node ./tools/bazel-stamp-vars.js"
+build:release --stamp
 
 ################################
 # View Engine / Ivy toggle     #
