@@ -1777,6 +1777,43 @@ runInEachFileSystem(() => {
           expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
           expect(actualDeclaration !.viaModule).toBe('@angular/core');
         });
+
+        it('should return the correct declaration of an identifier imported in a typings file',
+           () => {
+
+             const FILES = [
+               {
+                 name: _('/node_modules/test-package/index.d.ts'),
+                 contents: `
+              import {SubModule} from 'sub_module';
+              export const x = SubModule;
+              `,
+               },
+               {
+                 name: _('/node_modules/packages.json'),
+                 contents: '{ "typings: "index.d.ts" }',
+               },
+               {
+                 name: _('/node_modules/sub_module/index.d.ts'),
+                 contents: `export class SubModule {}`,
+               }
+             ];
+             loadTestFiles(FILES);
+             const {program, host: compilerHost} = makeTestBundleProgram(FILES[0].name);
+             const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+             const expectedDeclaration =
+                 getDeclaration(program, FILES[2].name, 'SubModule', isNamedClassDeclaration);
+             const x = getDeclaration(program, FILES[0].name, 'x', isNamedVariableDeclaration);
+             if (x.initializer === undefined || !ts.isIdentifier(x.initializer)) {
+               return fail('Expected constant `x` to have an identifer as an initializer.');
+             }
+             const decl = host.getDeclarationOfIdentifier(x.initializer);
+             if (decl === null) {
+               return fail('Expected to find a declaration for ' + x.initializer.getText());
+             }
+             expect(decl.viaModule).toEqual('sub_module');
+             expect(decl.node).toBe(expectedDeclaration);
+           });
       });
 
       describe('getExportsOfModule()', () => {
