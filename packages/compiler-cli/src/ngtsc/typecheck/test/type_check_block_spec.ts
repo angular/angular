@@ -280,6 +280,12 @@ describe('type check blocks', () => {
           '_t1.addEventListener("event", ($event): any => (ctx).foo(($event as any)));');
     });
 
+    it('should detect writes to template variables', () => {
+      const TEMPLATE = `<ng-template let-v><div (event)="v = 3"></div></ng-template>`;
+      const block = tcb(TEMPLATE);
+      expect(block).toContain('_t3.addEventListener("event", ($event): any => (_t2 = 3))');
+    });
+
   });
 
   describe('config', () => {
