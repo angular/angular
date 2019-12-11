@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  ChangeDetectorRef,
-  Directive,
-  ElementRef,
-} from '@angular/core';
+import {ChangeDetectorRef, Directive, ElementRef, OnDestroy} from '@angular/core';
 import {
   CanDisable,
   CanDisableCtor,
@@ -106,19 +102,31 @@ const _MatChipRemoveMixinBase:
       'mat-mdc-chip-remove mat-mdc-chip-trailing-icon mdc-chip__icon mdc-chip__icon--trailing',
     '[tabIndex]': 'tabIndex',
     'role': 'button',
-    '(click)': 'interaction.next($event)',
-    '(keydown)': 'interaction.next($event)',
+    '(click)': '_clicks.next($event)',
+    '(keydown)': '_keydowns.next($event)',
   }
 })
-export class MatChipRemove extends _MatChipRemoveMixinBase implements CanDisable, HasTabIndex {
+export class MatChipRemove extends _MatChipRemoveMixinBase
+    implements CanDisable, HasTabIndex, OnDestroy {
   /**
-   * Emits when the user interacts with the icon.
+   * Emits when the user clicks the icon.
    * @docs-private
    */
-  interaction: Subject<MouseEvent | KeyboardEvent> = new Subject<MouseEvent | KeyboardEvent>();
+  _clicks: Subject<MouseEvent> = new Subject<MouseEvent>();
+
+  /**
+   * Emits when the user presses a key on the icon.
+   * @docs-private
+   */
+  _keydowns: Subject<KeyboardEvent> = new Subject<KeyboardEvent>();
 
   constructor(_elementRef: ElementRef) {
     super(_elementRef);
+  }
+
+  ngOnDestroy() {
+    this._clicks.complete();
+    this._keydowns.complete();
   }
 
   static ngAcceptInputType_disabled: boolean | string | null | undefined;

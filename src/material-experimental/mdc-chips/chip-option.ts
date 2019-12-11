@@ -202,7 +202,7 @@ export class MatChipOption extends MatChip {
     if (this.disabled) {
       event.preventDefault();
     } else {
-      this._handleInteraction(event);
+      this._handleClick(event);
       event.stopPropagation();
     }
   }
@@ -221,7 +221,7 @@ export class MatChipOption extends MatChip {
         event.preventDefault();
         break;
       default:
-        this._handleInteraction(event);
+        this._handleKeydown(event);
     }
   }
 

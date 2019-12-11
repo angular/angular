@@ -120,7 +120,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   /** Emits when the chip is blurred. */
   readonly _onBlur = new Subject<MatChipEvent>();
 
-  readonly HANDLED_KEYS: number[] = [];
+  readonly HANDLED_KEYS: Set<number> = new Set();
 
   /** Whether the chip has focus. */
   protected _hasFocusInternal = false;
@@ -330,24 +330,29 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   _initRemoveIcon() {
     if (this.removeIcon) {
       this._chipFoundation.setShouldRemoveOnTrailingIconClick(true);
-      this._listenToRemoveIconInteraction();
+      this._listenToRemoveIconInteractions();
       this.removeIcon.disabled = this.disabled;
     }
   }
 
   /** Handles interaction with the remove icon. */
-  _listenToRemoveIconInteraction() {
-    this.removeIcon.interaction
+  _listenToRemoveIconInteractions() {
+    this.removeIcon._clicks
         .pipe(takeUntil(this._destroyed))
-        .subscribe((event) => {
+        .subscribe(event => {
+          if (!this.disabled) {
+            this._chipFoundation.handleClick(event);
+          }
+        });
+    this.removeIcon._keydowns
+        .pipe(takeUntil(this._destroyed))
+        .subscribe(event => {
           // The MDC chip foundation calls stopPropagation() for any trailing icon interaction
           // event, even ones it doesn't handle, so we want to avoid passing it keyboard events
           // for which we have a custom handler.
-          if (this.disabled || (event instanceof KeyboardEvent &&
-            this.HANDLED_KEYS.indexOf(event.keyCode) !== -1)) {
-            return;
+          if (!this.disabled && !this.HANDLED_KEYS.has(event.keyCode)) {
+            this._chipFoundation.handleKeydown(event);
           }
-          this._chipFoundation.handleTrailingIconInteraction(event);
         });
   }
 
@@ -391,10 +396,17 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     this._rippleRenderer.setupTriggerEvents(this._elementRef);
   }
 
-  /** Forwards interaction events to the MDC chip foundation. */
-  _handleInteraction(event: MouseEvent | KeyboardEvent) {
+  /** Forwards click events to the MDC chip foundation. */
+  _handleClick(event: MouseEvent) {
     if (!this.disabled) {
-      this._chipFoundation.handleInteraction(event);
+      this._chipFoundation.handleClick(event);
+    }
+  }
+
+  /** Forwards keydown events to the MDC chip foundation. */
+  _handleKeydown(event: KeyboardEvent) {
+    if (!this.disabled) {
+      this._chipFoundation.handleKeydown(event);
     }
   }
 

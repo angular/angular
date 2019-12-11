@@ -86,7 +86,10 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
     removeClass: (className: string) => this._rootElement.classList.remove(className),
     setStyle: (el: HTMLElement, styleProperty: string, value: string) => {
       (el.style as any)[styleProperty] = value;
-    }
+    },
+    removeAttribute: (name: string) => this._elementRef.nativeElement.removeAttribute(name),
+    setAttribute: (name: string, value: string) =>
+        this._elementRef.nativeElement.setAttribute(name, value),
   };
 
   /** Flag that indicates whether NoopAnimations mode is set to true. */

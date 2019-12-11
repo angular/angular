@@ -18,7 +18,7 @@ ng_module(
 # Add all MDC Sass files that we depend on here. After updating MDC dependencies, use the following
 # command to generate an updated list:
 #
-# `find node_modules/@material/ -name "_*.scss" | sort | sed -r 's/(.*\/@material\/[^/]*)\/(.*)/"@npm\/\/\1:\2",/'`
+# `find node_modules/@material/ -name "_*.scss" | sort | sed -r 's/(.*)/"@npm\/\/:\1",/'`
 #
 # TODO(mmalerba): Find a less tedious way to do this...
 sass_library(
@@ -45,6 +45,7 @@ sass_library(
         "@npm//:node_modules/@material/dialog/_variables.scss",
         "@npm//:node_modules/@material/drawer/_mixins.scss",
         "@npm//:node_modules/@material/drawer/_variables.scss",
+        "@npm//:node_modules/@material/elevation/_functions.scss",
         "@npm//:node_modules/@material/elevation/_mixins.scss",
         "@npm//:node_modules/@material/elevation/_variables.scss",
         "@npm//:node_modules/@material/fab/_mixins.scss",
@@ -108,6 +109,7 @@ sass_library(
         "@npm//:node_modules/@material/tab-bar/_variables.scss",
         "@npm//:node_modules/@material/tab-indicator/_mixins.scss",
         "@npm//:node_modules/@material/tab-scroller/_mixins.scss",
+        "@npm//:node_modules/@material/tab-scroller/_variables.scss",
         "@npm//:node_modules/@material/tab/_mixins.scss",
         "@npm//:node_modules/@material/tab/_variables.scss",
         "@npm//:node_modules/@material/textfield/_functions.scss",
