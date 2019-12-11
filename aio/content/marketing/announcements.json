@@ -1,15 +1,15 @@
 [
   {
-    "startDate": "2019-04-02",
-    "endDate": "2019-04-20",
-    "message": "Join us for ng-conf<br/>May 1st-3rd, 2019",
+    "startDate": "2020-03-01",
+    "endDate": "2020-03-31",
+    "message": "Join us for ng-conf<br/>April 1st-3rd, 2020",
     "imageUrl": "generated/images/marketing/home/ng-conf.png",
-    "linkUrl": "http://ng-conf.org/?utm_source=angular.io&utm_medium=referral"
+    "linkUrl": "https://ng-conf.org/?utm_source=angular.io&utm_medium=referral"
   },
   {
-    "startDate": "2019-05-01",
-    "endDate": "2019-05-03",
-    "message": "Watch ng-conf live stream <br/>May 1st-3rd, 2019",
+    "startDate": "2020-04-01",
+    "endDate": "2020-04-03",
+    "message": "Watch ng-conf live stream <br/>April 1st-3rd, 2020",
     "imageUrl": "generated/images/marketing/home/ng-conf.png",
     "linkUrl": "https://www.ng-conf.org/livestream/?utm_source=angular.io&utm_medium=referral"
   },
