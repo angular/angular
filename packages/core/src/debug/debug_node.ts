@@ -331,10 +331,14 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     const eAttrs = element.attributes;
     for (let i = 0; i < eAttrs.length; i++) {
       const attr = eAttrs[i];
+      const lowercaseName = attr.name.toLowerCase();
+
       // Make sure that we don't assign the same attribute both in its
       // case-sensitive form and the lower-cased one from the browser.
-      if (lowercaseTNodeAttrs.indexOf(attr.name) === -1) {
-        attributes[attr.name] = attr.value;
+      if (lowercaseTNodeAttrs.indexOf(lowercaseName) === -1) {
+        // Save the lowercase name to align the behavior between browsers.
+        // IE preserves the case, while all other browser convert it to lower case.
+        attributes[lowercaseName] = attr.value;
       }
     }
 
