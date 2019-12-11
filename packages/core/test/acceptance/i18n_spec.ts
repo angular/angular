@@ -1451,13 +1451,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     @Component({
       selector: `my-app`,
       template: `
-      <div i18n test i18n-title title="start {{exp1}} middle {{exp2}} end">
+      <div i18n test i18n-title title="start {{exp1}} middle {{exp2}} end" outer>
          trad: {exp1, plural,
               =0 {no <b title="none">emails</b>!}
               =1 {one <i>email</i>}
               other {{{exp1}} emails}
          }
-      </div><div test></div>`
+      </div><div test inner></div>`
     })
     class MyApp {
       exp1 = 1;
@@ -1476,19 +1476,27 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
     const fixture = TestBed.createComponent(MyApp);
     fixture.detectChanges();
-    expect(fixture.nativeElement.innerHTML)
-        .toEqual(
-            `<div test="" title="début 2 milieu 1 fin" class="foo"> traduction: un <i>email</i><!--ICU 21--> ` +
-            `</div><div test="" class="foo"></div>`);
+
+    const outerDiv: HTMLElement = fixture.nativeElement.querySelector('div[outer]');
+    const innerDiv: HTMLElement = fixture.nativeElement.querySelector('div[inner]');
+
+    // Note that ideally we'd just compare the innerHTML here, but different browsers return
+    // the order of attributes differently. E.g. most browsers preserve the declaration order,
+    // but IE does not.
+    expect(outerDiv.getAttribute('title')).toBe('début 2 milieu 1 fin');
+    expect(outerDiv.getAttribute('class')).toBe('foo');
+    expect(outerDiv.textContent !.trim()).toBe('traduction: un email');
+    expect(innerDiv.getAttribute('class')).toBe('foo');
 
     directiveInstances.forEach(instance => instance.klass = 'bar');
     fixture.componentRef.instance.exp1 = 2;
     fixture.componentRef.instance.exp2 = 3;
     fixture.detectChanges();
-    expect(fixture.nativeElement.innerHTML)
-        .toEqual(
-            `<div test="" title="début 3 milieu 2 fin" class="bar"> traduction: 2 emails<!--ICU 21--> ` +
-            `</div><div test="" class="bar"></div>`);
+
+    expect(outerDiv.getAttribute('title')).toBe('début 3 milieu 2 fin');
+    expect(outerDiv.getAttribute('class')).toBe('bar');
+    expect(outerDiv.textContent !.trim()).toBe('traduction: 2 emails');
+    expect(innerDiv.getAttribute('class')).toBe('bar');
   });
 
   it('should handle i18n attribute with directive inputs', () => {
@@ -2033,9 +2041,15 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     const fixture = TestBed.createComponent(ContentElementDialog);
     fixture.detectChanges();
+
+    // Remove the reflect attribute, because the attribute order in innerHTML
+    // isn't guaranteed in different browsers so it could throw off our assertions.
+    const button = fixture.nativeElement.querySelector('button');
+    button.removeAttribute('ng-reflect-dialog-result');
+
     expect(fixture.nativeElement.innerHTML).toEqual(`<div dialog=""><!--bindings={
   "ng-reflect-ng-if": "false"
-}--></div><button ng-reflect-dialog-result="true" title="Close dialog">Button label</button>`);
+}--></div><button title="Close dialog">Button label</button>`);
   });
 });
 
