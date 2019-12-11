@@ -138,6 +138,9 @@
     "name": "getOwnDefinition"
   },
   {
+    "name": "getTypeName"
+  },
+  {
     "name": "getUndecoratedInjectableFactory"
   },
   {
