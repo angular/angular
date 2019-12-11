@@ -409,6 +409,50 @@ export function makeDuplicateDeclarationError(
 }
 
 /**
+ * Resolves the given `rawProviders` into `ClassDeclarations` and returns
+ * a set containing those that are known to require a factory definition.
+ * @param rawProviders Expression that declared the providers array in the source.
+ */
+export function resolveProvidersRequiringFactory(
+    rawProviders: ts.Expression, reflector: ReflectionHost,
+    evaluator: PartialEvaluator): Set<Reference<ClassDeclaration>> {
+  const providers = new Set<Reference<ClassDeclaration>>();
+  const resolvedProviders = evaluator.evaluate(rawProviders);
+
+  if (!Array.isArray(resolvedProviders)) {
+    return providers;
+  }
+
+  resolvedProviders.forEach(function processProviders(provider) {
+    let tokenClass: Reference|null = null;
+
+    if (Array.isArray(provider)) {
+      // If we ran into an array, recurse into it until we've resolve all the classes.
+      provider.forEach(processProviders);
+    } else if (provider instanceof Reference) {
+      tokenClass = provider;
+    } else if (provider instanceof Map && provider.has('useClass') && !provider.has('deps')) {
+      const useExisting = provider.get('useClass') !;
+      if (useExisting instanceof Reference) {
+        tokenClass = useExisting;
+      }
+    }
+
+    if (tokenClass !== null && reflector.isClass(tokenClass.node)) {
+      const constructorParameters = reflector.getConstructorParameters(tokenClass.node);
+
+      // Note that we only want to capture providers with a non-trivial constructor,
+      // because they're the ones that might be using DI and need to be decorated.
+      if (constructorParameters !== null && constructorParameters.length > 0) {
+        providers.add(tokenClass as Reference<ClassDeclaration>);
+      }
+    }
+  });
+
+  return providers;
+}
+
+/**
  * Create an R3Reference for a class.
  *
  * The `value` is the exported declaration of the class from its source file.
