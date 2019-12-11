@@ -189,7 +189,8 @@ export function extendsDirectlyFromObject(type: Type<any>): boolean {
  */
 export function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMetadataFacade {
   // Reflect inputs and outputs.
-  const propMetadata = getReflect().ownPropMetadata(type);
+  const reflect = getReflect();
+  const propMetadata = reflect.ownPropMetadata(type);
 
   return {
     name: type.name,
@@ -202,7 +203,7 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     inputs: metadata.inputs || EMPTY_ARRAY,
     outputs: metadata.outputs || EMPTY_ARRAY,
     queries: extractQueriesMetadata(type, propMetadata, isContentQuery),
-    lifecycle: {usesOnChanges: usesLifecycleHook(type, 'ngOnChanges')},
+    lifecycle: {usesOnChanges: reflect.hasLifecycleHook(type, 'ngOnChanges')},
     typeSourceSpan: null !,
     usesInheritance: !extendsDirectlyFromObject(type),
     exportAs: extractExportAs(metadata.exportAs),
@@ -216,7 +217,7 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
  */
 function addDirectiveDefToUndecoratedParents(type: Type<any>) {
   const objPrototype = Object.prototype;
-  let parent = Object.getPrototypeOf(type);
+  let parent = Object.getPrototypeOf(type.prototype).constructor;
 
   // Go up the prototype until we hit `Object`.
   while (parent && parent !== objPrototype) {
@@ -291,22 +292,19 @@ function splitByComma(value: string): string[] {
   return value.split(',').map(piece => piece.trim());
 }
 
-function usesLifecycleHook(type: Type<any>, name: string): boolean {
-  const prototype = type.prototype;
-  return prototype && prototype.hasOwnProperty(name);
-}
-
 const LIFECYCLE_HOOKS = [
   'ngOnChanges', 'ngOnInit', 'ngOnDestroy', 'ngDoCheck', 'ngAfterViewInit', 'ngAfterViewChecked',
   'ngAfterContentInit', 'ngAfterContentChecked'
 ];
 
 function shouldAddAbstractDirective(type: Type<any>): boolean {
-  if (LIFECYCLE_HOOKS.some(hookName => usesLifecycleHook(type, hookName))) {
+  const reflect = getReflect();
+
+  if (LIFECYCLE_HOOKS.some(hookName => reflect.hasLifecycleHook(type, hookName))) {
     return true;
   }
 
-  const propMetadata = getReflect().ownPropMetadata(type);
+  const propMetadata = reflect.propMetadata(type);
 
   for (const field in propMetadata) {
     const annotations = propMetadata[field];
