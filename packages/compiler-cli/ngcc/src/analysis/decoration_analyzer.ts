@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool} from '@angular/compiler';
+import {InjectableClassRegistry} from '@angular/compiler-cli/src/ngtsc/metadata/src/registry';
 import * as ts from 'typescript';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
@@ -85,6 +86,7 @@ export class DecorationAnalyzer {
       new PartialEvaluator(this.reflectionHost, this.typeChecker, /* dependencyTracker */ null);
   importGraph = new ImportGraph(this.moduleResolver);
   cycleAnalyzer = new CycleAnalyzer(this.importGraph);
+  injectableRegistry = new InjectableClassRegistry();
   handlers: DecoratorHandler<unknown, unknown, unknown>[] = [
     new ComponentDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.fullMetaReader,
@@ -92,28 +94,28 @@ export class DecorationAnalyzer {
         /* defaultPreserveWhitespaces */ false,
         /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
         this.moduleResolver, this.cycleAnalyzer, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER,
-        NOOP_DEPENDENCY_TRACKER, /* annotateForClosureCompiler */ false),
+        NOOP_DEPENDENCY_TRACKER, this.injectableRegistry, /* annotateForClosureCompiler */ false),
     // See the note in ngtsc about why this cast is needed.
     // clang-format off
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.scopeRegistry,
-        NOOP_DEFAULT_IMPORT_RECORDER, this.isCore,
+        NOOP_DEFAULT_IMPORT_RECORDER, this.injectableRegistry, this.isCore,
         /* annotateForClosureCompiler */ false) as DecoratorHandler<unknown, unknown, unknown>,
     // clang-format on
     // Pipe handler must be before injectable handler in list so pipe factories are printed
     // before injectable factories (so injectable factories can delegate to them)
     new PipeDecoratorHandler(
         this.reflectionHost, this.evaluator, this.metaRegistry, this.scopeRegistry,
-        NOOP_DEFAULT_IMPORT_RECORDER, this.isCore),
+        NOOP_DEFAULT_IMPORT_RECORDER, this.injectableRegistry, this.isCore),
     new InjectableDecoratorHandler(
         this.reflectionHost, NOOP_DEFAULT_IMPORT_RECORDER, this.isCore,
-        /* strictCtorDeps */ false, /* errorOnDuplicateProv */ false),
+        /* strictCtorDeps */ false, this.injectableRegistry, /* errorOnDuplicateProv */ false),
     new NgModuleDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullMetaReader, this.fullRegistry,
         this.scopeRegistry, this.referencesRegistry, this.isCore, /* routeAnalyzer */ null,
         this.refEmitter,
         /* factoryTracker */ null, NOOP_DEFAULT_IMPORT_RECORDER,
-        /* annotateForClosureCompiler */ false),
+        /* annotateForClosureCompiler */ false, this.injectableRegistry),
   ];
   migrations: Migration[] = [
     new UndecoratedParentMigration(),

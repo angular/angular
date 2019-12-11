@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
 import {MetadataRegistry} from '../../metadata';
+import {InjectableClassRegistry} from '../../metadata/src/registry';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
@@ -30,7 +31,8 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
-      private defaultImportRecorder: DefaultImportRecorder, private isCore: boolean) {}
+      private defaultImportRecorder: DefaultImportRecorder,
+      private injectableRegistry: InjectableClassRegistry, private isCore: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = PipeDecoratorHandler.name;
@@ -93,6 +95,8 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
       }
       pure = pureValue;
     }
+
+    this.injectableRegistry.registerClass(clazz);
 
     return {
       analysis: {

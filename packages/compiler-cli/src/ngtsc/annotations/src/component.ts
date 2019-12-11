@@ -17,6 +17,7 @@ import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
 import {DirectiveMeta, MetadataReader, MetadataRegistry, extractDirectiveGuards} from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
+import {InjectableClassRegistry} from '../../metadata/src/registry';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry} from '../../scope';
@@ -26,10 +27,11 @@ import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {SubsetOfKeys} from '../../util/src/typescript';
 
 import {ResourceLoader} from './api';
+import {getProviderDiagnostics} from './diagnostics';
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, makeDuplicateDeclarationError, readBaseClass, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
+import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, makeDuplicateDeclarationError, readBaseClass, resolveProvidersRequiringFactory, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -53,6 +55,8 @@ export interface ComponentAnalysisData {
   guards: ReturnType<typeof extractDirectiveGuards>;
   template: ParsedTemplateWithSource;
   metadataStmt: Statement|null;
+  providersRequiringFactory: Set<ClassDeclaration>|null;
+  viewProvidersRequiringFactory: Set<ClassDeclaration>|null;
 }
 
 export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadataResolvedFields>;
@@ -71,7 +75,9 @@ export class ComponentDecoratorHandler implements
       private enableI18nLegacyMessageIdFormat: boolean, private moduleResolver: ModuleResolver,
       private cycleAnalyzer: CycleAnalyzer, private refEmitter: ReferenceEmitter,
       private defaultImportRecorder: DefaultImportRecorder,
-      private depTracker: DependencyTracker|null, private annotateForClosureCompiler: boolean) {}
+      private depTracker: DependencyTracker|null,
+      private injectableRegistry: InjectableClassRegistry,
+      private annotateForClosureCompiler: boolean) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -186,11 +192,17 @@ export class ComponentDecoratorHandler implements
       }
     }, undefined) !;
 
-    const viewProviders: Expression|null = component.has('viewProviders') ?
+    const rawViewProviders = component.get('viewProviders');
+    const wrappedViewProviders: Expression|null = rawViewProviders ?
         new WrappedNodeExpr(
-            this.annotateForClosureCompiler ?
-                wrapFunctionExpressionsInParens(component.get('viewProviders') !) :
-                component.get('viewProviders') !) :
+            this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(rawViewProviders) :
+                                              rawViewProviders) :
+        null;
+    const viewProvidersRequiringFactory = rawViewProviders ?
+        resolveProvidersRequiringFactory(rawViewProviders, this.evaluator) :
+        null;
+    const providersRequiringFactory = component.has('providers') ?
+        resolveProvidersRequiringFactory(component.get('providers') !, this.evaluator) :
         null;
 
     // Parse the template.
@@ -290,7 +302,7 @@ export class ComponentDecoratorHandler implements
           // These will be replaced during the compilation step, after all `NgModule`s have been
           // analyzed and the full compilation scope for the component can be realized.
           animations,
-          viewProviders,
+          viewProviders: wrappedViewProviders,
           i18nUseExternalIds: this.i18nUseExternalIds, relativeContextFilePath,
         },
         guards: extractDirectiveGuards(node, this.reflector),
@@ -298,6 +310,8 @@ export class ComponentDecoratorHandler implements
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
         template,
+        providersRequiringFactory,
+        viewProvidersRequiringFactory,
       },
     };
     if (changeDetection !== null) {
@@ -321,6 +335,8 @@ export class ComponentDecoratorHandler implements
       isComponent: true,
       baseClass: analysis.baseClass, ...analysis.guards,
     });
+
+    this.injectableRegistry.registerClass(node);
   }
 
   index(
@@ -385,14 +401,7 @@ export class ComponentDecoratorHandler implements
 
   resolve(node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>):
       ResolveResult<ComponentResolutionData> {
-    const duplicateDeclData = this.scopeRegistry.getDuplicateDeclarations(node);
-    if (duplicateDeclData !== null) {
-      // This component was declared twice (or more).
-      return {
-        diagnostics: [makeDuplicateDeclarationError(node, duplicateDeclData, 'Component')],
-      };
-    }
-
+    const result: ResolveResult<ComponentResolutionData> = {diagnostics: []};
     const context = node.getSourceFile();
     // Check whether this component was registered with an NgModule. If so, it should be compiled
     // under that module's compilation scope.
@@ -495,7 +504,32 @@ export class ComponentDecoratorHandler implements
         this.scopeRegistry.setComponentAsRequiringRemoteScoping(node);
       }
     }
-    return {data};
+
+    result.data = data;
+
+    if (analysis.providersRequiringFactory !== null &&
+        analysis.meta.providers instanceof WrappedNodeExpr) {
+      const providerDiagnostics = getProviderDiagnostics(
+          analysis.providersRequiringFactory, analysis.meta.providers !.node,
+          this.injectableRegistry);
+      result.diagnostics !.push(...providerDiagnostics);
+    }
+
+    if (analysis.viewProvidersRequiringFactory !== null &&
+        analysis.meta.viewProviders instanceof WrappedNodeExpr) {
+      const viewProviderDiagnostics = getProviderDiagnostics(
+          analysis.viewProvidersRequiringFactory, analysis.meta.viewProviders !.node,
+          this.injectableRegistry);
+      result.diagnostics !.push(...viewProviderDiagnostics);
+    }
+
+    const duplicateDeclData = this.scopeRegistry.getDuplicateDeclarations(node);
+    if (duplicateDeclData !== null) {
+      result.diagnostics !.push(
+          makeDuplicateDeclarationError(node, duplicateDeclData, 'Component'));
+    }
+
+    return result;
   }
 
   compile(

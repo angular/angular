@@ -13,6 +13,7 @@ import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {LocalIdentifierStrategy, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
 import {CompoundMetadataReader, DtsMetadataReader, LocalMetadataRegistry} from '../../metadata';
+import {InjectableClassRegistry} from '../../metadata/src/registry';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -66,11 +67,12 @@ runInEachFileSystem(() => {
           metaRegistry, new MetadataDtsModuleScopeResolver(dtsReader, null),
           new ReferenceEmitter([]), null);
       const refEmitter = new ReferenceEmitter([new LocalIdentifierStrategy()]);
+      const injectableRegistry = new InjectableClassRegistry();
 
       const handler = new NgModuleDecoratorHandler(
           reflectionHost, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry,
           /* isCore */ false, /* routeAnalyzer */ null, refEmitter, /* factoryTracker */ null,
-          NOOP_DEFAULT_IMPORT_RECORDER, /* annotateForClosureCompiler */ false);
+          NOOP_DEFAULT_IMPORT_RECORDER, /* annotateForClosureCompiler */ false, injectableRegistry);
       const TestModule =
           getDeclaration(program, _('/entry.ts'), 'TestModule', isNamedClassDeclaration);
       const detected =

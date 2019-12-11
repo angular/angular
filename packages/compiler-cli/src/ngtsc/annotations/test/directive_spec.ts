@@ -9,6 +9,7 @@ import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
 import {DtsMetadataReader, LocalMetadataRegistry} from '../../metadata';
+import {InjectableClassRegistry} from '../../metadata/src/registry';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -48,8 +49,10 @@ runInEachFileSystem(() => {
       const scopeRegistry = new LocalModuleScopeRegistry(
           metaReader, new MetadataDtsModuleScopeResolver(dtsReader, null), new ReferenceEmitter([]),
           null);
+      const injectableRegistry = new InjectableClassRegistry();
       const handler = new DirectiveDecoratorHandler(
           reflectionHost, evaluator, scopeRegistry, scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
+          injectableRegistry,
           /* isCore */ false, /* annotateForClosureCompiler */ false);
 
       const analyzeDirective = (dirName: string) => {

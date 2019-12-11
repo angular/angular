@@ -5222,6 +5222,252 @@ export const Foo = Foo__PRE_R3__;
       });
     });
 
+    describe('undecorated providers', () => {
+      it('should error when an undecorated class, with a non-trivial constructor, is provided directly in a module',
+         () => {
+           env.write('test.ts', `
+            import {NgModule, NgZone} from '@angular/core';
+
+            class NotAService {
+              constructor(ngZone: NgZone) {}
+            }
+
+            @NgModule({
+              providers: [NotAService]
+            })
+            export class SomeModule {}
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toBe(
+                   `Provider NotAService is not injectable, because it doesn't have an ` +
+                   `Angular decorator. This will result in an error at runtime.`);
+         });
+
+      it('should error when an undecorated class is provided via useClass', () => {
+        env.write('test.ts', `
+          import {NgModule, Injectable, NgZone} from '@angular/core';
+
+          @Injectable({providedIn: 'root'})
+          class Service {}
+
+          class NotAService {
+            constructor(ngZone: NgZone) {}
+          }
+
+          @NgModule({
+            providers: [{provide: Service, useClass: NotAService}]
+          })
+          export class SomeModule {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(
+                `Provider NotAService is not injectable, because it doesn't have an ` +
+                `Angular decorator. This will result in an error at runtime.`);
+      });
+
+      it('should error when an undecorated class is provided via an array', () => {
+        env.write('test.ts', `
+          import {NgModule, Injectable, NgZone} from '@angular/core';
+
+          @Injectable({providedIn: 'root'})
+          class Service {}
+
+          class NotAService {
+            constructor(ngZone: NgZone) {}
+          }
+
+          @NgModule({
+            providers: [Service, [NotAService]]
+          })
+          export class SomeModule {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(
+                `Provider NotAService is not injectable, because it doesn't have an ` +
+                `Angular decorator. This will result in an error at runtime.`);
+      });
+
+      it('should error when an undecorated class is provided to a directive', () => {
+        env.write('test.ts', `
+          import {NgModule, Directive, NgZone} from '@angular/core';
+
+          class NotAService {
+            constructor(ngZone: NgZone) {}
+          }
+
+          @Directive({
+            selector: '[some-dir]',
+            providers: [NotAService]
+          })
+          class SomeDirective {}
+
+          @NgModule({
+            declarations: [SomeDirective]
+          })
+          export class SomeModule {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(
+                `Provider NotAService is not injectable, because it doesn't have an ` +
+                `Angular decorator. This will result in an error at runtime.`);
+      });
+
+      it('should error when an undecorated class is provided to a component', () => {
+        env.write('test.ts', `
+          import {NgModule, Component, NgZone} from '@angular/core';
+
+          class NotAService {
+            constructor(ngZone: NgZone) {}
+          }
+
+          @Component({
+            selector: 'some-comp',
+            template: '',
+            providers: [NotAService]
+          })
+          class SomeComponent {}
+
+          @NgModule({
+            declarations: [SomeComponent]
+          })
+          export class SomeModule {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(
+                `Provider NotAService is not injectable, because it doesn't have an ` +
+                `Angular decorator. This will result in an error at runtime.`);
+      });
+
+      it('should error when an undecorated class is provided to a component via viewProviders',
+         () => {
+           env.write('test.ts', `
+          import {NgModule, Component, NgZone} from '@angular/core';
+
+          class NotAService {
+            constructor(ngZone: NgZone) {}
+          }
+
+          @Component({
+            selector: 'some-comp',
+            template: '',
+            viewProviders: [NotAService]
+          })
+          class SomeComponent {}
+
+          @NgModule({
+            declarations: [SomeComponent]
+          })
+          export class SomeModule {}
+        `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toBe(
+                   `Provider NotAService is not injectable, because it doesn't have an ` +
+                   `Angular decorator. This will result in an error at runtime.`);
+         });
+
+      it('should not error when a class with a factory is provided', () => {
+        env.write('test.ts', `
+          import {NgModule, Pipe} from '@angular/core';
+
+          @Pipe({
+            name: 'some-pipe'
+          })
+          class SomePipe {}
+
+          @NgModule({
+            declarations: [SomePipe],
+            providers: [SomePipe]
+          })
+          export class SomeModule {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not error when an undecorated class from a declaration file is provided', () => {
+        env.write('node_modules/@angular/core/testing/index.d.ts', `
+          export declare class Testability {
+          }
+        `);
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+          import {Testability} from '@angular/core/testing';
+
+          @NgModule({
+            providers: [Testability]
+          })
+          export class SomeModule {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not error when an undecorated class from a declaration file is provided via useClass',
+         () => {
+           env.write('node_modules/@angular/core/testing/index.d.ts', `
+            export declare class Testability {
+            }
+          `);
+           env.write('test.ts', `
+            import {NgModule, Injectable} from '@angular/core';
+            import {Testability} from '@angular/core/testing';
+
+            @Injectable()
+            class TestingService {}
+
+            @NgModule({
+              providers: [{provide: TestingService, useClass: Testability}]
+            })
+            export class SomeModule {}
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+
+      it('should not error if the undecorated class does not have a constructor or the constructor is blank',
+         () => {
+           env.write('test.ts', `
+          import {NgModule, NgZone} from '@angular/core';
+
+          class NoConstructorService {
+          }
+
+          class BlankConstructorService {
+          }
+
+          @NgModule({
+            providers: [NoConstructorService, BlankConstructorService]
+          })
+          export class SomeModule {}
+        `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+
+    });
+
   });
 
   function expectTokenAtPosition<T extends ts.Node>(

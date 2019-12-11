@@ -11,6 +11,7 @@ import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
 import {CompoundMetadataReader, DtsMetadataReader, LocalMetadataRegistry} from '../../metadata';
+import {InjectableClassRegistry} from '../../metadata/src/registry';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -59,13 +60,14 @@ runInEachFileSystem(() => {
           new ReferenceEmitter([]), null);
       const metaReader = new CompoundMetadataReader([metaRegistry, dtsReader]);
       const refEmitter = new ReferenceEmitter([]);
+      const injectableRegistry = new InjectableClassRegistry();
 
       const handler = new ComponentDecoratorHandler(
           reflectionHost, evaluator, metaRegistry, metaReader, scopeRegistry, scopeRegistry,
           /* isCore */ false, new NoopResourceLoader(), /* rootDirs */[''],
           /* defaultPreserveWhitespaces */ false, /* i18nUseExternalIds */ true,
           /* enableI18nLegacyMessageIdFormat */ false, moduleResolver, cycleAnalyzer, refEmitter,
-          NOOP_DEFAULT_IMPORT_RECORDER, /* depTracker */ null,
+          NOOP_DEFAULT_IMPORT_RECORDER, /* depTracker */ null, injectableRegistry,
           /* annotateForClosureCompiler */ false);
       const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
       const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));

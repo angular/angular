@@ -26,6 +26,9 @@ export enum ErrorCode {
   PARAM_MISSING_TOKEN = 2003,
   DIRECTIVE_MISSING_SELECTOR = 2004,
 
+  /** Raised when an undecorated class is passed in as a provider to a module or a directive. */
+  UNDECORATED_PROVIDER = 2005,
+
   SYMBOL_NOT_EXPORTED = 3001,
   SYMBOL_EXPORTED_UNDER_DIFFERENT_NAME = 3002,
 

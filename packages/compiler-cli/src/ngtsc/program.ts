@@ -23,6 +23,7 @@ import {IncrementalDriver} from './incremental';
 import {IndexedComponent, IndexingContext} from './indexer';
 import {generateAnalysis} from './indexer/src/transform';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry, MetadataReader} from './metadata';
+import {InjectableClassRegistry} from './metadata/src/registry';
 import {ModuleWithProvidersScanner} from './modulewithproviders';
 import {PartialEvaluator} from './partial_evaluator';
 import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
@@ -629,6 +630,7 @@ export class NgtscProgram implements api.Program {
         localMetaReader, depScopeReader, this.refEmitter, this.aliasingHost);
     const scopeReader: ComponentScopeReader = this.scopeRegistry;
     const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, this.scopeRegistry]);
+    const injectableRegistry = new InjectableClassRegistry();
 
     this.metaReader = new CompoundMetadataReader([localMetaReader, dtsReader]);
 
@@ -658,26 +660,27 @@ export class NgtscProgram implements api.Program {
           this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false, this.moduleResolver,
           this.cycleAnalyzer, this.refEmitter, this.defaultImportTracker,
-          this.incrementalDriver.depGraph, this.closureCompilerEnabled),
+          this.incrementalDriver.depGraph, injectableRegistry, this.closureCompilerEnabled),
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null` not
       // being assignable to `unknown` when wrapped in `Readonly`).
       // clang-format off
       new DirectiveDecoratorHandler(
-          this.reflector, evaluator, metaRegistry, this.scopeRegistry, this.defaultImportTracker,
+          this.reflector, evaluator, metaRegistry, this.scopeRegistry, this.defaultImportTracker, injectableRegistry,
           this.isCore, this.closureCompilerEnabled) as Readonly<DecoratorHandler<unknown, unknown, unknown>>,
       // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
       new PipeDecoratorHandler(
           this.reflector, evaluator, metaRegistry, this.scopeRegistry, this.defaultImportTracker,
-          this.isCore),
+          injectableRegistry, this.isCore),
       new InjectableDecoratorHandler(
           this.reflector, this.defaultImportTracker, this.isCore,
-          this.options.strictInjectionParameters || false),
+          this.options.strictInjectionParameters || false, injectableRegistry),
       new NgModuleDecoratorHandler(
           this.reflector, evaluator, this.metaReader, metaRegistry, this.scopeRegistry,
           referencesRegistry, this.isCore, this.routeAnalyzer, this.refEmitter, this.factoryTracker,
-          this.defaultImportTracker, this.closureCompilerEnabled, this.options.i18nInLocale),
+          this.defaultImportTracker, this.closureCompilerEnabled, injectableRegistry,
+          this.options.i18nInLocale),
     ];
 
     return new TraitCompiler(

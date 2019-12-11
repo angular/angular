@@ -435,3 +435,47 @@ export function makeDuplicateDeclarationError(
       ErrorCode.NGMODULE_DECLARATION_NOT_UNIQUE, node.name,
       `The ${kind} '${node.name.text}' is declared by more than one NgModule.`, context);
 }
+
+/**
+ * Resolves the given `rawProviders` into `ClassDeclarations` and returns
+ * a set containing those that are known to require a factory definition.
+ * @param rawProviders Expression that declared the providers array in the source.
+ */
+export function resolveProvidersRequiringFactory(
+    rawProviders: ts.Expression, evaluator: PartialEvaluator): Set<ClassDeclaration> {
+  const providers = new Set<ClassDeclaration>();
+  const resolvedProviders = evaluator.evaluate(rawProviders);
+
+  if (Array.isArray(resolvedProviders)) {
+    const handleReference = (reference: Reference) => {
+      const node = reference.node;
+
+      // Skip declarations from external libraries since the consumer can't do much about them.
+      if (!node.getSourceFile().isDeclarationFile && isNamedClassDeclaration(node)) {
+        const constructor = node.members.find(ts.isConstructorDeclaration);
+
+        // Note that we only want to capture providers with a non-trivial constructor,
+        // because they're the ones that might be using DI and need to be decorated.
+        if (constructor !== undefined && constructor.parameters.length > 0) {
+          providers.add(node);
+        }
+      }
+    };
+
+    resolvedProviders.forEach(function processProviders(provider) {
+      if (provider instanceof Reference) {
+        handleReference(provider);
+      } else if (provider instanceof Map) {
+        const useExisting = provider.get('useClass');
+        if (useExisting instanceof Reference) {
+          handleReference(useExisting);
+        }
+      } else if (Array.isArray(provider)) {
+        // If we ran into an array, recurse into it until we've resolve all the classes.
+        provider.forEach(processProviders);
+      }
+    });
+  }
+
+  return providers;
+}

@@ -59,3 +59,13 @@ export class CompoundMetadataRegistry implements MetadataRegistry {
     }
   }
 }
+
+/**
+ * Registry that keeps track of classes that can be injected (e.g. injectables, components, pipes).
+ */
+export class InjectableClassRegistry {
+  private classes = new Set<ClassDeclaration>();
+
+  registerClass(declaration: ClassDeclaration): void { this.classes.add(declaration); }
+  hasClass(declaration: ClassDeclaration): boolean { return this.classes.has(declaration); }
+}
