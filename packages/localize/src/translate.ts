@@ -52,6 +52,7 @@ export function loadTranslations(translations: Record<MessageId, TargetMessage>)
  * @publicApi
  */
 export function clearTranslations() {
+  $localize.translate = undefined;
   $localize.TRANSLATIONS = {};
 }
 
