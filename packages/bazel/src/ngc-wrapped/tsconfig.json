@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "lib": ["es5", "es2015.collection", "es2015.core"],
     "types": ["node"],
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "paths": {
+      "@angular/compiler-cli": ["../../../compiler-cli"]
+    }
   }
 }
