@@ -121,9 +121,10 @@ function renderCommonJsDependencies(
     return;
   }
   const factoryCall = conditional.whenTrue;
-  const injectionPoint = factoryCall.getEnd() -
-      1;  // Backup one char to account for the closing parenthesis on the call
-  imports.forEach(i => output.appendLeft(injectionPoint, `,require('${i.specifier}')`));
+  // Backup one char to account for the closing parenthesis on the call
+  const injectionPoint = factoryCall.getEnd() - 1;
+  const importString = imports.map(i => `require('${i.specifier}')`).join(',');
+  output.appendLeft(injectionPoint, (factoryCall.arguments.length > 0 ? ',' : '') + importString);
 }
 
 /**
@@ -135,13 +136,24 @@ function renderAmdDependencies(
   if (!conditional) {
     return;
   }
-  const dependencyArray = conditional.whenTrue.arguments[1];
-  if (!dependencyArray || !ts.isArrayLiteralExpression(dependencyArray)) {
-    return;
+  const amdDefineCall = conditional.whenTrue;
+  const importString = imports.map(i => `'${i.specifier}'`).join(',');
+  // The dependency array (if it exists) is the second to last argument
+  // `define(id?, dependencies?, factory);`
+  const factoryIndex = amdDefineCall.arguments.length - 1;
+  const dependencyArray = amdDefineCall.arguments[factoryIndex - 1];
+  if (dependencyArray === undefined || !ts.isArrayLiteralExpression(dependencyArray)) {
+    // No array provided: `define(factory)` or `define(id, factory)`.
+    // Insert a new array in front the `factory` call.
+    const injectionPoint = amdDefineCall.arguments[factoryIndex].getFullStart();
+    output.appendLeft(injectionPoint, `[${importString}],`);
+  } else {
+    // Already an array, add imports to the end of the array.
+    // Backup one char to account for the closing square bracket on the array
+    const injectionPoint = dependencyArray.getEnd() - 1;
+    output.appendLeft(
+        injectionPoint, (dependencyArray.elements.length > 0 ? ',' : '') + importString);
   }
-  const injectionPoint = dependencyArray.getEnd() -
-      1;  // Backup one char to account for the closing square bracket on the array
-  imports.forEach(i => output.appendLeft(injectionPoint, `,'${i.specifier}'`));
 }
 
 /**
@@ -155,7 +167,9 @@ function renderGlobalDependencies(
   }
   // Backup one char to account for the closing parenthesis after the argument list of the call.
   const injectionPoint = globalFactoryCall.getEnd() - 1;
-  imports.forEach(i => output.appendLeft(injectionPoint, `,global.${getGlobalIdentifier(i)}`));
+  const importString = imports.map(i => `global.${getGlobalIdentifier(i)}`).join(',');
+  output.appendLeft(
+      injectionPoint, (globalFactoryCall.arguments.length > 0 ? ',' : '') + importString);
 }
 
 /**
@@ -175,9 +189,21 @@ function renderFactoryParameters(
   if (!ts.isFunctionExpression(factoryFunction)) {
     return;
   }
+
   const parameters = factoryFunction.parameters;
-  const injectionPoint = parameters[parameters.length - 1].getEnd();
-  imports.forEach(i => output.appendLeft(injectionPoint, `,${i.qualifier}`));
+  const parameterString = imports.map(i => i.qualifier).join(',');
+  if (parameters.length > 0) {
+    const injectionPoint = parameters[parameters.length - 1].getEnd();
+    output.appendLeft(injectionPoint, ',' + parameterString);
+  } else {
+    // If there are no parameters then the factory function will look like:
+    // function () { ... }
+    // The AST does not give us a way to find the insertion point - between the two parentheses.
+    // So we must use a regular expression on the text of the function.
+    const injectionPoint =
+        factoryFunction.getStart() + factoryFunction.getText().search(/\(\)/) + 1;
+    output.appendLeft(injectionPoint, parameterString);
+  }
 }
 
 /**
