@@ -123,6 +123,7 @@
     "tsickle": "0.37.1",
     "tslib": "^1.10.0",
     "tslint": "5.7.0",
+    "ts-node": "^8.5.4",
     "typescript": "~3.6.4",
     "xhr2": "0.1.4",
     "yargs": "13.1.0"
@@ -166,6 +167,7 @@
     "tslint-eslint-rules": "4.1.1",
     "tslint-no-toplevel-property-access": "0.0.2",
     "tsutils": "2.27.2",
+    "command-line-args": "^5.1.1",
     "universal-analytics": "0.4.15",
     "vlq": "0.2.2",
     "vrsource-tslint-rules": "5.1.1",

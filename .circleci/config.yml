@@ -59,6 +59,11 @@ var_10: &only_on_master
       only:
         - master
 
+var_11: &parse_execution_log
+  run:
+    command: yarn -s ts-node tools/bazel-performance/parse-execution-log.ts --log_file=/tmp/execution_log.json
+    no_output_timeout: 20m
+
 # Executor Definitions
 # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
 # **NOTE 1**: Pin to exact images using an ID (SHA). See https://circleci.com/docs/2.0/circleci-images/#using-a-docker-image-id-to-pin-an-image-to-a-fixed-version.
@@ -283,6 +288,7 @@ jobs:
       - run:
           command: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
           no_output_timeout: 20m
+      - <<: *parse_execution_log
 
   # Temporary job to test what will happen when we flip the Ivy flag to true
   test_ivy_aot:
@@ -301,6 +307,7 @@ jobs:
       - run:
           command: yarn test-ivy-aot //... --symlink_prefix=dist/
           no_output_timeout: 20m
+      - <<: *parse_execution_log
 
         # Publish bundle artifacts which will be used to calculate the size change. **Note**: Make
         # sure that the size plugin from the Angular robot fetches the artifacts from this CircleCI
@@ -353,6 +360,7 @@ jobs:
               --key $(echo $SAUCE_ACCESS_KEY | rev) \
               yarn bazel test //:test_web_all
           no_output_timeout: 20m
+      - <<: *parse_execution_log
       - notify_webhook_on_fail:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
@@ -504,6 +512,8 @@ jobs:
 
       - run: node scripts/build-packages-dist.js
 
+      - <<: *parse_execution_log
+
       # Save the npm packages from //packages/... for other workflow jobs to read
       - persist_to_workspace:
           root: *workspace_location
@@ -531,6 +541,7 @@ jobs:
       - setup_bazel_rbe
 
       - run: node scripts/build-ivy-npm-packages.js
+      - <<: *parse_execution_log
 
       # Save the npm packages from //packages/... for other workflow jobs to read
       - persist_to_workspace:
@@ -758,6 +769,8 @@ jobs:
              cp dist/bin/packages/zone.js/npm_package/dist/zone-patch-electron.js ./packages/zone.js/test/extra/ &&
              yarn --cwd packages/zone.js electrontest
 
+      - <<: *parse_execution_log
+
   # Windows jobs
   # Docs: https://circleci.com/docs/2.0/hello-world-windows/
   test_win:
@@ -784,7 +797,6 @@ jobs:
       - run:
           command: yarn circleci-win-ivy
           no_output_timeout: 45m
-
 
 workflows:
   version: 2

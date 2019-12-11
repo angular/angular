@@ -15,3 +15,5 @@ build --repository_cache=/home/circleci/bazel_repository_cache
 # Limit Bazel to consuming resources that fit in CircleCI "xlarge" class
 # https://circleci.com/docs/2.0/configuration-reference/#resource_class
 build --local_resources=14336,8.0,1.0
+
+build --execution_log_json_file=/tmp/execution_log.json
