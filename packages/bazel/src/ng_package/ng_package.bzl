@@ -13,7 +13,7 @@ It packages your library following the Angular Package Format, see the
 specification of this format at https://goo.gl/jB3GVv
 """
 
-load("@build_bazel_rules_nodejs//:providers.bzl", "JSEcmaScriptModuleInfo", "JSNamedModuleInfo", "NpmPackageInfo", "node_modules_aspect")
+load("@build_bazel_rules_nodejs//:providers.bzl", "JSEcmaScriptModuleInfo", "JSNamedModuleInfo", "NodeContextInfo", "NpmPackageInfo", "node_modules_aspect")
 load(
     "@build_bazel_rules_nodejs//internal/npm_package:npm_package.bzl",
     "NPM_PACKAGE_ATTRS",
@@ -209,6 +209,7 @@ def _write_rollup_config(ctx, root_dir, filename = "_%s.rollup.conf.js", include
       The rollup config file. See https://rollupjs.org/guide/en#configuration-files
     """
     config = ctx.actions.declare_file(filename % ctx.label.name)
+    stamp = ctx.attr._node_context_data[NodeContextInfo].stamp
 
     mappings = dict()
     all_deps = ctx.attr.deps + ctx.attr.srcs
@@ -237,7 +238,7 @@ def _write_rollup_config(ctx, root_dir, filename = "_%s.rollup.conf.js", include
             "TMPL_module_mappings": str(mappings),
             "TMPL_node_modules_root": _compute_node_modules_root(ctx),
             "TMPL_root_dir": root_dir,
-            "TMPL_stamp_data": "\"%s\"" % ctx.version_file.path if ctx.version_file else "undefined",
+            "TMPL_stamp_data": "\"%s\"" % ctx.version_file.path if stamp else "undefined",
             "TMPL_workspace_name": ctx.workspace_name,
             "TMPL_external": ", ".join(["'%s'" % e for e in external]),
             "TMPL_globals": ", ".join(["'%s': '%s'" % g for g in globals.items()]),
@@ -248,6 +249,7 @@ def _write_rollup_config(ctx, root_dir, filename = "_%s.rollup.conf.js", include
 
 def _run_rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output, format, module_name = ""):
     map_output = ctx.actions.declare_file(js_output.basename + ".map", sibling = js_output)
+    stamp = ctx.attr._node_context_data[NodeContextInfo].stamp
 
     args = ctx.actions.args()
     args.add("--input", entry_point)
@@ -286,7 +288,7 @@ def _run_rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output,
     other_inputs = [rollup_config]
     if ctx.file.license_banner:
         other_inputs.append(ctx.file.license_banner)
-    if ctx.version_file:
+    if stamp:
         other_inputs.append(ctx.version_file)
     ctx.actions.run(
         progress_message = "ng_package: Rollup %s %s" % (bundle_name, ctx.label),
@@ -640,7 +642,7 @@ _NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **{
     "entry_point": attr.label(
         doc = """The starting point of the application, passed as the `--input` flag to rollup.
 
-        If the entry JavaScript file belongs to the same package (as the BUILD file), 
+        If the entry JavaScript file belongs to the same package (as the BUILD file),
         you can simply reference it by its relative name to the package directory:
 
         ```
@@ -668,7 +670,7 @@ _NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **{
 
         The rule will use the corresponding `.js` output of the ts_library rule as the entry point.
 
-        If the entry point target is a rule, it should produce a single JavaScript entry file that will be passed to the nodejs_binary rule. 
+        If the entry point target is a rule, it should produce a single JavaScript entry file that will be passed to the nodejs_binary rule.
         For example:
 
         ```
@@ -746,6 +748,11 @@ If `config_file` isn't supplied, Bazel will use a default config file.
     "rollup_config_tmpl": attr.label(
         default = Label(_DEFAULT_ROLLUP_CONFIG_TMPL),
         allow_single_file = True,
+    ),
+    "_node_context_data": attr.label(
+        default = "@build_bazel_rules_nodejs//internal:node_context_data",
+        providers = [NodeContextInfo],
+        doc = "Internal use only",
     ),
 })
 

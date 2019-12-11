@@ -15,7 +15,7 @@
 """
 
 load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
-load("@build_bazel_rules_nodejs//:providers.bzl", "JSEcmaScriptModuleInfo", "NpmPackageInfo", "node_modules_aspect")
+load("@build_bazel_rules_nodejs//:providers.bzl", "JSEcmaScriptModuleInfo", "NodeContextInfo", "NpmPackageInfo", "node_modules_aspect")
 load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "esm5_root_dir", "flatten_esm5")
 load("@npm_bazel_terser//:index.bzl", "terser_minified")
 
@@ -66,7 +66,6 @@ _NG_ROLLUP_BUNDLE_DEPS_ASPECTS = [esm5_outputs_aspect, ng_rollup_module_mappings
 _NG_ROLLUP_BUNDLE_ATTRS = {
     "build_optimizer": attr.bool(
         doc = """Use build optimizer plugin
-        
         Only used if sources are esm5 which depends on value of esm5_sources.""",
         default = True,
     ),
@@ -82,7 +81,7 @@ _NG_ROLLUP_BUNDLE_ATTRS = {
     "entry_point": attr.label(
         doc = """The starting point of the application, passed as the `--input` flag to rollup.
 
-        If the entry JavaScript file belongs to the same package (as the BUILD file), 
+        If the entry JavaScript file belongs to the same package (as the BUILD file),
         you can simply reference it by its relative name to the package directory:
 
         ```
@@ -110,7 +109,7 @@ _NG_ROLLUP_BUNDLE_ATTRS = {
 
         The rule will use the corresponding `.js` output of the ts_library rule as the entry point.
 
-        If the entry point target is a rule, it should produce a single JavaScript entry file that will be passed to the nodejs_binary rule. 
+        If the entry point target is a rule, it should produce a single JavaScript entry file that will be passed to the nodejs_binary rule.
         For example:
 
         ```
@@ -181,6 +180,11 @@ _NG_ROLLUP_BUNDLE_ATTRS = {
         default = Label("//tools/ng_rollup_bundle:rollup.config.js"),
         allow_single_file = True,
     ),
+    "_node_context_data": attr.label(
+        default = "@build_bazel_rules_nodejs//internal:node_context_data",
+        providers = [NodeContextInfo],
+        doc = "Internal use only",
+    ),
 }
 
 def _compute_node_modules_root(ctx):
@@ -244,6 +248,7 @@ def _write_rollup_config(ctx, root_dir, build_optimizer, filename = "_%s.rollup.
       The rollup config file. See https://rollupjs.org/guide/en#configuration-files
     """
     config = ctx.actions.declare_file(filename % ctx.label.name)
+    stamp = ctx.attr._node_context_data[NodeContextInfo].stamp
 
     mappings = dict()
     all_deps = ctx.attr.deps + ctx.attr.srcs
@@ -270,7 +275,7 @@ def _write_rollup_config(ctx, root_dir, build_optimizer, filename = "_%s.rollup.
             "TMPL_module_mappings": str(mappings),
             "TMPL_node_modules_root": _compute_node_modules_root(ctx),
             "TMPL_root_dir": root_dir,
-            "TMPL_stamp_data": "\"%s\"" % ctx.version_file.path if ctx.version_file else "undefined",
+            "TMPL_stamp_data": "\"%s\"" % ctx.version_file.path if stamp else "undefined",
             "TMPL_workspace_name": ctx.workspace_name,
             "TMPL_external": ", ".join(["'%s'" % e for e in external]),
             "TMPL_globals": ", ".join(["'%s': '%s'" % g for g in globals]),
@@ -288,6 +293,7 @@ def _filter_js_inputs(all_inputs):
     ]
 
 def _run_rollup(ctx, entry_point_path, sources, config):
+    stamp = ctx.attr._node_context_data[NodeContextInfo].stamp
     args = ctx.actions.args()
     args.add("--config", config.path)
     args.add("--input", entry_point_path)
@@ -314,7 +320,7 @@ def _run_rollup(ctx, entry_point_path, sources, config):
 
     if ctx.file.license_banner:
         direct_inputs.append(ctx.file.license_banner)
-    if ctx.version_file:
+    if stamp:
         direct_inputs.append(ctx.version_file)
 
     ctx.actions.run(
