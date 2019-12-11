@@ -36,7 +36,8 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   }
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
-    return this.getUmdImportedDeclaration(id) || super.getDeclarationOfIdentifier(id);
+    return (!id.getSourceFile().isDeclarationFile && this.getUmdImportedDeclaration(id)) ||
+        super.getDeclarationOfIdentifier(id);
   }
 
   getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
