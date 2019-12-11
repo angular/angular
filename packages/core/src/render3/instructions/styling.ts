@@ -191,7 +191,7 @@ function stylingProp(
   if (ngDevMode && getCheckNoChangesMode()) {
     const oldValue = getValue(lView, bindingIndex);
     if (hasValueChangedUnwrapSafeValue(oldValue, value)) {
-      throwErrorIfNoChangesMode(false, oldValue, value);
+      throwErrorIfNoChangesMode(false, oldValue, value, prop);
     }
   }
 
@@ -369,7 +369,10 @@ function stylingMap(
   // For this reason, the checkNoChanges situation must also be handled here
   // as well.
   if (ngDevMode && valueHasChanged && getCheckNoChangesMode()) {
-    throwErrorIfNoChangesMode(false, oldValue, value);
+    // check if the value is a StylingMapArray, in which case take the first value (which stores raw
+    // value) from the array
+    const previousValue = Array.isArray(oldValue) && oldValue.length ? oldValue[0] : oldValue;
+    throwErrorIfNoChangesMode(false, previousValue, value);
   }
 
   // Direct Apply Case: bypass context resolution and apply the

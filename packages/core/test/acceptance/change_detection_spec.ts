@@ -12,7 +12,7 @@ import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, C
 import {AfterContentChecked, AfterViewChecked} from '@angular/core/src/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ivyEnabled} from '@angular/private/testing';
+import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
 
 describe('change detection', () => {
@@ -1247,6 +1247,103 @@ describe('change detection', () => {
       log.length = 0;
       expect(trim(fixture.nativeElement.textContent)).toEqual('InsertComp(Hello) Hello Angular!');
     });
+  });
+
+  describe('ExpressionChangedAfterItHasBeenCheckedError', () => {
+    @Component({template: '...'})
+    class MyApp {
+      a: string = 'a';
+      b: string = 'b';
+      c: string = 'c';
+      unstableBooleanExpression: boolean = true;
+      unstableStringExpression: string = 'initial';
+      unstableColorExpression: string = 'red';
+      unstableStyleMapExpression: {[key: string]: string;} = {'color': 'red', 'margin': '10px'};
+
+      ngAfterViewChecked() {
+        this.unstableBooleanExpression = false;
+        this.unstableStringExpression = 'changed';
+        this.unstableColorExpression = 'green';
+        this.unstableStyleMapExpression = {'color': 'green', 'margin': '20px'};
+      }
+    }
+
+    function initWithTemplate(template: string) {
+      TestBed.configureTestingModule({declarations: [MyApp]});
+      TestBed.overrideComponent(MyApp, {set: {template}});
+      const fixture = TestBed.createComponent(MyApp);
+      fixture.detectChanges();
+      return fixture;
+    }
+
+    it('should include field name in case of property binding', () => {
+      expect(() => initWithTemplate('<div [id]="unstableStringExpression"></div>'))
+          .toThrowError(/Previous value: 'id: initial'. Current value: 'id: changed'/);
+    });
+
+    it('should include field name in case of property interpolation', () => {
+      expect(
+          () => initWithTemplate(
+              '<div id="Expressions: {{ a }} and {{ unstableStringExpression }}!"></div>'))
+          .toThrowError(
+              /Previous value: 'id: Expressions: a and initial!'. Current value: 'id: Expressions: a and changed!'/);
+    });
+
+    it('should only display a value of an expression that was changed in text interpolation',
+       () => {
+         expect(() => initWithTemplate('Expressions: {{ a }} and {{ unstableStringExpression }}!'))
+             .toThrowError(/Previous value: '.*?initial'. Current value: '.*?changed'/);
+       });
+
+    it('should only display a value of an expression that was changed in text interpolation ' +
+           'that follows an element with property interpolation',
+       () => {
+         expect(() => {
+           initWithTemplate(`
+             <div id="Prop interpolation: {{ aVal }}"></div>
+             Text interpolation: {{ unstableStringExpression }}.
+           `);
+         }).toThrowError(/Previous value: '.*?initial'. Current value: '.*?changed'/);
+       });
+
+    it('should include style prop name', () => {
+      expect(() => initWithTemplate('<div [style.color]="unstableColorExpression"></div>'))
+          .toThrowError(/Previous value: 'color: red'. Current value: 'color: green'/);
+    });
+
+    it('should include class name', () => {
+      expect(() => initWithTemplate('<div [class.someClass]="unstableBooleanExpression"></div>'))
+          .toThrowError(/Previous value: 'someClass: true'. Current value: 'someClass: false'/);
+    });
+
+    onlyInIvy('VE doesn\'t throw in case of [style] binding change')
+        .it('should throw for style maps', () => {
+          expect(() => initWithTemplate('<div [style]="unstableStyleMapExpression"></div>'))
+              .toThrowError(
+                  /Previous value: '\[object Object\]'. Current value: '\[object Object\]'/);
+        });
+
+    onlyInIvy('VE doesn\'t throw in case of [style] binding change')
+        .it('should throw for class maps', () => {
+          expect(() => initWithTemplate('<div [class]="unstableStyleMapExpression"></div>'))
+              .toThrowError(
+                  /Previous value: '\[object Object\]'. Current value: '\[object Object\]'/);
+        });
+
+    it('should only display a value of an expression that was changed in text interpolation inside i18n block',
+       () => {
+         expect(
+             () => initWithTemplate('<div i18n>Expression: {{ unstableStringExpression }}</div>'))
+             .toThrowError(/Previous value: '.*?initial'. Current value: '.*?changed'/);
+       });
+
+    it('should only display a value of an expression for interpolation inside an i18n property',
+       () => {
+         expect(
+             () => initWithTemplate(
+                 '<div i18n-title title="Expression: {{ unstableStringExpression }}"></div>'))
+             .toThrowError(/Previous value: '.*?initial'. Current value: '.*?changed'/);
+       });
   });
 });
 
