@@ -174,3 +174,10 @@ function afterUnderscore(str: string): string {
   }
   return str.substr(pos + 1);
 }
+
+/** Returns whether a class declaration has the necessary class fields to make it injectable. */
+export function hasInjectableFields(clazz: ClassDeclaration, host: ReflectionHost): boolean {
+  const members = host.getMembersOfClass(clazz);
+  return members.some(
+      ({isStatic, name}) => isStatic && (name === 'ɵprov' || name === 'ɵfac' || name === 'ɵinj'));
+}

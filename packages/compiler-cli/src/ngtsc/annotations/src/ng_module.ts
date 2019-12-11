@@ -11,8 +11,8 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
-import {MetadataReader, MetadataRegistry} from '../../metadata';
-import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
+import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
+import {PartialEvaluator, ResolvedValue, ResolvedValueArray} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
@@ -20,9 +20,10 @@ import {FactoryTracker} from '../../shims';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {getSourceFile} from '../../util/src/typescript';
 
+import {getProviderDiagnostics} from './diagnostics';
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
-import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
+import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
 
 export interface NgModuleAnalysis {
   mod: R3NgModuleMetadata;
@@ -35,6 +36,8 @@ export interface NgModuleAnalysis {
   exports: Reference<ClassDeclaration>[];
   id: Expression|null;
   factorySymbolName: string;
+  providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
+  providers: ts.Expression|null;
 }
 
 export interface NgModuleResolution { injectorImports: Expression[]; }
@@ -54,7 +57,8 @@ export class NgModuleDecoratorHandler implements
       private routeAnalyzer: NgModuleRouteAnalyzer|null, private refEmitter: ReferenceEmitter,
       private factoryTracker: FactoryTracker|null,
       private defaultImportRecorder: DefaultImportRecorder,
-      private annotateForClosureCompiler: boolean, private localeId?: string) {}
+      private annotateForClosureCompiler: boolean,
+      private injectableRegistry: InjectableClassRegistry, private localeId?: string) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = NgModuleDecoratorHandler.name;
@@ -240,7 +244,7 @@ export class NgModuleDecoratorHandler implements
     };
 
     const rawProviders = ngModule.has('providers') ? ngModule.get('providers') ! : null;
-    const providers = rawProviders !== null ?
+    const wrapperProviders = rawProviders !== null ?
         new WrappedNodeExpr(
             this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(rawProviders) :
                                               rawProviders) :
@@ -264,7 +268,7 @@ export class NgModuleDecoratorHandler implements
       internalType,
       deps: getValidConstructorDependencies(
           node, this.reflector, this.defaultImportRecorder, this.isCore),
-      providers,
+      providers: wrapperProviders,
       imports: injectorImports,
     };
 
@@ -277,6 +281,10 @@ export class NgModuleDecoratorHandler implements
         declarations: declarationRefs, rawDeclarations,
         imports: importRefs,
         exports: exportRefs,
+        providers: rawProviders,
+        providersRequiringFactory: rawProviders ?
+            resolveProvidersRequiringFactory(rawProviders, this.reflector, this.evaluator) :
+            null,
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
@@ -301,6 +309,8 @@ export class NgModuleDecoratorHandler implements
     if (this.factoryTracker !== null) {
       this.factoryTracker.track(node.getSourceFile(), analysis.factorySymbolName);
     }
+
+    this.injectableRegistry.registerInjectable(node);
   }
 
   resolve(node: ClassDeclaration, analysis: Readonly<NgModuleAnalysis>):
@@ -311,6 +321,12 @@ export class NgModuleDecoratorHandler implements
     const scopeDiagnostics = this.scopeRegistry.getDiagnosticsOfModule(node);
     if (scopeDiagnostics !== null) {
       diagnostics.push(...scopeDiagnostics);
+    }
+
+    if (analysis.providersRequiringFactory !== null) {
+      const providerDiagnostics = getProviderDiagnostics(
+          analysis.providersRequiringFactory, analysis.providers !, this.injectableRegistry);
+      diagnostics.push(...providerDiagnostics);
     }
 
     const data: NgModuleResolution = {

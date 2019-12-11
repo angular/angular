@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder} from '../../imports';
+import {InjectableClassRegistry} from '../../metadata';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
@@ -33,6 +34,7 @@ export class InjectableDecoratorHandler implements
   constructor(
       private reflector: ReflectionHost, private defaultImportRecorder: DefaultImportRecorder,
       private isCore: boolean, private strictCtorDeps: boolean,
+      private injectableRegistry: InjectableClassRegistry,
       /**
        * What to do if the injectable already contains a ɵprov property.
        *
@@ -79,6 +81,8 @@ export class InjectableDecoratorHandler implements
       },
     };
   }
+
+  register(node: ClassDeclaration): void { this.injectableRegistry.registerInjectable(node); }
 
   compile(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>): CompileResult[] {
     const res = compileIvyInjectable(analysis.meta);

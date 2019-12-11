@@ -11,16 +11,17 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {MetadataRegistry} from '../../metadata';
+import {InjectableClassRegistry, MetadataRegistry} from '../../metadata';
 import {extractDirectiveGuards} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 
+import {getProviderDiagnostics} from './diagnostics';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getConstructorDependencies, isAngularDecorator, makeDuplicateDeclarationError, readBaseClass, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
+import {findAngularDecorator, getConstructorDependencies, isAngularDecorator, makeDuplicateDeclarationError, readBaseClass, resolveProvidersRequiringFactory, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 const FIELD_DECORATORS = [
@@ -37,13 +38,16 @@ export interface DirectiveHandlerData {
   guards: ReturnType<typeof extractDirectiveGuards>;
   meta: R3DirectiveMetadata;
   metadataStmt: Statement|null;
+  providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
 }
+
 export class DirectiveDecoratorHandler implements
     DecoratorHandler<Decorator|null, DirectiveHandlerData, unknown> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
-      private defaultImportRecorder: DefaultImportRecorder, private isCore: boolean,
+      private defaultImportRecorder: DefaultImportRecorder,
+      private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
       private annotateForClosureCompiler: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -88,6 +92,12 @@ export class DirectiveDecoratorHandler implements
       return {};
     }
 
+    let providersRequiringFactory: Set<Reference<ClassDeclaration>>|null = null;
+    if (directiveResult !== undefined && directiveResult.decorator.has('providers')) {
+      providersRequiringFactory = resolveProvidersRequiringFactory(
+          directiveResult.decorator.get('providers') !, this.reflector, this.evaluator);
+    }
+
     return {
       analysis: {
         meta: analysis,
@@ -95,7 +105,7 @@ export class DirectiveDecoratorHandler implements
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
-        guards: extractDirectiveGuards(node, this.reflector),
+        guards: extractDirectiveGuards(node, this.reflector), providersRequiringFactory
       }
     };
   }
@@ -115,18 +125,28 @@ export class DirectiveDecoratorHandler implements
       isComponent: false,
       baseClass: analysis.baseClass, ...analysis.guards,
     });
+
+    this.injectableRegistry.registerInjectable(node);
   }
 
-  resolve(node: ClassDeclaration): ResolveResult<unknown> {
+  resolve(node: ClassDeclaration, analysis: DirectiveHandlerData): ResolveResult<unknown> {
+    const diagnostics: ts.Diagnostic[] = [];
+
+    if (analysis.providersRequiringFactory !== null &&
+        analysis.meta.providers instanceof WrappedNodeExpr) {
+      const providerDiagnostics = getProviderDiagnostics(
+          analysis.providersRequiringFactory, analysis.meta.providers !.node,
+          this.injectableRegistry);
+      diagnostics.push(...providerDiagnostics);
+    }
+
     const duplicateDeclData = this.scopeRegistry.getDuplicateDeclarations(node);
     if (duplicateDeclData !== null) {
       // This directive was declared twice (or more).
-      return {
-        diagnostics: [makeDuplicateDeclarationError(node, duplicateDeclData, 'Directive')],
-      };
+      diagnostics.push(makeDuplicateDeclarationError(node, duplicateDeclData, 'Directive'));
     }
 
-    return {};
+    return {diagnostics: diagnostics.length > 0 ? diagnostics : undefined};
   }
 
   compile(
@@ -160,10 +180,8 @@ export function extractDirectiveMetadata(
     clazz: ClassDeclaration, decorator: Readonly<Decorator|null>, reflector: ReflectionHost,
     evaluator: PartialEvaluator, defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
     flags: HandlerFlags, annotateForClosureCompiler: boolean,
-    defaultSelector: string | null = null): {
-  decorator: Map<string, ts.Expression>,
-  metadata: R3DirectiveMetadata,
-}|undefined {
+    defaultSelector: string | null =
+        null): {decorator: Map<string, ts.Expression>, metadata: R3DirectiveMetadata}|undefined {
   let directive: Map<string, ts.Expression>;
   if (decorator === null || decorator.args === null || decorator.args.length === 0) {
     directive = new Map<string, ts.Expression>();
@@ -390,7 +408,6 @@ export function extractQueriesFromDecorator(
   view: R3QueryMetadata[],
 } {
   const content: R3QueryMetadata[] = [], view: R3QueryMetadata[] = [];
-  const expr = unwrapExpression(queryData);
   if (!ts.isObjectLiteralExpression(queryData)) {
     throw new Error(`queries metadata must be an object literal`);
   }

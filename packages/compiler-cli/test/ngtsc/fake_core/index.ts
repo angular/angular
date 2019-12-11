@@ -89,3 +89,5 @@ export class EventEmitter<T> {
 export interface QueryList<T>/* implements Iterable<T> */ { [Symbol.iterator]: () => Iterator<T>; }
 
 export type NgIterable<T> = Array<T>| Iterable<T>;
+
+export class NgZone {}

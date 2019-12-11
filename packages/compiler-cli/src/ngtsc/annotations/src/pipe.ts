@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {MetadataRegistry} from '../../metadata';
+import {InjectableClassRegistry, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
@@ -30,7 +30,8 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
-      private defaultImportRecorder: DefaultImportRecorder, private isCore: boolean) {}
+      private defaultImportRecorder: DefaultImportRecorder,
+      private injectableRegistry: InjectableClassRegistry, private isCore: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = PipeDecoratorHandler.name;
@@ -115,6 +116,8 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
   register(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): void {
     const ref = new Reference(node);
     this.metaRegistry.registerPipeMetadata({ref, name: analysis.meta.pipeName});
+
+    this.injectableRegistry.registerInjectable(node);
   }
 
   resolve(node: ClassDeclaration): ResolveResult<unknown> {
