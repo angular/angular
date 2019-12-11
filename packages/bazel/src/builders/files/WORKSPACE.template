@@ -15,8 +15,8 @@ workspace(
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-RULES_NODEJS_VERSION = "0.40.0"
-RULES_NODEJS_SHA256 = "9901bc17138a79135048fb0c107ee7a56e91815ec6594c08cb9a17b80276d62b"
+RULES_NODEJS_VERSION = "0.42.3"
+RULES_NODEJS_SHA256 = "a54b2511d6dae42c1f7cdaeb08144ee2808193a088004fc3b464a04583d5aa2e"
 http_archive(
     name = "build_bazel_rules_nodejs",
     sha256 = RULES_NODEJS_SHA256,
