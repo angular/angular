@@ -1,3 +1,38 @@
+<a name="9.0.0-rc.6"></a>
+# [9.0.0-rc.6](https://github.com/angular/angular/compare/9.0.0-rc.5...9.0.0-rc.6) (2019-12-11)
+
+
+### Bug Fixes
+
+* **bazel:** improve performance of tsHost.writeFile() ([#34331](https://github.com/angular/angular/issues/34331)) ([d7c459a](https://github.com/angular/angular/commit/d7c459a))
+* **common:** update closure locales to include directionality data ([#34240](https://github.com/angular/angular/issues/34240)) ([a02bde7](https://github.com/angular/angular/commit/a02bde7))
+* **compiler:** ensure localized strings are ES5 compatible for JIT mode ([#34265](https://github.com/angular/angular/issues/34265)) ([26dba21](https://github.com/angular/angular/commit/26dba21)), closes [#34246](https://github.com/angular/angular/issues/34246)
+* **compiler:** switch to modern diagnostic formatting ([#34234](https://github.com/angular/angular/issues/34234)) ([60051eb](https://github.com/angular/angular/commit/60051eb))
+* **compiler-cli:** allow declaration-only template type check members ([#34296](https://github.com/angular/angular/issues/34296)) ([bbb9412](https://github.com/angular/angular/commit/bbb9412))
+* **ivy:** add flag to skip non-exported classes ([#33921](https://github.com/angular/angular/issues/33921)) ([#34340](https://github.com/angular/angular/issues/34340)) ([7ed984b](https://github.com/angular/angular/commit/7ed984b)), closes [#33724](https://github.com/angular/angular/issues/33724)
+* **ivy:** align TestBed.overrideProvider with what happens with providers in TestBed providers array ([#33769](https://github.com/angular/angular/issues/33769)) ([10a33ef](https://github.com/angular/angular/commit/10a33ef))
+* **ivy:** do not invoke change detection for destroyed views ([#34241](https://github.com/angular/angular/issues/34241)) ([24bbcaf](https://github.com/angular/angular/commit/24bbcaf))
+* **ivy:** handle SafeStyles in [style.prop] correctly ([#34286](https://github.com/angular/angular/issues/34286)) ([b0d5784](https://github.com/angular/angular/commit/b0d5784)), closes [/github.com/angular/angular/blob/master/packages/core/src/render3/styling/bindings.ts#L620](https://github.com//github.com/angular/angular/blob/master/packages/core/src/render3/styling/bindings.ts/issues/L620)
+* **ivy:** inherit static coercion members from base classes ([#34296](https://github.com/angular/angular/issues/34296)) ([edfaab6](https://github.com/angular/angular/commit/edfaab6)), closes [#33830](https://github.com/angular/angular/issues/33830)
+* **ivy:** properly parenthesize ternary expressions when emitted ([#34221](https://github.com/angular/angular/issues/34221)) ([af36bc6](https://github.com/angular/angular/commit/af36bc6)), closes [#34087](https://github.com/angular/angular/issues/34087)
+* **ivy:** throw a better error when DI can't inject a ctor param ([#33739](https://github.com/angular/angular/issues/33739)) ([#34340](https://github.com/angular/angular/issues/34340)) ([676aca1](https://github.com/angular/angular/commit/676aca1)), closes [#33637](https://github.com/angular/angular/issues/33637)
+* **language-service:** bug of accessing a string index signature using dot notation ([#34177](https://github.com/angular/angular/issues/34177)) ([72a5a8c](https://github.com/angular/angular/commit/72a5a8c))
+* **language-service:** Remove getExternalFiles() ([#34260](https://github.com/angular/angular/issues/34260)) ([0e911f8](https://github.com/angular/angular/commit/0e911f8))
+* **language-service:** return the js primitive type name ([#34177](https://github.com/angular/angular/issues/34177)) ([b4680a6](https://github.com/angular/angular/commit/b4680a6))
+* **language-service:** Simplify resolution logic in banner ([#34262](https://github.com/angular/angular/issues/34262)) ([7dfd327](https://github.com/angular/angular/commit/7dfd327))
+* **ngcc:** ensure that bundle `rootDir` is the package path ([#34212](https://github.com/angular/angular/issues/34212)) ([69dd516](https://github.com/angular/angular/commit/69dd516))
+* **ngcc:** fix undecorated child migration when `exportAs` is present ([#34014](https://github.com/angular/angular/issues/34014)) ([24d1f9e](https://github.com/angular/angular/commit/24d1f9e))
+* **ngcc:** log Angular error codes correctly ([#34014](https://github.com/angular/angular/issues/34014)) ([3cd43c1](https://github.com/angular/angular/commit/3cd43c1))
+* **ngcc:** report diagnostics from migrations ([#34014](https://github.com/angular/angular/issues/34014)) ([599dcd0](https://github.com/angular/angular/commit/599dcd0))
+
+
+### Performance Improvements
+
+* **ivy:** chain listener instructions ([#33720](https://github.com/angular/angular/issues/33720)) ([#34340](https://github.com/angular/angular/issues/34340)) ([d3ec306](https://github.com/angular/angular/commit/d3ec306))
+* **ivy:** chain styling instructions ([#33837](https://github.com/angular/angular/issues/33837)) ([#34340](https://github.com/angular/angular/issues/34340)) ([c66fd06](https://github.com/angular/angular/commit/c66fd06))
+
+
+
 <a name="9.0.0-rc.5"></a>
 # [9.0.0-rc.5](https://github.com/angular/angular/compare/9.0.0-rc.4...9.0.0-rc.5) (2019-12-04)
 
