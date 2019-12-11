@@ -48,13 +48,17 @@ function reflectDependency(compiler: CompilerFacade, dep: any | any[]): R3Depend
       if (param === undefined) {
         // param may be undefined if type of dep is not set by ngtsc
         continue;
-      } else if (param instanceof Optional || param.__proto__.ngMetadataName === 'Optional') {
+      }
+
+      const proto = Object.getPrototypeOf(param);
+
+      if (param instanceof Optional || proto.ngMetadataName === 'Optional') {
         meta.optional = true;
-      } else if (param instanceof SkipSelf || param.__proto__.ngMetadataName === 'SkipSelf') {
+      } else if (param instanceof SkipSelf || proto.ngMetadataName === 'SkipSelf') {
         meta.skipSelf = true;
-      } else if (param instanceof Self || param.__proto__.ngMetadataName === 'Self') {
+      } else if (param instanceof Self || proto.ngMetadataName === 'Self') {
         meta.self = true;
-      } else if (param instanceof Host || param.__proto__.ngMetadataName === 'Host') {
+      } else if (param instanceof Host || proto.ngMetadataName === 'Host') {
         meta.host = true;
       } else if (param instanceof Inject) {
         meta.token = param.token;
