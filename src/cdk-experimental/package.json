@@ -22,7 +22,7 @@
   "peerDependencies": {
     "@angular/cdk": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-NG",
-    "tslib": "^1.9.0"
+    "tslib": "0.0.0-TSLIB"
   },
   "sideEffects": false,
   "publishConfig":{

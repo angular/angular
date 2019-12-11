@@ -29,7 +29,7 @@
   "peerDependencies": {
     "@angular/core": "0.0.0-NG",
     "@angular/common": "0.0.0-NG",
-    "tslib": "^1.9.0"
+    "tslib": "0.0.0-TSLIB"
   },
   "optionalDependencies": {
     "parse5": "^5.0.0"

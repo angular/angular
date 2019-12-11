@@ -23,7 +23,7 @@
     "@angular/material": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-NG",
     "moment": "^2.18.1",
-    "tslib": "^1.9.0"
+    "tslib": "0.0.0-TSLIB"
   },
   "ng-update": {
     "packageGroup": [
