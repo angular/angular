@@ -38,7 +38,7 @@ filegroup(
 html_insert_assets(
     name = "inject_scripts",
     # We can't output "index.html" since that collides with the input file.
-    # We output "_/index.html" instead and remap in ts_devserver & pkg_web
+    # We output "_/index.html" instead ond remap in ts_devserver & pkg_web
     # using additional_root_paths.
     outs = ["_/index.html"],
     args = [
@@ -47,7 +47,7 @@ html_insert_assets(
         "--out",
         "$@",
         "--assets",
-        # We load zone.js outside the bundle. That's because it's a "polyfill"
+        # We load zone.js outside the bundle. That's because it's a "pollyfill"
         # which speculates that such features might be available in a browser.
         # Also it's tricky to configure dead code elimination to understand that
         # zone.js is used, given that we don't have any import statement that
