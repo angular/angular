@@ -18,7 +18,7 @@ import {PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNo
 import {SelectorFlags} from '../interfaces/projection';
 import {TQueries} from '../interfaces/query';
 import {RComment, RElement, RNode} from '../interfaces/renderer';
-import {TStylingContext} from '../interfaces/styling';
+import {TStylingContext, TStylingRange} from '../interfaces/styling';
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, TViewType, T_HOST} from '../interfaces/view';
 import {DebugNodeStyling, NodeStylingDebug} from '../styling/styling_debug';
 import {attachDebugObject} from '../util/debug_utils';
@@ -177,6 +177,8 @@ export const TNodeConstructor = class TNode implements ITNode {
       public projection: number|(ITNode|RNode[])[]|null,                       //
       public styles: TStylingContext|null,                                     //
       public classes: TStylingContext|null,                                    //
+      public classBindings: TStylingRange,                                     //
+      public styleBindings: TStylingRange,                                     //
       ) {}
 
   get type_(): string {
