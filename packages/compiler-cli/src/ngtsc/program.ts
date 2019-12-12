@@ -291,7 +291,7 @@ export class NgtscProgram implements api.Program {
       const containingFile = this.tsProgram.getRootFileNames()[0];
       const [entryPath, moduleName] = entryRoute.split('#');
       const resolvedModule =
-          resolveModuleName(entryPath, containingFile, this.options, this.host, undefined);
+          resolveModuleName(entryPath, containingFile, this.options, this.host, null);
 
       if (resolvedModule) {
         entryRoute = entryPointKeyFor(resolvedModule.resolvedFileName, moduleName);

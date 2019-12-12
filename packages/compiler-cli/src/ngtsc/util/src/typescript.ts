@@ -112,7 +112,7 @@ export function nodeDebugInfo(node: ts.Node): string {
 export function resolveModuleName(
     moduleName: string, containingFile: string, compilerOptions: ts.CompilerOptions,
     compilerHost: ts.CompilerHost,
-    moduleResolutionCache: ts.ModuleResolutionCache | undefined): ts.ResolvedModule|undefined {
+    moduleResolutionCache: ts.ModuleResolutionCache | null): ts.ResolvedModule|undefined {
   if (compilerHost.resolveModuleNames) {
     // FIXME: Additional parameters are required in TS3.6, but ignored in 3.5.
     // Remove the any cast once google3 is fully on TS3.6.
@@ -121,7 +121,8 @@ export function resolveModuleName(
   } else {
     return ts
         .resolveModuleName(
-            moduleName, containingFile, compilerOptions, compilerHost, moduleResolutionCache)
+            moduleName, containingFile, compilerOptions, compilerHost,
+            moduleResolutionCache !== null ? moduleResolutionCache : undefined)
         .resolvedModule;
   }
 }
