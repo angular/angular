@@ -45,6 +45,33 @@ const ANGULAR_ELEMENTS: ReadonlyArray<ng.CompletionEntry> = [
   },
 ];
 
+// This is adapted from packages/compiler/src/render3/r3_template_transform.ts
+// to allow empty binding names.
+const BIND_NAME_REGEXP =
+    /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*))|\[\(([^\)]*)\)\]|\[([^\]]*)\]|\(([^\)]*)\))$/;
+enum ATTR {
+  // Group 1 = "bind-"
+  KW_BIND_IDX = 1,
+  // Group 2 = "let-"
+  KW_LET_IDX = 2,
+  // Group 3 = "ref-/#"
+  KW_REF_IDX = 3,
+  // Group 4 = "on-"
+  KW_ON_IDX = 4,
+  // Group 5 = "bindon-"
+  KW_BINDON_IDX = 5,
+  // Group 6 = "@"
+  KW_AT_IDX = 6,
+  // Group 7 = the identifier after "bind-", "let-", "ref-/#", "on-", "bindon-" or "@"
+  IDENT_KW_IDX = 7,
+  // Group 8 = identifier inside [()]
+  IDENT_BANANA_BOX_IDX = 8,
+  // Group 9 = identifier inside []
+  IDENT_PROPERTY_IDX = 9,
+  // Group 10 = identifier inside ()
+  IDENT_EVENT_IDX = 10,
+}
+
 function isIdentifierPart(code: number) {
   // Identifiers consist of alphanumeric characters, '_', or '$'.
   return isAsciiLetter(code) || isDigit(code) || code == $$ || code == $_;
@@ -139,7 +166,7 @@ export function getTemplateCompletions(
             } else if (templatePosition < startTagSpan.end) {
               // We are in the attribute section of the element (but not in an attribute).
               // Return the attribute completions.
-              result = attributeCompletions(templateInfo, path);
+              result = attributeCompletionsForElement(templateInfo, ast.name);
             }
           },
           visitAttribute(ast) {
@@ -190,11 +217,52 @@ export function getTemplateCompletions(
 }
 
 function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ng.CompletionEntry[] {
-  const item = path.tail instanceof Element ? path.tail : path.parentOf(path.tail);
-  if (item instanceof Element) {
-    return attributeCompletionsForElement(info, item.name);
+  const attr = path.tail;
+  const elem = path.parentOf(attr);
+  if (!(attr instanceof Attribute) || !(elem instanceof Element)) {
+    return [];
   }
-  return [];
+
+  // TODO: Consider parsing the attrinute name to a proper AST instead of
+  // matching using regex. This is because the regexp would incorrectly identify
+  // bind parts for cases like [()|]
+  //                              ^ cursor is here
+  const bindParts = attr.name.match(BIND_NAME_REGEXP);
+  // TemplateRef starts with '*'. See https://angular.io/api/core/TemplateRef
+  const isTemplateRef = attr.name.startsWith('*');
+  const isBinding = bindParts !== null || isTemplateRef;
+
+  if (!isBinding) {
+    return attributeCompletionsForElement(info, elem.name);
+  }
+
+  const results: string[] = [];
+  const ngAttrs = angularAttributes(info, elem.name);
+  if (!bindParts) {
+    // If bindParts is null then this must be a TemplateRef.
+    results.push(...ngAttrs.templateRefs);
+  } else if (
+      bindParts[ATTR.KW_BIND_IDX] !== undefined ||
+      bindParts[ATTR.IDENT_PROPERTY_IDX] !== undefined) {
+    // property binding via bind- or []
+    results.push(...propertyNames(elem.name), ...ngAttrs.inputs);
+  } else if (
+      bindParts[ATTR.KW_ON_IDX] !== undefined || bindParts[ATTR.IDENT_EVENT_IDX] !== undefined) {
+    // event binding via on- or ()
+    results.push(...eventNames(elem.name), ...ngAttrs.outputs);
+  } else if (
+      bindParts[ATTR.KW_BINDON_IDX] !== undefined ||
+      bindParts[ATTR.IDENT_BANANA_BOX_IDX] !== undefined) {
+    // banana-in-a-box binding via bindon- or [()]
+    results.push(...ngAttrs.bananas);
+  }
+  return results.map(name => {
+    return {
+      name,
+      kind: ng.CompletionKind.ATTRIBUTE,
+      sortText: name,
+    };
+  });
 }
 
 function attributeCompletionsForElement(
@@ -212,26 +280,15 @@ function attributeCompletionsForElement(
     }
   }
 
-  // Add html properties
-  for (const name of propertyNames(elementName)) {
-    results.push({
-      name: `[${name}]`,
-      kind: ng.CompletionKind.ATTRIBUTE,
-      sortText: name,
-    });
-  }
-
-  // Add html events
-  for (const name of eventNames(elementName)) {
-    results.push({
-      name: `(${name})`,
-      kind: ng.CompletionKind.ATTRIBUTE,
-      sortText: name,
-    });
-  }
-
   // Add Angular attributes
-  results.push(...angularAttributes(info, elementName));
+  const ngAttrs = angularAttributes(info, elementName);
+  for (const name of ngAttrs.others) {
+    results.push({
+      name,
+      kind: ng.CompletionKind.ATTRIBUTE,
+      sortText: name,
+    });
+  }
 
   return results;
 }
@@ -484,24 +541,54 @@ function getSourceText(template: ng.TemplateSource, span: ng.Span): string {
   return template.source.substring(span.start, span.end);
 }
 
-function angularAttributes(info: AstResult, elementName: string): ng.CompletionEntry[] {
+interface AngularAttributes {
+  /**
+   * Attributes that support the * syntax. See https://angular.io/api/core/TemplateRef
+   */
+  templateRefs: Set<string>;
+  /**
+   * Attributes with the @Input annotation.
+   */
+  inputs: Set<string>;
+  /**
+   * Attributes with the @Output annotation.
+   */
+  outputs: Set<string>;
+  /**
+   * Attributes that support the [()] or bindon- syntax.
+   */
+  bananas: Set<string>;
+  /**
+   * General attributes that match the specified element.
+   */
+  others: Set<string>;
+}
+
+/**
+ * Return all Angular-specific attributes for the element with `elementName`.
+ * @param info
+ * @param elementName
+ */
+function angularAttributes(info: AstResult, elementName: string): AngularAttributes {
   const {selectors, map: selectorMap} = getSelectors(info);
   const templateRefs = new Set<string>();
   const inputs = new Set<string>();
   const outputs = new Set<string>();
+  const bananas = new Set<string>();
   const others = new Set<string>();
   for (const selector of selectors) {
     if (selector.element && selector.element !== elementName) {
       continue;
     }
     const summary = selectorMap.get(selector) !;
-    for (const attr of selector.attrs) {
-      if (attr) {
-        if (hasTemplateReference(summary.type)) {
-          templateRefs.add(attr);
-        } else {
-          others.add(attr);
-        }
+    const isTemplateRef = hasTemplateReference(summary.type);
+    // attributes are listed in (attribute, value) pairs
+    for (let i = 0; i < selector.attrs.length; i += 2) {
+      const attr = selector.attrs[i];
+      if (isTemplateRef) {
+        templateRefs.add(attr);
+      } else {
+        others.add(attr);
       }
     }
     for (const input of Object.values(summary.inputs)) {
@@ -511,44 +598,12 @@ function angularAttributes(info: AstResult, elementName: string): ng.CompletionE
       outputs.add(output);
     }
   }
-
-  const results: ng.CompletionEntry[] = [];
-  for (const name of templateRefs) {
-    results.push({
-      name: `*${name}`,
-      kind: ng.CompletionKind.ATTRIBUTE,
-      sortText: name,
-    });
-  }
   for (const name of inputs) {
-    results.push({
-      name: `[${name}]`,
-      kind: ng.CompletionKind.ATTRIBUTE,
-      sortText: name,
-    });
     // Add banana-in-a-box syntax
     // https://angular.io/guide/template-syntax#two-way-binding-
     if (outputs.has(`${name}Change`)) {
-      results.push({
-        name: `[(${name})]`,
-        kind: ng.CompletionKind.ATTRIBUTE,
-        sortText: name,
-      });
+      bananas.add(name);
     }
   }
-  for (const name of outputs) {
-    results.push({
-      name: `(${name})`,
-      kind: ng.CompletionKind.ATTRIBUTE,
-      sortText: name,
-    });
-  }
-  for (const name of others) {
-    results.push({
-      name,
-      kind: ng.CompletionKind.ATTRIBUTE,
-      sortText: name,
-    });
-  }
-  return results;
+  return {templateRefs, inputs, outputs, bananas, others};
 }

@@ -93,18 +93,6 @@ export class NumberModel {
   @Output('outputAlias') modelChange: EventEmitter<number> = new EventEmitter();
 }
 
-@Component({
-  selector: 'foo-component',
-  template: `
-    <div string-model ~{string-marker}="text"></div>
-    <div number-model ~{number-marker}="value"></div>
-  `,
-})
-export class FooComponent {
-  text: string = 'some text';
-  value: number = 42;
-}
-
 interface Person {
   name: string;
   age: number;
