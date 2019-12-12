@@ -172,8 +172,8 @@ describe('static-queries migration with usage strategy', () => {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }
 
-  async function runMigration() {
-    await runner.runSchematicAsync('migration-v8-static-queries', {}, tree).toPromise();
+  function runMigration() {
+    return runner.runSchematicAsync('migration-v8-static-queries', {}, tree).toPromise();
   }
 
   function createQueryTests(queryType: 'ViewChild' | 'ContentChild') {
@@ -686,12 +686,12 @@ describe('static-queries migration with usage strategy', () => {
           resolve(): Promise;
           reject(): Promise;
         }
-        
+
         interface Promise {
           then(cb: Function): Promise;
           catch(cb: Function): Promise;
         }
-        
+
         declare var Promise: PromiseConstructor;
       `);
       writeFile('/index.ts', `
@@ -1437,15 +1437,15 @@ describe('static-queries migration with usage strategy', () => {
          writeFile('/index.ts', `
             import {Component, ${queryType}} from '@angular/core';
             import {thirdPartySync} from 'my-lib';
-    
+
             @Component({template: '<span>Template</span>'})
             export class MyComponent {
               @${queryType}('test') query: any;
               @${queryType}('test') query2: any;
-              
+
               ngOnInit() {
                 const myVarFn = () => this.query2.doSomething();
-              
+
                 thirdPartySync(() => this.query.doSomething());
                 thirdPartySync(myVarFn);
               }
@@ -1473,12 +1473,12 @@ describe('static-queries migration with usage strategy', () => {
          writeFile('/index.ts', `
             import {Component, ${queryType}} from '@angular/core';
             import {ThirdParty} from 'my-lib';
-    
+
             @Component({template: '<span>Template</span>'})
             export class MyComponent {
               @${queryType}('test') query: any;
-              
-              ngOnInit() {                
+
+              ngOnInit() {
                 new ThirdParty(() => this.query.doSomething());
               }
             }
@@ -1533,11 +1533,11 @@ describe('static-queries migration with usage strategy', () => {
         @Component({template: '<span>Test</span>'})
         export class MyComponent {
           @${queryType}('test') query: any;
-          
+
           ngOnInit() {
             this.myFunction();
           }
-          
+
           myFunction(unused?: string, cb = () => this.query.doSomething) {
             cb();
           }
