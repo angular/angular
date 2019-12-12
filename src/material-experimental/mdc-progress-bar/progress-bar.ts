@@ -82,6 +82,8 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
     getBuffer: () => this._bufferBar,
     getPrimaryBar: () => this._primaryBar,
     forceLayout: () => this._platform.isBrowser && this._rootElement.offsetWidth,
+    removeAttribute: (name: string) => this._rootElement.removeAttribute(name),
+    setAttribute: (name: string, value: string) => this._rootElement.setAttribute(name, value),
     hasClass: (className: string) => this._rootElement.classList.contains(className),
     removeClass: (className: string) => this._rootElement.classList.remove(className),
     setStyle: (el: HTMLElement, styleProperty: string, value: string) => {
