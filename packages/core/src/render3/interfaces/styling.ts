@@ -181,3 +181,23 @@ export interface TStyleProperty {
 
   sanitizer: StyleSanitizeFn|null;
 }
+
+/**
+ * Simple enum used to express what mode the bindings are being applied in
+ */
+export const enum BindingSourceMode {
+  /**
+   * Template-based bindings (e.g. `<div [style.width]>`)
+   */
+  Template = 0,
+
+  /**
+   * Component-based host bindings (e.g. `@HostBinding('style.width')`)
+   */
+  Component = 1,
+
+  /**
+   * Directive-based host bindings (e.g. `@HostBinding('style.width')`)
+   */
+  Directive = 2,
+}

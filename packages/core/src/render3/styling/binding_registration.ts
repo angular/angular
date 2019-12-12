@@ -7,9 +7,9 @@
 */
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {TNode, TNodeFlags} from '../interfaces/node';
-import {TDataStylingFlags} from '../interfaces/styling';
+import {BindingSourceMode, TDataStylingFlags} from '../interfaces/styling';
 import {TData} from '../interfaces/view';
-import {getBindingPropName, getNextBindingIndex, getPreviousBindingIndex, getStylingHead, getStylingTail, hasInitialClass, hasInitialStyle, hasInitialStyling, isComponentHostBinding, patchConfig, setBindingConfig, setBindingPointer, setBindingProp, setStylingHeadTail} from '../util/styling_utils';
+import {getBindingPropName, getNextBindingIndex, getPreviousBindingIndex, getStylingHead, getStylingTail, hasConfig, hasInitialClass, hasInitialStyle, hasInitialStyling, isComponentHostBinding, patchConfig, setBindingConfig, setBindingPointer, setBindingProp, setStylingHeadTail} from '../util/styling_utils';
 
 import {StylingState} from './state';
 
@@ -64,27 +64,6 @@ function getBindingSourceMode(tNode: TNode, directiveIndex: number) {
   return directiveIndex === 1 && hasComponentOnHost ? BindingSourceMode.Component :
                                                       BindingSourceMode.Directive;
 }
-
-/**
- * Simple enum used to express what mode the bindings are being applied in
- */
-const enum BindingSourceMode {
-  /**
-   * Template-based bindings (e.g. `<div [style.width]>`)
-   */
-  Template = 0,
-
-  /**
-   * Component-based host bindings (e.g. `@HostBinding('style.width')`)
-   */
-  Component = 1,
-
-  /**
-   * Directive-based host bindings (e.g. `@HostBinding('style.width')`)
-   */
-  Directive = 2,
-}
-
 /**
  * Registers the provided style/class binding into the associated tData array.
  *
@@ -268,7 +247,7 @@ function checkAndMarkBindingAsDuplicate(
     tNode: TNode, tData: TData, prop: string | null, bindingIndex: number, isClassBased: boolean,
     hostBindingsMode: boolean): void {
   const isMapBasedBinding = prop === null;
-  let targetBindingIsDuplicate = false;
+  let previousBindingIsDuplicate = false;
 
   // Case #1: see if this binding overlaps with any bindings that exist
   //          in the styling chain before this one.
@@ -276,21 +255,25 @@ function checkAndMarkBindingAsDuplicate(
     // this can only happen when the target prop is being registered from
     // a directive.
     let i = getPreviousBindingIndex(tData, bindingIndex);
-    while (i !== 0 && !targetBindingIsDuplicate) {
+    while (i !== 0 && !previousBindingIsDuplicate) {
       const p = getBindingPropName(tData, i);
-      targetBindingIsDuplicate = isMapBasedBinding || p === null || p === prop;
+      previousBindingIsDuplicate = isMapBasedBinding || p === null || p === prop;
       i = getPreviousBindingIndex(tData, i);
     }
+  } else if (prop !== null) {
+    const mapBasedFlag =
+        isClassBased ? TNodeFlags.hasClassMapBindings : TNodeFlags.hasStyleMapBindings;
+    previousBindingIsDuplicate = hasConfig(tNode, mapBasedFlag);
   }
 
-  if (!targetBindingIsDuplicate && hasInitialStyling(tNode, isClassBased)) {
-    targetBindingIsDuplicate = isMapBasedBinding ?
+  if (!previousBindingIsDuplicate && hasInitialStyling(tNode, isClassBased)) {
+    previousBindingIsDuplicate = isMapBasedBinding ?
         true  // map-based values conflict with everything
         :
         (isClassBased ? hasInitialClass(tNode, prop !) : hasInitialStyle(tNode, prop !));
   }
 
-  if (targetBindingIsDuplicate) {
+  if (previousBindingIsDuplicate) {
     setBindingConfig(tData, bindingIndex, TDataStylingFlags.IsDuplicateBinding);
   }
 

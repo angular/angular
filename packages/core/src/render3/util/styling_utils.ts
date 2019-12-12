@@ -70,7 +70,7 @@ export function setValue(data: LStylingData, bindingIndex: number, value: any): 
  * Returns the value set at the provided `bindingIndex` in the `LStylingData` array
  */
 export function getValue<T = any>(data: LStylingData, bindingIndex: number): T|null {
-  return bindingIndex !== 0 ? data[bindingIndex] as T : null;
+  return data[bindingIndex] as T | null;
 }
 
 /**

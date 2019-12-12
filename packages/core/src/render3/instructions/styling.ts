@@ -15,7 +15,7 @@ import {flushBindings, updateBindingValue} from '../styling/binding_concatenatio
 import {registerBinding} from '../styling/binding_registration';
 import {getStylingState, resetStylingState} from '../styling/state';
 import {NO_CHANGE} from '../tokens';
-import {checkStylingValueNoChanges, getValue, hasDirectiveInput, hasValueChanged, isHostStylingActive, isStylingValueDefined, nextStylingBindingIndex, normalizeStylingDirectiveInputValue, selectClassBasedInputName, setValue} from '../util/styling_utils';
+import {checkStylingValueNoChanges, getValue, hasDirectiveInput, hasValueChanged, isHostStylingActive, nextStylingBindingIndex, normalizeStylingDirectiveInputValue, selectClassBasedInputName, setValue} from '../util/styling_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
 
 import {setInputsForProperty} from './shared';
@@ -263,11 +263,18 @@ export function ɵɵclassMap(classes: {[className: string]: any} | NO_CHANGE | s
 }
 
 /**
- * Applies the provided `[style]`, `[style.prop]`, `[class]` or `[class.name]` binding.
+ * Queues the provided `[style]`, `[style.prop]`, `[class]` or `[class.name]` binding to be applied
+ * during a styling flush.
  *
- * This function will also register the binding on the associated `TData` data-structure
- * (which is obtained from the current global `LView` instance) if this function is called
- * during the `firstUpdatePass`.
+ * Each time any styling instruction runs the style/class values are passed
+ * in through this function, but they are not yet applied to the element.
+ * They are instead "queued" until the "styling flush" occurs (which happens
+ * when the element is fully processed).
+ *
+ * When this function is called during the first update pass (when the bindings are
+ * run for the very first time on an element), the binding property name and metadata
+ * are registered on the associated `TData` data-structure (which is obtained from
+ * the current global `LView` instance).
  */
 export function stylingBindingInternal(
     elementIndex: number, prop: string | null, value: any, suffix: string | null,

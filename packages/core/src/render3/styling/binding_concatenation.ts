@@ -5,6 +5,7 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {unwrapSafeValue} from '../../sanitization/bypass';
 import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
 import {assertEqual, assertNotEqual} from '../../util/assert';
 import {CharCode} from '../../util/char_code';
@@ -394,7 +395,7 @@ function normalizeValueForConcatenation(
                                            // if they need sanitization
       value = sanitizer(prop, value, sanitizationFlag);
     } else {
-      value = renderStringify(value);
+      value = renderStringify(unwrapSafeValue(value));
       if (suffix !== null && value.length !== 0) {
         value += suffix;
       }

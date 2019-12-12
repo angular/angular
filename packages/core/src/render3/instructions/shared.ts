@@ -802,9 +802,9 @@ export function createTNode(
                          tParent,    // parent: TElementNode|TContainerNode|null
                          null,       // projection: number|(ITNode|RNode[])[]|null
                          null,       // initialStyleNames: string[]|null
-                         null,       // styles: string
+                         null,       // styles: string|null
                          0,          // stylesBindingIndex: number
-                         null,       // classes: string
+                         null,       // classes: string|null
                          0,          // classesBindingIndex: number
                          ) :
                      {
