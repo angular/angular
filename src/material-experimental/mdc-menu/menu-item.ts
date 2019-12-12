@@ -19,6 +19,9 @@ import {MatMenuItem as BaseMatMenuItem} from '@angular/material/menu';
   inputs: ['disabled', 'disableRipple'],
   host: {
     '[attr.role]': 'role',
+    // The MatMenuItem parent class adds `mat-menu-item` to the CSS classlist, but this should
+    // not be added for this MDC equivalent menu item.
+    '[class.mat-menu-item]': 'false',
     'class': 'mat-mdc-menu-item',
     '[class.mat-mdc-menu-item-highlighted]': '_highlighted',
     '[class.mat-mdc-menu-item-submenu-trigger]': '_triggersSubmenu',
