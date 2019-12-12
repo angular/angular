@@ -302,7 +302,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
           typeof define === 'function' && define.amd ? define('file', factory) :
           (factory());
           }(this, (function () {'use strict';
-            var index = "";
+            var index = '';
             return index;
           })));`,
         };
@@ -318,12 +318,10 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
             file);
         const outputSrc = output.toString();
 
-        expect(output.toString())
-            .toContain(
-                `typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('@angular/core'),require('@angular/common')) :`);
-        expect(output.toString())
-            .toContain(
-                `typeof define === 'function' && define.amd ? define('file',['@angular/core','@angular/common'], factory) :`);
+        expect(outputSrc).toContain(
+            `typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('@angular/core'),require('@angular/common')) :`);
+        expect(outputSrc).toContain(
+            `typeof define === 'function' && define.amd ? define('file',['@angular/core','@angular/common'], factory) :`);
         expect(outputSrc).toContain(`(factory(global.ng.core,global.ng.common));`);
         expect(outputSrc).toContain(`(function (i0,i1) {'use strict';`);
       });

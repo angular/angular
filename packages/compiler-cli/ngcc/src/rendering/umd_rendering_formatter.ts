@@ -200,8 +200,7 @@ function renderFactoryParameters(
     // function () { ... }
     // The AST does not give us a way to find the insertion point - between the two parentheses.
     // So we must use a regular expression on the text of the function.
-    const injectionPoint =
-        factoryFunction.getStart() + factoryFunction.getText().search(/\(\)/) + 1;
+    const injectionPoint = factoryFunction.getStart() + factoryFunction.getText().indexOf('()') + 1;
     output.appendLeft(injectionPoint, parameterString);
   }
 }
