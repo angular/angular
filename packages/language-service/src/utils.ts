@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AstPath, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, HtmlAstPath, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, RecursiveVisitor, TemplateAst, TemplateAstPath, identifierName, templateVisitAll, visitAll} from '@angular/compiler';
+import {AstPath, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, HtmlAstPath, Identifiers, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, RecursiveVisitor, TemplateAst, TemplateAstPath, identifierName, templateVisitAll, visitAll} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AstResult, SelectorInfo} from './common';
@@ -57,11 +57,9 @@ export function isNarrower(spanA: Span, spanB: Span): boolean {
 }
 
 export function hasTemplateReference(type: CompileTypeMetadata): boolean {
-  if (type.diDeps) {
-    for (let diDep of type.diDeps) {
-      if (diDep.token && diDep.token.identifier &&
-          identifierName(diDep.token !.identifier !) === 'TemplateRef')
-        return true;
+  for (const diDep of type.diDeps) {
+    if (diDep.token && identifierName(diDep.token.identifier) === Identifiers.TemplateRef.name) {
+      return true;
     }
   }
   return false;
