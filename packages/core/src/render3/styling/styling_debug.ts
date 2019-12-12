@@ -5,7 +5,6 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
-import {createProxy} from '../../debug/proxy';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {TNodeFlags} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
@@ -141,7 +140,7 @@ export interface DebugNodeStylingEntry {
   prop: string;
 
   /** The last applied value for the style/class property */
-  value: string|boolean|null;
+  value: string|null;
 
   /** The binding index of the last applied style/class property */
   bindingIndex: number|null;
@@ -378,7 +377,6 @@ export class NodeStylingDebug implements DebugNodeStyling {
   get summary(): {[key: string]: DebugNodeStylingEntry} {
     const entries: {[key: string]: DebugNodeStylingEntry} = {};
     const config = this.config;
-    const isClassBased = this._isClassBased;
 
     let data = this._data;
 
@@ -396,33 +394,7 @@ export class NodeStylingDebug implements DebugNodeStyling {
       entries[prop] = {prop, value, bindingIndex};
     });
 
-    // because the styling algorithm runs into two different
-    // modes: direct and context-resolution, the output of the entries
-    // object is different because the removed values are not
-    // saved between updates. For this reason a proxy is created
-    // so that the behavior is the same when examining values
-    // that are no longer active on the element.
-    return createProxy({
-      get(target: {}, prop: string): DebugNodeStylingEntry{
-        let value: DebugNodeStylingEntry = entries[prop]; if (!value) {
-          value = {
-            prop,
-            value: isClassBased ? false : null,
-            bindingIndex: null,
-          };
-        } return value;
-      },
-      set(target: {}, prop: string, value: any) { return false; },
-      ownKeys() { return Object.keys(entries); },
-      getOwnPropertyDescriptor(k: any) {
-        // we use a special property descriptor here so that enumeration operations
-        // such as `Object.keys` will work on this proxy.
-        return {
-          enumerable: true,
-          configurable: true,
-        };
-      },
-    });
+    return entries;
   }
 
   get config() { return buildConfig(this._tNode, this._isClassBased); }
