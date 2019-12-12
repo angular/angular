@@ -56,45 +56,23 @@ npm install @example/my-builder
 
 ## Creating a builder
 
-As an example, let’s create a builder that executes a shell command.
-To create a builder, use the `createBuilder()` CLI Builder function, and return a `BuilderOutput` object.
+As an example, let's create a builder that executes a shell command.
+To create a builder, use the `createBuilder()` CLI Builder function, and return a `Promise<BuilderOutput>` object.
 
-<code-example language="typescript" header="/command/index.ts">
-import { BuilderOutput, createBuilder } from '@angular-devkit/architect';
-
-export default createBuilder(_commandBuilder);
-
-function _commandBuilder(
-  options: JsonObject,
-  context: BuilderContext,
-  ): Promise<BuilderOutput> {
-  ...
-}
-
+<code-example 
+  path="cli-builder/src/my-builder.ts" 
+  header="src/my-builder.ts (builder skeleton)" 
+  region="builder-skeleton">
 </code-example>
 
 Now let’s add some logic to it.
 The following code retrieves the command and arguments from the user options, spawns the new process, and waits for the process to finish.
 If the process is successful (returns a code of 0), it resolves the return value.
 
-<code-example language="typescript" header="/command/index.ts">
-import { BuilderOutput, createBuilder } from '@angular-devkit/architect';
-import * as childProcess from 'child_process';
-
-export default createBuilder(_commandBuilder);
-
-function _commandBuilder(
-  options: JsonObject,
-  context: BuilderContext,
-): Promise<BuilderOutput> {
-  const child = childProcess.spawn(options.command, options.args);
-  return new Promise<BuilderOutput>(resolve => {
-    child.on('close', code => {
-      resolve({success: code === 0});
-    });
-  });
-}
-
+<code-example 
+  path="cli-builder/src/my-builder.ts" 
+  header="src/my-builder.ts (builder)" 
+  region="builder">
 </code-example>
 
 ### Handling output
@@ -105,31 +83,10 @@ This also allows the builder itself to be executed in a separate process, even i
 
 We can retrieve a Logger instance from the context.
 
-<code-example language="typescript" header="/command/index.ts">
-import { BuilderOutput, createBuilder, BuilderContext } from '@angular-devkit/architect';
-import * as childProcess from 'child_process';
-
-export default createBuilder(_commandBuilder);
-
-function _commandBuilder(
-  options: JsonObject,
-  context: BuilderContext,
-): Promise<BuilderOutput> {
-  const child = childProcess.spawn(options.command, options.args, {stdio: 'pipe'});
-  child.stdout.on('data', (data) => {
-    context.logger.info(data.toString());
-  });
-  child.stderr.on('data', (data) => {
-    context.logger.error(data.toString());
-  });
-
-  return new Promise<BuilderOutput>(resolve => {
-    child.on('close', code => {
-      resolve({success: code === 0});
-    });
-  });
-}
-
+<code-example 
+  path="cli-builder/src/my-builder.ts" 
+  header="src/my-builder.ts (handling output)" 
+  region="handling-output">
 </code-example>
 
 ### Progress and status reporting
@@ -147,34 +104,10 @@ Use the `BuilderContext.reportStatus()` method to generate a status string of an
 (Note that there’s no guarantee that a long string will be shown entirely; it could be cut to fit the UI that displays it.)
 Pass an empty string to remove the status.
 
-<code-example language="typescript" header="/command/index.ts">
-import { BuilderOutput, createBuilder, BuilderContext } from '@angular-devkit/architect';
-import * as childProcess from 'child_process';
-
-export default createBuilder(_commandBuilder);
-
-function _commandBuilder(
-  options: JsonObject,
-  context: BuilderContext,
-): Promise<BuilderOutput> {
-  context.reportStatus(`Executing "${options.command}"...`);
-  const child = childProcess.spawn(options.command, options.args, {stdio: 'pipe'});
-
-  child.stdout.on('data', (data) => {
-    context.logger.info(data.toString());
-  });
-  child.stderr.on('data', (data) => {
-    context.logger.error(data.toString());
-  });
-
-  return new Promise<BuilderOutput>(resolve => {
-    context.reportStatus(`Done.`);
-    child.on('close', code => {
-      resolve({success: code === 0});
-    });
-  });
-}
-
+<code-example 
+  path="cli-builder/src/my-builder.ts" 
+  header="src/my-builder.ts (progess reporting)" 
+  region="progress-reporting">
 </code-example>
 
 ## Builder input
@@ -257,10 +190,10 @@ The first part of this is the package name (resolved using node resolution), and
 
 Using one of our `options` is very straightforward, we did this in the previous section when we accessed `options.command`.
 
-<code-example language="typescript" header="/command/index.ts">
-    context.reportStatus(`Executing "${options.command}"...`);
-    const child = childProcess.spawn(options.command, options.args, { stdio: 'pipe' });
-
+<code-example 
+  path="cli-builder/src/my-builder.ts" 
+  header="src/my-builder.ts (report status)" 
+  region="report-status">
 </code-example>
 
 ### Target configuration
@@ -486,73 +419,21 @@ Because we did not override the *args* option, it will list information about th
 
 Use integration testing for your builder, so that you can use the Architect scheduler to create a context, as in this [example](https://github.com/mgechev/cli-builders-demo).
 
-* In the builder source directory, we have created a new test file `index.spec.ts`. The code creates new instances of `JsonSchemaRegistry` (for schema validation), `TestingArchitectHost` (an in-memory implementation of `ArchitectHost`), and `Architect`.
+* In the builder source directory, we have created a new test file `my-builder.spec.ts`. The code creates new instances of `JsonSchemaRegistry` (for schema validation), `TestingArchitectHost` (an in-memory implementation of `ArchitectHost`), and `Architect`.
 
 * We've added a `builders.json` file next to the builder's [`package.json` file](https://github.com/mgechev/cli-builders-demo/blob/master/command-builder/builders.json), and modified the package file to point to it.
 
 Here’s an example of a test that runs the command builder.
-The test uses the builder to run the `ls` command, then validates that it ran successfully and listed the proper files.
+The test uses the builder to run the `node --print 'foo'` command, then validates that the `logger` contains an entry for `foo`.
 
-<code-example language="typescript" header="command/index_spec.ts">
-
-import { Architect } from '@angular-devkit/architect';
-import { TestingArchitectHost } from '@angular-devkit/architect/testing';
-// Our builder forwards the STDOUT of the command to the logger.
-import { logging, schema } from '@angular-devkit/core';
-
-describe('Command Runner Builder', () => {
-  let architect: Architect;
-  let architectHost: TestingArchitectHost;
-
-  beforeEach(async () => {
-    const registry = new schema.CoreSchemaRegistry();
-    registry.addPostTransform(schema.transforms.addUndefinedDefaults);
-
-    // TestingArchitectHost() takes workspace and current directories.
-    // Since we don't use those, both are the same in this case.
-    architectHost = new TestingArchitectHost(__dirname, __dirname);
-    architect = new Architect(architectHost, registry);
-
-    // This will either take a Node package name, or a path to the directory
-    // for the package.json file.
-    await architectHost.addBuilderFromPackage('..');
-  });
-
-  // This might not work in Windows.
-  it('can run ls', async () => {
-    // Create a logger that keeps an array of all messages that were logged.
-    const logger = new logging.Logger('');
-    const logs = [];
-    logger.subscribe(ev => logs.push(ev.message));
-
-    // A "run" can have multiple outputs, and contains progress information.
-    const run = await architect.scheduleBuilder('@example/command-runner:command', {
-      command: 'ls',
-      args: [__dirname],
-    }, { logger });  // We pass the logger for checking later.
-
-    // The "result" member (of type BuilderOutput) is the next output.
-    const output = await run.result;
-
-    // Stop the builder from running. This stops Architect from keeping
-    // the builder-associated states in memory, since builders keep waiting
-    // to be scheduled.
-    await run.stop();
-
-    // Expect that it succeeded.
-    expect(output.success).toBe(true);
-
-    // Expect that this file was listed. It should be since we're running
-    // `ls $__dirname`.
-    expect(logs).toContain('index.spec.ts');
-  });
-});
-
+<code-example 
+  path="cli-builder/src/my-builder.spec.ts" 
+  header="src/my-builder.spec.ts">
 </code-example>
 
 <div class="alert is-helpful">
 
-   When running this test in your repo, you need the [`ts-node`](https://github.com/TypeStrong/ts-node) package. You can avoid this by renaming `index.spec.ts` to `index.spec.js`.
+   When running this test in your repo, you need the [`ts-node`](https://github.com/TypeStrong/ts-node) package. You can avoid this by renaming `my-builder.spec.ts` to `my-builder.spec.js`.
 
 </div>
 
