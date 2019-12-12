@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {StylingMapArray, TStylingContext} from '../interfaces/styling';
+import {StylingMapArray, TStylingContext, TStylingRange} from '../interfaces/styling';
 import {CssSelector} from './projection';
 import {RNode} from './renderer';
 import {LView, TView} from './view';
@@ -599,6 +599,26 @@ export interface TNode {
    * will be placed into the initial styling slot in the newly created `TStylingContext`.
    */
   classes: StylingMapArray|TStylingContext|null;
+
+  /**
+   * Stores the head/tail of the class bindings.
+   *
+   * See: `STYLING.md` for details.
+   *
+   * This is used by `insertTStylingBinding` to know where the next styling binding should be
+   * inserted.
+   */
+  classBindings: TStylingRange;
+
+  /**
+   * Stores the head/tail of the style bindings.
+   *
+   * See: `STYLING.md` for details.
+   *
+   * This is used by `insertTStylingBinding` to know where the next styling binding should be
+   * inserted.
+   */
+  styleBindings: TStylingRange;
 }
 
 /** Static data for an element  */

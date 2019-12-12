@@ -471,3 +471,99 @@ export const enum StylingMapsSyncMode {
  * The styling algorithm code only needs access to `flags`.
  */
 export interface TStylingNode { flags: TNodeFlags; }
+
+
+/**
+ * Value stored in the `TData` which is needed to re-concatenate the styling.
+ *
+ * - `null`: This is unused in the case of `ɵɵstyleMap`/`ɵɵclassMap` instruction.
+ * - `string`: Stores the property name. Used with `ɵɵstyleProp`/`ɵɵclassProp` instruction.
+ * - `{key: string, suffix: string}`: Stores the property name/key and a suffix. Used with
+ *   `ɵɵstyleProp`/`ɵɵclassProp` instruction as in `[style.width.px]="exp"`.
+ */
+export type TStylingKey = string | null | {key: string, suffix: string};
+
+/**
+ * This is a branded number which contains previous and next index.
+ *
+ * When we come across styling instructions we need to store the `TStyleValue` in the correct
+ * order so that we can re-concatenate the styling value in the desired priority.
+ *
+ * The insertion can happen either at the:
+ * - end of template as in the case of coming across additional styling instruction in the template
+ * - in front of the template in the case of coming across additional instruction in the
+ *   `hostBindings`.
+ *
+ * We use `TStylingRange` to store the previous and next index into the `TData` where the template
+ * bindings can be found.
+ *
+ * - bit 0 is used to mark that the previous index has a duplicate for current value.
+ * - bit 1 is used to mark that the next index has a duplicate for the current value.
+ * - bits 2-16 are used to encode the next/tail of the template.
+ * - bits 17-32 are used to encode the previous/head of template.
+ *
+ * NOTE: `0` has special significance and represents `null` as in no additional pointer.
+ */
+export interface TStylingRange { __brand__: 'TStylingRange'; }
+
+/**
+ * Shift and masks constants for encoding two numbers into and duplicate info into a single number.
+ */
+export const enum StylingRange {
+  /// Number of bits to shift for the previous pointer
+  PREV_SHIFT = 18,
+  /// Previous pointer mask.
+  PREV_MASK = 0xFFFC0000,
+
+  /// Number of bits to shift for the next pointer
+  NEXT_SHIFT = 2,
+  /// Next pointer mask.
+  NEXT_MASK = 0x0003FFC,
+
+  PREV_DUPLICATE = 0x02,
+  NEXT_DUPLICATE = 0x01,
+}
+
+
+export function toTStylingRange(prev: number, next: number): TStylingRange {
+  return (prev << StylingRange.PREV_SHIFT | next << StylingRange.NEXT_SHIFT) as any;
+}
+
+export function getTStylingRangePrev(tStylingRange: TStylingRange): number {
+  return (tStylingRange as any as number) >> StylingRange.PREV_SHIFT;
+}
+
+export function getTStylingRangePrevDuplicate(tStylingRange: TStylingRange): boolean {
+  return ((tStylingRange as any as number) & StylingRange.PREV_DUPLICATE) ==
+      StylingRange.PREV_DUPLICATE;
+}
+
+export function setTStylingRangePrev(
+    tStylingRange: TStylingRange, previous: number): TStylingRange {
+  return (
+      ((tStylingRange as any as number) & ~StylingRange.PREV_MASK) |
+      (previous << StylingRange.PREV_SHIFT)) as any;
+}
+
+export function setTStylingRangePrevDuplicate(tStylingRange: TStylingRange): TStylingRange {
+  return ((tStylingRange as any as number) | StylingRange.PREV_DUPLICATE) as any;
+}
+
+export function getTStylingRangeNext(tStylingRange: TStylingRange): number {
+  return ((tStylingRange as any as number) & StylingRange.NEXT_MASK) >> StylingRange.NEXT_SHIFT;
+}
+
+export function setTStylingRangeNext(tStylingRange: TStylingRange, next: number): TStylingRange {
+  return (
+      ((tStylingRange as any as number) & ~StylingRange.NEXT_MASK) |  //
+      next << StylingRange.NEXT_SHIFT) as any;
+}
+
+export function getTStylingRangeNextDuplicate(tStylingRange: TStylingRange): boolean {
+  return ((tStylingRange as any as number) & StylingRange.NEXT_DUPLICATE) ===
+      StylingRange.NEXT_DUPLICATE;
+}
+
+export function setTStylingRangeNextDuplicate(tStylingRange: TStylingRange): TStylingRange {
+  return ((tStylingRange as any as number) | StylingRange.NEXT_DUPLICATE) as any;
+}
