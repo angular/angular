@@ -58,7 +58,7 @@ If the above `ng build` command throws an error about missing packages, append t
 
 #### Hosting the built project
 
-The files in the `dist/my-project-name` folder are static and can be hosted on any web server capable of serving files (Firebase, Google Cloud, App Engine, others) or any backend (`Node.js`, Java, .NET).
+The files in the `dist/my-project-name` folder are static and can be hosted by a cloud hosting service (Firebase, Google Cloud, App Engine, others) or any custom web server capable of serving files over (`Node.js`, Java, .NET).
 
 ### Hosting an Angular app on Firebase
 
@@ -93,7 +93,6 @@ Angular offers many more capabilities, and you now have a foundation that empowe
 * Angular also has an extensive [network of 3rd-party tools and libraries](https://angular.io/resources "Angular resources list"). 
 
 Keep current by following the [Angular blog](https://blog.angular.io/ "Angular blog"). 
-
 
 
 
