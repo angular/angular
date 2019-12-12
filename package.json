@@ -130,8 +130,8 @@
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "// 3": "when updating @bazel/bazel version you also need to update the RBE settings in .bazelrc (see https://github.com/angular/angular/pull/27935)",
   "devDependencies": {
-    "@angular/cli": "^9.0.0-rc.3",
     "@angular-devkit/build-angular": "^0.900.0-rc.3",
+    "@angular/cli": "^9.0.0-rc.3",
     "@bazel/bazel": "1.1.0",
     "@bazel/buildifier": "^0.29.0",
     "@bazel/ibazel": "^0.10.3",
@@ -168,8 +168,7 @@
     "tsutils": "2.27.2",
     "universal-analytics": "0.4.15",
     "vlq": "0.2.2",
-    "vrsource-tslint-rules": "5.1.1",
-    "webpack": "1.12.9"
+    "vrsource-tslint-rules": "5.1.1"
   },
   "// 4": "Overwrite graceful-fs to a version that does not rely on the 'natives' package. This fixes gulp for >= 10.13, more information: #28213",
   "resolutions": {
