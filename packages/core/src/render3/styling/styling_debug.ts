@@ -6,9 +6,10 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-import {TNodeFlags} from '../interfaces/node';
+import {TNode, TNodeFlags} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
-import {ApplyStylingFn, LStylingData, TStylingContext, TStylingContextIndex, TStylingNode} from '../interfaces/styling';
+import {ApplyStylingFn, LStylingData, TStylingContext, TStylingContextIndex, TStylingNode, TStylingRange, getTStylingRangePrev} from '../interfaces/styling';
+import {TData} from '../interfaces/view';
 import {getCurrentStyleSanitizer} from '../state';
 import {attachDebugObject} from '../util/debug_utils';
 import {MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, allowDirectStyling as _allowDirectStyling, getBindingValue, getDefaultValue, getGuardMask, getProp, getPropValuesStartPosition, getValue, getValuesCount, hasConfig, isSanitizationRequired, isStylingContext, normalizeIntoStylingMap, setValue} from '../util/styling_utils';
@@ -494,4 +495,22 @@ function buildConfig(tNode: TStylingNode, isClassBased: boolean): DebugStylingCo
       hasHostBindings,      //
       allowDirectStyling,   //
   };
+}
+
+
+/**
+ * Find the head of the styling binding linked list.
+ */
+export function getStylingBindingHead(tData: TData, tNode: TNode, isClassBinding: boolean): number {
+  let index = getTStylingRangePrev(isClassBinding ? tNode.classBindings : tNode.styleBindings);
+  while (true) {
+    const tStylingRange = tData[index + 1] as TStylingRange;
+    const prev = getTStylingRangePrev(tStylingRange);
+    if (prev === 0) {
+      // found head exit.
+      return index;
+    } else {
+      index = prev;
+    }
+  }
 }
