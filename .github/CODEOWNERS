@@ -480,6 +480,7 @@
 
 /packages/compiler-cli/src/ngtools/**                           @angular/tools-cli @angular/framework-global-approvers
 /aio/content/guide/cli-builder.md                               @angular/tools-cli @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/cli-builder/**                            @angular/tools-cli @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/ivy.md                                       @angular/tools-cli @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/web-worker.md                                @angular/tools-cli @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
@@ -901,7 +902,7 @@ testing/**                                                      @angular/fw-test
 /aio/content/guide/migration-module-with-providers.md           @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/updating-to-version-9.md                     @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/ivy-compatibility.md                         @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
-/aio/content/guide/ivy-compatibility-examples.md                     @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/ivy-compatibility-examples.md                @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
 # ================================================
