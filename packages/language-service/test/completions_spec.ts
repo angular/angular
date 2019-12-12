@@ -80,14 +80,15 @@ describe('completions', () => {
     ]);
   });
 
-  it('should be able to find common angular attributes', () => {
+  it('should be able to find common Angular attributes', () => {
     const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'div-attributes');
     const completions = ngLS.getCompletionsAt(APP_COMPONENT, marker.start);
     expectContain(completions, CompletionKind.ATTRIBUTE, [
-      '(click)',
-      '[ngClass]',
-      '*ngIf',
-      '*ngFor',
+      'ngClass',
+      'ngForm',
+      'ngModel',
+      'string-model',
+      'number-model',
     ]);
   });
 
@@ -117,46 +118,21 @@ describe('completions', () => {
     expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
   });
 
-  describe('property completions for members of an indexed type', () => {
-    it('should work with numeric index signatures (arrays)', () => {
-      mockHost.override(TEST_TEMPLATE, `{{ heroes[0].~{heroes-number-index}}}`);
-      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-number-index');
-      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
-      expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
-    });
-
-    it('should work with numeric index signatures (tuple arrays)', () => {
-      mockHost.override(TEST_TEMPLATE, `{{ tupleArray[1].~{tuple-array-number-index}}}`);
-      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'tuple-array-number-index');
-      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
-      expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
-    });
-
-    describe('with string index signatures', () => {
-      it('should work with index notation', () => {
-        mockHost.override(TEST_TEMPLATE, `{{ heroesByName['Jacky'].~{heroes-string-index}}}`);
-        const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-string-index');
-        const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
-        expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
-      });
-
-      it('should work with dot notation', () => {
-        mockHost.override(TEST_TEMPLATE, `{{ heroesByName.jacky.~{heroes-string-index}}}`);
-        const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-string-index');
-        const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
-        expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
-      });
-
-      it('should work with dot notation if stringIndexType is a primitive type', () => {
-        mockHost.override(TEST_TEMPLATE, `{{ primitiveIndexType.test.~{string-primitive-type}}}`);
-        const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'string-primitive-type');
-        const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
-        expectContain(completions, CompletionKind.METHOD, ['substring']);
-      });
-    });
+  it('should suggest template refereces', () => {
+    mockHost.override(TEST_TEMPLATE, `<div *~{cursor}></div>`);
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+    expectContain(completions, CompletionKind.ATTRIBUTE, [
+      'ngFor',
+      'ngForOf',
+      'ngIf',
+      'ngSwitchCase',
+      'ngSwitchDefault',
+      'ngPluralCase',
+    ]);
   });
 
-  it('should be able to return attribute names with an incompete attribute', () => {
+  it('should be able to return attribute names with an incomplete attribute', () => {
     const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'no-value-attribute');
     const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
     expectContain(completions, CompletionKind.HTML_ATTRIBUTE, ['id', 'class', 'dir', 'lang']);
@@ -275,14 +251,16 @@ describe('completions', () => {
       expect(entries).not.toContain(jasmine.objectContaining({name: 'onmouseup'}));
     });
 
-    it('should be able to find common angular attributes', () => {
-      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'div-attributes');
+    it('should be able to find common Angular attributes', () => {
+      mockHost.override(TEST_TEMPLATE, `<div ~{cursor}></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
       const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
       expectContain(completions, CompletionKind.ATTRIBUTE, [
-        '(click)',
-        '[ngClass]',
-        '*ngIf',
-        '*ngFor',
+        'ngClass',
+        'ngForm',
+        'ngModel',
+        'string-model',
+        'number-model',
       ]);
     });
   });
@@ -366,14 +344,10 @@ describe('completions', () => {
     });
 
     it('should be able to complete a the LHS of a two-way binding', () => {
-      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'two-way-binding-input');
-      const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
-      expectContain(completions, CompletionKind.ATTRIBUTE, [
-        'ngModel',
-        '[ngModel]',
-        '(ngModelChange)',
-        '[(ngModel)]',
-      ]);
+      mockHost.override(TEST_TEMPLATE, `<div [(~{cursor})]></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.ATTRIBUTE, ['ngModel']);
     });
 
     it('should be able to complete a the RHS of a two-way binding', () => {
@@ -382,14 +356,46 @@ describe('completions', () => {
       expectContain(completions, CompletionKind.PROPERTY, ['test']);
     });
 
-    it('should work with input and output', () => {
-      const m1 = mockHost.getLocationMarkerFor(PARSING_CASES, 'string-marker');
-      const c1 = ngLS.getCompletionsAt(PARSING_CASES, m1.start);
-      expectContain(c1, CompletionKind.ATTRIBUTE, ['[model]', '(modelChange)', '[(model)]']);
+    it('should suggest property binding for input', () => {
+      // Property binding via []
+      mockHost.override(TEST_TEMPLATE, `<div number-model [~{cursor}]></div>`);
+      const m1 = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const c1 = ngLS.getCompletionsAt(TEST_TEMPLATE, m1.start);
+      expectContain(c1, CompletionKind.ATTRIBUTE, ['inputAlias']);
 
-      const m2 = mockHost.getLocationMarkerFor(PARSING_CASES, 'number-marker');
-      const c2 = ngLS.getCompletionsAt(PARSING_CASES, m2.start);
-      expectContain(c2, CompletionKind.ATTRIBUTE, ['[inputAlias]', '(outputAlias)']);
+      // Property binding via bind-
+      mockHost.override(TEST_TEMPLATE, `<div number-model bind-~{cursor}></div>`);
+      const m2 = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const c2 = ngLS.getCompletionsAt(TEST_TEMPLATE, m2.start);
+      expectContain(c2, CompletionKind.ATTRIBUTE, ['inputAlias']);
+    });
+
+    it('should suggest event binding for output', () => {
+      // Event binding via ()
+      mockHost.override(TEST_TEMPLATE, `<div number-model (~{cursor})></div>`);
+      const m1 = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const c1 = ngLS.getCompletionsAt(TEST_TEMPLATE, m1.start);
+      expectContain(c1, CompletionKind.ATTRIBUTE, ['outputAlias']);
+
+      // Event binding via on-
+      mockHost.override(TEST_TEMPLATE, `<div number-mode on-~{cursor}></div>`);
+      const m2 = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const c2 = ngLS.getCompletionsAt(TEST_TEMPLATE, m2.start);
+      expectContain(c2, CompletionKind.ATTRIBUTE, ['outputAlias']);
+    });
+
+    it('should suggest two-way binding for input and output', () => {
+      // Banana-in-a-box via [()]
+      mockHost.override(TEST_TEMPLATE, `<div string-model [(~{cursor})]></div>`);
+      const m1 = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const c1 = ngLS.getCompletionsAt(TEST_TEMPLATE, m1.start);
+      expectContain(c1, CompletionKind.ATTRIBUTE, ['model']);
+
+      // Banana-in-a-box via bindon-
+      mockHost.override(TEST_TEMPLATE, `<div string-model bindon-~{cursor}></div>`);
+      const m2 = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const c2 = ngLS.getCompletionsAt(TEST_TEMPLATE, m2.start);
+      expectContain(c2, CompletionKind.ATTRIBUTE, ['model']);
     });
   });
 
@@ -543,7 +549,7 @@ describe('completions', () => {
         @Component({
           selector: 'foo-component',
           template: \`
-            <div cl~{click}></div>
+            <div (cl~{click})></div>
           \`,
         })
         export class FooComponent {}
@@ -551,9 +557,9 @@ describe('completions', () => {
       const location = mockHost.getLocationMarkerFor(fileName, 'click');
       const completions = ngLS.getCompletionsAt(fileName, location.start) !;
       expect(completions).toBeDefined();
-      const completion = completions.entries.find(entry => entry.name === '(click)') !;
+      const completion = completions.entries.find(entry => entry.name === 'click') !;
       expect(completion).toBeDefined();
-      expect(completion.kind).toBe('attribute');
+      expect(completion.kind).toBe(CompletionKind.ATTRIBUTE);
       expect(completion.replacementSpan).toEqual({start: location.start - 2, length: 2});
     });
 
@@ -602,7 +608,7 @@ describe('completions', () => {
         @Component({
           selector: 'foo-component',
           template: \`
-            <input ngMod~{model} />
+            <input [(ngMod~{model})] />
           \`,
         })
         export class FooComponent {}
@@ -610,10 +616,49 @@ describe('completions', () => {
       const location = mockHost.getLocationMarkerFor(fileName, 'model');
       const completions = ngLS.getCompletionsAt(fileName, location.start) !;
       expect(completions).toBeDefined();
-      const completion = completions.entries.find(entry => entry.name === '[(ngModel)]') !;
+      const completion = completions.entries.find(entry => entry.name === 'ngModel') !;
       expect(completion).toBeDefined();
-      expect(completion.kind).toBe('attribute');
+      expect(completion.kind).toBe(CompletionKind.ATTRIBUTE);
       expect(completion.replacementSpan).toEqual({start: location.start - 5, length: 5});
+    });
+  });
+
+  describe('property completions for members of an indexed type', () => {
+    it('should work with numeric index signatures (arrays)', () => {
+      mockHost.override(TEST_TEMPLATE, `{{ heroes[0].~{heroes-number-index}}}`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-number-index');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
+    });
+
+    it('should work with numeric index signatures (tuple arrays)', () => {
+      mockHost.override(TEST_TEMPLATE, `{{ tupleArray[1].~{tuple-array-number-index}}}`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'tuple-array-number-index');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
+    });
+
+    describe('with string index signatures', () => {
+      it('should work with index notation', () => {
+        mockHost.override(TEST_TEMPLATE, `{{ heroesByName['Jacky'].~{heroes-string-index}}}`);
+        const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-string-index');
+        const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+        expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
+      });
+
+      it('should work with dot notation', () => {
+        mockHost.override(TEST_TEMPLATE, `{{ heroesByName.jacky.~{heroes-string-index}}}`);
+        const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'heroes-string-index');
+        const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+        expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
+      });
+
+      it('should work with dot notation if stringIndexType is a primitive type', () => {
+        mockHost.override(TEST_TEMPLATE, `{{ primitiveIndexType.test.~{string-primitive-type}}}`);
+        const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'string-primitive-type');
+        const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+        expectContain(completions, CompletionKind.METHOD, ['substring']);
+      });
     });
   });
 });
