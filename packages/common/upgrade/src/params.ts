@@ -225,10 +225,9 @@ function _stripIndexHtml(url: string): string {
  *
  * @private
  * @param str value potential URI component to check.
- * @returns {boolean} True if `value` can be decoded
- * with the decodeURIComponent function.
+ * @returns the decoded URI if it can be decoded or else `undefined`.
  */
-function tryDecodeURIComponent(value: string) {
+function tryDecodeURIComponent(value: string): string|undefined {
   try {
     return decodeURIComponent(value);
   } catch (e) {
@@ -241,7 +240,6 @@ function tryDecodeURIComponent(value: string) {
 /**
  * Parses an escaped url query string into key-value pairs. Logic taken from
  * https://github.com/angular/angular.js/blob/864c7f0/src/Angular.js#L1382
- * @returns {Object.<string,boolean|Array>}
  */
 function parseKeyValue(keyValue: string): {[k: string]: unknown} {
   const obj: {[k: string]: unknown} = {};
