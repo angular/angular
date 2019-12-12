@@ -1212,8 +1212,7 @@ describe('styling', () => {
 
         classesSummary = classes.summary;
         abcSummary = classesSummary['abc'];
-        expect(abcSummary.prop).toEqual('abc');
-        expect(abcSummary.value).toBeFalsy();
+        expect(abcSummary).toBeUndefined();
 
         let defSummary = classesSummary['def'];
         expect(defSummary.prop).toEqual('def');
