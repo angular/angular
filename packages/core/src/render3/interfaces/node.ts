@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {StylingMapArray, TStylingContext} from '../interfaces/styling';
+import {StylingMapArray, TStylingContext, TStylingRange} from '../interfaces/styling';
 import {CssSelector} from './projection';
 import {RNode} from './renderer';
 import {LView, TView} from './view';
@@ -599,6 +599,36 @@ export interface TNode {
    * will be placed into the initial styling slot in the newly created `TStylingContext`.
    */
   classes: StylingMapArray|TStylingContext|null;
+
+  /**
+   * Stores the head/tail index of the class bindings.
+   *
+   * - If no bindings, the head and tail will both be 0.
+   * - If there are template bindings, stores the head/tail of the class bindings in the template.
+   * - If no template bindings but there are host bindings, the head value will point to the last
+   *   host binding for "class" (not the head of the linked list), tail will be 0.
+   *
+   * See: `style_binding_list.ts` for details.
+   *
+   * This is used by `insertTStylingBinding` to know where the next styling binding should be
+   * inserted so that they can be sorted in priority order.
+   */
+  classBindings: TStylingRange;
+
+  /**
+   * Stores the head/tail index of the class bindings.
+   *
+   * - If no bindings, the head and tail will both be 0.
+   * - If there are template bindings, stores the head/tail of the style bindings in the template.
+   * - If no template bindings but there are host bindings, the head value will point to the last
+   *   host binding for "style" (not the head of the linked list), tail will be 0.
+   *
+   * See: `style_binding_list.ts` for details.
+   *
+   * This is used by `insertTStylingBinding` to know where the next styling binding should be
+   * inserted so that they can be sorted in priority order.
+   */
+  styleBindings: TStylingRange;
 }
 
 /** Static data for an element  */

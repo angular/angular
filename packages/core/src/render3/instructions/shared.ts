@@ -815,6 +815,8 @@ export function createTNode(
                          null,       // projection: number|(ITNode|RNode[])[]|null
                          null,       // styles: TStylingContext|null
                          null,       // classes: TStylingContext|null
+                         0 as any,   // classBindings: TStylingRange;
+                         0 as any,   // styleBindings: TStylingRange;
                          ) :
                      {
                        type: type,
@@ -839,6 +841,8 @@ export function createTNode(
                        projection: null,
                        styles: null,
                        classes: null,
+                       classBindings: 0 as any,
+                       styleBindings: 0 as any,
                      };
 }
 
