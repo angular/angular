@@ -9,6 +9,7 @@ import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 
 import {TNodeFlags} from './node';
 import {ProceduralRenderer3, RElement, Renderer3} from './renderer';
+import {SanitizerFn} from './sanitization';
 import {LView} from './view';
 
 
@@ -471,3 +472,173 @@ export const enum StylingMapsSyncMode {
  * The styling algorithm code only needs access to `flags`.
  */
 export interface TStylingNode { flags: TNodeFlags; }
+
+
+/**
+ * Value stored in the `TData` which is needed to re-concatenate the styling.
+ *
+ * - `string`: Stores the property name. Used with `ɵɵstyleProp`/`ɵɵclassProp` instruction which
+ * don't have suffix or don't need sanitization.
+ */
+export type TStylingKey = string | TStylingSuffixKey | TStylingSanitizationKey | TStylingMapKey;
+
+
+/**
+ * For performance reasons we want to make sure that all subclasses have the same shape object.
+ *
+ * See subclasses for implementation details.
+ */
+export interface TStylingKeyShape {
+  key: string|null;
+  extra: string|SanitizerFn|TStylingMapFn;
+}
+
+/**
+ * Used in the case of `ɵɵstyleProp('width', exp, 'px')`.
+ */
+export interface TStylingSuffixKey extends TStylingKeyShape {
+  /// Stores the property key.
+  key: string;
+  /// Stores the property suffix.
+  extra: string;
+}
+
+/**
+ * Used in the case of `ɵɵstyleProp('url', exp, styleSanitizationFn)`.
+ */
+export interface TStylingSanitizationKey extends TStylingKeyShape {
+  /// Stores the property key.
+  key: string;
+  /// Stores sanitization function.
+  extra: SanitizerFn;
+}
+
+/**
+ * Used in the case of `ɵɵstyleMap()`/`ɵɵclassMap()`.
+ */
+export interface TStylingMapKey extends TStylingKeyShape {
+  /// There is no key
+  key: null;
+  /// Invoke this function to process the value (convert it into the result)
+  /// This is implemented this way so that the logic associated with `ɵɵstyleMap()`/`ɵɵclassMap()`
+  /// can be tree shaken away. Internally the function will break the `Map`/`Array` down into
+  /// parts and call `appendStyling` on parts.
+  ///
+  /// See: `CLASS_MAP_STYLING_KEY` and `STYLE_MAP_STYLING_KEY` for details.
+  extra: TStylingMapFn;
+}
+
+/**
+ * Invoke this function to process the styling value which is non-primitive (Map/Array)
+ * This is implemented this way so that the logic associated with `ɵɵstyleMap()`/`ɵɵclassMap()`
+ * can be tree shaken away. Internally the function will break the `Map`/`Array` down into
+ * parts and call `appendStyling` on parts.
+ *
+ * See: `CLASS_MAP_STYLING_KEY` and `STYLE_MAP_STYLING_KEY` for details.
+ */
+export type TStylingMapFn = (text: string, value: any, hasPreviousDuplicate: boolean) => string;
+
+/**
+ * This is a branded number which contains previous and next index.
+ *
+ * When we come across styling instructions we need to store the `TStylingKey` in the correct
+ * order so that we can re-concatenate the styling value in the desired priority.
+ *
+ * The insertion can happen either at the:
+ * - end of template as in the case of coming across additional styling instruction in the template
+ * - in front of the template in the case of coming across additional instruction in the
+ *   `hostBindings`.
+ *
+ * We use `TStylingRange` to store the previous and next index into the `TData` where the template
+ * bindings can be found.
+ *
+ * - bit 0 is used to mark that the previous index has a duplicate for current value.
+ * - bit 1 is used to mark that the next index has a duplicate for the current value.
+ * - bits 2-16 are used to encode the next/tail of the template.
+ * - bits 17-32 are used to encode the previous/head of template.
+ *
+ * NODE: *duplicate* false implies that it is statically known that this binding will not collide
+ * with other bindings and therefore there is no need to check other bindings. For example the
+ * bindings in `<div [style.color]="exp" [style.width]="exp">` will never collide and will have
+ * their bits set accordingly. Previous duplicate means that we may need to check previous if the
+ * current binding is `null`. Next duplicate means that we may need to check next bindings if the
+ * current binding is not `null`.
+ *
+ * NOTE: `0` has special significance and represents `null` as in no additional pointer.
+ */
+export interface TStylingRange { __brand__: 'TStylingRange'; }
+
+/**
+ * Shift and masks constants for encoding two numbers into and duplicate info into a single number.
+ */
+export const enum StylingRange {
+  /// Number of bits to shift for the previous pointer
+  PREV_SHIFT = 18,
+  /// Previous pointer mask.
+  PREV_MASK = 0xFFFC0000,
+
+  /// Number of bits to shift for the next pointer
+  NEXT_SHIFT = 2,
+  /// Next pointer mask.
+  NEXT_MASK = 0x0003FFC,
+
+  /**
+   * This bit is set if the previous bindings contains a binding which could possibly cause a
+   * duplicate. For example: `<div [style]="map" [style.width]="width">`, the `width` binding will
+   * have previous duplicate set. The implication is that if `width` binding becomes `null`, it is
+   * necessary to defer the value to `map.width`. (Because `width` overwrites `map.width`.)
+   */
+  PREV_DUPLICATE = 0x02,
+
+  /**
+   * This bit is set to if the next binding contains a binding which could possibly cause a
+   * duplicate. For example: `<div [style]="map" [style.width]="width">`, the `map` binding will
+   * have next duplicate set. The implication is that if `map.width` binding becomes not `null`, it
+   * is necessary to defer the value to `width`. (Because `width` overwrites `map.width`.)
+   */
+  NEXT_DUPLICATE = 0x01,
+}
+
+
+export function toTStylingRange(prev: number, next: number): TStylingRange {
+  return (prev << StylingRange.PREV_SHIFT | next << StylingRange.NEXT_SHIFT) as any;
+}
+
+export function getTStylingRangePrev(tStylingRange: TStylingRange): number {
+  return (tStylingRange as any as number) >> StylingRange.PREV_SHIFT;
+}
+
+export function getTStylingRangePrevDuplicate(tStylingRange: TStylingRange): boolean {
+  return ((tStylingRange as any as number) & StylingRange.PREV_DUPLICATE) ==
+      StylingRange.PREV_DUPLICATE;
+}
+
+export function setTStylingRangePrev(
+    tStylingRange: TStylingRange, previous: number): TStylingRange {
+  return (
+      ((tStylingRange as any as number) & ~StylingRange.PREV_MASK) |
+      (previous << StylingRange.PREV_SHIFT)) as any;
+}
+
+export function setTStylingRangePrevDuplicate(tStylingRange: TStylingRange): TStylingRange {
+  return ((tStylingRange as any as number) | StylingRange.PREV_DUPLICATE) as any;
+}
+
+export function getTStylingRangeNext(tStylingRange: TStylingRange): number {
+  return ((tStylingRange as any as number) & StylingRange.NEXT_MASK) >> StylingRange.NEXT_SHIFT;
+}
+
+export function setTStylingRangeNext(tStylingRange: TStylingRange, next: number): TStylingRange {
+  return (
+      ((tStylingRange as any as number) & ~StylingRange.NEXT_MASK) |  //
+      next << StylingRange.NEXT_SHIFT) as any;
+}
+
+export function getTStylingRangeNextDuplicate(tStylingRange: TStylingRange): boolean {
+  return ((tStylingRange as any as number) & StylingRange.NEXT_DUPLICATE) ===
+      StylingRange.NEXT_DUPLICATE;
+}
+
+export function setTStylingRangeNextDuplicate(tStylingRange: TStylingRange): TStylingRange {
+  return ((tStylingRange as any as number) | StylingRange.NEXT_DUPLICATE) as any;
+}
