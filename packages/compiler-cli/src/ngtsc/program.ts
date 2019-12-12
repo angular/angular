@@ -630,7 +630,7 @@ export class NgtscProgram implements api.Program {
         localMetaReader, depScopeReader, this.refEmitter, this.aliasingHost);
     const scopeReader: ComponentScopeReader = this.scopeRegistry;
     const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, this.scopeRegistry]);
-    const injectableRegistry = new InjectableClassRegistry();
+    const injectableRegistry = new InjectableClassRegistry(this.reflector);
 
     this.metaReader = new CompoundMetadataReader([localMetaReader, dtsReader]);
 

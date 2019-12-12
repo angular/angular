@@ -449,9 +449,7 @@ export function resolveProvidersRequiringFactory(
   if (Array.isArray(resolvedProviders)) {
     const handleReference = (reference: Reference) => {
       const node = reference.node;
-
-      // Skip declarations from external libraries since the consumer can't do much about them.
-      if (!node.getSourceFile().isDeclarationFile && isNamedClassDeclaration(node)) {
+      if (isNamedClassDeclaration(node)) {
         const constructor = node.members.find(ts.isConstructorDeclaration);
 
         // Note that we only want to capture providers with a non-trivial constructor,

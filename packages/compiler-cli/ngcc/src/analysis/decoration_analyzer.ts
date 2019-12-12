@@ -86,7 +86,7 @@ export class DecorationAnalyzer {
       new PartialEvaluator(this.reflectionHost, this.typeChecker, /* dependencyTracker */ null);
   importGraph = new ImportGraph(this.moduleResolver);
   cycleAnalyzer = new CycleAnalyzer(this.importGraph);
-  injectableRegistry = new InjectableClassRegistry();
+  injectableRegistry = new InjectableClassRegistry(this.reflectionHost);
   handlers: DecoratorHandler<unknown, unknown, unknown>[] = [
     new ComponentDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.fullMetaReader,

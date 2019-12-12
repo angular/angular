@@ -60,7 +60,7 @@ runInEachFileSystem(() => {
           new ReferenceEmitter([]), null);
       const metaReader = new CompoundMetadataReader([metaRegistry, dtsReader]);
       const refEmitter = new ReferenceEmitter([]);
-      const injectableRegistry = new InjectableClassRegistry();
+      const injectableRegistry = new InjectableClassRegistry(reflectionHost);
 
       const handler = new ComponentDecoratorHandler(
           reflectionHost, evaluator, metaRegistry, metaReader, scopeRegistry, scopeRegistry,

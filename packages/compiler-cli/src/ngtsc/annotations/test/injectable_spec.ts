@@ -68,7 +68,7 @@ function setupHandler(errorOnDuplicateProv: boolean) {
   ]);
   const checker = program.getTypeChecker();
   const reflectionHost = new TypeScriptReflectionHost(checker);
-  const injectableRegistry = new InjectableClassRegistry();
+  const injectableRegistry = new InjectableClassRegistry(reflectionHost);
   const handler = new InjectableDecoratorHandler(
       reflectionHost, NOOP_DEFAULT_IMPORT_RECORDER, /* isCore */ false,
       /* strictCtorDeps */ false, injectableRegistry, errorOnDuplicateProv);

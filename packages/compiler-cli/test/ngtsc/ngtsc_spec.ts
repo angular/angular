@@ -5422,7 +5422,7 @@ export const Foo = Foo__PRE_R3__;
         expect(diags.length).toBe(0);
       });
 
-      it('should not error when an undecorated class from a declaration file is provided via useClass',
+      it('should not error when an undecorated class without a constructor from a declaration file is provided via useClass',
          () => {
            env.write('node_modules/@angular/core/testing/index.d.ts', `
             export declare class Testability {
@@ -5461,6 +5461,65 @@ export const Foo = Foo__PRE_R3__;
           })
           export class SomeModule {}
         `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+
+      it('should error when an undecorated class with a non-trivial constructor in a declaration file is provided via useClass',
+         () => {
+           env.write('node_modules/@angular/core/testing/index.d.ts', `
+            export declare class NgZone {}
+
+            export declare class Testability {
+              constructor(ngZone: NgZone) {}
+            }
+          `);
+           env.write('test.ts', `
+            import {NgModule, Injectable} from '@angular/core';
+            import {Testability} from '@angular/core/testing';
+
+            @Injectable()
+            class TestingService {}
+
+            @NgModule({
+              providers: [{provide: TestingService, useClass: Testability}]
+            })
+            export class SomeModule {}
+          `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toBe(
+                   `Provider Testability is not injectable, because it doesn't have an ` +
+                   `Angular decorator. This will result in an error at runtime.`);
+         });
+
+      it('should not error when an class with a factory definition and a non-trivial constructor in a declaration file is provided via useClass',
+         () => {
+           env.write('node_modules/@angular/core/testing/index.d.ts', `
+            import * as i0 from '@angular/core';
+
+            export declare class NgZone {}
+
+            export declare class Testability {
+              static ɵfac: i0.ɵɵFactoryDef<Testability>;
+              constructor(ngZone: NgZone) {}
+            }
+          `);
+           env.write('test.ts', `
+            import {NgModule, Injectable} from '@angular/core';
+            import {Testability} from '@angular/core/testing';
+
+            @Injectable()
+            class TestingService {}
+
+            @NgModule({
+              providers: [{provide: TestingService, useClass: Testability}]
+            })
+            export class SomeModule {}
+          `);
 
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(0);

@@ -67,7 +67,7 @@ runInEachFileSystem(() => {
           metaRegistry, new MetadataDtsModuleScopeResolver(dtsReader, null),
           new ReferenceEmitter([]), null);
       const refEmitter = new ReferenceEmitter([new LocalIdentifierStrategy()]);
-      const injectableRegistry = new InjectableClassRegistry();
+      const injectableRegistry = new InjectableClassRegistry(reflectionHost);
 
       const handler = new NgModuleDecoratorHandler(
           reflectionHost, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry,

@@ -49,7 +49,7 @@ runInEachFileSystem(() => {
       const scopeRegistry = new LocalModuleScopeRegistry(
           metaReader, new MetadataDtsModuleScopeResolver(dtsReader, null), new ReferenceEmitter([]),
           null);
-      const injectableRegistry = new InjectableClassRegistry();
+      const injectableRegistry = new InjectableClassRegistry(reflectionHost);
       const handler = new DirectiveDecoratorHandler(
           reflectionHost, evaluator, scopeRegistry, scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
           injectableRegistry,
