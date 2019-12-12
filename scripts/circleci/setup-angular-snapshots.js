@@ -14,11 +14,10 @@
  * Read more here: https://yarnpkg.com/lang/en/docs/package-json/#toc-resolutions
  */
 
-const {yellow, green} = require('chalk');
 const {writeFileSync} = require('fs');
 const {join} = require('path');
 
-const {tag} = require('minimist')(process.argv.slice(2), {string: ['tag']});
+const [tag] = process.argv.slice(2);
 const projectDir = join(__dirname, '../../');
 const packageJsonPath = join(projectDir, 'package.json');
 const packageJson = require(packageJsonPath);
@@ -32,8 +31,8 @@ const angularPackages = Object.keys({...packageJson.dependencies, ...packageJson
   .filter(packageName => packageName.startsWith('@angular/'));
 const packageSuffix = tag ? ` (${tag})` : '';
 
-console.log(green('Setting up snapshot builds for:\n'));
-console.log(yellow(`  ${angularPackages.map(n => `${n}${packageSuffix}`).join('\n  ')}\n`));
+console.log('Setting up snapshot builds for:\n');
+console.log(`  ${angularPackages.map(n => `${n}${packageSuffix}`).join('\n  ')}\n`);
 
 // Setup the snapshot version for each Angular package specified in the "package.json" file.
 angularPackages.forEach(packageName => {
@@ -55,4 +54,4 @@ angularPackages.forEach(packageName => {
 // Write changes to the "packageJson", so that we can install the new versions afterwards.
 writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
-console.log(green('Successfully added the "resolutions" to the "package.json".'));
+console.log('Successfully added the "resolutions" to the "package.json".');

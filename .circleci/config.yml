@@ -61,15 +61,22 @@ var_10: &yarn_install
     name: "Installing project dependencies"
     command: yarn install --frozen-lockfile --non-interactive
 
+# Installs all dependencies but does not enforce a frozen lockfile. Helpful when
+# the "package.json" is updated as part of a CI job. e.g. when setting up snapshots.
+var_11: &yarn_install_loose_lockfile
+  run:
+    name: "Installing project dependencies"
+    command: yarn install --non-interactive
+
 # Anchor that can be used to download and install Yarn globally in the bash environment.
-var_11: &yarn_download
+var_12: &yarn_download
   run:
     name: "Downloading and installing Yarn"
     command: |
       touch $BASH_ENV
       curl -o- -L https://yarnpkg.com/install.sh | PROFILE=$BASH_ENV bash -s -- --version "1.19.1"
 # Sets up the Bazel config which is specific for CircleCI builds.
-var_12: &setup_bazel_ci_config
+var_13: &setup_bazel_ci_config
   run:
     name: "Setting up Bazel configuration for CI"
     command: |
@@ -77,14 +84,14 @@ var_12: &setup_bazel_ci_config
 
 # Attaches the release output which has been stored in the workspace to the current job.
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
-var_13: &attach_release_output
+var_14: &attach_release_output
   attach_workspace:
     at: dist/
 
 # Branch filter that we can specify for jobs that should only run on publish branches. This filter
 # is used to ensure that not all upstream branches will be published as Github builds
 # (e.g. revert branches, feature branches)
-var_14: &publish_branches_filter
+var_15: &publish_branches_filter
   branches:
     only:
       - master
@@ -98,24 +105,36 @@ var_14: &publish_branches_filter
 # In order to reduce duplication we use a YAML anchor that just always excludes the "_presubmit"
 # branch. We don't want to run Circle for the temporary "_presubmit" branch which is reserved
 # for the caretaker.
-var_15: &ignore_presubmit_branch_filter
+var_16: &ignore_presubmit_branch_filter
   branches:
     ignore:
       - "_presubmit"
 
 # Runs a script that sets up the Bazel remote execution. This will be used by jobs that run
 # Bazel primarily and should benefit from remote caching and execution.
-var_16: &setup_bazel_remote_execution
+var_17: &setup_bazel_remote_execution
   run:
     name: "Setup bazel RBE remote execution"
     command: ./scripts/circleci/bazel/setup-remote-execution.sh
 
 # Sets up the bazel binary globally. We don't want to access bazel through Yarn and NodeJS
 # because it could mean that the Bazel child process only has access to limited memory.
-var_17: &setup_bazel_binary
+var_18: &setup_bazel_binary
   run:
     name: "Setting up global Bazel binary"
     command: ./scripts/circleci/setup_bazel_binary.sh
+
+# Sets up the Angular snapshot builds.
+var_19: &setup_snapshot_builds
+  run:
+    name: "Setting up Angular snapshot builds"
+    command: node ./scripts/circleci/setup-angular-snapshots.js master
+
+# Filter to skip a job on builds for pull requests.
+var_20: &skip_on_pull_requests_filter
+  branches:
+      ignore:
+        - /pull\/\d+/
 
 # -----------------------------
 # Container version of CircleCI
@@ -356,6 +375,39 @@ jobs:
 
       - run: ./scripts/circleci/publish-snapshots.sh
 
+  # -----------------------------------------------------------------
+  # Job that ensures that the release output is compatible with ngcc.
+  # -----------------------------------------------------------------
+  ngcc_compatibility:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - *checkout_code
+      - *restore_cache
+      - *attach_release_output
+      - *yarn_download
+      - *yarn_install
+
+      - run: cp -R dist/releases/* node_modules/@angular/
+      - run: yarn ngcc
+
+  # -----------------------------------------------------------------
+  # Job that ensures that the release output is compatible with the
+  # latest snapshot ngcc changes.
+  # -----------------------------------------------------------------
+  ngcc_compatibility_snapshot:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - *checkout_code
+      - *restore_cache
+      - *attach_release_output
+      - *yarn_download
+      - *setup_snapshot_builds
+      - *yarn_install_loose_lockfile
+
+      - run: cp -R dist/releases/* node_modules/@angular/
+      - run: yarn ngcc
 
   # ----------------------------------------------------------------------------
   # Job that runs the local browser tests against the Angular Github snapshots
@@ -372,10 +424,10 @@ jobs:
     - *setup_bazel_ci_config
     - *setup_bazel_remote_execution
     - *yarn_download
-    - *yarn_install
+    - *setup_snapshot_builds
+    - *yarn_install_loose_lockfile
     - *setup_bazel_binary
 
-    - run: node ./scripts/circleci/setup-angular-snapshots.js --tag master
     - run: bazel test src/... --build_tag_filters=-e2e --test_tag_filters=-e2e
 
   # ----------------------------------------------------------------------------
@@ -414,11 +466,10 @@ jobs:
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
       - *yarn_download
-      - *yarn_install
+      - *setup_snapshot_builds
+      - *yarn_install_loose_lockfile
       - *setup_bazel_binary
 
-      # Setup Angular snapshots by installing the artifacts from the Github repositories.
-      - run: node ./scripts/circleci/setup-angular-snapshots.js --tag master
       # Run project tests with NGC and View Engine.
       - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --config=view-engine
       - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine
@@ -478,6 +529,14 @@ workflows:
           filters: *ignore_presubmit_branch_filter
       - lint:
           filters: *ignore_presubmit_branch_filter
+      - ngcc_compatibility:
+          filters: *ignore_presubmit_branch_filter
+          requires:
+            - build_release_packages
+      - ngcc_compatibility_snapshot:
+          filters: *skip_on_pull_requests_filter
+          requires:
+            - build_release_packages
       - publish_snapshots:
           filters: *publish_branches_filter
           requires:
@@ -493,6 +552,7 @@ workflows:
       - snapshot_tests_local_browsers
       - view_engine_snapshot_test_cronjob
       - mdc_snapshot_test_cronjob
+
     triggers:
       - schedule:
           cron: "0 * * * *"
