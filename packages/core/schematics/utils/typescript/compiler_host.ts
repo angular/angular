@@ -22,7 +22,7 @@ export function createMigrationCompilerHost(
     const treeRelativePath = relative(basePath, fileName);
     const fakeOutput = fakeRead ? fakeRead(treeRelativePath) : null;
     const buffer = fakeOutput === null ? tree.read(treeRelativePath) : fakeOutput;
-    // Strip BOM as otherwise TSC methods (Ex: getWidth) will return an offset which
+    // Strip BOM as otherwise TSC methods (Ex: getWidth) will return an offset,
     // which breaks the CLI UpdateRecorder.
     // See: https://github.com/angular/angular/pull/30719
     return buffer ? buffer.toString().replace(/^\uFEFF/, '') : undefined;

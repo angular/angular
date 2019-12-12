@@ -68,13 +68,12 @@ describe('Undecorated classes with DI migration', () => {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }
 
-  async function runMigration() {
+  function runMigration() {
     return runner.runSchematicAsync('migration-v9-undecorated-classes-with-di', {}, tree)
         .toPromise();
   }
 
-  function
-  writeFakeAngular() {
+  function writeFakeAngular() {
     writeFile('/node_modules/@angular/core/index.d.ts', `
       export declare class PipeTransform {}
       export declare class NgZone {}
@@ -92,7 +91,7 @@ describe('Undecorated classes with DI migration', () => {
     }));
     writeFile('/node_modules/my-lib/index.d.ts', `
       import {NgZone} from '@angular/core';
-      
+
       export declare class SuperBaseClass {
         constructor(zone: NgZone);
       }
@@ -101,12 +100,12 @@ describe('Undecorated classes with DI migration', () => {
     writeFile('/index.ts', `
       import {Component, NgModule} from '@angular/core';
       import {SuperBaseClass} from 'my-lib';
-            
+
       export class BaseClass extends SuperBaseClass {}
-      
+
       @Component({template: ''})
       export class MyComponent extends BaseClass {}
-    
+
       @NgModule({declarations: [MyComponent]})
       export class MyModule {}
     `);
@@ -125,21 +124,21 @@ describe('Undecorated classes with DI migration', () => {
   it('should add @Directive() decorator to extended base class', async() => {
     writeFile('/index.ts', `
       import {Component, NgModule, NgZone} from '@angular/core';
-      
+
       export class BaseClass {
         constructor(zone: NgZone) {}
       }
-      
+
       export class BaseClass2 {
         constructor(zone: NgZone) {}
       }
-      
+
       @Component({template: ''})
       export class MyComponent extends BaseClass {}
-    
+
       @Component({template: ''})
       export class MyComponent2 extends BaseClass2 {}
-      
+
       @NgModule({declarations: [MyComponent, MyComponent2]})
       export class AppModule {}
     `);
@@ -153,17 +152,17 @@ describe('Undecorated classes with DI migration', () => {
   it('not decorated base class multiple times if extended multiple times', async() => {
     writeFile('/index.ts', dedent `
       import {Component, NgModule, NgZone} from '@angular/core';
-      
+
       export class BaseClass {
         constructor(zone: NgZone) {}
       }
-      
+
       @Component({template: ''})
       export class MyComponent extends BaseClass {}
-    
+
       @Component({template: ''})
       export class MyComponent2 extends BaseClass {}
-      
+
       @NgModule({declarations: [MyComponent, MyComponent2]})
       export class AppModule {}
     `);
@@ -171,7 +170,7 @@ describe('Undecorated classes with DI migration', () => {
     await runMigration();
 
     expect(tree.readContent('/index.ts')).toContain(dedent `
-      
+
       @Directive()
       export class BaseClass {
         constructor(zone: NgZone) {}
@@ -181,14 +180,14 @@ describe('Undecorated classes with DI migration', () => {
   it('should add @Injectable() decorator to extended base class', async() => {
     writeFile('/index.ts', `
       import {Injectable, NgModule, NgZone} from '@angular/core';
-      
+
       export class BaseClass {
         constructor(zone: NgZone) {}
       }
 
       @Injectable({template: ''})
       export class MyService extends BaseClass {}
-      
+
       @NgModule({providers: [MyService]})
       export class AppModule {}
     `);
@@ -201,10 +200,10 @@ describe('Undecorated classes with DI migration', () => {
   it('should not decorate base class for decorated pipe', async() => {
     writeFile('/index.ts', dedent `
       import {Component, NgModule, Pipe, PipeTransform} from '@angular/core';
-            
+
       @Pipe({name: 'test'})
       export class MyPipe extends PipeTransform {}
-    
+
       @NgModule({declarations: [MyPipe]})
       export class AppModule {}
     `);
@@ -256,29 +255,29 @@ describe('Undecorated classes with DI migration', () => {
      async() => {
        writeFile('/index.ts', dedent `
       import {Component, Injectable, NgModule, NgZone} from '@angular/core';
-      
+
       export class BaseClass {
         constructor(zone: NgZone) {}
       }
-      
+
       export class BaseClass {
         constructor(zone: NgZone) {}
       }
-      
+
       @Component({template: ''})
       export class MyComponent extends BaseClass {
         constructor(zone: NgZone) {
           super(zone);
         }
       }
-      
+
       @Injectable()
       export class MyService extends BaseClass {
         constructor(zone: NgZone) {
           super(zone);
         }
       }
-      
+
       @NgModule({declarations: [MyComponent], providers: [MyService]})
       export class AppModule {}
     `);
@@ -295,18 +294,18 @@ describe('Undecorated classes with DI migration', () => {
   it('should not decorate base class if it already has decorator', async() => {
     writeFile('/index.ts', dedent `
       import {Component, Directive, NgModule, NgZone} from '@angular/core';
-      
+
       @Directive({selector: 'base-class'})
       export class BaseClass {
         constructor(zone: NgZone) {}
       }
-      
+
       @Component({template: ''})
       export class MyComponent extends BaseClass {}
-      
+
       @NgModule({declarations: [MyComponent]})
       export class AppModule {}
-      
+
       @NgModule({declarations: [BaseClass]})
       export class LibModule {}
     `);
@@ -314,7 +313,7 @@ describe('Undecorated classes with DI migration', () => {
     await runMigration();
 
     expect(tree.readContent('/index.ts')).toContain(dedent `
-      
+
       @Directive({selector: 'base-class'})
       export class BaseClass {`);
   });
@@ -327,7 +326,7 @@ describe('Undecorated classes with DI migration', () => {
     }));
     writeFile('/node_modules/my-lib/index.d.ts', `
       import {NgZone} from '@angular/core';
-      
+
       export declare class SuperBaseClass {
         constructor(zone: NgZone);
       }
@@ -336,30 +335,30 @@ describe('Undecorated classes with DI migration', () => {
     writeFile('/index.ts', dedent `
       import {Component, Injectable, NgModule} from '@angular/core';
       import {SuperBaseClass} from 'my-lib';
-            
+
       export class BaseClass extends SuperBaseClass {}
-      
+
       export class BaseClass2 extends SuperBaseClass {}
-      
+
       export class PassThroughClass extends BaseClass {}
-      
+
       // should cause "BaseClass" to get a todo comment.
       @Component({template: ''})
       export class MyComponent extends PassThroughClass {}
-       
+
       // should cause "BaseClass2" to get a todo comment.
       @Injectable()
       export class MyService extends BaseClass2 {}
-      
+
       // should cause "BaseClass" to get a todo comment.
       @Component({template: ''})
       export class MyComponent2 extends BaseClass {}
-      
+
       // should get a todo comment because there are no base classes
       // in between.
       @Component({template: ''})
       export class MyComponent3 extends SuperBaseClass {}
-    
+
       @NgModule({declarations: [MyComponent, MyComponent2, MyComponent3], providers: [MyService]})
       export class MyModule {}
     `);
@@ -404,10 +403,10 @@ describe('Undecorated classes with DI migration', () => {
        writeFile('/index.ts', dedent `
         import {Component, NgModule} from '@angular/core';
         import {BaseComponent} from 'my-lib';
-  
+
         @Component({template: ''})
         export class MyComponent extends BaseComponent {}
-      
+
         @NgModule({declarations: [MyComponent]})
         export class MyModule {}
       `);
@@ -424,10 +423,10 @@ describe('Undecorated classes with DI migration', () => {
     writeFile('/index.ts', dedent `
         import {Component, NgModule} from '@angular/core';
         import {BaseDirective} from 'my-lib';
-  
+
         @Component({template: ''})
         export class MyComponent extends BaseDirective {}
-      
+
         @NgModule({declarations: [MyComponent]})
         export class MyModule {}
       `);
@@ -446,10 +445,10 @@ describe('Undecorated classes with DI migration', () => {
     writeFile('/index.ts', dedent `
         import {Component, NgModule} from '@angular/core';
         import {BaseComponent} from 'my-lib';
-  
+
         @Component({template: ''})
         export class MyComponent extends BaseComponent {}
-      
+
         @NgModule({declarations: [MyComponent]})
         export class MyModule {}
     `);
@@ -466,16 +465,16 @@ describe('Undecorated classes with DI migration', () => {
   it('should decorate all undecorated directives of inheritance chain', async() => {
     writeFile('/index.ts', `
       import {Component, NgModule, NgZone} from '@angular/core';
-      
+
       export class SuperBaseClass {
         constructor(zone: NgZone) {}
       }
-      
+
       export class BaseClass extends SuperBaseClass {}
-      
+
       @Component({template: ''})
       export class MyComponent extends BaseClass {}
-    
+
       @NgModule({declarations: [MyComponent]})
       export class MyModule {}
     `);
@@ -490,16 +489,16 @@ describe('Undecorated classes with DI migration', () => {
   it('should decorate all undecorated providers of inheritance chain', async() => {
     writeFile('/index.ts', `
       import {Injectable, NgModule, NgZone} from '@angular/core';
-      
+
       export class SuperBaseClass {
         constructor(zone: NgZone) {}
       }
-      
+
       export class BaseClass extends SuperBaseClass {}
-      
+
       @Injectable()
       export class MyService extends BaseClass {}
-    
+
       @NgModule({providers: [MyService]})
       export class MyModule {}
     `);
@@ -516,17 +515,17 @@ describe('Undecorated classes with DI migration', () => {
        writeFile('/index.ts', `
          import {Component, NgModule, NgZone} from '@angular/core';
          import {BaseClass} from './base';
-         
+
          @Component({template: ''})
          export class A extends BaseClass {}
-       
+
          @NgModule({declarations: [A]})
          export class MyModule {}
        `);
 
        writeFile('/base.ts', `
          import * as core from '@angular/core';
-         
+
          export class BaseClass {
            constructor(zone: core.NgZone) {}
          }
@@ -542,14 +541,14 @@ describe('Undecorated classes with DI migration', () => {
        writeFile('/index.ts', `
          import {Component, NgModule, NgZone} from '@angular/core';
          import {Directive} from './third_party_directive';
-         
+
          export class BaseClass {
            constructor(zone: NgZone) {}
          }
-         
+
          @Component({template: ''})
          export class MyComponent extends BaseClass {}
-         
+
          @NgModule({declarations: [MyComponent]})
          export class AppModule {}
        `);
@@ -566,19 +565,19 @@ describe('Undecorated classes with DI migration', () => {
        writeFile('/index.ts', `
          import {Component, NgModule, NgZone} from '@angular/core';
          import {BaseClass} from './base';
-         
+
          @Component({template: ''})
          export class A extends BaseClass {}
-       
+
          @NgModule({declarations: [A]})
          export class MyModule {}
        `);
 
        writeFile('/base.ts', `
          import {Directive} from './external';
-         
+
          export class MyService {}
-       
+
          export class BaseClass {
            constructor(zone: MyService) {}
          }
@@ -595,17 +594,17 @@ describe('Undecorated classes with DI migration', () => {
     writeFile('/index.ts', `
       import {Component, NgModule} from '@angular/core';
       import {BaseClass} from './base';
-      
+
       @Component({template: ''})
       export class A extends BaseClass {}
-     
+
       @NgModule({declarations: [A]})
       export class MyModule {}
     `);
 
     writeFile('/base.ts', `
       import {Directive as AliasedDir, NgZone} from '@angular/core';
-   
+
       export class BaseClass {
         constructor(zone: NgZone) {}
       }
@@ -637,7 +636,7 @@ describe('Undecorated classes with DI migration', () => {
           templateUrl: './my-dir.html',
         })
         export class BaseClass {}
-        
+
         @NgModule({declarations: [BaseClass]})
         export class LibModule {}
       `);
@@ -667,14 +666,14 @@ describe('Undecorated classes with DI migration', () => {
 
       writeFile('/lib/base.ts', dedent `
         import {Directive, NgModule} from '@angular/core';
-          
+
         /** my comment */
         @Directive({
           selector: 'my-dir',
           styleUrls: ['./my-dir.css'],
         })
         export class BaseClass {}
-        
+
         @NgModule({declarations: [BaseClass]})
         export class LibModule {}
       `);
@@ -683,7 +682,7 @@ describe('Undecorated classes with DI migration', () => {
 
       expect(tree.readContent('/index.ts')).toContain(dedent `
         import {BaseClass} from './lib/base';
-        
+
         @Directive({
             selector: 'my-dir',
             styleUrls: ['./my-dir.css']
@@ -704,10 +703,10 @@ describe('Undecorated classes with DI migration', () => {
 
       writeFile('/lib/base.ts', dedent `
         import {Pipe, NgModule} from '@angular/core';
-          
+
         @Pipe({name: 'my-pipe-name'})
         export class BasePipe {}
-        
+
         @NgModule({declarations: [BasePipe]})
         export class LibModule {}
       `);
@@ -728,7 +727,7 @@ describe('Undecorated classes with DI migration', () => {
       writeFile('/index.ts', dedent `
         import {NgModule, Component} from '@angular/core';
         import {CDK_TABLE_TEMPLATE} from '@angular/cdk/table';
-        
+
         const A = 'hello';
 
         @Component({
@@ -777,16 +776,16 @@ describe('Undecorated classes with DI migration', () => {
         import {Component, NgModule} from '@angular/core';
         import {CDK_TABLE_TEMPLATE as tableTmpl} from '@angular/cdk/table';
         import {STYLE_THROUGH_VAR} from '../styles';
-          
-        export const LOCAL_STYLE = 'local_style'; 
-  
+
+        export const LOCAL_STYLE = 'local_style';
+
         @Component({
           selector: 'my-dir',
           template: tableTmpl,
           styles: [STYLE_THROUGH_VAR, LOCAL_STYLE]
         })
         export class BaseClass {}
-        
+
         @NgModule({declarations: [BaseClass]})
         export class LibModule {}
       `);
@@ -822,23 +821,23 @@ describe('Undecorated classes with DI migration', () => {
       writeFile('/second-module.ts', dedent `
         import {NgModule, Directive} from '@angular/core';
         import {MyComp} from './index';
-        
+
         @Directive({selector: 'other-dir'})
         export class OtherDir {}
-        
+
         @NgModule({declarations: [OtherDir, [MyComp]], entryComponents: [MyComp]})
         export class MySecondModule {}
       `);
 
       writeFile('/lib/base.ts', dedent `
         import {Component, NgModule} from '@angular/core';
-          
+
         @Component({
           selector: 'my-dir',
           template: '',
         })
         export class BaseClass {}
-        
+
         @NgModule({declarations: [BaseClass]})
         export class LibModule {}
       `);
@@ -859,7 +858,7 @@ describe('Undecorated classes with DI migration', () => {
       writeFile('/index.ts', dedent `
         import {NgModule} from '@angular/core';
         import {BaseClass} from './lib/base';
-        
+
         // this will conflict if "MY_TEMPLATE" from the base class is imported. The
         // import to that export from base class should be aliased to avoid the collision.
         const MY_TEMPLATE = '';
@@ -872,15 +871,15 @@ describe('Undecorated classes with DI migration', () => {
 
       writeFile('/lib/base.ts', dedent `
         import {Component, NgModule} from '@angular/core';
-          
+
         export const MY_TEMPLATE = '';
-          
+
         @Component({
           selector: 'my-dir',
           template: MY_TEMPLATE,
         })
         export class BaseClass {}
-        
+
         @NgModule({declarations: [BaseClass]})
         export class LibModule {}
       `);
@@ -910,7 +909,7 @@ describe('Undecorated classes with DI migration', () => {
 
       writeFile('/lib/base.ts', dedent `
         import {Component, NgModule, Document} from '@angular/core';
-        
+
         // this variable cannot be imported automatically.
         const someProviders = [{provide: Document, useValue: null}]
 
@@ -920,7 +919,7 @@ describe('Undecorated classes with DI migration', () => {
           providers: [...someProviders],
         })
         export class BaseClass {}
-        
+
         @NgModule({declarations: [BaseClass]})
         export class LibModule {}
       `);
@@ -954,7 +953,7 @@ describe('Undecorated classes with DI migration', () => {
 
          writeFile('/lib/base.ts', dedent `
         import {Component, NgModule} from '@angular/core';
-        
+
         export const metadataThroughVar = {
           styleUrls: ['./test.css'],
         }
@@ -965,7 +964,7 @@ describe('Undecorated classes with DI migration', () => {
           ...metadataThroughVar,
         })
         export class BaseClass {}
-        
+
         @NgModule({declarations: [BaseClass]})
         export class LibModule {}
       `);
@@ -1002,7 +1001,7 @@ describe('Undecorated classes with DI migration', () => {
       writeFile('/lib/my-tmpl.html', '');
       writeFile('/lib/base.ts', dedent `
         import {Component, NgModule} from '@angular/core';
-        
+
         export const host = {};
         export const templateUrl = './my-tmpl.html';
         const styleUrls = ["hello.css"];
@@ -1014,7 +1013,7 @@ describe('Undecorated classes with DI migration', () => {
           host,
         })
         export class BaseClass {}
-        
+
         @NgModule({declarations: [BaseClass]})
         export class LibModule {}
       `);
@@ -1043,14 +1042,14 @@ describe('Undecorated classes with DI migration', () => {
       writeFile('/index.ts', dedent `
         import {NgModule} from '@angular/core';
         import {BaseComponent, BasePipe} from 'my-lib';
-        
+
         export class PassThrough extends BaseComponent {}
-        
+
         @NgModule({declarations: [PassThrough]})
         export class MyPassThroughMod {}
 
         export class MyComp extends PassThrough {}
-        
+
         export class MyPipe extends BasePipe {}
 
         @NgModule({declarations: [MyComp, MyPipe]})
@@ -1110,7 +1109,7 @@ describe('Undecorated classes with DI migration', () => {
       writeFile('/index.ts', dedent `
         import {NgModule} from '@angular/core';
         import {BaseComponent} from 'my-lib';
-        
+
         export class MyComp extends BaseComponent {}
 
         @NgModule({declarations: [MyComp]})
@@ -1172,7 +1171,7 @@ describe('Undecorated classes with DI migration', () => {
 
         @NgModule({declarations: [MyDir]})
         export class MyModule {}
-        
+
         export {LOCAL_NAME as PUBLIC_NAME};
       `);
 
@@ -1186,7 +1185,7 @@ describe('Undecorated classes with DI migration', () => {
           styleUrls: [PUBLIC_NAME]
         })
         export class BaseClass {}
-        
+
         @NgModule({declarations: [BaseClass]})
         export class LibModule {}
       `);
@@ -1220,7 +1219,7 @@ describe('Undecorated classes with DI migration', () => {
     writeFile('/node_modules/my-lib/index.d.ts', `export * from './public-api';`);
     writeFile('/node_modules/my-lib/public-api.d.ts', `
       import {NgZone} from '@angular/core';
-    
+
       export const testValidators: any;
       export declare class BasePipe {}
       export declare class BaseDirective {}
@@ -1328,7 +1327,7 @@ describe('Undecorated classes with DI migration', () => {
     writeFile('/node_modules/my-lib/index.d.ts', `export * from './public-api';`);
     writeFile('/node_modules/my-lib/public-api.d.ts', `
       import {NgZone} from '@angular/core';
-    
+
       export declare class BaseComponent {
         constructor(zone: NgZone);
       }
@@ -1407,7 +1406,7 @@ describe('Undecorated classes with DI migration', () => {
 
     writeFile('/src/app.component.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({template: ''})
       export class AppComponent {}
     `);
@@ -1415,7 +1414,7 @@ describe('Undecorated classes with DI migration', () => {
     writeFile('/src/app.module.ts', `
       import {NgModule} from '@angular/core';
       import {AppComponent} from './app.component';
-      
+
       @NgModule({declarations: [AppComponent]})
       export class AppModule {}
     `);
@@ -1434,10 +1433,10 @@ describe('Undecorated classes with DI migration', () => {
     it('should gracefully exit migration if project fails with structural diagnostic', async() => {
       writeFile('/index.ts', `
         import {Component, NgModule} from '@angular/core';
-        
+
         @Component({template: ''})
         export class TestComp {}
-       
+
         @NgModule({declarations: [/* TestComp not added */]})
         export class MyModule {}
     `);
@@ -1477,13 +1476,13 @@ describe('Undecorated classes with DI migration', () => {
     it('should not throw if resources could not be read', async() => {
       writeFile('/index.ts', `
         import {Component, NgModule} from '@angular/core';
-        
+
         @Component({
           templateUrl: './my-template.pug',
           styleUrls: ["./test.scss", "./some-special-file.custom"],
         })
         export class TestComp {}
-       
+
         @NgModule({declarations: [TestComp]})
         export class MyModule {}
       `);
