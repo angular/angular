@@ -96,7 +96,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
       pure = pureValue;
     }
 
-    this.injectableRegistry.registerClass(clazz);
+    this.injectableRegistry.registerInjectable(clazz);
 
     return {
       analysis: {

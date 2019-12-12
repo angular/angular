@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool} from '@angular/compiler';
-import {InjectableClassRegistry} from '@angular/compiler-cli/src/ngtsc/metadata/src/registry';
 import * as ts from 'typescript';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
@@ -14,6 +13,7 @@ import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
 import {FileSystem, LogicalFileSystem, absoluteFrom, dirname, resolve} from '../../../src/ngtsc/file_system';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry} from '../../../src/ngtsc/metadata';
+import {InjectableClassRegistry} from '../../../src/ngtsc/metadata/src/registry';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {ClassDeclaration} from '../../../src/ngtsc/reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';

@@ -125,7 +125,7 @@ export class DirectiveDecoratorHandler implements
       baseClass: analysis.baseClass, ...analysis.guards,
     });
 
-    this.injectableRegistry.registerClass(node);
+    this.injectableRegistry.registerInjectable(node);
   }
 
   resolve(node: ClassDeclaration, analysis: DirectiveHandlerData): ResolveResult<unknown> {

@@ -465,7 +465,7 @@ export function resolveProvidersRequiringFactory(
     resolvedProviders.forEach(function processProviders(provider) {
       if (provider instanceof Reference) {
         handleReference(provider);
-      } else if (provider instanceof Map) {
+      } else if (provider instanceof Map && provider.has('useClass')) {
         const useExisting = provider.get('useClass');
         if (useExisting instanceof Reference) {
           handleReference(useExisting);

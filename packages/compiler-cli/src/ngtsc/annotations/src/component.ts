@@ -198,7 +198,7 @@ export class ComponentDecoratorHandler implements
             this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(rawViewProviders) :
                                               rawViewProviders) :
         null;
-    const viewProvidersRequiringFactory = rawViewProviders ?
+    const viewProvidersRequiringFactory = rawViewProviders !== undefined ?
         resolveProvidersRequiringFactory(rawViewProviders, this.evaluator) :
         null;
     const providersRequiringFactory = component.has('providers') ?
@@ -336,7 +336,7 @@ export class ComponentDecoratorHandler implements
       baseClass: analysis.baseClass, ...analysis.guards,
     });
 
-    this.injectableRegistry.registerClass(node);
+    this.injectableRegistry.registerInjectable(node);
   }
 
   index(

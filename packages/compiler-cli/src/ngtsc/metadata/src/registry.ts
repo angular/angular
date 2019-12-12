@@ -66,6 +66,6 @@ export class CompoundMetadataRegistry implements MetadataRegistry {
 export class InjectableClassRegistry {
   private classes = new Set<ClassDeclaration>();
 
-  registerClass(declaration: ClassDeclaration): void { this.classes.add(declaration); }
-  hasClass(declaration: ClassDeclaration): boolean { return this.classes.has(declaration); }
+  registerInjectable(declaration: ClassDeclaration): void { this.classes.add(declaration); }
+  isInjectable(declaration: ClassDeclaration): boolean { return this.classes.has(declaration); }
 }

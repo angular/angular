@@ -25,7 +25,7 @@ export function getProviderDiagnostics(
   const diagnostics: ts.Diagnostic[] = [];
 
   providerClasses.forEach(provider => {
-    if (!registry.hasClass(provider)) {
+    if (!registry.isInjectable(provider)) {
       diagnostics.push(makeDiagnostic(
           ErrorCode.UNDECORATED_PROVIDER, highlightNode,
           `Provider ${provider.name.text} is not injectable, because it doesn't have an Angular decorator. This will result in an error at runtime.`));

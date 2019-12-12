@@ -66,7 +66,7 @@ export class InjectableDecoratorHandler implements
     const meta = extractInjectableMetadata(node, decorator, this.reflector);
     const decorators = this.reflector.getDecoratorsOfDeclaration(node);
 
-    this.injectableRegistry.registerClass(node);
+    this.injectableRegistry.registerInjectable(node);
 
     return {
       analysis: {
