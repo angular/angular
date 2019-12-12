@@ -116,8 +116,6 @@ module.exports = function(config) {
       '/base/npm/': '/base/',
     },
 
-    reporters: ['dots'],
-
     sauceLabs: {
       testName: 'Angular2',
       retryLimit: 3,
@@ -145,11 +143,19 @@ module.exports = function(config) {
     browserDisconnectTimeout: 180000,
     browserDisconnectTolerance: 3,
     browserNoActivityTimeout: 300000,
-  }
+  };
+
+  // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1431. The idea is
+  // that we do no not allow `@bazel/karma` to add the `progress` reporter.
+  Object.defineProperty(conf, 'reporters', {
+    enumerable: true,
+    get: () => ['dots'],
+    set: () => {},
+  });
 
   // When running under Bazel with karma_web_test, SAUCE_TUNNEL_IDENTIFIER and KARMA_WEB_TEST_MODE
-  // will only be available when `--config=saucelabs` is set. See //:test_web_all target
-  // and /.bazelrc.
+  // will only be available if they are part of the Bazel action environment. More details in the
+  // "scripts/saucelabs/run-bazel-via-tunnel.sh" script.
   if (process.env['SAUCE_TUNNEL_IDENTIFIER']) {
     console.log(`SAUCE_TUNNEL_IDENTIFIER: ${process.env.SAUCE_TUNNEL_IDENTIFIER}`);
 
