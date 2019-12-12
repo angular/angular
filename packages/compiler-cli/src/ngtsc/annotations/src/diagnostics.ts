@@ -84,7 +84,7 @@ export function checkInheritanceOfDirective(
     }
 
     const newParentClass = readBaseClass(baseClass.node, reflector, evaluator);
-    if (newParentClass) {
+    if (newParentClass !== null) {
       // If we found another parent class, keep going.
       baseClass = newParentClass;
     } else if (!baseClassConstructor) {
