@@ -192,18 +192,27 @@ export class ComponentDecoratorHandler implements
       }
     }, undefined) !;
 
-    const rawViewProviders = component.get('viewProviders');
-    const wrappedViewProviders: Expression|null = rawViewProviders ?
-        new WrappedNodeExpr(
-            this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(rawViewProviders) :
-                                              rawViewProviders) :
-        null;
-    const viewProvidersRequiringFactory = rawViewProviders !== undefined ?
-        resolveProvidersRequiringFactory(rawViewProviders, this.evaluator) :
-        null;
-    const providersRequiringFactory = component.has('providers') ?
-        resolveProvidersRequiringFactory(component.get('providers') !, this.evaluator) :
-        null;
+
+    // Note that we could technically combine the `viewProvidersRequiringFactory` and
+    // `providersRequiringFactory` into a single set, but we keep the separate so that
+    // we can distinguish where an error is coming from when logging the diagnostics in `resolve`.
+    let viewProvidersRequiringFactory: Set<ClassDeclaration>|null = null;
+    let providersRequiringFactory: Set<ClassDeclaration>|null = null;
+    let wrappedViewProviders: Expression|null = null;
+
+    if (component.has('viewProviders')) {
+      const viewProviders = component.get('viewProviders') !;
+      viewProvidersRequiringFactory =
+          resolveProvidersRequiringFactory(viewProviders, this.evaluator);
+      wrappedViewProviders = new WrappedNodeExpr(
+          this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(viewProviders) :
+                                            viewProviders);
+    }
+
+    if (component.has('providers')) {
+      providersRequiringFactory =
+          resolveProvidersRequiringFactory(component.get('providers') !, this.evaluator);
+    }
 
     // Parse the template.
     // If a preanalyze phase was executed, the template may already exist in parsed form, so check

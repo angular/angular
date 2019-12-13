@@ -93,6 +93,12 @@ export class DirectiveDecoratorHandler implements
       return {};
     }
 
+    let providersRequiringFactory: Set<ClassDeclaration>|null = null;
+    if (directiveResult !== undefined && directiveResult.decorator.has('providers')) {
+      providersRequiringFactory = resolveProvidersRequiringFactory(
+          directiveResult.decorator.get('providers') !, this.evaluator);
+    }
+
     return {
       analysis: {
         meta: analysis,
@@ -100,11 +106,7 @@ export class DirectiveDecoratorHandler implements
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
-        guards: extractDirectiveGuards(node, this.reflector),
-        providersRequiringFactory: directiveResult !.decorator.has('providers') ?
-            resolveProvidersRequiringFactory(
-                directiveResult !.decorator.get('providers') !, this.evaluator) :
-            null
+        guards: extractDirectiveGuards(node, this.reflector), providersRequiringFactory
       }
     };
   }
