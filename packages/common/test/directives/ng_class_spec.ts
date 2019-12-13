@@ -352,6 +352,21 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
            detectChangesAndExpectClassName('init baz');
          }));
     });
+
+    describe('non-regression', () => {
+
+      // https://github.com/angular/angular/issues/34336
+      it('should not write to native node when a bound expression doesnt change', () => {
+        fixture = createTestComponent(`<div [ngClass]="{'color-red': true}"></div>`);
+        detectChangesAndExpectClassName('color-red');
+
+        // Overwrite CSS classes to make sure that ngClass is not doing any DOM manipulation (as
+        // there was no change to the expression bound to [ngClass]).
+        fixture.debugElement.children[0].nativeElement.className = '';
+        detectChangesAndExpectClassName('');
+      });
+
+    });
   });
 }
 

@@ -157,6 +157,24 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
          expectNativeEl(fixture).not.toHaveCssStyle('max-width');
          expectNativeEl(fixture).toHaveCssStyle({'font-size': '12px'});
        }));
+
+    it('should not write to native node when a bound expression doesnt change', () => {
+
+      const template = `<div [ngStyle]="{'color': 'red'}"></div>`;
+
+      fixture = createTestComponent(template);
+
+      fixture.detectChanges();
+      expectNativeEl(fixture).toHaveCssStyle({'color': 'red'});
+
+      // Overwrite native styles to make sure that ngClass is not doing any DOM manipulation (as
+      // there was no change to the expression bound to [ngStyle]).
+      fixture.debugElement.children[0].nativeElement.style.color = 'blue';
+      fixture.detectChanges();
+      expectNativeEl(fixture).toHaveCssStyle({'color': 'blue'});
+
+    });
+
   });
 }
 
