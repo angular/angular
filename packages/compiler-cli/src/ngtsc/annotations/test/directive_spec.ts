@@ -49,7 +49,7 @@ runInEachFileSystem(() => {
           metaReader, new MetadataDtsModuleScopeResolver(dtsReader, null), new ReferenceEmitter([]),
           null);
       const handler = new DirectiveDecoratorHandler(
-          reflectionHost, evaluator, scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
+          reflectionHost, evaluator, scopeRegistry, scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
           /* isCore */ false, /* annotateForClosureCompiler */ false);
 
       const analyzeDirective = (dirName: string) => {
