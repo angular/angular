@@ -9,10 +9,11 @@
 import {Expression, ExternalExpr, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
 import {DefaultImportRecorder, ImportMode, Reference, ReferenceEmitter} from '../../imports';
 import {ForeignFunctionResolver, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, CtorParameter, Decorator, Import, ReflectionHost, TypeValueReference, isNamedClassDeclaration} from '../../reflection';
+import {DeclarationData} from '../../scope';
 
 export enum ConstructorDepErrorKind {
   NO_SUITABLE_TOKEN,
@@ -375,4 +376,62 @@ const parensWrapperTransformerFactory: ts.TransformerFactory<ts.Expression> =
  */
 export function wrapFunctionExpressionsInParens(expression: ts.Expression): ts.Expression {
   return ts.transform(expression, [parensWrapperTransformerFactory]).transformed[0];
+}
+
+/**
+ * Given a 'container' expression and a `Reference` extracted from that container, produce a
+ * `ts.Expression` to use in a diagnostic which best indicates the position within the container
+ * expression that generated the `Reference`.
+ *
+ * For example, given a `Reference` to the class 'Bar' and the containing expression:
+ * `[Foo, Bar, Baz]`, this function would attempt to return the `ts.Identifier` for `Bar` within the
+ * array. This could be used to produce a nice diagnostic context:
+ *
+ * ```text
+ * [Foo, Bar, Baz]
+ *       ~~~
+ * ```
+ *
+ * If no specific node can be found, then the `fallback` expression is used, which defaults to the
+ * entire containing expression.
+ */
+export function getReferenceOriginForDiagnostics(
+    ref: Reference, container: ts.Expression, fallback: ts.Expression = container): ts.Expression {
+  const id = ref.getIdentityInExpression(container);
+  if (id !== null) {
+    return id;
+  }
+
+  return fallback;
+}
+
+/**
+ * Create a `ts.Diagnostic` which indicates the given class is part of the declarations of two or
+ * more NgModules.
+ *
+ * The resulting `ts.Diagnostic` will have a context entry for each NgModule showing the point where
+ * the directive/pipe exists in its `declarations` (if possible).
+ */
+export function makeDuplicateDeclarationError(
+    node: ClassDeclaration, data: DeclarationData[], kind: string): ts.Diagnostic {
+  const context: {node: ts.Node; messageText: string;}[] = [];
+  for (const decl of data) {
+    if (decl.rawDeclarations === null) {
+      continue;
+    }
+    // Try to find the reference to the declaration within the declarations array, to hang the
+    // error there. If it can't be found, fall back on using the NgModule's name.
+    const contextNode =
+        getReferenceOriginForDiagnostics(decl.ref, decl.rawDeclarations, decl.ngModule.name);
+    context.push({
+      node: contextNode,
+      messageText:
+          `'${node.name.text}' is listed in the declarations of the NgModule '${decl.ngModule.name.text}'.`,
+    });
+  }
+
+  // Finally, produce the diagnostic.
+  return makeDiagnostic(
+      ErrorCode.NGMODULE_DECLARATION_NOT_UNIQUE, node.name,
+      `The ${kind} '${node.name.text}' is declared by more than one NgModule.`, context);
 }

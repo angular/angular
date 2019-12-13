@@ -71,6 +71,11 @@ export enum ErrorCode {
   NGMODULE_REEXPORT_NAME_COLLISION = 6006,
 
   /**
+   * Raised when a directive/pipe is part of the declarations of two or more NgModules.
+   */
+  NGMODULE_DECLARATION_NOT_UNIQUE = 6007,
+
+  /**
    * Raised when ngcc tries to inject a synthetic decorator over one that already exists.
    */
   NGCC_MIGRATION_DECORATOR_INJECTION_ERROR = 7001,

@@ -55,6 +55,7 @@ export class DtsMetadataReader implements MetadataReader {
       imports: extractReferencesFromType(
           this.checker, importMetadata, ref.ownedByModuleGuess, resolutionContext),
       schemas: [],
+      rawDeclarations: null,
     };
   }
 

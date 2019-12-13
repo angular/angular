@@ -115,6 +115,26 @@ export class Reference<T extends ts.Node = ts.Node> {
     return this.identifiers.find(id => id.getSourceFile() === context) || null;
   }
 
+  /**
+   * Get a `ts.Identifier` for this `Reference` that exists within the given expression.
+   *
+   * This is very useful for producing `ts.Diagnostic`s that reference `Reference`s that were
+   * extracted from some larger expression, as it can be used to pinpoint the `ts.Identifier` within
+   * the expression from which the `Reference` originated.
+   */
+  getIdentityInExpression(expr: ts.Expression): ts.Identifier|null {
+    const sf = expr.getSourceFile();
+    return this.identifiers.find(id => {
+      if (id.getSourceFile() !== sf) {
+        return false;
+      }
+
+      // This identifier is a match if its position lies within the given expression.
+      return id.pos >= expr.pos && id.end <= expr.end;
+    }) ||
+        null;
+  }
+
   cloneWithAlias(alias: Expression): Reference<T> {
     const ref = new Reference(this.node, this.bestGuessOwningModule);
     ref.identifiers = [...this.identifiers];

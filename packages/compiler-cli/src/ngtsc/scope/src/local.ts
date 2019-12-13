@@ -75,7 +75,14 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
    * contain directives. This doesn't cause any problems but isn't useful as there is no concept of
    * a directive's compilation scope.
    */
-  private declarationToModule = new Map<ClassDeclaration, ClassDeclaration>();
+  private declarationToModule = new Map<ClassDeclaration, DeclarationData>();
+
+  /**
+   * This maps from the directive/pipe class to a map of data for each NgModule that declares the
+   * directive/pipe. This data is needed to produce an error for the given class.
+   */
+  private duplicateDeclarations =
+      new Map<ClassDeclaration, Map<ClassDeclaration, DeclarationData>>();
 
   private moduleToRef = new Map<ClassDeclaration, Reference<ClassDeclaration>>();
 
@@ -111,9 +118,12 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
    */
   registerNgModuleMetadata(data: NgModuleMeta): void {
     this.assertCollecting();
+    const ngModule = data.ref.node;
     this.moduleToRef.set(data.ref.node, data.ref);
+    // Iterate over the module's declarations, and add them to declarationToModule. If duplicates
+    // are found, they're instead tracked in duplicateDeclarations.
     for (const decl of data.declarations) {
-      this.declarationToModule.set(decl.node, data.ref.node);
+      this.registerDeclarationOfModule(ngModule, decl, data.rawDeclarations);
     }
   }
 
@@ -124,8 +134,23 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
   getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null {
     const scope = !this.declarationToModule.has(clazz) ?
         null :
-        this.getScopeOfModule(this.declarationToModule.get(clazz) !);
+        this.getScopeOfModule(this.declarationToModule.get(clazz) !.ngModule);
     return scope;
+  }
+
+  /**
+   * If `node` is declared in more than one NgModule (duplicate declaration), then get the
+   * `DeclarationData` for each offending declaration.
+   *
+   * Ordinarily a class is only declared in one NgModule, in which case this function returns
+   * `null`.
+   */
+  getDuplicateDeclarations(node: ClassDeclaration): DeclarationData[]|null {
+    if (!this.duplicateDeclarations.has(node)) {
+      return null;
+    }
+
+    return Array.from(this.duplicateDeclarations.get(node) !.values());
   }
 
   /**
@@ -165,13 +190,49 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
    */
   getCompilationScopes(): CompilationScope[] {
     const scopes: CompilationScope[] = [];
-    this.declarationToModule.forEach((ngModule, declaration) => {
-      const scope = this.getScopeOfModule(ngModule);
+    this.declarationToModule.forEach((declData, declaration) => {
+      const scope = this.getScopeOfModule(declData.ngModule);
       if (scope !== null) {
-        scopes.push({declaration, ngModule, ...scope.compilation});
+        scopes.push({declaration, ngModule: declData.ngModule, ...scope.compilation});
       }
     });
     return scopes;
+  }
+
+  private registerDeclarationOfModule(
+      ngModule: ClassDeclaration, decl: Reference<ClassDeclaration>,
+      rawDeclarations: ts.Expression|null): void {
+    const declData: DeclarationData = {
+      ngModule,
+      ref: decl, rawDeclarations,
+    };
+
+    // First, check for duplicate declarations of the same directive/pipe.
+    if (this.duplicateDeclarations.has(decl.node)) {
+      // This directive/pipe has already been identified as being duplicated. Add this module to the
+      // map of modules for which a duplicate declaration exists.
+      this.duplicateDeclarations.get(decl.node) !.set(ngModule, declData);
+    } else if (
+        this.declarationToModule.has(decl.node) &&
+        this.declarationToModule.get(decl.node) !.ngModule !== ngModule) {
+      // This directive/pipe is already registered as declared in another module. Mark it as a
+      // duplicate instead.
+      const duplicateDeclMap = new Map<ClassDeclaration, DeclarationData>();
+      const firstDeclData = this.declarationToModule.get(decl.node) !;
+
+      // Being detected as a duplicate means there are two NgModules (for now) which declare this
+      // directive/pipe. Add both of them to the duplicate tracking map.
+      duplicateDeclMap.set(firstDeclData.ngModule, firstDeclData);
+      duplicateDeclMap.set(ngModule, declData);
+      this.duplicateDeclarations.set(decl.node, duplicateDeclMap);
+
+      // Remove the directive/pipe from `declarationToModule` as it's a duplicate declaration, and
+      // therefore not valid.
+      this.declarationToModule.delete(decl.node);
+    } else {
+      // This is the first declaration of this directive/pipe, so map it.
+      this.declarationToModule.set(decl.node, declData);
+    }
   }
 
   /**
@@ -513,4 +574,10 @@ function reexportCollision(
         {node: refA.node.name, messageText: childMessageText},
         {node: refB.node.name, messageText: childMessageText},
       ]);
+}
+
+export interface DeclarationData {
+  ngModule: ClassDeclaration;
+  ref: Reference;
+  rawDeclarations: ts.Expression|null;
 }
