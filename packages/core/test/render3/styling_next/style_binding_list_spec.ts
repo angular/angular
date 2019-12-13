@@ -11,7 +11,7 @@ import {TNode, TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate} from '@angular/core/src/render3/interfaces/styling';
 import {LView, TData} from '@angular/core/src/render3/interfaces/view';
 import {enterView, leaveView} from '@angular/core/src/render3/state';
-import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
+import {appendStyling, flushStyleBinding, insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
 import {getStylingBindingHead} from '@angular/core/src/render3/styling/styling_debug';
 import {newArray} from '@angular/core/src/util/array_utils';
 
@@ -382,13 +382,15 @@ describe('TNode styling linked list', () => {
       const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
       const tData: TData = [null, null];
       insertTStylingBinding(tData, tNode, 'width', 2, false, false);
-      insertTStylingBinding(tData, tNode, {key: 'height', suffix: 'px'}, 4, false, false);
+      insertTStylingBinding(
+          tData, tNode, {key: 'height', suffixOrSanitizer: 'px'}, 4, false, false);
       expectPriorityOrder(tData, tNode, false).toEqual([
         //            PREV,  NEXT
         [2, 'width', false, false],
         [4, 'height', false, false],
       ]);
-      insertTStylingBinding(tData, tNode, {key: 'height', suffix: 'em'}, 6, false, false);
+      insertTStylingBinding(
+          tData, tNode, {key: 'height', suffixOrSanitizer: 'em'}, 6, false, false);
       expectPriorityOrder(tData, tNode, false).toEqual([
         //            PREV,  NEXT
         [2, 'width', false, false],
@@ -430,7 +432,101 @@ describe('TNode styling linked list', () => {
         [6, null, true, false],
       ]);
     });
+  });
 
+  describe('styleBindingFlush', () => {
+    it('should write basic value', () => {
+      const fixture = new StylingFixture([['color']], false);
+      fixture.setBinding(0, 'red');
+      expect(fixture.flush(0)).toEqual('color: red');
+    });
+
+    it('should chain values and allow update mid list', () => {
+      const fixture =
+          new StylingFixture([['color', {key: 'width', suffixOrSanitizer: 'px'}]], false);
+      fixture.setBinding(0, 'red');
+      fixture.setBinding(1, '100');
+      expect(fixture.flush(0)).toEqual('color: red; width: 100px');
+
+      fixture.setBinding(0, 'blue');
+      fixture.setBinding(1, '200');
+      expect(fixture.flush(1)).toEqual('color: red; width: 200px');
+      expect(fixture.flush(0)).toEqual('color: blue; width: 200px');
+    });
+
+    it('should remove duplicates', () => {
+      const fixture = new StylingFixture([['color', 'color']], false);
+      fixture.setBinding(0, 'red');
+      fixture.setBinding(1, 'blue');
+      expect(fixture.flush(0)).toEqual('color: blue');
+    });
+
+  });
+
+  describe('appendStyling', () => {
+    it('should append simple style', () => {
+      expect(appendStyling('', 'color', 'red', false, false)).toEqual('color: red');
+      expect(appendStyling('', 'color', 'red', true, false)).toEqual('color: red');
+      expect(appendStyling('', 'color', 'red', false, true)).toEqual('color');
+      expect(appendStyling('', 'color', 'red', true, true)).toEqual('color');
+      expect(appendStyling('', 'color', true, true, true)).toEqual('color');
+      expect(appendStyling('', 'color', false, true, true)).toEqual('');
+      expect(appendStyling('', 'color', 0, true, true)).toEqual('');
+      expect(appendStyling('', 'color', '', true, true)).toEqual('');
+    });
+
+    it('should append simple style with suffix', () => {
+      expect(appendStyling('', {key: 'width', suffixOrSanitizer: 'px'}, 100, false, false))
+          .toEqual('width: 100px');
+    });
+
+    it('should append simple style with sanitizer', () => {
+      expect(
+          appendStyling('', {key: 'width', suffixOrSanitizer: (v) => `-${v}-`}, 100, false, false))
+          .toEqual('width: -100-');
+    });
+
+    it('should append class/style', () => {
+      expect(appendStyling('color: white', 'color', 'red', false, false))
+          .toEqual('color: white; color: red');
+      expect(appendStyling('MY-CLASS', 'color', true, false, true)).toEqual('MY-CLASS color');
+      expect(appendStyling('MY-CLASS', 'color', false, true, true)).toEqual('MY-CLASS');
+    });
+
+    it('should remove existing', () => {
+      expect(appendStyling('color: white', 'color', 'blue', true, false)).toEqual('color: blue');
+      expect(appendStyling('A YES B', 'YES', false, true, true)).toEqual('A B');
+    });
+
+    it('should support maps/arrays for classes', () => {
+      expect(appendStyling('', null, {A: true, B: false}, true, true)).toEqual('A');
+      expect(appendStyling('A B C', null, {A: true, B: false}, true, true)).toEqual('A C');
+      expect(appendStyling('', null, ['A', 'B'], true, true)).toEqual('A B');
+      expect(appendStyling('A B C', null, ['A', 'B'], true, true)).toEqual('A B C');
+    });
+
+    it('should support maps for styles', () => {
+      expect(appendStyling('', null, {A: 'a', B: 'b'}, true, false)).toEqual('A: a; B: b');
+      expect(appendStyling('A:_; B:_; C:_', null, {A: 'a', B: 'b'}, true, false))
+          .toEqual('C:_; A: a; B: b');
+    });
+
+    it('should support strings for classes', () => {
+      expect(appendStyling('', null, 'A B', true, true)).toEqual('A B');
+      expect(appendStyling('A B C', null, 'A B', false, true)).toEqual('A B C A B');
+      expect(appendStyling('A B C', null, 'A B', true, true)).toEqual('A B C');
+    });
+
+    it('should support strings for styles', () => {
+      expect(appendStyling('A:a;B:b', null, 'A : a ; B : b', false, false))
+          .toEqual('A:a;B:b; A : a ; B : b');
+      expect(appendStyling('A:_; B:_; C:_', null, 'A : a ; B : b', true, false))
+          .toEqual('C:_; A: a; B: b');
+    });
+
+    it('should throw no arrays for styles', () => {
+      expect(() => appendStyling('', null, ['A', 'a'], true, false)).toThrow();
+    });
   });
 });
 
@@ -476,4 +572,30 @@ function expectPriorityOrder(tData: TData, tNode: TNode, isClassBinding: boolean
     index = getTStylingRangeNext(tStylingRange);
   }
   return expect(indexes);
+}
+
+class StylingFixture {
+  tData: TData = [null, null];
+  lView: LView = [null, null !] as any;
+  tNode: TNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
+  constructor(bindingSources: TStylingKey[][], public isClassBinding: boolean) {
+    let bindingIndex = this.tData.length;
+    for (let i = 0; i < bindingSources.length; i++) {
+      const bindings = bindingSources[i];
+      for (let j = 0; j < bindings.length; j++) {
+        const binding = bindings[j];
+        insertTStylingBinding(
+            this.tData, this.tNode, binding, bindingIndex, i === 0, isClassBinding);
+        this.lView.push(null, null);
+        bindingIndex += 2;
+      }
+    }
+  }
+
+  setBinding(index: number, value: any) { this.lView[index * 2 + 2] = value; }
+
+  flush(index: number): string {
+    return flushStyleBinding(
+        this.tData, this.tNode, this.lView, index * 2 + 2, this.isClassBinding);
+  }
 }

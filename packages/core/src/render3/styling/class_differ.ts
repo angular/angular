@@ -105,23 +105,37 @@ export function processClassToken(
  * @returns a new class-list which does not have `classToRemove`
  */
 export function removeClass(className: string, classToRemove: string): string {
+  return toggleClass(className, classToRemove, false);
+}
+
+export function toggleClass(className: string, classToToggle: string, toggle: boolean): string {
+  if (className === '') {
+    return toggle ? classToToggle : '';
+  }
   let start = 0;
   let end = className.length;
   while (start < end) {
-    start = className.indexOf(classToRemove, start);
+    start = className.indexOf(classToToggle, start);
     if (start === -1) {
-      // we did not find anything, so just bail.
+      if (toggle === true) {
+        className = className === '' ? classToToggle : className + ' ' + classToToggle;
+      }
       break;
     }
-    const removeLength = classToRemove.length;
+    const removeLength = classToToggle.length;
     const hasLeadingWhiteSpace = start === 0 || className.charCodeAt(start - 1) <= CharCode.SPACE;
     const hasTrailingWhiteSpace = start + removeLength === end ||
         className.charCodeAt(start + removeLength) <= CharCode.SPACE;
     if (hasLeadingWhiteSpace && hasTrailingWhiteSpace) {
-      // Cut out the class which should be removed.
-      const endWhitespace = consumeWhitespace(className, start + removeLength, end);
-      className = className.substring(0, start) + className.substring(endWhitespace, end);
-      end = className.length;
+      if (toggle === false) {
+        // Cut out the class which should be removed.
+        const endWhitespace = consumeWhitespace(className, start + removeLength, end);
+        className = className.substring(0, start) + className.substring(endWhitespace, end);
+        end = className.length;
+      } else {
+        // we found it and we should have it so just return
+        return className;
+      }
     } else {
       // in this case we are only a substring of the actual class, move on.
       start = start + removeLength;

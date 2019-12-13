@@ -9,6 +9,7 @@ import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 
 import {TNodeFlags} from './node';
 import {ProceduralRenderer3, RElement, Renderer3} from './renderer';
+import {SanitizerFn} from './sanitization';
 import {LView} from './view';
 
 
@@ -481,7 +482,7 @@ export interface TStylingNode { flags: TNodeFlags; }
  * - `{key: string, suffix: string}`: Stores the property name/key and a suffix. Used with
  *   `ɵɵstyleProp`/`ɵɵclassProp` instruction as in `[style.width.px]="exp"`.
  */
-export type TStylingKey = string | null | {key: string, suffix: string};
+export type TStylingKey = string | null | {key: string, suffixOrSanitizer: string | SanitizerFn};
 
 /**
  * This is a branded number which contains previous and next index.

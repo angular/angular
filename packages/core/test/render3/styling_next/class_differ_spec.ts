@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computeClassChanges, removeClass, splitClassList} from '../../../src/render3/styling/class_differ';
+import {computeClassChanges, removeClass, splitClassList, toggleClass} from '../../../src/render3/styling/class_differ';
 
 describe('class differ', () => {
   describe('computeClassChanges', () => {
@@ -96,6 +96,18 @@ describe('class differ', () => {
       expect(removeClass('ABC', 'C')).toEqual('ABC');
       expect(removeClass('ABC', 'AB')).toEqual('ABC');
       expect(removeClass('ABC', 'BC')).toEqual('ABC');
+    });
+  });
+
+  describe('removeClass', () => {
+    it('should toggle a class', () => {
+      expect(toggleClass('', 'B', false)).toEqual('');
+      expect(toggleClass('', 'B', true)).toEqual('B');
+      expect(toggleClass('A B C', 'B', true)).toEqual('A B C');
+      expect(toggleClass('A C', 'B', true)).toEqual('A C B');
+      expect(toggleClass('A B C', 'B', false)).toEqual('A C');
+      expect(toggleClass('A B B C', 'B', false)).toEqual('A C');
+      expect(toggleClass('A B B C', 'B', true)).toEqual('A B B C');
     });
   });
 });

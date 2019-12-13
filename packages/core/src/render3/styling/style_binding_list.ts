@@ -8,9 +8,12 @@
 
 import {assertEqual} from '../../util/assert';
 import {TNode} from '../interfaces/node';
+import {SanitizerFn} from '../interfaces/sanitization';
 import {StylingMapArray, TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangePrev, getTStylingRangePrevDuplicate, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange} from '../interfaces/styling';
 import {LView, TData, TVIEW} from '../interfaces/view';
 import {getLView} from '../state';
+import {splitClassList, toggleClass} from './class_differ';
+import {StyleChangesMap, parseKeyValue, removeStyle} from './style_differ';
 
 
 
@@ -355,4 +358,140 @@ function markDuplicates(
     tData[index + 1] = isPrevDir ? setTStylingRangePrevDuplicate(tStylingAtIndex) :
                                    setTStylingRangeNextDuplicate(tStylingAtIndex);
   }
+}
+
+/**
+ * Computes the new styling value starting `index` styling binding.
+ *
+ * @param tData `TData` containing the styling binding linked list.
+ *              - `TData[index]` contains the binding name.
+ *              - `TData[index + 1]` contains the `TStylingRange` a linked list of other bindings.
+ * @param tNode `TNode` containing the initial styling values.
+ * @param lView `LView` containing the styling values.
+ *              - `LView[index]` contains the binding value.
+ *              - `LView[index + 1]` contains the concatenated value up to this point.
+ * @param index the location in `TData`/`LView` where the styling search should start.
+ * @param isClassBinding `true` if binding to `className`; `false` when binding to `style`.
+ */
+export function flushStyleBinding(
+    tData: TData, tNode: TNode, lView: LView, index: number, isClassBinding: boolean): string {
+  const tStylingRangeAtIndex = tData[index + 1] as TStylingRange;
+  const lastGoodValueIndex = getTStylingRangePrev(tStylingRangeAtIndex);
+  let text = lastGoodValueIndex === 0 ? getStaticStylingValue(tNode, isClassBinding) :
+                                        lView[lastGoodValueIndex + 1] as string;
+  let cursor = index;
+  while (cursor !== 0) {
+    const value = lView[cursor];
+    const key = tData[cursor] as TStylingKey;
+    const stylingRange = tData[cursor + 1] as TStylingRange;
+    lView[cursor + 1] = text = appendStyling(
+        text, key, value, getTStylingRangePrevDuplicate(stylingRange), isClassBinding);
+    cursor = getTStylingRangeNext(stylingRange);
+  }
+  return text;
+}
+
+/**
+ * Retrieves the static value for styling.
+ *
+ * @param tNode
+ * @param isClassBinding
+ */
+function getStaticStylingValue(tNode: TNode, isClassBinding: Boolean) {
+  // TODO(misko): implement once we have more code integrated.
+  return '';
+}
+
+/**
+ * Append new styling to the currently concatenated styling text.
+ *
+ * This function concatenates the existing `className`/`cssText` text with the binding value.
+ *
+ * @param text Text to concatenate to.
+ * @param stylingKey `TStylingKey` holding the key (className or style property name).
+ * @param value The value for the key.
+ *         - `isClassBinding === true`
+ *              - `boolean` if `true` than add the key to the class list string.
+ *              - `Array` add each string value to the class list string.
+ *              - `Object` add object key to the class list string if the key value is truthy.
+ *         - `isClassBinding === false`
+ *              - `Array` Not supported.
+ *              - `Object` add object key/value to the styles.
+ * @param hasPreviousDuplicate determines if there is a chance of duplicate.
+ *         - `true` the existing `text` should be searched for duplicates and if any found they
+ *           should be removed.
+ *         - `false` Fast path, just concatenate the strings.
+ * @param isClassBinding Determines if the `text` is `className` or `cssText`.
+ */
+export function appendStyling(
+    text: string, stylingKey: TStylingKey, value: any, hasPreviousDuplicate: boolean,
+    isClassBinding: boolean): string {
+  if (stylingKey === null) {
+    // we know that value is a list or an array
+    if (!value) {
+      // we are falsy do nothing.
+    } else if (Array.isArray(value)) {
+      ngDevMode && assertEqual(isClassBinding, true, 'arrays supported for classes only');
+      for (let i = 0; i < value.length; i++) {
+        text = appendStyling(
+            text, value[i], isClassBinding ? true : value[++i], hasPreviousDuplicate,
+            isClassBinding);
+      }
+    } else if (typeof value == 'string') {
+      if (hasPreviousDuplicate) {
+        text = isClassBinding ? parseClassesAndAppendStyling(text, value) :
+                                parseStylesAndAppendStyling(text, value);
+      } else {
+        text = text === '' ? value : text + (isClassBinding ? ' ' : '; ') + value;
+      }
+    } else if (typeof value == 'object') {
+      for (let key in value) {
+        text = appendStyling(text, key, value[key], hasPreviousDuplicate, isClassBinding);
+      }
+    }
+  } else {
+    if (isClassBinding) {
+      ngDevMode && assertEqual(typeof stylingKey === 'string', true, 'Expecting key to be string');
+      if (hasPreviousDuplicate) {
+        text = toggleClass(text, stylingKey as string, !!value);
+      } else if (value) {
+        text = text === '' ? stylingKey as string : text + ' ' + stylingKey;
+      }
+    } else {
+      let key: string;
+      let suffixOrSanitizer: string|SanitizerFn|null = null;
+      if (typeof stylingKey === 'object') {
+        key = stylingKey.key;
+        suffixOrSanitizer = stylingKey.suffixOrSanitizer;
+      } else {
+        key = stylingKey;
+      }
+      if (hasPreviousDuplicate) {
+        text = removeStyle(text, key);
+      }
+      const keyValue = key + ': ' +
+          (suffixOrSanitizer === null ? value : sanitizeOrSuffix(suffixOrSanitizer, value));
+      text = text === '' ? keyValue : text + '; ' + keyValue;
+    }
+  }
+  return text;
+}
+
+function sanitizeOrSuffix(suffixOrSanitizer: string | SanitizerFn, value: string): string {
+  return typeof suffixOrSanitizer === 'string' ? value + suffixOrSanitizer :
+                                                 suffixOrSanitizer(value);
+}
+
+function parseClassesAndAppendStyling(text: string, value: string): string {
+  const changes = new Map<string, boolean|null>();
+  splitClassList(value, changes, false);
+  changes.forEach((_, key) => text = appendStyling(text, key, true, true, true));
+  return text;
+}
+
+function parseStylesAndAppendStyling(text: string, value: string): string {
+  const changes: StyleChangesMap = new Map<string, {old: string | null, new: string | null}>();
+  parseKeyValue(value, changes, false);
+  changes.forEach((value, key) => text = appendStyling(text, key, value.old, true, false));
+  return text;
 }
