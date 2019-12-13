@@ -129,7 +129,7 @@ commands:
           # Overwrite the yarn installed in the docker container with our own version.
           name: Overwrite yarn with our own version
           command: |
-            ourYarn=$(realpath ./third_party/github.com/yarnpkg/yarn/releases/download/v1.21.1/bin/yarn.js)
+            ourYarn=$(realpath ./third_party/github.com/yarnpkg/yarn/releases/download/v1.17.3/bin/yarn.js)
             sudo chmod a+x $ourYarn
             sudo ln -fs $ourYarn /usr/local/bin/yarn
       - run: echo "Yarn version $(yarn --version)"
