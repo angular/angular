@@ -9,7 +9,7 @@
 import {CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, STRING_TYPE, SchemaMetadata, Statement, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
 import {MetadataReader, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
@@ -22,13 +22,14 @@ import {getSourceFile} from '../../util/src/typescript';
 
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
-import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
+import {combineResolvers, findAngularDecorator, forwardRefResolver, getReferenceOriginForDiagnostics, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
 
 export interface NgModuleAnalysis {
   mod: R3NgModuleMetadata;
   inj: R3InjectorMetadata;
   metadataStmt: Statement|null;
   declarations: Reference<ClassDeclaration>[];
+  rawDeclarations: ts.Expression|null;
   schemas: SchemaMetadata[];
   imports: Reference<ClassDeclaration>[];
   exports: Reference<ClassDeclaration>[];
@@ -104,13 +105,37 @@ export class NgModuleDecoratorHandler implements
       forwardRefResolver,
     ]);
 
+    const diagnostics: ts.Diagnostic[] = [];
+
     // Extract the module declarations, imports, and exports.
     let declarationRefs: Reference<ClassDeclaration>[] = [];
+    let rawDeclarations: ts.Expression|null = null;
     if (ngModule.has('declarations')) {
-      const expr = ngModule.get('declarations') !;
-      const declarationMeta = this.evaluator.evaluate(expr, forwardRefResolver);
-      declarationRefs = this.resolveTypeList(expr, declarationMeta, name, 'declarations');
+      rawDeclarations = ngModule.get('declarations') !;
+      const declarationMeta = this.evaluator.evaluate(rawDeclarations, forwardRefResolver);
+      declarationRefs =
+          this.resolveTypeList(rawDeclarations, declarationMeta, name, 'declarations');
+
+      // Look through the declarations to make sure they're all a part of the current compilation.
+      for (const ref of declarationRefs) {
+        if (ref.node.getSourceFile().isDeclarationFile) {
+          const errorNode: ts.Expression = getReferenceOriginForDiagnostics(ref, rawDeclarations);
+
+          diagnostics.push(makeDiagnostic(
+              ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode,
+              `Cannot declare '${ref.node.name.text}' in an NgModule as it's not a part of the current compilation.`,
+              [{
+                node: ref.node.name,
+                messageText: `'${ref.node.name.text}' is declared here.`,
+              }]));
+        }
+      }
     }
+
+    if (diagnostics.length > 0) {
+      return {diagnostics};
+    }
+
     let importRefs: Reference<ClassDeclaration>[] = [];
     let rawImports: ts.Expression|null = null;
     if (ngModule.has('imports')) {
@@ -245,7 +270,7 @@ export class NgModuleDecoratorHandler implements
         schemas: schemas,
         mod: ngModuleDef,
         inj: ngInjectorDef,
-        declarations: declarationRefs,
+        declarations: declarationRefs, rawDeclarations,
         imports: importRefs,
         exports: exportRefs,
         metadataStmt: generateSetClassMetadataCall(
@@ -266,6 +291,7 @@ export class NgModuleDecoratorHandler implements
       declarations: analysis.declarations,
       imports: analysis.imports,
       exports: analysis.exports,
+      rawDeclarations: analysis.rawDeclarations,
     });
 
     if (this.factoryTracker !== null) {
@@ -276,10 +302,34 @@ export class NgModuleDecoratorHandler implements
   resolve(node: ClassDeclaration, analysis: Readonly<NgModuleAnalysis>):
       ResolveResult<NgModuleResolution> {
     const scope = this.scopeRegistry.getScopeOfModule(node);
-    const diagnostics = this.scopeRegistry.getDiagnosticsOfModule(node) || undefined;
+    const diagnostics: ts.Diagnostic[] = [];
+
+    const scopeDiagnostics = this.scopeRegistry.getDiagnosticsOfModule(node);
+    if (scopeDiagnostics !== null) {
+      diagnostics.push(...scopeDiagnostics);
+    }
+
     const data: NgModuleResolution = {
       injectorImports: [],
     };
+
+    for (const decl of analysis.declarations) {
+      if (this.metaReader.getDirectiveMetadata(decl) === null &&
+          this.metaReader.getPipeMetadata(decl) === null) {
+        // This declaration is neither a directive(or component) nor a pipe, so produce a diagnostic
+        // for it.
+
+        // Locate the error on the 'declarations' field of the NgModule decorator to start.
+        const errorNode: ts.Expression =
+            getReferenceOriginForDiagnostics(decl, analysis.rawDeclarations !);
+        diagnostics.push(makeDiagnostic(
+            ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode,
+            `The class '${decl.node.name.text}' is listed in the declarations of the NgModule '${node.name.text}', but is not a directive, a component, or a pipe.
+
+Either remove it from the NgModule's declarations, or add an appropriate Angular decorator.`,
+            [{node: decl.node.name, messageText: `'${decl.node.name.text}' is declared here.`}]));
+      }
+    }
 
     if (scope !== null) {
       // Using the scope information, extend the injector's imports using the modules that are
@@ -302,12 +352,15 @@ export class NgModuleDecoratorHandler implements
       }
     }
 
+    if (diagnostics.length > 0) {
+      return {diagnostics};
+    }
+
     if (scope === null || scope.reexports === null) {
-      return {data, diagnostics};
+      return {data};
     } else {
       return {
         data,
-        diagnostics,
         reexports: scope.reexports,
       };
     }
