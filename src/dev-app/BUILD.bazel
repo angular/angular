@@ -1,5 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
+load("@build_bazel_rules_nodejs//internal/common:devmode_js_sources.bzl", "devmode_js_sources")
 load("//src/cdk:config.bzl", "CDK_ENTRYPOINTS")
 load("//src/cdk-experimental:config.bzl", "CDK_EXPERIMENTAL_ENTRYPOINTS")
 load("//src/material:config.bzl", "MATERIAL_ENTRYPOINTS")
@@ -111,8 +113,11 @@ expand_template(
     template = "system-config-tmpl.js",
 )
 
-dev_server(
-    name = "devserver",
+# File group for all static files which are needed to serve the dev-app. These files are
+# used in the devserver as runfiles and will be copied into the static web package that can
+# be deployed on static hosting services (like firebase).
+filegroup(
+    name = "dev_app_static_files",
     srcs = [
         "favicon.ico",
         "index.html",
@@ -158,10 +163,40 @@ dev_server(
         "@npm//:node_modules/tslib/tslib.js",
         "@npm//:node_modules/zone.js/dist/zone.js",
     ],
+)
+
+dev_server(
+    name = "devserver",
+    srcs = [":dev_app_static_files"],
     additional_root_paths = [
         "npm/node_modules",
+        # Needed for compatibility with "pkg_web" which always uses the tree
+        # artifact output as workspace root.
+        "angular_material",
     ],
     deps = [
         ":dev-app",
     ],
+)
+
+# Collects all ES5 JavaScript files which are required to serve the dev-app. By default,
+# ts_library and ng_module targets only expose the type definition files as outputs.
+devmode_js_sources(
+    name = "dev_app_js_sources",
+    tags = ["manual"],
+    deps = [":dev-app"],
+)
+
+# Target that builds a static web package of the dev-app. The web package can be
+# deployed on static hosting services (such as firebase).
+pkg_web(
+    name = "web_package",
+    srcs = [
+        ":dev_app_js_sources",
+        ":dev_app_static_files",
+    ],
+    additional_root_paths = [
+        "npm/node_modules",
+    ],
+    tags = ["manual"],
 )
