@@ -603,7 +603,7 @@ export interface TNode {
   /**
    * Stores the head/tail of the class bindings.
    *
-   * See: `STYLING.md` for details.
+   * See: `style_binding_list.md` for details.
    *
    * This is used by `insertTStylingBinding` to know where the next styling binding should be
    * inserted.
@@ -613,7 +613,7 @@ export interface TNode {
   /**
    * Stores the head/tail of the style bindings.
    *
-   * See: `STYLING.md` for details.
+   * See: `style_binding_list.md` for details.
    *
    * This is used by `insertTStylingBinding` to know where the next styling binding should be
    * inserted.

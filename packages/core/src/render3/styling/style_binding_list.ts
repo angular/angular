@@ -18,8 +18,6 @@ import {StyleChangesMap, parseKeyValue, removeStyle} from './style_differ';
 
 
 /**
- * See `STYLING.md` for mode details.
- *
  * NOTE: The word `styling` is used interchangeably as style or class styling.
  *
  * This file contains code to link styling instructions together so that they can be replayed.
