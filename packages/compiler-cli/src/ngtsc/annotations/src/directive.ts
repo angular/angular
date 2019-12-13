@@ -15,11 +15,12 @@ import {MetadataRegistry} from '../../metadata';
 import {extractDirectiveGuards} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence} from '../../transform';
+import {LocalModuleScopeRegistry} from '../../scope';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens} from './util';
+import {findAngularDecorator, getConstructorDependencies, isAngularDecorator, makeDuplicateDeclarationError, readBaseClass, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 const FIELD_DECORATORS = [
@@ -41,8 +42,9 @@ export class DirectiveDecoratorHandler implements
     DecoratorHandler<Decorator|null, DirectiveHandlerData, unknown> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private metaRegistry: MetadataRegistry, private defaultImportRecorder: DefaultImportRecorder,
-      private isCore: boolean, private annotateForClosureCompiler: boolean) {}
+      private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
+      private defaultImportRecorder: DefaultImportRecorder, private isCore: boolean,
+      private annotateForClosureCompiler: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = DirectiveDecoratorHandler.name;
@@ -113,6 +115,18 @@ export class DirectiveDecoratorHandler implements
       isComponent: false,
       baseClass: analysis.baseClass, ...analysis.guards,
     });
+  }
+
+  resolve(node: ClassDeclaration): ResolveResult<unknown> {
+    const duplicateDeclData = this.scopeRegistry.getDuplicateDeclarations(node);
+    if (duplicateDeclData !== null) {
+      // This directive was declared twice (or more).
+      return {
+        diagnostics: [makeDuplicateDeclarationError(node, duplicateDeclData, 'Directive')],
+      };
+    }
+
+    return {};
   }
 
   compile(

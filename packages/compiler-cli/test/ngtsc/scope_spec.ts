@@ -28,6 +28,129 @@ runInEachFileSystem(() => {
     });
 
     describe('diagnostics', () => {
+      describe('declarations', () => {
+        it('should detect when a random class is declared', () => {
+          env.write('test.ts', `
+            import {NgModule} from '@angular/core';
+
+            export class RandomClass {}
+
+            @NgModule({
+              declarations: [RandomClass],
+            })
+            export class Module {}
+          `);
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          const node = diagnosticToNode(diags[0], ts.isIdentifier);
+          expect(node.text).toEqual('RandomClass');
+          expect(diags[0].messageText).toContain('is not a directive, a component, or a pipe.');
+        });
+
+        it('should detect when a declaration lives outside the current compilation', () => {
+          env.write('dir.d.ts', `
+            import {ɵɵDirectiveDefWithMeta} from '@angular/core';
+
+            export declare class ExternalDir {
+              static ɵdir: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
+            }
+          `);
+          env.write('test.ts', `
+            import {NgModule} from '@angular/core';
+            import {ExternalDir} from './dir';
+
+            @NgModule({
+              declarations: [ExternalDir],
+            })
+            export class Module {}
+          `);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          const node = diagnosticToNode(diags[0], ts.isIdentifier);
+          expect(node.text).toEqual('ExternalDir');
+          expect(diags[0].messageText).toContain(`not a part of the current compilation`);
+        });
+
+        it('should detect when a declaration is shared between two modules', () => {
+          env.write('test.ts', `
+            import {Directive, NgModule} from '@angular/core';
+
+            @Directive({selector: '[test]'})
+            export class TestDir {}
+
+            @NgModule({
+              declarations: [TestDir]
+            })
+            export class ModuleA {}
+
+            @NgModule({
+              declarations: [TestDir],
+            })
+            export class ModuleB {}
+          `);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          const node = findContainingClass(diagnosticToNode(diags[0], ts.isIdentifier));
+          expect(node.name !.text).toEqual('TestDir');
+
+          const relatedNodes = new Set(diags[0].relatedInformation !.map(
+              related =>
+                  findContainingClass(diagnosticToNode(related, ts.isIdentifier)).name !.text));
+          expect(relatedNodes).toContain('ModuleA');
+          expect(relatedNodes).toContain('ModuleB');
+          expect(relatedNodes.size).toBe(2);
+        });
+
+        it('should detect when a declaration is repeated within the same module', () => {
+          env.write('test.ts', `
+            import {Directive, NgModule} from '@angular/core';
+
+            @Directive({selector: '[test]'})
+            export class TestDir {}
+
+
+            @NgModule({
+              declarations: [TestDir, TestDir],
+            })
+            export class Module {}
+          `);
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
+
+        it('should detect when a declaration is shared between two modules, and is repeated within them',
+           () => {
+             env.write('test.ts', `
+              import {Directive, NgModule} from '@angular/core';
+
+              @Directive({selector: '[test]'})
+              export class TestDir {}
+
+              @NgModule({
+                declarations: [TestDir, TestDir]
+              })
+              export class ModuleA {}
+
+              @NgModule({
+                declarations: [TestDir, TestDir],
+              })
+              export class ModuleB {}
+            `);
+             const diags = env.driveDiagnostics();
+             expect(diags.length).toBe(1);
+             const node = findContainingClass(diagnosticToNode(diags[0], ts.isIdentifier));
+             expect(node.name !.text).toEqual('TestDir');
+
+             const relatedNodes = new Set(diags[0].relatedInformation !.map(
+                 related =>
+                     findContainingClass(diagnosticToNode(related, ts.isIdentifier)).name !.text));
+             expect(relatedNodes).toContain('ModuleA');
+             expect(relatedNodes).toContain('ModuleB');
+             expect(relatedNodes.size).toBe(2);
+           });
+      });
       describe('imports', () => {
         it('should emit imports in a pure function call', () => {
           env.write('test.ts', `
@@ -182,8 +305,9 @@ runInEachFileSystem(() => {
   });
 
   function diagnosticToNode<T extends ts.Node>(
-      diagnostic: ts.Diagnostic | Diagnostic, guard: (node: ts.Node) => node is T): T {
-    const diag = diagnostic as ts.Diagnostic;
+      diagnostic: ts.Diagnostic | Diagnostic | ts.DiagnosticRelatedInformation,
+      guard: (node: ts.Node) => node is T): T {
+    const diag = diagnostic as ts.Diagnostic | ts.DiagnosticRelatedInformation;
     if (diag.file === undefined) {
       throw new Error(`Expected ts.Diagnostic to have a file source`);
     }
@@ -192,3 +316,14 @@ runInEachFileSystem(() => {
     return node as T;
   }
 });
+
+function findContainingClass(node: ts.Node): ts.ClassDeclaration {
+  while (!ts.isClassDeclaration(node)) {
+    if (node.parent && node.parent !== node) {
+      node = node.parent;
+    } else {
+      throw new Error('Expected node to have a ClassDeclaration parent');
+    }
+  }
+  return node;
+}
