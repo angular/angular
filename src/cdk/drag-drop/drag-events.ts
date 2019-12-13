@@ -33,7 +33,7 @@ export interface CdkDragEnd<T = any> {
 export interface CdkDragEnter<T = any, I = T> {
   /** Container into which the user has moved the item. */
   container: CdkDropList<T>;
-  /** Item that was removed from the container. */
+  /** Item that was moved into the container. */
   item: CdkDrag<I>;
   /** Index at which the item has entered the container. */
   currentIndex: number;
