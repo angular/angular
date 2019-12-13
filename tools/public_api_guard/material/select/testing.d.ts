@@ -3,8 +3,8 @@ export declare class MatSelectHarness extends MatFormFieldControlHarness {
     clickOptions(filter?: OptionHarnessFilters): Promise<void>;
     close(): Promise<void>;
     focus(): Promise<void>;
-    getOptionGroups(filter?: OptionGroupHarnessFilters): Promise<MatSelectOptionGroupHarness[]>;
-    getOptions(filter?: OptionHarnessFilters): Promise<MatSelectOptionHarness[]>;
+    getOptionGroups(filter?: Omit<OptgroupHarnessFilters, 'ancestor'>): Promise<MatOptgroupHarness[]>;
+    getOptions(filter?: Omit<OptionHarnessFilters, 'ancestor'>): Promise<MatOptionHarness[]>;
     getValueText(): Promise<string>;
     isDisabled(): Promise<boolean>;
     isEmpty(): Promise<boolean>;

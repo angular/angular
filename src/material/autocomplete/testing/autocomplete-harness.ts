@@ -8,13 +8,13 @@
 
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
-import {AutocompleteHarnessFilters} from './autocomplete-harness-filters';
 import {
-  MatAutocompleteOptionGroupHarness,
-  MatAutocompleteOptionHarness,
-  OptionGroupHarnessFilters,
+  MatOptgroupHarness,
+  MatOptionHarness,
+  OptgroupHarnessFilters,
   OptionHarnessFilters
-} from './option-harness';
+} from '@angular/material/core/testing';
+import {AutocompleteHarnessFilters} from './autocomplete-harness-filters';
 
 /** Selector for the autocomplete panel. */
 const PANEL_SELECTOR = '.mat-autocomplete-panel';
@@ -66,15 +66,21 @@ export class MatAutocompleteHarness extends ComponentHarness {
   }
 
   /** Gets the options inside the autocomplete panel. */
-  async getOptions(filters: OptionHarnessFilters = {}): Promise<MatAutocompleteOptionHarness[]> {
-    return this._documentRootLocator.locatorForAll(MatAutocompleteOptionHarness.with(filters))();
+  async getOptions(filters: Omit<OptionHarnessFilters, 'ancestor'> = {}):
+    Promise<MatOptionHarness[]> {
+    return this._documentRootLocator.locatorForAll(MatOptionHarness.with({
+      ...filters,
+      ancestor: PANEL_SELECTOR
+    }))();
   }
 
   /** Gets the option groups inside the autocomplete panel. */
-  async getOptionGroups(filters: OptionGroupHarnessFilters = {}):
-      Promise<MatAutocompleteOptionGroupHarness[]> {
-    return this._documentRootLocator.locatorForAll(
-        MatAutocompleteOptionGroupHarness.with(filters))();
+  async getOptionGroups(filters: Omit<OptgroupHarnessFilters, 'ancestor'> = {}):
+    Promise<MatOptgroupHarness[]> {
+    return this._documentRootLocator.locatorForAll(MatOptgroupHarness.with({
+      ...filters,
+      ancestor: PANEL_SELECTOR
+    }))();
   }
 
   /** Selects the first option matching the given filters. */
@@ -84,7 +90,7 @@ export class MatAutocompleteHarness extends ComponentHarness {
     if (!options.length) {
       throw Error(`Could not find a mat-option matching ${JSON.stringify(filters)}`);
     }
-    await options[0].select();
+    await options[0].click();
   }
 
   /** Whether the autocomplete is open. */

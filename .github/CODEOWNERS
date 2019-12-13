@@ -40,6 +40,7 @@
 
 # Angular Material core
 /src/material/core/*                               @jelbourn
+/src/material/core/testing/**                      @crisbeto
 /src/material/core/animation/**                    @jelbourn
 /src/material/core/common-behaviors/**             @jelbourn @devversion
 /src/material/core/datetime/**                     @mmalerba

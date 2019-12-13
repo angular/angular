@@ -8,19 +8,21 @@
 
 import {HarnessPredicate} from '@angular/cdk/testing';
 import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
-import {SelectHarnessFilters} from './select-harness-filters';
 import {
-  MatSelectOptionHarness,
-  MatSelectOptionGroupHarness,
+  MatOptionHarness,
+  MatOptgroupHarness,
   OptionHarnessFilters,
-  OptionGroupHarnessFilters,
-} from './option-harness';
+  OptgroupHarnessFilters,
+} from '@angular/material/core/testing';
+import {SelectHarnessFilters} from './select-harness-filters';
+
+const PANEL_SELECTOR = '.mat-select-panel';
 
 /** Harness for interacting with a standard mat-select in tests. */
 export class MatSelectHarness extends MatFormFieldControlHarness {
   private _documentRootLocator = this.documentRootLocatorFactory();
   private _backdrop = this._documentRootLocator.locatorFor('.cdk-overlay-backdrop');
-  private _optionalPanel = this._documentRootLocator.locatorForOptional('.mat-select-panel');
+  private _optionalPanel = this._documentRootLocator.locatorForOptional(PANEL_SELECTOR);
   private _trigger = this.locatorFor('.mat-select-trigger');
   private _value = this.locatorFor('.mat-select-value');
 
@@ -78,14 +80,21 @@ export class MatSelectHarness extends MatFormFieldControlHarness {
   }
 
   /** Gets the options inside the select panel. */
-  async getOptions(filter: OptionHarnessFilters = {}): Promise<MatSelectOptionHarness[]> {
-    return this._documentRootLocator.locatorForAll(MatSelectOptionHarness.with(filter))();
+  async getOptions(filter: Omit<OptionHarnessFilters, 'ancestor'> = {}):
+    Promise<MatOptionHarness[]> {
+    return this._documentRootLocator.locatorForAll(MatOptionHarness.with({
+      ...filter,
+      ancestor: PANEL_SELECTOR
+    }))();
   }
 
   /** Gets the groups of options inside the panel. */
-  async getOptionGroups(filter: OptionGroupHarnessFilters = {}):
-      Promise<MatSelectOptionGroupHarness[]> {
-    return this._documentRootLocator.locatorForAll(MatSelectOptionGroupHarness.with(filter))();
+  async getOptionGroups(filter: Omit<OptgroupHarnessFilters, 'ancestor'> = {}):
+    Promise<MatOptgroupHarness[]> {
+    return this._documentRootLocator.locatorForAll(MatOptgroupHarness.with({
+      ...filter,
+      ancestor: PANEL_SELECTOR
+    }))();
   }
 
   /** Gets whether the select is open. */

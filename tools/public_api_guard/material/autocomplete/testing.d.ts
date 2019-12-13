@@ -6,8 +6,8 @@ export declare class MatAutocompleteHarness extends ComponentHarness {
     blur(): Promise<void>;
     enterText(value: string): Promise<void>;
     focus(): Promise<void>;
-    getOptionGroups(filters?: OptionGroupHarnessFilters): Promise<MatAutocompleteOptionGroupHarness[]>;
-    getOptions(filters?: OptionHarnessFilters): Promise<MatAutocompleteOptionHarness[]>;
+    getOptionGroups(filters?: Omit<OptgroupHarnessFilters, 'ancestor'>): Promise<MatOptgroupHarness[]>;
+    getOptions(filters?: Omit<OptionHarnessFilters, 'ancestor'>): Promise<MatOptionHarness[]>;
     getValue(): Promise<string>;
     isDisabled(): Promise<boolean>;
     isOpen(): Promise<boolean>;
