@@ -47,13 +47,10 @@ export function getDirectiveDiagnostics(
 export function checkInheritanceOfDirective(
     node: ClassDeclaration, reader: MetadataReader, reflector: ReflectionHost,
     evaluator: PartialEvaluator): ts.Diagnostic|null {
-  if (!ts.isClassDeclaration(node)) {
-    return null;
-  }
-
-  if (getConstructor(node) !== undefined) {
-    // If a constructor exists, then no base class definition is required on the runtime side -
-    // it's legal to inherit from any class.
+  if (!reflector.isClass(node) || reflector.getConstructorParameters(node) !== null) {
+    // We should skip classes that aren't classes.
+    // If a constructor exists, then no base class definition is required
+    // on the runtime side - it's legal to inherit from any class.
     return null;
   }
 
@@ -62,7 +59,7 @@ export function checkInheritanceOfDirective(
   // Engine compatibility hack: View Engine ignores 'extends' expressions that it cannot understand.
   let baseClass = readBaseClass(node, reflector, evaluator);
 
-  while (baseClass) {
+  while (baseClass !== null) {
     if (baseClass === 'dynamic' || !isNamedClassDeclaration(baseClass.node)) {
       return null;
     }
@@ -74,40 +71,27 @@ export function checkInheritanceOfDirective(
     }
 
     // If the base class has a blank constructor we can skip it since it can't be using DI.
-    const baseClassConstructor = getConstructor(baseClass.node);
-    if (baseClassConstructor) {
-      if (baseClassConstructor.parameters.length === 0) {
-        return null;
-      } else {
-        return getInheritedUndecoratedCtorDiagnostic(node, baseClass, reader);
-      }
+    const baseClassConstructorParams = reflector.getConstructorParameters(baseClass.node);
+    const newParentClass = readBaseClass(baseClass.node, reflector, evaluator);
+
+    if (baseClassConstructorParams !== null && baseClassConstructorParams.length > 0) {
+      // This class has a non-trivial constructor, that's an error!
+      return getInheritedUndecoratedCtorDiagnostic(node, baseClass, reader);
+    } else if (baseClassConstructorParams !== null || newParentClass === null) {
+      // This class has a trivial constructor, or no constructor + is the
+      // top of the inheritance chain, so it's okay.
+      return null;
     }
 
-    const newParentClass = readBaseClass(baseClass.node, reflector, evaluator);
-    if (newParentClass !== null) {
-      // If we found another parent class, keep going.
-      baseClass = newParentClass;
-    } else if (!baseClassConstructor) {
-      // If this is the last class in the chain and it doesn't have
-      // a constructor, it can't be using DI so we shouldn't throw.
-      return null;
-    } else {
-      // Otherwise log the diagnostic.
-      return getInheritedUndecoratedCtorDiagnostic(node, baseClass, reader);
-    }
+    // Go up the chain and continue
+    baseClass = newParentClass;
   }
 
   return null;
 }
 
-/** Gets the constructor of a class declaration. */
-function getConstructor(node: ts.ClassDeclaration): ts.ConstructorDeclaration|undefined {
-  const constructor = node.members.find(member => ts.isConstructorDeclaration(member));
-  return constructor as ts.ConstructorDeclaration | undefined;
-}
-
 function getInheritedUndecoratedCtorDiagnostic(
-    node: ClassDeclaration & ts.ClassDeclaration, baseClass: Reference, reader: MetadataReader) {
+    node: ClassDeclaration, baseClass: Reference, reader: MetadataReader) {
   const subclassMeta = reader.getDirectiveMetadata(new Reference(node)) !;
   const dirOrComp = subclassMeta.isComponent ? 'Component' : 'Directive';
   const baseClassName = baseClass.debugName;
