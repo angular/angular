@@ -4,7 +4,7 @@
                [disablePagination]="disablePagination"
                (indexFocused)="_focusChanged($event)"
                (selectFocusedIndex)="selectedIndex = $event">
-  <div class="mat-tab-label" role="tab" matTabLabelWrapper mat-ripple cdkMonitorElementFocus
+  <div class="mat-tab-label mat-focus-indicator" role="tab" matTabLabelWrapper mat-ripple cdkMonitorElementFocus
        *ngFor="let tab of _tabs; let i = index"
        [id]="_getTabLabelId(i)"
        [attr.tabIndex]="_getTabIndex(tab, i)"

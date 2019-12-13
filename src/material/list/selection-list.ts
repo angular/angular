@@ -95,7 +95,7 @@ export class MatSelectionListChange {
   inputs: ['disableRipple'],
   host: {
     'role': 'option',
-    'class': 'mat-list-item mat-list-option',
+    'class': 'mat-list-item mat-list-option mat-focus-indicator',
     '(focus)': '_handleFocus()',
     '(blur)': '_handleBlur()',
     '(click)': '_handleClick()',

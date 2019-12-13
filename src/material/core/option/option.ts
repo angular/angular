@@ -77,7 +77,7 @@ export const MAT_OPTION_PARENT_COMPONENT =
     '[class.mat-option-disabled]': 'disabled',
     '(click)': '_selectViaInteraction()',
     '(keydown)': '_handleKeydown($event)',
-    'class': 'mat-option',
+    'class': 'mat-option mat-focus-indicator',
   },
   styleUrls: ['option.css'],
   templateUrl: 'option.html',

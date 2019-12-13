@@ -47,6 +47,7 @@ const _MatMenuItemMixinBase: CanDisableRippleCtor & CanDisableCtor & typeof MatM
     '[class.mat-menu-item]': 'true',
     '[class.mat-menu-item-highlighted]': '_highlighted',
     '[class.mat-menu-item-submenu-trigger]': '_triggersSubmenu',
+    '[class.mat-focus-indicator]': 'true',
     '[attr.tabindex]': '_getTabIndex()',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.disabled]': 'disabled || null',

@@ -127,7 +127,7 @@ const _MatSliderMixinBase:
     // On Safari starting to slide temporarily triggers text selection mode which
     // show the wrong cursor. We prevent it by stopping the `selectstart` event.
     '(selectstart)': '$event.preventDefault()',
-    'class': 'mat-slider',
+    'class': 'mat-slider mat-focus-indicator',
     'role': 'slider',
     '[tabIndex]': 'tabIndex',
     '[attr.aria-disabled]': 'disabled',

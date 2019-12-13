@@ -29,7 +29,7 @@ import {CdkStepHeader, StepState} from '@angular/cdk/stepper';
   templateUrl: 'step-header.html',
   styleUrls: ['step-header.css'],
   host: {
-    'class': 'mat-step-header',
+    'class': 'mat-step-header mat-focus-indicator',
     'role': 'tab',
   },
   encapsulation: ViewEncapsulation.None,

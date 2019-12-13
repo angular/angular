@@ -31,6 +31,7 @@ $mat-sort-header-arrow-hint-opacity: 0.38;
   outline: 0;
   font: inherit;
   color: currentColor;
+  position: relative;
 
   // Usually we could rely on the arrow showing up to be focus indication, but if a header is
   // active, the arrow will always be shown so the user has no way of telling the difference.

@@ -159,7 +159,7 @@ export class MatCardAvatar {}
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    'class': 'mat-card',
+    'class': 'mat-card mat-focus-indicator',
     '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
   }
 })

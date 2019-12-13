@@ -48,6 +48,8 @@ $mat-list-item-inset-divider-offset: 72px;
   width: 100%;
   padding: 0;
 
+  position: relative;
+
   .mat-list-item-content {
     display: flex;
     flex-direction: row;
@@ -330,4 +332,8 @@ mat-action-list {
       background: none;
     }
   }
+}
+
+.mat-selection-list {
+  position: relative;
 }

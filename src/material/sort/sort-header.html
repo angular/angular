@@ -1,7 +1,7 @@
 <div class="mat-sort-header-container"
      [class.mat-sort-header-sorted]="_isSorted()"
      [class.mat-sort-header-position-before]="arrowPosition == 'before'">
-  <button class="mat-sort-header-button" type="button"
+  <button class="mat-sort-header-button mat-focus-indicator" type="button"
           [attr.disabled]="_isDisabled() || null"
           [attr.aria-label]="_intl.sortButtonLabel(id)">
     <ng-content></ng-content>

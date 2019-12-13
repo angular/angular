@@ -263,7 +263,7 @@ export class _MatTabLinkBase extends _MatTabLinkMixinBase implements OnDestroy, 
   exportAs: 'matTabLink',
   inputs: ['disabled', 'disableRipple', 'tabIndex'],
   host: {
-    'class': 'mat-tab-link',
+    'class': 'mat-tab-link mat-focus-indicator',
     '[attr.aria-current]': 'active ? "page" : null',
     '[attr.aria-disabled]': 'disabled',
     '[attr.tabIndex]': 'tabIndex',

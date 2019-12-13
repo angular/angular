@@ -1,0 +1,54 @@
+@import '../theming/theming';
+
+@mixin mat-focus-indicator() {
+  // Focus indicator base styles.
+  .mat-focus-indicator::before {
+    border-radius: 4px;
+    border-width: 2px;
+    border-style: solid;
+    box-sizing: border-box;
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  // Focus indicator offsets.
+  .mat-focus-indicator {
+    &.mat-button-base::before,
+    &.mat-card::before,
+    &.mat-calendar-body-cell::before,
+    &.mat-sort-header-button::before {
+      margin: -4px;
+    }
+
+    &.mat-tab-link::before,
+    &.mat-tab-label::before {
+      margin: 4px 0;
+    }
+  }
+
+  // Render pseudo-element on focus.
+  .mat-focus-indicator {
+    // Checkbox, Option, Slide Toggle
+    .cdk-focused.mat-checkbox &::before,
+    .cdk-focused.mat-radio-button &::before,
+    .cdk-focused.mat-slide-toggle &::before,
+
+    // Option
+    &.mat-option.mat-active::before,
+
+    // All other components
+    &:focus::before {
+      content: '';
+    }
+  }
+}
+
+@mixin mat-focus-indicator-theme($theme) {
+  .mat-focus-indicator::before {
+    border-color: mat-color(map_get($theme, primary));
+  }
+}

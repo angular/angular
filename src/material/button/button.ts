@@ -70,6 +70,7 @@ const _MatButtonMixinBase: CanDisableRippleCtor & CanDisableCtor & CanColorCtor 
   host: {
     '[attr.disabled]': 'disabled || null',
     '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
+    'class': 'mat-focus-indicator',
   },
   templateUrl: 'button.html',
   styleUrls: ['button.css'],
