@@ -105,7 +105,15 @@ export class NodeStylingDebug implements DebugNodeStyling {
    *
    * See [DebugNodeStylingEntry].
    */
-  get summary(): {[key: string]: DebugNodeStylingEntry} { return {}; }
+  get summary(): {[key: string]: DebugNodeStylingEntry} {
+    const values = this.values;
+    const summary: {[key: string]: DebugNodeStylingEntry} = {};
+    Object.keys(values).forEach(prop => {
+      const value = values[prop];
+      summary[prop] = {prop, value};
+    });
+    return summary;
+  }
 
   /**
    * Various configurations that are used by styles or classes on this node.

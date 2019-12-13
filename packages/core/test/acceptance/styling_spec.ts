@@ -1145,11 +1145,11 @@ describe('styling', () => {
         expect(widthSummary.value).toEqual('500px');
 
         heightSummary = stylesSummary['height'];
-        expect(heightSummary.value).toEqual(null);
+        expect(heightSummary).toBeFalsy();
 
         classesSummary = classes.summary;
         abcSummary = classesSummary['abc'];
-        expect(abcSummary).toBeUndefined();
+        expect(abcSummary).toBeFalsy();
 
         let defSummary = classesSummary['def'];
         expect(defSummary.prop).toEqual('def');
@@ -2842,6 +2842,76 @@ describe('styling', () => {
             fixture.detectChanges();
             expect(elm.style.width).toEqual('1px');
             expect(elm.style.height).toEqual('1px');
+          });
+
+  onlyInIvy('only ivy treats [class] in concert with other class bindings')
+      .it('should allow a single host binding on an element', () => {
+        @Component({
+          template: `
+        <div single-host-style-dir></div>
+      `
+        })
+        class Cmp {
+        }
+
+        @Directive({selector: '[single-host-style-dir]'})
+        class SingleHostStyleDir {
+          @HostBinding('style.width')
+          width = '100px';
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp, SingleHostStyleDir]});
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.detectChanges();
+
+        const element = fixture.nativeElement.querySelector('div');
+        expect(element.style.width).toEqual('100px');
+      });
+
+  onlyInIvy('only ivy treats [class] in concert with other class bindings')
+      .it('should cancel out inherited static classes if a sub component has a binding to cancel them out',
+          () => {
+            @Component({
+              template: `
+            <child-comp class="template"></child-comp>
+          `
+            })
+            class Cmp {
+            }
+
+            @Component({
+              selector: 'parent-comp',
+              host: {'class': 'parent-comp', '[class.parent-comp-active]': 'true'},
+              template: '...',
+            })
+            class ParentComp {
+            }
+
+            @Component({
+              selector: 'child-comp',
+              host: {
+                'class': 'child-comp',
+                '[class.child-comp-active]': 'true',
+                '[class.parent-comp]': 'false',
+                '[class.parent-comp-active]': 'false'
+              },
+              template: '...',
+            })
+            class ChildComp extends ParentComp {
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp, ChildComp, ParentComp]});
+            const fixture = TestBed.createComponent(Cmp);
+            fixture.detectChanges();
+
+            const element = fixture.nativeElement.querySelector('child-comp');
+            expect(element.classList.contains('template')).toBeTruthy();
+
+            expect(element.classList.contains('child-comp')).toBeTruthy();
+            expect(element.classList.contains('child-comp-active')).toBeTruthy();
+
+            expect(element.classList.contains('parent-comp')).toBeFalsy();
+            expect(element.classList.contains('parent-comp-active')).toBeFalsy();
           });
 });
 

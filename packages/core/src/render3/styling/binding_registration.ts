@@ -318,10 +318,10 @@ export function setBindingConfigAndPointers(
     setBindingConfig(tData, bindingIndex, TDataStylingFlags.IsComponentHostBinding);
   }
 
-  if (previousIndex !== 0) {
+  if (previousIndex !== 0 && previousIndex !== bindingIndex) {
     setBindingPointer(tData, bindingIndex, previousIndex, true);
   }
-  if (nextIndex !== 0) {
+  if (nextIndex !== 0 && nextIndex !== bindingIndex) {
     setBindingPointer(tData, bindingIndex, nextIndex, false);
   }
 }

@@ -671,7 +671,7 @@ export function hasInitialClass(tNode: TNode, prop: string): boolean {
     return (  // word break before
                index === 0 || classes.charCodeAt(index - 1) <= CharCode.SPACE) &&
         (  // word break after
-               end === classes.length || classes.charCodeAt(end + 1) <= CharCode.SPACE);
+               end === classes.length || classes.charCodeAt(end) <= CharCode.SPACE);
   } else {
     return false;
   }

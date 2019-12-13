@@ -7,7 +7,7 @@
 */
 import {TNode} from '../interfaces/node';
 import {LStylingData} from '../interfaces/styling';
-import {TData} from '../interfaces/view';
+import {LView, TData, TVIEW, TView} from '../interfaces/view';
 import {getBindingPropName, getConcatenatedValue, getNextBindingIndex, getPreviousBindingIndex, getStyleBindingSuffix, getStylingHead, getStylingTail, getValue, isComponentHostBinding, isDirectiveHostBinding, isHostBinding} from '../util/styling_utils';
 
 
@@ -33,34 +33,39 @@ import {getBindingPropName, getConcatenatedValue, getNextBindingIndex, getPrevio
 /**
  * Used to print each of the style/class bindings attached to the given node.
  */
-export function printStylingSources(tNode: TNode, tData: TData, isClassBased: boolean): void {
+export function printStylingSources(
+    tData: TData, tNode: TNode, lView: LView, isClassBased: boolean): void {
   let bindingIndex = getStylingHead(tNode, isClassBased);
   let hostBindingsMode = false;
-  let isFirstItem = true;
   let str = '';
+  let mode = '';
   while (bindingIndex !== 0) {
-    if (!hostBindingsMode && isHostBinding(tData, bindingIndex)) {
-      hostBindingsMode = true;
-      isFirstItem = true;
-    }
-    if (isFirstItem) {
-      if (hostBindingsMode) {
-        str += '\n\nHOST BINDINGS:\n';
-      } else {
-        str += '\n\nTEMPLATE BINDINGS:\n';
-      }
+    const nextMode = determineBindingModeName(lView[TVIEW], bindingIndex);
+    if (mode !== nextMode) {
+      str += `\n\n${nextMode}:\n`;
+      mode = nextMode;
     }
 
-    isFirstItem = false;
     const prop = getBindingPropName(tData, bindingIndex) || 'MAP';
     const suffix = getStyleBindingSuffix(tData, bindingIndex);
     const name = suffix ? `${prop}.${suffix}` : prop;
-    str += `  ${getPrintedBindingName(name, hostBindingsMode)}: ${bindingIndex}\n`;
+    str += `  ${getPrintedBindingName(name, hostBindingsMode)}:\n`;
+    str += `    - bindingIndex: ${bindingIndex}\n`;
+    str += `    - value: ${getValue(lView, bindingIndex)}\n`;
+    str += `    - concat value: ${getConcatenatedValue(lView, bindingIndex)}\n\n`;
     bindingIndex = getNextBindingIndex(tData, bindingIndex);
   }
 
   /* tslint:disable */
   console.log(str);
+}
+
+function determineBindingModeName(tView: TView, bindingIndex: number) {
+  if (bindingIndex < tView.expandoStartIndex) {
+    return 'TEMPLATE:'
+  } else {
+    return 'HOST BINDINGS:'
+  }
 }
 
 /**
