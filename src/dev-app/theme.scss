@@ -14,7 +14,7 @@
 @include angular-material-typography-mdc();
 @include mat-edit-typography(mat-typography-config());
 
-// Include the focus indicator
+// Include the focus indicator base styles.
 @include mat-focus-indicator();
 
 // Define the default theme (same as the example above).
