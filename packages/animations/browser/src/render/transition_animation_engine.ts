@@ -308,11 +308,13 @@ export class AnimationTransitionNamespace {
     }
   }
 
-  private _signalRemovalForInnerTriggers(rootElement: any, context: any, animate: boolean = false) {
+  private _signalRemovalForInnerTriggers(rootElement: any, context: any) {
+    const elements = this._engine.driver.query(rootElement, NG_TRIGGER_SELECTOR, true);
+
     // emulate a leave animation for all inner nodes within this node.
     // If there are no animations found for any of the nodes then clear the cache
     // for the element.
-    this._engine.driver.query(rootElement, NG_TRIGGER_SELECTOR, true).forEach(elm => {
+    elements.forEach(elm => {
       // this means that an inner remove() operation has already kicked off
       // the animation on this element...
       if (elm[REMOVAL_FLAG]) return;
@@ -324,6 +326,11 @@ export class AnimationTransitionNamespace {
         this.clearElementCache(elm);
       }
     });
+
+    // If the child elements were removed along with the parent, their animations might not
+    // have completed. Clear all the elements from the cache so we don't end up with a memory leak.
+    this._engine.afterFlushAnimationsDone(
+        () => elements.forEach(elm => this.clearElementCache(elm)));
   }
 
   triggerLeaveAnimation(
@@ -388,7 +395,7 @@ export class AnimationTransitionNamespace {
     const engine = this._engine;
 
     if (element.childElementCount) {
-      this._signalRemovalForInnerTriggers(element, context, true);
+      this._signalRemovalForInnerTriggers(element, context);
     }
 
     // this means that a * => VOID animation was detected and kicked off
