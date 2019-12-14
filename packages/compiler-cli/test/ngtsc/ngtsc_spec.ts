@@ -666,7 +666,7 @@ runInEachFileSystem(os => {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
-              `static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestBase, never, never, { 'input': "input" }, {}, never>;`);
+              `static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestBase, never, never, { "input": "input"; }, {}, never>;`);
     });
 
     it('should compile NgModules without errors', () => {
