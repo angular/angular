@@ -54,6 +54,7 @@ export default [
   ['{1} {0}', u, '{1} \'u\' {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'BAM',
   'KM',
   'Bosanskohercegovačka konvertibilna marka',
   {
