@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'es-MX', [['a. m.', 'p. m.'], u, u], u,
+  'es-MX',
+  [['a. m.', 'p. m.'], u, u],
+  u,
   [
     ['D', 'L', 'M', 'M', 'J', 'V', 'S'], ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
     ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
@@ -34,11 +36,19 @@ export default [
       'octubre', 'noviembre', 'diciembre'
     ]
   ],
-  u, [['a. C.', 'd. C.'], u, ['antes de Cristo', 'después de Cristo']], 0, [6, 0],
+  u,
+  [['a. C.', 'd. C.'], u, ['antes de Cristo', 'después de Cristo']],
+  0,
+  [6, 0],
   ['dd/MM/yy', 'd MMM y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
-  ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'], ['{1} {0}', u, '{1} \'a\' \'las\' {0}', u],
+  ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+  ['{1} {0}', u, '{1} \'a\' \'las\' {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'], '$', 'peso mexicano', {
+  ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'],
+  'MXN',
+  '$',
+  'peso mexicano',
+  {
     'AUD': [u, '$'],
     'BRL': [u, 'R$'],
     'BYN': [u, 'p.'],

@@ -18,7 +18,8 @@ function plural(n: number): number {
 }
 
 export default [
-  'ksh', [['v.M.', 'n.M.'], u, ['Uhr vörmiddaachs', 'Uhr nommendaachs']],
+  'ksh',
+  [['v.M.', 'n.M.'], u, ['Uhr vörmiddaachs', 'Uhr nommendaachs']],
   [['v.M.', 'n.M.'], u, ['Vörmeddaach', 'Nommendaach']],
   [
     ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['Su.', 'Mo.', 'Di.', 'Me.', 'Du.', 'Fr.', 'Sa.'],
@@ -45,10 +46,17 @@ export default [
       'Oktohber', 'Novämber', 'Dezämber'
     ]
   ],
-  [['vC', 'nC'], ['v. Chr.', 'n. Chr.'], ['vür Krestos', 'noh Krestos']], 1, [6, 0],
+  [['vC', 'nC'], ['v. Chr.', 'n. Chr.'], ['vür Krestos', 'noh Krestos']],
+  1,
+  [6, 0],
   ['d. M. y', 'd. MMM. y', 'd. MMMM y', 'EEEE, \'dä\' d. MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '−', '×10^', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro',
-  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'EUR',
+  '€',
+  'Euro',
+  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  plural
 ];

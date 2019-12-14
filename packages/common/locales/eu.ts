@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'eu', [['g', 'a'], ['AM', 'PM'], u], [['AM', 'PM'], u, u],
+  'eu',
+  [['g', 'a'], ['AM', 'PM'], u],
+  [['AM', 'PM'], u, u],
   [
     ['I', 'A', 'A', 'A', 'O', 'O', 'L'], ['ig.', 'al.', 'ar.', 'az.', 'og.', 'or.', 'lr.'],
     ['igandea', 'astelehena', 'asteartea', 'asteazkena', 'osteguna', 'ostirala', 'larunbata'],
@@ -34,14 +36,21 @@ export default [
       'iraila', 'urria', 'azaroa', 'abendua'
     ]
   ],
-  u, [['K.a.', 'K.o.'], u, ['K.a.', 'Kristo ondoren']], 1, [6, 0],
+  u,
+  [['K.a.', 'K.o.'], u, ['K.a.', 'Kristo ondoren']],
+  1,
+  [6, 0],
   [
     'yy/M/d', 'y(\'e\')\'ko\' MMM d(\'a\')', 'y(\'e\')\'ko\' MMMM\'ren\' d(\'a\')',
     'y(\'e\')\'ko\' MMMM\'ren\' d(\'a\'), EEEE'
   ],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss (z)', 'HH:mm:ss (zzzz)'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss (z)', 'HH:mm:ss (zzzz)'],
+  ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '% #,##0', '#,##0.00 ¤', '#E0'], '€', 'euroa',
+  ['#,##0.###', '% #,##0', '#,##0.00 ¤', '#E0'],
+  'EUR',
+  '€',
+  'euroa',
   {'ESP': ['₧'], 'JPY': ['JP¥', '¥'], 'THB': ['฿'], 'TWD': ['NT$'], 'USD': ['US$', '$']},
   plural
 ];

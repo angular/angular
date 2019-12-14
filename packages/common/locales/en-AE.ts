@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'en-AE', [['a', 'p'], ['AM', 'PM'], u], [['AM', 'PM'], u, u],
+  'en-AE',
+  [['a', 'p'], ['AM', 'PM'], u],
+  [['AM', 'PM'], u, u],
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
@@ -33,9 +35,18 @@ export default [
       'October', 'November', 'December'
     ]
   ],
-  u, [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 6, [5, 6],
+  u,
+  [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']],
+  6,
+  [5, 6],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1}, {0}', u, '{1} \'at\' {0}', u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1}, {0}', u, '{1} \'at\' {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'AED', 'United Arab Emirates Dirham', {}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'AED',
+  'AED',
+  'United Arab Emirates Dirham',
+  {},
+  plural
 ];

@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'bas', [['I bikɛ̂glà', 'I ɓugajɔp'], u, u], u,
+  'bas',
+  [['I bikɛ̂glà', 'I ɓugajɔp'], u, u],
+  u,
   [
     ['n', 'n', 'u', 'ŋ', 'm', 'k', 'j'], ['nɔy', 'nja', 'uum', 'ŋge', 'mbɔ', 'kɔɔ', 'jon'],
     [
@@ -34,10 +36,18 @@ export default [
       'Hìkaŋ', 'Dìpɔ̀s', 'Bìòôm', 'Màyɛsèp', 'Lìbuy li ńyèe'
     ]
   ],
-  u, [['b.Y.K', 'm.Y.K'], u, ['bisū bi Yesù Krǐstò', 'i mbūs Yesù Krǐstò']], 1, [6, 0],
+  u,
+  [['b.Y.K', 'm.Y.K'], u, ['bisū bi Yesù Krǐstò', 'i mbūs Yesù Krǐstò']],
+  1,
+  [6, 0],
   ['d/M/y', 'd MMM, y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'FCFA', 'Frǎŋ CFA (BEAC)',
-  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'XAF',
+  'FCFA',
+  'Frǎŋ CFA (BEAC)',
+  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  plural
 ];

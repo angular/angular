@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'fo', [['AM', 'PM'], u, u], u,
+  'fo',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['S', 'M', 'T', 'M', 'H', 'F', 'L'],
     ['sun.', 'mán.', 'týs.', 'mik.', 'hós.', 'frí.', 'ley.'],
@@ -51,10 +53,17 @@ export default [
       'oktober', 'november', 'desember'
     ]
   ],
-  [['fKr', 'eKr'], ['f.Kr.', 'e.Kr.'], ['fyri Krist', 'eftir Krist']], 1, [6, 0],
+  [['fKr', 'eKr'], ['f.Kr.', 'e.Kr.'], ['fyri Krist', 'eftir Krist']],
+  1,
+  [6, 0],
   ['dd.MM.yy', 'dd.MM.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'kl\'. {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1}, {0}', u, '{1} \'kl\'. {0}', u],
   [',', '.', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr', 'donsk króna',
-  {'DKK': ['kr'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'DKK',
+  'kr',
+  'donsk króna',
+  {'DKK': ['kr'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  plural
 ];

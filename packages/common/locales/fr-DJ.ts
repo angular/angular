@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'fr-DJ', [['AM', 'PM'], u, u], u,
+  'fr-DJ',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['D', 'L', 'M', 'M', 'J', 'V', 'S'], ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
     ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],
@@ -36,11 +38,19 @@ export default [
       'octobre', 'novembre', 'décembre'
     ]
   ],
-  u, [['av. J.-C.', 'ap. J.-C.'], u, ['avant Jésus-Christ', 'après Jésus-Christ']], 6, [6, 0],
+  u,
+  [['av. J.-C.', 'ap. J.-C.'], u, ['avant Jésus-Christ', 'après Jésus-Christ']],
+  6,
+  [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', '{1} \'à\' {0}', u, u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1} {0}', '{1} \'à\' {0}', u, u],
   [',', '\u202f', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'Fdj', 'franc djiboutien', {
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'DJF',
+  'Fdj',
+  'franc djiboutien',
+  {
     'ARS': ['$AR', '$'],
     'AUD': ['$AU', '$'],
     'BEF': ['FB'],

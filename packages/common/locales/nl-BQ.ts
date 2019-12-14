@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'nl-BQ', [['a.m.', 'p.m.'], u, u], u,
+  'nl-BQ',
+  [['a.m.', 'p.m.'], u, u],
+  u,
   [
     ['Z', 'M', 'D', 'W', 'D', 'V', 'Z'], ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'],
     ['zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag'],
@@ -33,11 +35,19 @@ export default [
       'oktober', 'november', 'december'
     ]
   ],
-  u, [['v.C.', 'n.C.'], ['v.Chr.', 'n.Chr.'], ['voor Christus', 'na Christus']], 1, [6, 0],
+  u,
+  [['v.C.', 'n.C.'], ['v.Chr.', 'n.Chr.'], ['voor Christus', 'na Christus']],
+  1,
+  [6, 0],
   ['dd-MM-y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, '{1} \'om\' {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, '{1} \'om\' {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00;¤ -#,##0.00', '#E0'], '$', 'Amerikaanse dollar', {
+  ['#,##0.###', '#,##0%', '¤ #,##0.00;¤ -#,##0.00', '#E0'],
+  'USD',
+  '$',
+  'Amerikaanse dollar',
+  {
     'AUD': ['AU$', '$'],
     'CAD': ['C$', '$'],
     'FJD': ['FJ$', '$'],

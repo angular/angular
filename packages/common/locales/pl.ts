@@ -25,7 +25,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'pl', [['a', 'p'], ['AM', 'PM'], u], u,
+  'pl',
+  [['a', 'p'], ['AM', 'PM'], u],
+  u,
   [
     ['n', 'p', 'w', 'ś', 'c', 'p', 's'], ['niedz.', 'pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sob.'],
     ['niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota'],
@@ -52,11 +54,18 @@ export default [
       'wrzesień', 'październik', 'listopad', 'grudzień'
     ]
   ],
-  [['p.n.e.', 'n.e.'], u, ['przed naszą erą', 'naszej ery']], 1, [6, 0],
+  [['p.n.e.', 'n.e.'], u, ['przed naszą erą', 'naszej ery']],
+  1,
+  [6, 0],
   ['dd.MM.y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1}, {0}', u, '{1} {0}', u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'zł', 'złoty polski', {
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'PLN',
+  'zł',
+  'złoty polski',
+  {
     'AUD': [u, '$'],
     'CAD': [u, '$'],
     'CNY': [u, '¥'],

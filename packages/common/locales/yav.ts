@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'yav', [['kiɛmɛ́ɛm', 'kisɛ́ndɛ'], u, u], u,
+  'yav',
+  [['kiɛmɛ́ɛm', 'kisɛ́ndɛ'], u, u],
+  u,
   [
     ['s', 'm', 'm', 'e', 'k', 'f', 's'], ['sd', 'md', 'mw', 'et', 'kl', 'fl', 'ss'],
     [
@@ -36,10 +38,18 @@ export default [
       'makandikɛ', 'pilɔndɔ́'
     ]
   ],
-  u, [['k.Y.', '+J.C.'], u, ['katikupíen Yésuse', 'ékélémkúnupíén n']], 1, [6, 0],
+  u,
+  [['k.Y.', '+J.C.'], u, ['katikupíen Yésuse', 'ékélémkúnupíén n']],
+  1,
+  [6, 0],
   ['d/M/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'FCFA', 'XAF',
-  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'XAF',
+  'FCFA',
+  'XAF',
+  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  plural
 ];

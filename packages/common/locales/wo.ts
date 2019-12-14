@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'wo', [['Sub', 'Ngo'], u, u], u,
+  'wo',
+  [['Sub', 'Ngo'], u, u],
+  u,
   [
     ['Dib', 'Alt', 'Tal', 'Àla', 'Alx', 'Àjj', 'Ase'], u,
     ['Dibéer', 'Altine', 'Talaata', 'Àlarba', 'Alxamis', 'Àjjuma', 'Aseer'],
@@ -31,10 +33,18 @@ export default [
       'Oktoobar', 'Nowàmbar', 'Desàmbar'
     ]
   ],
-  u, [['JC', 'AD'], u, ['av. JC', 'AD']], 1, [6, 0],
+  u,
+  [['JC', 'AD'], u, ['av. JC', 'AD']],
+  1,
+  [6, 0],
   ['dd-MM-y', 'd MMM, y', 'd MMMM, y', 'EEEE, d MMM, y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} - {0}', u, '{1} \'ci\' {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} - {0}', u, '{1} \'ci\' {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'CFA', 'Franc CFA bu Afrik Sowwu-jant',
-  {'JPY': ['JP¥', '¥']}, plural
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
+  'XOF',
+  'CFA',
+  'Franc CFA bu Afrik Sowwu-jant',
+  {'JPY': ['JP¥', '¥']},
+  plural
 ];

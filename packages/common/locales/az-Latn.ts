@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'az-Latn', [['a', 'p'], ['AM', 'PM'], u], [['AM', 'PM'], u, u],
+  'az-Latn',
+  [['a', 'p'], ['AM', 'PM'], u],
+  [['AM', 'PM'], u, u],
   [
     ['7', '1', '2', '3', '4', '5', '6'], ['B.', 'B.e.', 'Ç.a.', 'Ç.', 'C.a.', 'C.', 'Ş.'],
     [
@@ -50,11 +52,18 @@ export default [
       'Noyabr', 'dekabr'
     ]
   ],
-  [['e.ə.', 'y.e.'], u, ['eramızdan əvvəl', 'yeni era']], 1, [6, 0],
+  [['e.ə.', 'y.e.'], u, ['eramızdan əvvəl', 'yeni era']],
+  1,
+  [6, 0],
   ['dd.MM.yy', 'd MMM y', 'd MMMM y', 'd MMMM y, EEEE'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₼', 'Azərbaycan Manatı', {
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'AZN',
+  '₼',
+  'Azərbaycan Manatı',
+  {
     'AZN': ['₼'],
     'JPY': ['JP¥', '¥'],
     'RON': [u, 'ley'],

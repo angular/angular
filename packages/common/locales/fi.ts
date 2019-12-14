@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'fi', [['ap.', 'ip.'], u, u], u,
+  'fi',
+  [['ap.', 'ip.'], u, u],
+  u,
   [
     ['S', 'M', 'T', 'K', 'T', 'P', 'L'], ['su', 'ma', 'ti', 'ke', 'to', 'pe', 'la'],
     [
@@ -58,10 +60,17 @@ export default [
     ['eKr', 'jKr'], ['eKr.', 'jKr.'],
     ['ennen Kristuksen syntymää', 'jälkeen Kristuksen syntymän']
   ],
-  1, [6, 0], ['d.M.y', u, 'd. MMMM y', 'cccc d. MMMM y'],
-  ['H.mm', 'H.mm.ss', 'H.mm.ss z', 'H.mm.ss zzzz'], ['{1} {0}', '{1} \'klo\' {0}', u, u],
+  1,
+  [6, 0],
+  ['d.M.y', u, 'd. MMMM y', 'cccc d. MMMM y'],
+  ['H.mm', 'H.mm.ss', 'H.mm.ss z', 'H.mm.ss zzzz'],
+  ['{1} {0}', '{1} \'klo\' {0}', u, u],
   [',', ' ', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'epäluku', '.'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', {
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'EUR',
+  '€',
+  'euro',
+  {
     'AOA': [],
     'ARS': [],
     'AUD': [],

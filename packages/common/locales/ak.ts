@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'ak', [['AN', 'EW'], u, u], u,
+  'ak',
+  [['AN', 'EW'], u, u],
+  u,
   [
     ['K', 'D', 'B', 'W', 'Y', 'F', 'M'], ['Kwe', 'Dwo', 'Ben', 'Wuk', 'Yaw', 'Fia', 'Mem'],
     ['Kwesida', 'Dwowda', 'Benada', 'Wukuda', 'Yawda', 'Fida', 'Memeneda'],
@@ -33,10 +35,18 @@ export default [
       'Difuu-Ɔsandaa', 'Fankwa-Ɛbɔ', 'Ɔbɛsɛ-Ahinime', 'Ɔberɛfɛw-Obubuo', 'Mumu-Ɔpɛnimba'
     ]
   ],
-  u, [['AK', 'KE'], u, ['Ansa Kristo', 'Kristo Ekyiri']], 1, [6, 0],
+  u,
+  [['AK', 'KE'], u, ['Ansa Kristo', 'Kristo Ekyiri']],
+  1,
+  [6, 0],
   ['yy/MM/dd', 'y MMM d', 'y MMMM d', 'EEEE, y MMMM dd'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'GH₵', 'Ghana Sidi',
-  {'GHS': ['GH₵'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'GHS',
+  'GH₵',
+  'Ghana Sidi',
+  {'GHS': ['GH₵'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  plural
 ];

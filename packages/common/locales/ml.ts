@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'ml', [['AM', 'PM'], u, u], u,
+  'ml',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['ഞ', 'തി', 'ചൊ', 'ബു', 'വ്യാ', 'വെ', 'ശ'],
     [
@@ -71,9 +73,16 @@ export default [
       'ആന്നോ ഡൊമിനി'
     ]
   ],
-  0, [0, 0], ['d/M/yy', 'y, MMM d', 'y, MMMM d', 'y, MMMM d, EEEE'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
+  0,
+  [0, 0],
+  ['d/M/yy', 'y, MMM d', 'y, MMMM d', 'y, MMMM d, EEEE'],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₹', 'ഇന്ത്യൻ രൂപ',
-  {'THB': ['฿'], 'TWD': ['NT$']}, plural
+  ['#,##,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'INR',
+  '₹',
+  'ഇന്ത്യൻ രൂപ',
+  {'THB': ['฿'], 'TWD': ['NT$']},
+  plural
 ];

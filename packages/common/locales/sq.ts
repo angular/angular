@@ -17,7 +17,8 @@ function plural(n: number): number {
 }
 
 export default [
-  'sq', [['p.d.', 'm.d.'], u, ['e paradites', 'e pasdites']],
+  'sq',
+  [['p.d.', 'm.d.'], u, ['e paradites', 'e pasdites']],
   [['p.d.', 'm.d.'], u, ['paradite', 'pasdite']],
   [
     ['d', 'h', 'm', 'm', 'e', 'p', 'sh'], ['Die', 'Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht'],
@@ -37,11 +38,19 @@ export default [
       'nëntor', 'dhjetor'
     ]
   ],
-  u, [['p.K.', 'mb.K.'], u, ['para Krishtit', 'mbas Krishtit']], 1, [6, 0],
+  u,
+  [['p.K.', 'mb.K.'], u, ['para Krishtit', 'mbas Krishtit']],
+  1,
+  [6, 0],
   ['d.M.yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a, z', 'h:mm:ss a, zzzz'], ['{1}, {0}', u, '{1} \'në\' {0}', u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a, z', 'h:mm:ss a, zzzz'],
+  ['{1}, {0}', u, '{1} \'në\' {0}', u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'Lekë', 'Leku shqiptar', {
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'ALL',
+  'Lekë',
+  'Leku shqiptar',
+  {
     'ALL': ['Lekë'],
     'AOA': [],
     'ARS': [],

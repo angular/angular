@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'ca', [['a. m.', 'p. m.'], u, u], u,
+  'ca',
+  [['a. m.', 'p. m.'], u, u],
+  u,
   [
     ['dg', 'dl', 'dt', 'dc', 'dj', 'dv', 'ds'], ['dg.', 'dl.', 'dt.', 'dc.', 'dj.', 'dv.', 'ds.'],
     ['diumenge', 'dilluns', 'dimarts', 'dimecres', 'dijous', 'divendres', 'dissabte'],
@@ -47,12 +49,18 @@ export default [
       'novembre', 'desembre'
     ]
   ],
-  [['aC', 'dC'], u, ['abans de Crist', 'després de Crist']], 1, [6, 0],
+  [['aC', 'dC'], u, ['abans de Crist', 'després de Crist']],
+  1,
+  [6, 0],
   ['d/M/yy', 'd MMM y', 'd MMMM \'de\' y', 'EEEE, d MMMM \'de\' y'],
   ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
   ['{1} {0}', '{1}, {0}', '{1} \'a\' \'les\' {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro', {
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'EUR',
+  '€',
+  'euro',
+  {
     'AUD': ['AU$', '$'],
     'BRL': [u, 'R$'],
     'CAD': [u, '$'],
