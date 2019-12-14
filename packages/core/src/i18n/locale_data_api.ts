@@ -64,6 +64,21 @@ export function findLocaleData(locale: string): any {
 }
 
 /**
+ * Retrieves the default currency code for the given locale.
+ *
+ * The default is defined as the first currency which is still in use.
+ *
+ * @param locale The code of the locale whose currency code we want.
+ * @returns The code of the default currency for the given locale.
+ *
+ * @publicApi
+ */
+export function getLocaleCurrencyCode(locale: string): string|null {
+  const data = findLocaleData(locale);
+  return data[LocaleDataIndex.CurrencyCode] || null;
+}
+
+/**
  * Retrieves the plural function used by ICU expressions to determine the plural case to use
  * for a given locale.
  * @param locale A locale code for the locale format rules to use.
@@ -116,6 +131,7 @@ export enum LocaleDataIndex {
   DateTimeFormat,
   NumberSymbols,
   NumberFormats,
+  CurrencyCode,
   CurrencySymbol,
   CurrencyName,
   Currencies,

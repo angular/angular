@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {findLocaleData, registerLocaleData, unregisterAllLocaleData} from '../../src/i18n/locale_data_api';
+import {LocaleDataIndex, findLocaleData, getLocaleCurrencyCode, registerLocaleData, unregisterAllLocaleData} from '../../src/i18n/locale_data_api';
 import {global} from '../../src/util/global';
 
 {
@@ -15,6 +15,7 @@ import {global} from '../../src/util/global';
     const localeDeCH: any[] = ['de-CH'];
     const localeEn: any[] = ['en'];
     const localeFr: any[] = ['fr'];
+    localeFr[LocaleDataIndex.CurrencyCode] = 'EUR';
     const localeFrCA: any[] = ['fr-CA'];
     const localeZh: any[] = ['zh'];
     const localeEnAU: any[] = ['en-AU'];
@@ -80,6 +81,14 @@ import {global} from '../../src/util/global';
 
       it('should find the registered LOCALE_DATA even if the same locale is on the global object',
          () => { expect(findLocaleData('fr')).not.toBe(fakeGlobalFr); });
+    });
+
+    describe('getLocaleCurrencyCode()', () => {
+      it('should return `null` if the given locale does not provide a currency code',
+         () => { expect(getLocaleCurrencyCode('de')).toBe(null); });
+
+      it('should return the code at the `LocaleDataIndex.CurrencyCode` of the given locale`s data',
+         () => { expect(getLocaleCurrencyCode('fr')).toEqual('EUR'); });
     });
   });
 }
