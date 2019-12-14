@@ -45,6 +45,7 @@ export default [
   ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
   'CHF',
   'CHF',
+  'CHF',
   {},
   'ltr',
   plural
