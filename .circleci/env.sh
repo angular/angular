@@ -3,7 +3,6 @@
 # Variables
 readonly projectDir=$(realpath "$(dirname ${BASH_SOURCE[0]})/..")
 readonly envHelpersPath="$projectDir/.circleci/env-helpers.inc.sh";
-readonly getCommitRangePath="$projectDir/.circleci/get-commit-range.js";
 
 # Load helpers and make them available everywhere (through `$BASH_ENV`).
 source $envHelpersPath;
