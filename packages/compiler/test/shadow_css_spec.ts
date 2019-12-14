@@ -209,9 +209,31 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       });
 
       it('should handle nested ::slotted(*)', () => {
-        expect(s('p ::slotted(*) {}', 'contenta', 'a-host'))
+        expect(s('p ::slotted(*) {}', 'contenta'))
             .toEqual(
                 'p[contenta] [contenta] > *:not([contenta]), p[contenta] > *:not([contenta]) {}');
+      });
+
+      it('should handle child combinator with nested selector before ::slotted(*)', () => {
+        expect(s('p>::slotted(*) {}', 'contenta', 'a-host'))
+            .toEqual('p[contenta] > *:not([contenta]) {}');
+      });
+
+      it('should handle child combinator with host selector before ::slotted(*)', () => {
+        expect(s(':host>::slotted(*) {}', 'contenta', 'a-host'))
+            .toEqual('[a-host] > *:not([contenta]) {}');
+        expect(s(':host(.x) > ::slotted(*) {}', 'contenta', 'a-host'))
+            .toEqual('.x[a-host] > *:not([contenta]) {}');
+      });
+
+      it('should handle adjacent sibling combinator before ::slotted(*)', () => {
+        expect(s('p+::slotted(*) {}', 'contenta')).toEqual('p[contenta] + *:not([contenta]) {}');
+        expect(s('p + ::slotted(*) {}', 'contenta')).toEqual('p[contenta] + *:not([contenta]) {}');
+      });
+
+      it('should handle general sibling combinator before ::slotted(*)', () => {
+        expect(s('p~::slotted(*) {}', 'contenta')).toEqual('p[contenta] ~ *:not([contenta]) {}');
+        expect(s('p ~ ::slotted(*) {}', 'contenta')).toEqual('p[contenta] ~ *:not([contenta]) {}');
       });
 
       it('should handle white space around slotted selector', () => {
@@ -225,28 +247,52 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
                 '[a-host] > [a="b c"]:not([contenta]), [contenta] > [a="b c"]:not([contenta]) {}');
       });
 
+      it('should handle :host-context', () => {
+        expect(s(':host-context(.x) ::slotted(*) {}', 'contenta', 'a-host'))
+            .toEqual(
+                '.x[a-host] [contenta] > *:not([contenta]), .x[a-host] > *:not([contenta]), .x [a-host] [contenta] > *:not([contenta]), .x [a-host] > *:not([contenta]) {}');
+      });
+
       it('should fail with selectors after ::slotted', () => {
         expect(s('::slotted(*) .x {}', 'contenta', 'a-host'))
             .toEqual(
-                '[a-host] > --invalidslotted:not([contenta]), [contenta] > --invalidslotted:not([contenta]) {}');
+                '[a-host] > -invalidslotted:not([contenta]), [contenta] > -invalidslotted:not([contenta]) {}');
         expect(s('::slotted(*) .x, .y {}', 'contenta', 'a-host'))
             .toEqual(
-                '[a-host] > --invalidslotted:not([contenta]), [contenta] > --invalidslotted:not([contenta]), .y[contenta] {}');
+                '[a-host] > -invalidslotted:not([contenta]), [contenta] > -invalidslotted:not([contenta]), .y[contenta] {}');
       });
 
       it('should fail with selectors inside ::slotted after first selector', () => {
         expect(s('::slotted(* span) {}', 'contenta', 'a-host'))
             .toEqual(
-                '[a-host] > --invalidslotted:not([contenta]), [contenta] > --invalidslotted:not([contenta]) {}');
+                '[a-host] > -invalidslotted:not([contenta]), [contenta] > -invalidslotted:not([contenta]) {}');
         expect(s('::slotted(* span), .y {}', 'contenta', 'a-host'))
             .toEqual(
-                '[a-host] > --invalidslotted:not([contenta]), [contenta] > --invalidslotted:not([contenta]), .y[contenta] {}');
+                '[a-host] > -invalidslotted:not([contenta]), [contenta] > -invalidslotted:not([contenta]), .y[contenta] {}');
       });
 
       it('should fail with missing whitespace before ::slotted', () => {
-        expect(s('p::slotted(*) {}', 'contenta', 'a-host'))
+        expect(s('p::slotted(*) {}', 'contenta'))
             .toEqual(
-                'p[contenta] [contenta] > --invalidslotted:not([contenta]), p[contenta] > --invalidslotted:not([contenta]) {}');
+                'p[contenta] [contenta] > -invalidslotted:not([contenta]), p[contenta] > -invalidslotted:not([contenta]) {}');
+      });
+
+      it('should fail with adjacent sibling combinator with :host', () => {
+        expect(s(':host+::slotted(*) {}', 'contenta', 'a-host'))
+            .toEqual('[a-host] + -invalidslotted:not([contenta]) {}');
+        expect(s(':host + ::slotted(*) {}', 'contenta', 'a-host'))
+            .toEqual('[a-host] + -invalidslotted:not([contenta]) {}');
+        expect(s(':host(.x) + ::slotted(*) {}', 'contenta', 'a-host'))
+            .toEqual('.x[a-host] + -invalidslotted:not([contenta]) {}');
+      });
+
+      it('should fail with general sibling combinator with :host', () => {
+        expect(s(':host~::slotted(*) {}', 'contenta', 'a-host'))
+            .toEqual('[a-host] ~ -invalidslotted:not([contenta]) {}');
+        expect(s(':host ~ ::slotted(*) {}', 'contenta', 'a-host'))
+            .toEqual('[a-host] ~ -invalidslotted:not([contenta]) {}');
+        expect(s(':host(.x) ~ ::slotted(*) {}', 'contenta', 'a-host'))
+            .toEqual('.x[a-host] ~ -invalidslotted:not([contenta]) {}');
       });
     });
 
