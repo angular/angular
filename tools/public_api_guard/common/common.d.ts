@@ -13,7 +13,7 @@ export declare class CommonModule {
 }
 
 export declare class CurrencyPipe implements PipeTransform {
-    constructor(_locale: string);
+    constructor(_locale: string, _defaultCurrencyCode?: string);
     transform(value: any, currencyCode?: string, display?: 'code' | 'symbol' | 'symbol-narrow' | string | boolean, digitsInfo?: string, locale?: string): string | null;
 }
 
