@@ -134,7 +134,7 @@ runInEachFileSystem(() => {
         {name: _('/node_modules/internal/src/index.d.ts'), contents: ''},
         {
           name: _('/node_modules/internal/src/internal.d.ts'),
-          contents: 'export declare function internal();'
+          contents: 'export declare class Internal {}'
         },
         {
           name: _('/node_modules/internal/esm2015/index.js'),
@@ -146,7 +146,7 @@ runInEachFileSystem(() => {
         },
         {
           name: _('/node_modules/internal/esm2015/src/internal.js'),
-          contents: 'export function internal();'
+          contents: 'export class Internal {}'
         },
 
         // A package with a secondary entry-point that has source files in a different tree
@@ -210,74 +210,75 @@ runInEachFileSystem(() => {
              ].map(p => absoluteFrom(p).toString())));
        });
 
-    it('should include equivalently named, internally imported, src files in the typings program, if `mirrorDtsFromSrc` is true',
-       () => {
-         setupMockFileSystem();
-         const fs = getFileSystem();
-         const entryPoint: EntryPoint = {
-           name: 'test',
-           packageJson: {name: 'test'},
-           package: absoluteFrom('/node_modules/test'),
-           path: absoluteFrom('/node_modules/test'),
-           typings: absoluteFrom('/node_modules/test/index.d.ts'),
-           compiledByAngular: true,
-           ignoreMissingDependencies: false,
-           generateDeepReexports: false,
-         };
-         const esm5bundle = makeEntryPointBundle(
-             fs, entryPoint, './index.js', false, 'esm5', /* transformDts */ true,
-             /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
-         expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
-             .toContain(absoluteFrom('/node_modules/test/internal.js'));
-         expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
-             .toContain(absoluteFrom('/node_modules/test/internal.d.ts'));
-       });
+    describe(
+        'including equivalently named, internally imported, src files in the typings program',
+        () => {
+          it('does include internal .d.ts files if `mirrorDtsFromSrc` is true', () => {
+            setupMockFileSystem();
+            const fs = getFileSystem();
+            const entryPoint: EntryPoint = {
+              name: 'test',
+              packageJson: {name: 'test'},
+              package: absoluteFrom('/node_modules/test'),
+              path: absoluteFrom('/node_modules/test'),
+              typings: absoluteFrom('/node_modules/test/index.d.ts'),
+              compiledByAngular: true,
+              ignoreMissingDependencies: false,
+              generateDeepReexports: false,
+            };
+            const esm5bundle = makeEntryPointBundle(
+                fs, entryPoint, './index.js', false, 'esm5', /* transformDts */ true,
+                /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
+            expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
+                .toContain(absoluteFrom('/node_modules/test/internal.js'));
+            expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
+                .toContain(absoluteFrom('/node_modules/test/internal.d.ts'));
+          });
 
-    it('should include equivalently named, internally imported, src files in the typings program, if `mirrorDtsFromSrc` is true',
-       () => {
-         setupMockFileSystem();
-         const fs = getFileSystem();
-         const entryPoint: EntryPoint = {
-           name: 'internal',
-           packageJson: {name: 'internal'},
-           package: absoluteFrom('/node_modules/internal'),
-           path: absoluteFrom('/node_modules/internal'),
-           typings: absoluteFrom('/node_modules/internal/index.d.ts'),
-           compiledByAngular: true,
-           ignoreMissingDependencies: false,
-           generateDeepReexports: false,
-         };
-         const esm5bundle = makeEntryPointBundle(
-             fs, entryPoint, './esm2015/index.js', false, 'esm2015', /* transformDts */ true,
-             /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
-         expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
-             .toContain(absoluteFrom('/node_modules/internal/esm2015/src/internal.js'));
-         expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
-             .toContain(absoluteFrom('/node_modules/internal/src/internal.d.ts'));
-       });
+          it('should work when the .d.ts files are in a different tree than the sources', () => {
+            setupMockFileSystem();
+            const fs = getFileSystem();
+            const entryPoint: EntryPoint = {
+              name: 'internal',
+              packageJson: {name: 'internal'},
+              package: absoluteFrom('/node_modules/internal'),
+              path: absoluteFrom('/node_modules/internal'),
+              typings: absoluteFrom('/node_modules/internal/index.d.ts'),
+              compiledByAngular: true,
+              ignoreMissingDependencies: false,
+              generateDeepReexports: false,
+            };
+            const esm5bundle = makeEntryPointBundle(
+                fs, entryPoint, './esm2015/index.js', false, 'esm2015', /* transformDts */ true,
+                /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
+            expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
+                .toContain(absoluteFrom('/node_modules/internal/esm2015/src/internal.js'));
+            expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
+                .toContain(absoluteFrom('/node_modules/internal/src/internal.d.ts'));
+          });
 
-    it('should ignore, internally imported, src files in the typings program, if `mirrorDtsFromSrc` is false',
-       () => {
-         setupMockFileSystem();
-         const fs = getFileSystem();
-         const entryPoint: EntryPoint = {
-           name: 'test',
-           packageJson: {name: 'test'},
-           package: absoluteFrom('/node_modules/test'),
-           path: absoluteFrom('/node_modules/test'),
-           typings: absoluteFrom('/node_modules/test/index.d.ts'),
-           compiledByAngular: true,
-           ignoreMissingDependencies: false,
-           generateDeepReexports: false,
-         };
-         const esm5bundle = makeEntryPointBundle(
-             fs, entryPoint, './index.js', false, 'esm5', /* transformDts */ true,
-             /* pathMappings */ undefined, /* mirrorDtsFromSrc */ false);
-         expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
-             .toContain(absoluteFrom('/node_modules/test/internal.js'));
-         expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
-             .not.toContain(absoluteFrom('/node_modules/test/internal.d.ts'));
-       });
+          it('ignores internal .d.ts files if `mirrorDtsFromSrc` is false', () => {
+            setupMockFileSystem();
+            const fs = getFileSystem();
+            const entryPoint: EntryPoint = {
+              name: 'test',
+              packageJson: {name: 'test'},
+              package: absoluteFrom('/node_modules/test'),
+              path: absoluteFrom('/node_modules/test'),
+              typings: absoluteFrom('/node_modules/test/index.d.ts'),
+              compiledByAngular: true,
+              ignoreMissingDependencies: false,
+              generateDeepReexports: false,
+            };
+            const esm5bundle = makeEntryPointBundle(
+                fs, entryPoint, './index.js', false, 'esm5', /* transformDts */ true,
+                /* pathMappings */ undefined, /* mirrorDtsFromSrc */ false);
+            expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
+                .toContain(absoluteFrom('/node_modules/test/internal.js'));
+            expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
+                .not.toContain(absoluteFrom('/node_modules/test/internal.d.ts'));
+          });
+        });
 
     it('should set the `rootDir` to the package path not the entry-point path', () => {
       setupMockFileSystem();
