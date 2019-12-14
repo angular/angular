@@ -144,8 +144,24 @@ export class NgZone {
 
     self.shouldCoalesceEventChangeDetection = shouldCoalesceEventChangeDetection;
     self.lastRequestAnimationFrameId = -1;
-    self.nativeRequestAnimationFrame = getNativeRequestAnimationFrame().nativeRequestAnimationFrame;
+    const {nativeRequestAnimationFrame, nativeCancelAnimationFrame} =
+        getNativeRequestAnimationFrame();
+    self.nativeRequestAnimationFrame = nativeRequestAnimationFrame;
+    self.nativeCancelAnimationFrame = nativeCancelAnimationFrame;
     forkInnerZoneWithAngularBehavior(self);
+
+    // replace Zone.root with angular zone
+    const angularZone = self._inner;
+    let findZone: Zone|null = angularZone;
+    while (findZone) {
+      if (findZone.parent === self._outer) {
+        break;
+      }
+      findZone = findZone.parent;
+    }
+    if (findZone) {
+      (findZone as any)._parent = null;
+    }
   }
 
   static isInAngularZone(): boolean { return Zone.current.get('isAngularZone') === true; }
@@ -241,6 +257,7 @@ interface NgZonePrivate extends NgZone {
   isStable: boolean;
   shouldCoalesceEventChangeDetection: boolean;
   nativeRequestAnimationFrame: (callback: FrameRequestCallback) => number;
+  nativeCancelAnimationFrame: (id: number) => void;
 }
 
 function checkStable(zone: NgZonePrivate) {
@@ -263,7 +280,8 @@ function checkStable(zone: NgZonePrivate) {
 
 function delayChangeDetectionForEvents(zone: NgZonePrivate) {
   if (zone.lastRequestAnimationFrameId !== -1) {
-    return;
+    zone.nativeCancelAnimationFrame.call(global, zone.lastRequestAnimationFrameId);
+    zone.lastRequestAnimationFrameId = -1;
   }
   zone.lastRequestAnimationFrameId = zone.nativeRequestAnimationFrame.call(global, () => {
     zone.lastRequestAnimationFrameId = -1;
@@ -275,7 +293,7 @@ function delayChangeDetectionForEvents(zone: NgZonePrivate) {
 
 function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
   const delayChangeDetectionForEventsDelegate = () => { delayChangeDetectionForEvents(zone); };
-  const maybeDelayChangeDetection = !!zone.shouldCoalesceEventChangeDetection &&
+  const maybeDelayChangeDetection =
       zone.nativeRequestAnimationFrame && delayChangeDetectionForEventsDelegate;
   zone._inner = zone._inner.fork({
     name: 'angular',
@@ -287,7 +305,7 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
         onEnter(zone);
         return delegate.invokeTask(target, task, applyThis, applyArgs);
       } finally {
-        if (maybeDelayChangeDetection && task.type === 'eventTask') {
+        if (maybeDelayChangeDetection) {
           maybeDelayChangeDetection();
         }
         onLeave(zone);
@@ -301,6 +319,9 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
         onEnter(zone);
         return delegate.invoke(target, callback, applyThis, applyArgs, source);
       } finally {
+        if (maybeDelayChangeDetection) {
+          maybeDelayChangeDetection();
+        }
         onLeave(zone);
       }
     },
@@ -330,8 +351,7 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
 }
 
 function updateMicroTaskStatus(zone: NgZonePrivate) {
-  if (zone._hasPendingMicrotasks ||
-      (zone.shouldCoalesceEventChangeDetection && zone.lastRequestAnimationFrameId !== -1)) {
+  if (zone._hasPendingMicrotasks || zone.lastRequestAnimationFrameId !== -1) {
     zone.hasPendingMicrotasks = true;
   } else {
     zone.hasPendingMicrotasks = false;
