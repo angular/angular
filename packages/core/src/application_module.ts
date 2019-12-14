@@ -14,6 +14,7 @@ import {Console} from './console';
 import {Injector, StaticProvider} from './di';
 import {Inject, Optional, SkipSelf} from './di/metadata';
 import {ErrorHandler} from './error_handler';
+import {getLocaleCurrencyCode} from './i18n/locale_data_api';
 import {DEFAULT_LOCALE_ID, USD_CURRENCY_CODE} from './i18n/localization';
 import {DEFAULT_CURRENCY_CODE, LOCALE_ID} from './i18n/tokens';
 import {ivyEnabled} from './ivy_switch';
@@ -40,6 +41,10 @@ export function _localeFactory(locale?: string): string {
     setLocaleId(locale);
   }
   return locale;
+}
+
+export function _getDefaultCurrencyCode(localeId: string): string {
+  return getLocaleCurrencyCode(localeId) || USD_CURRENCY_CODE;
 }
 
 /**
@@ -95,7 +100,7 @@ export const APPLICATION_MODULE_PROVIDERS: StaticProvider[] = [
     useFactory: _localeFactory,
     deps: [[new Inject(LOCALE_ID), new Optional(), new SkipSelf()]]
   },
-  {provide: DEFAULT_CURRENCY_CODE, useValue: USD_CURRENCY_CODE},
+  {provide: DEFAULT_CURRENCY_CODE, useFactory: _getDefaultCurrencyCode, deps: [LOCALE_ID]},
 ];
 
 /**

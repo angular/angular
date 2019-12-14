@@ -33,29 +33,21 @@ import {InjectionToken} from '../di/injection_token';
 export const LOCALE_ID = new InjectionToken<string>('LocaleId');
 
 /**
- * Provide this token to set the default currency code your application uses for
- * CurrencyPipe when there is no currency code passed into it. This is only used by
- * CurrencyPipe and has no relation to locale currency. Defaults to USD if not configured.
+ * This token is used by the `CurrencyPipe` when no currency code is explicitly passed to it.
  *
- * See the [i18n guide](guide/i18n#setting-up-locale) for more information.
+ * Unless overridden, `DEFAULT_CURRENCY_CODE` is the default currency of the current locale as
+ * provided by `LOCALE_ID`, which defaults to `en-US` if not configured differently.
  *
- * <div class="alert is-helpful">
  *
- * **Deprecation notice:**
- *
- * The default currency code is currently always `USD` but this is deprecated from v9.
- *
- * **In v10 the default currency code will be taken from the current locale.**
- *
- * If you need the previous behavior then set it by creating a `DEFAULT_CURRENCY_CODE` provider in
- * your application `NgModule`:
+ * Provide your own value for this token if the default currency code should be different to that
+ * given in the current locale. For example, if you need the previous behavior then set it by
+ * creating a `DEFAULT_CURRENCY_CODE` provider in your application `NgModule`:
  *
  * ```ts
  * {provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}
  * ```
  *
- * </div>
- *
+ * See the [i18n guide](guide/i18n#setting-up-locale) for more information.
  * @usageNotes
  * ### Example
  *
