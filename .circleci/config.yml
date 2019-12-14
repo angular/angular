@@ -154,6 +154,10 @@ commands:
       - custom_attach_workspace
       # Install Bazel pre-requisites that aren't in the preconfigured CircleCI Windows VM.
       - run: ./.circleci/windows-env.ps1
+      - run:
+          # Overwrite the yarn installed in the docker container with our own version.
+          name: Overwrite yarn with our own version
+          command: ./.circleci/windows-yarn-setup.ps1
       - run: node --version
       - run: yarn --version
       - restore_cache:
