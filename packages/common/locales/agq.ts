@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'agq', [['a.g', 'a.k'], u, u], u,
+  'agq',
+  [['a.g', 'a.k'], u, u],
+  u,
   [
     ['n', 'k', 'g', 't', 'u', 'g', 'd'], ['nts', 'kpa', 'ghɔ', 'tɔm', 'ume', 'ghɨ', 'dzk'],
     [
@@ -36,10 +38,18 @@ export default [
       'ndzɔ̀ŋɔ̀ghǔuwelɔ̀m', 'ndzɔ̀ŋɔ̀chwaʔàkaa wo', 'ndzɔ̀ŋèfwòo'
     ]
   ],
-  u, [['SK', 'BK'], u, ['Sěe Kɨ̀lesto', 'Bǎa Kɨ̀lesto']], 1, [6, 0],
+  u,
+  [['SK', 'BK'], u, ['Sěe Kɨ̀lesto', 'Bǎa Kɨ̀lesto']],
+  1,
+  [6, 0],
   ['d/M/y', 'd MMM, y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], 'FCFA', 'CFA Fàlâŋ BEAC',
-  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'],
+  'XAF',
+  'FCFA',
+  'CFA Fàlâŋ BEAC',
+  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  plural
 ];

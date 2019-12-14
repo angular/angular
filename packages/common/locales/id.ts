@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'id', [['AM', 'PM'], u, u], u,
+  'id',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['M', 'S', 'S', 'R', 'K', 'J', 'S'], ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
     ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
@@ -31,11 +33,19 @@ export default [
       'Oktober', 'November', 'Desember'
     ]
   ],
-  u, [['SM', 'M'], u, ['Sebelum Masehi', 'Masehi']], 0, [6, 0],
+  u,
+  [['SM', 'M'], u, ['Sebelum Masehi', 'Masehi']],
+  0,
+  [6, 0],
   ['dd/MM/yy', 'd MMM y', 'd MMMM y', 'EEEE, dd MMMM y'],
-  ['HH.mm', 'HH.mm.ss', 'HH.mm.ss z', 'HH.mm.ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH.mm', 'HH.mm.ss', 'HH.mm.ss z', 'HH.mm.ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', '.'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Rp', 'Rupiah Indonesia', {
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'IDR',
+  'Rp',
+  'Rupiah Indonesia',
+  {
     'AUD': ['AU$', '$'],
     'IDR': ['Rp'],
     'INR': ['Rs', '₹'],

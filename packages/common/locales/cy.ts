@@ -21,7 +21,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'cy', [['b', 'h'], ['AM', 'PM'], ['yb', 'yh']], [['AM', 'PM'], u, u],
+  'cy',
+  [['b', 'h'], ['AM', 'PM'], ['yb', 'yh']],
+  [['AM', 'PM'], u, u],
   [
     ['S', 'Ll', 'M', 'M', 'I', 'G', 'S'], ['Sul', 'Llun', 'Maw', 'Mer', 'Iau', 'Gwen', 'Sad'],
     [
@@ -54,11 +56,18 @@ export default [
       'Hydref', 'Tachwedd', 'Rhagfyr'
     ]
   ],
-  [['C', 'O'], ['CC', 'OC'], ['Cyn Crist', 'Oed Crist']], 1, [6, 0],
+  [['C', 'O'], ['CC', 'OC'], ['Cyn Crist', 'Oed Crist']],
+  1,
+  [6, 0],
   ['dd/MM/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, '{1} \'am\' {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, '{1} \'am\' {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '£', 'Punt Prydain', {
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'GBP',
+  '£',
+  'Punt Prydain',
+  {
     'BDT': [u, 'TK'],
     'BWP': [],
     'HKD': ['HK$'],

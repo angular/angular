@@ -18,7 +18,8 @@ function plural(n: number): number {
 }
 
 export default [
-  'pt-MO', [['a.m.', 'p.m.'], u, ['da manhã', 'da tarde']],
+  'pt-MO',
+  [['a.m.', 'p.m.'], u, ['da manhã', 'da tarde']],
   [['a.m.', 'p.m.'], u, ['manhã', 'tarde']],
   [
     ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
@@ -40,11 +41,19 @@ export default [
       'outubro', 'novembro', 'dezembro'
     ]
   ],
-  u, [['a.C.', 'd.C.'], u, ['antes de Cristo', 'depois de Cristo']], 0, [6, 0],
+  u,
+  [['a.C.', 'd.C.'], u, ['antes de Cristo', 'depois de Cristo']],
+  0,
+  [6, 0],
   ['dd/MM/yy', 'dd/MM/y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1}, {0}', u, '{1} \'às\' {0}', u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1}, {0}', u, '{1} \'às\' {0}', u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'MOP$', 'pataca macaense', {
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'MOP',
+  'MOP$',
+  'pataca macaense',
+  {
     'AUD': ['AU$', '$'],
     'JPY': ['JP¥', '¥'],
     'MOP': ['MOP$'],

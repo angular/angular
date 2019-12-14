@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'sw-UG', [['am', 'pm'], ['AM', 'PM'], u], [['AM', 'PM'], u, u],
+  'sw-UG',
+  [['am', 'pm'], ['AM', 'PM'], u],
+  [['AM', 'PM'], u, u],
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
     ['Jumapili', 'Jumatatu', 'Jumanne', 'Jumatano', 'Alhamisi', 'Ijumaa', 'Jumamosi'], u, u
@@ -32,11 +34,19 @@ export default [
       'Oktoba', 'Novemba', 'Desemba'
     ]
   ],
-  u, [['KK', 'BK'], u, ['Kabla ya Kristo', 'Baada ya Kristo']], 1, [0, 0],
+  u,
+  [['KK', 'BK'], u, ['Kabla ya Kristo', 'Baada ya Kristo']],
+  1,
+  [0, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'USh', 'Shilingi ya Uganda', {
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
+  'UGX',
+  'USh',
+  'Shilingi ya Uganda',
+  {
     'JPY': ['JP¥', '¥'],
     'KES': ['Ksh'],
     'THB': ['฿'],

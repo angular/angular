@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'ln-AO', [['ntɔ́ngɔ́', 'mpókwa'], u, u], u,
+  'ln-AO',
+  [['ntɔ́ngɔ́', 'mpókwa'], u, u],
+  u,
   [
     ['e', 'y', 'm', 'm', 'm', 'm', 'p'], ['eye', 'ybo', 'mbl', 'mst', 'min', 'mtn', 'mps'],
     [
@@ -37,10 +39,18 @@ export default [
       'sánzá ya zómi na míbalé'
     ]
   ],
-  u, [['libóso ya', 'nsima ya Y'], u, ['Yambo ya Yézu Krís', 'Nsima ya Yézu Krís']], 1, [6, 0],
+  u,
+  [['libóso ya', 'nsima ya Y'], u, ['Yambo ya Yézu Krís', 'Nsima ya Yézu Krís']],
+  1,
+  [6, 0],
   ['d/M/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'Kz', 'Kwanza ya Angóla',
-  {'AOA': ['Kz'], 'CDF': ['FC'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'AOA',
+  'Kz',
+  'Kwanza ya Angóla',
+  {'AOA': ['Kz'], 'CDF': ['FC'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  plural
 ];

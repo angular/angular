@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'ee', [['ŋ', 'ɣ'], ['ŋdi', 'ɣetrɔ'], u], u,
+  'ee',
+  [['ŋ', 'ɣ'], ['ŋdi', 'ɣetrɔ'], u],
+  u,
   [
     ['k', 'd', 'b', 'k', 'y', 'f', 'm'], ['kɔs', 'dzo', 'bla', 'kuɖ', 'yaw', 'fiɖ', 'mem'],
     ['kɔsiɖa', 'dzoɖa', 'blaɖa', 'kuɖa', 'yawoɖa', 'fiɖa', 'memleɖa'],
@@ -32,11 +34,19 @@ export default [
       'anyɔnyɔ', 'kele', 'adeɛmekpɔxe', 'dzome'
     ]
   ],
-  u, [['HYV', 'Yŋ'], u, ['Hafi Yesu Va', 'Yesu ŋɔli']], 1, [6, 0],
+  u,
+  [['HYV', 'Yŋ'], u, ['Hafi Yesu Va', 'Yesu ŋɔli']],
+  1,
+  [6, 0],
   ['M/d/yy', 'MMM d \'lia\', y', 'MMMM d \'lia\' y', 'EEEE, MMMM d \'lia\' y'],
   ['a \'ga\' h:mm', 'a \'ga\' h:mm:ss', 'a \'ga\' h:mm:ss z', 'a \'ga\' h:mm:ss zzzz'],
-  ['{0} {1}', u, u, u], ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'mnn', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'GH₵', 'ghana siɖi', {
+  ['{0} {1}', u, u, u],
+  ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'mnn', ':'],
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'GHS',
+  'GH₵',
+  'ghana siɖi',
+  {
     'AUD': ['AU$', '$'],
     'GHS': ['GH₵'],
     'JPY': ['JP¥', '¥'],

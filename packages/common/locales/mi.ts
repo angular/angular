@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'mi', [['AM', 'PM'], u, u], u,
+  'mi',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['T', 'H', 'T', 'A', 'P', 'M', 'H'], ['Tap', 'Hin', 'Tū', 'Apa', 'Par', 'Mer', 'Hor'],
     ['Rātapu', 'Rāhina', 'Rātū', 'Rāapa', 'Rāpare', 'Rāmere', 'Rāhoroi'],
@@ -33,9 +35,18 @@ export default [
       'Hōngongoi', 'Hereturikōkā', 'Mahuru', 'Whiringa-ā-nuku', 'Whiringa-ā-rangi', 'Hakihea'
     ]
   ],
-  u, [['BCE', 'CE'], u, u], 1, [6, 0], ['dd-MM-y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
+  u,
+  [['BCE', 'CE'], u, u],
+  1,
+  [6, 0],
+  ['dd-MM-y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '$', 'Tāra o Aotearoa',
-  {'NZD': ['$'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
+  'NZD',
+  '$',
+  'Tāra o Aotearoa',
+  {'NZD': ['$'], 'USD': ['US$', '$']},
+  plural
 ];

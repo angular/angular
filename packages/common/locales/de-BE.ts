@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'de-BE', [['AM', 'PM'], u, u], u,
+  'de-BE',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'],
     ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
@@ -48,11 +50,18 @@ export default [
       'Oktober', 'November', 'Dezember'
     ]
   ],
-  [['v. Chr.', 'n. Chr.'], u, u], 1, [6, 0],
+  [['v. Chr.', 'n. Chr.'], u, u],
+  1,
+  [6, 0],
   ['dd.MM.yy', 'dd.MM.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'um\' {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1}, {0}', u, '{1} \'um\' {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro', {
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'EUR',
+  '€',
+  'Euro',
+  {
     'ATS': ['öS'],
     'AUD': ['AU$', '$'],
     'BGM': ['BGK'],

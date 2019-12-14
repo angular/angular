@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'jv', [['Isuk', 'Wengi'], u, u], u,
+  'jv',
+  [['Isuk', 'Wengi'], u, u],
+  u,
   [
     ['A', 'S', 'S', 'R', 'K', 'J', 'S'], ['Ahad', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
     ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
@@ -31,10 +33,18 @@ export default [
       'Oktober', 'November', 'Desember'
     ]
   ],
-  u, [['SM', 'M'], u, ['Sakdurunge Masehi', 'Masehi']], 0, [6, 0],
+  u,
+  [['SM', 'M'], u, ['Sakdurunge Masehi', 'Masehi']],
+  0,
+  [6, 0],
   ['dd-MM-y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1}, {0}', u, '{1} {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'Rp', 'Rupiah Indonesia',
-  {'IDR': ['Rp'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
+  'IDR',
+  'Rp',
+  'Rupiah Indonesia',
+  {'IDR': ['Rp'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  plural
 ];

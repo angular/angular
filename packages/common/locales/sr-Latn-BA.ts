@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'sr-Latn-BA', [['a', 'p'], ['prije podne', 'po podne'], u], u,
+  'sr-Latn-BA',
+  [['a', 'p'], ['prije podne', 'po podne'], u],
+  u,
   [
     ['n', 'p', 'u', 's', 'č', 'p', 's'], ['ned', 'pon', 'ut', 'sr', 'čet', 'pet', 'sub'],
     ['nedjelja', 'ponedeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota'],
@@ -31,12 +33,19 @@ export default [
       'novembar', 'decembar'
     ]
   ],
-  u, [['p.n.e.', 'n.e.'], ['p. n. e.', 'n. e.'], ['prije nove ere', 'nove ere']], 1, [6, 0],
+  u,
+  [['p.n.e.', 'n.e.'], ['p. n. e.', 'n. e.'], ['prije nove ere', 'nove ere']],
+  1,
+  [6, 0],
   ['d.M.yy.', 'dd.MM.y.', 'dd. MMMM y.', 'EEEE, dd. MMMM y.'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'KM',
-  'Bosansko-hercegovačka konvertibilna marka', {
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'BAM',
+  'KM',
+  'Bosansko-hercegovačka konvertibilna marka',
+  {
     'AUD': [u, '$'],
     'BAM': ['KM'],
     'BYN': [u, 'r.'],

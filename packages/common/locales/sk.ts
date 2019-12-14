@@ -20,7 +20,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'sk', [['AM', 'PM'], u, u], u,
+  'sk',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['n', 'p', 'u', 's', 'š', 'p', 's'], ['ne', 'po', 'ut', 'st', 'št', 'pi', 'so'],
     ['nedeľa', 'pondelok', 'utorok', 'streda', 'štvrtok', 'piatok', 'sobota'],
@@ -43,11 +45,18 @@ export default [
       'október', 'november', 'december'
     ]
   ],
-  [['pred Kr.', 'po Kr.'], u, ['pred Kristom', 'po Kristovi']], 1, [6, 0],
-  ['d. M. y', u, 'd. MMMM y', 'EEEE d. MMMM y'], ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+  [['pred Kr.', 'po Kr.'], u, ['pred Kristom', 'po Kristovi']],
+  1,
+  [6, 0],
+  ['d. M. y', u, 'd. MMMM y', 'EEEE d. MMMM y'],
+  ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
   ['{1} {0}', '{1}, {0}', u, u],
   [',', ' ', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', {
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'EUR',
+  '€',
+  'euro',
+  {
     'AUD': [u, '$'],
     'BRL': [u, 'R$'],
     'CAD': [u, '$'],

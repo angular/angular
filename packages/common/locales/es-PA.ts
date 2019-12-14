@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'es-PA', [['a. m.', 'p. m.'], u, u], u,
+  'es-PA',
+  [['a. m.', 'p. m.'], u, u],
+  u,
   [
     ['d', 'l', 'm', 'm', 'j', 'v', 's'], ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
     ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
@@ -38,12 +40,19 @@ export default [
       'octubre', 'noviembre', 'diciembre'
     ]
   ],
-  u, [['a. C.', 'd. C.'], u, ['antes de Cristo', 'después de Cristo']], 0, [6, 0],
+  u,
+  [['a. C.', 'd. C.'], u, ['antes de Cristo', 'después de Cristo']],
+  0,
+  [6, 0],
   ['MM/dd/yy', 'MM/dd/y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   ['{1} {0}', u, '{1} \'a\' \'las\' {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'], 'B/.', 'balboa panameño', {
+  ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'],
+  'PAB',
+  'B/.',
+  'balboa panameño',
+  {
     'AUD': [u, '$'],
     'BRL': [u, 'R$'],
     'CAD': [u, '$'],

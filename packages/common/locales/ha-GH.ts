@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'ha-GH', [['AM', 'PM'], u, ['Safiya', 'Yamma']], [['AM', 'PM'], u, u],
+  'ha-GH',
+  [['AM', 'PM'], u, ['Safiya', 'Yamma']],
+  [['AM', 'PM'], u, u],
   [
     ['L', 'L', 'T', 'L', 'A', 'J', 'A'], ['Lah', 'Lit', 'Tal', 'Lar', 'Alh', 'Jum', 'Asa'],
     ['Lahadi', 'Litinin', 'Talata', 'Laraba', 'Alhamis', 'Jummaʼa', 'Asabar'],
@@ -32,10 +34,18 @@ export default [
       'Oktoba', 'Nuwamba', 'Disamba'
     ]
   ],
-  u, [['K.H', 'BHAI'], u, ['Kafin haihuwar annab', 'Bayan haihuwar annab']], 1, [6, 0],
+  u,
+  [['K.H', 'BHAI'], u, ['Kafin haihuwar annab', 'Bayan haihuwar annab']],
+  1,
+  [6, 0],
   ['d/M/yy', 'd MMM, y', 'd MMMM, y', 'EEEE d MMMM, y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'GH₵', 'GHS',
-  {'GHS': ['GH₵'], 'NGN': ['₦']}, plural
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
+  'GHS',
+  'GH₵',
+  'GHS',
+  {'GHS': ['GH₵'], 'NGN': ['₦']},
+  plural
 ];

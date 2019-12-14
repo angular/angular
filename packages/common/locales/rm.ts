@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'rm', [['AM', 'PM'], u, u], u,
+  'rm',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['D', 'G', 'M', 'M', 'G', 'V', 'S'], ['du', 'gli', 'ma', 'me', 'gie', 've', 'so'],
     ['dumengia', 'glindesdi', 'mardi', 'mesemna', 'gievgia', 'venderdi', 'sonda'],
@@ -46,10 +48,17 @@ export default [
       'october', 'november', 'december'
     ]
   ],
-  [['av. Cr.', 's. Cr.'], u, ['avant Cristus', 'suenter Cristus']], 1, [6, 0],
+  [['av. Cr.', 's. Cr.'], u, ['avant Cristus', 'suenter Cristus']],
+  1,
+  [6, 0],
   ['dd-MM-yy', 'dd-MM-y', 'd MMMM y', 'EEEE, \'ils\' d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', '’', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'CHF', 'franc svizzer',
-  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'CHF',
+  'CHF',
+  'franc svizzer',
+  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  plural
 ];

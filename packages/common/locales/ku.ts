@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'ku', [['BN', 'PN'], u, u], u,
+  'ku',
+  [['BN', 'PN'], u, u],
+  u,
   [
     ['Y', 'D', 'S', 'Ç', 'P', 'Î', 'Ş'], ['yş', 'dş', 'sş', 'çş', 'pş', 'în', 'ş'],
     ['yekşem', 'duşem', 'sêşem', 'çarşem', 'pêncşem', 'în', 'şemî'],
@@ -40,10 +42,17 @@ export default [
       'rezber', 'kewçêr', 'sermawez', 'berfanbar'
     ]
   ],
-  [['BZ', 'PZ'], u, ['berî zayînê', 'piştî zayînê']], 1, [6, 0],
+  [['BZ', 'PZ'], u, ['berî zayînê', 'piştî zayînê']],
+  1,
+  [6, 0],
   ['y-MM-dd', 'y MMM d', 'y MMMM d', 'y MMMM d, EEEE'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '%#,##0', '#,##0.00 ¤', '#E0'], '₺', 'TRY',
-  {'JPY': ['JP¥', '¥'], 'TRY': ['₺'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '%#,##0', '#,##0.00 ¤', '#E0'],
+  'TRY',
+  '₺',
+  'TRY',
+  {'JPY': ['JP¥', '¥'], 'TRY': ['₺'], 'USD': ['US$', '$']},
+  plural
 ];

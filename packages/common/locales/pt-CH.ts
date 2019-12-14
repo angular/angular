@@ -18,7 +18,8 @@ function plural(n: number): number {
 }
 
 export default [
-  'pt-CH', [['a.m.', 'p.m.'], u, ['da manhã', 'da tarde']],
+  'pt-CH',
+  [['a.m.', 'p.m.'], u, ['da manhã', 'da tarde']],
   [['a.m.', 'p.m.'], u, ['manhã', 'tarde']],
   [
     ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
@@ -40,11 +41,19 @@ export default [
       'outubro', 'novembro', 'dezembro'
     ]
   ],
-  u, [['a.C.', 'd.C.'], u, ['antes de Cristo', 'depois de Cristo']], 1, [6, 0],
+  u,
+  [['a.C.', 'd.C.'], u, ['antes de Cristo', 'depois de Cristo']],
+  1,
+  [6, 0],
   ['dd/MM/yy', 'dd/MM/y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'às\' {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1}, {0}', u, '{1} \'às\' {0}', u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'CHF', 'franco suíço', {
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'CHF',
+  'CHF',
+  'franco suíço',
+  {
     'AUD': ['AU$', '$'],
     'JPY': ['JP¥', '¥'],
     'PTE': ['​'],

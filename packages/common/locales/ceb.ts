@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'ceb', [['a', 'p'], ['AM', 'PM'], u], [['AM', 'PM'], u, u],
+  'ceb',
+  [['a', 'p'], ['AM', 'PM'], u],
+  [['AM', 'PM'], u, u],
   [
     ['D', 'L', 'M', 'M', 'H', 'B', 'S'], ['Dom', 'Lun', 'Mar', 'Mks', 'Hu', 'Bi', 'Sa'],
     ['Domingo', 'Lunes', 'Martes', 'Miyerkules', 'Huwebes', 'Biyernes', 'Sabado'],
@@ -31,9 +33,18 @@ export default [
       'Oktubre', 'Nobyembre', 'Disyembre'
     ]
   ],
-  u, [['WK', 'KP'], u, u], 0, [6, 0], ['M/d/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1}, {0}', u, '{1} \'sa\' {0}', u],
+  u,
+  [['WK', 'KP'], u, u],
+  0,
+  [6, 0],
+  ['M/d/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1}, {0}', u, '{1} \'sa\' {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,#0%', '¤#,##0.00', '#E0'], '₱', 'Philippine Piso',
-  {'JPY': ['JP¥', '¥'], 'PHP': ['₱'], 'USD': ['US $', '$']}, plural
+  ['#,##0.###', '#,#0%', '¤#,##0.00', '#E0'],
+  'PHP',
+  '₱',
+  'Philippine Piso',
+  {'JPY': ['JP¥', '¥'], 'PHP': ['₱'], 'USD': ['US $', '$']},
+  plural
 ];
