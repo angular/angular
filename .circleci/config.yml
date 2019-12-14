@@ -129,10 +129,10 @@ commands:
           # Overwrite the yarn installed in the docker container with our own version.
           name: Overwrite yarn with our own version
           command: |
-            ourYarn=$(realpath ./third_party/github.com/yarnpkg/yarn/releases/download/v1.17.3/bin/yarn.js)
-            sudo chmod a+x $ourYarn
-            sudo ln -fs $ourYarn /usr/local/bin/yarn
-      - run: echo "Yarn version $(yarn --version)"
+            sudo chmod a+x $CI_LOCAL_YARN_PATH
+            sudo ln -fs $CI_LOCAL_YARN_PATH /usr/local/bin/yarn
+      - run: node --version
+      - run: yarn --version
       - run:
           # Configure git as the CircleCI `checkout` command does.
           # This is needed because we only checkout on the setup job.
