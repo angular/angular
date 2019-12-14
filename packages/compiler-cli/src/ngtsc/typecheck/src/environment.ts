@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ExpressionType, ExternalExpr, ReadVarExpr, Type} from '@angular/compiler';
+import {ExpressionType, ExternalExpr, Type, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {NOOP_DEFAULT_IMPORT_RECORDER, Reference, ReferenceEmitter} from '../../imports';
@@ -124,12 +124,12 @@ export class Environment {
       return this.outputHelperIdent;
     }
 
-    const eventEmitter = this.referenceExternalType(
-        '@angular/core', 'EventEmitter', [new ExpressionType(new ReadVarExpr('T'))]);
-
     const outputHelperIdent = ts.createIdentifier('_outputHelper');
     const genericTypeDecl = ts.createTypeParameterDeclaration('T');
     const genericTypeRef = ts.createTypeReferenceNode('T', /* typeParameters */ undefined);
+
+    const eventEmitter = this.referenceExternalType(
+        '@angular/core', 'EventEmitter', [new ExpressionType(new WrappedNodeExpr(genericTypeRef))]);
 
     // Declare a type that has a `subscribe` method that carries over type `T` as parameter
     // into the callback. The below code generates the following type literal:
