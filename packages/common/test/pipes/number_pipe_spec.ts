@@ -89,7 +89,7 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
     describe('CurrencyPipe', () => {
       let pipe: CurrencyPipe;
 
-      beforeEach(() => { pipe = new CurrencyPipe('en-US'); });
+      beforeEach(() => { pipe = new CurrencyPipe('en-US', 'USD'); });
 
       describe('transform', () => {
         it('should return correct value for numbers', () => {

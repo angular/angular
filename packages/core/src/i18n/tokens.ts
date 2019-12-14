@@ -33,6 +33,29 @@ import {InjectionToken} from '../di/injection_token';
 export const LOCALE_ID = new InjectionToken<string>('LocaleId');
 
 /**
+ * Provide this token to set the default currency code your application uses for
+ * CurrencyPipe when there is no currency code passed into it. This is only used by
+ * CurrencyPipe and has no relation to locale currency. Defaults to USD if not configured.
+ *
+ * See the [i18n guide](guide/i18n#setting-up-locale) for more information.
+ *
+ * @usageNotes
+ * ### Example
+ *
+ * ```typescript
+ * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+ * import { AppModule } from './app/app.module';
+ *
+ * platformBrowserDynamic().bootstrapModule(AppModule, {
+ *   providers: [{provide: DEFAULT_CURRENCY_CODE, useValue: 'EUR' }]
+ * });
+ * ```
+ *
+ * @publicApi
+ */
+export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>('DefaultCurrencyCode');
+
+/**
  * Use this token at bootstrap to provide the content of your translation file (`xtb`,
  * `xlf` or `xlf2`) when you want to translate your application in another language.
  *
