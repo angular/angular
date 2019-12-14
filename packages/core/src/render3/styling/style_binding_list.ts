@@ -203,18 +203,20 @@ export function insertTStylingBinding(
 
   tData[index] = tStylingValue;
   if (isHost) {
-    // We are inserting in template section.
+    // We are inserting host bindings
 
     // If we don't have template bindings than `tail` is 0.
     const hasNoTemplateBinding = tmplTail === 0;
     // This is important to know because that means that the `head` can't point to the first
     // template bindings (there are none.) Instead the head points to the tail of the template.
-    const templateTail = hasNoTemplateBinding ?
+    const previousNode = hasNoTemplateBinding ?
         tmplHead :
+         // template head's "prev" will point to last host binding or to 0 if no host bindings yet
         getTStylingRangePrev(tData[tmplHead + 1] as TStylingRange);
-    const templateHead = hasNoTemplateBinding ? 0 : tmplHead;
-    tData[index + 1] = toTStylingRange(templateTail, templateHead);
-    if (templateTail !== 0) {
+    const nextNode = hasNoTemplateBinding ? 0 : tmplHead;
+    tData[index + 1] = toTStylingRange(previousNode, nextNode);
+    // if a host binding has already been registered, we need to update the next of that host binding to point to this one
+    if (previousNode !== 0) {
       // We need to update the template-tail value to point to us.
       tData[templateTail + 1] =
           setTStylingRangeNext(tData[templateTail + 1] as TStylingRange, index);
@@ -223,11 +225,12 @@ export function insertTStylingBinding(
       // if we don't have template, the head points to template-tail, and needs to be advanced.
       tmplHead = index;
     } else {
-      // We have to update the head to point to us.
+      // The "previous" of the template binding head should point to this host binding
       tData[tmplHead + 1] = setTStylingRangePrev(tData[tmplHead + 1] as TStylingRange, index);
     }
   } else {
     // We are inserting in template section.
+   // We need to set this binding's "previous" to the current template tail
     tData[index + 1] = toTStylingRange(tmplTail, 0);
     ngDevMode && assertEqual(
                      tmplHead !== 0 && tmplTail === 0, false,
@@ -235,8 +238,8 @@ export function insertTStylingBinding(
     if (tmplHead === 0) {
       tmplHead = index;
     }
-    if (tmplTail !== 0) {
-      // We need to update the previous value to point to us.
+   } else {
+      // We need to update the previous value "next" to point to this binding
       tData[tmplTail + 1] = setTStylingRangeNext(tData[tmplTail + 1] as TStylingRange, index);
     }
     tmplTail = index;
