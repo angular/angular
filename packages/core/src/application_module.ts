@@ -14,8 +14,8 @@ import {Console} from './console';
 import {Injector, StaticProvider} from './di';
 import {Inject, Optional, SkipSelf} from './di/metadata';
 import {ErrorHandler} from './error_handler';
-import {DEFAULT_LOCALE_ID} from './i18n/localization';
-import {LOCALE_ID} from './i18n/tokens';
+import {DEFAULT_LOCALE_ID, USD_CURRENCY_CODE} from './i18n/localization';
+import {DEFAULT_CURRENCY_CODE, LOCALE_ID} from './i18n/tokens';
 import {ivyEnabled} from './ivy_switch';
 import {ComponentFactoryResolver} from './linker';
 import {Compiler} from './linker/compiler';
@@ -96,6 +96,7 @@ export const APPLICATION_MODULE_PROVIDERS: StaticProvider[] = [
     useFactory: _localeFactory,
     deps: [[new Inject(LOCALE_ID), new Optional(), new SkipSelf()]]
   },
+  {provide: DEFAULT_CURRENCY_CODE, useValue: USD_CURRENCY_CODE},
 ];
 
 /**
