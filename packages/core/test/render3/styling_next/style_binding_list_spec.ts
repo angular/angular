@@ -11,7 +11,7 @@ import {TNode, TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate} from '@angular/core/src/render3/interfaces/styling';
 import {LView, TData} from '@angular/core/src/render3/interfaces/view';
 import {enterView, leaveView} from '@angular/core/src/render3/state';
-import {appendStyling, flushStyleBinding, insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
+import {CLASS_MAP_STYLING_KEY, STYLE_MAP_STYLING_KEY, appendStyling, flushStyleBinding, insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
 import {getStylingBindingHead} from '@angular/core/src/render3/styling/styling_debug';
 import {newArray} from '@angular/core/src/util/array_utils';
 
@@ -116,20 +116,21 @@ describe('TNode styling linked list', () => {
 
       const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
       const tData: TData = newArray(32, null);
+      const STYLE = STYLE_MAP_STYLING_KEY;
 
-      insertTStylingBinding(tData, tNode, null, 10, false, false);
+      insertTStylingBinding(tData, tNode, STYLE, 10, false, false);
       expectRange(tNode.styleBindings).toEqual([10, 10]);
       expectTData(tData).toEqual([
-        ...empty_0_through_9,        //
-        null, [false, 0, false, 0],  // 10 - Template:  ɵɵstyleMap({color: '#001'});
-        null, null,                  // 12
-        ...empty_14_through_19,      // 14-19
-        null, null,                  // 20
-        null, null,                  // 22
-        null, null,                  // 24
-        null, null,                  // 26
-        null, null,                  // 28
-        null, null,                  // 30
+        ...empty_0_through_9,         //
+        STYLE, [false, 0, false, 0],  // 10 - Template:  ɵɵstyleMap({color: '#001'});
+        null, null,                   // 12
+        ...empty_14_through_19,       // 14-19
+        null, null,                   // 20
+        null, null,                   // 22
+        null, null,                   // 24
+        null, null,                   // 26
+        null, null,                   // 28
+        null, null,                   // 30
       ]);
       expectPriorityOrder(tData, tNode, false).toEqual([
         [10, null, false, false],  // 10 - Template:  ɵɵstyleMap({color: '#001'});
@@ -140,7 +141,7 @@ describe('TNode styling linked list', () => {
       expectRange(tNode.styleBindings).toEqual([10, 12]);
       expectTData(tData).toEqual([
         ...empty_0_through_9,            //
-        null, [false, 0, false, 12],     // 10 - Template:  ɵɵstyleMap({color: '#001'});
+        STYLE, [false, 0, false, 12],    // 10 - Template:  ɵɵstyleMap({color: '#001'});
         'color', [false, 10, false, 0],  // 12 - Template:  ɵɵstyleProp('color', '#002'});
         ...empty_14_through_19,          // 14-19
         null, null,                      // 20
@@ -155,14 +156,15 @@ describe('TNode styling linked list', () => {
         [12, 'color', true, false],  // 12 - Template:  ɵɵstyleProp('color', '#002'});
       ]);
 
-      insertTStylingBinding(tData, tNode, null, 20, true, false);
+      debugger;
+      insertTStylingBinding(tData, tNode, STYLE, 20, true, false);
       expectRange(tNode.styleBindings).toEqual([10, 12]);
       expectTData(tData).toEqual([
         ...empty_0_through_9,            //
-        null, [false, 20, false, 12],    // 10 - Template:  ɵɵstyleMap({color: '#001'});
+        STYLE, [false, 20, false, 12],   // 10 - Template:  ɵɵstyleMap({color: '#001'});
         'color', [false, 10, false, 0],  // 12 - Template:  ɵɵstyleProp('color', '#002'});
         ...empty_14_through_19,          // 14-19
-        null, [false, 0, false, 10],     // 20 - MyComponent:  ɵɵstyleMap({color: '#003'});
+        STYLE, [false, 0, false, 10],    // 20 - MyComponent:  ɵɵstyleMap({color: '#003'});
         null, null,                      // 22
         null, null,                      // 24
         null, null,                      // 26
@@ -179,10 +181,10 @@ describe('TNode styling linked list', () => {
       expectRange(tNode.styleBindings).toEqual([10, 12]);
       expectTData(tData).toEqual([
         ...empty_0_through_9,             // 00-09
-        null, [false, 22, false, 12],     // 10 - Template:  ɵɵstyleMap({color: '#001'});
+        STYLE, [false, 22, false, 12],    // 10 - Template:  ɵɵstyleMap({color: '#001'});
         'color', [false, 10, false, 0],   // 12 - Template:  ɵɵstyleProp('color', '#002'});
         ...empty_14_through_19,           // 14-19
-        null, [false, 0, false, 22],      // 20 - MyComponent:  ɵɵstyleMap({color: '#003'});
+        STYLE, [false, 0, false, 22],     // 20 - MyComponent:  ɵɵstyleMap({color: '#003'});
         'color', [false, 20, false, 10],  // 22 - MyComponent:  ɵɵstyleProp('color', '#004'});
         null, null,                       // 24
         null, null,                       // 26
@@ -196,16 +198,16 @@ describe('TNode styling linked list', () => {
         [12, 'color', true, false],  // 12 - Template:  ɵɵstyleProp('color', '#002'});
       ]);
 
-      insertTStylingBinding(tData, tNode, null, 24, true, false);
+      insertTStylingBinding(tData, tNode, STYLE, 24, true, false);
       expectRange(tNode.styleBindings).toEqual([10, 12]);
       expectTData(tData).toEqual([
         ...empty_0_through_9,             //
-        null, [false, 24, false, 12],     // 10 - Template:  ɵɵstyleMap({color: '#001'});
+        STYLE, [false, 24, false, 12],    // 10 - Template:  ɵɵstyleMap({color: '#001'});
         'color', [false, 10, false, 0],   // 12 - Template:  ɵɵstyleProp('color', '#002'});
         ...empty_14_through_19,           // 14-19
-        null, [false, 0, false, 22],      // 20 - MyComponent:  ɵɵstyleMap({color: '#003'});
+        STYLE, [false, 0, false, 22],     // 20 - MyComponent:  ɵɵstyleMap({color: '#003'});
         'color', [false, 20, false, 24],  // 22 - MyComponent:  ɵɵstyleProp('color', '#004'});
-        null, [false, 22, false, 10],     // 24 - Style1Directive:  ɵɵstyleMap({color: '#003'});
+        STYLE, [false, 22, false, 10],    // 24 - Style1Directive:  ɵɵstyleMap({color: '#003'});
         null, null,                       // 26
         null, null,                       // 28
         null, null,                       // 30
@@ -222,12 +224,12 @@ describe('TNode styling linked list', () => {
       expectRange(tNode.styleBindings).toEqual([10, 12]);
       expectTData(tData).toEqual([
         ...empty_0_through_9,             // 00-09
-        null, [false, 26, false, 12],     // 10 - Template:  ɵɵstyleMap({color: '#001'});
+        STYLE, [false, 26, false, 12],    // 10 - Template:  ɵɵstyleMap({color: '#001'});
         'color', [false, 10, false, 0],   // 12 - Template:  ɵɵstyleProp('color', '#002'});
         ...empty_14_through_19,           // 14-19
-        null, [false, 0, false, 22],      // 20 - MyComponent:  ɵɵstyleMap({color: '#003'});
+        STYLE, [false, 0, false, 22],     // 20 - MyComponent:  ɵɵstyleMap({color: '#003'});
         'color', [false, 20, false, 24],  // 22 - MyComponent:  ɵɵstyleProp('color', '#004'});
-        null, [false, 22, false, 26],     // 24 - Style1Directive:  ɵɵstyleMap({color: '#005'});
+        STYLE, [false, 22, false, 26],    // 24 - Style1Directive:  ɵɵstyleMap({color: '#005'});
         'color', [false, 24, false, 10],  // 26 - Style1Directive:  ɵɵstyleProp('color', '#006'});
         null, null,                       // 28
         null, null,                       // 30
@@ -242,18 +244,18 @@ describe('TNode styling linked list', () => {
       ]);
 
 
-      insertTStylingBinding(tData, tNode, null, 28, true, false);
+      insertTStylingBinding(tData, tNode, STYLE, 28, true, false);
       expectRange(tNode.styleBindings).toEqual([10, 12]);
       expectTData(tData).toEqual([
         ...empty_0_through_9,             //
-        null, [false, 28, false, 12],     // 10 - Template:  ɵɵstyleMap({color: '#001'});
+        STYLE, [false, 28, false, 12],    // 10 - Template:  ɵɵstyleMap({color: '#001'});
         'color', [false, 10, false, 0],   // 12 - Template:  ɵɵstyleProp('color', '#002'});
         ...empty_14_through_19,           // 14-19
-        null, [false, 0, false, 22],      // 20 - MyComponent:  ɵɵstyleMap({color: '#003'});
+        STYLE, [false, 0, false, 22],     // 20 - MyComponent:  ɵɵstyleMap({color: '#003'});
         'color', [false, 20, false, 24],  // 22 - MyComponent:  ɵɵstyleProp('color', '#004'});
-        null, [false, 22, false, 26],     // 24 - Style1Directive:  ɵɵstyleMap({color: '#005'});
+        STYLE, [false, 22, false, 26],    // 24 - Style1Directive:  ɵɵstyleMap({color: '#005'});
         'color', [false, 24, false, 28],  // 26 - Style1Directive:  ɵɵstyleProp('color', '#006'});
-        null, [false, 26, false, 10],     // 28 - Style2Directive:  ɵɵstyleMap({color: '#007'});
+        STYLE, [false, 26, false, 10],    // 28 - Style2Directive:  ɵɵstyleMap({color: '#007'});
         null, null,                       // 30
       ]);
       expectPriorityOrder(tData, tNode, false).toEqual([
@@ -270,14 +272,14 @@ describe('TNode styling linked list', () => {
       expectRange(tNode.styleBindings).toEqual([10, 12]);
       expectTData(tData).toEqual([
         ...empty_0_through_9,             // 00-09
-        null, [false, 30, false, 12],     // 10 - Template:  ɵɵstyleMap({color: '#001'});
+        STYLE, [false, 30, false, 12],    // 10 - Template:  ɵɵstyleMap({color: '#001'});
         'color', [false, 10, false, 0],   // 12 - Template:  ɵɵstyleProp('color', '#002'});
         ...empty_14_through_19,           // 14-19
-        null, [false, 0, false, 22],      // 20 - MyComponent:  ɵɵstyleMap({color: '#003'});
+        STYLE, [false, 0, false, 22],     // 20 - MyComponent:  ɵɵstyleMap({color: '#003'});
         'color', [false, 20, false, 24],  // 22 - MyComponent:  ɵɵstyleProp('color', '#004'});
-        null, [false, 22, false, 26],     // 24 - Style1Directive:  ɵɵstyleMap({color: '#005'});
+        STYLE, [false, 22, false, 26],    // 24 - Style1Directive:  ɵɵstyleMap({color: '#005'});
         'color', [false, 24, false, 28],  // 26 - Style1Directive:  ɵɵstyleProp('color', '#006'});
-        null, [false, 26, false, 30],     // 28 - Style2Directive:  ɵɵstyleMap({color: '#007'});
+        STYLE, [false, 26, false, 30],    // 28 - Style2Directive:  ɵɵstyleMap({color: '#007'});
         'color', [false, 28, false, 10],  // 30 - Style2Directive:  ɵɵstyleProp('color', '#008'});
       ]);
       expectPriorityOrder(tData, tNode, false).toEqual([
@@ -355,7 +357,7 @@ describe('TNode styling linked list', () => {
         [2, 'color', false, false],
       ]);
 
-      insertTStylingBinding(tData, tNode, null /*Map*/, 6, true, false);
+      insertTStylingBinding(tData, tNode, STYLE_MAP_STYLING_KEY /*Map*/, 6, true, false);
       expectPriorityOrder(tData, tNode, false).toEqual([
         //            PREV,  NEXT
         [4, 'height', false, true],
@@ -367,7 +369,7 @@ describe('TNode styling linked list', () => {
     it('should mark all things after map as duplicate', () => {
       const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
       const tData: TData = [null, null];
-      insertTStylingBinding(tData, tNode, null, 2, false, false);
+      insertTStylingBinding(tData, tNode, STYLE_MAP_STYLING_KEY, 2, false, false);
       insertTStylingBinding(tData, tNode, 'height', 4, false, false);
       insertTStylingBinding(tData, tNode, 'color', 6, true, false);
       expectPriorityOrder(tData, tNode, false).toEqual([
@@ -382,15 +384,13 @@ describe('TNode styling linked list', () => {
       const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
       const tData: TData = [null, null];
       insertTStylingBinding(tData, tNode, 'width', 2, false, false);
-      insertTStylingBinding(
-          tData, tNode, {key: 'height', suffixOrSanitizer: 'px'}, 4, false, false);
+      insertTStylingBinding(tData, tNode, {key: 'height', extra: 'px'}, 4, false, false);
       expectPriorityOrder(tData, tNode, false).toEqual([
         //            PREV,  NEXT
         [2, 'width', false, false],
         [4, 'height', false, false],
       ]);
-      insertTStylingBinding(
-          tData, tNode, {key: 'height', suffixOrSanitizer: 'em'}, 6, false, false);
+      insertTStylingBinding(tData, tNode, {key: 'height', extra: 'em'}, 6, false, false);
       expectPriorityOrder(tData, tNode, false).toEqual([
         //            PREV,  NEXT
         [2, 'width', false, false],
@@ -424,7 +424,7 @@ describe('TNode styling linked list', () => {
         [4, 'color', true, false],
       ]);
 
-      insertTStylingBinding(tData, tNode, null, 6, false, false);
+      insertTStylingBinding(tData, tNode, STYLE_MAP_STYLING_KEY, 6, false, false);
       expectPriorityOrder(tData, tNode, false).toEqual([
         //            PREV,  NEXT
         [2, 'width', false, true],
@@ -442,8 +442,7 @@ describe('TNode styling linked list', () => {
     });
 
     it('should chain values and allow update mid list', () => {
-      const fixture =
-          new StylingFixture([['color', {key: 'width', suffixOrSanitizer: 'px'}]], false);
+      const fixture = new StylingFixture([['color', {key: 'width', extra: 'px'}]], false);
       fixture.setBinding(0, 'red');
       fixture.setBinding(1, '100');
       expect(fixture.flush(0)).toEqual('color: red; width: 100px');
@@ -465,69 +464,80 @@ describe('TNode styling linked list', () => {
 
   describe('appendStyling', () => {
     it('should append simple style', () => {
-      expect(appendStyling('', 'color', 'red', false, false)).toEqual('color: red');
-      expect(appendStyling('', 'color', 'red', true, false)).toEqual('color: red');
-      expect(appendStyling('', 'color', 'red', false, true)).toEqual('color');
-      expect(appendStyling('', 'color', 'red', true, true)).toEqual('color');
-      expect(appendStyling('', 'color', true, true, true)).toEqual('color');
-      expect(appendStyling('', 'color', false, true, true)).toEqual('');
-      expect(appendStyling('', 'color', 0, true, true)).toEqual('');
-      expect(appendStyling('', 'color', '', true, true)).toEqual('');
+      expect(appendStyling('', 'color', 'red', null, false, false)).toEqual('color: red');
+      expect(appendStyling('', 'color', 'red', null, true, false)).toEqual('color: red');
+      expect(appendStyling('', 'color', 'red', null, false, true)).toEqual('color');
+      expect(appendStyling('', 'color', 'red', null, true, true)).toEqual('color');
+      expect(appendStyling('', 'color', true, null, true, true)).toEqual('color');
+      expect(appendStyling('', 'color', false, null, true, true)).toEqual('');
+      expect(appendStyling('', 'color', 0, null, true, true)).toEqual('');
+      expect(appendStyling('', 'color', '', null, true, true)).toEqual('');
     });
 
     it('should append simple style with suffix', () => {
-      expect(appendStyling('', {key: 'width', suffixOrSanitizer: 'px'}, 100, false, false))
+      expect(appendStyling('', {key: 'width', extra: 'px'}, 100, null, false, false))
           .toEqual('width: 100px');
     });
 
     it('should append simple style with sanitizer', () => {
       expect(
-          appendStyling('', {key: 'width', suffixOrSanitizer: (v) => `-${v}-`}, 100, false, false))
+          appendStyling('', {key: 'width', extra: (v: any) => `-${v}-`}, 100, null, false, false))
           .toEqual('width: -100-');
     });
 
     it('should append class/style', () => {
-      expect(appendStyling('color: white', 'color', 'red', false, false))
+      expect(appendStyling('color: white', 'color', 'red', null, false, false))
           .toEqual('color: white; color: red');
-      expect(appendStyling('MY-CLASS', 'color', true, false, true)).toEqual('MY-CLASS color');
-      expect(appendStyling('MY-CLASS', 'color', false, true, true)).toEqual('MY-CLASS');
+      expect(appendStyling('MY-CLASS', 'color', true, null, false, true)).toEqual('MY-CLASS color');
+      expect(appendStyling('MY-CLASS', 'color', false, null, true, true)).toEqual('MY-CLASS');
     });
 
     it('should remove existing', () => {
-      expect(appendStyling('color: white', 'color', 'blue', true, false)).toEqual('color: blue');
-      expect(appendStyling('A YES B', 'YES', false, true, true)).toEqual('A B');
+      expect(appendStyling('color: white', 'color', 'blue', null, true, false))
+          .toEqual('color: blue');
+      expect(appendStyling('A YES B', 'YES', false, null, true, true)).toEqual('A B');
     });
 
     it('should support maps/arrays for classes', () => {
-      expect(appendStyling('', null, {A: true, B: false}, true, true)).toEqual('A');
-      expect(appendStyling('A B C', null, {A: true, B: false}, true, true)).toEqual('A C');
-      expect(appendStyling('', null, ['A', 'B'], true, true)).toEqual('A B');
-      expect(appendStyling('A B C', null, ['A', 'B'], true, true)).toEqual('A B C');
+      expect(appendStyling('', CLASS_MAP_STYLING_KEY, {A: true, B: false}, null, true, true))
+          .toEqual('A');
+      expect(appendStyling('A B C', CLASS_MAP_STYLING_KEY, {A: true, B: false}, null, true, true))
+          .toEqual('A C');
+      expect(appendStyling('', CLASS_MAP_STYLING_KEY, ['A', 'B'], null, true, true)).toEqual('A B');
+      expect(appendStyling('A B C', CLASS_MAP_STYLING_KEY, ['A', 'B'], null, true, true))
+          .toEqual('A B C');
     });
 
     it('should support maps for styles', () => {
-      expect(appendStyling('', null, {A: 'a', B: 'b'}, true, false)).toEqual('A: a; B: b');
-      expect(appendStyling('A:_; B:_; C:_', null, {A: 'a', B: 'b'}, true, false))
+      expect(appendStyling('', STYLE_MAP_STYLING_KEY, {A: 'a', B: 'b'}, null, true, false))
+          .toEqual('A: a; B: b');
+      expect(appendStyling(
+                 'A:_; B:_; C:_', STYLE_MAP_STYLING_KEY, {A: 'a', B: 'b'}, null, true, false))
           .toEqual('C:_; A: a; B: b');
     });
 
     it('should support strings for classes', () => {
-      expect(appendStyling('', null, 'A B', true, true)).toEqual('A B');
-      expect(appendStyling('A B C', null, 'A B', false, true)).toEqual('A B C A B');
-      expect(appendStyling('A B C', null, 'A B', true, true)).toEqual('A B C');
+      expect(appendStyling('', CLASS_MAP_STYLING_KEY, 'A B', null, true, true)).toEqual('A B');
+      expect(appendStyling('A B C', CLASS_MAP_STYLING_KEY, 'A B', null, false, true))
+          .toEqual('A B C A B');
+      expect(appendStyling('A B C', CLASS_MAP_STYLING_KEY, 'A B', null, true, true))
+          .toEqual('A B C');
     });
 
     it('should support strings for styles', () => {
-      expect(appendStyling('A:a;B:b', null, 'A : a ; B : b', false, false))
+      expect(appendStyling('A:a;B:b', STYLE_MAP_STYLING_KEY, 'A : a ; B : b', null, false, false))
           .toEqual('A:a;B:b; A : a ; B : b');
-      expect(appendStyling('A:_; B:_; C:_', null, 'A : a ; B : b', true, false))
+      expect(
+          appendStyling('A:_; B:_; C:_', STYLE_MAP_STYLING_KEY, 'A : a ; B : b', null, true, false))
           .toEqual('C:_; A: a; B: b');
     });
 
     it('should throw no arrays for styles', () => {
-      expect(() => appendStyling('', null, ['A', 'a'], true, false)).toThrow();
+      expect(() => appendStyling('', STYLE_MAP_STYLING_KEY, ['A', 'a'], null, true, false))
+          .toThrow();
     });
   });
+  // TODO: add sanitization tests.
 });
 
 const empty_0_through_9 = [null, null, null, null, null, null, null, null, null, null];
@@ -558,14 +568,14 @@ function expectPriorityOrder(tData: TData, tNode: TNode, isClassBinding: boolean
   let index = getStylingBindingHead(tData, tNode, isClassBinding);
   const indexes: [number, string | null, boolean, boolean][] = [];
   while (index !== 0) {
-    let key = tData[index] as TStylingKey;
+    let key = tData[index] as TStylingKey | null;
     if (key !== null && typeof key === 'object') {
       key = key.key;
     }
     const tStylingRange = tData[index + 1] as TStylingRange;
     indexes.push([
       index,                                         //
-      key,                                           //
+      key as string,                                 //
       getTStylingRangePrevDuplicate(tStylingRange),  //
       getTStylingRangeNextDuplicate(tStylingRange),  //
     ]);

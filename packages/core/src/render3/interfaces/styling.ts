@@ -477,12 +477,56 @@ export interface TStylingNode { flags: TNodeFlags; }
 /**
  * Value stored in the `TData` which is needed to re-concatenate the styling.
  *
- * - `null`: This is unused in the case of `ɵɵstyleMap`/`ɵɵclassMap` instruction.
- * - `string`: Stores the property name. Used with `ɵɵstyleProp`/`ɵɵclassProp` instruction.
- * - `{key: string, suffix: string}`: Stores the property name/key and a suffix. Used with
- *   `ɵɵstyleProp`/`ɵɵclassProp` instruction as in `[style.width.px]="exp"`.
+ * - `string`: Stores the property name. Used with `ɵɵstyleProp`/`ɵɵclassProp` instruction which
+ * don't have suffix or don't need sanitization.
  */
-export type TStylingKey = string | null | {key: string, suffixOrSanitizer: string | SanitizerFn};
+export type TStylingKey = string | TStylingSuffixKey | TStylingSanitizationKey | TStylingMapKey;
+
+
+/**
+ * For performance reasons we want to make sure that all subclasses have the same shape object.
+ *
+ * See subclasses for implementation details.
+ */
+export interface TStylingKeyShape {
+  key: string|null;
+  extra: string|SanitizerFn|TStylingMapFn;
+}
+
+/**
+ * Used in the case of `ɵɵstyleProp('width', exp, 'px')`.
+ */
+export interface TStylingSuffixKey extends TStylingKeyShape {
+  /// Stores the property key.
+  key: string;
+  /// Stores the property suffix.
+  extra: string;
+}
+
+/**
+ * Used in the case of `ɵɵstyleProp('url', exp, styleSanitizationFn)`.
+ */
+export interface TStylingSanitizationKey extends TStylingKeyShape {
+  /// Stores the property key.
+  key: string;
+  /// Stores sanitization function.
+  extra: SanitizerFn;
+}
+
+/**
+ * Used in the case of `ɵɵstyleMap()`/`ɵɵclassMap()`.
+ */
+export interface TStylingMapKey extends TStylingKeyShape {
+  /// There is no key
+  key: null;
+  /// Invoke this function to process the value (convert it into the result)
+  /// This is implemented this way so that the logic associated with `ɵɵstyleMap()`/`ɵɵclassMap()`
+  /// can be tree shaken away. Internally the function will break the `Map`/`Array` down into
+  // parts and call `appendStyling` on parts.
+  extra: TStylingMapFn;
+}
+
+export type TStylingMapFn = (text: string, value: any, hasPreviousDuplicate: boolean) => string;
 
 /**
  * This is a branded number which contains previous and next index.

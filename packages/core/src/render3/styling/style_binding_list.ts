@@ -6,12 +6,14 @@
 * found in the LICENSE file at https://angular.io/license
 */
 
-import {assertEqual} from '../../util/assert';
+import {stylePropNeedsSanitization, ɵɵsanitizeStyle} from '../../sanitization/sanitization';
+import {assertEqual, assertNotEqual, throwError} from '../../util/assert';
 import {TNode} from '../interfaces/node';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {StylingMapArray, TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangePrev, getTStylingRangePrevDuplicate, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange} from '../interfaces/styling';
+import {StylingMapArray, TStylingKey, TStylingMapKey, TStylingRange, getTStylingRangeNext, getTStylingRangePrev, getTStylingRangePrevDuplicate, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange} from '../interfaces/styling';
 import {LView, TData, TVIEW} from '../interfaces/view';
 import {getLView} from '../state';
+
 import {splitClassList, toggleClass} from './class_differ';
 import {StyleChangesMap, parseKeyValue, removeStyle} from './style_differ';
 
@@ -302,19 +304,17 @@ export function insertTStylingBinding(
  * NOTE: We use `style` as example, but same logic is applied to `class`es as well.
  *
  * @param tData
- * @param tStylingValue
+ * @param tStylingKey
  * @param index
  * @param staticValues
  * @param isPrevDir
  */
 function markDuplicates(
-    tData: TData, tStylingValue: TStylingKey, index: number, staticValues: StylingMapArray | null,
+    tData: TData, tStylingKey: TStylingKey, index: number, staticValues: StylingMapArray | null,
     isPrevDir: boolean) {
   const tStylingAtIndex = tData[index + 1] as TStylingRange;
-  const isMap = tStylingValue === null;
-  if (tStylingValue !== null && typeof tStylingValue === 'object') {
-    tStylingValue = tStylingValue.key;
-  }
+  const key: string|null = typeof tStylingKey === 'object' ? tStylingKey.key : tStylingKey;
+  const isMap = key === null;
   let cursor =
       isPrevDir ? getTStylingRangePrev(tStylingAtIndex) : getTStylingRangeNext(tStylingAtIndex);
   let foundDuplicate = false;
@@ -325,9 +325,9 @@ function markDuplicates(
   while (cursor !== 0 && (foundDuplicate === false || isMap)) {
     const tStylingValueAtCursor = tData[cursor] as TStylingKey;
     const tStyleRangeAtCursor = tData[cursor + 1] as TStylingRange;
-    if (tStylingValueAtCursor === null || tStylingValue == null ||
-        (typeof tStylingValueAtCursor === 'object' ? tStylingValueAtCursor.key :
-                                                     tStylingValueAtCursor) === tStylingValue) {
+    const keyAtCursor = typeof tStylingValueAtCursor === 'object' ? tStylingValueAtCursor.key :
+                                                                    tStylingValueAtCursor;
+    if (keyAtCursor === null || key == null || keyAtCursor === key) {
       foundDuplicate = true;
       tData[cursor + 1] = isPrevDir ? setTStylingRangeNextDuplicate(tStyleRangeAtCursor) :
                                       setTStylingRangePrevDuplicate(tStyleRangeAtCursor);
@@ -344,8 +344,7 @@ function markDuplicates(
       foundDuplicate = true;
     } else {
       for (let i = 1; foundDuplicate === false && i < staticValues.length; i = i + 2) {
-        const key = staticValues[i];
-        if (key === tStylingValue) {
+        if (staticValues[i] === key) {
           foundDuplicate = true;
           break;
         }
@@ -383,7 +382,7 @@ export function flushStyleBinding(
     const key = tData[cursor] as TStylingKey;
     const stylingRange = tData[cursor + 1] as TStylingRange;
     lView[cursor + 1] = text = appendStyling(
-        text, key, value, getTStylingRangePrevDuplicate(stylingRange), isClassBinding);
+        text, key, value, null, getTStylingRangePrevDuplicate(stylingRange), isClassBinding);
     cursor = getTStylingRangeNext(stylingRange);
   }
   return text;
@@ -415,6 +414,9 @@ function getStaticStylingValue(tNode: TNode, isClassBinding: Boolean) {
  *         - `isClassBinding === false`
  *              - `Array` Not supported.
  *              - `Object` add object key/value to the styles.
+ * @param sanitizer Optional sanitizer to use. If `null` the `stylingKey` sanitizer will be used.
+ *        This is provided so that `ɵɵstyleMap()`/`ɵɵclassMap()` can recursively call
+ *        `appendStyling` without having ta package the sanitizer into `TStylingSanitizationKey`.
  * @param hasPreviousDuplicate determines if there is a chance of duplicate.
  *         - `true` the existing `text` should be searched for duplicates and if any found they
  *           should be removed.
@@ -422,74 +424,104 @@ function getStaticStylingValue(tNode: TNode, isClassBinding: Boolean) {
  * @param isClassBinding Determines if the `text` is `className` or `cssText`.
  */
 export function appendStyling(
-    text: string, stylingKey: TStylingKey, value: any, hasPreviousDuplicate: boolean,
-    isClassBinding: boolean): string {
-  if (stylingKey === null) {
-    // we know that value is a list or an array
-    if (!value) {
-      // we are falsy do nothing.
-    } else if (Array.isArray(value)) {
-      ngDevMode && assertEqual(isClassBinding, true, 'arrays supported for classes only');
-      for (let i = 0; i < value.length; i++) {
-        text = appendStyling(
-            text, value[i], isClassBinding ? true : value[++i], hasPreviousDuplicate,
-            isClassBinding);
-      }
-    } else if (typeof value == 'string') {
-      if (hasPreviousDuplicate) {
-        text = isClassBinding ? parseClassesAndAppendStyling(text, value) :
-                                parseStylesAndAppendStyling(text, value);
-      } else {
-        text = text === '' ? value : text + (isClassBinding ? ' ' : '; ') + value;
-      }
-    } else if (typeof value == 'object') {
-      for (let key in value) {
-        text = appendStyling(text, key, value[key], hasPreviousDuplicate, isClassBinding);
-      }
+    text: string, stylingKey: TStylingKey, value: any, sanitizer: SanitizerFn | null,
+    hasPreviousDuplicate: boolean, isClassBinding: boolean): string {
+  let key: string;
+  let suffixOrSanitizer: string|SanitizerFn|undefined|null;
+  if (typeof stylingKey === 'object') {
+    if (stylingKey.key === null) {
+      return value != null ? stylingKey.extra(text, value, hasPreviousDuplicate) : text;
+    } else {
+      suffixOrSanitizer = stylingKey.extra;
+      key = stylingKey.key;
     }
   } else {
-    if (isClassBinding) {
-      ngDevMode && assertEqual(typeof stylingKey === 'string', true, 'Expecting key to be string');
-      if (hasPreviousDuplicate) {
-        text = toggleClass(text, stylingKey as string, !!value);
-      } else if (value) {
-        text = text === '' ? stylingKey as string : text + ' ' + stylingKey;
-      }
-    } else {
-      let key: string;
-      let suffixOrSanitizer: string|SanitizerFn|null = null;
-      if (typeof stylingKey === 'object') {
-        key = stylingKey.key;
-        suffixOrSanitizer = stylingKey.suffixOrSanitizer;
-      } else {
-        key = stylingKey;
-      }
-      if (hasPreviousDuplicate) {
-        text = removeStyle(text, key);
-      }
-      const keyValue = key + ': ' +
-          (suffixOrSanitizer === null ? value : sanitizeOrSuffix(suffixOrSanitizer, value));
-      text = text === '' ? keyValue : text + '; ' + keyValue;
+    key = stylingKey;
+  }
+  if (isClassBinding) {
+    ngDevMode && assertEqual(typeof stylingKey === 'string', true, 'Expecting key to be string');
+    if (hasPreviousDuplicate) {
+      text = toggleClass(text, stylingKey as string, !!value);
+    } else if (value) {
+      text = text === '' ? stylingKey as string : text + ' ' + stylingKey;
     }
+  } else {
+    if (hasPreviousDuplicate) {
+      text = removeStyle(text, key);
+    }
+    const keyValue =
+        key + ': ' + (typeof suffixOrSanitizer === 'function' ?
+                          suffixOrSanitizer(value) :
+                          (suffixOrSanitizer == null ? value : value + suffixOrSanitizer));
+    text = text === '' ? keyValue : text + '; ' + keyValue;
   }
   return text;
 }
 
-function sanitizeOrSuffix(suffixOrSanitizer: string | SanitizerFn, value: string): string {
-  return typeof suffixOrSanitizer === 'string' ? value + suffixOrSanitizer :
-                                                 suffixOrSanitizer(value);
-}
+// TODO(misko): add comments
+export const CLASS_MAP_STYLING_KEY: TStylingMapKey = {
+  key: null,
+  extra: (text: string, value: any, hasPreviousDuplicate: boolean): string => {
+    if (Array.isArray(value)) {
+      // We support Arrays
+      for (let i = 0; i < value.length; i++) {
+        text = appendStyling(text, value[i], true, null, hasPreviousDuplicate, true);
+      }
+    } else if (typeof value === 'object') {
+      // We support maps
+      for (let key in value) {
+        text = appendStyling(text, key, value[key], null, hasPreviousDuplicate, true);
+      }
+    } else if (typeof value === 'string') {
+      // We support strings
+      if (hasPreviousDuplicate) {
+        // We need to parse and process it.
+        const changes = new Map<string, boolean|null>();
+        splitClassList(value, changes, false);
+        changes.forEach((_, key) => text = appendStyling(text, key, true, null, true, true));
+      } else {
+        // No duplicates, just append it.
+        text = text === '' ? value : text + ' ' + value;
+      }
+    } else {
+      // All other cases are not supported.
+      ngDevMode && throwError('Unsupported value for class binding: ' + value);
+    }
+    return text;
+  }
+};
 
-function parseClassesAndAppendStyling(text: string, value: string): string {
-  const changes = new Map<string, boolean|null>();
-  splitClassList(value, changes, false);
-  changes.forEach((_, key) => text = appendStyling(text, key, true, true, true));
-  return text;
-}
-
-function parseStylesAndAppendStyling(text: string, value: string): string {
-  const changes: StyleChangesMap = new Map<string, {old: string | null, new: string | null}>();
-  parseKeyValue(value, changes, false);
-  changes.forEach((value, key) => text = appendStyling(text, key, value.old, true, false));
-  return text;
-}
+// TODO(misko): add comments
+export const STYLE_MAP_STYLING_KEY: TStylingMapKey = {
+  key: null,
+  extra: (text: string, value: any, hasPreviousDuplicate: boolean): string => {
+    if (Array.isArray(value)) {
+      // We don't support Arrays
+      ngDevMode && throwError('Style binding do not support arrays bindings: ' + value);
+    } else if (typeof value === 'object') {
+      // We support maps
+      for (let key in value) {
+        text = appendStyling(text, key, value[key], null, hasPreviousDuplicate, false);
+      }
+    } else if (typeof value === 'string') {
+      // We support strings
+      if (hasPreviousDuplicate) {
+        // We need to parse and process it.
+        const changes: StyleChangesMap =
+            new Map<string, {old: string | null, new: string | null}>();
+        parseKeyValue(value, changes, false);
+        changes.forEach(
+            (value, key) => text = appendStyling(
+                text, key, value.old, stylePropNeedsSanitization(key) ? ɵɵsanitizeStyle : null,
+                true, false));
+      } else {
+        // No duplicates, just append it.
+        text = text === '' ? value : text + '; ' + value;
+      }
+    } else {
+      // All other cases are not supported.
+      ngDevMode && throwError('Unsupported value for class binding: ' + value);
+    }
+    return text;
+  }
+};
