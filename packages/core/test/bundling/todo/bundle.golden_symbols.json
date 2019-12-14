@@ -222,6 +222,9 @@
     "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
   },
   {
+    "name": "SafeValueImpl"
+  },
+  {
     "name": "SkipSelf"
   },
   {
@@ -427,6 +430,9 @@
   },
   {
     "name": "checkNoChangesInternal"
+  },
+  {
+    "name": "classNameIndexOf"
   },
   {
     "name": "cleanUpView"
@@ -1032,6 +1038,9 @@
     "name": "isStylingValueDefined"
   },
   {
+    "name": "isWhitespace"
+  },
+  {
     "name": "iterateListLike"
   },
   {
@@ -1393,6 +1402,9 @@
   },
   {
     "name": "unwrapRNode"
+  },
+  {
+    "name": "unwrapSafeValue"
   },
   {
     "name": "updateBindingValue"

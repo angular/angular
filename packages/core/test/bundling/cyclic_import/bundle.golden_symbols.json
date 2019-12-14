@@ -192,6 +192,9 @@
     "name": "callHooks"
   },
   {
+    "name": "classNameIndexOf"
+  },
+  {
     "name": "concatString"
   },
   {

@@ -47,6 +47,15 @@ describe('styling_utils', () => {
       expect(hasInitialClass(tNode, 'two')).toBeTruthy();
       expect(hasInitialClass(tNode, 'three')).toBeTruthy();
     });
+
+    it('should detect that a class exists and isn\'t a substring of another class', () => {
+      const tNode = { classes: null } as any as TNode;
+
+      tNode.classes = 'mobile-active mobile desktop-active';
+      expect(hasInitialClass(tNode, 'mobile')).toBeTruthy();
+      expect(hasInitialClass(tNode, 'mobile-active')).toBeTruthy();
+      expect(hasInitialClass(tNode, 'desktop')).toBeFalsy();
+    });
   });
 
   describe('hasInitialStyle', () => {

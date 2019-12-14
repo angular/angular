@@ -662,19 +662,31 @@ export function hasInitialStyle(tNode: TNode, prop: string): boolean {
  * ```
  */
 export function hasInitialClass(tNode: TNode, prop: string): boolean {
-  const classes = tNode.classes;
-  if (classes === null || classes === '') return false;
-  const index = classes === null ? -1 : classes.indexOf(prop);
-  if (index >= 0) {
-    // we found it now check to make sure we are not a substring.
-    let end = index + prop.length;
-    return (  // word break before
-               index === 0 || classes.charCodeAt(index - 1) <= CharCode.SPACE) &&
-        (  // word break after
-               end === classes.length || classes.charCodeAt(end) <= CharCode.SPACE);
-  } else {
-    return false;
+  return tNode.classes !== null ? classNameIndexOf(tNode.classes, prop) !== -1 : false;
+}
+
+export function classNameIndexOf(classes: string, className: string): number {
+  // -1 just implies that we haven't matched anything yet
+  // (we use `index` as a start point when we run `indexOf`
+  // in the code below)
+  let index = -1;
+  if (classes.length !== 0) {
+    while (index < classes.length) {
+      index = classes.indexOf(className, index + 1);
+      if (index === -1) {
+        break;
+      }
+
+      const endIndex = index + className.length;
+      const lhsMatch = index === 0 || classes.charCodeAt(index - 1) <= CharCode.SPACE;
+      const rhsMatch =
+          endIndex === classes.length || classes.charCodeAt(endIndex) <= CharCode.SPACE;
+      if (lhsMatch && rhsMatch) {
+        break;
+      }
+    }
   }
+  return index;
 }
 
 /**

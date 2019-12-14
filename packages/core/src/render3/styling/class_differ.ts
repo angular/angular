@@ -8,7 +8,10 @@
 
 import {ArrayMap, arrayInsert2, arrayMapIndexOf, arrayMapSet} from '../../util/array_utils';
 import {CharCode} from '../../util/char_code';
+import {classNameIndexOf} from '../util/styling_utils';
+
 import {consumeClassToken, consumeWhitespace} from './styling_parser';
+
 
 /**
  * Computes the diff between two class-list strings.
@@ -103,27 +106,12 @@ export function processClassToken(
  * @returns a new class-list which does not have `classToRemove`
  */
 export function removeClass(className: string, classToRemove: string): string {
-  let start = 0;
-  let end = className.length;
-  while (start < end) {
-    start = className.indexOf(classToRemove, start);
-    if (start === -1) {
-      // we did not find anything, so just bail.
-      break;
-    }
-    const removeLength = classToRemove.length;
-    const hasLeadingWhiteSpace = start === 0 || className.charCodeAt(start - 1) <= CharCode.SPACE;
-    const hasTrailingWhiteSpace = start + removeLength === end ||
-        className.charCodeAt(start + removeLength) <= CharCode.SPACE;
-    if (hasLeadingWhiteSpace && hasTrailingWhiteSpace) {
-      // Cut out the class which should be removed.
-      const endWhitespace = consumeWhitespace(className, start + removeLength, end);
-      className = className.substring(0, start) + className.substring(endWhitespace, end);
-      end = className.length;
-    } else {
-      // in this case we are only a substring of the actual class, move on.
-      start = start + removeLength;
-    }
+  const index = classNameIndexOf(className, classToRemove);
+  if (index !== -1) {
+    const endWhitespace =
+        consumeWhitespace(className, index + classToRemove.length, className.length);
+    className =
+        className.substring(0, index) + className.substring(endWhitespace, className.length);
   }
   return className;
 }
