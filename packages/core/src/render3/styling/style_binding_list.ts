@@ -22,7 +22,10 @@ import {StyleChangesMap, parseKeyValue, removeStyle} from './style_differ';
 /**
  * NOTE: The word `styling` is used interchangeably as style or class styling.
  *
- * This file contains code to link styling instructions together so that they can be replayed.
+ * This file contains code to link styling instructions together so that they can be replayed in
+ * priority order. The file exists because Ivy styling instruction execution order does not match
+ * that of the priority order. The purpose of this code is to create a linked list so that the
+ * instructions can be traversed in priority order when computing the styles.
  *
  * Assume we are dealing with the following code:
  * ```
@@ -184,15 +187,15 @@ import {StyleChangesMap, parseKeyValue, removeStyle} from './style_differ';
  *
  * @param tData The `TData` to insert into.
  * @param tNode `TNode` associated with the styling element.
- * @param tStylingValue See `TStyleValue`.
+ * @param tStylingKey See `TStylingKey`.
  * @param index location of where `tStyleValue` should be stored (and linked into list.)
  * @param isHost `true` if the insertion is for a `hostBinding`. (insertion is in front of
- * template.)
- * @param isClassBinding True if the associated `tStilingValue` as a `class` styling.
+ *               template.)
+ * @param isClassBinding True if the associated `tStylingKey` as a `class` styling.
  *                       `tNode.classBindings` should be used (or `tNode.styleBindings` otherwise.)
  */
 export function insertTStylingBinding(
-    tData: TData, tNode: TNode, tStylingValue: TStylingKey, index: number, isHost: boolean,
+    tData: TData, tNode: TNode, tStylingKey: TStylingKey, index: number, isHost: boolean,
     isClassBinding: boolean): void {
   ngDevMode && assertEqual(
                    getLView()[TVIEW].firstUpdatePass, true,
@@ -201,44 +204,48 @@ export function insertTStylingBinding(
   let tmplHead = getTStylingRangePrev(tBindings);
   let tmplTail = getTStylingRangeNext(tBindings);
 
-  tData[index] = tStylingValue;
+  tData[index] = tStylingKey;
   if (isHost) {
     // We are inserting host bindings
 
     // If we don't have template bindings than `tail` is 0.
-    const hasNoTemplateBinding = tmplTail === 0;
+    const hasTemplateBindings = tmplTail !== 0;
     // This is important to know because that means that the `head` can't point to the first
     // template bindings (there are none.) Instead the head points to the tail of the template.
-    const previousNode = hasNoTemplateBinding ?
-        tmplHead :
-         // template head's "prev" will point to last host binding or to 0 if no host bindings yet
-        getTStylingRangePrev(tData[tmplHead + 1] as TStylingRange);
-    const nextNode = hasNoTemplateBinding ? 0 : tmplHead;
-    tData[index + 1] = toTStylingRange(previousNode, nextNode);
-    // if a host binding has already been registered, we need to update the next of that host binding to point to this one
-    if (previousNode !== 0) {
-      // We need to update the template-tail value to point to us.
-      tData[templateTail + 1] =
-          setTStylingRangeNext(tData[templateTail + 1] as TStylingRange, index);
-    }
-    if (hasNoTemplateBinding) {
-      // if we don't have template, the head points to template-tail, and needs to be advanced.
-      tmplHead = index;
-    } else {
+    if (hasTemplateBindings) {
+      // template head's "prev" will point to last host binding or to 0 if no host bindings yet
+      const previousNode = getTStylingRangePrev(tData[tmplHead + 1] as TStylingRange);
+      tData[index + 1] = toTStylingRange(previousNode, tmplHead);
+      // if a host binding has already been registered, we need to update the next of that host
+      // binding to point to this one
+      if (previousNode !== 0) {
+        // We need to update the template-tail value to point to us.
+        tData[previousNode + 1] =
+            setTStylingRangeNext(tData[previousNode + 1] as TStylingRange, index);
+      }
       // The "previous" of the template binding head should point to this host binding
       tData[tmplHead + 1] = setTStylingRangePrev(tData[tmplHead + 1] as TStylingRange, index);
+    } else {
+      tData[index + 1] = toTStylingRange(tmplHead, 0);
+      // if a host binding has already been registered, we need to update the next of that host
+      // binding to point to this one
+      if (tmplHead !== 0) {
+        // We need to update the template-tail value to point to us.
+        tData[tmplHead + 1] = setTStylingRangeNext(tData[tmplHead + 1] as TStylingRange, index);
+      }
+      // if we don't have template, the head points to template-tail, and needs to be advanced.
+      tmplHead = index;
     }
   } else {
     // We are inserting in template section.
-   // We need to set this binding's "previous" to the current template tail
+    // We need to set this binding's "previous" to the current template tail
     tData[index + 1] = toTStylingRange(tmplTail, 0);
     ngDevMode && assertEqual(
                      tmplHead !== 0 && tmplTail === 0, false,
                      'Adding template bindings after hostBindings is not allowed.');
     if (tmplHead === 0) {
       tmplHead = index;
-    }
-   } else {
+    } else {
       // We need to update the previous value "next" to point to this binding
       tData[tmplTail + 1] = setTStylingRangeNext(tData[tmplTail + 1] as TStylingRange, index);
     }
@@ -247,8 +254,8 @@ export function insertTStylingBinding(
 
   // Now we need to update / compute the duplicates.
   // Starting with our location search towards head (least priority)
-  markDuplicates(tData, tStylingValue, index, isClassBinding ? tNode.classes : tNode.styles, true);
-  markDuplicates(tData, tStylingValue, index, null, false);
+  markDuplicates(tData, tStylingKey, index, isClassBinding ? tNode.classes : tNode.styles, true);
+  markDuplicates(tData, tStylingKey, index, null, false);
 
   tBindings = toTStylingRange(tmplHead, tmplTail);
   if (isClassBinding) {
@@ -430,7 +437,7 @@ export function appendStyling(
     text: string, stylingKey: TStylingKey, value: any, sanitizer: SanitizerFn | null,
     hasPreviousDuplicate: boolean, isClassBinding: boolean): string {
   let key: string;
-  let suffixOrSanitizer: string|SanitizerFn|undefined|null;
+  let suffixOrSanitizer: string|SanitizerFn|undefined|null = sanitizer;
   if (typeof stylingKey === 'object') {
     if (stylingKey.key === null) {
       return value != null ? stylingKey.extra(text, value, hasPreviousDuplicate) : text;
@@ -461,7 +468,17 @@ export function appendStyling(
   return text;
 }
 
-// TODO(misko): add comments
+/**
+ * `ɵɵclassMap()` inserts `CLASS_MAP_STYLING_KEY` as a key to the `insertTStylingBinding()`.
+ *
+ * The purpose of this key is to add class map abilities to the concatenation in a tree shakable
+ * way. If `ɵɵclassMap()` is not referenced than `CLASS_MAP_STYLING_KEY` will become eligible for
+ * tree shaking.
+ *
+ * This key supports: `strings`, `object` (as Map) and `Array`. In each case it is necessary to
+ * break the classes into parts and concatenate the parts into the `text`. The concatenation needs
+ * to be done in parts as each key is individually subject to overwrites.
+ */
 export const CLASS_MAP_STYLING_KEY: TStylingMapKey = {
   key: null,
   extra: (text: string, value: any, hasPreviousDuplicate: boolean): string => {
@@ -494,7 +511,18 @@ export const CLASS_MAP_STYLING_KEY: TStylingMapKey = {
   }
 };
 
-// TODO(misko): add comments
+/**
+ * `ɵɵstyleMap()` inserts `STYLE_MAP_STYLING_KEY` as a key to the `insertTStylingBinding()`.
+ *
+ * The purpose of this key is to add style map abilities to the concatenation in a tree shakable
+ * way. If `ɵɵstyleMap()` is not referenced than `STYLE_MAP_STYLING_KEY` will become eligible for
+ * tree shaking. (`STYLE_MAP_STYLING_KEY` also pulls int the sanitizer as `ɵɵstyleMap()` could have
+ * a sanitizable property.)
+ *
+ * This key supports: `strings`, and `object` (as Map). In each case it is necessary to
+ * break the style into parts and concatenate the parts into the `text`. The concatenation needs
+ * to be done in parts as each key is individually subject to overwrites.
+ */
 export const STYLE_MAP_STYLING_KEY: TStylingMapKey = {
   key: null,
   extra: (text: string, value: any, hasPreviousDuplicate: boolean): string => {
@@ -504,7 +532,9 @@ export const STYLE_MAP_STYLING_KEY: TStylingMapKey = {
     } else if (typeof value === 'object') {
       // We support maps
       for (let key in value) {
-        text = appendStyling(text, key, value[key], null, hasPreviousDuplicate, false);
+        text = appendStyling(
+            text, key, value[key], stylePropNeedsSanitization(key) ? ɵɵsanitizeStyle : null,
+            hasPreviousDuplicate, false);
       }
     } else if (typeof value === 'string') {
       // We support strings

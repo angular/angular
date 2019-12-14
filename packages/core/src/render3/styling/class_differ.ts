@@ -108,6 +108,14 @@ export function removeClass(className: string, classToRemove: string): string {
   return toggleClass(className, classToRemove, false);
 }
 
+/**
+ * Toggles a class in `className` string.
+ *
+ * @param className A string containing classes (whitespace separated)
+ * @param classToToggle A class name to remove or add to the `className`
+ * @param toggle Weather the resulting `className` should contain or not the `classToToggle`
+ * @returns a new class-list which does not have `classToRemove`
+ */
 export function toggleClass(className: string, classToToggle: string, toggle: boolean): string {
   if (className === '') {
     return toggle ? classToToggle : '';
@@ -115,7 +123,7 @@ export function toggleClass(className: string, classToToggle: string, toggle: bo
   let start = 0;
   let end = className.length;
   while (start < end) {
-    start = className.indexOf(classToToggle, start);
+    start = classIndexOf(className, classToToggle, start);
     if (start === -1) {
       if (toggle === true) {
         className = className === '' ? classToToggle : className + ' ' + classToToggle;
@@ -123,23 +131,45 @@ export function toggleClass(className: string, classToToggle: string, toggle: bo
       break;
     }
     const removeLength = classToToggle.length;
-    const hasLeadingWhiteSpace = start === 0 || className.charCodeAt(start - 1) <= CharCode.SPACE;
-    const hasTrailingWhiteSpace = start + removeLength === end ||
-        className.charCodeAt(start + removeLength) <= CharCode.SPACE;
-    if (hasLeadingWhiteSpace && hasTrailingWhiteSpace) {
-      if (toggle === false) {
-        // Cut out the class which should be removed.
-        const endWhitespace = consumeWhitespace(className, start + removeLength, end);
-        className = className.substring(0, start) + className.substring(endWhitespace, end);
-        end = className.length;
-      } else {
-        // we found it and we should have it so just return
-        return className;
-      }
+    if (toggle === true) {
+      // we found it and we should have it so just return
+      return className;
     } else {
-      // in this case we are only a substring of the actual class, move on.
-      start = start + removeLength;
+      // Cut out the class which should be removed.
+      const endWhitespace = consumeWhitespace(className, start + removeLength, end);
+      className = className.substring(0, start) + className.substring(endWhitespace, end);
+      end = className.length;
     }
   }
   return className;
+}
+
+/**
+ * Returns an index of `classToSearch` in `className` taking token boundaries into account.
+ *
+ * `classIndexOf('AB A', 'A', 0)` will be 3 (not 0 since `AB!==A`)
+ *
+ * @param className A string containing classes (whitespace separated)
+ * @param classToSearch A class name to locate
+ * @param startingIndex Starting location of search
+ * @returns an index of the located class (or -1 if not found)
+ */
+export function classIndexOf(
+    className: string, classToSearch: string, startingIndex: number): number {
+  let end = className.length;
+  while (true) {
+    const foundIndex = className.indexOf(classToSearch, startingIndex);
+    if (foundIndex === -1) return foundIndex;
+    if (foundIndex === 0 || className.charCodeAt(foundIndex - 1) <= CharCode.SPACE) {
+      // Ensure that it has leading whitespace
+      const removeLength = classToSearch.length;
+      if (foundIndex + removeLength === end ||
+          className.charCodeAt(foundIndex + removeLength) <= CharCode.SPACE) {
+        // Ensure that it has trailing whitespace
+        return foundIndex;
+      }
+    }
+    // False positive, keep searching from where we left off.
+    startingIndex = foundIndex + 1;
+  }
 }

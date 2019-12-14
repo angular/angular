@@ -536,8 +536,56 @@ describe('TNode styling linked list', () => {
       expect(() => appendStyling('', STYLE_MAP_STYLING_KEY, ['A', 'a'], null, true, false))
           .toThrow();
     });
+
+    describe('style sanitization', () => {
+      it('should sanitize properties', () => {
+        // Verify map
+        expect(appendStyling(
+                   '', STYLE_MAP_STYLING_KEY, {
+                     'background-image': 'url(javascript:evil())',
+                     'background': 'url(javascript:evil())',
+                     'border-image': 'url(javascript:evil())',
+                     'filter': 'url(javascript:evil())',
+                     'list-style': 'url(javascript:evil())',
+                     'list-style-image': 'url(javascript:evil())',
+                     'clip-path': 'url(javascript:evil())',
+                     'width': 'url(javascript:evil())',  // should not sanitize
+                   },
+                   null, true, false))
+            .toEqual(
+                'background-image: unsafe; ' +
+                'background: unsafe; ' +
+                'border-image: unsafe; ' +
+                'filter: unsafe; ' +
+                'list-style: unsafe; ' +
+                'list-style-image: unsafe; ' +
+                'clip-path: unsafe; ' +
+                'width: url(javascript:evil())');
+        // verify string
+        expect(appendStyling(
+                   '', STYLE_MAP_STYLING_KEY,
+                   'background-image: url(javascript:evil());' +
+                       'background: url(javascript:evil());' +
+                       'border-image: url(javascript:evil());' +
+                       'filter: url(javascript:evil());' +
+                       'list-style: url(javascript:evil());' +
+                       'list-style-image: url(javascript:evil());' +
+                       'clip-path: url(javascript:evil());' +
+                       'width: url(javascript:evil())'  // should not sanitize
+                   ,
+                   null, true, false))
+            .toEqual(
+                'background-image: unsafe; ' +
+                'background: unsafe; ' +
+                'border-image: unsafe; ' +
+                'filter: unsafe; ' +
+                'list-style: unsafe; ' +
+                'list-style-image: unsafe; ' +
+                'clip-path: unsafe; ' +
+                'width: url(javascript:evil())');
+      });
+    });
   });
-  // TODO: add sanitization tests.
 });
 
 const empty_0_through_9 = [null, null, null, null, null, null, null, null, null, null];

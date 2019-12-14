@@ -522,16 +522,26 @@ export interface TStylingMapKey extends TStylingKeyShape {
   /// Invoke this function to process the value (convert it into the result)
   /// This is implemented this way so that the logic associated with `ɵɵstyleMap()`/`ɵɵclassMap()`
   /// can be tree shaken away. Internally the function will break the `Map`/`Array` down into
-  // parts and call `appendStyling` on parts.
+  /// parts and call `appendStyling` on parts.
+  ///
+  /// See: `CLASS_MAP_STYLING_KEY` and `STYLE_MAP_STYLING_KEY` for details.
   extra: TStylingMapFn;
 }
 
+/**
+ * Invoke this function to process the styling value which is non-primitive (Map/Array)
+ * This is implemented this way so that the logic associated with `ɵɵstyleMap()`/`ɵɵclassMap()`
+ * can be tree shaken away. Internally the function will break the `Map`/`Array` down into
+ * parts and call `appendStyling` on parts.
+ *
+ * See: `CLASS_MAP_STYLING_KEY` and `STYLE_MAP_STYLING_KEY` for details.
+ */
 export type TStylingMapFn = (text: string, value: any, hasPreviousDuplicate: boolean) => string;
 
 /**
  * This is a branded number which contains previous and next index.
  *
- * When we come across styling instructions we need to store the `TStyleValue` in the correct
+ * When we come across styling instructions we need to store the `TStylingKey` in the correct
  * order so that we can re-concatenate the styling value in the desired priority.
  *
  * The insertion can happen either at the:
@@ -546,6 +556,13 @@ export type TStylingMapFn = (text: string, value: any, hasPreviousDuplicate: boo
  * - bit 1 is used to mark that the next index has a duplicate for the current value.
  * - bits 2-16 are used to encode the next/tail of the template.
  * - bits 17-32 are used to encode the previous/head of template.
+ *
+ * NODE: *duplicate* false implies that it is statically know that this binding will not collide
+ * with other binding and therefor there is no need to check other bindings. For example the
+ * bindings in `<div [style.color]="exp" [style.width]="exp">` will never collide and will have
+ * their bits set accordingly. Previous duplicate means that we may need to check previous if the
+ * current binding is `null`. Next duplicate means that we may need to check next bindings if the
+ * current binding is not `null`.
  *
  * NOTE: `0` has special significance and represents `null` as in no additional pointer.
  */
@@ -565,7 +582,20 @@ export const enum StylingRange {
   /// Next pointer mask.
   NEXT_MASK = 0x0003FFC,
 
+  /**
+   * This bit is set to if the previous bindings contains a binding which could possibly cause a
+   * duplicate. For example: `<div [style]="map" [style.width]="width">`, the `width` binding will
+   * have previous duplicate set. The implication is that if `width` binding becomes `null`, it is
+   * necessary to deffer the value to `map.width`. (Because `width` overwrites `map.width`.)
+   */
   PREV_DUPLICATE = 0x02,
+
+  /**
+   * This bit is set to if the next bindings contains a binding which could possibly cause a
+   * duplicate. For example: `<div [style]="map" [style.width]="width">`, the `map` binding will
+   * have next duplicate set. The implication is that if `map.width` binding becomes not `null`, it
+   * is necessary to deffer the value to `width`. (Because `width` overwrites `map.width`.)
+   */
   NEXT_DUPLICATE = 0x01,
 }
 
