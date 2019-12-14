@@ -257,6 +257,8 @@ export declare const DebugNode: {
     new (...args: any[]): DebugNode;
 };
 
+export declare const DEFAULT_CURRENCY_CODE: InjectionToken<string>;
+
 /** @deprecated */
 export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
     readonly collection: V[] | Iterable<V> | null;
