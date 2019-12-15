@@ -28,7 +28,7 @@ import {Render3ParseResult} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
-import {StylingBuilder, StylingInstructionCall} from './styling_builder';
+import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, TemplateDefinitionBuilder, ValueConverter, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn} from './template';
 import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, chainedInstruction, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
 
@@ -530,8 +530,6 @@ function createHostBindingsFunction(
     hostBindingsMetadata: R3HostMetadata, typeSourceSpan: ParseSourceSpan,
     bindingParser: BindingParser, constantPool: ConstantPool, selector: string, name: string,
     definitionMap: DefinitionMap): o.Expression|null {
-  // Initialize hostVarsCount to number of bound host properties (interpolations illegal)
-  const hostVarsCount = Object.keys(hostBindingsMetadata.properties).length;
   const elVarExp = o.variable('elIndex');
   const bindingContext = o.variable(CONTEXT_NAME);
   const styleBuilder = new StylingBuilder(elVarExp, bindingContext);
@@ -547,9 +545,37 @@ function createHostBindingsFunction(
   const createStatements: o.Statement[] = [];
   const updateStatements: o.Statement[] = [];
 
-  let totalHostVarsCount = hostVarsCount;
   const hostBindingSourceSpan = typeSourceSpan;
   const directiveSummary = metadataAsSummary(hostBindingsMetadata);
+
+  // Calculate host event bindings
+  const eventBindings =
+      bindingParser.createDirectiveHostEventAsts(directiveSummary, hostBindingSourceSpan);
+  if (eventBindings && eventBindings.length) {
+    const listeners = createHostListeners(eventBindings, name);
+    createStatements.push(...listeners);
+  }
+
+  // Calculate the host property bindings
+  const bindings = bindingParser.createBoundHostProperties(directiveSummary, hostBindingSourceSpan);
+  const allOtherBindings: ParsedProperty[] = [];
+
+  // We need to calculate the total amount of binding slots required by
+  // all the instructions together before any value conversions happen.
+  // Value conversions may require additional slots for interpolation and
+  // bindings with pipes. These calculates happen after this block.
+  let totalHostVarsCount = 0;
+  bindings && bindings.forEach((binding: ParsedProperty) => {
+    const name = binding.name;
+    const stylingInputWasSet =
+        styleBuilder.registerInputBasedOnName(name, binding.expression, binding.sourceSpan);
+    if (stylingInputWasSet) {
+      totalHostVarsCount += MIN_STYLING_BINDING_SLOTS_REQUIRED;
+    } else {
+      allOtherBindings.push(binding);
+      totalHostVarsCount++;
+    }
+  });
 
   let valueConverter: ValueConverter;
   const getValueConverter = () => {
@@ -568,65 +594,49 @@ function createHostBindingsFunction(
     return valueConverter;
   };
 
-  // Calculate host event bindings
-  const eventBindings =
-      bindingParser.createDirectiveHostEventAsts(directiveSummary, hostBindingSourceSpan);
-  if (eventBindings && eventBindings.length) {
-    const listeners = createHostListeners(eventBindings, name);
-    createStatements.push(...listeners);
-  }
-
-  // Calculate the host property bindings
-  const bindings = bindingParser.createBoundHostProperties(directiveSummary, hostBindingSourceSpan);
   const propertyBindings: o.Expression[][] = [];
   const attributeBindings: o.Expression[][] = [];
   const syntheticHostBindings: o.Expression[][] = [];
+  allOtherBindings.forEach((binding: ParsedProperty) => {
+    // resolve literal arrays and literal objects
+    const value = binding.expression.visit(getValueConverter());
+    const bindingExpr = bindingFn(bindingContext, value);
 
-  bindings && bindings.forEach((binding: ParsedProperty) => {
-    const name = binding.name;
-    const stylingInputWasSet =
-        styleBuilder.registerInputBasedOnName(name, binding.expression, binding.sourceSpan);
-    if (!stylingInputWasSet) {
-      // resolve literal arrays and literal objects
-      const value = binding.expression.visit(getValueConverter());
-      const bindingExpr = bindingFn(bindingContext, value);
+    const {bindingName, instruction, isAttribute} = getBindingNameAndInstruction(binding);
 
-      const {bindingName, instruction, isAttribute} = getBindingNameAndInstruction(binding);
+    const securityContexts =
+        bindingParser.calcPossibleSecurityContexts(selector, bindingName, isAttribute)
+            .filter(context => context !== core.SecurityContext.NONE);
 
-      const securityContexts =
-          bindingParser.calcPossibleSecurityContexts(selector, bindingName, isAttribute)
-              .filter(context => context !== core.SecurityContext.NONE);
-
-      let sanitizerFn: o.ExternalExpr|null = null;
-      if (securityContexts.length) {
-        if (securityContexts.length === 2 &&
-            securityContexts.indexOf(core.SecurityContext.URL) > -1 &&
-            securityContexts.indexOf(core.SecurityContext.RESOURCE_URL) > -1) {
-          // Special case for some URL attributes (such as "src" and "href") that may be a part
-          // of different security contexts. In this case we use special santitization function and
-          // select the actual sanitizer at runtime based on a tag name that is provided while
-          // invoking sanitization function.
-          sanitizerFn = o.importExpr(R3.sanitizeUrlOrResourceUrl);
-        } else {
-          sanitizerFn = resolveSanitizationFn(securityContexts[0], isAttribute);
-        }
-      }
-      const instructionParams = [o.literal(bindingName), bindingExpr.currValExpr];
-      if (sanitizerFn) {
-        instructionParams.push(sanitizerFn);
-      }
-
-      updateStatements.push(...bindingExpr.stmts);
-
-      if (instruction === R3.hostProperty) {
-        propertyBindings.push(instructionParams);
-      } else if (instruction === R3.attribute) {
-        attributeBindings.push(instructionParams);
-      } else if (instruction === R3.updateSyntheticHostBinding) {
-        syntheticHostBindings.push(instructionParams);
+    let sanitizerFn: o.ExternalExpr|null = null;
+    if (securityContexts.length) {
+      if (securityContexts.length === 2 &&
+          securityContexts.indexOf(core.SecurityContext.URL) > -1 &&
+          securityContexts.indexOf(core.SecurityContext.RESOURCE_URL) > -1) {
+        // Special case for some URL attributes (such as "src" and "href") that may be a part
+        // of different security contexts. In this case we use special santitization function and
+        // select the actual sanitizer at runtime based on a tag name that is provided while
+        // invoking sanitization function.
+        sanitizerFn = o.importExpr(R3.sanitizeUrlOrResourceUrl);
       } else {
-        updateStatements.push(o.importExpr(instruction).callFn(instructionParams).toStmt());
+        sanitizerFn = resolveSanitizationFn(securityContexts[0], isAttribute);
       }
+    }
+    const instructionParams = [o.literal(bindingName), bindingExpr.currValExpr];
+    if (sanitizerFn) {
+      instructionParams.push(sanitizerFn);
+    }
+
+    updateStatements.push(...bindingExpr.stmts);
+
+    if (instruction === R3.hostProperty) {
+      propertyBindings.push(instructionParams);
+    } else if (instruction === R3.attribute) {
+      attributeBindings.push(instructionParams);
+    } else if (instruction === R3.updateSyntheticHostBinding) {
+      syntheticHostBindings.push(instructionParams);
+    } else {
+      updateStatements.push(o.importExpr(instruction).callFn(instructionParams).toStmt());
     }
   });
 
@@ -664,7 +674,8 @@ function createHostBindingsFunction(
         instruction.calls.forEach(call => {
           // we subtract a value of `1` here because the binding slot was already allocated
           // at the top of this method when all the input bindings were counted.
-          totalHostVarsCount += Math.max(call.allocateBindingSlots - 1, 0);
+          totalHostVarsCount +=
+              Math.max(call.allocateBindingSlots - MIN_STYLING_BINDING_SLOTS_REQUIRED, 0);
           calls.push(convertStylingCall(call, bindingContext, bindingFn));
         });
 
