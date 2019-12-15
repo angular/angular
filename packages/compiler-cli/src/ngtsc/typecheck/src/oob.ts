@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, BindingPipe, PropertyWrite, TmplAstReference, TmplAstVariable} from '@angular/compiler';
+import {BindingPipe, PropertyWrite, TmplAstReference, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 
-import {TcbSourceResolver, absoluteSourceSpanToSourceLocation, makeTemplateDiagnostic} from './diagnostics';
+import {TemplateId} from './api';
+import {TemplateSourceResolver, makeTemplateDiagnostic} from './diagnostics';
 
 
 
@@ -35,7 +36,7 @@ export interface OutOfBandDiagnosticRecorder {
    * reference.
    * @param ref the `TmplAstReference` which could not be matched to a directive.
    */
-  missingReferenceTarget(templateId: string, ref: TmplAstReference): void;
+  missingReferenceTarget(templateId: TemplateId, ref: TmplAstReference): void;
 
   /**
    * Reports usage of a `| pipe` expression in the template for which the named pipe could not be
@@ -45,20 +46,20 @@ export interface OutOfBandDiagnosticRecorder {
    * pipe.
    * @param ast the `BindingPipe` invocation of the pipe which could not be found.
    */
-  missingPipe(templateId: string, ast: BindingPipe): void;
+  missingPipe(templateId: TemplateId, ast: BindingPipe): void;
 
   illegalAssignmentToTemplateVar(
-      templateId: string, assignment: PropertyWrite, target: TmplAstVariable): void;
+      templateId: TemplateId, assignment: PropertyWrite, target: TmplAstVariable): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
   private _diagnostics: ts.Diagnostic[] = [];
 
-  constructor(private resolver: TcbSourceResolver) {}
+  constructor(private resolver: TemplateSourceResolver) {}
 
   get diagnostics(): ReadonlyArray<ts.Diagnostic> { return this._diagnostics; }
 
-  missingReferenceTarget(templateId: string, ref: TmplAstReference): void {
+  missingReferenceTarget(templateId: TemplateId, ref: TmplAstReference): void {
     const mapping = this.resolver.getSourceMapping(templateId);
     const value = ref.value.trim();
 
@@ -68,12 +69,11 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         ngErrorCode(ErrorCode.MISSING_REFERENCE_TARGET), errorMsg));
   }
 
-  missingPipe(templateId: string, ast: BindingPipe): void {
+  missingPipe(templateId: TemplateId, ast: BindingPipe): void {
     const mapping = this.resolver.getSourceMapping(templateId);
     const errorMsg = `No pipe found with name '${ast.name}'.`;
 
-    const location = absoluteSourceSpanToSourceLocation(templateId, ast.nameSpan);
-    const sourceSpan = this.resolver.sourceLocationToSpan(location);
+    const sourceSpan = this.resolver.toParseSourceSpan(templateId, ast.nameSpan);
     if (sourceSpan === null) {
       throw new Error(
           `Assertion failure: no SourceLocation found for usage of pipe '${ast.name}'.`);
@@ -84,13 +84,12 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
   }
 
   illegalAssignmentToTemplateVar(
-      templateId: string, assignment: PropertyWrite, target: TmplAstVariable): void {
+      templateId: TemplateId, assignment: PropertyWrite, target: TmplAstVariable): void {
     const mapping = this.resolver.getSourceMapping(templateId);
     const errorMsg =
         `Cannot use variable '${assignment.name}' as the left-hand side of an assignment expression. Template variables are read-only.`;
 
-    const location = absoluteSourceSpanToSourceLocation(templateId, assignment.sourceSpan);
-    const sourceSpan = this.resolver.sourceLocationToSpan(location);
+    const sourceSpan = this.resolver.toParseSourceSpan(templateId, assignment.sourceSpan);
     if (sourceSpan === null) {
       throw new Error(`Assertion failure: no SourceLocation found for property binding.`);
     }
