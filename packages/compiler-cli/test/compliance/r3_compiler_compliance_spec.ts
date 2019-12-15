@@ -477,7 +477,7 @@ describe('compiler compliance', () => {
       const template = `
         MyComponent.ɵcmp = i0.ɵɵdefineComponent({type:MyComponent,selectors:[["my-component"]],
             decls: 1,
-            vars: 2,
+            vars: 4,
             template: function MyComponent_Template(rf,ctx){
               if (rf & 1) {
                 $r3$.ɵɵelement(0, "div");

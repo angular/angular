@@ -377,8 +377,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵelement(0, "div");
             }
             if (rf & 2) {
-              $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-              $r3$.ɵɵstyleMap($ctx$.myStyleExp);
+              $r3$.ɵɵstyleMap($ctx$.myStyleExp, $r3$.ɵɵdefaultStyleSanitizer);
             }
           }
           `;
@@ -504,15 +503,14 @@ describe('compiler compliance: styling', () => {
               type: MyComponent,
               selectors:[["my-component"]],
               decls: 1,
-              vars: 5,
+              vars: 7,
               consts: [[${AttributeMarker.Styles}, "opacity", "1"]],
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵɵelement(0, "div", 0);
                 }
                 if (rf & 2) {
-                  $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-                  $r3$.ɵɵstyleMap($ctx$.myStyleExp);
+                  $r3$.ɵɵstyleMap($ctx$.myStyleExp, $r3$.ɵɵdefaultStyleSanitizer);
                   $r3$.ɵɵstyleProp("width", $ctx$.myWidth)("height", $ctx$.myHeight);
                   $r3$.ɵɵattribute("style", "border-width: 10px", $r3$.ɵɵsanitizeStyle);
                 }
@@ -551,14 +549,13 @@ describe('compiler compliance: styling', () => {
             type: MyComponent,
             selectors: [["my-component"]],
             decls: 1,
-            vars: 1,
+            vars: 2,
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵelement(0, "div");
               }
               if (rf & 2) {
-                $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-                $r3$.ɵɵstyleProp("background-image", ctx.myImage);
+                $r3$.ɵɵstyleProp("background-image", ctx.myImage, $r3$.ɵɵdefaultStyleSanitizer);
               }
             },
             encapsulation: 2
@@ -697,7 +694,7 @@ describe('compiler compliance: styling', () => {
               type: MyComponent,
               selectors:[["my-component"]],
               decls: 1,
-              vars: 5,
+              vars: 7,
               consts: [[${AttributeMarker.Classes}, "grape"]],
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
@@ -816,8 +813,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵelement(0, "div");
             }
             if (rf & 2) {
-              $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-              $r3$.ɵɵstyleMap($ctx$.myStyleExp);
+              $r3$.ɵɵstyleMap($ctx$.myStyleExp, $r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵclassMap($ctx$.myClassExp);
             }
           }
@@ -858,8 +854,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-              $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind1(1, 4, $ctx$.myStyleExp));
+              $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind1(1, 4, $ctx$.myStyleExp), $r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵclassMap($r3$.ɵɵpipeBind1(2, 6, $ctx$.myClassExp));
             }
           }
@@ -911,11 +906,10 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-              $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind2(1, 8, $ctx$.myStyleExp, 1000));
-              $r3$.ɵɵclassMap($r3$.ɵɵpureFunction0(20, _c0));
-              $r3$.ɵɵstyleProp("bar", $r3$.ɵɵpipeBind2(2, 11, $ctx$.barExp, 3000))("baz", $r3$.ɵɵpipeBind2(3, 14, $ctx$.bazExp, 4000));
-              $r3$.ɵɵclassProp("foo", $r3$.ɵɵpipeBind2(4, 17, $ctx$.fooExp, 2000));
+              $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind2(1, 11, $ctx$.myStyleExp, 1000), $r3$.ɵɵdefaultStyleSanitizer);
+              $r3$.ɵɵclassMap($r3$.ɵɵpureFunction0(23, _c0));
+              $r3$.ɵɵstyleProp("bar", $r3$.ɵɵpipeBind2(2, 14, $ctx$.barExp, 3000))("baz", $r3$.ɵɵpipeBind2(3, 17, $ctx$.bazExp, 4000));
+              $r3$.ɵɵclassProp("foo", $r3$.ɵɵpipeBind2(4, 20, $ctx$.fooExp, 2000));
               $r3$.ɵɵadvance(5);
              $r3$.ɵɵtextInterpolate1(" ", $ctx$.item, "");
             }
@@ -1014,9 +1008,15 @@ describe('compiler compliance: styling', () => {
           hostAttrs: [${AttributeMarker.Classes}, "foo", "baz", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
           hostVars: 6,
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+<<<<<<< HEAD
+=======
+            if (rf & 1) {
+              $r3$.ɵɵallocHostVars(8);
+              $r3$.ɵɵelementHostAttrs($e0_attrs$);
+            }
+>>>>>>> 3a14b06a3b... refactor(ivy): generate 2 slots per styling instruction
             if (rf & 2) {
-              $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-              $r3$.ɵɵstyleMap(ctx.myStyle);
+              $r3$.ɵɵstyleMap(ctx.myStyle, $r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵclassMap(ctx.myClass);
               $r3$.ɵɵstyleProp("color", ctx.myColorProp);
               $r3$.ɵɵclassProp("foo", ctx.myFooClass);
@@ -1070,9 +1070,14 @@ describe('compiler compliance: styling', () => {
       const template = `
           hostVars: 8,
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+<<<<<<< HEAD
+=======
+            if (rf & 1) {
+              $r3$.ɵɵallocHostVars(12);
+            }
+>>>>>>> 3a14b06a3b... refactor(ivy): generate 2 slots per styling instruction
             if (rf & 2) {
-              $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-              $r3$.ɵɵstyleMap(ctx.myStyle);
+              $r3$.ɵɵstyleMap(ctx.myStyle, $r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵclassMap(ctx.myClasses);
               $r3$.ɵɵstyleProp("height", ctx.myHeightProp, "pt")("width", ctx.myWidthProp);
               $r3$.ɵɵclassProp("bar", ctx.myBarClass)("foo", ctx.myFooClass);
@@ -1129,8 +1134,7 @@ describe('compiler compliance: styling', () => {
                 $r3$.ɵɵelement(0, "div");
               }
               if (rf & 2) {
-                $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-                $r3$.ɵɵstyleMap(ctx.myStyleExp);
+                $r3$.ɵɵstyleMap(ctx.myStyleExp, $r3$.ɵɵdefaultStyleSanitizer);
                 $r3$.ɵɵclassMap(ctx.myClassExp);
                 $r3$.ɵɵstyleProp("height", ctx.myHeightExp);
                 $r3$.ɵɵclassProp("bar", ctx.myBarClassExp);
@@ -1141,9 +1145,14 @@ describe('compiler compliance: styling', () => {
          const hostBindings = `
             hostVars: 6,
             hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+<<<<<<< HEAD
+=======
+              if (rf & 1) {
+                $r3$.ɵɵallocHostVars(8);
+              }
+>>>>>>> 3a14b06a3b... refactor(ivy): generate 2 slots per styling instruction
               if (rf & 2) {
-                $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-                $r3$.ɵɵstyleMap(ctx.myStyleExp);
+                $r3$.ɵɵstyleMap(ctx.myStyleExp, $r3$.ɵɵdefaultStyleSanitizer);
                 $r3$.ɵɵclassMap(ctx.myClassExp);
                 $r3$.ɵɵstyleProp("width", ctx.myWidthExp);
                 $r3$.ɵɵclassProp("foo", ctx.myFooClassExp);
@@ -1404,6 +1413,46 @@ describe('compiler compliance: styling', () => {
             …
             if (rf & 2) {
               $r3$.ɵɵstylePropInterpolate2("width", "a", ctx.one, "b", ctx.two, "c", "px");
+            }
+            …
+          `;
+         const result = compile(files, angularFiles);
+
+         expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
+       });
+
+    it('should generate update instructions for interpolated style properties with a sanitizer',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                <div style.background="url({{ myUrl1 }})"
+                     style.borderImage="url({{ myUrl2 }}) {{ myRepeat }} auto"
+                     style.boxShadow="{{ myBoxX }} {{ myBoxY }} {{ myBoxWidth }} black"></div>
+              \`
+            })
+            export class MyComponent {
+              myUrl1 = '...';
+              myUrl2 = '...';
+              myBoxX = '0px';
+              myBoxY = '0px';
+              myBoxWidth = '100px';
+              myRepeat = 'no-repeat';
+            }
+          `
+           }
+         };
+
+         const template = `
+            …
+            if (rf & 2) {
+              $r3$.ɵɵstylePropInterpolate1("background", "url(", ctx.myUrl1, ")", $r3$.ɵɵdefaultStyleSanitizer);
+              $r3$.ɵɵstylePropInterpolate2("border-image", "url(", ctx.myUrl2, ") ", ctx.myRepeat, " auto", $r3$.ɵɵdefaultStyleSanitizer);
+              $r3$.ɵɵstylePropInterpolate3("box-shadow", "", ctx.myBoxX, " ", ctx.myBoxY, " ", ctx.myBoxWidth, " black");
             }
             …
           `;
@@ -1833,8 +1882,7 @@ describe('compiler compliance: styling', () => {
       hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
         if (rf & 2) {
           $r3$.ɵɵhostProperty("id", ctx.id)("title", ctx.title);
-          $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-          $r3$.ɵɵstyleMap(ctx.myStyle);
+          $r3$.ɵɵstyleMap(ctx.myStyle, $r3$.ɵɵdefaultStyleSanitizer);
           $r3$.ɵɵclassMap(ctx.myClass);
         }
       }
@@ -1908,8 +1956,7 @@ describe('compiler compliance: styling', () => {
         template: function MyAppComp_Template(rf, ctx) {
           …
           if (rf & 2) {
-            $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-            $r3$.ɵɵstyleProp("background-image", ctx.bgExp);
+            $r3$.ɵɵstyleProp("background-image", ctx.bgExp, $r3$.ɵɵdefaultStyleSanitizer);
           }
           …
         }
@@ -1943,8 +1990,7 @@ describe('compiler compliance: styling', () => {
         template: function MyAppComp_Template(rf, ctx) {
           …
           if (rf & 2) {
-            $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-            $r3$.ɵɵstyleMap(ctx.mapExp);
+            $r3$.ɵɵstyleMap(ctx.mapExp, $r3$.ɵɵdefaultStyleSanitizer);
           }
           …
         }
@@ -2035,11 +2081,17 @@ describe('compiler compliance: styling', () => {
       const template = `
           hostVars: 9,
           hostBindings: function MyDir_HostBindings(rf, ctx, elIndex) {
+<<<<<<< HEAD
+=======
+            …
+            $r3$.ɵɵallocHostVars(10);
+            …
+>>>>>>> 3a14b06a3b... refactor(ivy): generate 2 slots per styling instruction
             if (rf & 2) {
               $r3$.ɵɵhostProperty("title", ctx.title);
               $r3$.ɵɵupdateSyntheticHostBinding("@anim",
-                $r3$.ɵɵpureFunction2(6, _c1, ctx._animValue,
-                $r3$.ɵɵpureFunction2(3, _c0, ctx._animParam1, ctx._animParam2)));
+                $r3$.ɵɵpureFunction2(7, _c1, ctx._animValue,
+                $r3$.ɵɵpureFunction2(4, _c0, ctx._animParam1, ctx._animParam2)));
               $r3$.ɵɵclassProp("foo", ctx.foo);
             }
           }

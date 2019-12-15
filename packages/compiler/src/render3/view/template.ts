@@ -684,7 +684,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // the code here will collect all update-level styling instructions and add them to the
     // update block of the template function AOT code. Instructions like `styleProp`,
-    // `styleMap`, `classMap`, `classProp` and `stylingApply`
+    // `styleMap`, `classMap`, `classProp` and `flushStyling`
     // are all generated and assigned in the code below.
     const stylingInstructions = stylingBuilder.buildUpdateLevelInstructions(this._valueConverter);
     const limit = stylingInstructions.length - 1;
