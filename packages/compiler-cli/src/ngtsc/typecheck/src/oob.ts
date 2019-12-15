@@ -44,15 +44,11 @@ export interface OutOfBandDiagnosticRecorder {
    * @param templateId the template type-checking ID of the template which contains the unknown
    * pipe.
    * @param ast the `BindingPipe` invocation of the pipe which could not be found.
-   * @param sourceSpan the `AbsoluteSourceSpan` of the pipe invocation (ideally, this should be the
-   * source span of the pipe's name). This depends on the source span of the `BindingPipe` itself
-   * plus span of the larger expression context.
    */
-  missingPipe(templateId: string, ast: BindingPipe, sourceSpan: AbsoluteSourceSpan): void;
+  missingPipe(templateId: string, ast: BindingPipe): void;
 
   illegalAssignmentToTemplateVar(
-      templateId: string, assignment: PropertyWrite, assignmentSpan: AbsoluteSourceSpan,
-      target: TmplAstVariable): void;
+      templateId: string, assignment: PropertyWrite, target: TmplAstVariable): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -72,11 +68,11 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         ngErrorCode(ErrorCode.MISSING_REFERENCE_TARGET), errorMsg));
   }
 
-  missingPipe(templateId: string, ast: BindingPipe, absSpan: AbsoluteSourceSpan): void {
+  missingPipe(templateId: string, ast: BindingPipe): void {
     const mapping = this.resolver.getSourceMapping(templateId);
     const errorMsg = `No pipe found with name '${ast.name}'.`;
 
-    const location = absoluteSourceSpanToSourceLocation(templateId, absSpan);
+    const location = absoluteSourceSpanToSourceLocation(templateId, ast.nameSpan);
     const sourceSpan = this.resolver.sourceLocationToSpan(location);
     if (sourceSpan === null) {
       throw new Error(
@@ -88,13 +84,12 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
   }
 
   illegalAssignmentToTemplateVar(
-      templateId: string, assignment: PropertyWrite, assignmentSpan: AbsoluteSourceSpan,
-      target: TmplAstVariable): void {
+      templateId: string, assignment: PropertyWrite, target: TmplAstVariable): void {
     const mapping = this.resolver.getSourceMapping(templateId);
     const errorMsg =
         `Cannot use variable '${assignment.name}' as the left-hand side of an assignment expression. Template variables are read-only.`;
 
-    const location = absoluteSourceSpanToSourceLocation(templateId, assignmentSpan);
+    const location = absoluteSourceSpanToSourceLocation(templateId, assignment.sourceSpan);
     const sourceSpan = this.resolver.sourceLocationToSpan(location);
     if (sourceSpan === null) {
       throw new Error(`Assertion failure: no SourceLocation found for property binding.`);

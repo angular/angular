@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteSourceSpan, ParseSourceSpan, ParseSpan, Position} from '@angular/compiler';
+import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {getTokenAtPosition} from '../../util/src/typescript';
@@ -35,26 +35,6 @@ export interface TcbSourceResolver {
   sourceLocationToSpan(location: SourceLocation): ParseSourceSpan|null;
 }
 
-/**
- * An `AbsoluteSpan` is the result of translating the `ParseSpan` of `AST` template expression nodes
- * to their absolute positions, as the `ParseSpan` is always relative to the start of the
- * expression, not the full template.
- */
-export interface AbsoluteSpan {
-  __brand__: 'AbsoluteSpan';
-  start: number;
-  end: number;
-}
-
-/**
- * Translates a `ParseSpan` into an `AbsoluteSpan` by incorporating the location information that
- * the `ParseSourceSpan` represents.
- */
-export function toAbsoluteSpan(span: ParseSpan, sourceSpan: ParseSourceSpan): AbsoluteSpan {
-  const offset = sourceSpan.start.offset;
-  return <AbsoluteSpan>{start: span.start + offset, end: span.end + offset};
-}
-
 export function absoluteSourceSpanToSourceLocation(
     id: string, span: AbsoluteSourceSpan): SourceLocation {
   return {id, ...span};
@@ -78,20 +58,15 @@ export function wrapForDiagnostics(expr: ts.Expression): ts.Expression {
  * Adds a synthetic comment to the expression that represents the parse span of the provided node.
  * This comment can later be retrieved as trivia of a node to recover original source locations.
  */
-export function addParseSpanInfo(node: ts.Node, span: AbsoluteSpan | ParseSourceSpan): void {
+export function addParseSpanInfo(node: ts.Node, span: AbsoluteSourceSpan | ParseSourceSpan): void {
   let commentText: string;
-  if (isAbsoluteSpan(span)) {
+  if (span instanceof AbsoluteSourceSpan) {
     commentText = `${span.start},${span.end}`;
   } else {
     commentText = `${span.start.offset},${span.end.offset}`;
   }
   ts.addSyntheticTrailingComment(
-      node, ts.SyntaxKind.MultiLineCommentTrivia, commentText,
-      /* hasTrailingNewLine */ false);
-}
-
-function isAbsoluteSpan(span: AbsoluteSpan | ParseSourceSpan): span is AbsoluteSpan {
-  return typeof span.start === 'number';
+      node, ts.SyntaxKind.MultiLineCommentTrivia, commentText, /* hasTrailingNewLine */ false);
 }
 
 /**
@@ -245,18 +220,18 @@ export function makeTemplateDiagnostic(
 function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): SourceLocation|null {
   // Search for comments until the TCB's function declaration is encountered.
   while (node !== undefined && !ts.isFunctionDeclaration(node)) {
-    const parseSpan =
+    const sourceSpan =
         ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
           if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
             return null;
           }
           const commentText = sourceFile.text.substring(pos, end);
-          return parseParseSpanComment(commentText);
+          return parseSourceSpanComment(commentText);
         }) || null;
-    if (parseSpan !== null) {
+    if (sourceSpan !== null) {
       // Once the positional information has been extracted, search further up the TCB to extract
       // the file information that is attached with the TCB's function declaration.
-      return toSourceLocation(parseSpan, node, sourceFile);
+      return toSourceLocation(sourceSpan, node, sourceFile);
     }
 
     node = node.parent;
@@ -266,7 +241,7 @@ function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): SourceLoc
 }
 
 function toSourceLocation(
-    parseSpan: ParseSpan, node: ts.Node, sourceFile: ts.SourceFile): SourceLocation|null {
+    sourceSpan: AbsoluteSourceSpan, node: ts.Node, sourceFile: ts.SourceFile): SourceLocation|null {
   // Walk up to the function declaration of the TCB, the file information is attached there.
   let tcb = node;
   while (!ts.isFunctionDeclaration(tcb)) {
@@ -292,18 +267,18 @@ function toSourceLocation(
 
   return {
     id,
-    start: parseSpan.start,
-    end: parseSpan.end,
+    start: sourceSpan.start,
+    end: sourceSpan.end,
   };
 }
 
 const parseSpanComment = /^\/\*(\d+),(\d+)\*\/$/;
 
-function parseParseSpanComment(commentText: string): ParseSpan|null {
+function parseSourceSpanComment(commentText: string): AbsoluteSourceSpan|null {
   const match = commentText.match(parseSpanComment);
   if (match === null) {
     return null;
   }
 
-  return new ParseSpan(+match[1], +match[2]);
+  return new AbsoluteSourceSpan(+match[1], +match[2]);
 }
