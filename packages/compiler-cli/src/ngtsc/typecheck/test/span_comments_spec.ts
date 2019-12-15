@@ -97,14 +97,15 @@ describe('type check blocks diagnostics', () => {
     it('should annotate safe property access', () => {
       const TEMPLATE = `{{ a?.b }}`;
       expect(tcbWithSpans(TEMPLATE))
-          .toContain('(((ctx).a /*3,4*/) != null ? ((ctx).a /*3,4*/)!.b : undefined) /*3,8*/;');
+          .toContain(
+              '(((ctx).a /*3,4*/) /*ignore*/ != null ? ((ctx).a /*3,4*/)!.b : undefined) /*3,8*/;');
     });
 
     it('should annotate safe method calls', () => {
       const TEMPLATE = `{{ a?.method(b) }}`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '(((ctx).a /*3,4*/) != null ? ((ctx).a /*3,4*/)!.method((ctx).b /*13,14*/) : undefined) /*3,16*/;');
+              '(((ctx).a /*3,4*/) /*ignore*/ != null ? ((ctx).a /*3,4*/)!.method((ctx).b /*13,14*/) : undefined) /*3,16*/;');
     });
 
     it('should annotate $any casts', () => {

@@ -46,6 +46,16 @@ export function wrapForDiagnostics(expr: ts.Expression): ts.Expression {
   return ts.createParen(expr);
 }
 
+const IGNORE_MARKER = 'ignore';
+
+/**
+ * Adds a marker to the node that signifies that any errors within the node should not be reported.
+ */
+export function ignoreDiagnostics(node: ts.Node): void {
+  ts.addSyntheticTrailingComment(
+      node, ts.SyntaxKind.MultiLineCommentTrivia, IGNORE_MARKER, /* hasTrailingNewLine */ false);
+}
+
 /**
  * Adds a synthetic comment to the expression that represents the parse span of the provided node.
  * This comment can later be retrieved as trivia of a node to recover original source locations.
@@ -214,17 +224,20 @@ interface SourceLocation {
   span: AbsoluteSourceSpan;
 }
 
+/**
+ * Traverses up the AST starting from the given node to extract the source location from comments
+ * that have been emitted into the TCB. If the node does not exist within a TCB, or if an ignore
+ * marker comment is found up the tree, this function returns null.
+ */
 function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): SourceLocation|null {
   // Search for comments until the TCB's function declaration is encountered.
   while (node !== undefined && !ts.isFunctionDeclaration(node)) {
-    const span =
-        ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
-          if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
-            return null;
-          }
-          const commentText = sourceFile.text.substring(pos, end);
-          return parseSourceSpanComment(commentText);
-        }) || null;
+    if (hasIgnoreMarker(node, sourceFile)) {
+      // There's an ignore marker on this node, so the diagnostic should not be reported.
+      return null;
+    }
+
+    const span = readSpanComment(sourceFile, node);
     if (span !== null) {
       // Once the positional information has been extracted, search further up the TCB to extract
       // the unique id that is attached with the TCB's function declaration.
@@ -243,17 +256,21 @@ function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): SourceLoc
 
 function getTemplateId(node: ts.Node, sourceFile: ts.SourceFile): TemplateId|null {
   // Walk up to the function declaration of the TCB, the file information is attached there.
-  let tcb = node;
-  while (!ts.isFunctionDeclaration(tcb)) {
-    tcb = tcb.parent;
+  while (!ts.isFunctionDeclaration(node)) {
+    if (hasIgnoreMarker(node, sourceFile)) {
+      // There's an ignore marker on this node, so the diagnostic should not be reported.
+      return null;
+    }
+    node = node.parent;
 
     // Bail once we have reached the root.
-    if (tcb === undefined) {
+    if (node === undefined) {
       return null;
     }
   }
 
-  return ts.forEachLeadingCommentRange(sourceFile.text, tcb.getFullStart(), (pos, end, kind) => {
+  const start = node.getFullStart();
+  return ts.forEachLeadingCommentRange(sourceFile.text, start, (pos, end, kind) => {
     if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
       return null;
     }
@@ -262,13 +279,29 @@ function getTemplateId(node: ts.Node, sourceFile: ts.SourceFile): TemplateId|nul
   }) as TemplateId || null;
 }
 
-const parseSpanComment = /^\/\*(\d+),(\d+)\*\/$/;
+const parseSpanComment = /^(\d+),(\d+)$/;
 
-function parseSourceSpanComment(commentText: string): AbsoluteSourceSpan|null {
-  const match = commentText.match(parseSpanComment);
-  if (match === null) {
-    return null;
-  }
+function readSpanComment(sourceFile: ts.SourceFile, node: ts.Node): AbsoluteSourceSpan|null {
+  return ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
+    if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
+      return null;
+    }
+    const commentText = sourceFile.text.substring(pos + 2, end - 2);
+    const match = commentText.match(parseSpanComment);
+    if (match === null) {
+      return null;
+    }
 
-  return new AbsoluteSourceSpan(+match[1], +match[2]);
+    return new AbsoluteSourceSpan(+match[1], +match[2]);
+  }) || null;
+}
+
+function hasIgnoreMarker(node: ts.Node, sourceFile: ts.SourceFile): boolean {
+  return ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
+    if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
+      return null;
+    }
+    const commentText = sourceFile.text.substring(pos + 2, end - 2);
+    return commentText === IGNORE_MARKER;
+  }) === true;
 }
