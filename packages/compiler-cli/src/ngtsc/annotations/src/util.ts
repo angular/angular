@@ -442,35 +442,35 @@ export function makeDuplicateDeclarationError(
  * @param rawProviders Expression that declared the providers array in the source.
  */
 export function resolveProvidersRequiringFactory(
-    rawProviders: ts.Expression, evaluator: PartialEvaluator): Set<ClassDeclaration> {
-  const providers = new Set<ClassDeclaration>();
+    rawProviders: ts.Expression, reflector: ReflectionHost,
+    evaluator: PartialEvaluator): Set<Reference<ClassDeclaration>> {
+  const providers = new Set<Reference<ClassDeclaration>>();
   const resolvedProviders = evaluator.evaluate(rawProviders);
 
   if (Array.isArray(resolvedProviders)) {
-    const handleReference = (reference: Reference) => {
-      const node = reference.node;
-      if (isNamedClassDeclaration(node)) {
-        const constructor = node.members.find(ts.isConstructorDeclaration);
+    resolvedProviders.forEach(function processProviders(provider) {
+      let tokenClass: Reference|null = null;
+
+      if (Array.isArray(provider)) {
+        // If we ran into an array, recurse into it until we've resolve all the classes.
+        provider.forEach(processProviders);
+      } else if (provider instanceof Reference) {
+        tokenClass = provider;
+      } else if (provider instanceof Map && provider.has('useClass')) {
+        const useExisting = provider.get('useClass') !;
+        if (useExisting instanceof Reference) {
+          tokenClass = useExisting;
+        }
+      }
+
+      if (tokenClass !== null && reflector.isClass(tokenClass.node)) {
+        const constructorParameters = reflector.getConstructorParameters(tokenClass.node);
 
         // Note that we only want to capture providers with a non-trivial constructor,
         // because they're the ones that might be using DI and need to be decorated.
-        if (constructor !== undefined && constructor.parameters.length > 0) {
-          providers.add(node);
+        if (constructorParameters !== null && constructorParameters.length > 0) {
+          providers.add(tokenClass as Reference<ClassDeclaration>);
         }
-      }
-    };
-
-    resolvedProviders.forEach(function processProviders(provider) {
-      if (provider instanceof Reference) {
-        handleReference(provider);
-      } else if (provider instanceof Map && provider.has('useClass')) {
-        const useExisting = provider.get('useClass');
-        if (useExisting instanceof Reference) {
-          handleReference(useExisting);
-        }
-      } else if (Array.isArray(provider)) {
-        // If we ran into an array, recurse into it until we've resolve all the classes.
-        provider.forEach(processProviders);
       }
     });
   }

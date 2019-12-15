@@ -55,8 +55,8 @@ export interface ComponentAnalysisData {
   guards: ReturnType<typeof extractDirectiveGuards>;
   template: ParsedTemplateWithSource;
   metadataStmt: Statement|null;
-  providersRequiringFactory: Set<ClassDeclaration>|null;
-  viewProvidersRequiringFactory: Set<ClassDeclaration>|null;
+  providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
+  viewProvidersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
 }
 
 export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadataResolvedFields>;
@@ -196,22 +196,22 @@ export class ComponentDecoratorHandler implements
     // Note that we could technically combine the `viewProvidersRequiringFactory` and
     // `providersRequiringFactory` into a single set, but we keep the separate so that
     // we can distinguish where an error is coming from when logging the diagnostics in `resolve`.
-    let viewProvidersRequiringFactory: Set<ClassDeclaration>|null = null;
-    let providersRequiringFactory: Set<ClassDeclaration>|null = null;
+    let viewProvidersRequiringFactory: Set<Reference<ClassDeclaration>>|null = null;
+    let providersRequiringFactory: Set<Reference<ClassDeclaration>>|null = null;
     let wrappedViewProviders: Expression|null = null;
 
     if (component.has('viewProviders')) {
       const viewProviders = component.get('viewProviders') !;
       viewProvidersRequiringFactory =
-          resolveProvidersRequiringFactory(viewProviders, this.evaluator);
+          resolveProvidersRequiringFactory(viewProviders, this.reflector, this.evaluator);
       wrappedViewProviders = new WrappedNodeExpr(
           this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(viewProviders) :
                                             viewProviders);
     }
 
     if (component.has('providers')) {
-      providersRequiringFactory =
-          resolveProvidersRequiringFactory(component.get('providers') !, this.evaluator);
+      providersRequiringFactory = resolveProvidersRequiringFactory(
+          component.get('providers') !, this.reflector, this.evaluator);
     }
 
     // Parse the template.

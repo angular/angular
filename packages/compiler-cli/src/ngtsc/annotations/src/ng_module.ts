@@ -37,7 +37,7 @@ export interface NgModuleAnalysis {
   exports: Reference<ClassDeclaration>[];
   id: Expression|null;
   factorySymbolName: string;
-  providersRequiringFactory: Set<ClassDeclaration>|null;
+  providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
   providers: ts.Expression|null;
 }
 
@@ -279,8 +279,9 @@ export class NgModuleDecoratorHandler implements
         imports: importRefs,
         exports: exportRefs,
         providers: rawProviders,
-        providersRequiringFactory:
-            rawProviders ? resolveProvidersRequiringFactory(rawProviders, this.evaluator) : null,
+        providersRequiringFactory: rawProviders ?
+            resolveProvidersRequiringFactory(rawProviders, this.reflector, this.evaluator) :
+            null,
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),

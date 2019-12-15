@@ -9,28 +9,42 @@
 import * as ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic} from '../../diagnostics';
+import {Reference} from '../../imports';
 import {InjectableClassRegistry} from '../../metadata/src/registry';
 import {ClassDeclaration} from '../../reflection';
 
 /**
  * Gets the diagnostics for a set of provider classes.
  * @param providerClasses Classes that should be checked.
- * @param highlightNode Node that should be highlighted in the diagnostic.
- *    Usually the place where the providers are being used.
+ * @param providersDeclaration Node that declares the providers array.
  * @param registry Registry that keeps track of the registered injectable classes.
  */
 export function getProviderDiagnostics(
-    providerClasses: Set<ClassDeclaration>, highlightNode: ts.Node,
+    providerClasses: Set<Reference<ClassDeclaration>>, providersDeclaration: ts.Node,
     registry: InjectableClassRegistry): ts.Diagnostic[] {
   const diagnostics: ts.Diagnostic[] = [];
 
-  providerClasses.forEach(provider => {
-    if (!registry.isInjectable(provider)) {
+  for (const provider of providerClasses) {
+    if (!registry.isInjectable(provider.node)) {
+      const identity = provider.getIdentityIn(providersDeclaration.getSourceFile());
+      let highlightNode: ts.Node;
+
+      // Try to narrow down the node in which the provider is declared so we can show a more
+      // accurate diagnostic. If the can find the `Identifier` and it is contained within the
+      // providers array we can use it, otherwise fall back to the array itself.
+      if (identity !== null && identity.pos >= providersDeclaration.pos &&
+          identity.end <= providersDeclaration.end) {
+        highlightNode = identity;
+      } else {
+        highlightNode = providersDeclaration;
+      }
+
       diagnostics.push(makeDiagnostic(
           ErrorCode.UNDECORATED_PROVIDER, highlightNode,
-          `Provider ${provider.name.text} is not injectable, because it doesn't have an Angular decorator. This will result in an error at runtime.`));
+          `Provider ${provider.node.name.text} is not injectable, because it doesn't have ` +
+              `an Angular decorator. This will result in an error at runtime.`));
     }
-  });
+  }
 
   return diagnostics;
 }

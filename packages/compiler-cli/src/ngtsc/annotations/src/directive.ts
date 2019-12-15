@@ -39,7 +39,7 @@ export interface DirectiveHandlerData {
   guards: ReturnType<typeof extractDirectiveGuards>;
   meta: R3DirectiveMetadata;
   metadataStmt: Statement|null;
-  providersRequiringFactory: Set<ClassDeclaration>|null;
+  providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
 }
 
 export class DirectiveDecoratorHandler implements
@@ -93,10 +93,10 @@ export class DirectiveDecoratorHandler implements
       return {};
     }
 
-    let providersRequiringFactory: Set<ClassDeclaration>|null = null;
+    let providersRequiringFactory: Set<Reference<ClassDeclaration>>|null = null;
     if (directiveResult !== undefined && directiveResult.decorator.has('providers')) {
       providersRequiringFactory = resolveProvidersRequiringFactory(
-          directiveResult.decorator.get('providers') !, this.evaluator);
+          directiveResult.decorator.get('providers') !, this.reflector, this.evaluator);
     }
 
     return {
