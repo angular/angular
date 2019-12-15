@@ -12,8 +12,8 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
-import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
-import {addParseSpanInfo, addSourceId, wrapForDiagnostics} from './diagnostics';
+import {TemplateId, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
+import {addParseSpanInfo, addTemplateId, wrapForDiagnostics} from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {NULL_AS_ANY, astToTypescript} from './expression';
@@ -77,7 +77,7 @@ export function generateTypeCheckBlock(
       /* parameters */ paramList,
       /* type */ undefined,
       /* body */ body);
-  addSourceId(fnDecl, meta.id);
+  addTemplateId(fnDecl, meta.id);
   return fnDecl;
 }
 
@@ -579,7 +579,7 @@ export class Context {
 
   constructor(
       readonly env: Environment, readonly domSchemaChecker: DomSchemaChecker,
-      readonly oobRecorder: OutOfBandDiagnosticRecorder, readonly id: string,
+      readonly oobRecorder: OutOfBandDiagnosticRecorder, readonly id: TemplateId,
       readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
       private pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
       readonly schemas: SchemaMetadata[]) {}
