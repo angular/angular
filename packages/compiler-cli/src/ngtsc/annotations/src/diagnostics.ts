@@ -12,7 +12,7 @@ import {ErrorCode, makeDiagnostic} from '../../diagnostics';
 import {Reference} from '../../imports';
 import {MetadataReader} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
-import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 
 import {makeDuplicateDeclarationError, readBaseClass} from './util';
@@ -48,9 +48,8 @@ export function checkInheritanceOfDirective(
     node: ClassDeclaration, reader: MetadataReader, reflector: ReflectionHost,
     evaluator: PartialEvaluator): ts.Diagnostic|null {
   if (!reflector.isClass(node) || reflector.getConstructorParameters(node) !== null) {
-    // We should skip classes that aren't classes.
-    // If a constructor exists, then no base class definition is required
-    // on the runtime side - it's legal to inherit from any class.
+    // We should skip nodes that aren't classes. If a constructor exists, then no base class
+    // definition is required on the runtime side - it's legal to inherit from any class.
     return null;
   }
 
@@ -60,7 +59,7 @@ export function checkInheritanceOfDirective(
   let baseClass = readBaseClass(node, reflector, evaluator);
 
   while (baseClass !== null) {
-    if (baseClass === 'dynamic' || !isNamedClassDeclaration(baseClass.node)) {
+    if (baseClass === 'dynamic') {
       return null;
     }
 
