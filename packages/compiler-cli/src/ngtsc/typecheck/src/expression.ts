@@ -10,7 +10,7 @@ import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional,
 import * as ts from 'typescript';
 
 import {TypeCheckingConfig} from './api';
-import {addParseSpanInfo, wrapForDiagnostics} from './diagnostics';
+import {addParseSpanInfo, ignoreDiagnostics, wrapForDiagnostics} from './diagnostics';
 
 export const NULL_AS_ANY =
     ts.createAsExpression(ts.createNull(), ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
@@ -222,11 +222,13 @@ class AstTranslator implements AstVisitor {
     // See the comment in SafePropertyRead above for an explanation of the need for the non-null
     // assertion here.
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
+    const guard = ts.getMutableClone(receiver);
+    ignoreDiagnostics(guard);
     const method = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
     const args = ast.args.map(expr => this.translate(expr));
     const expr = ts.createCall(method, undefined, args);
     const whenNull = this.config.strictSafeNavigationTypes ? UNDEFINED : NULL_AS_ANY;
-    const node = safeTernary(receiver, expr, whenNull);
+    const node = safeTernary(guard, expr, whenNull);
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
@@ -237,9 +239,11 @@ class AstTranslator implements AstVisitor {
     // assertion is necessary because in practice 'a' may be a method call expression, which won't
     // have a narrowed type when repeated in the ternary true branch.
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
+    const guard = ts.getMutableClone(receiver);
+    ignoreDiagnostics(guard);
     const expr = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
     const whenNull = this.config.strictSafeNavigationTypes ? UNDEFINED : NULL_AS_ANY;
-    const node = safeTernary(receiver, expr, whenNull);
+    const node = safeTernary(guard, expr, whenNull);
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }

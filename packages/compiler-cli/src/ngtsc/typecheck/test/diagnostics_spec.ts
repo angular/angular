@@ -43,7 +43,7 @@ runInEachFileSystem(() => {
           `<div *ngFor="let person of persons; let idx=index">{{ render(idx) }}</div>`, `
         class TestComponent {
           persons: {}[];
-          
+
           render(input: string): string { return input; }
         }`,
           [ngForDeclaration()], [ngForDts()]);
@@ -58,7 +58,7 @@ runInEachFileSystem(() => {
           `<div *ngFor="let person of persons;">{{ render(person.namme) }}</div>`, `
         class TestComponent {
           persons: any;
-          
+
           render(input: string): string { return input; }
         }`,
           [ngForDeclaration()], [ngForDts()]);
@@ -194,6 +194,46 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('does not repeat diagnostics for errors within LHS of safe-navigation operator', () => {
+      const messages = diagnose(`{{ personn?.name }} {{ personn?.getName() }}`, `
+         class TestComponent {
+           person: {
+             name: string;
+             getName: () => string;
+           } | null;
+         }`);
+
+      expect(messages).toEqual([
+        `synthetic.html(1, 4): Property 'personn' does not exist on type 'TestComponent'. Did you mean 'person'?`,
+        `synthetic.html(1, 24): Property 'personn' does not exist on type 'TestComponent'. Did you mean 'person'?`,
+      ]);
+    });
+
+    it('does not repeat diagnostics for errors used in template guard expressions', () => {
+      const messages = diagnose(
+          `<div *guard="personn.name"></div>`, `
+          class GuardDir {
+            static ngTemplateGuard_guard: 'binding';
+          }
+
+          class TestComponent {
+            person: {
+              name: string;
+            };
+          }`,
+          [{
+            type: 'directive',
+            name: 'GuardDir',
+            selector: '[guard]',
+            inputs: {'guard': 'guard'},
+            ngTemplateGuards: [{inputName: 'guard', type: 'binding'}]
+          }]);
+
+      expect(messages).toEqual([
+        `synthetic.html(1, 14): Property 'personn' does not exist on type 'TestComponent'. Did you mean 'person'?`,
+      ]);
+    });
+
     it('does not produce diagnostics for user code', () => {
       const messages = diagnose(`{{ person.name }}`, `
       class TestComponent {
@@ -313,7 +353,7 @@ runInEachFileSystem(() => {
 <div>
   <img [src]="srcc"
        [height]="heihgt">
-</div>    
+</div>
 `,
           `
 class TestComponent {

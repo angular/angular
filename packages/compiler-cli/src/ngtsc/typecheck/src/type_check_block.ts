@@ -13,7 +13,7 @@ import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
 import {TemplateId, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
-import {addParseSpanInfo, addTemplateId, wrapForDiagnostics} from './diagnostics';
+import {addParseSpanInfo, addTemplateId, ignoreDiagnostics, wrapForDiagnostics} from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {NULL_AS_ANY, astToTypescript} from './expression';
@@ -216,6 +216,10 @@ class TcbTemplateBodyOp extends TcbOp {
           if (boundInput !== undefined) {
             // If there is such a binding, generate an expression for it.
             const expr = tcbExpression(boundInput.value, this.tcb, this.scope);
+
+            // The expression has already been checked in the type constructor invocation, so
+            // it should be ignored when used within a template guard.
+            ignoreDiagnostics(expr);
 
             if (guard.type === 'binding') {
               // Use the binding expression itself as guard.
