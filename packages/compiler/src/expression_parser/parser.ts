@@ -359,7 +359,7 @@ export class _ParseAST {
       do {
         const nameStart = this.inputIndex;
         const name = this.expectIdentifierOrKeyword();
-        const nameSpan = this.span(nameStart);
+        const nameSpan = this.sourceSpan(nameStart);
         const args: AST[] = [];
         while (this.optionalCharacter(chars.$COLON)) {
           args.push(this.parseExpression());
