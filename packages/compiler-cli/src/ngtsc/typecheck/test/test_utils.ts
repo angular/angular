@@ -15,7 +15,7 @@ import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy,
 import {ClassDeclaration, TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {TemplateSourceMapping, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../src/api';
+import {TemplateId, TemplateSourceMapping, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../src/api';
 import {TypeCheckContext} from '../src/context';
 import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
@@ -197,7 +197,8 @@ export function tcb(
   const binder = new R3TargetBinder(matcher);
   const boundTarget = binder.bind({template: nodes});
 
-  const meta: TypeCheckBlockMetadata = {boundTarget, pipes, id: 'tcb', schemas: []};
+  const id = 'tcb' as TemplateId;
+  const meta: TypeCheckBlockMetadata = {id, boundTarget, pipes, schemas: []};
 
   config = config || {
     applyTemplateContextGuards: true,

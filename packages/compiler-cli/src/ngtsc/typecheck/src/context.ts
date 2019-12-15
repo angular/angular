@@ -20,7 +20,7 @@ import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {TypeCheckProgramHost} from './host';
 import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
-import {TcbSourceManager} from './source';
+import {TemplateSourceManager} from './source';
 import {generateTypeCheckBlock, requiresInlineTypeCheckBlock} from './type_check_block';
 import {TypeCheckFile} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
@@ -55,7 +55,7 @@ export class TypeCheckContext {
    */
   private typeCtorPending = new Set<ts.ClassDeclaration>();
 
-  private sourceManager = new TcbSourceManager();
+  private sourceManager = new TemplateSourceManager();
 
   private domSchemaChecker = new RegistryDomSchemaChecker(this.sourceManager);
 

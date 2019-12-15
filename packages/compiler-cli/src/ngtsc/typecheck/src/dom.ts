@@ -11,7 +11,8 @@ import * as ts from 'typescript';
 
 import {ErrorCode} from '../../diagnostics';
 
-import {TcbSourceResolver, makeTemplateDiagnostic} from './diagnostics';
+import {TemplateId} from './api';
+import {TemplateSourceResolver, makeTemplateDiagnostic} from './diagnostics';
 
 const REGISTRY = new DomElementSchemaRegistry();
 const REMOVE_XHTML_REGEX = /^:xhtml:/;
@@ -67,9 +68,9 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
 
   get diagnostics(): ReadonlyArray<ts.Diagnostic> { return this._diagnostics; }
 
-  constructor(private resolver: TcbSourceResolver) {}
+  constructor(private resolver: TemplateSourceResolver) {}
 
-  checkElement(id: string, element: TmplAstElement, schemas: SchemaMetadata[]): void {
+  checkElement(id: TemplateId, element: TmplAstElement, schemas: SchemaMetadata[]): void {
     // HTML elements inside an SVG `foreignObject` are declared in the `xhtml` namespace.
     // We need to strip it before handing it over to the registry because all HTML tag names
     // in the registry are without a namespace.
@@ -97,7 +98,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
   }
 
   checkProperty(
-      id: string, element: TmplAstElement, name: string, span: ParseSourceSpan,
+      id: TemplateId, element: TmplAstElement, name: string, span: ParseSourceSpan,
       schemas: SchemaMetadata[]): void {
     if (!REGISTRY.hasProperty(element.name, name, schemas)) {
       const mapping = this.resolver.getSourceMapping(id);
