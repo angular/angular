@@ -1185,13 +1185,13 @@
     "name": "refreshView"
   },
   {
-    "name": "registerAndRenderInitialStyling"
-  },
-  {
     "name": "registerBinding"
   },
   {
     "name": "registerBindingIntoTData"
+  },
+  {
+    "name": "registerInitialElementStyling"
   },
   {
     "name": "registerPostOrderHooks"

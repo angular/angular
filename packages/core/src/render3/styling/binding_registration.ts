@@ -181,17 +181,6 @@ export function registerBindingIntoTData(
   setBindingProp(tData, bindingIndex, prop, suffix, sanitizer, isClassBased);
   setBindingConfigAndPointers(tData, bindingIndex, nextPointer, previousPointer, mode);
 
-  // depending on where this binding is set, we want each entry to be in order
-  // of styling priority. Therefore the bindings will change their order when
-  // host bindings run
-  if (nextPointer !== 0) {
-    setBindingPointer(tData, nextPointer, bindingIndex, true);
-  }
-
-  if (previousPointer !== 0) {
-    setBindingPointer(tData, previousPointer, bindingIndex, false);
-  }
-
   if (isClassBased) {
     state.sourceClassHead = sourceHead;
     state.sourceClassTail = sourceTail;
@@ -320,8 +309,10 @@ export function setBindingConfigAndPointers(
 
   if (previousIndex !== 0 && previousIndex !== bindingIndex) {
     setBindingPointer(tData, bindingIndex, previousIndex, true);
+    setBindingPointer(tData, previousIndex, bindingIndex, false);
   }
   if (nextIndex !== 0 && nextIndex !== bindingIndex) {
     setBindingPointer(tData, bindingIndex, nextIndex, false);
+    setBindingPointer(tData, nextIndex, bindingIndex, true);
   }
 }

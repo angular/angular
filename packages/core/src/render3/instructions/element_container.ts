@@ -15,7 +15,7 @@ import {HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from '../interface
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {getBindingIndex, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
-import {registerAndRenderInitialStyling} from '../util/styling_utils';
+import {registerInitialElementStyling} from '../util/styling_utils';
 import {getConstant} from '../util/view_utils';
 
 import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
@@ -32,9 +32,8 @@ function elementContainerStartFirstCreatePass(
 
   // While ng-container doesn't necessarily support styling, we use the style context to identify
   // and execute directives on the ng-container.
-  if (attrs !== null) {
-    const renderer = lView[RENDERER];
-    registerAndRenderInitialStyling(renderer, tNode, null, attrs, 0, false);
+  if (attrs != null) {
+    registerInitialElementStyling(tNode, attrs);
   }
 
   const localRefs = getConstant<string[]>(tViewConsts, localRefsIndex);

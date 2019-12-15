@@ -18,7 +18,7 @@ import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {decreaseElementDepthCount, getBindingIndex, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {setUpAttributes} from '../util/attrs_utils';
-import {hasClassInput, hasInitialStyling, hasStyleInput, registerAndRenderInitialStyling, renderInitialStyling, selectClassBasedInputName} from '../util/styling_utils';
+import {hasClassInput, hasInitialStyling, hasStyleInput, registerAndRenderInitialHostStyling, registerInitialElementStyling, renderInitialStyling, selectClassBasedInputName} from '../util/styling_utils';
 import {getConstant, getNativeByTNode, getTNode} from '../util/view_utils';
 
 import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, matchingSchemas, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';
@@ -32,9 +32,10 @@ function elementStartFirstCreatePass(
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
   const tNode = getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, name, attrs);
 
-  if (Array.isArray(attrs)) {
+  if (attrs != null) {
+    registerInitialElementStyling(tNode, attrs);
     const renderer = lView[RENDERER];
-    registerAndRenderInitialStyling(renderer, tNode, native, attrs, 0, false);
+    renderInitialStyling(renderer, native, tNode);
   }
 
   const hasDirectives =
@@ -91,7 +92,7 @@ export function ɵɵelementStart(
   // pass because it was already set in the tNode creation code above
   if (!tView.firstCreatePass &&
       (hasInitialStyling(tNode, false) || hasInitialStyling(tNode, true))) {
-    renderInitialStyling(renderer, native, tNode, false);
+    renderInitialStyling(renderer, native, tNode);
   }
 
   appendChild(native, tNode, lView);
@@ -225,7 +226,7 @@ export function ɵɵelementHostAttrs(attrs: TAttributes) {
     const lastAttrIndex = setUpAttributes(lView[RENDERER], native, attrs);
     if (tView.firstCreatePass) {
       const renderer = lView[RENDERER];
-      registerAndRenderInitialStyling(renderer, tNode, native, attrs, lastAttrIndex, true);
+      registerAndRenderInitialHostStyling(renderer, tNode, native, attrs, lastAttrIndex);
     }
   }
 }

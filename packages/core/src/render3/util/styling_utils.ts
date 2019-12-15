@@ -574,61 +574,62 @@ export function setConcatenatedValue(
  * apart of `tNode.classes` or `tNode.styles`) in an array. What will happen
  * instead is they will be applied to the element as soon as they are encountered.
  */
-export function registerAndRenderInitialStyling(
-    renderer: Renderer3, tNode: TNode, native: RElement | null, attrs: TAttributes,
-    startIndex: number, appendOnly: boolean): void {
+export function registerInitialElementStyling(tNode: TNode, attrs: TAttributes): void {
   let mode = -1;
   let stylesStr: string = '';
   let classesStr: string = '';
-  let initialStyleNames = tNode.initialStyleNames || [];
-  const appendStyles = appendOnly || hasInitialStyling(tNode, false);
-  const appendClasses = appendOnly || hasInitialStyling(tNode, true);
+  let initialStyleNames: string[]|null = null;
+  for (let i = 0; i < attrs.length; i++) {
+    const attr = attrs[i] as string;
+    if (typeof attr == 'number') {
+      mode = attr;
+    } else if (mode == AttributeMarker.Classes) {
+      classesStr = concatString(classesStr, attr, CLASS_ENTRIES_SEPARATOR);
+    } else if (mode == AttributeMarker.Styles) {
+      const value = attrs[++i] as string;
+      stylesStr = concatString(stylesStr, concatStyle(attr, value), STYLE_ENTRIES_SEPARATOR);
+      initialStyleNames = initialStyleNames || [];
+      initialStyleNames.push(attr);
+    }
+  }
+
+  if (stylesStr.length !== 0) {
+    tNode.initialStyleNames = initialStyleNames;
+    tNode.styles = concatString(stylesStr, tNode.styles, STYLE_ENTRIES_SEPARATOR);
+  }
+  if (classesStr.length !== 0) {
+    tNode.classes = concatString(classesStr, tNode.classes, CLASS_ENTRIES_SEPARATOR);
+  }
+}
+
+export function registerAndRenderInitialHostStyling(
+    renderer: Renderer3, tNode: TNode, native: RElement, attrs: TAttributes, startIndex: number) {
+  let mode = -1;
+  let initialStyleNames = tNode.initialStyleNames || (tNode.initialStyleNames = []);
+  let classesStr = '';
+  let stylesStr = '';
 
   for (let i = startIndex; i < attrs.length; i++) {
     const attr = attrs[i] as string;
     if (typeof attr == 'number') {
       mode = attr;
     } else if (mode == AttributeMarker.Classes) {
-      const registerClasses = appendClasses ? !hasInitialClass(tNode, attr) : true;
-      if (registerClasses) {
+      if (!hasInitialClass(tNode, attr)) {
+        setClass(renderer, native, attr, true);
         classesStr = concatString(classesStr, attr, CLASS_ENTRIES_SEPARATOR);
-        if (native && appendClasses) {
-          setClass(renderer, native, attr, true);
-        }
       }
     } else if (mode == AttributeMarker.Styles) {
-      const registerStyle = appendStyles ? !hasInitialStyle(tNode, attr) : true;
-      if (registerStyle) {
-        initialStyleNames.push(attr);
+      if (!hasInitialStyle(tNode, attr)) {
         const value = attrs[++i] as string;
+        setStyle(renderer, native, attr, value);
         stylesStr = concatString(stylesStr, concatStyle(attr, value), STYLE_ENTRIES_SEPARATOR);
-        if (native && appendStyles) {
-          setStyle(renderer, native, attr, value);
-        }
+        initialStyleNames.push(attr);
       }
     }
   }
 
-  if (stylesStr.length !== 0) {
-    // we add the styles in reverse so the template-level styles override
-    // the styles any directive styling (the template-level styles are
-    // always added first)
-    tNode.styles = concatString(stylesStr, tNode.styles, STYLE_ENTRIES_SEPARATOR);
-    tNode.initialStyleNames = initialStyleNames;
-    if (native && !appendStyles) {
-      setStyleAttr(renderer, native, tNode.styles);
-    }
-  }
-
-  if (classesStr.length !== 0) {
-    // we add the classes in reverse so the template-level classes show
-    // up at the end of the className string (so that the behavior matches
-    // what the style attribute looks like)
-    tNode.classes = concatString(classesStr, tNode.classes, CLASS_ENTRIES_SEPARATOR);
-    if (native && !appendClasses) {
-      setClassName(renderer, native, tNode.classes);
-    }
-  }
+  tNode.styles = concatString(stylesStr, tNode.styles, STYLE_ENTRIES_SEPARATOR);
+  tNode.classes = concatString(classesStr, tNode.classes, CLASS_ENTRIES_SEPARATOR);
 }
 
 /**
@@ -740,8 +741,7 @@ export function setStylingHeadTail(
  * applied once the element is instantiated. This function applies each of the static
  * style and class entries to the element.
  */
-export function renderInitialStyling(
-    renderer: Renderer3, native: RElement, tNode: TNode, append: boolean) {
+export function renderInitialStyling(renderer: Renderer3, native: RElement, tNode: TNode) {
   if (hasInitialStyling(tNode, true)) {
     setClassName(renderer, native, tNode.classes !);
   }

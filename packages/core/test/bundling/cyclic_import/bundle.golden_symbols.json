@@ -117,9 +117,6 @@
     "name": "RENDERER_FACTORY"
   },
   {
-    "name": "RendererStyleFlags3"
-  },
-  {
     "name": "SANITIZER"
   },
   {
@@ -190,9 +187,6 @@
   },
   {
     "name": "callHooks"
-  },
-  {
-    "name": "classNameIndexOf"
   },
   {
     "name": "concatString"
@@ -405,12 +399,6 @@
     "name": "hasClassInput"
   },
   {
-    "name": "hasInitialClass"
-  },
-  {
-    "name": "hasInitialStyle"
-  },
-  {
     "name": "hasInitialStyling"
   },
   {
@@ -501,9 +489,6 @@
     "name": "isProceduralRenderer"
   },
   {
-    "name": "isStylingValueDefined"
-  },
-  {
     "name": "leaveDI"
   },
   {
@@ -558,7 +543,7 @@
     "name": "refreshView"
   },
   {
-    "name": "registerAndRenderInitialStyling"
+    "name": "registerInitialElementStyling"
   },
   {
     "name": "registerPostOrderHooks"
@@ -612,9 +597,6 @@
     "name": "setBindingRoot"
   },
   {
-    "name": "setClass"
-  },
-  {
     "name": "setClassName"
   },
   {
@@ -649,9 +631,6 @@
   },
   {
     "name": "setSelectedIndex"
-  },
-  {
-    "name": "setStyle"
   },
   {
     "name": "setStyleAttr"
