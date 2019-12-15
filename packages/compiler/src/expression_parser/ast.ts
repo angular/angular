@@ -30,7 +30,7 @@ export class AST {
       /**
        * Absolute location of the expression AST in a source code file.
        */
-      public sourceSpan: Readonly<AbsoluteSourceSpan>) {}
+      public sourceSpan: AbsoluteSourceSpan) {}
   visit(visitor: AstVisitor, context: any = null): any { return null; }
   toString(): string { return 'AST'; }
 }
@@ -145,7 +145,7 @@ export class KeyedWrite extends AST {
 export class BindingPipe extends AST {
   constructor(
       span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public exp: AST, public name: string,
-      public args: any[], public nameSpan: ParseSpan) {
+      public args: any[], public nameSpan: AbsoluteSourceSpan) {
     super(span, sourceSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any { return visitor.visitPipe(this, context); }
