@@ -41,6 +41,9 @@ import {LazyModuleRef, UpgradeAppType, controllerKey, getDowngradedModuleCount, 
  *
  * {@example upgrade/static/ts/full/module.ts region="ng2-heroes-wrapper"}
  *
+ * For more details and examples on downgrading Angular components to AngularJS components please
+ * visit the [Upgrade guide](guide/upgrade#using-angular-components-from-angularjs-code).
+ *
  * @param info contains information about the Component that is being downgraded:
  *
  * - `component: Type<any>`: The type of the Component that will be downgraded
