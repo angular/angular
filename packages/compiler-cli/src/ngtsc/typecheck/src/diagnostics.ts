@@ -10,34 +10,26 @@ import * as ts from 'typescript';
 
 import {getTokenAtPosition} from '../../util/src/typescript';
 
-import {ExternalTemplateSourceMapping, TemplateSourceMapping} from './api';
+import {ExternalTemplateSourceMapping, TemplateId, TemplateSourceMapping} from './api';
 
-export interface SourceLocation {
-  id: string;
-  start: number;
-  end: number;
-}
 
 /**
  * Adapter interface which allows the template type-checking diagnostics code to interpret offsets
  * in a TCB and map them back to original locations in the template.
  */
-export interface TcbSourceResolver {
+export interface TemplateSourceResolver {
   /**
    * For the given template id, retrieve the original source mapping which describes how the offsets
    * in the template should be interpreted.
    */
-  getSourceMapping(id: string): TemplateSourceMapping;
+  getSourceMapping(id: TemplateId): TemplateSourceMapping;
 
   /**
-   * Convert a location extracted from a TCB into a `ParseSourceSpan` if possible.
+   * Convert an absolute source span associated with the given template id into a full
+   * `ParseSourceSpan`. The returned parse span has line and column numbers in addition to only
+   * absolute offsets and gives access to the original template source.
    */
-  sourceLocationToSpan(location: SourceLocation): ParseSourceSpan|null;
-}
-
-export function absoluteSourceSpanToSourceLocation(
-    id: string, span: AbsoluteSourceSpan): SourceLocation {
-  return {id, ...span};
+  toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan|null;
 }
 
 /**
@@ -70,10 +62,10 @@ export function addParseSpanInfo(node: ts.Node, span: AbsoluteSourceSpan | Parse
 }
 
 /**
- * Adds a synthetic comment to the function declaration that contains the source location
+ * Adds a synthetic comment to the function declaration that contains the template id
  * of the class declaration.
  */
-export function addSourceId(tcb: ts.FunctionDeclaration, id: string): void {
+export function addTemplateId(tcb: ts.FunctionDeclaration, id: TemplateId): void {
   ts.addSyntheticLeadingComment(tcb, ts.SyntaxKind.MultiLineCommentTrivia, id, true);
 }
 
@@ -105,7 +97,7 @@ export function shouldReportDiagnostic(diagnostic: ts.Diagnostic): boolean {
  * file from being reported as type-check errors.
  */
 export function translateDiagnostic(
-    diagnostic: ts.Diagnostic, resolver: TcbSourceResolver): ts.Diagnostic|null {
+    diagnostic: ts.Diagnostic, resolver: TemplateSourceResolver): ts.Diagnostic|null {
   if (diagnostic.file === undefined || diagnostic.start === undefined) {
     return null;
   }
@@ -118,7 +110,7 @@ export function translateDiagnostic(
   }
 
   // Now use the external resolver to obtain the full `ParseSourceFile` of the template.
-  const span = resolver.sourceLocationToSpan(sourceLocation);
+  const span = resolver.toParseSourceSpan(sourceLocation.id, sourceLocation.span);
   if (span === null) {
     return null;
   }
@@ -217,10 +209,15 @@ export function makeTemplateDiagnostic(
   }
 }
 
+interface SourceLocation {
+  id: TemplateId;
+  span: AbsoluteSourceSpan;
+}
+
 function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): SourceLocation|null {
   // Search for comments until the TCB's function declaration is encountered.
   while (node !== undefined && !ts.isFunctionDeclaration(node)) {
-    const sourceSpan =
+    const span =
         ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
           if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
             return null;
@@ -228,10 +225,14 @@ function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): SourceLoc
           const commentText = sourceFile.text.substring(pos, end);
           return parseSourceSpanComment(commentText);
         }) || null;
-    if (sourceSpan !== null) {
+    if (span !== null) {
       // Once the positional information has been extracted, search further up the TCB to extract
-      // the file information that is attached with the TCB's function declaration.
-      return toSourceLocation(sourceSpan, node, sourceFile);
+      // the unique id that is attached with the TCB's function declaration.
+      const id = getTemplateId(node, sourceFile);
+      if (id === null) {
+        return null;
+      }
+      return {id, span};
     }
 
     node = node.parent;
@@ -240,8 +241,7 @@ function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): SourceLoc
   return null;
 }
 
-function toSourceLocation(
-    sourceSpan: AbsoluteSourceSpan, node: ts.Node, sourceFile: ts.SourceFile): SourceLocation|null {
+function getTemplateId(node: ts.Node, sourceFile: ts.SourceFile): TemplateId|null {
   // Walk up to the function declaration of the TCB, the file information is attached there.
   let tcb = node;
   while (!ts.isFunctionDeclaration(tcb)) {
@@ -253,23 +253,13 @@ function toSourceLocation(
     }
   }
 
-  const id =
-      ts.forEachLeadingCommentRange(sourceFile.text, tcb.getFullStart(), (pos, end, kind) => {
-        if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
-          return null;
-        }
-        const commentText = sourceFile.text.substring(pos, end);
-        return commentText.substring(2, commentText.length - 2);
-      }) || null;
-  if (id === null) {
-    return null;
-  }
-
-  return {
-    id,
-    start: sourceSpan.start,
-    end: sourceSpan.end,
-  };
+  return ts.forEachLeadingCommentRange(sourceFile.text, tcb.getFullStart(), (pos, end, kind) => {
+    if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
+      return null;
+    }
+    const commentText = sourceFile.text.substring(pos + 2, end - 2);
+    return commentText;
+  }) as TemplateId || null;
 }
 
 const parseSpanComment = /^\/\*(\d+),(\d+)\*\/$/;
