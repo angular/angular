@@ -600,7 +600,8 @@ export interface TNode {
    * are encountered. If and when this happens then the existing `StylingMapArray` value
    * will be placed into the initial styling slot in the newly created `TStylingContext`.
    */
-  styles: StylingMapArray|TStylingContext|null;
+  // TODO(misko): `Remove StylingMapArray|TStylingContext|null` in follow up PR.
+  styles: StylingMapArray|TStylingContext|string|null;
 
   /**
    * A collection of all class bindings and/or static class values for an element.
@@ -620,7 +621,8 @@ export interface TNode {
    * are encountered. If and when this happens then the existing `StylingMapArray` value
    * will be placed into the initial styling slot in the newly created `TStylingContext`.
    */
-  classes: StylingMapArray|TStylingContext|null;
+  // TODO(misko): `Remove StylingMapArray|TStylingContext|null` in follow up PR.
+  classes: StylingMapArray|TStylingContext|string|null;
 
   /**
    * Stores the head/tail index of the class bindings.

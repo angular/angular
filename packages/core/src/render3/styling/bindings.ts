@@ -1030,8 +1030,8 @@ export const setStyleAttr = (renderer: Renderer3 | null, native: RElement, value
  * initial styling values on an element.
  */
 export function renderStylingMap(
-    renderer: Renderer3, element: RElement, stylingValues: TStylingContext | StylingMapArray | null,
-    isClassBased: boolean): void {
+    renderer: Renderer3, element: RElement,
+    stylingValues: TStylingContext | StylingMapArray | string | null, isClassBased: boolean): void {
   const stylingMapArr = getStylingMapArray(stylingValues);
   if (stylingMapArr) {
     for (let i = StylingMapArrayIndex.ValuesStartPosition; i < stylingMapArr.length;

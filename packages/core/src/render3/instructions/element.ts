@@ -171,7 +171,7 @@ export function ɵɵelement(
 }
 
 function setDirectiveStylingInput(
-    context: TStylingContext | StylingMapArray | null, lView: LView,
+    context: TStylingContext | StylingMapArray | string | null, lView: LView,
     stylingInputs: (string | number)[], propName: string) {
   // older versions of Angular treat the input as `null` in the
   // event that the value does not exist at all. For this reason

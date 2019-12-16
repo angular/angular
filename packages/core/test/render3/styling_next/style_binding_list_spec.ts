@@ -115,6 +115,7 @@ describe('TNode styling linked list', () => {
       //   ɵɵstyleProp('color', '#008');  // Binding index: 30
 
       const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
+      tNode.styles = '';
       const tData: TData = newArray(32, null);
       const STYLE = STYLE_MAP_STYLING_KEY;
 
@@ -408,7 +409,7 @@ describe('TNode styling linked list', () => {
 
     it('should mark duplicate on static fields', () => {
       const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
-      tNode.styles = [null, 'color', 'blue'];
+      tNode.styles = 'color: blue;';
       const tData: TData = [null, null];
       insertTStylingBinding(tData, tNode, 'width', 2, false, false);
       expectPriorityOrder(tData, tNode, false).toEqual([
@@ -636,6 +637,8 @@ class StylingFixture {
   lView: LView = [null, null !] as any;
   tNode: TNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
   constructor(bindingSources: TStylingKey[][], public isClassBinding: boolean) {
+    this.tNode.classes = '';
+    this.tNode.styles = '';
     let bindingIndex = this.tData.length;
     for (let i = 0; i < bindingSources.length; i++) {
       const bindings = bindingSources[i];

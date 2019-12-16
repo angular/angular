@@ -219,8 +219,10 @@ export function hyphenate(value: string): string {
  * will copy over an initial styling values from the tNode (which are stored as a
  * `StylingMapArray` on the `tNode.classes` or `tNode.styles` values).
  */
-export function getStylingMapArray(value: TStylingContext | StylingMapArray | null):
+export function getStylingMapArray(value: TStylingContext | StylingMapArray | string | null):
     StylingMapArray|null {
+  // TODO(misko): remove after TNode.classes/styles becomes `string` only
+  if (typeof value === 'string') return null;
   return isStylingContext(value) ?
       (value as TStylingContext)[TStylingContextIndex.InitialStylingValuePosition] :
       value as StylingMapArray;
@@ -240,7 +242,10 @@ export function isStylingMapArray(value: any): boolean {
       (typeof(value as StylingMapArray)[StylingMapArrayIndex.ValuesStartPosition] === 'string');
 }
 
-export function getInitialStylingValue(context: TStylingContext | StylingMapArray | null): string {
+export function getInitialStylingValue(context: TStylingContext | StylingMapArray | string | null):
+    string {
+  // TODO(misko): remove after TNode.classes/styles becomes `string` only
+  if (typeof context === 'string') return context;
   const map = getStylingMapArray(context);
   return map && (map[StylingMapArrayIndex.RawValuePosition] as string | null) || '';
 }
