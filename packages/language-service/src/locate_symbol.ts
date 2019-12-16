@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, CompileTypeSummary, CssSelector, DirectiveAst, ElementAst, SelectorMatcher, TemplateAstPath, findNode, tokenReference} from '@angular/compiler';
+import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, CompileTypeSummary, CssSelector, DirectiveAst, ElementAst, SelectorMatcher, TemplateAstPath, tokenReference} from '@angular/compiler';
 
 import {AstResult} from './common';
 import {getExpressionScope} from './expression_diagnostics';
 import {getExpressionSymbol} from './expressions';
 import {Definition, DirectiveKind, Span, Symbol} from './types';
-import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, inSpan, offsetSpan, spanOf} from './utils';
+import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getPathToNodeAtPosition, inSpan, offsetSpan, spanOf} from './utils';
 
 export interface SymbolInfo {
   symbol: Symbol;
@@ -144,7 +144,7 @@ export function locateSymbol(info: AstResult, position: number): SymbolInfo|unde
 
 function findAttribute(info: AstResult, position: number): Attribute|undefined {
   const templatePosition = position - info.template.span.start;
-  const path = findNode(info.htmlAst, templatePosition);
+  const path = getPathToNodeAtPosition(info.htmlAst, templatePosition);
   return path.first(Attribute);
 }
 
