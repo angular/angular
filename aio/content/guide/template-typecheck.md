@@ -62,7 +62,8 @@ In addition to the full mode behavior, Angular version 9:
 
 ## Checking of `*ngFor`
 
-The three modes of type-checking treat embedded views differently. Consider the following example.
+The three modes of type-checking treat embedded views differently.
+Consider the following example.
 
 
 <code-example language="ts" header="User interface">
@@ -89,6 +90,104 @@ The `<h2>` and the `<span>` are in the `*ngFor` embedded view.
 In basic mode, Angular doesn't check either of them.
 However, in full mode, Angular checks that `config` and `user` exist and assumes a type of `any`.
 In strict mode, Angular knows that the `user` in the `<span>` has a type of `User`, and that `address` is an object with a `city` property of type `string`.
+
+Template validation produces error messages when a type error is detected in a template binding  expression, similar to how type errors are reported by the TypeScript compiler against code in a `.ts` file.
+
+For example, consider the following component:
+
+```typescript
+  @Component({
+    selector: 'my-component',
+    template: '{{person.addresss.street}}'
+  })
+  class MyComponent {
+    person?: Person;
+  }
+```
+
+This produces the following error:
+
+```bash
+  my.component.html:1:11 - error TS2339: Property 'addresss' does not exist on type 'Person'. Did you mean 'address'?
+
+1         {{person.addresss.street}}
+ ```
+
+The file name reported in the error message, `MyComponent.html`, is either the path of the `.ts` file for inline templates (template), or the path of the `.html` file for external templates (templateUrl).
+
+If a component uses `templateUrl` instead of `template`, the errors are reported in the HTML file referenced by the `templateUrl` instead of a synthetic file.
+
+The error location is the beginning of the text node that contains the interpolation expression with the error.
+If the error is in an attribute binding such as `[value]="person.address.street"`, the error
+location is the location of the attribute that contains the error.
+
+The validation uses the TypeScript type checker and the options supplied to the TypeScript compiler to control how detailed the type validation is.
+For example, if the `strictTypeChecks` is specified, the error
+```my.component.ts.MyComponent.html(1,1): : Object is possibly 'undefined'```
+is reported as well as the above error message.
+
+## Type narrowing
+
+The expression used in an `ngIf` directive is used to narrow type unions in the Angular
+template compiler, the same way the `if` expression does in TypeScript.
+For example, to avoid `Object is possibly 'undefined'` error in the template above, modify it to only emit the interpolation if the value of `person` is initialized as shown below:
+
+```typescript
+  @Component({
+    selector: 'my-component',
+    template: '<span *ngIf="person"> {{person.address.street}} </span>'
+  })
+  class MyComponent {
+    person?: Person;
+  }
+```
+
+Using `*ngIf` allows the TypeScript compiler to infer that the `person` used in the binding expression will never be `undefined`.
+
+
+## Non-null type assertion operator
+
+Use the [non-null type assertion operator](guide/template-syntax#non-null-assertion-operator) to suppress the `Object is possibly 'undefined'` error when it is inconvenient to use `*ngIf`. You can also use this operator when a constraint in the component ensures that the expression is always non-null when the binding expression is interpolated.
+
+In the following example, the `person` and `address` properties are always set together, implying that `address` is always non-null if `person` is non-null.
+There is no convenient way to describe this constraint to TypeScript and the template compiler, but the error is suppressed in the example by using `address!.street`.
+
+```typescript
+  @Component({
+    selector: 'my-component',
+    template: '<span *ngIf="person"> {{person.name}} lives on {{address!.street}} </span>'
+  })
+  class MyComponent {
+    person?: Person;
+    address?: Address;
+
+    setData(person: Person, address: Address) {
+      this.person = person;
+      this.address = address;
+    }
+  }
+```
+
+The non-null assertion operator should be used sparingly as refactoring of the component might break this constraint.
+
+In this example it is recommended to include the checking of `address` in the `*ngIf` as shown below:
+
+```typescript
+  @Component({
+    selector: 'my-component',
+    template: '<span *ngIf="person && address"> {{person.name}} lives on {{address.street}} </span>'
+  })
+  class MyComponent {
+    person?: Person;
+    address?: Address;
+
+    setData(person: Person, address: Address) {
+      this.person = person;
+      this.address = address;
+    }
+  }
+```
+
 
 {@a troubleshooting-template-errors}
 
