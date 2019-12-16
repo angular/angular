@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AstPath, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, ParseSourceSpan, RecursiveTemplateAstVisitor, TemplateAst, TemplateAstPath, identifierName, templateVisitAll} from '@angular/compiler';
+import {AstPath, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, HtmlAstPath, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, RecursiveVisitor, TemplateAst, TemplateAstPath, identifierName, templateVisitAll, visitAll} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AstResult, SelectorInfo} from './common';
@@ -224,4 +224,28 @@ export function findPropertyValueOfType<T extends ts.Node>(
     if (predicate(initializer)) return initializer;
   }
   return startNode.forEachChild(c => findPropertyValueOfType(c, propName, predicate));
+}
+
+/**
+ * Find the tightest node at the specified `position` from the AST `nodes`, and
+ * return the path to the node.
+ * @param nodes HTML AST nodes
+ * @param position
+ */
+export function getPathToNodeAtPosition(nodes: Node[], position: number): HtmlAstPath {
+  const path: Node[] = [];
+  const visitor = new class extends RecursiveVisitor {
+    visit(ast: Node) {
+      const span = spanOf(ast);
+      if (inSpan(position, span)) {
+        path.push(ast);
+      } else {
+        // Returning a truthy value here will skip all children and terminate
+        // the visit.
+        return true;
+      }
+    }
+  };
+  visitAll(visitor, nodes);
+  return new AstPath<Node>(path, position);
 }

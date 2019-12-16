@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, TemplateBinding, Text, findNode, getHtmlTagDefinition} from '@angular/compiler';
+import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, TemplateBinding, Text, getHtmlTagDefinition} from '@angular/compiler';
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {AstResult} from './common';
@@ -15,7 +15,7 @@ import {getExpressionCompletions} from './expressions';
 import {attributeNames, elementNames, eventNames, propertyNames} from './html_info';
 import {InlineTemplate} from './template';
 import * as ng from './types';
-import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getSelectors, hasTemplateReference, inSpan, spanOf} from './utils';
+import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getPathToNodeAtPosition, getSelectors, hasTemplateReference, inSpan, spanOf} from './utils';
 
 const HIDDEN_HTML_ELEMENTS: ReadonlySet<string> =
     new Set(['html', 'script', 'noscript', 'base', 'body', 'title', 'head', 'link']);
@@ -121,7 +121,7 @@ export function getTemplateCompletions(
   const {htmlAst, template} = templateInfo;
   // The templateNode starts at the delimiter character so we add 1 to skip it.
   const templatePosition = position - template.span.start;
-  const path = findNode(htmlAst, templatePosition);
+  const path = getPathToNodeAtPosition(htmlAst, templatePosition);
   const mostSpecific = path.tail;
   if (path.empty || !mostSpecific) {
     result = elementCompletions(templateInfo);

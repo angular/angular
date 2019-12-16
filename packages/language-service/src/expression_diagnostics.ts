@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CompileDirectiveSummary, CompileTypeMetadata, DirectiveAst, ElementAst, EmbeddedTemplateAst, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, ReferenceAst, TemplateAst, TemplateAstPath, VariableAst, findNode, identifierName, templateVisitAll, tokenReference} from '@angular/compiler';
+import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CompileDirectiveSummary, CompileTypeMetadata, DirectiveAst, ElementAst, EmbeddedTemplateAst, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, ReferenceAst, TemplateAst, TemplateAstPath, VariableAst, identifierName, templateVisitAll, tokenReference} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AstType, ExpressionDiagnosticsContext, TypeDiagnostic} from './expression_type';
 import {BuiltinType, Definition, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
 import {Diagnostic} from './types';
+import {getPathToNodeAtPosition} from './utils';
 
 export interface DiagnosticTemplateInfo {
   fileName?: string;
@@ -304,7 +305,7 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
   }
 
   private attributeValueLocation(ast: TemplateAst) {
-    const path = findNode(this.info.htmlAst, ast.sourceSpan.start.offset);
+    const path = getPathToNodeAtPosition(this.info.htmlAst, ast.sourceSpan.start.offset);
     const last = path.tail;
     if (last instanceof Attribute && last.valueSpan) {
       return last.valueSpan.start.offset;
