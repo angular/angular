@@ -482,10 +482,10 @@ export function providerToFactory(
   } else {
     if (isValueProvider(provider)) {
       factory = () => resolveForwardRef(provider.useValue);
-    } else if (isExistingProvider(provider)) {
-      factory = () => ɵɵinject(resolveForwardRef(provider.useExisting));
     } else if (isFactoryProvider(provider)) {
       factory = () => provider.useFactory(...injectArgs(provider.deps || []));
+    } else if (isExistingProvider(provider)) {
+      factory = () => ɵɵinject(resolveForwardRef(provider.useExisting));
     } else {
       const classRef = resolveForwardRef(
           provider &&
