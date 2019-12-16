@@ -38,7 +38,6 @@ import * as ParsingCases from './parsing-cases';
     ParsingCases.EventBinding,
     ParsingCases.FooComponent,
     ParsingCases.ForLetIEqual,
-    ParsingCases.ForOfEmpty,
     ParsingCases.ForOfLetEmpty,
     ParsingCases.ForUsingComponent,
     ParsingCases.NoValueAttribute,

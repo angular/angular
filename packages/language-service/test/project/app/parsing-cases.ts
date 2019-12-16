@@ -112,12 +112,6 @@ interface Person {
 }
 
 @Component({
-  template: '<div *ngFor="~{for-empty}"></div>',
-})
-export class ForOfEmpty {
-}
-
-@Component({
   template: '<div *ngFor="let ~{for-let-empty}"></div>',
 })
 export class ForOfLetEmpty {
@@ -131,7 +125,7 @@ export class ForLetIEqual {
 
 @Component({
   template: `
-    <div *ngFor="~{for-let}let ~{for-person}person ~{for-of}of ~{for-people}people">
+    <div *ngFor="let ~{for-person}person of ~{for-people}people">
       <span>Name: {{~{for-interp-person}person.~{for-interp-name}name}}</span>
       <span>Age: {{person.~{for-interp-age}age}}</span>
     </div>`,
