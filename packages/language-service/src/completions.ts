@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, TemplateBinding, Text, findNode, getHtmlTagDefinition} from '@angular/compiler';
+import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, TemplateBinding, Text, findNode, getHtmlTagDefinition} from '@angular/compiler';
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {AstResult} from './common';
@@ -246,19 +246,7 @@ function attributeValueCompletions(
   const visitor =
       new ExpressionVisitor(info, position, () => getExpressionScope(dinfo, path, false), attr);
   path.tail.visit(visitor, null);
-  const {results} = visitor;
-  if (results.length) {
-    return results;
-  }
-  // Try allowing widening the path
-  const widerPath = findTemplateAstAt(info.templateAst, position, /* allowWidening */ true);
-  if (widerPath.tail) {
-    const widerVisitor = new ExpressionVisitor(
-        info, position, () => getExpressionScope(dinfo, widerPath, false), attr);
-    widerPath.tail.visit(widerVisitor, null);
-    return widerVisitor.results;
-  }
-  return results;
+  return visitor.results;
 }
 
 function elementCompletions(info: AstResult): ng.CompletionEntry[] {
@@ -415,24 +403,6 @@ class ExpressionVisitor extends NullTemplateVisitor {
     }
   }
 
-  private addKeysToCompletions(selector: CssSelector, key: string) {
-    if (key !== 'ngFor') {
-      return;
-    }
-    this.completions.set('let', {
-      name: 'let',
-      kind: ng.CompletionKind.KEY,
-      sortText: 'let',
-    });
-    if (selector.attrs.some(attr => attr === 'ngForOf')) {
-      this.completions.set('of', {
-        name: 'of',
-        kind: ng.CompletionKind.KEY,
-        sortText: 'of',
-      });
-    }
-  }
-
   private addSymbolsToCompletions(symbols: ng.Symbol[]) {
     for (const s of symbols) {
       if (s.name.startsWith('__') || !s.public || this.completions.has(s.name)) {
@@ -507,8 +477,6 @@ class ExpressionVisitor extends NullTemplateVisitor {
       this.addAttributeValuesToCompletions(binding.expression.ast, this.position);
       return;
     }
-
-    this.addKeysToCompletions(selector, key);
   }
 }
 
