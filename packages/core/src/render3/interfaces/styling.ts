@@ -557,8 +557,8 @@ export type TStylingMapFn = (text: string, value: any, hasPreviousDuplicate: boo
  * - bits 2-16 are used to encode the next/tail of the template.
  * - bits 17-32 are used to encode the previous/head of template.
  *
- * NODE: *duplicate* false implies that it is statically know that this binding will not collide
- * with other binding and therefor there is no need to check other bindings. For example the
+ * NODE: *duplicate* false implies that it is statically known that this binding will not collide
+ * with other bindings and therefore there is no need to check other bindings. For example the
  * bindings in `<div [style.color]="exp" [style.width]="exp">` will never collide and will have
  * their bits set accordingly. Previous duplicate means that we may need to check previous if the
  * current binding is `null`. Next duplicate means that we may need to check next bindings if the
@@ -583,18 +583,18 @@ export const enum StylingRange {
   NEXT_MASK = 0x0003FFC,
 
   /**
-   * This bit is set to if the previous bindings contains a binding which could possibly cause a
+   * This bit is set if the previous bindings contains a binding which could possibly cause a
    * duplicate. For example: `<div [style]="map" [style.width]="width">`, the `width` binding will
    * have previous duplicate set. The implication is that if `width` binding becomes `null`, it is
-   * necessary to deffer the value to `map.width`. (Because `width` overwrites `map.width`.)
+   * necessary to defer the value to `map.width`. (Because `width` overwrites `map.width`.)
    */
   PREV_DUPLICATE = 0x02,
 
   /**
-   * This bit is set to if the next bindings contains a binding which could possibly cause a
+   * This bit is set to if the next binding contains a binding which could possibly cause a
    * duplicate. For example: `<div [style]="map" [style.width]="width">`, the `map` binding will
    * have next duplicate set. The implication is that if `map.width` binding becomes not `null`, it
-   * is necessary to deffer the value to `width`. (Because `width` overwrites `map.width`.)
+   * is necessary to defer the value to `width`. (Because `width` overwrites `map.width`.)
    */
   NEXT_DUPLICATE = 0x01,
 }

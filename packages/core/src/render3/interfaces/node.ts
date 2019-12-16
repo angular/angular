@@ -616,7 +616,9 @@ export interface TNode {
   classBindings: TStylingRange;
 
   /**
-   * Stores the head/tail of the style bindings.
+   * If there are template bindings, stores the head/tail of the style bindings in the template, 
+   * If no template bindings but there are host bindings, the head value will point to the last host binding for "style".
+   * If neither, the head and tail will both be 0.
    *
    * - If no bindings, the head and tail will both be 0.
    * - If there are template bindings, stores the head/tail of the style bindings in the template.

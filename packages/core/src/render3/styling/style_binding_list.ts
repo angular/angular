@@ -7,7 +7,7 @@
 */
 
 import {stylePropNeedsSanitization, ɵɵsanitizeStyle} from '../../sanitization/sanitization';
-import {assertEqual, assertNotEqual, throwError} from '../../util/assert';
+import {assertEqual, throwError} from '../../util/assert';
 import {TNode} from '../interfaces/node';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {StylingMapArray, TStylingKey, TStylingMapKey, TStylingRange, getTStylingRangeNext, getTStylingRangePrev, getTStylingRangePrevDuplicate, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange} from '../interfaces/styling';
@@ -182,8 +182,8 @@ import {StyleChangesMap, parseKeyValue, removeStyle} from './style_differ';
  *
  * The function works by keeping track of `tStylingRange` which contains two pointers pointing to
  * the head/tail of the template portion of the styles.
- *  - if `isHost === false` (we are template) than insertion is at tail of `TStylingRange`
- *  - if `isHost === true` (we are host binding) than insertion is at head of `TStylingRange`
+ *  - if `isHost === false` (we are template) then insertion is at tail of `TStylingRange`
+ *  - if `isHost === true` (we are host binding) then insertion is at head of `TStylingRange`
  *
  * @param tData The `TData` to insert into.
  * @param tNode `TNode` associated with the styling element.
@@ -208,7 +208,7 @@ export function insertTStylingBinding(
   if (isHost) {
     // We are inserting host bindings
 
-    // If we don't have template bindings than `tail` is 0.
+    // If we don't have template bindings then `tail` is 0.
     const hasTemplateBindings = tmplTail !== 0;
     // This is important to know because that means that the `head` can't point to the first
     // template bindings (there are none.) Instead the head points to the tail of the template.
@@ -239,6 +239,7 @@ export function insertTStylingBinding(
   } else {
     // We are inserting in template section.
     // We need to set this binding's "previous" to the current template tail
+   // We need to set this binding's "previous" to the current template tail
     tData[index + 1] = toTStylingRange(tmplTail, 0);
     ngDevMode && assertEqual(
                      tmplHead !== 0 && tmplTail === 0, false,
@@ -368,7 +369,7 @@ function markDuplicates(
 }
 
 /**
- * Computes the new styling value starting `index` styling binding.
+ * Computes the new styling value starting at `index` styling binding.
  *
  * @param tData `TData` containing the styling binding linked list.
  *              - `TData[index]` contains the binding name.
@@ -418,7 +419,7 @@ function getStaticStylingValue(tNode: TNode, isClassBinding: Boolean) {
  * @param stylingKey `TStylingKey` holding the key (className or style property name).
  * @param value The value for the key.
  *         - `isClassBinding === true`
- *              - `boolean` if `true` than add the key to the class list string.
+ *              - `boolean` if `true` then add the key to the class list string.
  *              - `Array` add each string value to the class list string.
  *              - `Object` add object key to the class list string if the key value is truthy.
  *         - `isClassBinding === false`
@@ -516,7 +517,7 @@ export const CLASS_MAP_STYLING_KEY: TStylingMapKey = {
  *
  * The purpose of this key is to add style map abilities to the concatenation in a tree shakable
  * way. If `ɵɵstyleMap()` is not referenced than `STYLE_MAP_STYLING_KEY` will become eligible for
- * tree shaking. (`STYLE_MAP_STYLING_KEY` also pulls int the sanitizer as `ɵɵstyleMap()` could have
+ * tree shaking. (`STYLE_MAP_STYLING_KEY` also pulls in the sanitizer as `ɵɵstyleMap()` could have
  * a sanitizable property.)
  *
  * This key supports: `strings`, and `object` (as Map). In each case it is necessary to
@@ -528,7 +529,7 @@ export const STYLE_MAP_STYLING_KEY: TStylingMapKey = {
   extra: (text: string, value: any, hasPreviousDuplicate: boolean): string => {
     if (Array.isArray(value)) {
       // We don't support Arrays
-      ngDevMode && throwError('Style binding do not support arrays bindings: ' + value);
+      ngDevMode && throwError('Style bindings do not support array bindings: ' + value);
     } else if (typeof value === 'object') {
       // We support maps
       for (let key in value) {
@@ -553,7 +554,7 @@ export const STYLE_MAP_STYLING_KEY: TStylingMapKey = {
       }
     } else {
       // All other cases are not supported.
-      ngDevMode && throwError('Unsupported value for class binding: ' + value);
+      ngDevMode && throwError('Unsupported value for style binding: ' + value);
     }
     return text;
   }
