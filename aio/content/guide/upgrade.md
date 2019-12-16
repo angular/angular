@@ -932,7 +932,7 @@ The `useHash` property defaults to `false`, and the `hashPrefix` defaults to an 
 
 ```ts
 LocationUpgradeModule.config({
-  useHash: true
+  useHash: true,
   hashPrefix: '!'
 })
 ```
