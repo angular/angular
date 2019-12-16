@@ -591,7 +591,7 @@ export const enum StylingRange {
   PREV_DUPLICATE = 0x02,
 
   /**
-   * This bit is set to if the next binding contains a binding which could possibly cause a
+   * This bit is set if the next binding contains a binding which could possibly cause a
    * duplicate. For example: `<div [style]="map" [style.width]="width">`, the `map` binding will
    * have next duplicate set. The implication is that if `map.width` binding becomes not `null`, it
    * is necessary to defer the value to `width`. (Because `width` overwrites `map.width`.)

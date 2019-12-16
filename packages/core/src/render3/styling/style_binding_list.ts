@@ -383,7 +383,7 @@ function markDuplicates(
 export function flushStyleBinding(
     tData: TData, tNode: TNode, lView: LView, index: number, isClassBinding: boolean): string {
   const tStylingRangeAtIndex = tData[index + 1] as TStylingRange;
-  // When styling changes we don't have to start at the begging. Instead we start at the change
+  // When styling changes we don't have to start at the beginning. Instead we start at the first changed
   // value and look up the previous concatenation as a starting point going forward.
   const lastUnchangedValueIndex = getTStylingRangePrev(tStylingRangeAtIndex);
   let text = lastUnchangedValueIndex === 0 ? getStaticStylingValue(tNode, isClassBinding) :
@@ -475,7 +475,7 @@ export function appendStyling(
  * `ɵɵclassMap()` inserts `CLASS_MAP_STYLING_KEY` as a key to the `insertTStylingBinding()`.
  *
  * The purpose of this key is to add class map abilities to the concatenation in a tree shakable
- * way. If `ɵɵclassMap()` is not referenced than `CLASS_MAP_STYLING_KEY` will become eligible for
+ * way. If `ɵɵclassMap()` is not referenced then `CLASS_MAP_STYLING_KEY` will become eligible for
  * tree shaking.
  *
  * This key supports: `strings`, `object` (as Map) and `Array`. In each case it is necessary to
@@ -518,7 +518,7 @@ export const CLASS_MAP_STYLING_KEY: TStylingMapKey = {
  * `ɵɵstyleMap()` inserts `STYLE_MAP_STYLING_KEY` as a key to the `insertTStylingBinding()`.
  *
  * The purpose of this key is to add style map abilities to the concatenation in a tree shakable
- * way. If `ɵɵstyleMap()` is not referenced than `STYLE_MAP_STYLING_KEY` will become eligible for
+ * way. If `ɵɵstyleMap()` is not referenced then `STYLE_MAP_STYLING_KEY` will become eligible for
  * tree shaking. (`STYLE_MAP_STYLING_KEY` also pulls in the sanitizer as `ɵɵstyleMap()` could have
  * a sanitizable property.)
  *
