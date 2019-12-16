@@ -1901,4 +1901,36 @@ describe('di', () => {
 
     expect(fixture.nativeElement.textContent.trim()).toBe('2 (transformed) items');
   });
+
+  // TODO: https://angular-team.atlassian.net/browse/FW-1779
+  it('should prioritize useFactory over useExisting', () => {
+    abstract class Base {}
+    @Directive({selector: '[dirA]'})
+    class DirA implements Base {
+    }
+    @Directive({selector: '[dirB]'})
+    class DirB implements Base {
+    }
+
+    const PROVIDER = {provide: Base, useExisting: DirA, useFactory: () => new DirB()};
+
+    @Component({selector: 'child', template: '', providers: [PROVIDER]})
+    class Child {
+      constructor(readonly base: Base) {}
+    }
+
+    @Component({template: `<div dirA> <child></child> </div>`})
+    class App {
+      @ViewChild(DirA) dirA !: DirA;
+      @ViewChild(Child) child !: Child;
+    }
+
+    const fixture = TestBed.configureTestingModule({declarations: [DirA, DirB, App, Child]})
+                        .createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.dirA)
+        .not.toEqual(
+            fixture.componentInstance.child.base,
+            'should not get dirA from parent, but create new dirB from the useFactory provider');
+  });
 });
