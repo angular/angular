@@ -786,7 +786,7 @@ export declare const ɵɵdefineDirective: <T>(directiveDefinition: {
     features?: DirectiveDefFeature[] | undefined;
     hostBindings?: HostBindingsFunction<T> | undefined;
     hostVars?: number | undefined;
-    hostAttrs?: (string | (string | SelectorFlags)[] | AttributeMarker)[] | undefined;
+    hostAttrs?: TAttributes | undefined;
     contentQueries?: ContentQueriesFunction<T> | undefined;
     viewQuery?: ViewQueriesFunction<T> | null | undefined;
     exportAs?: string[] | undefined;
