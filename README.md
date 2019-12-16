@@ -16,7 +16,7 @@ own custom components. The team maintains several npm packages.
 
 #### Quick links
 [Documentation, demos, and guides][mat-docs] |
-[Frequently Asked Questions][./FAQ] |
+[Frequently Asked Questions](FAQ.md) |
 [Community Google group](https://groups.google.com/forum/#!forum/angular-material2) |
 [Contributing](https://github.com/angular/components/blob/master/CONTRIBUTING.md) |
 [StackBlitz Template](https://stackblitz.com/fork/components-issue)
