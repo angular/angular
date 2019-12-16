@@ -355,7 +355,7 @@ jobs:
               --tunnel-id angular-${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_INDEX} \
               --username $SAUCE_USERNAME \
               --key $(echo $SAUCE_ACCESS_KEY | rev) \
-              yarn bazel test //:saucelabs_unit_tests_poc --config=saucelabs
+              -- yarn bazel test //:saucelabs_unit_tests_poc --config=saucelabs
           no_output_timeout: 20m
       - notify_webhook_on_fail:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
