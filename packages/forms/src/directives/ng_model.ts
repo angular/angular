@@ -136,6 +136,16 @@ const resolvedPromise = (() => Promise.resolve(null))();
 export class NgModel extends NgControl implements OnChanges,
     OnDestroy {
   public readonly control: FormControl = new FormControl();
+
+  // At runtime we coerce arbitrary values assigned to the "disabled" input to a "boolean".
+  // This is not reflected in the type of the property because outside of templates, consumers
+  // should only deal with booleans. In templates, a string is allowed for convenience and to
+  // match the native "disabled attribute" semantics which can be observed on input elements.
+  // This static member tells the compiler that values of type "string" can also be assigned
+  // to the input in a template.
+  /** @nodoc */
+  static ngAcceptInputType_disabled: boolean|string;
+
   /** @internal */
   _registered = false;
 

@@ -415,6 +415,7 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
+    static ngAcceptInputType_disabled: boolean | string;
 }
 
 export declare class NgModelGroup extends AbstractFormGroupDirective implements OnInit, OnDestroy {
