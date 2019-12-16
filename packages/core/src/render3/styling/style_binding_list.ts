@@ -189,13 +189,13 @@ import {StyleChangesMap, parseKeyValue, removeStyle} from './style_differ';
  * @param tNode `TNode` associated with the styling element.
  * @param tStylingKey See `TStylingKey`.
  * @param index location of where `tStyleValue` should be stored (and linked into list.)
- * @param isHost `true` if the insertion is for a `hostBinding`. (insertion is in front of
+ * @param isHostBinding `true` if the insertion is for a `hostBinding`. (insertion is in front of
  *               template.)
  * @param isClassBinding True if the associated `tStylingKey` as a `class` styling.
  *                       `tNode.classBindings` should be used (or `tNode.styleBindings` otherwise.)
  */
 export function insertTStylingBinding(
-    tData: TData, tNode: TNode, tStylingKey: TStylingKey, index: number, isHost: boolean,
+    tData: TData, tNode: TNode, tStylingKey: TStylingKey, index: number, isHostBinding: boolean,
     isClassBinding: boolean): void {
   ngDevMode && assertEqual(
                    getLView()[TVIEW].firstUpdatePass, true,
@@ -205,7 +205,7 @@ export function insertTStylingBinding(
   let tmplTail = getTStylingRangeNext(tBindings);
 
   tData[index] = tStylingKey;
-  if (isHost) {
+  if (isHostBinding) {
     // We are inserting host bindings
 
     // If we don't have template bindings then `tail` is 0.
@@ -239,7 +239,6 @@ export function insertTStylingBinding(
   } else {
     // We are inserting in template section.
     // We need to set this binding's "previous" to the current template tail
-   // We need to set this binding's "previous" to the current template tail
     tData[index + 1] = toTStylingRange(tmplTail, 0);
     ngDevMode && assertEqual(
                      tmplHead !== 0 && tmplTail === 0, false,
@@ -384,9 +383,11 @@ function markDuplicates(
 export function flushStyleBinding(
     tData: TData, tNode: TNode, lView: LView, index: number, isClassBinding: boolean): string {
   const tStylingRangeAtIndex = tData[index + 1] as TStylingRange;
-  const lastGoodValueIndex = getTStylingRangePrev(tStylingRangeAtIndex);
-  let text = lastGoodValueIndex === 0 ? getStaticStylingValue(tNode, isClassBinding) :
-                                        lView[lastGoodValueIndex + 1] as string;
+  // When styling changes we don't have to start at the begging. Instead we start at the change
+  // value and look up the previous concatenation as a starting point going forward.
+  const lastUnchangedValueIndex = getTStylingRangePrev(tStylingRangeAtIndex);
+  let text = lastUnchangedValueIndex === 0 ? getStaticStylingValue(tNode, isClassBinding) :
+                                             lView[lastUnchangedValueIndex + 1] as string;
   let cursor = index;
   while (cursor !== 0) {
     const value = lView[cursor];
@@ -433,6 +434,7 @@ function getStaticStylingValue(tNode: TNode, isClassBinding: Boolean) {
  *           should be removed.
  *         - `false` Fast path, just concatenate the strings.
  * @param isClassBinding Determines if the `text` is `className` or `cssText`.
+ * @returns new styling string with the concatenated values.
  */
 export function appendStyling(
     text: string, stylingKey: TStylingKey, value: any, sanitizer: SanitizerFn | null,

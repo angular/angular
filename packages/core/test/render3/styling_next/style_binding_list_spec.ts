@@ -156,7 +156,6 @@ describe('TNode styling linked list', () => {
         [12, 'color', true, false],  // 12 - Template:  ɵɵstyleProp('color', '#002'});
       ]);
 
-      debugger;
       insertTStylingBinding(tData, tNode, STYLE, 20, true, false);
       expectRange(tNode.styleBindings).toEqual([10, 12]);
       expectTData(tData).toEqual([
