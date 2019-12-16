@@ -1,0 +1,22 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "mdc-snackbar",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "mdc-snackbar-demo.html",
+        ":mdc_snackbar_demo_scss",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-snackbar",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "mdc_snackbar_demo_scss",
+    src = "mdc-snackbar-demo.scss",
+)

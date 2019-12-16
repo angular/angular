@@ -79,6 +79,7 @@ export class DevAppLayout {
     {name: 'MDC Tabs', route: '/mdc-tabs'},
     {name: 'MDC Slide Toggle', route: '/mdc-slide-toggle'},
     {name: 'MDC Slider', route: '/mdc-slider'},
+    {name: 'MDC Snackbar', route: '/mdc-snackbar'},
   ];
 
   constructor(

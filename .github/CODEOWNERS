@@ -162,6 +162,7 @@
 /src/dev-app/mdc-menu/**                           @crisbeto
 /src/dev-app/mdc-progress-bar/**                   @crisbeto
 /src/dev-app/mdc-radio/**                          @mmalerba
+/src/dev-app/mdc-snackbar/**                       @opozo
 /src/dev-app/mdc-slide-toggle/**                   @crisbeto
 /src/dev-app/mdc-slider/**                         @devversion
 /src/dev-app/mdc-tabs/**                           @crisbeto
