@@ -101,15 +101,14 @@ export function diagnosticInfoFromTemplateInfo(info: AstResult): DiagnosticTempl
   };
 }
 
-export function findTemplateAstAt(
-    ast: TemplateAst[], position: number, allowWidening: boolean = false): TemplateAstPath {
+export function findTemplateAstAt(ast: TemplateAst[], position: number): TemplateAstPath {
   const path: TemplateAst[] = [];
   const visitor = new class extends RecursiveTemplateAstVisitor {
     visit(ast: TemplateAst, context: any): any {
       let span = spanOf(ast);
       if (inSpan(position, span)) {
         const len = path.length;
-        if (!len || allowWidening || isNarrower(span, spanOf(path[len - 1]))) {
+        if (!len || isNarrower(span, spanOf(path[len - 1]))) {
           path.push(ast);
         }
       } else {

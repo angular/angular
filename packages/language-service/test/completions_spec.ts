@@ -296,12 +296,6 @@ describe('completions', () => {
   });
 
   describe('with a *ngFor', () => {
-    it('should include a let for empty attribute', () => {
-      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'for-empty');
-      const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
-      expectContain(completions, CompletionKind.KEY, ['let', 'of']);
-    });
-
     it('should suggest NgForRow members for let initialization expression', () => {
       const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'for-let-i-equal');
       const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
@@ -315,18 +309,6 @@ describe('completions', () => {
         'even',
         'odd',
       ]);
-    });
-
-    it('should include a let', () => {
-      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'for-let');
-      const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
-      expectContain(completions, CompletionKind.KEY, ['let', 'of']);
-    });
-
-    it('should include an "of"', () => {
-      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'for-of');
-      const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
-      expectContain(completions, CompletionKind.KEY, ['let', 'of']);
     });
 
     it('should include field reference', () => {
