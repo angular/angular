@@ -214,7 +214,10 @@ function bulidMapFromValues(
       let key = keys[i];
       key = trim ? key.trim() : key;
       const value = (values as{[key: string]: any})[key];
-      setMapValues(map, key, value, parseOutUnits, allowSubKeys);
+
+      if (value !== undefined) {
+        setMapValues(map, key, value, parseOutUnits, allowSubKeys);
+      }
     }
   } else {
     // case 2: array

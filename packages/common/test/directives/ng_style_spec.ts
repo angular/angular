@@ -157,6 +157,29 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
          expectNativeEl(fixture).not.toHaveCssStyle('max-width');
          expectNativeEl(fixture).toHaveCssStyle({'font-size': '12px'});
        }));
+
+    it('should skip keys that are set to undefined values', async(() => {
+         const template = `<div [ngStyle]="expr"></div>`;
+
+         fixture = createTestComponent(template);
+
+         getComponent().expr = {
+           'border-top-color': undefined,
+           'border-top-style': undefined,
+           'border-color': 'red',
+           'border-style': 'solid',
+           'border-width': '1rem',
+         };
+
+         fixture.detectChanges();
+
+         expectNativeEl(fixture).toHaveCssStyle({
+           'border-color': 'red',
+           'border-style': 'solid',
+           'border-width': '1rem',
+         });
+       }));
+
   });
 }
 
