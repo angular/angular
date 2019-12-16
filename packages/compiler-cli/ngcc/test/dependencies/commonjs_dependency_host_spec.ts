@@ -12,29 +12,6 @@ import {loadTestFiles} from '../../../test/helpers';
 import {CommonJsDependencyHost} from '../../src/dependencies/commonjs_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 
-interface ImportsPerType {
-  // var foo = require('...');
-  varDeclaration?: string[];
-
-  // var foo = require('...'), bar = require('...');
-  varDeclarations?: string[][];
-
-  // exports.foo = require('...');
-  propAssignment?: string[];
-
-  // module.exports = {foo: require('...')};
-  inObjectLiteral?: string[];
-
-  // require('...');
-  forSideEffects?: string[];
-
-  // __export(require('...'));
-  reExportsWithEmittedHelper?: string[];
-
-  // tslib_1.__exportStar(require('...'), exports);
-  reExportsWithImportedHelper?: string[];
-}
-
 runInEachFileSystem(() => {
   describe('CommonJsDependencyHost', () => {
     let _: typeof absoluteFrom;
@@ -347,6 +324,29 @@ runInEachFileSystem(() => {
       });
     });
   });
+
+  interface ImportsPerType {
+    // var foo = require('...');
+    varDeclaration?: string[];
+
+    // var foo = require('...'), bar = require('...');
+    varDeclarations?: string[][];
+
+    // exports.foo = require('...');
+    propAssignment?: string[];
+
+    // module.exports = {foo: require('...')};
+    inObjectLiteral?: string[];
+
+    // require('...');
+    forSideEffects?: string[];
+
+    // __export(require('...'));
+    reExportsWithEmittedHelper?: string[];
+
+    // tslib_1.__exportStar(require('...'), exports);
+    reExportsWithImportedHelper?: string[];
+  }
 
   function commonJs(importsPerType: ImportsPerType | string[], exportNames: string[] = []): string {
     if (Array.isArray(importsPerType)) {

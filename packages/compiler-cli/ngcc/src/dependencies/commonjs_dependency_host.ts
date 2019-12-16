@@ -71,14 +71,11 @@ export class CommonJsDependencyHost extends DependencyHostBase {
           } else if (ts.isObjectLiteralExpression(stmt.expression.right)) {
             // Import in object literal. E.g.:
             // `module.exports = {foo: require('...')}`
-            const requireCallsFromProperties: RequireCall[] =
-                stmt.expression.right.properties
-                    .filter(
-                        (prop): prop is ts.PropertyAssignment & {initializer: RequireCall} =>
-                            ts.isPropertyAssignment(prop) && isRequireCall(prop.initializer))
-                    .map(prop => prop.initializer);
-
-            requireCalls.push(...requireCallsFromProperties);
+            stmt.expression.right.properties.forEach(prop => {
+              if (ts.isPropertyAssignment(prop) && isRequireCall(prop.initializer)) {
+                requireCalls.push(prop.initializer);
+              }
+            });
           }
         }
       }
