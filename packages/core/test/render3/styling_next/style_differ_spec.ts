@@ -7,7 +7,7 @@
  */
 
 import {StyleChangesMap, parseKeyValue, removeStyle} from '@angular/core/src/render3/styling/style_differ';
-import {consumeSeparator, consumeStyleValue} from '@angular/core/src/render3/styling/styling_parser';
+import {consumeSeparatorWithWhitespace, consumeStyleValue} from '@angular/core/src/render3/styling/styling_parser';
 import {CharCode} from '@angular/core/src/util/char_code';
 import {sortedForEach} from './class_differ_spec';
 
@@ -92,6 +92,7 @@ describe('style differ', () => {
 
     it('should remove some of the style', () => {
       expect(removeStyle('a: a; foo: bar; b: b', 'foo')).toEqual('a: a; b: b');
+      expect(removeStyle('a: a;    foo: bar;   b: b', 'foo')).toEqual('a: a; b: b');
       expect(removeStyle('a: a; foo: bar; b: b; foo: bar; c: c', 'foo'))
           .toEqual('a: a; b: b; c: c');
     });
@@ -113,9 +114,9 @@ function expectParseValue(
     text: string) {
   let stopIndex = text.indexOf('🛑');
   if (stopIndex < 0) stopIndex = text.length;
-  const valueStart = consumeSeparator(text, 0, text.length, CharCode.COLON);
+  const valueStart = consumeSeparatorWithWhitespace(text, 0, text.length, CharCode.COLON);
   const valueEnd = consumeStyleValue(text, valueStart, text.length);
-  const valueSep = consumeSeparator(text, valueEnd, text.length, CharCode.SEMI_COLON);
+  const valueSep = consumeSeparatorWithWhitespace(text, valueEnd, text.length, CharCode.SEMI_COLON);
   expect(valueSep).toBe(stopIndex);
   return expect(text.substring(valueStart, valueEnd));
 }
