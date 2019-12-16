@@ -8,7 +8,7 @@
 import {AnimationEvent} from '@angular/animations';
 import {AriaDescriber, FocusMonitor} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty, NumberInput} from '@angular/cdk/coercion';
 import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
 import {BreakpointObserver, Breakpoints, BreakpointState} from '@angular/cdk/layout';
 import {
@@ -604,9 +604,9 @@ export class MatTooltip implements OnDestroy, OnInit {
     }
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_hideDelay: number | string | null | undefined;
-  static ngAcceptInputType_showDelay: number | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_hideDelay: NumberInput;
+  static ngAcceptInputType_showDelay: NumberInput;
 }
 
 /**

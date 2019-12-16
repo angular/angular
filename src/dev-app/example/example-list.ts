@@ -8,7 +8,7 @@
 
 import {Component, Input} from '@angular/core';
 import {EXAMPLE_COMPONENTS} from '@angular/components-examples';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 
 /** Displays a set of components-examples in a mat-accordion. */
 @Component({
@@ -66,5 +66,5 @@ export class ExampleList {
 
   exampleComponents = EXAMPLE_COMPONENTS;
 
-  static ngAcceptInputType_expandAll: boolean | string | null | undefined;
+  static ngAcceptInputType_expandAll: BooleanInput;
 }

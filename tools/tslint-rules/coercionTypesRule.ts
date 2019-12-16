@@ -61,9 +61,19 @@ class Walker extends Lint.RuleWalker {
     if (node.type.kind === ts.SyntaxKind.AnyKeyword) {
       // if the type is "any", then it can be "null" and "undefined" too.
       return;
+    } else if (
+        ts.isTypeReferenceNode(node.type) && ts.isIdentifier(node.type.typeName) &&
+        (node.type.typeName.text === 'BooleanInput' || node.type.typeName.text === 'NumberInput')) {
+      // if the type is "BooleanInput" or "NumberInput", we don't need to check more. Ideally,
+      // we'd not have any of these hardcoded checks at all, and just rely on type assignability
+      // checks, but this is only programmatically possible with TypeScript 3.7. See:
+      // https://github.com/microsoft/TypeScript/issues/9879
+      return;
     } else if (!ts.isUnionTypeNode(node.type)) {
-      this.addFailureAtNode(node, 'Acceptance member does not have an union type. The member ' +
-        'should use an union type to also accept "null" and "undefined".');
+      this.addFailureAtNode(
+          node,
+          'Acceptance member does not have an union type. The member ' +
+              'should use an union type to also accept "null" and "undefined".');
       return;
     }
 
@@ -78,14 +88,17 @@ class Walker extends Lint.RuleWalker {
     }
 
     if (!hasNull && !hasUndefined) {
-      this.addFailureAtNode(node, 'Acceptance member has to accept "null" and "undefined".',
+      this.addFailureAtNode(
+          node, 'Acceptance member has to accept "null" and "undefined".',
           this.appendText(node.type.getEnd(), ' | null | undefined'));
     } else if (!hasNull) {
-      this.addFailureAtNode(node, 'Acceptance member has to accept "null".',
-        this.appendText(node.type.getEnd(), ' | null'));
+      this.addFailureAtNode(
+          node, 'Acceptance member has to accept "null".',
+          this.appendText(node.type.getEnd(), ' | null'));
     } else if (!hasUndefined) {
-      this.addFailureAtNode(node, 'Acceptance member has to accept "undefined".',
-        this.appendText(node.type.getEnd(), ' | undefined'));
+      this.addFailureAtNode(
+          node, 'Acceptance member has to accept "undefined".',
+          this.appendText(node.type.getEnd(), ' | undefined'));
     }
   }
 

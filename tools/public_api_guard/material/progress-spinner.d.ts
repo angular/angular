@@ -16,9 +16,9 @@ export declare class MatProgressSpinner extends _MatProgressSpinnerMixinBase imp
     value: number;
     constructor(_elementRef: ElementRef<HTMLElement>, platform: Platform, _document: any, animationMode: string, defaults?: MatProgressSpinnerDefaultOptions);
     ngOnInit(): void;
-    static ngAcceptInputType_diameter: number | string | null | undefined;
-    static ngAcceptInputType_strokeWidth: number | string | null | undefined;
-    static ngAcceptInputType_value: number | string | null | undefined;
+    static ngAcceptInputType_diameter: NumberInput;
+    static ngAcceptInputType_strokeWidth: NumberInput;
+    static ngAcceptInputType_value: NumberInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatProgressSpinner, "mat-progress-spinner", ["matProgressSpinner"], { 'color': "color", 'diameter': "diameter", 'strokeWidth': "strokeWidth", 'mode': "mode", 'value': "value" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatProgressSpinner>;
 }
@@ -36,9 +36,9 @@ export declare class MatProgressSpinnerModule {
 
 export declare class MatSpinner extends MatProgressSpinner {
     constructor(elementRef: ElementRef<HTMLElement>, platform: Platform, document: any, animationMode: string, defaults?: MatProgressSpinnerDefaultOptions);
-    static ngAcceptInputType_diameter: number | string | null | undefined;
-    static ngAcceptInputType_strokeWidth: number | string | null | undefined;
-    static ngAcceptInputType_value: number | string | null | undefined;
+    static ngAcceptInputType_diameter: NumberInput;
+    static ngAcceptInputType_strokeWidth: NumberInput;
+    static ngAcceptInputType_value: NumberInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSpinner, "mat-spinner", never, { 'color': "color" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatSpinner>;
 }

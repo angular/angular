@@ -7,7 +7,7 @@
  */
 
 import {Directive, Input, ContentChildren, QueryList, AfterContentInit} from '@angular/core';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {CdkAccordion} from '@angular/cdk/accordion';
 import {FocusKeyManager} from '@angular/cdk/a11y';
 import {HOME, END, hasModifierKey} from '@angular/cdk/keycodes';
@@ -102,6 +102,6 @@ export class MatAccordion extends CdkAccordion implements MatAccordionBase, Afte
     this._keyManager.updateActiveItem(header);
   }
 
-  static ngAcceptInputType_hideToggle: boolean | string | null | undefined;
-  static ngAcceptInputType_multi: boolean | string | null | undefined;
+  static ngAcceptInputType_hideToggle: BooleanInput;
+  static ngAcceptInputType_multi: BooleanInput;
 }

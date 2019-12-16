@@ -11,8 +11,8 @@ export declare class MatCellDef extends CdkCellDef {
 
 export declare class MatColumnDef extends CdkColumnDef {
     name: string;
-    static ngAcceptInputType_sticky: boolean | string | null | undefined;
-    static ngAcceptInputType_stickyEnd: boolean | string | null | undefined;
+    static ngAcceptInputType_sticky: BooleanInput;
+    static ngAcceptInputType_stickyEnd: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatColumnDef, "[matColumnDef]", never, { 'sticky': "sticky", 'name': "matColumnDef" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatColumnDef>;
 }
@@ -34,7 +34,7 @@ export declare class MatFooterRow extends CdkFooterRow {
 }
 
 export declare class MatFooterRowDef extends CdkFooterRowDef {
-    static ngAcceptInputType_sticky: boolean | string | null | undefined;
+    static ngAcceptInputType_sticky: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatFooterRowDef, "[matFooterRowDef]", never, { 'columns': "matFooterRowDef", 'sticky': "matFooterRowDefSticky" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatFooterRowDef>;
 }
@@ -56,7 +56,7 @@ export declare class MatHeaderRow extends CdkHeaderRow {
 }
 
 export declare class MatHeaderRowDef extends CdkHeaderRowDef {
-    static ngAcceptInputType_sticky: boolean | string | null | undefined;
+    static ngAcceptInputType_sticky: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatHeaderRowDef, "[matHeaderRowDef]", never, { 'columns': "matHeaderRowDef", 'sticky': "matHeaderRowDefSticky" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatHeaderRowDef>;
 }
@@ -73,7 +73,7 @@ export declare class MatRowDef<T> extends CdkRowDef<T> {
 
 export declare class MatTable<T> extends CdkTable<T> {
     protected stickyCssClass: string;
-    static ngAcceptInputType_multiTemplateDataRows: boolean | string | null | undefined;
+    static ngAcceptInputType_multiTemplateDataRows: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTable<any>, "mat-table, table[mat-table]", ["matTable"], {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTable<any>>;
 }

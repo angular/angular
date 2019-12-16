@@ -8,7 +8,7 @@
 
 import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {END, HOME} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
@@ -554,9 +554,9 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
     this._lastDestroyedChipIndex = null;
   }
 
-  static ngAcceptInputType_multiple: boolean | string | null | undefined;
-  static ngAcceptInputType_selectable: boolean | string | null | undefined;
-  static ngAcceptInputType_required: boolean | string | null | undefined;
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_multiple: BooleanInput;
+  static ngAcceptInputType_selectable: BooleanInput;
+  static ngAcceptInputType_required: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
 }
 

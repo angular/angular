@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Component, ElementRef, Injector, Input, OnInit} from '@angular/core';
 import {EXAMPLE_COMPONENTS} from '@angular/components-examples';
 import {createCustomElement} from '@angular/elements';
@@ -72,5 +72,5 @@ export class Example implements OnInit {
     this.title = EXAMPLE_COMPONENTS[this.id] ? EXAMPLE_COMPONENTS[this.id].title : '';
   }
 
-  static ngAcceptInputType_showLabel: boolean | string | null | undefined;
+  static ngAcceptInputType_showLabel: BooleanInput;
 }

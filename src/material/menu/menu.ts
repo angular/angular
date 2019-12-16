@@ -8,7 +8,7 @@
 
 import {FocusKeyManager, FocusOrigin} from '@angular/cdk/a11y';
 import {Direction} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   ESCAPE,
   LEFT_ARROW,
@@ -508,6 +508,6 @@ export class _MatMenu extends MatMenu {
     super(elementRef, ngZone, defaultOptions);
   }
 
-  static ngAcceptInputType_overlapTrigger: boolean | string | null | undefined;
-  static ngAcceptInputType_hasBackdrop: boolean | string | null | undefined;
+  static ngAcceptInputType_overlapTrigger: BooleanInput;
+  static ngAcceptInputType_hasBackdrop: BooleanInput;
 }

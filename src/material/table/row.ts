@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BooleanInput} from '@angular/cdk/coercion';
 import {
   CDK_ROW_TEMPLATE,
   CdkFooterRow,
@@ -27,7 +28,7 @@ import {ChangeDetectionStrategy, Component, Directive, ViewEncapsulation} from '
   inputs: ['columns: matHeaderRowDef', 'sticky: matHeaderRowDefSticky'],
 })
 export class MatHeaderRowDef extends CdkHeaderRowDef {
-  static ngAcceptInputType_sticky: boolean | string | null | undefined;
+  static ngAcceptInputType_sticky: BooleanInput;
 }
 
 /**
@@ -40,7 +41,7 @@ export class MatHeaderRowDef extends CdkHeaderRowDef {
   inputs: ['columns: matFooterRowDef', 'sticky: matFooterRowDefSticky'],
 })
 export class MatFooterRowDef extends CdkFooterRowDef {
-  static ngAcceptInputType_sticky: boolean | string | null | undefined;
+  static ngAcceptInputType_sticky: BooleanInput;
 }
 
 /**

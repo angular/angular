@@ -7,7 +7,7 @@
  */
 
 import {Directionality} from '@angular/cdk/bidi';
-import {coerceNumberProperty} from '@angular/cdk/coercion';
+import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
 import {Directive, ElementRef, Input, OnDestroy, Optional, Renderer2} from '@angular/core';
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
@@ -110,5 +110,5 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
     }
   }
 
-  static ngAcceptInputType_level: number | string | null | undefined;
+  static ngAcceptInputType_level: NumberInput;
 }

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BooleanInput} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 import {
   ChangeDetectionStrategy,
@@ -52,8 +53,8 @@ export class MatIconButton extends MatButtonBase {
     super(elementRef, platform, ngZone, animationMode);
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }
 
 /**
@@ -81,6 +82,6 @@ export class MatIconAnchor extends MatAnchorBase {
     super(elementRef, platform, ngZone, animationMode);
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }

@@ -7,7 +7,7 @@
  */
 
 import {FocusMonitor} from '@angular/cdk/a11y';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
 import {
   AfterContentInit,
@@ -369,9 +369,9 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
     this.valueChange.emit(this.value);
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_multiple: boolean | string | null | undefined;
-  static ngAcceptInputType_vertical: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_multiple: BooleanInput;
+  static ngAcceptInputType_vertical: BooleanInput;
 }
 
 // Boilerplate for applying mixins to the MatButtonToggle class.
@@ -560,9 +560,9 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
     this._changeDetectorRef.markForCheck();
   }
 
-  static ngAcceptInputType_checked: boolean | string | null | undefined;
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_vertical: boolean | string | null | undefined;
-  static ngAcceptInputType_multiple: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_checked: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_vertical: BooleanInput;
+  static ngAcceptInputType_multiple: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }

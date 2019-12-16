@@ -25,7 +25,12 @@ import {
 } from '@angular/core';
 import {MDCSwitchAdapter, MDCSwitchFoundation} from '@material/switch';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
+import {
+  BooleanInput,
+  coerceBooleanProperty,
+  coerceNumberProperty,
+  NumberInput
+} from '@angular/cdk/coercion';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {ThemePalette, RippleAnimationConfig} from '@angular/material/core';
 import {numbers} from '@material/ripple';
@@ -312,9 +317,9 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
     this._changeDetectorRef.markForCheck();
   }
 
-  static ngAcceptInputType_tabIndex: number | string | null | undefined;
-  static ngAcceptInputType_required: boolean | string | null | undefined;
-  static ngAcceptInputType_checked: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_tabIndex: NumberInput;
+  static ngAcceptInputType_required: BooleanInput;
+  static ngAcceptInputType_checked: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
 }

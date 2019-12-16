@@ -7,7 +7,7 @@
  */
 
 import {FocusMonitor} from '@angular/cdk/a11y';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {
   AfterContentInit,
@@ -307,8 +307,8 @@ export class MatRadioGroup implements AfterContentInit, ControlValueAccessor {
     this._changeDetector.markForCheck();
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_required: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_required: BooleanInput;
 }
 
 // Boilerplate for applying mixins to MatRadioButton.
@@ -597,8 +597,8 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
     }
   }
 
-  static ngAcceptInputType_checked: boolean | string | null | undefined;
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_required: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_checked: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_required: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }

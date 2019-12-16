@@ -7,7 +7,7 @@
  */
 
 import {Direction, Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {CollectionViewer, DataSource, isDataSource} from '@angular/cdk/collections';
 import {Platform} from '@angular/cdk/platform';
 import {DOCUMENT} from '@angular/common';
@@ -1077,7 +1077,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
         });
   }
 
-  static ngAcceptInputType_multiTemplateDataRows: boolean | string | null | undefined;
+  static ngAcceptInputType_multiTemplateDataRows: BooleanInput;
 }
 
 /** Utility function that gets a merged list of the entries in a QueryList and values of a Set. */

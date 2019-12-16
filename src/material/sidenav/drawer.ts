@@ -8,7 +8,7 @@
 import {AnimationEvent} from '@angular/animations';
 import {FocusMonitor, FocusOrigin, FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
 import {Platform} from '@angular/cdk/platform';
 import {CdkScrollable, ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
@@ -452,9 +452,9 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     this._animationEnd.next(event);
   }
 
-  static ngAcceptInputType_disableClose: boolean | string | null | undefined;
-  static ngAcceptInputType_autoFocus: boolean | string | null | undefined;
-  static ngAcceptInputType_opened: boolean | string | null | undefined;
+  static ngAcceptInputType_disableClose: BooleanInput;
+  static ngAcceptInputType_autoFocus: BooleanInput;
+  static ngAcceptInputType_opened: BooleanInput;
 }
 
 
@@ -832,6 +832,6 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
     return drawer != null && drawer.opened;
   }
 
-  static ngAcceptInputType_autosize: boolean | string | null | undefined;
-  static ngAcceptInputType_hasBackdrop: boolean | string | null | undefined;
+  static ngAcceptInputType_autosize: BooleanInput;
+  static ngAcceptInputType_hasBackdrop: BooleanInput;
 }

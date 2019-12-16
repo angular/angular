@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 import {
   AfterViewInit,
@@ -387,9 +387,9 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
     }
   }
 
-  static ngAcceptInputType_checked: boolean | string | null | undefined;
-  static ngAcceptInputType_indeterminate: boolean | string | null | undefined;
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_required: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_checked: BooleanInput;
+  static ngAcceptInputType_indeterminate: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_required: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }

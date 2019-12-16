@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BooleanInput} from '@angular/cdk/coercion';
 import {Directive, ElementRef, Input} from '@angular/core';
 import {
   CdkCell,
@@ -61,8 +62,8 @@ export class MatColumnDef extends CdkColumnDef {
   /** Unique name for this column. */
   @Input('matColumnDef') name: string;
 
-  static ngAcceptInputType_sticky: boolean | string | null | undefined;
-  static ngAcceptInputType_stickyEnd: boolean | string | null | undefined;
+  static ngAcceptInputType_sticky: BooleanInput;
+  static ngAcceptInputType_stickyEnd: BooleanInput;
 }
 
 /** Header cell template container that adds the right classes and role. */

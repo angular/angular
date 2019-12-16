@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BooleanInput} from '@angular/cdk/coercion';
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
 import {CanDisable, CanDisableCtor, mixinDisabled} from '../common-behaviors/disabled';
 
@@ -45,5 +46,5 @@ export class MatOptgroup extends _MatOptgroupMixinBase implements CanDisable {
   /** Unique id for the underlying label. */
   _labelId: string = `mat-optgroup-label-${_uniqueOptgroupIdCounter++}`;
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
 }

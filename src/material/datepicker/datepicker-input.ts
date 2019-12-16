@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {DOWN_ARROW} from '@angular/cdk/keycodes';
 import {
   Directive,
@@ -367,9 +367,8 @@ export class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, V
     return (this._dateAdapter.isDateInstance(obj) && this._dateAdapter.isValid(obj)) ? obj : null;
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-
   // Accept `any` to avoid conflicts with other directives on `<input>` that
   // may accept different types.
   static ngAcceptInputType_value: any;
+  static ngAcceptInputType_disabled: BooleanInput;
 }

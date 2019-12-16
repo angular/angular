@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceNumberProperty} from '@angular/cdk/coercion';
+import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 import {DOCUMENT} from '@angular/common';
 import {
@@ -295,9 +295,9 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
         .replace(/DIAMETER/g, `${this.diameter}`);
   }
 
-  static ngAcceptInputType_diameter: number | string | null | undefined;
-  static ngAcceptInputType_strokeWidth: number | string | null | undefined;
-  static ngAcceptInputType_value: number | string | null | undefined;
+  static ngAcceptInputType_diameter: NumberInput;
+  static ngAcceptInputType_strokeWidth: NumberInput;
+  static ngAcceptInputType_value: NumberInput;
 }
 
 
@@ -333,9 +333,9 @@ export class MatSpinner extends MatProgressSpinner {
     this.mode = 'indeterminate';
   }
 
-  static ngAcceptInputType_diameter: number | string | null | undefined;
-  static ngAcceptInputType_strokeWidth: number | string | null | undefined;
-  static ngAcceptInputType_value: number | string | null | undefined;
+  static ngAcceptInputType_diameter: NumberInput;
+  static ngAcceptInputType_strokeWidth: NumberInput;
+  static ngAcceptInputType_value: NumberInput;
 }
 
 

@@ -14,9 +14,9 @@ export declare class MatBadge extends _MatBadgeMixinBase implements OnDestroy, O
     isAfter(): boolean;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
-    static ngAcceptInputType_disabled: boolean | string | null | undefined;
-    static ngAcceptInputType_hidden: boolean | string | null | undefined;
-    static ngAcceptInputType_overlap: boolean | string | null | undefined;
+    static ngAcceptInputType_disabled: BooleanInput;
+    static ngAcceptInputType_hidden: BooleanInput;
+    static ngAcceptInputType_overlap: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatBadge, "[matBadge]", never, { 'disabled': "matBadgeDisabled", 'color': "matBadgeColor", 'overlap': "matBadgeOverlap", 'position': "matBadgePosition", 'content': "matBadge", 'description': "matBadgeDescription", 'size': "matBadgeSize", 'hidden': "matBadgeHidden" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatBadge>;
 }

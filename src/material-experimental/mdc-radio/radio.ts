@@ -15,7 +15,7 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
 } from '@angular/core';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MDCRadioAdapter, MDCRadioFoundation} from '@material/radio';
 
 // Increasing integer for generating unique ids for radio components.
@@ -80,5 +80,5 @@ export class MatRadioButton implements AfterViewInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
 }

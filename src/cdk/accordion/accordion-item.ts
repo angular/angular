@@ -18,7 +18,7 @@ import {
 } from '@angular/core';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {CdkAccordion} from './accordion';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Subscription} from 'rxjs';
 
 /** Used to generate unique ID for each accordion item. */
@@ -153,6 +153,6 @@ export class CdkAccordionItem implements OnDestroy {
     });
   }
 
-  static ngAcceptInputType_expanded: boolean | string | null | undefined;
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_expanded: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
 }

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BooleanInput} from '@angular/cdk/coercion';
 import {Overlay, ScrollStrategy} from '@angular/cdk/overlay';
 import {
   ChangeDetectionStrategy,
@@ -71,6 +72,6 @@ export class MatMenu extends BaseMatMenu {
     // - should not increase the elevation if the user specified a custom one
   }
 
-  static ngAcceptInputType_overlapTrigger: boolean | string | null | undefined;
-  static ngAcceptInputType_hasBackdrop: boolean | string | null | undefined;
+  static ngAcceptInputType_overlapTrigger: BooleanInput;
+  static ngAcceptInputType_hasBackdrop: BooleanInput;
 }

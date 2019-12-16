@@ -7,7 +7,7 @@
  */
 
 import {Directive, ElementRef, Inject, Optional, Input, OnDestroy} from '@angular/core';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Subject} from 'rxjs';
 import {CDK_DRAG_PARENT} from '../drag-parent';
 import {toggleNativeDragInteractions} from '../drag-styling';
@@ -47,5 +47,5 @@ export class CdkDragHandle implements OnDestroy {
     this._stateChanges.complete();
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
 }

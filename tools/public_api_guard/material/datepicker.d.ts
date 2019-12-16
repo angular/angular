@@ -133,8 +133,8 @@ export declare class MatDatepicker<D> implements OnDestroy, CanColor {
     ngOnDestroy(): void;
     open(): void;
     select(date: D): void;
-    static ngAcceptInputType_disabled: boolean | string | null | undefined;
-    static ngAcceptInputType_touchUi: boolean | string | null | undefined;
+    static ngAcceptInputType_disabled: BooleanInput;
+    static ngAcceptInputType_touchUi: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepicker<any>, "mat-datepicker", ["matDatepicker"], { 'calendarHeaderComponent': "calendarHeaderComponent", 'startAt': "startAt", 'startView': "startView", 'color': "color", 'touchUi': "touchUi", 'disabled': "disabled", 'panelClass': "panelClass", 'dateClass': "dateClass", 'opened': "opened" }, { 'yearSelected': "yearSelected", 'monthSelected': "monthSelected", 'openedStream': "opened", 'closedStream': "closed" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatDatepicker<any>>;
 }
@@ -184,7 +184,7 @@ export declare class MatDatepickerInput<D> implements ControlValueAccessor, OnDe
     setDisabledState(isDisabled: boolean): void;
     validate(c: AbstractControl): ValidationErrors | null;
     writeValue(value: D): void;
-    static ngAcceptInputType_disabled: boolean | string | null | undefined;
+    static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_value: any;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDatepickerInput<any>, "input[matDatepicker]", ["matDatepickerInput"], { 'matDatepicker': "matDatepicker", 'matDatepickerFilter': "matDatepickerFilter", 'value': "value", 'min': "min", 'max': "max", 'disabled': "disabled" }, { 'dateChange': "dateChange", 'dateInput': "dateInput" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatDatepickerInput<any>>;
@@ -234,7 +234,7 @@ export declare class MatDatepickerToggle<D> implements AfterContentInit, OnChang
     ngAfterContentInit(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
-    static ngAcceptInputType_disabled: boolean | string | null | undefined;
+    static ngAcceptInputType_disabled: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepickerToggle<any>, "mat-datepicker-toggle", ["matDatepickerToggle"], { 'datepicker': "for", 'tabIndex': "tabIndex", 'disabled': "disabled", 'disableRipple': "disableRipple" }, {}, ["_customIcon"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatDatepickerToggle<any>>;
 }

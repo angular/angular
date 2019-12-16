@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceBooleanProperty, coerceNumberProperty, coerceElement} from '@angular/cdk/coercion';
+import {
+  coerceBooleanProperty,
+  coerceNumberProperty,
+  coerceElement,
+  BooleanInput
+} from '@angular/cdk/coercion';
 import {
   AfterContentInit,
   Directive,
@@ -194,8 +199,8 @@ export class CdkObserveContent implements AfterContentInit, OnDestroy {
     }
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_debounce: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_debounce: BooleanInput;
 }
 
 

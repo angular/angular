@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {DOCUMENT} from '@angular/common';
 import {
   AfterContentInit,
@@ -419,6 +419,6 @@ export class CdkTrapFocus implements OnDestroy, AfterContentInit, DoCheck {
     }
   }
 
-  static ngAcceptInputType_enabled: boolean | string | null | undefined;
-  static ngAcceptInputType_autoCapture: boolean | string | null | undefined;
+  static ngAcceptInputType_enabled: BooleanInput;
+  static ngAcceptInputType_autoCapture: BooleanInput;
 }

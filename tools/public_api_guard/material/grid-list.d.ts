@@ -12,7 +12,7 @@ export declare class MatGridList implements MatGridListBase, OnInit, AfterConten
     _setListStyle(style: [string, string | null] | null): void;
     ngAfterContentChecked(): void;
     ngOnInit(): void;
-    static ngAcceptInputType_cols: number | string | null | undefined;
+    static ngAcceptInputType_cols: NumberInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatGridList, "mat-grid-list", ["matGridList"], { 'cols': "cols", 'gutterSize': "gutterSize", 'rowHeight': "rowHeight" }, {}, ["_tiles"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatGridList>;
 }
@@ -30,8 +30,8 @@ export declare class MatGridTile {
     rowspan: number;
     constructor(_element: ElementRef<HTMLElement>, _gridList?: MatGridListBase | undefined);
     _setStyle(property: string, value: any): void;
-    static ngAcceptInputType_colspan: number | string | null | undefined;
-    static ngAcceptInputType_rowspan: number | string | null | undefined;
+    static ngAcceptInputType_colspan: NumberInput;
+    static ngAcceptInputType_rowspan: NumberInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatGridTile, "mat-grid-tile", ["matGridTile"], { 'rowspan': "rowspan", 'colspan': "colspan" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatGridTile>;
 }

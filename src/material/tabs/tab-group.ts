@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
+import {
+  BooleanInput,
+  coerceBooleanProperty,
+  coerceNumberProperty,
+  NumberInput
+} from '@angular/cdk/coercion';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -408,8 +413,8 @@ export class MatTabGroup extends _MatTabGroupBase {
     super(elementRef, changeDetectorRef, defaultConfig, animationMode);
   }
 
-  static ngAcceptInputType_dynamicHeight: boolean | string | null | undefined;
-  static ngAcceptInputType_animationDuration: number | string | null | undefined;
-  static ngAcceptInputType_selectedIndex: number | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_dynamicHeight: BooleanInput;
+  static ngAcceptInputType_animationDuration: NumberInput;
+  static ngAcceptInputType_selectedIndex: NumberInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }

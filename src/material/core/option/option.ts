@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ENTER, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
 import {
   AfterViewChecked,
@@ -267,7 +267,7 @@ export class MatOption implements FocusableOption, AfterViewChecked, OnDestroy {
     this.onSelectionChange.emit(new MatOptionSelectionChange(this, isUserInput));
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
 }
 
 /**

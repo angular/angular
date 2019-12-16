@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BooleanInput, NumberInput} from '@angular/cdk/coercion';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -73,6 +74,6 @@ export class MatTabHeader extends _MatTabHeaderBase implements AfterContentInit 
     super.ngAfterContentInit();
   }
 
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
-  static ngAcceptInputType_selectedIndex: number | string | null | undefined;
+  static ngAcceptInputType_disableRipple: BooleanInput;
+  static ngAcceptInputType_selectedIndex: NumberInput;
 }

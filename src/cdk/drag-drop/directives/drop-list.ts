@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceArray, coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceArray, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   ContentChildren,
   ElementRef,
@@ -332,7 +332,7 @@ export class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
     });
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_sortingDisabled: boolean | string | null | undefined;
-  static ngAcceptInputType_autoScrollDisabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_sortingDisabled: BooleanInput;
+  static ngAcceptInputType_autoScrollDisabled: BooleanInput;
 }

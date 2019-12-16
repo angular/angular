@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BooleanInput} from '@angular/cdk/coercion';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {
   ChangeDetectionStrategy,
@@ -140,5 +141,5 @@ export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnCh
         this._explicitContent || this._implicitContent, this._viewContainerRef);
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
 }

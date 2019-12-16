@@ -6,6 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/**
+ * Type describing the allowed values for a number input
+ * @docs-private
+ */
+export type NumberInput = string | number | null | undefined;
+
 /** Coerces a data-bound value (typically a string) to a number. */
 export function coerceNumberProperty(value: any): number;
 export function coerceNumberProperty<D>(value: any, fallback: D): number | D;

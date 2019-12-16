@@ -36,9 +36,9 @@ export declare class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDe
     ngOnDestroy(): void;
     reset(): void;
     resizeToFitContent(force?: boolean): void;
-    static ngAcceptInputType_enabled: boolean | string | null | undefined;
-    static ngAcceptInputType_maxRows: number | string | null | undefined;
-    static ngAcceptInputType_minRows: number | string | null | undefined;
+    static ngAcceptInputType_enabled: BooleanInput;
+    static ngAcceptInputType_maxRows: NumberInput;
+    static ngAcceptInputType_minRows: NumberInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkTextareaAutosize, "textarea[cdkTextareaAutosize]", ["cdkTextareaAutosize"], { 'minRows': "cdkAutosizeMinRows", 'maxRows': "cdkAutosizeMaxRows", 'enabled': "cdkTextareaAutosize" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkTextareaAutosize>;
 }

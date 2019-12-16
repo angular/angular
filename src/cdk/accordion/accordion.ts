@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Directive, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
 import {Subject} from 'rxjs';
 
@@ -60,5 +60,5 @@ export class CdkAccordion implements OnDestroy, OnChanges {
     }
   }
 
-  static ngAcceptInputType_multi: boolean | string | null | undefined;
+  static ngAcceptInputType_multi: BooleanInput;
 }

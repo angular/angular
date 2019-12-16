@@ -7,7 +7,7 @@
  */
 
 import {AriaDescriber} from '@angular/cdk/a11y';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   Directive,
   ElementRef,
@@ -270,7 +270,7 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, OnChanges
     }
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_hidden: boolean | string | null | undefined;
-  static ngAcceptInputType_overlap: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_hidden: BooleanInput;
+  static ngAcceptInputType_overlap: BooleanInput;
 }

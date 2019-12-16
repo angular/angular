@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 
 @Component({
   selector: 'mat-divider',
@@ -37,6 +37,6 @@ export class MatDivider {
   set inset(value: boolean) { this._inset = coerceBooleanProperty(value); }
   private _inset: boolean = false;
 
-  static ngAcceptInputType_vertical: boolean | string | null | undefined;
-  static ngAcceptInputType_inset: boolean | string | null | undefined;
+  static ngAcceptInputType_vertical: BooleanInput;
+  static ngAcceptInputType_inset: BooleanInput;
 }

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BooleanInput} from '@angular/cdk/coercion';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -69,7 +70,7 @@ export class MatNavList extends _MatListMixinBase implements CanDisableRipple, O
     this._stateChanges.complete();
   }
 
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }
 
 @Component({
@@ -118,7 +119,7 @@ export class MatList extends _MatListMixinBase implements CanDisableRipple, OnCh
     this._stateChanges.complete();
   }
 
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }
 
 /**
@@ -221,5 +222,5 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
     return this._element.nativeElement;
   }
 
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }

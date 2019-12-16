@@ -8,7 +8,7 @@
 
 import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
 import {BACKSPACE, END, HOME} from '@angular/cdk/keycodes';
 import {
@@ -810,8 +810,8 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
     }
   }
 
-  static ngAcceptInputType_multiple: boolean | string | null | undefined;
-  static ngAcceptInputType_required: boolean | string | null | undefined;
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_selectable: boolean | string | null | undefined;
+  static ngAcceptInputType_multiple: BooleanInput;
+  static ngAcceptInputType_required: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_selectable: BooleanInput;
 }

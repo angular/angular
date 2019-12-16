@@ -5,8 +5,8 @@ export declare class CdkObserveContent implements AfterContentInit, OnDestroy {
     constructor(_contentObserver: ContentObserver, _elementRef: ElementRef<HTMLElement>, _ngZone: NgZone);
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
-    static ngAcceptInputType_debounce: boolean | string | null | undefined;
-    static ngAcceptInputType_disabled: boolean | string | null | undefined;
+    static ngAcceptInputType_debounce: BooleanInput;
+    static ngAcceptInputType_disabled: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkObserveContent, "[cdkObserveContent]", ["cdkObserveContent"], { 'disabled': "cdkObserveContentDisabled", 'debounce': "debounce" }, { 'event': "cdkObserveContent" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkObserveContent>;
 }

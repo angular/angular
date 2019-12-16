@@ -10,7 +10,7 @@ import {Directive, ElementRef, Inject, Input, OnDestroy, OnInit} from '@angular/
 import {DOCUMENT} from '@angular/common';
 import {MatTabLabelWrapper as BaseMatTabLabelWrapper} from '@angular/material/tabs';
 import {MatInkBarFoundation, MatInkBarItem} from './ink-bar';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 
 /**
  * Used in the `mat-tab-group` view to display tab labels.
@@ -54,6 +54,6 @@ export class MatTabLabelWrapper extends BaseMatTabLabelWrapper
     this.elementRef.nativeElement.focus();
   }
 
-  static ngAcceptInputType_fitInkBarToContent: boolean | string | null | undefined;
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_fitInkBarToContent: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
 }

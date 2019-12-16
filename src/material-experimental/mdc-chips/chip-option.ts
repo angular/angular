@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SPACE} from '@angular/cdk/keycodes';
 import {
   ChangeDetectionStrategy,
@@ -225,10 +225,10 @@ export class MatChipOption extends MatChip {
     }
   }
 
-  static ngAcceptInputType_selectable: boolean | string | null | undefined;
-  static ngAcceptInputType_selected: boolean | string | null | undefined;
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_removable: boolean | string | null | undefined;
-  static ngAcceptInputType_highlighted: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_selectable: BooleanInput;
+  static ngAcceptInputType_selected: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_removable: BooleanInput;
+  static ngAcceptInputType_highlighted: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }

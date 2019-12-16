@@ -30,7 +30,12 @@ import {
   ChangeDetectorRef,
   isDevMode,
 } from '@angular/core';
-import {coerceBooleanProperty, coerceNumberProperty, coerceElement} from '@angular/cdk/coercion';
+import {
+  coerceBooleanProperty,
+  coerceNumberProperty,
+  coerceElement,
+  BooleanInput
+} from '@angular/cdk/coercion';
 import {Observable, Observer, Subject, merge} from 'rxjs';
 import {startWith, take, map, takeUntil, switchMap, tap} from 'rxjs/operators';
 import {
@@ -409,7 +414,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     });
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
 }
 
 /** Gets the closest ancestor of an element that matches a selector. */

@@ -8,7 +8,12 @@
 
 import {ActiveDescendantKeyManager, LiveAnnouncer} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
+import {
+  BooleanInput,
+  coerceBooleanProperty,
+  coerceNumberProperty,
+  NumberInput
+} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
 import {
   A,
@@ -1354,10 +1359,10 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     return this._panelOpen || !this.empty;
   }
 
-  static ngAcceptInputType_required: boolean | string | null | undefined;
-  static ngAcceptInputType_multiple: boolean | string | null | undefined;
-  static ngAcceptInputType_disableOptionCentering: boolean | string | null | undefined;
-  static ngAcceptInputType_typeaheadDebounceInterval: number | string | null | undefined;
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_required: BooleanInput;
+  static ngAcceptInputType_multiple: BooleanInput;
+  static ngAcceptInputType_disableOptionCentering: BooleanInput;
+  static ngAcceptInputType_typeaheadDebounceInterval: NumberInput;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }

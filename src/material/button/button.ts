@@ -7,6 +7,7 @@
  */
 
 import {FocusMonitor, FocusableOption, FocusOrigin} from '@angular/cdk/a11y';
+import {BooleanInput} from '@angular/cdk/coercion';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -135,8 +136,8 @@ export class MatButton extends _MatButtonMixinBase
     return attributes.some(attribute => this._getHostElement().hasAttribute(attribute));
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }
 
 /**
@@ -181,6 +182,6 @@ export class MatAnchor extends MatButton {
     }
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }

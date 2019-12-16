@@ -7,7 +7,7 @@
  */
 
 import {FocusableOption} from '@angular/cdk/a11y';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {BACKSPACE, DELETE, SPACE} from '@angular/cdk/keycodes';
 import {Platform} from '@angular/cdk/platform';
 import {
@@ -389,11 +389,11 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
     }
   }
 
-  static ngAcceptInputType_selected: boolean | string | null | undefined;
-  static ngAcceptInputType_selectable: boolean | string | null | undefined;
-  static ngAcceptInputType_removable: boolean | string | null | undefined;
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_selected: BooleanInput;
+  static ngAcceptInputType_selectable: BooleanInput;
+  static ngAcceptInputType_removable: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }
 
 

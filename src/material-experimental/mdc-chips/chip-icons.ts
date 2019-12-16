@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BooleanInput} from '@angular/cdk/coercion';
 import {
   ChangeDetectorRef,
   Directive,
@@ -121,5 +122,5 @@ export class MatChipRemove extends _MatChipRemoveMixinBase implements CanDisable
     super(_elementRef);
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
 }

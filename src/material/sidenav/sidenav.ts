@@ -22,7 +22,12 @@ import {
 } from '@angular/core';
 import {MatDrawer, MatDrawerContainer, MatDrawerContent, MAT_DRAWER_CONTAINER} from './drawer';
 import {matDrawerAnimations} from './drawer-animations';
-import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
+import {
+  BooleanInput,
+  coerceBooleanProperty,
+  coerceNumberProperty,
+  NumberInput
+} from '@angular/cdk/coercion';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 
 
@@ -96,12 +101,12 @@ export class MatSidenav extends MatDrawer {
   set fixedBottomGap(value) { this._fixedBottomGap = coerceNumberProperty(value); }
   private _fixedBottomGap = 0;
 
-  static ngAcceptInputType_fixedInViewport: boolean | string | null | undefined;
-  static ngAcceptInputType_fixedTopGap: number | string | null | undefined;
-  static ngAcceptInputType_fixedBottomGap: number | string | null | undefined;
-  static ngAcceptInputType_disableClose: boolean | string | null | undefined;
-  static ngAcceptInputType_autoFocus: boolean | string | null | undefined;
-  static ngAcceptInputType_opened: boolean | string | null | undefined;
+  static ngAcceptInputType_fixedInViewport: BooleanInput;
+  static ngAcceptInputType_fixedTopGap: NumberInput;
+  static ngAcceptInputType_fixedBottomGap: NumberInput;
+  static ngAcceptInputType_disableClose: BooleanInput;
+  static ngAcceptInputType_autoFocus: BooleanInput;
+  static ngAcceptInputType_opened: BooleanInput;
 }
 
 
@@ -132,6 +137,6 @@ export class MatSidenavContainer extends MatDrawerContainer {
 
   @ContentChild(MatSidenavContent) _content: MatSidenavContent;
 
-  static ngAcceptInputType_autosize: boolean | string | null | undefined;
-  static ngAcceptInputType_hasBackdrop: boolean | string | null | undefined;
+  static ngAcceptInputType_autosize: BooleanInput;
+  static ngAcceptInputType_hasBackdrop: BooleanInput;
 }

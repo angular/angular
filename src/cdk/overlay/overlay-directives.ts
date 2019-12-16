@@ -7,7 +7,7 @@
  */
 
 import {Direction, Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {
@@ -395,11 +395,11 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     this._backdropSubscription.unsubscribe();
   }
 
-  static ngAcceptInputType_hasBackdrop: boolean | string | null | undefined;
-  static ngAcceptInputType_lockPosition: boolean | string | null | undefined;
-  static ngAcceptInputType_flexibleDimensions: boolean | string | null | undefined;
-  static ngAcceptInputType_growAfterOpen: boolean | string | null | undefined;
-  static ngAcceptInputType_push: boolean | string | null | undefined;
+  static ngAcceptInputType_hasBackdrop: BooleanInput;
+  static ngAcceptInputType_lockPosition: BooleanInput;
+  static ngAcceptInputType_flexibleDimensions: BooleanInput;
+  static ngAcceptInputType_growAfterOpen: BooleanInput;
+  static ngAcceptInputType_push: BooleanInput;
 }
 
 

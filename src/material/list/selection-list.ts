@@ -7,7 +7,7 @@
  */
 
 import {FocusableOption, FocusKeyManager} from '@angular/cdk/a11y';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
 import {
   A,
@@ -305,9 +305,9 @@ export class MatListOption extends _MatListOptionMixinBase implements AfterConte
     this._changeDetector.markForCheck();
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_selected: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_selected: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }
 
 
@@ -640,6 +640,6 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
     }
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }

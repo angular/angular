@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {DOWN_ARROW, ENTER, ESCAPE, TAB, UP_ARROW} from '@angular/cdk/keycodes';
 import {
   FlexibleConnectedPositionStrategy,
@@ -759,5 +759,5 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
     return !element.readOnly && !element.disabled && !this._autocompleteDisabled;
   }
 
-  static ngAcceptInputType_autocompleteDisabled: boolean | string | null | undefined;
+  static ngAcceptInputType_autocompleteDisabled: BooleanInput;
 }

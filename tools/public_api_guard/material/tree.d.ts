@@ -8,7 +8,7 @@ export declare class MatNestedTreeNode<T> extends CdkNestedTreeNode<T> implement
     constructor(_elementRef: ElementRef<HTMLElement>, _tree: CdkTree<T>, _differs: IterableDiffers, tabIndex: string);
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
-    static ngAcceptInputType_disabled: boolean | string | null | undefined;
+    static ngAcceptInputType_disabled: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatNestedTreeNode<any>, "mat-nested-tree-node", ["matNestedTreeNode"], { 'node': "matNestedTreeNode", 'disabled': "disabled", 'tabIndex': "tabIndex" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatNestedTreeNode<any>>;
 }
@@ -58,7 +58,7 @@ export declare class MatTreeNode<T> extends _MatTreeNodeMixinBase<T> implements 
     protected _tree: CdkTree<T>;
     role: 'treeitem' | 'group';
     constructor(_elementRef: ElementRef<HTMLElement>, _tree: CdkTree<T>, tabIndex: string);
-    static ngAcceptInputType_disabled: boolean | string | null | undefined;
+    static ngAcceptInputType_disabled: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTreeNode<any>, "mat-tree-node", ["matTreeNode"], { 'disabled': "disabled", 'tabIndex': "tabIndex", 'role': "role" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTreeNode<any>>;
 }
@@ -80,14 +80,14 @@ export declare class MatTreeNodeOutlet implements CdkTreeNodeOutlet {
 export declare class MatTreeNodePadding<T> extends CdkTreeNodePadding<T> {
     indent: number;
     level: number;
-    static ngAcceptInputType_level: number | string | null | undefined;
+    static ngAcceptInputType_level: NumberInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTreeNodePadding<any>, "[matTreeNodePadding]", never, { 'level': "matTreeNodePadding", 'indent': "matTreeNodePaddingIndent" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTreeNodePadding<any>>;
 }
 
 export declare class MatTreeNodeToggle<T> extends CdkTreeNodeToggle<T> {
     recursive: boolean;
-    static ngAcceptInputType_recursive: boolean | string | null | undefined;
+    static ngAcceptInputType_recursive: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTreeNodeToggle<any>, "[matTreeNodeToggle]", never, { 'recursive': "matTreeNodeToggleRecursive" }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTreeNodeToggle<any>>;
 }

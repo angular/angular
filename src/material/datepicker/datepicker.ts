@@ -7,7 +7,7 @@
  */
 
 import {Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE, UP_ARROW} from '@angular/cdk/keycodes';
 import {
   Overlay,
@@ -521,6 +521,6 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
     }
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_touchUi: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_touchUi: BooleanInput;
 }

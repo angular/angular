@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {coerceNumberProperty} from '@angular/cdk/coercion';
+import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
 import {DOCUMENT} from '@angular/common';
 import {
   AfterViewInit,
@@ -219,7 +219,7 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
     }
   }
 
-  static ngAcceptInputType_value: number | string | null | undefined;
+  static ngAcceptInputType_value: NumberInput;
 }
 
 /** Clamps a value to be between two numbers, by default 0 and 100. */

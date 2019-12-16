@@ -7,7 +7,7 @@
  */
 
 import {Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -599,5 +599,5 @@ export class MatFormField extends _MatFormFieldMixinBase
     return document.documentElement!.contains(element);
   }
 
-  static ngAcceptInputType_hideRequiredMarker: boolean | string | null | undefined;
+  static ngAcceptInputType_hideRequiredMarker: BooleanInput;
 }

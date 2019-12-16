@@ -20,7 +20,7 @@ import {
   Inject,
 } from '@angular/core';
 import {MatLine, setLines} from '@angular/material/core';
-import {coerceNumberProperty} from '@angular/cdk/coercion';
+import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
 import {MAT_GRID_LIST, MatGridListBase} from './grid-list-base';
 
 @Component({
@@ -60,8 +60,8 @@ export class MatGridTile {
     (this._element.nativeElement.style as any)[property] = value;
   }
 
-  static ngAcceptInputType_rowspan: number | string | null | undefined;
-  static ngAcceptInputType_colspan: number | string | null | undefined;
+  static ngAcceptInputType_rowspan: NumberInput;
+  static ngAcceptInputType_colspan: NumberInput;
 }
 
 @Component({

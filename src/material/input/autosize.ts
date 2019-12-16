@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BooleanInput, NumberInput} from '@angular/cdk/coercion';
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {Directive, Input} from '@angular/core';
 
@@ -42,7 +43,7 @@ export class MatTextareaAutosize extends CdkTextareaAutosize {
   get matTextareaAutosize(): boolean { return this.enabled; }
   set matTextareaAutosize(value: boolean) { this.enabled = value; }
 
-  static ngAcceptInputType_minRows: number | string | null | undefined;
-  static ngAcceptInputType_maxRows: number | string | null | undefined;
-  static ngAcceptInputType_enabled: boolean | string | null | undefined;
+  static ngAcceptInputType_minRows: NumberInput;
+  static ngAcceptInputType_maxRows: NumberInput;
+  static ngAcceptInputType_enabled: BooleanInput;
 }

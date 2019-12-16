@@ -8,7 +8,7 @@
 
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   AfterContentInit,
   Attribute,
@@ -294,8 +294,8 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
     this._changeDetectorRef.detectChanges();
   }
 
-  static ngAcceptInputType_required: boolean | string | null | undefined;
-  static ngAcceptInputType_checked: boolean | string | null | undefined;
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_required: BooleanInput;
+  static ngAcceptInputType_checked: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }

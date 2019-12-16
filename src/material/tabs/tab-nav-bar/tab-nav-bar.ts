@@ -41,7 +41,7 @@ import {
   RippleTarget,
   ThemePalette,
 } from '@angular/material/core';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty, NumberInput} from '@angular/cdk/coercion';
 import {FocusMonitor, FocusableOption} from '@angular/cdk/a11y';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MatInkBar} from '../ink-bar';
@@ -180,8 +180,8 @@ export class MatTabNav extends _MatTabNavBase {
     super(elementRef, dir, ngZone, changeDetectorRef, viewportRuler, platform, animationMode);
   }
 
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
-  static ngAcceptInputType_selectedIndex: number | string | null | undefined;
+  static ngAcceptInputType_disableRipple: BooleanInput;
+  static ngAcceptInputType_selectedIndex: NumberInput;
 }
 
 // Boilerplate for applying mixins to MatTabLink.
@@ -289,6 +289,6 @@ export class MatTabLink extends _MatTabLinkBase implements OnDestroy {
     this._tabLinkRipple._removeTriggerEvents();
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }

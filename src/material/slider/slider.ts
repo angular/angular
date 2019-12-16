@@ -8,7 +8,12 @@
 
 import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
+import {
+  BooleanInput,
+  coerceBooleanProperty,
+  coerceNumberProperty,
+  NumberInput
+} from '@angular/cdk/coercion';
 import {
   DOWN_ARROW,
   END,
@@ -883,15 +888,15 @@ export class MatSlider extends _MatSliderMixinBase
     this.disabled = isDisabled;
   }
 
-  static ngAcceptInputType_invert: boolean | string | null | undefined;
-  static ngAcceptInputType_max: number | string | null | undefined;
-  static ngAcceptInputType_min: number | string | null | undefined;
-  static ngAcceptInputType_step: number | string | null | undefined;
-  static ngAcceptInputType_thumbLabel: boolean | string | null | undefined;
-  static ngAcceptInputType_tickInterval: number | string | null | undefined;
-  static ngAcceptInputType_value: number | string | null | undefined;
-  static ngAcceptInputType_vertical: boolean | string | null | undefined;
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_invert: BooleanInput;
+  static ngAcceptInputType_max: NumberInput;
+  static ngAcceptInputType_min: NumberInput;
+  static ngAcceptInputType_step: NumberInput;
+  static ngAcceptInputType_thumbLabel: BooleanInput;
+  static ngAcceptInputType_tickInterval: NumberInput;
+  static ngAcceptInputType_value: NumberInput;
+  static ngAcceptInputType_vertical: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
 }
 
 /** Returns whether an event is a touch event. */

@@ -7,7 +7,7 @@
  */
 
 import {Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {
@@ -398,8 +398,8 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     }
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_removable: boolean | string | null | undefined;
-  static ngAcceptInputType_highlighted: boolean | string | null | undefined;
-  static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_removable: BooleanInput;
+  static ngAcceptInputType_highlighted: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }

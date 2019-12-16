@@ -7,6 +7,7 @@
  */
 
 import {Directionality} from '@angular/cdk/bidi';
+import {BooleanInput, NumberInput} from '@angular/cdk/coercion';
 import {
   CdkStep,
   CdkStepper,
@@ -81,10 +82,10 @@ export class MatStep extends CdkStep implements ErrorStateMatcher {
     return originalErrorState || customErrorState;
   }
 
-  static ngAcceptInputType_editable: boolean | string | null | undefined;
-  static ngAcceptInputType_hasError: boolean | string | null | undefined;
-  static ngAcceptInputType_optional: boolean | string | null | undefined;
-  static ngAcceptInputType_completed: boolean | string | null | undefined;
+  static ngAcceptInputType_editable: BooleanInput;
+  static ngAcceptInputType_hasError: BooleanInput;
+  static ngAcceptInputType_optional: BooleanInput;
+  static ngAcceptInputType_completed: BooleanInput;
 }
 
 
@@ -132,12 +133,12 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
     });
   }
 
-  static ngAcceptInputType_editable: boolean | string | null | undefined;
-  static ngAcceptInputType_optional: boolean | string | null | undefined;
-  static ngAcceptInputType_completed: boolean | string | null | undefined;
-  static ngAcceptInputType_hasError: boolean | string | null | undefined;
-  static ngAcceptInputType_linear: boolean | string | null | undefined;
-  static ngAcceptInputType_selectedIndex: number | string | null | undefined;
+  static ngAcceptInputType_editable: BooleanInput;
+  static ngAcceptInputType_optional: BooleanInput;
+  static ngAcceptInputType_completed: BooleanInput;
+  static ngAcceptInputType_hasError: BooleanInput;
+  static ngAcceptInputType_linear: BooleanInput;
+  static ngAcceptInputType_selectedIndex: NumberInput;
 }
 
 @Component({
@@ -166,12 +167,12 @@ export class MatHorizontalStepper extends MatStepper {
   @Input()
   labelPosition: 'bottom' | 'end' = 'end';
 
-  static ngAcceptInputType_editable: boolean | string | null | undefined;
-  static ngAcceptInputType_optional: boolean | string | null | undefined;
-  static ngAcceptInputType_completed: boolean | string | null | undefined;
-  static ngAcceptInputType_hasError: boolean | string | null | undefined;
-  static ngAcceptInputType_linear: boolean | string | null | undefined;
-  static ngAcceptInputType_selectedIndex: number | string | null | undefined;
+  static ngAcceptInputType_editable: BooleanInput;
+  static ngAcceptInputType_optional: BooleanInput;
+  static ngAcceptInputType_completed: BooleanInput;
+  static ngAcceptInputType_hasError: BooleanInput;
+  static ngAcceptInputType_linear: BooleanInput;
+  static ngAcceptInputType_selectedIndex: NumberInput;
 }
 
 @Component({
@@ -204,10 +205,10 @@ export class MatVerticalStepper extends MatStepper {
     this._orientation = 'vertical';
   }
 
-  static ngAcceptInputType_editable: boolean | string | null | undefined;
-  static ngAcceptInputType_optional: boolean | string | null | undefined;
-  static ngAcceptInputType_completed: boolean | string | null | undefined;
-  static ngAcceptInputType_hasError: boolean | string | null | undefined;
-  static ngAcceptInputType_linear: boolean | string | null | undefined;
-  static ngAcceptInputType_selectedIndex: number | string | null | undefined;
+  static ngAcceptInputType_editable: BooleanInput;
+  static ngAcceptInputType_optional: BooleanInput;
+  static ngAcceptInputType_completed: BooleanInput;
+  static ngAcceptInputType_hasError: BooleanInput;
+  static ngAcceptInputType_linear: BooleanInput;
+  static ngAcceptInputType_selectedIndex: NumberInput;
 }

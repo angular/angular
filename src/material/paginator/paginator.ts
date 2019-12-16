@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceNumberProperty, coerceBooleanProperty} from '@angular/cdk/coercion';
+import {
+  coerceNumberProperty,
+  coerceBooleanProperty,
+  BooleanInput,
+  NumberInput
+} from '@angular/cdk/coercion';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -283,10 +288,10 @@ export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy
     });
   }
 
-  static ngAcceptInputType_pageIndex: number | string | null | undefined;
-  static ngAcceptInputType_length: number | string | null | undefined;
-  static ngAcceptInputType_pageSize: number | string | null | undefined;
-  static ngAcceptInputType_hidePageSize: boolean | string | null | undefined;
-  static ngAcceptInputType_showFirstLastButtons: boolean | string | null | undefined;
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_pageIndex: NumberInput;
+  static ngAcceptInputType_length: NumberInput;
+  static ngAcceptInputType_pageSize: NumberInput;
+  static ngAcceptInputType_hidePageSize: BooleanInput;
+  static ngAcceptInputType_showFirstLastButtons: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
 }

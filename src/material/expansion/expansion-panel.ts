@@ -8,7 +8,7 @@
 
 import {AnimationEvent} from '@angular/animations';
 import {CdkAccordionItem} from '@angular/cdk/accordion';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {
@@ -226,9 +226,9 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
     return false;
   }
 
-  static ngAcceptInputType_hideToggle: boolean | string | null | undefined;
-  static ngAcceptInputType_expanded: boolean | string | null | undefined;
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
+  static ngAcceptInputType_hideToggle: BooleanInput;
+  static ngAcceptInputType_expanded: BooleanInput;
+  static ngAcceptInputType_disabled: BooleanInput;
 }
 
 @Directive({

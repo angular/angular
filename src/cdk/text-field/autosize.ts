@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
+import {
+  BooleanInput,
+  coerceBooleanProperty,
+  coerceNumberProperty,
+  NumberInput
+} from '@angular/cdk/coercion';
 import {
   Directive,
   ElementRef,
@@ -281,7 +286,7 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     }
   }
 
-  static ngAcceptInputType_minRows: number | string | null | undefined;
-  static ngAcceptInputType_maxRows: number | string | null | undefined;
-  static ngAcceptInputType_enabled: boolean | string | null | undefined;
+  static ngAcceptInputType_minRows: NumberInput;
+  static ngAcceptInputType_maxRows: NumberInput;
+  static ngAcceptInputType_enabled: BooleanInput;
 }

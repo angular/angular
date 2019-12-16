@@ -37,11 +37,11 @@ export declare class MatChip extends _MatChipMixinBase implements FocusableOptio
     select(): void;
     selectViaInteraction(): void;
     toggleSelected(isUserInput?: boolean): boolean;
-    static ngAcceptInputType_disableRipple: boolean | string | null | undefined;
-    static ngAcceptInputType_disabled: boolean | string | null | undefined;
-    static ngAcceptInputType_removable: boolean | string | null | undefined;
-    static ngAcceptInputType_selectable: boolean | string | null | undefined;
-    static ngAcceptInputType_selected: boolean | string | null | undefined;
+    static ngAcceptInputType_disableRipple: BooleanInput;
+    static ngAcceptInputType_disabled: BooleanInput;
+    static ngAcceptInputType_removable: BooleanInput;
+    static ngAcceptInputType_selectable: BooleanInput;
+    static ngAcceptInputType_selected: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatChip, "mat-basic-chip, [mat-basic-chip], mat-chip, [mat-chip]", ["matChip"], { 'color': "color", 'disabled': "disabled", 'disableRipple': "disableRipple", 'selected': "selected", 'value': "value", 'selectable': "selectable", 'removable': "removable" }, { 'selectionChange': "selectionChange", 'destroyed': "destroyed", 'removed': "removed" }, ["avatar", "trailingIcon", "removeIcon"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatChip>;
 }
@@ -77,8 +77,8 @@ export declare class MatChipInput implements MatChipTextControl, OnChanges {
     _onInput(): void;
     focus(options?: FocusOptions): void;
     ngOnChanges(): void;
-    static ngAcceptInputType_addOnBlur: boolean | string | null | undefined;
-    static ngAcceptInputType_disabled: boolean | string | null | undefined;
+    static ngAcceptInputType_addOnBlur: BooleanInput;
+    static ngAcceptInputType_disabled: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatChipInput, "input[matChipInputFor]", ["matChipInput", "matChipInputFor"], { 'chipList': "matChipInputFor", 'addOnBlur': "matChipInputAddOnBlur", 'separatorKeyCodes': "matChipInputSeparatorKeyCodes", 'placeholder': "placeholder", 'id': "id", 'disabled': "disabled" }, { 'chipEnd': "matChipInputTokenEnd" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatChipInput>;
 }
@@ -151,10 +151,10 @@ export declare class MatChipList extends _MatChipListMixinBase implements MatFor
     setDescribedByIds(ids: string[]): void;
     setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
-    static ngAcceptInputType_disabled: boolean | string | null | undefined;
-    static ngAcceptInputType_multiple: boolean | string | null | undefined;
-    static ngAcceptInputType_required: boolean | string | null | undefined;
-    static ngAcceptInputType_selectable: boolean | string | null | undefined;
+    static ngAcceptInputType_disabled: BooleanInput;
+    static ngAcceptInputType_multiple: BooleanInput;
+    static ngAcceptInputType_required: BooleanInput;
+    static ngAcceptInputType_selectable: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatChipList, "mat-chip-list", ["matChipList"], { 'errorStateMatcher': "errorStateMatcher", 'multiple': "multiple", 'compareWith': "compareWith", 'value': "value", 'required': "required", 'placeholder': "placeholder", 'disabled': "disabled", 'ariaOrientation': "aria-orientation", 'selectable': "selectable", 'tabIndex': "tabIndex" }, { 'change': "change", 'valueChange': "valueChange" }, ["chips"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatChipList>;
 }

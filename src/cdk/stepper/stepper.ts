@@ -8,7 +8,12 @@
 
 import {FocusableOption, FocusKeyManager} from '@angular/cdk/a11y';
 import {Direction, Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
+import {
+  BooleanInput,
+  coerceBooleanProperty,
+  coerceNumberProperty,
+  NumberInput
+} from '@angular/cdk/coercion';
 import {END, ENTER, hasModifierKey, HOME, SPACE} from '@angular/cdk/keycodes';
 import {DOCUMENT} from '@angular/common';
 import {
@@ -231,10 +236,10 @@ export class CdkStep implements OnChanges {
     this._stepper._stateChanged();
   }
 
-  static ngAcceptInputType_editable: boolean | string | null | undefined;
-  static ngAcceptInputType_hasError: boolean | string | null | undefined;
-  static ngAcceptInputType_optional: boolean | string | null | undefined;
-  static ngAcceptInputType_completed: boolean | string | null | undefined;
+  static ngAcceptInputType_editable: BooleanInput;
+  static ngAcceptInputType_hasError: BooleanInput;
+  static ngAcceptInputType_optional: BooleanInput;
+  static ngAcceptInputType_completed: BooleanInput;
 }
 
 @Directive({
@@ -518,12 +523,12 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
     return stepperElement === focusedElement || stepperElement.contains(focusedElement);
   }
 
-  static ngAcceptInputType_editable: boolean | string | null | undefined;
-  static ngAcceptInputType_optional: boolean | string | null | undefined;
-  static ngAcceptInputType_completed: boolean | string | null | undefined;
-  static ngAcceptInputType_hasError: boolean | string | null | undefined;
-  static ngAcceptInputType_linear: boolean | string | null | undefined;
-  static ngAcceptInputType_selectedIndex: number | string | null | undefined;
+  static ngAcceptInputType_editable: BooleanInput;
+  static ngAcceptInputType_optional: BooleanInput;
+  static ngAcceptInputType_completed: BooleanInput;
+  static ngAcceptInputType_hasError: BooleanInput;
+  static ngAcceptInputType_linear: BooleanInput;
+  static ngAcceptInputType_selectedIndex: NumberInput;
 }
 
 
