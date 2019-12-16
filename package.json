@@ -147,7 +147,7 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "run-sequence": "^1.2.2",
-    "scss-bundle": "^2.5.1",
+    "scss-bundle": "^3.0.2",
     "selenium-webdriver": "^3.6.0",
     "semver": "^6.3.0",
     "send": "^0.17.1",
