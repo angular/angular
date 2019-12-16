@@ -7,7 +7,9 @@
 */
 
 import {CharCode} from '../../util/char_code';
-import {consumeClassToken, consumeWhitespace} from './styling_parser';
+
+import {consumeWhitespace, getLastParsedKey, parseClassName, parseClassNameNext} from './styling_parser';
+
 
 /**
  * Computes the diff between two class-list strings.
@@ -50,15 +52,8 @@ export function computeClassChanges(oldValue: string, newValue: string): Map<str
  */
 export function splitClassList(
     text: string, changes: Map<string, boolean|null>, isNewValue: boolean): void {
-  const end = text.length;
-  let index = 0;
-  while (index < end) {
-    index = consumeWhitespace(text, index, end);
-    const tokenEnd = consumeClassToken(text, index, end);
-    if (tokenEnd !== index) {
-      processClassToken(changes, text.substring(index, tokenEnd), isNewValue);
-    }
-    index = tokenEnd;
+  for (let i = parseClassName(text); i >= 0; i = parseClassNameNext(text, i)) {
+    processClassToken(changes, getLastParsedKey(text), isNewValue);
   }
 }
 

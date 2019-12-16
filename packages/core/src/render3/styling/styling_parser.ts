@@ -9,6 +9,174 @@
 import {CharCode} from '../../util/char_code';
 
 /**
+ * Stores the locations of key/value indexes while parsing styling.
+ *
+ * In case of `cssText` parsing the indexes are like so:
+ * ```
+ *   "key1: value1; key2: value2; key3: value3"
+ *                  ^   ^ ^     ^             ^
+ *                  |   | |     |             +-- textEnd
+ *                  |   | |     +---------------- valueEnd
+ *                  |   | +---------------------- value
+ *                  |   +------------------------ keyEnd
+ *                  +---------------------------- key
+ * ```
+ *
+ * In case of `className` parsing the indexes are like so:
+ * ```
+ *   "key1 key2 key3"
+ *         ^   ^    ^
+ *         |   |    +-- textEnd
+ *         |   +------------------------ keyEnd
+ *         +---------------------------- key
+ * ```
+ * NOTE: `value` and `valueEnd` are used only for styles, not classes.
+ */
+interface ParserState {
+  textEnd: number;
+  key: number;
+  keyEnd: number;
+  value: number;
+  valueEnd: number;
+}
+// Global state of the parser. (This makes parser non-reentrant, but that is not an issue)
+const parserState: ParserState = {
+  textEnd: 0,
+  key: 0,
+  keyEnd: 0,
+  value: 0,
+  valueEnd: 0,
+};
+
+/**
+ * Retrieves the last parsed `key` of style.
+ * @param text the text to substring the key from.
+ */
+export function getLastParsedKey(text: string): string {
+  return text.substring(parserState.key, parserState.keyEnd);
+}
+
+/**
+ * Retrieves the last parsed `value` of style.
+ * @param text the text to substring the key from.
+ */
+export function getLastParsedValue(text: string): string {
+  return text.substring(parserState.value, parserState.valueEnd);
+}
+
+/**
+ * Initializes `className` string for parsing and parses the first token.
+ *
+ * This function is intended to be used in this format:
+ * ```
+ * for (let i = parseClassName(text); i >= 0; i = parseClassNameNext(text, i))) {
+ *   const key = getLastParsedKey();
+ *   ...
+ * }
+ * ```
+ * @param text `className` to parse
+ * @returns index where the next invocation of `parseClassNameNext` should resume.
+ */
+export function parseClassName(text: string): number {
+  resetParserState(text);
+  return parseClassNameNext(text, consumeWhitespace(text, 0, parserState.textEnd));
+}
+
+/**
+ * Parses next `className` token.
+ *
+ * This function is intended to be used in this format:
+ * ```
+ * for (let i = parseClassName(text); i >= 0; i = parseClassNameNext(text, i))) {
+ *   const key = getLastParsedKey();
+ *   ...
+ * }
+ * ```
+ *
+ * @param text `className` to parse
+ * @param index where the parsing should resume.
+ * @returns index where the next invocation of `parseClassNameNext` should resume.
+ */
+export function parseClassNameNext(text: string, index: number): number {
+  const end = parserState.textEnd;
+  if (end === index) {
+    return -1;
+  }
+  index = parserState.keyEnd = consumeClassToken(text, parserState.key = index, end);
+  return consumeWhitespace(text, index, end);
+}
+
+/**
+ * Initializes `cssText` string for parsing and parses the first key/values.
+ *
+ * This function is intended to be used in this format:
+ * ```
+ * for (let i = parseStyle(text); i >= 0; i = parseStyleNext(text, i))) {
+ *   const key = getLastParsedKey();
+ *   const value = getLastParsedValue();
+ *   ...
+ * }
+ * ```
+ * @param text `cssText` to parse
+ * @returns index where the next invocation of `parseStyleNext` should resume.
+ */
+export function parseStyle(text: string): number {
+  resetParserState(text);
+  return parseStyleNext(text, consumeWhitespace(text, 0, parserState.textEnd));
+}
+
+/**
+ * Parses the next `cssText` key/values.
+ *
+ * This function is intended to be used in this format:
+ * ```
+ * for (let i = parseStyle(text); i >= 0; i = parseStyleNext(text, i))) {
+ *   const key = getLastParsedKey();
+ *   const value = getLastParsedValue();
+ *   ...
+ * }
+ *
+ * @param text `cssText` to parse
+ * @param index where the parsing should resume.
+ * @returns index where the next invocation of `parseStyleNext` should resume.
+ */
+export function parseStyleNext(text: string, startIndex: number): number {
+  const end = parserState.textEnd;
+  if (end === startIndex) {
+    // we reached an end so just quit
+    return -1;
+  }
+  let index = parserState.keyEnd = consumeStyleKey(text, parserState.key = startIndex, end);
+  index = parserState.value = consumeSeparatorWithWhitespace(text, index, end, CharCode.COLON);
+  index = parserState.valueEnd = consumeStyleValue(text, index, end);
+  if (ngDevMode && parserState.value === parserState.valueEnd) {
+    throw malformedStyleError(text, index);
+  }
+  return consumeSeparatorWithWhitespace(text, index, end, CharCode.SEMI_COLON);
+}
+
+/**
+ * Reset the global state of the styling parser.
+ * @param text The styling text to parse.
+ */
+export function resetParserState(text: string): void {
+  parserState.key = 0;
+  parserState.keyEnd = 0;
+  parserState.value = 0;
+  parserState.valueEnd = 0;
+  parserState.textEnd = text.length;
+}
+
+/**
+ * Retrieves tha `valueEnd` from the parser global state.
+ *
+ * See: `ParserState`.
+ */
+export function getLastParsedValueEnd(): number {
+  return parserState.valueEnd;
+}
+
+/**
  * Returns index of next non-whitespace character.
  *
  * @param text Text to scan
@@ -65,7 +233,7 @@ export function consumeStyleKey(text: string, startIndex: number, endIndex: numb
  * @param endIndex Ending index of character where the scan should end.
  * @returns Index after separator and surrounding whitespace.
  */
-export function consumeSeparator(
+export function consumeSeparatorWithWhitespace(
     text: string, startIndex: number, endIndex: number, separator: number): number {
   startIndex = consumeWhitespace(text, startIndex, endIndex);
   if (startIndex < endIndex) {
@@ -150,4 +318,10 @@ function expectingError(text: string, expecting: string, index: number) {
   return new Error(
       `Expecting '${expecting}' at location ${index} in string '` + text.substring(0, index) +
       '[>>' + text.substring(index, index + 1) + '<<]' + text.substr(index + 1) + '\'.');
+}
+
+function malformedStyleError(text: string, index: number) {
+  return new Error(
+      `Malformed style at location ${index} in string '` + text.substring(0, index) + '[>>' +
+      text.substring(index, index + 1) + '<<]' + text.substr(index + 1) + '\'.');
 }
