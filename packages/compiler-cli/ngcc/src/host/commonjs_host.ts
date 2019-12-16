@@ -262,8 +262,9 @@ function isReexportStatement(statement: ts.Statement): statement is ReexportStat
   //       ([source](https://github.com/microsoft/TypeScript/blob/d7c83f023/src/compiler/transformers/module/module.ts#L1796-L1797)).
   //       So, theoretically, we only care about the formats `__export(require('...'))` and
   //       `tslib.__exportStar(require('...'), exports)`.
-  //       The accepts the other two formats (`__exportStar(...)` and `tslib.__export(...)`) to be
-  //       more future-proof (given that it is unlikely that they will introduce false positives).
+  //       The current implementation accepts the other two formats (`__exportStar(...)` and
+  //       `tslib.__export(...)`) as well to be more future-proof (given that it is unlikely that
+  //       they will introduce false positives).
   let fnName: string|null = null;
   if (ts.isIdentifier(statement.expression.expression)) {
     // Statement of the form `someFn(...)`.
@@ -275,7 +276,7 @@ function isReexportStatement(statement: ts.Statement): statement is ReexportStat
     fnName = statement.expression.expression.name.text;
   }
 
-  // Esnure the called function is either `__export()` or `__exportStar()`.
+  // Ensure the called function is either `__export()` or `__exportStar()`.
   if ((fnName !== '__export') && (fnName !== '__exportStar')) {
     return false;
   }
