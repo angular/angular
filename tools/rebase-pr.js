@@ -103,7 +103,7 @@ async function _main(repository, prNumber) {
 
           git fetch upstream ${target.baseRef};
           git checkout ${target.headRef};
-          git rebase origin/${target.baseRef};
+          git rebase upstream/${target.baseRef};
           git push --force-with-lease;
         `);
   } else {
