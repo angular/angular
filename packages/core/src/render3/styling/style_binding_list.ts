@@ -10,12 +10,12 @@ import {stylePropNeedsSanitization, ɵɵsanitizeStyle} from '../../sanitization/
 import {assertEqual, throwError} from '../../util/assert';
 import {TNode} from '../interfaces/node';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {StylingMapArray, TStylingKey, TStylingMapKey, TStylingRange, getTStylingRangeNext, getTStylingRangePrev, getTStylingRangePrevDuplicate, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange} from '../interfaces/styling';
+import {TStylingKey, TStylingMapKey, TStylingRange, getTStylingRangeNext, getTStylingRangePrev, getTStylingRangePrevDuplicate, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange} from '../interfaces/styling';
 import {LView, TData, TVIEW} from '../interfaces/view';
 import {getLView} from '../state';
-
 import {splitClassList, toggleClass} from './class_differ';
 import {StyleChangesMap, parseKeyValue, removeStyle} from './style_differ';
+import {getLastParsedKey, parseClassName, parseClassNameNext, parseStyle, parseStyleNext} from './styling_parser';
 
 
 
@@ -254,8 +254,10 @@ export function insertTStylingBinding(
 
   // Now we need to update / compute the duplicates.
   // Starting with our location search towards head (least priority)
-  markDuplicates(tData, tStylingKey, index, isClassBinding ? tNode.classes : tNode.styles, true);
-  markDuplicates(tData, tStylingKey, index, null, false);
+  markDuplicates(
+      tData, tStylingKey, index, (isClassBinding ? tNode.classes : tNode.styles) as string, true,
+      isClassBinding);
+  markDuplicates(tData, tStylingKey, index, '', false, isClassBinding);
 
   tBindings = toTStylingRange(tmplHead, tmplTail);
   if (isClassBinding) {
@@ -320,8 +322,8 @@ export function insertTStylingBinding(
  * @param isPrevDir
  */
 function markDuplicates(
-    tData: TData, tStylingKey: TStylingKey, index: number, staticValues: StylingMapArray | null,
-    isPrevDir: boolean) {
+    tData: TData, tStylingKey: TStylingKey, index: number, staticValues: string, isPrevDir: boolean,
+    isClassBinding: boolean) {
   const tStylingAtIndex = tData[index + 1] as TStylingRange;
   const key: string|null = typeof tStylingKey === 'object' ? tStylingKey.key : tStylingKey;
   const isMap = key === null;
@@ -345,16 +347,19 @@ function markDuplicates(
     cursor = isPrevDir ? getTStylingRangePrev(tStyleRangeAtCursor) :
                          getTStylingRangeNext(tStyleRangeAtCursor);
   }
-  if (staticValues !== null &&  // If we have static values to search
-      !foundDuplicate           // If we have duplicate don't bother since we are already marked as
-                                // duplicate
+  if (staticValues !== '' &&  // If we have static values to search
+      !foundDuplicate         // If we have duplicate don't bother since we are already marked as
+                              // duplicate
       ) {
     if (isMap) {
       // if we are a Map (and we have statics) we must assume duplicate
       foundDuplicate = true;
-    } else {
-      for (let i = 1; foundDuplicate === false && i < staticValues.length; i = i + 2) {
-        if (staticValues[i] === key) {
+    } else if (staticValues != null) {
+      for (let i = isClassBinding ? parseClassName(staticValues) : parseStyle(staticValues);  //
+           i >= 0;                                                                            //
+           i = isClassBinding ? parseClassNameNext(staticValues, i) :
+                                parseStyleNext(staticValues, i)) {
+        if (getLastParsedKey(staticValues) === key) {
           foundDuplicate = true;
           break;
         }
@@ -386,8 +391,9 @@ export function flushStyleBinding(
   // When styling changes we don't have to start at the begging. Instead we start at the change
   // value and look up the previous concatenation as a starting point going forward.
   const lastUnchangedValueIndex = getTStylingRangePrev(tStylingRangeAtIndex);
-  let text = lastUnchangedValueIndex === 0 ? getStaticStylingValue(tNode, isClassBinding) :
-                                             lView[lastUnchangedValueIndex + 1] as string;
+  let text = lastUnchangedValueIndex === 0 ?
+      ((isClassBinding ? tNode.classes : tNode.styles) as string) :
+      lView[lastUnchangedValueIndex + 1] as string;
   let cursor = index;
   while (cursor !== 0) {
     const value = lView[cursor];
@@ -400,16 +406,6 @@ export function flushStyleBinding(
   return text;
 }
 
-/**
- * Retrieves the static value for styling.
- *
- * @param tNode
- * @param isClassBinding
- */
-function getStaticStylingValue(tNode: TNode, isClassBinding: Boolean) {
-  // TODO(misko): implement once we have more code integrated.
-  return '';
-}
 
 /**
  * Append new styling to the currently concatenated styling text.
