@@ -455,7 +455,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       bindings.forEach(binding => {
         chainBindings.push({sourceSpan: span, value: () => this.convertPropertyBinding(binding)});
       });
-      this.updateInstructionChain(R3.i18nExp, chainBindings);
+      // for i18n block, advance to the most recent element index (by taking the current number of
+      // elements and subtracting one) before invoking `i18nExp` instructions, to make sure the
+      // necessary lifecycle hooks of components/directives are properly flushed.
+      this.updateInstructionChainWithAdvance(this.getConstCount() - 1, R3.i18nExp, chainBindings);
       this.updateInstruction(span, R3.i18nApply, [o.literal(index)]);
     }
     if (!selfClosing) {
@@ -671,7 +674,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           }
         });
         if (bindings.length) {
-          this.updateInstructionChain(R3.i18nExp, bindings);
+          this.updateInstructionChainWithAdvance(elementIndex, R3.i18nExp, bindings);
         }
         if (i18nAttrArgs.length) {
           const index: o.Expression = o.literal(this.allocateDataSlot());

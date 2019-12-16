@@ -10,7 +10,7 @@
 import '@angular/localize/init';
 import {CommonModule, registerLocaleData} from '@angular/common';
 import localeRo from '@angular/common/locales/ro';
-import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, Pipe, PipeTransform, NO_ERRORS_SCHEMA} from '@angular/core';
+import {Component, ContentChild, ElementRef, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, Pipe, PipeTransform, NO_ERRORS_SCHEMA} from '@angular/core';
 import {setDelayProjection} from '@angular/core/src/render3/instructions/projection';
 import {TestBed} from '@angular/core/testing';
 import {loadTranslations, clearTranslations} from '@angular/localize';
@@ -2013,6 +2013,55 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(toHtml(fixture.nativeElement))
           .toEqual(`<div-query>Contenu<!--ng-container--></div-query>`);
     });
+  });
+
+  it('should reflect lifecycle hook changes in text interpolations in i18n block', () => {
+    @Directive({selector: 'input'})
+    class InputsDir {
+      constructor(private elementRef: ElementRef) {}
+      ngOnInit() { this.elementRef.nativeElement.value = 'value set in Directive.ngOnInit'; }
+    }
+
+    @Component({
+      template: `
+        <input #myinput>
+        <div i18n>{{myinput.value}}</div>
+      `
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [App, InputsDir]});
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('value set in Directive.ngOnInit');
+  });
+
+  it('should reflect lifecycle hook changes in text interpolations in i18n attributes', () => {
+    @Directive({selector: 'input'})
+    class InputsDir {
+      constructor(private elementRef: ElementRef) {}
+      ngOnInit() { this.elementRef.nativeElement.value = 'value set in Directive.ngOnInit'; }
+    }
+
+    @Component({
+      template: `
+        <input #myinput>
+        <div i18n-title title="{{myinput.value}}"></div>
+      `
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [App, InputsDir]});
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('div').title)
+        .toContain('value set in Directive.ngOnInit');
   });
 
   it('should not alloc expando slots when there is no new variable to create', () => {
