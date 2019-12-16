@@ -1,28 +1,111 @@
 package(default_visibility = ["//visibility:public"])
 
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
+load("@npm//history-server:index.bzl", "history_server")
+load("@npm//html-insert-assets:index.bzl", "html_insert_assets")
 load("@npm_angular_bazel//:index.bzl", "ng_module")
-load("@npm//http-server:index.bzl", "http_server")
-load("@build_bazel_rules_nodejs//internal/web_package:web_package.bzl", "web_package")
+load("@npm_bazel_karma//:index.bzl", "karma_web_test_suite")
 load("@npm_bazel_rollup//:index.bzl", "rollup_bundle")
 load("@npm_bazel_terser//:index.bzl", "terser_minified")
-load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver", "ts_library")
+load("@io_bazel_rules_sass//:defs.bzl", "multi_sass_binary", "sass_binary")
 
-# Allow targets under sub-packages to reference the tsconfig.json file
-exports_files(["tsconfig.json"])
+sass_binary(
+    name = "global_stylesheet",
+    src = glob([
+        "styles.css",
+        "styles.scss",
+    ])[0],
+    output_name = "global_stylesheet.css",
+)
+
+multi_sass_binary(
+    name = "styles",
+    srcs = glob(
+        include = ["**/*.scss"],
+        exclude = ["styles.scss"],
+    ),
+)
 
 ng_module(
     name = "src",
-    srcs = glob(["*.ts"]),
+    srcs = glob(
+        include = ["**/*.ts"],
+        exclude = [
+            "**/*.spec.ts",
+            "main.ts",
+            "test.ts",
+            "initialize_testbed.ts",
+        ],
+    ),
+    assets = glob([
+        "**/*.css",
+        "**/*.html",
+    ]) + ([":styles"] if len(glob(["**/*.scss"])) else []),
     generate_ve_shims = True,
     deps = [
-        "//src/hello-world",
-        "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/platform-browser",
         "@npm//@angular/router",
         "@npm//@types",
         "@npm//rxjs",
     ],
+)
+
+rollup_bundle(
+    name = "bundle",
+    config_file = "rollup.config.js",
+    entry_point = ":main.prod.ts",
+    deps = [
+        "//src",
+        "@npm//rollup-plugin-commonjs",
+        "@npm//rollup-plugin-node-resolve",
+    ],
+)
+
+terser_minified(
+    name = "bundle.min",
+    src = ":bundle",
+)
+
+html_insert_assets(
+    name = "inject_scripts",
+    outs = ["_/index.html"],
+    args = [
+        "--html",
+        "$(location :index.html)",
+        "--out",
+        "$@",
+        "--roots",
+        "$(RULEDIR)",
+        "--assets",
+        "$(location :global_stylesheet.css)",
+        "$(location @npm//:node_modules/zone.js/dist/zone.min.js)",
+        "bundle.min.js",
+    ],
+    data = [
+        ":global_stylesheet.css",
+        ":index.html",
+        "@npm//:node_modules/zone.js/dist/zone.min.js",
+    ],
+)
+
+pkg_web(
+    name = "prodapp",
+    srcs = [
+        "favicon.ico",
+        ":bundle.min",
+        ":global_stylesheet",
+        ":inject_scripts",
+        "@npm//:node_modules/zone.js/dist/zone.min.js",
+    ],
+    additional_root_paths = ["src/_"],
+)
+
+history_server(
+    name = "prodserver",
+    data = [":prodapp"],
+    templated_args = ["src/prodapp"],
 )
 
 filegroup(
@@ -36,46 +119,67 @@ filegroup(
 
 ts_devserver(
     name = "devserver",
-    entry_module = "bazel_integration_test/src/main",
-    index_html = "index.html",
+    additional_root_paths = ["src/_"],
+    entry_module = "project/src/main.dev",
+    port = 4200,
     scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
         ":rxjs_umd_modules",
     ],
     serving_path = "/bundle.min.js",
     static_files = [
         "@npm//:node_modules/zone.js/dist/zone.min.js",
+        ":global_stylesheet",
+        ":inject_scripts",
+        "favicon.ico",
     ],
-    deps = ["//src"],
+    deps = [":src"],
 )
 
-rollup_bundle(
-    name = "bundle",
-    config_file = "rollup.config.js",
-    entry_point = ":main.ts",
+ts_library(
+    name = "test_lib",
+    testonly = 1,
+    srcs = glob(["**/*.spec.ts"]),
     deps = [
-        "//src",
-        "@npm//rollup-plugin-commonjs",
-        "@npm//rollup-plugin-node-resolve",
+        ":src",
+        "@npm//@angular/core",
+        "@npm//@angular/router",
+        "@npm//@types",
     ],
 )
 
-terser_minified(
-    name = "bundle.min",
-    src = ":bundle",
-)
-
-web_package(
-    name = "prodapp",
-    assets = [
-        # do not sort
-        "@npm//:node_modules/zone.js/dist/zone.min.js",
-        ":bundle.min",
+ts_library(
+    name = "initialize_testbed",
+    testonly = 1,
+    srcs = [
+        "initialize_testbed.ts",
     ],
-    index_html = "index.html",
+    deps = [
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types",
+    ],
 )
 
-http_server(
-    name = "prodserver",
-    data = [":prodapp"],
-    templated_args = ["src/prodapp"],
+karma_web_test_suite(
+    name = "test",
+    srcs = [
+        "@npm//:node_modules/tslib/tslib.js",
+    ],
+    # do not sort
+    bootstrap = [
+        "@npm//:node_modules/zone.js/dist/zone-testing-bundle.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+    ],
+    browsers = [
+        "@io_bazel_rules_webtesting//browsers:chromium-local",
+    ],
+    tags = ["native"],
+    runtime_deps = [
+        ":initialize_testbed",
+    ],
+    deps = [
+        ":rxjs_umd_modules",
+        ":test_lib",
+    ],
 )
