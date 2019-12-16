@@ -553,7 +553,8 @@ export function registerInitialStylingOnTNode(
   return hasAdditionalInitialStyling;
 }
 
-function updateRawValueOnContext(context: TStylingContext | StylingMapArray, value: string) {
+function updateRawValueOnContext(
+    context: TStylingContext | StylingMapArray | string, value: string) {
   const stylingMapArr = getStylingMapArray(context) !;
   stylingMapArr[StylingMapArrayIndex.RawValuePosition] = value;
 }
