@@ -5271,6 +5271,27 @@ export const Foo = Foo__PRE_R3__;
                 `Angular decorator. This will result in an error at runtime.`);
       });
 
+      it('should not error when an undecorated class is provided via useClass with deps', () => {
+        env.write('test.ts', `
+          import {NgModule, Injectable, NgZone} from '@angular/core';
+
+          @Injectable({providedIn: 'root'})
+          class Service {}
+
+          class NotAService {
+            constructor(ngZone: NgZone) {}
+          }
+
+          @NgModule({
+            providers: [{provide: Service, useClass: NotAService, deps: [NgZone]}]
+          })
+          export class SomeModule {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
       it('should error when an undecorated class is provided via an array', () => {
         env.write('test.ts', `
           import {NgModule, Injectable, NgZone} from '@angular/core';

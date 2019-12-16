@@ -25,25 +25,27 @@ export function getProviderDiagnostics(
   const diagnostics: ts.Diagnostic[] = [];
 
   for (const provider of providerClasses) {
-    if (!registry.isInjectable(provider.node)) {
-      const identity = provider.getIdentityIn(providersDeclaration.getSourceFile());
-      let highlightNode: ts.Node;
-
-      // Try to narrow down the node in which the provider is declared so we can show a more
-      // accurate diagnostic. If the can find the `Identifier` and it is contained within the
-      // providers array we can use it, otherwise fall back to the array itself.
-      if (identity !== null && identity.pos >= providersDeclaration.pos &&
-          identity.end <= providersDeclaration.end) {
-        highlightNode = identity;
-      } else {
-        highlightNode = providersDeclaration;
-      }
-
-      diagnostics.push(makeDiagnostic(
-          ErrorCode.UNDECORATED_PROVIDER, highlightNode,
-          `Provider ${provider.node.name.text} is not injectable, because it doesn't have ` +
-              `an Angular decorator. This will result in an error at runtime.`));
+    if (registry.isInjectable(provider.node)) {
+      continue;
     }
+
+    const identity = provider.getIdentityIn(providersDeclaration.getSourceFile());
+    let highlightNode: ts.Node;
+
+    // Try to narrow down the node in which the provider is declared so we can show a more
+    // accurate diagnostic. If the can find the `Identifier` and it is contained within the
+    // providers array we can use it, otherwise fall back to the array itself.
+    if (identity !== null && identity.pos >= providersDeclaration.pos &&
+        identity.end <= providersDeclaration.end) {
+      highlightNode = identity;
+    } else {
+      highlightNode = providersDeclaration;
+    }
+
+    diagnostics.push(makeDiagnostic(
+        ErrorCode.UNDECORATED_PROVIDER, highlightNode,
+        `Provider ${provider.node.name.text} is not injectable, because it doesn't have ` +
+            `an Angular decorator. This will result in an error at runtime.`));
   }
 
   return diagnostics;
