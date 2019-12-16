@@ -298,7 +298,7 @@ export const enum LViewFlags {
    * back into the parent view, `data` will be defined and `creationMode` will be
    * improperly reported as false.
    */
-  CreationMode = 0b00000000100,
+  CreationMode = 1 << 2,
 
   /**
    * Whether or not this LView instance is on its first processing pass.
@@ -307,10 +307,10 @@ export const enum LViewFlags {
    * has completed one creation mode run and one update mode run. At this
    * time, the flag is turned off.
    */
-  FirstLViewPass = 0b00000001000,
+  FirstLViewPass = 1 << 3,
 
   /** Whether this view has default change detection strategy (checks always) or onPush */
-  CheckAlways = 0b00000010000,
+  CheckAlways = 1 << 4,
 
   /**
    * Whether or not manual change detection is turned on for onPush components.
@@ -327,26 +327,28 @@ export const enum LViewFlags {
    *
    * TODO: Add a public API to ChangeDetectionStrategy to turn this mode on
    */
-  ManualOnPush = 0b00000100000,
+  ManualOnPush = 1 << 5,
 
   /** Whether or not this view is currently dirty (needing check) */
-  Dirty = 0b000001000000,
+  Dirty = 1 << 6,
 
   /** Whether or not this view is currently attached to change detection tree. */
-  Attached = 0b000010000000,
+  Attached = 1 << 7,
 
   /** Whether or not this view is destroyed. */
-  Destroyed = 0b000100000000,
+  Destroyed = 1 << 8,
 
   /** Whether or not this view is the root view */
-  IsRoot = 0b001000000000,
+  IsRoot = 1 << 9,
+
+  CheckNoChanges = 1 << 10,
 
   /**
    * Index of the current init phase on last 22 bits
    */
-  IndexWithinInitPhaseIncrementer = 0b010000000000,
-  IndexWithinInitPhaseShift = 10,
-  IndexWithinInitPhaseReset = 0b001111111111,
+  IndexWithinInitPhaseIncrementer = 1 << 11,
+  IndexWithinInitPhaseShift = 11,
+  IndexWithinInitPhaseReset = ((1 << 12) - 1),
 }
 
 /**

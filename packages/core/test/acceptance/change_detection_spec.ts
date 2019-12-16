@@ -1350,6 +1350,7 @@ describe('change detection', () => {
     });
   });
 
+<<<<<<< HEAD
   describe('OnPush markForCheck in lifecycle hooks', () => {
     describe('with check no changes enabled', () => createOnPushMarkForCheckTests(true));
     describe('with check no changes disabled', () => createOnPushMarkForCheckTests(false));
@@ -1609,6 +1610,21 @@ describe('change detection', () => {
     //   expect(() => initWithHostBindings({'[class]': 'unstableClassMapExpression'}))
     //       .not.toThrowError();
     // });
+
+    it('throws ExpressionChangedAfterItWasCheckedError for OnPush components', () => {
+      @Component({template: '{{binding}}', changeDetection: ChangeDetectionStrategy.OnPush})
+      class MyComp {
+        binding = 'initial';
+
+        ngAfterViewInit() {
+          this.binding = 'updated';
+        }
+      }
+
+      const fixture =
+        TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+      expect(() => fixture.detectChanges()).toThrow();
+    });
   });
 });
 

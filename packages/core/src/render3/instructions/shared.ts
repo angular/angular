@@ -500,6 +500,14 @@ export function refreshView<T>(
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
     }
   } finally {
+    // If this refresh was a checkNoChanges pass, remove the checkNoChanges flag. Otherwise, mark
+    // the LView as needing a checkNoChanges pass after a "regular" refresh.
+    if (checkNoChangesMode) {
+      lView[FLAGS] &= ~LViewFlags.CheckNoChanges;
+    } else {
+      lView[FLAGS] |= LViewFlags.CheckNoChanges;
+    }
+    lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
     leaveView();
   }
 }
@@ -1665,9 +1673,17 @@ function refreshComponent(hostLView: LView, componentHostIdx: number): void {
   const componentView = getComponentLViewByIndex(componentHostIdx, hostLView);
   // Only attached components that are CheckAlways or OnPush and dirty should be refreshed
   if (viewAttachedToChangeDetector(componentView) &&
+<<<<<<< HEAD
       componentView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
     const componentTView = componentView[TVIEW];
     refreshView(componentTView, componentView, componentTView.template, componentView[CONTEXT]);
+=======
+      (componentView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty) ||
+       // Check needed as part of checkNoChanges pass
+       (getCheckNoChangesMode() && componentView[FLAGS] & LViewFlags.CheckNoChanges))) {
+    const tView = componentView[TVIEW];
+    refreshView(componentView, tView, tView.template, componentView[CONTEXT]);
+>>>>>>> fix(core): Ensure checkNoChanges runs for OnPush components
   }
 }
 

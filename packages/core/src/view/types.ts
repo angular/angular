@@ -375,14 +375,16 @@ export const enum ViewState {
   CheckProjectedView = 1 << 5,
   CheckProjectedViews = 1 << 6,
   Destroyed = 1 << 7,
+  /** Indicates that the view needs to be checked during checkNoChanges pass */
+  CheckNoChanges = 1 << 8,
 
   // InitState Uses 3 bits
-  InitState_Mask = 7 << 8,
-  InitState_BeforeInit = 0 << 8,
-  InitState_CallingOnInit = 1 << 8,
-  InitState_CallingAfterContentInit = 2 << 8,
-  InitState_CallingAfterViewInit = 3 << 8,
-  InitState_AfterInit = 4 << 8,
+  InitState_Mask = 7 << 9,
+  InitState_BeforeInit = 0 << 9,
+  InitState_CallingOnInit = 1 << 9,
+  InitState_CallingAfterContentInit = 2 << 9,
+  InitState_CallingAfterViewInit = 3 << 9,
+  InitState_AfterInit = 4 << 9,
 
   CatDetectChanges = Attached | ChecksEnabled,
   CatInit = BeforeFirstCheck | CatDetectChanges | InitState_BeforeInit

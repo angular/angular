@@ -344,7 +344,8 @@ export function checkNoChangesView(view: ViewData) {
   execComponentViewsAction(view, ViewAction.CheckNoChanges);
   // Note: We don't check queries for changes as we didn't do this in v2.x.
   // TODO(tbosch): investigate if we can enable the check again in v5.x with a nicer error message.
-  view.state &= ~(ViewState.CheckProjectedViews | ViewState.CheckProjectedView);
+  view.state &=
+      ~(ViewState.CheckProjectedViews | ViewState.CheckProjectedView | ViewState.CheckNoChanges);
 }
 
 export function checkAndUpdateView(view: ViewData) {
@@ -375,9 +376,11 @@ export function checkAndUpdateView(view: ViewData) {
   callLifecycleHooksChildrenFirst(
       view, NodeFlags.AfterViewChecked | (callInit ? NodeFlags.AfterViewInit : 0));
 
-  if (view.def.flags & ViewFlags.OnPush) {
+  // Do not flip the ChecksEnabled flag in dev mode or checkNoChanges will not check OnPush views.
+  if ((view.def.flags & ViewFlags.OnPush)) {
     view.state &= ~ViewState.ChecksEnabled;
   }
+  view.state |= ViewState.CheckNoChanges;
   view.state &= ~(ViewState.CheckProjectedViews | ViewState.CheckProjectedView);
   shiftInitState(view, ViewState.InitState_CallingAfterViewInit, ViewState.InitState_AfterInit);
 }
@@ -593,7 +596,10 @@ function callViewAction(view: ViewData, action: ViewAction) {
   switch (action) {
     case ViewAction.CheckNoChanges:
       if ((viewState & ViewState.Destroyed) === 0) {
-        if ((viewState & ViewState.CatDetectChanges) === ViewState.CatDetectChanges) {
+        if (viewState & ViewState.Attached &&
+            // OnPush components remove ChecksEnabled at the end of CheckAndUpdateView but set the
+            // CheckNoChanges flag so CheckNoChanges is not skipped.
+            (viewState & ViewState.ChecksEnabled || viewState & ViewState.CheckNoChanges)) {
           checkNoChangesView(view);
         } else if (viewState & ViewState.CheckProjectedViews) {
           execProjectedViewsAction(view, ViewAction.CheckNoChangesProjectedViews);
