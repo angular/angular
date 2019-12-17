@@ -313,7 +313,7 @@ export class NgModuleDecoratorHandler implements
       injectorImports: [],
     };
 
-    if (scope !== null) {
+    if (scope !== null && scope !== 'error') {
       // Using the scope information, extend the injector's imports using the modules that are
       // specified as module exports.
       const context = getSourceFile(node);
@@ -338,7 +338,7 @@ export class NgModuleDecoratorHandler implements
       return {diagnostics};
     }
 
-    if (scope === null || scope.reexports === null) {
+    if (scope === null || scope === 'error' || scope.reexports === null) {
       return {data};
     } else {
       return {
@@ -366,9 +366,10 @@ export class NgModuleDecoratorHandler implements
     for (const decl of analysis.declarations) {
       if (this.scopeRegistry.getRequiresRemoteScope(decl.node)) {
         const scope = this.scopeRegistry.getScopeOfModule(ts.getOriginalNode(node) as typeof node);
-        if (scope === null) {
+        if (scope === null || scope === 'error') {
           continue;
         }
+
         const directives = scope.compilation.directives.map(
             directive => this.refEmitter.emit(directive.ref, context));
         const pipes = scope.compilation.pipes.map(pipe => this.refEmitter.emit(pipe.ref, context));

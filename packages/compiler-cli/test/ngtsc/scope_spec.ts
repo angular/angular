@@ -301,6 +301,87 @@ runInEachFileSystem(() => {
           expect(diagnosticToNode(error, ts.isIdentifier).text).toEqual('Dir');
         });
       });
+
+      it('should not produce component template type-check errors if its module is invalid', () => {
+        env.tsconfig({'fullTemplateTypeCheck': true});
+
+        // Set up 3 files, each of which declare an NgModule that's invalid in some way. This will
+        // produce a bunch of diagnostics related to the issues with the modules. Each module also
+        // declares a component with a template that references a <doesnt-exist> element. This test
+        // verifies that none of the produced diagnostics mention this nonexistent element, since
+        // no template type-checking should be performed for a component that's part of an invalid
+        // NgModule.
+
+        // This NgModule declares something which isn't a directive/pipe.
+        env.write('invalid-declaration.ts', `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<doesnt-exist></doesnt-exist>',
+          })
+          export class TestCmp {}
+
+          export class NotACmp {}
+
+          @NgModule({declarations: [TestCmp, NotACmp]})
+          export class Module {}
+        `);
+
+        // This NgModule imports something which isn't an NgModule.
+        env.write('invalid-import.ts', `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<doesnt-exist></doesnt-exist>',
+          })
+          export class TestCmp {}
+
+          export class NotAModule {}
+
+          @NgModule({
+            declarations: [TestCmp],
+            imports: [NotAModule],
+          })
+          export class Module {}
+        `);
+
+        // This NgModule imports a DepModule which itself is invalid (it declares something which
+        // isn't a directive/pipe).
+        env.write('transitive-error-in-import.ts', `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<doesnt-exist></doesnt-exist>',
+          })
+          export class TestCmp {}
+
+          export class NotACmp {}
+
+          @NgModule({
+            declarations: [NotACmp],
+            exports: [NotACmp],
+          })
+          export class DepModule {}
+
+          @NgModule({
+            declarations: [TestCmp],
+            imports: [DepModule],
+          })
+          export class Module {}
+        `);
+
+        for (const diag of env.driveDiagnostics()) {
+          // None of the diagnostics should be related to the fact that the component uses an
+          // unknown element, because in all cases the component's scope was invalid.
+          expect(diag.messageText)
+              .not.toContain(
+                  'doesnt-exist',
+                  'Template type-checking ran for a component, when it shouldn\'t have.');
+        }
+      });
     });
   });
 
