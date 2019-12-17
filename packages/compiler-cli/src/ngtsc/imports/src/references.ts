@@ -135,6 +135,29 @@ export class Reference<T extends ts.Node = ts.Node> {
         null;
   }
 
+  /**
+   * Given the 'container' expression from which this `Reference` was extracted, produce a
+   * `ts.Expression` to use in a diagnostic which best indicates the position within the container
+   * expression that generated the `Reference`.
+   *
+   * For example, given a `Reference` to the class 'Bar' and the containing expression:
+   * `[Foo, Bar, Baz]`, this function would attempt to return the `ts.Identifier` for `Bar` within
+   * the array. This could be used to produce a nice diagnostic context:
+   *
+   * ```text
+   * [Foo, Bar, Baz]
+   *       ~~~
+   * ```
+   *
+   * If no specific node can be found, then the `fallback` expression is used, which defaults to the
+   * entire containing expression.
+   */
+  getOriginForDiagnostics(container: ts.Expression, fallback: ts.Expression = container):
+      ts.Expression {
+    const id = this.getIdentityInExpression(container);
+    return id !== null ? id : fallback;
+  }
+
   cloneWithAlias(alias: Expression): Reference<T> {
     const ref = new Reference(this.node, this.bestGuessOwningModule);
     ref.identifiers = [...this.identifiers];
