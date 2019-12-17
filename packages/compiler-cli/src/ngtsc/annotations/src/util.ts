@@ -379,33 +379,6 @@ export function wrapFunctionExpressionsInParens(expression: ts.Expression): ts.E
 }
 
 /**
- * Given a 'container' expression and a `Reference` extracted from that container, produce a
- * `ts.Expression` to use in a diagnostic which best indicates the position within the container
- * expression that generated the `Reference`.
- *
- * For example, given a `Reference` to the class 'Bar' and the containing expression:
- * `[Foo, Bar, Baz]`, this function would attempt to return the `ts.Identifier` for `Bar` within the
- * array. This could be used to produce a nice diagnostic context:
- *
- * ```text
- * [Foo, Bar, Baz]
- *       ~~~
- * ```
- *
- * If no specific node can be found, then the `fallback` expression is used, which defaults to the
- * entire containing expression.
- */
-export function getReferenceOriginForDiagnostics(
-    ref: Reference, container: ts.Expression, fallback: ts.Expression = container): ts.Expression {
-  const id = ref.getIdentityInExpression(container);
-  if (id !== null) {
-    return id;
-  }
-
-  return fallback;
-}
-
-/**
  * Create a `ts.Diagnostic` which indicates the given class is part of the declarations of two or
  * more NgModules.
  *
@@ -421,8 +394,7 @@ export function makeDuplicateDeclarationError(
     }
     // Try to find the reference to the declaration within the declarations array, to hang the
     // error there. If it can't be found, fall back on using the NgModule's name.
-    const contextNode =
-        getReferenceOriginForDiagnostics(decl.ref, decl.rawDeclarations, decl.ngModule.name);
+    const contextNode = decl.ref.getOriginForDiagnostics(decl.rawDeclarations, decl.ngModule.name);
     context.push({
       node: contextNode,
       messageText:

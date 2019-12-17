@@ -298,8 +298,13 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
       } else if (pipe !== null) {
         compilationPipes.set(decl.node, {...pipe, ref: decl});
       } else {
-        // TODO(alxhub): produce a ts.Diagnostic. This can't be an error right now since some
-        // ngtools tests rely on analysis of broken components.
+        const errorNode = decl.getOriginForDiagnostics(ngModule.rawDeclarations !);
+        diagnostics.push(makeDiagnostic(
+            ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode,
+            `The class '${decl.node.name.text}' is listed in the declarations of the NgModule '${ngModule.ref.node.name.text}', but is not a directive, a component, or a pipe.
+
+Either remove it from the NgModule's declarations, or add an appropriate Angular decorator.`,
+            [{node: decl.node.name, messageText: `'${decl.node.name.text}' is declared here.`}]));
         continue;
       }
 
