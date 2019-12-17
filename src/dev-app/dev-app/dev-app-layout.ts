@@ -21,6 +21,7 @@ import {DevAppDirectionality} from './dev-app-directionality';
 })
 export class DevAppLayout {
   dark = false;
+  strongFocus = false;
   navItems = [
     {name: 'Examples', route: '/examples'},
     {name: 'Autocomplete', route: '/autocomplete'},
@@ -116,6 +117,20 @@ export class DevAppLayout {
     } else {
       this._element.nativeElement.classList.remove(darkThemeClass);
       this._overlayContainer.getContainerElement().classList.remove(darkThemeClass);
+    }
+  }
+
+  toggleStrongFocus() {
+    const strongFocusClass = 'demo-strong-focus';
+
+    this.strongFocus = !this.strongFocus;
+
+    if (this.strongFocus) {
+      this._element.nativeElement.classList.add(strongFocusClass);
+      this._overlayContainer.getContainerElement().classList.add(strongFocusClass);
+    } else {
+      this._element.nativeElement.classList.remove(strongFocusClass);
+      this._overlayContainer.getContainerElement().classList.remove(strongFocusClass);
     }
   }
 }

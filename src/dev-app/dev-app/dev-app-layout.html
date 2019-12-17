@@ -37,6 +37,9 @@
           <button mat-button (click)="rippleOptions.disabled = !rippleOptions.disabled">
             {{rippleOptions.disabled ? 'Enable' : 'Disable'}} ripples
           </button>
+          <button mat-button (click)="toggleStrongFocus()">
+            {{strongFocus ? 'Disable strong focus' : 'Enable strong focus'}}
+          </button>
           <button mat-button (click)="dir.value = (dir.value === 'rtl' ? 'ltr' : 'rtl')"
                   title="Toggle between RTL and LTR">
             {{dir.value.toUpperCase()}}

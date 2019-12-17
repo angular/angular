@@ -15,7 +15,9 @@
 @include mat-edit-typography(mat-typography-config());
 
 // Include base styles for strong focus indicators.
-@include mat-strong-focus-indicators();
+.demo-strong-focus {
+  @include mat-strong-focus-indicators();
+}
 
 // Define the default theme (same as the example above).
 $candy-app-primary: mat-palette($mat-indigo);
@@ -28,14 +30,16 @@ $candy-app-theme: mat-light-theme($candy-app-primary, $candy-app-accent);
 @include mat-slider-theme-mdc($candy-app-theme);
 @include mat-popover-edit-theme($candy-app-theme);
 
-// Include the theme for focus indicators.
-@include mat-strong-focus-indicators-theme($candy-app-theme);
-
 // Define an alternate dark theme.
 $dark-primary: mat-palette($mat-blue-grey);
 $dark-accent: mat-palette($mat-amber, A200, A100, A400);
 $dark-warn: mat-palette($mat-deep-orange);
 $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
+
+// Include the default theme for focus indicators.
+.demo-strong-focus {
+  @include mat-strong-focus-indicators-theme($candy-app-theme);
+}
 
 // Include the alternative theme styles inside of a block with a CSS class. You can make this
 // CSS class whatever you want. In this example, any component inside of an element with
@@ -46,7 +50,9 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
   @include angular-material-theme-mdc($dark-theme);
   @include mat-slider-theme-mdc($dark-theme);
   @include mat-popover-edit-theme($dark-theme);
+}
 
-  // Include the theme for focus indicators.
+// Include the dark theme for focus indicators.
+.demo-unicorn-dark-theme.demo-strong-focus {
   @include mat-strong-focus-indicators-theme($dark-theme);
 }
