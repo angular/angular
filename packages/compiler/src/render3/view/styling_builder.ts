@@ -524,9 +524,10 @@ function isStyleSanitizable(prop: string): boolean {
   // Note that browsers support both the dash case and
   // camel case property names when setting through JS.
   return prop === 'background-image' || prop === 'backgroundImage' || prop === 'background' ||
-      prop === 'border-image' || prop === 'borderImage' || prop === 'filter' ||
-      prop === 'list-style' || prop === 'listStyle' || prop === 'list-style-image' ||
-      prop === 'listStyleImage' || prop === 'clip-path' || prop === 'clipPath';
+      prop === 'border-image' || prop === 'borderImage' || prop === 'border-image-source' ||
+      prop === 'borderImageSource' || prop === 'filter' || prop === 'list-style' ||
+      prop === 'listStyle' || prop === 'list-style-image' || prop === 'listStyleImage' ||
+      prop === 'clip-path' || prop === 'clipPath';
 }
 
 /**

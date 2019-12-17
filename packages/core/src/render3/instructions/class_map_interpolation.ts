@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getLView, getSelectedIndex} from '../state';
-
+import {getLView} from '../state';
+import {CLASS_MAP_STYLING_KEY} from '../styling/style_binding_list';
 import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
-import {classMapInternal} from './styling';
+import {checkStylingMap} from './styling';
 
 
 
@@ -37,7 +37,7 @@ import {classMapInternal} from './styling';
 export function ɵɵclassMapInterpolate1(prefix: string, v0: any, suffix: string): void {
   const lView = getLView();
   const interpolatedValue = interpolation1(lView, prefix, v0, suffix);
-  classMapInternal(getSelectedIndex(), interpolatedValue);
+  checkStylingMap(CLASS_MAP_STYLING_KEY, interpolatedValue, true);
 }
 
 /**
@@ -67,7 +67,7 @@ export function ɵɵclassMapInterpolate2(
     prefix: string, v0: any, i0: string, v1: any, suffix: string): void {
   const lView = getLView();
   const interpolatedValue = interpolation2(lView, prefix, v0, i0, v1, suffix);
-  classMapInternal(getSelectedIndex(), interpolatedValue);
+  checkStylingMap(CLASS_MAP_STYLING_KEY, interpolatedValue, true);
 }
 
 /**
@@ -100,7 +100,7 @@ export function ɵɵclassMapInterpolate3(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): void {
   const lView = getLView();
   const interpolatedValue = interpolation3(lView, prefix, v0, i0, v1, i1, v2, suffix);
-  classMapInternal(getSelectedIndex(), interpolatedValue);
+  checkStylingMap(CLASS_MAP_STYLING_KEY, interpolatedValue, true);
 }
 
 /**
@@ -136,7 +136,7 @@ export function ɵɵclassMapInterpolate4(
     suffix: string): void {
   const lView = getLView();
   const interpolatedValue = interpolation4(lView, prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
-  classMapInternal(getSelectedIndex(), interpolatedValue);
+  checkStylingMap(CLASS_MAP_STYLING_KEY, interpolatedValue, true);
 }
 
 /**
@@ -175,7 +175,7 @@ export function ɵɵclassMapInterpolate5(
   const lView = getLView();
   const interpolatedValue =
       interpolation5(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
-  classMapInternal(getSelectedIndex(), interpolatedValue);
+  checkStylingMap(CLASS_MAP_STYLING_KEY, interpolatedValue, true);
 }
 
 /**
@@ -216,7 +216,7 @@ export function ɵɵclassMapInterpolate6(
   const lView = getLView();
   const interpolatedValue =
       interpolation6(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
-  classMapInternal(getSelectedIndex(), interpolatedValue);
+  checkStylingMap(CLASS_MAP_STYLING_KEY, interpolatedValue, true);
 }
 
 /**
@@ -259,7 +259,7 @@ export function ɵɵclassMapInterpolate7(
   const lView = getLView();
   const interpolatedValue =
       interpolation7(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
-  classMapInternal(getSelectedIndex(), interpolatedValue);
+  checkStylingMap(CLASS_MAP_STYLING_KEY, interpolatedValue, true);
 }
 
 /**
@@ -305,7 +305,7 @@ export function ɵɵclassMapInterpolate8(
   const lView = getLView();
   const interpolatedValue = interpolation8(
       lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
-  classMapInternal(getSelectedIndex(), interpolatedValue);
+  checkStylingMap(CLASS_MAP_STYLING_KEY, interpolatedValue, true);
 }
 
 /**
@@ -334,5 +334,5 @@ export function ɵɵclassMapInterpolate8(
 export function ɵɵclassMapInterpolateV(values: any[]): void {
   const lView = getLView();
   const interpolatedValue = interpolationV(lView, values);
-  classMapInternal(getSelectedIndex(), interpolatedValue);
+  checkStylingMap(CLASS_MAP_STYLING_KEY, interpolatedValue, true);
 }

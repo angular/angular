@@ -187,6 +187,12 @@ export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: 
  */
 export const ɵɵdefaultStyleSanitizer =
     (function(prop: string, value: string|null, mode?: StyleSanitizeMode): string | boolean | null {
+      if (value === undefined && mode === undefined) {
+        // This is a workaround for the fact that `StyleSanitizeFn` should not exist once PR#34480
+        // lands. For now the `StyleSanitizeFn` and should act like `(value: any) => string` as a
+        // work around.
+        return ɵɵsanitizeStyle(prop);
+      }
       mode = mode || StyleSanitizeMode.ValidateAndSanitize;
       let doSanitizeValue = true;
       if (mode & StyleSanitizeMode.ValidateProperty) {
@@ -201,9 +207,11 @@ export const ɵɵdefaultStyleSanitizer =
     } as StyleSanitizeFn);
 
 export function stylePropNeedsSanitization(prop: string): boolean {
-  return prop === 'background-image' || prop === 'background' || prop === 'border-image' ||
-      prop === 'filter' || prop === 'list-style' || prop === 'list-style-image' ||
-      prop === 'clip-path';
+  return prop === 'background-image' || prop === 'backgroundImage' || prop === 'background' ||
+      prop === 'border-image' || prop === 'borderImage' || prop === 'border-image-source' ||
+      prop === 'borderImageSource' || prop === 'filter' || prop === 'list-style' ||
+      prop === 'listStyle' || prop === 'list-style-image' || prop === 'listStyleImage' ||
+      prop === 'clip-path' || prop === 'clipPath';
 }
 
 export function validateAgainstEventProperties(name: string) {

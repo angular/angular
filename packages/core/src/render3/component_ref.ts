@@ -19,7 +19,6 @@ import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider';
-
 import {assertComponentType} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
@@ -27,7 +26,7 @@ import {NodeInjector} from './di';
 import {assignTViewNodeToLView, createLView, createTView, elementCreate, locateHostElement, renderView} from './instructions/shared';
 import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode} from './interfaces/node';
-import {RNode, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
+import {RNode, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {LView, LViewFlags, TVIEW, TViewType} from './interfaces/view';
 import {stringifyCSSSelectorList} from './node_selector_matcher';
 import {enterView, leaveView} from './state';
@@ -132,8 +131,9 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         rootViewInjector.get(RendererFactory2, domRendererFactory3) as RendererFactory3;
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
+    const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);
     const hostRNode = rootSelectorOrNode ?
-        locateHostElement(rendererFactory, rootSelectorOrNode, this.componentDef.encapsulation) :
+        locateHostElement(hostRenderer, rootSelectorOrNode, this.componentDef.encapsulation) :
         // Determine a tag name used for creating host elements when this component is created
         // dynamically. Default to 'div' if this component did not specify any tag name in its
         // selector.
@@ -152,20 +152,13 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         /^#root-ng-internal-isolated-\d+/.test(rootSelectorOrNode);
 
     const rootContext = createRootContext();
-    const renderer = rendererFactory.createRenderer(hostRNode, this.componentDef);
-
-    if (rootSelectorOrNode && hostRNode) {
-      ngDevMode && ngDevMode.rendererSetAttribute++;
-      isProceduralRenderer(renderer) ?
-          renderer.setAttribute(hostRNode, 'ng-version', VERSION.full) :
-          hostRNode.setAttribute('ng-version', VERSION.full);
-    }
 
     // Create the root view. Uses empty TView and ContentTemplate.
     const rootTView = createTView(TViewType.Root, -1, null, 1, 0, null, null, null, null, null);
     const rootLView = createLView(
-        null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, sanitizer,
-        rootViewInjector);
+        null, rootTView, rootContext, rootFlags, null, null, rendererFactory, hostRenderer,
+        sanitizer, rootViewInjector);
+    const addVersion = rootSelectorOrNode && hostRNode ? VERSION.full : null;
 
     // rootView is the parent when bootstrapping
     // TODO(misko): it looks like we are entering view here but we don't really need to as
@@ -179,7 +172,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     try {
       const componentView = createRootComponentView(
-          hostRNode, this.componentDef, rootLView, rendererFactory, renderer);
+          hostRNode, this.componentDef, rootLView, rendererFactory, hostRenderer, addVersion, null);
 
       tElementNode = getTNode(0, rootLView) as TElementNode;
 

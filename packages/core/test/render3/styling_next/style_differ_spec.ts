@@ -7,8 +7,7 @@
  */
 
 import {StyleChangesMap, parseKeyValue, removeStyle} from '@angular/core/src/render3/styling/style_differ';
-import {consumeSeparatorWithWhitespace, consumeStyleValue} from '@angular/core/src/render3/styling/styling_parser';
-import {CharCode} from '@angular/core/src/util/char_code';
+import {getLastParsedValue, parseStyle} from '@angular/core/src/render3/styling/styling_parser';
 import {sortedForEach} from './class_differ_spec';
 
 describe('style differ', () => {
@@ -29,6 +28,13 @@ describe('style differ', () => {
       expectParseValue(':  text3 ;🛑').toBe('text3');
       expectParseValue(':  text1 text2;🛑').toBe('text1 text2');
       expectParseValue(':  text1 text2  ;🛑').toBe('text1 text2');
+    });
+
+    it('should parse empty vale', () => {
+      expectParseValue(':').toBe('');
+      expectParseValue(':   ').toBe('');
+      expectParseValue(':  ;🛑').toBe('');
+      expectParseValue(':;🛑').toBe('');
     });
 
     it('should parse quoted values', () => {
@@ -54,9 +60,14 @@ describe('style differ', () => {
   });
 
   describe('parseKeyValue', () => {
-    it('should parse empty value', () => {
+    it('should parse empty string', () => {
       expectParseKeyValue('').toEqual([]);
       expectParseKeyValue(' \n\t\r ').toEqual([]);
+    });
+
+    it('should parse empty value', () => {
+      expectParseKeyValue('key:').toEqual(['key', '', null]);
+      expectParseKeyValue('key: \n\t\r; ').toEqual(['key', '', null]);
     });
 
     it('should prase single style', () => {
@@ -79,27 +90,27 @@ describe('style differ', () => {
   describe('removeStyle', () => {
     it('should remove no style', () => {
       expect(removeStyle('', 'foo')).toEqual('');
-      expect(removeStyle('abc: bar', 'a')).toEqual('abc: bar');
-      expect(removeStyle('abc: bar', 'b')).toEqual('abc: bar');
-      expect(removeStyle('abc: bar', 'c')).toEqual('abc: bar');
-      expect(removeStyle('abc: bar', 'bar')).toEqual('abc: bar');
+      expect(removeStyle('abc: bar;', 'a')).toEqual('abc: bar;');
+      expect(removeStyle('abc: bar;', 'b')).toEqual('abc: bar;');
+      expect(removeStyle('abc: bar;', 'c')).toEqual('abc: bar;');
+      expect(removeStyle('abc: bar;', 'bar')).toEqual('abc: bar;');
     });
 
     it('should remove all style', () => {
-      expect(removeStyle('foo: bar', 'foo')).toEqual('');
+      expect(removeStyle('foo: bar;', 'foo')).toEqual('');
       expect(removeStyle('foo: bar; foo: bar;', 'foo')).toEqual('');
     });
 
     it('should remove some of the style', () => {
-      expect(removeStyle('a: a; foo: bar; b: b', 'foo')).toEqual('a: a; b: b');
-      expect(removeStyle('a: a;    foo: bar;   b: b', 'foo')).toEqual('a: a; b: b');
-      expect(removeStyle('a: a; foo: bar; b: b; foo: bar; c: c', 'foo'))
-          .toEqual('a: a; b: b; c: c');
+      expect(removeStyle('a: a; foo: bar; b: b;', 'foo')).toEqual('a: a; b: b;');
+      expect(removeStyle('a: a;    foo: bar;   b: b;', 'foo')).toEqual('a: a; b: b;');
+      expect(removeStyle('a: a; foo: bar; b: b; foo: bar; c: c;', 'foo'))
+          .toEqual('a: a; b: b; c: c;');
     });
 
     it('should remove trailing ;', () => {
-      expect(removeStyle('a: a; foo: bar', 'foo')).toEqual('a: a');
-      expect(removeStyle('a: a ; foo: bar ; ', 'foo')).toEqual('a: a');
+      expect(removeStyle('a: a; foo: bar;', 'foo')).toEqual('a: a;');
+      expect(removeStyle('a: a ; foo: bar ; ', 'foo')).toEqual('a: a ;');
     });
   });
 });
@@ -114,11 +125,9 @@ function expectParseValue(
     text: string) {
   let stopIndex = text.indexOf('🛑');
   if (stopIndex < 0) stopIndex = text.length;
-  const valueStart = consumeSeparatorWithWhitespace(text, 0, text.length, CharCode.COLON);
-  const valueEnd = consumeStyleValue(text, valueStart, text.length);
-  const valueSep = consumeSeparatorWithWhitespace(text, valueEnd, text.length, CharCode.SEMI_COLON);
-  expect(valueSep).toBe(stopIndex);
-  return expect(text.substring(valueStart, valueEnd));
+  let i = parseStyle(text);
+  expect(i).toBe(stopIndex);
+  return expect(getLastParsedValue(text));
 }
 
 function expectParseKeyValue(text: string) {
