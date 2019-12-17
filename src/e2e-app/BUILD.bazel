@@ -90,17 +90,14 @@ sass_binary(
 ts_devserver(
     name = "devserver",
     testonly = True,
-    # Root paths can be used simplify the loading of files from external Bazel repositories
-    # (such as the Bazel managed deps repository called "npm")
     additional_root_paths = [
         "npm/node_modules",
     ],
     # Name of the AMD module that should be required on page load.
     entry_module = "angular_material/src/e2e-app/main",
     port = 4200,
-    # Scripts which will be included in the serving_path bundle after "require.js" has been
-    # loaded.
-    # TODO(jelbourn): remove UMDs from here once we don't have to manually include them
+    # Scripts which will be included in the serving_path bundle after
+    # RequireJS has been loaded.
     scripts = [
         ":devserver-configure.js",
         "//tools/rxjs:rxjs_umd_modules",
@@ -120,7 +117,6 @@ ts_devserver(
         ":index.html",
         ":theme",
     ],
-    # Dependencies that produce JavaScript output will be automatically included in the
-    # serving_path bundle
+    tags = ["manual"],
     deps = [":e2e-app"],
 )

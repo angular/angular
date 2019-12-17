@@ -177,6 +177,7 @@ dev_server(
         # artifact output as workspace root.
         "angular_material",
     ],
+    tags = ["manual"],
     deps = [
         ":dev-app",
     ],
