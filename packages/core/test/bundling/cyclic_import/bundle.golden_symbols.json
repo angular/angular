@@ -114,9 +114,6 @@
     "name": "RENDERER_FACTORY"
   },
   {
-    "name": "RendererStyleFlags3"
-  },
-  {
     "name": "SANITIZER"
   },
   {
@@ -159,16 +156,10 @@
     "name": "addHostBindingsToExpandoInstructions"
   },
   {
-    "name": "addItemToStylingMap"
-  },
-  {
     "name": "addToViewTree"
   },
   {
     "name": "allocLFrame"
-  },
-  {
-    "name": "allocStylingMapArray"
   },
   {
     "name": "appendChild"
@@ -195,7 +186,13 @@
     "name": "classIndexOf"
   },
   {
-    "name": "concatString"
+    "name": "clearActiveHostElement"
+  },
+  {
+    "name": "computeStaticStyling"
+  },
+  {
+    "name": "concatStringsWithSpace"
   },
   {
     "name": "createDirectivesInstances"
@@ -285,9 +282,6 @@
     "name": "findDirectiveDefMatches"
   },
   {
-    "name": "forceStylesAsString"
-  },
-  {
     "name": "generateExpandoInstructionBlock"
   },
   {
@@ -336,9 +330,6 @@
     "name": "getFirstNativeNode"
   },
   {
-    "name": "getInitialStylingValue"
-  },
-  {
     "name": "getInjectorIndex"
   },
   {
@@ -352,12 +343,6 @@
   },
   {
     "name": "getLViewParent"
-  },
-  {
-    "name": "getMapProp"
-  },
-  {
-    "name": "getMapValue"
   },
   {
     "name": "getNameOnlyMarkerIndex"
@@ -408,13 +393,7 @@
     "name": "getSelectedIndex"
   },
   {
-    "name": "getStylingMapArray"
-  },
-  {
     "name": "growHostVarsSpace"
-  },
-  {
-    "name": "hasActiveElementFlag"
   },
   {
     "name": "hasClassInput"
@@ -429,16 +408,10 @@
     "name": "hasTagAndTypeMatch"
   },
   {
-    "name": "hyphenate"
-  },
-  {
     "name": "includeViewProviders"
   },
   {
     "name": "increaseElementDepthCount"
-  },
-  {
-    "name": "incrementActiveDirectiveId"
   },
   {
     "name": "incrementInitPhaseFlags"
@@ -510,12 +483,6 @@
     "name": "isProceduralRenderer"
   },
   {
-    "name": "isStylingContext"
-  },
-  {
-    "name": "isStylingValueDefined"
-  },
-  {
     "name": "leaveDI"
   },
   {
@@ -558,12 +525,6 @@
     "name": "noSideEffects"
   },
   {
-    "name": "objectToClassName"
-  },
-  {
-    "name": "setHostBindingsByExecutingExpandoInstructions"
-  },
-  {
     "name": "refreshChildComponents"
   },
   {
@@ -582,9 +543,6 @@
     "name": "refreshView"
   },
   {
-    "name": "registerInitialStylingOnTNode"
-  },
-  {
     "name": "registerPostOrderHooks"
   },
   {
@@ -600,13 +558,7 @@
     "name": "renderComponent"
   },
   {
-    "name": "renderInitialStyling"
-  },
-  {
     "name": "renderStringify"
-  },
-  {
-    "name": "renderStylingMap"
   },
   {
     "name": "renderView"
@@ -624,9 +576,6 @@
     "name": "saveResolvedLocalsInData"
   },
   {
-    "name": "selectClassBasedInputName"
-  },
-  {
     "name": "selectIndexInternal"
   },
   {
@@ -639,16 +588,13 @@
     "name": "setBindingRoot"
   },
   {
-    "name": "setClass"
-  },
-  {
-    "name": "setClassName"
-  },
-  {
     "name": "setCurrentQueryIndex"
   },
   {
-    "name": "setDirectiveStylingInput"
+    "name": "setDirectiveInputsWhichShadowsStyling"
+  },
+  {
+    "name": "setHostBindingsByExecutingExpandoInstructions"
   },
   {
     "name": "setIncludeViewProviders"
@@ -666,28 +612,16 @@
     "name": "setIsNotParent"
   },
   {
-    "name": "setMapValue"
-  },
-  {
     "name": "setPreviousOrParentTNode"
   },
   {
     "name": "setSelectedIndex"
   },
   {
-    "name": "setStyle"
-  },
-  {
-    "name": "setStyleAttr"
-  },
-  {
     "name": "setUpAttributes"
   },
   {
     "name": "stringifyForError"
-  },
-  {
-    "name": "stylingMapToString"
   },
   {
     "name": "syncViewWithBlueprint"
@@ -699,13 +633,13 @@
     "name": "unwrapRNode"
   },
   {
-    "name": "updateRawValueOnContext"
-  },
-  {
     "name": "viewAttachedToChangeDetector"
   },
   {
-    "name": "writeStylingValueDirectly"
+    "name": "writeDirectClass"
+  },
+  {
+    "name": "writeDirectStyle"
   },
   {
     "name": "ɵɵdefineComponent"

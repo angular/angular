@@ -10,6 +10,8 @@ import {Component, Directive, HostBinding, InjectionToken, ViewChild} from '@ang
 import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
 import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {getElementStyles} from '@angular/core/testing/src/styling';
+import {expect} from '@angular/core/testing/src/testing_internal';
 import {onlyInIvy} from '@angular/private/testing';
 
 import {getHostElement, markDirty} from '../../src/render3/index';
@@ -473,11 +475,10 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils deprecated', () =>
       const childDebug = getDebugNode(child) !;
 
       expect(childDebug.native).toBe(child);
-      expect(childDebug.styles).toBeTruthy();
-
-      const styles = childDebug.styles !.values;
-      expect(styles['width']).toEqual('200px');
-      expect(styles['height']).toEqual('400px');
+      expect(getElementStyles(child)).toEqual({
+        width: '200px',
+        height: '400px',
+      });
     });
   });
 });

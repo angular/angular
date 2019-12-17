@@ -37,7 +37,6 @@ export function stringify(token: any): string {
   return newLineIndex === -1 ? res : res.substring(0, newLineIndex);
 }
 
-
 /**
  * Concatenates two strings with separator, allocating new strings only when necessary.
  *

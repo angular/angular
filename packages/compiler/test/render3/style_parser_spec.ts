@@ -21,6 +21,11 @@ describe('style parsing', () => {
     expect(result).toEqual(['width', '100px', 'height', '200px', 'opacity', '0']);
   });
 
+  it('should allow empty values', () => {
+    const result = parseStyle('width:;height:   ;');
+    expect(result).toEqual(['width', '', 'height', '']);
+  });
+
   it('should trim values and properties', () => {
     const result = parseStyle('width :333px ; height:666px    ; opacity: 0.5;');
     expect(result).toEqual(['width', '333px', 'height', '666px', 'opacity', '0.5']);

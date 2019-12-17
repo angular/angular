@@ -77,111 +77,6 @@ export const enum TNodeFlags {
    * that actually have directives with host bindings.
    */
   hasHostBindings = 0x80,
-
-  /** Bit #9 - This bit is set if the node has initial styling */
-  hasInitialStyling = 0x100,
-
-  /**
-   * Bit #10 - Whether or not there are class-based map bindings present.
-   *
-   * Examples include:
-   * 1. `<div [class]="x">`
-   * 2. `@HostBinding('class') x`
-   */
-  hasClassMapBindings = 0x200,
-
-  /**
-   * Bit #11 - Whether or not there are any class-based prop bindings present.
-   *
-   * Examples include:
-   * 1. `<div [class.name]="x">`
-   * 2. `@HostBinding('class.name') x`
-   */
-  hasClassPropBindings = 0x400,
-
-  /**
-   * Bit #12 - whether or not there are any active [class] and [class.name] bindings
-   */
-  hasClassPropAndMapBindings = hasClassMapBindings | hasClassPropBindings,
-
-  /**
-   * Bit #13 - Whether or not the context contains one or more class-based template bindings.
-   *
-   * Examples include:
-   * 1. `<div [class]="x">`
-   * 2. `<div [class.name]="x">`
-   */
-  hasTemplateClassBindings = 0x800,
-
-  /**
-   * Bit #14 - Whether or not the context contains one or more class-based host bindings.
-   *
-   * Examples include:
-   * 1. `@HostBinding('class') x`
-   * 2. `@HostBinding('class.name') x`
-   */
-  hasHostClassBindings = 0x1000,
-
-  /**
-   * Bit #15 - Whether or not there are two or more sources for a class property in the context.
-   *
-   * Examples include:
-   * 1. prop + prop: `<div [class.active]="x" dir-that-sets-active-class>`
-   * 2. map + prop: `<div [class]="x" [class.foo]>`
-   * 3. map + map: `<div [class]="x" dir-that-sets-class>`
-   */
-  hasDuplicateClassBindings = 0x2000,
-
-  /**
-   * Bit #16 - Whether or not there are style-based map bindings present.
-   *
-   * Examples include:
-   * 1. `<div [style]="x">`
-   * 2. `@HostBinding('style') x`
-   */
-  hasStyleMapBindings = 0x4000,
-
-  /**
-   * Bit #17 - Whether or not there are any style-based prop bindings present.
-   *
-   * Examples include:
-   * 1. `<div [style.prop]="x">`
-   * 2. `@HostBinding('style.prop') x`
-   */
-  hasStylePropBindings = 0x8000,
-
-  /**
-   * Bit #18 - whether or not there are any active [style] and [style.prop] bindings
-   */
-  hasStylePropAndMapBindings = hasStyleMapBindings | hasStylePropBindings,
-
-  /**
-   * Bit #19 - Whether or not the context contains one or more style-based template bindings.
-   *
-   * Examples include:
-   * 1. `<div [style]="x">`
-   * 2. `<div [style.prop]="x">`
-   */
-  hasTemplateStyleBindings = 0x10000,
-
-  /**
-   * Bit #20 - Whether or not the context contains one or more style-based host bindings.
-   *
-   * Examples include:
-   * 1. `@HostBinding('style') x`
-   * 2. `@HostBinding('style.prop') x`
-   */
-  hasHostStyleBindings = 0x20000,
-
-  /**
-   * Bit #21 - Whether or not there are two or more sources for a style property in the context.
-   *
-   * Examples include:
-   * 1. prop + prop: `<div [style.width]="x" dir-that-sets-width>`
-   * 2. map + prop: `<div [style]="x" [style.prop]>`
-   * 3. map + map: `<div [style]="x" dir-that-sets-style>`
-   */
-  hasDuplicateStyleBindings = 0x40000,
 }
 
 /**
@@ -588,20 +483,8 @@ export interface TNode {
    * This field will be populated if and when:
    *
    * - There are one or more initial styles on an element (e.g. `<div style="width:200px">`)
-   * - There are one or more style bindings on an element (e.g. `<div [style.width]="w">`)
-   *
-   * If and when there are only initial styles (no bindings) then an instance of `StylingMapArray`
-   * will be used here. Otherwise an instance of `TStylingContext` will be created when there
-   * are one or more style bindings on an element.
-   *
-   * During element creation this value is likely to be populated with an instance of
-   * `StylingMapArray` and only when the bindings are evaluated (which happens during
-   * update mode) then it will be converted to a `TStylingContext` if any style bindings
-   * are encountered. If and when this happens then the existing `StylingMapArray` value
-   * will be placed into the initial styling slot in the newly created `TStylingContext`.
    */
-  // TODO(misko): `Remove StylingMapArray|TStylingContext|null` in follow up PR.
-  styles: StylingMapArray|TStylingContext|string|null;
+  styles: string|null;
 
   /**
    * A collection of all class bindings and/or static class values for an element.
@@ -609,20 +492,8 @@ export interface TNode {
    * This field will be populated if and when:
    *
    * - There are one or more initial classes on an element (e.g. `<div class="one two three">`)
-   * - There are one or more class bindings on an element (e.g. `<div [class.foo]="f">`)
-   *
-   * If and when there are only initial classes (no bindings) then an instance of `StylingMapArray`
-   * will be used here. Otherwise an instance of `TStylingContext` will be created when there
-   * are one or more class bindings on an element.
-   *
-   * During element creation this value is likely to be populated with an instance of
-   * `StylingMapArray` and only when the bindings are evaluated (which happens during
-   * update mode) then it will be converted to a `TStylingContext` if any class bindings
-   * are encountered. If and when this happens then the existing `StylingMapArray` value
-   * will be placed into the initial styling slot in the newly created `TStylingContext`.
    */
-  // TODO(misko): `Remove StylingMapArray|TStylingContext|null` in follow up PR.
-  classes: StylingMapArray|TStylingContext|string|null;
+  classes: string|null;
 
   /**
    * Stores the head/tail index of the class bindings.
@@ -842,3 +713,53 @@ export type TNodeWithLocalRefs = TContainerNode | TElementNode | TElementContain
  * - `<ng-template #tplRef>` - `tplRef` should point to the `TemplateRef` instance;
  */
 export type LocalRefExtractor = (tNode: TNodeWithLocalRefs, currentView: LView) => any;
+
+/**
+ * Returns `true` if the `TNode` has a directive which has `@Input()` for `class` binding.
+ *
+ * ```
+ * <div my-dir [class]="exp"></div>
+ * ```
+ * and
+ * ```
+ * @Directive({
+ * })
+ * class MyDirective {
+ *   @Input()
+ *   class: string;
+ * }
+ * ```
+ *
+ * In the above case it is necessary to write the reconciled styling information into the
+ * directive's input.
+ *
+ * @param tNode
+ */
+export function hasClassInput(tNode: TNode) {
+  return (tNode.flags & TNodeFlags.hasClassInput) !== 0;
+}
+
+/**
+ * Returns `true` if the `TNode` has a directive which has `@Input()` for `style` binding.
+ *
+ * ```
+ * <div my-dir [style]="exp"></div>
+ * ```
+ * and
+ * ```
+ * @Directive({
+ * })
+ * class MyDirective {
+ *   @Input()
+ *   class: string;
+ * }
+ * ```
+ *
+ * In the above case it is necessary to write the reconciled styling information into the
+ * directive's input.
+ *
+ * @param tNode
+ */
+export function hasStyleInput(tNode: TNode) {
+  return (tNode.flags & TNodeFlags.hasStyleInput) !== 0;
+}

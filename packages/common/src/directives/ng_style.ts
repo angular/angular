@@ -85,4 +85,10 @@ export class NgStyle implements DoCheck {
     changes.forEachAddedItem((record) => this._setStyle(record.key, record.currentValue));
     changes.forEachChangedItem((record) => this._setStyle(record.key, record.currentValue));
   }
+
+  // TODO(misko): Delete this code after angula/flex-layout stops depending on private APIs
+  // We need to export this to make angular/flex-layout happy
+  // https://github.com/angular/flex-layout/blob/ec7b57eb6adf59ecfdfff1de5ccf1ab2f6652ed3/src/lib/extended/class/class.ts#L9
+  setNgStyle(value: any) { this.ngStyle = value; }
+  applyChanges() { this.ngDoCheck(); }
 }

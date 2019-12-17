@@ -14,15 +14,13 @@ import {initNgDevMode} from '../../util/ng_dev_mode';
 import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
-import {PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
+import {PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
 import {TQueries} from '../interfaces/query';
 import {RComment, RElement, RNode} from '../interfaces/renderer';
-import {TStylingContext, TStylingRange} from '../interfaces/styling';
+import {TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate} from '../interfaces/styling';
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, TViewType, T_HOST} from '../interfaces/view';
-import {DebugNodeStyling, NodeStylingDebug} from '../styling/styling_debug';
 import {attachDebugObject} from '../util/debug_utils';
-import {isStylingContext} from '../util/styling_utils';
 import {getLContainerActiveIndex, getTNode, unwrapRNode} from '../util/view_utils';
 
 const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNgDevMode());
@@ -140,7 +138,7 @@ export const TViewConstructor = class TView implements ITView {
       public components: number[]|null,                      //
       public directiveRegistry: DirectiveDefList|null,       //
       public pipeRegistry: PipeDefList|null,                 //
-      public firstChild: TNode|null,                         //
+      public firstChild: ITNode|null,                        //
       public schemas: SchemaMetadata[]|null,                 //
       public consts: TConstants|null,                        //
       ) {}
@@ -152,7 +150,7 @@ export const TViewConstructor = class TView implements ITView {
   }
 };
 
-export const TNodeConstructor = class TNode implements ITNode {
+class TNode implements ITNode {
   constructor(
       public tView_: TView,                                                          //
       public type: TNodeType,                                                        //
@@ -176,8 +174,8 @@ export const TNodeConstructor = class TNode implements ITNode {
       public child: ITNode|null,                                                     //
       public parent: TElementNode|TContainerNode|null,                               //
       public projection: number|(ITNode|RNode[])[]|null,                             //
-      public styles: TStylingContext|null,                                           //
-      public classes: TStylingContext|null,                                          //
+      public styles: string|null,                                                    //
+      public classes: string|null,                                                   //
       public classBindings: TStylingRange,                                           //
       public styleBindings: TStylingRange,                                           //
       ) {}
@@ -206,7 +204,6 @@ export const TNodeConstructor = class TNode implements ITNode {
     if (this.flags & TNodeFlags.hasClassInput) flags.push('TNodeFlags.hasClassInput');
     if (this.flags & TNodeFlags.hasContentQuery) flags.push('TNodeFlags.hasContentQuery');
     if (this.flags & TNodeFlags.hasStyleInput) flags.push('TNodeFlags.hasStyleInput');
-    if (this.flags & TNodeFlags.hasInitialStyling) flags.push('TNodeFlags.hasInitialStyling');
     if (this.flags & TNodeFlags.hasHostBindings) flags.push('TNodeFlags.hasHostBindings');
     if (this.flags & TNodeFlags.isComponentHost) flags.push('TNodeFlags.isComponentHost');
     if (this.flags & TNodeFlags.isDirectiveHost) flags.push('TNodeFlags.isDirectiveHost');
@@ -233,9 +230,54 @@ export const TNodeConstructor = class TNode implements ITNode {
     buf.push('</', this.tagName || this.type_, '>');
     return buf.join('');
   }
-};
 
-function processTNodeChildren(tNode: TNode | null, buf: string[]) {
+  get styleBindings_(): DebugStyleBindings { return toDebugStyleBinding(this, false); }
+  get classBindings_(): DebugStyleBindings { return toDebugStyleBinding(this, true); }
+}
+export const TNodeDebug = TNode;
+export type TNodeDebug = TNode;
+
+export interface DebugStyleBindings extends Array<DebugStyleBinding|string|null> {
+  [0]: string|null;
+}
+export interface DebugStyleBinding {
+  key: TStylingKey;
+  index: number;
+  isTemplate: boolean;
+  prevDuplicate: boolean;
+  nextDuplicate: boolean;
+  prevIndex: number;
+  nextIndex: number;
+}
+
+function toDebugStyleBinding(tNode: TNode, isClassBased: boolean): DebugStyleBindings {
+  const tData = tNode.tView_.data;
+  const bindings: DebugStyleBindings = [] as any;
+  const range = isClassBased ? tNode.classBindings : tNode.styleBindings;
+  const prev = getTStylingRangePrev(range);
+  const next = getTStylingRangeNext(range);
+  let isTemplate = next !== 0;
+  let cursor = isTemplate ? next : prev;
+  while (cursor !== 0) {
+    const itemKey = tData[cursor] as TStylingKey;
+    const itemRange = tData[cursor + 1] as TStylingRange;
+    bindings.unshift({
+      key: itemKey,
+      index: cursor,
+      isTemplate: isTemplate,
+      prevDuplicate: getTStylingRangePrevDuplicate(itemRange),
+      nextDuplicate: getTStylingRangeNextDuplicate(itemRange),
+      nextIndex: getTStylingRangeNext(itemRange),
+      prevIndex: getTStylingRangePrev(itemRange),
+    });
+    if (cursor === prev) isTemplate = false;
+    cursor = getTStylingRangePrev(itemRange);
+  }
+  bindings.unshift(isClassBased ? tNode.classes : tNode.styles);
+  return bindings;
+}
+
+function processTNodeChildren(tNode: ITNode | null, buf: string[]) {
   while (tNode) {
     buf.push((tNode as any as{template_: string}).template_);
     tNode = tNode.next;
@@ -389,8 +431,6 @@ export class LViewDebug {
 export interface DebugNode {
   html: string|null;
   native: Node;
-  styles: DebugNodeStyling|null;
-  classes: DebugNodeStyling|null;
   nodes: DebugNode[]|null;
   component: LViewDebug|null;
 }
@@ -401,10 +441,10 @@ export interface DebugNode {
  * @param tNode
  * @param lView
  */
-export function toDebugNodes(tNode: TNode | null, lView: LView): DebugNode[]|null {
+export function toDebugNodes(tNode: ITNode | null, lView: LView): DebugNode[]|null {
   if (tNode) {
     const debugNodes: DebugNode[] = [];
-    let tNodeCursor: TNode|null = tNode;
+    let tNodeCursor: ITNode|null = tNode;
     while (tNodeCursor) {
       debugNodes.push(buildDebugNode(tNodeCursor, lView, tNodeCursor.index));
       tNodeCursor = tNodeCursor.next;
@@ -415,19 +455,13 @@ export function toDebugNodes(tNode: TNode | null, lView: LView): DebugNode[]|nul
   }
 }
 
-export function buildDebugNode(tNode: TNode, lView: LView, nodeIndex: number): DebugNode {
+export function buildDebugNode(tNode: ITNode, lView: LView, nodeIndex: number): DebugNode {
   const rawValue = lView[nodeIndex];
   const native = unwrapRNode(rawValue);
   const componentLViewDebug = toDebug(readLViewValue(rawValue));
-  const styles = isStylingContext(tNode.styles) ?
-      new NodeStylingDebug(tNode.styles as any as TStylingContext, tNode, lView, false) :
-      null;
-  const classes = isStylingContext(tNode.classes) ?
-      new NodeStylingDebug(tNode.classes as any as TStylingContext, tNode, lView, true) :
-      null;
   return {
     html: toHtml(native),
-    native: native as any, styles, classes,
+    native: native as any,
     nodes: toDebugNodes(tNode.child, lView),
     component: componentLViewDebug,
   };

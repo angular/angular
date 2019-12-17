@@ -30,7 +30,19 @@ export function getBinding(lView: LView, bindingIndex: number): any {
   return lView[bindingIndex];
 }
 
-/** Updates binding if changed, then returns whether it was updated. */
+/**
+ * Updates binding if changed, then returns whether it was updated.
+ *
+ * This function also checks the `CheckNoChangesMode` and throws if changes are made.
+ * Some changes (Objects/iterables) during `CheckNoChangesMode` are exempt to comply with VE
+ * behavior.
+ *
+ * @param lView current `LView`
+ * @param bindingIndex The binding in the `LView` to check
+ * @param value New value to check against `lView[bindingIndex]`
+ * @returns `true` if the bindings has changed. (Throws if binding has changed during
+ *          `CheckNoChangesMode`)
+ */
 export function bindingUpdated(lView: LView, bindingIndex: number, value: any): boolean {
   ngDevMode && assertNotSame(value, NO_CHANGE, 'Incoming value should never be NO_CHANGE.');
   ngDevMode &&
@@ -50,6 +62,11 @@ export function bindingUpdated(lView: LView, bindingIndex: number, value: any): 
         throwErrorIfNoChangesMode(
             oldValue === NO_CHANGE, details.oldValue, details.newValue, details.propName);
       }
+      // There was a change, but the `devModeEqual` decided that the change is exempt from an error.
+      // For this reason we exit as if no change. The early exit is needed to prevent the changed
+      // value to be written into `LView` (If we would write the new value that we would not see it
+      // as change on next CD.)
+      return false;
     }
     lView[bindingIndex] = value;
     return true;

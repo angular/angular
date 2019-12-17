@@ -25,7 +25,7 @@ export class TreeFunction {
     type: TreeFunction,
     selectors: [['tree']],
     decls: 5,
-    vars: 1,
+    vars: 2,
     template: function(rf: ɵRenderFlags, ctx: TreeFunction) {
       // bit of a hack
       TreeTpl(rf, ctx.data);
@@ -34,6 +34,7 @@ export class TreeFunction {
   });
 }
 
+const TreeFunctionCmpDef = TreeFunction.ɵcmp as{decls: number, vars: number};
 export function TreeTpl(rf: ɵRenderFlags, ctx: TreeNode) {
   if (rf & ɵRenderFlags.Create) {
     ɵɵelementStart(0, 'tree');
@@ -54,7 +55,7 @@ export function TreeTpl(rf: ɵRenderFlags, ctx: TreeNode) {
     ɵɵcontainerRefreshStart(3);
     {
       if (ctx.left != null) {
-        let rf0 = ɵɵembeddedViewStart(0, 5, 1);
+        let rf0 = ɵɵembeddedViewStart(0, 5, 2);
         { TreeTpl(rf0, ctx.left); }
         ɵɵembeddedViewEnd();
       }
@@ -63,7 +64,7 @@ export function TreeTpl(rf: ɵRenderFlags, ctx: TreeNode) {
     ɵɵcontainerRefreshStart(4);
     {
       if (ctx.right != null) {
-        let rf0 = ɵɵembeddedViewStart(0, 5, 1);
+        let rf0 = ɵɵembeddedViewStart(0, TreeFunctionCmpDef.decls, TreeFunctionCmpDef.vars);
         { TreeTpl(rf0, ctx.right); }
         ɵɵembeddedViewEnd();
       }

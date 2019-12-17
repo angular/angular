@@ -116,10 +116,10 @@ describe('inheritance', () => {
         'Base.backgroundColor', 'Super.color', 'Sub2.width',   //
       ]);
       if (ivyEnabled) {
-        expect(getDirectiveDef(BaseDirective) !.hostVars).toEqual(1);
-        expect(getDirectiveDef(SuperDirective) !.hostVars).toEqual(2);
-        expect(getDirectiveDef(Sub1Directive) !.hostVars).toEqual(3);
-        expect(getDirectiveDef(Sub2Directive) !.hostVars).toEqual(3);
+        expect(getDirectiveDef(BaseDirective) !.hostVars).toEqual(2);
+        expect(getDirectiveDef(SuperDirective) !.hostVars).toEqual(4);
+        expect(getDirectiveDef(Sub1Directive) !.hostVars).toEqual(6);
+        expect(getDirectiveDef(Sub2Directive) !.hostVars).toEqual(6);
       }
     });
   });

@@ -642,3 +642,8 @@ export function getTStylingRangeNextDuplicate(tStylingRange: TStylingRange): boo
 export function setTStylingRangeNextDuplicate(tStylingRange: TStylingRange): TStylingRange {
   return ((tStylingRange as any as number) | StylingRange.NEXT_DUPLICATE) as any;
 }
+
+export function getTStylingRangeTail(tStylingRange: TStylingRange): number {
+  const next = getTStylingRangeNext(tStylingRange);
+  return next === 0 ? getTStylingRangePrev(tStylingRange) : next;
+}

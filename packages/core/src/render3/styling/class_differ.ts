@@ -6,9 +6,11 @@
 * found in the LICENSE file at https://angular.io/license
 */
 
+import {assertNotEqual} from '../../util/assert';
 import {CharCode} from '../../util/char_code';
-
+import {concatStringsWithSpace} from '../../util/stringify';
 import {consumeWhitespace, getLastParsedKey, parseClassName, parseClassNameNext} from './styling_parser';
+
 
 
 /**
@@ -93,17 +95,6 @@ export function processClassToken(
 }
 
 /**
- * Removes a class from a `className` string.
- *
- * @param className A string containing classes (whitespace separated)
- * @param classToRemove A class name to remove from the `className`
- * @returns a new class-list which does not have `classToRemove`
- */
-export function removeClass(className: string, classToRemove: string): string {
-  return toggleClass(className, classToRemove, false);
-}
-
-/**
  * Toggles a class in `className` string.
  *
  * @param className A string containing classes (whitespace separated)
@@ -121,17 +112,23 @@ export function toggleClass(className: string, classToToggle: string, toggle: bo
     start = classIndexOf(className, classToToggle, start);
     if (start === -1) {
       if (toggle === true) {
-        className = className === '' ? classToToggle : className + ' ' + classToToggle;
+        className = concatStringsWithSpace(className, classToToggle);
       }
       break;
     }
-    const removeLength = classToToggle.length;
     if (toggle === true) {
       // we found it and we should have it so just return
       return className;
     } else {
+      const length = classToToggle.length;
       // Cut out the class which should be removed.
-      const endWhitespace = consumeWhitespace(className, start + removeLength, end);
+      const endWhitespace = consumeWhitespace(className, start + length, end);
+      if (endWhitespace === end) {
+        // If we are the last token then we need back search trailing whitespace.
+        while (start > 0 && className.charCodeAt(start - 1) <= CharCode.SPACE) {
+          start--;
+        }
+      }
       className = className.substring(0, start) + className.substring(endWhitespace, end);
       end = className.length;
     }
@@ -151,15 +148,16 @@ export function toggleClass(className: string, classToToggle: string, toggle: bo
  */
 export function classIndexOf(
     className: string, classToSearch: string, startingIndex: number): number {
+  ngDevMode && assertNotEqual(classToSearch, '', 'can not look for "" string.');
   let end = className.length;
   while (true) {
     const foundIndex = className.indexOf(classToSearch, startingIndex);
     if (foundIndex === -1) return foundIndex;
     if (foundIndex === 0 || className.charCodeAt(foundIndex - 1) <= CharCode.SPACE) {
       // Ensure that it has leading whitespace
-      const removeLength = classToSearch.length;
-      if (foundIndex + removeLength === end ||
-          className.charCodeAt(foundIndex + removeLength) <= CharCode.SPACE) {
+      const length = classToSearch.length;
+      if (foundIndex + length === end ||
+          className.charCodeAt(foundIndex + length) <= CharCode.SPACE) {
         // Ensure that it has trailing whitespace
         return foundIndex;
       }

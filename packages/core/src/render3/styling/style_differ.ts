@@ -6,7 +6,8 @@
 * found in the LICENSE file at https://angular.io/license
 */
 
-import {getLastParsedKey, getLastParsedValue, getLastParsedValueEnd, parseStyle, parseStyleNext, resetParserState} from './styling_parser';
+import {concatStringsWithSpace} from '../../util/stringify';
+import {consumeWhitespace, getLastParsedKey, getLastParsedValue, parseStyle, parseStyleNext, resetParserState} from './styling_parser';
 
 /**
  * Stores changes to Style values.
@@ -111,18 +112,20 @@ export function removeStyle(cssText: string, styleToRemove: string): string {
   for (let i = parseStyle(cssText); i >= 0; i = parseStyleNext(cssText, i)) {
     const key = getLastParsedKey(cssText);
     if (key === styleToRemove) {
+      // Consume any remaining whitespace.
+      i = consumeWhitespace(cssText, i, cssText.length);
       if (lastValueEnd === 0) {
         cssText = cssText.substring(i);
         i = 0;
       } else if (i === cssText.length) {
         return cssText.substring(0, lastValueEnd);
       } else {
-        cssText = cssText.substring(0, lastValueEnd) + '; ' + cssText.substring(i);
-        i = lastValueEnd + 2;  // 2 is for '; '.length(so that we skip the separator)
+        cssText = concatStringsWithSpace(cssText.substring(0, lastValueEnd), cssText.substring(i));
+        i = lastValueEnd + 1;  // 1 is for ';'.length(so that we skip the separator)
       }
       resetParserState(cssText);
     }
-    lastValueEnd = getLastParsedValueEnd();
+    lastValueEnd = i;
   }
   return cssText;
 }

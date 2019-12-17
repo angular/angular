@@ -8,6 +8,7 @@
 
 import {Renderer3, domRendererFactory3} from '@angular/core/src/render3/interfaces/renderer';
 import {writeAndReconcileClass, writeAndReconcileStyle} from '@angular/core/src/render3/styling/reconcile';
+import {getSortedClassName, getSortedStyle} from '@angular/core/testing/src/styling';
 
 describe('styling reconcile', () => {
   [document, domRendererFactory3.createRenderer(null, null)].forEach((renderer: Renderer3) => {
@@ -84,41 +85,3 @@ describe('styling reconcile', () => {
     });
   });
 });
-
-function getSortedClassName(element: HTMLElement): string {
-  const names: string[] = [];
-  const classList = element.classList || [];
-  for (let i = 0; i < classList.length; i++) {
-    const name = classList[i];
-    if (names.indexOf(name) === -1) {
-      names.push(name);
-    }
-  }
-  names.sort();
-  return names.join(' ');
-}
-
-function getSortedStyle(element: HTMLElement): string {
-  const names: string[] = [];
-  const style = element.style;
-  // reading `style.color` is a work around for a bug in Domino. The issue is that Domino has stale
-  // value for `style.length`. It seems that reading a property from the element causes the stale
-  // value to be updated. (As of Domino v 2.1.3)
-  style.color;
-  for (let i = 0; i < style.length; i++) {
-    const name = style.item(i);
-    if (names.indexOf(name) === -1) {
-      names.push(name);
-    }
-  }
-  names.sort();
-  let sorted = '';
-  names.forEach(key => {
-    const value = style.getPropertyValue(key);
-    if (value != null && value !== '') {
-      if (sorted !== '') sorted += ' ';
-      sorted += key + ': ' + value + ';';
-    }
-  });
-  return sorted;
-}

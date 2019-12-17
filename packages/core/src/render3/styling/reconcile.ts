@@ -6,6 +6,7 @@
 * found in the LICENSE file at https://angular.io/license
 */
 
+import {assertDefined, assertString} from '../../util/assert';
 import {ProceduralRenderer3, RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
 import {computeClassChanges} from './class_differ';
 import {computeStyleChanges} from './style_differ';
@@ -43,19 +44,42 @@ import {computeStyleChanges} from './style_differ';
  */
 export function writeAndReconcileClass(
     renderer: Renderer3, element: RElement, expectedValue: string, newValue: string): void {
+  ngDevMode && assertDefined(element, 'Expecting DOM element');
+  ngDevMode && assertString(expectedValue, '\'oldValue\' should be a string');
+  ngDevMode && assertString(newValue, '\'newValue\' should be a string');
   if (element.className === expectedValue) {
-    // This is the simple/fast case where no one has written into element without our knowledge.
-    if (isProceduralRenderer(renderer)) {
-      renderer.setAttribute(element, 'class', newValue);
-    } else {
-      element.className = newValue;
-    }
-    ngDevMode && ngDevMode.rendererSetClassName++;
+    writeDirectClass(renderer, element, newValue);
   } else {
     // The expected value is not the same as last value. Something changed the DOM element without
     // our knowledge so we need to do reconciliation instead.
     reconcileClassNames(renderer, element, expectedValue, newValue);
   }
+}
+
+/**
+ * Write `className` to `RElement`.
+ *
+ * This function does direct write without any reconciliation. Used for writing initial values, so
+ * that static styling values do not pull in the style parser.
+ *
+ * @param renderer Renderer to use
+ * @param element The element which needs to be updated.
+ * @param newValue The new class list to write.
+ */
+export function writeDirectClass(renderer: Renderer3, element: RElement, newValue: string) {
+  ngDevMode && assertString(newValue, '\'newValue\' should be a string');
+  if (isProceduralRenderer(renderer)) {
+    if (newValue === '') {
+      // There are tests in `google3` which expect `element.getAttribute('class')` to be `null`.
+      // TODO(commit): add test case
+      renderer.removeAttribute(element, 'class');
+    } else {
+      renderer.setAttribute(element, 'class', newValue);
+    }
+  } else {
+    element.className = newValue;
+  }
+  ngDevMode && ngDevMode.rendererSetClassName++;
 }
 
 /**
@@ -88,20 +112,37 @@ export function writeAndReconcileClass(
 */
 export function writeAndReconcileStyle(
     renderer: Renderer3, element: RElement, expectedValue: string, newValue: string): void {
-  const style = (element as HTMLElement).style;
-  if (style != null && style.cssText === expectedValue) {
-    // This is the simple/fast case where no one has written into element without our knowledge.
-    if (isProceduralRenderer(renderer)) {
-      renderer.setAttribute(element, 'style', newValue);
-    } else {
-      style.cssText = newValue;
-    }
-    ngDevMode && ngDevMode.rendererCssText++;
+  ngDevMode && assertDefined(element, 'Expecting DOM element');
+  ngDevMode && assertString(expectedValue, '\'expectedValue\' should be a string');
+  ngDevMode && assertString(newValue, '\'newValue\' should be a string');
+  const style = expectedValue === null ? null : (element as HTMLElement).style;
+  if (expectedValue === null || style != null && (style !.cssText === expectedValue)) {
+    writeDirectStyle(renderer, element, newValue);
   } else {
     // The expected value is not the same as last value. Something changed the DOM element without
     // our knowledge so we need to do reconciliation instead.
     reconcileStyleNames(renderer, element, expectedValue, newValue);
   }
+}
+
+/**
+ * Write `cssText` to `RElement`.
+ *
+ * This function does direct write without any reconciliation. Used for writing initial values, so
+ * that static styling values do not pull in the style parser.
+ *
+ * @param renderer Renderer to use
+ * @param element The element which needs to be updated.
+ * @param newValue The new class list to write.
+ */
+export function writeDirectStyle(renderer: Renderer3, element: RElement, newValue: string) {
+  ngDevMode && assertString(newValue, '\'newValue\' should be a string');
+  if (isProceduralRenderer(renderer)) {
+    renderer.setAttribute(element, 'style', newValue);
+  } else {
+    (element as HTMLElement).style.cssText = newValue;
+  }
+  ngDevMode && ngDevMode.rendererSetStyle++;
 }
 
 /**

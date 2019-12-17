@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {assertEqual, throwError} from '../../util/assert';
 import {CharCode} from '../../util/char_code';
 
 /**
@@ -142,17 +143,16 @@ export function parseStyle(text: string): number {
  */
 export function parseStyleNext(text: string, startIndex: number): number {
   const end = parserState.textEnd;
-  if (end === startIndex) {
+  let index = parserState.key = consumeWhitespace(text, startIndex, end);
+  if (end === index) {
     // we reached an end so just quit
     return -1;
   }
-  let index = parserState.keyEnd = consumeStyleKey(text, parserState.key = startIndex, end);
-  index = parserState.value = consumeSeparatorWithWhitespace(text, index, end, CharCode.COLON);
+  index = parserState.keyEnd = consumeStyleKey(text, index, end);
+  index = consumeSeparator(text, index, end, CharCode.COLON);
+  index = parserState.value = consumeWhitespace(text, index, end);
   index = parserState.valueEnd = consumeStyleValue(text, index, end);
-  if (ngDevMode && parserState.value === parserState.valueEnd) {
-    throw malformedStyleError(text, index);
-  }
-  return consumeSeparatorWithWhitespace(text, index, end, CharCode.SEMI_COLON);
+  return consumeSeparator(text, index, end, CharCode.SEMI_COLON);
 }
 
 /**
@@ -165,15 +165,6 @@ export function resetParserState(text: string): void {
   parserState.value = 0;
   parserState.valueEnd = 0;
   parserState.textEnd = text.length;
-}
-
-/**
- * Retrieves tha `valueEnd` from the parser global state.
- *
- * See: `ParserState`.
- */
-export function getLastParsedValueEnd(): number {
-  return parserState.valueEnd;
 }
 
 /**
@@ -233,16 +224,15 @@ export function consumeStyleKey(text: string, startIndex: number, endIndex: numb
  * @param endIndex Ending index of character where the scan should end.
  * @returns Index after separator and surrounding whitespace.
  */
-export function consumeSeparatorWithWhitespace(
+export function consumeSeparator(
     text: string, startIndex: number, endIndex: number, separator: number): number {
   startIndex = consumeWhitespace(text, startIndex, endIndex);
   if (startIndex < endIndex) {
     if (ngDevMode && text.charCodeAt(startIndex) !== separator) {
-      throw expectingError(text, String.fromCharCode(separator), startIndex);
+      malformedStyleError(text, String.fromCharCode(separator), startIndex);
     }
     startIndex++;
   }
-  startIndex = consumeWhitespace(text, startIndex, endIndex);
   return startIndex;
 }
 
@@ -310,18 +300,14 @@ export function consumeQuotedText(
       ch1 = ch;
     }
   }
-  throw ngDevMode ? expectingError(text, String.fromCharCode(quoteCharCode), endIndex) :
+  throw ngDevMode ? malformedStyleError(text, String.fromCharCode(quoteCharCode), endIndex) :
                     new Error();
 }
 
-function expectingError(text: string, expecting: string, index: number) {
-  return new Error(
-      `Expecting '${expecting}' at location ${index} in string '` + text.substring(0, index) +
-      '[>>' + text.substring(index, index + 1) + '<<]' + text.substr(index + 1) + '\'.');
-}
-
-function malformedStyleError(text: string, index: number) {
-  return new Error(
+function malformedStyleError(text: string, expecting: string, index: number): never {
+  ngDevMode && assertEqual(typeof text === 'string', true, 'String expected here');
+  throw throwError(
       `Malformed style at location ${index} in string '` + text.substring(0, index) + '[>>' +
-      text.substring(index, index + 1) + '<<]' + text.substr(index + 1) + '\'.');
+      text.substring(index, index + 1) + '<<]' + text.substr(index + 1) +
+      `'. Expecting '${expecting}'.`);
 }

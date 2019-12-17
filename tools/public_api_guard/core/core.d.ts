@@ -703,8 +703,8 @@ export declare function ɵɵattributeInterpolate8(attrName: string, prefix: stri
 export declare function ɵɵattributeInterpolateV(attrName: string, values: any[], sanitizer?: SanitizerFn, namespace?: string): typeof ɵɵattributeInterpolateV;
 
 export declare function ɵɵclassMap(classes: {
-    [className: string]: any;
-} | NO_CHANGE | string | null): void;
+    [className: string]: boolean | null | undefined;
+} | Map<string, boolean | undefined | null> | Set<string> | string[] | string | null | undefined): void;
 
 export declare function ɵɵclassMapInterpolate1(prefix: string, v0: any, suffix: string): void;
 
@@ -724,7 +724,7 @@ export declare function ɵɵclassMapInterpolate8(prefix: string, v0: any, i0: st
 
 export declare function ɵɵclassMapInterpolateV(values: any[]): void;
 
-export declare function ɵɵclassProp(className: string, value: boolean | null): typeof ɵɵclassProp;
+export declare function ɵɵclassProp(className: string, value: boolean | null | undefined): typeof ɵɵclassProp;
 
 export declare type ɵɵComponentDefWithMeta<T, Selector extends String, ExportAs extends string[], InputMap extends {
     [key: string]: string;
@@ -1035,9 +1035,9 @@ export declare function ɵɵstaticViewQuery<T>(predicate: Type<any> | string[], 
 
 export declare function ɵɵstyleMap(styles: {
     [styleName: string]: any;
-} | NO_CHANGE | null): void;
+} | Map<string, string | number | null | undefined> | string | null | undefined): void;
 
-export declare function ɵɵstyleProp(prop: string, value: string | number | SafeValue | null, suffix?: string | null): typeof ɵɵstyleProp;
+export declare function ɵɵstyleProp(prop: string, value: string | number | SafeValue | null | undefined, suffix?: string | null): typeof ɵɵstyleProp;
 
 export declare function ɵɵstylePropInterpolate1(prop: string, prefix: string, v0: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate1;
 

@@ -196,7 +196,7 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
         fixture = createTestComponent(`<div [ngClass]="['foo', {}]"></div>`);
         expect(() => fixture !.detectChanges())
             .toThrowError(
-                /NgClass can only toggle CSS classes expressed as strings, got: \[object Object\]/);
+                /NgClass can only toggle CSS classes expressed as strings, got \[object Object\]/);
       });
     });
 
@@ -372,6 +372,27 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
         detectChangesAndExpectClassName('color-red');
       });
 
+      it('should allow classes with trailing and leading spaces in [ngClass]', () => {
+        @Component({
+          template: `
+            <div leading-space [ngClass]="{' foo': applyClasses}"></div>
+            <div trailing-space [ngClass]="{'foo ': applyClasses}"></div>
+          `
+        })
+        class Cmp {
+          applyClasses = true;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.detectChanges();
+
+        const leading = fixture.nativeElement.querySelector('[leading-space]');
+        const trailing = fixture.nativeElement.querySelector('[trailing-space]');
+        expect(leading.className).toBe('foo');
+        expect(trailing.className).toBe('foo');
+      });
+
     });
   });
 }
@@ -379,8 +400,7 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   condition: boolean = true;
-  // TODO(issue/24571): remove '!'.
-  items !: any[];
+  items: any[]|undefined;
   arrExpr: string[] = ['foo'];
   setExpr: Set<string> = new Set<string>();
   objExpr: {[klass: string]: any}|null = {'foo': true, 'bar': false};
