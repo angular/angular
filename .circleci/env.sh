@@ -35,7 +35,6 @@ setPublicVar CI_COMMIT_RANGE "`[[ ${CIRCLE_PR_NUMBER:-false} != false ]] && echo
 setPublicVar CI_PULL_REQUEST "${CIRCLE_PR_NUMBER:-false}";
 setPublicVar CI_REPO_NAME "$CIRCLE_PROJECT_REPONAME";
 setPublicVar CI_REPO_OWNER "$CIRCLE_PROJECT_USERNAME";
-setPublicVar CI_LOCAL_YARN_PATH "`node $projectDir/.circleci/get-vendored-yarn-path.js`";
 
 
 ####################################################################################################
