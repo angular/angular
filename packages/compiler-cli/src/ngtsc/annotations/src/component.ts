@@ -328,6 +328,11 @@ export class ComponentDecoratorHandler implements
     const scope = this.scopeReader.getScopeForComponent(node);
     const selector = analysis.meta.selector;
     const matcher = new SelectorMatcher<DirectiveMeta>();
+    if (scope === 'error') {
+      // Don't bother indexing components which had erroneous scopes.
+      return null;
+    }
+
     if (scope !== null) {
       for (const directive of scope.compilation.directives) {
         if (directive.selector !== null) {
@@ -360,6 +365,11 @@ export class ComponentDecoratorHandler implements
     let schemas: SchemaMetadata[] = [];
 
     const scope = this.scopeReader.getScopeForComponent(node);
+    if (scope === 'error') {
+      // Don't type-check components that had errors in their scopes.
+      return;
+    }
+
     if (scope !== null) {
       for (const meta of scope.compilation.directives) {
         if (meta.selector !== null) {
@@ -405,7 +415,7 @@ export class ComponentDecoratorHandler implements
       wrapDirectivesAndPipesInClosure: false,
     };
 
-    if (scope !== null) {
+    if (scope !== null && scope !== 'error') {
       // Replace the empty components and directives from the analyze() step with a fully expanded
       // scope. This is possible now because during resolve() the whole compilation unit has been
       // fully analyzed.

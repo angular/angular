@@ -109,6 +109,15 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
    */
   private scopeErrors = new Map<ClassDeclaration, ts.Diagnostic[]>();
 
+  /**
+   * Tracks which NgModules are unreliable due to errors within their declarations.
+   *
+   * This provides a unified view of which modules have errors, across all of the different
+   * diagnostic categories that can be produced. Theoretically this can be inferred from the other
+   * properties of this class, but is tracked explicitly to simplify the logic.
+   */
+  private taintedModules = new Set<ClassDeclaration>();
+
   constructor(
       private localReader: MetadataReader, private dependencyScopeReader: DtsModuleScopeResolver,
       private refEmitter: ReferenceEmitter, private aliasingHost: AliasingHost|null) {}
@@ -131,7 +140,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
 
   registerPipeMetadata(pipe: PipeMeta): void {}
 
-  getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null {
+  getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null|'error' {
     const scope = !this.declarationToModule.has(clazz) ?
         null :
         this.getScopeOfModule(this.declarationToModule.get(clazz) !.ngModule);
@@ -158,15 +167,20 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
    * `LocalModuleScope`.
    *
    * This method implements the logic of NgModule imports and exports. It returns the
-   * `LocalModuleScope` for the given NgModule if one can be produced, and `null` if no scope is
-   * available or the scope contains errors.
+   * `LocalModuleScope` for the given NgModule if one can be produced, `null` if no scope was ever
+   * defined, or the string `'error'` if the scope contained errors.
    */
-  getScopeOfModule(clazz: ClassDeclaration): LocalModuleScope|null {
+  getScopeOfModule(clazz: ClassDeclaration): LocalModuleScope|'error'|null {
     const scope = this.moduleToRef.has(clazz) ?
         this.getScopeOfModuleReference(this.moduleToRef.get(clazz) !) :
         null;
-    // Translate undefined -> null.
-    return scope !== undefined ? scope : null;
+    // If the NgModule class is marked as tainted, consider it an error.
+    if (this.taintedModules.has(clazz)) {
+      return 'error';
+    }
+
+    // Translate undefined -> 'error'.
+    return scope !== undefined ? scope : 'error';
   }
 
   /**
@@ -192,7 +206,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     const scopes: CompilationScope[] = [];
     this.declarationToModule.forEach((declData, declaration) => {
       const scope = this.getScopeOfModule(declData.ngModule);
-      if (scope !== null) {
+      if (scope !== null && scope !== 'error') {
         scopes.push({declaration, ngModule: declData.ngModule, ...scope.compilation});
       }
     });
@@ -219,6 +233,10 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
       // duplicate instead.
       const duplicateDeclMap = new Map<ClassDeclaration, DeclarationData>();
       const firstDeclData = this.declarationToModule.get(decl.node) !;
+
+      // Mark both modules as tainted, since their declarations are missing a component.
+      this.taintedModules.add(firstDeclData.ngModule);
+      this.taintedModules.add(ngModule);
 
       // Being detected as a duplicate means there are two NgModules (for now) which declare this
       // directive/pipe. Add both of them to the duplicate tracking map.
@@ -298,6 +316,8 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
       } else if (pipe !== null) {
         compilationPipes.set(decl.node, {...pipe, ref: decl});
       } else {
+        this.taintedModules.add(ngModule.ref.node);
+
         const errorNode = decl.getOriginForDiagnostics(ngModule.rawDeclarations !);
         diagnostics.push(makeDiagnostic(
             ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode,
@@ -390,8 +410,8 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
       // Save the errors for retrieval.
       this.scopeErrors.set(ref.node, diagnostics);
 
-      // Return undefined to indicate the scope is invalid.
-      this.cache.set(ref.node, undefined);
+      // Mark this module as being tainted.
+      this.taintedModules.add(ref.node);
       return undefined;
     }
 
