@@ -13,7 +13,7 @@ import {CompoundMetadataRegistry, DirectiveMeta, LocalMetadataRegistry, Metadata
 import {ClassDeclaration} from '../../reflection';
 import {ScopeData} from '../src/api';
 import {DtsModuleScopeResolver} from '../src/dependency';
-import {LocalModuleScopeRegistry} from '../src/local';
+import {LocalModuleScope, LocalModuleScopeRegistry} from '../src/local';
 
 function registerFakeRefs(registry: MetadataRegistry):
     {[name: string]: Reference<ClassDeclaration>} {
@@ -56,7 +56,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawDeclarations: null,
     });
 
-    const scope = scopeRegistry.getScopeOfModule(Module.node) !;
+    const scope = scopeRegistry.getScopeOfModule(Module.node) as LocalModuleScope;
     expect(scopeToRefs(scope.compilation)).toEqual([Dir1, Dir2, Pipe1]);
     expect(scopeToRefs(scope.exported)).toEqual([Dir1, Pipe1]);
   });
@@ -89,7 +89,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawDeclarations: null,
     });
 
-    const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) !;
+    const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
     expect(scopeToRefs(scopeA.compilation)).toEqual([DirA, DirB, DirCE]);
     expect(scopeToRefs(scopeA.exported)).toEqual([]);
   });
@@ -114,7 +114,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawDeclarations: null,
     });
 
-    const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) !;
+    const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
     expect(scopeToRefs(scopeA.compilation)).toEqual([]);
     expect(scopeToRefs(scopeA.exported)).toEqual([Dir]);
   });
@@ -147,7 +147,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawDeclarations: null,
     });
 
-    const scope = scopeRegistry.getScopeOfModule(ModuleA.node) !;
+    const scope = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
     expect(scopeToRefs(scope.compilation)).toEqual([DirA, DirB]);
     expect(scopeToRefs(scope.exported)).toEqual([DirA, DirB]);
   });
@@ -171,7 +171,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawDeclarations: null,
     });
 
-    const scope = scopeRegistry.getScopeOfModule(Module.node) !;
+    const scope = scopeRegistry.getScopeOfModule(Module.node) as LocalModuleScope;
     expect(scope.compilation.directives[0].ref.getIdentityIn(idSf)).toBe(id);
   });
 
@@ -195,7 +195,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawDeclarations: null,
     });
 
-    const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) !;
+    const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
     expect(scopeToRefs(scopeA.exported)).toEqual([Dir]);
   });
 
@@ -219,7 +219,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawDeclarations: null,
     });
 
-    expect(scopeRegistry.getScopeOfModule(ModuleA.node)).toBe(null);
+    expect(scopeRegistry.getScopeOfModule(ModuleA.node)).toBe('error');
 
     // ModuleA should have associated diagnostics as it exports `Dir` without declaring it.
     expect(scopeRegistry.getDiagnosticsOfModule(ModuleA.node)).not.toBeNull();
