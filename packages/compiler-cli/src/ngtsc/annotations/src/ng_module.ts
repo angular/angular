@@ -22,7 +22,7 @@ import {getSourceFile} from '../../util/src/typescript';
 
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
-import {combineResolvers, findAngularDecorator, forwardRefResolver, getReferenceOriginForDiagnostics, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
+import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
 
 export interface NgModuleAnalysis {
   mod: R3NgModuleMetadata;
@@ -119,7 +119,7 @@ export class NgModuleDecoratorHandler implements
       // Look through the declarations to make sure they're all a part of the current compilation.
       for (const ref of declarationRefs) {
         if (ref.node.getSourceFile().isDeclarationFile) {
-          const errorNode: ts.Expression = getReferenceOriginForDiagnostics(ref, rawDeclarations);
+          const errorNode: ts.Expression = ref.getOriginForDiagnostics(rawDeclarations);
 
           diagnostics.push(makeDiagnostic(
               ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode,
@@ -312,24 +312,6 @@ export class NgModuleDecoratorHandler implements
     const data: NgModuleResolution = {
       injectorImports: [],
     };
-
-    for (const decl of analysis.declarations) {
-      if (this.metaReader.getDirectiveMetadata(decl) === null &&
-          this.metaReader.getPipeMetadata(decl) === null) {
-        // This declaration is neither a directive(or component) nor a pipe, so produce a diagnostic
-        // for it.
-
-        // Locate the error on the 'declarations' field of the NgModule decorator to start.
-        const errorNode: ts.Expression =
-            getReferenceOriginForDiagnostics(decl, analysis.rawDeclarations !);
-        diagnostics.push(makeDiagnostic(
-            ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode,
-            `The class '${decl.node.name.text}' is listed in the declarations of the NgModule '${node.name.text}', but is not a directive, a component, or a pipe.
-
-Either remove it from the NgModule's declarations, or add an appropriate Angular decorator.`,
-            [{node: decl.node.name, messageText: `'${decl.node.name.text}' is declared here.`}]));
-      }
-    }
 
     if (scope !== null) {
       // Using the scope information, extend the injector's imports using the modules that are
