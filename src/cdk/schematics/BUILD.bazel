@@ -77,7 +77,6 @@ ts_library(
         "@npm//@schematics/angular",
         "@npm//@types/jasmine",
         "@npm//@types/node",
-        "@npm//mock-fs",
         "@npm//typescript",
     ],
 )

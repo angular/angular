@@ -1,4 +1,4 @@
-import {createPackageBuildTasks} from 'material2-build-tools';
+import {createPackageBuildTasks} from '../package-tools';
 import {
   cdkExperimentalPackage,
   cdkPackage,

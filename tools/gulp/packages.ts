@@ -1,4 +1,4 @@
-import {BuildPackage} from 'material2-build-tools';
+import {BuildPackage} from '../package-tools';
 
 export const cdkPackage = new BuildPackage('cdk');
 export const materialPackage = new BuildPackage('material', [cdkPackage]);

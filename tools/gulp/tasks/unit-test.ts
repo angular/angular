@@ -1,6 +1,6 @@
 import {join} from 'path';
 import {task, watch} from 'gulp';
-import {buildConfig, sequenceTask} from 'material2-build-tools';
+import {buildConfig, sequenceTask} from '../../package-tools';
 
 // There are no type definitions available for these imports.
 const runSequence = require('run-sequence');

@@ -5,16 +5,6 @@ import {inlineResourcesForDirectory} from '../inline-resources';
 import {buildScssPipeline} from './build-scss-pipeline';
 import {sequenceTask} from './sequence-task';
 
-// There are no type definitions available for these imports.
-const htmlmin = require('gulp-htmlmin');
-
-const htmlMinifierOptions = {
-  collapseWhitespace: true,
-  removeComments: true,
-  caseSensitive: true,
-  removeAttributeQuotes: false
-};
-
 /**
  * Creates a set of gulp tasks that can build the specified package.
  * @param buildPackage Build package for which the gulp tasks will be generated
@@ -64,7 +54,7 @@ export function createPackageBuildTasks(buildPackage: BuildPackage, preBuildTask
   task(`${taskName}:assets`, assetTasks);
 
   task(`${taskName}:assets:scss`, () => {
-    return buildScssPipeline(buildPackage.sourceDir, true)
+    return buildScssPipeline(buildPackage.sourceDir)
       .pipe(dest(buildPackage.outputDir));
     }
   );
@@ -75,8 +65,7 @@ export function createPackageBuildTasks(buildPackage: BuildPackage, preBuildTask
   });
 
   task(`${taskName}:assets:html`, () => {
-    return src(htmlGlob).pipe(htmlmin(htmlMinifierOptions))
-        .pipe(dest(buildPackage.outputDir));
+    return src(htmlGlob).pipe(dest(buildPackage.outputDir));
   });
 
   task(`${taskName}:assets:inline`, () => {

@@ -1,5 +1,5 @@
 import {task, src} from 'gulp';
-import {buildConfig} from 'material2-build-tools';
+import {buildConfig} from '../../package-tools';
 
 // This import lacks type definitions.
 const gulpClean = require('gulp-clean');

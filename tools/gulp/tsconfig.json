@@ -17,10 +17,7 @@
     "types": [
       "node"
     ],
-    "baseUrl": ".",
-    "paths": {
-      "material2-build-tools": ["../package-tools/index"]
-    }
+    "baseUrl": "."
   },
   "files": [
     "gulpfile.ts"
