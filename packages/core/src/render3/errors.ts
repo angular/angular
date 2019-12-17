@@ -11,7 +11,6 @@ import {stringify} from '../util/stringify';
 
 import {TNode} from './interfaces/node';
 import {LView, TVIEW} from './interfaces/view';
-import {getBindingRoot} from './state';
 import {INTERPOLATION_DELIMITER} from './util/misc_utils';
 
 
@@ -46,9 +45,9 @@ export function throwInvalidProviderError(
 /** Throws an ExpressionChangedAfterChecked error if checkNoChanges mode is on. */
 export function throwErrorIfNoChangesMode(
     creationMode: boolean, oldValue: any, currValue: any, propName?: string): never|void {
-  const field = propName ? `${propName}: ` : '';
+  const field = propName ? ` for '${propName}'` : '';
   let msg =
-      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '${field}${oldValue}'. Current value: '${field}${currValue}'.`;
+      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value${field}: '${oldValue}'. Current value: '${currValue}'.`;
   if (creationMode) {
     msg +=
         ` It seems like the view has been created after its parent and its children have been dirty checked.` +
@@ -79,7 +78,8 @@ function constructDetailsForInterpolation(
  * function description.
  */
 export function getExpressionChangedErrorDetails(
-    lView: LView, bindingIndex: number, oldValue: any, newValue: any): any {
+    lView: LView, bindingIndex: number, oldValue: any,
+    newValue: any): {propName?: string, oldValue: any, newValue: any} {
   const tData = lView[TVIEW].data;
   const metadata = tData[bindingIndex];
 
@@ -93,13 +93,13 @@ export function getExpressionChangedErrorDetails(
     return {propName: metadata, oldValue, newValue};
   }
 
-  // metadata is not available for this expression, check if this expressions is a part of the
+  // metadata is not available for this expression, check if this expression is a part of the
   // property interpolation by going from the current binding index left and look for a string that
   // contains INTERPOLATION_DELIMITER, the layout in tView.data for this case will look like this:
   // [..., 'id�Prefix � and � suffix', null, null, null, ...]
   if (metadata === null) {
     let idx = bindingIndex - 1;
-    while (typeof tData[idx] !== 'string' && tData[idx + 1] === null && idx >= getBindingRoot()) {
+    while (typeof tData[idx] !== 'string' && tData[idx + 1] === null) {
       idx--;
     }
     const meta = tData[idx];
