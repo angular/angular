@@ -1249,7 +1249,7 @@ describe('change detection', () => {
     });
   });
 
-  fdescribe('ExpressionChangedAfterItHasBeenCheckedError', () => {
+  describe('ExpressionChangedAfterItHasBeenCheckedError', () => {
     @Component({template: '...'})
     class MyApp {
       a: string = 'a';
