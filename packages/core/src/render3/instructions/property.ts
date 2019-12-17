@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {bindingUpdated} from '../bindings';
+import {TNode} from '../interfaces/node';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {TVIEW} from '../interfaces/view';
+import {LView, TVIEW} from '../interfaces/view';
 import {getLView, getSelectedIndex, nextBindingIndex} from '../state';
-
-import {elementPropertyInternal, storePropertyBindingMetadata} from './shared';
+import {elementPropertyInternal, setInputsForProperty, storePropertyBindingMetadata} from './shared';
 
 
 /**
@@ -41,4 +41,17 @@ export function ɵɵproperty<T>(
     ngDevMode && storePropertyBindingMetadata(lView[TVIEW].data, nodeIndex, propName, bindingIndex);
   }
   return ɵɵproperty;
+}
+
+/**
+ * Given `<div style="..." my-dir>` and `MyDir` with `@Input('style')` we need to write to
+ * directive input.
+ */
+export function setDirectiveInputsWhichShadowsStyling(
+    tNode: TNode, lView: LView, value: any, isClassBased: boolean) {
+  const inputs = tNode.inputs !;
+  const property = isClassBased ? 'class' : 'style';
+  // We support both 'class' and `className` hence the fallback.
+  const stylingInputs = inputs[property] || (isClassBased && inputs['className']);
+  setInputsForProperty(lView, stylingInputs, property, value);
 }

@@ -73,6 +73,11 @@ export function assertFirstCreatePass(tView: TView, errMessage?: string) {
       tView.firstCreatePass, true, errMessage || 'Should only be called in first create pass.');
 }
 
+export function assertFirstUpdatePass(tView: TView, errMessage?: string) {
+  assertEqual(
+      tView.firstUpdatePass, true, errMessage || 'Should only be called in first update pass.');
+}
+
 /**
  * This is a basic sanity check that an object is probably a directive def. DirectiveDef is
  * an interface, so we can't do a direct instanceof check.

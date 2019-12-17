@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {classIndexOf, computeClassChanges, removeClass, splitClassList, toggleClass} from '../../../src/render3/styling/class_differ';
+import {classIndexOf, computeClassChanges, splitClassList, toggleClass} from '../../../src/render3/styling/class_differ';
 
 describe('class differ', () => {
   describe('computeClassChanges', () => {
@@ -81,25 +81,25 @@ describe('class differ', () => {
     });
   });
 
-  describe('removeClass', () => {
+  describe('toggleClass', () => {
     it('should remove class name from a class-list string', () => {
-      expect(removeClass('', '')).toEqual('');
-      expect(removeClass('A', 'A')).toEqual('');
-      expect(removeClass('AB', 'AB')).toEqual('');
-      expect(removeClass('A B', 'A')).toEqual('B');
-      expect(removeClass('A    B', 'A')).toEqual('B');
+      expect(toggleClass('', '', false)).toEqual('');
+      expect(toggleClass('A', 'A', false)).toEqual('');
+      expect(toggleClass('AB', 'AB', false)).toEqual('');
+      expect(toggleClass('A B', 'A', false)).toEqual('B');
+      expect(toggleClass('A    B', 'A', false)).toEqual('B');
+      expect(toggleClass('A    B', 'B', false)).toEqual('A');
+      expect(toggleClass('  B ', 'B', false)).toEqual('');
     });
 
     it('should not remove a sub-string', () => {
-      expect(removeClass('ABC', 'A')).toEqual('ABC');
-      expect(removeClass('ABC', 'B')).toEqual('ABC');
-      expect(removeClass('ABC', 'C')).toEqual('ABC');
-      expect(removeClass('ABC', 'AB')).toEqual('ABC');
-      expect(removeClass('ABC', 'BC')).toEqual('ABC');
+      expect(toggleClass('ABC', 'A', false)).toEqual('ABC');
+      expect(toggleClass('ABC', 'B', false)).toEqual('ABC');
+      expect(toggleClass('ABC', 'C', false)).toEqual('ABC');
+      expect(toggleClass('ABC', 'AB', false)).toEqual('ABC');
+      expect(toggleClass('ABC', 'BC', false)).toEqual('ABC');
     });
-  });
 
-  describe('removeClass', () => {
     it('should toggle a class', () => {
       expect(toggleClass('', 'B', false)).toEqual('');
       expect(toggleClass('', 'B', true)).toEqual('B');

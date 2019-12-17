@@ -10,20 +10,20 @@ import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
-import {TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
+import {TAttributes, TElementNode, TNode, TNodeType, hasClassInput, hasStyleInput} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
-import {StylingMapArray, TStylingContext} from '../interfaces/styling';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
-import {decreaseElementDepthCount, getBindingIndex, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {decreaseElementDepthCount, getBindingIndex, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {writeDirectClass, writeDirectStyle} from '../styling/reconcile';
+import {computeStaticStyling} from '../styling/static_styling';
 import {setUpAttributes} from '../util/attrs_utils';
-import {getInitialStylingValue, hasClassInput, hasStyleInput, selectClassBasedInputName} from '../util/styling_utils';
-import {getConstant, getNativeByTNode, getTNode} from '../util/view_utils';
+import {getConstant} from '../util/view_utils';
+import {setDirectiveInputsWhichShadowsStyling} from './property';
+import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, matchingSchemas, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
-import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, matchingSchemas, renderInitialStyling, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';
-import {registerInitialStylingOnTNode} from './styling';
 
 function elementStartFirstCreatePass(
     index: number, tView: TView, lView: LView, native: RElement, name: string,
@@ -40,7 +40,7 @@ function elementStartFirstCreatePass(
   ngDevMode && warnAboutUnknownElement(lView, native, tNode, hasDirectives);
 
   if (tNode.mergedAttrs !== null) {
-    registerInitialStylingOnTNode(tNode, tNode.mergedAttrs, 0);
+    computeStaticStyling(tNode, tNode.mergedAttrs);
   }
 
   if (tView.queries !== null) {
@@ -88,8 +88,13 @@ export function ɵɵelementStart(
   if (mergedAttrs !== null) {
     setUpAttributes(renderer, native, mergedAttrs);
   }
-  if ((tNode.flags & TNodeFlags.hasInitialStyling) === TNodeFlags.hasInitialStyling) {
-    renderInitialStyling(renderer, native, tNode, false);
+  const classes = tNode.classes;
+  if (classes !== null) {
+    writeDirectClass(renderer, native, classes);
+  }
+  const styles = tNode.styles;
+  if (styles !== null) {
+    writeDirectStyle(renderer, native, styles);
   }
 
   appendChild(native, tNode, lView);
@@ -143,16 +148,14 @@ export function ɵɵelementEnd(): void {
     }
   }
 
-  if (hasClassInput(tNode)) {
-    const inputName: string = selectClassBasedInputName(tNode.inputs !);
-    setDirectiveStylingInput(tNode.classes, lView, tNode.inputs ![inputName], inputName);
+  if (tNode.classes !== null && hasClassInput(tNode)) {
+    setDirectiveInputsWhichShadowsStyling(tNode, lView, tNode.classes, true);
   }
 
-  if (hasStyleInput(tNode)) {
-    setDirectiveStylingInput(tNode.styles, lView, tNode.inputs !['style'], 'style');
+  if (tNode.styles !== null && hasStyleInput(tNode)) {
+    setDirectiveInputsWhichShadowsStyling(tNode, lView, tNode.styles, false);
   }
 }
-
 
 /**
  * Creates an empty element using {@link elementStart} and {@link elementEnd}
@@ -168,20 +171,6 @@ export function ɵɵelement(
     index: number, name: string, attrsIndex?: number | null, localRefsIndex?: number): void {
   ɵɵelementStart(index, name, attrsIndex, localRefsIndex);
   ɵɵelementEnd();
-}
-
-function setDirectiveStylingInput(
-    context: TStylingContext | StylingMapArray | string | null, lView: LView,
-    stylingInputs: (string | number)[], propName: string) {
-  // older versions of Angular treat the input as `null` in the
-  // event that the value does not exist at all. For this reason
-  // we can't have a styling value be an empty string.
-  const value = (context && getInitialStylingValue(context)) || null;
-
-  // Ivy does an extra `[class]` write with a falsy value since the value
-  // is applied during creation mode. This is a deviation from VE and should
-  // be (Jira Issue = FW-1467).
-  setInputsForProperty(lView, stylingInputs, propName, value);
 }
 
 function warnAboutUnknownElement(
