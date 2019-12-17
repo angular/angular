@@ -51,9 +51,10 @@ export function throwErrorIfNoChangesMode(
   if (creationMode) {
     msg +=
         ` It seems like the view has been created after its parent and its children have been dirty checked.` +
-        ` Has it been created in a change detection hook ?`;
+        ` Has it been created in a change detection hook?`;
   }
-  // TODO: include debug context
+  // TODO: include debug context, see `viewDebugError` function in
+  // `packages/core/src/view/errors.ts` for reference.
   throw new Error(msg);
 }
 
