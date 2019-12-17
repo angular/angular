@@ -270,28 +270,22 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
 
     // Associate attributes/bindings on the node with directives or with the node itself.
     type BoundNode = BoundAttribute | BoundEvent | TextAttribute;
-    const processAttribute =
-        (attribute: BoundNode, filter: (attribute: BoundNode) => DirectiveT | undefined) => {
-          const dir = filter(attribute);
-          if (dir !== undefined) {
-            this.bindings.set(attribute, dir);
-          } else {
-            this.bindings.set(attribute, node);
-          }
+    const setAttributeBinding =
+        (attribute: BoundNode, ioType: keyof Pick<DirectiveMeta, 'inputs'|'outputs'>) => {
+          const dir = directives.find(dir => dir[ioType].hasOwnProperty(attribute.name));
+          const binding = dir !== undefined ? dir : node;
+          this.bindings.set(attribute, binding);
         };
-    const filterInputs = (attribute: BoundNode) =>
-        directives.find(dir => dir.inputs.hasOwnProperty(attribute.name));
-    const filterOutputs = (attribute: BoundNode) =>
-        directives.find(dir => dir.outputs.hasOwnProperty(attribute.name));
-    // Node attributes, template attributes, and node inputs can be bound to an input on a
-    // directive.
-    node.attributes.forEach(attr => processAttribute(attr, filterInputs));
-    node.inputs.forEach(input => processAttribute(input, filterInputs));
+
+    // Node inputs (bound attributes) and text attributes can be bound to an
+    // input on a directive.
+    node.inputs.forEach(input => setAttributeBinding(input, 'inputs'));
+    node.attributes.forEach(attr => setAttributeBinding(attr, 'inputs'));
     if (node instanceof Template) {
-      node.templateAttrs.forEach(attr => processAttribute(attr, filterInputs));
+      node.templateAttrs.forEach(attr => setAttributeBinding(attr, 'inputs'));
     }
-    // Node outputs can be bound to an output on a directive.
-    node.outputs.forEach(output => processAttribute(output, filterOutputs));
+    // Node outputs (bound events) can be bound to an output on a directive.
+    node.outputs.forEach(output => setAttributeBinding(output, 'outputs'));
 
     // Recurse into the node's children.
     node.children.forEach(child => child.visit(this));
