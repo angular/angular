@@ -220,36 +220,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
 
     // Get the declaration of an emitted TypeScript helper (if any).
     if (isEmittedTsHelperDeclaration(declaration.node)) {
-      // This is a variable declaration of an emitted TypeScript helper function that ngtsc/ngcc
-      // know how to handle. If we continued as usual, returning the declaration, the interpreter
-      // would try to evaluate the initializer (which is of the form
-      // `(this && this.__<fn>) || function () { ... };`) and categorize it as a `DynamicValue`.
-      //
-      // Instead, we return a function declaration of the same shape as the one that would have been
-      // returned if the helper was instead imported from `tslib`:
-      // `export declare function __<fn>(...args: any[][]): any[];`
-      //
-      // This will allow the interpreter to correctly recognize it as a TypeScript helper function
-      // and evaluate it accordingly.
-      return {
-        node: ts.createFunctionDeclaration(
-            undefined,
-            [
-              ts.createModifier(ts.SyntaxKind.ExportKeyword),
-              ts.createModifier(ts.SyntaxKind.DeclareKeyword),
-            ],
-            undefined, id.text, undefined,
-            [
-              ts.createParameter(
-                  undefined, undefined, ts.createToken(ts.SyntaxKind.DotDotDotToken),
-                  ts.createIdentifier('args'), undefined,
-                  ts.createArrayTypeNode(
-                      ts.createArrayTypeNode(ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword))),
-                  undefined),
-            ],
-            ts.createArrayTypeNode(ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)), undefined),
-        viaModule: null,
-      };
+      return createSynthesizedTsHelperDeclaration(id.text);
     }
 
     if (!ts.isVariableDeclaration(declaration.node) || declaration.node.initializer !== undefined ||
@@ -691,7 +662,7 @@ function reflectArrayElement(element: ts.Expression) {
  * Detect whether `node` corresponds to the declaration of a known TypeScript helper function.
  *
  * When TypeScript helpers are emitted (instead of imported from `tslib`), they are emitted as
- * variable declaration of the form:
+ * variable declarations of the form:
  *
  * ```ts
  * var __helperfn = (this && this.__helperFn) || function () {
@@ -737,6 +708,67 @@ function isEmittedTsHelperDeclaration(node: ts.Declaration): boolean {
       ts.isPropertyAccessExpression(leftInnerExpr.right) &&
       (leftInnerExpr.right.expression.kind === ts.SyntaxKind.ThisKeyword) &&
       (stripDollarSuffix(leftInnerExpr.right.name.text) === varName);
+}
+
+/**
+ * Create a synthesized function declaration for a TypeScript helper function.
+ *
+ * **Context**
+ * When TypeScript helpers are emitted (instead of imported from `tslib`), they are emitted as
+ * variable declarations of the form:
+ *
+ * ```ts
+ * var __<helperName> = (this && this.__<helperName>) || function () {
+ *   ...
+ * };
+ * ```
+ *
+ * The static interpreter used in ngtsc/ngcc would normally try to evaluate the variable declaration
+ * initializer and categorize it as a `DynamicValue`.
+ *
+ * The `createSynthesizedTsHelperDeclaration()` function can be used to create an appropriate
+ * synthesized function declaration, which will allow the static interpreter to correctly detect it
+ * as a known TypeScript helper function and handle is accordingly.
+ *
+ * The created function declaration will be of the same shape as the one that would have been
+ * returned if the TypeScript helper was imported from `tslib` (instead of emitted):
+ *
+ * ```ts
+ * export declare function __<helperName>(...args: any[][]): any[];
+ * ```
+ *
+ * @param helperName The name of the TypeScript helper function for which to create a synthesized
+ *                   declaration. This should be based on the known names in `KNOWN_TS_HELPER_FNS`,
+ *                   but can have a suffix such as those targeted by `stripDollarSuffix()`.
+ * @return A synthesized `Declaration` corresponding to a known TypeScript helper function.
+ */
+function createSynthesizedTsHelperDeclaration(helperName: string): Declaration {
+  if (!KNOWN_TS_HELPER_FNS.hasOwnProperty(stripDollarSuffix(helperName))) {
+    throw new Error(
+        `Trying to create synthesized declaration for unknown TypeScript helper '${helperName}'. ` +
+        `Expected one of: ${Object.keys(KNOWN_TS_HELPER_FNS).join(', ')} (or a '$'-suffixed ` +
+        'version thereof)');
+  }
+
+  return {
+    node: ts.createFunctionDeclaration(
+        undefined,
+        [
+          ts.createModifier(ts.SyntaxKind.ExportKeyword),
+          ts.createModifier(ts.SyntaxKind.DeclareKeyword),
+        ],
+        undefined, helperName, undefined,
+        [
+          ts.createParameter(
+              undefined, undefined, ts.createToken(ts.SyntaxKind.DotDotDotToken),
+              ts.createIdentifier('args'), undefined,
+              ts.createArrayTypeNode(
+                  ts.createArrayTypeNode(ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword))),
+              undefined),
+        ],
+        ts.createArrayTypeNode(ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)), undefined),
+    viaModule: null,
+  };
 }
 
 /**
