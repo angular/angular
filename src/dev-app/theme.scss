@@ -14,8 +14,8 @@
 @include angular-material-typography-mdc();
 @include mat-edit-typography(mat-typography-config());
 
-// Include the focus indicator base styles.
-@include mat-focus-indicator();
+// Include base styles for strong focus indicators.
+@include mat-strong-focus-indicators();
 
 // Define the default theme (same as the example above).
 $candy-app-primary: mat-palette($mat-indigo);
@@ -28,8 +28,8 @@ $candy-app-theme: mat-light-theme($candy-app-primary, $candy-app-accent);
 @include mat-slider-theme-mdc($candy-app-theme);
 @include mat-popover-edit-theme($candy-app-theme);
 
-// Include the focus indicator theme.
-@include mat-focus-indicator-theme($candy-app-theme);
+// Include the theme for focus indicators.
+@include mat-strong-focus-indicators-theme($candy-app-theme);
 
 // Define an alternate dark theme.
 $dark-primary: mat-palette($mat-blue-grey);
@@ -47,6 +47,6 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
   @include mat-slider-theme-mdc($dark-theme);
   @include mat-popover-edit-theme($dark-theme);
 
-  // Include the focus indicator theme.
-  @include mat-focus-indicator-theme($dark-theme);
+  // Include the theme for focus indicators.
+  @include mat-strong-focus-indicators-theme($dark-theme);
 }
