@@ -74,7 +74,9 @@ executors:
         type: string
         default: medium
     docker:
-      - image: circleci/node:10.16@sha256:75c05084fff4afa3683a03c5a04a4a3ad95c536ff2439d8fe14e7e1f5c58b09a
+      # new cimg images from CircleCI, unlike legacy `circleci` type are determinisitc by version, 
+      # and only ever re-released in the case of critical CVEs.  For this reason, pinning is no longer needed.
+      - image: cimg/node:10.16
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
