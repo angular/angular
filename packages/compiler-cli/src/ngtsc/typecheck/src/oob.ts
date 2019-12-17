@@ -66,7 +66,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     const errorMsg = `No directive found with exportAs '${value}'.`;
     this._diagnostics.push(makeTemplateDiagnostic(
         mapping, ref.valueSpan || ref.sourceSpan, ts.DiagnosticCategory.Error,
-        ngErrorCode(ErrorCode.MISSING_REFERENCE_TARGET), errorMsg));
+        ErrorCode.MISSING_REFERENCE_TARGET, errorMsg));
   }
 
   missingPipe(templateId: TemplateId, ast: BindingPipe): void {
@@ -79,8 +79,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
           `Assertion failure: no SourceLocation found for usage of pipe '${ast.name}'.`);
     }
     this._diagnostics.push(makeTemplateDiagnostic(
-        mapping, sourceSpan, ts.DiagnosticCategory.Error, ngErrorCode(ErrorCode.MISSING_PIPE),
-        errorMsg));
+        mapping, sourceSpan, ts.DiagnosticCategory.Error, ErrorCode.MISSING_PIPE, errorMsg));
   }
 
   illegalAssignmentToTemplateVar(
@@ -94,8 +93,8 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       throw new Error(`Assertion failure: no SourceLocation found for property binding.`);
     }
     this._diagnostics.push(makeTemplateDiagnostic(
-        mapping, sourceSpan, ts.DiagnosticCategory.Error,
-        ngErrorCode(ErrorCode.WRITE_TO_READ_ONLY_VARIABLE), errorMsg, {
+        mapping, sourceSpan, ts.DiagnosticCategory.Error, ErrorCode.WRITE_TO_READ_ONLY_VARIABLE,
+        errorMsg, {
           text: `The variable ${assignment.name} is declared here.`,
           span: target.valueSpan || target.sourceSpan,
         }));
