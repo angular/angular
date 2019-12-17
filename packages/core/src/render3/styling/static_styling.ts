@@ -23,8 +23,8 @@ import {getLView} from '../state';
 export function computeStaticStyling(tNode: TNode, attrs: TAttributes): void {
   ngDevMode && assertFirstCreatePass(
                    getLView()[TVIEW], 'Expecting to be called in first template pass only');
-  let styles: string|null = tNode.styles as string | null;
-  let classes: string|null = tNode.classes as string | null;
+  let styles: string|null = tNode.styles;
+  let classes: string|null = tNode.classes;
   let mode: AttributeMarker|0 = 0;
   for (let i = 0; i < attrs.length; i++) {
     const value = attrs[i];

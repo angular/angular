@@ -7,11 +7,12 @@
  */
 
 import {NgForOfContext} from '@angular/common';
+import {getSortedClassName} from '@angular/core/testing/src/styling';
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
 import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
-import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, getSanitizationBypassType, unwrapSafeValue} from '../../src/sanitization/bypass';
+import {SafeValue, bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, getSanitizationBypassType, unwrapSafeValue} from '../../src/sanitization/bypass';
 import {ɵɵdefaultStyleSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 import {SecurityContext} from '../../src/sanitization/security';
@@ -137,18 +138,20 @@ describe('instructions', () => {
 
   describe('styleProp', () => {
     it('should automatically sanitize unless a bypass operation is applied', () => {
-      const t = new TemplateFixture(() => { return createDiv(); }, () => {}, 1);
-      t.update(() => {
-        ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
-        ɵɵstyleProp('background-image', 'url("http://server")');
-      });
+      let backgroundImage: string|SafeValue = 'url("http://server")';
+      const t = new TemplateFixture(
+          () => { return createDiv(); },
+          () => {
+            ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
+            ɵɵstyleProp('background-image', backgroundImage);
+          },
+          2, 2);
       // nothing is set because sanitizer suppresses it.
-      expect(t.html).toEqual('<div></div>');
+      expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
+          .toEqual('');
 
-      t.update(() => {
-        ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
-        ɵɵstyleProp('background-image', bypassSanitizationTrustStyle('url("http://server2")'));
-      });
+      backgroundImage = bypassSanitizationTrustStyle('url("http://server2")');
+      t.update();
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
           .toEqual('url("http://server2")');
     });
@@ -160,9 +163,10 @@ describe('instructions', () => {
     function createDivWithStyle() { ɵɵelement(0, 'div', 0); }
 
     it('should add style', () => {
-      const fixture = new TemplateFixture(
-          createDivWithStyle, () => {}, 1, 0, null, null, null, undefined, attrs);
-      fixture.update(() => { ɵɵstyleMap({'background-color': 'red'}); });
+      const fixture = new TemplateFixture(createDivWithStyle, () => {
+        ɵɵstyleMap({'background-color': 'red'});
+      }, 1, 2, null, null, null, undefined, attrs);
+      fixture.update();
       expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
     });
 
@@ -184,7 +188,7 @@ describe('instructions', () => {
               'width': 'width'
             });
           },
-          1, 0, null, null, sanitizerInterceptor);
+          1, 2, null, null, sanitizerInterceptor);
 
       const props = detectedValues.sort();
       expect(props).toEqual([
@@ -197,9 +201,10 @@ describe('instructions', () => {
     function createDivWithStyling() { ɵɵelement(0, 'div'); }
 
     it('should add class', () => {
-      const fixture =
-          new TemplateFixture(createDivWithStyling, () => { ɵɵclassMap('multiple classes'); }, 1);
-      expect(fixture.html).toEqual('<div class="classes multiple"></div>');
+      const fixture = new TemplateFixture(
+          createDivWithStyling, () => { ɵɵclassMap('multiple classes'); }, 1, 2);
+      const div = fixture.containerElement.querySelector('div.multiple') !;
+      expect(getSortedClassName(div)).toEqual('classes multiple');
     });
   });
 

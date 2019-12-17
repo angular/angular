@@ -7,22 +7,22 @@
 */
 import {SafeValue} from '../../sanitization/bypass';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-import {throwErrorIfNoChangesMode} from '../errors';
-import {setInputsForProperty} from '../instructions/shared';
-import {AttributeMarker, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
+import {assertEqual, assertGreaterThan, assertLessThan} from '../../util/assert';
+import {concatStringsWithSpace} from '../../util/stringify';
+import {assertFirstUpdatePass} from '../assert';
+import {bindingUpdated} from '../bindings';
+import {TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
-import {StylingMapArray, StylingMapArrayIndex, TStylingContext} from '../interfaces/styling';
-import {isDirectiveHost} from '../interfaces/type_checks';
-import {LView, RENDERER, TVIEW} from '../interfaces/view';
-import {getActiveDirectiveId, getCheckNoChangesMode, getCurrentStyleSanitizer, getLView, getSelectedIndex, incrementBindingIndex, nextBindingIndex, resetCurrentStyleSanitizer, setCurrentStyleSanitizer, setElementExitFn} from '../state';
-import {applyStylingMapDirectly, applyStylingValueDirectly, flushStyling, setClass, setStyle, updateClassViaContext, updateStyleViaContext} from '../styling/bindings';
-import {activateStylingMapFeature} from '../styling/map_based_bindings';
-import {attachStylingDebugObject} from '../styling/styling_debug';
+import {SanitizerFn} from '../interfaces/sanitization';
+import {TStylingKey, TStylingMapKey, TStylingSanitizationKey, TStylingSuffixKey, getTStylingRangeTail} from '../interfaces/styling';
+import {HEADER_OFFSET, RENDERER, TVIEW, TView} from '../interfaces/view';
+import {getCheckNoChangesMode, getClassBindingChanged, getCurrentStyleSanitizer, getLView, getSelectedIndex, getStyleBindingChanged, incrementBindingIndex, isActiveHostElement, markStylingBindingDirty, setCurrentStyleSanitizer, setElementExitFn} from '../state';
+import {writeAndReconcileClass, writeAndReconcileStyle} from '../styling/reconcile';
+import {CLASS_MAP_STYLING_KEY, IGNORE_DUE_TO_INPUT_SHADOW, STYLE_MAP_STYLING_KEY, flushStyleBinding, insertTStylingBinding} from '../styling/style_binding_list';
 import {NO_CHANGE} from '../tokens';
-import {renderStringify} from '../util/misc_utils';
-import {addItemToStylingMap, allocStylingMapArray, allocTStylingContext, allowDirectStyling, concatString, forceClassesAsString, forceStylesAsString, getInitialStylingValue, getStylingMapArray, getValue, hasClassInput, hasStyleInput, hasValueChanged, hasValueChangedUnwrapSafeValue, isHostStylingActive, isStylingContext, isStylingMapArray, isStylingValueDefined, normalizeIntoStylingMap, patchConfig, selectClassBasedInputName, setValue, stylingMapToString} from '../util/styling_utils';
-import {getNativeByTNode, getTNode} from '../util/view_utils';
+import {unwrapRNode} from '../util/view_utils';
 
+import {setDirectiveInputsWhichShadowsStyling} from './property';
 
 
 
@@ -70,7 +70,7 @@ export function ɵɵstyleSanitizer(sanitizer: StyleSanitizeFn | null): void {
 export function ɵɵstyleProp(
     prop: string, value: string | number | SafeValue | null,
     suffix?: string | null): typeof ɵɵstyleProp {
-  stylePropInternal(getSelectedIndex(), prop, value, suffix);
+  checkStylingProperty(prop, value, suffix, false);
   return ɵɵstyleProp;
 }
 
@@ -90,31 +90,7 @@ export function ɵɵstyleProp(
  * @codeGenApi
  */
 export function ɵɵclassProp(className: string, value: boolean | null): typeof ɵɵclassProp {
-  // if a value is interpolated then it may render a `NO_CHANGE` value.
-  // in this case we do not need to do anything, but the binding index
-  // still needs to be incremented because all styling binding values
-  // are stored inside of the lView.
-  const bindingIndex = nextBindingIndex();
-  const lView = getLView();
-  const elementIndex = getSelectedIndex();
-  const tNode = getTNode(elementIndex, lView);
-  const firstUpdatePass = lView[TVIEW].firstUpdatePass;
-
-  // we check for this in the instruction code so that the context can be notified
-  // about prop or map bindings so that the direct apply check can decide earlier
-  // if it allows for context resolution to be bypassed.
-  if (firstUpdatePass) {
-    patchConfig(tNode, TNodeFlags.hasClassPropBindings);
-    patchHostStylingFlag(tNode, isHostStyling(), true);
-  }
-
-  const updated = stylingProp(tNode, firstUpdatePass, lView, bindingIndex, className, value, true);
-  if (ngDevMode) {
-    ngDevMode.classProp++;
-    if (updated) {
-      ngDevMode.classPropCacheMiss++;
-    }
-  }
+  checkStylingProperty(className, value, null, true);
   return ɵɵclassProp;
 }
 
@@ -138,39 +114,8 @@ export function ɵɵclassProp(className: string, value: boolean | null): typeof 
  *
  * @codeGenApi
  */
-export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | null): void {
-  const index = getSelectedIndex();
-  const lView = getLView();
-  const tNode = getTNode(index, lView);
-  const firstUpdatePass = lView[TVIEW].firstUpdatePass;
-  const context = getStylesContext(tNode);
-  const hasDirectiveInput = hasStyleInput(tNode);
-
-  // if a value is interpolated then it may render a `NO_CHANGE` value.
-  // in this case we do not need to do anything, but the binding index
-  // still needs to be incremented because all styling binding values
-  // are stored inside of the lView.
-  const bindingIndex = incrementBindingIndex(2);
-  const hostBindingsMode = isHostStyling();
-
-  // inputs are only evaluated from a template binding into a directive, therefore,
-  // there should not be a situation where a directive host bindings function
-  // evaluates the inputs (this should only happen in the template function)
-  if (!hostBindingsMode && hasDirectiveInput && styles !== NO_CHANGE) {
-    updateDirectiveInputValue(context, lView, tNode, bindingIndex, styles, false, firstUpdatePass);
-    styles = NO_CHANGE;
-  }
-
-  // we check for this in the instruction code so that the context can be notified
-  // about prop or map bindings so that the direct apply check can decide earlier
-  // if it allows for context resolution to be bypassed.
-  if (firstUpdatePass) {
-    patchConfig(tNode, TNodeFlags.hasStyleMapBindings);
-    patchHostStylingFlag(tNode, isHostStyling(), false);
-  }
-
-  stylingMap(
-      context, tNode, firstUpdatePass, lView, bindingIndex, styles, false, hasDirectiveInput);
+export function ɵɵstyleMap(styles: {[styleName: string]: any} | string | null): void {
+  checkStylingMap(STYLE_MAP_STYLING_KEY, styles, false);
 }
 
 /**
@@ -191,7 +136,221 @@ export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | nu
  *
  * @codeGenApi
  */
-export function ɵɵclassMap(classes: {[className: string]: any} | NO_CHANGE | string | null): void {
-  classMapInternal(getSelectedIndex(), classes);
+export function ɵɵclassMap(classes: {[className: string]: any} | string | null): void {
+  checkStylingMap(CLASS_MAP_STYLING_KEY, classes, true);
 }
 
+
+/**
+ * Common code between `ɵɵclassProp` and `ɵɵstyleProp`.
+ *
+ * @param prop property name.
+ * @param value binding value.
+ * @param suffixOrSanitizer suffix or sanitization function
+ * @param isClassBased `true` if `class` change (`false` if `style`)
+ */
+export function checkStylingProperty(
+    prop: string, value: string | number | SafeValue | null,
+    suffixOrSanitizer: SanitizerFn | string | undefined | null, isClassBased: boolean): void {
+  const lView = getLView();
+  const tView = lView[TVIEW];
+  // Styling instructions use 2 slots per binding.
+  // 1. one for the value / TStylingKey
+  // 2. one for the intermittent-value / TStylingRange
+  const bindingIndex = incrementBindingIndex(2);
+  if (tView.firstUpdatePass) {
+    // This is a work around. Once PR#34480 lands the sanitizer is passed explicitly and this line
+    // can be removed.
+    let styleSanitizer: StyleSanitizeFn|null;
+    if (suffixOrSanitizer == null) {
+      if (styleSanitizer = getCurrentStyleSanitizer()) {
+        suffixOrSanitizer = styleSanitizer as any;
+      }
+    }
+    stylingPropertyFirstUpdatePass(tView, prop, suffixOrSanitizer, bindingIndex, isClassBased);
+  }
+  if (value !== NO_CHANGE && bindingUpdated(lView, bindingIndex, value)) {
+    lView[bindingIndex] = value;
+    markStylingBindingDirty(bindingIndex, isClassBased);
+    setElementExitFn(flushStylingOnElementExit);
+  }
+}
+
+/**
+* Common code between `ɵɵclassMap` and `ɵɵstyleMap`.
+*
+* @param tStylingMapKey See `STYLE_MAP_STYLING_KEY` and `CLASS_MAP_STYLING_KEY`.
+* @param value binding value.
+* @param isClassBased `true` if `class` change (`false` if `style`)
+*/
+export function checkStylingMap(
+    tStylingMapKey: TStylingMapKey, value: {[className: string]: any} | string | null,
+    isClassBased: boolean): void {
+  const lView = getLView();
+  const tView = lView[TVIEW];
+  const bindingIndex = incrementBindingIndex(2);
+  if (tView.firstUpdatePass) {
+    stylingPropertyFirstUpdatePass(tView, tStylingMapKey, null, bindingIndex, isClassBased);
+  }
+  if (value !== NO_CHANGE && bindingUpdated(lView, bindingIndex, value)) {
+    const tNode = tView.data[getSelectedIndex() + HEADER_OFFSET] as TNode;
+    if (hasStylingInputShadow(tNode, isClassBased) && !isInHostBindings(tView, bindingIndex)) {
+      // VE concatenates the static portion with the dynamic portion.
+      // We are doing the same.
+      let staticPrefix = isClassBased ? tNode.classes : tNode.styles;
+      ngDevMode && isClassBased === false && staticPrefix !== null &&
+          assertEqual(
+              staticPrefix.endsWith(';'), true, 'Expecting static portion to end with \';\'');
+      if (typeof value === 'string') {
+        value = concatStringsWithSpace(staticPrefix, value as string);
+      }
+      // Given `<div [style] my-dir>` such that `my-dir` has `@Input('style')`.
+      // This takes over the `[style]` binding. (Same for `[class]`)
+      setDirectiveInputsWhichShadowsStyling(tNode, lView, value, isClassBased);
+    } else {
+      lView[bindingIndex] = value;
+      markStylingBindingDirty(bindingIndex, isClassBased);
+      setElementExitFn(flushStylingOnElementExit);
+    }
+  }
+}
+
+/**
+ * Determines when the binding is in `hostBindings` section
+ *
+ * @param tView Current `TView`
+ * @param bindingIndex index of binding which we would like if it is in `hostBindings`
+ */
+function isInHostBindings(tView: TView, bindingIndex: number): boolean {
+  // All host bindings are placed after the expando section.
+  return bindingIndex >= tView.expandoStartIndex;
+}
+
+/**
+* Collects the necessary information to insert the binding into a linked list of style bindings
+* using `insertTStylingBinding`.
+*
+* @param tView `TView` where the binding linked list will be stored.
+* @param prop Property/key of the binding.
+* @param suffix Optional suffix or Sanitization function.
+* @param bindingIndex Index of binding associated with the `prop`
+* @param isClassBased `true` if `class` change (`false` if `style`)
+*/
+function stylingPropertyFirstUpdatePass(
+    tView: TView, prop: TStylingMapKey, suffix: null, bindingIndex: number,
+    isClassBased: boolean): void;
+function stylingPropertyFirstUpdatePass(
+    tView: TView, prop: string, suffix: SanitizerFn | string | null | undefined,
+    bindingIndex: number, isClassBased: boolean): void;
+function stylingPropertyFirstUpdatePass(
+    tView: TView, prop: string | TStylingMapKey,
+    suffixOrSanitization: SanitizerFn | string | null | undefined, bindingIndex: number,
+    isClassBased: boolean): void {
+  ngDevMode && assertFirstUpdatePass(tView);
+  const tData = tView.data;
+  if (tData[bindingIndex + 1] === null) {
+    // The above check is necessary because we don't clear first update pass until first successful
+    // (ne exception) template execution. This prevents the styling instruction from double adding
+    // itself to the list.
+    const tNode = tData[getSelectedIndex() + HEADER_OFFSET] as TNode;
+    if (hasStylingInputShadow(tNode, isClassBased) && typeof prop === 'object' &&
+        !isInHostBindings(tView, bindingIndex)) {
+      // typeof prop === 'object' implies that we are either `STYLE_MAP_STYLING_KEY` or
+      // `CLASS_MAP_STYLING_KEY` which means that we are either `[style]` or `[class]` binding.
+      // If there is a directive which uses `@Input('style')` or `@Input('class')` than
+      // we need to neutralize this binding since that directive is shadowing it.
+      // We turn this into a noop using `IGNORE_DOE_TO_INPUT_SHADOW`
+      prop = IGNORE_DUE_TO_INPUT_SHADOW;
+    }
+    const tStylingKey: TStylingKey = suffixOrSanitization == null ? prop : ({
+      key: prop as string, extra: suffixOrSanitization
+    } as TStylingSuffixKey | TStylingSanitizationKey);
+    insertTStylingBinding(
+        tData, tNode, tStylingKey, bindingIndex, isActiveHostElement(), isClassBased);
+  }
+}
+
+/**
+ * Tests if the `TNode` has input shadow.
+ *
+ * An input shadow is when a directive steals (shadows) the input by using `@Input('style')` or
+ * `@Input('class')` as input.
+ *
+ * @param tNode `TNode` which we would like to see if it has shadow.
+* @param isClassBased `true` if `class` (`false` if `style`)
+ */
+export function hasStylingInputShadow(tNode: TNode, isClassBased: boolean) {
+  return (tNode.flags & (isClassBased ? TNodeFlags.hasClassInput : TNodeFlags.hasStyleInput)) !== 0;
+}
+
+/**
+* Flushes styling into DOM element from the bindings.
+*
+* The function starts at `LFrame.stylingBindingChanged` and computes new styling information from
+* the bindings progressing towards the tail of the list. At the end the resulting style is written
+* into the DOM Element.
+*
+* This function is invoked from:
+* 1. Template `advance` instruction.
+* 2. HostBinding instruction.
+*/
+function flushStylingOnElementExit() {
+  ngDevMode && assertEqual(
+                   getStyleBindingChanged() > 0 || getClassBindingChanged() > 0, true,
+                   'Only expected to be here if binding has changed.');
+  ngDevMode &&
+      assertEqual(
+          getCheckNoChangesMode(), false, 'Should never get here during check no changes mode');
+  const lView = getLView();
+  const tView = lView[TVIEW];
+  const tData = tView.data;
+  const elementIndex = getSelectedIndex() + HEADER_OFFSET;
+  const tNode = tData[elementIndex] as TNode;
+  const renderer = lView[RENDERER];
+  const element = unwrapRNode(lView[elementIndex]) as RElement;
+
+  const classBindingIndex = getClassBindingChanged();
+  if (classBindingIndex > 0) {
+    const classLastWrittenValueIndex = getTStylingRangeTail(tNode.classBindings) + 1;
+    ngDevMode &&
+        assertGreaterThan(
+            classLastWrittenValueIndex, 1,
+            'Ignoring `class` binding because there is no `class` metadata associated with the element. ' +
+                '(Was exception thrown during `firstUpdatePass` which prevented the metadata creation?)');
+    ngDevMode &&
+        assertLessThan(classLastWrittenValueIndex, lView.length, 'Reading past end of LView');
+    const lastValue: string|NO_CHANGE = lView[classLastWrittenValueIndex];
+    const newValue = flushStyleBinding(tData, tNode, lView, classBindingIndex, true);
+    if (lastValue !== newValue) {
+      if (tNode.type === TNodeType.Element) {
+        writeAndReconcileClass(
+            renderer, element, lastValue === NO_CHANGE ? tNode.classes || '' : lastValue as string,
+            newValue);
+      }
+      lView[classLastWrittenValueIndex] = newValue;
+    }
+  }
+
+  const styleBindingIndex = getStyleBindingChanged();
+  if (styleBindingIndex > 0) {
+    const styleLastWrittenValueIndex = getTStylingRangeTail(tNode.styleBindings) + 1;
+    ngDevMode &&
+        assertGreaterThan(
+            styleLastWrittenValueIndex, 1,
+            'Ignoring `style` binding because there is no `style` metadata associated with the element. ' +
+                '(Was exception thrown during `firstUpdatePass` which prevented the metadata creation?)');
+    ngDevMode &&
+        assertLessThan(styleLastWrittenValueIndex, lView.length, 'Reading past end of LView');
+    const lastValue: string|NO_CHANGE = lView[styleLastWrittenValueIndex];
+    const newValue = flushStyleBinding(tData, tNode, lView, styleBindingIndex, false);
+    if (lastValue !== newValue) {
+      if (tNode.type === TNodeType.Element) {
+        writeAndReconcileStyle(
+            renderer, element, lastValue === NO_CHANGE ? tNode.styles || '' : lastValue as string,
+            newValue);
+      }
+      lView[styleLastWrittenValueIndex] = newValue;
+    }
+  }
+  ngDevMode && ngDevMode.flushStyling++;
+}

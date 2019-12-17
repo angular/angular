@@ -12,7 +12,6 @@ import {TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDu
 import {LView, TData} from '@angular/core/src/render3/interfaces/view';
 import {enterView, leaveView} from '@angular/core/src/render3/state';
 import {CLASS_MAP_STYLING_KEY, STYLE_MAP_STYLING_KEY, appendStyling, flushStyleBinding, insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
-import {getStylingBindingHead} from '@angular/core/src/render3/styling/styling_debug';
 import {newArray} from '@angular/core/src/util/array_utils';
 
 describe('TNode styling linked list', () => {
@@ -438,34 +437,47 @@ describe('TNode styling linked list', () => {
     it('should write basic value', () => {
       const fixture = new StylingFixture([['color']], false);
       fixture.setBinding(0, 'red');
-      expect(fixture.flush(0)).toEqual('color: red');
+      expect(fixture.flush(0)).toEqual('color: red;');
     });
 
     it('should chain values and allow update mid list', () => {
       const fixture = new StylingFixture([['color', {key: 'width', extra: 'px'}]], false);
       fixture.setBinding(0, 'red');
       fixture.setBinding(1, '100');
-      expect(fixture.flush(0)).toEqual('color: red; width: 100px');
+      expect(fixture.flush(0)).toEqual('color: red; width: 100px;');
 
       fixture.setBinding(0, 'blue');
       fixture.setBinding(1, '200');
-      expect(fixture.flush(1)).toEqual('color: red; width: 200px');
-      expect(fixture.flush(0)).toEqual('color: blue; width: 200px');
+      expect(fixture.flush(1)).toEqual('color: red; width: 200px;');
+      expect(fixture.flush(0)).toEqual('color: blue; width: 200px;');
     });
 
     it('should remove duplicates', () => {
       const fixture = new StylingFixture([['color', 'color']], false);
       fixture.setBinding(0, 'red');
       fixture.setBinding(1, 'blue');
-      expect(fixture.flush(0)).toEqual('color: blue');
+      expect(fixture.flush(0)).toEqual('color: blue;');
+    });
+
+    it('should remove falsy values', () => {
+      const fixture = new StylingFixture([['color', 'color']], false);
+      fixture.setBinding(0, 'red');
+      fixture.setBinding(1, undefined);
+      expect(fixture.flush(0)).toEqual('color: red;');
+    });
+
+    it('should ignore falsy values', () => {
+      const fixture = new StylingFixture([['color']], false);
+      fixture.setBinding(0, null);
+      expect(fixture.flush(0)).toEqual('');
     });
 
   });
 
   describe('appendStyling', () => {
     it('should append simple style', () => {
-      expect(appendStyling('', 'color', 'red', null, false, false)).toEqual('color: red');
-      expect(appendStyling('', 'color', 'red', null, true, false)).toEqual('color: red');
+      expect(appendStyling('', 'color', 'red', null, false, false)).toEqual('color: red;');
+      expect(appendStyling('', 'color', 'red', null, true, false)).toEqual('color: red;');
       expect(appendStyling('', 'color', 'red', null, false, true)).toEqual('color');
       expect(appendStyling('', 'color', 'red', null, true, true)).toEqual('color');
       expect(appendStyling('', 'color', true, null, true, true)).toEqual('color');
@@ -476,25 +488,25 @@ describe('TNode styling linked list', () => {
 
     it('should append simple style with suffix', () => {
       expect(appendStyling('', {key: 'width', extra: 'px'}, 100, null, false, false))
-          .toEqual('width: 100px');
+          .toEqual('width: 100px;');
     });
 
     it('should append simple style with sanitizer', () => {
       expect(
           appendStyling('', {key: 'width', extra: (v: any) => `-${v}-`}, 100, null, false, false))
-          .toEqual('width: -100-');
+          .toEqual('width: -100-;');
     });
 
     it('should append class/style', () => {
-      expect(appendStyling('color: white', 'color', 'red', null, false, false))
-          .toEqual('color: white; color: red');
+      expect(appendStyling('color: white;', 'color', 'red', null, false, false))
+          .toEqual('color: white; color: red;');
       expect(appendStyling('MY-CLASS', 'color', true, null, false, true)).toEqual('MY-CLASS color');
       expect(appendStyling('MY-CLASS', 'color', false, null, true, true)).toEqual('MY-CLASS');
     });
 
     it('should remove existing', () => {
-      expect(appendStyling('color: white', 'color', 'blue', null, true, false))
-          .toEqual('color: blue');
+      expect(appendStyling('color: white;', 'color', 'blue', null, true, false))
+          .toEqual('color: blue;');
       expect(appendStyling('A YES B', 'YES', false, null, true, true)).toEqual('A B');
     });
 
@@ -510,10 +522,10 @@ describe('TNode styling linked list', () => {
 
     it('should support maps for styles', () => {
       expect(appendStyling('', STYLE_MAP_STYLING_KEY, {A: 'a', B: 'b'}, null, true, false))
-          .toEqual('A: a; B: b');
+          .toEqual('A: a; B: b;');
       expect(appendStyling(
-                 'A:_; B:_; C:_', STYLE_MAP_STYLING_KEY, {A: 'a', B: 'b'}, null, true, false))
-          .toEqual('C:_; A: a; B: b');
+                 'A:_; B:_; C:_;', STYLE_MAP_STYLING_KEY, {A: 'a', B: 'b'}, null, true, false))
+          .toEqual('C:_; A: a; B: b;');
     });
 
     it('should support strings for classes', () => {
@@ -525,11 +537,11 @@ describe('TNode styling linked list', () => {
     });
 
     it('should support strings for styles', () => {
-      expect(appendStyling('A:a;B:b', STYLE_MAP_STYLING_KEY, 'A : a ; B : b', null, false, false))
-          .toEqual('A:a;B:b; A : a ; B : b');
-      expect(
-          appendStyling('A:_; B:_; C:_', STYLE_MAP_STYLING_KEY, 'A : a ; B : b', null, true, false))
-          .toEqual('C:_; A: a; B: b');
+      expect(appendStyling('A:a;B:b;', STYLE_MAP_STYLING_KEY, 'A : a ; B : b', null, false, false))
+          .toEqual('A:a;B:b; A : a ; B : b;');
+      expect(appendStyling(
+                 'A:_; B:_; C:_;', STYLE_MAP_STYLING_KEY, 'A : a ; B : b', null, true, false))
+          .toEqual('C:_; A: a; B: b;');
     });
 
     it('should throw no arrays for styles', () => {
@@ -560,7 +572,7 @@ describe('TNode styling linked list', () => {
                 'list-style: unsafe; ' +
                 'list-style-image: unsafe; ' +
                 'clip-path: unsafe; ' +
-                'width: url(javascript:evil())');
+                'width: url(javascript:evil());');
         // verify string
         expect(appendStyling(
                    '', STYLE_MAP_STYLING_KEY,
@@ -571,7 +583,7 @@ describe('TNode styling linked list', () => {
                        'list-style: url(javascript:evil());' +
                        'list-style-image: url(javascript:evil());' +
                        'clip-path: url(javascript:evil());' +
-                       'width: url(javascript:evil())'  // should not sanitize
+                       'width: url(javascript:evil());'  // should not sanitize
                    ,
                    null, true, false))
             .toEqual(
@@ -582,7 +594,7 @@ describe('TNode styling linked list', () => {
                 'list-style: unsafe; ' +
                 'list-style-image: unsafe; ' +
                 'clip-path: unsafe; ' +
-                'width: url(javascript:evil())');
+                'width: url(javascript:evil());');
       });
     });
   });
@@ -630,6 +642,24 @@ function expectPriorityOrder(tData: TData, tNode: TNode, isClassBinding: boolean
     index = getTStylingRangeNext(tStylingRange);
   }
   return expect(indexes);
+}
+
+
+/**
+ * Find the head of the styling binding linked list.
+ */
+export function getStylingBindingHead(tData: TData, tNode: TNode, isClassBinding: boolean): number {
+  let index = getTStylingRangePrev(isClassBinding ? tNode.classBindings : tNode.styleBindings);
+  while (true) {
+    const tStylingRange = tData[index + 1] as TStylingRange;
+    const prev = getTStylingRangePrev(tStylingRange);
+    if (prev === 0) {
+      // found head exit.
+      return index;
+    } else {
+      index = prev;
+    }
+  }
 }
 
 class StylingFixture {

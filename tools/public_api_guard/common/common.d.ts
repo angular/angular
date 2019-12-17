@@ -201,7 +201,10 @@ export declare class NgClass implements DoCheck {
   constructor(
       _iterableDiffers: IterableDiffers, _keyValueDiffers: KeyValueDiffers, _ngEl: ElementRef,
       _renderer: Renderer2);
+  applyChanges(): void;
   ngDoCheck(): void;
+  setClass(value: string): void;
+  setNgClass(value: any): void;
 }
 
 export declare class NgComponentOutlet implements OnChanges, OnDestroy {
@@ -279,7 +282,9 @@ export declare class NgPluralCase {
 export declare class NgStyle implements DoCheck {
   ngStyle: {[klass: string]: any;}|null;
   constructor(_ngEl: ElementRef, _differs: KeyValueDiffers, _renderer: Renderer2);
+  applyChanges(): void;
   ngDoCheck(): void;
+  setNgStyle(value: any): void;
 }
 
 export declare class NgSwitch { set ngSwitch(newValue: any); }

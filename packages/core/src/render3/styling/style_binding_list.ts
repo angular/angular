@@ -6,13 +6,18 @@
 * found in the LICENSE file at https://angular.io/license
 */
 
+import {unwrapSafeValue} from '../../sanitization/bypass';
 import {stylePropNeedsSanitization, ɵɵsanitizeStyle} from '../../sanitization/sanitization';
-import {assertEqual, throwError} from '../../util/assert';
+import {assertEqual, assertString, throwError} from '../../util/assert';
+import {CharCode} from '../../util/char_code';
+import {concatStringsWithSpace} from '../../util/stringify';
+import {assertFirstUpdatePass} from '../assert';
 import {TNode} from '../interfaces/node';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {TStylingKey, TStylingMapKey, TStylingRange, getTStylingRangeNext, getTStylingRangePrev, getTStylingRangePrevDuplicate, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange} from '../interfaces/styling';
 import {LView, TData, TVIEW} from '../interfaces/view';
 import {getLView} from '../state';
+import {NO_CHANGE} from '../tokens';
 import {splitClassList, toggleClass} from './class_differ';
 import {StyleChangesMap, parseKeyValue, removeStyle} from './style_differ';
 import {getLastParsedKey, parseClassName, parseClassNameNext, parseStyle, parseStyleNext} from './styling_parser';
@@ -197,9 +202,7 @@ import {getLastParsedKey, parseClassName, parseClassNameNext, parseStyle, parseS
 export function insertTStylingBinding(
     tData: TData, tNode: TNode, tStylingKey: TStylingKey, index: number, isHostBinding: boolean,
     isClassBinding: boolean): void {
-  ngDevMode && assertEqual(
-                   getLView()[TVIEW].firstUpdatePass, true,
-                   'Should be called during \'firstUpdatePass` only.');
+  ngDevMode && assertFirstUpdatePass(getLView()[TVIEW]);
   let tBindings = isClassBinding ? tNode.classBindings : tNode.styleBindings;
   let tmplHead = getTStylingRangePrev(tBindings);
   let tmplTail = getTStylingRangeNext(tBindings);
@@ -255,7 +258,7 @@ export function insertTStylingBinding(
   // Now we need to update / compute the duplicates.
   // Starting with our location search towards head (least priority)
   markDuplicates(
-      tData, tStylingKey, index, (isClassBinding ? tNode.classes : tNode.styles) as string, true,
+      tData, tStylingKey, index, (isClassBinding ? tNode.classes : tNode.styles) || '', true,
       isClassBinding);
   markDuplicates(tData, tStylingKey, index, '', false, isClassBinding);
 
@@ -347,6 +350,7 @@ function markDuplicates(
     cursor = isPrevDir ? getTStylingRangePrev(tStyleRangeAtCursor) :
                          getTStylingRangeNext(tStyleRangeAtCursor);
   }
+  // We also need to process the static values.
   if (staticValues !== '' &&  // If we have static values to search
       !foundDuplicate         // If we have duplicate don't bother since we are already marked as
                               // duplicate
@@ -355,6 +359,8 @@ function markDuplicates(
       // if we are a Map (and we have statics) we must assume duplicate
       foundDuplicate = true;
     } else if (staticValues != null) {
+      // If we found non-map than we iterate over its keys to determine if any of them match ours
+      // If we find a match than we mark it as duplicate.
       for (let i = isClassBinding ? parseClassName(staticValues) : parseStyle(staticValues);  //
            i >= 0;                                                                            //
            i = isClassBinding ? parseClassNameNext(staticValues, i) :
@@ -367,6 +373,7 @@ function markDuplicates(
     }
   }
   if (foundDuplicate) {
+    // if we found a duplicate, than mark ourselves.
     tData[index + 1] = isPrevDir ? setTStylingRangePrevDuplicate(tStylingAtIndex) :
                                    setTStylingRangeNextDuplicate(tStylingAtIndex);
   }
@@ -392,18 +399,21 @@ export function flushStyleBinding(
   // value and look up the previous concatenation as a starting point going forward.
   const lastUnchangedValueIndex = getTStylingRangePrev(tStylingRangeAtIndex);
   let text = lastUnchangedValueIndex === 0 ?
-      ((isClassBinding ? tNode.classes : tNode.styles) as string) :
-      lView[lastUnchangedValueIndex + 1] as string;
+      (isClassBinding ? tNode.classes : tNode.styles) :
+      lView[lastUnchangedValueIndex + 1] as string | NO_CHANGE;
+  if (text === null || text === NO_CHANGE) text = '';
+  ngDevMode && assertString(text, 'Last unchanged value value should be a string');
   let cursor = index;
   while (cursor !== 0) {
     const value = lView[cursor];
     const key = tData[cursor] as TStylingKey;
     const stylingRange = tData[cursor + 1] as TStylingRange;
     lView[cursor + 1] = text = appendStyling(
-        text, key, value, null, getTStylingRangePrevDuplicate(stylingRange), isClassBinding);
+        text as string, key, value, null, getTStylingRangePrevDuplicate(stylingRange),
+        isClassBinding);
     cursor = getTStylingRangeNext(stylingRange);
   }
-  return text;
+  return text as string;
 }
 
 
@@ -452,17 +462,27 @@ export function appendStyling(
     if (hasPreviousDuplicate) {
       text = toggleClass(text, stylingKey as string, !!value);
     } else if (value) {
-      text = text === '' ? stylingKey as string : text + ' ' + stylingKey;
+      text = concatStringsWithSpace(text, stylingKey as string);
     }
   } else {
+    if (value === undefined) {
+      // If undefined than treat it as if we have no value. This means that we will fallback to the
+      // previous value (if any).
+      // `<div style="width: 10px" [style.width]="{width: undefined}">` => `width: 10px`.
+      return text;
+    }
     if (hasPreviousDuplicate) {
       text = removeStyle(text, key);
     }
-    const keyValue =
-        key + ': ' + (typeof suffixOrSanitizer === 'function' ?
-                          suffixOrSanitizer(value) :
-                          (suffixOrSanitizer == null ? value : value + suffixOrSanitizer));
-    text = text === '' ? keyValue : text + '; ' + keyValue;
+    if (value !== false && value !== null) {
+      // `<div style="width: 10px" [style.width]="{width: null}">` => ``. (remove it)
+      // `<div style="width: 10px" [style.width]="{width: false}">` => ``. (remove it)
+      value = typeof suffixOrSanitizer === 'function' ? suffixOrSanitizer(value) :
+                                                        unwrapSafeValue(value);
+      const keyValue = key + ': ' +
+          (typeof suffixOrSanitizer === 'string' ? value + suffixOrSanitizer : value) + ';';
+      text = concatStringsWithSpace(text, keyValue);
+    }
   }
   return text;
 }
@@ -489,7 +509,10 @@ export const CLASS_MAP_STYLING_KEY: TStylingMapKey = {
     } else if (typeof value === 'object') {
       // We support maps
       for (let key in value) {
-        text = appendStyling(text, key, value[key], null, hasPreviousDuplicate, true);
+        if (key !== '') {
+          // We have to guard for `""` empty string as key since it will break search and replace.
+          text = appendStyling(text, key, value[key], null, hasPreviousDuplicate, true);
+        }
       }
     } else if (typeof value === 'string') {
       // We support strings
@@ -500,7 +523,7 @@ export const CLASS_MAP_STYLING_KEY: TStylingMapKey = {
         changes.forEach((_, key) => text = appendStyling(text, key, true, null, true, true));
       } else {
         // No duplicates, just append it.
-        text = text === '' ? value : text + ' ' + value;
+        text = concatStringsWithSpace(text, value);
       }
     } else {
       // All other cases are not supported.
@@ -531,9 +554,12 @@ export const STYLE_MAP_STYLING_KEY: TStylingMapKey = {
     } else if (typeof value === 'object') {
       // We support maps
       for (let key in value) {
-        text = appendStyling(
-            text, key, value[key], stylePropNeedsSanitization(key) ? ɵɵsanitizeStyle : null,
-            hasPreviousDuplicate, false);
+        if (key !== '') {
+          // We have to guard for `""` empty string as key since it will break search and replace.
+          text = appendStyling(
+              text, key, value[key], stylePropNeedsSanitization(key) ? ɵɵsanitizeStyle : null,
+              hasPreviousDuplicate, false);
+        }
       }
     } else if (typeof value === 'string') {
       // We support strings
@@ -548,7 +574,10 @@ export const STYLE_MAP_STYLING_KEY: TStylingMapKey = {
                 true, false));
       } else {
         // No duplicates, just append it.
-        text = text === '' ? value : text + '; ' + value;
+        if (value.charCodeAt(value.length - 1) !== CharCode.SEMI_COLON) {
+          value += ';';
+        }
+        text = concatStringsWithSpace(text, value);
       }
     } else {
       // All other cases are not supported.
@@ -556,4 +585,15 @@ export const STYLE_MAP_STYLING_KEY: TStylingMapKey = {
     }
     return text;
   }
+};
+
+
+/**
+ * If we have `<div [class] my-dir>` such that `my-dir` has `@Input('class')`, the `my-dir` captures
+ * the `[class]` binding, so that it no longer participates in the style bindings. For this case
+ * we use `IGNORE_DO_TO_INPUT_SHADOW` so that `flushStyleBinding` ignores it.
+ */
+export const IGNORE_DUE_TO_INPUT_SHADOW: TStylingMapKey = {
+  key: null,
+  extra: (text: string, value: any, hasPreviousDuplicate: boolean): string => { return text;}
 };

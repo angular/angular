@@ -7,8 +7,7 @@
  */
 
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
-import {assertDefined, assertEqual} from '../util/assert';
-
+import {assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
 import {assertLViewOrUndefined} from './assert';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
@@ -44,7 +43,7 @@ interface LFrame {
   /**
    * Used to set the parent property when nodes are created and track query results.
    *
-   * This is used in conjection with `isParent`.
+   * This is used in conjunction with `isParent`.
    */
   previousOrParentTNode: TNode;
 
@@ -95,11 +94,6 @@ interface LFrame {
 
 
   /**
-   * Used when processing host bindings.
-   */
-  currentDirectiveDef: DirectiveDef<any>|ComponentDef<any>|null;
-
-  /**
    * The root index from which pure function instructions should calculate their binding
    * indices. In component views, this is TView.bindingStartIndex. In a host binding
    * context, this is the TView.expandoStartIndex + any dirs/hostVars before the given dir.
@@ -111,6 +105,18 @@ interface LFrame {
    * We iterate over the list of Queries and increment current query index at every step.
    */
   currentQueryIndex: number;
+
+  /**
+   * Stores the index of the style binding which changed first.
+   *
+   * A change in styling binding implies that all bindings starting with this index need to be
+   * recomputed. See: `flushStylingOnElementExit` and `markStylingBindingDirty` functions for
+   * details.
+   *
+   * If this value is set than `flushStylingOnElementExit` needs to execute during the `advance`
+   * instruction to update the styling.
+   */
+  stylingBindingChanged: number;
 }
 
 /**
@@ -259,17 +265,15 @@ export function getLView(): LView {
  * function or when all host bindings are processed for an element).
  */
 export const enum ActiveElementFlags {
-  Initial = 0b00,
-  RunExitFn = 0b01,
+  HostMode = 0b1,
+  RunExitFn = 0b1,
   Size = 1,
 }
 
 
-/**
- * Sets a flag is for the active element.
- */
-function setActiveElementFlag(flag: ActiveElementFlags) {
-  instructionState.lFrame.selectedIndex |= flag;
+export function isActiveHostElement(): boolean {
+  return (instructionState.lFrame.selectedIndex & ActiveElementFlags.HostMode) ===
+      ActiveElementFlags.HostMode;
 }
 
 /**
@@ -279,17 +283,23 @@ function setActiveElementFlag(flag: ActiveElementFlags) {
  * @param elementIndex the element index value for the host element where
  *                     the directive/component instance lives
  */
-export function setActiveHostElement(elementIndex: number | null) {
-  if (hasActiveElementFlag(ActiveElementFlags.RunExitFn)) {
-    executeElementExitFn();
-  }
-  setSelectedIndex(elementIndex === null ? -1 : elementIndex);
-  instructionState.lFrame.activeDirectiveId = 0;
+export function setActiveHostElement(elementIndex: number) {
+  executeElementExitFn();
+  setSelectedIndex(elementIndex);
+  instructionState.lFrame.selectedIndex |= ActiveElementFlags.HostMode;
+}
+
+export function clearActiveHostElement() {
+  executeElementExitFn();
+  setSelectedIndex(-1);
 }
 
 export function executeElementExitFn() {
-  instructionState.elementExitFn !();
-  instructionState.lFrame.selectedIndex &= ~ActiveElementFlags.RunExitFn;
+  const lFrame = instructionState.lFrame;
+  if (lFrame.stylingBindingChanged !== 0) {
+    instructionState.elementExitFn !();
+    lFrame.stylingBindingChanged = 0;
+  }
 }
 
 /**
@@ -306,7 +316,6 @@ export function executeElementExitFn() {
  * @param fn
  */
 export function setElementExitFn(fn: () => void): void {
-  setActiveElementFlag(ActiveElementFlags.RunExitFn);
   if (instructionState.elementExitFn === null) {
     instructionState.elementExitFn = fn;
   }
@@ -354,6 +363,7 @@ export function getContextLView(): LView {
 }
 
 export function getCheckNoChangesMode(): boolean {
+  // TODO(misko): remove this from the LView since it is ngDevMode=true mode only.
   return instructionState.checkNoChangesMode;
 }
 
@@ -430,8 +440,6 @@ export function enterDI(newView: LView, tNode: TNode) {
     newLFrame.elementDepthCount = DEV_MODE_VALUE;
     newLFrame.currentNamespace = DEV_MODE_VALUE;
     newLFrame.currentSanitizer = DEV_MODE_VALUE;
-    newLFrame.currentDirectiveDef = DEV_MODE_VALUE;
-    newLFrame.activeDirectiveId = DEV_MODE_VALUE;
     newLFrame.bindingRootIndex = DEV_MODE_VALUE;
     newLFrame.currentQueryIndex = DEV_MODE_VALUE;
   }
@@ -471,11 +479,10 @@ export function enterView(newView: LView, tNode: TNode | null): void {
   newLFrame.elementDepthCount = 0;
   newLFrame.currentNamespace = null;
   newLFrame.currentSanitizer = null;
-  newLFrame.currentDirectiveDef = null;
-  newLFrame.activeDirectiveId = 0;
   newLFrame.bindingRootIndex = -1;
   newLFrame.bindingIndex = newView === null ? -1 : newView[TVIEW].bindingStartIndex;
   newLFrame.currentQueryIndex = 0;
+  newLFrame.stylingBindingChanged = 0;
 }
 
 /**
@@ -498,22 +505,19 @@ function createLFrame(parent: LFrame | null): LFrame {
     elementDepthCount: 0,           //
     currentNamespace: null,         //
     currentSanitizer: null,         //
-    currentDirectiveDef: null,      //
-    activeDirectiveId: 0,           //
     bindingRootIndex: -1,           //
     bindingIndex: -1,               //
     currentQueryIndex: 0,           //
     parent: parent !,               //
     child: null,                    //
+    stylingBindingChanged: 0,       //
   };
   parent !== null && (parent.child = lFrame);  // link the new LFrame for reuse.
   return lFrame;
 }
 
 export function leaveViewProcessExit() {
-  if (hasActiveElementFlag(ActiveElementFlags.RunExitFn)) {
-    executeElementExitFn();
-  }
+  executeElementExitFn();
   leaveView();
 }
 
@@ -539,7 +543,7 @@ function walkUpViews(nestingLevel: number, currentView: LView): LView {
 }
 
 /**
- * Gets the most recent index passed to {@link select}
+ * Gets the currently selected element index.
  *
  * Used with {@link property} instruction (and more in the future) to identify the index in the
  * current `LView` to act on.
@@ -615,4 +619,49 @@ export function getCurrentStyleSanitizer() {
   // `NodeStyleDebug` hence we return `null`. This should be fixed
   const lFrame = instructionState.lFrame;
   return lFrame === null ? null : lFrame.currentSanitizer;
+}
+
+/**
+ * Used for encoding both Class and Style index into `LFrame.stylingBindingChanged`.
+ */
+const enum BindingChanged {
+  CLASS_SHIFT = 16,
+  STYLE_MASK = 0xFFFF,
+}
+
+/**
+ * Store the first binding location from where the style flushing should start.
+ *
+ * This function stores the first binding location. Any subsequent binding changes are ignored as
+ * they are downstream from this change and will be picked up once the flushing starts traversing
+ * forward.
+ *
+ * Because flushing for template and flushing for host elements are separate, we don't need to worry
+ * about the fact that they will be out of order.
+ *
+ * @param bindingIndex Index of binding location. This will be a binding location from which the
+ *                     flushing of styling should start.
+ * @param isClassBased `true` if `class` change (`false` if `style`)
+ */
+export function markStylingBindingDirty(bindingIndex: number, isClassBased: boolean) {
+  ngDevMode && assertGreaterThan(bindingIndex, 0, 'expected valid binding index changed');
+  ngDevMode &&
+      assertEqual(
+          getCheckNoChangesMode(), false, 'Should never get here during check no changes mode');
+  const lFrame = instructionState.lFrame;
+  const stylingBindingChanged = lFrame.stylingBindingChanged;
+  const stylingBindingChangedExtracted = isClassBased ?
+      stylingBindingChanged >> BindingChanged.CLASS_SHIFT :
+      stylingBindingChanged & BindingChanged.STYLE_MASK;
+  if (stylingBindingChangedExtracted === 0) {
+    lFrame.stylingBindingChanged = stylingBindingChanged |
+        (isClassBased ? bindingIndex << BindingChanged.CLASS_SHIFT : bindingIndex);
+  }
+}
+
+export function getClassBindingChanged() {
+  return instructionState.lFrame.stylingBindingChanged >> BindingChanged.CLASS_SHIFT;
+}
+export function getStyleBindingChanged() {
+  return instructionState.lFrame.stylingBindingChanged & BindingChanged.STYLE_MASK;
 }

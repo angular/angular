@@ -157,4 +157,11 @@ export class NgClass implements DoCheck {
       });
     }
   }
+
+  // TODO(misko): Delete this code after angula/flex-layout stops depending on private APIs
+  // We need to export this to make angular/flex-layout happy
+  // https://github.com/angular/flex-layout/blob/ec7b57eb6adf59ecfdfff1de5ccf1ab2f6652ed3/src/lib/extended/class/class.ts#L9
+  setClass(value: string) { this.klass = value; }
+  setNgClass(value: any) { this.ngClass = value; }
+  applyChanges() { this.ngDoCheck(); }
 }

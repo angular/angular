@@ -18,7 +18,7 @@ import {BrowserModule} from '@angular/platform-browser';
     <ng-template #t3><button [class.bar]="exp ==='bar'"></button></ng-template>
     <ng-template #t4><button class="foo" [class.bar]="exp ==='bar'"></button></ng-template>
     <ng-template #t5><button class="foo" [ngClass]="{bar: exp ==='bar'}"></button></ng-template>
-    <ng-template #t6><button class="foo" [ngStyle]="staticStyle" [style.background-color]="exp"></button></ng-template>
+    <ng-template #t6><button class="foo" [ngStyle]="staticStyle" [style.background-color]="exp == 'bar' ? 'yellow': 'red'"></button></ng-template>
     <ng-template #t7><button style="color: red"></button></ng-template>
     
     <div>

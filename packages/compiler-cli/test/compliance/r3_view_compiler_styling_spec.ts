@@ -1006,15 +1006,8 @@ describe('compiler compliance: styling', () => {
 
       const template = `
           hostAttrs: [${AttributeMarker.Classes}, "foo", "baz", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
-          hostVars: 6,
+          hostVars: 8,
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
-<<<<<<< HEAD
-=======
-            if (rf & 1) {
-              $r3$.ɵɵallocHostVars(8);
-              $r3$.ɵɵelementHostAttrs($e0_attrs$);
-            }
->>>>>>> 3a14b06a3b... refactor(ivy): generate 2 slots per styling instruction
             if (rf & 2) {
               $r3$.ɵɵstyleMap(ctx.myStyle, $r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵclassMap(ctx.myClass);
@@ -1068,14 +1061,8 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
-          hostVars: 8,
+          hostVars: 12,
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
-<<<<<<< HEAD
-=======
-            if (rf & 1) {
-              $r3$.ɵɵallocHostVars(12);
-            }
->>>>>>> 3a14b06a3b... refactor(ivy): generate 2 slots per styling instruction
             if (rf & 2) {
               $r3$.ɵɵstyleMap(ctx.myStyle, $r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵclassMap(ctx.myClasses);
@@ -1143,14 +1130,8 @@ describe('compiler compliance: styling', () => {
           `;
 
          const hostBindings = `
-            hostVars: 6,
+            hostVars: 8,
             hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
-<<<<<<< HEAD
-=======
-              if (rf & 1) {
-                $r3$.ɵɵallocHostVars(8);
-              }
->>>>>>> 3a14b06a3b... refactor(ivy): generate 2 slots per styling instruction
               if (rf & 2) {
                 $r3$.ɵɵstyleMap(ctx.myStyleExp, $r3$.ɵɵdefaultStyleSanitizer);
                 $r3$.ɵɵclassMap(ctx.myClassExp);
@@ -1212,6 +1193,7 @@ describe('compiler compliance: styling', () => {
          // NOTE: IF YOU ARE CHANGING THIS COMPILER SPEC, YOU MAY NEED TO CHANGE THE DIRECTIVE
          // DEF THAT'S HARD-CODED IN `ng_class.ts`.
          const template = `
+          …
           hostVars: 2,
           hostBindings: function ClassDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 2) {
@@ -1219,7 +1201,7 @@ describe('compiler compliance: styling', () => {
             }
           }
           …
-          hostVars: 2,
+          hostVars: 4,
           hostBindings: function WidthDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 2) {
               $r3$.ɵɵstyleProp("width", ctx.myWidth);
@@ -1227,7 +1209,7 @@ describe('compiler compliance: styling', () => {
             }
           }
           …
-          hostVars: 2,
+          hostVars: 4,
           hostBindings: function HeightDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 2) {
               $r3$.ɵɵstyleProp("height", ctx.myHeight);
@@ -1917,7 +1899,7 @@ describe('compiler compliance: styling', () => {
     };
 
     const template = `
-    hostVars: 4,
+    hostVars: 6,
     hostBindings: function WidthDirective_HostBindings(rf, ctx, elIndex) {
         if (rf & 2) {
           $r3$.ɵɵhostProperty("id", ctx.id)("title", ctx.title);
@@ -2079,14 +2061,8 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
-          hostVars: 9,
+          hostVars: 10,
           hostBindings: function MyDir_HostBindings(rf, ctx, elIndex) {
-<<<<<<< HEAD
-=======
-            …
-            $r3$.ɵɵallocHostVars(10);
-            …
->>>>>>> 3a14b06a3b... refactor(ivy): generate 2 slots per styling instruction
             if (rf & 2) {
               $r3$.ɵɵhostProperty("title", ctx.title);
               $r3$.ɵɵupdateSyntheticHostBinding("@anim",

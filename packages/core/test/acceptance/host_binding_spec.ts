@@ -254,7 +254,7 @@ describe('host bindings', () => {
               }
 
               TestBed.configureTestingModule(
-                  {declarations: [MyApp, ParentDir, ChildDir, SiblingDir]});
+                  {declarations: [MyApp, ParentDir, SiblingDir, ChildDir]});
               const fixture = TestBed.createComponent(MyApp);
               const element = fixture.nativeElement;
               fixture.detectChanges();
@@ -262,10 +262,9 @@ describe('host bindings', () => {
               const childElement = element.querySelector('div');
 
               // width/height values were set in all directives, but the sub-class directive
-              // (ChildDir)
-              // had priority over the parent directive (ParentDir) which is why its value won. It
-              // also
-              // won over Dir because the SiblingDir directive was evaluated later on.
+              // (ChildDir) had priority over the parent directive (ParentDir) which is why its
+              // value won. It also won over Dir because the SiblingDir directive was evaluated
+              // later on.
               expect(childElement.style.width).toEqual('200px');
               expect(childElement.style.height).toEqual('200px');
 

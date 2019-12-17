@@ -1435,16 +1435,15 @@ describe('change detection', () => {
        });
 
     it('should include style prop name in case of style binding', () => {
-      const message = ivyEnabled ?
-          `Previous value for 'style.color': 'red'. Current value: 'green'` :
-          `Previous value: 'color: red'. Current value: 'color: green'`;
+      const message = ivyEnabled ? `Previous value for 'color': 'red'. Current value: 'green'` :
+                                   `Previous value: 'color: red'. Current value: 'color: green'`;
       expect(() => initWithTemplate('<div [style.color]="unstableColorExpression"></div>'))
           .toThrowError(new RegExp(message));
     });
 
     it('should include class name in case of class binding', () => {
       const message = ivyEnabled ?
-          `Previous value for 'class.someClass': 'true'. Current value: 'false'` :
+          `Previous value for 'someClass': 'true'. Current value: 'false'` :
           `Previous value: 'someClass: true'. Current value: 'someClass: false'`;
       expect(() => initWithTemplate('<div [class.someClass]="unstableBooleanExpression"></div>'))
           .toThrowError(new RegExp(message));
@@ -1473,16 +1472,15 @@ describe('change detection', () => {
     });
 
     it('should include style prop name in case of host style bindings', () => {
-      const message = ivyEnabled ?
-          `Previous value for 'style.color': 'red'. Current value: 'green'` :
-          `Previous value: 'color: red'. Current value: 'color: green'`;
+      const message = ivyEnabled ? `Previous value for 'color': 'red'. Current value: 'green'` :
+                                   `Previous value: 'color: red'. Current value: 'color: green'`;
       expect(() => initWithHostBindings({'[style.color]': 'unstableColorExpression'}))
           .toThrowError(new RegExp(message));
     });
 
     it('should include class name in case of host class bindings', () => {
       const message = ivyEnabled ?
-          `Previous value for 'class.someClass': 'true'. Current value: 'false'` :
+          `Previous value for 'someClass': 'true'. Current value: 'false'` :
           `Previous value: 'someClass: true'. Current value: 'someClass: false'`;
       expect(() => initWithHostBindings({'[class.someClass]': 'unstableBooleanExpression'}))
           .toThrowError(new RegExp(message));

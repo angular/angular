@@ -29,7 +29,6 @@ import {enterDI, leaveDI} from './state';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils';
 import {stringifyForError} from './util/misc_utils';
-import {getInitialStylingValue} from './util/styling_utils';
 
 
 
@@ -269,10 +268,10 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
                    tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
   ngDevMode && assertDefined(tNode, 'expecting tNode');
   if (attrNameToInject === 'class') {
-    return getInitialStylingValue(tNode.classes);
+    return tNode.classes;
   }
   if (attrNameToInject === 'style') {
-    return getInitialStylingValue(tNode.styles);
+    return tNode.styles;
   }
 
   const attrs = tNode.attrs;

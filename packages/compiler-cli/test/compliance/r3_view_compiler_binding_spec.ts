@@ -856,7 +856,7 @@ describe('compiler compliance: bindings', () => {
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
           hostAttrs: ["title", "hello there from directive", ${AttributeMarker.Classes}, "one", "two", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
-          hostVars: 2,
+          hostVars: 4,
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
             …
           }
