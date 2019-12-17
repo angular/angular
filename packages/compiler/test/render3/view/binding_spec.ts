@@ -145,7 +145,7 @@ describe('t2 binding', () => {
       expect(consumer.name).toBe('HasInput');
     });
 
-    it('should bind to then encompassing node when no directive input is matched', () => {
+    it('should bind to the encompassing node when no directive input is matched', () => {
       const template = parseTemplate('<span dir></span>', '', {});
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const res = binder.bind({template: template.nodes});
