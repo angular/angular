@@ -19,6 +19,7 @@ entryPoints = [
     "mdc-slide-toggle/testing",
     "mdc-slider",
     "mdc-tabs",
+    "mdc-table",
     "popover-edit",
 ]
 

@@ -205,6 +205,8 @@ System.config({
       'dist/packages/material-experimental/mdc-slider/index.js',
     '@angular/material-experimental/mdc-tabs':
         'dist/packages/material-experimental/mdc-tabs/index.js',
+    '@angular/material-experimental/mdc-table':
+        'dist/packages/material-experimental/mdc-table/index.js',
     '@angular/material-experimental/mdc-progress-bar':
         'dist/packages/material-experimental/mdc-progress-bar/index.js',
     '@angular/material-experimental/popover-edit':
