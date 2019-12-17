@@ -125,24 +125,34 @@ describe('t2 binding', () => {
     });
 
     it('should work for text attributes on elements', () => {
-      const template = parseTemplate('<div hasInput inputBinding="{{myValue}}"></div>', '', {});
+      const template = parseTemplate('<div hasInput inputBinding="text"></div>', '', {});
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const res = binder.bind({template: template.nodes});
       const el = template.nodes[0] as a.Element;
-      const attr = el.inputs[0];
+      const attr = el.attributes[1];
       const consumer = res.getConsumerOfBinding(attr) as DirectiveMeta;
       expect(consumer.name).toBe('HasInput');
     });
 
     it('should work for text attributes on templates', () => {
       const template =
-          parseTemplate('<ng-template hasInput inputBinding="{{myValue}}"></ng-template>', '', {});
+          parseTemplate('<ng-template hasInput inputBinding="text"></ng-template>', '', {});
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const res = binder.bind({template: template.nodes});
       const el = template.nodes[0] as a.Element;
-      const attr = el.inputs[0];
+      const attr = el.attributes[1];
       const consumer = res.getConsumerOfBinding(attr) as DirectiveMeta;
       expect(consumer.name).toBe('HasInput');
+    });
+
+    it('should bind to then encompassing node when no directive input is matched', () => {
+      const template = parseTemplate('<span dir></span>', '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      const el = template.nodes[0] as a.Element;
+      const attr = el.attributes[0];
+      const consumer = res.getConsumerOfBinding(attr);
+      expect(consumer).toEqual(el);
     });
   });
 
@@ -156,6 +166,16 @@ describe('t2 binding', () => {
       const attr = el.outputs[0];
       const consumer = res.getConsumerOfBinding(attr) as DirectiveMeta;
       expect(consumer.name).toBe('HasOutput');
+    });
+
+    it('should bind to the encompassing node when no directive output is matched', () => {
+      const template = parseTemplate('<span dir (fakeOutput)="myHandler($event)"></span>', '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      const el = template.nodes[0] as a.Element;
+      const attr = el.outputs[0];
+      const consumer = res.getConsumerOfBinding(attr);
+      expect(consumer).toEqual(el);
     });
   });
 });
