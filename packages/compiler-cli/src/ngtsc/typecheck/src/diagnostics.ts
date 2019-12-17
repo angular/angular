@@ -8,6 +8,7 @@
 import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {getTokenAtPosition} from '../../util/src/typescript';
 
 import {ExternalTemplateSourceMapping, TemplateId, TemplateSourceMapping} from './api';
@@ -135,7 +136,7 @@ export function translateDiagnostic(
  */
 export function makeTemplateDiagnostic(
     mapping: TemplateSourceMapping, span: ParseSourceSpan, category: ts.DiagnosticCategory,
-    code: number, messageText: string | ts.DiagnosticMessageChain, relatedMessage?: {
+    code: ErrorCode, messageText: string | ts.DiagnosticMessageChain, relatedMessage?: {
       text: string,
       span: ParseSourceSpan,
     }): ts.Diagnostic {
@@ -156,9 +157,7 @@ export function makeTemplateDiagnostic(
     // directly into the bytes of the source file.
     return {
       source: 'ngtsc',
-      code,
-      category,
-      messageText,
+      code: ngErrorCode(code), category, messageText,
       file: mapping.node.getSourceFile(),
       start: span.start.offset,
       length: span.end.offset - span.start.offset, relatedInformation,
@@ -206,8 +205,7 @@ export function makeTemplateDiagnostic(
     return {
       source: 'ngtsc',
       category,
-      code,
-      messageText,
+      code: ngErrorCode(code), messageText,
       file: sf,
       start: span.start.offset,
       length: span.end.offset - span.start.offset,
