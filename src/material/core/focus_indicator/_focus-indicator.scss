@@ -8,10 +8,12 @@
 ///   }
 
 @mixin mat-strong-focus-indicators() {
+  $border-width: 2px;
+
   // Base styles for focus indicators.
   & .mat-focus-indicator::before {
     border-radius: 4px;
-    border: 2px solid transparent;
+    border: $border-width solid transparent;
     box-sizing: border-box;
     position: absolute;
     pointer-events: none;
@@ -30,16 +32,16 @@
     &.mat-button-base::before,
     &.mat-card::before,
     &.mat-sort-header-button::before {
-      margin: -4px;
+      margin: $border-width * -2;
     }
 
     &.mat-calendar-body-cell::before {
-      margin: -2px;
+      margin: $border-width * -1;
     }
 
     &.mat-tab-link::before,
     &.mat-tab-label::before {
-      margin: 4px;
+      margin: $border-width * 2;
     }
   }
 
