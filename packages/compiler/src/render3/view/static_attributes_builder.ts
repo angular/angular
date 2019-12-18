@@ -41,9 +41,15 @@ export class StaticAttributesBuilder {
     }
   }
 
-  setClassAttribute(value: string) { this._classAttr = value; }
+  setClassAttribute(value: string) {
+    value = value.trim();
+    this._classAttr = value.length === 0 ? null : value;
+  }
 
-  setStyleAttribute(value: string) { this._stylesAttr = value; }
+  setStyleAttribute(value: string) {
+    value = value.trim();
+    this._stylesAttr = value.length === 0 ? null : value;
+  }
 
   private _registerAttribute(attrName: string, value: any) {
     if (!this._keyValueAttrs) {

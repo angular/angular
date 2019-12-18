@@ -56,11 +56,14 @@ describe('StaticAttributesBuilder', () => {
       'baz',
     ]);
 
-    b.setClassAttribute('oof');
+    b.setClassAttribute(' oof ');
     expectStaticAttributes(b).toEqual([
       AttributeMarker.Classes,
       'oof',
     ]);
+
+    b.setClassAttribute(' ');
+    expectStaticAttributes(b).toEqual([]);
   });
 
   it('should set the class attribute even if registered as a normal attribute', () => {
