@@ -340,6 +340,44 @@ describe('component', () => {
     expect(log).toEqual(['CompB:ngDoCheck']);
   });
 
+  it('should preserve simple component selector in a component factory', () => {
+    @Component({selector: '[foo]', template: ''})
+    class AttSelectorCmp {
+    }
+
+    @NgModule({
+      declarations: [AttSelectorCmp],
+      entryComponents: [AttSelectorCmp],
+    })
+    class AppModule {
+    }
+
+    TestBed.configureTestingModule({imports: [AppModule]});
+    const cmpFactoryResolver = TestBed.inject(ComponentFactoryResolver);
+    const cmpFactory = cmpFactoryResolver.resolveComponentFactory(AttSelectorCmp);
+
+    expect(cmpFactory.selector).toBe('[foo]');
+  });
+
+  it('should preserve complex component selector in a component factory', () => {
+    @Component({selector: '[foo],div:not(.bar)', template: ''})
+    class ComplexSelectorCmp {
+    }
+
+    @NgModule({
+      declarations: [ComplexSelectorCmp],
+      entryComponents: [ComplexSelectorCmp],
+    })
+    class AppModule {
+    }
+
+    TestBed.configureTestingModule({imports: [AppModule]});
+    const cmpFactoryResolver = TestBed.inject(ComponentFactoryResolver);
+    const cmpFactory = cmpFactoryResolver.resolveComponentFactory(ComplexSelectorCmp);
+
+    expect(cmpFactory.selector).toBe('[foo],div:not(.bar)');
+  });
+
   describe('should clear host element if provided in ComponentFactory.create', () => {
     function runTestWithRenderer(rendererProviders: any[]) {
       @Component({

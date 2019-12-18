@@ -10,7 +10,7 @@ import {createTNode} from '@angular/core/src/render3/instructions/shared';
 
 import {AttributeMarker, TAttributes, TNode, TNodeType} from '../../src/render3/interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags} from '../../src/render3/interfaces/projection';
-import {getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorList} from '../../src/render3/node_selector_matcher';
+import {getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorList, stringifyCSSSelectorList} from '../../src/render3/node_selector_matcher';
 
 function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
   return createTNode(null !, null, TNodeType.Element, 0, tagName, attrs);
@@ -507,4 +507,85 @@ describe('css selector matching', () => {
 
   });
 
+});
+
+describe('stringifyCSSSelectorList', () => {
+
+  it('should stringify selector with a tag name only',
+     () => { expect(stringifyCSSSelectorList([['button']])).toBe('button'); });
+
+  it('should stringify selector with attributes', () => {
+    expect(stringifyCSSSelectorList([['', 'id', '']])).toBe('[id]');
+    expect(stringifyCSSSelectorList([['button', 'id', '']])).toBe('button[id]');
+    expect(stringifyCSSSelectorList([['button', 'id', 'value']])).toBe('button[id="value"]');
+    expect(stringifyCSSSelectorList([['button', 'id', 'value', 'title', 'other']]))
+        .toBe('button[id="value"][title="other"]');
+  });
+
+  it('should stringify selector with class names', () => {
+    expect(stringifyCSSSelectorList([['', SelectorFlags.CLASS, 'foo']])).toBe('.foo');
+    expect(stringifyCSSSelectorList([['button', SelectorFlags.CLASS, 'foo']])).toBe('button.foo');
+
+    expect(stringifyCSSSelectorList([['button', SelectorFlags.CLASS, 'foo', 'bar']]))
+        .toBe('button.foo.bar');
+
+    expect(stringifyCSSSelectorList([
+      ['button', 'id', 'value', 'title', 'other', SelectorFlags.CLASS, 'foo', 'bar']
+    ])).toBe('button[id="value"][title="other"].foo.bar');
+  });
+
+  it('should stringify selector with `:not()` rules', () => {
+    expect(stringifyCSSSelectorList([['', SelectorFlags.CLASS | SelectorFlags.NOT, 'foo', 'bar']]))
+        .toBe(':not(.foo.bar)');
+
+    expect(stringifyCSSSelectorList([
+      ['button', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'foo', 'bar']
+    ])).toBe('button:not([foo="bar"])');
+
+    expect(stringifyCSSSelectorList([['', SelectorFlags.ELEMENT | SelectorFlags.NOT, 'foo']]))
+        .toBe(':not(foo)');
+
+    expect(stringifyCSSSelectorList([
+      ['span', SelectorFlags.CLASS, 'foo', SelectorFlags.CLASS | SelectorFlags.NOT, 'bar', 'baz']
+    ])).toBe('span.foo:not(.bar.baz)');
+
+    expect(stringifyCSSSelectorList([
+      ['span', 'id', 'value', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'title', 'other']
+    ])).toBe('span[id="value"]:not([title="other"])');
+
+    expect(stringifyCSSSelectorList([[
+      '', SelectorFlags.CLASS, 'bar', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'foo', '',
+      SelectorFlags.ELEMENT | SelectorFlags.NOT, 'div'
+    ]])).toBe('.bar:not([foo]):not(div)');
+
+    expect(stringifyCSSSelectorList([[
+      'div', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'foo', '', SelectorFlags.CLASS, 'bar',
+      SelectorFlags.CLASS | SelectorFlags.NOT, 'baz'
+    ]])).toBe('div:not([foo].bar):not(.baz)');
+
+    expect(stringifyCSSSelectorList([[
+      'div', SelectorFlags.ELEMENT | SelectorFlags.NOT, 'p', SelectorFlags.CLASS, 'bar',
+      SelectorFlags.CLASS | SelectorFlags.NOT, 'baz'
+    ]])).toBe('div:not(p.bar):not(.baz)');
+  });
+
+  it('should stringify multiple comma-separated selectors', () => {
+    expect(stringifyCSSSelectorList([
+      ['', 'id', ''], ['button', 'id', 'value']
+    ])).toBe('[id],button[id="value"]');
+
+    expect(stringifyCSSSelectorList([
+      ['', 'id', ''], ['button', 'id', 'value'],
+      ['div', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'foo', '']
+    ])).toBe('[id],button[id="value"],div:not([foo])');
+
+    expect(stringifyCSSSelectorList([
+      ['', 'id', ''], ['button', 'id', 'value'],
+      ['div', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'foo', ''],
+      [
+        'div', SelectorFlags.ELEMENT | SelectorFlags.NOT, 'p', SelectorFlags.CLASS, 'bar',
+        SelectorFlags.CLASS | SelectorFlags.NOT, 'baz'
+      ]
+    ])).toBe('[id],button[id="value"],div:not([foo]),div:not(p.bar):not(.baz)');
+  });
 });
