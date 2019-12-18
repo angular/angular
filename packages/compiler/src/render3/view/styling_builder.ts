@@ -50,13 +50,8 @@ interface BoundStylingEntry {
 /**
  * Produces creation/update instructions for all styling bindings (class and style)
  *
- * It also produces the creation instruction to register all initial styling values
- * (which are all the static class="..." and style="..." attribute values that exist
- * on an element within a template).
- *
  * The builder class below handles producing instructions for the following cases:
  *
- * - Static style/class attributes (style="..." and class="...")
  * - Dynamic style/class map bindings ([style]="map" and [class]="map|string")
  * - Dynamic style/class property bindings ([style.prop]="exp" and [class.name]="exp")
  *
@@ -64,9 +59,6 @@ interface BoundStylingEntry {
  * for these attributes/properties/bindings must be done so in the correct order. The
  * order which these must be generated is as follows:
  *
- * if (createMode) {
- *   styling(...)
- * }
  * if (updateMode) {
  *   styleMap(...)
  *   classMap(...)
@@ -77,8 +69,6 @@ interface BoundStylingEntry {
  * The creation/update methods within the builder class produce these instructions.
  */
 export class StylingBuilder {
-  /** Whether or not there are any static styling values present */
-  private _hasInitialValues = false;
   /**
    *  Whether or not there are any styling bindings present
    *  (i.e. `[style]`, `[class]`, `[style.prop]` or `[class.name]`)
@@ -94,7 +84,6 @@ export class StylingBuilder {
   private _singleStyleInputs: BoundStylingEntry[]|null = null;
   /** an array of each [class.name] input */
   private _singleClassInputs: BoundStylingEntry[]|null = null;
-  private _lastStylingInput: BoundStylingEntry|null = null;
   private _firstStylingInput: BoundStylingEntry|null = null;
 
   // maps are used instead of hash maps because a Map will
@@ -113,20 +102,13 @@ export class StylingBuilder {
    * that `big=0` and `hidden=1`)
    */
   private _classesIndex = new Map<string, number>();
-  private _initialStyleValues: string[] = [];
-  private _initialClassValues: string[] = [];
 
   // certain style properties ALWAYS need sanitization
   // this is checked each time new styles are encountered
   private _useDefaultSanitizer = false;
 
-  constructor(private _elementIndexExpr: o.Expression, private _directiveExpr: o.Expression|null) {}
-
   /**
    * Registers a given input to the styling builder to be later used when producing AOT code.
-   *
-   * The code below will only accept the input if it is somehow tied to styling (whether it be
-   * style/class bindings or static style/class attributes).
    */
   registerBoundInput(input: t.BoundAttribute): boolean {
     // [attr.style] or [attr.class] are skipped in the code below,
@@ -189,7 +171,6 @@ export class StylingBuilder {
       this._useDefaultSanitizer = this._useDefaultSanitizer || isStyleSanitizable(name);
       registerIntoMap(this._stylesIndex, property);
     }
-    this._lastStylingInput = entry;
     this._firstStylingInput = this._firstStylingInput || entry;
     this._checkForPipes(value);
     this.hasBindings = true;
@@ -214,7 +195,6 @@ export class StylingBuilder {
       (this._singleClassInputs = this._singleClassInputs || []).push(entry);
       registerIntoMap(this._classesIndex, property);
     }
-    this._lastStylingInput = entry;
     this._firstStylingInput = this._firstStylingInput || entry;
     this._checkForPipes(value);
     this.hasBindings = true;
@@ -225,81 +205,6 @@ export class StylingBuilder {
     if ((value instanceof ASTWithSource) && (value.ast instanceof BindingPipe)) {
       this.hasBindingsWithPipes = true;
     }
-  }
-
-  /**
-   * Registers the element's static style string value to the builder.
-   *
-   * @param value the style string (e.g. `width:100px; height:200px;`)
-   */
-  registerStyleAttr(value: string) {
-    this._initialStyleValues = parseStyle(value);
-    this._hasInitialValues = true;
-  }
-
-  /**
-   * Registers the element's static class string value to the builder.
-   *
-   * @param value the className string (e.g. `disabled gold zoom`)
-   */
-  registerClassAttr(value: string) {
-    this._initialClassValues = value.trim().split(/\s+/g);
-    this._hasInitialValues = true;
-  }
-
-  /**
-   * Appends all styling-related expressions to the provided attrs array.
-   *
-   * @param attrs an existing array where each of the styling expressions
-   * will be inserted into.
-   */
-  populateInitialStylingAttrs(attrs: o.Expression[]): void {
-    // [CLASS_MARKER, 'foo', 'bar', 'baz' ...]
-    if (this._initialClassValues.length) {
-      attrs.push(o.literal(AttributeMarker.Classes));
-      for (let i = 0; i < this._initialClassValues.length; i++) {
-        attrs.push(o.literal(this._initialClassValues[i]));
-      }
-    }
-
-    // [STYLE_MARKER, 'width', '200px', 'height', '100px', ...]
-    if (this._initialStyleValues.length) {
-      attrs.push(o.literal(AttributeMarker.Styles));
-      for (let i = 0; i < this._initialStyleValues.length; i += 2) {
-        attrs.push(
-            o.literal(this._initialStyleValues[i]), o.literal(this._initialStyleValues[i + 1]));
-      }
-    }
-  }
-
-  /**
-   * Builds an instruction with all the expressions and parameters for `elementHostAttrs`.
-   *
-   * The instruction generation code below is used for producing the AOT statement code which is
-   * responsible for registering initial styles (within a directive hostBindings' creation block),
-   * as well as any of the provided attribute values, to the directive host element.
-   */
-  buildHostAttrsInstruction(
-      sourceSpan: ParseSourceSpan|null, attrs: o.Expression[],
-      constantPool: ConstantPool): StylingInstruction|null {
-    if (this._directiveExpr && (attrs.length || this._hasInitialValues)) {
-      return {
-        reference: R3.elementHostAttrs,
-        calls: [{
-          sourceSpan,
-          allocateBindingSlots: 0,
-          params: () => {
-            // params => elementHostAttrs(attrs)
-            this.populateInitialStylingAttrs(attrs);
-            const attrArray = !attrs.some(attr => attr instanceof o.WrappedNodeExpr) ?
-                getConstantLiteralFromArray(constantPool, attrs) :
-                o.literalArr(attrs);
-            return [attrArray];
-          }
-        }]
-      };
-    }
-    return null;
   }
 
   /**
