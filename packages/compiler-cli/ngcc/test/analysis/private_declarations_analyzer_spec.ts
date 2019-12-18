@@ -235,12 +235,12 @@ runInEachFileSystem(() => {
   function setup(jsProgram: TestFile[], dtsProgram: TestFile[]) {
     loadTestFiles(jsProgram);
     loadTestFiles(dtsProgram);
-    const {src: {program}, dts} = makeTestEntryPointBundle(
+    const {src, dts} = makeTestEntryPointBundle(
         'test-package', 'esm2015', false, getRootFiles(jsProgram), getRootFiles(dtsProgram));
-    const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dts);
+    const host = new Esm2015ReflectionHost(new MockLogger(), false, src, dts);
     const referencesRegistry = new NgccReferencesRegistry(host);
     const analyzer = new PrivateDeclarationsAnalyzer(host, referencesRegistry);
-    return {program, referencesRegistry, analyzer};
+    return {program: src.program, referencesRegistry, analyzer};
   }
 
   /**

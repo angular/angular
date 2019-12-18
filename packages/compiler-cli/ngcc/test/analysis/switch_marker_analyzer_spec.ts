@@ -74,7 +74,7 @@ runInEachFileSystem(() => {
         const bundle = makeTestEntryPointBundle(
             'test', 'esm2015', false, [_('/node_modules/test/entrypoint.js')]);
         const program = bundle.src.program;
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src);
         const analyzer = new SwitchMarkerAnalyzer(host, bundle.entryPoint.package);
         const analysis = analyzer.analyzeProgram(program);
 
@@ -105,7 +105,7 @@ runInEachFileSystem(() => {
         const bundle = makeTestEntryPointBundle(
             'test', 'esm2015', false, [_('/node_modules/test/entrypoint.js')]);
         const program = bundle.src.program;
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src);
         const analyzer = new SwitchMarkerAnalyzer(host, bundle.entryPoint.package);
         const analysis = analyzer.analyzeProgram(program);
 

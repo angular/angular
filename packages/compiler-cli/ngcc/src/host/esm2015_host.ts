@@ -83,9 +83,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   protected decoratorCache = new Map<ClassDeclaration, DecoratorInfo>();
 
   constructor(
-      protected logger: Logger, protected isCore: boolean, checker: ts.TypeChecker,
+      protected logger: Logger, protected isCore: boolean, src: BundleProgram,
       dts?: BundleProgram|null) {
-    super(checker);
+    super(src.program.getTypeChecker());
     this.dtsDeclarationMap =
         dts && this.computeDtsDeclarationMap(dts.path, dts.program, dts.package) || null;
   }
