@@ -887,10 +887,11 @@ exports.ExternalModule = ExternalModule;
       describe('getDecoratorsOfDeclaration()', () => {
         it('should find the decorators on a class', () => {
           loadTestFiles([SOME_DIRECTIVE_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+              bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
+              isNamedVariableDeclaration);
           const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
           expect(decorators).toBeDefined();
@@ -906,11 +907,11 @@ exports.ExternalModule = ExternalModule;
 
         it('should find the decorators on a class at the top level', () => {
           loadTestFiles([TOPLEVEL_DECORATORS_FILE]);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(TOPLEVEL_DECORATORS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(TOPLEVEL_DECORATORS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+              bundle.program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective',
+              isNamedVariableDeclaration);
           const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
           expect(decorators).toBeDefined();
@@ -926,40 +927,41 @@ exports.ExternalModule = ExternalModule;
 
         it('should return null if the symbol is not a class', () => {
           loadTestFiles([FOO_FUNCTION_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-          const functionNode =
-              getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
+          const bundle = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+          const functionNode = getDeclaration(
+              bundle.program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
           const decorators = host.getDecoratorsOfDeclaration(functionNode);
           expect(decorators).toBe(null);
         });
 
         it('should return null if there are no decorators', () => {
           loadTestFiles([SIMPLE_CLASS_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+              bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
           const decorators = host.getDecoratorsOfDeclaration(classNode);
           expect(decorators).toBe(null);
         });
 
         it('should ignore `decorators` if it is not an array literal', () => {
           loadTestFiles([INVALID_DECORATORS_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(INVALID_DECORATORS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(INVALID_DECORATORS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, INVALID_DECORATORS_FILE.name, 'NotArrayLiteral', isNamedVariableDeclaration);
+              bundle.program, INVALID_DECORATORS_FILE.name, 'NotArrayLiteral',
+              isNamedVariableDeclaration);
           const decorators = host.getDecoratorsOfDeclaration(classNode);
           expect(decorators).toEqual([]);
         });
 
         it('should ignore decorator elements that are not object literals', () => {
           loadTestFiles([INVALID_DECORATORS_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(INVALID_DECORATORS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(INVALID_DECORATORS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, INVALID_DECORATORS_FILE.name, 'NotObjectLiteral',
+              bundle.program, INVALID_DECORATORS_FILE.name, 'NotObjectLiteral',
               isNamedVariableDeclaration);
           const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
@@ -969,10 +971,11 @@ exports.ExternalModule = ExternalModule;
 
         it('should ignore decorator elements that have no `type` property', () => {
           loadTestFiles([INVALID_DECORATORS_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(INVALID_DECORATORS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(INVALID_DECORATORS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, INVALID_DECORATORS_FILE.name, 'NoTypeProperty', isNamedVariableDeclaration);
+              bundle.program, INVALID_DECORATORS_FILE.name, 'NoTypeProperty',
+              isNamedVariableDeclaration);
           const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
           expect(decorators.length).toBe(1);
@@ -981,10 +984,11 @@ exports.ExternalModule = ExternalModule;
 
         it('should ignore decorator elements whose `type` value is not an identifier', () => {
           loadTestFiles([INVALID_DECORATORS_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(INVALID_DECORATORS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(INVALID_DECORATORS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, INVALID_DECORATORS_FILE.name, 'NotIdentifier', isNamedVariableDeclaration);
+              bundle.program, INVALID_DECORATORS_FILE.name, 'NotIdentifier',
+              isNamedVariableDeclaration);
           const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
           expect(decorators.length).toBe(1);
@@ -994,11 +998,10 @@ exports.ExternalModule = ExternalModule;
         describe('(returned decorators `args`)', () => {
           it('should be an empty array if decorator has no `args` property', () => {
             loadTestFiles([INVALID_DECORATOR_ARGS_FILE]);
-            const {program, host: compilerHost} =
-                makeTestBundleProgram(INVALID_DECORATOR_ARGS_FILE.name);
-            const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+            const bundle = makeTestBundleProgram(INVALID_DECORATOR_ARGS_FILE.name);
+            const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, INVALID_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
+                bundle.program, INVALID_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
                 isNamedVariableDeclaration);
             const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
@@ -1009,11 +1012,10 @@ exports.ExternalModule = ExternalModule;
 
           it('should be an empty array if decorator\'s `args` has no property assignment', () => {
             loadTestFiles([INVALID_DECORATOR_ARGS_FILE]);
-            const {program, host: compilerHost} =
-                makeTestBundleProgram(INVALID_DECORATOR_ARGS_FILE.name);
-            const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+            const bundle = makeTestBundleProgram(INVALID_DECORATOR_ARGS_FILE.name);
+            const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, INVALID_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
+                bundle.program, INVALID_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
                 isNamedVariableDeclaration);
             const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
@@ -1024,11 +1026,10 @@ exports.ExternalModule = ExternalModule;
 
           it('should be an empty array if `args` property value is not an array literal', () => {
             loadTestFiles([INVALID_DECORATOR_ARGS_FILE]);
-            const {program, host: compilerHost} =
-                makeTestBundleProgram(INVALID_DECORATOR_ARGS_FILE.name);
-            const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+            const bundle = makeTestBundleProgram(INVALID_DECORATOR_ARGS_FILE.name);
+            const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, INVALID_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
+                bundle.program, INVALID_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
                 isNamedVariableDeclaration);
             const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
@@ -1042,10 +1043,11 @@ exports.ExternalModule = ExternalModule;
       describe('getMembersOfClass()', () => {
         it('should find decorated members on a class', () => {
           loadTestFiles([SOME_DIRECTIVE_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+              bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
+              isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
 
           const input1 = members.find(member => member.name === 'input1') !;
@@ -1061,11 +1063,11 @@ exports.ExternalModule = ExternalModule;
 
         it('should find decorated members on a class at the top level', () => {
           loadTestFiles([TOPLEVEL_DECORATORS_FILE]);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(TOPLEVEL_DECORATORS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(TOPLEVEL_DECORATORS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+              bundle.program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective',
+              isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
 
           const input1 = members.find(member => member.name === 'input1') !;
@@ -1081,10 +1083,11 @@ exports.ExternalModule = ExternalModule;
 
         it('should find non decorated properties on a class', () => {
           loadTestFiles([SOME_DIRECTIVE_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+              bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
+              isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
 
           const instanceProperty = members.find(member => member.name === 'instanceProperty') !;
@@ -1096,10 +1099,11 @@ exports.ExternalModule = ExternalModule;
 
         it('should find static methods on a class', () => {
           loadTestFiles([SOME_DIRECTIVE_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+              bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
+              isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
 
           const staticMethod = members.find(member => member.name === 'staticMethod') !;
@@ -1110,10 +1114,11 @@ exports.ExternalModule = ExternalModule;
 
         it('should find static properties on a class', () => {
           loadTestFiles([SOME_DIRECTIVE_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+              bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
+              isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
 
           const staticProperty = members.find(member => member.name === 'staticProperty') !;
@@ -1125,10 +1130,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should throw if the symbol is not a class', () => {
           loadTestFiles([FOO_FUNCTION_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-          const functionNode =
-              getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
+          const bundle = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+          const functionNode = getDeclaration(
+              bundle.program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
           expect(() => {
             host.getMembersOfClass(functionNode);
           }).toThrowError(`Attempted to get members of a non-class: "function foo() {}"`);
@@ -1136,10 +1141,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should return an empty array if there are no prop decorators', () => {
           loadTestFiles([SIMPLE_CLASS_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+              bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
 
           expect(members).toEqual([]);
@@ -1148,12 +1153,10 @@ exports.ExternalModule = ExternalModule;
         it('should not process decorated properties in `propDecorators` if it is not an object literal',
            () => {
              loadTestFiles([INVALID_PROP_DECORATORS_FILE]);
-             const {program, host: compilerHost} =
-                 makeTestBundleProgram(INVALID_PROP_DECORATORS_FILE.name);
-             const host =
-                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+             const bundle = makeTestBundleProgram(INVALID_PROP_DECORATORS_FILE.name);
+             const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
              const classNode = getDeclaration(
-                 program, INVALID_PROP_DECORATORS_FILE.name, 'NotObjectLiteral',
+                 bundle.program, INVALID_PROP_DECORATORS_FILE.name, 'NotObjectLiteral',
                  isNamedVariableDeclaration);
              const members = host.getMembersOfClass(classNode);
 
@@ -1162,11 +1165,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should ignore prop decorator elements that are not object literals', () => {
           loadTestFiles([INVALID_PROP_DECORATORS_FILE]);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(INVALID_PROP_DECORATORS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(INVALID_PROP_DECORATORS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, INVALID_PROP_DECORATORS_FILE.name, 'NotObjectLiteralProp',
+              bundle.program, INVALID_PROP_DECORATORS_FILE.name, 'NotObjectLiteralProp',
               isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
           const prop = members.find(m => m.name === 'prop') !;
@@ -1178,11 +1180,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should ignore prop decorator elements that have no `type` property', () => {
           loadTestFiles([INVALID_PROP_DECORATORS_FILE]);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(INVALID_PROP_DECORATORS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(INVALID_PROP_DECORATORS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, INVALID_PROP_DECORATORS_FILE.name, 'NoTypeProperty',
+              bundle.program, INVALID_PROP_DECORATORS_FILE.name, 'NoTypeProperty',
               isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
           const prop = members.find(m => m.name === 'prop') !;
@@ -1194,11 +1195,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should ignore prop decorator elements whose `type` value is not an identifier', () => {
           loadTestFiles([INVALID_PROP_DECORATORS_FILE]);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(INVALID_PROP_DECORATORS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(INVALID_PROP_DECORATORS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, INVALID_PROP_DECORATORS_FILE.name, 'NotIdentifier',
+              bundle.program, INVALID_PROP_DECORATORS_FILE.name, 'NotIdentifier',
               isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
           const prop = members.find(m => m.name === 'prop') !;
@@ -1210,11 +1210,12 @@ exports.ExternalModule = ExternalModule;
 
         it('should have import information on decorators', () => {
           loadTestFiles([SOME_DIRECTIVE_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
 
           const classNode = getDeclaration(
-              program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+              bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
+              isNamedVariableDeclaration);
           const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
           expect(decorators.length).toEqual(1);
@@ -1224,11 +1225,10 @@ exports.ExternalModule = ExternalModule;
         describe('(returned prop decorators `args`)', () => {
           it('should be an empty array if prop decorator has no `args` property', () => {
             loadTestFiles([INVALID_PROP_DECORATOR_ARGS_FILE]);
-            const {program, host: compilerHost} =
-                makeTestBundleProgram(INVALID_PROP_DECORATOR_ARGS_FILE.name);
-            const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+            const bundle = makeTestBundleProgram(INVALID_PROP_DECORATOR_ARGS_FILE.name);
+            const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
+                bundle.program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
                 isNamedVariableDeclaration);
             const members = host.getMembersOfClass(classNode);
             const prop = members.find(m => m.name === 'prop') !;
@@ -1242,12 +1242,10 @@ exports.ExternalModule = ExternalModule;
           it('should be an empty array if prop decorator\'s `args` has no property assignment',
              () => {
                loadTestFiles([INVALID_PROP_DECORATOR_ARGS_FILE]);
-               const {program, host: compilerHost} =
-                   makeTestBundleProgram(INVALID_PROP_DECORATOR_ARGS_FILE.name);
-               const host =
-                   new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+               const bundle = makeTestBundleProgram(INVALID_PROP_DECORATOR_ARGS_FILE.name);
+               const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
                const classNode = getDeclaration(
-                   program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
+                   bundle.program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
                    isNamedVariableDeclaration);
                const members = host.getMembersOfClass(classNode);
                const prop = members.find(m => m.name === 'prop') !;
@@ -1260,11 +1258,10 @@ exports.ExternalModule = ExternalModule;
 
           it('should be an empty array if `args` property value is not an array literal', () => {
             loadTestFiles([INVALID_PROP_DECORATOR_ARGS_FILE]);
-            const {program, host: compilerHost} =
-                makeTestBundleProgram(INVALID_PROP_DECORATOR_ARGS_FILE.name);
-            const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+            const bundle = makeTestBundleProgram(INVALID_PROP_DECORATOR_ARGS_FILE.name);
+            const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
+                bundle.program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
                 isNamedVariableDeclaration);
             const members = host.getMembersOfClass(classNode);
             const prop = members.find(m => m.name === 'prop') !;
@@ -1280,10 +1277,11 @@ exports.ExternalModule = ExternalModule;
       describe('getConstructorParameters', () => {
         it('should find the decorated constructor parameters', () => {
           loadTestFiles([SOME_DIRECTIVE_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+              bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
+              isNamedVariableDeclaration);
           const parameters = host.getConstructorParameters(classNode);
 
           expect(parameters).toBeDefined();
@@ -1299,11 +1297,11 @@ exports.ExternalModule = ExternalModule;
 
         it('should find the decorated constructor parameters at the top level', () => {
           loadTestFiles([TOPLEVEL_DECORATORS_FILE]);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(TOPLEVEL_DECORATORS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(TOPLEVEL_DECORATORS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+              bundle.program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective',
+              isNamedVariableDeclaration);
           const parameters = host.getConstructorParameters(classNode);
 
           expect(parameters).toBeDefined();
@@ -1319,11 +1317,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should accept `ctorParameters` as an array', () => {
           loadTestFiles([CTOR_DECORATORS_ARRAY_FILE]);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(CTOR_DECORATORS_ARRAY_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(CTOR_DECORATORS_ARRAY_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, CTOR_DECORATORS_ARRAY_FILE.name, 'CtorDecoratedAsArray',
+              bundle.program, CTOR_DECORATORS_ARRAY_FILE.name, 'CtorDecoratedAsArray',
               isNamedVariableDeclaration);
           const parameters = host.getConstructorParameters(classNode) !;
 
@@ -1334,10 +1331,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should throw if the symbol is not a class', () => {
           loadTestFiles([FOO_FUNCTION_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-          const functionNode =
-              getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
+          const bundle = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+          const functionNode = getDeclaration(
+              bundle.program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
           expect(() => { host.getConstructorParameters(functionNode); })
               .toThrowError(
                   'Attempted to get constructor parameters of a non-class: "function foo() {}"');
@@ -1348,10 +1345,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should return an array even if there are no decorators', () => {
           loadTestFiles([SIMPLE_CLASS_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'NoDecoratorConstructorClass',
+              bundle.program, SIMPLE_CLASS_FILE.name, 'NoDecoratorConstructorClass',
               isNamedVariableDeclaration);
           const parameters = host.getConstructorParameters(classNode);
 
@@ -1363,11 +1360,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should return an empty array if there are no constructor parameters', () => {
           loadTestFiles([INVALID_CTOR_DECORATORS_FILE]);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, INVALID_CTOR_DECORATORS_FILE.name, 'NoParameters',
+              bundle.program, INVALID_CTOR_DECORATORS_FILE.name, 'NoParameters',
               isNamedVariableDeclaration);
           const parameters = host.getConstructorParameters(classNode);
 
@@ -1379,11 +1375,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should ignore `ctorParameters` if it does not return an array literal', () => {
           loadTestFiles([INVALID_CTOR_DECORATORS_FILE]);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, INVALID_CTOR_DECORATORS_FILE.name, 'NotArrayLiteral',
+              bundle.program, INVALID_CTOR_DECORATORS_FILE.name, 'NotArrayLiteral',
               isNamedVariableDeclaration);
           const parameters = host.getConstructorParameters(classNode);
 
@@ -1397,11 +1392,10 @@ exports.ExternalModule = ExternalModule;
         describe('(returned parameters `decorators`)', () => {
           it('should ignore param decorator elements that are not object literals', () => {
             loadTestFiles([INVALID_CTOR_DECORATORS_FILE]);
-            const {program, host: compilerHost} =
-                makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
-            const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+            const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
+            const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, INVALID_CTOR_DECORATORS_FILE.name, 'NotObjectLiteral',
+                bundle.program, INVALID_CTOR_DECORATORS_FILE.name, 'NotObjectLiteral',
                 isNamedVariableDeclaration);
             const parameters = host.getConstructorParameters(classNode);
 
@@ -1418,11 +1412,10 @@ exports.ExternalModule = ExternalModule;
 
           it('should ignore param decorator elements that have no `type` property', () => {
             loadTestFiles([INVALID_CTOR_DECORATORS_FILE]);
-            const {program, host: compilerHost} =
-                makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
-            const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+            const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
+            const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, INVALID_CTOR_DECORATORS_FILE.name, 'NoTypeProperty',
+                bundle.program, INVALID_CTOR_DECORATORS_FILE.name, 'NoTypeProperty',
                 isNamedVariableDeclaration);
             const parameters = host.getConstructorParameters(classNode);
             const decorators = parameters ![0].decorators !;
@@ -1434,12 +1427,10 @@ exports.ExternalModule = ExternalModule;
           it('should ignore param decorator elements whose `type` value is not an identifier',
              () => {
                loadTestFiles([INVALID_CTOR_DECORATORS_FILE]);
-               const {program, host: compilerHost} =
-                   makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
-               const host =
-                   new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+               const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATORS_FILE.name);
+               const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
                const classNode = getDeclaration(
-                   program, INVALID_CTOR_DECORATORS_FILE.name, 'NotIdentifier',
+                   bundle.program, INVALID_CTOR_DECORATORS_FILE.name, 'NotIdentifier',
                    isNamedVariableDeclaration);
                const parameters = host.getConstructorParameters(classNode);
                const decorators = parameters ![0].decorators !;
@@ -1450,10 +1441,11 @@ exports.ExternalModule = ExternalModule;
 
           it('should have import information on decorators', () => {
             loadTestFiles([SOME_DIRECTIVE_FILE]);
-            const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-            const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+            const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+            const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+                bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
+                isNamedVariableDeclaration);
 
             const parameters = host.getConstructorParameters(classNode);
             const decorators = parameters ![2].decorators !;
@@ -1467,11 +1459,10 @@ exports.ExternalModule = ExternalModule;
         describe('(returned parameters `decorators.args`)', () => {
           it('should be an empty array if param decorator has no `args` property', () => {
             loadTestFiles([INVALID_CTOR_DECORATOR_ARGS_FILE]);
-            const {program, host: compilerHost} =
-                makeTestBundleProgram(INVALID_CTOR_DECORATOR_ARGS_FILE.name);
-            const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+            const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATOR_ARGS_FILE.name);
+            const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
+                bundle.program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
                 isNamedVariableDeclaration);
             const parameters = host.getConstructorParameters(classNode);
             expect(parameters !.length).toBe(1);
@@ -1485,12 +1476,10 @@ exports.ExternalModule = ExternalModule;
           it('should be an empty array if param decorator\'s `args` has no property assignment',
              () => {
                loadTestFiles([INVALID_CTOR_DECORATOR_ARGS_FILE]);
-               const {program, host: compilerHost} =
-                   makeTestBundleProgram(INVALID_CTOR_DECORATOR_ARGS_FILE.name);
-               const host =
-                   new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+               const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATOR_ARGS_FILE.name);
+               const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
                const classNode = getDeclaration(
-                   program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
+                   bundle.program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
                    isNamedVariableDeclaration);
                const parameters = host.getConstructorParameters(classNode);
                const decorators = parameters ![0].decorators !;
@@ -1502,11 +1491,10 @@ exports.ExternalModule = ExternalModule;
 
           it('should be an empty array if `args` property value is not an array literal', () => {
             loadTestFiles([INVALID_CTOR_DECORATOR_ARGS_FILE]);
-            const {program, host: compilerHost} =
-                makeTestBundleProgram(INVALID_CTOR_DECORATOR_ARGS_FILE.name);
-            const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+            const bundle = makeTestBundleProgram(INVALID_CTOR_DECORATOR_ARGS_FILE.name);
+            const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
             const classNode = getDeclaration(
-                program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
+                bundle.program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
                 isNamedVariableDeclaration);
             const parameters = host.getConstructorParameters(classNode);
             const decorators = parameters ![0].decorators !;
@@ -1522,12 +1510,11 @@ exports.ExternalModule = ExternalModule;
         it('should return an object describing the function declaration passed as an argument',
            () => {
              loadTestFiles([FUNCTION_BODY_FILE]);
-             const {program, host: compilerHost} = makeTestBundleProgram(FUNCTION_BODY_FILE.name);
-             const host =
-                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+             const bundle = makeTestBundleProgram(FUNCTION_BODY_FILE.name);
+             const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
 
              const fooNode = getDeclaration(
-                 program, FUNCTION_BODY_FILE.name, 'foo', isNamedFunctionDeclaration) !;
+                 bundle.program, FUNCTION_BODY_FILE.name, 'foo', isNamedFunctionDeclaration) !;
              const fooDef = host.getDefinitionOfFunction(fooNode) !;
              expect(fooDef.node).toBe(fooNode);
              expect(fooDef.body !.length).toEqual(1);
@@ -1537,7 +1524,7 @@ exports.ExternalModule = ExternalModule;
              expect(fooDef.parameters[0].initializer).toBe(null);
 
              const barNode = getDeclaration(
-                 program, FUNCTION_BODY_FILE.name, 'bar', isNamedFunctionDeclaration) !;
+                 bundle.program, FUNCTION_BODY_FILE.name, 'bar', isNamedFunctionDeclaration) !;
              const barDef = host.getDefinitionOfFunction(barNode) !;
              expect(barDef.node).toBe(barNode);
              expect(barDef.body !.length).toEqual(1);
@@ -1550,7 +1537,7 @@ exports.ExternalModule = ExternalModule;
              expect(barDef.parameters[1].initializer !.getText()).toEqual('42');
 
              const bazNode = getDeclaration(
-                 program, FUNCTION_BODY_FILE.name, 'baz', isNamedFunctionDeclaration) !;
+                 bundle.program, FUNCTION_BODY_FILE.name, 'baz', isNamedFunctionDeclaration) !;
              const bazDef = host.getDefinitionOfFunction(bazNode) !;
              expect(bazDef.node).toBe(bazNode);
              expect(bazDef.body !.length).toEqual(3);
@@ -1559,7 +1546,7 @@ exports.ExternalModule = ExternalModule;
              expect(bazDef.parameters[0].initializer).toBe(null);
 
              const quxNode = getDeclaration(
-                 program, FUNCTION_BODY_FILE.name, 'qux', isNamedFunctionDeclaration) !;
+                 bundle.program, FUNCTION_BODY_FILE.name, 'qux', isNamedFunctionDeclaration) !;
              const quxDef = host.getDefinitionOfFunction(quxNode) !;
              expect(quxDef.node).toBe(quxNode);
              expect(quxDef.body !.length).toEqual(2);
@@ -1572,10 +1559,10 @@ exports.ExternalModule = ExternalModule;
       describe('getImportOfIdentifier', () => {
         it('should find the import of an identifier', () => {
           loadTestFiles(IMPORTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(_('/index.js'));
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const variableNode =
-              getDeclaration(program, _('/file_b.js'), 'b', isNamedVariableDeclaration);
+              getDeclaration(bundle.program, _('/file_b.js'), 'b', isNamedVariableDeclaration);
           const identifier = (variableNode.initializer &&
                               ts.isPropertyAccessExpression(variableNode.initializer)) ?
               variableNode.initializer.name :
@@ -1599,10 +1586,10 @@ exports.ExternalModule = ExternalModule;
               contents: `export declare class MyClass {}`,
             }
           ]);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.d.ts'));
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(_('/index.d.ts'));
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const variableNode =
-              getDeclaration(program, _('/index.d.ts'), 'a', isNamedVariableDeclaration);
+              getDeclaration(bundle.program, _('/index.d.ts'), 'a', isNamedVariableDeclaration);
           const identifier =
               ((variableNode.type as ts.TypeReferenceNode).typeName as ts.Identifier);
 
@@ -1612,10 +1599,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should return null if the identifier was not imported', () => {
           loadTestFiles(IMPORTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(_('/index.js'));
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const variableNode =
-              getDeclaration(program, _('/file_b.js'), 'd', isNamedVariableDeclaration);
+              getDeclaration(bundle.program, _('/file_b.js'), 'd', isNamedVariableDeclaration);
           const importOfIdent =
               host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
 
@@ -1624,10 +1611,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should handle factory functions not wrapped in parentheses', () => {
           loadTestFiles(IMPORTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(_('/index.js'));
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const variableNode =
-              getDeclaration(program, _('/file_c.js'), 'c', isNamedVariableDeclaration);
+              getDeclaration(bundle.program, _('/file_c.js'), 'c', isNamedVariableDeclaration);
           const identifier = (variableNode.initializer &&
                               ts.isPropertyAccessExpression(variableNode.initializer)) ?
               variableNode.initializer.name :
@@ -1642,10 +1629,11 @@ exports.ExternalModule = ExternalModule;
       describe('getDeclarationOfIdentifier', () => {
         it('should return the declaration of a locally defined identifier', () => {
           loadTestFiles([SOME_DIRECTIVE_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+              bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
+              isNamedVariableDeclaration);
           const ctrDecorators = host.getConstructorParameters(classNode) !;
           const identifierOfViewContainerRef = (ctrDecorators[0].typeValueReference !as{
                                                  local: true,
@@ -1654,7 +1642,8 @@ exports.ExternalModule = ExternalModule;
                                                }).expression;
 
           const expectedDeclarationNode = getDeclaration(
-              program, SOME_DIRECTIVE_FILE.name, 'ViewContainerRef', isNamedVariableDeclaration);
+              bundle.program, SOME_DIRECTIVE_FILE.name, 'ViewContainerRef',
+              isNamedVariableDeclaration);
           const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfViewContainerRef);
           expect(actualDeclaration).not.toBe(null);
           expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
@@ -1664,10 +1653,11 @@ exports.ExternalModule = ExternalModule;
         it('should return the source-file of an import namespace', () => {
           loadFakeCore(getFileSystem());
           loadTestFiles([SOME_DIRECTIVE_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+              bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
+              isNamedVariableDeclaration);
           const classDecorators = host.getDecoratorsOfDeclaration(classNode) !;
           const identifierOfDirective = (((classDecorators[0].node as ts.ObjectLiteralExpression)
                                               .properties[0] as ts.PropertyAssignment)
@@ -1675,7 +1665,7 @@ exports.ExternalModule = ExternalModule;
                                             .expression as ts.Identifier;
 
           const expectedDeclarationNode =
-              getSourceFileOrError(program, _('/node_modules/@angular/core/index.d.ts'));
+              getSourceFileOrError(bundle.program, _('/node_modules/@angular/core/index.d.ts'));
           const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfDirective);
           expect(actualDeclaration).not.toBe(null);
           expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
@@ -1699,10 +1689,10 @@ exports.ExternalModule = ExternalModule;
             }
           ]);
 
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(_('/index.js'));
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const variableNode =
-              getDeclaration(program, _('/index.js'), 'b', isNamedVariableDeclaration);
+              getDeclaration(bundle.program, _('/index.js'), 'b', isNamedVariableDeclaration);
           const identifier = variableNode.name as ts.Identifier;
 
           const importOfIdent = host.getDeclarationOfIdentifier(identifier !) !;
@@ -1725,10 +1715,10 @@ exports.ExternalModule = ExternalModule;
             },
           ]);
 
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(_('/index.js'));
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const variableNode =
-              getDeclaration(program, _('/index.js'), 'b', isNamedVariableDeclaration);
+              getDeclaration(bundle.program, _('/index.js'), 'b', isNamedVariableDeclaration);
           const identifier = (variableNode.initializer !as ts.PropertyAccessExpression).name;
 
           const importOfIdent = host.getDeclarationOfIdentifier(identifier !) !;
@@ -1740,9 +1730,9 @@ exports.ExternalModule = ExternalModule;
         it('should return a map of all the exports from a given module', () => {
           loadFakeCore(getFileSystem());
           loadTestFiles(EXPORTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-          const file = getSourceFileOrError(program, _('/b_module.js'));
+          const bundle = makeTestBundleProgram(_('/index.js'));
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+          const file = getSourceFileOrError(bundle.program, _('/b_module.js'));
           const exportDeclarations = host.getExportsOfModule(file);
           expect(exportDeclarations).not.toBe(null);
           expect(Array.from(exportDeclarations !.entries())
@@ -1766,9 +1756,9 @@ exports.ExternalModule = ExternalModule;
         it('should handle wildcard re-exports of other modules', () => {
           loadFakeCore(getFileSystem());
           loadTestFiles(EXPORTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.js'));
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-          const file = getSourceFileOrError(program, _('/wildcard_reexports.js'));
+          const bundle = makeTestBundleProgram(_('/index.js'));
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+          const file = getSourceFileOrError(bundle.program, _('/wildcard_reexports.js'));
           const exportDeclarations = host.getExportsOfModule(file);
           expect(exportDeclarations).not.toBe(null);
           expect(Array.from(exportDeclarations !.entries())
@@ -1793,9 +1783,9 @@ exports.ExternalModule = ExternalModule;
 
         it('should handle inline exports', () => {
           loadTestFiles([INLINE_EXPORT_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/inline_export.js'));
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-          const file = getSourceFileOrError(program, _('/inline_export.js'));
+          const bundle = makeTestBundleProgram(_('/inline_export.js'));
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+          const file = getSourceFileOrError(bundle.program, _('/inline_export.js'));
           const exportDeclarations = host.getExportsOfModule(file);
           expect(exportDeclarations).not.toBeNull();
           const decl = exportDeclarations !.get('directives') as InlineDeclaration;
@@ -1808,11 +1798,10 @@ exports.ExternalModule = ExternalModule;
       describe('getClassSymbol()', () => {
         it('should return the class symbol for an ES2015 class', () => {
           loadTestFiles([SIMPLE_ES2015_CLASS_FILE]);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(SIMPLE_ES2015_CLASS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SIMPLE_ES2015_CLASS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const node = getDeclaration(
-              program, SIMPLE_ES2015_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
+              bundle.program, SIMPLE_ES2015_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
           const classSymbol = host.getClassSymbol(node);
 
           expect(classSymbol).toBeDefined();
@@ -1822,10 +1811,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should return the class symbol for an ES5 class (outer variable declaration)', () => {
           loadTestFiles([SIMPLE_CLASS_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const outerNode = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+              bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
           const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
           const classSymbol = host.getClassSymbol(outerNode);
 
@@ -1836,10 +1825,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should return the class symbol for an ES5 class (inner function declaration)', () => {
           loadTestFiles([SIMPLE_CLASS_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const outerNode = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+              bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
           const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
           const classSymbol = host.getClassSymbol(innerNode);
 
@@ -1851,11 +1840,10 @@ exports.ExternalModule = ExternalModule;
         it('should return the same class symbol (of the outer declaration) for outer and inner declarations',
            () => {
              loadTestFiles([SIMPLE_CLASS_FILE]);
-             const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-             const host =
-                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+             const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+             const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
              const outerNode = getDeclaration(
-                 program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+                 bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
              const innerNode =
                  getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
 
@@ -1868,11 +1856,11 @@ exports.ExternalModule = ExternalModule;
         it('should return the class symbol for an ES5 class whose IIFE is not wrapped in parens',
            () => {
              loadTestFiles([SIMPLE_CLASS_FILE]);
-             const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-             const host =
-                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+             const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+             const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
              const outerNode = getDeclaration(
-                 program, SIMPLE_CLASS_FILE.name, 'NoParensClass', isNamedVariableDeclaration);
+                 bundle.program, SIMPLE_CLASS_FILE.name, 'NoParensClass',
+                 isNamedVariableDeclaration);
              const innerNode =
                  getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
              const classSymbol = host.getClassSymbol(outerNode);
@@ -1885,11 +1873,11 @@ exports.ExternalModule = ExternalModule;
         it('should return the class symbol for an ES5 class whose IIFE is not wrapped with inner parens',
            () => {
              loadTestFiles([SIMPLE_CLASS_FILE]);
-             const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-             const host =
-                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+             const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+             const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
              const outerNode = getDeclaration(
-                 program, SIMPLE_CLASS_FILE.name, 'InnerParensClass', isNamedVariableDeclaration);
+                 bundle.program, SIMPLE_CLASS_FILE.name, 'InnerParensClass',
+                 isNamedVariableDeclaration);
              const innerNode =
                  getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
              const classSymbol = host.getClassSymbol(outerNode);
@@ -1901,10 +1889,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should return undefined if node is not an ES5 class', () => {
           loadTestFiles([FOO_FUNCTION_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-          const node =
-              getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
+          const bundle = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+          const node = getDeclaration(
+              bundle.program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
           const classSymbol = host.getClassSymbol(node);
 
           expect(classSymbol).toBeUndefined();
@@ -1917,11 +1905,10 @@ exports.ExternalModule = ExternalModule;
                contents: `var MyClass = null;`,
              };
              loadTestFiles([testFile]);
-             const {program, host: compilerHost} = makeTestBundleProgram(testFile.name);
-             const host =
-                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-             const node =
-                 getDeclaration(program, testFile.name, 'MyClass', isNamedVariableDeclaration);
+             const bundle = makeTestBundleProgram(testFile.name);
+             const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+             const node = getDeclaration(
+                 bundle.program, testFile.name, 'MyClass', isNamedVariableDeclaration);
              const classSymbol = host.getClassSymbol(node);
 
              expect(classSymbol).toBeUndefined();
@@ -1931,33 +1918,30 @@ exports.ExternalModule = ExternalModule;
       describe('isClass()', () => {
         it('should return true if a given node is a TS class declaration', () => {
           loadTestFiles([SIMPLE_ES2015_CLASS_FILE]);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(SIMPLE_ES2015_CLASS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SIMPLE_ES2015_CLASS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const node = getDeclaration(
-              program, SIMPLE_ES2015_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
+              bundle.program, SIMPLE_ES2015_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
           expect(host.isClass(node)).toBe(true);
         });
 
         it('should return true if a given node is the outer variable declaration of a class',
            () => {
              loadTestFiles([SIMPLE_CLASS_FILE]);
-             const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-             const host =
-                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+             const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+             const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
              const node = getDeclaration(
-                 program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
+                 bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
              expect(host.isClass(node)).toBe(true);
            });
 
         it('should return true if a given node is the inner variable declaration of a class',
            () => {
              loadTestFiles([SIMPLE_CLASS_FILE]);
-             const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-             const host =
-                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+             const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+             const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
              const outerNode = getDeclaration(
-                 program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
+                 bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
              const innerNode =
                  getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
              expect(host.isClass(innerNode)).toBe(true);
@@ -1965,10 +1949,10 @@ exports.ExternalModule = ExternalModule;
 
         it('should return false if a given node is a function declaration', () => {
           loadTestFiles([FOO_FUNCTION_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-          const node =
-              getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
+          const bundle = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+          const node = getDeclaration(
+              bundle.program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
           expect(host.isClass(node)).toBe(false);
         });
       });
@@ -1981,10 +1965,10 @@ exports.ExternalModule = ExternalModule;
           };
 
           loadTestFiles([file]);
-          const {program, host: compilerHost} = makeTestBundleProgram(file.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(file.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode =
-              getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
+              getDeclaration(bundle.program, file.name, 'TestClass', isNamedVariableDeclaration);
           return host.hasBaseClass(classNode);
         }
 
@@ -2028,10 +2012,10 @@ exports.ExternalModule = ExternalModule;
           };
 
           loadTestFiles([file]);
-          const {program, host: compilerHost} = makeTestBundleProgram(file.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(file.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode =
-              getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
+              getDeclaration(bundle.program, file.name, 'TestClass', isNamedVariableDeclaration);
           const expression = host.getBaseClassExpression(classNode);
           if (expression !== null && !ts.isIdentifier(expression)) {
             throw new Error(
@@ -2100,10 +2084,10 @@ exports.ExternalModule = ExternalModule;
           };
 
           loadTestFiles([file]);
-          const {program, host: compilerHost} = makeTestBundleProgram(file.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(file.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
           const classNode =
-              getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
+              getDeclaration(bundle.program, file.name, 'TestClass', isNamedVariableDeclaration);
           const expression = host.getBaseClassExpression(classNode) !;
           expect(expression.getText()).toBe('foo()');
         });
@@ -2112,11 +2096,10 @@ exports.ExternalModule = ExternalModule;
       describe('findClassSymbols()', () => {
         it('should return an array of all classes in the given source file', () => {
           loadTestFiles(DECORATED_FILES);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(getRootFiles(DECORATED_FILES)[0]);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-          const primaryFile = getSourceFileOrError(program, DECORATED_FILES[0].name);
-          const secondaryFile = getSourceFileOrError(program, DECORATED_FILES[1].name);
+          const bundle = makeTestBundleProgram(getRootFiles(DECORATED_FILES)[0]);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+          const primaryFile = getSourceFileOrError(bundle.program, DECORATED_FILES[0].name);
+          const secondaryFile = getSourceFileOrError(bundle.program, DECORATED_FILES[1].name);
 
           const classSymbolsPrimary = host.findClassSymbols(primaryFile);
           expect(classSymbolsPrimary.length).toEqual(2);
@@ -2131,11 +2114,10 @@ exports.ExternalModule = ExternalModule;
       describe('getDecoratorsOfSymbol()', () => {
         it('should return decorators of class symbol', () => {
           loadTestFiles(DECORATED_FILES);
-          const {program, host: compilerHost} =
-              makeTestBundleProgram(getRootFiles(DECORATED_FILES)[0]);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-          const primaryFile = getSourceFileOrError(program, DECORATED_FILES[0].name);
-          const secondaryFile = getSourceFileOrError(program, DECORATED_FILES[1].name);
+          const bundle = makeTestBundleProgram(getRootFiles(DECORATED_FILES)[0]);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+          const primaryFile = getSourceFileOrError(bundle.program, DECORATED_FILES[0].name);
+          const secondaryFile = getSourceFileOrError(bundle.program, DECORATED_FILES[1].name);
 
           const classSymbolsPrimary = host.findClassSymbols(primaryFile);
           const classDecoratorsPrimary =
@@ -2157,12 +2139,11 @@ exports.ExternalModule = ExternalModule;
            () => {
              loadTestFiles(TYPINGS_SRC_FILES);
              loadTestFiles(TYPINGS_DTS_FILES);
-             const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+             const bundle = makeTestBundleProgram(_('/src/index.js'));
              const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
-             const class1 =
-                 getDeclaration(program, _('/src/class1.js'), 'Class1', ts.isVariableDeclaration);
-             const host =
-                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dts);
+             const class1 = getDeclaration(
+                 bundle.program, _('/src/class1.js'), 'Class1', ts.isVariableDeclaration);
+             const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
 
              const dtsDeclaration = host.getDtsDeclaration(class1);
              expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/class1.d.ts'));
@@ -2171,12 +2152,11 @@ exports.ExternalModule = ExternalModule;
         it('should find the dts declaration for exported functions', () => {
           loadTestFiles(TYPINGS_SRC_FILES);
           loadTestFiles(TYPINGS_DTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+          const bundle = makeTestBundleProgram(_('/src/index.js'));
           const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
           const mooFn =
-              getDeclaration(program, _('/src/func1.js'), 'mooFn', ts.isFunctionDeclaration);
-          const host =
-              new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dts);
+              getDeclaration(bundle.program, _('/src/func1.js'), 'mooFn', ts.isFunctionDeclaration);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
           const dtsDeclaration = host.getDtsDeclaration(mooFn);
           expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/func1.d.ts'));
         });
@@ -2184,12 +2164,11 @@ exports.ExternalModule = ExternalModule;
         it('should return null if there is no matching class in the matching dts file', () => {
           loadTestFiles(TYPINGS_SRC_FILES);
           loadTestFiles(TYPINGS_DTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+          const bundle = makeTestBundleProgram(_('/src/index.js'));
           const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
           const missingClass = getDeclaration(
-              program, _('/src/class1.js'), 'MissingClass1', ts.isVariableDeclaration);
-          const host =
-              new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dts);
+              bundle.program, _('/src/class1.js'), 'MissingClass1', ts.isVariableDeclaration);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
 
           expect(host.getDtsDeclaration(missingClass)).toBe(null);
         });
@@ -2197,12 +2176,12 @@ exports.ExternalModule = ExternalModule;
         it('should return null if there is no matching dts file', () => {
           loadTestFiles(TYPINGS_SRC_FILES);
           loadTestFiles(TYPINGS_DTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+          const bundle = makeTestBundleProgram(_('/src/index.js'));
           const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
           const missingClass = getDeclaration(
-              program, _('/src/missing-class.js'), 'MissingClass2', ts.isVariableDeclaration);
-          const host =
-              new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dts);
+              bundle.program, _('/src/missing-class.js'), 'MissingClass2',
+              ts.isVariableDeclaration);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
 
           expect(host.getDtsDeclaration(missingClass)).toBe(null);
         });
@@ -2211,12 +2190,11 @@ exports.ExternalModule = ExternalModule;
            () => {
              loadTestFiles(TYPINGS_SRC_FILES);
              loadTestFiles(TYPINGS_DTS_FILES);
-             const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+             const bundle = makeTestBundleProgram(_('/src/index.js'));
              const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
              const class1 = getDeclaration(
-                 program, _('/src/flat-file.js'), 'Class1', ts.isVariableDeclaration);
-             const host =
-                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dts);
+                 bundle.program, _('/src/flat-file.js'), 'Class1', ts.isVariableDeclaration);
+             const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
 
              const dtsDeclaration = host.getDtsDeclaration(class1);
              expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/class1.d.ts'));
@@ -2225,12 +2203,11 @@ exports.ExternalModule = ExternalModule;
         it('should find aliased exports', () => {
           loadTestFiles(TYPINGS_SRC_FILES);
           loadTestFiles(TYPINGS_DTS_FILES);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+          const bundle = makeTestBundleProgram(_('/src/index.js'));
           const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
-          const class3 =
-              getDeclaration(program, _('/src/flat-file.js'), 'Class3', ts.isVariableDeclaration);
-          const host =
-              new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dts);
+          const class3 = getDeclaration(
+              bundle.program, _('/src/flat-file.js'), 'Class3', ts.isVariableDeclaration);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
 
           const dtsDeclaration = host.getDtsDeclaration(class3);
           expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/class3.d.ts'));
@@ -2240,12 +2217,11 @@ exports.ExternalModule = ExternalModule;
            () => {
              loadTestFiles(TYPINGS_SRC_FILES);
              loadTestFiles(TYPINGS_DTS_FILES);
-             const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+             const bundle = makeTestBundleProgram(_('/src/index.js'));
              const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
              const internalClass = getDeclaration(
-                 program, _('/src/internal.js'), 'InternalClass', ts.isVariableDeclaration);
-             const host =
-                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dts);
+                 bundle.program, _('/src/internal.js'), 'InternalClass', ts.isVariableDeclaration);
+             const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
 
              const dtsDeclaration = host.getDtsDeclaration(internalClass);
              expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/internal.d.ts'));
@@ -2255,14 +2231,13 @@ exports.ExternalModule = ExternalModule;
            () => {
              loadTestFiles(TYPINGS_SRC_FILES);
              loadTestFiles(TYPINGS_DTS_FILES);
-             const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
+             const bundle = makeTestBundleProgram(_('/src/index.js'));
              const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
-             const class2 =
-                 getDeclaration(program, _('/src/class2.js'), 'Class2', ts.isVariableDeclaration);
-             const internalClass2 =
-                 getDeclaration(program, _('/src/internal.js'), 'Class2', ts.isVariableDeclaration);
-             const host =
-                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dts);
+             const class2 = getDeclaration(
+                 bundle.program, _('/src/class2.js'), 'Class2', ts.isVariableDeclaration);
+             const internalClass2 = getDeclaration(
+                 bundle.program, _('/src/internal.js'), 'Class2', ts.isVariableDeclaration);
+             const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
 
              const class2DtsDeclaration = host.getDtsDeclaration(class2);
              expect(class2DtsDeclaration !.getSourceFile().fileName)
@@ -2277,23 +2252,23 @@ exports.ExternalModule = ExternalModule;
       describe('getInternalNameOfClass()', () => {
         it('should return the name of the inner class declaration', () => {
           loadTestFiles([SIMPLE_CLASS_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
 
           const emptyClass = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+              bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
           expect(host.getInternalNameOfClass(emptyClass).text).toEqual('EmptyClass');
 
           const class1 = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'OuterClass1', isNamedVariableDeclaration);
+              bundle.program, SIMPLE_CLASS_FILE.name, 'OuterClass1', isNamedVariableDeclaration);
           expect(host.getInternalNameOfClass(class1).text).toEqual('InnerClass1');
 
           const class2 = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'OuterClass2', isNamedVariableDeclaration);
+              bundle.program, SIMPLE_CLASS_FILE.name, 'OuterClass2', isNamedVariableDeclaration);
           expect(host.getInternalNameOfClass(class2).text).toEqual('InnerClass2');
 
           const childClass = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'ChildClass', isNamedVariableDeclaration);
+              bundle.program, SIMPLE_CLASS_FILE.name, 'ChildClass', isNamedVariableDeclaration);
           expect(host.getInternalNameOfClass(childClass).text).toEqual('InnerChildClass');
         });
       });
@@ -2301,23 +2276,23 @@ exports.ExternalModule = ExternalModule;
       describe('getAdjacentNameOfClass()', () => {
         it('should return the name of the inner class declaration', () => {
           loadTestFiles([SIMPLE_CLASS_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
 
           const emptyClass = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+              bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
           expect(host.getAdjacentNameOfClass(emptyClass).text).toEqual('EmptyClass');
 
           const class1 = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'OuterClass1', isNamedVariableDeclaration);
+              bundle.program, SIMPLE_CLASS_FILE.name, 'OuterClass1', isNamedVariableDeclaration);
           expect(host.getAdjacentNameOfClass(class1).text).toEqual('InnerClass1');
 
           const class2 = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'OuterClass2', isNamedVariableDeclaration);
+              bundle.program, SIMPLE_CLASS_FILE.name, 'OuterClass2', isNamedVariableDeclaration);
           expect(host.getAdjacentNameOfClass(class2).text).toEqual('InnerClass2');
 
           const childClass = getDeclaration(
-              program, SIMPLE_CLASS_FILE.name, 'ChildClass', isNamedVariableDeclaration);
+              bundle.program, SIMPLE_CLASS_FILE.name, 'ChildClass', isNamedVariableDeclaration);
           expect(host.getAdjacentNameOfClass(childClass).text).toEqual('InnerChildClass');
         });
       });
@@ -2326,10 +2301,9 @@ exports.ExternalModule = ExternalModule;
         it('should find every exported function that returns an object that looks like a ModuleWithProviders object',
            () => {
              loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-             const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-             const host =
-                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-             const file = getSourceFileOrError(program, _('/src/functions.js'));
+             const bundle = makeTestBundleProgram(_('/src/index.js'));
+             const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+             const file = getSourceFileOrError(bundle.program, _('/src/functions.js'));
              const fns = host.getModuleWithProvidersFunctions(file);
              expect(fns.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text]))
                  .toEqual([
@@ -2343,10 +2317,9 @@ exports.ExternalModule = ExternalModule;
         it('should find every static method on exported classes that return an object that looks like a ModuleWithProviders object',
            () => {
              loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-             const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-             const host =
-                 new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-             const file = getSourceFileOrError(program, _('/src/methods.js'));
+             const bundle = makeTestBundleProgram(_('/src/index.js'));
+             const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+             const file = getSourceFileOrError(bundle.program, _('/src/methods.js'));
              const fn = host.getModuleWithProvidersFunctions(file);
              expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
                [
@@ -2371,9 +2344,9 @@ exports.ExternalModule = ExternalModule;
         // https://github.com/angular/angular/issues/29078
         it('should resolve aliased module references to their original declaration', () => {
           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-          const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-          const file = getSourceFileOrError(program, _('/src/aliased_class.js'));
+          const bundle = makeTestBundleProgram(_('/src/index.js'));
+          const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
+          const file = getSourceFileOrError(bundle.program, _('/src/aliased_class.js'));
           const fn = host.getModuleWithProvidersFunctions(file);
           expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
             ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],

@@ -19,10 +19,12 @@ import {NgccClassSymbol} from './ngcc_host';
 export class CommonJsReflectionHost extends Esm5ReflectionHost {
   protected commonJsExports = new Map<ts.SourceFile, Map<string, Declaration>|null>();
   protected topLevelHelperCalls = new Map<string, Map<ts.SourceFile, ts.CallExpression[]>>();
-  constructor(
-      logger: Logger, isCore: boolean, protected program: ts.Program,
-      protected compilerHost: ts.CompilerHost, dts?: BundleProgram|null) {
-    super(logger, isCore, program.getTypeChecker(), dts);
+  protected program: ts.Program;
+  protected compilerHost: ts.CompilerHost;
+  constructor(logger: Logger, isCore: boolean, src: BundleProgram, dts?: BundleProgram|null) {
+    super(logger, isCore, src, dts);
+    this.program = src.program;
+    this.compilerHost = src.host;
   }
 
   getImportOfIdentifier(id: ts.Identifier): Import|null {

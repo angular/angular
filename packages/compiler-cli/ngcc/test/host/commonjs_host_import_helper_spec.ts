@@ -85,10 +85,11 @@ exports.AliasedDirective$1 = AliasedDirective$1;
       it('should find the decorators on a class at the top level', () => {
         loadFakeCore(getFileSystem());
         loadTestFiles([TOPLEVEL_DECORATORS_FILE]);
-        const {program, host: compilerHost} = makeTestBundleProgram(TOPLEVEL_DECORATORS_FILE.name);
-        const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+        const bundle = makeTestBundleProgram(TOPLEVEL_DECORATORS_FILE.name);
+        const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
         const classNode = getDeclaration(
-            program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+            bundle.program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective',
+            isNamedVariableDeclaration);
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators.length).toEqual(1);
@@ -105,10 +106,10 @@ exports.AliasedDirective$1 = AliasedDirective$1;
       it('should find the decorators on an aliased class at the top level', () => {
         loadFakeCore(getFileSystem());
         loadTestFiles([TOPLEVEL_DECORATORS_FILE]);
-        const {program, host: compilerHost} = makeTestBundleProgram(TOPLEVEL_DECORATORS_FILE.name);
-        const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+        const bundle = makeTestBundleProgram(TOPLEVEL_DECORATORS_FILE.name);
+        const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
         const classNode = getDeclaration(
-            program, TOPLEVEL_DECORATORS_FILE.name, 'AliasedDirective$1',
+            bundle.program, TOPLEVEL_DECORATORS_FILE.name, 'AliasedDirective$1',
             isNamedVariableDeclaration);
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 

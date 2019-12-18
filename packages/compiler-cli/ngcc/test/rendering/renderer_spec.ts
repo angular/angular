@@ -83,9 +83,8 @@ function createTestRenderer(
   const isCore = packageName === '@angular/core';
   const bundle = makeTestEntryPointBundle(
       'test-package', 'esm5', isCore, getRootFiles(files), dtsFiles && getRootFiles(dtsFiles));
-  const typeChecker = bundle.src.program.getTypeChecker();
-  const host = isEs5 ? new Esm5ReflectionHost(logger, isCore, typeChecker, bundle.dts) :
-                       new Esm2015ReflectionHost(logger, isCore, typeChecker, bundle.dts);
+  const host = isEs5 ? new Esm5ReflectionHost(logger, isCore, bundle.src, bundle.dts) :
+                       new Esm2015ReflectionHost(logger, isCore, bundle.src, bundle.dts);
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();

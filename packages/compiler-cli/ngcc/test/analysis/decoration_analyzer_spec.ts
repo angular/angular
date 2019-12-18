@@ -110,8 +110,7 @@ runInEachFileSystem(() => {
         const bundle = makeTestEntryPointBundle('test-package', 'esm2015', false, rootFiles);
         program = bundle.src.program;
 
-        const reflectionHost =
-            new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const reflectionHost = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src);
         const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
         diagnosticLogs = [];
         const analyzer = new DecorationAnalyzer(
