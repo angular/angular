@@ -575,6 +575,7 @@ function declareTests(config?: {useJit: boolean}) {
       describe('OnPush components', () => {
 
         it('should use ChangeDetectorRef to manually request a check', () => {
+          // Note, numberOfChecks is double what you might think because of the checkNoChanges pass
           TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithRef]]]});
           const template = '<push-cmp-with-ref #cmp></push-cmp-with-ref>';
           TestBed.overrideComponent(MyComp, {set: {template}});
@@ -583,18 +584,19 @@ function declareTests(config?: {useJit: boolean}) {
           const cmp = fixture.debugElement.children[0].references !['cmp'];
 
           fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(1);
+          expect(cmp.numberOfChecks).toEqual(2);
 
           fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(1);
+          expect(cmp.numberOfChecks).toEqual(2);
 
           cmp.propagate();
 
           fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(2);
+          expect(cmp.numberOfChecks).toEqual(4);
         });
 
         it('should be checked when its bindings got updated', () => {
+          // Note, numberOfChecks is double what you might think because of the checkNoChanges pass
           TestBed.configureTestingModule(
               {declarations: [MyComp, PushCmp, EventCmp], imports: [CommonModule]});
           const template = '<push-cmp [prop]="ctxProp" #cmp></push-cmp>';
@@ -605,11 +607,11 @@ function declareTests(config?: {useJit: boolean}) {
 
           fixture.componentInstance.ctxProp = 'one';
           fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(1);
+          expect(cmp.numberOfChecks).toEqual(2);
 
           fixture.componentInstance.ctxProp = 'two';
           fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(2);
+          expect(cmp.numberOfChecks).toEqual(4);
         });
 
         if (getDOM().supportsDOMEvents()) {
@@ -632,6 +634,7 @@ function declareTests(config?: {useJit: boolean}) {
         }
 
         it('should be checked when an event is fired', () => {
+          // Note, numberOfChecks is double what you might think because of the checkNoChanges pass
           TestBed.configureTestingModule(
               {declarations: [MyComp, PushCmp, EventCmp], imports: [CommonModule]});
           const template = '<push-cmp [prop]="ctxProp" #cmp></push-cmp>';
@@ -642,31 +645,31 @@ function declareTests(config?: {useJit: boolean}) {
           const cmp = cmpEl.componentInstance;
           fixture.detectChanges();
           fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(1);
+          expect(cmp.numberOfChecks).toEqual(2);
 
           // regular element
           cmpEl.children[0].triggerEventHandler('click', <Event>{});
           fixture.detectChanges();
           fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(2);
+          expect(cmp.numberOfChecks).toEqual(4);
 
           // element inside of an *ngIf
           cmpEl.children[1].triggerEventHandler('click', <Event>{});
           fixture.detectChanges();
           fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(3);
+          expect(cmp.numberOfChecks).toEqual(6);
 
           // element inside a nested component
           cmpEl.children[2].children[0].triggerEventHandler('click', <Event>{});
           fixture.detectChanges();
           fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(4);
+          expect(cmp.numberOfChecks).toEqual(8);
 
           // host element
           cmpEl.triggerEventHandler('click', <Event>{});
           fixture.detectChanges();
           fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(5);
+          expect(cmp.numberOfChecks).toEqual(10);
         });
 
         it('should not affect updating properties on the component', () => {
@@ -687,6 +690,8 @@ function declareTests(config?: {useJit: boolean}) {
         });
 
         it('should be checked when an async pipe requests a check', fakeAsync(() => {
+             // Note, numberOfChecks is double what you might think because of the checkNoChanges
+             // pass
              TestBed.configureTestingModule(
                  {declarations: [MyComp, PushCmpWithAsyncPipe], imports: [CommonModule]});
              const template = '<push-cmp-with-async #cmp></push-cmp-with-async>';
@@ -697,17 +702,17 @@ function declareTests(config?: {useJit: boolean}) {
 
              const cmp: PushCmpWithAsyncPipe = fixture.debugElement.children[0].references !['cmp'];
              fixture.detectChanges();
-             expect(cmp.numberOfChecks).toEqual(1);
+             expect(cmp.numberOfChecks).toEqual(2);
 
              fixture.detectChanges();
              fixture.detectChanges();
-             expect(cmp.numberOfChecks).toEqual(1);
+             expect(cmp.numberOfChecks).toEqual(2);
 
              cmp.resolve(2);
              tick();
 
              fixture.detectChanges();
-             expect(cmp.numberOfChecks).toEqual(2);
+             expect(cmp.numberOfChecks).toEqual(4);
            }));
       });
 
