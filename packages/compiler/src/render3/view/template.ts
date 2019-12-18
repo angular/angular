@@ -37,6 +37,7 @@ import {createGoogleGetMsgStatements} from './i18n/get_msg_utils';
 import {createLocalizeStatements} from './i18n/localize_utils';
 import {I18nMetaVisitor} from './i18n/meta';
 import {I18N_ICU_MAPPING_PREFIX, TRANSLATION_PREFIX, assembleBoundTextPlaceholders, assembleI18nBoundString, declareI18nVariable, getTranslationConstPrefix, i18nFormatPlaceholderNames, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, wrapI18nPlaceholder} from './i18n/util';
+import {ProjectionAttributesBuilder} from './projection_attributes_builder';
 import {StaticAttributesBuilder, populateProjectAsSelectors} from './static_attributes_builder';
 import {StylingBuilder, StylingInstruction} from './styling_builder';
 import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, chainedInstruction, getAttrsForDirectiveMatching, getInterpolationArgsLength, invalid, trimTrailingNulls, unsupported} from './util';
@@ -496,33 +497,21 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   visitContent(ngContent: t.Content) {
     const slot = this.allocateDataSlot();
     const projectionSlotIdx = this._ngContentSelectorsOffset + this._ngContentReservedSlots.length;
-    const parameters: o.Expression[] = [o.literal(slot)];
-    const attributes: o.Expression[] = [];
-    let ngProjectAsAttr: t.TextAttribute|undefined;
+    const projectionAttrs = new ProjectionAttributesBuilder(slot, projectionSlotIdx);
 
     this._ngContentReservedSlots.push(ngContent.selector);
 
     ngContent.attributes.forEach((attribute) => {
       const {name, value} = attribute;
       if (name === NG_PROJECT_AS_ATTR_NAME) {
-        ngProjectAsAttr = attribute;
+        projectionAttrs.setProjectAsSelector(getNgProjectAsSelector(attribute));
       }
       if (name.toLowerCase() !== NG_CONTENT_SELECT_ATTR) {
-        attributes.push(o.literal(name), o.literal(value));
+        projectionAttrs.registerAttribute(name, value);
       }
     });
 
-    if (ngProjectAsAttr) {
-      attributes.push(...getNgProjectAsLiteral(ngProjectAsAttr));
-    }
-
-    if (attributes.length > 0) {
-      parameters.push(o.literal(projectionSlotIdx), o.literalArr(attributes));
-    } else if (projectionSlotIdx !== 0) {
-      parameters.push(o.literal(projectionSlotIdx));
-    }
-
-    this.creationInstruction(ngContent.sourceSpan, R3.projection, parameters);
+    this.creationInstruction(ngContent.sourceSpan, R3.projection, projectionAttrs.build());
     if (this.i18n) {
       this.i18n.appendProjection(ngContent.i18n !, slot);
     }
@@ -1756,17 +1745,6 @@ export function createCssSelector(
  */
 function getNgProjectAsSelector(attribute: t.TextAttribute): (string | core.SelectorFlags)[] {
   return core.parseSelectorToR3Selector(attribute.value)[0];
-}
-
-/**
- * Creates an array of expressions out of an `ngProjectAs` attributes
- * which can be added to the instruction parameters.
- */
-function getNgProjectAsLiteral(attribute: t.TextAttribute): o.Expression[] {
-  // Parse the attribute value into a CssSelectorList. Note that we only take the
-  // first selector, because we don't support multiple selectors in ngProjectAs.
-  const parsedR3Selector = core.parseSelectorToR3Selector(attribute.value)[0];
-  return [o.literal(core.AttributeMarker.ProjectAs), asLiteral(parsedR3Selector)];
 }
 
 /**

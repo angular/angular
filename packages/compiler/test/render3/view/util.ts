@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AttributeBuilder} from '@angular/compiler/src/compiler';
+
 import * as e from '../../../src/expression_parser/ast';
 import {Lexer} from '../../../src/expression_parser/lexer';
 import {Parser} from '../../../src/expression_parser/parser';
@@ -13,6 +15,7 @@ import * as html from '../../../src/ml_parser/ast';
 import {HtmlParser, ParseTreeResult} from '../../../src/ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../../src/ml_parser/html_whitespaces';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/interpolation_config';
+import * as o from '../../../src/output/output_ast';
 import * as a from '../../../src/render3/r3_ast';
 import {Render3ParseResult, htmlAstToRender3Ast} from '../../../src/render3/r3_template_transform';
 import {I18nMetaVisitor} from '../../../src/render3/view/i18n/meta';
@@ -112,4 +115,19 @@ export function processI18nMeta(
           new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false),
           htmlAstWithErrors.rootNodes),
       htmlAstWithErrors.errors);
+}
+
+/**
+ * Sets up an assert to test that an array of expressions matches a value
+ */
+export function expectAttributeValues(builder: AttributeBuilder) {
+  return expect(expArrayToRawValues(builder.build()));
+}
+
+function expArrayToRawValues(exp: (o.LiteralExpr | o.LiteralArrayExpr)[]): any[] {
+  return exp.map(entry => {
+    return (entry instanceof o.LiteralArrayExpr) ?
+        expArrayToRawValues(entry.entries as(o.LiteralExpr | o.LiteralArrayExpr)[]) :
+        entry.value;
+  });
 }
