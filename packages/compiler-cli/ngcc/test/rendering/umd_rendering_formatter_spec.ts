@@ -28,7 +28,7 @@ function setup(file: TestFile) {
   const logger = new MockLogger();
   const bundle = makeTestEntryPointBundle('test-package', 'esm5', false, [file.name]);
   const src = bundle.src;
-  const host = new UmdReflectionHost(logger, false, src.program, src.host);
+  const host = new UmdReflectionHost(logger, false, src);
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();

@@ -100,18 +100,15 @@ export class Transformer {
   }
 
   getHost(bundle: EntryPointBundle): NgccReflectionHost {
-    const typeChecker = bundle.src.program.getTypeChecker();
     switch (bundle.format) {
       case 'esm2015':
-        return new Esm2015ReflectionHost(this.logger, bundle.isCore, typeChecker, bundle.dts);
+        return new Esm2015ReflectionHost(this.logger, bundle.isCore, bundle.src, bundle.dts);
       case 'esm5':
-        return new Esm5ReflectionHost(this.logger, bundle.isCore, typeChecker, bundle.dts);
+        return new Esm5ReflectionHost(this.logger, bundle.isCore, bundle.src, bundle.dts);
       case 'umd':
-        return new UmdReflectionHost(
-            this.logger, bundle.isCore, bundle.src.program, bundle.src.host, bundle.dts);
+        return new UmdReflectionHost(this.logger, bundle.isCore, bundle.src, bundle.dts);
       case 'commonjs':
-        return new CommonJsReflectionHost(
-            this.logger, bundle.isCore, bundle.src.program, bundle.src.host, bundle.dts);
+        return new CommonJsReflectionHost(this.logger, bundle.isCore, bundle.src, bundle.dts);
       default:
         throw new Error(`Reflection host for "${bundle.format}" not yet implemented.`);
     }
