@@ -168,7 +168,7 @@ The `onSubmit()` method in the `ProfileEditor` component captures the current va
 
 </code-example>
 
-The `submit` event is emitted by the `form` tag using the native DOM event. You trigger the event by clicking a button with `submit` type. This allows the user to press the **Enter** key to submit the completed form.
+The `submit` event is emitted by the `form` tag using the native DOM event. You trigger the event by clicking an <input> element with a `submit` type, or a <button> element with a type other than 'button'. This also allows the user to press the **Enter** key to submit the completed form.
 
 Use a `button` element to add a button to the bottom of the form to trigger the form submission.
 
