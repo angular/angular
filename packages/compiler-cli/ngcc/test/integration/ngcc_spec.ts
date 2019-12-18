@@ -797,7 +797,7 @@ runInEachFileSystem(() => {
           fail('should have thrown');
         } catch (e) {
           expect(e.message).toContain(
-              'Failed to compile entry-point fatal-error due to compilation errors:');
+              'Failed to compile entry-point fatal-error (es2015 as esm2015) due to compilation errors:');
           expect(e.message).toContain('NG2001');
           expect(e.message).toContain('component is missing a template');
         }
