@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, TemplateBinding, Text, getHtmlTagDefinition} from '@angular/compiler';
+import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, TemplateBinding, Text, getHtmlTagDefinition} from '@angular/compiler';
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {AstResult} from './common';
@@ -242,9 +242,16 @@ function attributeValueCompletions(
   if (!path.tail) {
     return [];
   }
+  // HtmlAst contains the `Attribute` node, however the corresponding `AttrAst`
+  // node is missing from the TemplateAst. In this case, we have to manually
+  // append the `AttrAst` node to the path.
+  if (!(path.tail instanceof AttrAst)) {
+    // The sourceSpan of an AttrAst is the valueSpan of the HTML Attribute.
+    path.push(new AttrAst(attr.name, attr.value, attr.valueSpan !));
+  }
   const dinfo = diagnosticInfoFromTemplateInfo(info);
   const visitor =
-      new ExpressionVisitor(info, position, () => getExpressionScope(dinfo, path, false), attr);
+      new ExpressionVisitor(info, position, () => getExpressionScope(dinfo, path, false));
   path.tail.visit(visitor, null);
   return visitor.results;
 }
@@ -334,8 +341,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
 
   constructor(
       private readonly info: AstResult, private readonly position: number,
-      private readonly getExpressionScope: () => ng.SymbolTable,
-      private readonly attr?: Attribute) {
+      private readonly getExpressionScope: () => ng.SymbolTable) {
     super();
   }
 
@@ -352,18 +358,17 @@ class ExpressionVisitor extends NullTemplateVisitor {
   visitEvent(ast: BoundEventAst): void { this.addAttributeValuesToCompletions(ast.handler); }
 
   visitElement(ast: ElementAst): void {
-    if (!this.attr || !this.attr.valueSpan) {
-      return;
-    }
+    // no-op for now
+  }
 
+  visitAttr(ast: AttrAst) {
     // The attribute value is a template expression but the expression AST
     // was not produced when the TemplateAst was produced so do that here.
     const {templateBindings} = this.info.expressionParser.parseTemplateBindings(
-        this.attr.name, this.attr.value, this.attr.sourceSpan.toString(),
-        this.attr.sourceSpan.start.offset);
+        ast.name, ast.value, ast.sourceSpan.toString(), ast.sourceSpan.start.offset);
 
     // Find where the cursor is relative to the start of the attribute value.
-    const valueRelativePosition = this.position - this.attr.valueSpan.start.offset;
+    const valueRelativePosition = this.position - ast.sourceSpan.start.offset;
     // Find the template binding that contains the position
     const binding = templateBindings.find(b => inSpan(valueRelativePosition, b.span));
 
@@ -371,16 +376,16 @@ class ExpressionVisitor extends NullTemplateVisitor {
       return;
     }
 
-    if (this.attr.name.startsWith('*')) {
-      this.microSyntaxInAttributeValue(this.attr, binding);
-    } else if (valueRelativePosition >= 0) {
+    if (ast.name.startsWith('*')) {
+      this.microSyntaxInAttributeValue(ast, binding);
+    } else {
       // If the position is in the expression or after the key or there is no key,
       // return the expression completions
-      const span = new ParseSpan(0, this.attr.value.length);
+      const span = new ParseSpan(0, ast.value.length);
       const offset = ast.sourceSpan.start.offset;
       const receiver = new ImplicitReceiver(span, span.toAbsolute(offset));
       const expressionAst = new PropertyRead(span, span.toAbsolute(offset), receiver, '');
-      this.addAttributeValuesToCompletions(expressionAst, valueRelativePosition);
+      this.addAttributeValuesToCompletions(expressionAst);
     }
   }
 
@@ -394,10 +399,9 @@ class ExpressionVisitor extends NullTemplateVisitor {
     }
   }
 
-  private addAttributeValuesToCompletions(value: AST, position?: number) {
+  private addAttributeValuesToCompletions(value: AST) {
     const symbols = getExpressionCompletions(
-        this.getExpressionScope(), value,
-        position === undefined ? this.attributeValuePosition : position, this.info.template.query);
+        this.getExpressionScope(), value, this.position, this.info.template.query);
     if (symbols) {
       this.addSymbolsToCompletions(symbols);
     }
@@ -417,13 +421,6 @@ class ExpressionVisitor extends NullTemplateVisitor {
     }
   }
 
-  private get attributeValuePosition() {
-    if (this.attr && this.attr.valueSpan) {
-      return this.position;
-    }
-    return 0;
-  }
-
   /**
    * This method handles the completions of attribute values for directives that
    * support the microsyntax format. Examples are *ngFor and *ngIf.
@@ -435,7 +432,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
    * @param attr descriptor for attribute name and value pair
    * @param binding template binding for the expression in the attribute
    */
-  private microSyntaxInAttributeValue(attr: Attribute, binding: TemplateBinding) {
+  private microSyntaxInAttributeValue(attr: AttrAst, binding: TemplateBinding) {
     const key = attr.name.substring(1);  // remove leading asterisk
 
     // Find the selector - eg ngFor, ngIf, etc
@@ -453,7 +450,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
       return;
     }
 
-    const valueRelativePosition = this.position - attr.valueSpan !.start.offset;
+    const valueRelativePosition = this.position - attr.sourceSpan.start.offset;
 
     if (binding.keyIsVar) {
       const equalLocation = attr.value.indexOf('=');
@@ -474,7 +471,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
     }
 
     if (binding.expression && inSpan(valueRelativePosition, binding.expression.ast.span)) {
-      this.addAttributeValuesToCompletions(binding.expression.ast, this.position);
+      this.addAttributeValuesToCompletions(binding.expression.ast);
       return;
     }
   }
