@@ -31,8 +31,7 @@ describe('css selector matching', () => {
     describe('element matching', () => {
 
       it('should match element name only if names are the same', () => {
-        expect(isMatching('span', null, ['span']))
-            .toBeTruthy(`Selector 'span' should match <span>`);
+        expect(isMatching('span', null, ['span'])).toBeFalsy();
 
         expect(isMatching('span', null, ['div']))
             .toBeFalsy(`Selector 'div' should NOT match <span>`);
