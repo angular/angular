@@ -115,3 +115,7 @@ export function resolveFileWithPostfixes(
 export function stripDollarSuffix(value: string): string {
   return value.replace(/\$\d+$/, '');
 }
+
+export function stripExtension(fileName: string): string {
+  return fileName.replace(/\..+$/, '');
+}

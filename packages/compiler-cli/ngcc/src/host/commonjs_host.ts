@@ -11,7 +11,7 @@ import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Declaration, Import} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
-import {isDefined} from '../utils';
+import {isDefined, stripExtension} from '../utils';
 
 import {Esm5ReflectionHost} from './esm5_host';
 import {NgccClassSymbol} from './ngcc_host';
@@ -152,12 +152,12 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       return [];
     }
 
-    const viaModule = stripExtension(importedFile.fileName);
     const importedExports = this.getExportsOfModule(importedFile);
     if (importedExports === null) {
       return [];
     }
 
+    const viaModule = stripExtension(importedFile.fileName);
     const reexports: CommonJsExportDeclaration[] = [];
     importedExports.forEach((decl, name) => {
       if (decl.node !== null) {
@@ -257,10 +257,6 @@ function isReexportStatement(statement: ts.Statement): statement is ReexportStat
       ts.isIdentifier(statement.expression.expression) &&
       statement.expression.expression.text === '__export' &&
       statement.expression.arguments.length === 1;
-}
-
-function stripExtension(fileName: string): string {
-  return fileName.replace(/\..+$/, '');
 }
 
 function getOrDefault<K, V>(map: Map<K, V>, key: K, factory: (key: K) => V): V {
