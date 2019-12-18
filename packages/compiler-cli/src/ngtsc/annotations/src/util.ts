@@ -435,3 +435,18 @@ export function makeDuplicateDeclarationError(
       ErrorCode.NGMODULE_DECLARATION_NOT_UNIQUE, node.name,
       `The ${kind} '${node.name.text}' is declared by more than one NgModule.`, context);
 }
+
+/**
+ * Create an R3Reference for a class.
+ *
+ * The `value` is the exported declaration of the class from its source file.
+ * The `type` is an expression that would be used by ngcc in the typings (.d.ts) files.
+ */
+export function wrapTypeReference(reflector: ReflectionHost, clazz: ClassDeclaration): R3Reference {
+  const dtsClass = reflector.getDtsDeclaration(clazz);
+  const value = new WrappedNodeExpr(clazz.name);
+  const type = dtsClass !== null && isNamedClassDeclaration(dtsClass) ?
+      new WrappedNodeExpr(dtsClass.name) :
+      value;
+  return {value, type};
+}

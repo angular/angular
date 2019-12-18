@@ -19,7 +19,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPr
 
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getValidConstructorDependencies, makeDuplicateDeclarationError, unwrapExpression} from './util';
+import {findAngularDecorator, getValidConstructorDependencies, makeDuplicateDeclarationError, unwrapExpression, wrapTypeReference} from './util';
 
 export interface PipeHandlerData {
   meta: R3PipeMetadata;
@@ -53,8 +53,9 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
   analyze(clazz: ClassDeclaration, decorator: Readonly<Decorator>):
       AnalysisOutput<PipeHandlerData> {
     const name = clazz.name.text;
-    const type = new WrappedNodeExpr(clazz.name);
+    const type = wrapTypeReference(this.reflector, clazz);
     const internalType = new WrappedNodeExpr(this.reflector.getInternalNameOfClass(clazz));
+
     if (decorator.args === null) {
       throw new FatalDiagnosticError(
           ErrorCode.DECORATOR_NOT_CALLED, Decorator.nodeForError(decorator),
