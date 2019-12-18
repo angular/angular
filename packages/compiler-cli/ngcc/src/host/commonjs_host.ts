@@ -137,24 +137,35 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
 
   private extractCommonJsReexports(statement: ReexportStatement, containingFile: ts.SourceFile):
       CommonJsExportDeclaration[] {
-    const reexports: CommonJsExportDeclaration[] = [];
-    const requireCall = statement.expression.arguments[0];
+    const reexportArg = statement.expression.arguments[0];
+
+    const requireCall = isRequireCall(reexportArg) ?
+        reexportArg :
+        ts.isIdentifier(reexportArg) ? this.findRequireCallReference(reexportArg) : null;
+    if (requireCall === null) {
+      return [];
+    }
+
     const importPath = requireCall.arguments[0].text;
     const importedFile = this.resolveModuleName(importPath, containingFile);
-    if (importedFile !== undefined) {
-      const viaModule = stripExtension(importedFile.fileName);
-      const importedExports = this.getExportsOfModule(importedFile);
-      if (importedExports !== null) {
-        importedExports.forEach((decl, name) => {
-          if (decl.node !== null) {
-            reexports.push({name, declaration: {node: decl.node, viaModule}});
-          } else {
-            reexports.push(
-                {name, declaration: {node: null, expression: decl.expression, viaModule}});
-          }
-        });
-      }
+    if (importedFile === undefined) {
+      return [];
     }
+
+    const viaModule = stripExtension(importedFile.fileName);
+    const importedExports = this.getExportsOfModule(importedFile);
+    if (importedExports === null) {
+      return [];
+    }
+
+    const reexports: CommonJsExportDeclaration[] = [];
+    importedExports.forEach((decl, name) => {
+      if (decl.node !== null) {
+        reexports.push({name, declaration: {node: decl.node, viaModule}});
+      } else {
+        reexports.push({name, declaration: {node: null, expression: decl.expression, viaModule}});
+      }
+    });
     return reexports;
   }
 
@@ -162,11 +173,14 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     // Is `id` a namespaced property access, e.g. `Directive` in `core.Directive`?
     // If so capture the symbol of the namespace, e.g. `core`.
     const nsIdentifier = findNamespaceOfIdentifier(id);
-    const nsSymbol = nsIdentifier && this.checker.getSymbolAtLocation(nsIdentifier) || null;
-    const nsDeclaration = nsSymbol && nsSymbol.valueDeclaration;
+    return nsIdentifier && this.findRequireCallReference(nsIdentifier);
+  }
+
+  private findRequireCallReference(id: ts.Identifier): RequireCall|null {
+    const symbol = id && this.checker.getSymbolAtLocation(id) || null;
+    const declaration = symbol && symbol.valueDeclaration;
     const initializer =
-        nsDeclaration && ts.isVariableDeclaration(nsDeclaration) && nsDeclaration.initializer ||
-        null;
+        declaration && ts.isVariableDeclaration(declaration) && declaration.initializer || null;
     return initializer && isRequireCall(initializer) ? initializer : null;
   }
 
@@ -237,13 +251,12 @@ function findNamespaceOfIdentifier(id: ts.Identifier): ts.Identifier|null {
       null;
 }
 
-type ReexportStatement = ts.ExpressionStatement & {expression: {arguments: [RequireCall]}};
+type ReexportStatement = ts.ExpressionStatement & {expression: ts.CallExpression};
 function isReexportStatement(statement: ts.Statement): statement is ReexportStatement {
   return ts.isExpressionStatement(statement) && ts.isCallExpression(statement.expression) &&
       ts.isIdentifier(statement.expression.expression) &&
       statement.expression.expression.text === '__export' &&
-      statement.expression.arguments.length === 1 &&
-      isRequireCall(statement.expression.arguments[0]);
+      statement.expression.arguments.length === 1;
 }
 
 function stripExtension(fileName: string): string {
