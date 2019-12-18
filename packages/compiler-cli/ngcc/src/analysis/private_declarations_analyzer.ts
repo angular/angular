@@ -17,7 +17,6 @@ export interface ExportInfo {
   identifier: string;
   from: AbsoluteFsPath;
   dtsFrom?: AbsoluteFsPath|null;
-  alias?: string|null;
 }
 export type PrivateDeclarationsAnalyses = ExportInfo[];
 
@@ -42,7 +41,6 @@ export class PrivateDeclarationsAnalyzer {
       rootFiles: ts.SourceFile[],
       declarations: Map<ts.Identifier, ConcreteDeclaration>): PrivateDeclarationsAnalyses {
     const privateDeclarations: Map<ts.Identifier, ConcreteDeclaration> = new Map(declarations);
-    const exportAliasDeclarations: Map<ts.Identifier, string> = new Map();
 
     rootFiles.forEach(f => {
       const exports = this.host.getExportsOfModule(f);
@@ -54,17 +52,8 @@ export class PrivateDeclarationsAnalyzer {
               if (privateDeclaration.node !== declaration.node) {
                 throw new Error(`${declaration.node.name.text} is declared multiple times.`);
               }
-
-              if (declaration.node.name.text === exportedName) {
-                // This declaration is public so we can remove it from the list
-                privateDeclarations.delete(declaration.node.name);
-              } else {
-                // The referenced declaration is exported publicly but via an alias.
-                // In some cases the original declaration is missing from the dts program, such as
-                // when rolling up (flattening) the dts files.
-                // This is because the original declaration gets renamed to the exported alias.
-                exportAliasDeclarations.set(declaration.node.name, exportedName);
-              }
+              // This declaration is public so we can remove it from the list
+              privateDeclarations.delete(declaration.node.name);
             }
           }
         });
@@ -74,11 +63,10 @@ export class PrivateDeclarationsAnalyzer {
     return Array.from(privateDeclarations.keys()).map(id => {
       const from = absoluteFromSourceFile(id.getSourceFile());
       const declaration = privateDeclarations.get(id) !;
-      const alias = exportAliasDeclarations.has(id) ? exportAliasDeclarations.get(id) ! : null;
       const dtsDeclaration = this.host.getDtsDeclaration(declaration.node);
       const dtsFrom = dtsDeclaration && absoluteFromSourceFile(dtsDeclaration.getSourceFile());
 
-      return {identifier: id.text, from, dtsFrom, alias};
+      return {identifier: id.text, from, dtsFrom};
     });
   }
 }

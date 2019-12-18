@@ -161,74 +161,14 @@ runInEachFileSystem(() => {
                identifier: 'PrivateComponent1',
                from: _('/node_modules/test-package/src/b.js'),
                dtsFrom: null,
-               alias: null
              },
              {
                identifier: 'InternalComponent1',
                from: _('/node_modules/test-package/src/c.js'),
                dtsFrom: _('/node_modules/test-package/typings/c.d.ts'),
-               alias: null
              },
            ]);
          });
-
-      it('should find all non-public declarations that were aliased', () => {
-        const _ = absoluteFrom;
-        const ALIASED_EXPORTS_PROGRAM = [
-          {
-            name: _('/node_modules/test-package/src/entry_point.js'),
-            isRoot: true,
-            contents: `
-          // This component is only exported as an alias.
-          export {ComponentOne as aliasedComponentOne} from './a';
-          // This component is exported both as itself and an alias.
-          export {ComponentTwo as aliasedComponentTwo, ComponentTwo} from './a';
-        `
-          },
-          {
-            name: _('/node_modules/test-package/src/a.js'),
-            isRoot: false,
-            contents: `
-        import {Component} from '@angular/core';
-        export class ComponentOne {}
-        ComponentOne.decorators = [
-          {type: Component, args: [{selectors: 'a', template: ''}]}
-        ];
-
-        export class ComponentTwo {}
-        Component.decorators = [
-          {type: Component, args: [{selectors: 'a', template: ''}]}
-        ];
-      `
-          }
-        ];
-        const ALIASED_EXPORTS_DTS_PROGRAM = [
-          {
-            name: _('/node_modules/test-package/typings/entry_point.d.ts'),
-            isRoot: true,
-            contents: `
-          export declare class aliasedComponentOne {}
-          export declare class ComponentTwo {}
-          export {ComponentTwo as aliasedComponentTwo}
-        `
-          },
-        ];
-        const {program, referencesRegistry, analyzer} =
-            setup(ALIASED_EXPORTS_PROGRAM, ALIASED_EXPORTS_DTS_PROGRAM);
-
-        addToReferencesRegistry(
-            program, referencesRegistry, _('/node_modules/test-package/src/a.js'), 'ComponentOne');
-        addToReferencesRegistry(
-            program, referencesRegistry, _('/node_modules/test-package/src/a.js'), 'ComponentTwo');
-
-        const analyses = analyzer.analyzeProgram(program);
-        expect(analyses).toEqual([{
-          identifier: 'ComponentOne',
-          from: _('/node_modules/test-package/src/a.js'),
-          dtsFrom: _('/node_modules/test-package/typings/entry_point.d.ts'),
-          alias: 'aliasedComponentOne',
-        }]);
-      });
     });
   });
 

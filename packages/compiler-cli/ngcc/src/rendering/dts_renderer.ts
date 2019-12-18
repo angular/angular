@@ -156,7 +156,7 @@ export class DtsRenderer {
     // Capture the private declarations that need to be re-exported
     if (privateDeclarationsAnalyses.length) {
       privateDeclarationsAnalyses.forEach(e => {
-        if (!e.dtsFrom && !e.alias) {
+        if (!e.dtsFrom) {
           throw new Error(
               `There is no typings path for ${e.identifier} in ${e.from}.\n` +
               `We need to add an export for this class to a .d.ts typings file because ` +

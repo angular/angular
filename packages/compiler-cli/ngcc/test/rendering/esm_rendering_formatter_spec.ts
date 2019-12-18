@@ -146,36 +146,6 @@ export {ComponentA2} from './a';
 export {ComponentB} from './foo/b';
 export {TopLevelComponent};`);
       });
-
-      it('should not insert alias exports in js output', () => {
-        const {importManager, renderer, sourceFile} = setup([PROGRAM]);
-        const output = new MagicString(PROGRAM.contents);
-        renderer.addExports(
-            output, _(PROGRAM.name.replace(/\.js$/, '')),
-            [
-              {
-                from: _('/node_modules/test-package/some/a.js'),
-                alias: 'eComponentA1',
-                identifier: 'ComponentA1'
-              },
-              {
-                from: _('/node_modules/test-package/some/a.js'),
-                alias: 'eComponentA2',
-                identifier: 'ComponentA2'
-              },
-              {
-                from: _('/node_modules/test-package/some/foo/b.js'),
-                alias: 'eComponentB',
-                identifier: 'ComponentB'
-              },
-              {from: PROGRAM.name, alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
-            ],
-            importManager, sourceFile);
-        const outputString = output.toString();
-        expect(outputString).not.toContain(`{eComponentA1 as ComponentA1}`);
-        expect(outputString).not.toContain(`{eComponentB as ComponentB}`);
-        expect(outputString).not.toContain(`{eTopLevelComponent as TopLevelComponent}`);
-      });
     });
 
     describe('addConstants', () => {

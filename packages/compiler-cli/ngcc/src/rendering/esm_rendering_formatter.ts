@@ -55,9 +55,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
         exportFrom = entryPointBasePath !== basePath ? ` from '${relativePath}'` : '';
       }
 
-      // aliases should only be added in dts files as these are lost when rolling up dts file.
-      const exportStatement = e.alias && isDtsFile ? `${e.alias} as ${e.identifier}` : e.identifier;
-      const exportStr = `\nexport {${exportStatement}}${exportFrom};`;
+      const exportStr = `\nexport {${e.identifier}}${exportFrom};`;
       output.append(exportStr);
     });
   }

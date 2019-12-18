@@ -359,36 +359,6 @@ exports.TopLevelComponent = TopLevelComponent;
         expect(generateNamedImportSpy).toHaveBeenCalledWith('./a', 'ComponentA2');
         expect(generateNamedImportSpy).toHaveBeenCalledWith('./foo/b', 'ComponentB');
       });
-
-      it('should not insert alias exports in js output', () => {
-        const {importManager, renderer, sourceFile} = setup(PROGRAM);
-        const output = new MagicString(PROGRAM.contents);
-        renderer.addExports(
-            output, PROGRAM.name.replace(/\.js$/, ''),
-            [
-              {
-                from: _('/node_modules/test-package/some/a.js'),
-                alias: 'eComponentA1',
-                identifier: 'ComponentA1'
-              },
-              {
-                from: _('/node_modules/test-package/some/a.js'),
-                alias: 'eComponentA2',
-                identifier: 'ComponentA2'
-              },
-              {
-                from: _('/node_modules/test-package/some/foo/b.js'),
-                alias: 'eComponentB',
-                identifier: 'ComponentB'
-              },
-              {from: PROGRAM.name, alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
-            ],
-            importManager, sourceFile);
-        const outputString = output.toString();
-        expect(outputString).not.toContain(`eComponentA1`);
-        expect(outputString).not.toContain(`eComponentB`);
-        expect(outputString).not.toContain(`eTopLevelComponent`);
-      });
     });
 
     describe('addConstants', () => {
