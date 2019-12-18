@@ -37,6 +37,7 @@ import {createGoogleGetMsgStatements} from './i18n/get_msg_utils';
 import {createLocalizeStatements} from './i18n/localize_utils';
 import {I18nMetaVisitor} from './i18n/meta';
 import {I18N_ICU_MAPPING_PREFIX, TRANSLATION_PREFIX, assembleBoundTextPlaceholders, assembleI18nBoundString, declareI18nVariable, getTranslationConstPrefix, i18nFormatPlaceholderNames, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, wrapI18nPlaceholder} from './i18n/util';
+import {StaticAttributesBuilder, populateProjectAsSelectors} from './static_attributes_builder';
 import {StylingBuilder, StylingInstruction} from './styling_builder';
 import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, chainedInstruction, getAttrsForDirectiveMatching, getInterpolationArgsLength, invalid, trimTrailingNulls, unsupported} from './util';
 
@@ -529,15 +530,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   visitElement(element: t.Element) {
     const elementIndex = this.allocateDataSlot();
-    const stylingBuilder = new StylingBuilder(o.literal(elementIndex), null);
+    const attrsBuilder = new StaticAttributesBuilder();
+    const stylingBuilder = new StylingBuilder();
 
     let isNonBindableMode: boolean = false;
     const isI18nRootElement: boolean =
         isI18nRootNode(element.i18n) && !isSingleI18nIcu(element.i18n);
 
-    const i18nAttrs: (t.TextAttribute | t.BoundAttribute)[] = [];
     const outputAttrs: t.TextAttribute[] = [];
-    let ngProjectAsAttr: t.TextAttribute|undefined;
+    const i18nAttrs: (t.TextAttribute | t.BoundAttribute)[] = [];
 
     const [namespaceKey, elementName] = splitNsName(element.name);
     const isNgContainer = checkIsNgContainer(element.name);
@@ -548,12 +549,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (name === NON_BINDABLE_ATTR) {
         isNonBindableMode = true;
       } else if (name === 'style') {
-        stylingBuilder.registerStyleAttr(value);
+        attrsBuilder.setStyleAttribute(value);
       } else if (name === 'class') {
-        stylingBuilder.registerClassAttr(value);
+        attrsBuilder.setClassAttribute(value);
       } else {
         if (attr.name === NG_PROJECT_AS_ATTR_NAME) {
-          ngProjectAsAttr = attr;
+          attrsBuilder.setProjectAsSelector(getNgProjectAsSelector(attr));
         }
         if (attr.i18n) {
           // Place attributes into a separate array for i18n processing, but also keep such
@@ -561,6 +562,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           // TODO(FW-1248): prevent attributes duplication in `i18nAttributes` and `elementStart`
           // arguments
           i18nAttrs.push(attr);
+          attrsBuilder.registerI18nName(name);
         } else {
           outputAttrs.push(attr);
         }
@@ -589,6 +591,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           // TODO(FW-1248): prevent attributes duplication in `i18nAttributes` and `elementStart`
           // arguments
           i18nAttrs.push(input);
+          attrsBuilder.registerI18nName(input.name);
         } else {
           allOtherInputs.push(input);
         }
@@ -600,8 +603,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
 
     // add attributes for directive and projection matching purposes
-    attributes.push(...this.prepareNonRenderAttrs(
-        allOtherInputs, element.outputs, stylingBuilder, [], i18nAttrs, ngProjectAsAttr));
+    attributes.push(
+        ...this.prepareNonRenderAttrs(attrsBuilder, allOtherInputs, element.outputs, []));
     parameters.push(this.addAttrsToConsts(attributes));
 
     // local refs (ex.: <div #foo #bar="baz">)
@@ -841,7 +844,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   visitTemplate(template: t.Template) {
     const NG_TEMPLATE_TAG_NAME = 'ng-template';
     const templateIndex = this.allocateDataSlot();
-    let ngProjectAsAttr: t.TextAttribute|undefined;
+    const attrsBuilder = new StaticAttributesBuilder();
 
     if (this.i18n) {
       this.i18n.appendTemplate(template.i18n !, templateIndex);
@@ -867,13 +870,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const attrsExprs: o.Expression[] = [];
     template.attributes.forEach((attr: t.TextAttribute) => {
       if (attr.name === NG_PROJECT_AS_ATTR_NAME) {
-        ngProjectAsAttr = attr;
+        attrsBuilder.setProjectAsSelector(getNgProjectAsSelector(attr));
       }
       attrsExprs.push(asLiteral(attr.name), asLiteral(attr.value));
     });
     attrsExprs.push(...this.prepareNonRenderAttrs(
-        template.inputs, template.outputs, undefined, template.templateAttrs, undefined,
-        ngProjectAsAttr));
+        attrsBuilder, template.inputs, template.outputs, template.templateAttrs));
     parameters.push(this.addAttrsToConsts(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)
@@ -1231,96 +1233,38 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   /**
    * Prepares all attribute expression values for the `TAttributes` array.
    *
-   * The purpose of this function is to properly construct an attributes array that
-   * is passed into the `elementStart` (or just `element`) functions. Because there
-   * are many different types of attributes, the array needs to be constructed in a
-   * special way so that `elementStart` can properly evaluate them.
-   *
-   * The format looks like this:
-   *
-   * ```
-   * attrs = [prop, value, prop2, value2,
-   *   CLASSES, class1, class2,
-   *   STYLES, style1, value1, style2, value2,
-   *   BINDINGS, name1, name2, name3,
-   *   TEMPLATE, name4, name5, name6,
-   *   PROJECT_AS, selector,
-   *   I18N, name7, name8, ...]
-   * ```
+   * This function is shared for templates and elements and will register all input bindings,
+   * output bindings as template attributes into the provided `StaticAttributesBuilder` object.
    *
    * Note that this function will fully ignore all synthetic (@foo) attribute values
    * because those values are intended to always be generated as property instructions.
+   *
+   * @returns the `TAttributes` array (where all values within are expression instances).
    */
   private prepareNonRenderAttrs(
-      inputs: t.BoundAttribute[], outputs: t.BoundEvent[], styles?: StylingBuilder,
-      templateAttrs: (t.BoundAttribute|t.TextAttribute)[] = [],
-      i18nAttrs: (t.BoundAttribute|t.TextAttribute)[] = [],
-      ngProjectAsAttr?: t.TextAttribute): o.Expression[] {
-    const alreadySeen = new Set<string>();
-    const attrExprs: o.Expression[] = [];
+      attrBuilder: StaticAttributesBuilder, inputs: t.BoundAttribute[], outputs: t.BoundEvent[],
+      templateAttrs: (t.BoundAttribute|t.TextAttribute)[] = []): o.Expression[] {
+    for (let i = 0; i < templateAttrs.length; i++) {
+      attrBuilder !.registerTemplateName(templateAttrs[i].name);
+    }
 
-    function addAttrExpr(key: string | number, value?: o.Expression): void {
-      if (typeof key === 'string') {
-        if (!alreadySeen.has(key)) {
-          attrExprs.push(...getAttributeNameLiterals(key));
-          value !== undefined && attrExprs.push(value);
-          alreadySeen.add(key);
-        }
-      } else {
-        attrExprs.push(o.literal(key));
+    for (let i = 0; i < inputs.length; i++) {
+      const input = inputs[i];
+      // We don't want the animation and attribute bindings in the
+      // attributes array since they aren't used for directive matching.
+      if (input.type !== BindingType.Animation && input.type !== BindingType.Attribute) {
+        attrBuilder.registerBindingName(input.name);
       }
     }
 
-    // it's important that this occurs before BINDINGS and TEMPLATE because once `elementStart`
-    // comes across the BINDINGS or TEMPLATE markers then it will continue reading each value as
-    // as single property value cell by cell.
-    if (styles) {
-      styles.populateInitialStylingAttrs(attrExprs);
-    }
-
-    if (inputs.length || outputs.length) {
-      const attrsLengthBeforeInputs = attrExprs.length;
-
-      for (let i = 0; i < inputs.length; i++) {
-        const input = inputs[i];
-        // We don't want the animation and attribute bindings in the
-        // attributes array since they aren't used for directive matching.
-        if (input.type !== BindingType.Animation && input.type !== BindingType.Attribute) {
-          addAttrExpr(input.name);
-        }
-      }
-
-      for (let i = 0; i < outputs.length; i++) {
-        const output = outputs[i];
-        if (output.type !== ParsedEventType.Animation) {
-          addAttrExpr(output.name);
-        }
-      }
-
-      // this is a cheap way of adding the marker only after all the input/output
-      // values have been filtered (by not including the animation ones) and added
-      // to the expressions. The marker is important because it tells the runtime
-      // code that this is where attributes without values start...
-      if (attrExprs.length !== attrsLengthBeforeInputs) {
-        attrExprs.splice(attrsLengthBeforeInputs, 0, o.literal(core.AttributeMarker.Bindings));
+    for (let i = 0; i < outputs.length; i++) {
+      const output = outputs[i];
+      if (output.type !== ParsedEventType.Animation) {
+        attrBuilder.registerBindingName(output.name);
       }
     }
 
-    if (templateAttrs.length) {
-      attrExprs.push(o.literal(core.AttributeMarker.Template));
-      templateAttrs.forEach(attr => addAttrExpr(attr.name));
-    }
-
-    if (ngProjectAsAttr) {
-      attrExprs.push(...getNgProjectAsLiteral(ngProjectAsAttr));
-    }
-
-    if (i18nAttrs.length) {
-      attrExprs.push(o.literal(core.AttributeMarker.I18n));
-      i18nAttrs.forEach(attr => addAttrExpr(attr.name));
-    }
-
-    return attrExprs;
+    return attrBuilder.build();
   }
 
   private addToConsts(expression: o.Expression): o.LiteralExpr {
@@ -1804,6 +1748,14 @@ export function createCssSelector(
   });
 
   return cssSelector;
+}
+
+/**
+ * Creates an array of expressions out of an `ngProjectAs` attributes
+ * which can be added to the instruction parameters.
+ */
+function getNgProjectAsSelector(attribute: t.TextAttribute): (string | core.SelectorFlags)[] {
+  return core.parseSelectorToR3Selector(attribute.value)[0];
 }
 
 /**

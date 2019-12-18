@@ -28,6 +28,7 @@ import {Render3ParseResult} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
+import {StaticAttributesBuilder} from './static_attributes_builder';
 import {StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, TemplateDefinitionBuilder, ValueConverter, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn} from './template';
 import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, chainedInstruction, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
@@ -405,16 +406,6 @@ function prepareQueryParams(query: R3QueryMetadata, constantPool: ConstantPool):
   return parameters;
 }
 
-function convertAttributesToExpressions(attributes: {[name: string]: o.Expression}):
-    o.Expression[] {
-  const values: o.Expression[] = [];
-  for (let key of Object.getOwnPropertyNames(attributes)) {
-    const value = attributes[key];
-    values.push(o.literal(key), value);
-  }
-  return values;
-}
-
 // Define and update any content queries
 function createContentQueriesFunction(
     queries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
@@ -530,18 +521,20 @@ function createHostBindingsFunction(
     hostBindingsMetadata: R3HostMetadata, typeSourceSpan: ParseSourceSpan,
     bindingParser: BindingParser, constantPool: ConstantPool, selector: string,
     name?: string): o.Expression|null {
+  const attrsBuilder = new StaticAttributesBuilder();
+
   // Initialize hostVarsCount to number of bound host properties (interpolations illegal)
   const hostVarsCount = Object.keys(hostBindingsMetadata.properties).length;
   const elVarExp = o.variable('elIndex');
   const bindingContext = o.variable(CONTEXT_NAME);
-  const styleBuilder = new StylingBuilder(elVarExp, bindingContext);
+  const styleBuilder = new StylingBuilder();
 
   const {styleAttr, classAttr} = hostBindingsMetadata.specialAttributes;
   if (styleAttr !== undefined) {
-    styleBuilder.registerStyleAttr(styleAttr);
+    attrsBuilder.setStyleAttribute(styleAttr);
   }
   if (classAttr !== undefined) {
-    styleBuilder.registerClassAttr(classAttr);
+    attrsBuilder.setClassAttribute(classAttr);
   }
 
   const createStatements: o.Statement[] = [];
@@ -650,14 +643,19 @@ function createHostBindingsFunction(
   // that is inside of a host binding within a directive/component) to be attached
   // to the host element alongside any of the provided host attributes that were
   // collected earlier.
-  const hostAttrs = convertAttributesToExpressions(hostBindingsMetadata.attributes);
-  const hostInstruction = styleBuilder.buildHostAttrsInstruction(null, hostAttrs, constantPool);
-  if (hostInstruction && hostInstruction.calls.length > 0) {
+  const attrsMap = hostBindingsMetadata.attributes;
+  const hostAttrNames = Object.keys(attrsMap);
+  for (let i = 0; i < hostAttrNames.length; i++) {
+    const name = hostAttrNames[i];
+    const value = attrsMap[name];
+    attrsBuilder.registerAttribute(name, value);
+  }
+
+  const hostAttrs = attrsBuilder.build();
+  if (hostAttrs.length !== 0) {
+    // elementHostAttrs([...]);
     createStatements.push(
-        chainedInstruction(
-            hostInstruction.reference,
-            hostInstruction.calls.map(call => convertStylingCall(call, bindingContext, bindingFn)))
-            .toStmt());
+        o.importExpr(R3.elementHostAttrs).callFn([o.literalArr(hostAttrs)]).toStmt());
   }
 
   if (styleBuilder.hasBindings) {
