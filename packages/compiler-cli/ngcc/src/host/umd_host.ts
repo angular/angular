@@ -21,7 +21,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   protected umdImportPaths = new Map<ts.ParameterDeclaration, string|null>();
   protected program: ts.Program;
   protected compilerHost: ts.CompilerHost;
-  constructor(logger: Logger, isCore: boolean, src: BundleProgram, dts?: BundleProgram|null) {
+  constructor(logger: Logger, isCore: boolean, src: BundleProgram, dts: BundleProgram|null = null) {
     super(logger, isCore, src, dts);
     this.program = src.program;
     this.compilerHost = src.host;
