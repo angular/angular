@@ -483,7 +483,7 @@ export { D };
       beforeEach(() => {
         MODULE_WITH_PROVIDERS_PROGRAM = [
           {
-            name: _('/src/index.js'),
+            name: _('/node_modules/test-package/src/index.js'),
             contents: `
         import {ExternalModule} from './module';
         import {LibraryModule} from 'some-library';
@@ -510,7 +510,7 @@ export { D };
         `
           },
           {
-            name: _('/src/module.js'),
+            name: _('/node_modules/test-package/src/module.js'),
             contents: `
         export class ExternalModule {
           static withProviders1() { return {ngModule: ExternalModule}; }
@@ -525,7 +525,7 @@ export { D };
 
         MODULE_WITH_PROVIDERS_DTS_PROGRAM = [
           {
-            name: _('/typings/index.d.ts'),
+            name: _('/node_modules/test-package/typings/index.d.ts'),
             contents: `
         import {ModuleWithProviders} from '@angular/core';
         export declare class SomeClass {}
@@ -552,7 +552,7 @@ export { D };
         `
           },
           {
-            name: _('/typings/module.d.ts'),
+            name: _('/node_modules/test-package/typings/module.d.ts'),
             contents: `
         export interface ModuleWithProviders {}
         export declare class ExternalModule {
@@ -575,7 +575,8 @@ export { D };
         const moduleWithProvidersAnalyses =
             new ModuleWithProvidersAnalyzer(host, referencesRegistry, true)
                 .analyzeProgram(bundle.src.program);
-        const typingsFile = getSourceFileOrError(bundle.dts !.program, _('/typings/index.d.ts'));
+        const typingsFile = getSourceFileOrError(
+            bundle.dts !.program, _('/node_modules/test-package/typings/index.d.ts'));
         const moduleWithProvidersInfo = moduleWithProvidersAnalyses.get(typingsFile) !;
 
         const output = new MagicString(MODULE_WITH_PROVIDERS_DTS_PROGRAM[0].contents);
@@ -611,8 +612,8 @@ export { D };
            const moduleWithProvidersAnalyses =
                new ModuleWithProvidersAnalyzer(host, referencesRegistry, true)
                    .analyzeProgram(bundle.src.program);
-           const typingsFile =
-               getSourceFileOrError(bundle.dts !.program, _('/typings/module.d.ts'));
+           const typingsFile = getSourceFileOrError(
+               bundle.dts !.program, _('/node_modules/test-package/typings/module.d.ts'));
            const moduleWithProvidersInfo = moduleWithProvidersAnalyses.get(typingsFile) !;
 
            const output = new MagicString(MODULE_WITH_PROVIDERS_DTS_PROGRAM[1].contents);

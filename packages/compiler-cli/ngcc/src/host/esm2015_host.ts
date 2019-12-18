@@ -8,7 +8,6 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, TypeScriptReflectionHost, TypeValueReference, isDecoratorIdentifier, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
 import {Logger} from '../logging/logger';
@@ -50,7 +49,22 @@ export const CONSTRUCTOR_PARAMS = 'ctorParameters' as ts.__String;
  *   a static method called `ctorParameters`.
  */
 export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements NgccReflectionHost {
-  protected dtsDeclarationMap: Map<string, ts.Declaration>|null;
+  /**
+   * A mapping from source declarations typings declarations, which are both publicly exported.
+   *
+   * There should be one entry for every public export visible from the root file of the source
+   * tree. Note that by definition the key and value declarations will not be in the same TS
+   * program.
+   */
+  protected publicDtsDeclarationMap: Map<ts.Declaration, ts.Declaration>|null = null;
+  /**
+   * A mapping from source declarations to typings declarations, which are not publicly exported.
+   *
+   * This mapping is a best guess between declarations that happen to be exported from their file by
+   * the same name in both the source and the dts file. Note that by definition the key and value
+   * declarations will not be in the same TS program.
+   */
+  protected privateDtsDeclarationMap: Map<ts.Declaration, ts.Declaration>|null = null;
 
   /**
    * The set of source files that have already been preprocessed.
@@ -83,11 +97,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   protected decoratorCache = new Map<ClassDeclaration, DecoratorInfo>();
 
   constructor(
-      protected logger: Logger, protected isCore: boolean, src: BundleProgram,
-      dts?: BundleProgram|null) {
+      protected logger: Logger, protected isCore: boolean, protected src: BundleProgram,
+      protected dts: BundleProgram|null = null) {
     super(src.program.getTypeChecker());
-    this.dtsDeclarationMap =
-        dts && this.computeDtsDeclarationMap(dts.path, dts.program, dts.package) || null;
   }
 
   /**
@@ -484,16 +496,32 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * `ts.Program` as the input declaration.
    */
   getDtsDeclaration(declaration: ts.Declaration): ts.Declaration|null {
-    if (!this.dtsDeclarationMap) {
+    if (this.dts === null) {
       return null;
     }
     if (!isNamedDeclaration(declaration)) {
       throw new Error(
           `Cannot get the dts file for a declaration that has no name: ${declaration.getText()} in ${declaration.getSourceFile().fileName}`);
     }
-    return this.dtsDeclarationMap.has(declaration.name.text) ?
-        this.dtsDeclarationMap.get(declaration.name.text) ! :
-        null;
+
+    // Try to retrieve the dts declaration from the public map
+    if (this.publicDtsDeclarationMap === null) {
+      this.publicDtsDeclarationMap = this.computePublicDtsDeclarationMap(this.src, this.dts);
+    }
+    if (this.publicDtsDeclarationMap.has(declaration)) {
+      return this.publicDtsDeclarationMap.get(declaration) !;
+    }
+
+    // No public export, try the private map
+    if (this.privateDtsDeclarationMap === null) {
+      this.privateDtsDeclarationMap = this.computePrivateDtsDeclarationMap(this.src, this.dts);
+    }
+    if (this.privateDtsDeclarationMap.has(declaration)) {
+      return this.privateDtsDeclarationMap.get(declaration) !;
+    }
+
+    // No declaration found at all
+    return null;
   }
 
   /**
@@ -1499,42 +1527,91 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   }
 
   /**
-   * Extract all the class declarations from the dtsTypings program, storing them in a map
-   * where the key is the declared name of the class and the value is the declaration itself.
+   * Create a mapping between the public exports in a src program and the public exports of a dts
+   * program.
    *
-   * It is possible for there to be multiple class declarations with the same local name.
-   * Only the first declaration with a given name is added to the map; subsequent classes will be
-   * ignored.
-   *
-   * We are most interested in classes that are publicly exported from the entry point, so these
-   * are added to the map first, to ensure that they are not ignored.
-   *
-   * @param dtsRootFileName The filename of the entry-point to the `dtsTypings` program.
-   * @param dtsProgram The program containing all the typings files.
-   * @returns a map of class names to class declarations.
+   * @param src the program bundle containing the source files.
+   * @param dts the program bundle containing the typings files.
+   * @returns a map of source declarations to typings declarations.
    */
-  protected computeDtsDeclarationMap(
-      dtsRootFileName: AbsoluteFsPath, dtsProgram: ts.Program,
-      dtsPackage: AbsoluteFsPath): Map<string, ts.Declaration> {
+  protected computePublicDtsDeclarationMap(src: BundleProgram, dts: BundleProgram):
+      Map<ts.Declaration, ts.Declaration> {
+    const declarationMap = new Map<ts.Declaration, ts.Declaration>();
     const dtsDeclarationMap = new Map<string, ts.Declaration>();
-    const checker = dtsProgram.getTypeChecker();
+    const rootDts = getRootFileOrFail(dts);
+    this.collectDtsExportedDeclarations(dtsDeclarationMap, rootDts, dts.program.getTypeChecker());
+    const rootSrc = getRootFileOrFail(src);
+    this.collectSrcExportedDeclarations(declarationMap, dtsDeclarationMap, rootSrc);
+    return declarationMap;
+  }
 
-    // First add all the classes that are publicly exported from the entry-point
-    const rootFile = dtsProgram.getSourceFile(dtsRootFileName);
-    if (!rootFile) {
-      throw new Error(`The given file ${dtsRootFileName} is not part of the typings program.`);
-    }
-    collectExportedDeclarations(checker, dtsDeclarationMap, rootFile);
-
-    // Now add any additional classes that are exported from individual  dts files,
-    // but are not publicly exported from the entry-point.
-    dtsProgram.getSourceFiles().forEach(sourceFile => {
-      if (!isWithinPackage(dtsPackage, sourceFile)) {
-        return;
+  /**
+   * Create a mapping between the "private" exports in a src program and the "private" exports of a
+   * dts program. These exports may be exported from individual files in the src or dts programs,
+   * but not exported from the root file (i.e publicly from the entry-point).
+   *
+   * This mapping is a "best guess" since we cannot guarantee that two declarations that happen to
+   * be exported from a file with the same name are actually equivalent. But this is a reasonable
+   * estimate for the purposes of ngcc.
+   *
+   * @param src the program bundle containing the source files.
+   * @param dts the program bundle containing the typings files.
+   * @returns a map of source declarations to typings declarations.
+   */
+  protected computePrivateDtsDeclarationMap(src: BundleProgram, dts: BundleProgram):
+      Map<ts.Declaration, ts.Declaration> {
+    const declarationMap = new Map<ts.Declaration, ts.Declaration>();
+    const dtsDeclarationMap = new Map<string, ts.Declaration>();
+    const dtsFiles = getNonRootFiles(dts);
+    const typeChecker = dts.program.getTypeChecker();
+    for (const dtsFile of dtsFiles) {
+      if (isWithinPackage(dts.package, dtsFile)) {
+        this.collectDtsExportedDeclarations(dtsDeclarationMap, dtsFile, typeChecker);
       }
-      collectExportedDeclarations(checker, dtsDeclarationMap, sourceFile);
-    });
-    return dtsDeclarationMap;
+    }
+    const srcFiles = getNonRootFiles(src);
+    for (const srcFile of srcFiles) {
+      this.collectSrcExportedDeclarations(declarationMap, dtsDeclarationMap, srcFile);
+    }
+    return declarationMap;
+  }
+
+  /**
+   * Collect mappings between names of exported declarations in a file and its actual declaration.
+   *
+   * Any new mappings are added to the `dtsDeclarationMap`.
+   */
+  protected collectDtsExportedDeclarations(
+      dtsDeclarationMap: Map<string, ts.Declaration>, srcFile: ts.SourceFile,
+      checker: ts.TypeChecker): void {
+    const srcModule = srcFile && checker.getSymbolAtLocation(srcFile);
+    const moduleExports = srcModule && checker.getExportsOfModule(srcModule);
+    if (moduleExports) {
+      moduleExports.forEach(exportedSymbol => {
+        const name = exportedSymbol.name;
+        if (exportedSymbol.flags & ts.SymbolFlags.Alias) {
+          exportedSymbol = checker.getAliasedSymbol(exportedSymbol);
+        }
+        const declaration = exportedSymbol.valueDeclaration;
+        if (declaration && !dtsDeclarationMap.has(name)) {
+          dtsDeclarationMap.set(name, declaration);
+        }
+      });
+    }
+  }
+
+
+  protected collectSrcExportedDeclarations(
+      declarationMap: Map<ts.Declaration, ts.Declaration>,
+      dtsDeclarationMap: Map<string, ts.Declaration>, srcFile: ts.SourceFile): void {
+    const fileExports = this.getExportsOfModule(srcFile);
+    if (fileExports !== null) {
+      for (const [exportName, {node: declaration}] of fileExports) {
+        if (declaration !== null && dtsDeclarationMap.has(exportName)) {
+          declarationMap.set(declaration, dtsDeclarationMap.get(exportName) !);
+        }
+      }
+    }
   }
 
   /**
@@ -1863,29 +1940,6 @@ function isClassMemberType(node: ts.Declaration): node is ts.ClassElement|
 }
 
 /**
- * Collect mappings between exported declarations in a source file and its associated
- * declaration in the typings program.
- */
-function collectExportedDeclarations(
-    checker: ts.TypeChecker, dtsDeclarationMap: Map<string, ts.Declaration>,
-    srcFile: ts.SourceFile): void {
-  const srcModule = srcFile && checker.getSymbolAtLocation(srcFile);
-  const moduleExports = srcModule && checker.getExportsOfModule(srcModule);
-  if (moduleExports) {
-    moduleExports.forEach(exportedSymbol => {
-      if (exportedSymbol.flags & ts.SymbolFlags.Alias) {
-        exportedSymbol = checker.getAliasedSymbol(exportedSymbol);
-      }
-      const declaration = exportedSymbol.valueDeclaration;
-      const name = exportedSymbol.name;
-      if (declaration && !dtsDeclarationMap.has(name)) {
-        dtsDeclarationMap.set(name, declaration);
-      }
-    });
-  }
-}
-
-/**
  * Attempt to resolve the variable declaration that the given declaration is assigned to.
  * For example, for the following code:
  *
@@ -1971,4 +2025,17 @@ function getContainingStatement(node: ts.Node): ts.ExpressionStatement|null {
     node = node.parent;
   }
   return node || null;
+}
+
+function getRootFileOrFail(bundle: BundleProgram): ts.SourceFile {
+  const rootFile = bundle.program.getSourceFile(bundle.path);
+  if (rootFile === undefined) {
+    throw new Error(`The given rootPath ${rootFile} is not a file of the program.`);
+  }
+  return rootFile;
+}
+
+function getNonRootFiles(bundle: BundleProgram): ts.SourceFile[] {
+  const rootFile = bundle.program.getSourceFile(bundle.path);
+  return bundle.program.getSourceFiles().filter(f => f !== rootFile);
 }

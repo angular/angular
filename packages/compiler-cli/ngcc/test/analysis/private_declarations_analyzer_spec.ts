@@ -225,7 +225,7 @@ runInEachFileSystem(() => {
         expect(analyses).toEqual([{
           identifier: 'ComponentOne',
           from: _('/node_modules/test-package/src/a.js'),
-          dtsFrom: null,
+          dtsFrom: _('/node_modules/test-package/typings/entry_point.d.ts'),
           alias: 'aliasedComponentOne',
         }]);
       });
