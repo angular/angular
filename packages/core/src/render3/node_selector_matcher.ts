@@ -8,7 +8,7 @@
 
 import '../util/ng_dev_mode';
 
-import {assertDefined, assertNotEqual} from '../util/assert';
+import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
 
 import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
@@ -296,4 +296,43 @@ export function isSelectorInSelectorList(selector: CssSelector, list: CssSelecto
     return true;
   }
   return false;
+}
+
+/**
+ * Stringify a selector for the purpose of component bootstrapping. Please note that this function
+ * does NOT attempt to stringify all possible forms of a CSS selector but rather focuses on ones
+ * most likely used to bootstrap components. Supporting all possible cases would add too much to the
+ * framework's size to support just a handful of rare cases.
+ */
+export function stringifyCSSSelectorForBootstrap(selector: CssSelector): string {
+  ngDevMode && assertEqual(
+                   typeof selector[0], 'string',
+                   ':not() selectors are not supported for components to be bootstrapped.');
+  let result = selector[0] as string;
+  let i = 1;
+  let mode = SelectorFlags.ATTRIBUTE;
+  while (i < selector.length) {
+    let valueOrMarker = selector[i];
+    if (typeof valueOrMarker === 'string') {
+      if (mode === SelectorFlags.ATTRIBUTE) {
+        const attrValue = selector[i + 1] as string;
+        result += '[' + valueOrMarker + (attrValue.length > 0 ? '="' + attrValue + '"' : '') + ']';
+        i += 2;
+      } else if (mode === SelectorFlags.CLASS) {
+        result += '.' + valueOrMarker;
+        i++;
+      }
+    } else {
+      ngDevMode &&
+          assertEqual(
+              valueOrMarker === SelectorFlags.ATTRIBUTE || valueOrMarker === SelectorFlags.CLASS,
+              true,
+              'Only element, attribute and class selectors are supported for components to be bootstrapped');
+      mode = valueOrMarker;
+      i++;
+    }
+  }
+
+
+  return result;
 }

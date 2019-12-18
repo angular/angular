@@ -10,7 +10,7 @@ import {createTNode} from '@angular/core/src/render3/instructions/shared';
 
 import {AttributeMarker, TAttributes, TNode, TNodeType} from '../../src/render3/interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags} from '../../src/render3/interfaces/projection';
-import {getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorList} from '../../src/render3/node_selector_matcher';
+import {getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorList, stringifyCSSSelectorForBootstrap} from '../../src/render3/node_selector_matcher';
 
 function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
   return createTNode(null !, null, TNodeType.Element, 0, tagName, attrs);
@@ -507,4 +507,38 @@ describe('css selector matching', () => {
 
   });
 
+});
+
+describe('stringifyCSSSelectorForBootstrap', () => {
+
+  it('should stringify selector with a tag name only',
+     () => { expect(stringifyCSSSelectorForBootstrap(['button'])).toBe('button'); });
+
+  it('should stringify selector with attributes', () => {
+    expect(stringifyCSSSelectorForBootstrap(['', 'id', ''])).toBe('[id]');
+    expect(stringifyCSSSelectorForBootstrap(['button', 'id', ''])).toBe('button[id]');
+    expect(stringifyCSSSelectorForBootstrap(['button', 'id', 'value'])).toBe('button[id="value"]');
+    expect(stringifyCSSSelectorForBootstrap([
+      'button', 'id', 'value', 'title', 'other'
+    ])).toBe('button[id="value"][title="other"]');
+  });
+
+  it('should stringify selector with class names', () => {
+    expect(stringifyCSSSelectorForBootstrap(['', SelectorFlags.CLASS, 'foo'])).toBe('.foo');
+    expect(stringifyCSSSelectorForBootstrap([
+      'button', SelectorFlags.CLASS, 'foo'
+    ])).toBe('button.foo');
+
+    expect(stringifyCSSSelectorForBootstrap([
+      'button', SelectorFlags.CLASS, 'foo', 'bar'
+    ])).toBe('button.foo.bar');
+
+    expect(stringifyCSSSelectorForBootstrap([
+      'button', SelectorFlags.CLASS, 'foo'
+    ])).toBe('button.foo');
+
+    expect(stringifyCSSSelectorForBootstrap([
+      'button', 'id', 'value', 'title', 'other', SelectorFlags.CLASS, 'foo', 'bar'
+    ])).toBe('button[id="value"][title="other"].foo.bar');
+  });
 });

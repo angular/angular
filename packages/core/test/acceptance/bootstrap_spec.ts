@@ -7,16 +7,16 @@
  */
 
 import {Component, NgModule} from '@angular/core';
-import {getComponentDef} from '@angular/core/src/render3/definition';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {onlyInIvy, withBody} from '@angular/private/testing';
+import {withBody} from '@angular/private/testing';
 
 describe('bootstrap', () => {
-  it('should bootstrap using #id selector', withBody('<div #my-app>', async() => {
+  it('should bootstrap using #id selector',
+     withBody('<div>before|</div><button id="my-app"></button>', async() => {
        try {
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(MyAppModule);
-         expect(document.body.textContent).toEqual('works!');
+         expect(document.body.textContent).toEqual('before|works!');
          ngModuleRef.destroy();
        } catch (err) {
          console.error(err);
