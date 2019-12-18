@@ -25,19 +25,15 @@ export class StaticAttributesBuilder {
   private _projectAsSelectors: (string|number)[]|null = null;
   private _i18nNameAttrs: string[]|null = null;
 
-  registerAttribute(attrName: string, value: any) {
-    switch (attrName) {
-      case 'style':
-        this.setStyleAttribute(value);
-        break;
+  setAttribute(attrName: string, value: string|o.Expression) {
+    if (!this._keyValueAttrs) {
+      this._keyValueAttrs = [];
+    }
 
-      case 'class':
-        this.setClassAttribute(value);
-        break;
-
-      default:
-        this._registerAttribute(attrName, value);
-        break;
+    if (keyValueAttrsIndexOf(this._keyValueAttrs, attrName) === -1) {
+      const [ns, nsAttr] = splitNsName(attrName);
+      const prop = ns !== null ? {namespace: ns, attr: nsAttr, fullName: attrName} : attrName;
+      this._keyValueAttrs.push({prop, value});
     }
   }
 
@@ -49,18 +45,6 @@ export class StaticAttributesBuilder {
   setStyleAttribute(value: string) {
     value = value.trim();
     this._stylesAttr = value.length === 0 ? null : value;
-  }
-
-  private _registerAttribute(attrName: string, value: any) {
-    if (!this._keyValueAttrs) {
-      this._keyValueAttrs = [];
-    }
-
-    if (keyValueAttrsIndexOf(this._keyValueAttrs, attrName) === -1) {
-      const [ns, nsAttr] = splitNsName(attrName);
-      const prop = ns !== null ? {namespace: ns, attr: nsAttr, fullName: attrName} : attrName;
-      this._keyValueAttrs.push({prop, value});
-    }
   }
 
   registerTemplateName(value: string) {
@@ -166,7 +150,7 @@ interface NamespacedPropEntry {
  */
 interface KeyValueEntry {
   prop: string|NamespacedPropEntry;
-  value: any;
+  value: string|o.Expression;
 }
 
 function generateClassesArray(classAttr: string): string[] {

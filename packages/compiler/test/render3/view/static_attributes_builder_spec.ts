@@ -12,8 +12,8 @@ import {StaticAttributesBuilder} from '../../../src/render3/view/static_attribut
 describe('StaticAttributesBuilder', () => {
   it('should generate key/value attribute values', () => {
     const b = new StaticAttributesBuilder();
-    b.registerAttribute('key1', 'value1');
-    b.registerAttribute('key2', 'value2');
+    b.setAttribute('key1', 'value1');
+    b.setAttribute('key2', 'value2');
 
     expectStaticAttributes(b).toEqual([
       'key1',
@@ -32,17 +32,6 @@ describe('StaticAttributesBuilder', () => {
 
     b.setStyleAttribute('opacity:0.5');
     expectStaticAttributes(b).toEqual([AttributeMarker.Styles, 'opacity', '0.5']);
-  });
-
-  it('should set the style attribute even if registered as a normal attribute', () => {
-    const b = new StaticAttributesBuilder();
-
-    b.registerAttribute('style', 'z-index:1000');
-    expectStaticAttributes(b).toEqual([
-      AttributeMarker.Styles,
-      'z-index',
-      '1000',
-    ]);
   });
 
   it('should generate class attribute values', () => {
@@ -64,13 +53,6 @@ describe('StaticAttributesBuilder', () => {
 
     b.setClassAttribute(' ');
     expectStaticAttributes(b).toEqual([]);
-  });
-
-  it('should set the class attribute even if registered as a normal attribute', () => {
-    const b = new StaticAttributesBuilder();
-
-    b.registerAttribute('class', 'foo');
-    expectStaticAttributes(b).toEqual([AttributeMarker.Classes, 'foo']);
   });
 
   it('should generate template name attribute values', () => {
@@ -133,9 +115,9 @@ describe('StaticAttributesBuilder', () => {
 
   it('should generate key/value, class, style and template attribute values', () => {
     const b = new StaticAttributesBuilder();
-    b.registerAttribute('title1', 'titleValue1');
-    b.registerAttribute(':ns:title2', 'titleValue2');
-    b.registerAttribute('title3', 'titleValue3');
+    b.setAttribute('title1', 'titleValue1');
+    b.setAttribute(':ns:title2', 'titleValue2');
+    b.setAttribute('title3', 'titleValue3');
     b.registerBindingName('name1');
     b.registerBindingName('name2');
     b.registerBindingName('name3');
