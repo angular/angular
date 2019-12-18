@@ -58,33 +58,11 @@ export class PrivateDeclarationsAnalyzer {
               if (declaration.node.name.text === exportedName) {
                 // This declaration is public so we can remove it from the list
                 privateDeclarations.delete(declaration.node.name);
-              } else if (!this.host.getDtsDeclaration(declaration.node)) {
+              } else {
                 // The referenced declaration is exported publicly but via an alias.
                 // In some cases the original declaration is missing from the dts program, such as
                 // when rolling up (flattening) the dts files.
                 // This is because the original declaration gets renamed to the exported alias.
-
-                // There is a constraint on this which we cannot handle. Consider the following
-                // code:
-                //
-                // /src/entry_point.js:
-                //     export {MyComponent as aliasedMyComponent} from './a';
-                //     export {MyComponent} from './b';`
-                //
-                // /src/a.js:
-                //     export class MyComponent {}
-                //
-                // /src/b.js:
-                //     export class MyComponent {}
-                //
-                // //typings/entry_point.d.ts:
-                //     export declare class aliasedMyComponent {}
-                //     export declare class MyComponent {}
-                //
-                // In this case we would end up matching the `MyComponent` from `/src/a.js` to the
-                // `MyComponent` declared in `/typings/entry_point.d.ts` even though that
-                // declaration is actually for the `MyComponent` in `/src/b.js`.
-
                 exportAliasDeclarations.set(declaration.node.name, exportedName);
               }
             }

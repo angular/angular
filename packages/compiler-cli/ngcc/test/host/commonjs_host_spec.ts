@@ -650,7 +650,7 @@ exports.D = D;
 
       TYPINGS_SRC_FILES = [
         {
-          name: _('/src/index.js'),
+          name: _('/ep/src/index.js'),
           contents: `
 var internal = require('./internal');
 var class1 = require('./class1');
@@ -667,7 +667,7 @@ __export(class2);
 `
         },
         {
-          name: _('/src/class1.js'),
+          name: _('/ep/src/class1.js'),
           contents: `
 var Class1 = (function() {
   function Class1() {}
@@ -682,7 +682,7 @@ exports.MissingClass1 = MissingClass1;
 `
         },
         {
-          name: _('/src/class2.js'),
+          name: _('/ep/src/class2.js'),
           contents: `
 var Class2 = (function() {
   function Class2() {}
@@ -691,8 +691,8 @@ var Class2 = (function() {
 exports.Class2 = Class2;
 `
         },
-        {name: _('/src/func1.js'), contents: 'function mooFn() {} export {mooFn}'}, {
-          name: _('/src/internal.js'),
+        {name: _('/ep/src/func1.js'), contents: 'function mooFn() {} export {mooFn}'}, {
+          name: _('/ep/src/internal.js'),
           contents: `
 var InternalClass = (function() {
   function InternalClass() {}
@@ -707,7 +707,7 @@ exports.Class2 = Class2;
 `
         },
         {
-          name: _('/src/missing-class.js'),
+          name: _('/ep/src/missing-class.js'),
           contents: `
 var MissingClass2 = (function() {
   function MissingClass2() {}
@@ -717,7 +717,7 @@ exports. MissingClass2 = MissingClass2;
 `
         },
         {
-          name: _('/src/flat-file.js'),
+          name: _('/ep/src/flat-file.js'),
           contents: `
 var Class1 = (function() {
   function Class1() {}
@@ -731,12 +731,12 @@ var MissingClass2 = (function() {
   function MissingClass2() {}
   return MissingClass2;
 }());
-var Class3 = (function() {
-  function Class3() {}
-  return Class3;
+var SourceClass = (function() {
+  function SourceClass() {}
+  return SourceClass;
 }());
 exports.Class1 = Class1;
-exports.xClass3 = Class3;
+exports.AliasedClass = SourceClass;
 exports.MissingClass1 = MissingClass1;
 exports.MissingClass2 = MissingClass2;
 `
@@ -745,29 +745,38 @@ exports.MissingClass2 = MissingClass2;
 
       TYPINGS_DTS_FILES = [
         {
-          name: _('/typings/index.d.ts'),
+          name: _('/ep/typings/index.d.ts'),
           contents: `
-              import {InternalClass} from './internal';
-              import {mooFn} from './func1';
-              export * from './class1';
-              export * from './class2';
-              `
+            import '../../an_external_lib/index';
+            import {InternalClass} from './internal';
+            import {mooFn} from './func1';
+            export * from './class1';
+            export * from './class2';
+            `
         },
         {
-          name: _('/typings/class1.d.ts'),
+          name: _('/ep/typings/class1.d.ts'),
           contents: `export declare class Class1 {}\nexport declare class OtherClass {}`
         },
         {
-          name: _('/typings/class2.d.ts'),
-          contents:
-              `export declare class Class2 {}\nexport declare interface SomeInterface {}\nexport {Class3 as xClass3} from './class3';`
+          name: _('/ep/typings/class2.d.ts'),
+          contents: `
+            export declare class Class2 {}
+            export declare interface SomeInterface {}
+            export {TypingsClass as AliasedClass} from './typings-class';
+          `
         },
-        {name: _('/typings/func1.d.ts'), contents: 'export declare function mooFn(): void;'},
+        {name: _('/ep/typings/func1.d.ts'), contents: 'export declare function mooFn(): void;'},
         {
-          name: _('/typings/internal.d.ts'),
+          name: _('/ep/typings/internal.d.ts'),
           contents: `export declare class InternalClass {}\nexport declare class Class2 {}`
         },
-        {name: _('/typings/class3.d.ts'), contents: `export declare class Class3 {}`},
+        {
+          name: _('/ep/typings/typings-class.d.ts'),
+          contents: `export declare class TypingsClass {}`
+        },
+        {name: _('/ep/typings/shadow-class.d.ts'), contents: `export declare class ShadowClass {}`},
+        {name: _('/an_external_lib/index.d.ts'), contents: 'export declare class ShadowClass {}'},
       ];
 
       MODULE_WITH_PROVIDERS_PROGRAM = [
@@ -2140,35 +2149,36 @@ exports.ExternalModule = ExternalModule;
            () => {
              loadTestFiles(TYPINGS_SRC_FILES);
              loadTestFiles(TYPINGS_DTS_FILES);
-             const bundle = makeTestBundleProgram(_('/src/index.js'));
-             const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
+             const bundle = makeTestBundleProgram(getRootFiles(TYPINGS_SRC_FILES)[0]);
+             const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
              const class1 = getDeclaration(
-                 bundle.program, _('/src/class1.js'), 'Class1', ts.isVariableDeclaration);
+                 bundle.program, _('/ep/src/class1.js'), 'Class1', ts.isVariableDeclaration);
              const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
 
              const dtsDeclaration = host.getDtsDeclaration(class1);
-             expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/class1.d.ts'));
+             expect(dtsDeclaration !.getSourceFile().fileName)
+                 .toEqual(_('/ep/typings/class1.d.ts'));
            });
 
         it('should find the dts declaration for exported functions', () => {
           loadTestFiles(TYPINGS_SRC_FILES);
           loadTestFiles(TYPINGS_DTS_FILES);
-          const bundle = makeTestBundleProgram(_('/src/index.js'));
-          const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
-          const mooFn =
-              getDeclaration(bundle.program, _('/src/func1.js'), 'mooFn', ts.isFunctionDeclaration);
+          const bundle = makeTestBundleProgram(_('/ep/src/func1.js'));
+          const dts = makeTestDtsBundleProgram(_('/ep/typings/func1.d.ts'), _('/'));
+          const mooFn = getDeclaration(
+              bundle.program, _('/ep/src/func1.js'), 'mooFn', ts.isFunctionDeclaration);
           const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
           const dtsDeclaration = host.getDtsDeclaration(mooFn);
-          expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/func1.d.ts'));
+          expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/ep/typings/func1.d.ts'));
         });
 
         it('should return null if there is no matching class in the matching dts file', () => {
           loadTestFiles(TYPINGS_SRC_FILES);
           loadTestFiles(TYPINGS_DTS_FILES);
-          const bundle = makeTestBundleProgram(_('/src/index.js'));
-          const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
+          const bundle = makeTestBundleProgram(_('/ep/src/index.js'));
+          const dts = makeTestDtsBundleProgram(_('/ep/typings/index.d.ts'), _('/'));
           const missingClass = getDeclaration(
-              bundle.program, _('/src/class1.js'), 'MissingClass1', ts.isVariableDeclaration);
+              bundle.program, _('/ep/src/class1.js'), 'MissingClass1', ts.isVariableDeclaration);
           const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
 
           expect(host.getDtsDeclaration(missingClass)).toBe(null);
@@ -2177,10 +2187,10 @@ exports.ExternalModule = ExternalModule;
         it('should return null if there is no matching dts file', () => {
           loadTestFiles(TYPINGS_SRC_FILES);
           loadTestFiles(TYPINGS_DTS_FILES);
-          const bundle = makeTestBundleProgram(_('/src/index.js'));
-          const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
+          const bundle = makeTestBundleProgram(_('/ep/src/index.js'));
+          const dts = makeTestDtsBundleProgram(_('/ep/typings/index.d.ts'), _('/'));
           const missingClass = getDeclaration(
-              bundle.program, _('/src/missing-class.js'), 'MissingClass2',
+              bundle.program, _('/ep/src/missing-class.js'), 'MissingClass2',
               ts.isVariableDeclaration);
           const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
 
@@ -2191,62 +2201,73 @@ exports.ExternalModule = ExternalModule;
            () => {
              loadTestFiles(TYPINGS_SRC_FILES);
              loadTestFiles(TYPINGS_DTS_FILES);
-             const bundle = makeTestBundleProgram(_('/src/index.js'));
-             const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
+             const bundle = makeTestBundleProgram(_('/ep/src/flat-file.js'));
+             const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
              const class1 = getDeclaration(
-                 bundle.program, _('/src/flat-file.js'), 'Class1', ts.isVariableDeclaration);
+                 bundle.program, _('/ep/src/flat-file.js'), 'Class1', ts.isVariableDeclaration);
              const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
 
              const dtsDeclaration = host.getDtsDeclaration(class1);
-             expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/class1.d.ts'));
+             expect(dtsDeclaration !.getSourceFile().fileName)
+                 .toEqual(_('/ep/typings/class1.d.ts'));
            });
 
         it('should find aliased exports', () => {
           loadTestFiles(TYPINGS_SRC_FILES);
           loadTestFiles(TYPINGS_DTS_FILES);
-          const bundle = makeTestBundleProgram(_('/src/index.js'));
-          const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
-          const class3 = getDeclaration(
-              bundle.program, _('/src/flat-file.js'), 'Class3', ts.isVariableDeclaration);
+          const bundle = makeTestBundleProgram(_('/ep/src/flat-file.js'));
+          const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
+          const sourceClass = getDeclaration(
+              bundle.program, _('/ep/src/flat-file.js'), 'SourceClass', ts.isVariableDeclaration);
           const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
 
-          const dtsDeclaration = host.getDtsDeclaration(class3);
-          expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/class3.d.ts'));
+          const dtsDeclaration = host.getDtsDeclaration(sourceClass);
+          if (dtsDeclaration === null) {
+            return fail('Expected dts class to be found');
+          }
+          if (!isNamedClassDeclaration(dtsDeclaration)) {
+            return fail('Expected a named class to be found.');
+          }
+          expect(dtsDeclaration.name.text).toEqual('TypingsClass');
+          expect(_(dtsDeclaration.getSourceFile().fileName))
+              .toEqual(_('/ep/typings/typings-class.d.ts'));
         });
 
         it('should find the dts file that contains a matching class declaration, even if the class is not publicly exported',
            () => {
              loadTestFiles(TYPINGS_SRC_FILES);
              loadTestFiles(TYPINGS_DTS_FILES);
-             const bundle = makeTestBundleProgram(_('/src/index.js'));
-             const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
+             const bundle = makeTestBundleProgram(getRootFiles(TYPINGS_SRC_FILES)[0]);
+             const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
              const internalClass = getDeclaration(
-                 bundle.program, _('/src/internal.js'), 'InternalClass', ts.isVariableDeclaration);
+                 bundle.program, _('/ep/src/internal.js'), 'InternalClass',
+                 ts.isVariableDeclaration);
              const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
 
              const dtsDeclaration = host.getDtsDeclaration(internalClass);
-             expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/internal.d.ts'));
+             expect(dtsDeclaration !.getSourceFile().fileName)
+                 .toEqual(_('/ep/typings/internal.d.ts'));
            });
 
-        it('should prefer the publicly exported class if there are multiple classes with the same name',
+        it('should match publicly and internal exported classes correctly, even if they have the same name',
            () => {
              loadTestFiles(TYPINGS_SRC_FILES);
              loadTestFiles(TYPINGS_DTS_FILES);
-             const bundle = makeTestBundleProgram(_('/src/index.js'));
-             const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
-             const class2 = getDeclaration(
-                 bundle.program, _('/src/class2.js'), 'Class2', ts.isVariableDeclaration);
-             const internalClass2 = getDeclaration(
-                 bundle.program, _('/src/internal.js'), 'Class2', ts.isVariableDeclaration);
+             const bundle = makeTestBundleProgram(getRootFiles(TYPINGS_SRC_FILES)[0]);
+             const dts = makeTestDtsBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0], _('/ep'));
              const host = new CommonJsReflectionHost(new MockLogger(), false, bundle, dts);
 
+             const class2 = getDeclaration(
+                 bundle.program, _('/ep/src/class2.js'), 'Class2', isNamedVariableDeclaration);
              const class2DtsDeclaration = host.getDtsDeclaration(class2);
              expect(class2DtsDeclaration !.getSourceFile().fileName)
-                 .toEqual(_('/typings/class2.d.ts'));
+                 .toEqual(_('/ep/typings/class2.d.ts'));
 
+             const internalClass2 = getDeclaration(
+                 bundle.program, _('/ep/src/internal.js'), 'Class2', isNamedVariableDeclaration);
              const internalClass2DtsDeclaration = host.getDtsDeclaration(internalClass2);
              expect(internalClass2DtsDeclaration !.getSourceFile().fileName)
-                 .toEqual(_('/typings/class2.d.ts'));
+                 .toEqual(_('/ep/typings/internal.d.ts'));
            });
       });
 

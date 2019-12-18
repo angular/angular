@@ -114,7 +114,7 @@ runInEachFileSystem(() => {
             `import { Directive } from '@angular/core';\nexport class A {\n    foo(x) {\n        return x;\n    }\n}\nA.decorators = [\n    { type: Directive, args: [{ selector: '[a]' }] }\n];\n`
       };
       INPUT_DTS_PROGRAM = {
-        name: _('/typings/file.d.ts'),
+        name: _('/node_modules/test-package/typings/file.d.ts'),
         contents: `export declare class A {\nfoo(x: number): number;\n}\n`
       };
     });
@@ -126,7 +126,8 @@ runInEachFileSystem(() => {
       const result = renderer.renderProgram(
           decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
-      const typingsFile = result.find(f => f.path === _('/typings/file.d.ts')) !;
+      const typingsFile =
+          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts')) !;
       expect(typingsFile.contents)
           .toContain(
               'foo(x: number): number;\n    static ɵfac: ɵngcc0.ɵɵFactoryDef<A>;\n    static ɵdir: ɵngcc0.ɵɵDirectiveDefWithMeta');
@@ -139,7 +140,8 @@ runInEachFileSystem(() => {
       const result = renderer.renderProgram(
           decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
-      const typingsFile = result.find(f => f.path === _('/typings/file.d.ts')) !;
+      const typingsFile =
+          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts')) !;
       expect(typingsFile.contents).toContain(`\n// ADD IMPORTS\n`);
     });
 
@@ -158,7 +160,8 @@ runInEachFileSystem(() => {
       const result = renderer.renderProgram(
           decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
-      const typingsFile = result.find(f => f.path === _('/typings/file.d.ts')) !;
+      const typingsFile =
+          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts')) !;
       expect(typingsFile.contents).toContain(`\n// ADD EXPORTS\n`);
     });
 
@@ -170,7 +173,8 @@ runInEachFileSystem(() => {
       const result = renderer.renderProgram(
           decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
-      const typingsFile = result.find(f => f.path === _('/typings/file.d.ts')) !;
+      const typingsFile =
+          result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts')) !;
       expect(typingsFile.contents).toContain(`\n// ADD MODUlE WITH PROVIDERS PARAMS\n`);
     });
   });

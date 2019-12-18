@@ -21,7 +21,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
   protected topLevelHelperCalls = new Map<string, Map<ts.SourceFile, ts.CallExpression[]>>();
   protected program: ts.Program;
   protected compilerHost: ts.CompilerHost;
-  constructor(logger: Logger, isCore: boolean, src: BundleProgram, dts?: BundleProgram|null) {
+  constructor(logger: Logger, isCore: boolean, src: BundleProgram, dts: BundleProgram|null = null) {
     super(logger, isCore, src, dts);
     this.program = src.program;
     this.compilerHost = src.host;
