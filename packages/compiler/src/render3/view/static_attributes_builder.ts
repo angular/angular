@@ -9,14 +9,16 @@ import {AttributeMarker, SelectorFlags} from '../../core';
 import {splitNsName} from '../../ml_parser/tags';
 import * as o from '../../output/output_ast';
 
+import {AttributeBuilder} from './api';
 import {parse as parseStyle} from './style_parser';
+
 
 
 /**
  * Used to generate the `TAttributes` array (which is used by the `element`, `elementStart` and
  * `elementHostAttrs` instructions).
  */
-export class StaticAttributesBuilder {
+export class StaticAttributesBuilder implements AttributeBuilder {
   private _keyValueAttrs: KeyValueEntry[]|null = null;
   private _classAttr: string|null = null;
   private _stylesAttr: string|null = null;

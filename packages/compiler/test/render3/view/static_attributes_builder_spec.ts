@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AttributeMarker} from '../../../src/core';
-import * as o from '../../../src/output/output_ast';
 import {StaticAttributesBuilder} from '../../../src/render3/view/static_attributes_builder';
+import {expectAttributeValues} from './util';
 
 describe('StaticAttributesBuilder', () => {
   it('should generate key/value attribute values', () => {
@@ -15,7 +15,7 @@ describe('StaticAttributesBuilder', () => {
     b.setAttribute('key1', 'value1');
     b.setAttribute('key2', 'value2');
 
-    expectStaticAttributes(b).toEqual([
+    expectAttributeValues(b).toEqual([
       'key1',
       'value1',
       'key2',
@@ -27,32 +27,31 @@ describe('StaticAttributesBuilder', () => {
     const b = new StaticAttributesBuilder();
 
     b.setStyleAttribute('width:200px; height:400px');
-    expectStaticAttributes(b).toEqual(
-        [AttributeMarker.Styles, 'width', '200px', 'height', '400px']);
+    expectAttributeValues(b).toEqual([AttributeMarker.Styles, 'width', '200px', 'height', '400px']);
 
     b.setStyleAttribute('opacity:0.5');
-    expectStaticAttributes(b).toEqual([AttributeMarker.Styles, 'opacity', '0.5']);
+    expectAttributeValues(b).toEqual([AttributeMarker.Styles, 'opacity', '0.5']);
   });
 
   it('should generate class attribute values', () => {
     const b = new StaticAttributesBuilder();
 
     b.setClassAttribute('foo bar baz');
-    expectStaticAttributes(b).toEqual([
+    expectAttributeValues(b).toEqual([
       AttributeMarker.Classes,
       'foo',
       'bar',
       'baz',
     ]);
 
-    b.setClassAttribute(' oof ');
-    expectStaticAttributes(b).toEqual([
+    b.setClassAttribute('oof');
+    expectAttributeValues(b).toEqual([
       AttributeMarker.Classes,
       'oof',
     ]);
 
     b.setClassAttribute(' ');
-    expectStaticAttributes(b).toEqual([]);
+    expectAttributeValues(b).toEqual([]);
   });
 
   it('should generate template name attribute values', () => {
@@ -61,7 +60,7 @@ describe('StaticAttributesBuilder', () => {
     b.registerTemplateName('name2');
     b.registerTemplateName('name3');
 
-    expectStaticAttributes(b).toEqual([
+    expectAttributeValues(b).toEqual([
       AttributeMarker.Template,
       'name1',
       'name2',
@@ -75,7 +74,7 @@ describe('StaticAttributesBuilder', () => {
     b.registerBindingName('name2');
     b.registerBindingName('name3');
 
-    expectStaticAttributes(b).toEqual([
+    expectAttributeValues(b).toEqual([
       AttributeMarker.Bindings,
       'name1',
       'name2',
@@ -89,7 +88,7 @@ describe('StaticAttributesBuilder', () => {
     b.registerI18nName('name2');
     b.registerI18nName('name3');
 
-    expectStaticAttributes(b).toEqual([
+    expectAttributeValues(b).toEqual([
       AttributeMarker.I18n,
       'name1',
       'name2',
@@ -101,13 +100,13 @@ describe('StaticAttributesBuilder', () => {
     const b = new StaticAttributesBuilder();
 
     b.setProjectAsSelector('.my-app');
-    expectStaticAttributes(b).toEqual([
+    expectAttributeValues(b).toEqual([
       AttributeMarker.ProjectAs,
       ['.my-app'],
     ]);
 
     b.setProjectAsSelector('.their-app');
-    expectStaticAttributes(b).toEqual([
+    expectAttributeValues(b).toEqual([
       AttributeMarker.ProjectAs,
       ['.their-app'],
     ]);
@@ -131,7 +130,7 @@ describe('StaticAttributesBuilder', () => {
     b.setStyleAttribute('width: 200px; height: 400px');
     b.setProjectAsSelector('.my-app');
 
-    expectStaticAttributes(b).toEqual([
+    expectAttributeValues(b).toEqual([
       'title1',
       'titleValue1',
       AttributeMarker.NamespaceURI,
@@ -166,21 +165,3 @@ describe('StaticAttributesBuilder', () => {
     ]);
   });
 });
-
-function expectStaticAttributes(builder: StaticAttributesBuilder) {
-  return expect(expArrayToRawValues(builder.build()));
-}
-
-function expArrayToRawValues(exp: (o.LiteralExpr | o.LiteralArrayExpr)[]) {
-  return exp.map(entry => {
-    if (entry instanceof o.LiteralArrayExpr) {
-      return entry.entries.map(e => toRawValue(e as o.LiteralExpr));
-    } else {
-      return toRawValue(entry);
-    }
-  });
-}
-
-function toRawValue(exp: o.LiteralExpr): any {
-  return exp.value;
-}
