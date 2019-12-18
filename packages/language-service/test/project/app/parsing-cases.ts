@@ -100,29 +100,6 @@ interface Person {
 }
 
 @Component({
-  template: '<div *ngFor="let ~{for-let-empty}"></div>',
-})
-export class ForOfLetEmpty {
-}
-
-@Component({
-  template: '<div *ngFor="let i = ~{for-let-i-equal}"></div>',
-})
-export class ForLetIEqual {
-}
-
-@Component({
-  template: `
-    <div *ngFor="let ~{for-person}person of ~{for-people}people">
-      <span>Name: {{~{for-interp-person}person.~{for-interp-name}name}}</span>
-      <span>Age: {{person.~{for-interp-age}age}}</span>
-    </div>`,
-})
-export class ForUsingComponent {
-  people: Person[] = [];
-}
-
-@Component({
   template: `
     <div *ngFor="let person of people | async">
       {{person.~{async-person-name}name}}

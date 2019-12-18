@@ -511,7 +511,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
 
     if (binding.keyIsVar) {
       const equalLocation = attr.value.indexOf('=');
-      if (equalLocation >= 0 && valueRelativePosition >= equalLocation) {
+      if (equalLocation > 0 && valueRelativePosition > equalLocation) {
         // We are after the '=' in a let clause. The valid values here are the members of the
         // template reference's type parameter.
         const directiveMetadata = selectorInfo.map.get(selector);
@@ -530,6 +530,19 @@ class ExpressionVisitor extends NullTemplateVisitor {
     if (binding.expression && inSpan(valueRelativePosition, binding.expression.ast.span)) {
       this.addAttributeValuesToCompletions(binding.expression.ast);
       return;
+    }
+
+    // If the expression is incomplete, for example *ngFor="let x of |"
+    // binding.expression is null. We could still try to provide suggestions
+    // by looking for symbols that are in scope.
+    const KW_OF = ' of ';
+    const ofLocation = attr.value.indexOf(KW_OF);
+    if (ofLocation > 0 && valueRelativePosition >= ofLocation + KW_OF.length) {
+      const span = new ParseSpan(0, attr.value.length);
+      const offset = attr.sourceSpan.start.offset;
+      const receiver = new ImplicitReceiver(span, span.toAbsolute(offset));
+      const expressionAst = new PropertyRead(span, span.toAbsolute(offset), receiver, '');
+      this.addAttributeValuesToCompletions(expressionAst);
     }
   }
 }
