@@ -23,7 +23,7 @@ describe('ComponentFactory', () => {
         static ɵfac = () => new TestComponent();
         static ɵcmp = ɵɵdefineComponent({
           type: TestComponent,
-          selectors: [['test', 'foo'], ['bar']],
+          selectors: [['test', 'foo', ''], ['bar']],
           decls: 0,
           vars: 0,
           template: () => undefined,
@@ -32,7 +32,7 @@ describe('ComponentFactory', () => {
 
       const cf = cfr.resolveComponentFactory(TestComponent);
 
-      expect(cf.selector).toBe('test');
+      expect(cf.selector).toBe('test[foo],bar');
       expect(cf.componentType).toBe(TestComponent);
       expect(cf.ngContentSelectors).toEqual([]);
       expect(cf.inputs).toEqual([]);
@@ -45,7 +45,7 @@ describe('ComponentFactory', () => {
         static ɵcmp = ɵɵdefineComponent({
           type: TestComponent,
           encapsulation: ViewEncapsulation.None,
-          selectors: [['test', 'foo'], ['bar']],
+          selectors: [['test', 'foo', ''], ['bar']],
           decls: 0,
           vars: 0,
           template: () => undefined,
@@ -65,7 +65,7 @@ describe('ComponentFactory', () => {
 
       expect(cf.componentType).toBe(TestComponent);
       expect(cf.ngContentSelectors).toEqual(['*', 'a', 'b']);
-      expect(cf.selector).toBe('test');
+      expect(cf.selector).toBe('test[foo],bar');
 
       expect(cf.inputs).toEqual([
         {propName: 'in1', templateName: 'in1'},
