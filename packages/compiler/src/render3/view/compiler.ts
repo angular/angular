@@ -653,9 +653,14 @@ function createHostBindingsFunction(
 
   const hostAttrs = attrsBuilder.build();
   if (hostAttrs.length !== 0) {
-    // elementHostAttrs([...]);
-    createStatements.push(
-        o.importExpr(R3.elementHostAttrs).callFn([o.literalArr(hostAttrs)]).toStmt());
+    // convert the array into a constant if possible
+    const attrArray = !hostAttrs.some(attr => attr instanceof o.WrappedNodeExpr) ?
+        getConstantLiteralFromArray(constantPool, hostAttrs) :
+        o.literalArr(hostAttrs);
+
+    // this is the instruction that is used within host bindings to
+    // apply attribute values to an element.
+    createStatements.push(o.importExpr(R3.elementHostAttrs).callFn([attrArray]).toStmt());
   }
 
   if (styleBuilder.hasBindings) {
@@ -887,4 +892,12 @@ export function verifyHostBindings(
 function compileStyles(styles: string[], selector: string, hostSelector: string): string[] {
   const shadowCss = new ShadowCss();
   return styles.map(style => { return shadowCss !.shimCssText(style, selector, hostSelector); });
+}
+/**
+ * Simple helper function to either provide the constant literal that will house the value
+ * here or a null value if the provided values are empty.
+ */
+function getConstantLiteralFromArray(
+    constantPool: ConstantPool, values: o.Expression[]): o.Expression {
+  return values.length ? constantPool.getConstLiteral(o.literalArr(values), true) : o.NULL_EXPR;
 }
