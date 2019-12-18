@@ -118,7 +118,7 @@ describe('completions', () => {
     expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
   });
 
-  it('should suggest template refereces', () => {
+  it('should suggest template references', () => {
     mockHost.override(TEST_TEMPLATE, `<div *~{cursor}></div>`);
     const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
     const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
@@ -275,8 +275,9 @@ describe('completions', () => {
 
   describe('with a *ngFor', () => {
     it('should suggest NgForRow members for let initialization expression', () => {
-      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'for-let-i-equal');
-      const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
+      mockHost.override(TEST_TEMPLATE, `<div *ngFor="let i=~{cursor}"></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
       expectContain(completions, CompletionKind.PROPERTY, [
         '$implicit',
         'ngForOf',
@@ -289,24 +290,44 @@ describe('completions', () => {
       ]);
     });
 
-    it('should include field reference', () => {
-      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'for-people');
-      const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
-      expectContain(completions, CompletionKind.PROPERTY, ['people']);
+    it('should not provide suggestion before the = sign', () => {
+      mockHost.override(TEST_TEMPLATE, `<div *ngFor="let i~{cursor}="></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expect(completions).toBeUndefined();
     });
 
-    it('should include person in the let scope', () => {
-      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'for-interp-person');
-      const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
-      expectContain(completions, CompletionKind.VARIABLE, ['person']);
+    it('should include field reference', () => {
+      mockHost.override(TEST_TEMPLATE, `<div *ngFor="let x of ~{cursor}"></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.PROPERTY, ['title', 'heroes', 'league']);
+      // the symbol 'x' declared in *ngFor is also in scope. This asserts that
+      // we are actually taking the AST into account and not just referring to
+      // the symbol table of the Component.
+      expectContain(completions, CompletionKind.VARIABLE, ['x']);
+    });
+
+    it('should include variable in the let scope in interpolation', () => {
+      mockHost.override(TEST_TEMPLATE, `
+        <div *ngFor="let h of heroes">
+          {{~{cursor}}}
+        </div>
+      `);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.VARIABLE, ['h']);
     });
 
     it('should be able to infer the type of a ngForOf', () => {
-      for (const location of ['for-interp-name', 'for-interp-age']) {
-        const marker = mockHost.getLocationMarkerFor(PARSING_CASES, location);
-        const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
-        expectContain(completions, CompletionKind.PROPERTY, ['name', 'age', 'street']);
-      }
+      mockHost.override(TEST_TEMPLATE, `
+        <div *ngFor="let h of heroes">
+          {{ h.~{cursor} }}
+        </div>
+      `);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
     });
 
     it('should be able to infer the type of a ngForOf with an async pipe', () => {
