@@ -127,7 +127,7 @@ export class TraitCompiler {
     visit(sf);
 
     if (preanalyze && promises.length > 0) {
-      return Promise.all(promises).then(() => undefined as void);
+      return Promise.all(promises) as unknown as Promise<void>;
     } else {
       return undefined;
     }
