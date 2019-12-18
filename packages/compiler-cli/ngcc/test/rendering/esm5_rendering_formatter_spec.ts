@@ -28,8 +28,7 @@ function setup(file: {name: AbsoluteFsPath, contents: string}) {
   const fs = getFileSystem();
   const logger = new MockLogger();
   const bundle = makeTestEntryPointBundle('test-package', 'esm5', false, [file.name]);
-  const typeChecker = bundle.src.program.getTypeChecker();
-  const host = new Esm5ReflectionHost(logger, false, typeChecker);
+  const host = new Esm5ReflectionHost(logger, false, bundle.src);
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();

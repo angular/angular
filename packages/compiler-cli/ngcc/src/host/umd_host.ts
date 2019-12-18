@@ -18,10 +18,12 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   protected umdModules = new Map<ts.SourceFile, UmdModule|null>();
   protected umdExports = new Map<ts.SourceFile, Map<string, Declaration>|null>();
   protected umdImportPaths = new Map<ts.ParameterDeclaration, string|null>();
-  constructor(
-      logger: Logger, isCore: boolean, protected program: ts.Program,
-      protected compilerHost: ts.CompilerHost, dts?: BundleProgram|null) {
-    super(logger, isCore, program.getTypeChecker(), dts);
+  protected program: ts.Program;
+  protected compilerHost: ts.CompilerHost;
+  constructor(logger: Logger, isCore: boolean, src: BundleProgram, dts?: BundleProgram|null) {
+    super(logger, isCore, src, dts);
+    this.program = src.program;
+    this.compilerHost = src.host;
   }
 
   getImportOfIdentifier(id: ts.Identifier): Import|null {

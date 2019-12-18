@@ -77,10 +77,10 @@ runInEachFileSystem(() => {
     describe('getDecoratorsOfDeclaration()', () => {
       it('should find the decorators on a class', () => {
         loadTestFiles([SOME_DIRECTIVE_FILE]);
-        const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, bundle);
         const classNode = getDeclaration(
-            program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators).toBeDefined();
@@ -97,10 +97,11 @@ runInEachFileSystem(() => {
 
       it('should find the decorators on an aliased class', () => {
         loadTestFiles([SOME_DIRECTIVE_FILE]);
-        const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, bundle);
         const classNode = getDeclaration(
-            program, SOME_DIRECTIVE_FILE.name, 'AliasedDirective$1', isNamedVariableDeclaration);
+            bundle.program, SOME_DIRECTIVE_FILE.name, 'AliasedDirective$1',
+            isNamedVariableDeclaration);
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators).toBeDefined();
@@ -119,10 +120,10 @@ runInEachFileSystem(() => {
     describe('getMembersOfClass()', () => {
       it('should find decorated members on a class', () => {
         loadTestFiles([SOME_DIRECTIVE_FILE]);
-        const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, bundle);
         const classNode = getDeclaration(
-            program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
         const members = host.getMembersOfClass(classNode);
 
         const input1 = members.find(member => member.name === 'input1') !;
@@ -139,10 +140,11 @@ runInEachFileSystem(() => {
       describe('getConstructorParameters', () => {
         it('should find the decorated constructor parameters', () => {
           loadTestFiles([SOME_DIRECTIVE_FILE]);
-          const {program, host: compilerHost} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+          const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
+          const host = new UmdReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+              bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
+              isNamedVariableDeclaration);
           const parameters = host.getConstructorParameters(classNode);
 
           expect(parameters).toBeDefined();
