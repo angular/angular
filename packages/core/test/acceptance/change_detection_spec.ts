@@ -1403,12 +1403,12 @@ describe('change detection', () => {
     //       .not.toThrowError();
     // });
     //
-    // it('should include style prop name in case of host style bindings', () => {
+    // it('should not throw for style maps as host bindings', () => {
     //   expect(() => initWithHostBindings({'[style]': 'unstableStyleMapExpression'}))
     //       .not.toThrowError();
     // });
     //
-    // it('should include class name in case of host class bindings', () => {
+    // it('should not throw for class maps as host binding', () => {
     //   expect(() => initWithHostBindings({'[class]': 'unstableClassMapExpression'}))
     //       .not.toThrowError();
     // });
