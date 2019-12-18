@@ -1679,7 +1679,7 @@ function refreshComponent(hostLView: LView, componentHostIdx: number): void {
     refreshView(componentTView, componentView, componentTView.template, componentView[CONTEXT]);
 =======
       (componentView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty) ||
-       // Check needed as part of checkNoChanges pass
+       // Refresh needed as part of checkNoChanges pass
        (getCheckNoChangesMode() && componentView[FLAGS] & LViewFlags.CheckNoChanges))) {
     const tView = componentView[TVIEW];
     refreshView(componentView, tView, tView.template, componentView[CONTEXT]);

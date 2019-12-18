@@ -341,6 +341,7 @@ export const enum LViewFlags {
   /** Whether or not this view is the root view */
   IsRoot = 1 << 9,
 
+  /** Whether this view should be checked during CheckNoChanges pass. */
   CheckNoChanges = 1 << 10,
 
   /**
