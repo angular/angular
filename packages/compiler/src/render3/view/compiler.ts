@@ -648,13 +648,13 @@ function createHostBindingsFunction(
   for (let i = 0; i < hostAttrNames.length; i++) {
     const name = hostAttrNames[i];
     const value = attrsMap[name];
-    attrsBuilder.registerAttribute(name, value);
+    attrsBuilder.setAttribute(name, value);
   }
 
   const hostAttrs = attrsBuilder.build();
   if (hostAttrs.length !== 0) {
     // convert the array into a constant if possible
-    const attrArray = !hostAttrs.some(attr => attr instanceof o.WrappedNodeExpr) ?
+    const attrArray = hostAttrs.every(attr => attr.isConstant()) ?
         getConstantLiteralFromArray(constantPool, hostAttrs) :
         o.literalArr(hostAttrs);
 
