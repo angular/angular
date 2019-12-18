@@ -20,7 +20,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFl
 
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getConstructorDependencies, isAngularDecorator, makeDuplicateDeclarationError, readBaseClass, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens} from './util';
+import {findAngularDecorator, getConstructorDependencies, isAngularDecorator, makeDuplicateDeclarationError, readBaseClass, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 const FIELD_DECORATORS = [
@@ -292,6 +292,9 @@ export function extractDirectiveMetadata(
 
   // Detect if the component inherits from another class
   const usesInheritance = reflector.hasBaseClass(clazz);
+  const type = wrapTypeReference(reflector, clazz);
+  const internalType = new WrappedNodeExpr(reflector.getInternalNameOfClass(clazz));
+
   const metadata: R3DirectiveMetadata = {
     name: clazz.name.text,
     deps: ctorDeps, host,
@@ -300,9 +303,7 @@ export function extractDirectiveMetadata(
     },
     inputs: {...inputsFromMeta, ...inputsFromFields},
     outputs: {...outputsFromMeta, ...outputsFromFields}, queries, viewQueries, selector,
-    fullInheritance: !!(flags & HandlerFlags.FULL_INHERITANCE),
-    type: new WrappedNodeExpr(clazz.name),
-    internalType: new WrappedNodeExpr(reflector.getInternalNameOfClass(clazz)),
+    fullInheritance: !!(flags & HandlerFlags.FULL_INHERITANCE), type, internalType,
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
     typeSourceSpan: EMPTY_SOURCE_SPAN, usesInheritance, exportAs, providers
   };

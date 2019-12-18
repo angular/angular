@@ -481,7 +481,7 @@ function createTypeForDef(meta: R3DirectiveMetadata, typeBase: o.ExternalReferen
   const selectorForType = meta.selector !== null ? meta.selector.replace(/\n/g, '') : null;
 
   return o.expressionType(o.importExpr(typeBase, [
-    typeWithParameters(meta.type, meta.typeArgumentCount),
+    typeWithParameters(meta.type.type, meta.typeArgumentCount),
     selectorForType !== null ? stringAsType(selectorForType) : o.NONE_TYPE,
     meta.exportAs !== null ? stringArrayAsType(meta.exportAs) : o.NONE_TYPE,
     stringMapAsType(meta.inputs),
