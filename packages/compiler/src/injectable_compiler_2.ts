@@ -9,7 +9,7 @@
 import {Identifiers} from './identifiers';
 import * as o from './output/output_ast';
 import {R3DependencyMetadata, R3FactoryDelegateType, R3FactoryMetadata, R3FactoryTarget, compileFactoryFunction} from './render3/r3_factory';
-import {mapToMapExpression, typeWithParameters} from './render3/util';
+import {R3Reference, mapToMapExpression, typeWithParameters} from './render3/util';
 
 export interface InjectableDef {
   expression: o.Expression;
@@ -19,7 +19,7 @@ export interface InjectableDef {
 
 export interface R3InjectableMetadata {
   name: string;
-  type: o.Expression;
+  type: R3Reference;
   internalType: o.Expression;
   typeArgumentCount: number;
   providedIn: o.Expression;
@@ -69,7 +69,7 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
       result = compileFactoryFunction(factoryMeta);
     } else {
       result = delegateToFactory(
-          meta.type as o.WrappedNodeExpr<any>, meta.useClass as o.WrappedNodeExpr<any>);
+          meta.type.value as o.WrappedNodeExpr<any>, meta.useClass as o.WrappedNodeExpr<any>);
     }
   } else if (meta.useFactory !== undefined) {
     if (meta.userDeps !== undefined) {
@@ -101,7 +101,7 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
     });
   } else {
     result = delegateToFactory(
-        meta.type as o.WrappedNodeExpr<any>, meta.internalType as o.WrappedNodeExpr<any>);
+        meta.type.value as o.WrappedNodeExpr<any>, meta.internalType as o.WrappedNodeExpr<any>);
   }
 
   const token = meta.internalType;
@@ -116,7 +116,7 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
   const expression =
       o.importExpr(Identifiers.ɵɵdefineInjectable).callFn([mapToMapExpression(injectableProps)]);
   const type = new o.ExpressionType(o.importExpr(
-      Identifiers.InjectableDef, [typeWithParameters(meta.type, meta.typeArgumentCount)]));
+      Identifiers.InjectableDef, [typeWithParameters(meta.type.type, meta.typeArgumentCount)]));
 
   return {
     expression,
