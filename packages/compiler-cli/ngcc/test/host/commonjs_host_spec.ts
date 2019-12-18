@@ -557,7 +557,8 @@ exports.xtra2 = xtra2;
     function __export(m) {
       for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
     }
-    __export(require("./b_module"));
+    var b_module = require("./b_module");
+    __export(b_module);
     __export(require("./xtra_module"));
     `
         },
