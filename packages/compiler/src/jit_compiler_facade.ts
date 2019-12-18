@@ -39,7 +39,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       any {
     const metadata: R3PipeMetadata = {
       name: facade.name,
-      type: new WrappedNodeExpr(facade.type),
+      type: wrapReference(facade.type),
       internalType: new WrappedNodeExpr(facade.type),
       typeArgumentCount: facade.typeArgumentCount,
       deps: convertR3DependencyMetadataArray(facade.deps),
@@ -55,7 +55,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       facade: R3InjectableMetadataFacade): any {
     const {expression, statements} = compileInjectable({
       name: facade.name,
-      type: new WrappedNodeExpr(facade.type),
+      type: wrapReference(facade.type),
       internalType: new WrappedNodeExpr(facade.type),
       typeArgumentCount: facade.typeArgumentCount,
       providedIn: computeProvidedIn(facade.providedIn),
@@ -74,7 +74,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       facade: R3InjectorMetadataFacade): any {
     const meta: R3InjectorMetadata = {
       name: facade.name,
-      type: new WrappedNodeExpr(facade.type),
+      type: wrapReference(facade.type),
       internalType: new WrappedNodeExpr(facade.type),
       deps: convertR3DependencyMetadataArray(facade.deps),
       providers: new WrappedNodeExpr(facade.providers),
@@ -88,7 +88,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
       facade: R3NgModuleMetadataFacade): any {
     const meta: R3NgModuleMetadata = {
-      type: new WrappedNodeExpr(facade.type),
+      type: wrapReference(facade.type),
       internalType: new WrappedNodeExpr(facade.type),
       adjacentType: new WrappedNodeExpr(facade.type),
       bootstrap: facade.bootstrap.map(wrapReference),
@@ -163,7 +163,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3FactoryDefMetadataFacade) {
     const factoryRes = compileFactoryFunction({
       name: meta.name,
-      type: new WrappedNodeExpr(meta.type),
+      type: wrapReference(meta.type),
       internalType: new WrappedNodeExpr(meta.type),
       typeArgumentCount: meta.typeArgumentCount,
       deps: convertR3DependencyMetadataArray(meta.deps),
@@ -252,7 +252,7 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
   return {
     ...facade as R3DirectiveMetadataFacadeNoPropAndWhitespace,
     typeSourceSpan: facade.typeSourceSpan,
-    type: new WrappedNodeExpr(facade.type),
+    type: wrapReference(facade.type),
     internalType: new WrappedNodeExpr(facade.type),
     deps: convertR3DependencyMetadataArray(facade.deps),
     host: extractHostBindings(facade.propMetadata, facade.typeSourceSpan, facade.host),

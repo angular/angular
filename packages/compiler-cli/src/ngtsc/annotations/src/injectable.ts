@@ -16,7 +16,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPr
 
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, unwrapConstructorDependencies, unwrapForwardRef, validateConstructorDependencies} from './util';
+import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, unwrapConstructorDependencies, unwrapForwardRef, validateConstructorDependencies, wrapTypeReference} from './util';
 
 export interface InjectableHandlerData {
   meta: R3InjectableMetadata;
@@ -130,7 +130,7 @@ function extractInjectableMetadata(
     clazz: ClassDeclaration, decorator: Decorator,
     reflector: ReflectionHost): R3InjectableMetadata {
   const name = clazz.name.text;
-  const type = new WrappedNodeExpr(clazz.name);
+  const type = wrapTypeReference(reflector, clazz);
   const internalType = new WrappedNodeExpr(reflector.getInternalNameOfClass(clazz));
   const typeArgumentCount = reflector.getGenericArityOfClass(clazz) || 0;
   if (decorator.args === null) {

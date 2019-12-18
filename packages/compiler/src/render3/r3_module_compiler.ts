@@ -29,7 +29,7 @@ export interface R3NgModuleMetadata {
   /**
    * An expression representing the module type being compiled.
    */
-  type: o.Expression;
+  type: R3Reference;
 
   /**
    * An expression representing the module type being compiled, intended for use within a class
@@ -160,7 +160,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
 
   const expression = o.importExpr(R3.defineNgModule).callFn([mapToMapExpression(definitionMap)]);
   const type = new o.ExpressionType(o.importExpr(R3.NgModuleDefWithMeta, [
-    new o.ExpressionType(moduleType), tupleTypeOf(declarations), tupleTypeOf(imports),
+    new o.ExpressionType(moduleType.type), tupleTypeOf(declarations), tupleTypeOf(imports),
     tupleTypeOf(exports)
   ]));
 
@@ -228,7 +228,7 @@ export interface R3InjectorDef {
 
 export interface R3InjectorMetadata {
   name: string;
-  type: o.Expression;
+  type: R3Reference;
   internalType: o.Expression;
   deps: R3DependencyMetadata[]|null;
   providers: o.Expression|null;
@@ -259,7 +259,7 @@ export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
 
   const expression = o.importExpr(R3.defineInjector).callFn([mapToMapExpression(definitionMap)]);
   const type =
-      new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type)]));
+      new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type.type)]));
   return {expression, type, statements: result.statements};
 }
 

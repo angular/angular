@@ -15,7 +15,7 @@ import * as o from '../output/output_ast';
 import {Identifiers as R3} from '../render3/r3_identifiers';
 import {OutputContext} from '../util';
 
-import {typeWithParameters} from './util';
+import {R3Reference, typeWithParameters} from './util';
 import {unsupported} from './view/util';
 
 
@@ -32,7 +32,7 @@ export interface R3ConstructorFactoryMetadata {
   /**
    * An expression representing the interface type being constructed.
    */
-  type: o.Expression;
+  type: R3Reference;
 
   /**
    * An expression representing the constructor type, intended for use within a class definition
@@ -270,7 +270,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3FactoryFn {
         `${meta.name}_Factory`),
     statements,
     type: o.expressionType(
-        o.importExpr(R3.FactoryDef, [typeWithParameters(meta.type, meta.typeArgumentCount)]))
+        o.importExpr(R3.FactoryDef, [typeWithParameters(meta.type.type, meta.typeArgumentCount)]))
   };
 }
 

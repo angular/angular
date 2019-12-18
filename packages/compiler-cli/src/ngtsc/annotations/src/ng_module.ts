@@ -22,7 +22,7 @@ import {getSourceFile} from '../../util/src/typescript';
 
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
-import {combineResolvers, findAngularDecorator, forwardRefResolver, getReferenceOriginForDiagnostics, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
+import {combineResolvers, findAngularDecorator, forwardRefResolver, getReferenceOriginForDiagnostics, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
 
 export interface NgModuleAnalysis {
   mod: R3NgModuleMetadata;
@@ -220,10 +220,14 @@ export class NgModuleDecoratorHandler implements
         declarations.some(isForwardReference) || imports.some(isForwardReference) ||
         exports.some(isForwardReference);
 
+    const type = wrapTypeReference(this.reflector, node);
+    const internalType = new WrappedNodeExpr(this.reflector.getInternalNameOfClass(node));
+    const adjacentType = new WrappedNodeExpr(this.reflector.getAdjacentNameOfClass(node));
+
     const ngModuleDef: R3NgModuleMetadata = {
-      type: new WrappedNodeExpr(node.name),
-      internalType: new WrappedNodeExpr(this.reflector.getInternalNameOfClass(node)),
-      adjacentType: new WrappedNodeExpr(this.reflector.getAdjacentNameOfClass(node)),
+      type,
+      internalType,
+      adjacentType,
       bootstrap,
       declarations,
       exports,
@@ -256,8 +260,8 @@ export class NgModuleDecoratorHandler implements
 
     const ngInjectorDef: R3InjectorMetadata = {
       name,
-      type: new WrappedNodeExpr(node.name),
-      internalType: new WrappedNodeExpr(this.reflector.getInternalNameOfClass(node)),
+      type,
+      internalType,
       deps: getValidConstructorDependencies(
           node, this.reflector, this.defaultImportRecorder, this.isCore),
       providers,
