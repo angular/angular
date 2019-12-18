@@ -1,3 +1,57 @@
+<a name="9.0.0-rc.7"></a>
+# [9.0.0-rc.7](https://github.com/angular/angular/compare/9.0.0-rc.6...9.0.0-rc.7) (2019-12-18)
+
+
+### Bug Fixes
+
+* **animations:** leaking detached nodes when parent has a leave transition ([#34409](https://github.com/angular/angular/issues/34409)) ([6607fb4](https://github.com/angular/angular/commit/6607fb4)), closes [#25744](https://github.com/angular/angular/issues/25744)
+* **common:** ngStyle should ignore undefined values ([#34422](https://github.com/angular/angular/issues/34422)) ([ee1eebd](https://github.com/angular/angular/commit/ee1eebd)), closes [#34310](https://github.com/angular/angular/issues/34310)
+* **ivy:** avoid duplicate errors in safe navigations and template guards ([#34417](https://github.com/angular/angular/issues/34417)) ([d6edeab](https://github.com/angular/angular/commit/d6edeab))
+* **ivy:** avoid using __proto__ when reading metadata in JIT mode ([#34305](https://github.com/angular/angular/issues/34305)) ([08ce026](https://github.com/angular/angular/commit/08ce026))
+* **ivy:** don't produce template diagnostics when scope is invalid ([#34460](https://github.com/angular/angular/issues/34460)) ([c1fd629](https://github.com/angular/angular/commit/c1fd629)), closes [#33849](https://github.com/angular/angular/issues/33849)
+* **ivy:** generate a better error for template var writes ([#34339](https://github.com/angular/angular/issues/34339)) ([418d586](https://github.com/angular/angular/commit/418d586)), closes [#33674](https://github.com/angular/angular/issues/33674)
+* **ivy:** i18n - remove `translate` function when clearing translations ([#34346](https://github.com/angular/angular/issues/34346)) ([1489e5e](https://github.com/angular/angular/commit/1489e5e)), closes [#32781](https://github.com/angular/angular/issues/32781)
+* **ivy:** i18n instructions thrown off by sanitizer in IE11 ([#34305](https://github.com/angular/angular/issues/34305)) ([bed62b1](https://github.com/angular/angular/commit/bed62b1))
+* **ivy:** improve ExpressionChangedAfterChecked error ([#34381](https://github.com/angular/angular/issues/34381)) ([7ea3984](https://github.com/angular/angular/commit/7ea3984))
+* **ivy:** inconsistent attribute casing in DebugNode.attributes on IE ([#34305](https://github.com/angular/angular/issues/34305)) ([9bff8e7](https://github.com/angular/angular/commit/9bff8e7))
+* **ivy:** incorrect injectable name logged in warning message on IE ([#34305](https://github.com/angular/angular/issues/34305)) ([60d1d5e](https://github.com/angular/angular/commit/60d1d5e))
+* **ivy:** inheritance in JIT mode not working correctly on IE10 ([#34305](https://github.com/angular/angular/issues/34305)) ([65fb2fd](https://github.com/angular/angular/commit/65fb2fd))
+* **ivy:** inheriting injectable definition from undecorated class not working on IE10 in JIT mode ([#34305](https://github.com/angular/angular/issues/34305)) ([d83599d](https://github.com/angular/angular/commit/d83599d))
+* **ivy:** record correct absolute source span for ngForOf expressions ([#31813](https://github.com/angular/angular/issues/31813)) ([931cb5e](https://github.com/angular/angular/commit/931cb5e))
+* **ivy:** reorder provider type checks to align with VE ([#34433](https://github.com/angular/angular/issues/34433)) ([7916b1e](https://github.com/angular/angular/commit/7916b1e))
+* **ivy:** unknown property and element checks not working correctly in IE ([#34305](https://github.com/angular/angular/issues/34305)) ([0ff54f2](https://github.com/angular/angular/commit/0ff54f2))
+* **ivy:** validate the NgModule declarations field ([#34404](https://github.com/angular/angular/issues/34404)) ([03e236a](https://github.com/angular/angular/commit/03e236a))
+* **language-service:** HTML path should include last node before cursor ([#34440](https://github.com/angular/angular/issues/34440)) ([76e4870](https://github.com/angular/angular/commit/76e4870))
+* **language-service:** Proper completions for properties and events ([#34445](https://github.com/angular/angular/issues/34445)) ([4e41bf9](https://github.com/angular/angular/commit/4e41bf9))
+* **language-service:** Remove completions for let and of in ngFor ([#34434](https://github.com/angular/angular/issues/34434)) ([ab61480](https://github.com/angular/angular/commit/ab61480))
+* **ngcc:** correctly match aliased classes between src and dts files ([#34254](https://github.com/angular/angular/issues/34254)) ([4bffb6b](https://github.com/angular/angular/commit/4bffb6b)), closes [#33593](https://github.com/angular/angular/issues/33593)
+* **ngcc:** handle CommonJS re-exports by reference ([#34254](https://github.com/angular/angular/issues/34254)) ([9ca5faa](https://github.com/angular/angular/commit/9ca5faa))
+* **ngcc:** handle imports in dts files when processing UMD ([#34356](https://github.com/angular/angular/issues/34356)) ([81c75cf](https://github.com/angular/angular/commit/81c75cf))
+* **ngcc:** handle UMD re-exports ([#34254](https://github.com/angular/angular/issues/34254)) ([84a7d8a](https://github.com/angular/angular/commit/84a7d8a))
+* **ngcc:** render UMD imports even if no prior imports ([#34353](https://github.com/angular/angular/issues/34353)) ([c26738d](https://github.com/angular/angular/commit/c26738d)), closes [#34138](https://github.com/angular/angular/issues/34138)
+* **ngcc:** use the correct identifiers when updating typings files ([#34254](https://github.com/angular/angular/issues/34254)) ([c0c2ab3](https://github.com/angular/angular/commit/c0c2ab3))
+
+
+### Features
+
+* **forms:** expand NgModel disabled type to work with strict template type checking ([#34438](https://github.com/angular/angular/issues/34438)) ([b1d4c58](https://github.com/angular/angular/commit/b1d4c58))
+* **ivy:** error in ivy when inheriting a ctor from an undecorated base ([#34460](https://github.com/angular/angular/issues/34460)) ([f563c7c](https://github.com/angular/angular/commit/f563c7c))
+* **ivy:** throw compilation error when providing undecorated classes ([#34460](https://github.com/angular/angular/issues/34460)) ([0638e65](https://github.com/angular/angular/commit/0638e65))
+
+
+### Performance Improvements
+
+* **compiler:** optimize cloning cursors state ([#34332](https://github.com/angular/angular/issues/34332)) ([5d871b5](https://github.com/angular/angular/commit/5d871b5))
+* **compiler:** speed up i18n digest computations ([#34332](https://github.com/angular/angular/issues/34332)) ([adb0663](https://github.com/angular/angular/commit/adb0663))
+* **compiler:** use a shared interpolation regex ([#34332](https://github.com/angular/angular/issues/34332)) ([940e62b](https://github.com/angular/angular/commit/940e62b))
+* **ivy:** cache export scopes extracted from declaration files ([#34332](https://github.com/angular/angular/issues/34332)) ([eb9a8ac](https://github.com/angular/angular/commit/eb9a8ac))
+* **ivy:** eagerly parse the template twice during analysis ([#34334](https://github.com/angular/angular/issues/34334)) ([fb4a11a](https://github.com/angular/angular/commit/fb4a11a))
+* **ivy:** reuse prior analysis work during incremental builds ([#34288](https://github.com/angular/angular/issues/34288)) ([c387952](https://github.com/angular/angular/commit/c387952))
+* **ivy:** share instances of `DomElementSchemaRegistry` ([#34332](https://github.com/angular/angular/issues/34332)) ([ce94192](https://github.com/angular/angular/commit/ce94192))
+* **ivy:** use module resolution cache ([#34332](https://github.com/angular/angular/issues/34332)) ([82442c5](https://github.com/angular/angular/commit/82442c5))
+
+
+
 <a name="9.0.0-rc.6"></a>
 # [9.0.0-rc.6](https://github.com/angular/angular/compare/9.0.0-rc.5...9.0.0-rc.6) (2019-12-11)
 
