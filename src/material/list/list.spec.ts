@@ -27,7 +27,9 @@ describe('MatList', () => {
     const fixture = TestBed.createComponent(ListWithOneItem);
     const listItem = fixture.debugElement.query(By.css('mat-list-item'))!;
     fixture.detectChanges();
-    expect(listItem.nativeElement.className).toBe('mat-list-item mat-focus-indicator');
+    expect(listItem.nativeElement.classList.length).toBe(2);
+    expect(listItem.nativeElement.classList).toContain('mat-list-item');
+    expect(listItem.nativeElement.classList).toContain('mat-focus-indicator');
   });
 
   it('should apply mat-2-line class to lists with two lines', () => {
