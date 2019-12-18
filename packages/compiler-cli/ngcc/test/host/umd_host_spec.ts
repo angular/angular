@@ -546,10 +546,10 @@ runInEachFileSystem(() => {
           name: _('/index.js'),
           contents: `
           (function (global, factory) {
-            typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('./a_module'), require('./b_module')) :
-            typeof define === 'function' && define.amd ? define('index', ['exports', './a_module', './b_module'], factory) :
-            (factory(global.index, global.a_module, global.b_module));
-          }(this, (function (exports, a_module, b_module) { 'use strict';
+            typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('./a_module'), require('./b_module'), require('./wildcard_reexports')) :
+            typeof define === 'function' && define.amd ? define('index', ['exports', './a_module', './b_module', './wildcard_reexports], factory) :
+            (factory(global.index, global.a_module, global.b_module, global.wildcard_reexports));
+          }(this, (function (exports, a_module, b_module, wildcard_reexports) { 'use strict';
           })));
           `
         },
@@ -590,6 +590,35 @@ runInEachFileSystem(() => {
   exports.SomeClass = SomeClass;
 })));`,
         },
+        {
+          name: _('/xtra_module.js'),
+          contents: `
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define('xtra_module', ['exports'], factory) :
+  (factory(global.xtra_module));
+}(this, (function (exports) { 'use strict';
+  var xtra1 = 'xtra1';
+  var xtra2 = 'xtra2';
+  exports.xtra1 = xtra1;
+  exports.xtra2 = xtra2;
+})));`,
+        },
+        {
+          name: _('/wildcard_reexports.js'),
+          contents: `
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('./b_module'), require('./xtra_module')) :
+  typeof define === 'function' && define.amd ? define('wildcard_reexports', ['exports', './b_module', './xtra_module'], factory) :
+  (factory(global.wildcard_reexports, b_module, xtra_module));
+}(this, (function (exports, b_module, xtra_module) { 'use strict';
+  function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+  }
+__export(b_module);
+__export(xtra_module);
+})));`,
+        }
       ];
 
       FUNCTION_BODY_FILE = {
@@ -1860,6 +1889,34 @@ runInEachFileSystem(() => {
         expect(classSymbol).toBeDefined();
         expect(classSymbol !.declaration.valueDeclaration).toBe(node);
         expect(classSymbol !.implementation.valueDeclaration).toBe(node);
+      });
+
+      it('should handle wildcard re-exports of other modules', () => {
+        loadFakeCore(getFileSystem());
+        loadTestFiles(EXPORTS_FILES);
+        const bundle = makeTestBundleProgram(_('/index.js'));
+        const host = new UmdReflectionHost(new MockLogger(), false, bundle);
+        const file = getSourceFileOrError(bundle.program, _('/wildcard_reexports.js'));
+        const exportDeclarations = host.getExportsOfModule(file);
+        expect(exportDeclarations).not.toBe(null);
+        expect(Array.from(exportDeclarations !.entries())
+                   .map(entry => [entry[0], entry[1].node !.getText(), entry[1].viaModule]))
+            .toEqual([
+              ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
+              ['a', `a = 'a'`, _('/b_module')],
+              ['b', `b = a_module.a`, _('/b_module')],
+              ['c', `a = 'a'`, _('/b_module')],
+              ['d', `b = a_module.a`, _('/b_module')],
+              ['e', `e = 'e'`, _('/b_module')],
+              ['DirectiveX', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
+              [
+                'SomeClass',
+                `SomeClass = (function() {\n    function SomeClass() {}\n    return SomeClass;\n  }())`,
+                _('/b_module')
+              ],
+              ['xtra1', `xtra1 = 'xtra1'`, _('/xtra_module')],
+              ['xtra2', `xtra2 = 'xtra2'`, _('/xtra_module')],
+            ]);
       });
 
       it('should return the class symbol for an ES5 class (outer variable declaration)', () => {
