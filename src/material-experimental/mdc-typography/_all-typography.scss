@@ -8,6 +8,7 @@
 @import '../mdc-slide-toggle/mdc-slide-toggle';
 @import '../mdc-slider/mdc-slider';
 @import '../mdc-tabs/mdc-tabs';
+@import '../mdc-table/mdc-table';
 @import '../mdc-progress-bar/mdc-progress-bar';
 
 @mixin angular-material-typography-mdc($config: null) {
@@ -27,5 +28,6 @@
   @include mat-slide-toggle-typography-mdc($config);
   @include mat-slider-typography-mdc($config);
   @include mat-tabs-typography-mdc($config);
+  @include mat-table-typography-mdc($config);
   @include mat-progress-bar-typography-mdc($config);
 }

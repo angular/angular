@@ -70,7 +70,7 @@ export class MatColumnDef extends CdkColumnDef {
 @Directive({
   selector: 'th[mat-header-cell]',
   host: {
-    'class': 'mat-mdc-header-cell',
+    'class': 'mat-mdc-header-cell mdc-data-table__header-cell',
     'role': 'columnheader',
   },
 })
@@ -86,7 +86,7 @@ export class MatHeaderCell extends CdkHeaderCell {
 @Directive({
   selector: 'td[mat-footer-cell]',
   host: {
-    'class': 'mat-mdc-footer-cell',
+    'class': 'mat-mdc-footer-cell mdc-data-table__cell',
     'role': 'gridcell',
   },
 })
@@ -102,7 +102,7 @@ export class MatFooterCell extends CdkFooterCell {
 @Directive({
   selector: 'td[mat-cell]',
   host: {
-    'class': 'mat-mdc-cell',
+    'class': 'mat-mdc-cell mdc-data-table__cell',
     'role': 'gridcell',
   },
 })

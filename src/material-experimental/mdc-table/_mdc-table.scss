@@ -1,7 +1,14 @@
+@import '../mdc-helpers/mdc-helpers';
+@import '@material/data-table/mixins';
+
 @mixin mat-table-theme-mdc($theme) {
-  // TODO: Include theme styles for MDC Table
+  @include mat-using-mdc-theme($theme) {
+    @include mdc-data-table-core-styles($query: $mat-theme-styles-query);
+  }
 }
 
 @mixin mat-table-typography-mdc($config) {
-  // TODO: Include typography styles for MDC Table
+  @include mat-using-mdc-typography($config) {
+    @include mdc-data-table-core-styles($query: $mat-typography-styles-query);
+  }
 }
