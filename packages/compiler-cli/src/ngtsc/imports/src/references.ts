@@ -11,11 +11,6 @@ import * as ts from 'typescript';
 
 import {identifierOfNode} from '../../util/src/typescript';
 
-export enum ImportMode {
-  UseExistingImport,
-  ForceNewImport,
-}
-
 export interface OwningModule {
   specifier: string;
   resolutionContext: string;
