@@ -144,7 +144,7 @@ export class NgModel extends NgControl implements OnChanges,
   // This static member tells the compiler that values of type "string" can also be assigned
   // to the input in a template.
   /** @nodoc */
-  static ngAcceptInputType_disabled: boolean|string;
+  static ngAcceptInputType_isDisabled: boolean|string;
 
   /** @internal */
   _registered = false;
