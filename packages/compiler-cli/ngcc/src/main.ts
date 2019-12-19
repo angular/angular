@@ -35,7 +35,7 @@ import {NgccConfiguration} from './packages/configuration';
 import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {Transformer} from './packages/transformer';
-import {PathMappings} from './utils';
+import {PathMappings, createDtsDependencyHost} from './utils';
 import {FileWriter} from './writing/file_writer';
 import {InPlaceFileWriter} from './writing/in_place_file_writer';
 import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
@@ -164,12 +164,15 @@ export function mainNgcc(
     const esmDependencyHost = new EsmDependencyHost(fileSystem, moduleResolver);
     const umdDependencyHost = new UmdDependencyHost(fileSystem, moduleResolver);
     const commonJsDependencyHost = new CommonJsDependencyHost(fileSystem, moduleResolver);
-    const dependencyResolver = new DependencyResolver(fileSystem, logger, {
-      esm5: esmDependencyHost,
-      esm2015: esmDependencyHost,
-      umd: umdDependencyHost,
-      commonjs: commonJsDependencyHost
-    });
+    const dtsDependencyHost = createDtsDependencyHost(fileSystem, pathMappings);
+    const dependencyResolver = new DependencyResolver(
+        fileSystem, logger, {
+          esm5: esmDependencyHost,
+          esm2015: esmDependencyHost,
+          umd: umdDependencyHost,
+          commonjs: commonJsDependencyHost
+        },
+        dtsDependencyHost);
 
     const absBasePath = absoluteFrom(basePath);
     const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
