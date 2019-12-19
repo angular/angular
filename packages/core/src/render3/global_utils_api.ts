@@ -16,4 +16,5 @@
  */
 
 export {markDirty} from './instructions/all';
-export {getComponent, getContext, getDebugNode, getDirectives, getHostElement, getInjector, getListeners, getRootComponents, getViewComponent} from './util/discovery_utils';
+export {applyChanges} from './util/change_detection_utils';
+export {Listener, getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './util/discovery_utils';
