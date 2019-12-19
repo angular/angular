@@ -14,6 +14,9 @@ export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatM
     };
     _isAnimating: boolean;
     _panelAnimationState: 'void' | 'enter';
+    ariaDescribedby: string;
+    ariaLabel: string;
+    ariaLabelledby: string;
     backdropClass: string;
     classList: string;
     close: EventEmitter<void | 'click' | 'keydown' | 'tab'>;
@@ -45,7 +48,7 @@ export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatM
     resetActiveItem(): void;
     setElevation(depth: number): void;
     setPositionClasses(posX?: MenuPositionX, posY?: MenuPositionY): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatMenuBase, never, never, { 'backdropClass': "backdropClass", 'xPosition': "xPosition", 'yPosition': "yPosition", 'overlapTrigger': "overlapTrigger", 'hasBackdrop': "hasBackdrop", 'panelClass': "class", 'classList': "classList" }, { 'closed': "closed", 'close': "close" }, ["lazyContent", "_allItems", "items"]>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatMenuBase, never, never, { 'backdropClass': "backdropClass", 'ariaLabel': "aria-label", 'ariaLabelledby': "aria-labelledby", 'ariaDescribedby': "aria-describedby", 'xPosition': "xPosition", 'yPosition': "yPosition", 'overlapTrigger': "overlapTrigger", 'hasBackdrop': "hasBackdrop", 'panelClass': "class", 'classList': "classList" }, { 'closed': "closed", 'close': "close" }, ["lazyContent", "_allItems", "items"]>;
     static ɵfac: i0.ɵɵFactoryDef<_MatMenuBase>;
 }
 

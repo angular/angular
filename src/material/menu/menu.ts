@@ -132,6 +132,15 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   /** Class to be added to the backdrop element. */
   @Input() backdropClass: string = this._defaultOptions.backdropClass;
 
+  /** aria-label for the menu panel. */
+  @Input('aria-label') ariaLabel: string;
+
+  /** aria-labelledby for the menu panel. */
+  @Input('aria-labelledby') ariaLabelledby: string;
+
+  /** aria-describedby for the menu panel. */
+  @Input('aria-describedby') ariaDescribedby: string;
+
   /** Position of the menu in the X axis. */
   @Input()
   get xPosition(): MenuPositionX { return this._xPosition; }

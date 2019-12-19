@@ -503,6 +503,38 @@ describe('MDC-based MatMenu', () => {
     expect(role).toBe('menu', 'Expected panel to have the "menu" role.');
   });
 
+  it('should forward ARIA attributes to the menu panel', () => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    const instance = fixture.componentInstance;
+    fixture.detectChanges();
+    instance.trigger.openMenu();
+    fixture.detectChanges();
+
+    const menuPanel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
+    expect(menuPanel.hasAttribute('aria-label')).toBe(false);
+    expect(menuPanel.hasAttribute('aria-labelledby')).toBe(false);
+    expect(menuPanel.hasAttribute('aria-describedby')).toBe(false);
+
+    // Note that setting all of these at the same time is invalid,
+    // but it's up to the consumer to handle it correctly.
+    instance.ariaLabel = 'Custom aria-label';
+    instance.ariaLabelledby = 'custom-labelled-by';
+    instance.ariaDescribedby = 'custom-described-by';
+    fixture.detectChanges();
+
+    expect(menuPanel.getAttribute('aria-label')).toBe('Custom aria-label');
+    expect(menuPanel.getAttribute('aria-labelledby')).toBe('custom-labelled-by');
+    expect(menuPanel.getAttribute('aria-describedby')).toBe('custom-described-by');
+
+    // Change these to empty strings to make sure that we don't preserve empty attributes.
+    instance.ariaLabel = instance.ariaLabelledby = instance.ariaDescribedby = '';
+    fixture.detectChanges();
+
+    expect(menuPanel.hasAttribute('aria-label')).toBe(false);
+    expect(menuPanel.hasAttribute('aria-labelledby')).toBe(false);
+    expect(menuPanel.hasAttribute('aria-describedby')).toBe(false);
+  });
+
   it('should set the "menuitem" role on the items by default', () => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
     fixture.detectChanges();
@@ -2163,7 +2195,10 @@ describe('MatMenu default overrides', () => {
       #menu="matMenu"
       [class]="panelClass"
       (closed)="closeCallback($event)"
-      [backdropClass]="backdropClass">
+      [backdropClass]="backdropClass"
+      [aria-label]="ariaLabel"
+      [aria-labelledby]="ariaLabelledby"
+      [aria-describedby]="ariaDescribedby">
 
       <button mat-menu-item> Item </button>
       <button mat-menu-item disabled> Disabled </button>
@@ -2185,6 +2220,9 @@ class SimpleMenu {
   backdropClass: string;
   panelClass: string;
   restoreFocus = true;
+  ariaLabel: string;
+  ariaLabelledby: string;
+  ariaDescribedby: string;
 }
 
 @Component({
