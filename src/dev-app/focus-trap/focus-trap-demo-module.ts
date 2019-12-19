@@ -27,7 +27,6 @@ import {FocusTrapDemo, FocusTrapShadowDomDemo, FocusTrapDialogDemo} from './focu
     RouterModule.forChild([{path: '', component: FocusTrapDemo}]),
   ],
   declarations: [FocusTrapDemo, FocusTrapShadowDomDemo, FocusTrapDialogDemo],
-  entryComponents: [FocusTrapDialogDemo],
 })
 export class FocusTrapDemoModule {
 }

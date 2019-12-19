@@ -114,17 +114,6 @@ export class AccessibilityRoutingModule {}
     TabsAccessibilityDemo,
     ToolbarAccessibilityDemo,
     TooltipAccessibilityDemo,
-  ],
-  entryComponents: [
-    DialogAccessibilityDemo,
-    DialogAddressFormDialog,
-    DialogFruitExampleDialog,
-    DialogNeptuneExampleDialog,
-    DialogNeptuneIFrameDialog,
-    DialogWelcomeExampleDialog,
-    FoggyTabContent,
-    RainyTabContent,
-    SunnyTabContent,
   ]
 })
 export class AccessibilityDemoModule {}

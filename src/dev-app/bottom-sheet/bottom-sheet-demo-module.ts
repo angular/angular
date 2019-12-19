@@ -37,7 +37,6 @@ import {BottomSheetDemo, ExampleBottomSheet} from './bottom-sheet-demo';
     RouterModule.forChild([{path: '', component: BottomSheetDemo}]),
   ],
   declarations: [BottomSheetDemo, ExampleBottomSheet],
-  entryComponents: [ExampleBottomSheet],
 })
 export class BottomSheetDemoModule {
 }

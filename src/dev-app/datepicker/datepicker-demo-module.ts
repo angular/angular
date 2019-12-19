@@ -36,7 +36,6 @@ import {CustomHeader, CustomHeaderNgContent, DatepickerDemo} from './datepicker-
     RouterModule.forChild([{path: '', component: DatepickerDemo}]),
   ],
   declarations: [CustomHeader, CustomHeaderNgContent, DatepickerDemo],
-  entryComponents: [CustomHeader, CustomHeaderNgContent],
 })
 export class DatepickerDemoModule {
 }

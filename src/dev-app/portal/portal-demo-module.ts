@@ -17,7 +17,6 @@ import {PortalDemo, ScienceJoke} from './portal-demo';
     RouterModule.forChild([{path: '', component: PortalDemo}]),
   ],
   declarations: [PortalDemo, ScienceJoke],
-  entryComponents: [ScienceJoke],
 })
 export class PortalDemoModule {
 }

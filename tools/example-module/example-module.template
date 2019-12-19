@@ -31,7 +31,6 @@ export const EXAMPLE_LIST = [${exampleList}];
 @NgModule({
   imports: EXAMPLE_MODULES,
   exports: EXAMPLE_MODULES,
-  entryComponents: EXAMPLE_LIST,
 })
 export class ExampleModule { }
 

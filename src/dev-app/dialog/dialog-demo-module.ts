@@ -31,7 +31,6 @@ import {ContentElementDialog, DialogDemo, IFrameDialog, JazzDialog} from './dial
     RouterModule.forChild([{path: '', component: DialogDemo}]),
   ],
   declarations: [ContentElementDialog, DialogDemo, IFrameDialog, JazzDialog],
-  entryComponents: [ContentElementDialog, IFrameDialog, JazzDialog],
 })
 export class DialogDemoModule {
 }
