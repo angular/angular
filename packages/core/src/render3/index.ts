@@ -115,7 +115,6 @@ export {
   ɵɵstylePropInterpolate8,
   ɵɵstylePropInterpolateV,
 
-  ɵɵstyleSanitizer,
   ɵɵtemplate,
 
   ɵɵtext,
