@@ -11,7 +11,7 @@ import {AbsoluteFsPath, FileSystem, resolve} from '../../../src/ngtsc/file_syste
 import {Logger} from '../logging/logger';
 import {EntryPoint, EntryPointFormat, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from '../packages/entry_point';
 import {PartiallyOrderedList} from '../utils';
-import {DependencyHost, DependencyInfo} from './dependency_host';
+import {DependencyHost, DependencyInfo, createDependencyInfo} from './dependency_host';
 
 const builtinNodeJsModules = new Set<string>(require('module').builtinModules);
 
@@ -123,7 +123,9 @@ export class DependencyResolver {
       throw new Error(
           `Could not find a suitable format for computing dependencies of entry-point: '${entryPoint.path}'.`);
     }
-    return host.findDependencies(formatInfo.path);
+    const depInfo = createDependencyInfo();
+    host.findDependencies(formatInfo.path, depInfo);
+    return depInfo;
   }
 
   /**

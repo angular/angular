@@ -11,13 +11,18 @@ import {resolveFileWithPostfixes} from '../utils';
 import {ModuleResolver} from './module_resolver';
 
 export interface DependencyHost {
-  findDependencies(entryPointPath: AbsoluteFsPath): DependencyInfo;
+  findDependencies(
+      entryPointPath: AbsoluteFsPath, {dependencies, missing, deepImports}: DependencyInfo): void;
 }
 
 export interface DependencyInfo {
   dependencies: Set<AbsoluteFsPath>;
   missing: Set<AbsoluteFsPath|PathSegment>;
   deepImports: Set<AbsoluteFsPath>;
+}
+
+export function createDependencyInfo(): DependencyInfo {
+  return {dependencies: new Set(), missing: new Set(), deepImports: new Set()};
 }
 
 export abstract class DependencyHostBase implements DependencyHost {
@@ -30,11 +35,8 @@ export abstract class DependencyHostBase implements DependencyHost {
    * @returns Information about the dependencies of the entry-point, including those that were
    * missing or deep imports into other entry-points.
    */
-  findDependencies(entryPointPath: AbsoluteFsPath): DependencyInfo {
-    const dependencies = new Set<AbsoluteFsPath>();
-    const missing = new Set<AbsoluteFsPath|PathSegment>();
-    const deepImports = new Set<AbsoluteFsPath>();
-
+  findDependencies(
+      entryPointPath: AbsoluteFsPath, {dependencies, missing, deepImports}: DependencyInfo): void {
     const resolvedFile =
         resolveFileWithPostfixes(this.fs, entryPointPath, ['', '.js', '/index.js']);
     if (resolvedFile !== null) {
@@ -42,8 +44,6 @@ export abstract class DependencyHostBase implements DependencyHost {
       this.recursivelyFindDependencies(
           resolvedFile, dependencies, missing, deepImports, alreadySeen);
     }
-
-    return {dependencies, missing, deepImports};
   }
 
   /**
