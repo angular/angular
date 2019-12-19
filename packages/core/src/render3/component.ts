@@ -20,7 +20,7 @@ import {CLEAN_PROMISE, addHostBindingsToExpandoInstructions, addToViewTree, crea
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
-import {RElement, Renderer3, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
+import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
 import {writeDirectClass, writeDirectStyle} from './node_manipulation';
 import {enterView, getPreviousOrParentTNode, leaveView, setSelectedIndex} from './state';
@@ -139,7 +139,7 @@ export function renderComponent<T>(
   try {
     if (rendererFactory.begin) rendererFactory.begin();
     const componentView = createRootComponentView(
-        hostRNode, componentDef, rootView, rendererFactory, renderer, null, sanitizer);
+        hostRNode, componentDef, rootView, rendererFactory, renderer, sanitizer);
     component = createRootComponent(
         componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
 
@@ -169,8 +169,8 @@ export function renderComponent<T>(
  */
 export function createRootComponentView(
     rNode: RElement | null, def: ComponentDef<any>, rootView: LView,
-    rendererFactory: RendererFactory3, hostRenderer: Renderer3, addVersion: string | null,
-    sanitizer: Sanitizer | null): LView {
+    rendererFactory: RendererFactory3, hostRenderer: Renderer3,
+    sanitizer?: Sanitizer | null): LView {
   const tView = rootView[TVIEW];
   ngDevMode && assertDataInRange(rootView, 0 + HEADER_OFFSET);
   rootView[0 + HEADER_OFFSET] = rNode;
@@ -188,14 +188,8 @@ export function createRootComponentView(
       }
     }
   }
-  const viewRenderer = rendererFactory.createRenderer(rNode, def);
-  if (rNode !== null && addVersion) {
-    ngDevMode && ngDevMode.rendererSetAttribute++;
-    isProceduralRenderer(hostRenderer) ?
-        hostRenderer.setAttribute(rNode, 'ng-version', addVersion) :
-        rNode.setAttribute('ng-version', addVersion);
-  }
 
+  const viewRenderer = rendererFactory.createRenderer(rNode, def);
   const componentView = createLView(
       rootView, getOrCreateTComponentView(def), null,
       def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[HEADER_OFFSET], tNode,

@@ -389,3 +389,41 @@ function stringifyCSSSelector(selector: CssSelector): string {
 export function stringifyCSSSelectorList(selectorList: CssSelectorList): string {
   return selectorList.map(stringifyCSSSelector).join(',');
 }
+
+/**
+ * Extracts attributes and classes information from a given CSS selector.
+ *
+ * This function is used while creating a component dynamically. In this case, the host element
+ * (that is created dynamically) should contain attributes and classes specified in component's CSS
+ * selector.
+ *
+ * @param selector CSS selector in parsed form (in a form of array)
+ * @returns object with `attrs` and `classes` fields that contain extracted information
+ */
+export function extractAttrsAndClassesFromSelector(selector: CssSelector):
+    {attrs: string[], classes: string[]} {
+  const attrs: string[] = [];
+  const classes: string[] = [];
+  let i = 1;
+  let mode = SelectorFlags.ATTRIBUTE;
+  while (i < selector.length) {
+    let valueOrMarker = selector[i];
+    if (typeof valueOrMarker === 'string') {
+      if (mode === SelectorFlags.ATTRIBUTE) {
+        if (valueOrMarker !== '') {
+          attrs.push(valueOrMarker, selector[++i] as string);
+        }
+      } else if (mode === SelectorFlags.CLASS) {
+        classes.push(valueOrMarker);
+      }
+    } else {
+      // According to CssSelector spec, once we come across `SelectorFlags.NOT` flag, the negative
+      // mode is maintained for remaining chunks of a selector. Since attributes and classes are
+      // extracted only for "positive" part of the selector, we can stop here.
+      if (!isPositive(mode)) break;
+      mode = valueOrMarker;
+    }
+    i++;
+  }
+  return {attrs, classes};
+}
