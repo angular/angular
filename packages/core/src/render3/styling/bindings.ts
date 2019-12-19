@@ -97,7 +97,8 @@ export function updateStyleViaContext(
     context: TStylingContext, tNode: TStylingNode, data: LStylingData, element: RElement,
     directiveIndex: number, prop: string | null, bindingIndex: number,
     value: string | number | SafeValue | null | undefined | StylingMapArray | NO_CHANGE,
-    sanitizer: StyleSanitizeFn | null, forceUpdate: boolean, firstUpdatePass: boolean): boolean {
+    sanitizer: StyleSanitizeFn | null | undefined, forceUpdate: boolean,
+    firstUpdatePass: boolean): boolean {
   const isMapBased = !prop;
   const state = getStylingState(element, directiveIndex);
   const countIndex = isMapBased ? STYLING_INDEX_FOR_MAP_BINDING : state.stylesIndex++;

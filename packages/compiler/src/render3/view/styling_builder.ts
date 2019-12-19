@@ -44,6 +44,7 @@ interface BoundStylingEntry {
   name: string|null;
   unit: string|null;
   sourceSpan: ParseSourceSpan;
+  sanitize: boolean;
   value: AST;
 }
 
@@ -116,10 +117,6 @@ export class StylingBuilder {
   private _initialStyleValues: string[] = [];
   private _initialClassValues: string[] = [];
 
-  // certain style properties ALWAYS need sanitization
-  // this is checked each time new styles are encountered
-  private _useDefaultSanitizer = false;
-
   constructor(private _elementIndexExpr: o.Expression, private _directiveExpr: o.Expression|null) {}
 
   /**
@@ -179,14 +176,13 @@ export class StylingBuilder {
     const {property, hasOverrideFlag, unit: bindingUnit} = parseProperty(name);
     const entry: BoundStylingEntry = {
       name: property,
+      sanitize: property ? isStyleSanitizable(property) : true,
       unit: unit || bindingUnit, value, sourceSpan, hasOverrideFlag
     };
     if (isMapBased) {
-      this._useDefaultSanitizer = true;
       this._styleMapInput = entry;
     } else {
       (this._singleStyleInputs = this._singleStyleInputs || []).push(entry);
-      this._useDefaultSanitizer = this._useDefaultSanitizer || isStyleSanitizable(name);
       registerIntoMap(this._stylesIndex, property);
     }
     this._lastStylingInput = entry;
@@ -202,8 +198,8 @@ export class StylingBuilder {
       return null;
     }
     const {property, hasOverrideFlag} = parseProperty(name);
-    const entry:
-        BoundStylingEntry = {name: property, value, sourceSpan, hasOverrideFlag, unit: null};
+    const entry: BoundStylingEntry =
+        {name: property, value, sourceSpan, sanitize: false, hasOverrideFlag, unit: null};
     if (isMapBased) {
       if (this._classMapInput) {
         throw new Error(
@@ -364,10 +360,9 @@ export class StylingBuilder {
   }
 
   private _buildSingleInputs(
-      reference: o.ExternalReference, inputs: BoundStylingEntry[], mapIndex: Map<string, number>,
-      allowUnits: boolean, valueConverter: ValueConverter,
-      getInterpolationExpressionFn?: (value: Interpolation) => o.ExternalReference):
-      StylingInstruction[] {
+      reference: o.ExternalReference, inputs: BoundStylingEntry[], valueConverter: ValueConverter,
+      getInterpolationExpressionFn: ((value: Interpolation) => o.ExternalReference)|null,
+      isClassBased: boolean): StylingInstruction[] {
     const instructions: StylingInstruction[] = [];
 
     inputs.forEach(input => {
@@ -390,7 +385,7 @@ export class StylingBuilder {
         allocateBindingSlots: totalBindingSlotsRequired,
         supportsInterpolation: !!getInterpolationExpressionFn,
         params: (convertFn: (value: any) => o.Expression | o.Expression[]) => {
-          // params => stylingProp(propName, value)
+          // params => stylingProp(propName, value, suffix|sanitizer)
           const params: o.Expression[] = [];
           params.push(o.literal(input.name));
 
@@ -401,8 +396,16 @@ export class StylingBuilder {
             params.push(convertResult);
           }
 
-          if (allowUnits && input.unit) {
-            params.push(o.literal(input.unit));
+          // [style.prop] bindings may use suffix values (e.g. px, em, etc...) and they
+          // can also use a sanitizer. Sanitization occurs for url-based entries. Having
+          // the suffix value and a sanitizer together into the instruction doesn't make
+          // any sense (url-based entries cannot be sanitized).
+          if (!isClassBased) {
+            if (input.unit) {
+              params.push(o.literal(input.unit));
+            } else if (input.sanitize) {
+              params.push(o.importExpr(R3.defaultStyleSanitizer));
+            }
           }
 
           return params;
@@ -427,7 +430,7 @@ export class StylingBuilder {
   private _buildClassInputs(valueConverter: ValueConverter): StylingInstruction[] {
     if (this._singleClassInputs) {
       return this._buildSingleInputs(
-          R3.classProp, this._singleClassInputs, this._classesIndex, false, valueConverter);
+          R3.classProp, this._singleClassInputs, valueConverter, null, true);
     }
     return [];
   }
@@ -435,21 +438,10 @@ export class StylingBuilder {
   private _buildStyleInputs(valueConverter: ValueConverter): StylingInstruction[] {
     if (this._singleStyleInputs) {
       return this._buildSingleInputs(
-          R3.styleProp, this._singleStyleInputs, this._stylesIndex, true, valueConverter,
-          getStylePropInterpolationExpression);
+          R3.styleProp, this._singleStyleInputs, valueConverter,
+          getStylePropInterpolationExpression, false);
     }
     return [];
-  }
-
-  private _buildSanitizerFn(): StylingInstruction {
-    return {
-      reference: R3.styleSanitizer,
-      calls: [{
-        sourceSpan: this._firstStylingInput ? this._firstStylingInput.sourceSpan : null,
-        allocateBindingSlots: 0,
-        params: () => [o.importExpr(R3.defaultStyleSanitizer)]
-      }]
-    };
   }
 
   /**
@@ -459,9 +451,6 @@ export class StylingBuilder {
   buildUpdateLevelInstructions(valueConverter: ValueConverter) {
     const instructions: StylingInstruction[] = [];
     if (this.hasBindings) {
-      if (this._useDefaultSanitizer) {
-        instructions.push(this._buildSanitizerFn());
-      }
       const styleMapInstruction = this.buildStyleMapInstruction(valueConverter);
       if (styleMapInstruction) {
         instructions.push(styleMapInstruction);
