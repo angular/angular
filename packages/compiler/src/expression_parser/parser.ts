@@ -264,7 +264,14 @@ export class _ParseAST {
                                                this.inputLength + this.offset;
   }
 
-  span(start: number) { return new ParseSpan(start, this.inputIndex); }
+  span(start: number) {
+    // `end` is either the
+    //   - end index of the current token
+    //   - start of the first token (e.g. can happen when creating an implicit receiver)
+    const curToken = this.peek(-1);
+    const end = curToken ? curToken.end + this.offset : this.inputIndex;
+    return new ParseSpan(start, end);
+  }
 
   sourceSpan(start: number): AbsoluteSourceSpan {
     const serial = `${start}@${this.inputIndex}`;

@@ -421,17 +421,35 @@ class ExpressionVisitor extends NullTemplateVisitor {
   visitAttr(ast: AttrAst) {
     // The attribute value is a template expression but the expression AST
     // was not produced when the TemplateAst was produced so do that here.
+    const expression = ast.sourceSpan.toString();
     const {templateBindings} = this.info.expressionParser.parseTemplateBindings(
-        ast.name, ast.value, ast.sourceSpan.toString(), ast.sourceSpan.start.offset);
+        ast.name, ast.value, expression, ast.sourceSpan.start.offset);
 
+    // Stretch expression spans so the end of each ast node aligns with the start of the
+    // next. This allows determining the LHS of a position between two nodes.
+    //            v         cursor position
+    //   let n of | nums
+    //   ^-- ^ ^-   ^---    ast spans
+    //   ^---^-^----^---    stretched spans
+    //
+    // TODO(ayazhafiz): Pull this out into a separate, utility function with unique tests.
+    type SpanWrappedAst = ng.Span & {binding?: TemplateBinding};
+    const stretchedSpans: SpanWrappedAst[] = templateBindings.reduceRight((stretched, ast) => {
+      const end = Math.max(ast.span.end, stretched[0].start - 1);
+      return [
+        {start: ast.span.start, end, binding: ast},
+        ...stretched,
+      ];
+    }, [{start: expression.length + 1, end: expression.length + 1}]);
     // Find where the cursor is relative to the start of the attribute value.
     const valueRelativePosition = this.position - ast.sourceSpan.start.offset;
     // Find the template binding that contains the position
-    const binding = templateBindings.find(b => inSpan(valueRelativePosition, b.span));
+    const wrappedBinding = stretchedSpans.find(b => inSpan(valueRelativePosition, b));
 
-    if (!binding) {
+    if (!wrappedBinding || !wrappedBinding.binding) {
       return;
     }
+    const {binding} = wrappedBinding;
 
     if (ast.name.startsWith('*')) {
       this.microSyntaxInAttributeValue(ast, binding);

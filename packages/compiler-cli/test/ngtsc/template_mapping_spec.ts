@@ -176,9 +176,9 @@ runInEachFileSystem((os) => {
           expect(mappings).toContain(
               {source: 'items.push(', generated: 'ctx.items.push(', sourceUrl: '../test.ts'});
           expect(mappings).toContain(
-              {source: `'item' `, generated: `"item"`, sourceUrl: '../test.ts'});
+              {source: `'item'`, generated: `"item"`, sourceUrl: '../test.ts'});
           expect(mappings).toContain({
-            source: '+ items.length)',
+            source: ' + items.length)',
             generated: ' + ctx.items.length)',
             sourceUrl: '../test.ts'
           });

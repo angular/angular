@@ -393,7 +393,7 @@ describe('parser', () => {
         expect(keyValues(bindings)).toEqual([
           'ngFor', 'let person=$implicit', 'ngForOf=people in null'
         ]);
-        expect(keySpans(source, bindings)).toEqual(['', 'let person ', 'of people']);
+        expect(keySpans(source, bindings)).toEqual(['', 'let person', 'of people']);
       });
     });
   });
