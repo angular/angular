@@ -469,11 +469,15 @@ class ExpressionVisitor extends NullTemplateVisitor {
       if (s.name.startsWith('__') || !s.public || this.completions.has(s.name)) {
         continue;
       }
+
+      // The pipe method should not include parentheses.
+      // e.g. {{ value_expression | slice : start [ : end ] }}
+      const shouldInsertParentheses = s.callable && s.kind !== ng.CompletionKind.PIPE;
       this.completions.set(s.name, {
         name: s.name,
         kind: s.kind as ng.CompletionKind,
         sortText: s.name,
-        insertText: s.callable ? `${s.name}()` : s.name,
+        insertText: shouldInsertParentheses ? `${s.name}()` : s.name,
       });
     }
   }
