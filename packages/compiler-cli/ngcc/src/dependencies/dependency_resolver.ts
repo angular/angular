@@ -82,7 +82,8 @@ export interface SortedEntryPointsInfo extends DependencyDiagnostics {
 export class DependencyResolver {
   constructor(
       private fs: FileSystem, private logger: Logger,
-      private hosts: Partial<Record<EntryPointFormat, DependencyHost>>) {}
+      private hosts: Partial<Record<EntryPointFormat, DependencyHost>>,
+      private typingsHost: DependencyHost) {}
   /**
    * Sort the array of entry points so that the dependant entry points always come later than
    * their dependencies in the array.
@@ -125,6 +126,7 @@ export class DependencyResolver {
     }
     const depInfo = createDependencyInfo();
     host.collectDependencies(formatInfo.path, depInfo);
+    this.typingsHost.collectDependencies(entryPoint.typings, depInfo);
     return depInfo;
   }
 
