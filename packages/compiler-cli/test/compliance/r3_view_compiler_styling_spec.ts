@@ -377,7 +377,6 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵelement(0, "div");
             }
             if (rf & 2) {
-              $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵstyleMap($ctx$.myStyleExp);
             }
           }
@@ -511,7 +510,6 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵɵelement(0, "div", 0);
                 }
                 if (rf & 2) {
-                  $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
                   $r3$.ɵɵstyleMap($ctx$.myStyleExp);
                   $r3$.ɵɵstyleProp("width", $ctx$.myWidth)("height", $ctx$.myHeight);
                   $r3$.ɵɵattribute("style", "border-width: 10px", $r3$.ɵɵsanitizeStyle);
@@ -557,8 +555,7 @@ describe('compiler compliance: styling', () => {
                 $r3$.ɵɵelement(0, "div");
               }
               if (rf & 2) {
-                $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-                $r3$.ɵɵstyleProp("background-image", ctx.myImage);
+                $r3$.ɵɵstyleProp("background-image", ctx.myImage, $r3$.ɵɵdefaultStyleSanitizer);
               }
             },
             encapsulation: 2
@@ -816,7 +813,6 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵelement(0, "div");
             }
             if (rf & 2) {
-              $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵstyleMap($ctx$.myStyleExp);
               $r3$.ɵɵclassMap($ctx$.myClassExp);
             }
@@ -858,7 +854,6 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind1(1, 4, $ctx$.myStyleExp));
               $r3$.ɵɵclassMap($r3$.ɵɵpipeBind1(2, 6, $ctx$.myClassExp));
             }
@@ -911,7 +906,6 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind2(1, 8, $ctx$.myStyleExp, 1000));
               $r3$.ɵɵclassMap($r3$.ɵɵpureFunction0(20, _c0));
               $r3$.ɵɵstyleProp("bar", $r3$.ɵɵpipeBind2(2, 11, $ctx$.barExp, 3000))("baz", $r3$.ɵɵpipeBind2(3, 14, $ctx$.bazExp, 4000));
@@ -1017,7 +1011,6 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵelementHostAttrs($e0_attrs$);
             }
             if (rf & 2) {
-              $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵstyleMap(ctx.myStyle);
               $r3$.ɵɵclassMap(ctx.myClass);
               $r3$.ɵɵstyleProp("color", ctx.myColorProp);
@@ -1075,7 +1068,6 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵallocHostVars(8);
             }
             if (rf & 2) {
-              $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵstyleMap(ctx.myStyle);
               $r3$.ɵɵclassMap(ctx.myClasses);
               $r3$.ɵɵstyleProp("height", ctx.myHeightProp, "pt")("width", ctx.myWidthProp);
@@ -1133,7 +1125,6 @@ describe('compiler compliance: styling', () => {
                 $r3$.ɵɵelement(0, "div");
               }
               if (rf & 2) {
-                $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
                 $r3$.ɵɵstyleMap(ctx.myStyleExp);
                 $r3$.ɵɵclassMap(ctx.myClassExp);
                 $r3$.ɵɵstyleProp("height", ctx.myHeightExp);
@@ -1148,7 +1139,6 @@ describe('compiler compliance: styling', () => {
                 $r3$.ɵɵallocHostVars(6);
               }
               if (rf & 2) {
-                $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
                 $r3$.ɵɵstyleMap(ctx.myStyleExp);
                 $r3$.ɵɵclassMap(ctx.myClassExp);
                 $r3$.ɵɵstyleProp("width", ctx.myWidthExp);
@@ -1416,6 +1406,46 @@ describe('compiler compliance: styling', () => {
             …
             if (rf & 2) {
               $r3$.ɵɵstylePropInterpolate2("width", "a", ctx.one, "b", ctx.two, "c", "px");
+            }
+            …
+          `;
+         const result = compile(files, angularFiles);
+
+         expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
+       });
+
+    it('should generate update instructions for interpolated style properties with a sanitizer',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                <div style.background="url({{ myUrl1 }})"
+                     style.borderImage="url({{ myUrl2 }}) {{ myRepeat }} auto"
+                     style.boxShadow="{{ myBoxX }} {{ myBoxY }} {{ myBoxWidth }} black"></div>
+              \`
+            })
+            export class MyComponent {
+              myUrl1 = '...';
+              myUrl2 = '...';
+              myBoxX = '0px';
+              myBoxY = '0px';
+              myBoxWidth = '100px';
+              myRepeat = 'no-repeat';
+            }
+          `
+           }
+         };
+
+         const template = `
+            …
+            if (rf & 2) {
+              $r3$.ɵɵstylePropInterpolate1("background", "url(", ctx.myUrl1, ")", $r3$.ɵɵdefaultStyleSanitizer);
+              $r3$.ɵɵstylePropInterpolate2("border-image", "url(", ctx.myUrl2, ") ", ctx.myRepeat, " auto", $r3$.ɵɵdefaultStyleSanitizer);
+              $r3$.ɵɵstylePropInterpolate3("box-shadow", "", ctx.myBoxX, " ", ctx.myBoxY, " ", ctx.myBoxWidth, " black");
             }
             …
           `;
@@ -1849,7 +1879,6 @@ describe('compiler compliance: styling', () => {
         }
         if (rf & 2) {
           $r3$.ɵɵhostProperty("id", ctx.id)("title", ctx.title);
-          $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
           $r3$.ɵɵstyleMap(ctx.myStyle);
           $r3$.ɵɵclassMap(ctx.myClass);
         }
@@ -1902,7 +1931,7 @@ describe('compiler compliance: styling', () => {
   });
 
   describe('new styling refactor', () => {
-    it('should generate a `styleSanitizer` instruction when one or more sanitizable style properties are statically detected',
+    it('should generate a sanitizer value into the instruction when one or more sanitizable style properties are statically detected',
        () => {
          const files = {
            app: {
@@ -1926,8 +1955,7 @@ describe('compiler compliance: styling', () => {
         template: function MyAppComp_Template(rf, ctx) {
           …
           if (rf & 2) {
-            $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-            $r3$.ɵɵstyleProp("background-image", ctx.bgExp);
+            $r3$.ɵɵstyleProp("background-image", ctx.bgExp, $r3$.ɵɵdefaultStyleSanitizer);
           }
           …
         }
@@ -1937,11 +1965,10 @@ describe('compiler compliance: styling', () => {
          expectEmit(result.source, template, 'Incorrect template');
        });
 
-    it('should generate a `styleSanitizer` instruction when a `styleMap` instruction is used',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should not add a sanitizer param  when a `styleMap` instruction is used', () => {
+      const files = {
+        app: {
+          'spec.ts': `
             import {Component, NgModule} from '@angular/core';
 
             @Component({
@@ -1954,25 +1981,24 @@ describe('compiler compliance: styling', () => {
               mapExp = {};
             }
           `
-           }
-         };
+        }
+      };
 
-         const template = `
+      const template = `
         template: function MyAppComp_Template(rf, ctx) {
           …
           if (rf & 2) {
-            $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
             $r3$.ɵɵstyleMap(ctx.mapExp);
           }
           …
         }
       `;
 
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-    it('shouldn\'t generate a `styleSanitizer` instruction when class-based instructions are used',
+    it('shouldn\'t generate a sanitizer param into the styling instruction when class-based instructions are used',
        () => {
          const files = {
            app: {
