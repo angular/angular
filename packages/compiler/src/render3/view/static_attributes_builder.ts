@@ -13,7 +13,6 @@ import {AttributeBuilder} from './api';
 import {parse as parseStyle} from './style_parser';
 
 
-
 /**
  * Used to generate the `TAttributes` array (which is used by the `element`, `elementStart` and
  * `elementHostAttrs` instructions).

@@ -7,7 +7,6 @@
  */
 
 import {AttributeBuilder} from '@angular/compiler/src/compiler';
-
 import * as e from '../../../src/expression_parser/ast';
 import {Lexer} from '../../../src/expression_parser/lexer';
 import {Parser} from '../../../src/expression_parser/parser';
