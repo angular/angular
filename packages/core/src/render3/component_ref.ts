@@ -30,8 +30,10 @@ import {TContainerNode, TElementContainerNode, TElementNode} from './interfaces/
 import {RNode, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {LView, LViewFlags, TVIEW, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
-import {stringifyCSSSelectorList} from './node_selector_matcher';
+import {writeDirectClass} from './node_manipulation';
+import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
 import {enterView, leaveView} from './state';
+import {setUpAttributes} from './util/attrs_utils';
 import {defaultScheduler} from './util/misc_utils';
 import {getTNode} from './util/view_utils';
 import {createElementRef} from './view_engine_compatibility';
@@ -165,7 +167,6 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const rootLView = createLView(
         null, rootTView, rootContext, rootFlags, null, null, rendererFactory, hostRenderer,
         sanitizer, rootViewInjector);
-    const addVersion = rootSelectorOrNode && hostRNode ? VERSION.full : null;
 
     // rootView is the parent when bootstrapping
     // TODO(misko): it looks like we are entering view here but we don't really need to as
@@ -179,7 +180,24 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     try {
       const componentView = createRootComponentView(
-          hostRNode, this.componentDef, rootLView, rendererFactory, hostRenderer, addVersion, null);
+          hostRNode, this.componentDef, rootLView, rendererFactory, hostRenderer);
+      if (hostRNode) {
+        if (rootSelectorOrNode) {
+          setUpAttributes(hostRenderer, hostRNode, ['ng-version', VERSION.full]);
+        } else {
+          // If host element is created as a part of this function call (i.e. `rootSelectorOrNode`
+          // is not defined), also apply attributes and classes extracted from component selector.
+          // Extract attributes and classes from the first selector only to match VE behavior.
+          const {attrs, classes} =
+              extractAttrsAndClassesFromSelector(this.componentDef.selectors[0]);
+          if (attrs) {
+            setUpAttributes(hostRenderer, hostRNode, attrs);
+          }
+          if (classes && classes.length > 0) {
+            writeDirectClass(hostRenderer, hostRNode, classes.join(' '));
+          }
+        }
+      }
 
       tElementNode = getTNode(rootLView[TVIEW], 0) as TElementNode;
 
