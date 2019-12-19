@@ -170,6 +170,8 @@ System.config({
     '@angular/material/sort/testing/shared.spec': 'dist/packages/material/sort/testing/shared.spec.js',
     '@angular/material/stepper': 'dist/packages/material/stepper/index.js',
     '@angular/material/table': 'dist/packages/material/table/index.js',
+    '@angular/material/table/testing': 'dist/packages/material/table/testing/index.js',
+    '@angular/material/table/testing/shared.spec': 'dist/packages/material/table/testing/shared.spec.js',
     '@angular/material/tabs': 'dist/packages/material/tabs/index.js',
     '@angular/material/tabs/testing': 'dist/packages/material/tabs/testing/index.js',
     '@angular/material/tabs/testing/shared.spec': 'dist/packages/material/tabs/testing/shared.spec.js',
