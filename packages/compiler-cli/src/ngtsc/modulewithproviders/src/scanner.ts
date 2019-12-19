@@ -9,7 +9,7 @@
 import {ExpressionType, ExternalExpr, R3Identifiers as Identifiers, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ImportMode, Reference, ReferenceEmitter} from '../../imports';
+import {ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {PartialEvaluator, ResolvedValueMap} from '../../partial_evaluator';
 import {ReflectionHost} from '../../reflection';
 
@@ -98,7 +98,7 @@ export class ModuleWithProvidersScanner {
     }
 
     const ngModuleExpr =
-        this.emitter.emit(ngModule, decl.getSourceFile(), ImportMode.ForceNewImport);
+        this.emitter.emit(ngModule, decl.getSourceFile(), ImportFlags.ForceNewImport);
     const ngModuleType = new ExpressionType(ngModuleExpr);
     const mwpNgType = new ExpressionType(
         new ExternalExpr(Identifiers.ModuleWithProviders), /* modifiers */ null, [ngModuleType]);
