@@ -28,7 +28,7 @@
       bottom: 0;
       left: 0;
     }
-    
+
     // By default, all focus indicators are flush with the bounding box of their
     // host element. For particular elements (listed below), default inset/offset
     // values are necessary to ensure that the focus indicator is sufficiently
@@ -51,7 +51,7 @@
 
     // Render the focus indicator on focus. Defining a pseudo element's
     // content will cause it to render.
-    
+
     // For checkboxes, radios, and slide toggles, render the focus indicator
     // when the class .cdk-focused is present.
     #{$root-selector} .cdk-focused.mat-checkbox &::before,
@@ -65,7 +65,7 @@
     // For all other components, render the focus indicator on focus.
     #{$root-selector} &:focus::before {
       content: '';
-    }      
+    }
   }
 }
 
