@@ -76,7 +76,7 @@
     "twitter": "jakeherringbone",
     "website": "http://google.com/+alexeagle",
     "bio": "Alex works on language tooling for JavaScript and TypeScript. Previously Alex spent five years in Google's developer testing tools. He has developed systems including Google's continuous integration service, capturing build&test failures, and explaining them to developers. Before Google, Alex worked at startups including Opower, and consulted for large government IT. In his 20% time, he created the Error-Prone static analysis tool, which detects common Java programming mistakes and reports them as compile errors.",
-    "groups": ["Angular"],
+    "groups": ["Collaborators"],
     "lead": "igorminar"
   },
   "aikidave": {
@@ -306,7 +306,7 @@
     "twitter": "manekinekko",
     "website": "https://medium.com/@wassimchegham",
     "bio": "Wassim (aka manekinekko on Twitter/Github) is a Developer Advocate at SFEIR, in Web technologies (Angular, Polymer, PWA, Web Components...). He is also a Developer Expert in Web technologies nominated by Google. He enjoys writing technical articles, meeting developers at events, speaking at conferences and contributing to open source projects. Wassim loves the Web Platform and works hard to move it forward.",
-    "groups": ["Angular"],
+    "groups": ["GDE"],
     "mentor": "filipesilva"
   },
   "chrisnoring": {
