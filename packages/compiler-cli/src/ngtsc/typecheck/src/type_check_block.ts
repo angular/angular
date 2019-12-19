@@ -1187,7 +1187,10 @@ function tcbGetDirectiveInputs(
 
   // To determine which of directive's inputs are unset, we keep track of the set of field names
   // that have not been seen yet. A field is removed from this set once a binding to it is found.
-  const unsetFields = new Set(propMatch.values());
+  // Note: it's actually important here that `propMatch.values()` isn't used, as there can be
+  // multiple fields which share the same property name and only one of them will be listed as a
+  // value in `propMatch`.
+  const unsetFields = new Set(Object.keys(dir.inputs));
 
   el.inputs.forEach(processAttribute);
   el.attributes.forEach(processAttribute);
