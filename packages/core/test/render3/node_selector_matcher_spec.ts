@@ -10,7 +10,7 @@ import {createTNode} from '@angular/core/src/render3/instructions/shared';
 
 import {AttributeMarker, TAttributes, TNode, TNodeType} from '../../src/render3/interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags} from '../../src/render3/interfaces/projection';
-import {getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorList, stringifyCSSSelectorList} from '../../src/render3/node_selector_matcher';
+import {extractAttrsAndClassesFromSelector, getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorList, stringifyCSSSelectorList} from '../../src/render3/node_selector_matcher';
 
 function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
   return createTNode(null !, null, TNodeType.Element, 0, tagName, attrs);
@@ -567,5 +567,53 @@ describe('stringifyCSSSelectorList', () => {
         SelectorFlags.CLASS | SelectorFlags.NOT, 'baz'
       ]
     ])).toBe('[id],button[id="value"],div:not([foo]),div:not(p.bar):not(.baz)');
+  });
+});
+
+describe('extractAttrsAndClassesFromSelector', () => {
+  const cases = [
+    [
+      ['div', '', ''],
+      [],
+      [],
+    ],
+    [
+      ['div', 'attr-a', 'a', 'attr-b', 'b', 'attr-c', ''],
+      ['attr-a', 'a', 'attr-b', 'b', 'attr-c', ''],
+      [],
+    ],
+    [
+      ['div', 'attr-a', 'a', SelectorFlags.CLASS, 'class-a', 'class-b', 'class-c'],
+      ['attr-a', 'a'],
+      ['class-a', 'class-b', 'class-c'],
+    ],
+    [
+      ['', 'attr-a', 'a', SelectorFlags.CLASS, 'class-a', SelectorFlags.ATTRIBUTE, 'attr-b', 'b'],
+      ['attr-a', 'a', 'attr-b', 'b'],
+      ['class-a'],
+    ],
+    [
+      [
+        '', '', '', SelectorFlags.ATTRIBUTE, 'attr-a', 'a',
+        (SelectorFlags.CLASS | SelectorFlags.NOT), 'class-b'
+      ],
+      ['attr-a', 'a'],
+      [],
+    ],
+    [
+      [
+        '', '', '', (SelectorFlags.CLASS | SelectorFlags.NOT), 'class-a',
+        (SelectorFlags.ATTRIBUTE | SelectorFlags.NOT), 'attr-b', 'b'
+      ],
+      [],
+      [],
+    ],
+  ];
+  cases.forEach(([selector, attrs, classes]) => {
+    it(`should process ${JSON.stringify(selector)} selector`, () => {
+      const extracted = extractAttrsAndClassesFromSelector(selector);
+      expect(extracted.attrs).toEqual(attrs as string[]);
+      expect(extracted.classes).toEqual(classes as string[]);
+    });
   });
 });
