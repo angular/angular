@@ -174,6 +174,33 @@ export declare class AnimationEvent {
           .toEqual(`Argument of type 'string' is not assignable to parameter of type 'number'.`);
     });
 
+    it('should support one input property mapping to multiple fields', () => {
+      env.write('test.ts', `
+        import {Component, Directive, Input, NgModule} from '@angular/core';
+
+        @Directive({
+          selector: '[dir]',
+        })
+        export class Dir {
+
+          @Input('propertyName') fieldA!: string;
+          @Input('propertyName') fieldB!: string;
+        }
+
+        @Component({
+          selector: 'test-cmp',
+          template: '<div dir propertyName="test"></div>',
+        })
+        export class Cmp {}
+
+        @NgModule({declarations: [Dir, Cmp]})
+        export class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
     it('should check event bindings', () => {
       env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
       env.write('test.ts', `
