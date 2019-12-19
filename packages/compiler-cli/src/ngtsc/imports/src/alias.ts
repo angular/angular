@@ -10,8 +10,10 @@ import {Expression, ExternalExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration} from '../../reflection';
-import {FileToModuleHost, ReferenceEmitStrategy} from './emitter';
-import {ImportMode, Reference} from './references';
+
+import {FileToModuleHost, ImportFlags, ReferenceEmitStrategy} from './emitter';
+import {Reference} from './references';
+
 
 // Escape anything that isn't alphanumeric, '/' or '_'.
 const CHARS_TO_ESCAPE = /[^a-zA-Z0-9/_]/g;
@@ -206,7 +208,7 @@ export class PrivateExportAliasingHost implements AliasingHost {
  * directive or pipe, if it exists.
  */
 export class AliasStrategy implements ReferenceEmitStrategy {
-  emit(ref: Reference<ts.Node>, context: ts.SourceFile, importMode: ImportMode): Expression|null {
+  emit(ref: Reference<ts.Node>, context: ts.SourceFile, importMode: ImportFlags): Expression|null {
     return ref.alias;
   }
 }
