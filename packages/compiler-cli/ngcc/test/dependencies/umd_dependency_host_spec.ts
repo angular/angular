@@ -29,13 +29,13 @@ runInEachFileSystem(() => {
     describe('getDependencies()', () => {
       it('should not generate a TS AST if the source does not contain any require calls', () => {
         spyOn(ts, 'createSourceFile');
-        host.findDependencies(_('/no/imports/or/re-exports/index.js'), createDependencyInfo());
+        host.collectDependencies(_('/no/imports/or/re-exports/index.js'), createDependencyInfo());
         expect(ts.createSourceFile).not.toHaveBeenCalled();
       });
 
       it('should resolve all the external imports of the source file', () => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.findDependencies(
+        host.collectDependencies(
             _('/external/imports/index.js'), {dependencies, missing, deepImports});
         expect(dependencies.size).toBe(2);
         expect(missing.size).toBe(0);
@@ -46,7 +46,7 @@ runInEachFileSystem(() => {
 
       it('should resolve all the external re-exports of the source file', () => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.findDependencies(
+        host.collectDependencies(
             _('/external/re-exports/index.js'), {dependencies, missing, deepImports});
         expect(dependencies.size).toBe(2);
         expect(missing.size).toBe(0);
@@ -57,7 +57,7 @@ runInEachFileSystem(() => {
 
       it('should capture missing external imports', () => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.findDependencies(
+        host.collectDependencies(
             _('/external/imports-missing/index.js'), {dependencies, missing, deepImports});
 
         expect(dependencies.size).toBe(1);
@@ -72,7 +72,7 @@ runInEachFileSystem(() => {
         // is found that does not map to an entry-point but still exists on disk, i.e. a deep
         // import. Such deep imports are captured for diagnostics purposes.
         const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.findDependencies(
+        host.collectDependencies(
             _('/external/deep-import/index.js'), {dependencies, missing, deepImports});
 
         expect(dependencies.size).toBe(0);
@@ -83,7 +83,8 @@ runInEachFileSystem(() => {
 
       it('should recurse into internal dependencies', () => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.findDependencies(_('/internal/outer/index.js'), {dependencies, missing, deepImports});
+        host.collectDependencies(
+            _('/internal/outer/index.js'), {dependencies, missing, deepImports});
 
         expect(dependencies.size).toBe(1);
         expect(dependencies.has(_('/node_modules/lib_1/sub_1'))).toBe(true);
@@ -93,7 +94,7 @@ runInEachFileSystem(() => {
 
       it('should handle circular internal dependencies', () => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.findDependencies(
+        host.collectDependencies(
             _('/internal/circular_a/index.js'), {dependencies, missing, deepImports});
         expect(dependencies.size).toBe(2);
         expect(dependencies.has(_('/node_modules/lib_1'))).toBe(true);
@@ -112,7 +113,7 @@ runInEachFileSystem(() => {
                                        }
                                      }));
         const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.findDependencies(_('/path-alias/index.js'), {dependencies, missing, deepImports});
+        host.collectDependencies(_('/path-alias/index.js'), {dependencies, missing, deepImports});
         expect(dependencies.size).toBe(4);
         expect(dependencies.has(_('/dist/components'))).toBe(true);
         expect(dependencies.has(_('/dist/shared'))).toBe(true);
@@ -124,7 +125,8 @@ runInEachFileSystem(() => {
 
       it('should handle entry-point paths with no extension', () => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.findDependencies(_('/external/imports/index'), {dependencies, missing, deepImports});
+        host.collectDependencies(
+            _('/external/imports/index'), {dependencies, missing, deepImports});
         expect(dependencies.size).toBe(2);
         expect(missing.size).toBe(0);
         expect(deepImports.size).toBe(0);

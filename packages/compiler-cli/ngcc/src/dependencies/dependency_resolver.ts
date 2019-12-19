@@ -124,7 +124,7 @@ export class DependencyResolver {
           `Could not find a suitable format for computing dependencies of entry-point: '${entryPoint.path}'.`);
     }
     const depInfo = createDependencyInfo();
-    host.findDependencies(formatInfo.path, depInfo);
+    host.collectDependencies(formatInfo.path, depInfo);
     return depInfo;
   }
 

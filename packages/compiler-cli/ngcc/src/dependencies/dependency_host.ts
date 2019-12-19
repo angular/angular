@@ -11,7 +11,7 @@ import {resolveFileWithPostfixes} from '../utils';
 import {ModuleResolver} from './module_resolver';
 
 export interface DependencyHost {
-  findDependencies(
+  collectDependencies(
       entryPointPath: AbsoluteFsPath, {dependencies, missing, deepImports}: DependencyInfo): void;
 }
 
@@ -35,7 +35,7 @@ export abstract class DependencyHostBase implements DependencyHost {
    * @returns Information about the dependencies of the entry-point, including those that were
    * missing or deep imports into other entry-points.
    */
-  findDependencies(
+  collectDependencies(
       entryPointPath: AbsoluteFsPath, {dependencies, missing, deepImports}: DependencyInfo): void {
     const resolvedFile =
         resolveFileWithPostfixes(this.fs, entryPointPath, ['', '.js', '/index.js']);
