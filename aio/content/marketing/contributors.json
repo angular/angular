@@ -15,7 +15,7 @@
     "website": "https://google.com/+IgorMinar",
     "bio": "Igor is a software engineer at Google. He is a lead on the Angular project, practitioner of test driven development, open source enthusiast, hacker. In his free time, Igor enjoys spending time with his wife and two kids, doing outdoor activities (including but not limited to sports, gardening and building retaining walls).",
     "groups": ["Angular"],
-    "lead": "bradlygreen"
+    "lead": "juleskremer"
   },
   "bradlygreen": {
     "name": "Brad Green",
@@ -50,7 +50,7 @@
     "website": "https://plus.google.com/+stephenfluin",
     "bio": "Stephen is a Developer Advocate working on the Angular team. Before joining Google, he was a Google Expert. Stephen loves to help enterprises use technology more effectively.",
     "groups": ["Angular"],
-    "lead": "bradlygreen"
+    "lead": "juleskremer"
   },
   "robwormald": {
     "name": "Rob Wormald",
@@ -119,7 +119,7 @@
     "website": "http://probst.io",
     "bio": "Martin is a software engineer at Google in the AngularJS team. He holds a MSc in Software Engineering from HPI in Potsdam, Germany. Before joining the AngularJS team at Google, he worked at a database startup in the Netherlands, at EMC, at SAP, and as a freelancer. In his free time, he likes to cook and sail, not necessarily at the same time.",
     "groups": ["Angular"],
-    "lead": "bradlygreen"
+    "lead": "juleskremer"
   },
   "alxhub": {
     "name": "Alex Rickabaugh",
@@ -750,7 +750,7 @@
     "picture": "denny.jpg",
     "bio": "Denny is founder of Expert Support, a professional services firm specializing in technical communication, and leads the Angular technical writing team. His lifelong passion has been to reduce the time and effort required to understand complex technical information. Early on, he was Associate Chairman of the Computer Science Department at Stanford, where he taught introductory courses in programming. He also plays old-timers baseball in local leagues and national tournaments.",
     "groups": ["Angular"],
-    "lead": "bradlygreen"
+    "lead": "juleskremer"
   },
   "jbogarthyde": {
     "name": "Judy Bogart",
@@ -904,5 +904,12 @@
     "website": "https://strongbrew.io",
     "bio": "Kwinten is a GDE for Angular with a passion for reactive coding. He works as a software engineer for Stackblitz. He shares his passion for Angular and coding through blogposts and training sessions with the company he co-founded called Strongbrew.",
     "groups": ["GDE"]
+  },
+  "juleskremer": {
+    "name": "Jules Kremer",
+    "picture": "juleskremer.jpg",
+    "twitter": "jules_kremer",
+    "bio": "Jules Kremer is the engineering manager for web frameworks at Google including Angular. Jules has over 20 years of experience in technology and has been a software engineer, product manager, developer evangelist, and competitive intelligence lead. Jules has a passion for supporting women in tech, yoga, hiking, cooking, and exploring the jungles of Maui.",
+    "groups": ["Angular"]
   }
 }
