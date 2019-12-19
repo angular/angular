@@ -8,8 +8,9 @@
 
 import {DepGraph} from 'dependency-graph';
 
-import {FileSystem, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
+import {FileSystem, absoluteFrom, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {DependencyInfo} from '../../src/dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../../src/dependencies/dependency_resolver';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
@@ -86,67 +87,69 @@ runInEachFileSystem(() => {
         } as EntryPoint;
 
         dependencies = {
-          [_('/first/index.js')]: {resolved: [second.path, third.path, '/ignored-1'], missing: []},
+          [_('/first/index.js')]:
+              {resolved: [second.path, third.path, _('/ignored-1')], missing: []},
           [_('/second/sub/index.js')]: {resolved: [third.path, fifth.path], missing: []},
-          [_('/third/index.js')]: {resolved: [fourth.path, '/ignored-2'], missing: []},
+          [_('/third/index.js')]: {resolved: [fourth.path, _('/ignored-2')], missing: []},
           [_('/fourth/sub2/index.js')]: {resolved: [fifth.path], missing: []},
           [_('/fifth/index.js')]: {resolved: [], missing: []},
         };
       });
 
       it('should order the entry points by their dependency on each other', () => {
-        spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies(dependencies));
+        spyOn(host, 'collectDependencies')
+            .and.callFake(createFakeComputeDependencies(dependencies));
         const result = resolver.sortEntryPointsByDependency([fifth, first, fourth, second, third]);
         expect(result.entryPoints).toEqual([fifth, fourth, third, second, first]);
       });
 
       it('should remove entry-points that have missing direct dependencies', () => {
-        spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
-          [_('/first/index.js')]: {resolved: [], missing: ['/missing']},
+        spyOn(host, 'collectDependencies').and.callFake(createFakeComputeDependencies({
+          [_('/first/index.js')]: {resolved: [], missing: [_('/missing')]},
           [_('/second/sub/index.js')]: {resolved: [], missing: []},
         }));
         const result = resolver.sortEntryPointsByDependency([first, second]);
         expect(result.entryPoints).toEqual([second]);
         expect(result.invalidEntryPoints).toEqual([
-          {entryPoint: first, missingDependencies: ['/missing']},
+          {entryPoint: first, missingDependencies: [_('/missing')]},
         ]);
       });
 
       it('should remove entry points that depended upon an invalid entry-point', () => {
-        spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
+        spyOn(host, 'collectDependencies').and.callFake(createFakeComputeDependencies({
           [_('/first/index.js')]: {resolved: [second.path, third.path], missing: []},
-          [_('/second/sub/index.js')]: {resolved: [], missing: ['/missing']},
+          [_('/second/sub/index.js')]: {resolved: [], missing: [_('/missing')]},
           [_('/third/index.js')]: {resolved: [], missing: []},
         }));
         // Note that we will process `first` before `second`, which has the missing dependency.
         const result = resolver.sortEntryPointsByDependency([first, second, third]);
         expect(result.entryPoints).toEqual([third]);
         expect(result.invalidEntryPoints).toEqual([
-          {entryPoint: second, missingDependencies: ['/missing']},
-          {entryPoint: first, missingDependencies: ['/missing']},
+          {entryPoint: second, missingDependencies: [_('/missing')]},
+          {entryPoint: first, missingDependencies: [_('/missing')]},
         ]);
       });
 
       it('should remove entry points that will depend upon an invalid entry-point', () => {
-        spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
+        spyOn(host, 'collectDependencies').and.callFake(createFakeComputeDependencies({
           [_('/first/index.js')]: {resolved: [second.path, third.path], missing: []},
-          [_('/second/sub/index.js')]: {resolved: [], missing: ['/missing']},
+          [_('/second/sub/index.js')]: {resolved: [], missing: [_('/missing')]},
           [_('/third/index.js')]: {resolved: [], missing: []},
         }));
         // Note that we will process `first` after `second`, which has the missing dependency.
         const result = resolver.sortEntryPointsByDependency([second, first, third]);
         expect(result.entryPoints).toEqual([third]);
         expect(result.invalidEntryPoints).toEqual([
-          {entryPoint: second, missingDependencies: ['/missing']},
+          {entryPoint: second, missingDependencies: [_('/missing')]},
           {entryPoint: first, missingDependencies: [second.path]},
         ]);
       });
 
       it('should cope with entry points that will depend upon an invalid entry-point, when told to ignore missing dependencies',
          () => {
-           spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
+           spyOn(host, 'collectDependencies').and.callFake(createFakeComputeDependencies({
              [_('/first/index.js')]: {resolved: [sixthIgnoreMissing.path], missing: []},
-             [_('/sixth/index.js')]: {resolved: [], missing: ['/missing']},
+             [_('/sixth/index.js')]: {resolved: [], missing: [_('/missing')]},
            }));
            // Note that we will process `first` after `second`, which has the missing dependency.
            const result = resolver.sortEntryPointsByDependency([sixthIgnoreMissing, first]);
@@ -155,8 +158,8 @@ runInEachFileSystem(() => {
          });
 
       it('should not transitively ignore missing dependencies', () => {
-        spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
-          [_('/first/index.js')]: {resolved: [], missing: ['/missing']},
+        spyOn(host, 'collectDependencies').and.callFake(createFakeComputeDependencies({
+          [_('/first/index.js')]: {resolved: [], missing: [_('/missing')]},
           [_('/second/sub/index.js')]: {resolved: [first.path], missing: []},
           [_('/sixth/index.js')]: {resolved: [second.path], missing: []},
         }));
@@ -167,16 +170,16 @@ runInEachFileSystem(() => {
       });
 
       it('should cope with entry points having multiple indirect missing dependencies', () => {
-        spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
-          [_('/first/index.js')]: {resolved: [], missing: ['/missing1']},
-          [_('/second/sub/index.js')]: {resolved: [], missing: ['/missing2']},
+        spyOn(host, 'collectDependencies').and.callFake(createFakeComputeDependencies({
+          [_('/first/index.js')]: {resolved: [], missing: [_('/missing1')]},
+          [_('/second/sub/index.js')]: {resolved: [], missing: [_('/missing2')]},
           [_('/third/index.js')]: {resolved: [first.path, second.path], missing: []},
         }));
         const result = resolver.sortEntryPointsByDependency([first, second, third]);
         expect(result.entryPoints).toEqual([]);
         expect(result.invalidEntryPoints).toEqual([
-          {entryPoint: first, missingDependencies: ['/missing1']},
-          {entryPoint: second, missingDependencies: ['/missing2']},
+          {entryPoint: first, missingDependencies: [_('/missing1')]},
+          {entryPoint: second, missingDependencies: [_('/missing2')]},
           {entryPoint: third, missingDependencies: [first.path]},
         ]);
       });
@@ -195,16 +198,18 @@ runInEachFileSystem(() => {
       });
 
       it('should capture any dependencies that were ignored', () => {
-        spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies(dependencies));
+        spyOn(host, 'collectDependencies')
+            .and.callFake(createFakeComputeDependencies(dependencies));
         const result = resolver.sortEntryPointsByDependency([fifth, first, fourth, second, third]);
         expect(result.ignoredDependencies).toEqual([
-          {entryPoint: first, dependencyPath: '/ignored-1'},
-          {entryPoint: third, dependencyPath: '/ignored-2'},
+          {entryPoint: first, dependencyPath: _('/ignored-1')},
+          {entryPoint: third, dependencyPath: _('/ignored-2')},
         ]);
       });
 
       it('should return the computed dependency graph', () => {
-        spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies(dependencies));
+        spyOn(host, 'collectDependencies')
+            .and.callFake(createFakeComputeDependencies(dependencies));
         const result = resolver.sortEntryPointsByDependency([fifth, first, fourth, second, third]);
 
         expect(result.graph).toEqual(jasmine.any(DepGraph));
@@ -213,7 +218,8 @@ runInEachFileSystem(() => {
       });
 
       it('should only return dependencies of the target, if provided', () => {
-        spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies(dependencies));
+        spyOn(host, 'collectDependencies')
+            .and.callFake(createFakeComputeDependencies(dependencies));
         const entryPoints = [fifth, first, fourth, second, third];
         let sorted: SortedEntryPointsInfo;
 
@@ -230,8 +236,8 @@ runInEachFileSystem(() => {
       });
 
       it('should not process the provided target if it has missing dependencies', () => {
-        spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
-          [_('/first/index.js')]: {resolved: [], missing: ['/missing']},
+        spyOn(host, 'collectDependencies').and.callFake(createFakeComputeDependencies({
+          [_('/first/index.js')]: {resolved: [], missing: [_('/missing')]},
         }));
         const entryPoints = [first];
         let sorted: SortedEntryPointsInfo;
@@ -239,11 +245,11 @@ runInEachFileSystem(() => {
         sorted = resolver.sortEntryPointsByDependency(entryPoints, first);
         expect(sorted.entryPoints).toEqual([]);
         expect(sorted.invalidEntryPoints[0].entryPoint).toEqual(first);
-        expect(sorted.invalidEntryPoints[0].missingDependencies).toEqual(['/missing']);
+        expect(sorted.invalidEntryPoints[0].missingDependencies).toEqual([_('/missing')]);
       });
 
       it('should not consider builtin NodeJS modules as missing dependency', () => {
-        spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
+        spyOn(host, 'collectDependencies').and.callFake(createFakeComputeDependencies({
           [_('/first/index.js')]: {resolved: [], missing: ['fs']},
         }));
         const entryPoints = [first];
@@ -260,40 +266,42 @@ runInEachFileSystem(() => {
         const esm2015Host = new EsmDependencyHost(fs, moduleResolver);
         resolver =
             new DependencyResolver(fs, new MockLogger(), {esm5: esm5Host, esm2015: esm2015Host});
-        spyOn(esm5Host, 'findDependencies')
+        spyOn(esm5Host, 'collectDependencies')
             .and.callFake(createFakeComputeDependencies(dependencies));
-        spyOn(esm2015Host, 'findDependencies')
+        spyOn(esm2015Host, 'collectDependencies')
             .and.callFake(createFakeComputeDependencies(dependencies));
         const result = resolver.sortEntryPointsByDependency([fifth, first, fourth, second, third]);
         expect(result.entryPoints).toEqual([fifth, fourth, third, second, first]);
 
-        expect(esm5Host.findDependencies).toHaveBeenCalledWith(fs.resolve(first.path, 'index.js'));
-        expect(esm5Host.findDependencies)
-            .not.toHaveBeenCalledWith(fs.resolve(second.path, 'sub/index.js'));
-        expect(esm5Host.findDependencies).toHaveBeenCalledWith(fs.resolve(third.path, 'index.js'));
-        expect(esm5Host.findDependencies)
-            .not.toHaveBeenCalledWith(fs.resolve(fourth.path, 'sub2/index.js'));
-        expect(esm5Host.findDependencies).toHaveBeenCalledWith(fs.resolve(fifth.path, 'index.js'));
+        expect(esm5Host.collectDependencies)
+            .toHaveBeenCalledWith(fs.resolve(first.path, 'index.js'), jasmine.any(Object));
+        expect(esm5Host.collectDependencies)
+            .not.toHaveBeenCalledWith(fs.resolve(second.path, 'sub/index.js'), jasmine.any(Object));
+        expect(esm5Host.collectDependencies)
+            .toHaveBeenCalledWith(fs.resolve(third.path, 'index.js'), jasmine.any(Object));
+        expect(esm5Host.collectDependencies)
+            .not.toHaveBeenCalledWith(
+                fs.resolve(fourth.path, 'sub2/index.js'), jasmine.any(Object));
+        expect(esm5Host.collectDependencies)
+            .toHaveBeenCalledWith(fs.resolve(fifth.path, 'index.js'), jasmine.any(Object));
 
-        expect(esm2015Host.findDependencies)
-            .not.toHaveBeenCalledWith(fs.resolve(first.path, 'index.js'));
-        expect(esm2015Host.findDependencies)
-            .toHaveBeenCalledWith(fs.resolve(second.path, 'sub/index.js'));
-        expect(esm2015Host.findDependencies)
-            .not.toHaveBeenCalledWith(fs.resolve(third.path, 'index.js'));
-        expect(esm2015Host.findDependencies)
-            .toHaveBeenCalledWith(fs.resolve(fourth.path, 'sub2/index.js'));
-        expect(esm2015Host.findDependencies)
-            .not.toHaveBeenCalledWith(fs.resolve(fifth.path, 'index.js'));
+        expect(esm2015Host.collectDependencies)
+            .not.toHaveBeenCalledWith(fs.resolve(first.path, 'index.js'), jasmine.any(Object));
+        expect(esm2015Host.collectDependencies)
+            .toHaveBeenCalledWith(fs.resolve(second.path, 'sub/index.js'), jasmine.any(Object));
+        expect(esm2015Host.collectDependencies)
+            .not.toHaveBeenCalledWith(fs.resolve(third.path, 'index.js'), jasmine.any(Object));
+        expect(esm2015Host.collectDependencies)
+            .toHaveBeenCalledWith(fs.resolve(fourth.path, 'sub2/index.js'), jasmine.any(Object));
+        expect(esm2015Host.collectDependencies)
+            .not.toHaveBeenCalledWith(fs.resolve(fifth.path, 'index.js'), jasmine.any(Object));
       });
 
       function createFakeComputeDependencies(deps: DepMap) {
-        return (entryPoint: string) => {
-          const dependencies = new Set();
-          const missing = new Set();
-          const deepImports = new Set();
-          deps[entryPoint].resolved.forEach(dep => dependencies.add(dep));
-          deps[entryPoint].missing.forEach(dep => missing.add(dep));
+        return (entryPointPath: string, {dependencies, missing, deepImports}: DependencyInfo) => {
+          deps[entryPointPath].resolved.forEach(dep => dependencies.add(absoluteFrom(dep)));
+          deps[entryPointPath].missing.forEach(
+              dep => missing.add(fs.isRooted(dep) ? absoluteFrom(dep) : relativeFrom(dep)));
           return {dependencies, missing, deepImports};
         };
       }
