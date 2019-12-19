@@ -26,7 +26,7 @@ export class StaticAttributesBuilder {
   private _i18nNameAttrs: string[]|null = null;
 
   setAttribute(attrName: string, value: string|o.Expression) {
-    if (!this._keyValueAttrs) {
+    if (this._keyValueAttrs === null) {
       this._keyValueAttrs = [];
     }
 
@@ -204,7 +204,7 @@ function populateNameAttributeEntries(attrs: o.Expression[], names: any[]): void
   }
 }
 
-function toLiteralArr(values: any[]) {
+function toLiteralArr(values: (string | number)[]) {
   return o.literalArr(values.map(v => o.literal(v)));
 }
 
