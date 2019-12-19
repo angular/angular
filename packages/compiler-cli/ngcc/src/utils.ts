@@ -7,6 +7,8 @@
  */
 import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem, absoluteFrom} from '../../src/ngtsc/file_system';
+import {EsmDependencyHost} from './dependencies/esm_dependency_host';
+import {ModuleResolver} from './dependencies/module_resolver';
 
 /**
  * A list (`Array`) of partially ordered `T` items.
@@ -118,4 +120,9 @@ export function stripDollarSuffix(value: string): string {
 
 export function stripExtension(fileName: string): string {
   return fileName.replace(/\..+$/, '');
+}
+
+export function createDtsDependencyHost(fileSystem: FileSystem, pathMappings?: PathMappings) {
+  return new EsmDependencyHost(
+      fileSystem, new ModuleResolver(fileSystem, pathMappings, ['', '.d.ts', '/index.d.ts']));
 }
