@@ -10,7 +10,7 @@ import {Expression, ExternalExpr, R3DependencyMetadata, R3Reference, R3ResolvedD
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
-import {DefaultImportRecorder, ImportMode, Reference, ReferenceEmitter} from '../../imports';
+import {DefaultImportRecorder, ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {ForeignFunctionResolver, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, CtorParameter, Decorator, Import, ReflectionHost, TypeValueReference, isNamedClassDeclaration} from '../../reflection';
 import {DeclarationData} from '../../scope';
@@ -189,8 +189,8 @@ export function validateConstructorDependencies(
 export function toR3Reference(
     valueRef: Reference, typeRef: Reference, valueContext: ts.SourceFile,
     typeContext: ts.SourceFile, refEmitter: ReferenceEmitter): R3Reference {
-  const value = refEmitter.emit(valueRef, valueContext, ImportMode.UseExistingImport);
-  const type = refEmitter.emit(typeRef, typeContext, ImportMode.ForceNewImport);
+  const value = refEmitter.emit(valueRef, valueContext);
+  const type = refEmitter.emit(typeRef, typeContext, ImportFlags.ForceNewImport);
   if (value === null || type === null) {
     throw new Error(`Could not refer to ${ts.SyntaxKind[valueRef.node.kind]}`);
   }
