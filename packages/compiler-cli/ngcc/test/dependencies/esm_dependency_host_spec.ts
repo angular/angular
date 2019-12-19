@@ -13,6 +13,7 @@ import {loadTestFiles} from '../../../test/helpers';
 import {createDependencyInfo} from '../../src/dependencies/dependency_host';
 import {EsmDependencyHost, hasImportOrReexportStatements, isStringImportOrReexport} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
+import {createDtsDependencyHost} from '../../src/utils';
 
 runInEachFileSystem(() => {
 
@@ -159,8 +160,7 @@ runInEachFileSystem(() => {
         expect(jsDeps.missing.has(relativeFrom('./internal-typings'))).toBeTruthy();
 
         // Typings mode will pick up `internal-typings.d.ts` dependency
-        const dtsHost = new EsmDependencyHost(
-            fs, new ModuleResolver(fs, undefined, ['', '.d.ts', 'index.d.ts']));
+        const dtsHost = createDtsDependencyHost(fs);
         const dtsDeps = createDependencyInfo();
         dtsHost.collectDependencies(_('/external/index.d.ts'), dtsDeps);
         expect(dtsDeps.dependencies.size).toEqual(2);
