@@ -9,7 +9,46 @@
 import * as ts from 'typescript';
 import {ClassDeclaration} from '../../reflection';
 
+/**
+ * A `Set` of `ts.SyntaxKind`s of `ts.Expression` which are safe to wrap in a `ts.AsExpression`
+ * without needing to be wrapped in parentheses.
+ *
+ * For example, `foo.bar()` is a `ts.CallExpression`, and can be safely cast to `any` with
+ * `foo.bar() as any`. however, `foo !== bar` is a `ts.BinaryExpression`, and attempting to cast
+ * without the parentheses yields the expression `foo !== bar as any`. This is semantically
+ * equivalent to `foo !== (bar as any)`, which is not what was intended. Thus,
+ * `ts.BinaryExpression`s need to be wrapped in parentheses before casting.
+ */
+//
+const SAFE_TO_CAST_WITHOUT_PARENS: Set<ts.SyntaxKind> = new Set([
+  // Expressions which are already parenthesized can be cast without further wrapping.
+  ts.SyntaxKind.ParenthesizedExpression,
+
+  // Expressions which form a single lexical unit leave no room for precedence issues with the cast.
+  ts.SyntaxKind.Identifier,
+  ts.SyntaxKind.CallExpression,
+  ts.SyntaxKind.NonNullExpression,
+  ts.SyntaxKind.ElementAccessExpression,
+  ts.SyntaxKind.PropertyAccessExpression,
+  ts.SyntaxKind.ArrayLiteralExpression,
+  ts.SyntaxKind.ObjectLiteralExpression,
+
+  // The same goes for various literals.
+  ts.SyntaxKind.StringLiteral,
+  ts.SyntaxKind.NumericLiteral,
+  ts.SyntaxKind.TrueKeyword,
+  ts.SyntaxKind.FalseKeyword,
+  ts.SyntaxKind.NullKeyword,
+  ts.SyntaxKind.UndefinedKeyword,
+]);
+
 export function tsCastToAny(expr: ts.Expression): ts.Expression {
+  // Wrap `expr` in parentheses if needed (see `SAFE_TO_CAST_WITHOUT_PARENS` above).
+  if (!SAFE_TO_CAST_WITHOUT_PARENS.has(expr.kind)) {
+    expr = ts.createParen(expr);
+  }
+
+  // The outer expression is always wrapped in parentheses.
   return ts.createParen(
       ts.createAsExpression(expr, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)));
 }
