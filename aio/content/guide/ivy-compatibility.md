@@ -2,7 +2,7 @@
 
 The Angular team has worked hard to ensure Ivy is as backwards-compatible with the previous rendering engine ("View Engine") as possible.
 However, in rare cases, minor changes were necessary to ensure that the Angular's behavior was predictable and consistent, correcting issues in the View Engine implementation.
-In order to smooth the transition, we have provided automated migrations wherever possible so your application and library code is migrated automatically by the CLI.
+In order to smooth the transition, we have provided [automated migrations](guide/updating-to-version-9#migrations) wherever possible so your application and library code is migrated automatically by the CLI.
 That said, some applications will likely need to apply some manual updates.
 
 {@a debugging}
