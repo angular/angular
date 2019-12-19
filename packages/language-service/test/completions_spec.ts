@@ -208,6 +208,18 @@ describe('completions', () => {
     }));
   });
 
+  it('for methods of pipe should not include parentheses', () => {
+    mockHost.override(TEST_TEMPLATE, `<h1>{{title | lowe~{pipe-method} }}`);
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'pipe-method');
+    const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+    expect(completions).toBeDefined();
+    expect(completions !.entries).toContain(jasmine.objectContaining({
+      name: 'lowercase',
+      kind: CompletionKind.PIPE as any,
+      insertText: 'lowercase',
+    }));
+  });
+
   describe('in external template', () => {
     it('should be able to get entity completions in external template', () => {
       const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'entity-amp');
