@@ -27,7 +27,7 @@ export class CommonJsDependencyHost extends DependencyHostBase {
    * @param alreadySeen A set that is used to track internal dependencies to prevent getting stuck
    * in a circular dependency loop.
    */
-  protected recursivelyFindDependencies(
+  protected recursivelyCollectDependencies(
       file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
       deepImports: Set<AbsoluteFsPath>, alreadySeen: Set<AbsoluteFsPath>): void {
     const fromContents = this.fs.readFile(file);
@@ -53,7 +53,7 @@ export class CommonJsDependencyHost extends DependencyHostBase {
               const internalDependency = resolvedModule.modulePath;
               if (!alreadySeen.has(internalDependency)) {
                 alreadySeen.add(internalDependency);
-                this.recursivelyFindDependencies(
+                this.recursivelyCollectDependencies(
                     internalDependency, dependencies, missing, deepImports, alreadySeen);
               }
             } else {
