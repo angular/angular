@@ -135,6 +135,40 @@ runInEachFileSystem(() => {
         expect(dependencies.has(_('/node_modules/lib-1'))).toBe(true);
         expect(dependencies.has(_('/node_modules/lib-1/sub-1'))).toBe(true);
       });
+
+      it('should resolve modules based on the provided `moduleResolver`', () => {
+        const fs = getFileSystem();
+        loadTestFiles([
+          {
+            name: _('/external/index.d.ts'),
+            contents: `import * from './internal-typings';`,
+          },
+          {
+            name: _('/external/internal-typings.d.ts'),
+            contents: `export {X} from 'lib-1';\nexport {Y} from 'lib-1/sub-1';`,
+          }
+        ]);
+
+        // Default JS mode will not pick up `internal-typings.d.ts` dependency
+        const jsHost = new EsmDependencyHost(fs, new ModuleResolver(fs));
+        const jsDeps = createDependencyInfo();
+        jsHost.findDependencies(_('/external/index.d.ts'), jsDeps);
+        expect(jsDeps.dependencies.size).toEqual(0);
+        expect(jsDeps.deepImports.size).toEqual(0);
+        expect(jsDeps.missing.size).toEqual(1);
+        expect(jsDeps.missing.has(relativeFrom('./internal-typings'))).toBeTruthy();
+
+        // Typings mode will pick up `internal-typings.d.ts` dependency
+        const dtsHost = new EsmDependencyHost(
+            fs, new ModuleResolver(fs, undefined, ['', '.d.ts', 'index.d.ts']));
+        const dtsDeps = createDependencyInfo();
+        dtsHost.findDependencies(_('/external/index.d.ts'), dtsDeps);
+        expect(dtsDeps.dependencies.size).toEqual(2);
+        expect(dtsDeps.dependencies.has(_('/node_modules/lib-1'))).toBeTruthy();
+        expect(dtsDeps.dependencies.has(_('/node_modules/lib-1/sub-1'))).toBeTruthy();
+        expect(dtsDeps.deepImports.size).toEqual(0);
+        expect(dtsDeps.missing.size).toEqual(0);
+      });
     });
 
     function setupMockFileSystem(): void {

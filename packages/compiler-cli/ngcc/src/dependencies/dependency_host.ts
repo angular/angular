@@ -39,7 +39,7 @@ export abstract class DependencyHostBase implements DependencyHost {
   collectDependencies(
       entryPointPath: AbsoluteFsPath, {dependencies, missing, deepImports}: DependencyInfo): void {
     const resolvedFile =
-        resolveFileWithPostfixes(this.fs, entryPointPath, ['', '.js', '/index.js']);
+        resolveFileWithPostfixes(this.fs, entryPointPath, this.moduleResolver.relativeExtensions);
     if (resolvedFile !== null) {
       const alreadySeen = new Set<AbsoluteFsPath>();
       this.recursivelyCollectDependencies(
