@@ -110,6 +110,11 @@ System.config({
     '@angular/material/button/testing': 'dist/packages/material/button/testing/index.js',
     '@angular/material/button/testing/shared.spec': 'dist/packages/material/button/testing/shared.spec.js',
     '@angular/material/button-toggle': 'dist/packages/material/button-toggle/index.js',
+    '@angular/material/button-toggle/testing': 'dist/packages/material/button-toggle/testing/index.js',
+    '@angular/material/button-toggle/testing/button-toggle-shared.spec':
+        'dist/packages/material/button-toggle/testing/button-toggle-shared.spec.js',
+    '@angular/material/button-toggle/testing/button-toggle-group.spec':
+        'dist/packages/material/button-toggle/testing/button-toggle-group.spec.js',
     '@angular/material/card': 'dist/packages/material/card/index.js',
     '@angular/material/checkbox': 'dist/packages/material/checkbox/index.js',
     '@angular/material/checkbox/testing': 'dist/packages/material/checkbox/testing/index.js',

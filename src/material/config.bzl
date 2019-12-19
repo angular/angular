@@ -8,6 +8,7 @@ entryPoints = [
     "button",
     "button/testing",
     "button-toggle",
+    "button-toggle/testing",
     "card",
     "checkbox",
     "checkbox/testing",
