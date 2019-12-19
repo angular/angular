@@ -911,5 +911,19 @@
     "twitter": "jules_kremer",
     "bio": "Jules Kremer is the engineering manager for web frameworks at Google including Angular. Jules has over 20 years of experience in technology and has been a software engineer, product manager, developer evangelist, and competitive intelligence lead. Jules has a passion for supporting women in tech, yoga, hiking, cooking, and exploring the jungles of Maui.",
     "groups": ["Angular"]
+  },
+  "atscott": {
+    "name": "Andrew Scott",
+    "picture": "andrewscott.jpg",
+    "bio": "Andrew is a software engineer at Google on the Angular Core team",
+    "groups": ["Angular"],
+    "lead": "kara"
+  },
+  "manughub": {
+    "name": "Manu Murthy",
+    "picture": "manumurthy.jpg",
+    "twitter": "manu_murthy",
+    "bio": "Manu heads technical program management for Angular at Google. Manu keeps the big picture in focus and works with cross-functional teams to plan, execute and usher programs through the entire lifecycle.",
+    "groups": ["Angular"]
   }
 }
