@@ -20,7 +20,9 @@
         </mat-select>
       </mat-form-field>
 
-      <div *ngIf="_displayedPageSizeOptions.length <= 1">{{pageSize}}</div>
+      <div
+        class="mat-paginator-page-size-value"
+        *ngIf="_displayedPageSizeOptions.length <= 1">{{pageSize}}</div>
     </div>
 
     <div class="mat-paginator-range-actions">

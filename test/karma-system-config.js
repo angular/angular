@@ -136,6 +136,8 @@ System.config({
     '@angular/material/menu/testing': 'dist/packages/material/menu/testing/index.js',
     '@angular/material/menu/testing/shared.spec': 'dist/packages/material/menu/testing/shared.spec.js',
     '@angular/material/paginator': 'dist/packages/material/paginator/index.js',
+    '@angular/material/paginator/testing': 'dist/packages/material/paginator/testing/index.js',
+    '@angular/material/paginator/testing/shared.spec': 'dist/packages/material/paginator/testing/shared.spec.js',
     '@angular/material/progress-bar': 'dist/packages/material/progress-bar/index.js',
     '@angular/material/progress-bar/testing': 'dist/packages/material/progress-bar/testing/index.js',
     '@angular/material/progress-bar/testing/shared.spec': 'dist/packages/material/progress-bar/testing/shared.spec.js',
