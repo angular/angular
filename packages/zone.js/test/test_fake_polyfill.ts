@@ -78,5 +78,6 @@
   global['__Zone_ignore_on_properties'] =
       [{target: TestTarget.prototype, ignoreProperties: ['prop1']}];
   global[zoneSymbolPrefix + 'FakeAsyncTestMacroTask'] = [{source: 'TestClass.myTimeout'}];
-  global[zoneSymbolPrefix + 'UNPATCHED_EVENTS'] = ['scroll'];
+  global[zoneSymbolPrefix + 'UNPATCHED_EVENTS'] = ['scroll', 'wheel'];
+  global[zoneSymbolPrefix + 'PASSIVE_EVENTS'] = ['touchstart', 'scroll'];
 })(typeof window === 'object' && window || typeof self === 'object' && self || global);
