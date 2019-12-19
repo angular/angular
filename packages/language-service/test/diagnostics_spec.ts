@@ -328,7 +328,7 @@ describe('diagnostics', () => {
     it('report an unknown field in $implicit context', () => {
       mockHost.override(TEST_TEMPLATE, `
         <div *withContext="let myVar">
-          {{ ~{start-emb}myVar.missingField ~{end-emb}}}
+          {{ ~{start-emb}myVar.missingField~{end-emb} }}
         </div>
       `);
       const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
@@ -346,7 +346,7 @@ describe('diagnostics', () => {
     it('report an unknown field in non implicit context', () => {
       mockHost.override(TEST_TEMPLATE, `
         <div *withContext="let myVar = nonImplicitPerson">
-          {{ ~{start-emb}myVar.missingField ~{end-emb}}}
+          {{ ~{start-emb}myVar.missingField~{end-emb} }}
         </div>
       `);
       const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
