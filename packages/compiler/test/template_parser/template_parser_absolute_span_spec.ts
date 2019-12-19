@@ -94,9 +94,7 @@ describe('expression AST absolute source spans', () => {
     it('should provide absolute offsets of expressions in a binary expression', () => {
       expect(humanizeExpressionSource(parse('<div>{{1 + 2}}<div>')))
           .toEqual(jasmine.arrayContaining([
-            // TODO(ayazhafiz): The expression parser includes an extra whitespace on a expressions
-            // with trailing whitespace in a binary expression. Look into fixing this.
-            ['1', new AbsoluteSourceSpan(7, 9)],
+            ['1', new AbsoluteSourceSpan(7, 8)],
             ['2', new AbsoluteSourceSpan(11, 12)],
           ]));
     });
@@ -112,10 +110,8 @@ describe('expression AST absolute source spans', () => {
     it('should provide absolute offsets of expressions in a conditional', () => {
       expect(humanizeExpressionSource(parse('<div>{{bool ? 1 : 0}}<div>')))
           .toEqual(jasmine.arrayContaining([
-            // TODO(ayazhafiz): The expression parser includes an extra whitespace on a expressions
-            // with trailing whitespace in a conditional expression. Look into fixing this.
-            ['bool', new AbsoluteSourceSpan(7, 12)],
-            ['1', new AbsoluteSourceSpan(14, 16)],
+            ['bool', new AbsoluteSourceSpan(7, 11)],
+            ['1', new AbsoluteSourceSpan(14, 15)],
             ['0', new AbsoluteSourceSpan(18, 19)],
           ]));
     });
@@ -167,9 +163,7 @@ describe('expression AST absolute source spans', () => {
     it('should provide absolute offsets of expressions in an interpolation', () => {
       expect(humanizeExpressionSource(parse('<div>{{1 + 2}}<div>')))
           .toEqual(jasmine.arrayContaining([
-            // TODO(ayazhafiz): The expression parser includes an extra whitespace on a expressions
-            // with trailing whitespace in a conditional expression. Look into fixing this.
-            ['1', new AbsoluteSourceSpan(7, 9)],
+            ['1', new AbsoluteSourceSpan(7, 8)],
             ['2', new AbsoluteSourceSpan(11, 12)],
           ]));
     });
@@ -231,9 +225,7 @@ describe('expression AST absolute source spans', () => {
   describe('literal map', () => {
     it('should provide absolute offsets of a literal map', () => {
       expect(humanizeExpressionSource(parse('<div>{{ {a: 0} }}<div>'))).toContain([
-        // TODO(ayazhafiz): The expression parser includes an extra whitespace on a expressions
-        // with trailing whitespace in a literal map. Look into fixing this.
-        '{a: 0}', new AbsoluteSourceSpan(8, 15)
+        '{a: 0}', new AbsoluteSourceSpan(8, 14)
       ]);
     });
 
@@ -287,11 +279,7 @@ describe('expression AST absolute source spans', () => {
 
     it('should provide absolute offsets expressions in a pipe', () => {
       expect(humanizeExpressionSource(parse('<div>{{prop | test}}<div>', [], [testPipe])))
-          .toContain([
-            // TODO(ayazhafiz): The expression parser includes an extra whitespace on a expressions
-            // with trailing whitespace in a pipe. Look into fixing this.
-            'prop', new AbsoluteSourceSpan(7, 12)
-          ]);
+          .toContain(['prop', new AbsoluteSourceSpan(7, 11)]);
     });
   });
 

@@ -312,7 +312,14 @@ export class _ParseAST {
    */
   get currentAbsoluteOffset(): number { return this.absoluteOffset + this.inputIndex; }
 
-  span(start: number) { return new ParseSpan(start, this.inputIndex); }
+  span(start: number) {
+    // `end` is either the
+    //   - end index of the current token
+    //   - start of the first token (this can happen e.g. when creating an implicit receiver)
+    const curToken = this.peek(-1);
+    const end = this.index > 0 ? curToken.end + this.offset : this.inputIndex;
+    return new ParseSpan(start, end);
+  }
 
   sourceSpan(start: number): AbsoluteSourceSpan {
     const serial = `${start}@${this.inputIndex}`;
@@ -740,7 +747,6 @@ export class _ParseAST {
           const value = this.parseConditional();
           return new PropertyWrite(this.span(start), this.sourceSpan(start), receiver, id, value);
         } else {
-          const span = this.span(start);
           return new PropertyRead(this.span(start), this.sourceSpan(start), receiver, id);
         }
       }
@@ -887,11 +893,7 @@ export class _ParseAST {
       return null;
     }
     const ast = this.parsePipe();  // example: "condition | async"
-    const {start} = ast.span;
-    // Getting the end of the last token removes trailing whitespace.
-    // If ast has the correct end span then no need to peek at last token.
-    // TODO(ayazhafiz): Remove this in https://github.com/angular/angular/pull/34690
-    const {end} = this.peek(-1);
+    const {start, end} = ast.span;
     const value = this.input.substring(start, end);
     return new ASTWithSource(ast, value, this.location, this.absoluteOffset + start, this.errors);
   }

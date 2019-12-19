@@ -310,15 +310,30 @@ describe('completions', () => {
       expect(completions).toBeUndefined();
     });
 
-    it('should include field reference', () => {
-      mockHost.override(TEST_TEMPLATE, `<div *ngFor="let x of ~{cursor}"></div>`);
-      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
-      const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
-      expectContain(completions, CompletionKind.PROPERTY, ['title', 'heroes', 'league']);
-      // the symbol 'x' declared in *ngFor is also in scope. This asserts that
-      // we are actually taking the AST into account and not just referring to
-      // the symbol table of the Component.
-      expectContain(completions, CompletionKind.VARIABLE, ['x']);
+    describe('template binding: key expression', () => {
+      it('should complete the RHS of a template key expression without an expression value', () => {
+        mockHost.override(
+            TEST_TEMPLATE, `<div *ngFor="let x of ~{cursor}"></div>`);  // value is undefined
+        const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+        const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+        expectContain(completions, CompletionKind.PROPERTY, ['title', 'heroes', 'league']);
+        // the symbol 'x' declared in *ngFor is also in scope. This asserts that
+        // we are actually taking the AST into account and not just referring to
+        // the symbol table of the Component.
+        expectContain(completions, CompletionKind.VARIABLE, ['x']);
+      });
+
+      it('should complete the RHS of a template key expression with an expression value', () => {
+        mockHost.override(
+            TEST_TEMPLATE, `<div *ngFor="let x of t~{cursor}"></div>`);  // value is defined
+        const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+        const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+        expectContain(completions, CompletionKind.PROPERTY, ['title', 'heroes', 'league']);
+        // the symbol 'x' declared in *ngFor is also in scope. This asserts that
+        // we are actually taking the AST into account and not just referring to
+        // the symbol table of the Component.
+        expectContain(completions, CompletionKind.VARIABLE, ['x']);
+      });
     });
 
     it('should include expression completions', () => {

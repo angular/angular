@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, HtmlAstPath, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ReferenceAst, TagContentType, TemplateBinding, Text, VariableBinding, getHtmlTagDefinition} from '@angular/compiler';
+import {AST, AbsoluteSourceSpan, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, EmptyExpr, ExpressionBinding, HtmlAstPath, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, ReferenceAst, TagContentType, TemplateBinding, Text, VariableBinding, getHtmlTagDefinition} from '@angular/compiler';
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {AstResult} from './common';
@@ -575,21 +575,21 @@ class ExpressionVisitor extends NullTemplateVisitor {
           }
         }
       }
-    }
-    else if (inSpan(valueRelativePosition, binding.value?.ast.span)) {
-      this.processExpressionCompletions(binding.value !.ast);
-      return;
-    }
-
-    // If the expression is incomplete, for example *ngFor="let x of |"
-    // binding.expression is null. We could still try to provide suggestions
-    // by looking for symbols that are in scope.
-    const KW_OF = ' of ';
-    const ofLocation = attr.value.indexOf(KW_OF);
-    if (ofLocation > 0 && valueRelativePosition >= ofLocation + KW_OF.length) {
-      const expressionAst = this.info.expressionParser.parseBinding(
-          attr.value, attr.sourceSpan.toString(), attr.sourceSpan.start.offset);
-      this.processExpressionCompletions(expressionAst);
+    } else if (binding instanceof ExpressionBinding) {
+      if (inSpan(this.position, binding.value?.ast.sourceSpan)) {
+        this.processExpressionCompletions(binding.value !.ast);
+        return;
+      } else if (!binding.value && this.position > binding.key.span.end) {
+        // No expression is defined for the value of the key expression binding, but the cursor is
+        // in a location where the expression would be defined. This can happen in a case like
+        //   let i of |
+        //            ^-- cursor
+        // In this case, backfill the value to be an empty expression and retrieve completions.
+        this.processExpressionCompletions(new EmptyExpr(
+            new ParseSpan(valueRelativePosition, valueRelativePosition),
+            new AbsoluteSourceSpan(this.position, this.position)));
+        return;
+      }
     }
   }
 }
