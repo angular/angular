@@ -31,7 +31,7 @@ With Ivy, that `<div>` does not match because it is not a direct child of `<comp
 
 By default, `@ContentChildren` queries have the `descendants` flag set to `false`. 
 
-Previously, "descendants" referred to "descendant directives". 
+In the previous rendering engine, "descendants" referred to "descendant directives". 
 An element could be a match as long as there were no other directives between the element and the requesting directive.
 This made sense for directives with nesting like tabs, where nested tab directives might not be desirable to match.
 However, this caused surprising behavior for users because adding an unrelated directive like `ngClass` to a wrapper element could invalidate query results.
@@ -81,6 +81,21 @@ Because the previous behavior was inconsistent and surprising to users, we did n
 Instead, we simplified the mental model so that "descendants" refers to DOM nesting only. 
 Any DOM element between the requesting component and a potential match will invalidate that match.
 Type predicates and string predicates also have identical matching behavior.
+
+Ivy behavior for directive/string predicates:
+```
+<tab-list>
+  <div>
+    <tab> One </tab>     <!-- not a match (nested in element) -->
+  </div>
+  <tab>                  <!-- match (top level) -->
+    <tab> A </tab>       <!-- not a match (nested in tab) -->
+  </tab>  
+  <div [ngClass]="classes">
+    <tab> Two </tab>     <!-- not a match (nested in div) -->
+  </div>
+</tab-list>
+```
 
 
 ### Example of error
@@ -165,16 +180,16 @@ Adding the proper decorator explicitly provides this information.
 In JIT mode, the framework will throw the following error:
 
 ```
-ERROR: This constructor is not compatible with Angular Dependency Injection because dependency at index 'X' is invalid. 
+ERROR: This constructor is not compatible with Angular Dependency Injection because its dependency at index X of the parameter list is invalid. 
 This can happen if the dependency type is a primitive like a string or if an ancestor of this class is missing an Angular decorator.
 
-Please check that 1) the type for dependency X is correct and 2) the correct Angular decorators are defined for this class and its ancestors.
+Please check that 1) the type for the parameter at index X is correct and 2) the correct Angular decorators are defined for this class and its ancestors.
 ```
 
 In AOT mode, you'll see something like:
 
 ```
-X  inherits its constructor from Y, but the latter does not have an Angular decorator of its own. 
+X inherits its constructor from Y, but the latter does not have an Angular decorator of its own. 
 Dependency injection will not be able to resolve the parameters of Y's constructor. Either add a 
 @Directive decorator to Y, or add an explicit constructor to X.
 ```
