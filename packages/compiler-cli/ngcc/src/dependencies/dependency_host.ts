@@ -32,8 +32,9 @@ export abstract class DependencyHostBase implements DependencyHost {
    * Find all the dependencies for the entry-point at the given path.
    *
    * @param entryPointPath The absolute path to the JavaScript file that represents an entry-point.
-   * @returns Information about the dependencies of the entry-point, including those that were
-   * missing or deep imports into other entry-points.
+   * @param dependencyInfo An object containing information about the dependencies of the
+   * entry-point, including those that were missing or deep imports into other entry-points. The
+   * sets in this object will be updated with new information about the entry-point's dependencies.
    */
   collectDependencies(
       entryPointPath: AbsoluteFsPath, {dependencies, missing, deepImports}: DependencyInfo): void {
@@ -41,7 +42,7 @@ export abstract class DependencyHostBase implements DependencyHost {
         resolveFileWithPostfixes(this.fs, entryPointPath, ['', '.js', '/index.js']);
     if (resolvedFile !== null) {
       const alreadySeen = new Set<AbsoluteFsPath>();
-      this.recursivelyFindDependencies(
+      this.recursivelyCollectDependencies(
           resolvedFile, dependencies, missing, deepImports, alreadySeen);
     }
   }
@@ -58,7 +59,7 @@ export abstract class DependencyHostBase implements DependencyHost {
    * @param alreadySeen A set that is used to track internal dependencies to prevent getting stuck
    * in a circular dependency loop.
    */
-  protected abstract recursivelyFindDependencies(
+  protected abstract recursivelyCollectDependencies(
       file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
       deepImports: Set<AbsoluteFsPath>, alreadySeen: Set<AbsoluteFsPath>): void;
 }
