@@ -1090,78 +1090,6 @@ describe('compiler compliance: styling', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    it('should generate override instructions for only single-level styling bindings when !important is present',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
-                import {Component, NgModule, HostBinding} from '@angular/core';
-
-                @Component({
-                  selector: 'my-component',
-                  template: \`
-                    <div [style!important]="myStyleExp"
-                         [class!important]="myClassExp"
-                         [style.height!important]="myHeightExp"
-                         [class.bar!important]="myBarClassExp"></div>
-                  \`,
-                  host: {
-                    '[style!important]': 'myStyleExp',
-                    '[class!important]': 'myClassExp'
-                  }
-                })
-                export class MyComponent {
-                  @HostBinding('class.foo!important')
-                  myFooClassExp = true;
-
-                  @HostBinding('style.width!important')
-                  myWidthExp = '100px';
-
-                  myBarClassExp = true;
-                  myHeightExp = '200px';
-                }
-
-                @NgModule({declarations: [MyComponent]})
-                export class MyModule {}
-            `
-           }
-         };
-
-         const template = `
-            function MyComponent_Template(rf, ctx) {
-              if (rf & 1) {
-                $r3$.ɵɵelement(0, "div");
-              }
-              if (rf & 2) {
-                $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-                $r3$.ɵɵstyleMap(ctx.myStyleExp);
-                $r3$.ɵɵclassMap(ctx.myClassExp);
-                $r3$.ɵɵstyleProp("height", ctx.myHeightExp);
-                $r3$.ɵɵclassProp("bar", ctx.myBarClassExp);
-              }
-            },
-          `;
-
-         const hostBindings = `
-            hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
-              if (rf & 1) {
-                $r3$.ɵɵallocHostVars(6);
-              }
-              if (rf & 2) {
-                $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
-                $r3$.ɵɵstyleMap(ctx.myStyleExp);
-                $r3$.ɵɵclassMap(ctx.myClassExp);
-                $r3$.ɵɵstyleProp("width", ctx.myWidthExp);
-                $r3$.ɵɵclassProp("foo", ctx.myFooClassExp);
-              }
-            },
-          `;
-
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, hostBindings, 'Incorrect template');
-         expectEmit(result.source, template, 'Incorrect template');
-       });
-
     it('should generate styling instructions for multiple directives that contain host binding definitions',
        () => {
          const files = {
@@ -1423,37 +1351,6 @@ describe('compiler compliance: styling', () => {
 
          expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
        });
-
-    it('should generate update instructions for interpolated style properties with !important',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              template: \`
-                <div style.width!important="a{{one}}b{{two}}c"></div>
-              \`
-            })
-            export class MyComponent {
-            }
-          `
-           }
-         };
-
-         const template = `
-            …
-            if (rf & 2) {
-              $r3$.ɵɵstylePropInterpolate2("width", "a", ctx.one, "b", ctx.two, "c");
-            }
-            …
-          `;
-         const result = compile(files, angularFiles);
-
-         expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
-       });
-
   });
 
   describe('instruction chaining', () => {

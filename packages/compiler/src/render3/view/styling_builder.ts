@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool} from '../../constant_pool';
-import {AttributeMarker} from '../../core';
 import {AST, ASTWithSource, BindingPipe, BindingType, Interpolation} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
@@ -14,11 +13,9 @@ import {isEmptyExpression} from '../../template_parser/template_parser';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 
-import {hyphenate, parse as parseStyle} from './style_parser';
+import {hyphenate} from './style_parser';
 import {ValueConverter} from './template';
 import {getInterpolationArgsLength} from './util';
-
-const IMPORTANT_FLAG = '!important';
 
 /**
  * A styling expression summary that is to be processed by the compiler
@@ -29,18 +26,20 @@ export interface StylingInstruction {
   calls: StylingInstructionCall[];
 }
 
+/**
+ * A styling expression summary entry that the compiler uses when assembling styling instructions
+ */
 export interface StylingInstructionCall {
   sourceSpan: ParseSourceSpan|null;
-  supportsInterpolation?: boolean;
+  supportsInterpolation: boolean;
   allocateBindingSlots: number;
   params: ((convertFn: (value: any) => o.Expression | o.Expression[]) => o.Expression[]);
 }
 
 /**
- * An internal record of the input data for a styling binding
+ * an internal record of the input data for a styling binding
  */
 interface BoundStylingEntry {
-  hasOverrideFlag: boolean;
   name: string|null;
   unit: string|null;
   sourceSpan: ParseSourceSpan;
@@ -78,30 +77,18 @@ export class StylingBuilder {
 
   /** the input for [class] (if it exists) */
   private _classMapInput: BoundStylingEntry|null = null;
+
   /** the input for [style] (if it exists) */
   private _styleMapInput: BoundStylingEntry|null = null;
+
   /** an array of each [style.prop] input */
   private _singleStyleInputs: BoundStylingEntry[]|null = null;
+
   /** an array of each [class.name] input */
   private _singleClassInputs: BoundStylingEntry[]|null = null;
+
+  /** a reference to the very first input (used to attach the source span to the sanitizer) */
   private _firstStylingInput: BoundStylingEntry|null = null;
-
-  // maps are used instead of hash maps because a Map will
-  // retain the ordering of the keys
-
-  /**
-   * Represents the location of each style binding in the template
-   * (e.g. `<div [style.width]="w" [style.height]="h">` implies
-   * that `width=0` and `height=1`)
-   */
-  private _stylesIndex = new Map<string, number>();
-
-  /**
-   * Represents the location of each class binding in the template
-   * (e.g. `<div [class.big]="b" [class.hidden]="h">` implies
-   * that `big=0` and `hidden=1`)
-   */
-  private _classesIndex = new Map<string, number>();
 
   // certain style properties ALWAYS need sanitization
   // this is checked each time new styles are encountered
@@ -124,85 +111,114 @@ export class StylingBuilder {
         binding = this.registerInputBasedOnName(name, input.value, input.sourceSpan);
         break;
       case BindingType.Style:
-        binding = this.registerStyleInput(name, false, input.value, input.sourceSpan, input.unit);
+        binding = this._registerSingleInput(name, input.value, input.sourceSpan, input.unit, false);
         break;
       case BindingType.Class:
-        binding = this.registerClassInput(name, false, input.value, input.sourceSpan);
+        binding = this._registerSingleInput(name, input.value, input.sourceSpan, null, true);
         break;
     }
     return binding ? true : false;
   }
 
-  registerInputBasedOnName(name: string, expression: AST, sourceSpan: ParseSourceSpan) {
+  /**
+   * Registers the provided binding name and expression into the styling builder.
+   *
+   * A binding can only be successfully registered if it matches the following style/class
+   * binding patterns:
+   *
+   * - [style]
+   * - [style.prop]
+   * - [class]
+   * - [class.prop]
+   * - [className]
+   *
+   * @param name the binding name (e.g. "style", "style.width", "class", "class.foo" or "className")
+   * @param expression the binding expression
+   * @param sourceSpan the source span information attached to the binding
+   *
+   * @returns the style/class binding entry that is used within the builder (if the binding matches
+   *          of the binding patterns mentioned above). Otheriwse `null`.
+   */
+  registerInputBasedOnName(name: string, expression: AST, sourceSpan: ParseSourceSpan):
+      BoundStylingEntry|null {
     let binding: BoundStylingEntry|null = null;
-    const prefix = name.substring(0, 6);
-    const isStyle = name === 'style' || prefix === 'style.' || prefix === 'style!';
-    const isClass = !isStyle &&
-        (name === 'class' || name === 'className' || prefix === 'class.' || prefix === 'class!');
-    if (isStyle || isClass) {
-      const isMapBased = name.charAt(5) !== '.';         // style.prop or class.prop makes this a no
-      const property = name.substr(isMapBased ? 5 : 6);  // the dot explains why there's a +1
-      if (isStyle) {
-        binding = this.registerStyleInput(property, isMapBased, expression, sourceSpan);
-      } else {
-        binding = this.registerClassInput(property, isMapBased, expression, sourceSpan);
-      }
+
+    const isPropBased = isPropBasedBinding(name);
+    const propToMatch = isPropBased ? name.substring(0, 5) : name;
+    const isClassBased = propToMatch === 'class' || propToMatch === 'className';
+    const isStyleBased = !isClassBased && propToMatch === 'style';
+
+    if (isClassBased || isStyleBased) {
+      binding = isPropBased ?
+          this._registerSingleInput(
+              getSingleBindingPropName(name), expression, sourceSpan, null, isClassBased) :
+          this._registerMapInput(expression, sourceSpan, isClassBased);
     }
+
     return binding;
   }
 
-  registerStyleInput(
-      name: string, isMapBased: boolean, value: AST, sourceSpan: ParseSourceSpan,
-      unit?: string|null): BoundStylingEntry|null {
-    if (isEmptyExpression(value)) {
-      return null;
+  /**
+   * Registers a map-based binding (e.g. [style] or [class/className]) into the builder
+   */
+  private _registerMapInput(value: AST, sourceSpan: ParseSourceSpan, isClassBased: boolean) {
+    if (isClassBased && this._classMapInput) {
+      throw new Error(
+          '[class] and [className] bindings cannot be used on the same element simultaneously');
     }
-    name = normalizePropName(name);
-    const {property, hasOverrideFlag, unit: bindingUnit} = parseProperty(name);
-    const entry: BoundStylingEntry = {
-      name: property,
-      unit: unit || bindingUnit, value, sourceSpan, hasOverrideFlag
-    };
-    if (isMapBased) {
-      this._useDefaultSanitizer = true;
-      this._styleMapInput = entry;
-    } else {
-      (this._singleStyleInputs = this._singleStyleInputs || []).push(entry);
-      this._useDefaultSanitizer = this._useDefaultSanitizer || isStyleSanitizable(name);
-      registerIntoMap(this._stylesIndex, property);
-    }
-    this._firstStylingInput = this._firstStylingInput || entry;
-    this._checkForPipes(value);
-    this.hasBindings = true;
-    return entry;
-  }
 
-  registerClassInput(name: string, isMapBased: boolean, value: AST, sourceSpan: ParseSourceSpan):
-      BoundStylingEntry|null {
     if (isEmptyExpression(value)) {
       return null;
     }
-    const {property, hasOverrideFlag} = parseProperty(name);
-    const entry:
-        BoundStylingEntry = {name: property, value, sourceSpan, hasOverrideFlag, unit: null};
-    if (isMapBased) {
-      if (this._classMapInput) {
-        throw new Error(
-            '[class] and [className] bindings cannot be used on the same element simultaneously');
-      }
+
+    const entry = createStylingEntry(null, null, value, sourceSpan);
+    if (isClassBased) {
       this._classMapInput = entry;
     } else {
-      (this._singleClassInputs = this._singleClassInputs || []).push(entry);
-      registerIntoMap(this._classesIndex, property);
+      this._useDefaultSanitizer = true;
+      this._styleMapInput = entry;
     }
+
     this._firstStylingInput = this._firstStylingInput || entry;
     this._checkForPipes(value);
     this.hasBindings = true;
     return entry;
   }
 
-  private _checkForPipes(value: AST) {
-    if ((value instanceof ASTWithSource) && (value.ast instanceof BindingPipe)) {
+  /**
+   * Registers a prop-based binding (e.g. [style.prop] or [class.name]) into the builder
+   */
+  private _registerSingleInput(
+      name: string, value: AST, sourceSpan: ParseSourceSpan, unit: string|null,
+      isClassBased: boolean) {
+    if (isEmptyExpression(value)) {
+      return null;
+    }
+
+    name = isClassBased ? name : hyphenate(name);
+    const {property, unit: bindingUnit} = parseProperty(name);
+    const entry = createStylingEntry(property, unit || bindingUnit, value, sourceSpan);
+
+    let arr: BoundStylingEntry[];
+    if (isClassBased) {
+      arr = this._singleClassInputs || (this._singleClassInputs = []);
+    } else {
+      this._useDefaultSanitizer = this._useDefaultSanitizer || isStyleSanitizable(name);
+      arr = this._singleStyleInputs || (this._singleStyleInputs = []);
+    }
+    arr.push(entry);
+
+    this._firstStylingInput = this._firstStylingInput || entry;
+    this._checkForPipes(value);
+    this.hasBindings = true;
+    return entry;
+  }
+
+  /**
+   * Checks whether or not the provided expression contains pipes and, if so, flags the builder
+   */
+  private _checkForPipes(expression: AST) {
+    if ((expression instanceof ASTWithSource) && (expression.ast instanceof BindingPipe)) {
       this.hasBindingsWithPipes = true;
     }
   }
@@ -269,8 +285,8 @@ export class StylingBuilder {
   }
 
   private _buildSingleInputs(
-      reference: o.ExternalReference, inputs: BoundStylingEntry[], mapIndex: Map<string, number>,
-      allowUnits: boolean, valueConverter: ValueConverter,
+      reference: o.ExternalReference, inputs: BoundStylingEntry[], allowUnits: boolean,
+      valueConverter: ValueConverter,
       getInterpolationExpressionFn?: (value: Interpolation) => o.ExternalReference):
       StylingInstruction[] {
     const instructions: StylingInstruction[] = [];
@@ -331,8 +347,7 @@ export class StylingBuilder {
 
   private _buildClassInputs(valueConverter: ValueConverter): StylingInstruction[] {
     if (this._singleClassInputs) {
-      return this._buildSingleInputs(
-          R3.classProp, this._singleClassInputs, this._classesIndex, false, valueConverter);
+      return this._buildSingleInputs(R3.classProp, this._singleClassInputs, false, valueConverter);
     }
     return [];
   }
@@ -340,7 +355,7 @@ export class StylingBuilder {
   private _buildStyleInputs(valueConverter: ValueConverter): StylingInstruction[] {
     if (this._singleStyleInputs) {
       return this._buildSingleInputs(
-          R3.styleProp, this._singleStyleInputs, this._stylesIndex, true, valueConverter,
+          R3.styleProp, this._singleStyleInputs, true, valueConverter,
           getStylePropInterpolationExpression);
     }
     return [];
@@ -351,6 +366,7 @@ export class StylingBuilder {
       reference: R3.styleSanitizer,
       calls: [{
         sourceSpan: this._firstStylingInput ? this._firstStylingInput.sourceSpan : null,
+        supportsInterpolation: false,
         allocateBindingSlots: 0,
         params: () => [o.importExpr(R3.defaultStyleSanitizer)]
       }]
@@ -406,15 +422,7 @@ function getConstantLiteralFromArray(
   return values.length ? constantPool.getConstLiteral(o.literalArr(values), true) : o.NULL_EXPR;
 }
 
-export function parseProperty(name: string):
-    {property: string, unit: string, hasOverrideFlag: boolean} {
-  let hasOverrideFlag = false;
-  const overrideIndex = name.indexOf(IMPORTANT_FLAG);
-  if (overrideIndex !== -1) {
-    name = overrideIndex > 0 ? name.substring(0, overrideIndex) : '';
-    hasOverrideFlag = true;
-  }
-
+export function parseProperty(name: string): {property: string, unit: string} {
   let unit = '';
   let property = name;
   const unitIndex = name.lastIndexOf('.');
@@ -423,7 +431,7 @@ export function parseProperty(name: string):
     property = name.substring(0, unitIndex);
   }
 
-  return {property, unit, hasOverrideFlag};
+  return {property, unit};
 }
 
 /**
@@ -484,6 +492,28 @@ function getStylePropInterpolationExpression(interpolation: Interpolation) {
   }
 }
 
-function normalizePropName(prop: string): string {
-  return hyphenate(prop);
+function createStylingEntry(
+    name: string | null, unit: string | null, value: AST,
+    sourceSpan: ParseSourceSpan): BoundStylingEntry {
+  return {
+      name, unit, value, sourceSpan,
+  };
+}
+
+/**
+ * Whether or not a binding is prop based (e.g. `[style.width]` or `[class.foo]`)
+ */
+function isPropBasedBinding(name: string) {
+  // both the name in [style.prop] and [class.prop]
+  // begin at index 6
+  return name[5] === '.' && name.length > 6;
+}
+
+/**
+ * Returns the `prop` value in a [style.prop] or [class.prop] binding
+ */
+function getSingleBindingPropName(name: string) {
+  // both the name in [style.prop] and [class.prop]
+  // begin at index 6
+  return name.substring(6);
 }
