@@ -297,7 +297,24 @@ Following is all the code discussed in this page.
 
 </code-tabs>
 
+### Passive events
 
+Angular also support passive event listeners. For example, we can use the following steps to make scroll event passive.
+
+1. create a file `src/zone-flags.ts`.
+2. add the following line into this file.
+
+```
+(window as any)['__zone_symbol__PASSIVE_EVENTS'] = ['scroll'];
+```
+3. in `src/polyfills.ts`, before import zone.js, import the new created `zone-flags`.
+
+```
+import './zone-flags';
+import 'zone.js/dist/zone';  // Included with Angular CLI.
+```
+
+after those steps, if user add event listeners for the `passive` event, the listeners will be `passive`.
 
 
 ## Summary
