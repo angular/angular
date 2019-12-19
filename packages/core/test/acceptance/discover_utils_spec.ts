@@ -15,7 +15,7 @@ import {expect} from '@angular/core/testing/src/testing_internal';
 import {onlyInIvy} from '@angular/private/testing';
 
 import {getHostElement, markDirty} from '../../src/render3/index';
-import {getComponent, getComponentLView, getContext, getDebugNode, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getRootComponents, getViewComponent, loadLContext} from '../../src/render3/util/discovery_utils';
+import {getComponent, getComponentLView, getContext, getDebugNode, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, getRootComponents, loadLContext} from '../../src/render3/util/discovery_utils';
 
 onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
   let fixture: ComponentFixture<MyApp>;
@@ -81,8 +81,8 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
       expect(getComponent(p[0])).toEqual(null);
     });
     it('should throw when called on non-element', () => {
-      expect(() => getComponent(dirA[0] as any)).toThrowError(/Expecting instance of DOM Node/);
-      expect(() => getComponent(dirA[1] as any)).toThrowError(/Expecting instance of DOM Node/);
+      expect(() => getComponent(dirA[0] as any)).toThrowError(/Expecting instance of DOM Element/);
+      expect(() => getComponent(dirA[1] as any)).toThrowError(/Expecting instance of DOM Element/);
     });
     it('should return component from element', () => {
       expect(getComponent<MyApp>(fixture.nativeElement)).toEqual(myApp);
@@ -107,8 +107,8 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
 
   describe('getContext', () => {
     it('should throw when called on non-element', () => {
-      expect(() => getContext(dirA[0] as any)).toThrowError(/Expecting instance of DOM Node/);
-      expect(() => getContext(dirA[1] as any)).toThrowError(/Expecting instance of DOM Node/);
+      expect(() => getContext(dirA[0] as any)).toThrowError(/Expecting instance of DOM Element/);
+      expect(() => getContext(dirA[1] as any)).toThrowError(/Expecting instance of DOM Element/);
     });
     it('should return context from element', () => {
       expect(getContext<MyApp>(child[0])).toEqual(myApp);
@@ -161,30 +161,30 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
     });
   });
 
-  describe('getViewComponent', () => {
+  describe('getOwningComponent', () => {
     it('should return null when called on root component', () => {
-      expect(getViewComponent(fixture.nativeElement)).toEqual(null);
-      expect(getViewComponent(myApp)).toEqual(null);
+      expect(getOwningComponent(fixture.nativeElement)).toEqual(null);
+      expect(getOwningComponent(myApp)).toEqual(null);
     });
     it('should return containing component of child component', () => {
-      expect(getViewComponent<MyApp>(child[0])).toEqual(myApp);
-      expect(getViewComponent<MyApp>(child[1])).toEqual(myApp);
-      expect(getViewComponent<MyApp>(child[2])).toEqual(myApp);
+      expect(getOwningComponent<MyApp>(child[0])).toEqual(myApp);
+      expect(getOwningComponent<MyApp>(child[1])).toEqual(myApp);
+      expect(getOwningComponent<MyApp>(child[2])).toEqual(myApp);
 
-      expect(getViewComponent<MyApp>(childComponent[0])).toEqual(myApp);
-      expect(getViewComponent<MyApp>(childComponent[1])).toEqual(myApp);
-      expect(getViewComponent<MyApp>(childComponent[2])).toEqual(myApp);
+      expect(getOwningComponent<MyApp>(childComponent[0])).toEqual(myApp);
+      expect(getOwningComponent<MyApp>(childComponent[1])).toEqual(myApp);
+      expect(getOwningComponent<MyApp>(childComponent[2])).toEqual(myApp);
     });
     it('should return containing component of any view element', () => {
-      expect(getViewComponent<MyApp>(span[0])).toEqual(myApp);
-      expect(getViewComponent<MyApp>(div[0])).toEqual(myApp);
-      expect(getViewComponent<Child>(p[0])).toEqual(childComponent[0]);
-      expect(getViewComponent<Child>(p[1])).toEqual(childComponent[1]);
-      expect(getViewComponent<Child>(p[2])).toEqual(childComponent[2]);
+      expect(getOwningComponent<MyApp>(span[0])).toEqual(myApp);
+      expect(getOwningComponent<MyApp>(div[0])).toEqual(myApp);
+      expect(getOwningComponent<Child>(p[0])).toEqual(childComponent[0]);
+      expect(getOwningComponent<Child>(p[1])).toEqual(childComponent[1]);
+      expect(getOwningComponent<Child>(p[2])).toEqual(childComponent[2]);
     });
     it('should return containing component of child directive', () => {
-      expect(getViewComponent<MyApp>(dirA[0])).toEqual(myApp);
-      expect(getViewComponent<MyApp>(dirA[1])).toEqual(myApp);
+      expect(getOwningComponent<MyApp>(dirA[0])).toEqual(myApp);
+      expect(getOwningComponent<MyApp>(dirA[1])).toEqual(myApp);
     });
   });
 
@@ -231,6 +231,7 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
       expect(listeners[0].name).toEqual('click');
       expect(listeners[0].element).toEqual(span[0]);
       expect(listeners[0].useCapture).toEqual(false);
+      expect(listeners[0].type).toEqual('dom');
       listeners[0].callback('CLICKED');
       expect(log).toEqual(['CLICKED']);
     });

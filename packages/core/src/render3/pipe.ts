@@ -57,8 +57,6 @@ export function ɵɵpipe(index: number, pipeName: string): any {
  * @param name Name of pipe to resolve
  * @param registry Full list of available pipes
  * @returns Matching PipeDef
- *
- * @publicApi
  */
 function getPipeDef(name: string, registry: PipeDefList | null): PipeDef<any> {
   if (registry) {

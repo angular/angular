@@ -7,16 +7,16 @@
  */
 
 import {Injector} from '../di';
-import {getViewComponent} from '../render3/global_utils_api';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, LView, PARENT, TData, TVIEW, T_HOST} from '../render3/interfaces/view';
-import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext} from '../render3/util/discovery_utils';
+import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, loadLContext} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER, renderStringify} from '../render3/util/misc_utils';
 import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
+
 
 
 /**
@@ -217,14 +217,14 @@ class DebugNode__POST_R3__ implements DebugNode {
   get componentInstance(): any {
     const nativeElement = this.nativeNode;
     return nativeElement &&
-        (getComponent(nativeElement as Element) || getViewComponent(nativeElement));
+        (getComponent(nativeElement as Element) || getOwningComponent(nativeElement));
   }
   get context(): any {
     return getComponent(this.nativeNode as Element) || getContext(this.nativeNode as Element);
   }
 
   get listeners(): DebugEventListener[] {
-    return getListeners(this.nativeNode as Element).filter(isBrowserEvents);
+    return getListeners(this.nativeNode as Element).filter(listener => listener.type === 'dom');
   }
 
   get references(): {[key: string]: any;} { return getLocalRefs(this.nativeNode); }

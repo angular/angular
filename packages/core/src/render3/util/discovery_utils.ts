@@ -24,30 +24,34 @@ import {getTNode, unwrapRNode} from './view_utils';
 
 
 /**
- * Returns the component instance associated with a given DOM host element.
- * Elements which don't represent components return `null`.
+ * Retrieves the component instance associated with a given DOM element.
  *
- * @param element Host DOM element from which the component should be retrieved.
- *
- * ```
+ * @usageNotes
+ * Given the following DOM structure:
+ * ```html
  * <my-app>
- *   #VIEW
- *     <div>
- *       <child-comp></child-comp>
- *     </div>
- * </mp-app>
- *
- * expect(getComponent(<child-comp>) instanceof ChildComponent).toBeTruthy();
- * expect(getComponent(<my-app>) instanceof MyApp).toBeTruthy();
+ *   <div>
+ *     <child-comp></child-comp>
+ *   </div>
+ * </my-app>
  * ```
+ * Calling `getComponent` on `<child-comp>` will return the instance of `ChildComponent`
+ * associated with this DOM element.
+ *
+ * Calling the function on `<my-app>` will return the `MyApp` instance.
+ *
+ *
+ * @param element DOM element from which the component should be retrieved.
+ * @returns Component instance associated with the element or `null` if there
+ *    is no component associated with it.
  *
  * @publicApi
+ * @globalApi ng
  */
-export function getComponent<T = {}>(element: Element): T|null {
-  if (!(element instanceof Node)) throw new Error('Expecting instance of DOM Node');
+export function getComponent<T>(element: Element): T|null {
+  assertDomElement(element);
   const context = loadLContext(element, false);
   if (context === null) return null;
-
 
   if (context.component === undefined) {
     context.component = getComponentAtNodeIndex(context.nodeIndex, context.lView);
@@ -56,56 +60,42 @@ export function getComponent<T = {}>(element: Element): T|null {
   return context.component as T;
 }
 
+
 /**
- * Returns the component instance associated with a given DOM host element.
- * Elements which don't represent components return `null`.
+ * If inside an embedded view (e.g. `*ngIf` or `*ngFor`), retrieves the context of the embedded
+ * view that the element is part of. Otherwise retrieves the instance of the component whose view
+ * owns the element (in this case, the result is the same as calling `getOwningComponent`).
  *
- * @param element Host DOM element from which the component should be retrieved.
- *
- * ```
- * <my-app>
- *   #VIEW
- *     <div>
- *       <child-comp></child-comp>
- *     </div>
- * </mp-app>
- *
- * expect(getComponent(<child-comp>) instanceof ChildComponent).toBeTruthy();
- * expect(getComponent(<my-app>) instanceof MyApp).toBeTruthy();
- * ```
+ * @param element Element for which to get the surrounding component instance.
+ * @returns Instance of the component that is around the element or null if the element isn't
+ *    inside any component.
  *
  * @publicApi
+ * @globalApi ng
  */
-export function getContext<T = {}>(element: Element): T|null {
-  if (!(element instanceof Node)) throw new Error('Expecting instance of DOM Node');
+export function getContext<T>(element: Element): T|null {
+  assertDomElement(element);
   const context = loadLContext(element, false);
-  if (context === null) return null;
-
-  return context.lView[CONTEXT] as T;
+  return context === null ? null : context.lView[CONTEXT] as T;
 }
 
 /**
- * Returns the component instance associated with view which owns the DOM element (`null`
- * otherwise).
+ * Retrieves the component instance whose view contains the DOM element.
  *
- * @param element DOM element which is owned by an existing component's view.
+ * For example, if `<child-comp>` is used in the template of `<app-comp>`
+ * (i.e. a `ViewChild` of `<app-comp>`), calling `getOwningComponent` on `<child-comp>`
+ * would return `<app-comp>`.
  *
- * ```
- * <my-app>
- *   #VIEW
- *     <div>
- *       <child-comp></child-comp>
- *     </div>
- * </mp-app>
- *
- * expect(getViewComponent(<child-comp>) instanceof MyApp).toBeTruthy();
- * expect(getViewComponent(<my-app>)).toEqual(null);
- * ```
+ * @param elementOrDir DOM element, component or directive instance
+ *    for which to retrieve the root components.
+ * @returns Component instance whose view owns the DOM element or null if the element is not
+ *    part of a component view.
  *
  * @publicApi
+ * @globalApi ng
  */
-export function getViewComponent<T = {}>(element: Element | {}): T|null {
-  const context = loadLContext(element, false);
+export function getOwningComponent<T>(elementOrDir: Element | {}): T|null {
+  const context = loadLContext(elementOrDir, false);
   if (context === null) return null;
 
   let lView = context.lView;
@@ -119,27 +109,32 @@ export function getViewComponent<T = {}>(element: Element | {}): T|null {
 }
 
 /**
- * Retrieve all root components.
- *
+ * Retrieves all root components associated with a DOM element, directive or component instance.
  * Root components are those which have been bootstrapped by Angular.
  *
- * @param target A DOM element, component or directive instance.
+ * @param elementOrDir DOM element, component or directive instance
+ *    for which to retrieve the root components.
+ * @returns Root components associated with the target object.
  *
  * @publicApi
+ * @globalApi ng
  */
-export function getRootComponents(target: {}): any[] {
-  return [...getRootContext(target).components];
+export function getRootComponents(elementOrDir: Element | {}): {}[] {
+  return [...getRootContext(elementOrDir).components];
 }
 
 /**
- * Retrieves an `Injector` associated with the element, component or directive.
+ * Retrieves an `Injector` associated with an element, component or directive instance.
  *
- * @param target A DOM element, component or directive instance.
+ * @param elementOrDir DOM element, component or directive instance for which to
+ *    retrieve the injector.
+ * @returns Injector associated with the element, component or directive instance.
  *
  * @publicApi
+ * @globalApi ng
  */
-export function getInjector(target: {}): Injector {
-  const context = loadLContext(target, false);
+export function getInjector(elementOrDir: Element | {}): Injector {
+  const context = loadLContext(elementOrDir, false);
   if (context === null) return Injector.NULL;
 
   const tNode = context.lView[TVIEW].data[context.nodeIndex] as TElementNode;
@@ -150,7 +145,6 @@ export function getInjector(target: {}): Injector {
  * Retrieve a set of injection tokens at a given DOM node.
  *
  * @param element Element for which the injection tokens should be retrieved.
- * @publicApi
  */
 export function getInjectionTokens(element: Element): any[] {
   const context = loadLContext(element, false);
@@ -176,26 +170,43 @@ export function getInjectionTokens(element: Element): any[] {
 }
 
 /**
- * Retrieves directives associated with a given DOM host element.
+ * Retrieves directive instances associated with a given DOM element. Does not include
+ * component instances.
  *
- * @param target A DOM element, component or directive instance.
+ * @usageNotes
+ * Given the following DOM structure:
+ * ```
+ * <my-app>
+ *   <button my-button></button>
+ *   <my-comp></my-comp>
+ * </my-app>
+ * ```
+ * Calling `getDirectives` on `<button>` will return an array with an instance of the `MyButton`
+ * directive that is associated with the DOM element.
+ *
+ * Calling `getDirectives` on `<my-comp>` will return an empty array.
+ *
+ * @param element DOM element for which to get the directives.
+ * @returns Array of directives associated with the element.
  *
  * @publicApi
+ * @globalApi ng
  */
-export function getDirectives(target: {}): Array<{}> {
-  const context = loadLContext(target) !;
+export function getDirectives(element: Element): {}[] {
+  const context = loadLContext(element) !;
 
   if (context.directives === undefined) {
     context.directives = getDirectivesAtNodeIndex(context.nodeIndex, context.lView, false);
   }
 
-  return context.directives || [];
+  // The `directives` in this case are a named array called `LComponentView`. Clone the
+  // result so we don't expose an internal data structure in the user's console.
+  return context.directives === null ? [] : [...context.directives];
 }
 
 /**
  * Returns LContext associated with a target passed as an argument.
  * Throws if a given target doesn't have associated LContext.
- *
  */
 export function loadLContext(target: {}): LContext;
 export function loadLContext(target: {}, throwOnNotFound: false): LContext|null;
@@ -214,9 +225,8 @@ export function loadLContext(target: {}, throwOnNotFound: boolean = true): LCont
  *
  * The references are retrieved as a map of local reference name to element or directive instance.
  *
- * @param target A DOM element, component or directive instance.
- *
- * @publicApi
+ * @param target DOM element, component or directive instance for which to retrieve
+ *    the local references.
  */
 export function getLocalRefs(target: {}): {[key: string]: any} {
   const context = loadLContext(target, false);
@@ -230,17 +240,18 @@ export function getLocalRefs(target: {}): {[key: string]: any} {
 }
 
 /**
- * Retrieve the host element of the component.
+ * Retrieves the host element of a component or directive instance.
+ * The host element is the DOM element that matched the selector of the directive.
  *
- * Use this function to retrieve the host element of the component. The host
- * element is the element which the component is associated with.
- *
- * @param directive Component or Directive for which the host element should be retrieved.
+ * @param componentOrDirective Component or directive instance for which the host
+ *     element should be retrieved.
+ * @returns Host element of the target.
  *
  * @publicApi
+ * @globalApi ng
  */
-export function getHostElement<T>(directive: T): Element {
-  return getLContext(directive) !.native as never as Element;
+export function getHostElement(componentOrDirective: {}): Element {
+  return getLContext(componentOrDirective) !.native as never as Element;
 }
 
 /**
@@ -259,46 +270,61 @@ export function getRenderedText(component: any): string {
 }
 
 export function loadLContextFromNode(node: Node): LContext {
-  if (!(node instanceof Node)) throw new Error('Expecting instance of DOM Node');
+  if (!(node instanceof Node)) throw new Error('Expecting instance of DOM Element');
   return loadLContext(node) !;
 }
 
+/**
+ * Event listener configuration returned from `getListeners`.
+ * @publicApi
+ */
 export interface Listener {
+  /** Name of the event listener. */
   name: string;
+  /** Element that the listener is bound to. */
   element: Element;
+  /** Callback that is invoked when the event is triggered. */
   callback: (value: any) => any;
-  useCapture: boolean|null;
-}
-
-export function isBrowserEvents(listener: Listener): boolean {
-  // Browser events are those which don't have `useCapture` as boolean.
-  return typeof listener.useCapture === 'boolean';
+  /** Whether the listener is using event capturing. */
+  useCapture: boolean;
+  /**
+   * Type of the listener (e.g. a native DOM event or a custom @Output).
+   */
+  type: 'dom'|'output';
 }
 
 
 /**
- * Retrieves a list of DOM listeners.
+ * Retrieves a list of event listeners associated with a DOM element. The list does include host
+ * listeners, but it does not include event listeners defined outside of the Angular context
+ * (e.g. through `addEventListener`).
  *
+ * @usageNotes
+ * Given the following DOM structure:
  * ```
  * <my-app>
- *   #VIEW
- *     <div (click)="doSomething()">
- *     </div>
- * </mp-app>
+ *   <div (click)="doSomething()"></div>
+ * </my-app>
  *
- * expect(getListeners(<div>)).toEqual({
+ * ```
+ * Calling `getListeners` on `<div>` will return an object that looks as follows:
+ * ```
+ * {
  *   name: 'click',
  *   element: <div>,
  *   callback: () => doSomething(),
  *   useCapture: false
- * });
+ * }
  * ```
  *
  * @param element Element for which the DOM listeners should be retrieved.
+ * @returns Array of event listeners on the DOM element.
+ *
  * @publicApi
+ * @globalApi ng
  */
 export function getListeners(element: Element): Listener[] {
-  if (!(element instanceof Node)) throw new Error('Expecting instance of DOM Node');
+  assertDomElement(element);
   const lContext = loadLContext(element, false);
   if (lContext === null) return [];
 
@@ -319,11 +345,11 @@ export function getListeners(element: Element): Listener[] {
         // if useCaptureOrIndx is boolean then report it as is.
         // if useCaptureOrIndx is positive number then it in unsubscribe method
         // if useCaptureOrIndx is negative number then it is a Subscription
-        const useCapture = typeof useCaptureOrIndx === 'boolean' ?
-            useCaptureOrIndx :
-            (useCaptureOrIndx >= 0 ? false : null);
+        const type =
+            (typeof useCaptureOrIndx === 'boolean' || useCaptureOrIndx >= 0) ? 'dom' : 'output';
+        const useCapture = typeof useCaptureOrIndx === 'boolean' ? useCaptureOrIndx : false;
         if (element == listenerElement) {
-          listeners.push({element, name, callback, useCapture});
+          listeners.push({element, name, callback, useCapture, type});
         }
       }
     }
@@ -350,10 +376,8 @@ function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
  * Returns the attached `DebugNode` instance for an element in the DOM.
  *
  * @param element DOM element which is owned by an existing component's view.
- *
- * @publicApi
  */
-export function getDebugNode(element: Node): DebugNode|null {
+export function getDebugNode(element: Element): DebugNode|null {
   let debugNode: DebugNode|null = null;
 
   const lContext = loadLContextFromNode(element);
@@ -377,7 +401,7 @@ export function getDebugNode(element: Node): DebugNode|null {
  * NOTE: `LView` is a private and should not be leaked outside.
  *       Don't export this method to `ng.*` on window.
  *
- * @param target Component or Element instance.
+ * @param target DOM element or component instance for which to retrieve the LView.
  */
 export function getComponentLView(target: any): LView {
   const lContext = loadLContext(target);
@@ -386,4 +410,11 @@ export function getComponentLView(target: any): LView {
   const componentLView = lView[nodeIndx];
   ngDevMode && assertLView(componentLView);
   return componentLView;
+}
+
+/** Asserts that a value is a DOM Element. */
+function assertDomElement(value: any) {
+  if (typeof Element !== 'undefined' && !(value instanceof Element)) {
+    throw new Error('Expecting instance of DOM Element');
+  }
 }
