@@ -132,6 +132,9 @@ export class AsyncForUsingComponent {
 export class References {
 }
 
+/**
+ * This Component provides the `test-comp` selector.
+ */
 /*BeginTestComponent*/ @Component({
   selector: 'test-comp',
   template: '<div>Testing: {{name}}</div>',
@@ -145,6 +148,9 @@ export class TestComponent {
   templateUrl: 'test.ng',
 })
 export class TemplateReference {
+  /**
+   * This is the title of the `TemplateReference` Component.
+   */
   title = 'Some title';
   hero: Hero = {id: 1, name: 'Windstorm'};
   heroes: Hero[] = [this.hero];
