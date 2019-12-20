@@ -358,6 +358,12 @@ describe('completions', () => {
       expectContain(completions, CompletionKind.PROPERTY, ['test']);
     });
 
+    it('should be able to complete property read', () => {
+      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'data-binding-property-read');
+      const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
+      expectContain(completions, CompletionKind.PROPERTY, ['key']);
+    });
+
     it('should be able to complete an event', () => {
       const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'event-binding-model');
       const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
@@ -455,6 +461,13 @@ describe('completions', () => {
 
     it('should reference the component', () => {
       const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'test-comp-after-test');
+      const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
+      expectContain(completions, CompletionKind.PROPERTY, ['name', 'testEvent']);
+    });
+
+    it('should get reference property completions in a data binding', () => {
+      const marker =
+          mockHost.getLocationMarkerFor(PARSING_CASES, 'event-binding-ref-property-read');
       const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
       expectContain(completions, CompletionKind.PROPERTY, ['name', 'testEvent']);
     });

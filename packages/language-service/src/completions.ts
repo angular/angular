@@ -436,12 +436,11 @@ class ExpressionVisitor extends NullTemplateVisitor {
     if (ast.name.startsWith('*')) {
       this.microSyntaxInAttributeValue(ast, binding);
     } else {
-      // If the position is in the expression or after the key or there is no key,
-      // return the expression completions
-      const span = new ParseSpan(0, ast.value.length);
-      const offset = ast.sourceSpan.start.offset;
-      const receiver = new ImplicitReceiver(span, span.toAbsolute(offset));
-      const expressionAst = new PropertyRead(span, span.toAbsolute(offset), receiver, '');
+      // If the position is in the expression or after the key or there is no key, return the
+      // expression completions.
+      // The expression must be reparsed to get a valid AST rather than only template bindings.
+      const expressionAst = this.info.expressionParser.parseBinding(
+          ast.value, ast.sourceSpan.toString(), ast.sourceSpan.start.offset);
       this.addAttributeValuesToCompletions(expressionAst);
     }
   }
