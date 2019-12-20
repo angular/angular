@@ -7,7 +7,6 @@
  */
 
 import {Directionality} from '@angular/cdk/bidi';
-import {OverlayContainer} from '@angular/cdk/overlay';
 import {ChangeDetectorRef, Component, ElementRef, Inject, ViewEncapsulation} from '@angular/core';
 import {DevAppRippleOptions} from './ripple-options';
 import {DevAppDirectionality} from './dev-app-directionality';
@@ -86,8 +85,7 @@ export class DevAppLayout {
   ];
 
   constructor(
-      private _element: ElementRef<HTMLElement>, private _overlayContainer: OverlayContainer,
-      public rippleOptions: DevAppRippleOptions,
+      private _element: ElementRef<HTMLElement>, public rippleOptions: DevAppRippleOptions,
       @Inject(Directionality) public dir: DevAppDirectionality, cdr: ChangeDetectorRef) {
     dir.change.subscribe(() => cdr.markForCheck());
   }
