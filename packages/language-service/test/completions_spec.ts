@@ -308,6 +308,13 @@ describe('completions', () => {
       expectContain(completions, CompletionKind.VARIABLE, ['x']);
     });
 
+    it('should include expression completions', () => {
+      mockHost.override(TEST_TEMPLATE, `<div *ngFor="let x of hero.~{expr-property-read}"></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'expr-property-read');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.PROPERTY, ['name']);
+    });
+
     it('should include variable in the let scope in interpolation', () => {
       mockHost.override(TEST_TEMPLATE, `
         <div *ngFor="let h of heroes">
@@ -359,9 +366,10 @@ describe('completions', () => {
     });
 
     it('should be able to complete property read', () => {
-      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'data-binding-property-read');
-      const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
-      expectContain(completions, CompletionKind.PROPERTY, ['key']);
+      mockHost.override(TEST_TEMPLATE, `<h1 [model]="hero.~{property-read}"></h1>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'property-read');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
     });
 
     it('should be able to complete an event', () => {
@@ -466,9 +474,12 @@ describe('completions', () => {
     });
 
     it('should get reference property completions in a data binding', () => {
-      const marker =
-          mockHost.getLocationMarkerFor(PARSING_CASES, 'event-binding-ref-property-read');
-      const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
+      mockHost.override(TEST_TEMPLATE, `
+        <test-comp #test></test-comp>
+        <div (click)="test.~{property-read}"></div>
+      `);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'property-read');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
       expectContain(completions, CompletionKind.PROPERTY, ['name', 'testEvent']);
     });
 

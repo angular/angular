@@ -53,13 +53,10 @@ export class AttributeBinding {
 }
 
 @Component({
-  template: `
-    <h1 [model]="~{property-binding-model}test"></h1>
-    <h1 [model]="obj.~{data-binding-property-read}"></h1>`,
+  template: '<h1 [model]="~{property-binding-model}test"></h1>',
 })
 export class PropertyBinding {
   test: string = 'test';
-  obj = {key: 'value'};
 }
 
 @Component({
@@ -129,8 +126,6 @@ export class AsyncForUsingComponent {
         {{test1.~{test-comp-after-test}name}}
         {{div.~{test-comp-after-div}.innerText}}
       </test-comp>
-
-      <div (click)="test1.~{event-binding-ref-property-read}"></div>
     </div>
     <test-comp #test2></test-comp>`,
 })
