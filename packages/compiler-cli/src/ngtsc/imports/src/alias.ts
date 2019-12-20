@@ -209,6 +209,10 @@ export class PrivateExportAliasingHost implements AliasingHost {
  */
 export class AliasStrategy implements ReferenceEmitStrategy {
   emit(ref: Reference<ts.Node>, context: ts.SourceFile, importMode: ImportFlags): Expression|null {
+    if (importMode & ImportFlags.NoAliasing) {
+      return null;
+    }
+
     return ref.alias;
   }
 }
