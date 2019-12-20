@@ -57,7 +57,7 @@ export function generateTypeCheckBlock(
     throw new Error(
         `Expected TypeReferenceNode when referencing the ctx param for ${ref.debugName}`);
   }
-  const paramList = [tcbCtxParam(ref.node, ctxRawType.typeName)];
+  const paramList = [tcbCtxParam(ref.node, ctxRawType.typeName, env.config.useContextGenericType)];
 
   const scopeStatements = scope.render();
   const innerBody = ts.createBlock([
@@ -73,7 +73,7 @@ export function generateTypeCheckBlock(
       /* modifiers */ undefined,
       /* asteriskToken */ undefined,
       /* name */ name,
-      /* typeParameters */ ref.node.typeParameters,
+      /* typeParameters */ env.config.useContextGenericType ? ref.node.typeParameters : undefined,
       /* parameters */ paramList,
       /* type */ undefined,
       /* body */ body);
@@ -925,12 +925,18 @@ class Scope {
  * parameters listed (without their generic bounds).
  */
 function tcbCtxParam(
-    node: ClassDeclaration<ts.ClassDeclaration>, name: ts.EntityName): ts.ParameterDeclaration {
+    node: ClassDeclaration<ts.ClassDeclaration>, name: ts.EntityName,
+    useGenericType: boolean): ts.ParameterDeclaration {
   let typeArguments: ts.TypeNode[]|undefined = undefined;
   // Check if the component is generic, and pass generic type parameters if so.
   if (node.typeParameters !== undefined) {
-    typeArguments =
-        node.typeParameters.map(param => ts.createTypeReferenceNode(param.name, undefined));
+    if (useGenericType) {
+      typeArguments =
+          node.typeParameters.map(param => ts.createTypeReferenceNode(param.name, undefined));
+    } else {
+      typeArguments =
+          node.typeParameters.map(() => ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+    }
   }
   const type = ts.createTypeReferenceNode(name, typeArguments);
   return ts.createParameter(

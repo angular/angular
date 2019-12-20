@@ -215,6 +215,19 @@ export interface CompilerOptions extends ts.CompilerOptions {
    */
   strictDomEventTypes?: boolean;
 
+  /**
+   * Whether to include the generic type of components when type-checking the template.
+   *
+   * If no component has generic type parameters, this setting has no effect.
+   *
+   * If a component has generic type parameters and this setting is `true`, those generic parameters
+   * will be included in the context type for the template. If `false`, any generic parameters will
+   * be set to `any` in the template context type.
+   *
+   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   */
+  strictContextGenerics?: boolean;
+
   // Whether to use the CompilerHost's fileNameToModuleName utility (if available) to generate
   // import module specifiers. This is false by default, and exists to support running ngtsc
   // within Google. This option is internal and is used by the ng_module.bzl rule to switch
