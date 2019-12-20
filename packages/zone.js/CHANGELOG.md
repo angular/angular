@@ -1,3 +1,33 @@
+## [0.10.3](https://github.com/angular/angular/compare/zone.js-0.10.2...zone.js-0.10.3) (2020-02-27)
+
+
+### Bug Fixes
+
+* **zone.js:** a path traversal attack in test ([#32392](https://github.com/angular/angular/issues/32392)) ([d498314](https://github.com/angular/angular/commit/d4983148508a7ddaeb095ab01db6b3bf995ee23f))
+* **zone.js:** work around TS3.7 issue ([#33294](https://github.com/angular/angular/issues/33294)) ([0953642](https://github.com/angular/angular/commit/09536423e83892e716de13b2d14f12fff757f5a0))
+* fixes typo of zone.js patch vrdisplaydisconnected property ([#33581](https://github.com/angular/angular/issues/33581)) ([71b8e27](https://github.com/angular/angular/commit/71b8e271b352b80519f1b8bbd786d78b49a2012b)), closes [#33579](https://github.com/angular/angular/issues/33579)
+* should also allow subclass Promise without Symbol.species ([#34533](https://github.com/angular/angular/issues/34533)) ([58b29f1](https://github.com/angular/angular/commit/58b29f1503a180fdfb8feb73a30d0c4448afad9a))
+* **zone.js:** fix `zone-patch-rxjs` bundle to refer to `rxjs` (rather than include) it. ([#35983](https://github.com/angular/angular/issues/35983)) ([99ea5d7](https://github.com/angular/angular/commit/99ea5d7)), closes [#35878](https://github.com/angular/angular/issues/35878)
+* **zone.js:** Make `EventTarget` methods optional in `zone.js` extension API ([#35954](https://github.com/angular/angular/issues/35954)) ([5463462](https://github.com/angular/angular/commit/5463462))
+* **zone.js:** zone.js patches rxjs should check null for unsubscribe ([#35990](https://github.com/angular/angular/issues/35990)) ([3fa8952](https://github.com/angular/angular/commit/3fa8952)), closes [#31687](https://github.com/angular/angular/issues/31687) [#31684](https://github.com/angular/angular/issues/31684)
+
+### Features
+
+* implement Symbol.specics of Promise ([#34162](https://github.com/angular/angular/issues/34162)) ([539d8f0](https://github.com/angular/angular/commit/539d8f09e01fb4c577bc8a289d2e124360d4c6b1)), closes [#34105](https://github.com/angular/angular/issues/34105) [#33989](https://github.com/angular/angular/issues/33989)
+* define all zone.js configurations to typescript interfaces ([#35329](https://github.com/angular/angular/issues/35329)) ([03d88c7](https://github.com/angular/angular/commit/03d88c7965eb8b1310a1b50675fee66986a9ebac))
+* add a temp solution to support passive event listeners. ([#34503](https://github.com/angular/angular/issues/34503)) ([f9d483e](https://github.com/angular/angular/commit/f9d483e76ea9992e3fe3e2b7c8c415c264de4679))
+* add an tickOptions parameter with property processNewMacroTasksSynchronously. ([#33838](https://github.com/angular/angular/issues/33838)) ([17b862c](https://github.com/angular/angular/commit/17b862cf82a18490329d88b37d3e86e3245d5759)), closes [#33799](https://github.com/angular/angular/issues/33799)
+* add interface definitions which zone extends EventTarget ([#35304](https://github.com/angular/angular/issues/35304)) ([4acb676](https://github.com/angular/angular/commit/4acb676f2e9ba3a9ea33dd020e23534d702f988b)), closes [#35173](https://github.com/angular/angular/issues/35173)
+* make jasmine patch as zone module ([#34676](https://github.com/angular/angular/issues/34676)) ([e1160f1](https://github.com/angular/angular/commit/e1160f19beb2399581ae36aa498ec0dc23dfed53))
+* make mocha a zone module. ([#34719](https://github.com/angular/angular/issues/34719)) ([332937e](https://github.com/angular/angular/commit/332937ef2471ab039cac1eceda42f80f94912f68))
+* add basic jest support ([#35080](https://github.com/angular/angular/issues/35080)) ([daac33c](https://github.com/angular/angular/commit/daac33cdc84c6a882ec04c3009e6a230153716b0))
+* **zone.js:** add a zone config to allow user disable wrapping uncaught promise rejection ([#35873](https://github.com/angular/angular/issues/35873)) ([8456c5e](https://github.com/angular/angular/commit/8456c5e)), closes [#27840](https://github.com/angular/angular/issues/27840)
+* **zone.js:** Monkey patch MessagePort.prototype onproperties ([#34610](https://github.com/angular/angular/issues/34610)) ([0f8e710](https://github.com/angular/angular/commit/0f8e710))
+
+### Performance Improvements
+
+* performance improvement for eventListeners ([#34613](https://github.com/angular/angular/issues/34613)) ([a3c7ab9](https://github.com/angular/angular/commit/a3c7ab99b79cd63965fcce847d35fb2314676f53))
+
 <a name="0.10.2"></a>
 ## [0.10.2](https://github.com/angular/angular/compare/zone.js-0.10.1...zone.js-0.10.2) (2019-08-13)
 
