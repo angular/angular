@@ -214,6 +214,8 @@ class OverrideKindSymbol implements Symbol {
 
   get definition(): Definition { return this.sym.definition; }
 
+  get documentation(): ts.SymbolDisplayPart[] { return this.sym.documentation; }
+
   members() { return this.sym.members(); }
 
   signatures() { return this.sym.signatures(); }
