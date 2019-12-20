@@ -49,7 +49,7 @@ import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeConstructor, TNod
  * A permanent marker promise which signifies that the current CD tree is
  * clean.
  */
-const _CLEAN_PROMISE = (() => Promise.resolve(null))();
+const _CLEAN_PROMISE = (() => Promise.resolve())();
 
 /** Sets the host bindings for the current view. */
 export function setHostBindings(tView: TView, lView: LView): void {
@@ -1702,8 +1702,8 @@ export function scheduleTick(rootContext: RootContext, flags: RootContextFlags) 
   rootContext.flags |= flags;
 
   if (nothingScheduled && rootContext.clean == _CLEAN_PROMISE) {
-    let res: null|((val: null) => void);
-    rootContext.clean = new Promise<null>((r) => res = r);
+    let res: (() => void);
+    rootContext.clean = new Promise<void>((r) => res = r);
     rootContext.scheduler(() => {
       if (rootContext.flags & RootContextFlags.DetectChanges) {
         rootContext.flags &= ~RootContextFlags.DetectChanges;
@@ -1719,7 +1719,7 @@ export function scheduleTick(rootContext: RootContext, flags: RootContextFlags) 
       }
 
       rootContext.clean = _CLEAN_PROMISE;
-      res !(null);
+      res !();
     });
   }
 }

@@ -277,6 +277,6 @@ export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): v
  * @param component Component to wait upon
  * @returns Promise which resolves when the component is rendered.
  */
-export function whenRendered(component: any): Promise<null> {
+export function whenRendered(component: any): Promise<void> {
   return getRootContext(component).clean;
 }

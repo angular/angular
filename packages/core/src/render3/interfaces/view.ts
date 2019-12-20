@@ -690,7 +690,7 @@ export interface RootContext {
    *
    * This promise is overwritten every time a first call to {@link markDirty} is invoked.
    */
-  clean: Promise<null>;
+  clean: Promise<void>;
 
   /**
    * RootComponents - The components that were instantiated by the call to
