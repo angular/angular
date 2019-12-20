@@ -85,10 +85,10 @@ export function ɵɵpropertyInterpolate1(
   const lView = getLView();
   const interpolatedValue = interpolation1(lView, prefix, v0, suffix);
   if (interpolatedValue !== NO_CHANGE) {
-    elementPropertyInternal(lView, getSelectedIndex(), propName, interpolatedValue, sanitizer);
-    ngDevMode &&
-        storePropertyBindingMetadata(
-            lView[TVIEW].data, getSelectedIndex(), propName, getBindingIndex() - 1, prefix, suffix);
+    const nodeIndex = getSelectedIndex();
+    elementPropertyInternal(lView, nodeIndex, propName, interpolatedValue, sanitizer);
+    ngDevMode && storePropertyBindingMetadata(
+                     lView[TVIEW].data, nodeIndex, propName, getBindingIndex() - 1, prefix, suffix);
   }
   return ɵɵpropertyInterpolate1;
 }

@@ -1301,17 +1301,16 @@ describe('change detection', () => {
     });
 
     it('should include field name in case of attribute binding', () => {
-      // TODO(akushnir): improve error message and include attr name in Ivy
-      const message = ivyEnabled ? `Previous value: 'initial'. Current value: 'changed'` :
-                                   `Previous value: 'id: initial'. Current value: 'id: changed'`;
+      const message = ivyEnabled ?
+          `Previous value for 'attr.id': 'initial'. Current value: 'changed'` :
+          `Previous value: 'id: initial'. Current value: 'id: changed'`;
       expect(() => initWithTemplate('<div [attr.id]="unstableStringExpression"></div>'))
           .toThrowError(new RegExp(message));
     });
 
     it('should include field name in case of attribute interpolation', () => {
-      // TODO(akushnir): improve error message and include attr name and entire expression in Ivy
       const message = ivyEnabled ?
-          `Previous value: 'initial'. Current value: 'changed'` :
+          `Previous value for 'attr.id': 'Expressions: a and initial!'. Current value: 'Expressions: a and changed!'` :
           `Previous value: 'id: Expressions: a and initial!'. Current value: 'id: Expressions: a and changed!'`;
       expect(
           () => initWithTemplate(
