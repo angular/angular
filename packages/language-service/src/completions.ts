@@ -432,14 +432,14 @@ class ExpressionVisitor extends NullTemplateVisitor {
   get results(): ng.CompletionEntry[] { return Array.from(this.completions.values()); }
 
   visitDirectiveProperty(ast: BoundDirectivePropertyAst): void {
-    this.addAttributeValuesToCompletions(ast.value);
+    this.processExpressionCompletions(ast.value);
   }
 
   visitElementProperty(ast: BoundElementPropertyAst): void {
-    this.addAttributeValuesToCompletions(ast.value);
+    this.processExpressionCompletions(ast.value);
   }
 
-  visitEvent(ast: BoundEventAst): void { this.addAttributeValuesToCompletions(ast.handler); }
+  visitEvent(ast: BoundEventAst): void { this.processExpressionCompletions(ast.handler); }
 
   visitElement(ast: ElementAst): void {
     // no-op for now
@@ -466,7 +466,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
       // The expression must be reparsed to get a valid AST rather than only template bindings.
       const expressionAst = this.info.expressionParser.parseBinding(
           ast.value, ast.sourceSpan.toString(), ast.sourceSpan.start.offset);
-      this.addAttributeValuesToCompletions(expressionAst);
+      this.processExpressionCompletions(expressionAst);
     }
   }
 
@@ -490,7 +490,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
     }
   }
 
-  private addAttributeValuesToCompletions(value: AST) {
+  private processExpressionCompletions(value: AST) {
     const symbols = getExpressionCompletions(
         this.getExpressionScope(), value, this.position, this.info.template.query);
     if (symbols) {
@@ -566,7 +566,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
     }
 
     if (binding.expression && inSpan(valueRelativePosition, binding.expression.ast.span)) {
-      this.addAttributeValuesToCompletions(binding.expression.ast);
+      this.processExpressionCompletions(binding.expression.ast);
       return;
     }
 
@@ -578,7 +578,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
     if (ofLocation > 0 && valueRelativePosition >= ofLocation + KW_OF.length) {
       const expressionAst = this.info.expressionParser.parseBinding(
           attr.value, attr.sourceSpan.toString(), attr.sourceSpan.start.offset);
-      this.addAttributeValuesToCompletions(expressionAst);
+      this.processExpressionCompletions(expressionAst);
     }
   }
 }
