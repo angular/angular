@@ -1,8 +1,6 @@
 # Reactive Forms
 
-*Reactive forms* provide a model-driven approach to handling form inputs whose values change over time. This guide shows you how to create and update a simple form control, progress to using multiple controls in a group, validate form values, and implement more advanced forms.
-
-
+_Reactive forms_ provide a model-driven approach to handling form inputs whose values change over time. This guide shows you how to create and update a simple form control, progress to using multiple controls in a group, validate form values, and implement more advanced forms.
 
 {@a toc}
 
@@ -34,7 +32,7 @@ Generate a component for the control.
 
 <code-example language="sh" class="code-shell">
 
-  ng generate component NameEditor
+ng generate component NameEditor
 
 </code-example>
 
@@ -79,8 +77,8 @@ the current state and value through the component class or the component templat
 
 You can display the value in these ways:
 
-* Through the `valueChanges` observable where you can listen for changes in the form's value in the template using `AsyncPipe` or in the component class using the `subscribe()` method.
-* With the `value` property, which gives you a snapshot of the current value.
+- Through the `valueChanges` observable where you can listen for changes in the form's value in the template using `AsyncPipe` or in the component class using the `subscribe()` method.
+- With the `value` property, which gives you a snapshot of the current value.
 
 The following example shows you how to display the current value using interpolation in the template.
 
@@ -96,7 +94,7 @@ Read about other `FormControl` properties and methods in the [Reactive forms API
 
 Reactive forms have methods to change a control's value programmatically, which gives you the flexibility to update the value without user interaction. A form control instance provides a `setValue()` method that updates the value of the form control and validates the structure of the value provided against the control's structure. For example, when retrieving form data from a backend API or service, use the `setValue()` method to update the control to its new value, replacing the old value entirely.
 
-The following example adds a method to the component class to update the value of the control to *Nancy* using the `setValue()` method.
+The following example adds a method to the component class to update the value of the control to _Nancy_ using the `setValue()` method.
 
 <code-example path="reactive-forms/src/app/name-editor/name-editor.component.ts" region="update-value" header="src/app/name-editor/name-editor.component.ts (update value)">
 
@@ -126,7 +124,7 @@ Generate a `ProfileEditor` component and import the `FormGroup` and `FormControl
 
 <code-example language="sh" class="code-shell">
 
-  ng generate component ProfileEditor
+ng generate component ProfileEditor
 
 </code-example>
 
@@ -152,7 +150,7 @@ A form group tracks the status and changes for each of its controls, so if one o
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="formgroup" header="src/app/profile-editor/profile-editor.component.html (template form group)"></code-example>
 
-Note that just as a form group contains a group of controls, the *profile form* `FormGroup` is bound to the `form` element with the `FormGroup` directive, creating a communication layer between the model and the form containing the inputs. The `formControlName` input provided by the `FormControlName` directive binds each individual input to the form control defined in `FormGroup`. The form controls communicate with their respective elements. They also communicate changes to the form group instance, which provides the source of truth for the model value.
+Note that just as a form group contains a group of controls, the _profile form_ `FormGroup` is bound to the `form` element with the `FormGroup` directive, creating a communication layer between the model and the form containing the inputs. The `formControlName` input provided by the `FormControlName` directive binds each individual input to the form control defined in `FormGroup`. The form controls communicate with their respective elements. They also communicate changes to the form group instance, which provides the source of truth for the model value.
 
 ### Saving form data
 
@@ -168,7 +166,7 @@ The `onSubmit()` method in the `ProfileEditor` component captures the current va
 
 </code-example>
 
-The `submit` event is emitted by the `form` tag using the native DOM event. You trigger the event by clicking an <input> element with a `submit` type, or a <button> element with a type other than 'button'. This also allows the user to press the **Enter** key to submit the completed form.
+The `form` tag uses the native DOM event to emit the `submit` event. You trigger the event by clicking an `<input>` element with a `submit` type, or a `<button>` element with a type other than `button`. This also allows the user to press the **Enter** key to submit the completed form.
 
 Use a `button` element to add a button to the bottom of the form to trigger the form submission.
 
@@ -232,9 +230,9 @@ When updating the value for a form group instance that contains multiple control
 
 There are two ways to update the model value:
 
-* Use the `setValue()` method to set a new value for an individual control. The `setValue()` method strictly adheres to the structure of the form group and replaces the entire value for the control.
+- Use the `setValue()` method to set a new value for an individual control. The `setValue()` method strictly adheres to the structure of the form group and replaces the entire value for the control.
 
-* Use the `patchValue()` method to replace any properties defined in the object that have changed in the form model.
+- Use the `patchValue()` method to replace any properties defined in the object that have changed in the form model.
 
 The strict checks of the `setValue()` method help catch nesting errors in complex forms, while `patchValue()` fails silently on those errors.
 
@@ -334,7 +332,7 @@ HTML5 has a set of built-in attributes that you can use for native validation, i
 
 <div class="alert is-important">
 
-**Caution:** Use these HTML5 validation attributes *in combination with* the built-in validators provided by Angular's reactive forms. Using these in combination prevents errors when the expression is changed after the template has been checked.
+**Caution:** Use these HTML5 validation attributes _in combination with_ the built-in validators provided by Angular's reactive forms. Using these in combination prevents errors when the expression is changed after the template has been checked.
 
 </div>
 
@@ -356,7 +354,7 @@ For more on form validation, visit the [Form Validation](guide/form-validation) 
 
 ## Dynamic controls using form arrays
 
-`FormArray` is an alternative to `FormGroup` for managing any number of unnamed controls. As with form group instances, you can dynamically insert and remove controls from form array instances, and the form array instance value and validation status is calculated from its child controls. However, you don't need to define a key for each control by name, so this is a great option if you don't know the number of child values in advance. The following example shows you how to manage an array of *aliases* in `ProfileEditor`.
+`FormArray` is an alternative to `FormGroup` for managing any number of unnamed controls. As with form group instances, you can dynamically insert and remove controls from form array instances, and the form array instance value and validation status is calculated from its child controls. However, you don't need to define a key for each control by name, so this is a great option if you don't know the number of child values in advance. The following example shows you how to manage an array of _aliases_ in `ProfileEditor`.
 
 ### Step 1: Importing the FormArray class
 
