@@ -326,6 +326,7 @@ describe('type check blocks', () => {
       checkTypeOfNonDomReferences: true,
       checkTypeOfPipes: true,
       strictSafeNavigationTypes: true,
+      useContextGenericType: true,
     };
 
     describe('config.applyTemplateContextGuards', () => {
@@ -565,6 +566,21 @@ describe('type check blocks', () => {
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).toContain('(((ctx).a) != null ? ((ctx).a)!.method() : null as any)');
         expect(block).toContain('(((ctx).a) != null ? ((ctx).a)!.b : null as any)');
+      });
+    });
+
+    describe('config.strictContextGenerics', () => {
+      const TEMPLATE = `Test`;
+
+      it('should use the generic type of the context when enabled', () => {
+        const block = tcb(TEMPLATE);
+        expect(block).toContain('function Test_TCB<T extends string>(ctx: Test<T>)');
+      });
+
+      it('should use any for the context generic type when disabled', () => {
+        const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, useContextGenericType: false};
+        const block = tcb(TEMPLATE, undefined, DISABLED_CONFIG);
+        expect(block).toContain('function Test_TCB(ctx: Test<any>)');
       });
     });
   });

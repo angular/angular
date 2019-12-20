@@ -163,6 +163,7 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   checkTypeOfNonDomReferences: true,
   checkTypeOfPipes: true,
   strictSafeNavigationTypes: true,
+  useContextGenericType: true,
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
@@ -217,6 +218,7 @@ export function tcb(
     checkTypeOfPipes: true,
     checkTemplateBodies: true,
     strictSafeNavigationTypes: true,
+    useContextGenericType: true,
   };
   options = options || {
     emitSpans: false,

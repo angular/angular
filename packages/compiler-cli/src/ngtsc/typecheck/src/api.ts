@@ -211,6 +211,15 @@ export interface TypeCheckingConfig {
    * This is currently an unsupported feature.
    */
   checkQueries: false;
+
+  /**
+   * Whether to use any generic types of the context component.
+   *
+   * If this is `true`, then if the context component has generic types, those will be mirrored in
+   * the template type-checking context. If `false`, any generic type parameters of the context
+   * component will be set to `any` during type-checking.
+   */
+  useContextGenericType: boolean;
 }
 
 

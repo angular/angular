@@ -504,6 +504,7 @@ export class NgtscProgram implements api.Program {
         // Pipes are checked in View Engine so there is no strictness flag.
         checkTypeOfPipes: true,
         strictSafeNavigationTypes: strictTemplates,
+        useContextGenericType: strictTemplates,
       };
     } else {
       typeCheckingConfig = {
@@ -521,6 +522,7 @@ export class NgtscProgram implements api.Program {
         checkTypeOfNonDomReferences: false,
         checkTypeOfPipes: false,
         strictSafeNavigationTypes: false,
+        useContextGenericType: false,
       };
     }
 
@@ -548,6 +550,9 @@ export class NgtscProgram implements api.Program {
     }
     if (this.options.strictAttributeTypes !== undefined) {
       typeCheckingConfig.checkTypeOfAttributes = this.options.strictAttributeTypes;
+    }
+    if (this.options.strictContextGenerics !== undefined) {
+      typeCheckingConfig.useContextGenericType = this.options.strictContextGenerics;
     }
 
     // Execute the typeCheck phase of each decorator in the program.

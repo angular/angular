@@ -972,7 +972,8 @@ export declare class AnimationEvent {
     });
 
     it('should constrain types using type parameter bounds', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig(
+          {fullTemplateTypeCheck: true, strictInputTypes: true, strictContextGenerics: true});
       env.write('test.ts', `
     import {CommonModule} from '@angular/common';
     import {Component, Input, NgModule} from '@angular/core';
