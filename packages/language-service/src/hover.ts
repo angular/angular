@@ -18,6 +18,7 @@ const SYMBOL_SPACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.space];
 const SYMBOL_PUNC = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.punctuation];
 const SYMBOL_CLASS = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.className];
 const SYMBOL_TEXT = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.text];
+const SYMBOL_INTERFACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.interfaceName];
 
 /**
  * Traverse the template AST and look for the symbol located at `position`, then
@@ -45,19 +46,28 @@ export function getHover(info: AstResult, position: number, host: Readonly<TypeS
         {text: '.', kind: SYMBOL_PUNC},
       ] :
       [];
+  const typeDisplayParts: ts.SymbolDisplayPart[] = symbol.type ?
+      [
+        {text: ':', kind: SYMBOL_PUNC},
+        {text: ' ', kind: SYMBOL_SPACE},
+        {text: symbol.type.name, kind: SYMBOL_INTERFACE},
+      ] :
+      [];
   return {
     kind: symbol.kind as ts.ScriptElementKind,
     kindModifiers: '',  // kindModifier info not available on 'ng.Symbol'
     textSpan,
-    // this would generate a string like '(property) ClassX.propY'
+    // this would generate a string like '(property) ClassX.propY: type'
     // 'kind' in displayParts does not really matter because it's dropped when
     // displayParts get converted to string.
     displayParts: [
-      {text: '(', kind: SYMBOL_PUNC}, {text: symbol.kind, kind: symbol.kind},
-      {text: ')', kind: SYMBOL_PUNC}, {text: ' ', kind: SYMBOL_SPACE}, ...containerDisplayParts,
+      {text: '(', kind: SYMBOL_PUNC},
+      {text: symbol.kind, kind: symbol.kind},
+      {text: ')', kind: SYMBOL_PUNC},
+      {text: ' ', kind: SYMBOL_SPACE},
+      ...containerDisplayParts,
       {text: symbol.name, kind: symbol.kind},
-      // TODO: Append type info as well, but Symbol doesn't expose that!
-      // Ideally hover text should be like '(property) ClassX.propY: string'
+      ...typeDisplayParts,
     ],
   };
 }
