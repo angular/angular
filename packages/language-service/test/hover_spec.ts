@@ -36,7 +36,7 @@ describe('hover', () => {
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
-    expect(toText(displayParts)).toBe('(property) MyComponent.name');
+    expect(toText(displayParts)).toBe('(property) MyComponent.name: string');
   });
 
   it('should be able to find a field in a attribute reference', () => {
@@ -52,7 +52,7 @@ describe('hover', () => {
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
-    expect(toText(displayParts)).toBe('(property) MyComponent.name');
+    expect(toText(displayParts)).toBe('(property) MyComponent.name: string');
   });
 
   it('should be able to find a method from a call', () => {
@@ -69,7 +69,7 @@ describe('hover', () => {
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
     expect(textSpan.length).toBe('myClick()'.length);
-    expect(toText(displayParts)).toBe('(method) MyComponent.myClick');
+    expect(toText(displayParts)).toBe('(method) MyComponent.myClick: () => void');
   });
 
   it('should be able to find a field reference in an *ngIf', () => {
@@ -85,7 +85,7 @@ describe('hover', () => {
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
-    expect(toText(displayParts)).toBe('(property) MyComponent.include');
+    expect(toText(displayParts)).toBe('(property) MyComponent.include: boolean');
   });
 
   it('should be able to find a reference to a component', () => {
@@ -113,7 +113,7 @@ describe('hover', () => {
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
-    expect(toText(displayParts)).toBe('(directive) StringModel');
+    expect(toText(displayParts)).toBe('(directive) StringModel: typeof StringModel');
   });
 
   it('should be able to find an event provider', () => {
@@ -129,7 +129,7 @@ describe('hover', () => {
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
-    expect(toText(displayParts)).toBe('(event) TestComponent.testEvent');
+    expect(toText(displayParts)).toBe('(event) TestComponent.testEvent: EventEmitter<any>');
   });
 
   it('should be able to find an input provider', () => {
@@ -145,7 +145,7 @@ describe('hover', () => {
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
-    expect(toText(displayParts)).toBe('(property) TestComponent.name');
+    expect(toText(displayParts)).toBe('(property) TestComponent.name: string');
   });
 
   it('should be able to ignore a reference declaration', () => {
@@ -203,7 +203,7 @@ describe('hover', () => {
       start: position,
       length: '$any(title)'.length,
     });
-    expect(toText(displayParts)).toBe('(method) $any');
+    expect(toText(displayParts)).toBe('(method) $any: $any');
   });
 });
 
