@@ -12,7 +12,7 @@ import {Component, DebugElement, DebugNode, Directive, ElementRef, EmbeddedViewR
 import {NgZone} from '@angular/core/src/zone';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {hasClass} from '@angular/platform-browser/testing/src/browser_util';
+import {createMouseEvent, hasClass} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
@@ -1252,5 +1252,24 @@ class TestCmptWithPropInterpolation {
                         .createComponent(Wrapper);
     expect(fixture.debugElement.query(e => e.name === 'myComponent')).toBeTruthy();
     expect(fixture.debugElement.query(e => e.name === 'div')).toBeTruthy();
+  });
+
+  it('does not call event listeners added outside angular context', () => {
+    let listenerCalled = false;
+    const eventToTrigger = createMouseEvent('mouseenter');
+    function listener() { listenerCalled = true; }
+    @Component({template: ''})
+    class MyComp {
+      constructor(private readonly zone: NgZone, private readonly element: ElementRef) {}
+      ngOnInit() {
+        this.zone.runOutsideAngular(
+            () => { this.element.nativeElement.addEventListener('mouseenter', listener); });
+      }
+    }
+    const fixture =
+        TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+    fixture.detectChanges();
+    fixture.debugElement.triggerEventHandler('mouseenter', eventToTrigger);
+    expect(listenerCalled).toBe(false);
   });
 }

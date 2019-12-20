@@ -410,7 +410,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     this.listeners.forEach(listener => {
       if (listener.name === eventName) {
         const callback = listener.callback;
-        callback(eventObj);
+        callback.call(node, eventObj);
         invokedListeners.push(callback);
       }
     });
@@ -419,11 +419,20 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     // that Zone.js only adds to `EventTarget` in browser environments.
     if (typeof node.eventListeners === 'function') {
       // Note that in Ivy we wrap event listeners with a call to `event.preventDefault` in some
-      // cases. We use `Function` as a special token that gives us access to the actual event
+      // cases. We use '__ngUnwrap__' as a special token that gives us access to the actual event
       // listener.
       node.eventListeners(eventName).forEach((listener: Function) => {
-        const unwrappedListener = listener(Function);
-        return invokedListeners.indexOf(unwrappedListener) === -1 && unwrappedListener(eventObj);
+        // In order to ensure that we can detect the special __ngUnwrap__ token described above, we
+        // use `toString` on the listener and see if it contains the token. We use this approach to
+        // ensure that it still worked with compiled code since it cannot remove or rename string
+        // literals. We also considered using a special function name (i.e. if(listener.name ===
+        // special)) but that was more cumbersome and we were also concerned the compiled code could
+        // strip the name, turning the condition in to ("" === "") and always returning true.
+        if (listener.toString().indexOf('__ngUnwrap__') !== -1) {
+          const unwrappedListener = listener('__ngUnwrap__');
+          return invokedListeners.indexOf(unwrappedListener) === -1 &&
+              unwrappedListener.call(node, eventObj);
+        }
       });
     }
   }
