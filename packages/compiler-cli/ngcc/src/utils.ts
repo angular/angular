@@ -66,6 +66,13 @@ export function findAll<T>(node: ts.Node, test: (node: ts.Node) => node is ts.No
   }
 }
 
+export function getOrDefault<K, V>(map: Map<K, V>, key: K, factory: (key: K) => V): V {
+  if (!map.has(key)) {
+    map.set(key, factory(key));
+  }
+  return map.get(key) !;
+}
+
 /**
  * Does the given declaration have a name which is an identifier?
  * @param declaration The declaration to test.

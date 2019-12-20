@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {isRequireCall} from '../host/commonjs_host';
+import {isRequireCall} from '../host/commonjs_umd_utils';
 import {DependencyHostBase} from './dependency_host';
 import {ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
 
