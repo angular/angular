@@ -333,16 +333,19 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
     })
 
 def _collect_summaries_aspect_impl(target, ctx):
-    results = depset(target.angular.summaries if hasattr(target, "angular") else [])
+    if is_ivy_enabled(ctx):
+        results = depset([])
+    else:
+        results = depset(target.angular.summaries if hasattr(target, "angular") else [])
 
-    # If we are visiting empty-srcs ts_library, this is a re-export
-    srcs = ctx.rule.attr.srcs if hasattr(ctx.rule.attr, "srcs") else []
+        # If we are visiting empty-srcs ts_library, this is a re-export
+        srcs = ctx.rule.attr.srcs if hasattr(ctx.rule.attr, "srcs") else []
 
-    # "re-export" rules should expose all the files of their deps
-    if not srcs and hasattr(ctx.rule.attr, "deps"):
-        for dep in ctx.rule.attr.deps:
-            if (hasattr(dep, "angular")):
-                results = depset(dep.angular.summaries, transitive = [results])
+        # "re-export" rules should expose all the files of their deps
+        if not srcs and hasattr(ctx.rule.attr, "deps"):
+            for dep in ctx.rule.attr.deps:
+                if (hasattr(dep, "angular")):
+                    results = depset(dep.angular.summaries, transitive = [results])
 
     return struct(collect_summaries_aspect_result = results)
 
@@ -587,23 +590,26 @@ def ng_module_impl(ctx, ts_compile_actions):
 
     outs = _expected_outs(ctx)
 
-    if is_legacy_ngc:
-        providers["angular"] = {
-            "summaries": outs.summaries,
-            "metadata": outs.metadata,
+    providers["angular"] = {}
+    angularProvider = providers["angular"]
+
+    if _should_produce_flat_module_outs(ctx):
+        angularProvider["flat_module_metadata"] = {
+            "module_name": ctx.attr.module_name,
+            "typings_file": outs.bundle_index_typings,
+            "flat_module_out_file": _flat_module_out_file(ctx),
         }
+
+    if is_legacy_ngc:
+        angularProvider["summaries"] = outs.summaries
+        angularProvider["metadata"] = outs.metadata
         providers["ngc_messages"] = outs.i18n_messages
 
-    if is_legacy_ngc and _should_produce_flat_module_outs(ctx):
-        if len(outs.metadata) > 1:
-            fail("expecting exactly one metadata output for " + str(ctx.label))
+        if _should_produce_flat_module_outs(ctx):
+            if len(outs.metadata) > 1:
+                fail("expecting exactly one metadata output for " + str(ctx.label))
 
-        providers["angular"]["flat_module_metadata"] = struct(
-            module_name = ctx.attr.module_name,
-            metadata_file = outs.metadata[0],
-            typings_file = outs.bundle_index_typings,
-            flat_module_out_file = _flat_module_out_file(ctx),
-        )
+            angularProvider["flat_module_metadata"]["metadata_file"] = outs.metadata[0]
 
     if outs.dts_bundles != None:
         providers["dts_bundles"] = outs.dts_bundles

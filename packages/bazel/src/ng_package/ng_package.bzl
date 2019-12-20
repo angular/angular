@@ -397,10 +397,10 @@ def _ng_package_impl(ctx):
             # file and the typings entry point from the flat module metadata which is set by
             # the "ng_module" rule.
             ng_module_metadata = dep.angular.flat_module_metadata
-            module_name = ng_module_metadata.module_name
-            index_file = ng_module_metadata.flat_module_out_file + ".js"
-            typings_path = ng_module_metadata.typings_file.path
-            metadata_file = ng_module_metadata.metadata_file
+            module_name = ng_module_metadata["module_name"]
+            index_file = ng_module_metadata["flat_module_out_file"] + ".js"
+            typings_path = ng_module_metadata["typings_file"].path
+            metadata_file = getattr(ng_module_metadata, "metadata_file", None)
             guessed_paths = False
             _debug(
                 ctx.var,
@@ -640,7 +640,7 @@ _NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **{
     "entry_point": attr.label(
         doc = """The starting point of the application, passed as the `--input` flag to rollup.
 
-        If the entry JavaScript file belongs to the same package (as the BUILD file), 
+        If the entry JavaScript file belongs to the same package (as the BUILD file),
         you can simply reference it by its relative name to the package directory:
 
         ```
@@ -668,7 +668,7 @@ _NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **{
 
         The rule will use the corresponding `.js` output of the ts_library rule as the entry point.
 
-        If the entry point target is a rule, it should produce a single JavaScript entry file that will be passed to the nodejs_binary rule. 
+        If the entry point target is a rule, it should produce a single JavaScript entry file that will be passed to the nodejs_binary rule.
         For example:
 
         ```
