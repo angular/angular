@@ -248,11 +248,30 @@ class AugmentedCompilerHost extends NgtscCompilerHost {
   delegate !: ts.CompilerHost;
 }
 
+const ROOT_PREFIX = 'root/';
+
 class FileNameToModuleNameHost extends AugmentedCompilerHost {
   fileNameToModuleName(importedFilePath: string): string {
     const relativeFilePath = this.fs.relative(this.fs.pwd(), this.fs.resolve(importedFilePath));
     const rootedPath = this.fs.join('root', relativeFilePath);
     return rootedPath.replace(/(\.d)?.ts$/, '');
+  }
+
+  resolveModuleNames(
+      moduleNames: string[], containingFile: string, reusedNames: string[]|undefined,
+      redirectedReference: ts.ResolvedProjectReference|undefined,
+      options: ts.CompilerOptions): (ts.ResolvedModule|undefined)[] {
+    return moduleNames.map(moduleName => {
+      if (moduleName.startsWith(ROOT_PREFIX)) {
+        // Strip the artificially added root prefix.
+        moduleName = '/' + moduleName.substr(ROOT_PREFIX.length);
+      }
+
+      return ts
+          .resolveModuleName(
+              moduleName, containingFile, options, this, /* cache */ undefined, redirectedReference)
+          .resolvedModule;
+    });
   }
 }
 

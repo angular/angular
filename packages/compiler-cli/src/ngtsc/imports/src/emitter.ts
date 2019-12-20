@@ -42,6 +42,14 @@ export enum ImportFlags {
    * This is sometimes required if there's a risk TypeScript might remove imports during emit.
    */
   ForceNewImport = 0x01,
+
+  /**
+   * Don't make use of any aliasing information when emitting a reference.
+   *
+   * This is sometimes required if emitting into a context where generated references will be fed
+   * into TypeScript and type-checked (such as in template type-checking).
+   */
+  NoAliasing = 0x02,
 }
 
 /**

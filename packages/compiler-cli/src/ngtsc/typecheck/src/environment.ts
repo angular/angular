@@ -9,7 +9,7 @@
 import {ExpressionType, ExternalExpr, Type, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {NOOP_DEFAULT_IMPORT_RECORDER, Reference, ReferenceEmitter} from '../../imports';
+import {ImportFlags, NOOP_DEFAULT_IMPORT_RECORDER, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateType} from '../../translator';
 
@@ -205,7 +205,11 @@ export class Environment {
    * This may involve importing the node into the file if it's not declared there already.
    */
   reference(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.Expression {
-    const ngExpr = this.refEmitter.emit(ref, this.contextFile);
+    // Disable aliasing for imports generated in a template type-checking context, as there is no
+    // guarantee that any alias re-exports exist in the .d.ts files. It's safe to use direct imports
+    // in these cases as there is no strict dependency checking during the template type-checking
+    // pass.
+    const ngExpr = this.refEmitter.emit(ref, this.contextFile, ImportFlags.NoAliasing);
 
     // Use `translateExpression` to convert the `Expression` into a `ts.Expression`.
     return translateExpression(
@@ -218,7 +222,7 @@ export class Environment {
    * This may involve importing the node into the file if it's not declared there already.
    */
   referenceType(ref: Reference): ts.TypeNode {
-    const ngExpr = this.refEmitter.emit(ref, this.contextFile);
+    const ngExpr = this.refEmitter.emit(ref, this.contextFile, ImportFlags.NoAliasing);
 
     // Create an `ExpressionType` from the `Expression` and translate it via `translateType`.
     // TODO(alxhub): support references to types with generic arguments in a clean way.
