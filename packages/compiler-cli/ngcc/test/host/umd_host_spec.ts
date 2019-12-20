@@ -564,10 +564,10 @@ runInEachFileSystem(() => {
           name: _('/index.js'),
           contents: `
           (function (global, factory) {
-            typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('./a_module'), require('./b_module'), require('./wildcard_reexports')) :
-            typeof define === 'function' && define.amd ? define('index', ['exports', './a_module', './b_module', './wildcard_reexports], factory) :
-            (factory(global.index, global.a_module, global.b_module, global.wildcard_reexports));
-          }(this, (function (exports, a_module, b_module, wildcard_reexports) { 'use strict';
+            typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('./a_module'), require('./b_module'), require('./wildcard_reexports'), require('./wildcard_reexports_with_require')) :
+            typeof define === 'function' && define.amd ? define('index', ['exports', './a_module', './b_module', './wildcard_reexports', './wildcard_reexports_with_require'], factory) :
+            (factory(global.index, global.a_module, global.b_module, global.wildcard_reexports, global.wildcard_reexports_with_require));
+          }(this, (function (exports, a_module, b_module, wildcard_reexports, wildcard_reexports_with_require) { 'use strict';
           })));
           `
         },
@@ -633,8 +633,23 @@ runInEachFileSystem(() => {
   function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
   }
-__export(b_module);
-__export(xtra_module);
+  __export(b_module);
+  __export(xtra_module);
+})));`,
+        },
+        {
+          name: _('/wildcard_reexports_with_require.js'),
+          contents: `
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(require, exports) :
+  typeof define === 'function' && define.amd ? define('wildcard_reexports_with_require', ['require', 'exports'], factory);
+}(this, (function (require, exports) { 'use strict';
+  function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+  }
+  var b_module = require('./b_module');
+  __export(b_module);
+  __export(require('./xtra_module'));
 })));`,
         }
       ];
@@ -1938,6 +1953,34 @@ __export(xtra_module);
         const bundle = makeTestBundleProgram(_('/index.js'));
         const host = new UmdReflectionHost(new MockLogger(), false, bundle);
         const file = getSourceFileOrError(bundle.program, _('/wildcard_reexports.js'));
+        const exportDeclarations = host.getExportsOfModule(file);
+        expect(exportDeclarations).not.toBe(null);
+        expect(Array.from(exportDeclarations !.entries())
+                   .map(entry => [entry[0], entry[1].node !.getText(), entry[1].viaModule]))
+            .toEqual([
+              ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
+              ['a', `a = 'a'`, _('/b_module')],
+              ['b', `b = a_module.a`, _('/b_module')],
+              ['c', `a = 'a'`, _('/b_module')],
+              ['d', `b = a_module.a`, _('/b_module')],
+              ['e', `e = 'e'`, _('/b_module')],
+              ['DirectiveX', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
+              [
+                'SomeClass',
+                `SomeClass = (function() {\n    function SomeClass() {}\n    return SomeClass;\n  }())`,
+                _('/b_module')
+              ],
+              ['xtra1', `xtra1 = 'xtra1'`, _('/xtra_module')],
+              ['xtra2', `xtra2 = 'xtra2'`, _('/xtra_module')],
+            ]);
+      });
+
+      it('should handle wildcard re-exports of other modules using `require()` calls', () => {
+        loadFakeCore(getFileSystem());
+        loadTestFiles(EXPORTS_FILES);
+        const bundle = makeTestBundleProgram(_('/index.js'));
+        const host = new UmdReflectionHost(new MockLogger(), false, bundle);
+        const file = getSourceFileOrError(bundle.program, _('/wildcard_reexports_with_require.js'));
         const exportDeclarations = host.getExportsOfModule(file);
         expect(exportDeclarations).not.toBe(null);
         expect(Array.from(exportDeclarations !.entries())
