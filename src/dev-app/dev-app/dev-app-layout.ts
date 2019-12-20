@@ -112,11 +112,9 @@ export class DevAppLayout {
     this.dark = !this.dark;
 
     if (this.dark) {
-      this._element.nativeElement.classList.add(darkThemeClass);
-      this._overlayContainer.getContainerElement().classList.add(darkThemeClass);
+      document.body.classList.add(darkThemeClass);
     } else {
-      this._element.nativeElement.classList.remove(darkThemeClass);
-      this._overlayContainer.getContainerElement().classList.remove(darkThemeClass);
+      document.body.classList.remove(darkThemeClass);
     }
   }
 
@@ -126,11 +124,9 @@ export class DevAppLayout {
     this.strongFocus = !this.strongFocus;
 
     if (this.strongFocus) {
-      this._element.nativeElement.classList.add(strongFocusClass);
-      this._overlayContainer.getContainerElement().classList.add(strongFocusClass);
+      document.body.classList.add(strongFocusClass);
     } else {
-      this._element.nativeElement.classList.remove(strongFocusClass);
-      this._overlayContainer.getContainerElement().classList.remove(strongFocusClass);
+      document.body.classList.remove(strongFocusClass);
     }
   }
 }
