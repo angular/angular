@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {ClassMemberKind, CtorParameter, Import, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, CtorParameter, Import, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {getIifeBody} from '../../src/host/esm5_host';
@@ -30,6 +30,7 @@ runInEachFileSystem(() => {
     let SIMPLE_ES2015_CLASS_FILE: TestFile;
     let SIMPLE_CLASS_FILE: TestFile;
     let FOO_FUNCTION_FILE: TestFile;
+    let INLINE_EXPORT_FILE: TestFile;
     let INVALID_DECORATORS_FILE: TestFile;
     let INVALID_DECORATOR_ARGS_FILE: TestFile;
     let INVALID_PROP_DECORATORS_FILE: TestFile;
@@ -210,6 +211,23 @@ runInEachFileSystem(() => {
   ];
   exports.foo = foo;
 })));`,
+      };
+
+      INLINE_EXPORT_FILE = {
+        name: _('/inline_export.js'),
+        contents: `
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
+  typeof define === 'function' && define.amd ? define('foo_function', ['exports', '@angular/core'], factory) :
+  (factory(global.inline_export,global.ng.core));
+}(this, (function (exports,core) { 'use strict';
+  function foo() {}
+  foo.decorators = [
+    { type: core.Directive, args: [{ selector: '[ignored]' },] }
+  ];
+  exports.directives = [foo];
+})));
+`,
       };
 
       INVALID_DECORATORS_FILE = {
@@ -1872,6 +1890,20 @@ __export(xtra_module);
                 null
               ],
             ]);
+      });
+
+      it('should handle inline exports', () => {
+        loadFakeCore(getFileSystem());
+        loadTestFiles([INLINE_EXPORT_FILE]);
+        const bundle = makeTestBundleProgram(INLINE_EXPORT_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, bundle);
+        const file = getSourceFileOrError(bundle.program, INLINE_EXPORT_FILE.name);
+        const exportDeclarations = host.getExportsOfModule(file);
+        expect(exportDeclarations).not.toBe(null);
+        const decl = exportDeclarations !.get('directives') as InlineDeclaration;
+        expect(decl).not.toBeUndefined();
+        expect(decl.node).toBeNull();
+        expect(decl.expression).toBeDefined();
       });
 
       // Currently we do not support UMD versions of `export * from 'x';`

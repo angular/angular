@@ -114,9 +114,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     for (const statement of this.getModuleStatements(sourceFile)) {
       if (isUmdExportStatement(statement)) {
         const declaration = this.extractUmdExportDeclaration(statement);
-        if (declaration !== null) {
-          moduleMap.set(declaration.name, declaration.declaration);
-        }
+        moduleMap.set(declaration.name, declaration.declaration);
       } else if (isReexportStatement(statement)) {
         const reexports = this.extractUmdReexports(statement, sourceFile);
         for (const reexport of reexports) {
@@ -127,16 +125,22 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return moduleMap;
   }
 
-  private extractUmdExportDeclaration(statement: UmdExportStatement): UmdExportDeclaration|null {
+  private extractUmdExportDeclaration(statement: UmdExportStatement): UmdExportDeclaration {
     const exportExpression = statement.expression.right;
-    const name = statement.expression.left.name.text;
-
     const declaration = this.getDeclarationOfExpression(exportExpression);
-    if (declaration === null) {
-      return null;
+    const name = statement.expression.left.name.text;
+    if (declaration !== null) {
+      return {name, declaration};
+    } else {
+      return {
+        name,
+        declaration: {
+          node: null,
+          expression: exportExpression,
+          viaModule: null,
+        },
+      };
     }
-
-    return {name, declaration};
   }
 
   private extractUmdReexports(statement: ReexportStatement, containingFile: ts.SourceFile):
