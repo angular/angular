@@ -43,6 +43,10 @@ export const createGlobalSymbolTable: (query: ng.SymbolQuery) => ng.SymbolTable 
           callable: true,
           definition: undefined,
           nullable: false,
+          documentation: [{
+            kind: 'text',
+            text: 'function to cast an expression to the `any` type',
+          }],
           members: () => EMPTY_SYMBOL_TABLE,
           signatures: () => [],
           selectSignature(args: ng.Symbol[]) {

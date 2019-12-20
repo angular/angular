@@ -262,6 +262,14 @@ class TypeWrapper implements Symbol {
     return this.context.checker.getNonNullableType(this.tsType) != this.tsType;
   }
 
+  get documentation(): ts.SymbolDisplayPart[] {
+    const symbol = this.tsType.getSymbol();
+    if (!symbol) {
+      return [];
+    }
+    return symbol.getDocumentationComment(this.context.checker);
+  }
+
   get definition(): Definition|undefined {
     const symbol = this.tsType.getSymbol();
     return symbol ? definitionFromTsSymbol(symbol) : undefined;
@@ -347,6 +355,10 @@ class SymbolWrapper implements Symbol {
 
   get definition(): Definition { return definitionFromTsSymbol(this.symbol); }
 
+  get documentation(): ts.SymbolDisplayPart[] {
+    return this.symbol.getDocumentationComment(this.context.checker);
+  }
+
   members(): SymbolTable {
     if (!this._members) {
       if ((this.symbol.flags & (ts.SymbolFlags.Class | ts.SymbolFlags.Interface)) != 0) {
@@ -397,8 +409,9 @@ class DeclaredSymbol implements Symbol {
 
   get callable(): boolean { return this.declaration.type.callable; }
 
-
   get definition(): Definition { return this.declaration.definition; }
+
+  get documentation(): ts.SymbolDisplayPart[] { return this.declaration.type.documentation; }
 
   members(): SymbolTable { return this.declaration.type.members(); }
 
@@ -594,6 +607,14 @@ class PipeSymbol implements Symbol {
   get definition(): Definition|undefined {
     const symbol = this.tsType.getSymbol();
     return symbol ? definitionFromTsSymbol(symbol) : undefined;
+  }
+
+  get documentation(): ts.SymbolDisplayPart[] {
+    const symbol = this.tsType.getSymbol();
+    if (!symbol) {
+      return [];
+    }
+    return symbol.getDocumentationComment(this.context.checker);
   }
 
   members(): SymbolTable { return EmptyTable.instance; }

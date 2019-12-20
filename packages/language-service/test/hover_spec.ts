@@ -205,6 +205,24 @@ describe('hover', () => {
     });
     expect(toText(displayParts)).toBe('(method) $any: $any');
   });
+
+  it('should provide documentation for a property', () => {
+    mockHost.override(TEST_TEMPLATE, `<div>{{~{cursor}title}}</div>`);
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const quickInfo = ngLS.getHoverAt(TEST_TEMPLATE, marker.start);
+    expect(quickInfo).toBeDefined();
+    const documentation = toText(quickInfo !.documentation);
+    expect(documentation).toBe('This is the title of the `TemplateReference` Component.');
+  });
+
+  it('should provide documentation for a selector', () => {
+    mockHost.override(TEST_TEMPLATE, `<~{cursor}test-comp></test-comp>`);
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const quickInfo = ngLS.getHoverAt(TEST_TEMPLATE, marker.start);
+    expect(quickInfo).toBeDefined();
+    const documentation = toText(quickInfo !.documentation);
+    expect(documentation).toBe('This Component provides the `test-comp` selector.');
+  });
 });
 
 function toText(displayParts?: ts.SymbolDisplayPart[]): string {
