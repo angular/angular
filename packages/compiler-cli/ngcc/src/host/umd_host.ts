@@ -145,11 +145,25 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
 
   private extractUmdReexports(statement: ReexportStatement, containingFile: ts.SourceFile):
       UmdExportDeclaration[] {
-    const importParameter = this.findUmdImportParameter(statement.expression.arguments[0]);
-    const importPath = importParameter && this.getUmdImportPath(importParameter);
+    const reexportArg = statement.expression.arguments[0];
+
+    const requireCall = isRequireCall(reexportArg) ?
+        reexportArg :
+        ts.isIdentifier(reexportArg) ? this.findRequireCallReference(reexportArg) : null;
+
+    let importPath: string|null = null;
+
+    if (requireCall !== null) {
+      importPath = requireCall.arguments[0].text;
+    } else if (ts.isIdentifier(reexportArg)) {
+      const importParameter = this.findUmdImportParameter(reexportArg);
+      importPath = importParameter && this.getUmdImportPath(importParameter);
+    }
+
     if (importPath === null) {
       return [];
     }
+
     const importedFile = this.resolveModuleName(importPath, containingFile);
     if (importedFile === undefined) {
       return [];
@@ -180,6 +194,14 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     const symbol = id && this.checker.getSymbolAtLocation(id) || null;
     const declaration = symbol && symbol.valueDeclaration;
     return declaration && ts.isParameter(declaration) ? declaration : null;
+  }
+
+  private findRequireCallReference(id: ts.Identifier): RequireCall|null {
+    const symbol = id && this.checker.getSymbolAtLocation(id) || null;
+    const declaration = symbol && symbol.valueDeclaration;
+    const initializer =
+        declaration && ts.isVariableDeclaration(declaration) && declaration.initializer || null;
+    return initializer && isRequireCall(initializer) ? initializer : null;
   }
 
   private getUmdImportedDeclaration(id: ts.Identifier): Declaration|null {
@@ -277,13 +299,12 @@ interface UmdExportDeclaration {
   declaration: Declaration;
 }
 
-type ReexportStatement = ts.ExpressionStatement & {expression: {arguments: [ts.Identifier]}};
+type ReexportStatement = ts.ExpressionStatement & {expression: ts.CallExpression};
 function isReexportStatement(statement: ts.Statement): statement is ReexportStatement {
   return ts.isExpressionStatement(statement) && ts.isCallExpression(statement.expression) &&
       ts.isIdentifier(statement.expression.expression) &&
       statement.expression.expression.text === '__export' &&
-      statement.expression.arguments.length === 1 &&
-      ts.isIdentifier(statement.expression.arguments[0]);
+      statement.expression.arguments.length === 1;
 }
 
 function getRequiredModulePath(wrapperFn: ts.FunctionExpression, paramIndex: number): string {
@@ -315,7 +336,8 @@ function getRequiredModulePath(wrapperFn: ts.FunctionExpression, paramIndex: num
   }
 }
 
-function isRequireCall(node: ts.Node): node is ts.CallExpression {
+type RequireCall = ts.CallExpression & {arguments: [ts.StringLiteral]};
+function isRequireCall(node: ts.Node): node is RequireCall {
   return ts.isCallExpression(node) && ts.isIdentifier(node.expression) &&
       node.expression.text === 'require' && node.arguments.length === 1;
 }
