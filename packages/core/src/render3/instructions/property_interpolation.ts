@@ -11,7 +11,7 @@ import {getBindingIndex, getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
 import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
-import {elementPropertyInternal, storePropertyBindingMetadata} from './shared';
+import {elementPropertyInternal, storeBindingMetadata} from './shared';
 
 
 
@@ -87,7 +87,7 @@ export function ɵɵpropertyInterpolate1(
   if (interpolatedValue !== NO_CHANGE) {
     elementPropertyInternal(lView, getSelectedIndex(), propName, interpolatedValue, sanitizer);
     ngDevMode &&
-        storePropertyBindingMetadata(
+        storeBindingMetadata(
             lView[TVIEW].data, getSelectedIndex(), propName, getBindingIndex() - 1, prefix, suffix);
   }
   return ɵɵpropertyInterpolate1;
@@ -132,7 +132,7 @@ export function ɵɵpropertyInterpolate2(
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, interpolatedValue, sanitizer);
     ngDevMode &&
-        storePropertyBindingMetadata(
+        storeBindingMetadata(
             lView[TVIEW].data, nodeIndex, propName, getBindingIndex() - 2, prefix, i0, suffix);
   }
   return ɵɵpropertyInterpolate2;
@@ -180,7 +180,7 @@ export function ɵɵpropertyInterpolate3(
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, interpolatedValue, sanitizer);
     ngDevMode &&
-        storePropertyBindingMetadata(
+        storeBindingMetadata(
             lView[TVIEW].data, nodeIndex, propName, getBindingIndex() - 3, prefix, i0, i1, suffix);
   }
   return ɵɵpropertyInterpolate3;
@@ -229,7 +229,7 @@ export function ɵɵpropertyInterpolate4(
   if (interpolatedValue !== NO_CHANGE) {
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, interpolatedValue, sanitizer);
-    ngDevMode && storePropertyBindingMetadata(
+    ngDevMode && storeBindingMetadata(
                      lView[TVIEW].data, nodeIndex, propName, getBindingIndex() - 4, prefix, i0, i1,
                      i2, suffix);
   }
@@ -283,7 +283,7 @@ export function ɵɵpropertyInterpolate5(
   if (interpolatedValue !== NO_CHANGE) {
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, interpolatedValue, sanitizer);
-    ngDevMode && storePropertyBindingMetadata(
+    ngDevMode && storeBindingMetadata(
                      lView[TVIEW].data, nodeIndex, propName, getBindingIndex() - 5, prefix, i0, i1,
                      i2, i3, suffix);
   }
@@ -339,7 +339,7 @@ export function ɵɵpropertyInterpolate6(
   if (interpolatedValue !== NO_CHANGE) {
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, interpolatedValue, sanitizer);
-    ngDevMode && storePropertyBindingMetadata(
+    ngDevMode && storeBindingMetadata(
                      lView[TVIEW].data, nodeIndex, propName, getBindingIndex() - 6, prefix, i0, i1,
                      i2, i3, i4, suffix);
   }
@@ -397,7 +397,7 @@ export function ɵɵpropertyInterpolate7(
   if (interpolatedValue !== NO_CHANGE) {
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, interpolatedValue, sanitizer);
-    ngDevMode && storePropertyBindingMetadata(
+    ngDevMode && storeBindingMetadata(
                      lView[TVIEW].data, nodeIndex, propName, getBindingIndex() - 7, prefix, i0, i1,
                      i2, i3, i4, i5, suffix);
   }
@@ -457,7 +457,7 @@ export function ɵɵpropertyInterpolate8(
   if (interpolatedValue !== NO_CHANGE) {
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, interpolatedValue, sanitizer);
-    ngDevMode && storePropertyBindingMetadata(
+    ngDevMode && storeBindingMetadata(
                      lView[TVIEW].data, nodeIndex, propName, getBindingIndex() - 8, prefix, i0, i1,
                      i2, i3, i4, i5, i6, suffix);
   }
@@ -506,7 +506,7 @@ export function ɵɵpropertyInterpolateV(
       for (let i = 2; i < values.length; i += 2) {
         interpolationInBetween.push(values[i]);
       }
-      storePropertyBindingMetadata(
+      storeBindingMetadata(
           lView[TVIEW].data, nodeIndex, propName,
           getBindingIndex() - interpolationInBetween.length + 1, ...interpolationInBetween);
     }

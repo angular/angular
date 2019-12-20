@@ -11,7 +11,7 @@ import {TVIEW} from '../interfaces/view';
 import {getLView, getSelectedIndex, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
-import {elementPropertyInternal, loadComponentRenderer, storePropertyBindingMetadata} from './shared';
+import {elementPropertyInternal, loadComponentRenderer, storeBindingMetadata} from './shared';
 
 /**
  * Update a property on a host element. Only applies to native node properties, not inputs.
@@ -23,7 +23,7 @@ import {elementPropertyInternal, loadComponentRenderer, storePropertyBindingMeta
  * @param value New value to write.
  * @param sanitizer An optional function used to sanitize the value.
  * @returns This function returns itself so that it may be chained
- * (e.g. `property('name', ctx.name)('title', ctx.title)`)
+ * (e.g. `hostProperty('name', ctx.name)('title', ctx.title)`)
  *
  * @codeGenApi
  */
@@ -34,7 +34,7 @@ export function ɵɵhostProperty<T>(
   if (bindingUpdated(lView, bindingIndex, value)) {
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, value, sanitizer, true);
-    ngDevMode && storePropertyBindingMetadata(lView[TVIEW].data, nodeIndex, propName, bindingIndex);
+    ngDevMode && storeBindingMetadata(lView[TVIEW].data, nodeIndex, propName, bindingIndex);
   }
   return ɵɵhostProperty;
 }
@@ -70,7 +70,7 @@ export function ɵɵupdateSyntheticHostBinding<T>(
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(
         lView, nodeIndex, propName, value, sanitizer, true, loadComponentRenderer);
-    ngDevMode && storePropertyBindingMetadata(lView[TVIEW].data, nodeIndex, propName, bindingIndex);
+    ngDevMode && storeBindingMetadata(lView[TVIEW].data, nodeIndex, propName, bindingIndex);
   }
   return ɵɵupdateSyntheticHostBinding;
 }

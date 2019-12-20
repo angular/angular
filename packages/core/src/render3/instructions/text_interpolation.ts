@@ -5,11 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {getLView, getSelectedIndex} from '../state';
+import {TVIEW} from '../interfaces/view';
+import {getBindingIndex, getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
 import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
-import {textBindingInternal} from './shared';
+import {storeBindingMetadata, textBindingInternal} from './shared';
+
 
 
 /**
@@ -62,7 +64,10 @@ export function ɵɵtextInterpolate1(
   const lView = getLView();
   const interpolated = interpolation1(lView, prefix, v0, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, getSelectedIndex(), interpolated as string);
+    const nodeIndex = getSelectedIndex();
+    textBindingInternal(lView, nodeIndex, interpolated as string);
+    ngDevMode && storeBindingMetadata(
+                     lView[TVIEW].data, nodeIndex, null, getBindingIndex() - 1, prefix, suffix);
   }
   return ɵɵtextInterpolate1;
 }
@@ -91,7 +96,10 @@ export function ɵɵtextInterpolate2(
   const lView = getLView();
   const interpolated = interpolation2(lView, prefix, v0, i0, v1, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, getSelectedIndex(), interpolated as string);
+    const nodeIndex = getSelectedIndex();
+    textBindingInternal(lView, nodeIndex, interpolated as string);
+    ngDevMode && storeBindingMetadata(
+                     lView[TVIEW].data, nodeIndex, null, getBindingIndex() - 2, prefix, i0, suffix);
   }
   return ɵɵtextInterpolate2;
 }
@@ -122,7 +130,11 @@ export function ɵɵtextInterpolate3(
   const lView = getLView();
   const interpolated = interpolation3(lView, prefix, v0, i0, v1, i1, v2, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, getSelectedIndex(), interpolated as string);
+    const nodeIndex = getSelectedIndex();
+    textBindingInternal(lView, nodeIndex, interpolated as string);
+    ngDevMode &&
+        storeBindingMetadata(
+            lView[TVIEW].data, nodeIndex, null, getBindingIndex() - 3, prefix, i0, i1, suffix);
   }
   return ɵɵtextInterpolate3;
 }
@@ -153,7 +165,11 @@ export function ɵɵtextInterpolate4(
   const lView = getLView();
   const interpolated = interpolation4(lView, prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, getSelectedIndex(), interpolated as string);
+    const nodeIndex = getSelectedIndex();
+    textBindingInternal(lView, nodeIndex, interpolated as string);
+    ngDevMode &&
+        storeBindingMetadata(
+            lView[TVIEW].data, nodeIndex, null, getBindingIndex() - 4, prefix, i0, i1, i2, suffix);
   }
   return ɵɵtextInterpolate4;
 }
@@ -184,7 +200,11 @@ export function ɵɵtextInterpolate5(
   const lView = getLView();
   const interpolated = interpolation5(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, getSelectedIndex(), interpolated as string);
+    const nodeIndex = getSelectedIndex();
+    textBindingInternal(lView, nodeIndex, interpolated as string);
+    ngDevMode && storeBindingMetadata(
+                     lView[TVIEW].data, nodeIndex, null, getBindingIndex() - 5, prefix, i0, i1, i2,
+                     i3, suffix);
   }
   return ɵɵtextInterpolate5;
 }
@@ -218,7 +238,11 @@ export function ɵɵtextInterpolate6(
   const interpolated =
       interpolation6(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, getSelectedIndex(), interpolated as string);
+    const nodeIndex = getSelectedIndex();
+    textBindingInternal(lView, nodeIndex, interpolated as string);
+    ngDevMode && storeBindingMetadata(
+                     lView[TVIEW].data, nodeIndex, null, getBindingIndex() - 6, prefix, i0, i1, i2,
+                     i3, i4, suffix);
   }
   return ɵɵtextInterpolate6;
 }
@@ -251,7 +275,11 @@ export function ɵɵtextInterpolate7(
   const interpolated =
       interpolation7(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, getSelectedIndex(), interpolated as string);
+    const nodeIndex = getSelectedIndex();
+    textBindingInternal(lView, nodeIndex, interpolated as string);
+    ngDevMode && storeBindingMetadata(
+                     lView[TVIEW].data, nodeIndex, null, getBindingIndex() - 7, prefix, i0, i1, i2,
+                     i3, i4, i5, suffix);
   }
   return ɵɵtextInterpolate7;
 }
@@ -284,7 +312,11 @@ export function ɵɵtextInterpolate8(
   const interpolated = interpolation8(
       lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, getSelectedIndex(), interpolated as string);
+    const nodeIndex = getSelectedIndex();
+    textBindingInternal(lView, nodeIndex, interpolated as string);
+    ngDevMode && storeBindingMetadata(
+                     lView[TVIEW].data, nodeIndex, null, getBindingIndex() - 8, prefix, i0, i1, i2,
+                     i3, i4, i5, i6, suffix);
   }
   return ɵɵtextInterpolate8;
 }
@@ -317,7 +349,17 @@ export function ɵɵtextInterpolateV(values: any[]): typeof ɵɵtextInterpolateV
   const lView = getLView();
   const interpolated = interpolationV(lView, values);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, getSelectedIndex(), interpolated as string);
+    const nodeIndex = getSelectedIndex();
+    textBindingInternal(lView, nodeIndex, interpolated as string);
+    if (ngDevMode) {
+      const interpolationInBetween = [values[0]];  // prefix
+      for (let i = 2; i < values.length; i += 2) {
+        interpolationInBetween.push(values[i]);
+      }
+      storeBindingMetadata(
+          lView[TVIEW].data, nodeIndex, null, getBindingIndex() - interpolationInBetween.length + 1,
+          ...interpolationInBetween);
+    }
   }
   return ɵɵtextInterpolateV;
 }

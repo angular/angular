@@ -1319,21 +1319,25 @@ describe('change detection', () => {
           .toThrowError(new RegExp(message));
     });
 
-    it('should only display a value of an expression that was changed in text interpolation',
-       () => {
-         expect(() => initWithTemplate('Expressions: {{ a }} and {{ unstableStringExpression }}!'))
-             .toThrowError(/Previous value: '.*?initial'. Current value: '.*?changed'/);
-       });
+    it('should work with text interpolations', () => {
+      const message = ivyEnabled ?
+          `Previous value: 'Expressions: a and initial!'. Current value: 'Expressions: a and changed!'` :
+          `Previous value: '.*?initial'. Current value: '.*?changed'`;
+      expect(() => initWithTemplate('Expressions: {{ a }} and {{ unstableStringExpression }}!'))
+          .toThrowError(new RegExp(message));
+    });
 
-    it('should only display a value of an expression that was changed in text interpolation ' +
-           'that follows an element with property interpolation',
+    it('should work with text interpolations that follow an element with property interpolation',
        () => {
+         const message = ivyEnabled ?
+             `Previous value: ' Text interpolation: initial. '. Current value: ' Text interpolation: changed. '` :
+             `Previous value: '.*?initial'. Current value: '.*?changed'`;
          expect(() => {
            initWithTemplate(`
              <div id="Prop interpolation: {{ aVal }}"></div>
              Text interpolation: {{ unstableStringExpression }}.
            `);
-         }).toThrowError(/Previous value: '.*?initial'. Current value: '.*?changed'/);
+         }).toThrowError(new RegExp(message));
        });
 
     it('should include style prop name in case of style binding', () => {

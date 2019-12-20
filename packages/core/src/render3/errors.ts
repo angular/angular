@@ -47,7 +47,8 @@ export function throwErrorIfNoChangesMode(
     creationMode: boolean, oldValue: any, currValue: any, propName?: string): never|void {
   const field = propName ? ` for '${propName}'` : '';
   let msg =
-      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value${field}: '${oldValue}'. Current value: '${currValue}'.`;
+      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. ` +
+      `Previous value${field}: '${oldValue}'. Current value: '${currValue}'.`;
   if (creationMode) {
     msg +=
         ` It seems like the view has been created after its parent and its children have been dirty checked.` +
@@ -60,7 +61,9 @@ export function throwErrorIfNoChangesMode(
 
 function constructDetailsForInterpolation(
     lView: LView, rootIndex: number, expressionIndex: number, meta: string, changedValue: any) {
-  const [propName, prefix, ...chunks] = meta.split(INTERPOLATION_DELIMITER);
+  // Split metadata string (e.g. '�propName�Prefix � and � suffix') using INTERPOLATION_DELIMITER
+  // and extract the necessary chunks
+  const [unused, propName, prefix, ...chunks] = meta.split(INTERPOLATION_DELIMITER);
   let oldValue = prefix, newValue = prefix;
   for (let i = 0; i < chunks.length; i++) {
     const slotIdx = rootIndex + i;
@@ -71,12 +74,13 @@ function constructDetailsForInterpolation(
 }
 
 /**
- * Constructs an object that contains details for the ExpressionChangedAfterItHasBeenCheckedError:
+ * Constructs an object that contains details for the `ExpressionChangedAfterItHasBeenCheckedError`
+ * error:
  * - property name (for property bindings or interpolations)
  * - old and new values, enriched using information from metadata
  *
- * More information on the metadata storage format can be found in `storePropertyBindingMetadata`
- * function description.
+ * More information on the metadata storage format can be found in `storeBindingMetadata` function
+ * description.
  */
 export function getExpressionChangedErrorDetails(
     lView: LView, bindingIndex: number, oldValue: any,
@@ -85,19 +89,19 @@ export function getExpressionChangedErrorDetails(
   const metadata = tData[bindingIndex];
 
   if (typeof metadata === 'string') {
-    // metadata for property interpolation
+    // Metadata for property interpolation
     if (metadata.indexOf(INTERPOLATION_DELIMITER) > -1) {
       return constructDetailsForInterpolation(
           lView, bindingIndex, bindingIndex, metadata, newValue);
     }
-    // metadata for property binding
+    // Metadata for property binding
     return {propName: metadata, oldValue, newValue};
   }
 
-  // metadata is not available for this expression, check if this expression is a part of the
+  // Metadata is not available for this expression, check if this expression is a part of the
   // property interpolation by going from the current binding index left and look for a string that
   // contains INTERPOLATION_DELIMITER, the layout in tView.data for this case will look like this:
-  // [..., 'id�Prefix � and � suffix', null, null, null, ...]
+  // [..., '�propName�Prefix � and � suffix', null, null, null, ...]
   if (metadata === null) {
     let idx = bindingIndex - 1;
     while (typeof tData[idx] !== 'string' && tData[idx + 1] === null) {
@@ -106,9 +110,10 @@ export function getExpressionChangedErrorDetails(
     const meta = tData[idx];
     if (typeof meta === 'string') {
       const matches = meta.match(new RegExp(INTERPOLATION_DELIMITER, 'g'));
-      // first interpolation delimiter separates property name from interpolation parts (in case of
-      // property interpolations), so we subtract one from total number of found delimiters
-      if (matches && (matches.length - 1) > bindingIndex - idx) {
+      // Property or attribute name is wrapped in interpolation delimiters, so we subtract 2 from
+      // total number of found delimiters in a string. This also works for text interpolations which
+      // use the same format.
+      if (matches && (matches.length - 2) > bindingIndex - idx) {
         return constructDetailsForInterpolation(lView, idx, bindingIndex, meta, newValue);
       }
     }

@@ -1796,42 +1796,39 @@ function executeViewQueryFn<T>(
 ///////////////////////////////
 
 /**
- * Stores meta-data for a property binding to be used by TestBed's `DebugElement.properties`.
+ * Stores metadata for a property binding or interpolation, attribute binding or interpolation,
+ * text interpolations. This information is used to provide more context for the
+ * `ExpressionChangedAfterItHasBeenCheckedError` error.
  *
- * In order to support TestBed's `DebugElement.properties` we need to save, for each binding:
- * - a bound property name;
- * - a static parts of interpolated strings;
+ * Metadata is saved at the binding's index in the `TView.data` (in other words, a property binding
+ * metadata will be stored in `TView.data` at the same index as a bound value in `LView`). Metadata
+ * is represented as `INTERPOLATION_DELIMITER`-delimited string with the following format:
+ * - `propertyName` for bound properties and attributes
+ * - `�propertyName�prefix�interpolation_static_part1�..interpolation_static_partN�suffix` for
+ * interpolated properties, interpolated attributes and text interpolations. Note: the
+ * `propertyName` part is empty in case of text interpolations
  *
- * A given property metadata is saved at the binding's index in the `TView.data` (in other words, a
- * property binding metadata will be stored in `TView.data` at the same index as a bound value in
- * `LView`). Metadata are represented as `INTERPOLATION_DELIMITER`-delimited string with the
- * following format:
- * - `propertyName` for bound properties;
- * - `propertyName�prefix�interpolation_static_part1�..interpolation_static_partN�suffix` for
- * interpolated properties.
- *
- * @param tData `TData` where meta-data will be saved;
- * @param nodeIndex index of a `TNode` that is a target of the binding;
+ * @param tData `TData` where meta-data will be saved
+ * @param nodeIndex index of a `TNode` that is a target of the binding
  * @param propertyName bound property name;
  * @param bindingIndex binding index in `LView`
  * @param interpolationParts static interpolation parts (for property interpolations)
  */
-export function storePropertyBindingMetadata(
-    tData: TData, nodeIndex: number, propertyName: string, bindingIndex: number,
+export function storeBindingMetadata(
+    tData: TData, nodeIndex: number, propertyName: string | null, bindingIndex: number,
     ...interpolationParts: string[]) {
   // Binding meta-data are stored only the first time a given property instruction is processed.
   // Since we don't have a concept of the "first update pass" we need to check for presence of the
   // binding meta-data to decide if one should be stored (or if was stored already).
   if (tData[bindingIndex] === null) {
     const tNode = tData[nodeIndex + HEADER_OFFSET] as TNode;
-    if (tNode.inputs == null || !tNode.inputs[propertyName]) {
+    if (!propertyName || (tNode.inputs == null || !tNode.inputs[propertyName])) {
       const propBindingIdxs = tNode.propertyBindings || (tNode.propertyBindings = []);
       propBindingIdxs.push(bindingIndex);
-      let bindingMetadata = propertyName;
-      if (interpolationParts.length > 0) {
-        bindingMetadata +=
-            INTERPOLATION_DELIMITER + interpolationParts.join(INTERPOLATION_DELIMITER);
-      }
+      const bindingMetadata = interpolationParts.length === 0 ?
+          propertyName :
+          INTERPOLATION_DELIMITER + (propertyName || '') + INTERPOLATION_DELIMITER +
+              interpolationParts.join(INTERPOLATION_DELIMITER);
       tData[bindingIndex] = bindingMetadata;
     }
   }

@@ -10,7 +10,7 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {TVIEW} from '../interfaces/view';
 import {getLView, getSelectedIndex, nextBindingIndex} from '../state';
 
-import {elementPropertyInternal, storePropertyBindingMetadata} from './shared';
+import {elementPropertyInternal, storeBindingMetadata} from './shared';
 
 
 /**
@@ -38,7 +38,7 @@ export function ɵɵproperty<T>(
   if (bindingUpdated(lView, bindingIndex, value)) {
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, value, sanitizer);
-    ngDevMode && storePropertyBindingMetadata(lView[TVIEW].data, nodeIndex, propName, bindingIndex);
+    ngDevMode && storeBindingMetadata(lView[TVIEW].data, nodeIndex, propName, bindingIndex);
   }
   return ɵɵproperty;
 }
