@@ -18,6 +18,12 @@ ts_library(
 )
 
 ts_config(
+    name = "tsconfig-browser",
+    src = "tsconfig-build.json",
+    deps = ["//:tsconfig-defaults.json"],
+)
+
+ts_config(
     name = "tsconfig-test",
     src = "tsconfig-test.json",
     deps = [":tsconfig-build.json"],

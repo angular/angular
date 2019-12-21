@@ -7,11 +7,12 @@ exports_files([
     "protractor-perf.conf.js",
     "karma-js.conf.js",
     "browser-providers.conf.js",
+    "tsconfig-defaults.json",
 ])
 
 alias(
     name = "tsconfig.json",
-    actual = "//packages:tsconfig-build.json",
+    actual = "//packages:tsconfig-browser",
 )
 
 filegroup(

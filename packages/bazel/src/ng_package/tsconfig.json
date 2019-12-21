@@ -1,7 +1,3 @@
 {
-  "compilerOptions": {
-    "noImplicitAny": true,
-    "lib": ["es2015"],
-    "types": []
-  }
+  "extends": "../../../../tsconfig-defaults.json",
 }
