@@ -419,11 +419,9 @@ class ExpressionVisitor extends NullTemplateVisitor {
   }
 
   visitAttr(ast: AttrAst) {
-    // The attribute value is a template expression but the expression AST
-    // was not produced when the TemplateAst was produced so do that here.
+    // First, verify the attribute consists of some binding we can give completions for.
     const {templateBindings} = this.info.expressionParser.parseTemplateBindings(
         ast.name, ast.value, ast.sourceSpan.toString(), ast.sourceSpan.start.offset);
-
     // Find where the cursor is relative to the start of the attribute value.
     const valueRelativePosition = this.position - ast.sourceSpan.start.offset;
     // Find the template binding that contains the position
