@@ -681,6 +681,22 @@ describe('completions', () => {
         expectContain(completions, CompletionKind.METHOD, ['substring']);
       });
     });
+
+    describe('with template reference variables', () => {
+      it('should be able to get the completions (ref- prefix)', () => {
+        mockHost.override(TEST_TEMPLATE, `<form ref-itemForm="ngF~{reference}"></form>`);
+        const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'reference');
+        const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start) !;
+        expectContain(completions, CompletionKind.REFERENCE, ['ngForm']);
+      });
+
+      it('should be able to get the completions (# prefix)', () => {
+        mockHost.override(TEST_TEMPLATE, `<form #itemForm="ngF~{reference}"></form>`);
+        const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'reference');
+        const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start) !;
+        expectContain(completions, CompletionKind.REFERENCE, ['ngForm']);
+      });
+    });
   });
 });
 

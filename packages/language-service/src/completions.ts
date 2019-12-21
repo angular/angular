@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, TemplateBinding, Text, getHtmlTagDefinition} from '@angular/compiler';
+import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, ReferenceAst, TagContentType, TemplateBinding, Text, getHtmlTagDefinition} from '@angular/compiler';
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {AstResult} from './common';
@@ -170,11 +170,18 @@ export function getTemplateCompletions(
             }
           },
           visitAttribute(ast) {
-            if (!ast.valueSpan || !inSpan(templatePosition, spanOf(ast.valueSpan))) {
+            const bindParts = ast.name.match(BIND_NAME_REGEXP);
+            const isReference = bindParts && bindParts[ATTR.KW_REF_IDX] !== undefined;
+            if (!isReference &&
+                (!ast.valueSpan || !inSpan(templatePosition, spanOf(ast.valueSpan)))) {
               // We are in the name of an attribute. Show attribute completions.
               result = attributeCompletions(templateInfo, path);
             } else if (ast.valueSpan && inSpan(templatePosition, spanOf(ast.valueSpan))) {
-              result = attributeValueCompletions(templateInfo, templatePosition, ast);
+              if (isReference) {
+                result = referenceAttributeValueCompletions(templateInfo, templatePosition, ast);
+              } else {
+                result = attributeValueCompletions(templateInfo, templatePosition, ast);
+              }
             }
           },
           visitText(ast) {
@@ -313,6 +320,26 @@ function attributeValueCompletions(
   return visitor.results;
 }
 
+function referenceAttributeValueCompletions(
+    info: AstResult, position: number, attr: Attribute): ng.CompletionEntry[] {
+  const path = findTemplateAstAt(info.templateAst, position);
+  if (!path.tail) {
+    return [];
+  }
+
+  // When the template parser does not find a directive with matching "exportAs",
+  // the ReferenceAst will be ignored.
+  if (!(path.tail instanceof ReferenceAst)) {
+    // The sourceSpan of an ReferenceAst is the valueSpan of the HTML Attribute.
+    path.push(new ReferenceAst(attr.name, null !, attr.value, attr.valueSpan !));
+  }
+  const dinfo = diagnosticInfoFromTemplateInfo(info);
+  const visitor =
+      new ExpressionVisitor(info, position, () => getExpressionScope(dinfo, path, false));
+  path.tail.visit(visitor, path.parentOf(path.tail));
+  return visitor.results;
+}
+
 function elementCompletions(info: AstResult): ng.CompletionEntry[] {
   const results: ng.CompletionEntry[] = [...ANGULAR_ELEMENTS];
 
@@ -444,6 +471,16 @@ class ExpressionVisitor extends NullTemplateVisitor {
       const expressionAst = new PropertyRead(span, span.toAbsolute(offset), receiver, '');
       this.addAttributeValuesToCompletions(expressionAst);
     }
+  }
+
+  visitReference(ast: ReferenceAst, context: ElementAst) {
+    context.directives.forEach(dir => {
+      const {exportAs} = dir.directive;
+      if (exportAs) {
+        this.completions.set(
+            exportAs, {name: exportAs, kind: ng.CompletionKind.REFERENCE, sortText: exportAs});
+      }
+    });
   }
 
   visitBoundText(ast: BoundTextAst) {
