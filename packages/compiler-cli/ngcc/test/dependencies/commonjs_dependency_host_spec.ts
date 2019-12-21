@@ -25,25 +25,25 @@ runInEachFileSystem(() => {
           name: _('/no/imports/or/re-exports/index.js'),
           contents: '// some text but no import-like statements'
         },
-        {name: _('/no/imports/or/re-exports/package.json'), contents: '{"esm2015": "./index.js"}'},
+        {name: _('/no/imports/or/re-exports/package.json'), contents: '{"main": "./index.js"}'},
         {name: _('/no/imports/or/re-exports/index.metadata.json'), contents: 'MOCK METADATA'},
         {name: _('/external/imports/index.js'), contents: commonJs(['lib_1', 'lib_1/sub_1'])},
-        {name: _('/external/imports/package.json'), contents: '{"esm2015": "./index.js"}'},
+        {name: _('/external/imports/package.json'), contents: '{"main": "./index.js"}'},
         {name: _('/external/imports/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/external/re-exports/index.js'),
           contents: commonJs(['lib_1', 'lib_1/sub_1'], ['lib_1.X', 'lib_1sub_1.Y'])
         },
-        {name: _('/external/re-exports/package.json'), contents: '{"esm2015": "./index.js"}'},
+        {name: _('/external/re-exports/package.json'), contents: '{"main": "./index.js"}'},
         {name: _('/external/re-exports/index.metadata.json'), contents: 'MOCK METADATA'},
         {name: _('/external/imports-missing/index.js'), contents: commonJs(['lib_1', 'missing'])},
-        {name: _('/external/imports-missing/package.json'), contents: '{"esm2015": "./index.js"}'},
+        {name: _('/external/imports-missing/package.json'), contents: '{"main": "./index.js"}'},
         {name: _('/external/imports-missing/index.metadata.json'), contents: 'MOCK METADATA'},
         {name: _('/external/deep-import/index.js'), contents: commonJs(['lib_1/deep/import'])},
-        {name: _('/external/deep-import/package.json'), contents: '{"esm2015": "./index.js"}'},
+        {name: _('/external/deep-import/package.json'), contents: '{"main": "./index.js"}'},
         {name: _('/external/deep-import/index.metadata.json'), contents: 'MOCK METADATA'},
         {name: _('/internal/outer/index.js'), contents: commonJs(['../inner'])},
-        {name: _('/internal/outer/package.json'), contents: '{"esm2015": "./index.js"}'},
+        {name: _('/internal/outer/package.json'), contents: '{"main": "./index.js"}'},
         {name: _('/internal/outer/index.metadata.json'), contents: 'MOCK METADATA'},
         {name: _('/internal/inner/index.js'), contents: commonJs(['lib_1/sub_1'], ['X'])},
         {
@@ -54,16 +54,16 @@ runInEachFileSystem(() => {
           name: _('/internal/circular_b/index.js'),
           contents: commonJs(['../circular_a', 'lib_1'], ['X'])
         },
-        {name: _('/internal/circular_a/package.json'), contents: '{"esm2015": "./index.js"}'},
+        {name: _('/internal/circular_a/package.json'), contents: '{"main": "./index.js"}'},
         {name: _('/internal/circular_a/index.metadata.json'), contents: 'MOCK METADATA'},
         {name: _('/re-directed/index.js'), contents: commonJs(['lib_1/sub_2'])},
-        {name: _('/re-directed/package.json'), contents: '{"esm2015": "./index.js"}'},
+        {name: _('/re-directed/package.json'), contents: '{"main": "./index.js"}'},
         {name: _('/re-directed/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/path-alias/index.js'),
           contents: commonJs(['@app/components', '@app/shared', '@lib/shared/test', 'lib_1'])
         },
-        {name: _('/path-alias/package.json'), contents: '{"esm2015": "./index.js"}'},
+        {name: _('/path-alias/package.json'), contents: '{"main": "./index.js"}'},
         {name: _('/path-alias/index.metadata.json'), contents: 'MOCK METADATA'},
         {name: _('/node_modules/lib_1/index.d.ts'), contents: 'export declare class X {}'},
         {
@@ -114,7 +114,7 @@ runInEachFileSystem(() => {
       host = new CommonJsDependencyHost(fs, new ModuleResolver(fs));
     });
 
-    describe('getDependencies()', () => {
+    describe('collectDependencies()', () => {
       it('should not generate a TS AST if the source does not contain any require calls', () => {
         spyOn(ts, 'createSourceFile');
         host.collectDependencies(_('/no/imports/or/re-exports/index.js'), createDependencyInfo());
