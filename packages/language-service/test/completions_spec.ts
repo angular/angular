@@ -734,6 +734,13 @@ describe('completions', () => {
       });
     });
   });
+
+  it('should not expand i18n templates', () => {
+    mockHost.override(TEST_TEMPLATE, `<div i18n="@@el">{{~{cursor}}}</div>`);
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+    expectContain(completions, CompletionKind.PROPERTY, ['title']);
+  });
 });
 
 function expectContain(
