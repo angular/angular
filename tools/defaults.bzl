@@ -324,7 +324,7 @@ def ng_rollup_bundle(deps = [], **kwargs):
         **kwargs
     )
 
-def rollup_bundle(name, testonly = False, **kwargs):
+def rollup_bundle(name, testonly = False, sourcemap = "true", **kwargs):
     """A drop in replacement for the rules nodejs [legacy rollup_bundle].
 
     Runs [rollup_bundle], [terser_minified] and [babel] for downleveling to es5
@@ -356,7 +356,7 @@ def rollup_bundle(name, testonly = False, **kwargs):
     }
 
     # es2015
-    _rollup_bundle(name = name + ".es2015", testonly = testonly, format = "iife", sourcemap = "true", **kwargs)
+    _rollup_bundle(name = name + ".es2015", testonly = testonly, format = "iife", sourcemap = sourcemap, **kwargs)
     terser_minified(name = name + ".min.es2015", testonly = testonly, src = name + ".es2015", **common_terser_args)
     native.filegroup(name = name + ".min.es2015.js", testonly = testonly, srcs = [name + ".min.es2015"])
     terser_minified(name = name + ".min_debug.es2015", testonly = testonly, src = name + ".es2015", **common_terser_args)
@@ -391,7 +391,7 @@ def rollup_bundle(name, testonly = False, **kwargs):
     native.filegroup(name = name + ".min_debug.js", testonly = testonly, srcs = [name + ".min_debug"])
 
     # umd
-    _rollup_bundle(name = name + ".umd", testonly = testonly, format = "umd", sourcemap = "true", **kwargs)
+    _rollup_bundle(name = name + ".umd", testonly = testonly, format = "umd", sourcemap = sourcemap, **kwargs)
     terser_minified(name = name + ".min.umd", testonly = testonly, src = name + ".umd", **common_terser_args)
     native.filegroup(name = name + ".min.umd.js", testonly = testonly, srcs = [name + ".min.umd"])
     tsc(
