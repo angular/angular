@@ -278,15 +278,15 @@ test_deps = [
 test_entry_point = ":browser_entry_point.ts"
 
 karma_tests = {
-    "browser_test": ["//packages/zone.js/dist:zone-testing-bundle-dist-dev-test"],
+    "browser_test": ["//packages/zone.js/dist:zone-testing-bundle.js"],
     "browser_green_test": [
-        "//packages/zone.js/dist:zone-evergreen-dist-dev-test",
-        "//packages/zone.js/dist:zone-testing-dist-dev-test",
+        "//packages/zone.js/dist:zone-evergreen.js",
+        "//packages/zone.js/dist:zone-testing.js",
     ],
     "browser_legacy_test": [
-        "//packages/zone.js/dist:zone-legacy-dist-dev-test",
-        "//packages/zone.js/dist:zone-evergreen-dist-dev-test",
-        "//packages/zone.js/dist:zone-testing-dist-dev-test",
+        "//packages/zone.js/dist:zone-legacy.js",
+        "//packages/zone.js/dist:zone-evergreen.js",
+        "//packages/zone.js/dist:zone-testing.js",
     ],
 }
 
@@ -305,8 +305,8 @@ karma_test(
 karma_test(
     name = "browser_shadydom",
     bootstraps = {"browser_shadydom": [
-        "//packages/zone.js/dist:zone-testing-bundle-dist-dev-test",
-        "//packages/zone.js/dist:webapis-shadydom-dist-dev-test",
+        "//packages/zone.js/dist:zone-testing-bundle.js",
+        "//packages/zone.js/dist:webapis-shadydom.js",
     ]},
     ci = False,
     env_deps = [
