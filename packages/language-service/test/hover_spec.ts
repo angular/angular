@@ -223,6 +223,22 @@ describe('hover', () => {
     const documentation = toText(quickInfo !.documentation);
     expect(documentation).toBe('This Component provides the `test-comp` selector.');
   });
+
+  it('should not expand i18n templates', () => {
+    const fileName = mockHost.addCode(`
+      @Component({
+        template: '<div i18n="@@el">{{«name»}}</div>'
+      })
+      export class MyComponent {
+        name: string;
+      }`);
+    const marker = mockHost.getReferenceMarkerFor(fileName, 'name');
+    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    expect(quickInfo).toBeTruthy();
+    const {textSpan, displayParts} = quickInfo !;
+    expect(textSpan).toEqual(marker);
+    expect(toText(displayParts)).toBe('(property) MyComponent.name: string');
+  });
 });
 
 function toText(displayParts?: ts.SymbolDisplayPart[]): string {

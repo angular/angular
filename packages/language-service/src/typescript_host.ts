@@ -501,7 +501,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (!data) {
       return;
     }
-    const htmlParser = new I18NHtmlParser(new HtmlParser());
+    const htmlParser = new HtmlParser();
     const expressionParser = new Parser(new Lexer());
     const parser = new TemplateParser(
         new CompilerConfig(), this.reflector, expressionParser, new DomElementSchemaRegistry(),

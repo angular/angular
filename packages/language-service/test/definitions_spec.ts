@@ -306,4 +306,29 @@ describe('definitions', () => {
     expect(def.fileName).toBe('/app/test.css');
     expect(def.textSpan).toEqual({start: 0, length: 0});
   });
+
+  it('should not expand i18n templates', () => {
+    const fileName = mockHost.addCode(`
+      @Component({
+        template: '<div i18n="@@el">{{«name»}}</div>'
+      })
+      export class MyComponent {
+        «ᐱnameᐱ: string;»
+      }`);
+
+    const marker = mockHost.getReferenceMarkerFor(fileName, 'name');
+    const result = ngService.getDefinitionAt(fileName, marker.start);
+    expect(result).toBeDefined();
+    const {textSpan, definitions} = result !;
+
+    expect(textSpan).toEqual(marker);
+    expect(definitions).toBeDefined();
+    expect(definitions !.length).toBe(1);
+    const def = definitions ![0];
+
+    expect(def.fileName).toBe(fileName);
+    expect(def.name).toBe('name');
+    expect(def.kind).toBe('property');
+    expect(def.textSpan).toEqual(mockHost.getDefinitionMarkerFor(fileName, 'name'));
+  });
 });
