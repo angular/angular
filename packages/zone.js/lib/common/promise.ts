@@ -384,7 +384,7 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
         null): Promise<TResult1|TResult2> {
       let C = (this.constructor as any)[Symbol.species];
       if (!C || typeof C !== 'function') {
-        C = ZoneAwarePromise;
+        C = this.constructor || ZoneAwarePromise;
       }
       const chainPromise: Promise<TResult1|TResult2> = new (C as typeof ZoneAwarePromise)(noop);
       const zone = Zone.current;
