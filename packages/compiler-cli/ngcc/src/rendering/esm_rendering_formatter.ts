@@ -32,6 +32,10 @@ export class EsmRenderingFormatter implements RenderingFormatter {
    *  Add the imports at the top of the file, after any imports that are already there.
    */
   addImports(output: MagicString, imports: Import[], sf: ts.SourceFile): void {
+    if (imports.length === 0) {
+      return;
+    }
+
     const insertionPoint = this.findEndOfImports(sf);
     const renderedImports =
         imports.map(i => `import * as ${i.qualifier} from '${i.specifier}';\n`).join('');

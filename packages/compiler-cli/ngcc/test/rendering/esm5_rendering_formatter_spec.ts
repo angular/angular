@@ -195,6 +195,17 @@ import {Directive} from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';`);
       });
+
+      it('should leave the file unchanged if there are no imports to add', () => {
+        const {renderer, sourceFile} = setup(PROGRAM);
+        const output = new MagicString(PROGRAM.contents);
+        const contentsBefore = output.toString();
+
+        renderer.addImports(output, [], sourceFile);
+        const contentsAfter = output.toString();
+
+        expect(contentsAfter).toBe(contentsBefore);
+      });
     });
 
     describe('addExports', () => {
