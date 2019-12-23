@@ -542,6 +542,7 @@ It does not, however, rewrite the `.d.ts` file, so TypeScript doesn't recognize 
 
 
 {@a binding-expression-validation}
+
 ## Phase 3: Template type checking
 
 One of the Angular compiler's most helpful features is the ability to type-check expressions within templates, and catch any errors before they cause crashes at runtime.
@@ -559,7 +560,7 @@ As a result, templates that previously compiled under View Engine can fail type 
 This stricter type checking is not enabled by default in version 9, but can be enabled by setting the `strictTemplates` configuration option.
 We do expect to make strict type checking the default in the future.
 
-<!-- For more information about type-checking options, and about improvements to template type checking in version 9 and above, see [Template type checking](guide/template-type-checking). -->
+For more information about type-checking options, and about improvements to template type checking in version 9 and above, see [Template type checking](guide/template-typecheck).
 
 </div>
 
@@ -627,6 +628,8 @@ Directives that behave like `*ngIf` can declare that they want the same treatmen
 ```
 
 This declares that the input property `ngIf` of the `NgIf` directive should be treated as a guard to the use of its template, implying that the template will only be instantiated if the `ngIf` input property is true.
+
+For more information, see [Input setter coercion](guide/template-typecheck#input-setter-coercion) and [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks).
 
 
 ### Non-null type assertion operator
