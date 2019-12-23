@@ -187,6 +187,17 @@ var core = require('@angular/core');
 var i0 = require('@angular/core');
 var i1 = require('@angular/common');`);
       });
+
+      it('should leave the file unchanged if there are no imports to add', () => {
+        const {renderer, sourceFile} = setup(PROGRAM);
+        const output = new MagicString(PROGRAM.contents);
+        const contentsBefore = output.toString();
+
+        renderer.addImports(output, [], sourceFile);
+        const contentsAfter = output.toString();
+
+        expect(contentsAfter).toBe(contentsBefore);
+      });
     });
 
     describe('addExports', () => {

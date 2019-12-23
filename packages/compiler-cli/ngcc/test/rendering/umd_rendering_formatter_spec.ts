@@ -325,6 +325,18 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
         expect(outputSrc).toContain(`(factory(global.ng.core,global.ng.common));`);
         expect(outputSrc).toContain(`(function (i0,i1) {'use strict';`);
       });
+
+      it('should leave the file unchanged if there are no imports to add', () => {
+        const {renderer, program} = setup(PROGRAM);
+        const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
+        const output = new MagicString(PROGRAM.contents);
+        const contentsBefore = output.toString();
+
+        renderer.addImports(output, [], file);
+        const contentsAfter = output.toString();
+
+        expect(contentsAfter).toBe(contentsBefore);
+      });
     });
 
     describe('addExports', () => {
