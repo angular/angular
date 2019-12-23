@@ -32,7 +32,6 @@ export class EsmRenderingFormatter implements RenderingFormatter {
    *  Add the imports at the top of the file, after any imports that are already there.
    */
   addImports(output: MagicString, imports: Import[], sf: ts.SourceFile): void {
-    // Avoid unnecessary work if there are no imports to add.
     if (imports.length === 0) {
       return;
     }
