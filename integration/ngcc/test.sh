@@ -125,6 +125,21 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   assertSucceeded "Expected '@angular/cdk/a11y' (umd) to actually have decorators via static properties."
 
 
+# Did it transform imports in UMD correctly?
+# (E.g. no trailing commas, so that it remains compatible with legacy browsers, such as IE11.)
+  grep "factory(exports, require('rxjs'), require('rxjs/operators'))" node_modules/@angular/core/bundles/core.umd.js
+  assertSucceeded "Expected 'ngcc' to not add trailing commas to CommonJS block in UMD."
+
+  grep "define('@angular/core', \['exports', 'rxjs', 'rxjs/operators'], factory)" node_modules/@angular/core/bundles/core.umd.js
+  assertSucceeded "Expected 'ngcc' to not add trailing commas to AMD block in UMD."
+
+  grep "factory((global.ng = global.ng || {}, global.ng.core = {}), global.rxjs, global.rxjs.operators)" node_modules/@angular/core/bundles/core.umd.js
+  assertSucceeded "Expected 'ngcc' to not add trailing commas to globals block in UMD."
+
+  grep "(this, (function (exports, rxjs, operators) {" node_modules/@angular/core/bundles/core.umd.js
+  assertSucceeded "Expected 'ngcc' to not add trailing commas to factory function parameters in UMD."
+
+
 # Can it be safely run again (as a noop)?
 # And check that it logged skipping compilation as expected
 ngcc -l debug | grep 'Skipping'
