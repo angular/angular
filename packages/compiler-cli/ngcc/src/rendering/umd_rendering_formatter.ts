@@ -30,6 +30,11 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
    *  Add the imports to the UMD module IIFE.
    */
   addImports(output: MagicString, imports: Import[], file: ts.SourceFile): void {
+    // Avoid unnecessary work if there are no imports to add.
+    if (imports.length === 0) {
+      return;
+    }
+
     // Assume there is only one UMD module in the file
     const umdModule = this.umdHost.getUmdModule(file);
     if (!umdModule) {

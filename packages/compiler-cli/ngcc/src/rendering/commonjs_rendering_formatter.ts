@@ -30,6 +30,11 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
    *  Add the imports below any in situ imports as `require` calls.
    */
   addImports(output: MagicString, imports: Import[], file: ts.SourceFile): void {
+    // Avoid unnecessary work if there are no imports to add.
+    if (imports.length === 0) {
+      return;
+    }
+
     const insertionPoint = this.findEndOfImports(file);
     const renderedImports =
         imports.map(i => `var ${i.qualifier} = require('${i.specifier}');\n`).join('');
