@@ -167,6 +167,8 @@ Here, during type checking of the template for `AppComponent`, the `[user]="sele
 Therefore, Angular assigns the `selectedUser` property to `UserDetailComponent.user`, which would result in an error if their types were incompatible.
 TypeScript checks the assignment according to its type system, obeying flags such as `strictNullChecks` as they are configured in the application.
 
+You can avoid run-time type errors by providing more specific in-template type requirements to the template type checker. Make the input type requirements for your own directives as specific as possible by providing template-guard functions in the directive definition. See [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks), and [Input setter coercion](#input-setter-coercion) in this guide.
+
 
 ### Strict null checks
 
@@ -201,7 +203,7 @@ There are two potential workarounds to the above issues:
 
 As a library author, you can take several measures to provide an optimal experience for your users.
 First, enabling `strictNullChecks` and including `null` in an input's type, as appropriate, communicates to your consumers whether they can provide a nullable value or not.
-Additionally, it is possible to provide type hints that are specific to the template type checker, see the [Input setter coercion](guide/template-typecheck#input-setter-coercion) section of this guide.
+Additionally, it is possible to provide type hints that are specific to the template type checker. See [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks), and [Input setter coercion](#input-setter-coercion) below.
 
 
 {@a input-setter-coercion}
