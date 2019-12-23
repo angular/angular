@@ -157,7 +157,7 @@ export abstract class Renderer2 {
    * in the host element DOM.
    * @param parent The parent node.
    * @param newChild The new child nodes.
-   * @param refChild The existing child node that should precede the new node.
+   * @param refChild The existing child node before which `newChild` is inserted.
    */
   abstract insertBefore(parent: any, newChild: any, refChild: any): void;
   /**
