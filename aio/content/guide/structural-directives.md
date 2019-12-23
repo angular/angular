@@ -846,7 +846,7 @@ Use the type-guard properties to inform the template type checker of an expected
 
 This section provides example of both kinds of type-guard property.
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
    For more information, see [Template type checking guide](guide/template-typecheck "Template type-checking guide").
 
@@ -962,7 +962,7 @@ Here is the source from the `src/app/` folder.
 
 
 
-You learned
+You learned:
 
 * that structural directives manipulate HTML layout.
 * to use [`<ng-container>`](guide/structural-directives#ngcontainer) as a grouping element when there is no suitable host element.
