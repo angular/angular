@@ -77,14 +77,17 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
         return null;
       }
 
+      let importPath: string|null = null;
+
       for (const i of imports) {
+        // Add all imports to the map to speed up future look ups.
         this.umdImportPaths.set(i.parameter, i.path);
         if (i.parameter === importParameter) {
-          return i.path;
+          importPath = i.path;
         }
       }
 
-      return null;
+      return importPath;
     });
   }
 
