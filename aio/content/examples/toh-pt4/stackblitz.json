@@ -5,5 +5,6 @@
     "!**/*.js",
     "!**/*.[1,2].*"
   ],
+  "file": "src/app/hero.service.ts",
   "tags": ["tutorial", "tour", "heroes"]
 }
