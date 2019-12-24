@@ -5,6 +5,6 @@
     "!**/*.js",
     "!**/*.[1,2].*"
   ],
-  "file": "src/app/app.component.ts",
+  "file": "src/app/app-routing.module.ts",
   "tags": ["lazy loading"]
 }
