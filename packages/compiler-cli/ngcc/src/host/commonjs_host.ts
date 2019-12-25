@@ -11,15 +11,20 @@ import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Declaration, Import} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
-import {getOrDefault, isDefined, stripExtension} from '../utils';
+import {FactoryMap, isDefined, stripExtension} from '../utils';
 
 import {ExportDeclaration, ExportStatement, ReexportStatement, RequireCall, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isReexportStatement, isRequireCall} from './commonjs_umd_utils';
 import {Esm5ReflectionHost} from './esm5_host';
 import {NgccClassSymbol} from './ngcc_host';
 
 export class CommonJsReflectionHost extends Esm5ReflectionHost {
-  protected commonJsExports = new Map<ts.SourceFile, Map<string, Declaration>|null>();
-  protected topLevelHelperCalls = new Map<string, Map<ts.SourceFile, ts.CallExpression[]>>();
+  protected commonJsExports = new FactoryMap<ts.SourceFile, Map<string, Declaration>|null>(
+      sf => this.computeExportsOfCommonJsModule(sf));
+  protected topLevelHelperCalls =
+      new FactoryMap<string, FactoryMap<ts.SourceFile, ts.CallExpression[]>>(
+          helperName => new FactoryMap<ts.SourceFile, ts.CallExpression[]>(
+              sf => sf.statements.map(stmt => this.getHelperCall(stmt, [helperName]))
+                        .filter(isDefined)));
   protected program: ts.Program;
   protected compilerHost: ts.CompilerHost;
   constructor(logger: Logger, isCore: boolean, src: BundleProgram, dts: BundleProgram|null = null) {
@@ -46,12 +51,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
   }
 
   getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
-    return super.getExportsOfModule(module) || this.getCommonJsExports(module.getSourceFile());
-  }
-
-  getCommonJsExports(sourceFile: ts.SourceFile): Map<string, Declaration>|null {
-    return getOrDefault(
-        this.commonJsExports, sourceFile, () => this.computeExportsOfCommonJsModule(sourceFile));
+    return super.getExportsOfModule(module) || this.commonJsExports.get(module.getSourceFile());
   }
 
   /**
@@ -63,7 +63,8 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
    * no helpers are found.
    *
    * @param classSymbol the class whose helper calls we are interested in.
-   * @param helperName the name of the helper (e.g. `__decorate`) whose calls we are interested in.
+   * @param helperNames the names of the helpers (e.g. `__decorate`) whose calls we are interested
+   * in.
    * @returns an array of nodes of calls to the helper with the given name.
    */
   protected getHelperCallsForClass(classSymbol: NgccClassSymbol, helperNames: string[]):
@@ -92,11 +93,8 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       ts.CallExpression[] {
     const calls: ts.CallExpression[] = [];
     helperNames.forEach(helperName => {
-      const helperCallsMap = getOrDefault(this.topLevelHelperCalls, helperName, () => new Map());
-      calls.push(...getOrDefault(
-          helperCallsMap, sourceFile,
-          () => sourceFile.statements.map(statement => this.getHelperCall(statement, [helperName]))
-                    .filter(isDefined)));
+      const helperCallsMap = this.topLevelHelperCalls.get(helperName);
+      calls.push(...helperCallsMap.get(sourceFile));
     });
     return calls;
   }

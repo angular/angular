@@ -66,13 +66,6 @@ export function findAll<T>(node: ts.Node, test: (node: ts.Node) => node is ts.No
   }
 }
 
-export function getOrDefault<K, V>(map: Map<K, V>, key: K, factory: (key: K) => V): V {
-  if (!map.has(key)) {
-    map.set(key, factory(key));
-  }
-  return map.get(key) !;
-}
-
 /**
  * Does the given declaration have a name which is an identifier?
  * @param declaration The declaration to test.
@@ -96,6 +89,33 @@ export type PathMappings = {
  */
 export function isRelativePath(path: string): boolean {
   return /^\/|^\.\.?($|\/)/.test(path);
+}
+
+/**
+ * A `Map`-like object that can compute and memoize a missing value for any key.
+ *
+ * The computed values are memoized, so the factory function is not called more than once per key.
+ * This is useful for storing values that are expensive to compute and may be used multiple times.
+ */
+// NOTE:
+// Ideally, this class should extend `Map`, but that causes errors in ES5 transpiled code:
+// `TypeError: Constructor Map requires 'new'`
+export class FactoryMap<K, V> {
+  private internalMap: Map<K, V>;
+
+  constructor(private factory: (key: K) => V, entries?: readonly(readonly[K, V])[]|null) {
+    this.internalMap = new Map(entries);
+  }
+
+  get(key: K): V {
+    if (!this.internalMap.has(key)) {
+      this.internalMap.set(key, this.factory(key));
+    }
+
+    return this.internalMap.get(key) !;
+  }
+
+  set(key: K, value: V): void { this.internalMap.set(key, value); }
 }
 
 /**
