@@ -50,13 +50,10 @@ This creates a `customers` folder with the new lazy-loadable module `CustomersMo
 Because the new module is meant to be lazy-loaded, the command does NOT add a reference to the new feature module in the application's root module file, `app.module.ts`.
 Instead, it adds the declared route, `customers` to the `routes` array declared in the module provided as the `--module` option.
 
-<code-example language="typescript" header="src/app/app-routing.module.ts">
-const routes: Routes = [
-  {
-    path: 'customers',
-    loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule)
-  }
-];
+<code-example
+  header="src/app/app-routing.module.ts"
+  path="lazy-loading-ngmodules/src/app/app-routing.module.ts"
+  region="routes-customers">
 </code-example>
 
 Notice that the lazy-loading syntax uses `loadChildren` followed by a function that uses the browser's built-in `import('...')` syntax for dynamic imports.
@@ -73,17 +70,10 @@ ng generate module orders --route orders --module app.module
 This creates a new folder called `orders` containing the `OrdersModule` and `OrdersRoutingModule`, along with the new `OrdersComponent` source files.
 The `orders` route, specified with the `--route` option, is added to the `routes` array inside the `app-routing.module.ts` file, using the lazy-loading syntax.
 
-<code-example language="typescript" header="src/app/app-routing.module.ts">
-const routes: Routes = [
-  {
-    path: 'customers',
-    loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule)
-  },
-  {
-    path: 'orders',
-    loadChildren: () => import('./orders/orders.module').then(m => m.OrdersModule)
-  }
-];
+<code-example
+  header="src/app/app-routing.module.ts"
+  path="lazy-loading-ngmodules/src/app/app-routing.module.ts"
+  region="routes-customers-orders">
 </code-example>
 
 ## Set up the UI
