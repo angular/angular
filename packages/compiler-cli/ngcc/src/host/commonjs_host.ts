@@ -95,7 +95,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       const helperCallsMap = getOrDefault(this.topLevelHelperCalls, helperName, () => new Map());
       calls.push(...getOrDefault(
           helperCallsMap, sourceFile,
-          () => sourceFile.statements.map(statement => this.getHelperCall(statement, helperNames))
+          () => sourceFile.statements.map(statement => this.getHelperCall(statement, [helperName]))
                     .filter(isDefined)));
     });
     return calls;
