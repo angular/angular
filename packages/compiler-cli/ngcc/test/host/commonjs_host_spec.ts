@@ -510,7 +510,7 @@ var c = file_a.a;
           var a_module = require('./a_module');
           var b_module = require('./b_module');
           var xtra_module = require('./xtra_module');
-          var wildcard_reexports = require('./wildcard_reexports');
+          var wildcard_reexports_emitted_helpers = require('./wildcard_reexports_emitted_helpers');
           var wildcard_reexports_imported_helpers = require('./wildcard_reexports_imported_helpers');
           `
         },
@@ -553,7 +553,7 @@ exports.xtra2 = xtra2;
 `,
         },
         {
-          name: _('/wildcard_reexports.js'),
+          name: _('/wildcard_reexports_emitted_helpers.js'),
           contents: `
 function __export(m) {
   for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -1778,7 +1778,8 @@ exports.ExternalModule = ExternalModule;
           loadTestFiles(EXPORTS_FILES);
           const bundle = makeTestBundleProgram(_('/index.js'));
           const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
-          const file = getSourceFileOrError(bundle.program, _('/wildcard_reexports.js'));
+          const file =
+              getSourceFileOrError(bundle.program, _('/wildcard_reexports_emitted_helpers.js'));
           const exportDeclarations = host.getExportsOfModule(file);
           expect(exportDeclarations).not.toBe(null);
           expect(Array.from(exportDeclarations !.entries())
