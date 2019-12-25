@@ -12,16 +12,20 @@ import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Declaration, Import} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
-import {getOrDefault, stripExtension} from '../utils';
+import {FactoryMap, stripExtension} from '../utils';
 import {ExportDeclaration, ExportStatement, ReexportStatement, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isReexportStatement, isRequireCall} from './commonjs_umd_utils';
 import {Esm5ReflectionHost, stripParentheses} from './esm5_host';
 
 export class UmdReflectionHost extends Esm5ReflectionHost {
-  protected umdModules = new Map<ts.SourceFile, UmdModule|null>();
-  protected umdExports = new Map<ts.SourceFile, Map<string, Declaration>|null>();
-  protected umdImportPaths = new Map<ts.ParameterDeclaration, string|null>();
+  protected umdModules =
+      new FactoryMap<ts.SourceFile, UmdModule|null>(sf => this.computeUmdModule(sf));
+  protected umdExports = new FactoryMap<ts.SourceFile, Map<string, Declaration>|null>(
+      sf => this.computeExportsOfUmdModule(sf));
+  protected umdImportPaths =
+      new FactoryMap<ts.ParameterDeclaration, string|null>(param => this.computeImportPath(param));
   protected program: ts.Program;
   protected compilerHost: ts.CompilerHost;
+
   constructor(logger: Logger, isCore: boolean, src: BundleProgram, dts: BundleProgram|null = null) {
     super(logger, isCore, src, dts);
     this.program = src.program;
@@ -48,7 +52,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   }
 
   getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
-    return super.getExportsOfModule(module) || this.getUmdExports(module.getSourceFile());
+    return super.getExportsOfModule(module) || this.umdExports.get(module.getSourceFile());
   }
 
   getUmdModule(sourceFile: ts.SourceFile): UmdModule|null {
@@ -56,44 +60,11 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
       return null;
     }
 
-    return getOrDefault(this.umdModules, sourceFile, (sf: ts.SourceFile) => {
-      if (sf.statements.length !== 1) {
-        throw new Error(
-            `Expected UMD module file (${sf.fileName}) to contain exactly one statement, but found ${sf.statements.length}.`);
-      }
-      return parseStatementForUmdModule(sf.statements[0]);
-    });
+    return this.umdModules.get(sourceFile);
   }
 
   getUmdImportPath(importParameter: ts.ParameterDeclaration): string|null {
-    return getOrDefault(this.umdImportPaths, importParameter, (param: ts.ParameterDeclaration) => {
-      const umdModule = this.getUmdModule(param.getSourceFile());
-      if (umdModule === null) {
-        return null;
-      }
-
-      const imports = getImportsOfUmdModule(umdModule);
-      if (imports === null) {
-        return null;
-      }
-
-      let importPath: string|null = null;
-
-      for (const i of imports) {
-        // Add all imports to the map to speed up future look ups.
-        this.umdImportPaths.set(i.parameter, i.path);
-        if (i.parameter === importParameter) {
-          importPath = i.path;
-        }
-      }
-
-      return importPath;
-    });
-  }
-
-  getUmdExports(sourceFile: ts.SourceFile): Map<string, Declaration>|null {
-    return getOrDefault(
-        this.umdExports, sourceFile, (sf: ts.SourceFile) => this.computeExportsOfUmdModule(sf));
+    return this.umdImportPaths.get(importParameter);
   }
 
   /** Get the top level statements for a module.
@@ -106,6 +77,16 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   protected getModuleStatements(sourceFile: ts.SourceFile): ts.Statement[] {
     const umdModule = this.getUmdModule(sourceFile);
     return umdModule !== null ? Array.from(umdModule.factoryFn.body.statements) : [];
+  }
+
+  private computeUmdModule(sourceFile: ts.SourceFile): UmdModule|null {
+    if (sourceFile.statements.length !== 1) {
+      throw new Error(
+          `Expected UMD module file (${sourceFile.fileName}) to contain exactly one statement, ` +
+          `but found ${sourceFile.statements.length}.`);
+    }
+
+    return parseStatementForUmdModule(sourceFile.statements[0]);
   }
 
   private computeExportsOfUmdModule(sourceFile: ts.SourceFile): Map<string, Declaration>|null {
@@ -122,6 +103,30 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
       }
     }
     return moduleMap;
+  }
+
+  private computeImportPath(param: ts.ParameterDeclaration): string|null {
+    const umdModule = this.getUmdModule(param.getSourceFile());
+    if (umdModule === null) {
+      return null;
+    }
+
+    const imports = getImportsOfUmdModule(umdModule);
+    if (imports === null) {
+      return null;
+    }
+
+    let importPath: string|null = null;
+
+    for (const i of imports) {
+      // Add all imports to the map to speed up future look ups.
+      this.umdImportPaths.set(i.parameter, i.path);
+      if (i.parameter === param) {
+        importPath = i.path;
+      }
+    }
+
+    return importPath;
   }
 
   private extractUmdExportDeclaration(statement: ExportStatement): ExportDeclaration {

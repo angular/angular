@@ -6,29 +6,47 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getOrDefault, isRelativePath, stripExtension} from '../src/utils';
+import {FactoryMap, isRelativePath, stripExtension} from '../src/utils';
 
-describe('getOrDefault()', () => {
+describe('FactoryMap', () => {
   it('should return an existing value', () => {
-    const map = new Map([['k1', 'v1'], ['k2', 'v2']]);
-    const factorySpy = jasmine.createSpy('factory');
+    const factoryFnSpy = jasmine.createSpy('factory');
+    const factoryMap = new FactoryMap<string, string>(factoryFnSpy, [['k1', 'v1'], ['k2', 'v2']]);
 
-    expect(getOrDefault(map, 'k1', factorySpy)).toBe('v1');
-    expect(getOrDefault(map, 'k2', factorySpy)).toBe('v2');
-    expect(factorySpy).not.toHaveBeenCalled();
+    expect(factoryMap.get('k1')).toBe('v1');
+    expect(factoryMap.get('k2')).toBe('v2');
+    expect(factoryFnSpy).not.toHaveBeenCalled();
+  });
+
+  it('should not treat falsy values as missing', () => {
+    const factoryFnSpy = jasmine.createSpy('factory').and.returnValue('never gonna happen');
+    const factoryMap = new FactoryMap<string, any>(factoryFnSpy, [
+      ['k1', ''],
+      ['k2', 0],
+      ['k3', false],
+      ['k4', null],
+      ['k5', undefined],
+    ]);
+
+    expect(factoryMap.get('k1')).toBe('');
+    expect(factoryMap.get('k2')).toBe(0);
+    expect(factoryMap.get('k3')).toBe(false);
+    expect(factoryMap.get('k4')).toBe(null);
+    expect(factoryMap.get('k5')).toBe(undefined);
+    expect(factoryFnSpy).not.toHaveBeenCalled();
   });
 
   it('should create, store and return the value if it does not exist', () => {
-    const map = new Map([['k1', 'v1'], ['k2', 'v2']]);
-    const factorySpy = jasmine.createSpy('factory').and.returnValues('v3', 'never gonna happen');
+    const factoryFnSpy = jasmine.createSpy('factory').and.returnValues('v3', 'never gonna happen');
+    const factoryMap = new FactoryMap(factoryFnSpy, [['k1', 'v1'], ['k2', 'v2']]);
 
-    expect(getOrDefault(map, 'k3', factorySpy)).toBe('v3');
-    expect(factorySpy).toHaveBeenCalledTimes(1);
+    expect(factoryMap.get('k3')).toBe('v3');
+    expect(factoryFnSpy).toHaveBeenCalledTimes(1);
 
-    factorySpy.calls.reset();
+    factoryFnSpy.calls.reset();
 
-    expect(getOrDefault(map, 'k3', factorySpy)).toBe('v3');
-    expect(factorySpy).not.toHaveBeenCalled();
+    expect(factoryMap.get('k3')).toBe('v3');
+    expect(factoryFnSpy).not.toHaveBeenCalled();
   });
 });
 
