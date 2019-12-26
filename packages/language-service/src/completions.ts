@@ -316,6 +316,7 @@ function attributeValueCompletions(info: AstResult, htmlPath: HtmlAstPath): ng.C
     templatePath.tail.visit(visitor, null);
     return visitor.results;
   }
+
   // In order to provide accurate attribute value completion, we need to know
   // what the LHS is, and construct the proper AST if it is missing.
   const htmlAttr = htmlPath.tail as Attribute;

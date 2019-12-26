@@ -753,6 +753,16 @@ describe('completions', () => {
       expectContain(completions, CompletionKind.VARIABLE, ['$event']);
     });
   });
+
+  describe('$event completions', () => {
+    it('should suggest $event in event bindings', () => {
+      mockHost.override(TEST_TEMPLATE, `<div (click)="myClick(~{cursor});"></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      debugger;
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.VARIABLE, ['$event']);
+    });
+  });
 });
 
 function expectContain(
