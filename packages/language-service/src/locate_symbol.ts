@@ -150,16 +150,14 @@ function findAttribute(info: AstResult, position: number): Attribute|undefined {
 
 function findInputBinding(
     info: AstResult, path: TemplateAstPath, binding: BoundDirectivePropertyAst): Symbol|undefined {
-  const element = path.first(ElementAst);
-  if (element) {
-    for (const directive of element.directives) {
-      const invertedInput = invertMap(directive.directive.inputs);
-      const fieldName = invertedInput[binding.templateName];
-      if (fieldName) {
-        const classSymbol = info.template.query.getTypeSymbol(directive.directive.type.reference);
-        if (classSymbol) {
-          return classSymbol.members().get(fieldName);
-        }
+  const directive = path.parentOf(path.tail);
+  if (directive instanceof DirectiveAst) {
+    const invertedInput = invertMap(directive.directive.inputs);
+    const fieldName = invertedInput[binding.templateName];
+    if (fieldName) {
+      const classSymbol = info.template.query.getTypeSymbol(directive.directive.type.reference);
+      if (classSymbol) {
+        return classSymbol.members().get(fieldName);
       }
     }
   }

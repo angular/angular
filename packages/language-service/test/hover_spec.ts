@@ -148,6 +148,20 @@ describe('hover', () => {
     expect(toText(displayParts)).toBe('(property) TestComponent.name: string');
   });
 
+  it('should be able to find a structural directive', () => {
+    const fileName = mockHost.addCode(`
+      @Component({
+        template: '<div «*ᐱngIfᐱ="true"»></div>'
+      })
+      export class MyComponent { }`);
+    const marker = mockHost.getDefinitionMarkerFor(fileName, 'ngIf');
+    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    expect(quickInfo).toBeTruthy();
+    const {textSpan, displayParts} = quickInfo !;
+    expect(textSpan).toEqual(marker);
+    expect(toText(displayParts)).toBe('(property) NgIf<T>.ngIf: T');
+  });
+
   it('should be able to ignore a reference declaration', () => {
     const fileName = mockHost.addCode(`
       @Component({
