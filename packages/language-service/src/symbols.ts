@@ -129,6 +129,11 @@ export interface Symbol {
    * If the symbol cannot be indexed, this method should return `undefined`.
    */
   indexed(argument: Symbol, key?: any): Symbol|undefined;
+
+  /**
+   * Returns the type arguments of a Symbol, if any.
+   */
+  typeArguments(): Symbol[]|undefined;
 }
 
 /**
