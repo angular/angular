@@ -306,9 +306,10 @@ function attributeCompletionsForElement(
 function attributeValueCompletions(info: AstResult, htmlPath: HtmlAstPath): ng.CompletionEntry[] {
   // Find the corresponding Template AST path.
   const templatePath = findTemplateAstAt(info.templateAst, htmlPath.position);
+  const isEvent = templatePath.tail instanceof BoundEventAst;
   const visitor = new ExpressionVisitor(info, htmlPath.position, () => {
     const dinfo = diagnosticInfoFromTemplateInfo(info);
-    return getExpressionScope(dinfo, templatePath, false);
+    return getExpressionScope(dinfo, templatePath, isEvent);
   });
   if (templatePath.tail instanceof AttrAst ||
       templatePath.tail instanceof BoundElementPropertyAst ||
