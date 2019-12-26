@@ -262,6 +262,35 @@ describe('definitions', () => {
     }
   });
 
+  it('should be able to find a structural directive', () => {
+    const fileName = mockHost.addCode(`
+      @Component({
+        template: '<div ~{start-my}*«ngIf»="true"~{end-my}></div>'
+      })
+      export class MyComponent { }`);
+
+    // Get the marker for ngIf in the code added above.
+    const marker = mockHost.getReferenceMarkerFor(fileName, 'ngIf');
+
+    const result = ngService.getDefinitionAt(fileName, marker.start);
+    expect(result).toBeDefined();
+    const {textSpan, definitions} = result !;
+
+    // Get the marker for bounded text in the code added above
+    const boundedText = mockHost.getLocationMarkerFor(fileName, 'my');
+    expect(textSpan).toEqual(boundedText);
+
+    expect(definitions).toBeDefined();
+    expect(definitions !.length).toBe(1);
+
+    const refFileName = '/node_modules/@angular/common/common.d.ts';
+    const def = definitions ![0];
+    expect(def.fileName).toBe(refFileName);
+    expect(def.name).toBe('ngIf');
+    expect(def.kind).toBe('property');
+    // Not asserting the textSpan of definition because it's external file
+  });
+
   it('should be able to find a template from a url', () => {
     const fileName = mockHost.addCode(`
 	      @Component({
