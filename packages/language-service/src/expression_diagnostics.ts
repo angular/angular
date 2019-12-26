@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {AstType, ExpressionDiagnosticsContext, TypeDiagnostic} from './expression_type';
 import {BuiltinType, Definition, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
 import {Diagnostic} from './types';
-import {getPathToNodeAtPosition} from './utils';
+import {findOutputBinding, getPathToNodeAtPosition} from './utils';
 
 export interface DiagnosticTemplateInfo {
   fileName?: string;
@@ -193,26 +193,51 @@ function refinedVariableType(
   return query.getBuiltinType(BuiltinType.Any);
 }
 
-function getEventDeclaration(info: DiagnosticTemplateInfo, path: TemplateAstPath) {
-  let result: SymbolDeclaration[] = [];
-  if (path.tail instanceof BoundEventAst) {
-    // TODO: Determine the type of the event parameter based on the Observable<T> or EventEmitter<T>
-    // of the event.
-    result = [{name: '$event', kind: 'variable', type: info.query.getBuiltinType(BuiltinType.Any)}];
+function getEventDeclaration(
+    info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolDeclaration|undefined {
+  const event = path.tail;
+  if (!(event instanceof BoundEventAst)) {
+    // No event available in this context.
+    return;
   }
-  return result;
+
+  const genericEvent: SymbolDeclaration = {
+    name: '$event',
+    kind: 'variable',
+    type: info.query.getBuiltinType(BuiltinType.Any),
+  };
+
+  const outputSymbol = findOutputBinding(event, path, info.query);
+  if (!outputSymbol) {
+    // The `$event` variable doesn't belong to an output, so its type can't be refined.
+    // TODO: type `$event` variables in bindings to DOM events.
+    return genericEvent;
+  }
+
+  // The raw event type is wrapped in a generic, like EventEmitter<T> or Observable<T>.
+  const ta = outputSymbol.typeArguments();
+  if (!ta || ta.length !== 1) return genericEvent;
+  const eventType = ta[0];
+
+  return {...genericEvent, type: eventType};
 }
 
+/**
+ * Returns the symbols available in a particular scope of a template.
+ * @param info parsed template information
+ * @param path path of template nodes narrowing to the context the expression scope should be
+ * derived for.
+ */
 export function getExpressionScope(
     info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolTable {
   let result = info.members;
   const references = getReferences(info);
   const variables = getVarDeclarations(info, path);
-  const events = getEventDeclaration(info, path);
-  if (references.length || variables.length || events.length) {
+  const event = getEventDeclaration(info, path);
+  if (references.length || variables.length || event) {
     const referenceTable = info.query.createSymbolTable(references);
     const variableTable = info.query.createSymbolTable(variables);
-    const eventsTable = info.query.createSymbolTable(events);
+    const eventsTable = info.query.createSymbolTable(event ? [event] : []);
     result = info.query.mergeSymbolTable([result, referenceTable, variableTable, eventsTable]);
   }
   return result;

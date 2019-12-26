@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {AstResult, SelectorInfo} from './common';
 import {DiagnosticTemplateInfo} from './expression_diagnostics';
-import {Span, Symbol} from './types';
+import {Span, Symbol, SymbolQuery} from './types';
 
 export interface SpanHolder {
   sourceSpan: ParseSourceSpan;
@@ -268,14 +268,14 @@ export function invertMap(obj: {[name: string]: string}): {[name: string]: strin
  * @param path narrowing
  */
 export function findOutputBinding(
-    info: AstResult, path: TemplateAstPath, binding: BoundEventAst): Symbol|undefined {
+    binding: BoundEventAst, path: TemplateAstPath, query: SymbolQuery): Symbol|undefined {
   const element = path.first(ElementAst);
   if (element) {
     for (const directive of element.directives) {
       const invertedOutputs = invertMap(directive.directive.outputs);
       const fieldName = invertedOutputs[binding.name];
       if (fieldName) {
-        const classSymbol = info.template.query.getTypeSymbol(directive.directive.type.reference);
+        const classSymbol = query.getTypeSymbol(directive.directive.type.reference);
         if (classSymbol) {
           return classSymbol.members().get(fieldName);
         }
