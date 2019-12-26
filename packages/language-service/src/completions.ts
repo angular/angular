@@ -308,7 +308,7 @@ function attributeValueCompletions(info: AstResult, htmlPath: HtmlAstPath): ng.C
   const templatePath = findTemplateAstAt(info.templateAst, htmlPath.position);
   const visitor = new ExpressionVisitor(info, htmlPath.position, () => {
     const dinfo = diagnosticInfoFromTemplateInfo(info);
-    return getExpressionScope(dinfo, templatePath, false);
+    return getExpressionScope(dinfo, templatePath);
   });
   if (templatePath.tail instanceof AttrAst ||
       templatePath.tail instanceof BoundElementPropertyAst ||
@@ -398,8 +398,7 @@ function interpolationCompletions(info: AstResult, position: number): ng.Complet
     return [];
   }
   const visitor = new ExpressionVisitor(
-      info, position,
-      () => getExpressionScope(diagnosticInfoFromTemplateInfo(info), templatePath, false));
+      info, position, () => getExpressionScope(diagnosticInfoFromTemplateInfo(info), templatePath));
   templatePath.tail.visit(visitor, null);
   return visitor.results;
 }
