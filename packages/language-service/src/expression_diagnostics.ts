@@ -25,8 +25,7 @@ export interface DiagnosticTemplateInfo {
 
 export function getTemplateExpressionDiagnostics(info: DiagnosticTemplateInfo): Diagnostic[] {
   const visitor = new ExpressionDiagnosticsVisitor(
-      info, (path: TemplateAstPath, includeEvent: boolean) =>
-                getExpressionScope(info, path, includeEvent));
+      info, (path: TemplateAstPath, includeEvent: boolean) => getExpressionScope(info, path));
   templateVisitAll(visitor, info.templateAst);
   return visitor.diagnostics;
 }
@@ -194,9 +193,9 @@ function refinedVariableType(
   return query.getBuiltinType(BuiltinType.Any);
 }
 
-function getEventDeclaration(info: DiagnosticTemplateInfo, includeEvent?: boolean) {
+function getEventDeclaration(info: DiagnosticTemplateInfo, path: TemplateAstPath) {
   let result: SymbolDeclaration[] = [];
-  if (includeEvent) {
+  if (path.tail instanceof BoundEventAst) {
     // TODO: Determine the type of the event parameter based on the Observable<T> or EventEmitter<T>
     // of the event.
     result = [{name: '$event', kind: 'variable', type: info.query.getBuiltinType(BuiltinType.Any)}];
@@ -205,11 +204,11 @@ function getEventDeclaration(info: DiagnosticTemplateInfo, includeEvent?: boolea
 }
 
 export function getExpressionScope(
-    info: DiagnosticTemplateInfo, path: TemplateAstPath, includeEvent: boolean): SymbolTable {
+    info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolTable {
   let result = info.members;
   const references = getReferences(info);
   const variables = getVarDeclarations(info, path);
-  const events = getEventDeclaration(info, includeEvent);
+  const events = getEventDeclaration(info, path);
   if (references.length || variables.length || events.length) {
     const referenceTable = info.query.createSymbolTable(references);
     const variableTable = info.query.createSymbolTable(variables);
