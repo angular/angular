@@ -112,6 +112,7 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
             symbol = findOutputBinding(info, path, ast);
             symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.EVENT);
             span = spanOf(ast);
+<<<<<<< HEAD
           }
         },
         visitElementProperty(ast) { attributeValueSymbol(); },
@@ -124,6 +125,26 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
             if (!dir.directive.selector) continue;
             matcher.addSelectables(CssSelector.parse(dir.directive.selector), dir);
           }
+=======
+    }
+    , visitVariable(ast){}, visitEvent(ast) {
+      if (!attributeValueSymbol(ast.handler)) {
+        symbol = findOutputBinding(info, path, ast);
+        symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.EVENT);
+        span = spanOf(ast);
+      }
+    }
+    , visitElementProperty(ast) { attributeValueSymbol(ast.value); }
+    , visitAttr(ast) {
+      const element = path.head;
+      if (!element || !(element instanceof ElementAst)) return;
+      // Create a mapping of all directives applied to the element from their selectors.
+      const matcher = new SelectorMatcher<DirectiveAst>();
+      for (const dir of element.directives) {
+        if (!dir.directive.selector) continue;
+        matcher.addSelectables(CssSelector.parse(dir.directive.selector), dir);
+      }
+>>>>>>> feat(language-service): completions for output $event properties in
 
           // See if this attribute matches the selector of any directive on the element.
           const attributeSelector = `[${ast.name}=${ast.value}]`;

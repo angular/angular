@@ -10,7 +10,7 @@ import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementProperty
 import * as ts from 'typescript';
 
 import {AstType, ExpressionDiagnosticsContext, TypeDiagnostic} from './expression_type';
-import {BuiltinType, Definition, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
+import {BuiltinType, DeclarationKind, Definition, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
 import {Diagnostic} from './types';
 import {getPathToNodeAtPosition} from './utils';
 
@@ -193,14 +193,37 @@ function refinedVariableType(
   return query.getBuiltinType(BuiltinType.Any);
 }
 
-function getEventDeclaration(info: DiagnosticTemplateInfo, path: TemplateAstPath) {
-  let result: SymbolDeclaration[] = [];
-  if (path.tail instanceof BoundEventAst) {
-    // TODO: Determine the type of the event parameter based on the Observable<T> or EventEmitter<T>
-    // of the event.
-    result = [{name: '$event', kind: 'variable', type: info.query.getBuiltinType(BuiltinType.Any)}];
+function getEventDeclaration(
+    info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolDeclaration[] {
+  const genericEvent = {
+    name: '$event',
+    kind: 'variable' as DeclarationKind,
+    type: info.query.getBuiltinType(BuiltinType.Any),
+  };
+
+  const event = path.tail;
+  const element = path.parentOf(event);
+  if (!(event instanceof BoundEventAst) || !(element instanceof ElementAst)) {
+    // No event available in this context.
+    return [];
   }
-  return result;
+
+  const directive = element.directives.map(d => d.directive)
+                        .find(d => Object.values(d.outputs).includes(event.name));
+  if (!directive) {
+    // The `$event` variable doesn't belong to an output, so its type can't be refined.
+    // TODO(ayazhafiz): type `$event` variables in bindings to DOM events.
+    return [genericEvent];
+  }
+  const [outputProperty, ] = Object.entries(directive.outputs).find(([_, v]) => v === event.name) !;
+  const dirDecl = info.query.getTypeSymbol(directive.type.reference);
+  if (!dirDecl) return [genericEvent];
+  const outputSymbol = dirDecl.members().get(outputProperty);
+  if (!outputSymbol || !outputSymbol.type) return [genericEvent];
+  // The raw event type is wrapped in a generic, like EventEmitter<T> or Observable<T>.
+  // TODO: Extract this! Blocked by PR in progress.
+
+  return [{...genericEvent, type: outputSymbol.type}];
 }
 
 export function getExpressionScope(
