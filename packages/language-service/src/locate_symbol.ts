@@ -109,7 +109,7 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
         visitVariable(ast) {},
         visitEvent(ast) {
           if (!attributeValueSymbol()) {
-            symbol = findOutputBinding(info, path, ast);
+            symbol = findOutputBinding(ast, path, info.template.query);
             symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.EVENT);
             span = spanOf(ast);
           }

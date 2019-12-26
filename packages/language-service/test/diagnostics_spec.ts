@@ -319,16 +319,14 @@ describe('diagnostics', () => {
 
   describe('with $event', () => {
     it('should accept an event', () => {
-      const fileName = '/app/test.ng';
-      mockHost.override(fileName, '<div (click)="myClick($event)">Click me!</div>');
-      const diagnostics = ngLS.getSemanticDiagnostics(fileName);
+      mockHost.override(TEST_TEMPLATE, '<div (click)="myClick($event)">Click me!</div>');
+      const diagnostics = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
       expect(diagnostics).toEqual([]);
     });
 
     it('should reject it when not in an event binding', () => {
-      const fileName = '/app/test.ng';
-      const content = mockHost.override(fileName, '<div [tabIndex]="$event"></div>');
-      const diagnostics = ngLS.getSemanticDiagnostics(fileName) !;
+      const content = mockHost.override(TEST_TEMPLATE, '<div [tabIndex]="$event"></div>');
+      const diagnostics = ngLS.getSemanticDiagnostics(TEST_TEMPLATE) !;
       expect(diagnostics.length).toBe(1);
       const {messageText, start, length} = diagnostics[0];
       expect(messageText)
@@ -337,6 +335,17 @@ describe('diagnostics', () => {
       const keyword = '$event';
       expect(start).toBe(content.lastIndexOf(keyword));
       expect(length).toBe(keyword.length);
+    });
+
+    it('should reject invalid properties on an event type', () => {
+      const content = mockHost.override(
+          TEST_TEMPLATE, '<div string-model (modelChange)="$event.notSubstring()"></div>');
+      const diagnostics = ngLS.getSemanticDiagnostics(TEST_TEMPLATE) !;
+      expect(diagnostics.length).toBe(1);
+      const {messageText, start, length} = diagnostics[0];
+      expect(messageText).toBe(`Unknown method 'notSubstring'`);
+      expect(start).toBe(content.indexOf('$event'));
+      expect(length).toBe('$event.notSubstring()'.length);
     });
   });
 
