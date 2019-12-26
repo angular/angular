@@ -223,4 +223,6 @@ class OverrideKindSymbol implements Symbol {
   selectSignature(types: Symbol[]) { return this.sym.selectSignature(types); }
 
   indexed(argument: Symbol) { return this.sym.indexed(argument); }
+
+  typeArguments(): Symbol[]|undefined { return this.sym.typeArguments(); }
 }
