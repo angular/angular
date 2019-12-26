@@ -223,7 +223,8 @@ export class AstType implements AstVisitor {
       members(): SymbolTable{return _this.scope;},
       signatures(): Signature[]{return [];},
       selectSignature(types): Signature | undefined{return undefined;},
-      indexed(argument): Symbol | undefined{return undefined;}
+      indexed(argument): Symbol | undefined{return undefined;},
+      typeArguments(): Symbol[] | undefined{return undefined;},
     };
   }
 

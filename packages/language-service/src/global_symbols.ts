@@ -59,6 +59,7 @@ export const createGlobalSymbolTable: (query: ng.SymbolQuery) => ng.SymbolTable 
             };
           },
           indexed: () => undefined,
+          typeArguments: () => undefined,
         },
       },
     ]);
