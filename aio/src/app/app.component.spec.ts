@@ -152,6 +152,40 @@ describe('AppComponent', () => {
         component.onResize(hideToCBreakPoint + 1);
         expect(component.hasFloatingToc).toBe(true);
       });
+
+      it('should contain a back to top link on narrow screens', () => {
+        component.onResize(hideToCBreakPoint - 1);
+        tocService.tocList.next([{}, {}, {}] as TocItem[]);
+        fixture.detectChanges();
+
+        const backToTopDiv = fixture.debugElement.query(By.css('.back-to-top-link'));
+        expect(backToTopDiv).not.toBeNull();
+        expect(backToTopDiv.nativeElement).toBeDefined();
+      });
+
+      it('should call scrollToTop when clicking the back to top link on narrow screens', () => {
+        const scrollService: ScrollService = fixture.debugElement.injector.get<ScrollService>(ScrollService);
+        const scrollToTopSpy: jasmine.Spy = spyOn(scrollService, 'scrollToTop');
+
+        component.onResize(hideToCBreakPoint - 1);
+        tocService.tocList.next([{}, {}, {}] as TocItem[]);
+        fixture.detectChanges();
+
+        const backToTopDiv  = fixture.debugElement.query(By.css('.back-to-top-link')).nativeElement as HTMLDivElement;
+        const anchorLink = backToTopDiv.firstChild as HTMLAnchorElement;
+        anchorLink.click();
+
+        expect(scrollToTopSpy).toHaveBeenCalled();
+      });
+
+      it('should not contain a back to top link on wider screens', () => {
+        component.onResize(hideToCBreakPoint + 1);
+        tocService.tocList.next([{}, {}, {}] as TocItem[]);
+        fixture.detectChanges();
+
+        const backToTopDiv = fixture.debugElement.query(By.css('.back-to-top-link'));
+        expect(backToTopDiv).toBeNull();
+      });
     });
 
     describe('isSideBySide', () => {

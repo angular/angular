@@ -62,7 +62,8 @@
 </div>
 
 <div class="back-to-top-link" *ngIf="!hasFloatingToc">
-    <a (click)="scrollToTop()" class="material-icons" data-title="Back to top"></a>
+    <a (click)="scrollToTop()" (keyup)="scrollToTop()" class="material-icons" data-title="Back to top" aria-label="Back to top">
+    </a>
 </div>
 
 <footer class="no-print">
