@@ -137,6 +137,7 @@ export class DecorationAnalyzer {
   analyzeProgram(): DecorationAnalyses {
     const decorationAnalyses = new DecorationAnalyses();
     const analyzedFiles = this.program.getSourceFiles()
+                              .filter(sourceFile => !sourceFile.isDeclarationFile)
                               .filter(sourceFile => isWithinPackage(this.packagePath, sourceFile))
                               .map(sourceFile => this.analyzeFile(sourceFile))
                               .filter(isDefined);
