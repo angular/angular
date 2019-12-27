@@ -55,10 +55,6 @@ export class DirectiveDecoratorHandler implements
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null):
       DetectResult<Decorator|null>|undefined {
-    // Compiling declaration files is invalid.
-    if (node.getSourceFile().isDeclarationFile) {
-      return undefined;
-    }
     // If the class is undecorated, check if any of the fields have Angular decorators or lifecycle
     // hooks, and if they do, label the class as an abstract directive.
     if (!decorators) {

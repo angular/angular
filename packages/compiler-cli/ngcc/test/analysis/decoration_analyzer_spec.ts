@@ -11,7 +11,7 @@ import {FatalDiagnosticError, makeDiagnostic} from '../../../src/ngtsc/diagnosti
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
-import {DecoratorHandler, DetectResult} from '../../../src/ngtsc/transform';
+import {DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
@@ -391,6 +391,31 @@ runInEachFileSystem(() => {
              expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999999}));
              expect(diagnosticLogs[1]).toEqual(jasmine.objectContaining({code: -999998}));
            });
+      });
+
+      describe('declaration files', () => {
+        it('should not run decorator handlers against declaration files', () => {
+          const analyzer = setUpAnalyzer([{
+            name: _('/node_modules/test-package/index.d.ts'),
+            contents: 'export declare class SomeDirective {}',
+          }]);
+          const fakeDecoratorHandler: DecoratorHandler<{}|null, unknown, unknown> = {
+            name: 'FakeDecoratorHandler',
+            precedence: HandlerPrecedence.PRIMARY,
+            detect: jasmine.createSpy('detect').and.callFake(
+                (node: ClassDeclaration) => ({trigger: node, metadata: {}})),
+            analyze: jasmine.createSpy('analyze').and.returnValue({}),
+            compile: jasmine.createSpy('compile').and.returnValue([])
+          };
+
+          analyzer.handlers = [fakeDecoratorHandler];
+          result = analyzer.analyzeProgram();
+
+          expect(result.size).toBe(0);
+          expect(fakeDecoratorHandler.detect).not.toHaveBeenCalled();
+          expect(fakeDecoratorHandler.analyze).not.toHaveBeenCalled();
+          expect(fakeDecoratorHandler.compile).not.toHaveBeenCalled();
+        });
       });
     });
   });
