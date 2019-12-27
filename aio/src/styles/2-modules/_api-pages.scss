@@ -305,3 +305,27 @@
 .deprecated-api-item {
   text-decoration: line-through;
 }
+
+.back-to-top-link {
+  display: block;
+  margin-left: auto;
+  width: 25px;
+  z-index: 9999;
+  position: -webkit-sticky;
+  position: sticky;
+  bottom: 10px;
+
+  a {
+    color: $blue;
+    cursor: pointer;
+
+    &::before {
+      content: "arrow_upward";
+    }
+  
+    &:hover {
+      color: $mediumgray;
+      text-decoration: none;
+    }
+  }
+}

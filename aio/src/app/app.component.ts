@@ -400,6 +400,10 @@ export class AppComponent implements OnInit {
     this.showSearchResults = !!query;
   }
 
+  scrollToTop() {
+    this.scrollService.scrollToTop();
+  }
+
   @HostListener('document:keyup', ['$event.key', '$event.which'])
   onKeyUp(key: string, keyCode: number) {
     // forward slash "/"

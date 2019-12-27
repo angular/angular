@@ -61,6 +61,10 @@
   <aio-lazy-ce selector="aio-toc"></aio-lazy-ce>
 </div>
 
+<div class="back-to-top-link" *ngIf="!hasFloatingToc">
+    <a (click)="scrollToTop()" class="material-icons" data-title="Back to top"></a>
+</div>
+
 <footer class="no-print">
   <aio-footer [nodes]="footerNodes" [versionInfo]="versionInfo"></aio-footer>
 </footer>
