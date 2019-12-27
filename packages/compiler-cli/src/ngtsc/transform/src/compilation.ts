@@ -103,6 +103,11 @@ export class TraitCompiler {
   private analyze(sf: ts.SourceFile, preanalyze: false): void;
   private analyze(sf: ts.SourceFile, preanalyze: true): Promise<void>|undefined;
   private analyze(sf: ts.SourceFile, preanalyze: boolean): Promise<void>|undefined {
+    // We shouldn't analyze declaration files.
+    if (sf.isDeclarationFile) {
+      return undefined;
+    }
+
     // analyze() really wants to return `Promise<void>|void`, but TypeScript cannot narrow a return
     // type of 'void', so `undefined` is used instead.
     const promises: Promise<void>[] = [];
