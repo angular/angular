@@ -6,5 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {NOOP_INCREMENTAL_BUILD} from './src/noop';
-export {IncrementalDriver} from './src/state';
+import {IncrementalBuild} from '../api';
+
+export const NOOP_INCREMENTAL_BUILD: IncrementalBuild<any> = {
+  priorWorkFor: () => null
+};
