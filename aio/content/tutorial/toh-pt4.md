@@ -16,10 +16,11 @@ you'll rely on Angular [*dependency injection*](guide/dependency-injection)
 to inject it into the `HeroesComponent` constructor.
 
 Services are a great way to share information among classes that _don't know each other_.
-You'll create a `MessageService` and inject it in two places:
+You'll create a `MessageService` and inject it in two places.
 
-1. in `HeroService` which uses the service to send a message
-2. in `MessagesComponent` which displays that message
+1. Inject in HeroService, which uses the service to send a message.
+2. Inject in MessagesComponent, which displays that message, and also displays the ID
+when the user clicks a hero.
 
 
 ## Create the `HeroService`
@@ -367,9 +368,20 @@ to `MessageService.clear()`.
 The messages will look better when you add the private CSS styles to `messages.component.css`
 as listed in one of the ["final code review"](#final-code-review) tabs below.
 
+## Add additional messages to hero service
+
+The following example shows how to send and display a message each time the user clicks on
+a hero, showing a history of the user's selections. This will be helpful when you get to the
+next section on [Routing](tutorial/toh-pt5).
+
+<code-example header="src/app/heroes/heroes.component.ts"
+path="toh-pt4/src/app/heroes/heroes.component.ts">
+</code-example>
+
 The browser refreshes and the page displays the list of heroes.
-Scroll to the bottom to see the message from the `HeroService` in the message area.
-Click the "clear" button and the message area disappears.
+Refresh the browser to see the list of heroes, and scroll to the bottom to see the
+messages from the HeroService. Each time you click a hero, a new message appears to record
+the selection. Use the "clear" button to clear the message history.
 
 {@a final-code-review}
 
