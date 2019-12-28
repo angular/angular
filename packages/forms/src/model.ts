@@ -370,7 +370,7 @@ export abstract class AbstractControl {
    * @see `markAsPristine()`
    *
    * @param opts Configuration options that determine how the control propagates changes
-   * and emits events events after marking is applied.
+   * and emits events after marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors. Default is false.
    */
