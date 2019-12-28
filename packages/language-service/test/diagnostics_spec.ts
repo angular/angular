@@ -27,6 +27,7 @@ const EXPRESSION_CASES = '/app/expression-cases.ts';
 const NG_FOR_CASES = '/app/ng-for-cases.ts';
 const NG_IF_CASES = '/app/ng-if-cases.ts';
 const TEST_TEMPLATE = '/app/test.ng';
+const APP_COMPONENT = '/app/app.component.ts';
 
 describe('diagnostics', () => {
   const mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
@@ -347,16 +348,15 @@ describe('diagnostics', () => {
 
 
   it(`should not report an error for a form's host directives`, () => {
-    const fileName = '/app/app.component.ts';
-    mockHost.override(fileName, `
+    mockHost.override(APP_COMPONENT, `
       import { Component } from '@angular/core';
 
       @Component({
         template: '<form></form>'})
       export class AppComponent {}`);
-    const tsDiags = tsLS.getSemanticDiagnostics(fileName);
+    const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags).toEqual([]);
-    const ngDiags = ngLS.getDiagnostics(fileName);
+    const ngDiags = ngLS.getDiagnostics(APP_COMPONENT);
     expect(ngDiags).toEqual([]);
   });
 
@@ -381,8 +381,7 @@ describe('diagnostics', () => {
   });
 
   it('should report an error for invalid metadata', () => {
-    const fileName = '/app/app.component.ts';
-    const content = mockHost.override(fileName, `
+    const content = mockHost.override(APP_COMPONENT, `
       import { Component } from '@angular/core';
 
       @Component({
@@ -394,9 +393,9 @@ describe('diagnostics', () => {
       export class AppComponent {
         name = 'some name';
       }`);
-    const tsDiags = tsLS.getSemanticDiagnostics(fileName);
+    const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags).toEqual([]);
-    const ngDiags = ngLS.getDiagnostics(fileName) !;
+    const ngDiags = ngLS.getDiagnostics(APP_COMPONENT) !;
     expect(ngDiags.length).toBe(1);
     const {messageText, start, length} = ngDiags[0];
     const keyword = `() => 'foo'`;
@@ -422,8 +421,7 @@ describe('diagnostics', () => {
   });
 
   it('should not report an error for sub-types of string in non-strict mode', () => {
-    const fileName = '/app/app.component.ts';
-    mockHost.override(fileName, `
+    mockHost.override(APP_COMPONENT, `
       import { Component } from '@angular/core';
 
       @Component({
@@ -435,15 +433,14 @@ describe('diagnostics', () => {
     mockHost.overrideOptions({
       strict: false,  // TODO: this test fails in strict mode
     });
-    const tsDiags = tsLS.getSemanticDiagnostics(fileName);
+    const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags).toEqual([]);
-    const ngDiags = ngLS.getDiagnostics(fileName);
+    const ngDiags = ngLS.getDiagnostics(APP_COMPONENT);
     expect(ngDiags).toEqual([]);
   });
 
   it('should not report an error for sub-types of number in non-strict mode', () => {
-    const fileName = '/app/app.component.ts';
-    mockHost.override(fileName, `
+    mockHost.override(APP_COMPONENT, `
       import { Component } from '@angular/core';
 
       @Component({
@@ -455,15 +452,14 @@ describe('diagnostics', () => {
     mockHost.overrideOptions({
       strict: false,  // TODO: This test fails in strict mode
     });
-    const tsDiags = tsLS.getSemanticDiagnostics(fileName);
+    const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags).toEqual([]);
-    const ngDiags = ngLS.getDiagnostics(fileName);
+    const ngDiags = ngLS.getDiagnostics(APP_COMPONENT);
     expect(ngDiags).toEqual([]);
   });
 
   it('should report a warning if an event results in a callable expression', () => {
-    const fileName = '/app/app.component.ts';
-    const content = mockHost.override(fileName, `
+    const content = mockHost.override(APP_COMPONENT, `
       import { Component } from '@angular/core';
 
       @Component({
@@ -472,7 +468,7 @@ describe('diagnostics', () => {
       export class AppComponent {
         onClick() { }
       }`);
-    const diagnostics = ngLS.getDiagnostics(fileName) !;
+    const diagnostics = ngLS.getDiagnostics(APP_COMPONENT) !;
     const {messageText, start, length} = diagnostics[0];
     expect(messageText).toBe('Unexpected callable expression. Expected a method call');
     const keyword = `"onClick"`;
@@ -482,8 +478,7 @@ describe('diagnostics', () => {
 
   // #13412
   it('should not report an error for using undefined under non-strict mode', () => {
-    const fileName = '/app/app.component.ts';
-    mockHost.override(fileName, `
+    mockHost.override(APP_COMPONENT, `
       import { Component } from '@angular/core';
 
       @Component({
@@ -495,16 +490,15 @@ describe('diagnostics', () => {
     mockHost.overrideOptions({
       strict: false,  // TODO: This test fails in strict mode
     });
-    const tsDiags = tsLS.getSemanticDiagnostics(fileName);
+    const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags).toEqual([]);
-    const ngDiags = ngLS.getDiagnostics(fileName);
+    const ngDiags = ngLS.getDiagnostics(APP_COMPONENT);
     expect(ngDiags).toEqual([]);
   });
 
   // Issue #13326
   it('should report a narrow span for invalid pipes', () => {
-    const fileName = '/app/app.component.ts';
-    const content = mockHost.override(fileName, `
+    const content = mockHost.override(APP_COMPONENT, `
       import { Component } from '@angular/core';
 
       @Component({
@@ -513,9 +507,9 @@ describe('diagnostics', () => {
       export class AppComponent {
         data = 'some data';
       }`);
-    const tsDiags = tsLS.getSemanticDiagnostics(fileName);
+    const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags).toEqual([]);
-    const ngDiags = ngLS.getDiagnostics(fileName);
+    const ngDiags = ngLS.getDiagnostics(APP_COMPONENT);
     expect(ngDiags.length).toBe(1);
     const {messageText, start, length} = ngDiags[0];
     expect(messageText).toBe(`The pipe 'dat' could not be found`);
@@ -526,24 +520,22 @@ describe('diagnostics', () => {
 
   // Issue #19406
   it('should allow empty template', () => {
-    const fileName = '/app/app.component.ts';
-    mockHost.override(fileName, `
+    mockHost.override(APP_COMPONENT, `
       import { Component } from '@angular/core';
 
       @Component({
         template : '',
       })
       export class AppComponent {}`);
-    const tsDiags = tsLS.getSemanticDiagnostics(fileName);
+    const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags).toEqual([]);
-    const ngDiags = ngLS.getDiagnostics(fileName);
+    const ngDiags = ngLS.getDiagnostics(APP_COMPONENT);
     expect(ngDiags).toEqual([]);
   });
 
   // Issue #15460
   it('should be able to find members defined on an ancestor type', () => {
-    const fileName = '/app/app.component.ts';
-    mockHost.override(fileName, `
+    mockHost.override(APP_COMPONENT, `
       import { Component } from '@angular/core';
       import { NgForm } from '@angular/forms';
 
@@ -564,15 +556,14 @@ describe('diagnostics', () => {
       export class AppComponent {
         onSubmit(form: NgForm) {}
       }`);
-    const tsDiags = tsLS.getSemanticDiagnostics(fileName);
+    const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags).toEqual([]);
-    const ngDiags = ngLS.getDiagnostics(fileName);
+    const ngDiags = ngLS.getDiagnostics(APP_COMPONENT);
     expect(ngDiags).toEqual([]);
   });
 
   it('should report an error for invalid providers', () => {
-    const fileName = '/app/app.component.ts';
-    const content = mockHost.override(fileName, `
+    const content = mockHost.override(APP_COMPONENT, `
       import { Component } from '@angular/core';
 
       @Component({
@@ -580,12 +571,12 @@ describe('diagnostics', () => {
         providers: [null]
       })
       export class AppComponent {}`);
-    const tsDiags = tsLS.getSemanticDiagnostics(fileName);
+    const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags.length).toBe(1);
     const msgText = ts.flattenDiagnosticMessageText(tsDiags[0].messageText, '\n');
     expect(msgText).toBe(
         `Type 'null[]' is not assignable to type 'Provider[]'.\n  Type 'null' is not assignable to type 'Provider'.`);
-    const ngDiags = ngLS.getDiagnostics(fileName);
+    const ngDiags = ngLS.getDiagnostics(APP_COMPONENT);
     expect(ngDiags.length).toBe(1);
     const {messageText, start, length} = ngDiags[0];
     expect(messageText)
@@ -599,8 +590,7 @@ describe('diagnostics', () => {
 
   // Issue #15768
   it('should be able to parse a template reference', () => {
-    const fileName = '/app/app.component.ts';
-    mockHost.override(fileName, `
+    mockHost.override(APP_COMPONENT, `
       import { Component } from '@angular/core';
 
       @Component({
@@ -612,16 +602,15 @@ describe('diagnostics', () => {
         \`
       })
       export class AppComponent {}`);
-    const tsDiags = tsLS.getSemanticDiagnostics(fileName);
+    const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags).toEqual([]);
-    const ngDiags = ngLS.getDiagnostics(fileName);
+    const ngDiags = ngLS.getDiagnostics(APP_COMPONENT);
     expect(ngDiags).toEqual([]);
   });
 
   // Issue #15625
   it('should not report errors for localization syntax', () => {
-    const fileName = '/app/app.component.ts';
-    mockHost.override(fileName, `
+    mockHost.override(APP_COMPONENT, `
       import { Component } from '@angular/core';
 
       @Component({
@@ -635,9 +624,9 @@ describe('diagnostics', () => {
       export class AppComponent {
         fieldCount: number = 0;
       }`);
-    const tsDiags = tsLS.getSemanticDiagnostics(fileName);
+    const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags).toEqual([]);
-    const ngDiags = ngLS.getDiagnostics(fileName);
+    const ngDiags = ngLS.getDiagnostics(APP_COMPONENT);
     expect(ngDiags).toEqual([]);
   });
 
@@ -646,8 +635,7 @@ describe('diagnostics', () => {
     mockHost.overrideOptions({
       strictNullChecks: true,
     });
-    const fileName = '/app/app.component.ts';
-    mockHost.override(fileName, `
+    mockHost.override(APP_COMPONENT, `
       import { Component } from '@angular/core';
 
       @Component({
@@ -660,15 +648,14 @@ describe('diagnostics', () => {
           b: 2,
         };
       }`);
-    const tsDiags = tsLS.getSemanticDiagnostics(fileName);
+    const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags).toEqual([]);
-    const ngDiags = ngLS.getDiagnostics(fileName);
+    const ngDiags = ngLS.getDiagnostics(APP_COMPONENT);
     expect(ngDiags).toEqual([]);
   });
 
   it('should be able to resolve modules using baseUrl', () => {
-    const fileName = '/app/app.component.ts';
-    mockHost.override(fileName, `
+    mockHost.override(APP_COMPONENT, `
       import { Component } from '@angular/core';
       import { NgForm } from '@angular/forms';
       import { Server } from 'app/server';
@@ -685,15 +672,14 @@ describe('diagnostics', () => {
     mockHost.overrideOptions({
       baseUrl: '/other/files',
     });
-    const tsDiags = tsLS.getSemanticDiagnostics(fileName);
+    const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags).toEqual([]);
-    const diagnostic = ngLS.getDiagnostics(fileName);
+    const diagnostic = ngLS.getDiagnostics(APP_COMPONENT);
     expect(diagnostic).toEqual([]);
   });
 
   it('should report errors for using the now removed OpaqueToken (deprecated)', () => {
-    const fileName = '/app/app.component.ts';
-    mockHost.override(fileName, `
+    mockHost.override(APP_COMPONENT, `
       import { Component, Inject, OpaqueToken } from '@angular/core';
       import { NgForm } from '@angular/forms';
 
@@ -707,7 +693,7 @@ describe('diagnostics', () => {
         constructor (@Inject(token) value: string) {}
         onSubmit(form: NgForm) {}
       }`);
-    const tsDiags = tsLS.getSemanticDiagnostics(fileName);
+    const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags.length).toBe(1);
     expect(tsDiags[0].messageText)
         .toBe(
@@ -748,26 +734,24 @@ describe('diagnostics', () => {
     });
 
     it('should report diagnostic for missing template or templateUrl', () => {
-      const fileName = '/app/app.component.ts';
-      const content = mockHost.override(fileName, `
+      const content = mockHost.override(APP_COMPONENT, `
         import {Component} from '@angular/core';
 
         @Component({
           selector: 'app-example',
         })
         export class AppComponent {}`);
-      const diags = ngLS.getDiagnostics(fileName);
+      const diags = ngLS.getDiagnostics(APP_COMPONENT);
       expect(diags.length).toBe(1);
       const {file, messageText, start, length} = diags[0];
-      expect(file !.fileName).toBe(fileName);
+      expect(file !.fileName).toBe(APP_COMPONENT);
       expect(messageText).toBe(`Component 'AppComponent' must have a template or templateUrl`);
       expect(start).toBe(content.indexOf(`@Component`) + 1);
       expect(length).toBe('Component'.length);
     });
 
     it('should report diagnostic for both template and templateUrl', () => {
-      const fileName = '/app/app.component.ts';
-      const content = mockHost.override(fileName, `
+      const content = mockHost.override(APP_COMPONENT, `
         import {Component} from '@angular/core';
 
         @Component({
@@ -776,10 +760,10 @@ describe('diagnostics', () => {
           templateUrl: './test.ng',
         })
         export class AppComponent {}`);
-      const diags = ngLS.getDiagnostics(fileName);
+      const diags = ngLS.getDiagnostics(APP_COMPONENT);
       expect(diags.length).toBe(1);
       const {file, messageText, start, length} = diags[0];
-      expect(file !.fileName).toBe(fileName);
+      expect(file !.fileName).toBe(APP_COMPONENT);
       expect(messageText)
           .toBe(`Component 'AppComponent' must not have both template and templateUrl`);
       expect(start).toBe(content.indexOf(`@Component`) + 1);
@@ -806,8 +790,7 @@ describe('diagnostics', () => {
     });
 
     it('should not report errors for valid styleUrls', () => {
-      const fileName = '/app/app.component.ts';
-      mockHost.override(fileName, `
+      mockHost.override(APP_COMPONENT, `
         import {Component} from '@angular/core';
 
         @Component({
@@ -816,7 +799,7 @@ describe('diagnostics', () => {
         })
         export class AppComponent {}`);
 
-      const diagnostics = ngLS.getDiagnostics(fileName) !;
+      const diagnostics = ngLS.getDiagnostics(APP_COMPONENT) !;
       expect(diagnostics.length).toBe(0);
     });
   });
