@@ -35,8 +35,12 @@ export class TypeScriptReflectionHost implements ReflectionHost {
   getConstructorParameters(clazz: ClassDeclaration): CtorParameter[]|null {
     const tsClazz = castDeclarationToClassOrDie(clazz);
 
-    // First, find the constructor.
-    const ctor = tsClazz.members.find(ts.isConstructorDeclaration);
+    // First, find the constructor with a `body`. The constructors without a `body` are overloads
+    // whereas we want the implementation since it's the one that'll be executed and which can
+    // have decorators.
+    const ctor = tsClazz.members.find(
+        (member): member is ts.ConstructorDeclaration =>
+            ts.isConstructorDeclaration(member) && member.body !== undefined);
     if (ctor === undefined) {
       return null;
     }
