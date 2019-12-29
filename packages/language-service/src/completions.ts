@@ -72,6 +72,10 @@ enum ATTR {
   IDENT_EVENT_IDX = 10,
 }
 
+const ANIMATE_PROP_PREFIX = 'animate-';
+const SECOND_ANIMATE_PROP_PREFIX = '@';
+const ANIMATIONEVENT = ['start', 'done'];
+
 function isIdentifierPart(code: number) {
   // Identifiers consist of alphanumeric characters, '_', or '$'.
   return isAsciiLetter(code) || isDigit(code) || code == $$ || code == $_;
@@ -172,7 +176,7 @@ export function getTemplateCompletions(
           visitAttribute(ast) {
             if (!ast.valueSpan || !inSpan(templatePosition, spanOf(ast.valueSpan))) {
               // We are in the name of an attribute. Show attribute completions.
-              result = attributeCompletions(templateInfo, path);
+              result = attributeCompletions(templateInfo, path, templatePosition);
             } else if (ast.valueSpan && inSpan(templatePosition, spanOf(ast.valueSpan))) {
               result = attributeValueCompletions(templateInfo, templatePosition, ast);
             }
@@ -216,7 +220,8 @@ export function getTemplateCompletions(
   });
 }
 
-function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ng.CompletionEntry[] {
+function attributeCompletions(
+    info: AstResult, path: AstPath<HtmlAst>, position: number): ng.CompletionEntry[] {
   const attr = path.tail;
   const elem = path.parentOf(attr);
   if (!(attr instanceof Attribute) || !(elem instanceof Element)) {
@@ -244,12 +249,24 @@ function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ng.Compl
   } else if (
       bindParts[ATTR.KW_BIND_IDX] !== undefined ||
       bindParts[ATTR.IDENT_PROPERTY_IDX] !== undefined) {
-    // property binding via bind- or []
-    results.push(...propertyNames(elem.name), ...ngAttrs.inputs);
+    const name = bindParts[ATTR.KW_BIND_IDX] || bindParts[ATTR.IDENT_PROPERTY_IDX] || '';
+    if (isAnimationAttribute(name)) {
+      results.push(
+          ...completionForAnimation(name, info, position, attr.sourceSpan.start.offset + 1));
+    } else {
+      // property binding via bind- or []
+      results.push(...propertyNames(elem.name), ...ngAttrs.inputs);
+    }
   } else if (
       bindParts[ATTR.KW_ON_IDX] !== undefined || bindParts[ATTR.IDENT_EVENT_IDX] !== undefined) {
-    // event binding via on- or ()
-    results.push(...eventNames(elem.name), ...ngAttrs.outputs);
+    const name = bindParts[ATTR.KW_ON_IDX] || bindParts[ATTR.IDENT_EVENT_IDX] || '';
+    if (isAnimationAttribute(name)) {
+      results.push(
+          ...completionForAnimation(name, info, position, attr.sourceSpan.start.offset + 1));
+    } else {
+      // event binding via on- or ()
+      results.push(...eventNames(elem.name), ...ngAttrs.outputs);
+    }
   } else if (
       bindParts[ATTR.KW_BINDON_IDX] !== undefined ||
       bindParts[ATTR.IDENT_BANANA_BOX_IDX] !== undefined) {
@@ -263,6 +280,68 @@ function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ng.Compl
       sortText: name,
     };
   });
+}
+
+function isAnimationAttribute(name: string) {
+  return name.startsWith(ANIMATE_PROP_PREFIX) || name.startsWith(SECOND_ANIMATE_PROP_PREFIX);
+}
+
+// `cursorPosition` represents location of a cursor in the template(start with 0).
+//    k|ey.entry
+//     ^---------- cursor, return 0.
+//    key.ent|ry
+//           ^---- cursor, return 1.
+function cursorPosition(name: string, begin: number, position: number): number {
+  const parts = name.split('.');
+  let start = begin;
+  let index = 0;
+  if (position < start || position > (start + name.length)) {
+    // out of bound.
+    return -1;
+  }
+  for (const part of parts) {
+    if (start <= position && position <= start + part.length) {
+      return index;
+    }
+    index++;
+    start += part.length + 1;
+  }
+  return -1;
+}
+
+function completionForAnimation(
+    name: string, info: AstResult, position: number, namePosition: number): string[] {
+  let animationPrefixLength = 0;
+  if (name.startsWith(ANIMATE_PROP_PREFIX)) {
+    animationPrefixLength = ANIMATE_PROP_PREFIX.length;
+  }
+  if (name.startsWith(SECOND_ANIMATE_PROP_PREFIX)) {
+    animationPrefixLength = SECOND_ANIMATE_PROP_PREFIX.length;
+  }
+  name = name.substring(animationPrefixLength);
+  namePosition += animationPrefixLength;
+
+  const index = cursorPosition(name, namePosition, position);
+  const result: string[] = [];
+  switch (index) {
+    case 0:
+      result.push(...completionForAnimationTrigger(info));
+      break;
+    case 1:
+      result.push(...ANIMATIONEVENT);
+      break;
+    default:
+      break;
+  }
+  return result;
+}
+
+function completionForAnimationTrigger(info: AstResult): string[] {
+  const template = info.directive.template;
+  if (template) {
+    return template.animations.map(ani => ani.name);
+  }
+  return [];
 }
 
 function attributeCompletionsForElement(

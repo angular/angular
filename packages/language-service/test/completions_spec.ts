@@ -18,6 +18,7 @@ const APP_COMPONENT = '/app/app.component.ts';
 const PARSING_CASES = '/app/parsing-cases.ts';
 const TEST_TEMPLATE = '/app/test.ng';
 const EXPRESSION_CASES = '/app/expression-cases.ts';
+const ANIMATIONS_CASE = '/app/animations-case.ts';
 
 describe('completions', () => {
   const mockHost = new MockTypescriptHost(['/app/main.ts']);
@@ -682,6 +683,24 @@ describe('completions', () => {
       });
     });
   });
+
+  describe('animation', () => {
+    it('should work with trigger (animate- prefix)', () => {
+      const marker = mockHost.getLocationMarkerFor(ANIMATIONS_CASE, 'animate-prefix');
+      const completions = ngLS.getCompletionsAt(ANIMATIONS_CASE, marker.start);
+      expectContain(completions, CompletionKind.ATTRIBUTE, ['openClose']);
+    });
+    it('should work with trigger (@ prefix)', () => {
+      const marker = mockHost.getLocationMarkerFor(ANIMATIONS_CASE, 'trigger');
+      const completions = ngLS.getCompletionsAt(ANIMATIONS_CASE, marker.start);
+      expectContain(completions, CompletionKind.ATTRIBUTE, ['openClose']);
+    });
+    it('should work with event', () => {
+      const marker = mockHost.getLocationMarkerFor(ANIMATIONS_CASE, 'event');
+      const completions = ngLS.getCompletionsAt(ANIMATIONS_CASE, marker.start);
+      expectContain(completions, CompletionKind.ATTRIBUTE, ['start']);
+    });
+  })
 });
 
 function expectContain(
