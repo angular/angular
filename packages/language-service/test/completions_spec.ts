@@ -700,7 +700,12 @@ describe('completions', () => {
       const completions = ngLS.getCompletionsAt(ANIMATIONS_CASE, marker.start);
       expectContain(completions, CompletionKind.ATTRIBUTE, ['start']);
     });
-  })
+    it('should work with a special animation control binding', () => {
+      const marker = mockHost.getLocationMarkerFor(ANIMATIONS_CASE, 'disabled');
+      const completions = ngLS.getCompletionsAt(ANIMATIONS_CASE, marker.start);
+      expectContain(completions, CompletionKind.ATTRIBUTE, ['disabled']);
+    });
+  });
 });
 
 function expectContain(

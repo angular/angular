@@ -75,6 +75,7 @@ enum ATTR {
 const ANIMATE_PROP_PREFIX = 'animate-';
 const SECOND_ANIMATE_PROP_PREFIX = '@';
 const ANIMATIONEVENT = ['start', 'done'];
+const SPECIAL_ANIMATION_CONTROL = 'disabled';
 
 function isIdentifierPart(code: number) {
   // Identifiers consist of alphanumeric characters, '_', or '$'.
@@ -312,6 +313,10 @@ function cursorPosition(name: string, begin: number, position: number): number {
 function completionForAnimation(
     name: string, info: AstResult, position: number, namePosition: number): string[] {
   let animationPrefixLength = 0;
+  // A special animation control binding called @.disabled.
+  // https://angular.io/guide/transition-and-triggers#disabling-an-animation-on-an-html-element
+  let isSpecialAnimationControl = false;
+
   if (name.startsWith(ANIMATE_PROP_PREFIX)) {
     animationPrefixLength = ANIMATE_PROP_PREFIX.length;
   }
@@ -321,14 +326,26 @@ function completionForAnimation(
   name = name.substring(animationPrefixLength);
   namePosition += animationPrefixLength;
 
+  if (name.startsWith('.')) {
+    isSpecialAnimationControl = true;
+    name = name.substring(1);
+    namePosition += 1;
+  }
+
   const index = cursorPosition(name, namePosition, position);
   const result: string[] = [];
   switch (index) {
     case 0:
-      result.push(...completionForAnimationTrigger(info));
+      if (isSpecialAnimationControl) {
+        result.push(SPECIAL_ANIMATION_CONTROL);
+      } else {
+        result.push(...completionForAnimationTrigger(info));
+      }
       break;
     case 1:
-      result.push(...ANIMATIONEVENT);
+      if (!isSpecialAnimationControl) {
+        result.push(...ANIMATIONEVENT);
+      }
       break;
     default:
       break;
