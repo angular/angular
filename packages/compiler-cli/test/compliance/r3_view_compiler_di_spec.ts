@@ -99,6 +99,41 @@ describe('compiler compliance: dependency injection', () => {
     expectEmit(result.source, def, 'Incorrect injectable definition');
   });
 
+  it('should create a factory definition for an injectable with an overloaded constructor', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+          import {Injectable, Optional} from '@angular/core';
+
+          class MyDependency {}
+          class MyOptionalDependency {}
+
+          @Injectable()
+          export class MyService {
+            constructor(dep: MyDependency);
+            constructor(dep: MyDependency, @Optional() optionalDep?: MyOptionalDependency) {}
+          }
+        `
+      }
+    };
+
+    const factory = `
+      MyService.ɵfac = function MyService_Factory(t) {
+        return new (t || MyService)($r3$.ɵɵinject(MyDependency), $r3$.ɵɵinject(MyOptionalDependency, 8));
+      }`;
+
+    const def = `
+      MyService.ɵprov = $r3$.ɵɵdefineInjectable({
+        token: MyService,
+        factory: MyService.ɵfac
+      });
+    `;
+
+    const result = compile(files, angularFiles);
+    expectEmit(result.source, factory, 'Incorrect factory definition');
+    expectEmit(result.source, def, 'Incorrect injectable definition');
+  });
+
   it('should create a single factory def if the class has more than one decorator', () => {
     const files = {
       app: {

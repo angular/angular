@@ -192,6 +192,32 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('inject(Dep, 8)');
     });
 
+    it('should compile @Injectable with constructor overloads', () => {
+      env.write('test.ts', `
+      import {Injectable, Optional} from '@angular/core';
+
+      @Injectable()
+      class Dep {}
+
+      @Injectable()
+      class OptionalDep {}
+
+      @Injectable()
+      class Service {
+        constructor(dep: Dep);
+
+        constructor(dep: Dep, @Optional() optionalDep?: OptionalDep) {}
+      }
+    `);
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+
+      expect(jsContents)
+          .toContain(
+              `Service.ɵfac = function Service_Factory(t) { ` +
+              `return new (t || Service)(i0.ɵɵinject(Dep), i0.ɵɵinject(OptionalDep, 8)); };`);
+    });
+
     it('should compile Directives without errors', () => {
       env.write('test.ts', `
         import {Directive} from '@angular/core';
