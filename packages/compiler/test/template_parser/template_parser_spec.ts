@@ -658,6 +658,11 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           ]);
         });
 
+        it('should report missing property names in bind- syntax', () => {
+          expect(() => parse('<div bind-></div>', [])).toThrowError(`Template parse errors:
+Property name is missing in binding ("<div [ERROR ->]bind-></div>"): TestComp@0:5`);
+        });
+
         it('should parse bound properties via {{...}} and not report them as attributes', () => {
           expect(humanizeTplAst(parse('<div prop="{{v}}">', []))).toEqual([
             [ElementAst, 'div'],
@@ -683,6 +688,11 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                  .toThrowError(
                      /Assigning animation triggers via @prop="exp" attributes with an expression is invalid. Use property bindings \(e.g. \[@prop\]="exp"\) or use an attribute without a value \(e.g. @prop\) instead. \("<div \[ERROR ->\]@someAnimation="value2">"\): TestComp@0:5/);
            });
+
+        it('should report missing animation trigger in @ syntax', () => {
+          expect(() => parse('<div @></div>', [])).toThrowError(`Template parse errors:
+Animation trigger is missing ("<div [ERROR ->]@></div>"): TestComp@0:5`);
+        });
 
         it('should not issue a warning when host attributes contain a valid property-bound animation trigger',
            () => {
@@ -804,6 +814,11 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           ]))).toEqual([[ElementAst, 'div'], [BoundEventAst, 'event', null, 'v']]);
         });
 
+        it('should report missing event names in on- syntax', () => {
+          expect(() => parse('<div on-></div>', []))
+              .toThrowError(/Event name is missing in binding/);
+        });
+
         it('should allow events on explicit embedded templates that are emitted by a directive',
            () => {
              const dirA =
@@ -840,6 +855,10 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
              ]);
            });
 
+        it('should report missing property names in bindon- syntax', () => {
+          expect(() => parse('<div bindon-></div>', []))
+              .toThrowError(/Property name is missing in binding/);
+        });
       });
 
       describe('directives', () => {
@@ -1372,9 +1391,20 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
 "-" is not allowed in reference names ("<div [ERROR ->]#a-b></div>"): TestComp@0:5`);
         });
 
+        it('should report missing reference names', () => {
+          expect(() => parse('<div #></div>', [])).toThrowError(`Template parse errors:
+Reference does not have a name ("<div [ERROR ->]#></div>"): TestComp@0:5`);
+        });
+
         it('should report variables as errors', () => {
           expect(() => parse('<div let-a></div>', [])).toThrowError(`Template parse errors:
 "let-" is only supported on ng-template elements. ("<div [ERROR ->]let-a></div>"): TestComp@0:5`);
+        });
+
+        it('should report missing variable names', () => {
+          expect(() => parse('<ng-template let-></ng-template>', []))
+              .toThrowError(`Template parse errors:
+Variable does not have a name ("<ng-template [ERROR ->]let-></ng-template>"): TestComp@0:13`);
         });
 
         it('should report duplicate reference names', () => {

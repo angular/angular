@@ -31,7 +31,7 @@ import * as t from './template_ast';
 import {PreparsedElementType, preparseElement} from './template_preparser';
 
 const BIND_NAME_REGEXP =
-    /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/;
+    /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/;
 
 // Group 1 = "bind-"
 const KW_BIND_IDX = 1;
@@ -501,6 +501,8 @@ class TemplateParseVisitor implements html.Visitor {
       identifier: string, value: string, sourceSpan: ParseSourceSpan, targetVars: t.VariableAst[]) {
     if (identifier.indexOf('-') > -1) {
       this._reportError(`"-" is not allowed in variable names`, sourceSpan);
+    } else if (identifier.length === 0) {
+      this._reportError(`Variable does not have a name`, sourceSpan);
     }
 
     targetVars.push(new t.VariableAst(identifier, value, sourceSpan));
@@ -511,6 +513,8 @@ class TemplateParseVisitor implements html.Visitor {
       targetRefs: ElementOrDirectiveRef[]) {
     if (identifier.indexOf('-') > -1) {
       this._reportError(`"-" is not allowed in reference names`, sourceSpan);
+    } else if (identifier.length === 0) {
+      this._reportError(`Reference does not have a name`, sourceSpan);
     }
 
     targetRefs.push(new ElementOrDirectiveRef(identifier, value, sourceSpan));
