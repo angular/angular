@@ -68,10 +68,42 @@ ts_library(
     testonly = True,
     srcs = glob(["node/*.ts"]) + [
         "node-env-setup.ts",
-        "node_entry_point.ts",
-        "node_entry_point_no_patch_clock.ts",
         "test-env-setup-jasmine-no-patch-clock.ts",
     ],
+    deps = [
+        ":common_spec_env",
+        ":common_spec_srcs",
+        ":common_spec_util",
+        "//packages/zone.js/lib",
+        "@npm//@types/shelljs",
+        "@npm//@types/systemjs",
+        "@npm//rxjs",
+        "@npm//shelljs",
+        "@npm//systemjs",
+    ],
+)
+
+ts_library(
+    name = "node_entry_point",
+    testonly = True,
+    srcs = ["node_entry_point.ts"],
+    deps = [
+        ":common_spec_env",
+        ":common_spec_srcs",
+        ":common_spec_util",
+        "//packages/zone.js/lib",
+        "@npm//@types/shelljs",
+        "@npm//@types/systemjs",
+        "@npm//rxjs",
+        "@npm//shelljs",
+        "@npm//systemjs",
+    ],
+)
+
+ts_library(
+    name = "node_entry_point_no_patch_clock",
+    testonly = True,
+    srcs = ["node_entry_point_no_patch_clock.ts"],
     deps = [
         ":common_spec_env",
         ":common_spec_srcs",
@@ -90,7 +122,6 @@ ts_library(
     testonly = True,
     srcs = [
         "extra/bluebird.spec.ts",
-        "node_bluebird_entry_point.ts",
     ],
     deps = [
         ":common_spec_env",
@@ -100,13 +131,33 @@ ts_library(
 )
 
 ts_library(
-    name = "error_spec",
+    name = "node_bluebird_entry_point",
     testonly = True,
-    srcs = [
-        "node_error_disable_policy_entry_point.ts",
-        "node_error_entry_point.ts",
-        "node_error_lazy_policy_entry_point.ts",
+    srcs = ["node_bluebird_entry_point.ts"],
+    deps = [
+        ":common_spec_env",
+        "//packages/zone.js/lib",
+        "@npm//bluebird",
     ],
+)
+
+ts_library(
+    name = "node_error_disable_policy_entry_point",
+    testonly = True,
+    srcs = ["node_error_disable_policy_entry_point.ts"],
+    deps = [
+        ":common_spec_env",
+        ":common_spec_util",
+        ":error_spec_srcs",
+        ":node_error_entry_point",
+        "//packages/zone.js/lib",
+    ],
+)
+
+ts_library(
+    name = "node_error_entry_point",
+    testonly = True,
+    srcs = ["node_error_entry_point.ts"],
     deps = [
         ":common_spec_env",
         ":common_spec_util",
@@ -115,53 +166,61 @@ ts_library(
     ],
 )
 
+ts_library(
+    name = "node_error_lazy_policy_entry_point",
+    testonly = True,
+    srcs = ["node_error_lazy_policy_entry_point.ts"],
+    deps = [
+        ":common_spec_env",
+        ":common_spec_util",
+        ":error_spec_srcs",
+        ":node_error_entry_point",
+        "//packages/zone.js/lib",
+    ],
+)
+
 jasmine_node_test(
     name = "test_node",
-    bootstrap = [
-        "angular/packages/zone.js/test/node_entry_point.js",
-    ],
+    templated_args = ["--node_options=--require=$(rlocation $(location :node_entry_point_es5))"],
     deps = [
+        ":node_entry_point_es5",
         ":test_node_lib",
     ],
 )
 
 jasmine_node_test(
     name = "test_node_no_jasmine_clock",
-    bootstrap = [
-        "angular/packages/zone.js/test/node_entry_point_no_patch_clock.js",
-    ],
+    templated_args = ["--node_options=--require=$(rlocation $(location :node_entry_point_no_patch_clock_es5))"],
     deps = [
+        ":node_entry_point_no_patch_clock_es5",
         ":test_node_lib",
     ],
 )
 
 jasmine_node_test(
     name = "test_node_bluebird",
-    bootstrap = [
-        "angular/packages/zone.js/test/node_bluebird_entry_point.js",
-    ],
+    templated_args = ["--node_options=--require=$(rlocation $(location :node_bluebird_entry_point_es5))"],
     deps = [
         ":bluebird_spec",
+        ":node_bluebird_entry_point_es5",
     ],
 )
 
 jasmine_node_test(
     name = "test_node_error_disable_policy",
-    bootstrap = [
-        "angular/packages/zone.js/test/node_error_disable_policy_entry_point.js",
-    ],
+    templated_args = ["--node_options=--require=$(rlocation $(location :node_error_disable_policy_entry_point_es5))"],
     deps = [
-        ":error_spec",
+        ":node_error_disable_policy_entry_point",
+        ":node_error_disable_policy_entry_point_es5",
     ],
 )
 
 jasmine_node_test(
     name = "test_node_error_lazy_policy",
-    bootstrap = [
-        "angular/packages/zone.js/test/node_error_lazy_policy_entry_point.js",
-    ],
+    templated_args = ["--node_options=--require=$(rlocation $(location :node_error_lazy_policy_entry_point_es5))"],
     deps = [
-        ":error_spec",
+        ":node_error_lazy_policy_entry_point",
+        ":node_error_lazy_policy_entry_point_es5",
     ],
 )
 
