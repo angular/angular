@@ -91,25 +91,14 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   private _checked: boolean = false;
   private _foundation: MDCSwitchFoundation;
   private _adapter: MDCSwitchAdapter = {
-    addClass: (className) => {
-      this._toggleClass(className, true);
-    },
-    removeClass: (className) => {
-      this._toggleClass(className, false);
-    },
-    setNativeControlChecked: (checked) => {
-      this._checked = checked;
-    },
-    setNativeControlDisabled: (disabled) => {
-      this._disabled = disabled;
-    },
+    addClass: className => this._switchElement.nativeElement.classList.add(className),
+    removeClass: className => this._switchElement.nativeElement.classList.remove(className),
+    setNativeControlChecked: checked => this._checked = checked,
+    setNativeControlDisabled: disabled => this._disabled = disabled,
   };
 
   /** Whether the slide toggle is currently focused. */
   _focused: boolean;
-
-  /** The set of classes that should be applied to the native input. */
-  _classes: {[key: string]: boolean} = {'mdc-switch': true};
 
   /** Configuration for the underlying ripple. */
   _rippleAnimation: RippleAnimationConfig = {
@@ -205,6 +194,9 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
 
   /** Reference to the underlying input element. */
   @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
+
+  /** Reference to the MDC switch element. */
+  @ViewChild('switch') _switchElement: ElementRef<HTMLElement>;
 
   constructor(private _changeDetectorRef: ChangeDetectorRef,
               @Attribute('tabindex') tabIndex: string,
@@ -309,12 +301,6 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
       this._onTouched();
       this._changeDetectorRef.markForCheck();
     });
-  }
-
-  /** Toggles a class on the switch element. */
-  private _toggleClass(cssClass: string, active: boolean) {
-    this._classes[cssClass] = active;
-    this._changeDetectorRef.markForCheck();
   }
 
   static ngAcceptInputType_tabIndex: NumberInput;

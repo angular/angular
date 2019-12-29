@@ -1,6 +1,6 @@
 <div class="mdc-form-field"
      [class.mdc-form-field--align-end]="labelPosition == 'before'">
-  <div [ngClass]="_classes" #switch>
+  <div class="mdc-switch" #switch>
     <div class="mdc-switch__track"></div>
     <div class="mdc-switch__thumb-underlay">
       <div class="mat-mdc-slide-toggle-ripple" mat-ripple
@@ -28,9 +28,7 @@
     </div>
   </div>
 
-  <label #label
-         [for]="inputId"
-         (click)="$event.stopPropagation()">
+  <label [for]="inputId" (click)="$event.stopPropagation()">
     <ng-content></ng-content>
   </label>
 </div>

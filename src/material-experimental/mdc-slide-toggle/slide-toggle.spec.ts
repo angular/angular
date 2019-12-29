@@ -13,6 +13,7 @@ describe('MDC-based MatSlideToggle without forms', () => {
       imports: [MatSlideToggleModule, BidiModule],
       declarations: [
         SlideToggleBasic,
+        SlideToggleCheckedAndDisabledAttr,
         SlideToggleWithTabindexAttr,
         SlideToggleWithoutLabel,
         SlideToggleProjectedLabel,
@@ -319,6 +320,22 @@ describe('MDC-based MatSlideToggle without forms', () => {
       expect(slideToggle.tabIndex)
         .toBe(5, 'Expected tabIndex property to have been set based on the native attribute');
     }));
+
+    it('should add the disabled class if disabled through attribute', () => {
+      const fixture = TestBed.createComponent(SlideToggleCheckedAndDisabledAttr);
+      fixture.detectChanges();
+
+      const switchEl = fixture.nativeElement.querySelector('.mdc-switch');
+      expect(switchEl.classList).toContain('mdc-switch--disabled');
+    });
+
+    it('should add the checked class if checked through attribute', () => {
+      const fixture = TestBed.createComponent(SlideToggleCheckedAndDisabledAttr);
+      fixture.detectChanges();
+
+      const switchEl = fixture.nativeElement.querySelector('.mdc-switch');
+      expect(switchEl.classList).toContain('mdc-switch--checked');
+    });
 
     it('should remove the tabindex from the host element', fakeAsync(() => {
       const fixture = TestBed.createComponent(SlideToggleWithTabindexAttr);
@@ -771,6 +788,11 @@ class SlideToggleWithModel {
   isChecked = false;
   isDisabled = false;
 }
+
+@Component({
+  template: `<mat-slide-toggle checked disabled>Label</mat-slide-toggle>`
+})
+class SlideToggleCheckedAndDisabledAttr {}
 
 @Component({
   template: `
