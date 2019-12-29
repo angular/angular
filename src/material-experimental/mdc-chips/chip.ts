@@ -263,8 +263,15 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     },
     notifyTrailingIconInteraction: () => this.removeIconInteraction.emit(this.id),
     notifyRemoval: () => this.removed.emit({chip: this}),
-    getComputedStyleValue: propertyName =>
-        window.getComputedStyle(this._elementRef.nativeElement).getPropertyValue(propertyName),
+    getComputedStyleValue: propertyName => {
+      // This function is run when a chip is removed so it might be
+      // invoked during server-side rendering. Add some extra checks just in case.
+      if (typeof window !== 'undefined' && window) {
+        const getComputedStyle = window.getComputedStyle(this._elementRef.nativeElement);
+        return getComputedStyle.getPropertyValue(propertyName);
+      }
+      return '';
+    },
     setStyleProperty: (propertyName: string, value: string) => {
       this._elementRef.nativeElement.style.setProperty(propertyName, value);
     },
@@ -339,12 +346,13 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   _listenToRemoveIconInteraction() {
     this.removeIcon.interaction
         .pipe(takeUntil(this._destroyed))
-        .subscribe((event) => {
+        .subscribe(event => {
           // The MDC chip foundation calls stopPropagation() for any trailing icon interaction
           // event, even ones it doesn't handle, so we want to avoid passing it keyboard events
-          // for which we have a custom handler.
-          if (this.disabled || (event instanceof KeyboardEvent &&
-            this.HANDLED_KEYS.indexOf(event.keyCode) !== -1)) {
+          // for which we have a custom handler. Note that we assert the type of the event using
+          // the `type`, because `instanceof KeyboardEvent` can throw during server-side rendering.
+          if (this.disabled || (event.type.startsWith('key') &&
+            this.HANDLED_KEYS.indexOf((event as KeyboardEvent).keyCode) !== -1)) {
             return;
           }
           this._chipFoundation.handleTrailingIconInteraction(event);
