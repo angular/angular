@@ -1,5 +1,5 @@
 # BEGIN-INTERNAL
-load("@build_bazel_rules_nodejs//:index.bzl", "npm_package")
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 load("@npm_bazel_jasmine//:index.bzl", "jasmine_node_test")
 load("@npm_bazel_typescript//:index.bzl", "ts_library")
 
@@ -29,7 +29,7 @@ genrule(
     cmd = "cp $< $@",
 )
 
-npm_package(
+pkg_npm(
     name = "ts-api-guardian",
     srcs = [
         "BUILD.bazel",
@@ -38,7 +38,7 @@ npm_package(
         "index.bzl",
         "package.json",
     ],
-    replacements = {
+    substitutions = {
         "@angular//tools/ts-api-guardian:bin": "@npm_ts_api_guardian//:bin",
         "@angular//tools/ts-api-guardian:lib": "@npm//ts-api-guardian",
         "angular/tools/ts-api-guardian/": "npm_ts_api_guardian/",

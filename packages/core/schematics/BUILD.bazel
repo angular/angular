@@ -1,11 +1,11 @@
-load("//tools:defaults.bzl", "npm_package")
+load("//tools:defaults.bzl", "pkg_npm")
 
 exports_files([
     "tsconfig.json",
     "migrations.json",
 ])
 
-npm_package(
+pkg_npm(
     name = "npm_package",
     srcs = ["migrations.json"],
     visibility = ["//packages/core:__pkg__"],
