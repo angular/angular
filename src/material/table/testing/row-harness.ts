@@ -10,6 +10,11 @@ import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {RowHarnessFilters, CellHarnessFilters} from './table-harness-filters';
 import {MatCellHarness, MatHeaderCellHarness, MatFooterCellHarness} from './cell-harness';
 
+/** Text extracted from a table row organized by columns. */
+export interface MatRowHarnessColumnsText {
+  [columnName: string]: string;
+}
+
 /** Harness for interacting with a standard Angular Material table row. */
 export class MatRowHarness extends ComponentHarness {
   /** The selector for the host element of a `MatRowHarness` instance. */
@@ -32,6 +37,11 @@ export class MatRowHarness extends ComponentHarness {
   /** Gets the text of the cells in the row. */
   async getCellTextByIndex(filter: CellHarnessFilters = {}): Promise<string[]> {
     return getCellTextByIndex(this, filter);
+  }
+
+  /** Gets the text inside the row organized by columns. */
+  async getCellTextByColumnName(): Promise<MatRowHarnessColumnsText> {
+    return getCellTextByColumnName(this);
   }
 }
 
@@ -58,6 +68,11 @@ export class MatHeaderRowHarness extends ComponentHarness {
   /** Gets the text of the cells in the header row. */
   async getCellTextByIndex(filter: CellHarnessFilters = {}): Promise<string[]> {
     return getCellTextByIndex(this, filter);
+  }
+
+  /** Gets the text inside the header row organized by columns. */
+  async getCellTextByColumnName(): Promise<MatRowHarnessColumnsText> {
+    return getCellTextByColumnName(this);
   }
 }
 
@@ -86,11 +101,29 @@ export class MatFooterRowHarness extends ComponentHarness {
   async getCellTextByIndex(filter: CellHarnessFilters = {}): Promise<string[]> {
     return getCellTextByIndex(this, filter);
   }
+
+  /** Gets the text inside the footer row organized by columns. */
+  async getCellTextByColumnName(): Promise<MatRowHarnessColumnsText> {
+    return getCellTextByColumnName(this);
+  }
 }
+
 
 async function getCellTextByIndex(harness: {
   getCells: (filter?: CellHarnessFilters) => Promise<MatCellHarness[]>
 }, filter: CellHarnessFilters): Promise<string[]> {
   const cells = await harness.getCells(filter);
   return Promise.all(cells.map(cell => cell.getText()));
+}
+
+async function getCellTextByColumnName(harness: {
+  getCells: () => Promise<MatCellHarness[]>
+}): Promise<MatRowHarnessColumnsText> {
+  const output: MatRowHarnessColumnsText = {};
+  const cells = await harness.getCells();
+  const cellsData = await Promise.all(cells.map(cell => {
+    return Promise.all([cell.getColumnName(), cell.getText()]);
+  }));
+  cellsData.forEach(([columnName, text]) => output[columnName] = text);
+  return output;
 }

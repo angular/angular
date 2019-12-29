@@ -138,6 +138,27 @@ export function runHarnessTests(
       ['10', 'Neon', '20.1797', 'Ne']
     ]);
   });
+
+  it('should be able to get the cell text in a row organized by index', async () => {
+    const table = await loader.getHarness(tableHarness);
+    const rows = await table.getRows();
+
+    expect(rows.length).toBeGreaterThan(0);
+    expect(await rows[0].getCellTextByIndex()).toEqual(['1', 'Hydrogen', '1.0079', 'H']);
+  });
+
+  it('should be able to get the cell text in a row organized by columns', async () => {
+    const table = await loader.getHarness(tableHarness);
+    const rows = await table.getRows();
+
+    expect(rows.length).toBeGreaterThan(0);
+    expect(await rows[0].getCellTextByColumnName()).toEqual({
+      position: '1',
+      name: 'Hydrogen',
+      weight: '1.0079',
+      symbol: 'H'
+    });
+  });
 }
 
 @Component({

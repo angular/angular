@@ -8,7 +8,12 @@
 
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {TableHarnessFilters, RowHarnessFilters} from './table-harness-filters';
-import {MatRowHarness, MatHeaderRowHarness, MatFooterRowHarness} from './row-harness';
+import {
+  MatRowHarness,
+  MatHeaderRowHarness,
+  MatFooterRowHarness,
+  MatRowHarnessColumnsText,
+} from './row-harness';
 
 /** Text extracted from a table organized by columns. */
 export interface MatTableHarnessColumnsText {
@@ -64,13 +69,15 @@ export class MatTableHarness extends ComponentHarness {
 
     const text: MatTableHarnessColumnsText = {};
     const [headerData, footerData, rowsData] = await Promise.all([
-      Promise.all(headerRows.map(row => getRowData(row))),
-      Promise.all(footerRows.map(row => getRowData(row))),
-      Promise.all(dataRows.map(row => getRowData(row))),
+      Promise.all(headerRows.map(row => row.getCellTextByColumnName())),
+      Promise.all(footerRows.map(row => row.getCellTextByColumnName())),
+      Promise.all(dataRows.map(row => row.getCellTextByColumnName())),
     ]);
 
-    rowsData.forEach(cells => {
-      cells.forEach(([columnName, cellText]) => {
+    rowsData.forEach(data => {
+      Object.keys(data).forEach(columnName => {
+        const cellText = data[columnName];
+
         if (!text[columnName]) {
           text[columnName] = {
             headerText: getCellTextsByColumn(headerData, columnName),
@@ -87,21 +94,14 @@ export class MatTableHarness extends ComponentHarness {
   }
 }
 
-/** Utility to extract the column names and text from all of the cells in a row. */
-async function getRowData(row: MatRowHarness | MatHeaderRowHarness | MatFooterRowHarness) {
-  const cells = await row.getCells();
-  return Promise.all(cells.map(cell => Promise.all([cell.getColumnName(), cell.getText()])));
-}
-
-
 /** Extracts the text of cells only under a particular column. */
-function getCellTextsByColumn(rowsData: [string, string][][], column: string): string[] {
+function getCellTextsByColumn(rowsData: MatRowHarnessColumnsText[], column: string): string[] {
   const columnTexts: string[] = [];
 
-  rowsData.forEach(cells => {
-    cells.forEach(([columnName, cellText]) => {
+  rowsData.forEach(data => {
+    Object.keys(data).forEach(columnName => {
       if (columnName === column) {
-        columnTexts.push(cellText);
+        columnTexts.push(data[columnName]);
       }
     });
   });

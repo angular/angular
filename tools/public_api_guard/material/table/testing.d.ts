@@ -15,6 +15,7 @@ export declare class MatFooterCellHarness extends MatCellHarness {
 }
 
 export declare class MatFooterRowHarness extends ComponentHarness {
+    getCellTextByColumnName(): Promise<MatRowHarnessColumnsText>;
     getCellTextByIndex(filter?: CellHarnessFilters): Promise<string[]>;
     getCells(filter?: CellHarnessFilters): Promise<MatFooterCellHarness[]>;
     static hostSelector: string;
@@ -27,6 +28,7 @@ export declare class MatHeaderCellHarness extends MatCellHarness {
 }
 
 export declare class MatHeaderRowHarness extends ComponentHarness {
+    getCellTextByColumnName(): Promise<MatRowHarnessColumnsText>;
     getCellTextByIndex(filter?: CellHarnessFilters): Promise<string[]>;
     getCells(filter?: CellHarnessFilters): Promise<MatHeaderCellHarness[]>;
     static hostSelector: string;
@@ -34,10 +36,15 @@ export declare class MatHeaderRowHarness extends ComponentHarness {
 }
 
 export declare class MatRowHarness extends ComponentHarness {
+    getCellTextByColumnName(): Promise<MatRowHarnessColumnsText>;
     getCellTextByIndex(filter?: CellHarnessFilters): Promise<string[]>;
     getCells(filter?: CellHarnessFilters): Promise<MatCellHarness[]>;
     static hostSelector: string;
     static with(options?: RowHarnessFilters): HarnessPredicate<MatRowHarness>;
+}
+
+export interface MatRowHarnessColumnsText {
+    [columnName: string]: string;
 }
 
 export declare class MatTableHarness extends ComponentHarness {
