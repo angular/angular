@@ -84,7 +84,7 @@ const _MatChipRemoveMixinBase:
   CanDisableCtor &
   HasTabIndexCtor &
   typeof MatChipRemoveBase =
-    mixinTabIndex(mixinDisabled(MatChipRemoveBase));
+    mixinTabIndex(mixinDisabled(MatChipRemoveBase), 0);
 
 /**
  * Directive to remove the parent chip when the trailing icon is clicked or
@@ -95,9 +95,11 @@ const _MatChipRemoveMixinBase:
  *
  * Example:
  *
- *     `<mat-chip>
- *       <mat-icon matChipRemove>cancel</mat-icon>
- *     </mat-chip>`
+ * ```
+ * <mat-chip>
+ *   <mat-icon matChipRemove>cancel</mat-icon>
+ * </mat-chip>
+ * ```
  */
 @Directive({
   selector: '[matChipRemove]',
@@ -109,6 +111,9 @@ const _MatChipRemoveMixinBase:
     'role': 'button',
     '(click)': 'interaction.next($event)',
     '(keydown)': 'interaction.next($event)',
+
+    // We need to remove this explicitly, because it gets inherited from MatChipTrailingIcon.
+    '[attr.aria-hidden]': 'null',
   }
 })
 export class MatChipRemove extends _MatChipRemoveMixinBase implements CanDisable, HasTabIndex {

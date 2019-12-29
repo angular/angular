@@ -78,6 +78,14 @@ describe('MDC-based Chip Remove', () => {
 
       expect(chipNativeElement.classList.contains('mdc-chip--exit')).toBe(false);
     });
+
+    it('should not make the element aria-hidden when it is focusable', () => {
+      const buttonElement = chipNativeElement.querySelector('button')!;
+
+      expect(buttonElement.getAttribute('tabindex')).toBe('0');
+      expect(buttonElement.hasAttribute('aria-hidden')).toBe(false);
+    });
+
   });
 });
 
