@@ -28,6 +28,10 @@ import {MAT_GRID_LIST, MatGridListBase} from './grid-list-base';
   exportAs: 'matGridTile',
   host: {
     'class': 'mat-grid-tile',
+    // Ensures that the "rowspan" and "colspan" input value is reflected in
+    // the DOM. This is needed for the grid-tile harness.
+    '[attr.rowspan]': 'rowspan',
+    '[attr.colspan]': 'colspan'
   },
   templateUrl: 'grid-tile.html',
   styleUrls: ['grid-list.css'],

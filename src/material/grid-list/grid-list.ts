@@ -39,6 +39,9 @@ const MAT_FIT_MODE = 'fit';
   styleUrls: ['grid-list.css'],
   host: {
     'class': 'mat-grid-list',
+    // Ensures that the "cols" input value is reflected in the DOM. This is
+    // needed for the grid-list harness.
+    '[attr.cols]': 'cols',
   },
   providers: [{
     provide: MAT_GRID_LIST,

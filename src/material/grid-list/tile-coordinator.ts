@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MatGridTile} from './grid-tile';
+/**
+ * Interface describing a tile.
+ * @docs-private
+ */
+export interface Tile {
+  /** Amount of rows that the tile takes up. */
+  rowspan: number;
+  /** Amount of columns that the tile takes up. */
+  colspan: number;
+}
 
 /**
  * Class for determining, from a list of tiles, the (row, col) position of each of those tiles
@@ -55,8 +64,9 @@ export class TileCoordinator {
   /**
    * Updates the tile positions.
    * @param numColumns Amount of columns in the grid.
+   * @param tiles Tiles to be positioned.
    */
-  update(numColumns: number, tiles: MatGridTile[]) {
+  update(numColumns: number, tiles: Tile[]) {
     this.columnIndex = 0;
     this.rowIndex = 0;
 
@@ -66,7 +76,7 @@ export class TileCoordinator {
   }
 
   /** Calculates the row and col position of a tile. */
-  private _trackTile(tile: MatGridTile): TilePosition {
+  private _trackTile(tile: Tile): TilePosition {
     // Find a gap large enough for this tile.
     const gapStartIndex = this._findMatchingGap(tile.colspan);
 
@@ -153,7 +163,7 @@ export class TileCoordinator {
   }
 
   /** Update the tile tracker to account for the given tile in the given space. */
-  private _markTilePosition(start: number, tile: MatGridTile): void {
+  private _markTilePosition(start: number, tile: Tile): void {
     for (let i = 0; i < tile.colspan; i++) {
       this.tracker[start + i] = tile.rowspan;
     }
