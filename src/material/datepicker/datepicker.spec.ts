@@ -876,6 +876,44 @@ describe('MatDatepicker', () => {
 
         expect(testComponent.datepickerToggle.disabled).toBe(true);
       });
+
+      it('should not dispatch FormControl change event for invalid values on input when set ' +
+        'to update on blur', fakeAsync(() => {
+          const formControl = new FormControl({value: null}, {updateOn: 'blur'});
+          const spy = jasmine.createSpy('change spy');
+          const subscription = formControl.valueChanges.subscribe(spy);
+          const inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
+          const setValue = (value: string) => {
+            inputEl.value = value;
+            dispatchFakeEvent(inputEl, 'input');
+            fixture.detectChanges();
+            flush();
+            fixture.detectChanges();
+          };
+
+          fixture.componentInstance.formControl = formControl;
+          fixture.detectChanges();
+
+          expect(spy).not.toHaveBeenCalled();
+
+          setValue('10/10/2010');
+          expect(spy).not.toHaveBeenCalled();
+
+          setValue('10/10/');
+          expect(spy).not.toHaveBeenCalled();
+
+          setValue('10/10');
+          expect(spy).not.toHaveBeenCalled();
+
+          dispatchFakeEvent(inputEl, 'blur');
+          fixture.detectChanges();
+          flush();
+          fixture.detectChanges();
+
+          expect(spy).toHaveBeenCalledTimes(1);
+          subscription.unsubscribe();
+        }));
+
     });
 
     describe('datepicker with mat-datepicker-toggle', () => {

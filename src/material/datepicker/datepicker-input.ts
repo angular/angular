@@ -320,6 +320,7 @@ export class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, V
   }
 
   _onInput(value: string) {
+    const lastValueWasValid = this._lastValueValid;
     let date = this._dateAdapter.parse(value, this._dateFormats.parse.dateInput);
     this._lastValueValid = !date || this._dateAdapter.isValid(date);
     date = this._getValidDateOrNull(date);
@@ -329,7 +330,7 @@ export class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, V
       this._cvaOnChange(date);
       this._valueChange.emit(date);
       this.dateInput.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
-    } else {
+    } else if (lastValueWasValid !== this._lastValueValid) {
       this._validatorOnChange();
     }
   }
