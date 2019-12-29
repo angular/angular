@@ -982,6 +982,30 @@ describe('di', () => {
             `This will become an error in v10. Please add @Injectable() to the "MyRootService" class.`);
       }
     });
+
+    it('should inject services in constructor with overloads', () => {
+      @Injectable({providedIn: 'root'})
+      class MyService {
+      }
+
+      @Injectable({providedIn: 'root'})
+      class MyOtherService {
+      }
+
+      @Component({template: ''})
+      class MyComp {
+        constructor(myService: MyService);
+        constructor(
+            public myService: MyService, @Optional() public myOtherService?: MyOtherService) {}
+      }
+      TestBed.configureTestingModule({declarations: [MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.myService instanceof MyService).toBe(true);
+      expect(fixture.componentInstance.myOtherService instanceof MyOtherService).toBe(true);
+    });
+
   });
 
   describe('inject', () => {
