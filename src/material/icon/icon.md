@@ -86,7 +86,7 @@ match the current theme's colors using the `color` attribute. This can be change
 Similar to an `<img>` element, an icon alone does not convey any useful information for a
 screen-reader user. The user of `<mat-icon>` must provide additional information pertaining to how
 the icon is used. Based on the use-cases described below, `mat-icon` is marked as
-`aria-hidden="true"` by default, but this can be overriden by adding `aria-hidden="false"` to the
+`aria-hidden="true"` by default, but this can be overridden by adding `aria-hidden="false"` to the
 element.
 
 In thinking about accessibility, it is useful to place icon use into one of three categories:

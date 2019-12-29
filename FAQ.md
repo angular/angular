@@ -15,7 +15,7 @@ descriptions.
 ## Are there any updates on issue _X_?
 
 Any issue updates will appear on the issue. Due to the large volume of issues and feature requests
-recieved by the team, we aren't able to regularly comment on all open issues and PRs.
+received by the team, we aren't able to regularly comment on all open issues and PRs.
 
 ## Why hasn't PR _X_ been merged?
 
@@ -27,7 +27,7 @@ When tests fail, however, the team has to spend time investigating before the PR
 Because of this, we cannot merge any PRs that would break an existing project. If a PR has extensive
 failures, it may be put on the backburner until the team can schedule time to debug the full extent
 of the issue. If a PR seems ready to merge, but has been inactive, it has very likely
-encountered some test failures inside Google that must be resovled first.
+encountered some test failures inside Google that must be resolved first.
 
 ## Why aren't you working on _X_?
 

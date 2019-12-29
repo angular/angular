@@ -8,14 +8,14 @@ The most basic card needs only an `<mat-card>` element with some content. Howeve
 provides a number of preset sections that you can use inside of an `<mat-card>`:
 
 
-| Element               | Description                                                              |
-|-----------------------|--------------------------------------------------------------------------|
-| `<mat-card-title>`     | Card title                                                               |
-| `<mat-card-subtitle>`  | Card subtitle                                                            |
-| `<mat-card-content>`   | Primary card content. Intended for blocks of text                        |
-| `<img mat-card-image>` | Card image. Stretches the image to the container width                   |
-| `<mat-card-actions>`   | Container for buttons at the bottom of the card                          |
-| `<mat-card-footer>`    | Section anchored to the bottom of the card                               |
+| Element                | Description                                            |
+| ---------------------- | ------------------------------------------------------ |
+| `<mat-card-title>`     | Card title                                             |
+| `<mat-card-subtitle>`  | Card subtitle                                          |
+| `<mat-card-content>`   | Primary card content. Intended for blocks of text      |
+| `<img mat-card-image>` | Card image. Stretches the image to the container width |
+| `<mat-card-actions>`   | Container for buttons at the bottom of the card        |
+| `<mat-card-footer>`    | Section anchored to the bottom of the card             |
 
 These elements primary serve as pre-styled content containers without any additional APIs. 
 However, the `align` property on `<mat-card-actions>` can be used to position the actions at the 
@@ -26,11 +26,11 @@ However, the `align` property on `<mat-card-actions>` can be used to position th
 In addition to the aforementioned sections, `<mat-card-header>` gives the ability to add a rich
 header to a card. This header can contain:
 
-| Element                | Description                                                             |
-|------------------------|-------------------------------------------------------------------------|
-| `<mat-card-title>`      | A title within the header                                               |
-| `<mat-card-subtitle>`   | A subtitle within the header                                            |
-| `<img mat-card-avatar>` | An image used as an avatar within the header                            |
+| Element                 | Description                                  |
+| ----------------------- | -------------------------------------------- |
+| `<mat-card-title>`      | A title within the header                    |
+| `<mat-card-subtitle>`   | A subtitle within the header                 |
+| `<img mat-card-avatar>` | An image used as an avatar within the header |
 
 
 ### Title groups
