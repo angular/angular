@@ -21,7 +21,7 @@ import * as t from './r3_ast';
 import {I18N_ICU_VAR_PREFIX, isI18nRootNode} from './view/i18n/util';
 
 const BIND_NAME_REGEXP =
-    /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/;
+    /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/;
 
 // Group 1 = "bind-"
 const KW_BIND_IDX = 1;
@@ -399,7 +399,10 @@ class HtmlAstToIvyAst implements html.Visitor {
       valueSpan: ParseSourceSpan|undefined, variables: t.Variable[]) {
     if (identifier.indexOf('-') > -1) {
       this.reportError(`"-" is not allowed in variable names`, sourceSpan);
+    } else if (identifier.length === 0) {
+      this.reportError(`Variable does not have a name`, sourceSpan);
     }
+
     variables.push(new t.Variable(identifier, value, sourceSpan, valueSpan));
   }
 
@@ -408,6 +411,8 @@ class HtmlAstToIvyAst implements html.Visitor {
       valueSpan: ParseSourceSpan|undefined, references: t.Reference[]) {
     if (identifier.indexOf('-') > -1) {
       this.reportError(`"-" is not allowed in reference names`, sourceSpan);
+    } else if (identifier.length === 0) {
+      this.reportError(`Reference does not have a name`, sourceSpan);
     }
 
     references.push(new t.Reference(identifier, value, sourceSpan, valueSpan));

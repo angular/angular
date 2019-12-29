@@ -203,6 +203,10 @@ export class BindingParser {
       name: string, expression: string, isHost: boolean, sourceSpan: ParseSourceSpan,
       absoluteOffset: number, valueSpan: ParseSourceSpan|undefined,
       targetMatchableAttrs: string[][], targetProps: ParsedProperty[]) {
+    if (name.length === 0) {
+      this._reportError(`Property name is missing in binding`, sourceSpan);
+    }
+
     let isAnimationProp = false;
     if (name.startsWith(ANIMATE_PROP_PREFIX)) {
       isAnimationProp = true;
@@ -248,6 +252,10 @@ export class BindingParser {
       name: string, expression: string|null, sourceSpan: ParseSourceSpan, absoluteOffset: number,
       valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
       targetProps: ParsedProperty[]) {
+    if (name.length === 0) {
+      this._reportError('Animation trigger is missing', sourceSpan);
+    }
+
     // This will occur when a @trigger is not paired with an expression.
     // For animations it is valid to not have an expression since */void
     // states will be applied by angular when the element is attached/detached
@@ -343,6 +351,10 @@ export class BindingParser {
   parseEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetEvents: ParsedEvent[]) {
+    if (name.length === 0) {
+      this._reportError(`Event name is missing in binding`, sourceSpan);
+    }
+
     if (isAnimationLabel(name)) {
       name = name.substr(1);
       this._parseAnimationEvent(name, expression, sourceSpan, handlerSpan, targetEvents);
