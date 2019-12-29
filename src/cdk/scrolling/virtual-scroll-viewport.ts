@@ -23,13 +23,20 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {animationFrameScheduler, asapScheduler, Observable, Subject, Observer} from 'rxjs';
+import {
+  animationFrameScheduler,
+  asapScheduler,
+  Observable,
+  Subject,
+  Observer,
+  Subscription,
+} from 'rxjs';
 import {auditTime, startWith, takeUntil} from 'rxjs/operators';
 import {ScrollDispatcher} from './scroll-dispatcher';
 import {CdkScrollable, ExtendedScrollToOptions} from './scrollable';
 import {CdkVirtualForOf} from './virtual-for-of';
 import {VIRTUAL_SCROLL_STRATEGY, VirtualScrollStrategy} from './virtual-scroll-strategy';
-
+import {ViewportRuler} from './viewport-ruler';
 
 /** Checks if the given ranges are equal. */
 function rangesEqual(r1: ListRange, r2: ListRange): boolean {
@@ -142,17 +149,32 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   /** A list of functions to run after the next change detection cycle. */
   private _runAfterChangeDetection: Function[] = [];
 
+  /** Subscription to changes in the viewport size. */
+  private _viewportChanges = Subscription.EMPTY;
+
   constructor(public elementRef: ElementRef<HTMLElement>,
               private _changeDetectorRef: ChangeDetectorRef,
               ngZone: NgZone,
               @Optional() @Inject(VIRTUAL_SCROLL_STRATEGY)
                   private _scrollStrategy: VirtualScrollStrategy,
               @Optional() dir: Directionality,
-              scrollDispatcher: ScrollDispatcher) {
+              scrollDispatcher: ScrollDispatcher,
+              /**
+               * @deprecated `viewportRuler` parameter to become required.
+               * @breaking-change 11.0.0
+               */
+              @Optional() viewportRuler?: ViewportRuler) {
     super(elementRef, scrollDispatcher, ngZone, dir);
 
     if (!_scrollStrategy) {
       throw Error('Error: cdk-virtual-scroll-viewport requires the "itemSize" property to be set.');
+    }
+
+    // @breaking-change 11.0.0 Remove null check for `viewportRuler`.
+    if (viewportRuler) {
+      this._viewportChanges = viewportRuler.change().subscribe(() => {
+        this.checkViewportSize();
+      });
     }
   }
 
@@ -188,6 +210,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
     // Complete all subjects
     this._renderedRangeSubject.complete();
     this._detachedSubject.complete();
+    this._viewportChanges.unsubscribe();
 
     super.ngOnDestroy();
   }

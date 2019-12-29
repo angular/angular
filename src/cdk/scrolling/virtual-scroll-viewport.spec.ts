@@ -16,7 +16,15 @@ import {
   Directive,
   ViewContainerRef
 } from '@angular/core';
-import {async, ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
+import {
+  async,
+  ComponentFixture,
+  fakeAsync,
+  flush,
+  inject,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import {animationFrameScheduler, Subject} from 'rxjs';
 
 
@@ -72,6 +80,17 @@ describe('CdkVirtualScrollViewport', () => {
       flush();
       viewport.checkViewportSize();
       expect(viewport.getViewportSize()).toBe(500);
+    }));
+
+    it('should update the viewport size when the page viewport changes', fakeAsync(() => {
+      finishInit(fixture);
+      spyOn(viewport, 'checkViewportSize').and.callThrough();
+
+      dispatchFakeEvent(window, 'resize');
+      fixture.detectChanges();
+      tick(20); // The resize listener is debounced so we need to flush it.
+
+      expect(viewport.checkViewportSize).toHaveBeenCalled();
     }));
 
     it('should get the rendered range', fakeAsync(() => {

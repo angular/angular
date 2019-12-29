@@ -105,7 +105,8 @@ export declare class CdkVirtualScrollViewport extends CdkScrollable implements O
     orientation: 'horizontal' | 'vertical';
     renderedRangeStream: Observable<ListRange>;
     scrolledIndexChange: Observable<number>;
-    constructor(elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, ngZone: NgZone, _scrollStrategy: VirtualScrollStrategy, dir: Directionality, scrollDispatcher: ScrollDispatcher);
+    constructor(elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, ngZone: NgZone, _scrollStrategy: VirtualScrollStrategy, dir: Directionality, scrollDispatcher: ScrollDispatcher,
+    viewportRuler?: ViewportRuler);
     attach(forOf: CdkVirtualForOf<any>): void;
     checkViewportSize(): void;
     detach(): void;
