@@ -15,9 +15,9 @@ specification of this format at https://goo.gl/jB3GVv
 
 load("@build_bazel_rules_nodejs//:providers.bzl", "JSEcmaScriptModuleInfo", "JSNamedModuleInfo", "NpmPackageInfo", "node_modules_aspect")
 load(
-    "@build_bazel_rules_nodejs//internal/npm_package:npm_package.bzl",
-    "NPM_PACKAGE_ATTRS",
-    "NPM_PACKAGE_OUTPUTS",
+    "@build_bazel_rules_nodejs//internal/pkg_npm:pkg_npm.bzl",
+    "PKG_NPM_ATTRS",
+    "PKG_NPM_OUTPUTS",
     "create_package",
 )
 load("//packages/bazel/src:external.bzl", "FLAT_DTS_FILE_SUFFIX")
@@ -623,7 +623,7 @@ def _ng_package_impl(ctx):
     package_dir = create_package(
         ctx,
         devfiles.to_list(),
-        [npm_package_directory] + ctx.files.packages,
+        [npm_package_directory] + ctx.files.nested_packages,
     )
     return [DefaultInfo(
         files = depset([package_dir]),
@@ -631,7 +631,7 @@ def _ng_package_impl(ctx):
 
 _NG_PACKAGE_DEPS_ASPECTS = [esm5_outputs_aspect, ng_package_module_mappings_aspect, node_modules_aspect]
 
-_NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **{
+_NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
     "srcs": attr.label_list(
         doc = """JavaScript source files from the workspace.
         These can use ES2015 syntax and ES Modules (import/export)""",
@@ -807,12 +807,12 @@ def _ng_package_outputs(name, entry_point, entry_point_name):
         "umd": "%s.umd.js" % basename,
         "umd_min": "%s.umd.min.js" % basename,
     }
-    for key in NPM_PACKAGE_OUTPUTS:
-        # NPM_PACKAGE_OUTPUTS is a "normal" dict-valued outputs so it looks like
+    for key in PKG_NPM_OUTPUTS:
+        # PKG_NPM_OUTPUTS is a "normal" dict-valued outputs so it looks like
         #  "pack": "%{name}.pack",
         # But this is a function-valued outputs.
         # Bazel won't replace the %{name} token so we have to do it.
-        outputs[key] = NPM_PACKAGE_OUTPUTS[key].replace("%{name}", name)
+        outputs[key] = PKG_NPM_OUTPUTS[key].replace("%{name}", name)
     return outputs
 
 ng_package = rule(
