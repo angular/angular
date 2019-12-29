@@ -141,7 +141,7 @@
     "semver": "^6.3.0",
     "send": "^0.17.1",
     "shelljs": "^0.8.3",
-    "stylelint": "^10.1.0",
+    "stylelint": "^12.0.0",
     "terser": "^4.3.9",
     "ts-api-guardian": "^0.4.6",
     "ts-node": "^3.0.4",

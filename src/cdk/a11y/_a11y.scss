@@ -26,7 +26,8 @@
 //    `white-on-black` or `black-on-white`.
 @mixin cdk-high-contrast($target: active) {
   @if ($target != 'active' and $target != 'black-on-white' and $target != 'white-on-black') {
-    @error 'Unknown cdk-high-contrast value "#{$target}" provided. Allowed values are "active", "black-on-white", and "white-on-black"'; // stylelint-disable
+    @error 'Unknown cdk-high-contrast value "#{$target}" provided. ' +
+           'Allowed values are "active", "black-on-white", and "white-on-black"';
   }
 
   // If the selector context has multiple parts, such as `.section, .region`, just doing
@@ -36,10 +37,11 @@
     $selector-context: #{&};
     .cdk-high-contrast-#{$target} {
       @if ($selector-context == '') {
-        @content
-      } @else {
+        @content;
+      }
+      @else {
         #{$selector-context} {
-          @content
+          @content;
         }
       }
     }
