@@ -16,10 +16,11 @@ ts_library(
 
 jasmine_node_test(
     name = "css_parser",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
     deps = [
         ":css_parser_lib",
         "//tools/testing:node",
+        "//tools/testing:node_es5",
     ],
 )
 
