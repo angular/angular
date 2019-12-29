@@ -17,7 +17,6 @@
   @include mat-using-mdc-theme($theme) {
     $mdc-switch-baseline-theme-color: primary !global;
 
-    @include mdc-switch-without-ripple($query: $mat-theme-styles-query);
     @include mdc-form-field-core-styles($query: $mat-theme-styles-query);
 
     // MDC's switch doesn't support a `color` property. We add support
@@ -25,6 +24,10 @@
     .mat-mdc-slide-toggle {
       .mdc-switch__thumb-underlay::before, .mat-ripple-element {
         background: $mdc-switch-toggled-off-ripple-color;
+      }
+
+      &.mat-primary {
+        @include mdc-switch-without-ripple($query: $mat-theme-styles-query);
       }
 
       &.mat-accent {
