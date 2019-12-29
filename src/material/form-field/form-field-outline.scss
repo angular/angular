@@ -103,7 +103,6 @@ $mat-form-field-outline-subscript-padding:
     .mat-form-field-outline-end,
     .mat-form-field-outline-gap {
       border-width: $mat-form-field-outline-thick-width;
-      transition: border-color 300ms $swift-ease-out-timing-function;
     }
   }
 
