@@ -95,7 +95,7 @@ describe('MDC-based MatChipInput', () => {
       expect(label.textContent).toContain('or don\'t');
     });
 
-    it('should become disabled if the chip list is disabled', () => {
+    it('should become disabled if the chip grid is disabled', () => {
       expect(inputNativeElement.hasAttribute('disabled')).toBe(false);
       expect(chipInputDirective.disabled).toBe(false);
 
@@ -104,6 +104,15 @@ describe('MDC-based MatChipInput', () => {
 
       expect(inputNativeElement.getAttribute('disabled')).toBe('true');
       expect(chipInputDirective.disabled).toBe(true);
+    });
+
+    it('should be aria-required if the chip grid is required', () => {
+      expect(inputNativeElement.hasAttribute('aria-required')).toBe(false);
+
+      fixture.componentInstance.required = true;
+      fixture.detectChanges();
+
+      expect(inputNativeElement.getAttribute('aria-required')).toBe('true');
     });
 
     it('should allow focus to escape when tabbing forwards', fakeAsync(() => {
@@ -249,7 +258,7 @@ describe('MDC-based MatChipInput', () => {
 @Component({
   template: `
     <mat-form-field>
-      <mat-chip-grid #chipGrid>
+      <mat-chip-grid #chipGrid [required]="required">
         <mat-chip-row>Hello</mat-chip-row>
         <input matInput [matChipInputFor]="chipGrid"
                   [matChipInputAddOnBlur]="addOnBlur"
@@ -263,6 +272,7 @@ class TestChipInput {
   @ViewChild(MatChipGrid) chipGridInstance: MatChipGrid;
   addOnBlur: boolean = false;
   placeholder = '';
+  required = false;
 
   add(_: MatChipInputEvent) {
   }

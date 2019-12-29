@@ -43,6 +43,7 @@ let nextUniqueId = 0;
     '[attr.disabled]': 'disabled || null',
     '[attr.placeholder]': 'placeholder || null',
     '[attr.aria-invalid]': '_chipGrid && _chipGrid.ngControl ? _chipGrid.ngControl.invalid : null',
+    '[attr.aria-required]': '_chipGrid && _chipGrid.required || null',
   }
 })
 export class MatChipInput implements MatChipTextControl, OnChanges {

@@ -103,15 +103,6 @@ describe('MDC-based MatChipGrid', () => {
 
         expect(chipGridNativeElement.hasAttribute('role')).toBe(false);
       });
-
-      it('should not set aria-required when it does not have a role', () => {
-        testComponent.chips = [];
-        fixture.detectChanges();
-
-        expect(chipGridNativeElement.hasAttribute('role')).toBe(false);
-        expect(chipGridNativeElement.hasAttribute('aria-required')).toBe(false);
-      });
-
     });
 
     describe('focus behaviors', () => {
