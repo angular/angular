@@ -518,7 +518,7 @@ describe('MatDrawer', () => {
       expect(document.activeElement).toBe(firstFocusableElement);
     }));
 
-    it('should not trap focus when opened in "side" mode', fakeAsync(() => {
+    it('should not auto-focus by default when opened in "side" mode', fakeAsync(() => {
       testComponent.mode = 'side';
       fixture.detectChanges();
       lastFocusableElement.focus();
@@ -528,6 +528,19 @@ describe('MatDrawer', () => {
       tick();
 
       expect(document.activeElement).toBe(lastFocusableElement);
+    }));
+
+    it('should auto-focus when opened in "side" mode when enabled explicitly', fakeAsync(() => {
+      drawer.autoFocus = true;
+      testComponent.mode = 'side';
+      fixture.detectChanges();
+      lastFocusableElement.focus();
+
+      drawer.open();
+      fixture.detectChanges();
+      tick();
+
+      expect(document.activeElement).toBe(firstFocusableElement);
     }));
 
     it('should focus the drawer if there are no focusable elements', fakeAsync(() => {
@@ -545,7 +558,7 @@ describe('MatDrawer', () => {
     }));
 
     it('should be able to disable auto focus', fakeAsync(() => {
-      testComponent.autoFocus = false;
+      drawer.autoFocus = false;
       testComponent.mode = 'push';
       fixture.detectChanges();
       lastFocusableElement.focus();
@@ -981,7 +994,7 @@ class DrawerDynamicPosition {
   // to be focusable across all platforms.
   template: `
     <mat-drawer-container>
-      <mat-drawer position="start" [mode]="mode" [autoFocus]="autoFocus">
+      <mat-drawer position="start" [mode]="mode">
         <input type="text" class="input1"/>
       </mat-drawer>
       <input type="text" class="input2"/>
@@ -989,7 +1002,6 @@ class DrawerDynamicPosition {
 })
 class DrawerWithFocusableElements {
   mode: string = 'over';
-  autoFocus = true;
 }
 
 @Component({
