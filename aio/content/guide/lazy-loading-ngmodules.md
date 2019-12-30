@@ -52,9 +52,11 @@ Instead, it adds the declared route, `customers` to the `routes` array declared 
 
 <code-example language="typescript" header="src/app/app-routing.module.ts">
 const routes: Routes = [
-    { path: 'customers',
-      loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule) }
-    ];
+  {
+    path: 'customers',
+    loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule)
+  }
+];
 </code-example>
 
 Notice that the lazy-loading syntax uses `loadChildren` followed by a function that uses the browser's built-in `import('...')` syntax for dynamic imports.
@@ -73,11 +75,15 @@ The `orders` route, specified with the `--route` option, is added to the `routes
 
 <code-example language="typescript" header="src/app/app-routing.module.ts">
 const routes: Routes = [
-    { path: 'customers',
-      loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule) },
-    { path: 'orders',
-      loadChildren: () => import('./orders/orders.module').then(m => m.OrdersModule) }
-    ];
+  {
+    path: 'customers',
+    loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule)
+  },
+  {
+    path: 'orders',
+    loadChildren: () => import('./orders/orders.module').then(m => m.OrdersModule)
+  }
+];
 </code-example>
 
 ## Set up the UI
