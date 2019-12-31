@@ -8,12 +8,12 @@ import { Routes, RouterModule } from '@angular/router';
 const routes: Routes = [
   {
     path: 'customers',
-    loadChildren: () => import('./customers/customers.module').then(mod => mod.CustomersModule)
+    loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule)
     // #enddocregion routes-customers
   },
   {
     path: 'orders',
-    loadChildren: () => import('./orders/orders.module').then(mod => mod.OrdersModule)
+    loadChildren: () => import('./orders/orders.module').then(m => m.OrdersModule)
     // #enddocregion routes-customers-orders
   },
   {
