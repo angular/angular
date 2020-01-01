@@ -92,7 +92,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
     it('should extract selector from the tag definition', () => {
       const selector = 'rel="stylesheet"';
-      linkService.updateLink({property: 'stylesheet', href: 'http://foo.bar'});
+      linkService.updateLink({rel: 'stylesheet', href: 'http://foo.bar'});
 
       const actual = linkService.getLink(selector);
       expect(actual).not.toBeNull();
@@ -127,13 +127,13 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     it('should add multiple new link tags', () => {
-      const nameSelector = 'rel="canonical"';
+      const nameSelector = 'rel="stylesheet"';
       const propertySelector = 'rel="author"';
       expect(linkService.getLink(nameSelector)).toBeNull();
       expect(linkService.getLink(propertySelector)).toBeNull();
 
       linkService.addLinks(
-          [{rel: 'canonical', href: 'http://foo.bar'}, {rel: 'author', href: 'http://bar.baz'}]);
+          [{rel: 'stylesheet', href: 'http://foo.bar'}, {rel: 'author', href: 'http://bar.baz'}]);
       const canonicalLink = linkService.getLink(nameSelector) !;
       const authorLink = linkService.getLink(propertySelector) !;
       expect(canonicalLink).not.toBeNull();
@@ -148,8 +148,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       const selector = 'rel="canonical"';
       expect(linkService.getLinks(selector).length).toEqual(1);
 
-      linkService.addLink({rel: 'canonical', href: 'http://example.com'});
-
+      linkService.addLink({rel: 'canonical', href: 'https://example.com'});
       expect(linkService.getLinks(selector).length).toEqual(1);
     });
 
