@@ -132,10 +132,8 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       expect(linkService.getLink(nameSelector)).toBeNull();
       expect(linkService.getLink(propertySelector)).toBeNull();
 
-      linkService.addLinks([
-        {rel: 'canonical', href: 'http://foo.bar'},
-        {rel: 'author', href: 'http://bar.baz'}
-      ]);
+      linkService.addLinks(
+          [{rel: 'canonical', href: 'http://foo.bar'}, {rel: 'author', href: 'http://bar.baz'}]);
       const canonicalLink = linkService.getLink(nameSelector) !;
       const authorLink = linkService.getLink(propertySelector) !;
       expect(canonicalLink).not.toBeNull();
@@ -182,17 +180,13 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
   });
 
   describe('integration test', () => {
-
     @Injectable()
     class DependsOnLink {
       constructor(public link: Link) {}
     }
 
     beforeEach(() => {
-      TestBed.configureTestingModule({
-        imports: [BrowserModule],
-        providers: [DependsOnLink],
-      });
+      TestBed.configureTestingModule({imports: [BrowserModule], providers: [DependsOnLink]});
     });
 
     it('should inject Link service when using BrowserModule',

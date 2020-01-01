@@ -179,21 +179,16 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       // clean up
       metaService.removeTagElement(meta);
     });
-
   });
 
   describe('integration test', () => {
-
     @Injectable()
     class DependsOnMeta {
       constructor(public meta: Meta) {}
     }
 
     beforeEach(() => {
-      TestBed.configureTestingModule({
-        imports: [BrowserModule],
-        providers: [DependsOnMeta],
-      });
+      TestBed.configureTestingModule({imports: [BrowserModule], providers: [DependsOnMeta]});
     });
 
     it('should inject Meta service when using BrowserModule',
