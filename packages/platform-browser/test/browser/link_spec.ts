@@ -144,7 +144,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       linkService.removeLinkElement(authorLink);
     });
 
-    it('should not add meta tag if it is already present on the page and has the same attr', () => {
+    it('should not add link tag if it is already present on the page and has the same attr', () => {
       const selector = 'rel="canonical"';
       expect(linkService.getLinks(selector).length).toEqual(1);
 
@@ -152,29 +152,29 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       expect(linkService.getLinks(selector).length).toEqual(1);
     });
 
-    it('should add meta tag if it is already present on the page and but has different attr',
+    it('should add link tag if it is already present on the page and but has different attr',
        () => {
          const selector = 'rel="canonical"';
          expect(linkService.getLinks(selector).length).toEqual(1);
 
-         const meta = linkService.addLink({rel: 'canonical', href: 'http://bar.baz'}) !;
+         const link = linkService.addLink({rel: 'canonical', href: 'http://bar.baz'}) !;
 
          expect(linkService.getLinks(selector).length).toEqual(2);
 
          // clean up
-         linkService.removeLinkElement(meta);
+         linkService.removeLinkElement(link);
        });
 
-    it('should add meta tag if it is already present on the page and force true', () => {
+    it('should add link tag if it is already present on the page and force true', () => {
       const selector = 'rel="canonical"';
       expect(linkService.getLinks(selector).length).toEqual(1);
 
-      const meta = linkService.addLink({rel: 'canonical', href: 'http://bar.baz'}, true) !;
+      const link = linkService.addLink({rel: 'canonical', href: 'http://bar.baz'}, true) !;
 
       expect(linkService.getLinks(selector).length).toEqual(2);
 
       // clean up
-      linkService.removeLinkElement(meta);
+      linkService.removeLinkElement(link);
     });
   });
 
