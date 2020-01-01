@@ -113,7 +113,7 @@ export class Link {
   }
 
   private _parseSelector(link: LinkDefinition): string {
-    const attr: string = link.rel ? 'rel' : 'property';
+    const attr: string = link.rel ? 'rel' : 'href';
     return `${attr}="${link[attr]}"`;
   }
 
