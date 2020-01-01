@@ -15,14 +15,19 @@ import {Inject, Injectable, ɵɵinject} from '@angular/core';
  * @publicApi
  */
 export type LinkDefinition = {
-  charset?: string; crossorigin?: 'anonymous' | 'use-credentials'; disabled?: boolean;
-  href?: string;
+  as?: string; crossorigin?: 'anonymous' | 'use-credentials'; disabled?: boolean; href?: string;
   hreflang?: string;
+  importance?: 'auto' | 'high' | 'low';
+  integrity?: string;
   media?: string;
   methods?: string;
+  prefetch?: string;
+  referrerpolicy?: 'no-referrer' | 'no-referrer-when-downgrade' | 'origin' |
+      'origin-when-cross-origin' | 'unsafe-url';
   rel?: string;
   sizes?: string;
   target?: string;
+  title?: string;
   type?: string;
 } &
 {
