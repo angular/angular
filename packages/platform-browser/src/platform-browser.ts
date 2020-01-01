@@ -8,6 +8,7 @@
 
 export {BrowserModule, platformBrowser} from './browser';
 export {Meta, MetaDefinition} from './browser/meta';
+export {Link, LinkDefinition} from './browser/link';
 export {Title} from './browser/title';
 export {disableDebugTools, enableDebugTools} from './browser/tools/tools';
 export {BrowserTransferStateModule, StateKey, TransferState, makeStateKey} from './browser/transfer_state';
