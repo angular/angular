@@ -6,8 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, ɵDomAdapter as DomAdapter, ɵgetDOM as getDOM} from '@angular/common';
-import {Inject, Injectable, ɵɵinject} from '@angular/core';
+import {
+  DOCUMENT,
+  ɵDomAdapter as DomAdapter,
+  ɵgetDOM as getDOM
+} from "@angular/common";
+import { Inject, Injectable, ɵɵinject } from "@angular/core";
 
 /**
  * Represents a meta element.
@@ -15,13 +19,16 @@ import {Inject, Injectable, ɵɵinject} from '@angular/core';
  * @publicApi
  */
 export type MetaDefinition = {
-  charset?: string; content?: string; httpEquiv?: string; id?: string; itemprop?: string;
+  charset?: string;
+  content?: string;
+  httpEquiv?: string;
+  id?: string;
+  itemprop?: string;
   name?: string;
   property?: string;
   scheme?: string;
   url?: string;
-} &
-{
+} & {
   // TODO(IgorMinar): this type looks wrong
   [prop: string]: string;
 };
@@ -38,17 +45,25 @@ export function createMeta() {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root', useFactory: createMeta, deps: []})
+@Injectable({ providedIn: "root", useFactory: createMeta, deps: [] })
 export class Meta {
   private _dom: DomAdapter;
-  constructor(@Inject(DOCUMENT) private _doc: any) { this._dom = getDOM(); }
+  constructor(@Inject(DOCUMENT) private _doc: any) {
+    this._dom = getDOM();
+  }
 
-  addTag(tag: MetaDefinition, forceCreation: boolean = false): HTMLMetaElement|null {
+  addTag(
+    tag: MetaDefinition,
+    forceCreation: boolean = false
+  ): HTMLMetaElement | null {
     if (!tag) return null;
     return this._getOrCreateElement(tag, forceCreation);
   }
 
-  addTags(tags: MetaDefinition[], forceCreation: boolean = false): HTMLMetaElement[] {
+  addTags(
+    tags: MetaDefinition[],
+    forceCreation: boolean = false
+  ): HTMLMetaElement[] {
     if (!tags) return [];
     return tags.reduce((result: HTMLMetaElement[], tag: MetaDefinition) => {
       if (tag) {
@@ -58,28 +73,32 @@ export class Meta {
     }, []);
   }
 
-  getTag(attrSelector: string): HTMLMetaElement|null {
+  getTag(attrSelector: string): HTMLMetaElement | null {
     if (!attrSelector) return null;
     return this._doc.querySelector(`meta[${attrSelector}]`) || null;
   }
 
   getTags(attrSelector: string): HTMLMetaElement[] {
     if (!attrSelector) return [];
-    const list /*NodeList*/ = this._doc.querySelectorAll(`meta[${attrSelector}]`);
+    const list /*NodeList*/ = this._doc.querySelectorAll(
+      `meta[${attrSelector}]`
+    );
     return list ? [].slice.call(list) : [];
   }
 
-  updateTag(tag: MetaDefinition, selector?: string): HTMLMetaElement|null {
+  updateTag(tag: MetaDefinition, selector?: string): HTMLMetaElement | null {
     if (!tag) return null;
     selector = selector || this._parseSelector(tag);
-    const meta: HTMLMetaElement = this.getTag(selector) !;
+    const meta: HTMLMetaElement = this.getTag(selector)!;
     if (meta) {
       return this._setMetaElementAttributes(tag, meta);
     }
     return this._getOrCreateElement(tag, true);
   }
 
-  removeTag(attrSelector: string): void { this.removeTagElement(this.getTag(attrSelector) !); }
+  removeTag(attrSelector: string): void {
+    this.removeTagElement(this.getTag(attrSelector)!);
+  }
 
   removeTagElement(meta: HTMLMetaElement): void {
     if (meta) {
@@ -87,34 +106,48 @@ export class Meta {
     }
   }
 
-  private _getOrCreateElement(meta: MetaDefinition, forceCreation: boolean = false):
-      HTMLMetaElement {
+  private _getOrCreateElement(
+    meta: MetaDefinition,
+    forceCreation: boolean = false
+  ): HTMLMetaElement {
     if (!forceCreation) {
       const selector: string = this._parseSelector(meta);
-      const elem: HTMLMetaElement = this.getTag(selector) !;
+      const elem: HTMLMetaElement = this.getTag(selector)!;
       // It's allowed to have multiple elements with the same name so it's not enough to
       // just check that element with the same name already present on the page. We also need to
       // check if element has tag attributes
       if (elem && this._containsAttributes(meta, elem)) return elem;
     }
-    const element: HTMLMetaElement = this._dom.createElement('meta') as HTMLMetaElement;
+    const element: HTMLMetaElement = this._dom.createElement(
+      "meta"
+    ) as HTMLMetaElement;
     this._setMetaElementAttributes(meta, element);
-    const head = this._doc.getElementsByTagName('head')[0];
+    const head = this._doc.getElementsByTagName("head")[0];
     head.appendChild(element);
     return element;
   }
 
-  private _setMetaElementAttributes(tag: MetaDefinition, el: HTMLMetaElement): HTMLMetaElement {
-    Object.keys(tag).forEach((prop: string) => el.setAttribute(prop, tag[prop]));
+  private _setMetaElementAttributes(
+    tag: MetaDefinition,
+    el: HTMLMetaElement
+  ): HTMLMetaElement {
+    Object.keys(tag).forEach((prop: string) =>
+      el.setAttribute(prop, tag[prop])
+    );
     return el;
   }
 
   private _parseSelector(tag: MetaDefinition): string {
-    const attr: string = tag.name ? 'name' : 'property';
+    const attr: string = tag.name ? "name" : "property";
     return `${attr}="${tag[attr]}"`;
   }
 
-  private _containsAttributes(tag: MetaDefinition, elem: HTMLMetaElement): boolean {
-    return Object.keys(tag).every((key: string) => elem.getAttribute(key) === tag[key]);
+  private _containsAttributes(
+    tag: MetaDefinition,
+    elem: HTMLMetaElement
+  ): boolean {
+    return Object.keys(tag).every(
+      (key: string) => elem.getAttribute(key) === tag[key]
+    );
   }
 }

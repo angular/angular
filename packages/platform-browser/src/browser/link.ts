@@ -10,8 +10,8 @@ import {
   DOCUMENT,
   ɵDomAdapter as DomAdapter,
   ɵgetDOM as getDOM
-} from '@angular/common';
-import { Inject, Injectable, ɵɵinject } from '@angular/core';
+} from "@angular/common";
+import { Inject, Injectable, ɵɵinject } from "@angular/core";
 
 /**
  * Represents a link element.
@@ -20,7 +20,7 @@ import { Inject, Injectable, ɵɵinject } from '@angular/core';
  */
 export type LinkDefinition = {
   charset?: string;
-  crossorigin?: 'anonymous' | 'use-credentials';
+  crossorigin?: "anonymous" | "use-credentials";
   disabled?: boolean;
   href?: string;
   hreflang?: string;
@@ -30,8 +30,7 @@ export type LinkDefinition = {
   sizes?: string;
   target?: string;
   type?: string;
-} &
-{
+} & {
   [prop: string]: string;
 };
 
@@ -47,7 +46,7 @@ export function createLink() {
  *
  * @publicApi
  */
-@Injectable({ providedIn: 'root', useFactory: createLink, deps: [] })
+@Injectable({ providedIn: "root", useFactory: createLink, deps: [] })
 export class Link {
   private _dom: DomAdapter;
   constructor(@Inject(DOCUMENT) private _doc: any) {
@@ -114,17 +113,17 @@ export class Link {
   ): HTMLLinkElement {
     if (!forceCreation) {
       const selector: string = this._parseSelector(link);
-      const elem: HTMLLinkElement = this.getLink(selector) !;
+      const elem: HTMLLinkElement = this.getLink(selector)!;
       // It's allowed to have multiple elements with the same name so it's not enough to
       // just check that element with the same name already present on the page. We also need to
       // check if element has tag attributes
       if (elem && this._containsAttributes(link, elem)) return elem;
     }
     const element: HTMLLinkElement = this._dom.createElement(
-      'link'
+      "link"
     ) as HTMLLinkElement;
     this._setLinkElementAttributes(link, element);
-    const head = this._doc.getElementsByTagName('head')[0];
+    const head = this._doc.getElementsByTagName("head")[0];
     head.appendChild(element);
     return element;
   }
@@ -140,11 +139,16 @@ export class Link {
   }
 
   private _parseSelector(link: LinkDefinition): string {
-    const attr: string = link.rel ? 'rel' : 'property';
+    const attr: string = link.rel ? "rel" : "property";
     return `${attr}="${link[attr]}"`;
   }
 
-  private _containsAttributes(link: LinkDefinition, elem: HTMLLinkElement): boolean {
-    return Object.keys(link).every((key: string) => elem.getAttribute(key) === link[key]);
+  private _containsAttributes(
+    link: LinkDefinition,
+    elem: HTMLLinkElement
+  ): boolean {
+    return Object.keys(link).every(
+      (key: string) => elem.getAttribute(key) === link[key]
+    );
   }
 }
