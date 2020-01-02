@@ -1991,31 +1991,3 @@ export function textBindingInternal(lView: LView, index: number, value: string):
   isProceduralRenderer(renderer) ? renderer.setValue(element, value) : element.textContent = value;
 }
 
-/**
- * Renders all initial styling (class and style values) on to the element from the tNode.
- *
- * All initial styling data (i.e. any values extracted from the `style` or `class` attributes
- * on an element) are collected into the `tNode.styles` and `tNode.classes` data structures.
- * These values are populated during the creation phase of an element and are then later
- * applied once the element is instantiated. This function applies each of the static
- * style and class entries to the element.
- */
-export function renderInitialStyling(
-    renderer: Renderer3, native: RElement, tNode: TNode, append: boolean) {
-  if (tNode.classes !== null) {
-    if (append) {
-      renderStylingMap(renderer, native, tNode.classes, true);
-    } else {
-      const classes = getInitialStylingValue(tNode.classes);
-      writeStylingValueDirectly(renderer, native, classes, true, null);
-    }
-  }
-  if (tNode.styles !== null) {
-    if (append) {
-      renderStylingMap(renderer, native, tNode.styles, false);
-    } else {
-      const styles = getInitialStylingValue(tNode.styles);
-      writeStylingValueDirectly(renderer, native, styles, false, null);
-    }
-  }
-}
