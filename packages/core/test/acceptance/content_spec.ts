@@ -955,6 +955,50 @@ describe('projection', () => {
     expect(fixture.nativeElement).toHaveText('hello');
   });
 
+  it('should support ngProjectAs with a various number of other bindings and attributes', () => {
+    @Directive({selector: '[color],[margin]'})
+    class ElDecorator {
+      @Input() color?: string;
+      @Input() margin?: number;
+    }
+    @Component({
+      selector: 'card',
+      template: `
+        <ng-content select="[card-title]"></ng-content>
+        ---
+        <ng-content select="[card-subtitle]"></ng-content>
+        ---
+        <ng-content select="[card-content]"></ng-content>
+        ---
+        <ng-content select="[card-footer]"></ng-content>
+      `
+    })
+    class Card {
+    }
+
+    @Component({
+      selector: 'card-with-title',
+      template: `
+        <card>
+         <h1 [color]="'red'" [margin]="10" ngProjectAs="[card-title]">Title</h1>
+         <h2  xlink:href="google.com" ngProjectAs="[card-subtitle]">Subtitle</h2>
+         <div style="font-color: blue;" ngProjectAs="[card-content]">content</div>
+         <div [color]="'blue'" ngProjectAs="[card-footer]">footer</div>
+        </card>
+      `
+    })
+    class CardWithTitle {
+    }
+
+    TestBed.configureTestingModule({declarations: [Card, CardWithTitle, ElDecorator]});
+    const fixture = TestBed.createComponent(CardWithTitle);
+    fixture.detectChanges();
+
+    // Compare the text output, because Ivy and ViewEngine produce slightly different HTML.
+    expect(fixture.nativeElement.textContent)
+        .toContain('Title --- Subtitle --- content --- footer');
+  });
+
   it('should support ngProjectAs on elements (including <ng-content>)', () => {
     @Component({
       selector: 'card',
