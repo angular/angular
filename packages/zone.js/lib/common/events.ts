@@ -44,6 +44,16 @@ export const globalSources: any = {};
 const EVENT_NAME_SYMBOL_REGX = new RegExp('^' + ZONE_SYMBOL_PREFIX + '(\\w+)(true|false)$');
 const IMMEDIATE_PROPAGATION_SYMBOL = zoneSymbol('propagationStopped');
 
+function prepareEventNames(eventName: string, eventNameToString?: (eventName: string) => string) {
+  const falseEventName = (eventNameToString ? eventNameToString(eventName) : eventName) + FALSE_STR;
+  const trueEventName = (eventNameToString ? eventNameToString(eventName) : eventName) + TRUE_STR;
+  const symbol = ZONE_SYMBOL_PREFIX + falseEventName;
+  const symbolCapture = ZONE_SYMBOL_PREFIX + trueEventName;
+  zoneSymbolEventNames[eventName] = {};
+  zoneSymbolEventNames[eventName][FALSE_STR] = symbol;
+  zoneSymbolEventNames[eventName][TRUE_STR] = symbolCapture;
+}
+
 export interface PatchEventTargetOptions {
   // validateHandler
   vh?: (nativeDelegate: any, delegate: any, target: any, args: any) => boolean;
@@ -387,23 +397,12 @@ export function patchEventTarget(
         }
 
         const zone = Zone.current;
-        const symbolEventNames = zoneSymbolEventNames[eventName];
-        let symbolEventName;
+        let symbolEventNames = zoneSymbolEventNames[eventName];
         if (!symbolEventNames) {
-          // the code is duplicate, but I just want to get some better performance
-          const falseEventName =
-              (eventNameToString ? eventNameToString(eventName) : eventName) + FALSE_STR;
-          const trueEventName =
-              (eventNameToString ? eventNameToString(eventName) : eventName) + TRUE_STR;
-          const symbol = ZONE_SYMBOL_PREFIX + falseEventName;
-          const symbolCapture = ZONE_SYMBOL_PREFIX + trueEventName;
-          zoneSymbolEventNames[eventName] = {};
-          zoneSymbolEventNames[eventName][FALSE_STR] = symbol;
-          zoneSymbolEventNames[eventName][TRUE_STR] = symbolCapture;
-          symbolEventName = capture ? symbolCapture : symbol;
-        } else {
-          symbolEventName = symbolEventNames[capture ? TRUE_STR : FALSE_STR];
+          prepareEventNames(eventName, eventNameToString);
+          symbolEventNames = zoneSymbolEventNames[eventName];
         }
+        const symbolEventName = symbolEventNames[capture ? TRUE_STR : FALSE_STR];
         let existingTasks = target[symbolEventName];
         let isExisting = false;
         if (existingTasks) {
@@ -668,20 +667,35 @@ export function patchEventTarget(
 }
 
 export function findEventTasks(target: any, eventName: string): Task[] {
-  const foundTasks: any[] = [];
-  for (let prop in target) {
-    const match = EVENT_NAME_SYMBOL_REGX.exec(prop);
-    let evtName = match && match[1];
-    if (evtName && (!eventName || evtName === eventName)) {
-      const tasks: any = target[prop];
-      if (tasks) {
-        for (let i = 0; i < tasks.length; i++) {
-          foundTasks.push(tasks[i]);
+  if (!eventName) {
+    const foundTasks: any[] = [];
+    for (let prop in target) {
+      const match = EVENT_NAME_SYMBOL_REGX.exec(prop);
+      let evtName = match && match[1];
+      if (evtName && (!eventName || evtName === eventName)) {
+        const tasks: any = target[prop];
+        if (tasks) {
+          for (let i = 0; i < tasks.length; i++) {
+            foundTasks.push(tasks[i]);
+          }
         }
       }
     }
+    return foundTasks;
   }
-  return foundTasks;
+  let symbolEventName = zoneSymbolEventNames[eventName];
+  if (!symbolEventName) {
+    prepareEventNames(eventName);
+    symbolEventName = zoneSymbolEventNames[eventName];
+  }
+  const captureFalseTasks = target[symbolEventName[FALSE_STR]];
+  const captureTrueTasks = target[symbolEventName[TRUE_STR]];
+  if (!captureFalseTasks) {
+    return captureTrueTasks ? captureTrueTasks.slice() : [];
+  } else {
+    return captureTrueTasks ? captureFalseTasks.concat(captureTrueTasks) :
+                              captureFalseTasks.slice();
+  }
 }
 
 export function patchEventPrototype(global: any, api: _ZonePrivate) {
