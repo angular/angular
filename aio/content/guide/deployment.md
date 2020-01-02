@@ -473,17 +473,28 @@ Even as JavaScript continues to evolve, with new features being introduced, not 
 
 The code you write in development using TypeScript is compiled and bundled into ES2015, the JavaScript syntax that is compatible with most browsers.
 All modern browsers support ES2015 and beyond, but in most cases, you still have to account for users accessing your application from a browser that doesn't.
-When targeting older browsers, [polyfills](guide/browser-support#polyfills) can bridge the gap by providing functionality that doesn't exist in the older versions of JavaScript supported by those browsers.
+When targeting older browsers, [polyfills](guide/browser-support#polyfills) can help bridge the gap by providing functionality that doesn't exist in the older versions of JavaScript supported by those browsers. By also compiling the application to ES5 instead of ES2015, the gap can be fully bridged.
 
-To maximize compatibility, you could ship a single bundle that includes all your compiled code, plus any polyfills that may be needed.
-Users with modern browsers, however, shouldn't have to pay the price of increased bundle size that comes with polyfills they don't need.
+To maximize compatibility, you could ship an ES5 variant of your application that includes all your compiled code, plus any polyfills that may be needed.
+Users with modern browsers, however, shouldn't have to pay the price of increased bundle size that comes with both the polyfills they don't need and the larger code size for ES5 equivalents of ES2015 code. For example, ES5 does not support classes and they must be transformed into ES5 code that mimics their behavior.
 Differential loading, which is supported by default in Angular CLI version 8 and higher, solves this problem.
 
 Differential loading is a strategy that allows your web application to support multiple browsers, but only load the necessary code that the browser needs. When differential loading is enabled (which is the default) the CLI builds two separate bundles as part of your deployed application.
 
 * The first bundle contains modern ES2015 syntax, takes advantage of built-in support in modern browsers, ships fewer polyfills, and results in a smaller bundle size.
 
-* The second bundle contains code in the old ES5 syntax, along with all necessary polyfills. This results in a larger bundle size, but supports older browsers.
+* The second bundle contains code in the old ES5 syntax, along with all necessary polyfills for Angular to function. This results in a larger bundle size, but supports older browsers.
+
+To optimize differential loading build performance, the CLI uses a bundle level transformation process.
+This process requires that only one full compilation of the application in ES2015 syntax to take place.
+Once this full ES2015 compilation is complete, a post-processing step is performed that transforms each output JavaScript file into an additional ES5 variant. An additional ES5 only polyfills file is also generated that contains the required polyfills for ES5 browsers.
+This process also guarantees that the entire bundled application is ES5 compliant including third-party code.
+
+This process is different than changing the compilation target to `es5`.
+When changing the compilation target to `es5`, only the TypeScript application code will be transformed to ES5. For libraries, the ES5 entry point of the library's package will be used directly. If a library does not have one then the main entry point of the library's package will be used instead.
+The main entry point may not contain code that is ES5 compatible.
+This can result in a bundled application that is a mix of ES5 and ES2015+ code.
+If using a compilation target of `es5`, it is important to ensure that all libraries used by the application provide ES5 compatible code.
 
 ### Differential builds
 
@@ -519,16 +530,12 @@ When needed, the `index.html` file is also modified during the build process to 
   &lt;script src="runtime-es5.js" nomodule>&lt;/script>
   &lt;script src="polyfills-es2015.js" type="module">&lt;/script>
   &lt;script src="polyfills-es5.js" nomodule>&lt;/script>
-  &lt;script src="styles-es2015.js" type="module">&lt;/script>
-  &lt;script src="styles-es5.js" nomodule>&lt;/script>
-  &lt;script src="vendor-es2015.js" type="module">&lt;/script>
-  &lt;script src="vendor-es5.js" nomodule>&lt;/script>
   &lt;script src="main-es2015.js" type="module">&lt;/script>
   &lt;script src="main-es5.js" nomodule>&lt;/script>
 &lt;/body>
 </code-example>
 
-Each script tag has a `type="module"` or `nomodule` attribute. Browsers with native support for ES modules only load the scripts with the `module` type attribute and ignore scripts with the `nomodule` attribute. Legacy browsers only load the scripts with the `nomodule` attribute, and ignore the script tags with the `module` type that load ES modules.
+Each script tag has a `type="module"` or `nomodule` attribute. Browsers with native support for ES modules load the scripts with the `module` type attribute and ignore scripts with the `nomodule` attribute. Legacy browsers load the scripts with the `nomodule` attribute, and ignore the script tags with the `module` type that load ES modules.
 
 <div class="alert is-helpful">
 
@@ -613,7 +620,7 @@ To explicitly disable differential loading and create an ES5 build:
 ## Local development in older browsers
 
 In Angular CLI version 8 and higher, differential loading is enabled by default for the `ng build` command.
-The `ng serve`, `ng test`, and `ng e2e` commands, however, generate a single ES2015 build which cannot run in older browsers that don't support the modules, such as IE 11.
+The `ng serve`, `ng test`, and `ng e2e` commands, however, generate a single ES2015 build which cannot run in older browsers, such as IE 11.
 
 If you want to run ES5 code during development, you could disable differential loading completely.
 To maintain the benefits of differential loading, however, a better option is to define multiple configurations for `ng serve`, `ng e2e`, and `ng test`.
