@@ -499,24 +499,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const slot = this.allocateDataSlot();
     const projectionSlotIdx = this._ngContentSelectorsOffset + this._ngContentReservedSlots.length;
     const parameters: o.Expression[] = [o.literal(slot)];
-    const attributes: o.Expression[] = [];
-    let ngProjectAsAttr: t.TextAttribute|undefined;
 
     this._ngContentReservedSlots.push(ngContent.selector);
 
-    ngContent.attributes.forEach((attribute) => {
-      const {name, value} = attribute;
-      if (name === NG_PROJECT_AS_ATTR_NAME) {
-        ngProjectAsAttr = attribute;
-      }
-      if (name.toLowerCase() !== NG_CONTENT_SELECT_ATTR) {
-        attributes.push(o.literal(name), o.literal(value));
-      }
-    });
-
-    if (ngProjectAsAttr) {
-      attributes.push(...getNgProjectAsLiteral(ngProjectAsAttr));
-    }
+    const nonContentSelectAttributes =
+        ngContent.attributes.filter(attr => attr.name.toLowerCase() !== NG_CONTENT_SELECT_ATTR);
+    const attributes = this.getAttributeExpressions(nonContentSelectAttributes, [], []);
 
     if (attributes.length > 0) {
       parameters.push(o.literal(projectionSlotIdx), o.literalArr(attributes));
@@ -540,7 +528,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     const i18nAttrs: (t.TextAttribute | t.BoundAttribute)[] = [];
     const outputAttrs: t.TextAttribute[] = [];
-    let ngProjectAsAttr: t.TextAttribute|undefined;
 
     const [namespaceKey, elementName] = splitNsName(element.name);
     const isNgContainer = checkIsNgContainer(element.name);
@@ -555,9 +542,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       } else if (name === 'class') {
         stylingBuilder.registerClassAttr(value);
       } else {
-        if (attr.name === NG_PROJECT_AS_ATTR_NAME) {
-          ngProjectAsAttr = attr;
-        }
         if (attr.i18n) {
           // Place attributes into a separate array for i18n processing, but also keep such
           // attributes in the main list to make them available for directive matching at runtime.
@@ -580,7 +564,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     // Add the attributes
-    const attributes: o.Expression[] = [];
     const allOtherInputs: t.BoundAttribute[] = [];
 
     element.inputs.forEach((input: t.BoundAttribute) => {
@@ -598,13 +581,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
     });
 
-    outputAttrs.forEach(attr => {
-      attributes.push(...getAttributeNameLiterals(attr.name), o.literal(attr.value));
-    });
-
     // add attributes for directive and projection matching purposes
-    attributes.push(...this.prepareNonRenderAttrs(
-        allOtherInputs, element.outputs, stylingBuilder, [], i18nAttrs, ngProjectAsAttr));
+    const attributes: o.Expression[] = this.getAttributeExpressions(
+        outputAttrs, allOtherInputs, element.outputs, stylingBuilder, [], i18nAttrs);
     parameters.push(this.addAttrsToConsts(attributes));
 
     // local refs (ex.: <div #foo #bar="baz">)
@@ -844,7 +823,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   visitTemplate(template: t.Template) {
     const NG_TEMPLATE_TAG_NAME = 'ng-template';
     const templateIndex = this.allocateDataSlot();
-    let ngProjectAsAttr: t.TextAttribute|undefined;
 
     if (this.i18n) {
       this.i18n.appendTemplate(template.i18n !, templateIndex);
@@ -867,16 +845,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.matchDirectives(NG_TEMPLATE_TAG_NAME, template);
 
     // prepare attributes parameter (including attributes used for directive matching)
-    const attrsExprs: o.Expression[] = [];
-    template.attributes.forEach((attr: t.TextAttribute) => {
-      if (attr.name === NG_PROJECT_AS_ATTR_NAME) {
-        ngProjectAsAttr = attr;
-      }
-      attrsExprs.push(asLiteral(attr.name), asLiteral(attr.value));
-    });
-    attrsExprs.push(...this.prepareNonRenderAttrs(
-        template.inputs, template.outputs, undefined, template.templateAttrs, undefined,
-        ngProjectAsAttr));
+    const attrsExprs: o.Expression[] = this.getAttributeExpressions(
+        template.attributes, template.inputs, template.outputs, undefined, template.templateAttrs,
+        undefined);
     parameters.push(this.addAttrsToConsts(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)
@@ -1243,24 +1214,37 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    *
    * ```
    * attrs = [prop, value, prop2, value2,
+   *   PROJECT_AS, selector,
    *   CLASSES, class1, class2,
    *   STYLES, style1, value1, style2, value2,
    *   BINDINGS, name1, name2, name3,
    *   TEMPLATE, name4, name5, name6,
-   *   PROJECT_AS, selector,
    *   I18N, name7, name8, ...]
    * ```
    *
    * Note that this function will fully ignore all synthetic (@foo) attribute values
    * because those values are intended to always be generated as property instructions.
    */
-  private prepareNonRenderAttrs(
-      inputs: t.BoundAttribute[], outputs: t.BoundEvent[], styles?: StylingBuilder,
-      templateAttrs: (t.BoundAttribute|t.TextAttribute)[] = [],
-      i18nAttrs: (t.BoundAttribute|t.TextAttribute)[] = [],
-      ngProjectAsAttr?: t.TextAttribute): o.Expression[] {
+  private getAttributeExpressions(
+      renderAttributes: t.TextAttribute[], inputs: t.BoundAttribute[], outputs: t.BoundEvent[],
+      styles?: StylingBuilder, templateAttrs: (t.BoundAttribute|t.TextAttribute)[] = [],
+      i18nAttrs: (t.BoundAttribute|t.TextAttribute)[] = []): o.Expression[] {
     const alreadySeen = new Set<string>();
     const attrExprs: o.Expression[] = [];
+    let ngProjectAsAttr: t.TextAttribute|undefined;
+
+    renderAttributes.forEach((attr: t.TextAttribute) => {
+      if (attr.name === NG_PROJECT_AS_ATTR_NAME) {
+        ngProjectAsAttr = attr;
+      }
+      attrExprs.push(...getAttributeNameLiterals(attr.name), asLiteral(attr.value));
+    });
+
+    // Keep ngProjectAs next to the other name, value pairs so we can verify that we match
+    // ngProjectAs marker in the attribute name slot.
+    if (ngProjectAsAttr) {
+      attrExprs.push(...getNgProjectAsLiteral(ngProjectAsAttr));
+    }
 
     function addAttrExpr(key: string | number, value?: o.Expression): void {
       if (typeof key === 'string') {
@@ -1312,10 +1296,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (templateAttrs.length) {
       attrExprs.push(o.literal(core.AttributeMarker.Template));
       templateAttrs.forEach(attr => addAttrExpr(attr.name));
-    }
-
-    if (ngProjectAsAttr) {
-      attrExprs.push(...getNgProjectAsLiteral(ngProjectAsAttr));
     }
 
     if (i18nAttrs.length) {
