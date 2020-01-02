@@ -100,15 +100,6 @@ interface LFrame {
   currentDirectiveDef: DirectiveDef<any>|ComponentDef<any>|null;
 
   /**
-   * Used as the starting directive id value.
-   *
-   * All subsequent directives are incremented from this value onwards.
-   * The reason why this value is `1` instead of `0` is because the `0`
-   * value is reserved for the template.
-   */
-  activeDirectiveId: number;
-
-  /**
    * The root index from which pure function instructions should calculate their binding
    * indices. In component views, this is TView.bindingStartIndex. In a host binding
    * context, this is the TView.expandoStartIndex + any dirs/hostVars before the given dir.
@@ -273,12 +264,6 @@ export const enum ActiveElementFlags {
   Size = 1,
 }
 
-/**
- * Determines whether or not a flag is currently set for the active element.
- */
-export function hasActiveElementFlag(flag: ActiveElementFlags) {
-  return (instructionState.lFrame.selectedIndex & flag) === flag;
-}
 
 /**
  * Sets a flag is for the active element.
@@ -327,54 +312,6 @@ export function setElementExitFn(fn: () => void): void {
   }
   ngDevMode &&
       assertEqual(instructionState.elementExitFn, fn, 'Expecting to always get the same function');
-}
-
-/**
- * Returns the current id value of the current directive.
- *
- * For example we have an element that has two directives on it:
- * <div dir-one dir-two></div>
- *
- * dirOne->hostBindings() (id == 1)
- * dirTwo->hostBindings() (id == 2)
- *
- * Note that this is only active when `hostBinding` functions are being processed.
- *
- * Note that directive id values are specific to an element (this means that
- * the same id value could be present on another element with a completely
- * different set of directives).
- */
-export function getActiveDirectiveId() {
-  return instructionState.lFrame.activeDirectiveId;
-}
-
-/**
- * Increments the current directive id value.
- *
- * For example we have an element that has two directives on it:
- * <div dir-one dir-two></div>
- *
- * dirOne->hostBindings() (index = 1)
- * // increment
- * dirTwo->hostBindings() (index = 2)
- *
- * Depending on whether or not a previous directive had any inherited
- * directives present, that value will be incremented in addition
- * to the id jumping up by one.
- *
- * Note that this is only active when `hostBinding` functions are being processed.
- *
- * Note that directive id values are specific to an element (this means that
- * the same id value could be present on another element with a completely
- * different set of directives).
- */
-export function incrementActiveDirectiveId() {
-  // Each directive gets a uniqueId value that is the same for both
-  // create and update calls when the hostBindings function is called. The
-  // directive uniqueId is not set anywhere--it is just incremented between
-  // each hostBindings call and is useful for helping instruction code
-  // uniquely determine which directive is currently active when executed.
-  instructionState.lFrame.activeDirectiveId += 1;
 }
 
 /**
