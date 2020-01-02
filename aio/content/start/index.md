@@ -311,6 +311,12 @@ To make the "Notify Me" button work, you need to configure two things:
 
 1. In the component class, define a property named `notify` with an `@Output()` decorator and an instance of `EventEmitter()`. This allows the product alert component to emit an event when the value of the notify property changes.
 
+<div class="alert is-helpful">
+
+Whenever a new component is generated using the Angular CLI it comes with an empty constructor,the OnInit interface and the ngOnInit() method. Since they are not used in the following example they are removed it.
+
+</div>
+
     <code-example path="getting-started/src/app/product-alerts/product-alerts.component.ts" header="src/app/product-alerts/product-alerts.component.ts" region="input-output"></code-example>
 
 1. In the product alert template, `product-alerts.component.html`, update the "Notify Me" button with an event binding to call the `notify.emit()` method.
