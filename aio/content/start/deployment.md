@@ -18,7 +18,7 @@ Whether you came here directly from [Your First App](start "Getting Started: You
 StackBlitz projects are public by default, allowing you to share your Angular app via the project URL. Keep in mind that this is a great way to share ideas and prototypes, but it is not intended for production hosting.
 
 1. In your StackBlitz project, make sure you have forked or saved your project.
-1. In the preview pane, you should see a URL that looks like `https://<Project ID>.stackblitz.io`.
+1. In the preview page, you should see a URL that looks like `https://<Project ID>.stackblitz.io`.
 1. Share this URL with a friend or colleague.
 1. Users that visit your URL will see a development server start up, and then your application will load.
 
