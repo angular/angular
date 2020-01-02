@@ -40,6 +40,7 @@ ES5_BUNDLES = {
     "webapis-shadydom": _DIR + "browser/shadydom",
     "zone-patch-socket-io": _DIR + "extra/socket-io",
     "zone-patch-user-media": _DIR + "browser/webapis-user-media",
+    "zone-patch-message-port": _DIR + "browser/message-port",
     "zone-testing": _DIR + "testing/zone-testing",
     "zone-testing-bundle": _DIR + "browser/rollup-legacy-test-main",
 }
