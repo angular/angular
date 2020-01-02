@@ -1536,7 +1536,7 @@ describe('compiler compliance', () => {
             decls: 1,
             vars: 1,
             consts: [
-                ["ngProjectAs", ".someclass", ${AttributeMarker.Template}, "ngIf", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"]],
+                ["ngProjectAs", ".someclass", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"], ${AttributeMarker.Template}, "ngIf"],
                 ["ngProjectAs", ".someclass", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"]]
             ],
             template: function MyApp_Template(rf, ctx) {
