@@ -34,9 +34,9 @@ describe('ClusterExecutor', () => {
 
   beforeEach(() => {
     masterRunSpy = spyOn(ClusterMaster.prototype, 'run')
-                       .and.returnValue(Promise.resolve('CusterMaster#run()'));
+                       .and.returnValue(Promise.resolve('CusterMaster#run()' as any));
     workerRunSpy = spyOn(ClusterWorker.prototype, 'run')
-                       .and.returnValue(Promise.resolve('CusterWorker#run()'));
+                       .and.returnValue(Promise.resolve('CusterWorker#run()' as any));
     createTaskCompletedCallback = jasmine.createSpy('createTaskCompletedCallback');
 
     mockLogger = new MockLogger();

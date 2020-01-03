@@ -65,10 +65,11 @@ describe('NodeJSFileSystem', () => {
 
   describe('readdir()', () => {
     it('should delegate to fs.readdirSync()', () => {
-      const spy = spyOn(realFs, 'readdirSync').and.returnValue(['x', 'y/z']);
+      const spy = spyOn(realFs, 'readdirSync').and.returnValue(['x', 'y/z'] as any);
       const result = fs.readdir(abcPath);
       expect(result).toEqual([relativeFrom('x'), relativeFrom('y/z')]);
-      expect(spy).toHaveBeenCalledWith(abcPath);
+      // TODO: @JiaLiPassion need to wait for @types/jasmine update to handle optional parameters.
+      expect(spy as any).toHaveBeenCalledWith(abcPath);
     });
   });
 
@@ -88,7 +89,8 @@ describe('NodeJSFileSystem', () => {
       const spy = spyOn(realFs, 'statSync').and.returnValue(stats);
       const result = fs.stat(abcPath);
       expect(result).toBe(stats);
-      expect(spy).toHaveBeenCalledWith(abcPath);
+      // TODO: @JiaLiPassion need to wait for @types/jasmine update to handle optional parameters.
+      expect(spy as any).toHaveBeenCalledWith(abcPath);
     });
   });
 
@@ -125,7 +127,7 @@ describe('NodeJSFileSystem', () => {
       const xyPath = absoluteFrom('/x/y');
       const mkdirCalls: string[] = [];
       const existsCalls: string[] = [];
-      spyOn(realFs, 'mkdirSync').and.callFake((path: string) => mkdirCalls.push(path));
+      spyOn(realFs, 'mkdirSync').and.callFake(((path: string) => mkdirCalls.push(path)) as any);
       spyOn(fs, 'exists').and.callFake((path: AbsoluteFsPath) => {
         existsCalls.push(path);
         switch (path) {
@@ -171,12 +173,12 @@ describe('NodeJSFileSystem', () => {
            }
            return false;
          });
-         spyOn(fs, 'stat').and.returnValue({isDirectory: () => true});
-         const mkdirSyncSpy = spyOn(realFs, 'mkdirSync').and.callFake((path: string) => {
+         spyOn(fs, 'stat').and.returnValue({ isDirectory: () => true } as any);
+         const mkdirSyncSpy = spyOn(realFs, 'mkdirSync').and.callFake(((path: string) => {
            if (path === abcPath) {
              throw new Error('It exists already. Supposedly.');
            }
-         });
+         }) as any);
 
          fs.ensureDir(abcPath);
          expect(mkdirSyncSpy).toHaveBeenCalledTimes(3);
@@ -186,11 +188,11 @@ describe('NodeJSFileSystem', () => {
 
     it('should fail if creating the directory throws and the directory does not exist', () => {
       spyOn(fs, 'exists').and.returnValue(false);
-      spyOn(realFs, 'mkdirSync').and.callFake((path: string) => {
+      spyOn(realFs, 'mkdirSync').and.callFake(((path: string) => {
         if (path === abcPath) {
           throw new Error('Unable to create directory (for whatever reason).');
         }
-      });
+      }) as any);
 
       expect(() => fs.ensureDir(abcPath))
           .toThrowError('Unable to create directory (for whatever reason).');
@@ -210,12 +212,12 @@ describe('NodeJSFileSystem', () => {
         }
         return false;
       });
-      spyOn(fs, 'stat').and.returnValue({isDirectory: isDirectorySpy});
-      spyOn(realFs, 'mkdirSync').and.callFake((path: string) => {
+      spyOn(fs, 'stat').and.returnValue({ isDirectory: isDirectorySpy } as any);
+      spyOn(realFs, 'mkdirSync').and.callFake(((path: string) => {
         if (path === abcPath) {
           throw new Error('It exists already. Supposedly.');
         }
-      });
+      }) as any);
 
       expect(() => fs.ensureDir(abcPath)).toThrowError('It exists already. Supposedly.');
       expect(isDirectorySpy).toHaveBeenCalledTimes(1);

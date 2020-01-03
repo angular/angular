@@ -1559,11 +1559,13 @@ describe('ngc transformer command-line', () => {
       originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
       jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
       const timerToken = 100;
-      spyOn(ts.sys, 'setTimeout').and.callFake((callback: () => void) => {
+      // TODO: @JiaLiPassion, need to wait @types/jasmine to handle optional method case
+      spyOn(ts.sys as any, 'setTimeout').and.callFake((callback: () => void) => {
         timer = callback;
         return timerToken;
       });
-      spyOn(ts.sys, 'clearTimeout').and.callFake((token: number) => {
+      // TODO: @JiaLiPassion, need to wait @types/jasmine to handle optional method case
+      spyOn(ts.sys as any, 'clearTimeout').and.callFake((token: number) => {
         if (token == timerToken) {
           timer = undefined;
         }
@@ -2323,17 +2325,17 @@ describe('ngc transformer command-line', () => {
       }));
       write('lib1/index.ts', `
         import {Directive} from '@angular/core';
-        
+
         @Directive()
         export class BaseClass {}
       `);
       write('index.ts', `
         import {NgModule, Directive} from '@angular/core';
         import {BaseClass} from 'lib1_built';
-        
+
         @Directive({selector: 'my-dir'})
         export class MyDirective extends BaseClass {}
-        
+
         @NgModule({declarations: [MyDirective]})
         export class AppModule {}
       `);

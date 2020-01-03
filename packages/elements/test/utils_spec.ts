@@ -15,7 +15,9 @@ describe('utils', () => {
       let clearTimeoutSpy: jasmine.Spy;
 
       beforeEach(() => {
-        setTimeoutSpy = spyOn(window, 'setTimeout').and.returnValue(42);
+        // TODO: @JiaLiPassion, need to wait @types/jasmine to fix the wrong return
+        // type infer issue.
+        setTimeoutSpy = spyOn(window, 'setTimeout').and.returnValue(42 as any);
         clearTimeoutSpy = spyOn(window, 'clearTimeout');
       });
 
