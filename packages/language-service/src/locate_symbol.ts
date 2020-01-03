@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, CompileTypeSummary, CssSelector, DirectiveAst, ElementAst, SelectorMatcher, TemplateAstPath, tokenReference} from '@angular/compiler';
+import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, CompileTypeSummary, CssSelector, DirectiveAst, ElementAst, RecursiveTemplateAstVisitor, SelectorMatcher, TemplateAst, TemplateAstPath, templateVisitAll, tokenReference} from '@angular/compiler';
 
 import {AstResult} from './common';
 import {getExpressionScope} from './expression_diagnostics';
@@ -148,14 +148,31 @@ function findAttribute(info: AstResult, position: number): Attribute|undefined {
   return path.first(Attribute);
 }
 
+function findParentOfDirectivePropertyAst(ast: TemplateAst[], binding: BoundDirectivePropertyAst) {
+  let res: DirectiveAst|undefined;
+  const visitor = new class extends RecursiveTemplateAstVisitor {
+    visitDirective(ast: DirectiveAst) {
+      const result = this.visitChildren(ast, visit => { visit(ast.inputs); });
+      return result;
+    }
+    visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any) {
+      if (ast === binding) {
+        res = context;
+      }
+    }
+  };
+  templateVisitAll(visitor, ast);
+  return res;
+}
+
 function findInputBinding(
     info: AstResult, path: TemplateAstPath, binding: BoundDirectivePropertyAst): Symbol|undefined {
-  const directive = path.parentOf(path.tail);
-  if (directive instanceof DirectiveAst) {
-    const invertedInput = invertMap(directive.directive.inputs);
+  const directiveAst = findParentOfDirectivePropertyAst(info.templateAst, binding);
+  if (directiveAst) {
+    const invertedInput = invertMap(directiveAst.directive.inputs);
     const fieldName = invertedInput[binding.templateName];
     if (fieldName) {
-      const classSymbol = info.template.query.getTypeSymbol(directive.directive.type.reference);
+      const classSymbol = info.template.query.getTypeSymbol(directiveAst.directive.type.reference);
       if (classSymbol) {
         return classSymbol.members().get(fieldName);
       }
