@@ -48,7 +48,7 @@ describe('global utils', () => {
   });
 });
 
-function assertPublished(name: string, value: {}) {
+function assertPublished(name: string, value: Function) {
   const w = global as any as GlobalDevModeContainer;
   expect(w[GLOBAL_PUBLISH_EXPANDO_KEY][name]).toBe(value);
 }

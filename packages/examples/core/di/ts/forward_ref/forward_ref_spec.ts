@@ -42,7 +42,7 @@ import {Inject, ReflectiveInjector, forwardRef, resolveForwardRef} from '@angula
     it('can be unwrapped', () => {
       // #docregion resolve_forward_ref
       const ref = forwardRef(() => 'refValue');
-      expect(resolveForwardRef(ref)).toEqual('refValue');
+      expect(resolveForwardRef(ref as any)).toEqual('refValue');
       expect(resolveForwardRef('regularValue')).toEqual('regularValue');
       // #enddocregion
     });

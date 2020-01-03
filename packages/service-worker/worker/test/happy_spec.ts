@@ -879,7 +879,7 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
          spyOn(server, 'fetch').and.callFake((req: Request) => new MockResponse(null, {
                                                status: 503,
                                                statusText: 'Service Unavailable'
-                                             }));
+                                             }) as any);
 
          expect(await driver.checkForUpdate()).toEqual(false);
          expect(driver.state).toEqual(DriverReadyState.NORMAL);
@@ -1432,7 +1432,8 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
       it('ignores passive mixed content requests ', async() => {
         const scopeFetchSpy = spyOn(scope, 'fetch').and.callThrough();
-        const getRequestUrls = () => scopeFetchSpy.calls.allArgs().map(args => args[0].url);
+        const getRequestUrls = () =>
+            scopeFetchSpy.calls.allArgs().map((args: any[]) => args[0].url);
 
         const httpScopeUrl = 'http://mock.origin.dev';
         const httpsScopeUrl = 'https://mock.origin.dev';
