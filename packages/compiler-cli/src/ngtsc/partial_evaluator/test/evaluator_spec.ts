@@ -751,7 +751,8 @@ runInEachFileSystem(() => {
         const evaluator = makeEvaluator(checker, {...fakeDepTracker, addDependency});
         evaluator.evaluate(expression);
         expect(addDependency).toHaveBeenCalledTimes(2);  // two declaration visited
-        expect(addDependency.calls.allArgs().map(args => [args[0].fileName, args[1].fileName]))
+        expect(addDependency.calls.allArgs().map(
+                   (args: any[]) => [args[0].fileName, args[1].fileName]))
             .toEqual([[_('/entry.ts'), _('/entry.ts')], [_('/entry.ts'), _('/entry.ts')]]);
       });
 
@@ -765,7 +766,8 @@ runInEachFileSystem(() => {
         const evaluator = makeEvaluator(checker, {...fakeDepTracker, addDependency});
         evaluator.evaluate(expression);
         expect(addDependency).toHaveBeenCalledTimes(2);
-        expect(addDependency.calls.allArgs().map(args => [args[0].fileName, args[1].fileName]))
+        expect(addDependency.calls.allArgs().map(
+                   (args: any[]) => [args[0].fileName, args[1].fileName]))
             .toEqual([
               [_('/entry.ts'), _('/entry.ts')],
               [_('/entry.ts'), _('/other.ts')],
@@ -793,7 +795,8 @@ runInEachFileSystem(() => {
         const evaluator = makeEvaluator(checker, {...fakeDepTracker, addDependency});
         evaluator.evaluate(expression);
         expect(addDependency).toHaveBeenCalledTimes(2);
-        expect(addDependency.calls.allArgs().map(args => [args[0].fileName, args[1].fileName]))
+        expect(addDependency.calls.allArgs().map(
+                   (args: any[]) => [args[0].fileName, args[1].fileName]))
             .toEqual([
               [_('/entry.ts'), _('/direct-reexport.ts')],
               // Not '/indirect-reexport.ts' or '/def.ts'.

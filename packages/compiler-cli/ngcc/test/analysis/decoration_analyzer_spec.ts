@@ -96,7 +96,7 @@ runInEachFileSystem(() => {
         handler.compile.and.callFake((decl: ts.Declaration, analysis: any) => {
           logs.push(
               `compile: ${(decl as any).name.text}@${analysis.decoratorName} (resolved: ${analysis.resolved})`);
-          return `@${analysis.decoratorName} (compiled)`;
+          return `@${analysis.decoratorName} (compiled)` as any;
         });
         return handler;
       };
@@ -181,7 +181,7 @@ runInEachFileSystem(() => {
         it('should call detect on the decorator handlers with each class from the parsed file',
            () => {
              expect(testHandler.detect).toHaveBeenCalledTimes(5);
-             expect(testHandler.detect.calls.allArgs().map(args => args[1])).toEqual([
+             expect(testHandler.detect.calls.allArgs().map((args: any[]) => args[1])).toEqual([
                null,
                jasmine.arrayContaining([jasmine.objectContaining({name: 'Component'})]),
                jasmine.arrayContaining([jasmine.objectContaining({name: 'Directive'})]),

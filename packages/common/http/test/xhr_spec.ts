@@ -141,7 +141,7 @@ const XSSI_PREFIX = ')]}\'\n';
     it('emits real errors via the error path', done => {
       backend.handle(TEST_POST).subscribe(undefined, (err: HttpErrorResponse) => {
         expect(err instanceof HttpErrorResponse).toBe(true);
-        expect(err.error instanceof Error);
+        expect(err.error instanceof Error).toBeTrue();
         expect(err.url).toBe('/test');
         done();
       });

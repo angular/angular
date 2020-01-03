@@ -47,7 +47,7 @@ describe('CachedFileSystem', () => {
     let lstatSpy: jasmine.Spy;
     beforeEach(() => {
       // For most of the tests the files are not symbolic links.
-      lstatSpy = spyOn(delegate, 'lstat').and.returnValue({isSymbolicLink: () => false});
+      lstatSpy = spyOn(delegate, 'lstat').and.returnValue({ isSymbolicLink: () => false } as any);
     });
 
     it('should call delegate if not in cache', () => {
@@ -93,7 +93,7 @@ describe('CachedFileSystem', () => {
   describe('invalidateCaches()', () => {
     it('should call the delegate `readFile()` if the path for the cached file has been invalidated',
        () => {
-         spyOn(delegate, 'lstat').and.returnValue({isSymbolicLink: () => false});
+         spyOn(delegate, 'lstat').and.returnValue({ isSymbolicLink: () => false } as any);
          const spy = spyOn(delegate, 'readFile').and.returnValue('Some contents');
          fs.readFile(abcPath);  // Call once to fill the cache
          spy.calls.reset();
@@ -230,7 +230,7 @@ describe('CachedFileSystem', () => {
   describe('moveFile()', () => {
     beforeEach(() => {
       // `moveFile()` relies upon `readFile` which calls through to `lstat()`, so stub it out.
-      spyOn(delegate, 'lstat').and.returnValue({isSymbolicLink: () => false});
+      spyOn(delegate, 'lstat').and.returnValue({ isSymbolicLink: () => false } as any);
     });
 
     it('should call delegate', () => {

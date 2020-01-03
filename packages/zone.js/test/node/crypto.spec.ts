@@ -41,7 +41,7 @@ describe('crypto test', () => {
       done();
       return;
     }
-    const zoneASpec: ZoneSpec = {
+    const zoneASpec = {
       name: 'A',
       onScheduleTask: (delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
                           Task => { return delegate.scheduleTask(targetZone, task); }
