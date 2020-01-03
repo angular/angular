@@ -599,14 +599,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       attributes.push(...getAttributeNameLiterals(attr.name), o.literal(attr.value));
     });
 
-    // Keep ngProjectAs next to the other name, value pairs so we can verify that we match
-    // ngProjectAs marker in the attribute name slot.
-    if (ngProjectAsAttr) {
-      attributes.push(...getNgProjectAsLiteral(ngProjectAsAttr));
-    }
     // add attributes for directive and projection matching purposes
     attributes.push(...this.prepareNonRenderAttrs(
-        allOtherInputs, element.outputs, stylingBuilder, [], i18nAttrs));
+        allOtherInputs, element.outputs, stylingBuilder, [], i18nAttrs, ngProjectAsAttr));
     parameters.push(this.addAttrsToConsts(attributes));
 
     // local refs (ex.: <div #foo #bar="baz">)
@@ -876,13 +871,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
       attrsExprs.push(asLiteral(attr.name), asLiteral(attr.value));
     });
-    // Keep ngProjectAs next to the other name, value pairs so we can verify that we match
-    // ngProjectAs marker in the attribute name slot.
-    if (ngProjectAsAttr) {
-      attrsExprs.push(...getNgProjectAsLiteral(ngProjectAsAttr));
-    }
     attrsExprs.push(...this.prepareNonRenderAttrs(
-        template.inputs, template.outputs, undefined, template.templateAttrs, undefined));
+        template.inputs, template.outputs, undefined, template.templateAttrs, undefined,
+        ngProjectAsAttr));
     parameters.push(this.addAttrsToConsts(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)
@@ -1263,9 +1254,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private prepareNonRenderAttrs(
       inputs: t.BoundAttribute[], outputs: t.BoundEvent[], styles?: StylingBuilder,
       templateAttrs: (t.BoundAttribute|t.TextAttribute)[] = [],
-      i18nAttrs: (t.BoundAttribute|t.TextAttribute)[] = []): o.Expression[] {
+      i18nAttrs: (t.BoundAttribute|t.TextAttribute)[] = [],
+      ngProjectAsAttr?: t.TextAttribute): o.Expression[] {
     const alreadySeen = new Set<string>();
     const attrExprs: o.Expression[] = [];
+
+    // Keep ngProjectAs next to the other name, value pairs so we can verify that we match
+    // ngProjectAs marker in the attribute name slot.
+    if (ngProjectAsAttr) {
+      attrExprs.push(...getNgProjectAsLiteral(ngProjectAsAttr));
+    }
 
     function addAttrExpr(key: string | number, value?: o.Expression): void {
       if (typeof key === 'string') {
