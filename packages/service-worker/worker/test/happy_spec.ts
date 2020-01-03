@@ -876,7 +876,7 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
        async() => {
          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
          await driver.initialized;
-         spyOn(server, 'fetch').and.callFake((req: Request) => new MockResponse(null, {
+         spyOn(server, 'fetch').and.callFake(async(req: Request) => new MockResponse(null, {
                                                status: 503,
                                                statusText: 'Service Unavailable'
                                              }));
@@ -1432,7 +1432,8 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
       it('ignores passive mixed content requests ', async() => {
         const scopeFetchSpy = spyOn(scope, 'fetch').and.callThrough();
-        const getRequestUrls = () => scopeFetchSpy.calls.allArgs().map(args => args[0].url);
+        const getRequestUrls = () =>
+            (scopeFetchSpy.calls.allArgs() as[Request][]).map(args => args[0].url);
 
         const httpScopeUrl = 'http://mock.origin.dev';
         const httpsScopeUrl = 'https://mock.origin.dev';

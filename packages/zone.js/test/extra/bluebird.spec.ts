@@ -284,7 +284,11 @@ describe('bluebird promise', () => {
           .each(
               BluebirdPromise.map(arr, (item: number) => BluebirdPromise.resolve(item)),
               (r: number, idx: number) => {
+<<<<<<< HEAD
                 expect(r).toBe(arr[idx]);
+=======
+                expect(r === arr[idx]).toBeTrue();
+>>>>>>> 253023848d... build: update jasmine to 3.5
                 expect(Zone.current.name).toEqual('bluebird');
               })
           .then((r: any) => {
@@ -305,7 +309,11 @@ describe('bluebird promise', () => {
           .mapSeries(
               BluebirdPromise.map(arr, (item: number) => BluebirdPromise.resolve(item)),
               (r: number, idx: number) => {
+<<<<<<< HEAD
                 expect(r).toBe(arr[idx]);
+=======
+                expect(r === arr[idx]).toBeTrue();
+>>>>>>> 253023848d... build: update jasmine to 3.5
                 expect(Zone.current.name).toEqual('bluebird');
               })
           .then((r: any) => {

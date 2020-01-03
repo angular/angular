@@ -25,7 +25,7 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
       });
 
       it('should implement addGlobalEventListener', () => {
-        spyOn(plugin, 'addEventListener').and.callFake(() => {});
+        spyOn(plugin, 'addEventListener').and.callFake(() => () => {});
 
         expect(() => {
           plugin.addGlobalEventListener('document', 'swipe', () => {});

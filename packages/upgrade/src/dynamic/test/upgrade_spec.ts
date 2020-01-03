@@ -14,7 +14,6 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '../../common/src/angular1';
 import {$EXCEPTION_HANDLER, $ROOT_SCOPE} from '../../common/src/constants';
 import {html, multiTrim, withEachNg1Version} from '../../common/test/helpers/common_test_helpers';
-
 import {UpgradeAdapter, UpgradeAdapterRef} from '../src/upgrade_adapter';
 
 
@@ -113,11 +112,12 @@ withEachNg1Version(() => {
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
              expect(platformRef.bootstrapModule).toHaveBeenCalledWith(jasmine.any(Function), [
-               {providers: []}, jasmine.any(Object)
+               {providers: []}, jasmine.any(Object) as any
              ]);
              expect(platformRef.bootstrapModuleFactory)
                  .toHaveBeenCalledWith(
-                     jasmine.any(NgModuleFactory), {providers: [], ngZone: jasmine.any(NgZone)});
+                     jasmine.any(NgModuleFactory),
+                     jasmine.objectContaining({ngZone: jasmine.any(NgZone), providers: []}));
              ref.dispose();
            });
          }));

@@ -38,7 +38,7 @@ runInEachFileSystem(() => {
       initMockFileSystem(fs, testFiles);
 
       // Force single-process execution in unit tests by mocking available CPUs to 1.
-      spyOn(os, 'cpus').and.returnValue([{model: 'Mock CPU'}]);
+      spyOn(os, 'cpus').and.returnValue([{ model: 'Mock CPU' } as any]);
     });
 
     it('should run ngcc without errors for esm2015', () => {
@@ -962,7 +962,8 @@ runInEachFileSystem(() => {
             .toMatch(ANGULAR_CORE_IMPORT_REGEX);
 
         // Copies over files (unchanged) that did not need compiling
-        expect(fs.exists(_(`/node_modules/@angular/common/__ivy_ngcc__/esm5/src/version.js`)));
+        expect(fs.exists(_(`/node_modules/@angular/common/__ivy_ngcc__/esm5/src/version.js`)))
+            .toBeTrue();
         expect(fs.readFile(_(`/node_modules/@angular/common/__ivy_ngcc__/esm5/src/version.js`)))
             .toEqual(fs.readFile(_(`/node_modules/@angular/common/esm5/src/version.js`)));
 

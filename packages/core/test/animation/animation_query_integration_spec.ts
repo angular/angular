@@ -2496,8 +2496,8 @@ import {HostListener} from '../../src/metadata/directives';
            expect(players.length).toEqual(2);
            const [p1, p2] = players;
 
-           expect(p1.element.classList.contains('a'));
-           expect(p2.element.classList.contains('d'));
+           expect(p1.element.classList.contains('a')).toBeTrue();
+           expect(p2.element.classList.contains('d')).toBeTrue();
 
            cmp.exp = false;
            fixture.detectChanges();
@@ -2508,8 +2508,8 @@ import {HostListener} from '../../src/metadata/directives';
            expect(players.length).toEqual(2);
            const [p3, p4] = players;
 
-           expect(p3.element.classList.contains('a'));
-           expect(p4.element.classList.contains('d'));
+           expect(p3.element.classList.contains('a')).toBeTrue();
+           expect(p4.element.classList.contains('d')).toBeTrue();
          });
 
       it('should collect multiple root levels of :enter and :leave nodes', () => {
@@ -3248,9 +3248,9 @@ import {HostListener} from '../../src/metadata/directives';
 
              const [p1, p2] = players;
              expect(p1.duration).toEqual(750);
-             expect(p1.element.classList.contains('header'));
+             expect(p1.element.classList.contains('header')).toBeTrue();
              expect(p2.duration).toEqual(250);
-             expect(p2.element.classList.contains('footer'));
+             expect(p2.element.classList.contains('footer')).toBeTrue();
            });
 
         it('should allow a parent animation to query and animate sub animations that are in a disabled region',
@@ -3303,9 +3303,9 @@ import {HostListener} from '../../src/metadata/directives';
 
              const [p1, p2] = players;
              expect(p1.duration).toEqual(500);
-             expect(p1.element.classList.contains('child'));
+             expect(p1.element.classList.contains('child')).toBeTrue();
              expect(p2.duration).toEqual(1000);
-             expect(p2.element.classList.contains('parent'));
+             expect(p2.element.classList.contains('parent')).toBeTrue();
            });
       });
     });

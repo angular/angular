@@ -683,8 +683,10 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
          fakeAsync(() => {
            const ctx = createCompFixture('<div testDirective [a]="42"></div>');
            const rf = TestBed.inject(RendererFactory2);
-           spyOn(rf, 'begin');
-           spyOn(rf, 'end');
+           // TODO: @JiaLiPassion, need to wait @types/jasmine to fix the
+           // optional method infer issue.
+           spyOn(rf as any, 'begin');
+           spyOn(rf as any, 'end');
            expect(rf.begin).not.toHaveBeenCalled();
            expect(rf.end).not.toHaveBeenCalled();
 

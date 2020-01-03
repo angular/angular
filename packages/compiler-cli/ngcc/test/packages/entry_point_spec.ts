@@ -70,7 +70,7 @@ runInEachFileSystem(() => {
       const config = new NgccConfiguration(fs, _('/project'));
       spyOn(config, 'getConfig').and.returnValue({
         entryPoints: {[_('/project/node_modules/some_package/valid_entry_point')]: {ignore: true}}
-      });
+      } as any);
       const entryPoint = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
           _('/project/node_modules/some_package/valid_entry_point'));
@@ -95,7 +95,8 @@ runInEachFileSystem(() => {
         esm2015: './some_other.js',
       };
       spyOn(config, 'getConfig').and.returnValue({
-        entryPoints: {[_('/project/node_modules/some_package/valid_entry_point')]: {override}}
+        entryPoints: {[_('/project/node_modules/some_package/valid_entry_point')]: {override}},
+        versionRange: '*'
       });
       const entryPoint = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
@@ -145,7 +146,9 @@ runInEachFileSystem(() => {
          const override =
              JSON.parse(createPackageJson('missing_package_json', {excludes: ['name']}));
          spyOn(config, 'getConfig').and.returnValue({
-           entryPoints: {[_('/project/node_modules/some_package/missing_package_json')]: {override}}
+           entryPoints:
+               {[_('/project/node_modules/some_package/missing_package_json')]: {override}},
+           versionRange: '*'
          });
          const entryPoint = getEntryPointInfo(
              fs, config, new MockLogger(), SOME_PACKAGE,
@@ -279,7 +282,8 @@ runInEachFileSystem(() => {
          ]);
          const config = new NgccConfiguration(fs, _('/project'));
          spyOn(config, 'getConfig').and.returnValue({
-           entryPoints: {[_('/project/node_modules/some_package/missing_metadata')]: {}}
+           entryPoints: {[_('/project/node_modules/some_package/missing_metadata')]: {}},
+           versionRange: '*'
          });
          const entryPoint = getEntryPointInfo(
              fs, config, new MockLogger(), SOME_PACKAGE,
@@ -398,7 +402,7 @@ runInEachFileSystem(() => {
       if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
         return fail(`Expected an entry point but got ${result}`);
       }
-      entryPoint = result;
+      entryPoint = result as any;
     });
 
     it('should return `esm2015` format for `fesm2015` property', () => {

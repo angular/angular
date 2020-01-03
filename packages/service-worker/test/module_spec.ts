@@ -30,7 +30,7 @@ describe('ServiceWorkerModule', () => {
 
   beforeEach(
       () => swRegisterSpy =
-          spyOn(navigator.serviceWorker, 'register').and.returnValue(Promise.resolve()));
+          spyOn(navigator.serviceWorker, 'register').and.returnValue(Promise.resolve(null as any)));
 
   describe('register()', () => {
     const configTestBed = async(opts: SwRegistrationOptions) => {

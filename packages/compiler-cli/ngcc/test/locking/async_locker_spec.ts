@@ -66,6 +66,9 @@ runInEachFileSystem(() => {
         });
         spyOn(lockFile, 'read').and.callFake(() => {
           log.push('read() => ' + lockFileContents);
+          if (lockFileContents === null) {
+            throw {code: 'ENOENT'};
+          }
           return lockFileContents;
         });
 
@@ -99,6 +102,9 @@ runInEachFileSystem(() => {
         });
         spyOn(lockFile, 'read').and.callFake(() => {
           log.push('read() => ' + lockFileContents);
+          if (lockFileContents === null) {
+            throw {code: 'ENOENT'};
+          }
           return lockFileContents;
         });
 
@@ -148,6 +154,9 @@ runInEachFileSystem(() => {
            });
            spyOn(lockFile, 'read').and.callFake(() => {
              log.push('read() => ' + lockFileContents);
+             if (lockFileContents === null) {
+               throw {code: 'ENOENT'};
+             }
              return lockFileContents;
            });
 
