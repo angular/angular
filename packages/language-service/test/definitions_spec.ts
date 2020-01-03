@@ -291,6 +291,42 @@ describe('definitions', () => {
     // Not asserting the textSpan of definition because it's external file
   });
 
+  it('should be able to find a two-way binding', () => {
+    const fileName = mockHost.addCode(`
+      @Component({
+        template: '<test-comp string-model ~{start-my}[(«model»)]="test"~{end-my}></test-comp>'
+      })
+      export class MyComponent {
+        test = "";
+      }`);
+    // Get the marker for «model» in the code added above.
+    const marker = mockHost.getReferenceMarkerFor(fileName, 'model');
+
+    const result = ngService.getDefinitionAt(fileName, marker.start);
+    expect(result).toBeDefined();
+    const {textSpan, definitions} = result !;
+
+    // Get the marker for bounded text in the code added above
+    const boundedText = mockHost.getLocationMarkerFor(fileName, 'my');
+    expect(textSpan).toEqual(boundedText);
+
+    // There should be exactly 1 definition
+    expect(definitions).toBeDefined();
+    expect(definitions !.length).toBe(1);
+    const def = definitions ![0];
+
+    const refFileName = '/app/parsing-cases.ts';
+    expect(def.fileName).toBe(refFileName);
+    expect(def.name).toBe('model');
+    expect(def.kind).toBe('property');
+    const content = mockHost.readFile(refFileName) !;
+    const ref = `@Input() model: string = 'model';`;
+    expect(def.textSpan).toEqual({
+      start: content.indexOf(ref),
+      length: ref.length,
+    });
+  });
+
   it('should be able to find a template from a url', () => {
     const fileName = mockHost.addCode(`
 	      @Component({
