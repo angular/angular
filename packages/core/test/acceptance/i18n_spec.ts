@@ -2019,9 +2019,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     @Directive({selector: 'input'})
     class InputsDir {
       constructor(private elementRef: ElementRef) {}
-      ngOnInit() {
-        this.elementRef.nativeElement.value = 'value set in Directive.ngOnInit';  //
-      }
+      ngOnInit() { this.elementRef.nativeElement.value = 'value set in Directive.ngOnInit'; }
     }
 
     @Component({
@@ -2045,9 +2043,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     @Directive({selector: 'input'})
     class InputsDir {
       constructor(private elementRef: ElementRef) {}
-      ngOnInit() {
-        this.elementRef.nativeElement.value = 'value set in Directive.ngOnInit';  //
-      }
+      ngOnInit() { this.elementRef.nativeElement.value = 'value set in Directive.ngOnInit'; }
     }
 
     @Component({
