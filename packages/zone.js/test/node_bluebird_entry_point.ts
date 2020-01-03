@@ -6,13 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-if (process.env['TEST_SRCDIR']) {
-  // bootstrap the bazel require resolve patch since this
-  // script is a bootstrap script loaded with --node_options=--require=...
-  const path = require('path');
-  require(path.posix.join(
-      process.env['TEST_SRCDIR'], process.env['TEST_WORKSPACE'],
-      (process.env['TEST_BINARY'] as string).replace(/\.(sh|bat)$/, '_loader.js'), ));
+// bootstrap the bazel require patch since this bootstrap script is loaded with
+// `--node_options=--require=$(rlocation $(location script.js))`
+if (process.env['BAZEL_NODE_RUNFILES_HELPER']) {
+  require(process.env['BAZEL_NODE_RUNFILES_HELPER'] as string).patchRequire();
 }
 
 // Must be loaded before zone loads, so that zone can detect WTF.
