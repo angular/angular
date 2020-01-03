@@ -179,12 +179,12 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
 
           expect(pmSubscribeSpy).toHaveBeenCalledTimes(1);
           expect(pmSubscribeSpy).toHaveBeenCalledWith({
-            applicationServerKey: jasmine.any(Uint8Array),
+            applicationServerKey: jasmine.any(Uint8Array) as any,
             userVisibleOnly: true,
           });
 
-          const actualAppServerKey = pmSubscribeSpy.calls.first().args[0].applicationServerKey;
-          const actualAppServerKeyStr = decode(actualAppServerKey);
+          const actualAppServerKey = pmSubscribeSpy.calls.first().args[0] !.applicationServerKey;
+          const actualAppServerKeyStr = decode(actualAppServerKey as Uint8Array);
           expect(actualAppServerKeyStr).toBe(appServerKeyStr);
         });
 

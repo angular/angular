@@ -66,7 +66,7 @@ runInEachFileSystem(() => {
         });
         spyOn(lockFile, 'read').and.callFake(() => {
           log.push('read() => ' + lockFileContents);
-          return lockFileContents;
+          return lockFileContents !;
         });
 
         const promise = locker.lock(async() => log.push('fn()'));
@@ -99,7 +99,7 @@ runInEachFileSystem(() => {
         });
         spyOn(lockFile, 'read').and.callFake(() => {
           log.push('read() => ' + lockFileContents);
-          return lockFileContents;
+          return lockFileContents !;
         });
 
         const promise = locker.lock(async() => log.push('fn()'));
@@ -148,7 +148,7 @@ runInEachFileSystem(() => {
            });
            spyOn(lockFile, 'read').and.callFake(() => {
              log.push('read() => ' + lockFileContents);
-             return lockFileContents;
+             return lockFileContents !;
            });
 
            const promise = locker.lock(async() => log.push('fn()'));

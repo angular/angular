@@ -83,8 +83,9 @@ describe('css selector matching', () => {
 
       it('should match namespaced attributes', () => {
         expect(isMatching(
-            'span', [AttributeMarker.NamespaceURI, 'http://some/uri', 'title', 'name'],
-            ['', 'title', '']));
+                   'span', ['title', 'name', AttributeMarker.NamespaceURI, 'http://some/uri'],
+                   ['', 'title', '']))
+            .toBeTruthy();
       });
 
       it('should match selector with one attribute without value when element has several attributes',
