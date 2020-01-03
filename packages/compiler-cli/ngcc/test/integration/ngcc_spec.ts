@@ -244,21 +244,23 @@ runInEachFileSystem(() => {
            propertiesToConsider: ['esm2015']
          });
 
-         // In `@angular/common` the `NgClassR3Impl` class gets exported as something like
+         // In `@angular/common` the `BrowserPlatformLocation` class gets exported as something like
          // `ɵangular_packages_common_common_a`.
          const jsContents = fs.readFile(_(`/node_modules/@angular/common/fesm2015/common.js`));
-         const exportedNameMatch = jsContents.match(/export.* NgClassR3Impl as ([^ ,}]+)/);
+         const exportedNameMatch =
+             jsContents.match(/export.* BrowserPlatformLocation as ([^ ,}]+)/);
          if (exportedNameMatch === null) {
            return fail(
-               'Expected `/node_modules/@angular/common/fesm2015/common.js` to export `NgClassR3Impl` via an alias');
+               'Expected `/node_modules/@angular/common/fesm2015/common.js` to export `BrowserPlatformLocation` via an alias');
          }
          const exportedName = exportedNameMatch[1];
 
          // We need to make sure that the flat typings file exports this directly
          const dtsContents = fs.readFile(_('/node_modules/@angular/common/common.d.ts'));
-         expect(dtsContents).toContain(`export declare class ${exportedName} extends ɵNgClassImpl`);
+         expect(dtsContents)
+             .toContain(`export declare class ${exportedName} extends PlatformLocation`);
          // And that ngcc's modifications to that class use the correct (exported) name
-         expect(dtsContents).toContain(`static ɵprov: ɵngcc0.ɵɵInjectableDef<${exportedName}>`);
+         expect(dtsContents).toContain(`static ɵfac: ɵngcc0.ɵɵFactoryDef<${exportedName}>`);
        });
 
     it('should add generic type for ModuleWithProviders and generate exports for private modules',

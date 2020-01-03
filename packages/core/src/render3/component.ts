@@ -12,19 +12,18 @@ import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDataInRange} from '../util/assert';
-
 import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {registerPostOrderHooks} from './hooks';
-import {CLEAN_PROMISE, addHostBindingsToExpandoInstructions, addToViewTree, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, growHostVarsSpace, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, renderInitialStyling, renderView} from './instructions/shared';
-import {registerInitialStylingOnTNode} from './instructions/styling';
+import {CLEAN_PROMISE, addHostBindingsToExpandoInstructions, addToViewTree, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, growHostVarsSpace, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, renderView} from './instructions/shared';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
 import {enterView, getPreviousOrParentTNode, incrementActiveDirectiveId, leaveView, setActiveHostElement} from './state';
+import {computeStaticStyling} from './styling/static_styling';
 import {setUpAttributes} from './util/attrs_utils';
 import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler, stringifyForError} from './util/misc_utils';
@@ -175,7 +174,7 @@ export function createRootComponentView(
   const tNode: TElementNode = getOrCreateTNode(tView, null, 0, TNodeType.Element, null, null);
   const mergedAttrs = tNode.mergedAttrs = def.hostAttrs;
   if (mergedAttrs !== null) {
-    registerInitialStylingOnTNode(tNode, mergedAttrs, 0);
+    computeStaticStyling(tNode, mergedAttrs);
     if (rNode !== null) {
       setUpAttributes(renderer, rNode, mergedAttrs);
       renderInitialStyling(renderer, rNode, tNode, false);
