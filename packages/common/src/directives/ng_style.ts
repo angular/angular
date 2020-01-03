@@ -5,69 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Directive, DoCheck, Input, ɵRenderFlags, ɵɵdefineDirective, ɵɵstyleMap} from '@angular/core';
+import {Directive, DoCheck, ElementRef, Input, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, Renderer2} from '@angular/core';
 
-import {NgStyleImpl, NgStyleImplProvider} from './ng_style_impl';
-
-
-
-/*
- * NgStyle (as well as NgClass) behaves differently when loaded in the VE and when not.
- *
- * If the VE is present (which is for older versions of Angular) then NgStyle will inject
- * the legacy diffing algorithm as a service and delegate all styling changes to that.
- *
- * If the VE is not present then NgStyle will normalize (through the injected service) and
- * then write all styling changes to the `[style]` binding directly (through a host binding).
- * Then Angular will notice the host binding change and treat the changes as styling
- * changes and apply them via the core styling instructions that exist within Angular.
- */
-
-// used when the VE is present
-export const ngStyleDirectiveDef__PRE_R3__ = undefined;
-export const ngStyleFactoryDef__PRE_R3__ = undefined;
-
-// used when the VE is not present (note the directive will
-// never be instantiated normally because it is apart of a
-// base class)
-export const ngStyleDirectiveDef__POST_R3__ = ɵɵdefineDirective({
-  type: function() {} as any,
-  selectors: null as any,
-  hostVars: 2,
-  hostBindings: function(rf: ɵRenderFlags, ctx: any, elIndex: number) {
-    if (rf & ɵRenderFlags.Update) {
-      ɵɵstyleMap(ctx.getValue());
-    }
-  }
-});
-
-export const ngStyleFactoryDef__POST_R3__ = function() {};
-
-export const ngStyleDirectiveDef = ngStyleDirectiveDef__PRE_R3__;
-export const ngStyleFactoryDef = ngStyleDirectiveDef__PRE_R3__;
-
-/**
- * Serves as the base non-VE container for NgStyle.
- *
- * While this is a base class that NgStyle extends from, the
- * class itself acts as a container for non-VE code to setup
- * a link to the `[style]` host binding (via the static
- * `ɵdir` property on the class).
- *
- * Note that the `ɵdir` property's code is switched
- * depending if VE is present or not (this allows for the
- * binding code to be set only for newer versions of Angular).
- *
- * @publicApi
- */
-export class NgStyleBase {
-  static ɵdir: any = ngStyleDirectiveDef;
-  static ɵfac: any = ngStyleFactoryDef;
-
-  constructor(protected _delegate: NgStyleImpl) {}
-
-  getValue() { return this._delegate.getValue(); }
-}
 
 /**
  * @ngModule CommonModule
@@ -105,12 +44,45 @@ export class NgStyleBase {
  *
  * @publicApi
  */
-@Directive({selector: '[ngStyle]', providers: [NgStyleImplProvider]})
-export class NgStyle extends NgStyleBase implements DoCheck {
-  constructor(delegate: NgStyleImpl) { super(delegate); }
+@Directive({selector: '[ngStyle]'})
+export class NgStyle implements DoCheck {
+  private _ngStyle: {[key: string]: string}|null = null;
+  private _differ: KeyValueDiffer<string, string|number>|null = null;
+
+  constructor(
+      private _ngEl: ElementRef, private _differs: KeyValueDiffers, private _renderer: Renderer2) {}
 
   @Input('ngStyle')
-  set ngStyle(value: {[klass: string]: any}|null) { this._delegate.setNgStyle(value); }
+  set ngStyle(values: {[klass: string]: any}|null) {
+    this._ngStyle = values;
+    if (!this._differ && values) {
+      this._differ = this._differs.find(values).create();
+    }
+  }
 
-  ngDoCheck() { this._delegate.applyChanges(); }
+  ngDoCheck() {
+    if (this._differ) {
+      const changes = this._differ.diff(this._ngStyle !);
+      if (changes) {
+        this._applyChanges(changes);
+      }
+    }
+  }
+
+  private _setStyle(nameAndUnit: string, value: string|number|null|undefined): void {
+    const [name, unit] = nameAndUnit.split('.');
+    value = value != null && unit ? `${value}${unit}` : value;
+
+    if (value != null) {
+      this._renderer.setStyle(this._ngEl.nativeElement, name, value as string);
+    } else {
+      this._renderer.removeStyle(this._ngEl.nativeElement, name);
+    }
+  }
+
+  private _applyChanges(changes: KeyValueChanges<string, string|number>): void {
+    changes.forEachRemovedItem((record) => this._setStyle(record.key, null));
+    changes.forEachAddedItem((record) => this._setStyle(record.key, record.currentValue));
+    changes.forEachChangedItem((record) => this._setStyle(record.key, record.currentValue));
+  }
 }
