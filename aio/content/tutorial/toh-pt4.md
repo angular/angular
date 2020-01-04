@@ -11,8 +11,8 @@ Components shouldn't fetch or save data directly and they certainly shouldn't kn
 They should focus on presenting data and delegate data access to a service.
 
 In this tutorial, you'll create a `HeroService` that all application classes can use to get heroes.
-Instead of creating that service with `new`,
-you'll rely on Angular [*dependency injection*](guide/dependency-injection)
+Instead of creating that service with the [`new` keyword](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/new), 
+you'll rely on Angular [*dependency injection*](guide/dependency-injection) 
 to inject it into the `HeroesComponent` constructor.
 
 Services are a great way to share information among classes that _don't know each other_.
