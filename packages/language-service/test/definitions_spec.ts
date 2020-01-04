@@ -13,6 +13,8 @@ import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {MockTypescriptHost} from './test_utils';
 
+const TEST_TEMPLATE = '/app/test.ng';
+
 describe('definitions', () => {
   const mockHost = new MockTypescriptHost(['/app/main.ts']);
   const service = ts.createLanguageService(mockHost);
@@ -263,21 +265,17 @@ describe('definitions', () => {
   });
 
   it('should be able to find a structural directive', () => {
-    const fileName = mockHost.addCode(`
-      @Component({
-        template: '<div ~{start-my}*«ngIf»="true"~{end-my}></div>'
-      })
-      export class MyComponent { }`);
+    mockHost.override(TEST_TEMPLATE, `<div ~{start-my}*«ngIf»="true"~{end-my}></div>`);
 
     // Get the marker for ngIf in the code added above.
-    const marker = mockHost.getReferenceMarkerFor(fileName, 'ngIf');
+    const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'ngIf');
 
-    const result = ngService.getDefinitionAt(fileName, marker.start);
+    const result = ngService.getDefinitionAt(TEST_TEMPLATE, marker.start);
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
 
     // Get the marker for bounded text in the code added above
-    const boundedText = mockHost.getLocationMarkerFor(fileName, 'my');
+    const boundedText = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'my');
     expect(textSpan).toEqual(boundedText);
 
     expect(definitions).toBeDefined();
@@ -292,22 +290,18 @@ describe('definitions', () => {
   });
 
   it('should be able to find a two-way binding', () => {
-    const fileName = mockHost.addCode(`
-      @Component({
-        template: '<test-comp string-model ~{start-my}[(«model»)]="test"~{end-my}></test-comp>'
-      })
-      export class MyComponent {
-        test = "";
-      }`);
+    mockHost.override(
+        TEST_TEMPLATE,
+        `<test-comp string-model ~{start-my}[(«model»)]="title"~{end-my}></test-comp>`);
     // Get the marker for «model» in the code added above.
-    const marker = mockHost.getReferenceMarkerFor(fileName, 'model');
+    const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'model');
 
-    const result = ngService.getDefinitionAt(fileName, marker.start);
+    const result = ngService.getDefinitionAt(TEST_TEMPLATE, marker.start);
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
 
     // Get the marker for bounded text in the code added above
-    const boundedText = mockHost.getLocationMarkerFor(fileName, 'my');
+    const boundedText = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'my');
     expect(textSpan).toEqual(boundedText);
 
     // There should be exactly 1 definition

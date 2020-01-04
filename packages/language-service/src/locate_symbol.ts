@@ -148,14 +148,14 @@ function findAttribute(info: AstResult, position: number): Attribute|undefined {
   return path.first(Attribute);
 }
 
-function findParentOfDirectivePropertyAst(ast: TemplateAst[], binding: BoundDirectivePropertyAst) {
+function findParentOfBinding(ast: TemplateAst[], binding: BoundDirectivePropertyAst) {
   let res: DirectiveAst|undefined;
   const visitor = new class extends RecursiveTemplateAstVisitor {
     visitDirective(ast: DirectiveAst) {
       const result = this.visitChildren(ast, visit => { visit(ast.inputs); });
       return result;
     }
-    visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any) {
+    visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: DirectiveAst) {
       if (ast === binding) {
         res = context;
       }
@@ -167,7 +167,7 @@ function findParentOfDirectivePropertyAst(ast: TemplateAst[], binding: BoundDire
 
 function findInputBinding(
     info: AstResult, path: TemplateAstPath, binding: BoundDirectivePropertyAst): Symbol|undefined {
-  const directiveAst = findParentOfDirectivePropertyAst(info.templateAst, binding);
+  const directiveAst = findParentOfBinding(info.templateAst, binding);
   if (directiveAst) {
     const invertedInput = invertMap(directiveAst.directive.inputs);
     const fieldName = invertedInput[binding.templateName];
