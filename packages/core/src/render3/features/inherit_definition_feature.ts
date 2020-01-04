@@ -25,7 +25,7 @@ export function getSuperType(type: Type<any>): Type<any>&
  */
 export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
   let superType = getSuperType(definition.type);
-  let applyInheritedFeaturesOnly = false;
+  let shouldInheritFields = true;
 
   while (superType) {
     let superDef: DirectiveDef<any>|ComponentDef<any>|undefined = undefined;
@@ -41,7 +41,7 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
     }
 
     if (superDef) {
-      if (!applyInheritedFeaturesOnly) {
+      if (shouldInheritFields) {
         // Some fields in the definition may be empty, if there were no values to put in them that
         // would've justified object creation. Unwrap them if necessary.
         const writeableDef = definition as any;
@@ -89,10 +89,10 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
           // can stop merging fields from super classes. However we need to iterate through the
           // prototype chain to look for classes that might contain other "features" (like
           // NgOnChanges), which we should invoke for the original `definition`. We set the
-          // `applyInheritedFeaturesOnly` flag to indicate that, essentially skipping fields
-          // inheritance logic and only invoking functions from the "features" list.
+          // `shouldInheritFields` flag to indicate that, essentially skipping fields inheritance
+          // logic and only invoking functions from the "features" list.
           if (feature === ɵɵInheritDefinitionFeature) {
-            applyInheritedFeaturesOnly = true;
+            shouldInheritFields = false;
           }
         }
       }
@@ -117,7 +117,6 @@ function maybeUnwrapEmpty(value: any): any {
 function inheritViewQuery(
     definition: DirectiveDef<any>| ComponentDef<any>, superViewQuery: ViewQueriesFunction<any>) {
   const prevViewQuery = definition.viewQuery;
-
   if (prevViewQuery) {
     definition.viewQuery = (rf, ctx) => {
       superViewQuery(rf, ctx);
@@ -132,7 +131,6 @@ function inheritContentQueries(
     definition: DirectiveDef<any>| ComponentDef<any>,
     superContentQueries: ContentQueriesFunction<any>) {
   const prevContentQueries = definition.contentQueries;
-
   if (prevContentQueries) {
     definition.contentQueries = (rf, ctx, directiveIndex) => {
       superContentQueries(rf, ctx, directiveIndex);
@@ -147,17 +145,12 @@ function inheritHostBindings(
     definition: DirectiveDef<any>| ComponentDef<any>,
     superHostBindings: HostBindingsFunction<any>) {
   const prevHostBindings = definition.hostBindings;
-  // If the subclass does not have a host bindings function, we set the subclass host binding
-  // function to be the superclass's (in this feature). We should check if they're the same here
-  // to ensure we don't inherit it twice.
-  if (superHostBindings !== prevHostBindings) {
-    if (prevHostBindings) {
-      definition.hostBindings = (rf: RenderFlags, ctx: any, elementIndex: number) => {
-        superHostBindings(rf, ctx, elementIndex);
-        prevHostBindings(rf, ctx, elementIndex);
-      };
-    } else {
-      definition.hostBindings = superHostBindings;
-    }
+  if (prevHostBindings) {
+    definition.hostBindings = (rf: RenderFlags, ctx: any, elementIndex: number) => {
+      superHostBindings(rf, ctx, elementIndex);
+      prevHostBindings(rf, ctx, elementIndex);
+    };
+  } else {
+    definition.hostBindings = superHostBindings;
   }
 }

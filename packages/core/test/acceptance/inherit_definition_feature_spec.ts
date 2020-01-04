@@ -4234,9 +4234,7 @@ describe('inheritance', () => {
       })
       class BaseComponent {
         @HostListener('click')
-        clicked() {
-          events.push('BaseComponent.clicked');  //
-        }
+        clicked() { events.push('BaseComponent.clicked'); }
       }
 
       @Component({
@@ -4250,9 +4248,7 @@ describe('inheritance', () => {
         @HostListener('focus')
         focused() {}
 
-        clicked() {
-          events.push('ChildComponent.clicked');  //
-        }
+        clicked() { events.push('ChildComponent.clicked'); }
       }
 
       @Component({
@@ -4266,9 +4262,7 @@ describe('inheritance', () => {
         @HostListener('blur')
         focused() {}
 
-        clicked() {
-          events.push('GrandChildComponent.clicked');  //
-        }
+        clicked() { events.push('GrandChildComponent.clicked'); }
       }
 
       @Component({
