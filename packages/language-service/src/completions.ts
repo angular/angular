@@ -72,10 +72,9 @@ enum ATTR {
   IDENT_EVENT_IDX = 10,
 }
 
+// packages/compiler/src/template_parser/binding_parser.ts#L25
 const ANIMATE_PROP_PREFIX = 'animate-';
 const SECOND_ANIMATE_PROP_PREFIX = '@';
-const ANIMATIONEVENT = ['start', 'done'];
-const SPECIAL_ANIMATION_CONTROL = 'disabled';
 
 function isIdentifierPart(code: number) {
   // Identifiers consist of alphanumeric characters, '_', or '$'.
@@ -247,27 +246,22 @@ function attributeCompletions(
   if (!bindParts) {
     // If bindParts is null then this must be a TemplateRef.
     results.push(...ngAttrs.templateRefs);
-  } else if (
-      bindParts[ATTR.KW_BIND_IDX] !== undefined ||
-      bindParts[ATTR.IDENT_PROPERTY_IDX] !== undefined) {
-    const name = bindParts[ATTR.KW_BIND_IDX] || bindParts[ATTR.IDENT_PROPERTY_IDX] || '';
-    if (isAnimationAttribute(name)) {
-      results.push(
-          ...completionForAnimation(name, info, position, attr.sourceSpan.start.offset + 1));
-    } else {
-      // property binding via bind- or []
-      results.push(...propertyNames(elem.name), ...ngAttrs.inputs);
-    }
-  } else if (
-      bindParts[ATTR.KW_ON_IDX] !== undefined || bindParts[ATTR.IDENT_EVENT_IDX] !== undefined) {
-    const name = bindParts[ATTR.KW_ON_IDX] || bindParts[ATTR.IDENT_EVENT_IDX] || '';
-    if (isAnimationAttribute(name)) {
-      results.push(
-          ...completionForAnimation(name, info, position, attr.sourceSpan.start.offset + 1));
-    } else {
-      // event binding via on- or ()
-      results.push(...eventNames(elem.name), ...ngAttrs.outputs);
-    }
+  } else if (bindParts[ATTR.KW_BIND_IDX] !== undefined) {
+    results.push(...propertyBindingCompletions(
+        bindParts[ATTR.KW_BIND_IDX], info, position, attr.sourceSpan.start.offset + 5, elem,
+        ngAttrs));
+  } else if (bindParts[ATTR.IDENT_PROPERTY_IDX] !== undefined) {
+    results.push(...propertyBindingCompletions(
+        bindParts[ATTR.IDENT_PROPERTY_IDX], info, position, attr.sourceSpan.start.offset + 1, elem,
+        ngAttrs));
+  } else if (bindParts[ATTR.KW_ON_IDX] !== undefined) {
+    results.push(...eventBindingCompletions(
+        bindParts[ATTR.KW_ON_IDX], info, position, attr.sourceSpan.start.offset + 3, elem,
+        ngAttrs));
+  } else if (bindParts[ATTR.IDENT_EVENT_IDX] !== undefined) {
+    results.push(...eventBindingCompletions(
+        bindParts[ATTR.IDENT_EVENT_IDX], info, position, attr.sourceSpan.start.offset + 1, elem,
+        ngAttrs));
   } else if (
       bindParts[ATTR.KW_BINDON_IDX] !== undefined ||
       bindParts[ATTR.IDENT_BANANA_BOX_IDX] !== undefined) {
@@ -281,6 +275,28 @@ function attributeCompletions(
       sortText: name,
     };
   });
+}
+
+// event binding via on- or ()
+function eventBindingCompletions(
+    name: string, info: AstResult, templatePosition: number, namePosition: number, ele: Element,
+    angularAttributes: AngularAttributes): string[] {
+  if (isAnimationAttribute(name)) {
+    return animationCompletions(name, info, templatePosition, namePosition);
+  } else {
+    return eventNames(ele.name).concat(...angularAttributes.outputs);
+  }
+}
+
+// property binding via bind- or []
+function propertyBindingCompletions(
+    name: string, info: AstResult, templatePosition: number, namePosition: number, ele: Element,
+    angularAttributes: AngularAttributes): string[] {
+  if (isAnimationAttribute(name)) {
+    return animationCompletions(name, info, templatePosition, namePosition);
+  } else {
+    return propertyNames(ele.name).concat(...angularAttributes.inputs);
+  }
 }
 
 function isAnimationAttribute(name: string) {
@@ -310,7 +326,7 @@ function cursorPosition(name: string, begin: number, position: number): number {
   return -1;
 }
 
-function completionForAnimation(
+function animationCompletions(
     name: string, info: AstResult, position: number, namePosition: number): string[] {
   let animationPrefixLength = 0;
   // A special animation control binding called @.disabled.
@@ -334,12 +350,16 @@ function completionForAnimation(
 
   const index = cursorPosition(name, namePosition, position);
   const result: string[] = [];
+
+  const ANIMATIONEVENT = ['start', 'done'];
+  const SPECIAL_ANIMATION_CONTROL = 'disabled';
+
   switch (index) {
     case 0:
       if (isSpecialAnimationControl) {
         result.push(SPECIAL_ANIMATION_CONTROL);
       } else {
-        result.push(...completionForAnimationTrigger(info));
+        result.push(...animationTriggerCompletions(info));
       }
       break;
     case 1:
@@ -353,7 +373,7 @@ function completionForAnimation(
   return result;
 }
 
-function completionForAnimationTrigger(info: AstResult): string[] {
+function animationTriggerCompletions(info: AstResult): string[] {
   const template = info.directive.template;
   if (template) {
     return template.animations.map(ani => ani.name);

@@ -692,15 +692,15 @@ describe('completions', () => {
     });
     it('should work with trigger (@ prefix)', () => {
       mockHost.override(
-          TEST_TEMPLATE, `<div (@openClose~{trigger}.done)="onAnimationEvent($event)"></div>`)
-          const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'trigger');
+          TEST_TEMPLATE, `<div (@openClose~{trigger}.done)="onAnimationEvent($event)"></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'trigger');
       const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
       expectContain(completions, CompletionKind.ATTRIBUTE, ['openClose']);
     });
     it('should work with event', () => {
       mockHost.override(
-          TEST_TEMPLATE, `<div (@openClose.~{event})="onAnimationEvent($event)"></div>`)
-          const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'event');
+          TEST_TEMPLATE, `<div (@openClose.~{event})="onAnimationEvent($event)"></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'event');
       const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
       expectContain(completions, CompletionKind.ATTRIBUTE, ['start']);
     });
