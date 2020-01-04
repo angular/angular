@@ -149,13 +149,9 @@ describe('hover', () => {
   });
 
   it('should be able to find a structural directive', () => {
-    const fileName = mockHost.addCode(`
-      @Component({
-        template: '<div «*ᐱngIfᐱ="true"»></div>'
-      })
-      export class MyComponent { }`);
-    const marker = mockHost.getDefinitionMarkerFor(fileName, 'ngIf');
-    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    mockHost.override(TEST_TEMPLATE, `<div «*ᐱngIfᐱ="true"»></div>`);
+    const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'ngIf');
+    const quickInfo = ngLS.getHoverAt(TEST_TEMPLATE, marker.start);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
@@ -163,15 +159,9 @@ describe('hover', () => {
   });
 
   it('should be able to find a reference to a two-way binding', () => {
-    const fileName = mockHost.addCode(`
-      @Component({
-        template: '<test-comp string-model «[(ᐱmodelᐱ)]="test"»></test-comp>'
-      })
-      export class MyComponent {
-        test = "";
-      }`);
-    const marker = mockHost.getDefinitionMarkerFor(fileName, 'model');
-    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    mockHost.override(TEST_TEMPLATE, `<test-comp string-model «[(ᐱmodelᐱ)]="title"»></test-comp>`);
+    const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'model');
+    const quickInfo = ngLS.getHoverAt(TEST_TEMPLATE, marker.start);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo !;
     expect(textSpan).toEqual(marker);
