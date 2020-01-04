@@ -10,7 +10,6 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 
-import * as AnimationsCase from './animations-case';
 import {AppComponent} from './app.component';
 import * as ExpressionCases from './expression-cases';
 import * as NgForCases from './ng-for-cases';
@@ -46,7 +45,6 @@ import * as ParsingCases from './parsing-cases';
     ParsingCases.TemplateReference,
     ParsingCases.TestComponent,
     ParsingCases.TwoWayBinding,
-    AnimationsCase.AnimationsCaseComponent
   ]
 })
 export class AppModule {
