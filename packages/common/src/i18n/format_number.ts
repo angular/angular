@@ -161,7 +161,12 @@ export function formatCurrency(
   return res
       .replace(CURRENCY_CHAR, currency)
       // if we have 2 time the currency character, the second one is ignored
-      .replace(CURRENCY_CHAR, '');
+      .replace(CURRENCY_CHAR, '')
+      // If there is a spacing between currency character and the value and
+      // the currency character is supressed by passing an empty string, the
+      // spacing character would remain as part of the string. Then we
+      // should remove it.
+      .trim();
 }
 
 /**
