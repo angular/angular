@@ -281,8 +281,8 @@ function attributeCompletions(
 function eventBindingCompletions(
     name: string, info: AstResult, templatePosition: number, namePosition: number, ele: Element,
     angularAttributes: AngularAttributes): string[] {
-  if (isAnimationAttribute(name)) {
-    return animationCompletions(name, info, templatePosition, namePosition);
+  if (name.startsWith(SECOND_ANIMATE_PROP_PREFIX)) {
+    return animationEventBindingCompletions(name, info, templatePosition, namePosition);
   } else {
     return eventNames(ele.name).concat(...angularAttributes.outputs);
   }
@@ -293,7 +293,7 @@ function propertyBindingCompletions(
     name: string, info: AstResult, templatePosition: number, namePosition: number, ele: Element,
     angularAttributes: AngularAttributes): string[] {
   if (isAnimationAttribute(name)) {
-    return animationCompletions(name, info, templatePosition, namePosition);
+    return animationPropertyBindingCompletions(name, info, templatePosition, namePosition);
   } else {
     return propertyNames(ele.name).concat(...angularAttributes.inputs);
   }
@@ -326,7 +326,7 @@ function cursorPosition(name: string, begin: number, position: number): number {
   return -1;
 }
 
-function animationCompletions(
+function animationPropertyBindingCompletions(
     name: string, info: AstResult, position: number, namePosition: number): string[] {
   let animationPrefixLength = 0;
   // A special animation control binding called @.disabled.
@@ -351,7 +351,6 @@ function animationCompletions(
   const index = cursorPosition(name, namePosition, position);
   const result: string[] = [];
 
-  const ANIMATIONEVENT = ['start', 'done'];
   const SPECIAL_ANIMATION_CONTROL = 'disabled';
 
   switch (index) {
@@ -362,10 +361,33 @@ function animationCompletions(
         result.push(...animationTriggerCompletions(info));
       }
       break;
+    default:
+      break;
+  }
+  return result;
+}
+
+function animationEventBindingCompletions(
+    name: string, info: AstResult, position: number, namePosition: number): string[] {
+  let animationPrefixLength = 0;
+
+  if (name.startsWith(SECOND_ANIMATE_PROP_PREFIX)) {
+    animationPrefixLength = SECOND_ANIMATE_PROP_PREFIX.length;
+  }
+  name = name.substring(animationPrefixLength);
+  namePosition += animationPrefixLength;
+
+  const index = cursorPosition(name, namePosition, position);
+  const result: string[] = [];
+
+  const ANIMATIONEVENT = ['start', 'done'];
+
+  switch (index) {
+    case 0:
+      result.push(...animationTriggerCompletions(info));
+      break;
     case 1:
-      if (!isSpecialAnimationControl) {
-        result.push(...ANIMATIONEVENT);
-      }
+      result.push(...ANIMATIONEVENT);
       break;
     default:
       break;
