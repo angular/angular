@@ -109,6 +109,7 @@ export class ComponentDecoratorHandler implements
     if (decorator !== undefined) {
       return {
         trigger: decorator.node,
+        decorator,
         metadata: decorator,
       };
     } else {
