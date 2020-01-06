@@ -219,7 +219,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.zoom_changed
    */
-  @Output() zoomChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('zoomChanged');
+  @Output() zoomChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('zoom_changed');
 
   constructor(
     private readonly _elementRef: ElementRef,
