@@ -1,6 +1,6 @@
 # Static Query Migration Guide
 ​
-**Important note for library authors: This migration is especially crucial for library authors to facilitate their users upgrading to version 9 when it becomes available (approx Oct 2019).**
+**Important note for library authors: This migration is especially crucial for library authors to facilitate their users upgrading to version 9 when it becomes available (approx Jan 2020).**
 
 In version 9, the default setting for `@ViewChild` and `@ContentChild` queries is changing in order to fix buggy and surprising behavior in queries (read more about that [here](#what-does-this-flag-mean)).
 
