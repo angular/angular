@@ -54,6 +54,7 @@ export class InjectableDecoratorHandler implements
     if (decorator !== undefined) {
       return {
         trigger: decorator.node,
+        decorator: decorator,
         metadata: decorator,
       };
     } else {

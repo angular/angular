@@ -155,6 +155,7 @@ export interface DecoratorHandler<D, A, R> {
 
 export interface DetectResult<M> {
   trigger: ts.Node|null;
+  decorator: Decorator|null;
   metadata: Readonly<M>;
 }
 

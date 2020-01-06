@@ -9,23 +9,19 @@ import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 import {Reexport} from '../../../src/ngtsc/imports';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
-import {CompileResult, DecoratorHandler, DetectResult} from '../../../src/ngtsc/transform';
+import {CompileResult} from '../../../src/ngtsc/transform';
 
-export interface AnalyzedFile {
-  sourceFile: ts.SourceFile;
-  analyzedClasses: AnalyzedClass[];
-}
-
-export interface AnalyzedClass {
+export interface CompiledClass {
   name: string;
   decorators: Decorator[]|null;
   declaration: ClassDeclaration;
-  diagnostics?: ts.Diagnostic[];
-  matches: MatchingHandler<unknown, unknown, unknown>[];
+  compilation: CompileResult[];
 }
 
-export interface CompiledClass extends AnalyzedClass {
-  compilation: CompileResult[];
+export interface CompiledFile {
+  compiledClasses: CompiledClass[];
+  sourceFile: ts.SourceFile;
+  constantPool: ConstantPool;
 
   /**
    * Any re-exports which should be added next to this class, both in .js and (if possible) .d.ts.
@@ -33,18 +29,5 @@ export interface CompiledClass extends AnalyzedClass {
   reexports: Reexport[];
 }
 
-export interface CompiledFile {
-  compiledClasses: CompiledClass[];
-  sourceFile: ts.SourceFile;
-  constantPool: ConstantPool;
-}
-
 export type DecorationAnalyses = Map<ts.SourceFile, CompiledFile>;
 export const DecorationAnalyses = Map;
-
-export interface MatchingHandler<D, A, R> {
-  handler: DecoratorHandler<D, A, R>;
-  detected: DetectResult<D>;
-  analysis: Readonly<A>;
-  resolution: Readonly<R>;
-}
