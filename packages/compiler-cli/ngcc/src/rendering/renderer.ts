@@ -88,12 +88,12 @@ export class Renderer {
         const renderedStatements =
             this.renderAdjacentStatements(compiledFile.sourceFile, clazz, importManager);
         this.srcFormatter.addAdjacentStatements(outputText, clazz, renderedStatements);
-
-        if (!isEntryPoint && clazz.reexports.length > 0) {
-          this.srcFormatter.addDirectExports(
-              outputText, clazz.reexports, importManager, compiledFile.sourceFile);
-        }
       });
+
+      if (!isEntryPoint && compiledFile.reexports.length > 0) {
+        this.srcFormatter.addDirectExports(
+            outputText, compiledFile.reexports, importManager, compiledFile.sourceFile);
+      }
 
       this.srcFormatter.addConstants(
           outputText,

@@ -15,20 +15,19 @@ import {FileSystem, LogicalFileSystem, absoluteFrom, dirname, resolve} from '../
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
-import {ClassDeclaration} from '../../../src/ngtsc/reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
-import {CompileResult, DecoratorHandler} from '../../../src/ngtsc/transform';
-import {NgccClassSymbol, NgccReflectionHost} from '../host/ngcc_host';
+import {DecoratorHandler} from '../../../src/ngtsc/transform';
+import {NgccReflectionHost} from '../host/ngcc_host';
 import {Migration} from '../migrations/migration';
 import {MissingInjectableMigration} from '../migrations/missing_injectable_migration';
 import {UndecoratedChildMigration} from '../migrations/undecorated_child_migration';
 import {UndecoratedParentMigration} from '../migrations/undecorated_parent_migration';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
-import {isDefined} from '../utils';
 
 import {DefaultMigrationHost} from './migration_host';
-import {AnalyzedClass, AnalyzedFile, CompiledClass, CompiledFile, DecorationAnalyses} from './types';
-import {NOOP_DEPENDENCY_TRACKER, analyzeDecorators, isWithinPackage} from './util';
+import {NgccTraitCompiler} from './ngcc_trait_compiler';
+import {CompiledClass, CompiledFile, DecorationAnalyses} from './types';
+import {NOOP_DEPENDENCY_TRACKER, isWithinPackage} from './util';
 
 
 
@@ -57,10 +56,6 @@ export class DecorationAnalyzer {
   private packagePath = this.bundle.entryPoint.package;
   private isCore = this.bundle.isCore;
 
-  /**
-   * Map of NgModule declarations to the re-exports for that NgModule.
-   */
-  private reexportMap = new Map<ts.Declaration, Map<string, [string, string]>>();
   moduleResolver =
       new ModuleResolver(this.program, this.options, this.host, /* moduleResolutionCache */ null);
   resourceManager = new NgccResourceLoader(this.fs);
@@ -118,6 +113,7 @@ export class DecorationAnalyzer {
         /* factoryTracker */ null, NOOP_DEFAULT_IMPORT_RECORDER,
         /* annotateForClosureCompiler */ false, this.injectableRegistry),
   ];
+  compiler = new NgccTraitCompiler(this.handlers, this.reflectionHost);
   migrations: Migration[] = [
     new UndecoratedParentMigration(),
     new UndecoratedChildMigration(),
@@ -135,56 +131,54 @@ export class DecorationAnalyzer {
    * @returns a map of the source files to the analysis for those files.
    */
   analyzeProgram(): DecorationAnalyses {
+    for (const sourceFile of this.program.getSourceFiles()) {
+      if (!sourceFile.isDeclarationFile && isWithinPackage(this.packagePath, sourceFile)) {
+        this.compiler.analyzeFile(sourceFile);
+      }
+    }
+
+    this.applyMigrations();
+
+    this.compiler.resolve();
+
+    this.reportDiagnostics();
+
     const decorationAnalyses = new DecorationAnalyses();
-    const analyzedFiles = this.program.getSourceFiles()
-                              .filter(sourceFile => !sourceFile.isDeclarationFile)
-                              .filter(sourceFile => isWithinPackage(this.packagePath, sourceFile))
-                              .map(sourceFile => this.analyzeFile(sourceFile))
-                              .filter(isDefined);
-
-    this.applyMigrations(analyzedFiles);
-
-    analyzedFiles.forEach(analyzedFile => this.resolveFile(analyzedFile));
-    const compiledFiles = analyzedFiles.map(analyzedFile => this.compileFile(analyzedFile));
-    compiledFiles.forEach(
-        compiledFile => decorationAnalyses.set(compiledFile.sourceFile, compiledFile));
+    for (const analyzedFile of this.compiler.analyzedFiles) {
+      const compiledFile = this.compileFile(analyzedFile);
+      decorationAnalyses.set(compiledFile.sourceFile, compiledFile);
+    }
     return decorationAnalyses;
   }
 
-  protected analyzeFile(sourceFile: ts.SourceFile): AnalyzedFile|undefined {
-    const analyzedClasses = this.reflectionHost.findClassSymbols(sourceFile)
-                                .map(symbol => this.analyzeClass(symbol))
-                                .filter(isDefined);
-    return analyzedClasses.length ? {sourceFile, analyzedClasses} : undefined;
-  }
-
-  protected analyzeClass(symbol: NgccClassSymbol): AnalyzedClass|null {
-    const decorators = this.reflectionHost.getDecoratorsOfSymbol(symbol);
-    const analyzedClass = analyzeDecorators(symbol, decorators, this.handlers);
-    if (analyzedClass !== null && analyzedClass.diagnostics !== undefined) {
-      for (const diagnostic of analyzedClass.diagnostics) {
-        this.diagnosticHandler(diagnostic);
-      }
-    }
-    return analyzedClass;
-  }
-
-  protected applyMigrations(analyzedFiles: AnalyzedFile[]): void {
+  protected applyMigrations(): void {
     const migrationHost = new DefaultMigrationHost(
-        this.reflectionHost, this.fullMetaReader, this.evaluator, this.handlers,
-        this.bundle.entryPoint.path, analyzedFiles, this.diagnosticHandler);
+        this.reflectionHost, this.fullMetaReader, this.evaluator, this.compiler,
+        this.bundle.entryPoint.path);
 
     this.migrations.forEach(migration => {
-      analyzedFiles.forEach(analyzedFile => {
-        analyzedFile.analyzedClasses.forEach(({declaration}) => {
+      this.compiler.analyzedFiles.forEach(analyzedFile => {
+        const records = this.compiler.recordsFor(analyzedFile);
+        if (records === null) {
+          throw new Error('Assertion error: file to migrate must have records.');
+        }
+
+        records.forEach(record => {
+          const addDiagnostic = (diagnostic: ts.Diagnostic) => {
+            if (record.metaDiagnostics === null) {
+              record.metaDiagnostics = [];
+            }
+            record.metaDiagnostics.push(diagnostic);
+          };
+
           try {
-            const result = migration.apply(declaration, migrationHost);
+            const result = migration.apply(record.node, migrationHost);
             if (result !== null) {
-              this.diagnosticHandler(result);
+              addDiagnostic(result);
             }
           } catch (e) {
             if (isFatalDiagnosticError(e)) {
-              this.diagnosticHandler(e.toDiagnostic());
+              addDiagnostic(e.toDiagnostic());
             } else {
               throw e;
             }
@@ -194,67 +188,45 @@ export class DecorationAnalyzer {
     });
   }
 
-  protected compileFile(analyzedFile: AnalyzedFile): CompiledFile {
+  protected reportDiagnostics() { this.compiler.diagnostics.forEach(this.diagnosticHandler); }
+
+  protected compileFile(sourceFile: ts.SourceFile): CompiledFile {
     const constantPool = new ConstantPool();
-    const compiledClasses: CompiledClass[] = analyzedFile.analyzedClasses.map(analyzedClass => {
-      const compilation = this.compileClass(analyzedClass, constantPool);
-      const declaration = analyzedClass.declaration;
-      const reexports: Reexport[] = this.getReexportsForClass(declaration);
-      return {...analyzedClass, compilation, reexports};
-    });
-    return {constantPool, sourceFile: analyzedFile.sourceFile, compiledClasses};
-  }
-
-  protected compileClass(clazz: AnalyzedClass, constantPool: ConstantPool): CompileResult[] {
-    const compilations: CompileResult[] = [];
-    for (const {handler, analysis, resolution} of clazz.matches) {
-      const result = handler.compile(clazz.declaration, analysis, resolution, constantPool);
-      if (Array.isArray(result)) {
-        result.forEach(current => {
-          if (!compilations.some(compilation => compilation.name === current.name)) {
-            compilations.push(current);
-          }
-        });
-      } else if (!compilations.some(compilation => compilation.name === result.name)) {
-        compilations.push(result);
-      }
+    const records = this.compiler.recordsFor(sourceFile);
+    if (records === null) {
+      throw new Error('Assertion error: file to compile must have records.');
     }
-    return compilations;
-  }
 
-  protected resolveFile(analyzedFile: AnalyzedFile): void {
-    for (const {declaration, matches} of analyzedFile.analyzedClasses) {
-      for (const match of matches) {
-        const {handler, analysis} = match;
-        if ((handler.resolve !== undefined) && analysis) {
-          const {reexports, diagnostics, data} = handler.resolve(declaration, analysis);
-          if (reexports !== undefined) {
-            this.addReexports(reexports, declaration);
-          }
-          if (diagnostics !== undefined) {
-            diagnostics.forEach(error => this.diagnosticHandler(error));
-          }
-          match.resolution = data as Readonly<unknown>;
-        }
+    const compiledClasses: CompiledClass[] = [];
+
+    for (const record of records) {
+      const compilation = this.compiler.compile(record.node, constantPool);
+      if (compilation === null) {
+        continue;
       }
-    }
-  }
 
-  private getReexportsForClass(declaration: ClassDeclaration<ts.Declaration>) {
-    const reexports: Reexport[] = [];
-    if (this.reexportMap.has(declaration)) {
-      this.reexportMap.get(declaration) !.forEach(([fromModule, symbolName], asAlias) => {
-        reexports.push({asAlias, fromModule, symbolName});
+      compiledClasses.push({
+        name: record.node.name.text,
+        decorators: this.compiler.getAllDecorators(record.node),
+        declaration: record.node, compilation
       });
     }
-    return reexports;
+
+    const reexports = this.getReexportsForSourceFile(sourceFile);
+    return {constantPool, sourceFile: sourceFile, compiledClasses, reexports};
   }
 
-  private addReexports(reexports: Reexport[], declaration: ClassDeclaration<ts.Declaration>) {
-    const map = new Map<string, [string, string]>();
-    for (const reexport of reexports) {
-      map.set(reexport.asAlias, [reexport.fromModule, reexport.symbolName]);
+  private getReexportsForSourceFile(sf: ts.SourceFile): Reexport[] {
+    const exportStatements = this.compiler.exportStatements;
+    if (!exportStatements.has(sf.fileName)) {
+      return [];
     }
-    this.reexportMap.set(declaration, map);
+    const exports = exportStatements.get(sf.fileName) !;
+
+    const reexports: Reexport[] = [];
+    exports.forEach(([fromModule, symbolName], asAlias) => {
+      reexports.push({asAlias, fromModule, symbolName});
+    });
+    return reexports;
   }
 }

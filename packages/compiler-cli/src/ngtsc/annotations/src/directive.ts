@@ -70,10 +70,11 @@ export class DirectiveDecoratorHandler implements
         }
         return false;
       });
-      return angularField ? {trigger: angularField.node, metadata: null} : undefined;
+      return angularField ? {trigger: angularField.node, decorator: null, metadata: null} :
+                            undefined;
     } else {
       const decorator = findAngularDecorator(decorators, 'Directive', this.isCore);
-      return decorator ? {trigger: decorator.node, metadata: decorator} : undefined;
+      return decorator ? {trigger: decorator.node, decorator, metadata: decorator} : undefined;
     }
   }
 

@@ -44,6 +44,7 @@ runInEachFileSystem(() => {
         const handler = jasmine.createSpyObj<DecoratorHandlerWithResolve>('TestDecoratorHandler', [
           'detect',
           'analyze',
+          'register',
           'resolve',
           'compile',
         ]);
@@ -67,6 +68,7 @@ runInEachFileSystem(() => {
               } else {
                 return {
                   metadata,
+                  decorator: metadata,
                   trigger: metadata.node,
                 };
               }
@@ -117,7 +119,9 @@ runInEachFileSystem(() => {
             getFileSystem(), bundle, reflectionHost, referencesRegistry,
             (error) => diagnosticLogs.push(error));
         testHandler = createTestHandler(options);
-        analyzer.handlers = [testHandler];
+
+        // Replace the default handlers with the test handler in the original array of handlers
+        analyzer.handlers.splice(0, analyzer.handlers.length, testHandler);
         migrationLogs = [];
         const migration1 = new MockMigration('migration1', migrationLogs);
         const migration2 = new MockMigration('migration2', migrationLogs);
@@ -372,25 +376,49 @@ runInEachFileSystem(() => {
           expect(diagnosticLogs[1]).toEqual(jasmine.objectContaining({code: -996666}));
         });
 
-        it('should report analyze and resolve diagnostics to the `diagnosticHandler` callback',
-           () => {
-             const analyzer = setUpAnalyzer(
-                 [
-                   {
-                     name: _('/node_modules/test-package/index.js'),
-                     contents: `
+        it('should report analyze diagnostics to the `diagnosticHandler` callback', () => {
+          const analyzer = setUpAnalyzer(
+              [
+                {
+                  name: _('/node_modules/test-package/index.js'),
+                  contents: `
                   import {Component, Directive, Injectable} from '@angular/core';
                   export class MyComponent {}
                   MyComponent.decorators = [{type: Component}];
                 `,
-                   },
-                 ],
-                 {analyzeError: true, resolveError: true});
-             analyzer.analyzeProgram();
-             expect(diagnosticLogs.length).toEqual(2);
-             expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999999}));
-             expect(diagnosticLogs[1]).toEqual(jasmine.objectContaining({code: -999998}));
-           });
+                },
+              ],
+              {analyzeError: true, resolveError: true});
+          analyzer.analyzeProgram();
+          expect(diagnosticLogs.length).toEqual(1);
+          expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999999}));
+          expect(testHandler.analyze).toHaveBeenCalled();
+          expect(testHandler.register).not.toHaveBeenCalled();
+          expect(testHandler.resolve).not.toHaveBeenCalled();
+          expect(testHandler.compile).not.toHaveBeenCalled();
+        });
+
+        it('should report resolve diagnostics to the `diagnosticHandler` callback', () => {
+          const analyzer = setUpAnalyzer(
+              [
+                {
+                  name: _('/node_modules/test-package/index.js'),
+                  contents: `
+                  import {Component, Directive, Injectable} from '@angular/core';
+                  export class MyComponent {}
+                  MyComponent.decorators = [{type: Component}];
+                `,
+                },
+              ],
+              {analyzeError: false, resolveError: true});
+          analyzer.analyzeProgram();
+          expect(diagnosticLogs.length).toEqual(1);
+          expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999998}));
+          expect(testHandler.analyze).toHaveBeenCalled();
+          expect(testHandler.register).toHaveBeenCalled();
+          expect(testHandler.resolve).toHaveBeenCalled();
+          expect(testHandler.compile).not.toHaveBeenCalled();
+        });
       });
 
       describe('declaration files', () => {
@@ -410,7 +438,9 @@ runInEachFileSystem(() => {
             name: _('/node_modules/test-package/index.d.ts'),
             contents: 'export declare class SomeDirective {}',
           }]);
-          analyzer.handlers = [new FakeDecoratorHandler()];
+
+          // Replace the default handlers with the test handler in the original array of handlers
+          analyzer.handlers.splice(0, analyzer.handlers.length, new FakeDecoratorHandler());
           result = analyzer.analyzeProgram();
           expect(result.size).toBe(0);
         });
