@@ -285,6 +285,12 @@ jobs:
             bazel build //:rollup_globals
             yarn check-rollup-globals $(bazel info bazel-bin)/rollup_globals.json
 
+      - run:
+          name: Checking entry-points configuration
+          command: |
+            bazel build //:entry_points_manifest
+            yarn check-entry-point-setup $(bazel info bazel-bin)/entry_points_manifest.json
+
       - run: ./scripts/circleci/lint-bazel-files.sh
       - run: yarn ownerslint
       - run: yarn stylelint

@@ -12,14 +12,17 @@ entryPoints = [
     "mdc-menu",
     "mdc-menu/testing",
     "mdc-progress-bar",
+    "mdc-progress-bar/testing",
     "mdc-radio",
     "mdc-select",
     "mdc-sidenav",
     "mdc-slide-toggle",
     "mdc-slide-toggle/testing",
     "mdc-slider",
-    "mdc-tabs",
+    "mdc-slider/testing",
+    "mdc-snackbar",
     "mdc-table",
+    "mdc-tabs",
     "popover-edit",
 ]
 

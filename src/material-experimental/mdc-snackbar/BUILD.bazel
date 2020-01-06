@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "sass_binary", "sass_library")
 
 ng_module(
     name = "mdc-snackbar",
@@ -20,7 +19,7 @@ ng_module(
 )
 
 sass_library(
-    name = "snackbar_scss_lib",
+    name = "mdc_snackbar_scss_lib",
     srcs = glob(["**/_*.scss"]),
     deps = [
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",

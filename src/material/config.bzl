@@ -24,6 +24,7 @@ entryPoints = [
     "expansion/testing",
     "form-field",
     "grid-list",
+    "grid-list/testing",
     "icon",
     "input",
     "list",

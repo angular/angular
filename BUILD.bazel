@@ -1,6 +1,10 @@
 package(default_visibility = ["//visibility:public"])
 
 load("//:rollup-globals.bzl", "ROLLUP_GLOBALS")
+load("//src/cdk:config.bzl", "CDK_ENTRYPOINTS")
+load("//src/cdk-experimental:config.bzl", "CDK_EXPERIMENTAL_ENTRYPOINTS")
+load("//src/material:config.bzl", "MATERIAL_ENTRYPOINTS", "MATERIAL_TESTING_ENTRYPOINTS")
+load("//src/material-experimental:config.bzl", "MATERIAL_EXPERIMENTAL_ENTRYPOINTS", "MATERIAL_EXPERIMENTAL_TESTING_ENTRYPOINTS")
 
 exports_files([
     "LICENSE",
@@ -11,4 +15,15 @@ genrule(
     name = "rollup_globals",
     outs = ["rollup_globals.json"],
     cmd = "echo '%s' > $@" % ROLLUP_GLOBALS,
+)
+
+entryPoints = ["cdk/%s" % e for e in CDK_ENTRYPOINTS] + \
+              ["cdk-experimental/%s" % e for e in CDK_EXPERIMENTAL_ENTRYPOINTS] + \
+              ["material/%s" % e for e in MATERIAL_ENTRYPOINTS + MATERIAL_TESTING_ENTRYPOINTS] + \
+              ["material-experimental/%s" % e for e in MATERIAL_EXPERIMENTAL_ENTRYPOINTS + MATERIAL_EXPERIMENTAL_TESTING_ENTRYPOINTS]
+
+genrule(
+    name = "entry_points_manifest",
+    outs = ["entry_points_manifest.json"],
+    cmd = "echo '%s' > $@" % entryPoints,
 )
