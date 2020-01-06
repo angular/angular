@@ -496,24 +496,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const slot = this.allocateDataSlot();
     const projectionSlotIdx = this._ngContentSelectorsOffset + this._ngContentReservedSlots.length;
     const parameters: o.Expression[] = [o.literal(slot)];
-    const attributes: o.Expression[] = [];
-    let ngProjectAsAttr: t.TextAttribute|undefined;
 
     this._ngContentReservedSlots.push(ngContent.selector);
 
-    ngContent.attributes.forEach((attribute) => {
-      const {name, value} = attribute;
-      if (name === NG_PROJECT_AS_ATTR_NAME) {
-        ngProjectAsAttr = attribute;
-      }
-      if (name.toLowerCase() !== NG_CONTENT_SELECT_ATTR) {
-        attributes.push(o.literal(name), o.literal(value));
-      }
-    });
-
-    if (ngProjectAsAttr) {
-      attributes.push(...getNgProjectAsLiteral(ngProjectAsAttr));
-    }
+    const nonContentSelectAttributes =
+        ngContent.attributes.filter(attr => attr.name.toLowerCase() !== NG_CONTENT_SELECT_ATTR);
+    const attributes = this.getAttributeExpressions(nonContentSelectAttributes, [], []);
 
     if (attributes.length > 0) {
       parameters.push(o.literal(projectionSlotIdx), o.literalArr(attributes));
@@ -1237,7 +1225,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private getAttributeExpressions(
       renderAttributes: t.TextAttribute[], inputs: t.BoundAttribute[], outputs: t.BoundEvent[],
       styles?: StylingBuilder, templateAttrs: (t.BoundAttribute|t.TextAttribute)[] = [],
-      i18nAttrs: (t.BoundAttribute|t.TextAttribute)[] = [], ): o.Expression[] {
+      i18nAttrs: (t.BoundAttribute|t.TextAttribute)[] = []): o.Expression[] {
     const alreadySeen = new Set<string>();
     const attrExprs: o.Expression[] = [];
     let ngProjectAsAttr: t.TextAttribute|undefined;
