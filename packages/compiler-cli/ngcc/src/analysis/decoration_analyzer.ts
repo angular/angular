@@ -17,7 +17,8 @@ import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, Inj
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {ClassDeclaration} from '../../../src/ngtsc/reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
-import {CompileResult, DecoratorHandler} from '../../../src/ngtsc/transform';
+import {resolveTrait} from '../../../src/ngtsc/transform';
+import {CompileResult, DecoratorHandler, TraitState} from '../../../src/ngtsc/transform';
 import {NgccClassSymbol, NgccReflectionHost} from '../host/ngcc_host';
 import {Migration} from '../migrations/migration';
 import {MissingInjectableMigration} from '../migrations/missing_injectable_migration';
@@ -145,6 +146,9 @@ export class DecorationAnalyzer {
     this.applyMigrations(analyzedFiles);
 
     analyzedFiles.forEach(analyzedFile => this.resolveFile(analyzedFile));
+
+    this.reportDiagnostics(analyzedFiles);
+
     const compiledFiles = analyzedFiles.map(analyzedFile => this.compileFile(analyzedFile));
     compiledFiles.forEach(
         compiledFile => decorationAnalyses.set(compiledFile.sourceFile, compiledFile));
@@ -160,31 +164,32 @@ export class DecorationAnalyzer {
 
   protected analyzeClass(symbol: NgccClassSymbol): AnalyzedClass|null {
     const decorators = this.reflectionHost.getDecoratorsOfSymbol(symbol);
-    const analyzedClass = analyzeDecorators(symbol, decorators, this.handlers);
-    if (analyzedClass !== null && analyzedClass.diagnostics !== undefined) {
-      for (const diagnostic of analyzedClass.diagnostics) {
-        this.diagnosticHandler(diagnostic);
-      }
-    }
-    return analyzedClass;
+    return analyzeDecorators(symbol, decorators, this.handlers);
   }
 
   protected applyMigrations(analyzedFiles: AnalyzedFile[]): void {
     const migrationHost = new DefaultMigrationHost(
         this.reflectionHost, this.fullMetaReader, this.evaluator, this.handlers,
-        this.bundle.entryPoint.path, analyzedFiles, this.diagnosticHandler);
+        this.bundle.entryPoint.path, analyzedFiles);
 
     this.migrations.forEach(migration => {
       analyzedFiles.forEach(analyzedFile => {
-        analyzedFile.analyzedClasses.forEach(({declaration}) => {
+        analyzedFile.analyzedClasses.forEach(analyzedClass => {
+          const reportDiagnostic = (diagnostic: ts.Diagnostic) => {
+            if (analyzedClass.metaDiagnostics === undefined) {
+              analyzedClass.metaDiagnostics = [];
+            }
+            analyzedClass.metaDiagnostics.push(diagnostic);
+          };
+
           try {
-            const result = migration.apply(declaration, migrationHost);
+            const result = migration.apply(analyzedClass.declaration, migrationHost);
             if (result !== null) {
-              this.diagnosticHandler(result);
+              reportDiagnostic(result);
             }
           } catch (e) {
             if (isFatalDiagnosticError(e)) {
-              this.diagnosticHandler(e.toDiagnostic());
+              reportDiagnostic(e.toDiagnostic());
             } else {
               throw e;
             }
@@ -192,6 +197,21 @@ export class DecorationAnalyzer {
         });
       });
     });
+  }
+
+  protected reportDiagnostics(analyzedFiles: AnalyzedFile[]) {
+    for (const analyzedFile of analyzedFiles) {
+      for (const analyzedClass of analyzedFile.analyzedClasses) {
+        if (analyzedClass.metaDiagnostics !== undefined) {
+          analyzedClass.metaDiagnostics.forEach(this.diagnosticHandler);
+        }
+        for (const trait of analyzedClass.traits) {
+          if (trait.state === TraitState.ERRORED) {
+            trait.diagnostics.forEach(this.diagnosticHandler);
+          }
+        }
+      }
+    }
   }
 
   protected compileFile(analyzedFile: AnalyzedFile): CompiledFile {
@@ -207,8 +227,12 @@ export class DecorationAnalyzer {
 
   protected compileClass(clazz: AnalyzedClass, constantPool: ConstantPool): CompileResult[] {
     const compilations: CompileResult[] = [];
-    for (const {handler, analysis, resolution} of clazz.matches) {
-      const result = handler.compile(clazz.declaration, analysis, resolution, constantPool);
+    for (const trait of clazz.traits) {
+      if (trait.state !== TraitState.RESOLVED) {
+        continue;
+      }
+      const result =
+          trait.handler.compile(clazz.declaration, trait.analysis, trait.resolution, constantPool);
       if (Array.isArray(result)) {
         result.forEach(current => {
           if (!compilations.some(compilation => compilation.name === current.name)) {
@@ -223,18 +247,15 @@ export class DecorationAnalyzer {
   }
 
   protected resolveFile(analyzedFile: AnalyzedFile): void {
-    for (const {declaration, matches} of analyzedFile.analyzedClasses) {
-      for (const match of matches) {
-        const {handler, analysis} = match;
-        if ((handler.resolve !== undefined) && analysis) {
-          const {reexports, diagnostics, data} = handler.resolve(declaration, analysis);
-          if (reexports !== undefined) {
-            this.addReexports(reexports, declaration);
-          }
-          if (diagnostics !== undefined) {
-            diagnostics.forEach(error => this.diagnosticHandler(error));
-          }
-          match.resolution = data as Readonly<unknown>;
+    for (const {declaration, traits} of analyzedFile.analyzedClasses) {
+      for (const trait of traits) {
+        const result = resolveTrait(declaration, trait);
+        if (result === null) {
+          continue;
+        }
+
+        if (result.reexports !== undefined) {
+          this.addReexports(result.reexports, declaration);
         }
       }
     }

@@ -12,7 +12,7 @@ import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {MetadataReader} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
-import {DecoratorHandler, HandlerFlags} from '../../../src/ngtsc/transform';
+import {DecoratorHandler, HandlerFlags, TraitState} from '../../../src/ngtsc/transform';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {MigrationHost} from '../migrations/migration';
 
@@ -28,8 +28,7 @@ export class DefaultMigrationHost implements MigrationHost {
       readonly reflectionHost: NgccReflectionHost, readonly metadata: MetadataReader,
       readonly evaluator: PartialEvaluator,
       private handlers: DecoratorHandler<unknown, unknown, unknown>[],
-      private entryPointPath: AbsoluteFsPath, private analyzedFiles: AnalyzedFile[],
-      private diagnosticHandler: (error: ts.Diagnostic) => void) {}
+      private entryPointPath: AbsoluteFsPath, private analyzedFiles: AnalyzedFile[]) {}
 
   injectSyntheticDecorator(clazz: ClassDeclaration, decorator: Decorator, flags?: HandlerFlags):
       void {
@@ -39,9 +38,16 @@ export class DefaultMigrationHost implements MigrationHost {
       return;
     }
 
-    if (newAnalyzedClass.diagnostics !== undefined) {
-      for (const diagnostic of newAnalyzedClass.diagnostics) {
-        this.diagnosticHandler(createMigrationDiagnostic(diagnostic, clazz, decorator));
+    // Transform any reported diagnostics so that they contain a diagnostic chain referring to the
+    // migration.
+    if (newAnalyzedClass.metaDiagnostics !== undefined) {
+      newAnalyzedClass.metaDiagnostics = newAnalyzedClass.metaDiagnostics.map(
+          diag => createMigrationDiagnostic(diag, clazz, decorator));
+    }
+    for (const trait of newAnalyzedClass.traits) {
+      if (trait.state === TraitState.ERRORED) {
+        trait.diagnostics =
+            trait.diagnostics.map(diag => createMigrationDiagnostic(diag, clazz, decorator));
       }
     }
 
@@ -102,11 +108,13 @@ function mergeAnalyzedClasses(oldClass: AnalyzedClass, newClass: AnalyzedClass) 
     }
   }
 
-  if (newClass.diagnostics !== undefined) {
-    if (oldClass.diagnostics === undefined) {
-      oldClass.diagnostics = newClass.diagnostics;
+  oldClass.traits.push(...newClass.traits);
+
+  if (newClass.metaDiagnostics !== undefined) {
+    if (oldClass.metaDiagnostics === undefined) {
+      oldClass.metaDiagnostics = newClass.metaDiagnostics;
     } else {
-      oldClass.diagnostics.push(...newClass.diagnostics);
+      oldClass.metaDiagnostics.push(...newClass.metaDiagnostics);
     }
   }
 }

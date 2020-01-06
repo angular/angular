@@ -7,6 +7,7 @@
  */
 
 export * from './src/api';
-export {ClassRecord, TraitCompiler} from './src/compilation';
+export {analyzeTrait, ClassRecord, resolveTrait, TraitCompiler} from './src/compilation';
 export {declarationTransformFactory, DtsTransformRegistry, IvyDeclarationDtsTransform, ReturnTypeTransform} from './src/declaration';
+export {AnalyzedTrait, ErroredTrait, PendingTrait, ResolvedTrait, SkippedTrait, Trait, TraitState} from './src/trait';
 export {ivyTransformFactory} from './src/transform';

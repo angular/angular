@@ -6,20 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, Type} from '@angular/compiler';
+import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {ImportRewriter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
-import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
 import {getSourceFile, isExported} from '../../util/src/typescript';
 
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from './api';
+import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api';
 import {DtsTransformRegistry} from './declaration';
 import {Trait, TraitState} from './trait';
 
@@ -285,7 +283,7 @@ export class TraitCompiler {
     }
 
     for (const trait of record.traits) {
-      const analyze = () => this.analyzeTrait(clazz, trait);
+      const analyze = () => analyzeTrait(clazz, trait);
 
       let preanalysis: Promise<void>|null = null;
       if (preanalyzeQueue !== null && trait.handler.preanalyze !== undefined) {
@@ -299,83 +297,14 @@ export class TraitCompiler {
     }
   }
 
-  private analyzeTrait(clazz: ClassDeclaration, trait: Trait<unknown, unknown, unknown>): void {
-    if (trait.state !== TraitState.PENDING) {
-      throw new Error(
-          `Attempt to analyze trait of ${clazz.name.text} in state ${TraitState[trait.state]} (expected DETECTED)`);
-    }
-
-    // Attempt analysis. This could fail with a `FatalDiagnosticError`; catch it if it does.
-    let result: AnalysisOutput<unknown>;
-    try {
-      result = trait.handler.analyze(clazz, trait.detected.metadata);
-    } catch (err) {
-      if (err instanceof FatalDiagnosticError) {
-        trait = trait.toErrored([err.toDiagnostic()]);
-        return;
-      } else {
-        throw err;
-      }
-    }
-
-    if (result.diagnostics !== undefined) {
-      trait = trait.toErrored(result.diagnostics);
-    } else if (result.analysis !== undefined) {
-      // Analysis was successful. Trigger registration.
-      if (trait.handler.register !== undefined) {
-        trait.handler.register(clazz, result.analysis);
-      }
-
-      // Successfully analyzed and registered.
-      trait = trait.toAnalyzed(result.analysis);
-    } else {
-      trait = trait.toSkipped();
-    }
-  }
-
   resolve(): void {
     const classes = Array.from(this.classes.keys());
     for (const clazz of classes) {
       const record = this.classes.get(clazz) !;
       for (let trait of record.traits) {
-        const handler = trait.handler;
-        switch (trait.state) {
-          case TraitState.SKIPPED:
-          case TraitState.ERRORED:
-            continue;
-          case TraitState.PENDING:
-            throw new Error(
-                `Resolving a trait that hasn't been analyzed: ${clazz.name.text} / ${Object.getPrototypeOf(trait.handler).constructor.name}`);
-          case TraitState.RESOLVED:
-            throw new Error(`Resolving an already resolved trait`);
-        }
-
-        if (handler.resolve === undefined) {
-          // No resolution of this trait needed - it's considered successful by default.
-          trait = trait.toResolved(null);
+        const result = resolveTrait(clazz, trait);
+        if (result === null) {
           continue;
-        }
-
-        let result: ResolveResult<unknown>;
-        try {
-          result = handler.resolve(clazz, trait.analysis as Readonly<unknown>);
-        } catch (err) {
-          if (err instanceof FatalDiagnosticError) {
-            trait = trait.toErrored([err.toDiagnostic()]);
-            continue;
-          } else {
-            throw err;
-          }
-        }
-
-        if (result.diagnostics !== undefined && result.diagnostics.length > 0) {
-          trait = trait.toErrored(result.diagnostics);
-        } else {
-          if (result.data !== undefined) {
-            trait = trait.toResolved(result.data);
-          } else {
-            trait = trait.toResolved(null);
-          }
         }
 
         if (result.reexports !== undefined) {
@@ -502,4 +431,84 @@ export class TraitCompiler {
   }
 
   get exportStatements(): Map<string, Map<string, [string, string]>> { return this.reexportMap; }
+}
+
+export function analyzeTrait<D, A, R>(
+    clazz: ClassDeclaration, trait: Trait<D, A, R>, handlerFlags?: HandlerFlags): void {
+  if (trait.state !== TraitState.PENDING) {
+    throw new Error(
+        `Attempt to analyze trait of ${clazz.name.text} in state ${TraitState[trait.state]} (expected DETECTED)`);
+  }
+
+  // Attempt analysis. This could fail with a `FatalDiagnosticError`; catch it if it does.
+  let result: AnalysisOutput<A>;
+  try {
+    result = trait.handler.analyze(clazz, trait.detected.metadata, handlerFlags);
+  } catch (err) {
+    if (err instanceof FatalDiagnosticError) {
+      trait.toErrored([err.toDiagnostic()]);
+      return;
+    } else {
+      throw err;
+    }
+  }
+
+  if (result.diagnostics !== undefined) {
+    trait.toErrored(result.diagnostics);
+  } else if (result.analysis !== undefined) {
+    // Analysis was successful. Trigger registration.
+    if (trait.handler.register !== undefined) {
+      trait.handler.register(clazz, result.analysis);
+    }
+
+    // Successfully analyzed and registered.
+    trait.toAnalyzed(result.analysis);
+  } else {
+    trait.toSkipped();
+  }
+}
+
+export function resolveTrait<D, A, R>(
+    clazz: ClassDeclaration, trait: Trait<D, A, R>): ResolveResult<R>|null {
+  const handler = trait.handler;
+  switch (trait.state) {
+    case TraitState.SKIPPED:
+    case TraitState.ERRORED:
+      return null;
+    case TraitState.PENDING:
+      throw new Error(
+          `Resolving a trait that hasn't been analyzed: ${clazz.name.text} / ${Object.getPrototypeOf(trait.handler).constructor.name}`);
+    case TraitState.RESOLVED:
+      throw new Error(`Resolving an already resolved trait`);
+  }
+
+  if (handler.resolve === undefined) {
+    // No resolution of this trait needed - it's considered successful by default.
+    trait.toResolved(null as unknown as R);
+    return null;
+  }
+
+  let result: ResolveResult<R>;
+  try {
+    result = handler.resolve(clazz, trait.analysis);
+  } catch (err) {
+    if (err instanceof FatalDiagnosticError) {
+      trait.toErrored([err.toDiagnostic()]);
+      return null;
+    } else {
+      throw err;
+    }
+  }
+
+  if (result.diagnostics !== undefined && result.diagnostics.length > 0) {
+    trait.toErrored(result.diagnostics);
+  } else {
+    if (result.data !== undefined) {
+      trait.toResolved(result.data);
+    } else {
+      trait.toResolved(null as unknown as R);
+    }
+  }
+
+  return result;
 }

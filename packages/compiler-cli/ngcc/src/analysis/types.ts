@@ -9,7 +9,7 @@ import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 import {Reexport} from '../../../src/ngtsc/imports';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
-import {CompileResult, DecoratorHandler, DetectResult} from '../../../src/ngtsc/transform';
+import {CompileResult, Trait} from '../../../src/ngtsc/transform';
 
 export interface AnalyzedFile {
   sourceFile: ts.SourceFile;
@@ -20,8 +20,8 @@ export interface AnalyzedClass {
   name: string;
   decorators: Decorator[]|null;
   declaration: ClassDeclaration;
-  diagnostics?: ts.Diagnostic[];
-  matches: MatchingHandler<unknown, unknown, unknown>[];
+  traits: Trait<unknown, unknown, unknown>[];
+  metaDiagnostics?: ts.Diagnostic[];
 }
 
 export interface CompiledClass extends AnalyzedClass {
@@ -41,10 +41,3 @@ export interface CompiledFile {
 
 export type DecorationAnalyses = Map<ts.SourceFile, CompiledFile>;
 export const DecorationAnalyses = Map;
-
-export interface MatchingHandler<D, A, R> {
-  handler: DecoratorHandler<D, A, R>;
-  detected: DetectResult<D>;
-  analysis: Readonly<A>;
-  resolution: Readonly<R>;
-}

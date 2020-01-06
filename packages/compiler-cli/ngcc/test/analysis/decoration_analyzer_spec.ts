@@ -372,25 +372,41 @@ runInEachFileSystem(() => {
           expect(diagnosticLogs[1]).toEqual(jasmine.objectContaining({code: -996666}));
         });
 
-        it('should report analyze and resolve diagnostics to the `diagnosticHandler` callback',
-           () => {
-             const analyzer = setUpAnalyzer(
-                 [
-                   {
-                     name: _('/node_modules/test-package/index.js'),
-                     contents: `
+        it('should report analyze diagnostics to the `diagnosticHandler` callback', () => {
+          const analyzer = setUpAnalyzer(
+              [
+                {
+                  name: _('/node_modules/test-package/index.js'),
+                  contents: `
                   import {Component, Directive, Injectable} from '@angular/core';
                   export class MyComponent {}
                   MyComponent.decorators = [{type: Component}];
                 `,
-                   },
-                 ],
-                 {analyzeError: true, resolveError: true});
-             analyzer.analyzeProgram();
-             expect(diagnosticLogs.length).toEqual(2);
-             expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999999}));
-             expect(diagnosticLogs[1]).toEqual(jasmine.objectContaining({code: -999998}));
-           });
+                },
+              ],
+              {analyzeError: true, resolveError: true});
+          analyzer.analyzeProgram();
+          expect(diagnosticLogs.length).toEqual(1);
+          expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999999}));
+        });
+
+        it('should report resolve diagnostics to the `diagnosticHandler` callback', () => {
+          const analyzer = setUpAnalyzer(
+              [
+                {
+                  name: _('/node_modules/test-package/index.js'),
+                  contents: `
+                  import {Component, Directive, Injectable} from '@angular/core';
+                  export class MyComponent {}
+                  MyComponent.decorators = [{type: Component}];
+                `,
+                },
+              ],
+              {analyzeError: false, resolveError: true});
+          analyzer.analyzeProgram();
+          expect(diagnosticLogs.length).toEqual(1);
+          expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999998}));
+        });
       });
 
       describe('declaration files', () => {
