@@ -3,8 +3,8 @@
 import {EXAMPLE_COMPONENTS} from './example-module';
 
 /**
- * Example data
- *   with information about Component name, selector, files used in example, and path to examples
+ * Example data with information about component name, selector, files used in example, and path to
+ * examples.
  */
 export class ExampleData {
 

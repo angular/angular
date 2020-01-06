@@ -33,7 +33,7 @@ const TREE_DATA: ExampleFlatNode[] = [
     expandable: false,
     level: 2,
   }, {
-    name: 'Brussel sprouts',
+    name: 'Brussels sprouts',
     expandable: false,
     level: 2,
   }, {

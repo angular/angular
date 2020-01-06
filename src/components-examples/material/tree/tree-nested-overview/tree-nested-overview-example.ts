@@ -4,7 +4,7 @@ import {MatTreeNestedDataSource} from '@angular/material/tree';
 
 /**
  * Food data with nested structure.
- * Each node has a name and an optiona list of children.
+ * Each node has a name and an optional list of children.
  */
 interface FoodNode {
   name: string;
@@ -26,7 +26,7 @@ const TREE_DATA: FoodNode[] = [
         name: 'Green',
         children: [
           {name: 'Broccoli'},
-          {name: 'Brussel sprouts'},
+          {name: 'Brussels sprouts'},
         ]
       }, {
         name: 'Orange',
