@@ -41,7 +41,7 @@ function inlineExampleModuleTemplate(parsedData: AnalyzedExamples): string {
       .map(({additionalComponents, component, importPath}) =>
         createImportDeclaration(importPath!, additionalComponents.concat(component))),
     ...exampleModules.map(({name, packagePath}) => createImportDeclaration(packagePath, [name])),
-  ].join('');
+  ].join('\n');
   const quotePlaceholder = '◬';
   const exampleList = exampleMetadata.reduce((result, data) => {
     return result.concat(data.component).concat(data.additionalComponents);
@@ -63,9 +63,9 @@ function inlineExampleModuleTemplate(parsedData: AnalyzedExamples): string {
 
   return fs.readFileSync(require.resolve('./example-module.template'), 'utf8')
     .replace(/\${exampleImports}/g, exampleImports)
-    .replace(/\${exampleComponents}/g, JSON.stringify(exampleComponents))
-    .replace(/\${exampleList}/g, exampleList.join(', '))
-    .replace(/\${exampleModules}/g, `[${exampleModules.map(m => m.name).join(', ')}]`)
+    .replace(/\${exampleComponents}/g, JSON.stringify(exampleComponents, null, 2))
+    .replace(/\${exampleList}/g, exampleList.join(',\n'))
+    .replace(/\${exampleModules}/g, `[${exampleModules.map(m => m.name).join(',\n')}]`)
     .replace(new RegExp(`"${quotePlaceholder}|${quotePlaceholder}"`, 'g'), '');
 }
 
