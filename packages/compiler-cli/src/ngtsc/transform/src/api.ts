@@ -153,8 +153,26 @@ export interface DecoratorHandler<D, A, R> {
       constantPool: ConstantPool): CompileResult|CompileResult[];
 }
 
+/**
+ * The output of detecting a trait for a declaration as the result of the first phase of the
+ * compilation pipeline.
+ */
 export interface DetectResult<M> {
+  /**
+   * The node that triggered the match, which is typically a decorator.
+   */
   trigger: ts.Node|null;
+
+  /**
+   * Refers to the decorator that was recognized for this detection, if any. This can be a concrete
+   * decorator that is actually present in a file, or a synthetic decorator as inserted
+   * programmatically.
+   */
+  decorator: Decorator|null;
+
+  /**
+   * An arbitrary object to carry over from the detection phase into the analysis phase.
+   */
   metadata: Readonly<M>;
 }
 

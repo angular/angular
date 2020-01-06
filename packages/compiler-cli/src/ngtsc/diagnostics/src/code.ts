@@ -86,11 +86,6 @@ export enum ErrorCode {
   NGMODULE_DECLARATION_NOT_UNIQUE = 6007,
 
   /**
-   * Raised when ngcc tries to inject a synthetic decorator over one that already exists.
-   */
-  NGCC_MIGRATION_DECORATOR_INJECTION_ERROR = 7001,
-
-  /**
    * An element name failed validation against the DOM schema.
    */
   SCHEMA_INVALID_ELEMENT = 8001,
