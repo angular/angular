@@ -35,7 +35,8 @@ export class MergeInheritedProperties implements Processor {
       // member doc for the destination class, we clone the member doc. It's important to keep
       // the prototype and reference because later, Dgeni identifies members and properties
       // by using an instance comparison.
-      const newMemberDoc = {...Object.create(memberDoc), ...memberDoc};
+      // tslint:disable-next-line:ban Need to use Object.assign to preserve the prototype.
+      const newMemberDoc = Object.assign(Object.create(memberDoc), memberDoc);
       newMemberDoc.containerDoc = destination;
 
       destination.members.push(newMemberDoc);
