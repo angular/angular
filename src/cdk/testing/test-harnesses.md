@@ -73,7 +73,7 @@ Consider a reusable dialog-button component that opens a dialog on click, contai
 components, each with a corresponding harness:
 - `MyDialogButton` (composes the `MyButton` and `MyDialog` with a convenient API)
 - `MyButton` (a simple button component)
-- `MyDialog` (a dialog appended to `document.body` by `MyButtonDialog` upon click)
+- `MyDialog` (a dialog appended to `document.body` by `MyDialogButton` upon click)
 
 The following code loads harnesses for each of these components:
 
