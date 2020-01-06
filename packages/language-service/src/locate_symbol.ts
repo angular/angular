@@ -148,12 +148,16 @@ function findAttribute(info: AstResult, position: number): Attribute|undefined {
   return path.first(Attribute);
 }
 
+// TODO: remove this function after the path includes 'DirectiveAst'.
+// Find the directive that corresponds to the specified 'binding'
+// at the specified 'position' in the 'ast'.
 function findParentOfBinding(
-    ast: TemplateAst[], binding: BoundDirectivePropertyAst, position: number) {
+    ast: TemplateAst[], binding: BoundDirectivePropertyAst, position: number): DirectiveAst|
+    undefined {
   let res: DirectiveAst|undefined;
   const visitor = new class extends RecursiveTemplateAstVisitor {
     visit(ast: TemplateAst): any {
-      let span = spanOf(ast);
+      const span = spanOf(ast);
       if (!inSpan(position, span)) {
         // Returning a value here will result in the children being skipped.
         return true;
