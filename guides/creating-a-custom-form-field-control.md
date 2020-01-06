@@ -24,11 +24,11 @@ class MyTel {
   selector: 'example-tel-input',
   template: `
     <div [formGroup]="parts">
-      <input class="area" formControlName="area" size="3">
+      <input class="area" formControlName="area" maxlength="3">
       <span>&ndash;</span>
-      <input class="exchange" formControlName="exchange" size="3">
+      <input class="exchange" formControlName="exchange" maxlength="3">
       <span>&ndash;</span>
-      <input class="subscriber" formControlName="subscriber" size="4">
+      <input class="subscriber" formControlName="subscriber" maxlength="4">
     </div>
   `,
   styles: [`
