@@ -314,11 +314,8 @@ describe('definitions', () => {
     expect(def.name).toBe('model');
     expect(def.kind).toBe('property');
     const content = mockHost.readFile(refFileName) !;
-    const ref = `@Input() model: string = 'model';`;
-    expect(def.textSpan).toEqual({
-      start: content.indexOf(ref),
-      length: ref.length,
-    });
+    expect(content.substring(def.textSpan.start, def.textSpan.start + def.textSpan.length))
+        .toEqual(`@Input() model: string = 'model';`);
   });
 
   it('should be able to find a template from a url', () => {
