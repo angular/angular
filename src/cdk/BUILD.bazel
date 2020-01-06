@@ -51,7 +51,7 @@ ng_package(
     srcs = ["package.json"],
     data = rerootedStyleTargets + CDK_SCSS_LIBS,
     entry_point = ":public-api.ts",
-    packages = [
+    nested_packages = [
         "//src/cdk/schematics:npm_package",
     ],
     tags = ["release-package"],

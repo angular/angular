@@ -1,16 +1,16 @@
 """Implementation of the expand_template rule """
 
 def expand_template_impl(ctx):
-    replacements = dict(**ctx.attr.substitutions)
+    substitutions = dict(**ctx.attr.substitutions)
 
     for k in ctx.attr.configuration_env_vars:
         if k in ctx.var.keys():
-            replacements["$%s_TMPL" % k.upper()] = ctx.var[k]
+            substitutions["$%s_TMPL" % k.upper()] = ctx.var[k]
 
     ctx.actions.expand_template(
         template = ctx.file.template,
         output = ctx.outputs.output_name,
-        substitutions = replacements,
+        substitutions = substitutions,
     )
 
 """

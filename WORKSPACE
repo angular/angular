@@ -8,21 +8,22 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Add NodeJS rules
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "a54b2511d6dae42c1f7cdaeb08144ee2808193a088004fc3b464a04583d5aa2e",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.42.3/rules_nodejs-0.42.3.tar.gz"],
+    sha256 = "3887b948779431ac443e6a64f31b9e1e17b8d386a31eebc50ec1d9b0a6cabd2b",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/1.0.0/rules_nodejs-1.0.0.tar.gz"],
 )
 
 # Add sass rules
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "ad08e8c82aa1f48b72dc295cb83bba33f514cdf24cc7b0e21e9353f20f0dc147",
-    strip_prefix = "rules_sass-5d1b26f8cd12c5d75dd359f9291090b341e8fd52",
-    # We need to use a version that includes SHA 5d1b26f8cd12c5d75dd359f9291090b341e8fd52 of
-    # the "rules_sass" repository as it adds support for workers.
-    url = "https://github.com/bazelbuild/rules_sass/archive/5d1b26f8cd12c5d75dd359f9291090b341e8fd52.zip",
+    sha256 = "77e241148f26d5dbb98f96fe0029d8f221c6cb75edbb83e781e08ac7f5322c5f",
+    strip_prefix = "rules_sass-1.24.0",
+    urls = [
+        "https://github.com/bazelbuild/rules_sass/archive/1.24.0.zip",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.24.0.zip",
+    ],
 )
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
+load("@build_bazel_rules_nodejs//:index.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
 # The minimum bazel version to use with this repo is v1.1.0.
 check_bazel_version("1.1.0")

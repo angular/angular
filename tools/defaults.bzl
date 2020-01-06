@@ -120,7 +120,7 @@ def ng_package(name, data = [], globals = ROLLUP_GLOBALS, readme_md = None, **kw
         globals = globals,
         data = data + [":license_copied"],
         readme_md = readme_md,
-        replacements = VERSION_PLACEHOLDER_REPLACEMENTS,
+        substitutions = VERSION_PLACEHOLDER_REPLACEMENTS,
         **kwargs
     )
 

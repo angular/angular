@@ -1,0 +1,13 @@
+diff --git node_modules/ts-api-guardian/index.bzl node_modules/ts-api-guardian/index.bzl
+index d00888a..3142db4 100755
+--- node_modules/ts-api-guardian/index.bzl
++++ node_modules/ts-api-guardian/index.bzl
+@@ -15,7 +15,7 @@
+ """Runs ts_api_guardian
+ """
+ 
+-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "nodejs_test")
++load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "nodejs_test")
+ 
+ COMMON_MODULE_IDENTIFIERS = ["angular", "jasmine", "protractor"]
+ 

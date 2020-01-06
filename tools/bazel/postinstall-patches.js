@@ -29,6 +29,15 @@ shelljs.cd(projectDir);
 // Workaround for https://github.com/angular/angular/issues/18810.
 shelljs.exec('ngc -p angular-tsconfig.json');
 
+// Temporary patch to make @angular/bazel compatible with rules_nodejs 1.0.0.
+// This is needed to resolve the dependency sandwich between angular components and
+// repo framework. It can be removed with a future @angular/bazel update.
+applyPatch(path.join(__dirname, './angular_bazel_rules_nodejs_1.0.0.patch'));
+
+// Temporary patch for ts-api-guardian to be compatible with rules_nodejs 1.0.0.
+// TODO: a new ts-api-guardian release is needed.
+applyPatch(path.join(__dirname, './ts_api_guardian_rules_nodejs_1.0.0.patch'));
+
 // Workaround for https://github.com/angular/angular/issues/30586. It's not possible to
 // enable tsickle decorator processing without enabling import rewriting to closure.
 // This replacement allows us to enable decorator processing without rewriting imports.

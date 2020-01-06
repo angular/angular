@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
 # Custom "tsc_wrapped" binary that has "tsickle" available as runtime dependency.
 # This is needed as the default compiler for a "ts_library" does not have a dependency

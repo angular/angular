@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package")
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS")
 load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
@@ -38,10 +38,10 @@ ts_library(
 )
 
 # This package is intended to be combined into the main @angular/material package as a dep.
-npm_package(
+pkg_npm(
     name = "npm_package",
     srcs = [":schematics_assets"],
-    replacements = VERSION_PLACEHOLDER_REPLACEMENTS,
+    substitutions = VERSION_PLACEHOLDER_REPLACEMENTS,
     deps = [":schematics"],
 )
 
