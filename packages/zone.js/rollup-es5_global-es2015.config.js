@@ -16,7 +16,7 @@ if (bazel_stamp_file) {
 
 const banner = `/**
 * @license Angular v${version}
-* (c) 2010-2019 Google LLC. https://angular.io/
+* (c) 2010-2020 Google LLC. https://angular.io/
 * License: MIT
 */`;
 

@@ -90,7 +90,7 @@ Hello
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -339,7 +339,7 @@ Hello
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example/secondary",["exports","@angular/core"],t):t(((e=e||self).example=e.example||{},e.example.secondary={}),e.ng.core)}(this,(function(e,t){"use strict";
@@ -378,7 +378,7 @@ e.SecondaryModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -625,7 +625,7 @@ e.SecondaryModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example",["exports","@angular/core"],t):t((e=e||self).example={},e.ng.core)}(this,(function(e,t){"use strict";
@@ -864,7 +864,7 @@ export var a = 1;
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -891,7 +891,7 @@ export { }
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -928,7 +928,7 @@ export { SecondaryModule, a };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -963,7 +963,7 @@ export { MyModule };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -1007,7 +1007,7 @@ export { SecondaryModule, a };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -1083,7 +1083,7 @@ export { MyModule };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -1105,7 +1105,7 @@ export { }
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
