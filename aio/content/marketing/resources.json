@@ -110,7 +110,7 @@
       "Data Libraries": {
         "order": 3,
         "resources": {
-           "rx-web":{
+          "rx-web":{
             "desc":"RxWeb Reactive Form Validators provides all types of complex, conditional, cross field, and dynamic validation on validator-based reactive forms, model-based reactive forms, and template driven forms.",
             "rev": true,
             "title": "RxWeb Reactive Form Validators",
@@ -195,7 +195,7 @@
             "url": "https://www.genuitec.com/products/angular-ide"
           },
           "amexio-canvas": {
-             "desc": "Amexio Canvas is Drag and Drop Environment to create Fully Responsive Web and Smart Device HTML5/Angular Apps. Code will be auto generated and hot deployed by the Canvas for live testing. Out of the box 50+ Material Design Theme support. Commit your code to GitHub public or private repository.",
+            "desc": "Amexio Canvas is Drag and Drop Environment to create Fully Responsive Web and Smart Device HTML5/Angular Apps. Code will be auto generated and hot deployed by the Canvas for live testing. Out of the box 50+ Material Design Theme support. Commit your code to GitHub public or private repository.",
             "rev": true,
             "title": "Amexio Canvas Web Based Drag and Drop IDE by MetaMagic",
             "url": "https://amexio.tech/"
@@ -278,7 +278,7 @@
       "UI Components": {
         "order": 4,
         "resources": {
-           "AngularUIToolkit": {
+          "AngularUIToolkit": {
             "desc": "Angular UI Toolkit: 115 professionally maintained UI components ranging from a robust grid to charts and more. Try for free & build Angular apps faster.",
             "rev": true,
             "title": "Angular UI Toolkit",
@@ -400,6 +400,12 @@
             "rev": true,
             "title": "ag-Grid",
             "url": "https://www.ag-grid.com/best-angular-2-data-grid/"
+          },
+          "angular-slickgrid": {
+            "desc": "Angular-SlickGrid is a wrapper of the lightning fast & customizable SlickGrid datagrid library with Bootstrap 3,4 themes",
+            "rev": true,
+            "title": "Angular-Slickgrid",
+            "url": "https://github.com/ghiscoding/Angular-Slickgrid"
           },
           "fancygrid": {
             "desc": "Angular grid library with charts integration and server communication for Enterprise.",
