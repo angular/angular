@@ -271,7 +271,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     let valueDeclaration: ts.Declaration|undefined = undefined;
     if (symbol.valueDeclaration !== undefined) {
       valueDeclaration = symbol.valueDeclaration;
-    } else if (symbol.declarations.length > 0) {
+    } else if (symbol.declarations !== undefined && symbol.declarations.length > 0) {
       valueDeclaration = symbol.declarations[0];
     }
     if (valueDeclaration !== undefined && ts.isShorthandPropertyAssignment(valueDeclaration)) {
