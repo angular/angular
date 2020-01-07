@@ -9,8 +9,14 @@
   // variables to their original values and prevent unintended side effects from using this mixin.
   $orig-mdc-tab-text-label-color-active: $mdc-tab-text-label-color-active;
   $orig-mdc-tab-icon-color-active: $mdc-tab-icon-color-active;
+  $orig-mdc-tab-text-label-color-default: $mdc-tab-text-label-color-default;
 
   @include mat-using-mdc-theme($theme) {
+    // This value is the same as MDC's default, but MDC defines it once inside
+    // a variables file which means that we can't override it with our own palette.
+    $mdc-tab-text-label-color-default:
+        rgba(mdc-theme-prop-value(on-surface), $mdc-tab-text-label-opacity) !global;
+
     @include _mat-mdc-tabs-palette-styles($mdc-tab-text-label-color-active);
 
     .mat-mdc-tab-group, .mat-mdc-tab-nav-bar {
@@ -49,6 +55,7 @@
   // Restore original values of MDC global variables.
   $mdc-tab-text-label-color-active: $orig-mdc-tab-text-label-color-active !global;
   $mdc-tab-icon-color-active: $orig-mdc-tab-icon-color-active !global;
+  $mdc-tab-text-label-color-default: $orig-mdc-tab-text-label-color-default !global;
 }
 
 @mixin _mat-mdc-tabs-background($background-color, $foreground-color) {
