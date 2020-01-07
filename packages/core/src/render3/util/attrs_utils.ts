@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {AttributeMarker, TAttributes} from '../interfaces/node';
 import {CssSelector} from '../interfaces/projection';
 import {ProceduralRenderer3, RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
@@ -57,7 +58,7 @@ export function setUpAttributes(renderer: Renderer3, native: RElement, attrs: TA
       const namespaceURI = attrs[i++] as string;
       const attrName = attrs[i++] as string;
       const attrVal = attrs[i++] as string;
-      ngDevMode && ngDevMode.rendererSetAttribute++;
+      NG_DEV_MODE && NG_DEV_MODE.rendererSetAttribute++;
       isProc ?
           (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal, namespaceURI) :
           native.setAttributeNS(namespaceURI, attrName, attrVal);
@@ -66,7 +67,7 @@ export function setUpAttributes(renderer: Renderer3, native: RElement, attrs: TA
       const attrName = value as string;
       const attrVal = attrs[++i];
       // Standard attributes
-      ngDevMode && ngDevMode.rendererSetAttribute++;
+      NG_DEV_MODE && NG_DEV_MODE.rendererSetAttribute++;
       if (isAnimationProp(attrName)) {
         if (isProc) {
           (renderer as ProceduralRenderer3).setProperty(native, attrName, attrVal);

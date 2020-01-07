@@ -8,6 +8,7 @@
 import {InjectFlags, InjectionToken, resolveForwardRef} from '../../di';
 import {ɵɵinject} from '../../di/injector_compatibility';
 import {Type} from '../../interface/type';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {getOrCreateInjectable, injectAttributeImpl} from '../di';
 import {TDirectiveHostNode, TNodeType} from '../interfaces/node';
 import {assertNodeOfPossibleTypes} from '../node_assert';
@@ -73,6 +74,6 @@ export function ɵɵinjectAttribute(attrNameToInject: string): string|null {
  */
 export function ɵɵinvalidFactory(): never {
   const msg =
-      ngDevMode ? `This constructor was not compatible with Dependency Injection.` : 'invalid';
+      NG_DEV_MODE ? `This constructor was not compatible with Dependency Injection.` : 'invalid';
   throw new Error(msg);
 }

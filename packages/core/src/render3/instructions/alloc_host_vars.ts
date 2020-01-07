@@ -7,6 +7,7 @@
  */
 
 import {assertEqual} from '../../util/assert';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {ComponentDef, DirectiveDef} from '../interfaces/definition';
 import {LView, TVIEW, TView} from '../interfaces/view';
 import {getCurrentDirectiveDef, getLView} from '../state';
@@ -33,7 +34,7 @@ export function ɵɵallocHostVars(count: number): void {
  */
 function queueHostBindingForCheck(
     tView: TView, def: DirectiveDef<any>| ComponentDef<any>, hostVars: number): void {
-  ngDevMode &&
+  NG_DEV_MODE &&
       assertEqual(tView.firstCreatePass, true, 'Should only be called in first create pass.');
   const expando = tView.expandoInstructions !;
   const length = expando.length;
@@ -55,7 +56,7 @@ function queueHostBindingForCheck(
  * Because we are updating the blueprint, we only need to do this once.
  */
 function prefillHostVars(tView: TView, lView: LView, totalHostVars: number): void {
-  ngDevMode &&
+  NG_DEV_MODE &&
       assertEqual(tView.firstCreatePass, true, 'Should only be called in first create pass.');
   for (let i = 0; i < totalHostVars; i++) {
     lView.push(NO_CHANGE);

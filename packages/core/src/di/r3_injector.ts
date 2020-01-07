@@ -5,9 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import '../util/ng_dev_mode';
-
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
 import {getFactoryDef} from '../render3/definition';
@@ -22,7 +19,7 @@ import {InjectorType, InjectorTypeWithProviders, getInheritedInjectableDef, getI
 import {InjectFlags} from './interface/injector';
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './interface/provider';
 import {INJECTOR_SCOPE} from './scope';
-
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 
 
 /**
@@ -269,7 +266,7 @@ export class R3Injector {
         (ngModule === undefined) ? (defOrWrappedDef as InjectorType<any>) : ngModule;
 
     // Check for circular dependencies.
-    if (ngDevMode && parents.indexOf(defType) !== -1) {
+    if (NG_DEV_MODE && parents.indexOf(defType) !== -1) {
       const defName = stringify(defType);
       throw new Error(
           `Circular dependency in DI detected for type ${defName}. Dependency path: ${parents.map(defType => stringify(defType)).join(' > ')} > ${defName}.`);
@@ -299,7 +296,7 @@ export class R3Injector {
     if (def.imports != null && !isDuplicate) {
       // Before processing defType's imports, add it to the set of parents. This way, if it ends
       // up deeply importing itself, this can be detected.
-      ngDevMode && parents.push(defType);
+      NG_DEV_MODE && parents.push(defType);
       // Add it to the set of dedups. This way we can detect multiple imports of the same module
       dedupStack.push(defType);
 
@@ -315,7 +312,7 @@ export class R3Injector {
         });
       } finally {
         // Remove it from the parents set when finished.
-        ngDevMode && parents.pop();
+        NG_DEV_MODE && parents.pop();
       }
 
       // Imports which are declared with providers (TypeWithProviders) need to be processed

@@ -17,6 +17,7 @@ import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgMo
 import {registerNgModuleType} from '../linker/ng_module_factory_registration';
 import {NgModuleDef} from '../metadata/ng_module';
 import {assertDefined} from '../util/assert';
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
 
 import {ComponentFactoryResolver} from './component_ref';
@@ -44,7 +45,7 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   constructor(ngModuleType: Type<T>, public _parent: Injector|null) {
     super();
     const ngModuleDef = getNgModuleDef(ngModuleType);
-    ngDevMode && assertDefined(
+    NG_DEV_MODE && assertDefined(
                      ngModuleDef,
                      `NgModule '${stringify(ngModuleType)}' is not a subtype of 'NgModuleType'.`);
 
@@ -79,14 +80,14 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   }
 
   destroy(): void {
-    ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
+    NG_DEV_MODE && assertDefined(this.destroyCbs, 'NgModule already destroyed');
     const injector = this._r3Injector;
     !injector.destroyed && injector.destroy();
     this.destroyCbs !.forEach(fn => fn());
     this.destroyCbs = null;
   }
   onDestroy(callback: () => void): void {
-    ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
+    NG_DEV_MODE && assertDefined(this.destroyCbs, 'NgModule already destroyed');
     this.destroyCbs !.push(callback);
   }
 }

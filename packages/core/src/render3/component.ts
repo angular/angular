@@ -11,7 +11,8 @@
 import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {Sanitizer} from '../sanitization/sanitizer';
-import {assertDataInRange} from '../util/assert';
+import {assertDataInRange} from '../util/assert';\
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 
 import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
@@ -108,8 +109,8 @@ export function renderComponent<T>(
         Type<T>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */
     ,
     opts: CreateComponentOptions = {}): T {
-  ngDevMode && publishDefaultGlobalUtils();
-  ngDevMode && assertComponentType(componentType);
+  NG_DEV_MODE && publishDefaultGlobalUtils();
+  NG_DEV_MODE && assertComponentType(componentType);
 
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
@@ -168,7 +169,7 @@ export function createRootComponentView(
     rNode: RElement | null, def: ComponentDef<any>, rootView: LView,
     rendererFactory: RendererFactory3, renderer: Renderer3, sanitizer?: Sanitizer | null): LView {
   const tView = rootView[TVIEW];
-  ngDevMode && assertDataInRange(rootView, 0 + HEADER_OFFSET);
+  NG_DEV_MODE && assertDataInRange(rootView, 0 + HEADER_OFFSET);
   rootView[0 + HEADER_OFFSET] = rNode;
   const tNode: TElementNode = getOrCreateTNode(tView, null, 0, TNodeType.Element, null, null);
   const componentView = createLView(

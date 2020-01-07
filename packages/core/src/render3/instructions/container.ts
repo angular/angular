@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {assertDataInRange, assertEqual} from '../../util/assert';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags, registerPostOrderHooks} from '../hooks';
@@ -48,8 +49,8 @@ function templateFirstCreatePass(
     index: number, tView: TView, lView: LView, templateFn: ComponentTemplate<any>| null,
     decls: number, vars: number, tagName?: string | null, attrsIndex?: number | null,
     localRefsIndex?: number | null): TContainerNode {
-  ngDevMode && assertFirstCreatePass(tView);
-  ngDevMode && ngDevMode.firstCreatePass++;
+  NG_DEV_MODE && assertFirstCreatePass(tView);
+  NG_DEV_MODE && NG_DEV_MODE.firstCreatePass++;
   const tViewConsts = tView.consts;
   // TODO(pk): refactor getOrCreateTNode to have the "create" only version
   const tNode = getOrCreateTNode(
@@ -107,7 +108,7 @@ export function ɵɵtemplate(
       tView.data[adjustedIndex] as TContainerNode;
   setPreviousOrParentTNode(tNode, false);
 
-  const comment = lView[RENDERER].createComment(ngDevMode ? 'container' : '');
+  const comment = lView[RENDERER].createComment(NG_DEV_MODE ? 'container' : '');
   appendChild(comment, tNode, lView);
   attachPatchData(comment, lView);
 
@@ -133,7 +134,7 @@ export function ɵɵcontainerRefreshStart(index: number): void {
   const lView = getLView();
   const tView = lView[TVIEW];
   let previousOrParentTNode = load(tView.data, index) as TNode;
-  ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Container);
+  NG_DEV_MODE && assertNodeType(previousOrParentTNode, TNodeType.Container);
   setPreviousOrParentTNode(previousOrParentTNode, true);
 
   lView[index + HEADER_OFFSET][ACTIVE_INDEX] = 0;
@@ -170,13 +171,13 @@ export function ɵɵcontainerRefreshEnd(): void {
   if (getIsParent()) {
     setIsNotParent();
   } else {
-    ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.View);
-    ngDevMode && assertHasParent(previousOrParentTNode);
+    NG_DEV_MODE && assertNodeType(previousOrParentTNode, TNodeType.View);
+    NG_DEV_MODE && assertHasParent(previousOrParentTNode);
     previousOrParentTNode = previousOrParentTNode.parent !;
     setPreviousOrParentTNode(previousOrParentTNode, false);
   }
 
-  ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Container);
+  NG_DEV_MODE && assertNodeType(previousOrParentTNode, TNodeType.Container);
 
   const lContainer: LContainer = getLView()[previousOrParentTNode.index];
   const nextIndex = getLContainerActiveIndex(lContainer);
@@ -190,15 +191,15 @@ export function ɵɵcontainerRefreshEnd(): void {
 function containerInternal(
     lView: LView, nodeIndex: number, tagName: string | null,
     attrs: TAttributes | null): TContainerNode {
-  ngDevMode && assertEqual(
+  NG_DEV_MODE && assertEqual(
                    getBindingIndex(), lView[TVIEW].bindingStartIndex,
                    'container nodes should be created before any bindings');
 
   const adjustedIndex = nodeIndex + HEADER_OFFSET;
-  ngDevMode && assertDataInRange(lView, nodeIndex + HEADER_OFFSET);
-  ngDevMode && ngDevMode.rendererCreateComment++;
+  NG_DEV_MODE && assertDataInRange(lView, nodeIndex + HEADER_OFFSET);
+  NG_DEV_MODE && NG_DEV_MODE.rendererCreateComment++;
   const comment = lView[adjustedIndex] =
-      lView[RENDERER].createComment(ngDevMode ? 'container' : '');
+      lView[RENDERER].createComment(NG_DEV_MODE ? 'container' : '');
   const tNode =
       getOrCreateTNode(lView[TVIEW], lView[T_HOST], nodeIndex, TNodeType.Container, tagName, attrs);
   const lContainer = lView[adjustedIndex] = createLContainer(comment, lView, comment, tNode);
@@ -210,6 +211,6 @@ function containerInternal(
   // because views can be removed and re-inserted.
   addToViewTree(lView, lContainer);
 
-  ngDevMode && assertNodeType(getPreviousOrParentTNode(), TNodeType.Container);
+  NG_DEV_MODE && assertNodeType(getPreviousOrParentTNode(), TNodeType.Container);
   return tNode;
 }

@@ -7,6 +7,7 @@
  */
 
 import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
@@ -28,7 +29,7 @@ import {registerInitialStylingOnTNode} from './styling';
 function elementStartFirstCreatePass(
     index: number, tView: TView, lView: LView, native: RElement, name: string,
     attrsIndex?: number | null, localRefsIndex?: number): TElementNode {
-  ngDevMode && ngDevMode.firstCreatePass++;
+  NG_DEV_MODE && NG_DEV_MODE.firstCreatePass++;
 
   const tViewConsts = tView.consts;
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
@@ -40,7 +41,7 @@ function elementStartFirstCreatePass(
 
   const hasDirectives =
       resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
-  ngDevMode && validateElement(lView, native, tNode, hasDirectives);
+  NG_DEV_MODE && validateElement(lView, native, tNode, hasDirectives);
 
   if (tView.queries !== null) {
     tView.queries.elementStart(tView, tNode);
@@ -69,11 +70,11 @@ export function ɵɵelementStart(
   const tView = lView[TVIEW];
   const adjustedIndex = HEADER_OFFSET + index;
 
-  ngDevMode && assertEqual(
+  NG_DEV_MODE && assertEqual(
                    getBindingIndex(), tView.bindingStartIndex,
                    'elements should be created before any bindings');
-  ngDevMode && ngDevMode.rendererCreateElement++;
-  ngDevMode && assertDataInRange(lView, adjustedIndex);
+  NG_DEV_MODE && NG_DEV_MODE.rendererCreateElement++;
+  NG_DEV_MODE && assertDataInRange(lView, adjustedIndex);
 
   const renderer = lView[RENDERER];
   const native = lView[adjustedIndex] = elementCreate(name, renderer, getNamespace());
@@ -118,17 +119,17 @@ export function ɵɵelementStart(
  */
 export function ɵɵelementEnd(): void {
   let previousOrParentTNode = getPreviousOrParentTNode();
-  ngDevMode && assertDefined(previousOrParentTNode, 'No parent node to close.');
+  NG_DEV_MODE && assertDefined(previousOrParentTNode, 'No parent node to close.');
   if (getIsParent()) {
     setIsNotParent();
   } else {
-    ngDevMode && assertHasParent(getPreviousOrParentTNode());
+    NG_DEV_MODE && assertHasParent(getPreviousOrParentTNode());
     previousOrParentTNode = previousOrParentTNode.parent !;
     setPreviousOrParentTNode(previousOrParentTNode, false);
   }
 
   const tNode = previousOrParentTNode;
-  ngDevMode && assertNodeType(tNode, TNodeType.Element);
+  NG_DEV_MODE && assertNodeType(tNode, TNodeType.Element);
 
   const lView = getLView();
   const tView = lView[TVIEW];

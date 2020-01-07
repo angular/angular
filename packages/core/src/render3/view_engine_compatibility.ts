@@ -17,6 +17,7 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_Vie
 import {Renderer2} from '../render/api';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertEqual, assertGreaterThan, assertLessThan} from '../util/assert';
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 
 import {assertLContainer} from './assert';
 import {NodeInjector, getParentInjectorLocation} from './di';
@@ -111,7 +112,7 @@ export function createTemplateRef<T>(
             embeddedTView.node);
 
         const declarationLContainer = this._declarationView[this._declarationTContainer.index];
-        ngDevMode && assertLContainer(declarationLContainer);
+        NG_DEV_MODE && assertLContainer(declarationLContainer);
         lView[DECLARATION_LCONTAINER] = declarationLContainer;
 
         const declarationViewLQueries = this._declarationView[QUERIES];
@@ -129,7 +130,7 @@ export function createTemplateRef<T>(
   }
 
   if (hostTNode.type === TNodeType.Container) {
-    ngDevMode && assertDefined(hostTNode.tViews, 'TView must be allocated');
+    NG_DEV_MODE && assertDefined(hostTNode.tViews, 'TView must be allocated');
     return new R3TemplateRef(
         hostView, hostTNode as TContainerNode,
         createElementRef(ElementRefToken, hostTNode, hostView));
@@ -261,7 +262,7 @@ export function createContainerRef(
             this.detach(prevIdx);
           } else {
             const prevLContainer = lView[PARENT] as LContainer;
-            ngDevMode && assertEqual(
+            NG_DEV_MODE && assertEqual(
                              isLContainer(prevLContainer), true,
                              'An attached view should have its PARENT point to a container.');
 
@@ -321,7 +322,7 @@ export function createContainerRef(
         if (index == null) {
           return this.length + shift;
         }
-        if (ngDevMode) {
+        if (NG_DEV_MODE) {
           assertGreaterThan(index, -1, `ViewRef index must be positive, got ${index}`);
           // +1 because it's legal to insert at the end.
           assertLessThan(index, this.length + 1 + shift, 'index');
@@ -337,7 +338,7 @@ export function createContainerRef(
     };
   }
 
-  ngDevMode && assertNodeOfPossibleTypes(
+  NG_DEV_MODE && assertNodeOfPossibleTypes(
                    hostTNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
 
   let lContainer: LContainer;
@@ -355,8 +356,8 @@ export function createContainerRef(
     if (hostTNode.type === TNodeType.ElementContainer) {
       commentNode = unwrapRNode(slotValue) as RComment;
     } else {
-      ngDevMode && ngDevMode.rendererCreateComment++;
-      commentNode = hostView[RENDERER].createComment(ngDevMode ? 'container' : '');
+      NG_DEV_MODE && NG_DEV_MODE.rendererCreateComment++;
+      commentNode = hostView[RENDERER].createComment(NG_DEV_MODE ? 'container' : '');
 
       // A `ViewContainerRef` can be injected by the root (topmost / bootstrapped) component. In
       // this case we can't use TView / TNode data structures to insert container's marker node

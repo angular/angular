@@ -20,6 +20,7 @@ import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {NgModuleType} from '../ng_module_ref';
 import {maybeUnwrapFn, stringifyForError} from '../util/misc_utils';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 
 import {angularCoreEnv} from './environment';
 
@@ -101,15 +102,15 @@ export function compileNgModule(moduleType: Type<any>, ngModule: NgModule = {}):
 export function compileNgModuleDefs(
     moduleType: NgModuleType, ngModule: NgModule,
     allowDuplicateDeclarationsInRoot: boolean = false): void {
-  ngDevMode && assertDefined(moduleType, 'Required value moduleType');
-  ngDevMode && assertDefined(ngModule, 'Required value ngModule');
+  NG_DEV_MODE && assertDefined(moduleType, 'Required value moduleType');
+  NG_DEV_MODE && assertDefined(ngModule, 'Required value ngModule');
   const declarations: Type<any>[] = flatten(ngModule.declarations || EMPTY_ARRAY);
   let ngModuleDef: any = null;
   Object.defineProperty(moduleType, NG_MOD_DEF, {
     configurable: true,
     get: () => {
       if (ngModuleDef === null) {
-        if (ngDevMode && ngModule.imports && ngModule.imports.indexOf(moduleType) > -1) {
+        if (NG_DEV_MODE && ngModule.imports && ngModule.imports.indexOf(moduleType) > -1) {
           // We need to assert this immediately, because allowing it to continue will cause it to
           // go into an infinite loop before we've reached the point where we throw all the errors.
           throw new Error(`'${stringifyForError(moduleType)}' module can't import itself`);
@@ -144,7 +145,7 @@ export function compileNgModuleDefs(
   Object.defineProperty(moduleType, NG_INJ_DEF, {
     get: () => {
       if (ngInjectorDef === null) {
-        ngDevMode && verifySemanticsOfNgModuleDef(
+        NG_DEV_MODE && verifySemanticsOfNgModuleDef(
                          moduleType as any as NgModuleType, allowDuplicateDeclarationsInRoot);
         const meta: R3InjectorMetadataFacade = {
           name: moduleType.name,
@@ -162,7 +163,7 @@ export function compileNgModuleDefs(
       return ngInjectorDef;
     },
     // Make the property configurable in dev mode to allow overriding in tests
-    configurable: !!ngDevMode,
+    configurable: !!NG_DEV_MODE,
   });
 }
 

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {assertDataInRange, assertGreaterThan} from '../../util/assert';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {executeCheckHooks, executeInitAndCheckHooks} from '../hooks';
 import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, TVIEW} from '../interfaces/view';
 import {ActiveElementFlags, executeElementExitFn, getCheckNoChangesMode, getLView, getSelectedIndex, hasActiveElementFlag, setSelectedIndex} from '../state';
@@ -36,7 +37,7 @@ import {ActiveElementFlags, executeElementExitFn, getCheckNoChangesMode, getLVie
   * @codeGenApi
   */
 export function ɵɵadvance(delta: number): void {
-  ngDevMode && assertGreaterThan(delta, 0, 'Can only advance forward');
+  NG_DEV_MODE && assertGreaterThan(delta, 0, 'Can only advance forward');
   selectIndexInternal(getLView(), getSelectedIndex() + delta, getCheckNoChangesMode());
 }
 
@@ -50,8 +51,8 @@ export function ɵɵselect(index: number): void {
 }
 
 export function selectIndexInternal(lView: LView, index: number, checkNoChangesMode: boolean) {
-  ngDevMode && assertGreaterThan(index, -1, 'Invalid index');
-  ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
+  NG_DEV_MODE && assertGreaterThan(index, -1, 'Invalid index');
+  NG_DEV_MODE && assertDataInRange(lView, index + HEADER_OFFSET);
 
   if (hasActiveElementFlag(ActiveElementFlags.RunExitFn)) {
     executeElementExitFn();

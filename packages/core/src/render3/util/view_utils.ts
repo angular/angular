@@ -90,10 +90,10 @@ export function getNativeByIndex(index: number, lView: LView): RNode {
  * @param lView
  */
 export function getNativeByTNode(tNode: TNode, lView: LView): RNode {
-  ngDevMode && assertTNodeForLView(tNode, lView);
-  ngDevMode && assertDataInRange(lView, tNode.index);
+  NG_DEV_MODE && assertTNodeForLView(tNode, lView);
+  NG_DEV_MODE && assertDataInRange(lView, tNode.index);
   const node: RNode = unwrapRNode(lView[tNode.index]);
-  ngDevMode && !isProceduralRenderer(lView[RENDERER]) && assertDomNode(node);
+  NG_DEV_MODE && !isProceduralRenderer(lView[RENDERER]) && assertDomNode(node);
   return node;
 }
 
@@ -108,9 +108,9 @@ export function getNativeByTNode(tNode: TNode, lView: LView): RNode {
 export function getNativeByTNodeOrNull(tNode: TNode, lView: LView): RNode|null {
   const index = tNode.index;
   if (index !== -1) {
-    ngDevMode && assertTNodeForLView(tNode, lView);
+    NG_DEV_MODE && assertTNodeForLView(tNode, lView);
     const node: RNode|null = unwrapRNode(lView[index]);
-    ngDevMode && node !== null && !isProceduralRenderer(lView[RENDERER]) && assertDomNode(node);
+    NG_DEV_MODE && node !== null && !isProceduralRenderer(lView[RENDERER]) && assertDomNode(node);
     return node;
   }
   return null;
@@ -118,20 +118,20 @@ export function getNativeByTNodeOrNull(tNode: TNode, lView: LView): RNode|null {
 
 
 export function getTNode(index: number, view: LView): TNode {
-  ngDevMode && assertGreaterThan(index, -1, 'wrong index for TNode');
-  ngDevMode && assertLessThan(index, view[TVIEW].data.length, 'wrong index for TNode');
+  NG_DEV_MODE && assertGreaterThan(index, -1, 'wrong index for TNode');
+  NG_DEV_MODE && assertLessThan(index, view[TVIEW].data.length, 'wrong index for TNode');
   return view[TVIEW].data[index + HEADER_OFFSET] as TNode;
 }
 
 /** Retrieves a value from any `LView` or `TData`. */
 export function load<T>(view: LView | TData, index: number): T {
-  ngDevMode && assertDataInRange(view, index + HEADER_OFFSET);
+  NG_DEV_MODE && assertDataInRange(view, index + HEADER_OFFSET);
   return view[index + HEADER_OFFSET];
 }
 
 export function getComponentLViewByIndex(nodeIndex: number, hostView: LView): LView {
   // Could be an LView or an LContainer. If LContainer, unwrap to find LView.
-  ngDevMode && assertDataInRange(hostView, nodeIndex);
+  NG_DEV_MODE && assertDataInRange(hostView, nodeIndex);
   const slotValue = hostView[nodeIndex];
   const lView = isLView(slotValue) ? slotValue : slotValue[HOST];
   return lView;
@@ -143,7 +143,7 @@ export function getComponentLViewByIndex(nodeIndex: number, hostView: LView): LV
  * a component, directive or a DOM node).
  */
 export function readPatchedData(target: any): LView|LContext|null {
-  ngDevMode && assertDefined(target, 'Target expected');
+  NG_DEV_MODE && assertDefined(target, 'Target expected');
   return target[MONKEY_PATCH_KEY_NAME] || null;
 }
 

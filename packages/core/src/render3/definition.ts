@@ -14,6 +14,7 @@ import {ViewEncapsulation} from '../metadata/view';
 import {noSideEffects} from '../util/closure';
 import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_LOC_ID_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
@@ -248,7 +249,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
 }): never {
   // Initialize ngDevMode. This must be the first statement in ɵɵdefineComponent.
   // See the `initNgDevMode` docstring for more information.
-  (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
+  (typeof NG_DEV_MODE === 'undefined' || NG_DEV_MODE) && initNgDevMode();
 
   const type = componentDefinition.type;
   const typePrototype = type.prototype;
@@ -325,7 +326,7 @@ export function ɵɵsetComponentScope(
 
 export function extractDirectiveDef(type: Type<any>): DirectiveDef<any>|ComponentDef<any> {
   const def = getComponentDef(type) || getDirectiveDef(type);
-  if (ngDevMode && !def) {
+  if (NG_DEV_MODE && !def) {
     throw new Error(`'${type.name}' is neither 'ComponentType' or 'DirectiveType'.`);
   }
   return def !;
@@ -333,7 +334,7 @@ export function extractDirectiveDef(type: Type<any>): DirectiveDef<any>|Componen
 
 export function extractPipeDef(type: Type<any>): PipeDef<any> {
   const def = getPipeDef(type);
-  if (ngDevMode && !def) {
+  if (NG_DEV_MODE && !def) {
     throw new Error(`'${type.name}' is not a 'PipeType'.`);
   }
   return def !;
@@ -664,7 +665,7 @@ export function getFactoryDef<T>(type: any, throwNotFound: true): FactoryFn<T>;
 export function getFactoryDef<T>(type: any): FactoryFn<T>|null;
 export function getFactoryDef<T>(type: any, throwNotFound?: boolean): FactoryFn<T>|null {
   const hasFactoryDef = type.hasOwnProperty(NG_FACTORY_DEF);
-  if (!hasFactoryDef && throwNotFound === true && ngDevMode) {
+  if (!hasFactoryDef && throwNotFound === true && NG_DEV_MODE) {
     throw new Error(`Type ${stringify(type)} does not have 'ɵfac' property.`);
   }
   return hasFactoryDef ? type[NG_FACTORY_DEF] : null;

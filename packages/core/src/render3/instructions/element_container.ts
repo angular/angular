@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {assertDataInRange, assertEqual} from '../../util/assert';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
@@ -23,7 +24,7 @@ import {registerInitialStylingOnTNode} from './styling';
 function elementContainerStartFirstCreatePass(
     index: number, tView: TView, lView: LView, attrsIndex?: number | null,
     localRefsIndex?: number): TElementContainerNode {
-  ngDevMode && ngDevMode.firstCreatePass++;
+  NG_DEV_MODE && NG_DEV_MODE.firstCreatePass++;
 
   const tViewConsts = tView.consts;
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
@@ -66,8 +67,8 @@ export function ɵɵelementContainerStart(
   const tView = lView[TVIEW];
   const adjustedIndex = index + HEADER_OFFSET;
 
-  ngDevMode && assertDataInRange(lView, adjustedIndex);
-  ngDevMode && assertEqual(
+  NG_DEV_MODE && assertDataInRange(lView, adjustedIndex);
+  NG_DEV_MODE && assertEqual(
                    getBindingIndex(), tView.bindingStartIndex,
                    'element containers should be created before any bindings');
 
@@ -76,9 +77,9 @@ export function ɵɵelementContainerStart(
       tView.data[adjustedIndex] as TElementContainerNode;
   setPreviousOrParentTNode(tNode, true);
 
-  ngDevMode && ngDevMode.rendererCreateComment++;
+  NG_DEV_MODE && NG_DEV_MODE.rendererCreateComment++;
   const native = lView[adjustedIndex] =
-      lView[RENDERER].createComment(ngDevMode ? 'ng-container' : '');
+      lView[RENDERER].createComment(NG_DEV_MODE ? 'ng-container' : '');
   appendChild(native, tNode, lView);
   attachPatchData(native, lView);
 
@@ -104,12 +105,12 @@ export function ɵɵelementContainerEnd(): void {
   if (getIsParent()) {
     setIsNotParent();
   } else {
-    ngDevMode && assertHasParent(previousOrParentTNode);
+    NG_DEV_MODE && assertHasParent(previousOrParentTNode);
     previousOrParentTNode = previousOrParentTNode.parent !;
     setPreviousOrParentTNode(previousOrParentTNode, false);
   }
 
-  ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.ElementContainer);
+  NG_DEV_MODE && assertNodeType(previousOrParentTNode, TNodeType.ElementContainer);
 
   if (tView.firstCreatePass) {
     registerPostOrderHooks(tView, previousOrParentTNode);

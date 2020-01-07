@@ -9,6 +9,7 @@
 import {AttributeMarker, ComponentTemplate} from '..';
 import {SchemaMetadata} from '../../core';
 import {assertDefined} from '../../util/assert';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
@@ -25,7 +26,7 @@ import {attachDebugObject} from '../util/debug_utils';
 import {isStylingContext} from '../util/styling_utils';
 import {getLContainerActiveIndex, getTNode, unwrapRNode} from '../util/view_utils';
 
-const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNgDevMode());
+const ngDevMode = ((typeof NG_DEV_MODE === 'undefined' || !!NG_DEV_MODE) && initNgDevMode());
 
 /*
  * This file contains conditionally attached classes which provide human readable (debug) level

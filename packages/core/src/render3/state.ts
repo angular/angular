@@ -8,6 +8,7 @@
 
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {assertDefined, assertEqual} from '../util/assert';
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 
 import {assertLViewOrUndefined} from './assert';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
@@ -333,7 +334,7 @@ export function setElementExitFn(fn: () => void): void {
   if (instructionState.elementExitFn === null) {
     instructionState.elementExitFn = fn;
   }
-  ngDevMode &&
+  NG_DEV_MODE &&
       assertEqual(instructionState.elementExitFn, fn, 'Expecting to always get the same function');
 }
 
@@ -488,12 +489,12 @@ export function setCurrentQueryIndex(value: number): void {
  * @param tNode
  */
 export function enterDI(newView: LView, tNode: TNode) {
-  ngDevMode && assertLViewOrUndefined(newView);
+  NG_DEV_MODE && assertLViewOrUndefined(newView);
   const newLFrame = allocLFrame();
   instructionState.lFrame = newLFrame;
   newLFrame.previousOrParentTNode = tNode !;
   newLFrame.lView = newView;
-  if (ngDevMode) {
+  if (NG_DEV_MODE) {
     // resetting for safety in dev mode only.
     newLFrame.isParent = DEV_MODE_VALUE;
     newLFrame.selectedIndex = DEV_MODE_VALUE;
@@ -531,7 +532,7 @@ export const leaveDI = leaveView;
  * @returns the previously active lView;
  */
 export function enterView(newView: LView, tNode: TNode | null): void {
-  ngDevMode && assertLViewOrUndefined(newView);
+  NG_DEV_MODE && assertLViewOrUndefined(newView);
   const newLFrame = allocLFrame();
   instructionState.lFrame = newLFrame;
   newLFrame.previousOrParentTNode = tNode !;
@@ -600,7 +601,7 @@ export function nextContextImpl<T = any>(level: number): T {
 
 function walkUpViews(nestingLevel: number, currentView: LView): LView {
   while (nestingLevel > 0) {
-    ngDevMode && assertDefined(
+    NG_DEV_MODE && assertDefined(
                      currentView[DECLARATION_VIEW],
                      'Declaration view should be defined if nesting level is greater than 0.');
     currentView = currentView[DECLARATION_VIEW] !;

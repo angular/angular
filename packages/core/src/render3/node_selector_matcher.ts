@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import '../util/ng_dev_mode';
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 
 import {assertDefined, assertNotEqual} from '../util/assert';
 
@@ -66,7 +66,7 @@ function hasTagAndTypeMatch(
  */
 export function isNodeMatchingSelector(
     tNode: TNode, selector: CssSelector, isProjectionMode: boolean): boolean {
-  ngDevMode && assertDefined(selector[0], 'Selector should have a tag name');
+  NG_DEV_MODE && assertDefined(selector[0], 'Selector should have a tag name');
   let mode: SelectorFlags = SelectorFlags.ELEMENT;
   const nodeAttrs = tNode.attrs || [];
 
@@ -132,7 +132,7 @@ export function isNodeMatchingSelector(
         if (attrIndexInNode > nameOnlyMarkerIdx) {
           nodeAttrValue = '';
         } else {
-          ngDevMode && assertNotEqual(
+          NG_DEV_MODE && assertNotEqual(
                            nodeAttrs[attrIndexInNode], AttributeMarker.NamespaceURI,
                            'We do not match directives on namespaced attributes');
           // we lowercase the attribute value to be able to match

@@ -8,6 +8,7 @@
 import '../util/ng_dev_mode';
 
 import {assertDomNode} from '../util/assert';
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 
 import {EMPTY_ARRAY} from './empty';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
@@ -96,7 +97,7 @@ export function getLContext(target: any): LContext|null {
     }
   } else {
     const rElement = target as RElement;
-    ngDevMode && assertDomNode(rElement);
+    NG_DEV_MODE && assertDomNode(rElement);
 
     // if the context is not found then we need to traverse upwards up the DOM
     // to find the nearest element that has already been monkey patched with data

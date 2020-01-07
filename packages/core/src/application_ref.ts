@@ -38,6 +38,8 @@ import {scheduleMicroTask} from './util/microtask';
 import {stringify} from './util/stringify';
 import {NgZone, NoopNgZone} from './zone/ng_zone';
 
+import {NG_DEV_MODE} from './util/ng_dev_mode';
+
 let _platform: PlatformRef;
 
 let compileNgModuleFactory:
@@ -55,7 +57,7 @@ function compileNgModuleFactory__PRE_R3__<M>(
 export function compileNgModuleFactory__POST_R3__<M>(
     injector: Injector, options: CompilerOptions,
     moduleType: Type<M>): Promise<NgModuleFactory<M>> {
-  ngDevMode && assertNgModuleType(moduleType);
+  NG_DEV_MODE && assertNgModuleType(moduleType);
   const moduleFactory = new R3NgModuleFactory(moduleType);
 
   if (isComponentResourceResolutionQueueEmpty()) {
@@ -87,7 +89,7 @@ export function compileNgModuleFactory__POST_R3__<M>(
 // included into Angular when PRE mode is active.
 export function publishDefaultGlobalUtils__PRE_R3__() {}
 export function publishDefaultGlobalUtils__POST_R3__() {
-  ngDevMode && _publishDefaultGlobalUtils();
+  NG_DEV_MODE && _publishDefaultGlobalUtils();
 }
 
 let publishDefaultGlobalUtils: () => any = publishDefaultGlobalUtils__PRE_R3__;

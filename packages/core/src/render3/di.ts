@@ -14,6 +14,7 @@ import {getInjectorDef} from '../di/interface/defs';
 import {InjectFlags} from '../di/interface/injector';
 import {Type} from '../interface/type';
 import {assertDefined, assertEqual} from '../util/assert';
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 
 import {assertDirectiveDef} from './assert';
 import {getFactoryDef} from './definition';
@@ -98,7 +99,7 @@ let nextNgElementId = 0;
  */
 export function bloomAdd(
     injectorIndex: number, tView: TView, type: Type<any>| InjectionToken<any>| string): void {
-  ngDevMode && assertEqual(tView.firstCreatePass, true, 'expected firstCreatePass to be true');
+  NG_DEV_MODE && assertEqual(tView.firstCreatePass, true, 'expected firstCreatePass to be true');
   let id: number|undefined =
       typeof type !== 'string' ? (type as any)[NG_ELEMENT_ID] : type.charCodeAt(0) || 0;
 
@@ -265,9 +266,9 @@ export function diPublicInInjector(
  * @publicApi
  */
 export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): string|null {
-  ngDevMode && assertNodeOfPossibleTypes(
+  NG_DEV_MODE && assertNodeOfPossibleTypes(
                    tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
-  ngDevMode && assertDefined(tNode, 'expecting tNode');
+  NG_DEV_MODE && assertDefined(tNode, 'expecting tNode');
   if (attrNameToInject === 'class') {
     return getInitialStylingValue(tNode.classes);
   }
@@ -552,7 +553,7 @@ export function getNodeInjectable(
       // if the index of the dependency is in the directive range for this
       // tNode. If it's not, we know it's a provider and skip hook registration.
       if (tView.firstCreatePass && index >= tNode.directiveStart) {
-        ngDevMode && assertDirectiveDef(tData[index]);
+        NG_DEV_MODE && assertDirectiveDef(tData[index]);
         registerPreOrderHooks(index, tData[index] as DirectiveDef<any>, tView);
       }
     } finally {
@@ -579,7 +580,7 @@ export function getNodeInjectable(
  */
 export function bloomHashBitOrFactory(token: Type<any>| InjectionToken<any>| string): number|
     Function|undefined {
-  ngDevMode && assertDefined(token, 'token must be defined');
+  NG_DEV_MODE && assertDefined(token, 'token must be defined');
   if (typeof token === 'string') {
     return token.charCodeAt(0) || 0;
   }

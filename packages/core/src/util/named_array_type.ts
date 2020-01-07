@@ -7,7 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './ng_dev_mode';
+import {NG_DEV_MODE} from './ng_dev_mode';
 
 /**
  * THIS FILE CONTAINS CODE WHICH SHOULD BE TREE SHAKEN AND NEVER CALLED FROM PRODUCTION CODE!!!
@@ -25,7 +25,7 @@ import './ng_dev_mode';
  */
 export function createNamedArrayType(name: string): typeof Array {
   // This should never be called in prod mode, so let's verify that is the case.
-  if (ngDevMode) {
+  if (NG_DEV_MODE) {
     try {
       // We need to do it this way so that TypeScript does not down-level the below code.
       const FunctionConstructor: any = createNamedArrayType.constructor;

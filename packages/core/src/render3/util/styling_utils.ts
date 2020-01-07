@@ -5,6 +5,7 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {unwrapSafeValue} from '../../sanitization/bypass';
 import {PropertyAliases, TNodeFlags} from '../interfaces/node';
 import {LStylingData, StylingMapArray, StylingMapArrayIndex, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags, TStylingNode} from '../interfaces/styling';
@@ -83,7 +84,7 @@ export function allowDirectStyling(
     // `ngDevMode` is required to be checked here because tests/debugging rely on the context being
     // populated. If things are in production mode then there is no need to build a context
     // therefore the direct apply can be allowed (even on the first update).
-    allow = ngDevMode ? !firstUpdatePass : true;
+    allow = NG_DEV_MODE ? !firstUpdatePass : true;
   } else if (!firstUpdatePass) {
     const duplicateStylingFlag =
         isClassBased ? TNodeFlags.hasDuplicateClassBindings : TNodeFlags.hasDuplicateStyleBindings;
@@ -257,7 +258,7 @@ export function getMapProp(map: StylingMapArray, index: number): string {
 }
 
 const MAP_DIRTY_VALUE =
-    typeof ngDevMode !== 'undefined' && ngDevMode ? {} : {MAP_DIRTY_VALUE: true};
+    typeof NG_DEV_MODE !== 'undefined' && NG_DEV_MODE ? {} : {MAP_DIRTY_VALUE: true};
 
 export function setMapAsDirty(map: StylingMapArray): void {
   map[StylingMapArrayIndex.RawValuePosition] = MAP_DIRTY_VALUE;

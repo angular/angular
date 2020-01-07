@@ -11,6 +11,7 @@ import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Pipe} from '../../metadata/directives';
 import {NG_FACTORY_DEF, NG_PIPE_DEF} from '../fields';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 
 import {angularCoreEnv} from './environment';
 
@@ -30,7 +31,7 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
       return ngFactoryDef;
     },
     // Make the property configurable in dev mode to allow overriding in tests
-    configurable: !!ngDevMode,
+    configurable: !!NG_DEV_MODE,
   });
 
   Object.defineProperty(type, NG_PIPE_DEF, {
@@ -43,7 +44,7 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
       return ngPipeDef;
     },
     // Make the property configurable in dev mode to allow overriding in tests
-    configurable: !!ngDevMode,
+    configurable: !!NG_DEV_MODE,
   });
 }
 

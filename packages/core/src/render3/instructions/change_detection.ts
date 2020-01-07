@@ -7,6 +7,7 @@
  */
 
 import {assertDefined} from '../../util/assert';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {getComponentViewByInstance} from '../context_discovery';
 import {CONTEXT, RootContext, RootContextFlags} from '../interfaces/view';
 import {getRootView} from '../util/view_traversal_utils';
@@ -47,10 +48,10 @@ export function detectChanges<T>(component: T): void {
  * @publicApi
  */
 export function markDirty<T>(component: T) {
-  ngDevMode && assertDefined(component, 'component');
+  NG_DEV_MODE && assertDefined(component, 'component');
   const rootView = markViewDirty(getComponentViewByInstance(component)) !;
 
-  ngDevMode && assertDefined(rootView[CONTEXT], 'rootContext should be defined');
+  NG_DEV_MODE && assertDefined(rootView[CONTEXT], 'rootContext should be defined');
   scheduleTick(rootView[CONTEXT] as RootContext, RootContextFlags.DetectChanges);
 }
 /**

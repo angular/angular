@@ -13,6 +13,7 @@ import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {addAllToArray} from '../util/array_utils';
 import {assertDataInRange, assertDefined, assertEqual} from '../util/assert';
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 
 import {bindingUpdated} from './bindings';
 import {attachPatchData} from './context_discovery';
@@ -217,7 +218,7 @@ function removeInnerTemplateTranslation(message: string): string {
     }
   }
 
-  ngDevMode &&
+  NG_DEV_MODE &&
       assertEqual(
           inTemplate, false,
           `Tag mismatch: unable to find the end of the sub-template in the translation "${message}"`);
@@ -362,7 +363,7 @@ const parentIndexStack: number[] = [];
 export function ɵɵi18nStart(index: number, message: string, subTemplateIndex?: number): void {
   const lView = getLView();
   const tView = lView[TVIEW];
-  ngDevMode && assertDefined(tView, `tView should be defined`);
+  NG_DEV_MODE && assertDefined(tView, `tView should be defined`);
   i18nIndexStack[++i18nIndexStackPointer] = index;
   // We need to delay projections until `i18nEnd`
   setDelayProjection(true);
@@ -434,7 +435,7 @@ function i18nStartFirstPass(
           // Create the comment node that will anchor the ICU expression
           const icuNodeIndex = startIndex + i18nVarsCount++;
           createOpCodes.push(
-              COMMENT_MARKER, ngDevMode ? `ICU ${icuNodeIndex}` : '', icuNodeIndex,
+              COMMENT_MARKER, NG_DEV_MODE ? `ICU ${icuNodeIndex}` : '', icuNodeIndex,
               parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
 
           // Update codes for the ICU expression
@@ -474,7 +475,7 @@ function i18nStartFirstPass(
     allocExpando(lView, i18nVarsCount);
   }
 
-  ngDevMode &&
+  NG_DEV_MODE &&
       attachI18nOpCodesDebug(
           createOpCodes, updateOpCodes, icuExpressions.length ? icuExpressions : null, lView);
 
@@ -491,7 +492,7 @@ function i18nStartFirstPass(
 
 function appendI18nNode(
     tNode: TNode, parentTNode: TNode, previousTNode: TNode | null, lView: LView): TNode {
-  ngDevMode && ngDevMode.rendererMoveNode++;
+  NG_DEV_MODE && NG_DEV_MODE.rendererMoveNode++;
   const nextNode = tNode.next;
   if (!previousTNode) {
     previousTNode = parentTNode;
@@ -658,7 +659,7 @@ export function ɵɵi18nPostprocess(
 export function ɵɵi18nEnd(): void {
   const lView = getLView();
   const tView = lView[TVIEW];
-  ngDevMode && assertDefined(tView, `tView should be defined`);
+  NG_DEV_MODE && assertDefined(tView, `tView should be defined`);
   i18nEndFirstPass(lView, tView);
   // Stop delaying projections
   setDelayProjection(false);
@@ -668,13 +669,13 @@ export function ɵɵi18nEnd(): void {
  * See `i18nEnd` above.
  */
 function i18nEndFirstPass(lView: LView, tView: TView) {
-  ngDevMode && assertEqual(
+  NG_DEV_MODE && assertEqual(
                    getBindingIndex(), tView.bindingStartIndex,
                    'i18nEnd should be called before any binding');
 
   const rootIndex = i18nIndexStack[i18nIndexStackPointer--];
   const tI18n = tView.data[rootIndex + HEADER_OFFSET] as TI18n;
-  ngDevMode && assertDefined(tI18n, `You should call i18nStart before i18nEnd`);
+  NG_DEV_MODE && assertDefined(tI18n, `You should call i18nStart before i18nEnd`);
 
   // Find the last node that was added before `i18nEnd`
   const lastCreatedNode = getPreviousOrParentTNode();
@@ -708,7 +709,7 @@ function createDynamicNodeAtIndex(
     lView: LView, index: number, type: TNodeType, native: RElement | RText | null,
     name: string | null): TElementNode|TIcuContainerNode {
   const previousOrParentTNode = getPreviousOrParentTNode();
-  ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
+  NG_DEV_MODE && assertDataInRange(lView, index + HEADER_OFFSET);
   lView[index + HEADER_OFFSET] = native;
   const tNode = getOrCreateTNode(lView[TVIEW], lView[T_HOST], index, type as any, name, null);
 
@@ -732,7 +733,7 @@ function readCreateOpCodes(
     if (typeof opCode == 'string') {
       const textRNode = createTextNode(opCode, renderer);
       const textNodeIndex = createOpCodes[++i] as number;
-      ngDevMode && ngDevMode.rendererCreateTextNode++;
+      NG_DEV_MODE && NG_DEV_MODE.rendererCreateTextNode++;
       previousTNode = currentTNode;
       currentTNode =
           createDynamicNodeAtIndex(lView, textNodeIndex, TNodeType.Element, textRNode, null);
@@ -750,7 +751,7 @@ function readCreateOpCodes(
           } else {
             destinationTNode = getTNode(destinationNodeIndex, lView);
           }
-          ngDevMode &&
+          NG_DEV_MODE &&
               assertDefined(
                   currentTNode !,
                   `You need to create or select a node before you can insert it into the DOM`);
@@ -786,11 +787,11 @@ function readCreateOpCodes(
         case COMMENT_MARKER:
           const commentValue = createOpCodes[++i] as string;
           const commentNodeIndex = createOpCodes[++i] as number;
-          ngDevMode && assertEqual(
+          NG_DEV_MODE && assertEqual(
                            typeof commentValue, 'string',
                            `Expected "${commentValue}" to be a comment node value`);
           const commentRNode = renderer.createComment(commentValue);
-          ngDevMode && ngDevMode.rendererCreateComment++;
+          NG_DEV_MODE && NG_DEV_MODE.rendererCreateComment++;
           previousTNode = currentTNode;
           currentTNode = createDynamicNodeAtIndex(
               lView, commentNodeIndex, TNodeType.IcuContainer, commentRNode, null);
@@ -803,11 +804,11 @@ function readCreateOpCodes(
         case ELEMENT_MARKER:
           const tagNameValue = createOpCodes[++i] as string;
           const elementNodeIndex = createOpCodes[++i] as number;
-          ngDevMode && assertEqual(
+          NG_DEV_MODE && assertEqual(
                            typeof tagNameValue, 'string',
                            `Expected "${tagNameValue}" to be an element node tag name`);
           const elementRNode = renderer.createElement(tagNameValue);
-          ngDevMode && ngDevMode.rendererCreateElement++;
+          NG_DEV_MODE && NG_DEV_MODE.rendererCreateElement++;
           previousTNode = currentTNode;
           currentTNode = createDynamicNodeAtIndex(
               lView, elementNodeIndex, TNodeType.Element, elementRNode, tagNameValue);
@@ -938,7 +939,7 @@ function removeNode(index: number, viewData: LView, markAsDetached: boolean) {
     // Define this node as detached to avoid projecting it later
     removedPhTNode.flags |= TNodeFlags.isDetached;
   }
-  ngDevMode && ngDevMode.rendererRemoveNode++;
+  NG_DEV_MODE && NG_DEV_MODE.rendererRemoveNode++;
 }
 
 /**
@@ -983,7 +984,7 @@ export function ɵɵi18n(index: number, message: string, subTemplateIndex?: numb
 export function ɵɵi18nAttributes(index: number, values: string[]): void {
   const lView = getLView();
   const tView = lView[TVIEW];
-  ngDevMode && assertDefined(tView, `tView should be defined`);
+  NG_DEV_MODE && assertDefined(tView, `tView should be defined`);
   i18nAttributesFirstPass(lView, tView, index, values);
 }
 
@@ -1024,7 +1025,7 @@ function i18nAttributesFirstPass(lView: LView, tView: TView, index: number, valu
           const dataValue = tNode.inputs !== null && tNode.inputs[attrName];
           if (dataValue) {
             setInputsForProperty(lView, dataValue, attrName, value);
-            if (ngDevMode) {
+            if (NG_DEV_MODE) {
               const element = getNativeByIndex(previousElementIndex, lView) as RElement | RComment;
               setNgReflectProperties(lView, element, tNode.type, dataValue, value);
             }
@@ -1073,7 +1074,7 @@ export function ɵɵi18nApply(index: number) {
   if (shiftsCounter) {
     const lView = getLView();
     const tView = lView[TVIEW];
-    ngDevMode && assertDefined(tView, `tView should be defined`);
+    NG_DEV_MODE && assertDefined(tView, `tView should be defined`);
     const tI18n = tView.data[index + HEADER_OFFSET];
     let updateOpCodes: I18nUpdateOpCodes;
     let icus: TIcu[]|null = null;
@@ -1248,7 +1249,7 @@ function parseNodes(
                         icuCase.update);
                   }
                 } else {
-                  ngDevMode &&
+                  NG_DEV_MODE &&
                       console.warn(
                           `WARNING: ignoring unsafe attribute value ${lowerAttrName} on element ${tagName} (see http://g.co/ng/security#xss)`);
                 }
@@ -1281,7 +1282,7 @@ function parseNodes(
           const match = NESTED_ICU.exec(currentNode.textContent || '');
           if (match) {
             const nestedIcuIndex = parseInt(match[1], 10);
-            const newLocal = ngDevMode ? `nested ICU ${nestedIcuIndex}` : '';
+            const newLocal = NG_DEV_MODE ? `nested ICU ${nestedIcuIndex}` : '';
             // Create the comment node that will anchor the ICU expression
             icuCase.create.push(
                 COMMENT_MARKER, newLocal, newIndex,

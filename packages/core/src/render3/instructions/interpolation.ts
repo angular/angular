@@ -7,6 +7,7 @@
  */
 
 import {assertEqual, assertLessThan} from '../../util/assert';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from '../bindings';
 import {LView} from '../interfaces/view';
 import {getBindingIndex, incrementBindingIndex, nextBindingIndex, setBindingIndex} from '../state';
@@ -28,8 +29,8 @@ import {renderStringify} from '../util/misc_utils';
  * Returns the concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
  */
 export function interpolationV(lView: LView, values: any[]): string|NO_CHANGE {
-  ngDevMode && assertLessThan(2, values.length, 'should have at least 3 values');
-  ngDevMode && assertEqual(values.length % 2, 1, 'should have an odd number of values');
+  NG_DEV_MODE && assertLessThan(2, values.length, 'should have at least 3 values');
+  NG_DEV_MODE && assertEqual(values.length % 2, 1, 'should have an odd number of values');
   let isBindingUpdated = false;
   let bindingIndex = getBindingIndex();
 

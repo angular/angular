@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {Injector} from '../../di/injector';
 import {assertLView} from '../assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from '../context_discovery';
@@ -110,7 +110,7 @@ export function getViewComponent<T = {}>(element: Element | {}): T|null {
 
   let lView = context.lView;
   let parent: LView|null;
-  ngDevMode && assertLView(lView);
+  NG_DEV_MODE && assertLView(lView);
   while (lView[HOST] === null && (parent = getLViewParent(lView) !)) {
     // As long as lView[HOST] is null we know we are part of sub-template such as `*ngIf`
     lView = parent;
@@ -203,7 +203,7 @@ export function loadLContext(target: {}, throwOnNotFound: boolean = true): LCont
   const context = getLContext(target);
   if (!context && throwOnNotFound) {
     throw new Error(
-        ngDevMode ? `Unable to find context associated with ${stringifyForError(target)}` :
+        NG_DEV_MODE ? `Unable to find context associated with ${stringifyForError(target)}` :
                     'Invalid ng target');
   }
   return context;
@@ -384,6 +384,6 @@ export function getComponentLView(target: any): LView {
   const nodeIndx = lContext.nodeIndex;
   const lView = lContext.lView;
   const componentLView = lView[nodeIndx];
-  ngDevMode && assertLView(componentLView);
+  NG_DEV_MODE && assertLView(componentLView);
   return componentLView;
 }

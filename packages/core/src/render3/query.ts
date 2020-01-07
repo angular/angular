@@ -15,6 +15,7 @@ import {QueryList} from '../linker/query_list';
 import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {assertDataInRange, assertDefined, throwError} from '../util/assert';
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
 
 import {assertFirstCreatePass, assertLContainer} from './assert';
@@ -89,7 +90,7 @@ class TQueries_ implements TQueries {
   constructor(private queries: TQuery[] = []) {}
 
   elementStart(tView: TView, tNode: TNode): void {
-    ngDevMode && assertFirstCreatePass(
+    NG_DEV_MODE && assertFirstCreatePass(
                      tView, 'Queries should collect results on the first template pass only');
     for (let i = 0; i < this.queries.length; i++) {
       this.queries[i].elementStart(tView, tNode);
@@ -121,7 +122,7 @@ class TQueries_ implements TQueries {
   }
 
   template(tView: TView, tNode: TNode): void {
-    ngDevMode && assertFirstCreatePass(
+    NG_DEV_MODE && assertFirstCreatePass(
                      tView, 'Queries should collect results on the first template pass only');
     for (let i = 0; i < this.queries.length; i++) {
       this.queries[i].template(tView, tNode);
@@ -129,7 +130,7 @@ class TQueries_ implements TQueries {
   }
 
   getByIndex(index: number): TQuery {
-    ngDevMode && assertDataInRange(this.queries, index);
+    NG_DEV_MODE && assertDataInRange(this.queries, index);
     return this.queries[index];
   }
 
@@ -291,13 +292,13 @@ function createSpecialToken(lView: LView, tNode: TNode, read: any): any {
   } else if (read === ViewEngine_TemplateRef) {
     return createTemplateRef(ViewEngine_TemplateRef, ViewEngine_ElementRef, tNode, lView);
   } else if (read === ViewContainerRef) {
-    ngDevMode && assertNodeOfPossibleTypes(
+    NG_DEV_MODE && assertNodeOfPossibleTypes(
                      tNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer);
     return createContainerRef(
         ViewContainerRef, ViewEngine_ElementRef,
         tNode as TElementNode | TContainerNode | TElementContainerNode, lView);
   } else {
-    ngDevMode &&
+    NG_DEV_MODE &&
         throwError(
             `Special token to read should be one of ElementRef, TemplateRef or ViewContainerRef but got ${stringify(read)}.`);
   }
@@ -322,7 +323,7 @@ function materializeViewResults<T>(lView: LView, tQuery: TQuery, queryIndex: num
         // null as a placeholder
         result.push(null);
       } else {
-        ngDevMode && assertDataInRange(tViewData, matchedNodeIdx);
+        NG_DEV_MODE && assertDataInRange(tViewData, matchedNodeIdx);
         const tNode = tViewData[matchedNodeIdx] as TNode;
         result.push(createResultForNode(lView, tNode, tQueryMatches[i + 1], tQuery.metadata.read));
       }
@@ -347,13 +348,13 @@ function collectQueryResults<T>(lView: LView, queryIndex: number, result: T[]): 
       const tNodeIdx = tQueryMatches[i];
       if (tNodeIdx > 0) {
         const viewResult = lViewResults[i / 2];
-        ngDevMode && assertDefined(viewResult, 'materialized query result should be defined');
+        NG_DEV_MODE && assertDefined(viewResult, 'materialized query result should be defined');
         result.push(viewResult as T);
       } else {
         const childQueryIndex = tQueryMatches[i + 1];
 
         const declarationLContainer = lView[-tNodeIdx] as LContainer;
-        ngDevMode && assertLContainer(declarationLContainer);
+        NG_DEV_MODE && assertLContainer(declarationLContainer);
 
         // collect matches for views inserted in this container
         for (let i = CONTAINER_HEADER_OFFSET; i < declarationLContainer.length; i++) {
@@ -509,9 +510,9 @@ export function ɵɵloadQuery<T>(): QueryList<T> {
 }
 
 function loadQueryInternal<T>(lView: LView, queryIndex: number): QueryList<T> {
-  ngDevMode &&
+  NG_DEV_MODE &&
       assertDefined(lView[QUERIES], 'LQueries should be defined when trying to load a query');
-  ngDevMode && assertDataInRange(lView[QUERIES] !.queries, queryIndex);
+  NG_DEV_MODE && assertDataInRange(lView[QUERIES] !.queries, queryIndex);
   return lView[QUERIES] !.queries[queryIndex].queryList;
 }
 
@@ -538,6 +539,6 @@ function saveContentQueryAndDirectiveIndex(tView: TView, directiveIndex: number)
 }
 
 function getTQuery(tView: TView, index: number): TQuery {
-  ngDevMode && assertDefined(tView.queries, 'TQueries must be defined to retrieve a TQuery');
+  NG_DEV_MODE && assertDefined(tView.queries, 'TQueries must be defined to retrieve a TQuery');
   return tView.queries !.getByIndex(index);
 }

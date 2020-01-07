@@ -8,6 +8,7 @@
 import {SafeValue, unwrapSafeValue} from '../../sanitization/bypass';
 import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
 import {global} from '../../util/global';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {TNodeFlags} from '../interfaces/node';
 import {ProceduralRenderer3, RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 import {ApplyStylingFn, LStylingData, StylingMapArray, StylingMapArrayIndex, StylingMapsSyncMode, SyncStylingMapsFn, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags, TStylingNode} from '../interfaces/styling';
@@ -420,7 +421,7 @@ export function flushStyling(
     classesContext: TStylingContext | null, stylesContext: TStylingContext | null,
     element: RElement, directiveIndex: number, styleSanitizer: StyleSanitizeFn | null,
     firstUpdatePass: boolean): void {
-  ngDevMode && ngDevMode.flushStyling++;
+  NG_DEV_MODE && NG_DEV_MODE.flushStyling++;
 
   const state = getStylingState(element, directiveIndex);
   const hostBindingsMode = isHostStylingActive(state.sourceIndex);
@@ -938,7 +939,7 @@ export const setStyle: ApplyStylingFn =
           // and these need to be converted into strings so that
           // they can be assigned properly.
           value = value.toString();
-          ngDevMode && ngDevMode.rendererSetStyle++;
+          NG_DEV_MODE && NG_DEV_MODE.rendererSetStyle++;
           if (isProceduralRenderer(renderer)) {
             renderer.setStyle(native, prop, value, RendererStyleFlags3.DashCase);
           } else {
@@ -952,7 +953,7 @@ export const setStyle: ApplyStylingFn =
             }
           }
         } else {
-          ngDevMode && ngDevMode.rendererRemoveStyle++;
+          NG_DEV_MODE && NG_DEV_MODE.rendererRemoveStyle++;
 
           if (isProceduralRenderer(renderer)) {
             renderer.removeStyle(native, prop, RendererStyleFlags3.DashCase);
@@ -973,7 +974,7 @@ export const setClass: ApplyStylingFn =
     (renderer: Renderer3 | null, native: RElement, className: string, value: any) => {
       if (renderer !== null && className !== '') {
         if (value) {
-          ngDevMode && ngDevMode.rendererAddClass++;
+          NG_DEV_MODE && NG_DEV_MODE.rendererAddClass++;
           if (isProceduralRenderer(renderer)) {
             renderer.addClass(native, className);
           } else {
@@ -987,7 +988,7 @@ export const setClass: ApplyStylingFn =
             }
           }
         } else {
-          ngDevMode && ngDevMode.rendererRemoveClass++;
+          NG_DEV_MODE && NG_DEV_MODE.rendererRemoveClass++;
           if (isProceduralRenderer(renderer)) {
             renderer.removeClass(native, className);
           } else {

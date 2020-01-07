@@ -7,6 +7,7 @@
  */
 
 import {assertDefined, assertEqual} from '../../util/assert';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {assertLContainerOrUndefined} from '../assert';
 import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {RenderFlags} from '../interfaces/definition';
@@ -38,7 +39,7 @@ export function ɵɵembeddedViewStart(viewBlockId: number, decls: number, vars: 
       previousOrParentTNode;
   const lContainer = lView[containerTNode.index] as LContainer;
 
-  ngDevMode && assertNodeType(containerTNode, TNodeType.Container);
+  NG_DEV_MODE && assertNodeType(containerTNode, TNodeType.Container);
   let viewToRender = scanForView(lContainer, getLContainerActiveIndex(lContainer), viewBlockId);
 
   if (viewToRender) {
@@ -82,10 +83,10 @@ export function ɵɵembeddedViewStart(viewBlockId: number, decls: number, vars: 
 function getOrCreateEmbeddedTView(
     viewIndex: number, decls: number, vars: number, parent: TContainerNode): TView {
   const tView = getLView()[TVIEW];
-  ngDevMode && assertNodeType(parent, TNodeType.Container);
+  NG_DEV_MODE && assertNodeType(parent, TNodeType.Container);
   const containerTViews = parent.tViews as TView[];
-  ngDevMode && assertDefined(containerTViews, 'TView expected');
-  ngDevMode && assertEqual(Array.isArray(containerTViews), true, 'TViews should be in an array');
+  NG_DEV_MODE && assertDefined(containerTViews, 'TView expected');
+  NG_DEV_MODE && assertEqual(Array.isArray(containerTViews), true, 'TViews should be in an array');
   if (viewIndex >= containerTViews.length || containerTViews[viewIndex] == null) {
     containerTViews[viewIndex] = createTView(
         TViewType.Embedded, viewIndex, null, decls, vars, tView.directiveRegistry,
@@ -138,7 +139,7 @@ export function ɵɵembeddedViewEnd(): void {
   refreshView(lView, tView, tView.template, context);  // update mode pass
 
   const lContainer = lView[PARENT] as LContainer;
-  ngDevMode && assertLContainerOrUndefined(lContainer);
+  NG_DEV_MODE && assertLContainerOrUndefined(lContainer);
   leaveViewProcessExit();
   setPreviousOrParentTNode(viewHost !, false);
 }

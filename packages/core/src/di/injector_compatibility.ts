@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import '../util/ng_dev_mode';
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 
 import {Type} from '../interface/type';
 import {getClosureSafeProperty} from '../util/property';
@@ -129,7 +128,7 @@ export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags = InjectF
  * @codeGenApi
  */
 export function ɵɵinvalidFactoryDep(index: number): never {
-  const msg = ngDevMode ?
+  const msg = NG_DEV_MODE ?
       `This constructor is not compatible with Angular Dependency Injection because its dependency at index ${index} of the parameter list is invalid.
 This can happen if the dependency type is a primitive like a string or if an ancestor of this class is missing an Angular decorator.
 

@@ -34,6 +34,7 @@ import {defaultScheduler} from './util/misc_utils';
 import {getTNode} from './util/view_utils';
 import {createElementRef} from './view_engine_compatibility';
 import {RootViewRef, ViewRef} from './view_ref';
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 
 export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolver {
   /**
@@ -42,7 +43,7 @@ export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolve
   constructor(private ngModule?: viewEngine_NgModuleRef<any>) { super(); }
 
   resolveComponentFactory<T>(component: Type<T>): viewEngine_ComponentFactory<T> {
-    ngDevMode && assertComponentType(component);
+    NG_DEV_MODE && assertComponentType(component);
     const componentDef = getComponentDef(component) !;
     return new ComponentFactory(componentDef, this.ngModule);
   }
@@ -151,7 +152,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const renderer = rendererFactory.createRenderer(hostRNode, this.componentDef);
 
     if (rootSelectorOrNode && hostRNode) {
-      ngDevMode && ngDevMode.rendererSetAttribute++;
+      NG_DEV_MODE && NG_DEV_MODE.rendererSetAttribute++;
       isProceduralRenderer(renderer) ?
           renderer.setAttribute(hostRNode, 'ng-version', VERSION.full) :
           hostRNode.setAttribute('ng-version', VERSION.full);

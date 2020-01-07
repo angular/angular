@@ -19,6 +19,7 @@ import {applyStylingMapDirectly, applyStylingValueDirectly, flushStyling, setCla
 import {activateStylingMapFeature} from '../styling/map_based_bindings';
 import {attachStylingDebugObject} from '../styling/styling_debug';
 import {NO_CHANGE} from '../tokens';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {renderStringify} from '../util/misc_utils';
 import {addItemToStylingMap, allocStylingMapArray, allocTStylingContext, allowDirectStyling, concatString, forceClassesAsString, forceStylesAsString, getInitialStylingValue, getStylingMapArray, getValue, hasClassInput, hasStyleInput, hasValueChanged, hasValueChangedUnwrapSafeValue, isHostStylingActive, isStylingContext, isStylingMapArray, isStylingValueDefined, normalizeIntoStylingMap, patchConfig, selectClassBasedInputName, setValue, stylingMapToString} from '../util/styling_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
@@ -112,10 +113,10 @@ export function stylePropInternal(
   const updated = stylingProp(
       tNode, firstUpdatePass, lView, bindingIndex, prop, resolveStylePropValue(value, suffix),
       false);
-  if (ngDevMode) {
-    ngDevMode.styleProp++;
+  if (NG_DEV_MODE) {
+    NG_DEV_MODE.styleProp++;
     if (updated) {
-      ngDevMode.stylePropCacheMiss++;
+      NG_DEV_MODE.stylePropCacheMiss++;
     }
   }
 }
@@ -155,10 +156,10 @@ export function ɵɵclassProp(className: string, value: boolean | null): typeof 
   }
 
   const updated = stylingProp(tNode, firstUpdatePass, lView, bindingIndex, className, value, true);
-  if (ngDevMode) {
-    ngDevMode.classProp++;
+  if (NG_DEV_MODE) {
+    NG_DEV_MODE.classProp++;
     if (updated) {
-      ngDevMode.classPropCacheMiss++;
+      NG_DEV_MODE.classPropCacheMiss++;
     }
   }
   return ɵɵclassProp;
@@ -188,7 +189,7 @@ function stylingProp(
   // therefore manage accessing and updating the new value in the lView directly.
   // For this reason, the checkNoChanges situation must also be handled here
   // as well.
-  if (ngDevMode && getCheckNoChangesMode()) {
+  if (NG_DEV_MODE && getCheckNoChangesMode()) {
     const oldValue = getValue(lView, bindingIndex);
     if (hasValueChangedUnwrapSafeValue(oldValue, value)) {
       const field = isClassBased ? `class.${prop}` : `style.${prop}`;
@@ -369,7 +370,7 @@ function stylingMap(
   // manage accessing and updating the new value in the lView directly.
   // For this reason, the checkNoChanges situation must also be handled here
   // as well.
-  if (ngDevMode && valueHasChanged && getCheckNoChangesMode()) {
+  if (NG_DEV_MODE && valueHasChanged && getCheckNoChangesMode()) {
     // check if the value is a StylingMapArray, in which case take the first value (which stores raw
     // value) from the array
     const previousValue =
@@ -413,10 +414,10 @@ function stylingMap(
     setElementExitFn(stylingApply);
   }
 
-  if (ngDevMode) {
-    isClassBased ? ngDevMode.classMap : ngDevMode.styleMap++;
+  if (NG_DEV_MODE) {
+    isClassBased ? NG_DEV_MODE.classMap : NG_DEV_MODE.styleMap++;
     if (valueHasChanged) {
-      isClassBased ? ngDevMode.classMapCacheMiss : ngDevMode.styleMapCacheMiss++;
+      isClassBased ? NG_DEV_MODE.classMapCacheMiss : NG_DEV_MODE.styleMapCacheMiss++;
     }
   }
 }
@@ -574,7 +575,7 @@ function getContext(tNode: TNode, isClassBased: boolean): TStylingContext {
   if (!isStylingContext(context)) {
     const hasDirectives = isDirectiveHost(tNode);
     context = allocTStylingContext(context as StylingMapArray | null, hasDirectives);
-    if (ngDevMode) {
+    if (NG_DEV_MODE) {
       attachStylingDebugObject(context as TStylingContext, tNode, isClassBased);
     }
 

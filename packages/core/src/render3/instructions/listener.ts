@@ -8,6 +8,7 @@
 
 
 import {assertDataInRange} from '../../util/assert';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {isObservable} from '../../util/lang';
 import {EMPTY_OBJ} from '../empty';
 import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
@@ -124,7 +125,7 @@ function listenerInternal(
   // register a listener and store its cleanup function on LView.
   const lCleanup = getCleanup(lView);
 
-  ngDevMode && assertNodeOfPossibleTypes(
+  NG_DEV_MODE && assertNodeOfPossibleTypes(
                    tNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer);
 
   let processOutputs = true;
@@ -177,7 +178,7 @@ function listenerInternal(
         // - or element reference (in all other cases)
         listenerFn = wrapListener(tNode, lView, listenerFn, false /** preventDefault */);
         const cleanupFn = renderer.listen(resolved.name || target, eventName, listenerFn);
-        ngDevMode && ngDevMode.rendererAddEventListener++;
+        NG_DEV_MODE && NG_DEV_MODE.rendererAddEventListener++;
 
         lCleanup.push(listenerFn, cleanupFn);
         tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, lCleanupIndex + 1);
@@ -186,7 +187,7 @@ function listenerInternal(
     } else {
       listenerFn = wrapListener(tNode, lView, listenerFn, true /** preventDefault */);
       target.addEventListener(eventName, listenerFn, useCapture);
-      ngDevMode && ngDevMode.rendererAddEventListener++;
+      NG_DEV_MODE && NG_DEV_MODE.rendererAddEventListener++;
 
       lCleanup.push(listenerFn);
       tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, useCapture);
@@ -201,12 +202,12 @@ function listenerInternal(
     if (propsLength) {
       for (let i = 0; i < propsLength; i += 2) {
         const index = props[i] as number;
-        ngDevMode && assertDataInRange(lView, index);
+        NG_DEV_MODE && assertDataInRange(lView, index);
         const minifiedName = props[i + 1];
         const directiveInstance = lView[index];
         const output = directiveInstance[minifiedName];
 
-        if (ngDevMode && !isObservable(output)) {
+        if (NG_DEV_MODE && !isObservable(output)) {
           throw new Error(
               `@Output ${minifiedName} not initialized in '${directiveInstance.constructor.name}'.`);
         }

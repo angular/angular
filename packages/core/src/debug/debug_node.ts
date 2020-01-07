@@ -234,7 +234,7 @@ class DebugNode__POST_R3__ implements DebugNode {
 
 class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugElement {
   constructor(nativeNode: Element) {
-    ngDevMode && assertDomNode(nativeNode);
+    NG_DEV_MODE && assertDomNode(nativeNode);
     super(nativeNode);
   }
 

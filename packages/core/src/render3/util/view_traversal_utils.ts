@@ -7,6 +7,7 @@
  */
 
 import {assertDefined} from '../../util/assert';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {assertLView} from '../assert';
 import {isLContainer, isLView} from '../interfaces/type_checks';
 import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, RootContext} from '../interfaces/view';
@@ -19,7 +20,7 @@ import {readPatchedLView} from './view_utils';
  * @param lView the lView whose parent to get
  */
 export function getLViewParent(lView: LView): LView|null {
-  ngDevMode && assertLView(lView);
+  NG_DEV_MODE && assertLView(lView);
   const parent = lView[PARENT];
   return isLContainer(parent) ? parent[PARENT] ! : parent;
 }
@@ -31,12 +32,12 @@ export function getLViewParent(lView: LView): LView|null {
  * @param componentOrLView any component or `LView`
  */
 export function getRootView(componentOrLView: LView | {}): LView {
-  ngDevMode && assertDefined(componentOrLView, 'component');
+  NG_DEV_MODE && assertDefined(componentOrLView, 'component');
   let lView = isLView(componentOrLView) ? componentOrLView : readPatchedLView(componentOrLView) !;
   while (lView && !(lView[FLAGS] & LViewFlags.IsRoot)) {
     lView = getLViewParent(lView) !;
   }
-  ngDevMode && assertLView(lView);
+  NG_DEV_MODE && assertLView(lView);
   return lView;
 }
 
@@ -49,7 +50,7 @@ export function getRootView(componentOrLView: LView | {}): LView {
  */
 export function getRootContext(viewOrComponent: LView | {}): RootContext {
   const rootView = getRootView(viewOrComponent);
-  ngDevMode &&
+  NG_DEV_MODE &&
       assertDefined(rootView[CONTEXT], 'RootView has no context. Perhaps it is disconnected?');
   return rootView[CONTEXT] as RootContext;
 }

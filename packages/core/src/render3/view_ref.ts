@@ -10,6 +10,7 @@ import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
@@ -305,7 +306,7 @@ export class RootViewRef<T> extends ViewRef<T> {
 function collectNativeNodes(
     lView: LView, tNode: TNode | null, result: any[], isProjection: boolean = false): any[] {
   while (tNode !== null) {
-    ngDevMode && assertNodeOfPossibleTypes(
+    NG_DEV_MODE && assertNodeOfPossibleTypes(
                      tNode, TNodeType.Element, TNodeType.Container, TNodeType.Projection,
                      TNodeType.ElementContainer, TNodeType.IcuContainer);
 

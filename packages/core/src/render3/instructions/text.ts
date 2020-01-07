@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {assertDataInRange, assertEqual} from '../../util/assert';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {TElementNode, TNodeType} from '../interfaces/node';
 import {HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {appendChild, createTextNode} from '../node_manipulation';
@@ -28,10 +29,10 @@ export function ɵɵtext(index: number, value: string = ''): void {
   const tView = lView[TVIEW];
   const adjustedIndex = index + HEADER_OFFSET;
 
-  ngDevMode && assertEqual(
+  NG_DEV_MODE && assertEqual(
                    getBindingIndex(), tView.bindingStartIndex,
                    'text nodes should be created before any bindings');
-  ngDevMode && assertDataInRange(lView, adjustedIndex);
+  NG_DEV_MODE && assertDataInRange(lView, adjustedIndex);
 
   const tNode = tView.firstCreatePass ?
       getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, null, null) :

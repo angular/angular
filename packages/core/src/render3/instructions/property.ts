@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {TVIEW} from '../interfaces/view';
@@ -38,7 +39,7 @@ export function ɵɵproperty<T>(
   if (bindingUpdated(lView, bindingIndex, value)) {
     const nodeIndex = getSelectedIndex();
     elementPropertyInternal(lView, nodeIndex, propName, value, sanitizer);
-    ngDevMode && storePropertyBindingMetadata(lView[TVIEW].data, nodeIndex, propName, bindingIndex);
+    NG_DEV_MODE && storePropertyBindingMetadata(lView[TVIEW].data, nodeIndex, propName, bindingIndex);
   }
   return ɵɵproperty;
 }

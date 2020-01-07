@@ -21,6 +21,7 @@ import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF} from '../fields';
 import {ComponentType} from '../interfaces/definition';
 import {stringifyForError} from '../util/misc_utils';
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 
 import {angularCoreEnv} from './environment';
 import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, transitiveScopesFor} from './module';
@@ -39,7 +40,7 @@ import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, tra
 export function compileComponent(type: Type<any>, metadata: Component): void {
   // Initialize ngDevMode. This must be the first statement in compileComponent.
   // See the `initNgDevMode` docstring for more information.
-  (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
+  (typeof NG_DEV_MODE === 'undefined' || NG_DEV_MODE) && initNgDevMode();
 
   let ngComponentDef: any = null;
 
@@ -108,7 +109,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
       return ngComponentDef;
     },
     // Make the property configurable in dev mode to allow overriding in tests
-    configurable: !!ngDevMode,
+    configurable: !!NG_DEV_MODE,
   });
 }
 
@@ -142,7 +143,7 @@ export function compileDirective(type: Type<any>, directive: Directive | null): 
       return ngDirectiveDef;
     },
     // Make the property configurable in dev mode to allow overriding in tests
-    configurable: !!ngDevMode,
+    configurable: !!NG_DEV_MODE,
   });
 }
 
@@ -175,7 +176,7 @@ function addDirectiveFactoryDef(type: Type<any>, metadata: Directive | Component
       return ngFactoryDef;
     },
     // Make the property configurable in dev mode to allow overriding in tests
-    configurable: !!ngDevMode,
+    configurable: !!NG_DEV_MODE,
   });
 }
 

@@ -7,6 +7,7 @@
  */
 
 import {assertEqual, assertNotEqual} from '../util/assert';
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 
 import {assertFirstCreatePass} from './assert';
 import {DirectiveDef} from './interfaces/definition';
@@ -30,7 +31,7 @@ import {getCheckNoChangesMode} from './state';
  */
 export function registerPreOrderHooks(
     directiveIndex: number, directiveDef: DirectiveDef<any>, tView: TView): void {
-  ngDevMode && assertFirstCreatePass(tView);
+  NG_DEV_MODE && assertFirstCreatePass(tView);
   const {onChanges, onInit, doCheck} = directiveDef;
 
   if (onChanges) {
@@ -67,7 +68,7 @@ export function registerPreOrderHooks(
  * @param tNode The TNode whose directives are to be searched for hooks to queue
  */
 export function registerPostOrderHooks(tView: TView, tNode: TNode): void {
-  ngDevMode && assertFirstCreatePass(tView);
+  NG_DEV_MODE && assertFirstCreatePass(tView);
   // It's necessary to loop through the directives at elementEnd() (rather than processing in
   // directiveCreate) so we can preserve the current hook order. Content, view, and destroy
   // hooks for projected components and directives must be called *before* their hosts.
@@ -151,7 +152,7 @@ export function executeCheckHooks(lView: LView, hooks: HookData, nodeIndex?: num
  */
 export function executeInitAndCheckHooks(
     lView: LView, hooks: HookData, initPhase: InitPhaseState, nodeIndex?: number | null) {
-  ngDevMode && assertNotEqual(
+  NG_DEV_MODE && assertNotEqual(
                    initPhase, InitPhaseState.InitPhaseCompleted,
                    'Init pre-order hooks should not be called more than once');
   if ((lView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase) {
@@ -160,7 +161,7 @@ export function executeInitAndCheckHooks(
 }
 
 export function incrementInitPhaseFlags(lView: LView, initPhase: InitPhaseState): void {
-  ngDevMode &&
+  NG_DEV_MODE &&
       assertNotEqual(
           initPhase, InitPhaseState.InitPhaseCompleted,
           'Init hooks phase should not be incremented after all init hooks have been run.');
@@ -189,7 +190,7 @@ export function incrementInitPhaseFlags(lView: LView, initPhase: InitPhaseState)
 function callHooks(
     currentView: LView, arr: HookData, initPhase: InitPhaseState,
     currentNodeIndex: number | null | undefined): void {
-  ngDevMode && assertEqual(
+  NG_DEV_MODE && assertEqual(
                    getCheckNoChangesMode(), false,
                    'Hooks should never be run in the check no changes mode.');
   const startIndex = currentNodeIndex !== undefined ?
