@@ -95,6 +95,9 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
     removeClass: className => this._switchElement.nativeElement.classList.remove(className),
     setNativeControlChecked: checked => this._checked = checked,
     setNativeControlDisabled: disabled => this._disabled = disabled,
+    setNativeControlAttr: (name, value) => {
+      this._inputElement.nativeElement.setAttribute(name, value);
+    }
   };
 
   /** Whether the slide toggle is currently focused. */
