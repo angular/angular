@@ -1,0 +1,17 @@
+@import '@material/textfield/variables';
+
+// Top spacing of the form-field outline. MDC does not have a variable for this
+// and just hard-codes it into their styles.
+$mat-form-field-outline-top-spacing: 12px;
+
+// Baseline based on the default height of the MDC text-field.
+$mat-form-field-baseline: $mdc-text-field-height / 2;
+
+// Infix stretches to fit the container, but naturally wants to be this wide. We set
+// this in order to have a a consistent natural size for the various types of controls
+// that can go in a form field.
+$mat-form-field-default-infix-width: 180px !default;
+
+// Minimum amount of space between start and end hints in the subscript. MDC does not
+// have built-in support for hints.
+$mat-form-field-hint-min-space: 1em !default;

@@ -1,0 +1,88 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
+load(
+    "//tools:defaults.bzl",
+    "ng_e2e_test_library",
+    "ng_module",
+    "ng_test_library",
+    "ng_web_test_suite",
+    "sass_library",
+)
+
+ng_module(
+    name = "mdc-input",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    assets = glob(["**/*.html"]),
+    module_name = "@angular/material-experimental/mdc-input",
+    deps = [
+        "//src/material-experimental/mdc-form-field",
+        "//src/material/core",
+        "//src/material/input",
+        "@npm//@angular/forms",
+        "@npm//@material/textfield",
+    ],
+)
+
+sass_library(
+    name = "mdc_input_scss_lib",
+    srcs = glob(["**/_*.scss"]),
+    deps = [
+        "//src/cdk/a11y:a11y_scss_lib",
+        "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
+    ],
+)
+
+###########
+# Testing
+###########
+
+ng_test_library(
+    name = "input_tests_lib",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
+    deps = [
+        ":mdc-input",
+        "//src/cdk/platform",
+        "//src/cdk/testing/private",
+        "//src/material-experimental/mdc-form-field",
+        "//src/material/core",
+        "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
+    ],
+)
+
+ng_web_test_suite(
+    name = "unit_tests",
+    static_files = [
+        "@npm//:node_modules/@material/textfield/dist/mdc.textfield.js",
+        "@npm//:node_modules/@material/line-ripple/dist/mdc.lineRipple.js",
+        "@npm//:node_modules/@material/notched-outline/dist/mdc.notchedOutline.js",
+        "@npm//:node_modules/@material/floating-label/dist/mdc.floatingLabel.js",
+    ],
+    deps = [
+        ":input_tests_lib",
+        "//src/material-experimental:mdc_require_config.js",
+    ],
+)
+
+ng_e2e_test_library(
+    name = "e2e_test_sources",
+    srcs = glob(["**/*.e2e.spec.ts"]),
+    deps = [
+        "//src/cdk/testing/private/e2e",
+    ],
+)
+
+e2e_test_suite(
+    name = "e2e_tests",
+    deps = [
+        ":e2e_test_sources",
+        "//src/cdk/testing/private/e2e",
+    ],
+)

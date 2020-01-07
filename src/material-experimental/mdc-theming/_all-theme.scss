@@ -9,6 +9,8 @@
 @import '../mdc-tabs/mdc-tabs';
 @import '../mdc-table/mdc-table';
 @import '../mdc-progress-bar/mdc-progress-bar';
+@import '../mdc-input/mdc-input';
+@import '../mdc-form-field/mdc-form-field';
 
 @mixin angular-material-theme-mdc($theme) {
   @include mat-button-theme-mdc($theme);
@@ -23,6 +25,8 @@
   @include mat-radio-theme-mdc($theme);
   @include mat-slide-toggle-theme-mdc($theme);
   @include mat-table-theme-mdc($theme);
+  @include mat-form-field-theme-mdc($theme);
+  @include mat-input-theme-mdc($theme);
   // TODO(andrewjs): Add this back when MDC syncs their slider code into Google-internal code
   // @include mat-slider-theme-mdc($theme);
   @include mat-tabs-theme-mdc($theme);

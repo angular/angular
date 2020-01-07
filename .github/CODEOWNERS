@@ -96,7 +96,9 @@
 /src/material-experimental/mdc-checkbox/**         @mmalerba
 /src/material-experimental/mdc-chips/**            @mmalerba
 /src/material-experimental/mdc-dialog/**           @devversion
+/src/material-experimental/mdc-form-field/**       @devversion @mmalerba
 /src/material-experimental/mdc-helpers/**          @mmalerba
+/src/material-experimental/mdc-input/**            @devversion @mmalerba
 /src/material-experimental/mdc-list/**             @mmalerba
 /src/material-experimental/mdc-menu/**             @crisbeto
 /src/material-experimental/mdc-select/**           @crisbeto
@@ -160,6 +162,7 @@
 /src/dev-app/mdc-card/**                           @mmalerba
 /src/dev-app/mdc-checkbox/**                       @mmalerba
 /src/dev-app/mdc-chips/**                          @mmalerba
+/src/dev-app/mdc-input/**                          @devversion @mmalerba
 /src/dev-app/mdc-menu/**                           @crisbeto
 /src/dev-app/mdc-progress-bar/**                   @crisbeto
 /src/dev-app/mdc-radio/**                          @mmalerba

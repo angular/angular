@@ -63,6 +63,7 @@ export const DEV_APP_ROUTES: Routes = [
     loadChildren: 'mdc-progress-bar/mdc-progress-bar-demo-module#MdcProgressBarDemoModule'
   },
   {path: 'mdc-chips', loadChildren: 'mdc-chips/mdc-chips-demo-module#MdcChipsDemoModule'},
+  {path: 'mdc-input', loadChildren: 'mdc-input/mdc-input-demo-module#MdcInputDemoModule'},
   {path: 'mdc-menu', loadChildren: 'mdc-menu/mdc-menu-demo-module#MdcMenuDemoModule'},
   {path: 'mdc-radio', loadChildren: 'mdc-radio/mdc-radio-demo-module#MdcRadioDemoModule'},
   {

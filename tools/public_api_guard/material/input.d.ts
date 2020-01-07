@@ -38,7 +38,7 @@ export declare class MatInput extends _MatInputMixinBase implements MatFormField
     _focusChanged(isFocused: boolean): void;
     protected _isBadInput(): boolean;
     protected _isNeverEmpty(): boolean;
-    protected _isTextarea(): boolean;
+    _isTextarea(): boolean;
     _onInput(): void;
     protected _validateType(): void;
     focus(options?: FocusOptions): void;

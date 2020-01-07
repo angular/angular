@@ -1,0 +1,36 @@
+@import 'form-field-sizing';
+@import '../mdc-helpers/mdc-helpers';
+
+@mixin _mat-form-field-bottom-line() {
+  // Bottom line for form-fields. MDC by default only has a bottom-line for inputs
+  // and textareas. This does not work for us because we support abstract form-field
+  // controls which might not render an input or textarea. Additionally, the default MDC
+  // bottom-line does only cover the width of the input, while we also want it to cover
+  // prefixes and suffixes.
+  .mat-mdc-form-field-bottom-line {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+  }
+}
+
+@mixin _mat-form-field-bottom-line-theme() {
+  // Sets the color of the bottom-line. Our custom bottom-line is based on the default
+  // MDC bottom-line that only works for inputs and textareas (hence we need a custom
+  // bottom-line that works for all type of form-field controls). To replicate the
+  // appearance of the default MDC bottom-line, we use the same theming variables.
+  .mat-mdc-form-field-bottom-line {
+    @include mdc-theme-prop(border-bottom-color, $mdc-text-field-bottom-line-idle);
+
+    .mdc-text-field--disabled & {
+      @include mdc-theme-prop(border-bottom-color, $mdc-text-field-disabled-border);
+    }
+
+    .mdc-text-field--invalid & {
+      @include mdc-theme-prop(border-bottom-color, $mdc-text-field-error);
+    }
+  }
+}

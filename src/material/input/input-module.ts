@@ -14,7 +14,6 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatTextareaAutosize} from './autosize';
 import {MatInput} from './input';
 
-
 @NgModule({
   declarations: [MatInput, MatTextareaAutosize],
   imports: [

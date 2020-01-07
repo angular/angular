@@ -121,7 +121,7 @@ var map = Object.assign({
   '@material/tab-bar': '@material/tab-bar/dist/mdc.tabBar.js',
   '@material/tab-indicator': '@material/tab-indicator/dist/mdc.tabIndicator.js',
   '@material/tab-scroller': '@material/tab-scroller/dist/mdc.tabScroller.js',
-  '@material/text-field': '@material/textfield/dist/mdc.textfield.js',
+  '@material/textfield': '@material/textfield/dist/mdc.textfield.js',
   '@material/top-app-bar': '@material/top-app-bar/dist/mdc.topAppBar.js'
 }, pathMapping);
 

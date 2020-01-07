@@ -1,0 +1,80 @@
+@import 'form-field-sizing';
+
+// Mixin that can be included to override the default MDC text-field
+// styles to fit our needs. See individual comments for context on why
+// certain MDC styles need to be modified.
+@mixin _mat-mdc-text-field-structure-overrides() {
+  // Always hide the asterisk displayed by MDC. This is necessary because MDC can only display
+  // the asterisk if the label is directly preceded by the input. MDC does this because it
+  // relies on CSS to figure out if the input/textarea is required. This does not apply for us
+  // because it's not guaranteed that the form control is an input/textarea. The required state
+  // is handled as part of the registered form-field control instance. The asterisk will be
+  // rendered conditionally through the floating label.
+  .mat-mdc-form-field .mdc-floating-label::after {
+    display: none;
+  }
+
+  .mat-mdc-input-element {
+    // By default, MDC limits the height of a form-field to the height of an input, and
+    // overwrites the height to "auto" if a textarea is used. As mentioned in the comment
+    // above for the floating label, we do not know what type of control is used, so we
+    // shift the fixed height to the actual input element and let the form-field adjust
+    // based on the needed height. This makes it work for both input and textarea.
+    height: $mdc-text-field-height;
+
+    // Unset the border set by MDC. We move the border (which serves as the Material Design
+    // text-field bottom line) into its own element. This is necessary because we want the
+    // bottom-line to span across the whole form-field (including prefixes and suffixes).
+    border: none;
+  }
+
+  // Root element of the mdc-text-field. As explained in the height overwrites above, MDC
+  // sets a default height on the text-field root element. This is not desired since we
+  // want the element to be able to expand as needed.
+  .mat-mdc-text-field-wrapper {
+    height: auto;
+    flex: auto;
+  }
+
+  // The default MDC text-field implementation does not support labels which always float.
+  // MDC only renders the placeholder if the input is focused. We extend this to show the
+  // placeholder if the form-field label is set to always float.
+  // TODO(devversion): consider getting a mixin or variables for this (currently not available).
+  // Stylelint no-prefixes rule disabled because MDC text-field only uses "::placeholder" too.
+  /* stylelint-disable-next-line material/no-prefixes */
+  .mat-mdc-form-field-label-always-float .mdc-text-field__input::placeholder {
+    transition-delay: 40ms;
+    transition-duration: 110ms;
+    opacity: 1;
+  }
+
+  // The additional nesting is a temporary until the notched-outline is decoupled from the
+  // floating label. See https://github.com/material-components/material-components-web/issues/5326
+  // TODO(devversion): Remove this workaround/nesting once the feature is available.
+  .mat-mdc-text-field-wrapper:not(.mdc-text-field--outlined) {
+    // Reset horizontal spacing of the input. This is necessary because we move the horizontal
+    // spacing to the form-field flex container. We do this because prefixes and suffixes should
+    // adjoin the actual control infix. The spacing is still needed for outline and fill
+    // appearances and should surround the prefixes, suffixes and infix. Note that we need
+    // increased specificity because MDC has high specificity for the default padding styles.
+    .mat-mdc-input-element {
+      padding: {
+        left: 0;
+        right: 0;
+      }
+    }
+
+    // We removed the horizontal inset on input elements, but need to re-add the spacing to
+    // the actual form-field flex container that contains the prefixes, suffixes and infix.
+    .mat-mdc-form-field-flex {
+      padding: 0 $mdc-text-field-input-padding;
+    }
+
+    // Since we moved the horizontal spacing from the input to the form-field flex container
+    // and the MDC floating label tries to account for the horizontal spacing, we need to reset
+    // the shifting since there is no padding the label needs to account for.
+    .mdc-floating-label {
+      left: 0;
+    }
+  }
+}

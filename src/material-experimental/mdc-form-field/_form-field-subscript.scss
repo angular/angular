@@ -1,0 +1,67 @@
+@import 'form-field-sizing';
+@import '../mdc-helpers/mdc-helpers';
+
+@mixin _mat-form-field-subscript() {
+  // Wrapper for the hints and error messages.
+  .mat-mdc-form-field-subscript-wrapper {
+    box-sizing: border-box;
+    width: 100%;
+    // prevents multi-line errors from overlapping the control.
+    overflow: hidden;
+  }
+
+  // Scale down icons in the subscript to be the same size as the text.
+  .mat-mdc-form-field-subscript-wrapper .mat-icon {
+    width: 1em;
+    height: 1em;
+    font-size: inherit;
+    vertical-align: baseline;
+  }
+
+  // Clears the floats on the hints. This is necessary for the hint animation to work.
+  .mat-mdc-form-field-hint-wrapper {
+    display: flex;
+  }
+
+  // Spacer used to make sure start and end hints have enough space between them.
+  .mat-mdc-form-field-hint-spacer {
+    flex: 1 0 $mat-form-field-hint-min-space;
+  }
+
+  // Single error message displayed beneath the form field underline.
+  .mat-mdc-form-field-error {
+    display: block;
+  }
+}
+
+@mixin _mat-form-field-subscript-theme() {
+  // MDC does not have built-in error treatment.
+  .mat-mdc-form-field-error {
+    @include mdc-theme-prop(color, $mdc-text-field-error);
+  }
+}
+
+@mixin _mat-form-field-subscript-typography($config) {
+  // The unit-less line-height from the font config.
+  $line-height: mat-line-height($config, input);
+  // The amount to scale the font for the subscript.
+  $subscript-font-scale: 0.75;
+  // Font size to use for the subscript text.
+  $subscript-font-size: $subscript-font-scale * 100%;
+  // The space between the bottom of the text-field area and the subscript. Mocks in the spec show
+  // half of the text size, but this margin is applied to an element with the subscript text font
+  // size, so we need to divide by the scale factor to make it half of the original text size.
+  $subscript-margin-top: 0.5em / $subscript-font-scale;
+  // The minimum height applied to the subscript to reserve space for subscript text. This is a
+  // combination of the subscript's margin and line-height, but we need to multiply by the
+  // subscript font scale factor since the subscript has a reduced font size.
+  $subscript-min-height: ($subscript-margin-top + $line-height) * $subscript-font-scale;
+
+  // The subscript wrapper has a minimum height to avoid that the form-field
+  // jumps when hints or errors are displayed.
+  .mat-mdc-form-field-subscript-wrapper {
+    min-height: $subscript-min-height;
+    font-size: $subscript-font-size;
+    margin-top: $subscript-margin-top;
+  }
+}

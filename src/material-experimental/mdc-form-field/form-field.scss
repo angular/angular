@@ -1,0 +1,45 @@
+// TODO(devversion): do not import all text-field styles. Use feature targeting once available.
+@import '@material/textfield/mdc-text-field';
+@import 'form-field-sizing';
+@import 'form-field-subscript';
+@import 'form-field-bottom-line';
+@import 'mdc-text-field-textarea-overrides';
+@import 'mdc-text-field-structure-overrides';
+
+// MDC text-field overwrites.
+@include _mat-mdc-text-field-textarea-overrides();
+@include _mat-mdc-text-field-structure-overrides();
+
+// Include the subscript and bottom-line styles.
+@include _mat-form-field-subscript();
+@include _mat-form-field-bottom-line();
+
+// Host element of the form-field. It contains the mdc-text-field wrapper
+// and the subscript wrapper.
+.mat-mdc-form-field {
+  display: inline-flex;
+  // this container contains the text-field and the subscript. The subscript
+  // should be displayed below the text-field. Hence the column direction.
+  flex-direction: column;
+  vertical-align: middle;
+}
+
+// Container that contains the prefixes, infix and suffixes. These elements should
+// be aligned vertically in the baseline and in a single row.
+.mat-mdc-form-field-flex {
+  display: inline-flex;
+  align-items: baseline;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+// Infix that contains the projected content (usually an input or a textarea). We ensure
+// that the projected form-field control and content can stretch as needed, but we also
+// apply a default infix width to make the form-field's look natural.
+.mat-mdc-form-field-infix {
+  flex: auto;
+  min-width: 0;
+  width: $mat-form-field-default-infix-width;
+  // Needed so that the floating label does not overlap with prefixes or suffixes.
+  position: relative;
+}

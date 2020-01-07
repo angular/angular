@@ -31,7 +31,7 @@ require.config({
     '@material/tab-indicator': '/base/npm/node_modules/@material/tab-indicator/dist/mdc.tabIndicator',
     '@material/tab-scroller': '/base/npm/node_modules/@material/tab-scroller/dist/mdc.tabScroller',
     '@material/data-table': '/base/npm/node_modules/@material/data-table/dist/mdc.dataTable',
-    '@material/text-field': '/base/npm/node_modules/@material/textfield/dist/mdc.textField',
+    '@material/textfield': '/base/npm/node_modules/@material/textfield/dist/mdc.textfield',
     '@material/top-app-bar': '/base/npm/node_modules/@material/top-app-bar/dist/mdc.topAppBar',
   }
 });

@@ -1,0 +1,51 @@
+@import 'form-field-sizing';
+
+// MDCs default textarea styles cannot be used because they only apply if a special
+// class is applied to the "mdc-text-field" wrapper. Since we cannot know whether the
+// registered form-field control is a textarea and MDC by default does not have styles
+// for textareas in the fill appearance, we add our own minimal textarea styles
+// which are scoped to the actual textarea element (i.e. not require a class in the
+// text-field wrapper) and integrate better with the any configured appearance.
+
+// Mixin that can be included to override the default MDC text-field styles
+// to properly support textareas.
+@mixin _mat-mdc-text-field-textarea-overrides() {
+  // Ensures that textarea elements inside of the form-field have proper vertical spacing
+  // to account for the floating label. Also ensures that there is no vertical text overflow.
+  // TODO(devversion): remove extra specificity if we removed the ":not(outline-appearance)"
+  // selector from the structure overwrites. Blocked on material-components-web#5326.
+  .mat-mdc-form-field > .mat-mdc-text-field-wrapper .mat-mdc-form-field-infix
+  .mat-mdc-textarea-input {
+    resize: vertical;
+    box-sizing: border-box;
+    height: auto;
+    // Using padding for textareas causes a bad user experience because the text outside
+    // of the text box will overflow vertically. In order to avoid this overflow where small
+    // parts of the previous/followed lines are visible, we use margin for vertical spacing.
+    margin: $mat-form-field-baseline 0 $mdc-text-field-input-padding-bottom;
+    padding: 0;
+    border: none;
+  }
+
+  // By default, MDC aligns the label using percentage. This will be overwritten based
+  // on whether a textarea is used. This is not possible in our implementation of the
+  // form-field because we do not know what type of form-field control is set up. Hence
+  // we always use a fixed position for the label. This does not have any implications.
+  .mat-mdc-text-field-wrapper .mdc-floating-label {
+    top: $mat-form-field-baseline;
+  }
+
+  // In the outline appearance, the textarea needs slightly reduced top spacing because
+  // the label overflows the outline by 50%. Additionally, horizontal spacing needs to be
+  // added since the outline is part of the "infix" and we need to account for the outline.
+  // TODO(devversion): horizontal spacing and extra specificity can be removed once the
+  // following feature is available: material-components-web#5326.
+  .mat-mdc-form-field > .mat-mdc-text-field-wrapper.mdc-text-field--outlined
+  .mat-mdc-form-field-infix .mat-mdc-textarea-input {
+    margin-top: $mat-form-field-outline-top-spacing;
+    padding: {
+      left: $mdc-text-field-input-padding;
+      right: $mdc-text-field-input-padding;
+    }
+  }
+}

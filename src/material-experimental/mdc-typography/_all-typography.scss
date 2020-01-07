@@ -10,6 +10,8 @@
 @import '../mdc-tabs/mdc-tabs';
 @import '../mdc-table/mdc-table';
 @import '../mdc-progress-bar/mdc-progress-bar';
+@import '../mdc-input/mdc-input';
+@import '../mdc-form-field/mdc-form-field';
 
 @mixin angular-material-typography-mdc($config: null) {
   @if $config == null {
@@ -30,4 +32,6 @@
   @include mat-tabs-typography-mdc($config);
   @include mat-table-typography-mdc($config);
   @include mat-progress-bar-typography-mdc($config);
+  @include mat-input-typography-mdc($config);
+  @include mat-form-field-typography-mdc($config);
 }

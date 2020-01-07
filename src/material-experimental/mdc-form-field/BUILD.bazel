@@ -1,0 +1,108 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
+load(
+    "//tools:defaults.bzl",
+    "ng_e2e_test_library",
+    "ng_module",
+    "sass_binary",
+    "sass_library",
+)
+
+ng_module(
+    name = "mdc-form-field",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    assets = [":form_field_scss"] + glob(["**/*.html"]),
+    module_name = "@angular/material-experimental/mdc-form-field",
+    deps = [
+        "//src/cdk/observers",
+        "//src/material/core",
+        "//src/material/form-field",
+        "@npm//@angular/forms",
+        "@npm//@material/floating-label",
+        "@npm//@material/line-ripple",
+        "@npm//@material/textfield",
+        "@npm//rxjs",
+    ],
+)
+
+sass_library(
+    name = "mdc_form_field_scss_lib",
+    srcs = ["_mdc-form-field.scss"],
+    deps = [
+        ":form_field_partials",
+        "//src/cdk/a11y:a11y_scss_lib",
+        "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
+    ],
+)
+
+sass_binary(
+    name = "form_field_scss",
+    src = "form-field.scss",
+    include_paths = [
+        "external/npm/node_modules",
+    ],
+    deps = [
+        ":form_field_partials",
+        ":mdc_form_field_scss",
+        "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
+        "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+    ],
+)
+
+# TODO(devversion): Import all of the individual Sass mixins once feature targeting is available
+# for MDC text-field, notched-outline, floating-label and line-ripple.
+sass_library(
+    name = "mdc_form_field_scss",
+    srcs = [
+        "@npm//:node_modules/@material/floating-label/mdc-floating-label.scss",
+        "@npm//:node_modules/@material/line-ripple/mdc-line-ripple.scss",
+        "@npm//:node_modules/@material/notched-outline/mdc-notched-outline.scss",
+        "@npm//:node_modules/@material/ripple/common.scss",
+        "@npm//:node_modules/@material/textfield/_functions.scss",
+        "@npm//:node_modules/@material/textfield/character-counter/mdc-text-field-character-counter.scss",
+        "@npm//:node_modules/@material/textfield/helper-text/mdc-text-field-helper-text.scss",
+        "@npm//:node_modules/@material/textfield/icon/mdc-text-field-icon.scss",
+        "@npm//:node_modules/@material/textfield/mdc-text-field.scss",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+    ],
+)
+
+sass_library(
+    name = "form_field_partials",
+    srcs = [
+        "_form-field-bottom-line.scss",
+        "_form-field-sizing.scss",
+        "_form-field-subscript.scss",
+        "_mdc-text-field-structure-overrides.scss",
+        "_mdc-text-field-textarea-overrides.scss",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+    ],
+)
+
+###########
+# Testing
+###########
+
+ng_e2e_test_library(
+    name = "e2e_test_sources",
+    srcs = glob(["**/*.e2e.spec.ts"]),
+    deps = [
+        "//src/cdk/testing/private/e2e",
+    ],
+)
+
+e2e_test_suite(
+    name = "e2e_tests",
+    deps = [
+        ":e2e_test_sources",
+        "//src/cdk/testing/private/e2e",
+    ],
+)

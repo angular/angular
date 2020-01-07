@@ -1,0 +1,45 @@
+@import '../../cdk/text-field/text-field';
+
+.demo-basic {
+  padding: 0;
+}
+
+.demo-basic .mat-card-content {
+  padding: 16px;
+}
+
+.demo-horizontal-spacing {
+  margin: 0 12px;
+}
+
+.demo-full-width {
+  width: 100%;
+}
+
+.demo-card {
+  margin: 16px;
+
+  mat-card-content {
+    font-size: 16px;
+  }
+}
+
+.demo-text-align-end {
+  text-align: end;
+}
+
+.demo-textarea {
+  resize: none;
+  border: none;
+  overflow: auto;
+  padding: 0;
+  background: lightblue;
+}
+
+.demo-custom-autofill-style {
+  @include cdk-text-field-autofill-color(transparent, red);
+}
+
+.demo-rows {
+  width: 30px;
+}

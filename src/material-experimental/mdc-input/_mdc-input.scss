@@ -1,0 +1,9 @@
+@import '../mdc-helpers/mdc-helpers';
+
+@mixin mat-input-theme-mdc($theme) {
+  @include mat-using-mdc-theme($theme) {}
+}
+
+@mixin mat-input-typography-mdc($config) {
+  @include mat-using-mdc-typography($config) {}
+}

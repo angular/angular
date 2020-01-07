@@ -1,0 +1,17 @@
+@import '@material/textfield/variables';
+@import '../mdc-helpers/mdc-helpers';
+@import 'form-field-subscript';
+@import 'form-field-bottom-line';
+
+@mixin mat-form-field-theme-mdc($theme) {
+  @include mat-using-mdc-theme($theme) {
+    @include _mat-form-field-subscript-theme();
+    @include _mat-form-field-bottom-line-theme();
+  }
+}
+
+@mixin mat-form-field-typography-mdc($config) {
+  @include mat-using-mdc-typography($config) {
+    @include _mat-form-field-subscript-typography($config);
+  }
+}

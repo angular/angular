@@ -1,0 +1,34 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
+
+ng_module(
+    name = "mdc-input",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        ":mdc_input_demo_scss",
+        "mdc-input-demo.html",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-form-field",
+        "//src/material-experimental/mdc-input",
+        "//src/material/autocomplete",
+        "//src/material/button",
+        "//src/material/button-toggle",
+        "//src/material/card",
+        "//src/material/checkbox",
+        "//src/material/icon",
+        "//src/material/tabs",
+        "//src/material/toolbar",
+        "@npm//@angular/forms",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "mdc_input_demo_scss",
+    src = "mdc-input-demo.scss",
+    deps = [
+        "//src/cdk/text-field:text_field_scss_lib",
+    ],
+)

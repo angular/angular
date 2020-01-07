@@ -36,7 +36,7 @@ System.config({
     '@material/tab-bar': 'node:@material/tab-bar/dist/mdc.tabBar.js',
     '@material/tab-indicator': 'node:@material/tab-indicator/dist/mdc.tabIndicator.js',
     '@material/tab-scroller': 'node:@material/tab-scroller/dist/mdc.tabScroller.js',
-    '@material/text-field': 'node:@material/textfield/dist/mdc.textField.js',
+    '@material/textfield': 'node:@material/textfield/dist/mdc.textfield.js',
     '@material/top-app-bar': 'node:@material/top-app-bar/dist/mdc.topAppBar.js',
 
     // Angular specific mappings.
@@ -198,8 +198,12 @@ System.config({
         'dist/packages/material-experimental/mdc-checkbox/index.js',
     '@angular/material-experimental/mdc-chips':
         'dist/packages/material-experimental/mdc-chips/index.js',
+    '@angular/material-experimental/mdc-form-field':
+      'dist/packages/material-experimental/mdc-form-field/index.js',
     '@angular/material-experimental/mdc-helpers':
         'dist/packages/material-experimental/mdc-helpers/index.js',
+    '@angular/material-experimental/mdc-input':
+        'dist/packages/material-experimental/mdc-input/index.js',
     '@angular/material-experimental/mdc-list':
         'dist/packages/material-experimental/mdc-list/index.js',
     '@angular/material-experimental/mdc-menu':
