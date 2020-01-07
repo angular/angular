@@ -145,7 +145,10 @@ export class TestComponent {
   @Output('test') testEvent = new EventEmitter();
 } /*EndTestComponent*/
 
-@Component({templateUrl: 'test.ng', animations: [trigger('openClose')]})
+@Component({
+  templateUrl: 'test.ng',
+  animations: [trigger('openClose')],
+})
 export class TemplateReference {
   title = 'Some title';
   hero: Hero = {id: 1, name: 'Windstorm'};

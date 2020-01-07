@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, TemplateBinding, Text, getHtmlTagDefinition} from '@angular/compiler';
+import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyBindingType, PropertyRead, TagContentType, TemplateBinding, Text, getHtmlTagDefinition} from '@angular/compiler';
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {AstResult} from './common';
@@ -74,7 +74,7 @@ enum ATTR {
 
 // packages/compiler/src/template_parser/binding_parser.ts#L25
 const ANIMATE_PROP_PREFIX = 'animate-';
-const SECOND_ANIMATE_PROP_PREFIX = '@';
+const AT_ANIMATE_PROP_PREFIX = '@';
 
 function isIdentifierPart(code: number) {
   // Identifiers consist of alphanumeric characters, '_', or '$'.
@@ -246,22 +246,16 @@ function attributeCompletions(
   if (!bindParts) {
     // If bindParts is null then this must be a TemplateRef.
     results.push(...ngAttrs.templateRefs);
-  } else if (bindParts[ATTR.KW_BIND_IDX] !== undefined) {
+  } else if (
+      bindParts[ATTR.KW_BIND_IDX] !== undefined ||
+      bindParts[ATTR.IDENT_PROPERTY_IDX] !== undefined) {
+    const name = bindParts[ATTR.IDENT_KW_IDX] || bindParts[ATTR.IDENT_PROPERTY_IDX] || '';
     results.push(...propertyBindingCompletions(
-        bindParts[ATTR.KW_BIND_IDX], info, position, attr.sourceSpan.start.offset + 5, elem,
-        ngAttrs));
-  } else if (bindParts[ATTR.IDENT_PROPERTY_IDX] !== undefined) {
-    results.push(...propertyBindingCompletions(
-        bindParts[ATTR.IDENT_PROPERTY_IDX], info, position, attr.sourceSpan.start.offset + 1, elem,
-        ngAttrs));
-  } else if (bindParts[ATTR.KW_ON_IDX] !== undefined) {
-    results.push(...eventBindingCompletions(
-        bindParts[ATTR.KW_ON_IDX], info, position, attr.sourceSpan.start.offset + 3, elem,
-        ngAttrs));
-  } else if (bindParts[ATTR.IDENT_EVENT_IDX] !== undefined) {
-    results.push(...eventBindingCompletions(
-        bindParts[ATTR.IDENT_EVENT_IDX], info, position, attr.sourceSpan.start.offset + 1, elem,
-        ngAttrs));
+        info, position, parsePropertyBinding(name, attr), elem, ngAttrs));
+  } else if (
+      bindParts[ATTR.KW_ON_IDX] !== undefined || bindParts[ATTR.IDENT_EVENT_IDX] !== undefined) {
+    const name = bindParts[ATTR.IDENT_KW_IDX] || bindParts[ATTR.IDENT_EVENT_IDX] || '';
+    results.push(...eventBindingCompletions(info, position, parseEvent(name, attr), elem, ngAttrs));
   } else if (
       bindParts[ATTR.KW_BINDON_IDX] !== undefined ||
       bindParts[ATTR.IDENT_BANANA_BOX_IDX] !== undefined) {
@@ -277,12 +271,91 @@ function attributeCompletions(
   });
 }
 
+class BoundEventInfo {
+  constructor(
+      public name: string, public target: string|null, public phase: string|null,
+      public attribute: Attribute, public readonly isAnimation: boolean) {}
+}
+
+class BoundElementPropertyInfo {
+  readonly isAnimation: boolean;
+  constructor(
+      public name: string, public type: PropertyBindingType, public unit: string|null,
+      public attribute: Attribute) {
+    this.isAnimation = this.type === PropertyBindingType.Animation;
+  }
+}
+
+function isInAnimationName(bound: BoundEventInfo, templatePosition: number) {
+  const parts = bound.attribute.name.split('.').map(part => part.length);
+  const offset = bound.attribute.sourceSpan.start.offset;
+  return templatePosition <= offset + parts[0];
+}
+
+function isInAnimationPhase(bound: BoundEventInfo, templatePosition: number) {
+  const parts = bound.attribute.name.split('.').map(part => part.length);
+  const offset = bound.attribute.sourceSpan.start.offset + parts[0] + 1;
+  return parts.length >= 2 && offset <= templatePosition && templatePosition <= offset + parts[1];
+}
+
+function isAnimationAttribute(name: string) {
+  return name.startsWith(ANIMATE_PROP_PREFIX) || name.startsWith(AT_ANIMATE_PROP_PREFIX);
+}
+
+function parseEvent(name: string, attr: Attribute) {
+  if (name.startsWith(AT_ANIMATE_PROP_PREFIX)) {
+    name = name.substring(1);
+    const match = name.split('.');
+    return new BoundEventInfo(match[0], null, match[1], attr, true);
+  } else {
+    return new BoundEventInfo(name, null, null, attr, false);
+  }
+}
+
+function parsePropertyBinding(name: string, attr: Attribute) {
+  if (isAnimationAttribute(name)) {
+    if (name.startsWith(ANIMATE_PROP_PREFIX)) {
+      name = name.substring(ANIMATE_PROP_PREFIX.length);
+    }
+    if (name.startsWith(AT_ANIMATE_PROP_PREFIX)) {
+      name = name.substring(AT_ANIMATE_PROP_PREFIX.length);
+    }
+    return new BoundElementPropertyInfo(name, PropertyBindingType.Animation, null, attr);
+  } else {
+    return new BoundElementPropertyInfo(name, PropertyBindingType.Property, null, attr);
+  }
+}
+
+function animationPropertyBindingCompletions(
+    bound: BoundElementPropertyInfo, info: AstResult): string[] {
+  // A special animation control binding called @.disabled.
+  // https://angular.io/guide/transition-and-triggers#disabling-an-animation-on-an-html-element
+  if (bound.name.startsWith('.')) {
+    const SPECIAL_ANIMATION_CONTROL = ['disabled'];
+    return SPECIAL_ANIMATION_CONTROL;
+  } else {
+    return animationTriggerCompletions(info);
+  }
+}
+
+function animationEventBindingCompletions(
+    bound: BoundEventInfo, info: AstResult, templatePosition: number): string[] {
+  if (isInAnimationName(bound, templatePosition)) {
+    return animationTriggerCompletions(info);
+  }
+  if (isInAnimationPhase(bound, templatePosition)) {
+    const ANIMATION_PHASES = ['start', 'done'];
+    return ANIMATION_PHASES;
+  }
+  return [];
+}
+
 // event binding via on- or ()
 function eventBindingCompletions(
-    name: string, info: AstResult, templatePosition: number, namePosition: number, ele: Element,
+    info: AstResult, templatePosition: number, bound: BoundEventInfo, ele: Element,
     angularAttributes: AngularAttributes): string[] {
-  if (name.startsWith(SECOND_ANIMATE_PROP_PREFIX)) {
-    return animationEventBindingCompletions(name, info, templatePosition, namePosition);
+  if (bound.isAnimation) {
+    return animationEventBindingCompletions(bound, info, templatePosition);
   } else {
     return eventNames(ele.name).concat(...angularAttributes.outputs);
   }
@@ -290,109 +363,13 @@ function eventBindingCompletions(
 
 // property binding via bind- or []
 function propertyBindingCompletions(
-    name: string, info: AstResult, templatePosition: number, namePosition: number, ele: Element,
+    info: AstResult, templatePosition: number, bound: BoundElementPropertyInfo, ele: Element,
     angularAttributes: AngularAttributes): string[] {
-  if (isAnimationAttribute(name)) {
-    return animationPropertyBindingCompletions(name, info, templatePosition, namePosition);
+  if (bound.isAnimation) {
+    return animationPropertyBindingCompletions(bound, info);
   } else {
     return propertyNames(ele.name).concat(...angularAttributes.inputs);
   }
-}
-
-function isAnimationAttribute(name: string) {
-  return name.startsWith(ANIMATE_PROP_PREFIX) || name.startsWith(SECOND_ANIMATE_PROP_PREFIX);
-}
-
-// `cursorPosition` represents location of a cursor in the template(start with 0).
-//    k|ey.entry
-//     ^---------- cursor, return 0.
-//    key.ent|ry
-//           ^---- cursor, return 1.
-function cursorPosition(name: string, begin: number, position: number): number {
-  const parts = name.split('.');
-  let start = begin;
-  let index = 0;
-  if (position < start || position > (start + name.length)) {
-    // out of bound.
-    return -1;
-  }
-  for (const part of parts) {
-    if (start <= position && position <= start + part.length) {
-      return index;
-    }
-    index++;
-    start += part.length + 1;
-  }
-  return -1;
-}
-
-function animationPropertyBindingCompletions(
-    name: string, info: AstResult, position: number, namePosition: number): string[] {
-  let animationPrefixLength = 0;
-  // A special animation control binding called @.disabled.
-  // https://angular.io/guide/transition-and-triggers#disabling-an-animation-on-an-html-element
-  let isSpecialAnimationControl = false;
-
-  if (name.startsWith(ANIMATE_PROP_PREFIX)) {
-    animationPrefixLength = ANIMATE_PROP_PREFIX.length;
-  }
-  if (name.startsWith(SECOND_ANIMATE_PROP_PREFIX)) {
-    animationPrefixLength = SECOND_ANIMATE_PROP_PREFIX.length;
-  }
-  name = name.substring(animationPrefixLength);
-  namePosition += animationPrefixLength;
-
-  if (name.startsWith('.')) {
-    isSpecialAnimationControl = true;
-    name = name.substring(1);
-    namePosition += 1;
-  }
-
-  const index = cursorPosition(name, namePosition, position);
-  const result: string[] = [];
-
-  const SPECIAL_ANIMATION_CONTROL = 'disabled';
-
-  switch (index) {
-    case 0:
-      if (isSpecialAnimationControl) {
-        result.push(SPECIAL_ANIMATION_CONTROL);
-      } else {
-        result.push(...animationTriggerCompletions(info));
-      }
-      break;
-    default:
-      break;
-  }
-  return result;
-}
-
-function animationEventBindingCompletions(
-    name: string, info: AstResult, position: number, namePosition: number): string[] {
-  let animationPrefixLength = 0;
-
-  if (name.startsWith(SECOND_ANIMATE_PROP_PREFIX)) {
-    animationPrefixLength = SECOND_ANIMATE_PROP_PREFIX.length;
-  }
-  name = name.substring(animationPrefixLength);
-  namePosition += animationPrefixLength;
-
-  const index = cursorPosition(name, namePosition, position);
-  const result: string[] = [];
-
-  const ANIMATIONEVENT = ['start', 'done'];
-
-  switch (index) {
-    case 0:
-      result.push(...animationTriggerCompletions(info));
-      break;
-    case 1:
-      result.push(...ANIMATIONEVENT);
-      break;
-    default:
-      break;
-  }
-  return result;
 }
 
 function animationTriggerCompletions(info: AstResult): string[] {
