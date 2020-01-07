@@ -4260,7 +4260,7 @@ describe('inheritance', () => {
         // component def, which would trigger `hostBindings` functions merge operation in
         // InheritDefinitionFeature logic (merging GrandChild and Child host binding functions)
         @HostListener('blur')
-        focused() {}
+        blurred() {}
 
         clicked() { events.push('GrandChildComponent.clicked'); }
       }
