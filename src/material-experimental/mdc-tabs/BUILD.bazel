@@ -18,7 +18,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [
-        ":tabs_scss",
         ":tab-body.css",
         ":tab-header.css",
         ":tab-group.css",
@@ -47,16 +46,6 @@ ng_module(
 sass_library(
     name = "mdc_tabs_scss_lib",
     srcs = glob(["**/_*.scss"]),
-    deps = [
-        "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
-    ],
-)
-
-sass_binary(
-    name = "tabs_scss",
-    src = "_mdc-tabs.scss",
-    include_paths = ["external/npm/node_modules"],
     deps = [
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
