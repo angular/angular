@@ -29,8 +29,8 @@ var_4_win: &cache_key_win_fallback v5-angular-win-node-12.0-
 
 # Cache key for the Material unit tests job. **Note** when updating the SHA in the cache keys,
 # also update the SHA for the "MATERIAL_REPO_COMMIT" environment variable.
-var_5: &material_unit_tests_cache_key v5-angular-material-9e7ba251207df77164d73d66620e619bcbc4d2ad
-var_6: &material_unit_tests_cache_key_fallback v5-angular-material-
+var_5: &material_unit_tests_cache_key v6-angular-material-9e7ba251207df77164d73d66620e619bcbc4d2ad
+var_6: &material_unit_tests_cache_key_fallback v6-angular-material-
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages` and
 # `build-ivy-npm-packages`.
@@ -752,6 +752,12 @@ jobs:
       - restore_cache:
           keys:
             - *material_unit_tests_cache_key
+            # Whenever the `angular/components` SHA is updated, the cache key will no longer match. The
+            # fallback cache will still match, and CircleCI will restore the most recently cached
+            # repository folder. Without the fallback cache, we'd need to download the repository
+            # from scratch and it would slow down the job. This is because we can't clone the
+            # repository with reduced "--depth", but rather need to clone the whole repository to be
+            # able to support arbitrary SHA's.
             - *material_unit_tests_cache_key_fallback
       - run:
           name: "Fetching Material repository"
