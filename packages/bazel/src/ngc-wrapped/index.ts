@@ -7,7 +7,7 @@
  */
 
 import * as ng from '@angular/compiler-cli';
-import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop} from '@bazel/typescript';
+import {BazelOptions, CachedFileLoader, CompilerHost as BazelHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
@@ -34,9 +34,6 @@ export function main(args) {
   }
   return 0;
 }
-
-/** The one FileCache instance used in this process. */
-const fileCache = new FileCache<ts.SourceFile>(debug);
 
 export function runOneBuild(args: string[], inputs?: {[path: string]: string}): boolean {
   if (args[0] === '-p') args.shift();
@@ -144,8 +141,10 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
   return filePath;
 }
 
-export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, bazelOpts, files,
-                         inputs, expectedOuts, gatherDiagnostics, bazelHost}: {
+export function compile({
+    allDepsCompiledWithBazel = true, compilerOpts, tsHost, bazelOpts, files, inputs, expectedOuts,
+    gatherDiagnostics, bazelHost,
+}: {
   allDepsCompiledWithBazel?: boolean,
   compilerOpts: ng.CompilerOptions,
   tsHost: ts.CompilerHost, inputs?: {[path: string]: string},
@@ -153,41 +152,15 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
   files: string[],
   expectedOuts: string[],
   gatherDiagnostics?: (program: ng.Program) => ng.Diagnostics,
-  bazelHost?: CompilerHost,
+  bazelHost?: BazelHost,
 }): {diagnostics: ng.Diagnostics, program: ng.Program} {
-  let fileLoader: FileLoader;
-
-  if (bazelOpts.maxCacheSizeMb !== undefined) {
-    const maxCacheSizeBytes = bazelOpts.maxCacheSizeMb * (1 << 20);
-    fileCache.setMaxCacheSize(maxCacheSizeBytes);
-  } else {
-    fileCache.resetMaxCacheSize();
-  }
-
-  if (inputs) {
-    fileLoader = new CachedFileLoader(fileCache);
-    // Resolve the inputs to absolute paths to match TypeScript internals
-    const resolvedInputs = new Map<string, string>();
-    const inputKeys = Object.keys(inputs);
-    for (let i = 0; i < inputKeys.length; i++) {
-      const key = inputKeys[i];
-      resolvedInputs.set(resolveNormalizedPath(key), inputs[key]);
-    }
-    fileCache.updateCache(resolvedInputs);
-  } else {
-    fileLoader = new UncachedFileLoader();
-  }
-
   if (!bazelOpts.es5Mode) {
     compilerOpts.annotateForClosureCompiler = true;
     compilerOpts.annotationsAs = 'static fields';
   }
 
-  // Detect from compilerOpts whether the entrypoint is being invoked in Ivy mode.
-  const isInIvyMode = compilerOpts.enableIvy === 'ngtsc';
-
   // Disable downleveling and Closure annotation if in Ivy mode.
-  if (isInIvyMode) {
+  if (compilerOpts.enableIvy) {
     compilerOpts.annotationsAs = 'decorators';
   }
 
@@ -212,41 +185,14 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
         }
       };
 
-  // Patch fileExists when resolving modules, so that CompilerHost can ask TypeScript to
-  // resolve non-existing generated files that don't exist on disk, but are
-  // synthetic and added to the `programWithStubs` based on real inputs.
-  const generatedFileModuleResolverHost = Object.create(tsHost);
-  generatedFileModuleResolverHost.fileExists = (fileName: string) => {
-    const match = NGC_GEN_FILES.exec(fileName);
-    if (match) {
-      const [, file, suffix, ext] = match;
-      // Performance: skip looking for files other than .d.ts or .ts
-      if (ext !== '.ts' && ext !== '.d.ts') return false;
-      if (suffix.indexOf('ngstyle') >= 0) {
-        // Look for foo.css on disk
-        fileName = file;
-      } else {
-        // Look for foo.d.ts or foo.ts on disk
-        fileName = file + (ext || '');
-      }
-    }
-    return tsHost.fileExists(fileName);
-  };
-
-  function generatedFileModuleResolver(
-      moduleName: string, containingFile: string,
-      compilerOptions: ts.CompilerOptions): ts.ResolvedModuleWithFailedLookupLocations {
-    return ts.resolveModuleName(
-        moduleName, containingFile, compilerOptions, generatedFileModuleResolverHost);
-  }
-
   if (!bazelHost) {
-    bazelHost = new CompilerHost(
+    const fileLoader = createFileLoader(inputs, bazelOpts);
+    bazelHost = new BazelHost(
         files, compilerOpts, bazelOpts, tsHost, fileLoader, generatedFileModuleResolver);
   }
 
   // Also need to disable decorator downleveling in the BazelHost in Ivy mode.
-  if (isInIvyMode) {
+  if (compilerOpts.enableIvy) {
     bazelHost.transformDecorators = false;
   }
 
@@ -431,6 +377,68 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
   }
 
   return {program, diagnostics};
+}
+
+/** A module resolver for handling generated files in Bazel. */
+export function generatedFileModuleResolver(
+    moduleName: string, containingFile: string, compilerOptions: ts.CompilerOptions,
+    host: ts.ModuleResolutionHost, ): ts.ResolvedModuleWithFailedLookupLocations {
+  // Patch fileExists when resolving modules, so that CompilerHost can ask
+  // TypeScript to resolve non-existing generated files that don't exist on
+  // disk, but are synthetic and added to the `programWithStubs` based on real
+  // inputs.
+  const generatedFileModuleResolverHost = Object.assign({}, host, {
+    fileExists: (...[fileName, ...rest]: Parameters<typeof host.fileExists>):
+                    ReturnType<typeof host.fileExists> => {
+                      const match = NGC_GEN_FILES.exec(fileName);
+                      if (match) {
+                        const [, file, suffix, ext] = match;
+                        // Performance: skip looking for files other than .d.ts or .ts
+                        if (ext !== '.ts' && ext !== '.d.ts') return false;
+                        if (suffix.indexOf('ngstyle') >= 0) {
+                          // Look for foo.css on disk
+                          fileName = file;
+                        } else {
+                          // Look for foo.d.ts or foo.ts on disk
+                          fileName = file + (ext || '');
+                        }
+                      }
+
+                      return host.fileExists(fileName, ...rest);
+                    },
+  });
+
+  return ts.resolveModuleName(
+      moduleName, containingFile, compilerOptions, generatedFileModuleResolverHost);
+}
+
+/** Creates a {@link FileLoader} to cache Bazel inputs.*/
+export function createFileLoader(
+    inputs: {[key: string]: string} | undefined, bazelOpts: BazelOptions): FileLoader {
+  /** The one FileCache instance used in this process. */
+  const fileCache = new FileCache<ts.SourceFile>(debug);
+
+  if (bazelOpts.maxCacheSizeMb !== undefined) {
+    const maxCacheSizeBytes = bazelOpts.maxCacheSizeMb * (1 << 20);
+    fileCache.setMaxCacheSize(maxCacheSizeBytes);
+  } else {
+    fileCache.resetMaxCacheSize();
+  }
+
+  if (inputs) {
+    const fileLoader = new CachedFileLoader(fileCache);
+    // Resolve the inputs to absolute paths to match TypeScript internals
+    const resolvedInputs = new Map<string, string>();
+    const inputKeys = Object.keys(inputs);
+    for (let i = 0; i < inputKeys.length; i++) {
+      const key = inputKeys[i];
+      resolvedInputs.set(resolveNormalizedPath(key), inputs[key]);
+    }
+    fileCache.updateCache(resolvedInputs);
+    return fileLoader;
+  } else {
+    return new UncachedFileLoader();
+  }
 }
 
 /**
