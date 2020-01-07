@@ -42,6 +42,8 @@ export class Parser {
 
   constructor(private _lexer: Lexer) {}
 
+  simpleExpressionChecker = SimpleExpressionChecker;
+
   parseAction(
       input: string, location: any, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
@@ -62,11 +64,17 @@ export class Parser {
     return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
   }
 
+  private checkSimpleExpression(ast: AST): string[] {
+    const checker = new this.simpleExpressionChecker();
+    ast.visit(checker);
+    return checker.errors;
+  }
+
   parseSimpleBinding(
       input: string, location: string, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
     const ast = this._parseBindingAst(input, location, absoluteOffset, interpolationConfig);
-    const errors = SimpleExpressionChecker.check(ast);
+    const errors = this.checkSimpleExpression(ast);
     if (errors.length > 0) {
       this._reportError(
           `Host binding expression cannot contain ${errors.join(' ')}`, input, location);
@@ -232,6 +240,10 @@ export class Parser {
 
     return errLocation.length;
   }
+}
+
+export class IvyParser extends Parser {
+  simpleExpressionChecker = IvySimpleExpressionChecker;  //
 }
 
 export class _ParseAST {
@@ -825,12 +837,6 @@ export class _ParseAST {
 }
 
 class SimpleExpressionChecker implements AstVisitor {
-  static check(ast: AST): string[] {
-    const s = new SimpleExpressionChecker();
-    ast.visit(s);
-    return s.errors;
-  }
-
   errors: string[] = [];
 
   visitImplicitReceiver(ast: ImplicitReceiver, context: any) {}
@@ -874,4 +880,20 @@ class SimpleExpressionChecker implements AstVisitor {
   visitChain(ast: Chain, context: any) {}
 
   visitQuote(ast: Quote, context: any) {}
+}
+
+/**
+ * This class extends SimpleExpressionChecker used in View Engine and performs more strict checks to
+ * make sure host bindings do not contain pipes. In View Engine, having pipes in host bindings is
+ * not supported as well, but in some cases (like `!(value | async)`) the error is not triggered at
+ * compile time. In order to preserve View Engine behavior, more strict checks are introduced for
+ * Ivy mode only.
+ */
+class IvySimpleExpressionChecker extends SimpleExpressionChecker {
+  visitBinary(ast: Binary, context: any) {
+    ast.left.visit(this);
+    ast.right.visit(this);
+  }
+
+  visitPrefixNot(ast: PrefixNot, context: any) { ast.expression.visit(this); }
 }
