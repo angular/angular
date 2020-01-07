@@ -304,10 +304,7 @@ export function isSelectorInSelectorList(selector: CssSelector, list: CssSelecto
  * most likely used to bootstrap components. Supporting all possible cases would add too much to the
  * framework's size to support just a handful of rare cases.
  */
-export function stringifyCSSSelectorForBootstrap(selector: CssSelector): string {
-  ngDevMode && assertEqual(
-                   typeof selector[0], 'string',
-                   ':not() selectors are not supported for components to be bootstrapped.');
+export function stringifyCSSSelectorForBootstrap(selector: CssSelector): string|null {
   let result = selector[0] as string;
   let i = 1;
   let mode = SelectorFlags.ATTRIBUTE;
@@ -315,24 +312,22 @@ export function stringifyCSSSelectorForBootstrap(selector: CssSelector): string 
     let valueOrMarker = selector[i];
     if (typeof valueOrMarker === 'string') {
       if (mode === SelectorFlags.ATTRIBUTE) {
-        const attrValue = selector[i + 1] as string;
+        const attrValue = selector[++i] as string;
         result += '[' + valueOrMarker + (attrValue.length > 0 ? '="' + attrValue + '"' : '') + ']';
-        i += 2;
       } else if (mode === SelectorFlags.CLASS) {
         result += '.' + valueOrMarker;
-        i++;
+      } else if (mode === SelectorFlags.ELEMENT) {
+        result += ' ' + valueOrMarker;
       }
     } else {
-      ngDevMode &&
-          assertEqual(
-              valueOrMarker === SelectorFlags.ATTRIBUTE || valueOrMarker === SelectorFlags.CLASS,
-              true,
-              'Only element, attribute and class selectors are supported for components to be bootstrapped');
+      // Avoid processing CSS selectors with `:not()` in it and return `null` to indicate that
+      // default value should be used as a bootstrap selector.
+      if (valueOrMarker & SelectorFlags.NOT) {
+        return null;
+      }
       mode = valueOrMarker;
-      i++;
     }
+    i++;
   }
-
-
   return result;
 }

@@ -541,4 +541,14 @@ describe('stringifyCSSSelectorForBootstrap', () => {
       'button', 'id', 'value', 'title', 'other', SelectorFlags.CLASS, 'foo', 'bar'
     ])).toBe('button[id="value"][title="other"].foo.bar');
   });
+
+  it('should return `null` in case selector contains `:not()` rule', () => {
+    expect(stringifyCSSSelectorForBootstrap([
+      '', SelectorFlags.CLASS | SelectorFlags.NOT, 'foo'
+    ])).toBe(null);
+
+    expect(stringifyCSSSelectorForBootstrap([
+      'button', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'foo', 'bar'
+    ])).toBe(null);
+  });
 });

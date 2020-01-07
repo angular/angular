@@ -36,6 +36,10 @@ import {getTNode} from './util/view_utils';
 import {createElementRef} from './view_engine_compatibility';
 import {RootViewRef, ViewRef} from './view_ref';
 
+// Default tag name to be used while creating a component dynamically in case tag name is not
+// specified in selector.
+const DEFAULT_TAG_NAME = 'div';
+
 export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolver {
   /**
    * @param ngModule The NgModuleRef to which all resolved factories are bound.
@@ -114,7 +118,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       private componentDef: ComponentDef<any>, private ngModule?: viewEngine_NgModuleRef<any>) {
     super();
     this.componentType = componentDef.type;
-    this.selector = stringifyCSSSelectorForBootstrap(componentDef.selectors[0]);
+    this.selector = stringifyCSSSelectorForBootstrap(componentDef.selectors[0]) || DEFAULT_TAG_NAME;
     this.ngContentSelectors =
         componentDef.ngContentSelectors ? componentDef.ngContentSelectors : [];
     this.isBoundToModule = !!ngModule;
@@ -138,7 +142,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         // dynamically. Default to 'div' if this component did not specify any tag name in its
         // selector.
         elementCreate(
-            this.componentDef.selectors[0][0] as string || 'div',
+            this.componentDef.selectors[0][0] as string || DEFAULT_TAG_NAME,
             rendererFactory.createRenderer(null, this.componentDef), null);
 
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
