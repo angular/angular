@@ -166,36 +166,69 @@ describe('NgModule', () => {
       }).not.toThrow();
     });
 
-    it('should throw unknown element error without CUSTOM_ELEMENTS_SCHEMA for element with dash in tag name',
-       () => {
-         @Component({template: `<custom-el></custom-el>`})
-         class MyComp {
-         }
+    onlyInIvy('unknown element check logs a warning rather than throwing')
+        .it('should warn about unknown element without CUSTOM_ELEMENTS_SCHEMA for element with dash in tag name',
+            () => {
 
-         TestBed.configureTestingModule({declarations: [MyComp]});
+              @Component({template: `<custom-el></custom-el>`})
+              class MyComp {
+              }
 
-         expect(() => {
-           const fixture = TestBed.createComponent(MyComp);
-           fixture.detectChanges();
-         }).toThrowError(/'custom-el' is not a known element/);
-       });
+              const spy = spyOn(console, 'warn');
+              TestBed.configureTestingModule({declarations: [MyComp]});
+              const fixture = TestBed.createComponent(MyComp);
+              fixture.detectChanges();
+              expect(spy.calls.mostRecent().args[0]).toMatch(/'custom-el' is not a known element/);
+            });
 
-    it('should throw unknown element error without CUSTOM_ELEMENTS_SCHEMA for element without dash in tag name',
-       () => {
-         @Component({template: `<custom></custom>`})
-         class MyComp {
-         }
+    modifiedInIvy('unknown element error thrown instead of warning')
+        .it('should throw unknown element error without CUSTOM_ELEMENTS_SCHEMA for element with dash in tag name',
+            () => {
+              @Component({template: `<custom-el></custom-el>`})
+              class MyComp {
+              }
 
-         TestBed.configureTestingModule({declarations: [MyComp]});
+              TestBed.configureTestingModule({declarations: [MyComp]});
 
-         expect(() => {
-           const fixture = TestBed.createComponent(MyComp);
-           fixture.detectChanges();
-         }).toThrowError(/'custom' is not a known element/);
-       });
+              expect(() => {
+                const fixture = TestBed.createComponent(MyComp);
+                fixture.detectChanges();
+              }).toThrowError(/'custom-el' is not a known element/);
+            });
+
+    onlyInIvy('unknown element check logs a warning rather than throwing')
+        .it('should warn about unknown element without CUSTOM_ELEMENTS_SCHEMA for element without dash in tag name',
+            () => {
+              @Component({template: `<custom></custom>`})
+              class MyComp {
+              }
+
+              const spy = spyOn(console, 'warn');
+              TestBed.configureTestingModule({declarations: [MyComp]});
+              const fixture = TestBed.createComponent(MyComp);
+              fixture.detectChanges();
+              expect(spy.calls.mostRecent().args[0]).toMatch(/'custom' is not a known element/);
+            });
+
+    modifiedInIvy('unknown element error thrown instead of warning')
+        .it('should throw unknown element error without CUSTOM_ELEMENTS_SCHEMA for element without dash in tag name',
+            () => {
+              @Component({template: `<custom></custom>`})
+              class MyComp {
+              }
+
+              TestBed.configureTestingModule({declarations: [MyComp]});
+
+              expect(() => {
+                const fixture = TestBed.createComponent(MyComp);
+                fixture.detectChanges();
+              }).toThrowError(/'custom' is not a known element/);
+            });
 
     onlyInIvy('test relies on Ivy-specific AOT format')
-        .it('should not throw unknown element error for AOT-compiled components', () => {
+        .it('should not log unknown element warning for AOT-compiled components', () => {
+          const spy = spyOn(console, 'warn');
+
           /*
            *  @Component({
            *    selector: 'comp',
@@ -253,88 +286,173 @@ describe('NgModule', () => {
             imports: [MyModule],
           });
 
+          const fixture = TestBed.createComponent(MyComp);
+          fixture.detectChanges();
+          expect(spy).not.toHaveBeenCalled();
+        });
+
+    onlyInIvy('unknown element check logs a warning rather than throwing')
+        .it('should not warn about unknown elements with CUSTOM_ELEMENTS_SCHEMA', () => {
+          @Component({template: `<custom-el></custom-el>`})
+          class MyComp {
+          }
+
+          const spy = spyOn(console, 'warn');
+          TestBed.configureTestingModule({
+            declarations: [MyComp],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+          });
+
+          const fixture = TestBed.createComponent(MyComp);
+          fixture.detectChanges();
+          expect(spy).not.toHaveBeenCalled();
+        });
+
+    modifiedInIvy('unknown element error thrown instead of warning')
+        .it('should not throw unknown element error with CUSTOM_ELEMENTS_SCHEMA', () => {
+          @Component({template: `<custom-el></custom-el>`})
+          class MyComp {
+          }
+
+          TestBed.configureTestingModule({
+            declarations: [MyComp],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+          });
+
           expect(() => {
             const fixture = TestBed.createComponent(MyComp);
             fixture.detectChanges();
           }).not.toThrow();
         });
 
-    it('should not throw unknown element error with CUSTOM_ELEMENTS_SCHEMA', () => {
-      @Component({template: `<custom-el></custom-el>`})
-      class MyComp {
-      }
+    onlyInIvy('unknown element check logs a warning rather than throwing')
+        .it('should not warn about unknown elements with NO_ERRORS_SCHEMA', () => {
+          @Component({template: `<custom-el></custom-el>`})
+          class MyComp {
+          }
 
-      TestBed.configureTestingModule({
-        declarations: [MyComp],
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      });
+          const spy = spyOn(console, 'warn');
+          TestBed.configureTestingModule({
+            declarations: [MyComp],
+            schemas: [NO_ERRORS_SCHEMA],
+          });
 
-      expect(() => {
-        const fixture = TestBed.createComponent(MyComp);
-        fixture.detectChanges();
-      }).not.toThrow();
-    });
+          const fixture = TestBed.createComponent(MyComp);
+          fixture.detectChanges();
+          expect(spy).not.toHaveBeenCalled();
+        });
 
-    it('should not throw unknown element error with NO_ERRORS_SCHEMA', () => {
-      @Component({template: `<custom-el></custom-el>`})
-      class MyComp {
-      }
+    modifiedInIvy('unknown element error thrown instead of warning')
+        .it('should not throw unknown element error with NO_ERRORS_SCHEMA', () => {
+          @Component({template: `<custom-el></custom-el>`})
+          class MyComp {
+          }
 
-      TestBed.configureTestingModule({
-        declarations: [MyComp],
-        schemas: [NO_ERRORS_SCHEMA],
-      });
+          TestBed.configureTestingModule({
+            declarations: [MyComp],
+            schemas: [NO_ERRORS_SCHEMA],
+          });
 
-      expect(() => {
-        const fixture = TestBed.createComponent(MyComp);
-        fixture.detectChanges();
-      }).not.toThrow();
-    });
+          expect(() => {
+            const fixture = TestBed.createComponent(MyComp);
+            fixture.detectChanges();
+          }).not.toThrow();
+        });
 
-    it('should not throw unknown element error if element matches a directive', () => {
-      @Component({
-        selector: 'custom-el',
-        template: '',
-      })
-      class CustomEl {
-      }
+    onlyInIvy('unknown element check logs a warning rather than throwing')
+        .it('should not warn about unknown elements if element matches a directive', () => {
+          @Component({
+            selector: 'custom-el',
+            template: '',
+          })
+          class CustomEl {
+          }
 
-      @Component({template: `<custom-el></custom-el>`})
-      class MyComp {
-      }
+          @Component({template: `<custom-el></custom-el>`})
+          class MyComp {
+          }
 
-      TestBed.configureTestingModule({declarations: [MyComp, CustomEl]});
+          const spy = spyOn(console, 'warn');
+          TestBed.configureTestingModule({declarations: [MyComp, CustomEl]});
 
-      expect(() => {
-        const fixture = TestBed.createComponent(MyComp);
-        fixture.detectChanges();
-      }).not.toThrow();
-    });
+          const fixture = TestBed.createComponent(MyComp);
+          fixture.detectChanges();
+          expect(spy).not.toHaveBeenCalled();
+        });
 
-    it('should not throw for HTML elements inside an SVG foreignObject', () => {
-      @Component({
-        template: `
+    modifiedInIvy('unknown element error thrown instead of warning')
+        .it('should not throw unknown element error if element matches a directive', () => {
+          @Component({
+            selector: 'custom-el',
+            template: '',
+          })
+          class CustomEl {
+          }
+
+          @Component({template: `<custom-el></custom-el>`})
+          class MyComp {
+          }
+
+          TestBed.configureTestingModule({declarations: [MyComp, CustomEl]});
+
+          expect(() => {
+            const fixture = TestBed.createComponent(MyComp);
+            fixture.detectChanges();
+          }).not.toThrow();
+        });
+
+    onlyInIvy('unknown element check logs a warning rather than throwing')
+        .it('should not warn for HTML elements inside an SVG foreignObject', () => {
+          @Component({
+            template: `
           <svg>
             <svg:foreignObject>
               <xhtml:div>Hello</xhtml:div>
             </svg:foreignObject>
           </svg>
         `,
-      })
-      class MyComp {
-      }
+          })
+          class MyComp {
+          }
 
-      @NgModule({declarations: [MyComp]})
-      class MyModule {
-      }
+          @NgModule({declarations: [MyComp]})
+          class MyModule {
+          }
 
-      TestBed.configureTestingModule({imports: [MyModule]});
+          const spy = spyOn(console, 'warn');
+          TestBed.configureTestingModule({imports: [MyModule]});
 
-      expect(() => {
-        const fixture = TestBed.createComponent(MyComp);
-        fixture.detectChanges();
-      }).not.toThrow();
-    });
+          const fixture = TestBed.createComponent(MyComp);
+          fixture.detectChanges();
+          expect(spy).not.toHaveBeenCalled();
+        });
+
+
+    modifiedInIvy('unknown element error thrown instead of warning')
+        .it('should not throw for HTML elements inside an SVG foreignObject', () => {
+          @Component({
+            template: `
+          <svg>
+            <svg:foreignObject>
+              <xhtml:div>Hello</xhtml:div>
+            </svg:foreignObject>
+          </svg>
+        `,
+          })
+          class MyComp {
+          }
+
+          @NgModule({declarations: [MyComp]})
+          class MyModule {
+          }
+
+          TestBed.configureTestingModule({imports: [MyModule]});
+
+          expect(() => {
+            const fixture = TestBed.createComponent(MyComp);
+            fixture.detectChanges();
+          }).not.toThrow();
+        });
 
   });
 });
