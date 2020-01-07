@@ -125,8 +125,11 @@ function renderCommonJsDependencies(
     return;
   }
   const factoryCall = conditional.whenTrue;
-  // Backup one char to account for the closing parenthesis on the call
-  const injectionPoint = factoryCall.getEnd() - 1;
+  const injectionPoint = factoryCall.arguments.length > 0 ?
+      // Add extra dependencies after the first argument
+      factoryCall.arguments[0].getEnd() :
+      // Backup one char to account for the closing parenthesis on the call
+      factoryCall.getEnd() - 1;
   const importString = imports.map(i => `require('${i.specifier}')`).join(',');
   output.appendLeft(injectionPoint, (factoryCall.arguments.length > 0 ? ',' : '') + importString);
 }
@@ -152,9 +155,12 @@ function renderAmdDependencies(
     const injectionPoint = amdDefineCall.arguments[factoryIndex].getFullStart();
     output.appendLeft(injectionPoint, `[${importString}],`);
   } else {
-    // Already an array, add imports to the end of the array.
-    // Backup one char to account for the closing square bracket on the array
-    const injectionPoint = dependencyArray.getEnd() - 1;
+    // Already an array
+    const injectionPoint = dependencyArray.elements.length > 0 ?
+        // Add imports after the first item.
+        dependencyArray.elements[0].getEnd() :
+        // Backup one char to account for the closing square bracket on the array
+        dependencyArray.getEnd() - 1;
     output.appendLeft(
         injectionPoint, (dependencyArray.elements.length > 0 ? ',' : '') + importString);
   }
@@ -169,8 +175,11 @@ function renderGlobalDependencies(
   if (!globalFactoryCall) {
     return;
   }
-  // Backup one char to account for the closing parenthesis after the argument list of the call.
-  const injectionPoint = globalFactoryCall.getEnd() - 1;
+  const injectionPoint = globalFactoryCall.arguments.length > 0 ?
+      // Add extra dependencies after the first argument
+      globalFactoryCall.arguments[0].getEnd() :
+      // Backup one char to account for the closing parenthesis on the call
+      globalFactoryCall.getEnd() - 1;
   const importString = imports.map(i => `global.${getGlobalIdentifier(i)}`).join(',');
   output.appendLeft(
       injectionPoint, (globalFactoryCall.arguments.length > 0 ? ',' : '') + importString);
@@ -197,7 +206,7 @@ function renderFactoryParameters(
   const parameters = factoryFunction.parameters;
   const parameterString = imports.map(i => i.qualifier).join(',');
   if (parameters.length > 0) {
-    const injectionPoint = parameters[parameters.length - 1].getEnd();
+    const injectionPoint = parameters[0].getEnd();
     output.appendLeft(injectionPoint, ',' + parameterString);
   } else {
     // If there are no parameters then the factory function will look like:
