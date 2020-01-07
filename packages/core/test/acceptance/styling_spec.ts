@@ -2485,6 +2485,28 @@ describe('styling', () => {
     const div = fixture.nativeElement.querySelector('div');
     expect(getComputedStyle(div).width).toBe('10px');
   });
+
+  it('should allow classes with trailing and leading spaces in [ngClass]', () => {
+    @Component({
+      template: `
+        <div leading-space [ngClass]="{' foo': applyClasses}"></div>
+        <div trailing-space [ngClass]="{'foo ': applyClasses}"></div>
+      `
+    })
+    class Cmp {
+      applyClasses = true;
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+
+    const leading = fixture.nativeElement.querySelector('[leading-space]');
+    const trailing = fixture.nativeElement.querySelector('[trailing-space]');
+    expect(leading.className).toBe('foo', 'Expected class to be applied despite leading space.');
+    expect(trailing.className).toBe('foo', 'Expected class to be applied despite trailing space.');
+  });
+
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {
