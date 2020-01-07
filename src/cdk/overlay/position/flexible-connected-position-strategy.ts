@@ -921,7 +921,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
                             scrollPosition: ViewportScrollPosition) {
     // Reset any existing styles. This is necessary in case the
     // preferred position has changed since the last `apply`.
-    let styles = {top: null, bottom: null} as CSSStyleDeclaration;
+    let styles = {top: null, bottom: null} as NullableCSSStyleDeclaration;
     let overlayPoint = this._getOverlayPoint(originPoint, this._overlayRect, position);
 
     if (this._isPushed) {
@@ -957,7 +957,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
                             scrollPosition: ViewportScrollPosition) {
     // Reset any existing styles. This is necessary in case the preferred position has
     // changed since the last `apply`.
-    let styles = {left: null, right: null} as CSSStyleDeclaration;
+    let styles = {left: null, right: null} as NullableCSSStyleDeclaration;
     let overlayPoint = this._getOverlayPoint(originPoint, this._overlayRect, position);
 
     if (this._isPushed) {
@@ -1174,6 +1174,15 @@ interface FlexibleFit {
   boundingBoxRect: BoundingBoxRect;
 }
 
+/**
+ * Equivalent of CSSStyleDeclaration, but allows for `null` values. We need to do
+ * this while we support TS 3.6 and 3.7 since the built-in types are different.
+ * TODO(crisbeto): we can switch back to the regular CSSStyleDeclaration once we're running TS 3.7.
+ */
+type NullableCSSStyleDeclaration = {
+  [T in keyof CSSStyleDeclaration]: CSSStyleDeclaration[T] | null;
+};
+
 /** A connected position as specified by the user. */
 export interface ConnectedPosition {
   originX: 'start' | 'center' | 'end';
@@ -1189,12 +1198,13 @@ export interface ConnectedPosition {
 }
 
 /** Shallow-extends a stylesheet object with another stylesheet object. */
-function extendStyles(dest: CSSStyleDeclaration, source: CSSStyleDeclaration): CSSStyleDeclaration {
+function extendStyles(destination: NullableCSSStyleDeclaration,
+                      source: NullableCSSStyleDeclaration): NullableCSSStyleDeclaration {
   for (let key in source) {
     if (source.hasOwnProperty(key)) {
-      dest[key] = source[key];
+      destination[key] = source[key];
     }
   }
 
-  return dest;
+  return destination;
 }

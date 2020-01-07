@@ -49,7 +49,7 @@ describe('MatRipple', () => {
   }));
 
   afterEach(() => {
-    document.body.style.margin = originalBodyMargin;
+    document.body.style.margin = originalBodyMargin!;
   });
 
   describe('basic ripple', () => {

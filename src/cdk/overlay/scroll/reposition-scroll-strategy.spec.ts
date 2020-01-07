@@ -105,7 +105,7 @@ describe('RepositionScrollStrategy', () => {
       right: 100,
       width: 100,
       height: 100
-    });
+    } as DOMRect);
 
     scrolledSubject.next();
     expect(overlayRef.detach).toHaveBeenCalledTimes(1);
