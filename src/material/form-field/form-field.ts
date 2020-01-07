@@ -568,10 +568,10 @@ export class MatFormField extends _MatFormFieldMixinBase
     }
 
     for (let i = 0; i < startEls.length; i++) {
-      startEls.item(i).style.width = `${startWidth}px`;
+      startEls[i].style.width = `${startWidth}px`;
     }
     for (let i = 0; i < gapEls.length; i++) {
-      gapEls.item(i).style.width = `${gapWidth}px`;
+      gapEls[i].style.width = `${gapWidth}px`;
     }
 
     this._outlineGapCalculationNeededOnStable =
