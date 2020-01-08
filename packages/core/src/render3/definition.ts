@@ -18,13 +18,16 @@ import {stringify} from '../util/stringify';
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_LOC_ID_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction} from './interfaces/definition';
-import {TConstants} from './interfaces/node';
-// while SelectorFlags is unused here, it's required so that types don't get resolved lazily
-// see: https://github.com/Microsoft/web-build-tools/issues/1050
+import {AttributeMarker, TAttributes, TConstants} from './interfaces/node';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 import {NgModuleType} from './ng_module_ref';
 
 let _renderCompCount = 0;
+
+// While these types are unused here, they are required so that types don't
+// get resolved lazily. see: https://github.com/Microsoft/web-build-tools/issues/1050
+type _web_build_tools_issue_1050_SelectorFlags = SelectorFlags;
+type _web_build_tools_issue_1050_AttributeMarker = AttributeMarker;
 
 /**
  * Create a component definition object.
@@ -129,6 +132,46 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
    * Function executed by the parent template to allow child directive to apply host bindings.
    */
   hostBindings?: HostBindingsFunction<T>;
+
+  /**
+   * The number of bindings in this directive `hostBindings` (including pure fn bindings).
+   *
+   * Used to calculate the length of the component's LView array, so we
+   * can pre-fill the array and set the host binding start index.
+   */
+  hostVars?: number;
+
+  /**
+   * Assign static attribute values to a host element.
+   *
+   * This property will assign static attribute values as well as class and style
+   * values to a host element. Since attribute values can consist of different types of values, the
+   * `hostAttrs` array must include the values in the following format:
+   *
+   * attrs = [
+   *   // static attributes (like `title`, `name`, `id`...)
+   *   attr1, value1, attr2, value,
+   *
+   *   // a single namespace value (like `x:id`)
+   *   NAMESPACE_MARKER, namespaceUri1, name1, value1,
+   *
+   *   // another single namespace value (like `x:name`)
+   *   NAMESPACE_MARKER, namespaceUri2, name2, value2,
+   *
+   *   // a series of CSS classes that will be applied to the element (no spaces)
+   *   CLASSES_MARKER, class1, class2, class3,
+   *
+   *   // a series of CSS styles (property + value) that will be applied to the element
+   *   STYLES_MARKER, prop1, value1, prop2, value2
+   * ]
+   *
+   * All non-class and non-style attributes must be defined at the start of the list
+   * first before all class and style values are set. When there is a change in value
+   * type (like when classes and styles are introduced) a marker must be used to separate
+   * the entries. The marker values themselves are set via entries found in the
+   * [AttributeMarker] enum.
+   */
+  hostAttrs?: TAttributes;
 
   /**
    * Function to create instances of content queries associated with a given directive.
@@ -263,6 +306,8 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     consts: componentDefinition.consts || null,
     ngContentSelectors: componentDefinition.ngContentSelectors,
     hostBindings: componentDefinition.hostBindings || null,
+    hostVars: componentDefinition.hostVars || 0,
+    hostAttrs: componentDefinition.hostAttrs || null,
     contentQueries: componentDefinition.contentQueries || null,
     declaredInputs: declaredInputs,
     inputs: null !,   // assigned in noSideEffects
@@ -587,6 +632,46 @@ export const ɵɵdefineDirective = ɵɵdefineComponent as any as<T>(directiveDef
    * Function executed by the parent template to allow child directive to apply host bindings.
    */
   hostBindings?: HostBindingsFunction<T>;
+
+  /**
+   * The number of bindings in this directive `hostBindings` (including pure fn bindings).
+   *
+   * Used to calculate the length of the component's LView array, so we
+   * can pre-fill the array and set the host binding start index.
+   */
+  hostVars?: number;
+
+  /**
+   * Assign static attribute values to a host element.
+   *
+   * This property will assign static attribute values as well as class and style
+   * values to a host element. Since attribute values can consist of different types of values, the
+   * `hostAttrs` array must include the values in the following format:
+   *
+   * attrs = [
+   *   // static attributes (like `title`, `name`, `id`...)
+   *   attr1, value1, attr2, value,
+   *
+   *   // a single namespace value (like `x:id`)
+   *   NAMESPACE_MARKER, namespaceUri1, name1, value1,
+   *
+   *   // another single namespace value (like `x:name`)
+   *   NAMESPACE_MARKER, namespaceUri2, name2, value2,
+   *
+   *   // a series of CSS classes that will be applied to the element (no spaces)
+   *   CLASSES_MARKER, class1, class2, class3,
+   *
+   *   // a series of CSS styles (property + value) that will be applied to the element
+   *   STYLES_MARKER, prop1, value1, prop2, value2
+   * ]
+   *
+   * All non-class and non-style attributes must be defined at the start of the list
+   * first before all class and style values are set. When there is a change in value
+   * type (like when classes and styles are introduced) a marker must be used to separate
+   * the entries. The marker values themselves are set via entries found in the
+   * [AttributeMarker] enum.
+   */
+  hostAttrs?: TAttributes;
 
   /**
    * Function to create instances of content queries associated with a given directive.

@@ -648,6 +648,9 @@
     "name": "getContextLView"
   },
   {
+    "name": "getCurrentDirectiveDef"
+  },
+  {
     "name": "getCurrentStyleSanitizer"
   },
   {
@@ -1080,6 +1083,12 @@
     "name": "patchHostStylingFlag"
   },
   {
+    "name": "prefillHostVars"
+  },
+  {
+    "name": "queueHostBindingForCheck"
+  },
+  {
     "name": "readPatchedData"
   },
   {
@@ -1359,6 +1368,9 @@
     "name": "ɵɵadvance"
   },
   {
+    "name": "ɵɵallocHostVars"
+  },
+  {
     "name": "ɵɵclassProp"
   },
   {
@@ -1375,6 +1387,9 @@
   },
   {
     "name": "ɵɵelementEnd"
+  },
+  {
+    "name": "ɵɵelementHostAttrs"
   },
   {
     "name": "ɵɵelementStart"
