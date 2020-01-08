@@ -416,8 +416,8 @@ def ng_rollup_bundle(name, **kwargs):
         data = [name + ".min.js"],
         outs = [name + ".min.js.br"],
         args = [
-            "--output=$(location %s.min.js.br)" % name,
-            "$(location %s.min.js)" % name,
+            "--output=$(execpath %s.min.js.br)" % name,
+            "$(execpath %s.min.js)" % name,
         ],
         visibility = visibility,
     )
@@ -439,8 +439,8 @@ def ng_rollup_bundle(name, **kwargs):
         data = [name + ".min.es2015.js"],
         outs = [name + ".min.es2015.js.br"],
         args = [
-            "--output=$(location %s.min.es2015.js.br)" % name,
-            "$(location %s.min.es2015.js)" % name,
+            "--output=$(execpath %s.min.es2015.js.br)" % name,
+            "$(execpath %s.min.es2015.js)" % name,
         ],
         visibility = visibility,
     )
