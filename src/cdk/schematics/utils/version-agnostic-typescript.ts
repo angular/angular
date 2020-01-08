@@ -12,7 +12,8 @@
  * Note that we always need to adjust this type import based on the location of the Typescript
  * dependency that will be shipped with `@schematics/angular`.
  */
-import typescript = require('typescript');
+import typescript =
+  require('@schematics/angular/third_party/github.com/Microsoft/TypeScript/lib/typescript');
 import {SchematicsException} from '@angular-devkit/schematics';
 
 /**
