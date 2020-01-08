@@ -13,11 +13,10 @@ ts_library(
 
 jasmine_node_test(
     name = "ml_parser",
-    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
+    bootstrap = ["//tools/testing:node_es5"],
     deps = [
         ":ml_parser_lib",
         "//tools/testing:node",
-        "//tools/testing:node_es5",
     ],
 )
 

@@ -12,12 +12,11 @@ filegroup(
 
 jasmine_node_test(
     name = "test",
-    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
+    bootstrap = ["//tools/testing:node_es5"],
     deps = [
         "//packages/bazel/src/schematics/ng-add:test",
         "//packages/bazel/src/schematics/ng-new:test",
         "//packages/bazel/src/schematics/utility:test",
         "//tools/testing:node",
-        "//tools/testing:node_es5",
     ],
 )
