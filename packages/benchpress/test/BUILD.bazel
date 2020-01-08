@@ -20,7 +20,6 @@ jasmine_node_test(
         ":test_lib",
         "//packages/benchpress",
         "//packages/core/testing",
-        "//tools/testing:node",
         "@npm//protractor",
     ],
 )

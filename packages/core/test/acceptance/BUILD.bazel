@@ -41,7 +41,6 @@ jasmine_node_test(
     deps = [
         ":acceptance_lib",
         "//packages/zone.js/lib:zone_d_ts",
-        "//tools/testing:node",
         "@npm//base64-js",
         "@npm//source-map",
     ],
