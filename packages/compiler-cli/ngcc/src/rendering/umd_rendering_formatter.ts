@@ -193,7 +193,7 @@ function renderGlobalDependencies(
     return;
   }
   const injectionPoint = globalFactoryCall.arguments.length > 0 ?
-      // Add extra dependencies after the first argument
+      // Add extra dependencies before the first argument
       globalFactoryCall.arguments[0].getFullStart() :
       // Backup one char to account for the closing parenthesis on the call
       globalFactoryCall.getEnd() - 1;
