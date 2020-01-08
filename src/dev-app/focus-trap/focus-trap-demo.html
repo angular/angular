@@ -5,8 +5,11 @@
       <button mat-raised-button (click)="toggleFocus(basicFocusTrap)">
         {{basicFocusTrap && basicFocusTrap.enabled ? "Disable" : "Enable"}} FocusTrap
       </button>
-      <div class="demo-focus-trap-region" #basicDemoRegion
-        [class.demo-focus-trap-enabled]="(basicFocusTrap && basicFocusTrap.enabled) || false">
+      <div
+        class="demo-focus-trap-region"
+        cdkTrapFocus
+        #basicFocusTrap="cdkTrapFocus"
+        [class.demo-focus-trap-enabled]="basicFocusTrap && basicFocusTrap.enabled">
         <textarea class="demo-focus-trap-element" placeholder="One"></textarea>
         <textarea class="demo-focus-trap-element" placeholder="Two"></textarea>
       </div>
@@ -19,16 +22,20 @@
       <button mat-raised-button (click)="toggleFocus(nestedOuterFocusTrap)">
         {{nestedOuterFocusTrap && nestedOuterFocusTrap.enabled ? "Disable" : "Enable"}} outer FocusTrap
       </button>
-      <div class="demo-focus-trap-region" #nestedOuterDemoRegion
-        [class.demo-focus-trap-enabled]="(nestedOuterFocusTrap && nestedOuterFocusTrap.enabled) || false">
+      <div class="demo-focus-trap-region"
+        cdkTrapFocus
+        #nestedOuterFocusTrap="cdkTrapFocus"
+        [class.demo-focus-trap-enabled]="nestedOuterFocusTrap && nestedOuterFocusTrap.enabled">
         <textarea class="demo-focus-trap-element" placeholder="One"></textarea>
         <textarea class="demo-focus-trap-element" placeholder="Two"></textarea>
         <button mat-raised-button class="demo-focus-trap-element"
           (click)="toggleFocus(nestedInnerFocusTrap)">
           {{nestedInnerFocusTrap && nestedInnerFocusTrap.enabled ? "Disable" : "Enable"}} inner FocusTrap
         </button>
-        <div class="demo-focus-trap-region" #nestedInnerDemoRegion
-          [class.demo-focus-trap-enabled]="(nestedInnerFocusTrap && nestedInnerFocusTrap.enabled) || false">
+        <div class="demo-focus-trap-region"
+          cdkTrapFocus
+          #nestedInnerFocusTrap="cdkTrapFocus"
+          [class.demo-focus-trap-enabled]="nestedInnerFocusTrap && nestedInnerFocusTrap.enabled">
           <textarea class="demo-focus-trap-element" placeholder="Three"></textarea>
           <textarea class="demo-focus-trap-element" placeholder="Four"></textarea>
         </div>
@@ -42,8 +49,10 @@
       <button mat-raised-button (click)="toggleFocus(tabIndexFocusTrap)">
         {{tabIndexFocusTrap && tabIndexFocusTrap.enabled ? "Disable" : "Enable"}} FocusTrap
        </button>
-      <div class="demo-focus-trap-region" #tabIndexDemoRegion
-        [class.demo-focus-trap-enabled]="(tabIndexFocusTrap && tabIndexFocusTrap.enabled) || false">
+      <div class="demo-focus-trap-region"
+        cdkTrapFocus
+        #tabIndexFocusTrap="cdkTrapFocus"
+        [class.demo-focus-trap-enabled]="tabIndexFocusTrap && tabIndexFocusTrap.enabled">
         <textarea class="demo-focus-trap-element" tabindex="1"
           placeholder="I have tabindex 1"></textarea>
         <textarea class="demo-focus-trap-element" placeholder="One"></textarea>
@@ -56,21 +65,26 @@
 
   <mat-card class="demo-mat-card">
     <mat-toolbar color="primary">Shadow DOMs</mat-toolbar>
-    <mat-card-content class="demo-mat-card-content">
-      <button mat-raised-button (click)="toggleFocus(shadowDomFocusTrap)">
-        {{shadowDomFocusTrap && shadowDomFocusTrap.enabled ? "Disable" : "Enable"}} FocusTrap
-      </button>
-      <div class="demo-focus-trap-region" #shadowDomDemoRegion
-           [class.demo-focus-trap-enabled]="(shadowDomFocusTrap && shadowDomFocusTrap.enabled) || false">
+    <mat-card-content class="demo-mat-card-content" [ngSwitch]="_supportsShadowDom">
+      <ng-container *ngSwitchCase="true">
+        <button mat-raised-button (click)="toggleFocus(shadowDomFocusTrap)">
+          {{shadowDomFocusTrap && shadowDomFocusTrap.enabled ? "Disable" : "Enable"}} FocusTrap
+        </button>
+        <div class="demo-focus-trap-region"
+             cdkTrapFocus
+             #shadowDomFocusTrap="cdkTrapFocus"
+             [class.demo-focus-trap-enabled]="shadowDomFocusTrap && shadowDomFocusTrap.enabled">
+          <shadow-dom-demo>
+            <textarea placeholder="I am in a shadow DOM"></textarea>
+          </shadow-dom-demo>
+          <textarea class="demo-focus-trap-element" placeholder="One"></textarea>
+          <textarea class="demo-focus-trap-element" placeholder="Two"></textarea>
+        </div>
         <shadow-dom-demo>
-          <textarea placeholder="I am in a shadow DOM"></textarea>
+          <textarea class="demo-focus-trap-element" placeholder="I am in a shadow DOM"></textarea>
         </shadow-dom-demo>
-        <textarea class="demo-focus-trap-element" placeholder="One"></textarea>
-        <textarea class="demo-focus-trap-element" placeholder="Two"></textarea>
-      </div>
-      <shadow-dom-demo>
-        <textarea class="demo-focus-trap-element" placeholder="I am in a shadow DOM"></textarea>
-      </shadow-dom-demo>
+      </ng-container>
+      <ng-container *ngSwitchCase="false">Shadow DOM not supported</ng-container>
     </mat-card-content>
   </mat-card>
 
@@ -80,8 +94,10 @@
       <button mat-raised-button (click)="toggleFocus(iframeFocusTrap)">
         {{iframeFocusTrap && iframeFocusTrap.enabled ? "Disable" : "Enable"}} FocusTrap
       </button>
-      <div class="demo-focus-trap-region" #iframeDemoRegion
-           [class.demo-focus-trap-enabled]="(iframeFocusTrap && iframeFocusTrap.enabled) || false">
+      <div class="demo-focus-trap-region"
+           cdkTrapFocus
+           #iframeFocusTrap="cdkTrapFocus"
+           [class.demo-focus-trap-enabled]="iframeFocusTrap && iframeFocusTrap.enabled">
         <iframe class="demo-focus-trap-element"
           srcdoc="<textarea placeholder='I am in an iframe'></textarea>">
         </iframe>
@@ -98,8 +114,10 @@
       <button mat-raised-button (click)="toggleFocus(dynamicFocusTrap)">
         {{dynamicFocusTrap && dynamicFocusTrap.enabled ? "Disable" : "Enable"}} FocusTrap
       </button>
-      <div class="demo-focus-trap-region" #dynamicDemoRegion
-           [class.demo-focus-trap-enabled]="(dynamicFocusTrap && dynamicFocusTrap.enabled) || false">
+      <div class="demo-focus-trap-region"
+           cdkTrapFocus
+           #dynamicFocusTrap="cdkTrapFocus"
+           [class.demo-focus-trap-enabled]="dynamicFocusTrap && dynamicFocusTrap.enabled">
         <textarea class="demo-focus-trap-element" placeholder="One"></textarea>
         <textarea class="demo-focus-trap-element" placeholder="Two"></textarea>
         <button mat-raised-button class="demo-focus-trap-element" (click)="addNewElement()">

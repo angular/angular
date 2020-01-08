@@ -6,14 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
+import {CdkTrapFocus} from '@angular/cdk/a11y';
 import {
   AfterViewInit,
   Component,
   ElementRef,
   ViewChild,
-  ViewEncapsulation} from '@angular/core';
+  ViewEncapsulation,
+  ViewChildren,
+  QueryList,
+} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
+import {_supportsShadowDom} from '@angular/cdk/platform';
 
 @Component({
   selector: 'shadow-dom-demo',
@@ -29,69 +33,28 @@ export class FocusTrapShadowDomDemo {}
   styleUrls: ['focus-trap-demo.css'],
 })
 export class FocusTrapDemo implements AfterViewInit {
+  @ViewChild('newElements')
+  private _newElements: ElementRef<HTMLElement>;
 
-  basicFocusTrap: FocusTrap;
-  @ViewChild('basicDemoRegion', {static: false}) private readonly _basicDemoRegion!: ElementRef;
+  @ViewChildren(CdkTrapFocus)
+  private _focusTraps: QueryList<CdkTrapFocus>;
 
-  nestedOuterFocusTrap: FocusTrap;
-  @ViewChild('nestedOuterDemoRegion', {static: false})
-  private readonly _nestedOuterDemoRegion!: ElementRef;
-  nestedInnerFocusTrap: FocusTrap;
-  @ViewChild('nestedInnerDemoRegion', {static: false})
-  private readonly _nestedInnerDemoRegion!: ElementRef;
+  _supportsShadowDom = _supportsShadowDom();
 
-  tabIndexFocusTrap: FocusTrap;
-  @ViewChild('tabIndexDemoRegion', {static: false})
-  private readonly _tabIndexDemoRegion!: ElementRef;
-
-  shadowDomFocusTrap: FocusTrap;
-  @ViewChild('shadowDomDemoRegion', {static: false})
-  private readonly _shadowDomDemoRegion!: ElementRef;
-
-  iframeFocusTrap: FocusTrap;
-  @ViewChild('iframeDemoRegion', {static: false})
-  private readonly _iframeDemoRegion!: ElementRef;
-
-  dynamicFocusTrap: FocusTrap;
-  @ViewChild('dynamicDemoRegion', {static: false})
-  private readonly _dynamicDemoRegion!: ElementRef;
-  @ViewChild('newElements', {static: false}) private readonly _newElements!: ElementRef;
-
-  constructor(
-    public dialog: MatDialog,
-    private _focusTrapFactory: FocusTrapFactory) {}
+  constructor(public dialog: MatDialog) {}
 
   ngAfterViewInit() {
-    this.basicFocusTrap = this._focusTrapFactory.create(this._basicDemoRegion.nativeElement);
-    this.basicFocusTrap.enabled = false;
-
-    this.nestedOuterFocusTrap = this._focusTrapFactory.create(
-      this._nestedOuterDemoRegion.nativeElement);
-    this.nestedOuterFocusTrap.enabled = false;
-
-    this.nestedInnerFocusTrap = this._focusTrapFactory.create(
-      this._nestedInnerDemoRegion.nativeElement);
-    this.nestedInnerFocusTrap.enabled = false;
-
-    this.tabIndexFocusTrap = this._focusTrapFactory.create(
-      this._tabIndexDemoRegion.nativeElement);
-    this.tabIndexFocusTrap.enabled = false;
-
-    this.shadowDomFocusTrap = this._focusTrapFactory.create(
-      this._shadowDomDemoRegion.nativeElement);
-    this.shadowDomFocusTrap.enabled = false;
-
-    this.iframeFocusTrap = this._focusTrapFactory.create(this._iframeDemoRegion.nativeElement);
-    this.iframeFocusTrap.enabled = false;
-
-    this.dynamicFocusTrap = this._focusTrapFactory.create(this._dynamicDemoRegion.nativeElement);
-    this.dynamicFocusTrap.enabled = false;
+    // We want all the traps to be disabled by default, but doing so while using the value in
+    // the view will result in "changed after checked" errors so we defer it to the next tick.
+    setTimeout(() => {
+      this._focusTraps.forEach(trap => trap.enabled = false);
+    });
   }
 
-  toggleFocus(focusTrap: FocusTrap) {
-    focusTrap.enabled = !focusTrap.enabled;
-    if (focusTrap.enabled) {
-      focusTrap.focusInitialElementWhenReady();
+  toggleFocus(instance: CdkTrapFocus) {
+    instance.enabled = !instance.enabled;
+    if (instance.enabled) {
+      instance.focusTrap.focusInitialElementWhenReady();
     }
   }
 
