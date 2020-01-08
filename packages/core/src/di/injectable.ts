@@ -86,12 +86,6 @@ export const Injectable: InjectableDecorator = makeDecorator(
     'Injectable', undefined, undefined, undefined,
     (type: Type<any>, meta: Injectable) => SWITCH_COMPILE_INJECTABLE(type as any, meta));
 
-/**
- * Type representing injectable service.
- *
- * @publicApi
- */
-export interface InjectableType<T> extends Type<T> { ɵprov: ɵɵInjectableDef<T>; }
 
 /**
  * Supports @Injectable() in JIT mode for Render2.
