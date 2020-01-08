@@ -61,10 +61,9 @@ ts_library(
 
 jasmine_node_test(
     name = "render3",
-    templated_args = ["--node_options=--require=$(rlocation $(location :domino_es5))"],
+    bootstrap = [":domino_es5"],
     deps = [
         ":domino",
-        ":domino_es5",
         ":render3_node_lib",
         "//packages/zone.js/lib",
     ],
