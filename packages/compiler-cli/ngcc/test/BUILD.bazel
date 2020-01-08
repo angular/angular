@@ -33,13 +33,12 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
+    bootstrap = ["//tools/testing:node_no_angular_es5"],
     data = [
         "//packages/compiler-cli/test/ngtsc/fake_core:npm_package",
     ],
-    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_no_angular_es5))"],
     deps = [
         ":test_lib",
-        "//tools/testing:node_no_angular_es5",
     ],
 )
 
@@ -64,6 +63,7 @@ ts_library(
 jasmine_node_test(
     name = "integration",
     timeout = "long",
+    bootstrap = ["//tools/testing:node_no_angular_es5"],
     data = [
         "//packages/common:npm_package",
         "//packages/core:npm_package",
@@ -74,10 +74,8 @@ jasmine_node_test(
         # Disabled in AOT mode because we want ngcc to compile non-AOT Angular packages.
         "no-ivy-aot",
     ],
-    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_no_angular_es5))"],
     deps = [
         ":integration_lib",
-        "//tools/testing:node_no_angular_es5",
         "@npm//canonical-path",
         "@npm//convert-source-map",
     ],

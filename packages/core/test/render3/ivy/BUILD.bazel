@@ -16,14 +16,13 @@ ts_library(
 
 jasmine_node_test(
     name = "ivy",
+    bootstrap = ["//packages/core/test/render3:domino_es5"],
     tags = [
         "ivy-only",
     ],
-    templated_args = ["--node_options=--require=$(rlocation $(location //packages/core/test/render3:domino_es5))"],
     deps = [
         ":ivy_lib",
         "//packages/core/test/render3:domino",
-        "//packages/core/test/render3:domino_es5",
         "//packages/zone.js/lib",
     ],
 )

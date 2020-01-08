@@ -59,8 +59,8 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
+    bootstrap = ["//tools/testing:node_es5"],
     shard_count = 4,
-    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
     deps = [
         ":test_lib",
         ":test_node_only_lib",
@@ -68,7 +68,6 @@ jasmine_node_test(
         "//packages/platform-server/testing",
         "//packages/zone.js/lib:zone_d_ts",
         "//tools/testing:node",
-        "//tools/testing:node_es5",
         "@npm//base64-js",
         "@npm//source-map",
     ],
