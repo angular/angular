@@ -8,8 +8,7 @@
 
 import {DebugElement__PRE_R3__, DebugEventListener, DebugNode__PRE_R3__, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
-import {InjectableType} from '../di/injectable';
-import {getInjectableDef, ɵɵInjectableDef} from '../di/interface/defs';
+import {InjectableType, getInjectableDef, ɵɵInjectableDef} from '../di/interface/defs';
 import {ErrorHandler} from '../error_handler';
 import {Type} from '../interface/type';
 import {ComponentFactory} from '../linker/component_factory';
