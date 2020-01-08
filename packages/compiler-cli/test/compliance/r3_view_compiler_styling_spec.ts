@@ -333,9 +333,9 @@ describe('compiler compliance: styling', () => {
       const template = `
         MyAnimDir.ɵdir = $r3$.ɵɵdefineDirective({
           …
+          hostVars: 1,
           hostBindings: function MyAnimDir_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵallocHostVars(1);
               $r3$.ɵɵcomponentHostSyntheticListener("@myAnim.start", function MyAnimDir_animation_myAnim_start_HostBindingHandler($event) { return ctx.onStart(); })("@myAnim.done", function MyAnimDir_animation_myAnim_done_HostBindingHandler($event) { return ctx.onDone(); });
             } if (rf & 2) {
               $r3$.ɵɵupdateSyntheticHostBinding("@myAnim", ctx.myAnimState);
@@ -1011,11 +1011,9 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
+          hostAttrs: [${AttributeMarker.Classes}, "foo", "baz", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
+          hostVars: 6,
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵallocHostVars(6);
-              $r3$.ɵɵelementHostAttrs($e0_attrs$);
-            }
             if (rf & 2) {
               $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵstyleMap(ctx.myStyle);
@@ -1070,10 +1068,8 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
+          hostVars: 8,
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵallocHostVars(8);
-            }
             if (rf & 2) {
               $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵstyleMap(ctx.myStyle);
@@ -1143,10 +1139,8 @@ describe('compiler compliance: styling', () => {
           `;
 
          const hostBindings = `
+            hostVars: 6,
             hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
-              if (rf & 1) {
-                $r3$.ɵɵallocHostVars(6);
-              }
               if (rf & 2) {
                 $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
                 $r3$.ɵɵstyleMap(ctx.myStyleExp);
@@ -1209,29 +1203,23 @@ describe('compiler compliance: styling', () => {
          // NOTE: IF YOU ARE CHANGING THIS COMPILER SPEC, YOU MAY NEED TO CHANGE THE DIRECTIVE
          // DEF THAT'S HARD-CODED IN `ng_class.ts`.
          const template = `
-          function ClassDirective_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵallocHostVars(2);
-            }
+          hostVars: 2,
+          hostBindings: function ClassDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 2) {
               $r3$.ɵɵclassMap(ctx.myClassMap);
             }
           }
           …
-          function WidthDirective_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵallocHostVars(2);
-            }
+          hostVars: 2,
+          hostBindings: function WidthDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 2) {
               $r3$.ɵɵstyleProp("width", ctx.myWidth);
               $r3$.ɵɵclassProp("foo", ctx.myFooClass);
             }
           }
           …
-          function HeightDirective_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵallocHostVars(2);
-            }
+          hostVars: 2,
+          hostBindings: function HeightDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 2) {
               $r3$.ɵɵstyleProp("height", ctx.myHeight);
               $r3$.ɵɵclassProp("bar", ctx.myBarClass);
@@ -1840,13 +1828,9 @@ describe('compiler compliance: styling', () => {
     };
 
     const template = `
-      const $_c0$ = ["title", "foo title", ${AttributeMarker.Classes}, "foo", "baz", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"];
-      …
+      hostAttrs: ["title", "foo title", ${AttributeMarker.Classes}, "foo", "baz", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
+      hostVars: 6,
       hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
-        if (rf & 1) {
-          $r3$.ɵɵallocHostVars(6);
-          $r3$.ɵɵelementHostAttrs($_c0$);
-        }
         if (rf & 2) {
           $r3$.ɵɵhostProperty("id", ctx.id)("title", ctx.title);
           $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
@@ -1885,10 +1869,8 @@ describe('compiler compliance: styling', () => {
     };
 
     const template = `
-      hostBindings: function WidthDirective_HostBindings(rf, ctx, elIndex) {
-        if (rf & 1) {
-          $r3$.ɵɵallocHostVars(4);
-        }
+    hostVars: 4,
+    hostBindings: function WidthDirective_HostBindings(rf, ctx, elIndex) {
         if (rf & 2) {
           $r3$.ɵɵhostProperty("id", ctx.id)("title", ctx.title);
           $r3$.ɵɵstyleProp("width", ctx.myWidth);
@@ -2051,10 +2033,8 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
+          hostVars: 9,
           hostBindings: function MyDir_HostBindings(rf, ctx, elIndex) {
-            …
-            $r3$.ɵɵallocHostVars(9);
-            …
             if (rf & 2) {
               $r3$.ɵɵhostProperty("title", ctx.title);
               $r3$.ɵɵupdateSyntheticHostBinding("@anim",
