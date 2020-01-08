@@ -1,7 +1,7 @@
 # BEGIN-INTERNAL
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
-load("@npm_bazel_jasmine//:index.bzl", "jasmine_node_test")
 load("@npm_bazel_typescript//:index.bzl", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
 
 ts_library(
     name = "lib",
@@ -95,16 +95,13 @@ jasmine_node_test(
     srcs = [
         ":test_lib",
     ],
+    bootstrap = [":bootstrap_es5"],
     data = glob([
         "test/fixtures/*.ts",
         "test/fixtures/*.patch",
     ]) + [
-        ":bootstrap_es5",
         ":ts-api-guardian",
-        # TODO: remove this once the boostrap.js workaround has been removed.
-        ":package.json",
     ],
-    templated_args = ["--node_options=--require=$(rlocation $(location :bootstrap_es5))"],
 )
 # END-INTERNAL
 
