@@ -346,7 +346,7 @@ def rollup_bundle(name, testonly = False, **kwargs):
             name + ".js",
         ],
         args = [
-            "$(location :%s.es2015.js)" % name,
+            "$(execpath :%s.es2015.js)" % name,
             "--types",
             "--skipLibCheck",
             "--target",
@@ -355,7 +355,7 @@ def rollup_bundle(name, testonly = False, **kwargs):
             "es2015,dom",
             "--allowJS",
             "--outFile",
-            "$(location :%s.js)" % name,
+            "$(execpath :%s.js)" % name,
         ],
         data = [
             name + ".es2015.js",
@@ -377,7 +377,7 @@ def rollup_bundle(name, testonly = False, **kwargs):
             name + ".es5umd.js",
         ],
         args = [
-            "$(location :%s.umd.js)" % name,
+            "$(execpath :%s.umd.js)" % name,
             "--types",
             "--skipLibCheck",
             "--target",
@@ -386,7 +386,7 @@ def rollup_bundle(name, testonly = False, **kwargs):
             "es2015,dom",
             "--allowJS",
             "--outFile",
-            "$(location :%s.es5umd.js)" % name,
+            "$(execpath :%s.es5umd.js)" % name,
         ],
         data = [
             name + ".umd.js",
