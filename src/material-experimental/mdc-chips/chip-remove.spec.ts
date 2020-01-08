@@ -1,7 +1,13 @@
-import {createFakeEvent} from '@angular/cdk/testing/private';
+import {
+  createFakeEvent,
+  dispatchKeyboardEvent,
+  createKeyboardEvent,
+  dispatchEvent,
+} from '@angular/cdk/testing/private';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {SPACE, ENTER} from '@angular/cdk/keycodes';
 import {MatChip, MatChipsModule} from './index';
 
 describe('MDC-based Chip Remove', () => {
@@ -90,6 +96,58 @@ describe('MDC-based Chip Remove', () => {
 
       expect(buttonElement.getAttribute('tabindex')).toBe('0');
       expect(buttonElement.hasAttribute('aria-hidden')).toBe(false);
+    });
+
+    it('should prevent the default SPACE action', () => {
+      const buttonElement = chipNativeElement.querySelector('button')!;
+
+      testChip.removable = true;
+      fixture.detectChanges();
+
+      const event = dispatchKeyboardEvent(buttonElement, 'keydown', SPACE);
+      fixture.detectChanges();
+
+      expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('should not prevent the default SPACE action when a modifier key is pressed', () => {
+      const buttonElement = chipNativeElement.querySelector('button')!;
+
+      testChip.removable = true;
+      fixture.detectChanges();
+
+      const event = createKeyboardEvent('keydown', SPACE);
+      Object.defineProperty(event, 'shiftKey', {get: () => true});
+      dispatchEvent(buttonElement, event);
+      fixture.detectChanges();
+
+      expect(event.defaultPrevented).toBe(false);
+    });
+
+    it('should prevent the default ENTER action', () => {
+      const buttonElement = chipNativeElement.querySelector('button')!;
+
+      testChip.removable = true;
+      fixture.detectChanges();
+
+      const event = dispatchKeyboardEvent(buttonElement, 'keydown', ENTER);
+      fixture.detectChanges();
+
+      expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('should not prevent the default ENTER action when a modifier key is pressed', () => {
+      const buttonElement = chipNativeElement.querySelector('button')!;
+
+      testChip.removable = true;
+      fixture.detectChanges();
+
+      const event = createKeyboardEvent('keydown', ENTER);
+      Object.defineProperty(event, 'shiftKey', {get: () => true});
+      dispatchEvent(buttonElement, event);
+      fixture.detectChanges();
+
+      expect(event.defaultPrevented).toBe(false);
     });
 
   });

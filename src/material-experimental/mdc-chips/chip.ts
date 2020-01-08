@@ -46,6 +46,7 @@ import {
 } from '@angular/material/core';
 import {MDCChipAdapter, MDCChipFoundation} from '@material/chips';
 import {numbers} from '@material/ripple';
+import {SPACE, ENTER, hasModifierKey} from '@angular/cdk/keycodes';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {MatChipAvatar, MatChipTrailingIcon, MatChipRemove} from './chip-icons';
@@ -351,11 +352,23 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
           // event, even ones it doesn't handle, so we want to avoid passing it keyboard events
           // for which we have a custom handler. Note that we assert the type of the event using
           // the `type`, because `instanceof KeyboardEvent` can throw during server-side rendering.
-          if (this.disabled || (event.type.startsWith('key') &&
-            this.HANDLED_KEYS.indexOf((event as KeyboardEvent).keyCode) !== -1)) {
+          const isKeyboardEvent = event.type.startsWith('key');
+
+          if (this.disabled || (isKeyboardEvent &&
+              this.HANDLED_KEYS.indexOf((event as KeyboardEvent).keyCode) !== -1)) {
             return;
           }
+
           this._chipFoundation.handleTrailingIconInteraction(event);
+
+          if (isKeyboardEvent && !hasModifierKey(event as KeyboardEvent)) {
+            const keyCode = (event as KeyboardEvent).keyCode;
+
+            // Prevent default space and enter presses so we don't scroll the page or submit forms.
+            if (keyCode === SPACE || keyCode === ENTER) {
+              event.preventDefault();
+            }
+          }
         });
   }
 
