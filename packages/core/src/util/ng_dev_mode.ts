@@ -65,7 +65,7 @@ declare global {
   }
 }
 
-export let NG_DEV_MODE = ngDevMode;
+export let NG_DEV_MODE = global['ngDevMode'] || undefined;
 
 export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
   const locationString = typeof location !== 'undefined' ? location.toString() : '';
