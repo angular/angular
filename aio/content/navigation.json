@@ -98,6 +98,37 @@
       "tooltip": "The fundamentals of Angular",
       "children": [
         {
+          "title": "Angular Concepts",
+          "tooltip": "Introduction to basic concepts for Angular applications.",
+          "children": [
+            {
+              "url": "guide/architecture",
+              "title": "Intro to Basic Concepts",
+              "tooltip": "Basic building blocks of Angular applications."
+            },
+            {
+              "url": "guide/architecture-modules",
+              "title": "Intro to Modules",
+              "tooltip": "About NgModules."
+            },
+            {
+              "url": "guide/architecture-components",
+              "title": "Intro to Components",
+              "tooltip": "About Components, Templates, and Views."
+            },
+            {
+              "url": "guide/architecture-services",
+              "title": "Intro to Services and DI",
+              "tooltip": "About services and dependency injection."
+            },
+            {
+              "url": "guide/architecture-next-steps",
+              "title": "Next Steps",
+              "tooltip": "Beyond the basics."
+            }
+          ]
+        },
+        {
           "title": "Tour of Heroes App",
           "tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
           "children": [
@@ -141,37 +172,6 @@
             "title": "6. Get Data from a Server",
             "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
           }
-          ]
-        },
-        {
-          "title": "Architecture",
-          "tooltip": "The basic building blocks of Angular applications.",
-          "children": [
-            {
-              "url": "guide/architecture",
-              "title": "Architecture Overview",
-              "tooltip": "Basic building blocks of Angular applications."
-            },
-            {
-              "url": "guide/architecture-modules",
-              "title": "Intro to Modules",
-              "tooltip": "About NgModules."
-            },
-            {
-              "url": "guide/architecture-components",
-              "title": "Intro to Components",
-              "tooltip": "About Components, Templates, and Views."
-            },
-            {
-              "url": "guide/architecture-services",
-              "title": "Intro to Services and DI",
-              "tooltip": "About services and dependency injection."
-            },
-            {
-              "url": "guide/architecture-next-steps",
-              "title": "Next Steps",
-              "tooltip": "Beyond the basics."
-            }
           ]
         },
         {
@@ -298,11 +298,6 @@
           ]
         },
         {
-          "url": "guide/bootstrapping",
-          "title": "Bootstrapping",
-          "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
-        },
-        {
           "title": "NgModules",
           "tooltip": "NgModules.",
           "children": [
@@ -315,6 +310,11 @@
               "url": "guide/ngmodule-vs-jsmodule",
               "title": "JS Modules vs NgModules",
               "tooltip": "Differentiate between JavaScript modules and NgModules."
+            },
+            {
+              "url": "guide/bootstrapping",
+              "title": "App Root NgModule",
+              "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
             },
             {
               "url": "guide/frequent-ngmodules",
