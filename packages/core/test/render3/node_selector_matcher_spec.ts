@@ -10,7 +10,7 @@ import {createTNode} from '@angular/core/src/render3/instructions/shared';
 
 import {AttributeMarker, TAttributes, TNode, TNodeType} from '../../src/render3/interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags} from '../../src/render3/interfaces/projection';
-import {getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorList, stringifyCSSSelectorForBootstrap} from '../../src/render3/node_selector_matcher';
+import {getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorList, stringifyCSSSelector} from '../../src/render3/node_selector_matcher';
 
 function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
   return createTNode(null !, null, TNodeType.Element, 0, tagName, attrs);
@@ -512,43 +512,66 @@ describe('css selector matching', () => {
 describe('stringifyCSSSelectorForBootstrap', () => {
 
   it('should stringify selector with a tag name only',
-     () => { expect(stringifyCSSSelectorForBootstrap(['button'])).toBe('button'); });
+     () => { expect(stringifyCSSSelector(['button'])).toBe('button'); });
 
   it('should stringify selector with attributes', () => {
-    expect(stringifyCSSSelectorForBootstrap(['', 'id', ''])).toBe('[id]');
-    expect(stringifyCSSSelectorForBootstrap(['button', 'id', ''])).toBe('button[id]');
-    expect(stringifyCSSSelectorForBootstrap(['button', 'id', 'value'])).toBe('button[id="value"]');
-    expect(stringifyCSSSelectorForBootstrap([
+    expect(stringifyCSSSelector(['', 'id', ''])).toBe('[id]');
+    expect(stringifyCSSSelector(['button', 'id', ''])).toBe('button[id]');
+    expect(stringifyCSSSelector(['button', 'id', 'value'])).toBe('button[id="value"]');
+    expect(stringifyCSSSelector([
       'button', 'id', 'value', 'title', 'other'
     ])).toBe('button[id="value"][title="other"]');
   });
 
   it('should stringify selector with class names', () => {
-    expect(stringifyCSSSelectorForBootstrap(['', SelectorFlags.CLASS, 'foo'])).toBe('.foo');
-    expect(stringifyCSSSelectorForBootstrap([
-      'button', SelectorFlags.CLASS, 'foo'
-    ])).toBe('button.foo');
+    expect(stringifyCSSSelector(['', SelectorFlags.CLASS, 'foo'])).toBe('.foo');
+    expect(stringifyCSSSelector(['button', SelectorFlags.CLASS, 'foo'])).toBe('button.foo');
 
-    expect(stringifyCSSSelectorForBootstrap([
+    expect(stringifyCSSSelector([
       'button', SelectorFlags.CLASS, 'foo', 'bar'
     ])).toBe('button.foo.bar');
 
-    expect(stringifyCSSSelectorForBootstrap([
-      'button', SelectorFlags.CLASS, 'foo'
-    ])).toBe('button.foo');
+    expect(stringifyCSSSelector(['button', SelectorFlags.CLASS, 'foo'])).toBe('button.foo');
 
-    expect(stringifyCSSSelectorForBootstrap([
+    expect(stringifyCSSSelector([
       'button', 'id', 'value', 'title', 'other', SelectorFlags.CLASS, 'foo', 'bar'
     ])).toBe('button[id="value"][title="other"].foo.bar');
   });
 
-  it('should return `null` in case selector contains `:not()` rule', () => {
-    expect(stringifyCSSSelectorForBootstrap([
-      '', SelectorFlags.CLASS | SelectorFlags.NOT, 'foo'
-    ])).toBe(null);
+  it('should stringify selector with `:not()` rules', () => {
+    expect(stringifyCSSSelector([
+      '', SelectorFlags.CLASS | SelectorFlags.NOT, 'foo', 'bar'
+    ])).toBe(':not(.foo.bar)');
 
-    expect(stringifyCSSSelectorForBootstrap([
+    expect(stringifyCSSSelector([
       'button', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'foo', 'bar'
-    ])).toBe(null);
+    ])).toBe('button:not([foo="bar"])');
+
+    expect(stringifyCSSSelector([
+      '', SelectorFlags.ELEMENT | SelectorFlags.NOT, 'foo'
+    ])).toBe(':not(foo)');
+
+    expect(stringifyCSSSelector([
+      'span', SelectorFlags.CLASS, 'foo', SelectorFlags.CLASS | SelectorFlags.NOT, 'bar', 'baz'
+    ])).toBe('span.foo:not(.bar.baz)');
+
+    expect(stringifyCSSSelector([
+      'span', 'id', 'value', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'title', 'other'
+    ])).toBe('span[id="value"]:not([title="other"])');
+
+    expect(stringifyCSSSelector([
+      '', SelectorFlags.CLASS, 'bar', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'foo', '',
+      SelectorFlags.ELEMENT | SelectorFlags.NOT, 'div'
+    ])).toBe('.bar:not([foo]):not(div)');
+
+    expect(stringifyCSSSelector([
+      'div', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'foo', '', SelectorFlags.CLASS, 'bar',
+      SelectorFlags.CLASS | SelectorFlags.NOT, 'baz'
+    ])).toBe('div:not([foo].bar):not(.baz)');
+
+    expect(stringifyCSSSelector([
+      'div', SelectorFlags.ELEMENT | SelectorFlags.NOT, 'p', SelectorFlags.CLASS, 'bar',
+      SelectorFlags.CLASS | SelectorFlags.NOT, 'baz'
+    ])).toBe('div:not(p.bar):not(.baz)');
   });
 });

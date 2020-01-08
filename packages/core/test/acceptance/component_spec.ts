@@ -341,11 +341,9 @@ describe('component', () => {
   });
 
   it('should preserve component selector in a component factory', () => {
-
     @Component({selector: '[foo]', template: ''})
     class AttSelectorCmp {
     }
-
 
     @NgModule({
       declarations: [AttSelectorCmp],

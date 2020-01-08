@@ -298,36 +298,59 @@ export function isSelectorInSelectorList(selector: CssSelector, list: CssSelecto
   return false;
 }
 
-/**
- * Stringify a selector for the purpose of component bootstrapping. Please note that this function
- * does NOT attempt to stringify all possible forms of a CSS selector but rather focuses on ones
- * most likely used to bootstrap components. Supporting all possible cases would add too much to the
- * framework's size to support just a handful of rare cases.
- */
-export function stringifyCSSSelectorForBootstrap(selector: CssSelector): string|null {
+function maybeWrapInNotSelector(isNegativeMode: boolean, chunk: string): string {
+  return isNegativeMode ? ':not(' + chunk.trim() + ')' : chunk;
+}
+
+export function stringifyCSSSelector(selector: CssSelector): string {
   let result = selector[0] as string;
   let i = 1;
   let mode = SelectorFlags.ATTRIBUTE;
+  let currentChunk = '';
+  let isNegativeMode = false;
   while (i < selector.length) {
     let valueOrMarker = selector[i];
     if (typeof valueOrMarker === 'string') {
-      if (mode === SelectorFlags.ATTRIBUTE) {
+      if (mode & SelectorFlags.ATTRIBUTE) {
         const attrValue = selector[++i] as string;
-        result += '[' + valueOrMarker + (attrValue.length > 0 ? '="' + attrValue + '"' : '') + ']';
-      } else if (mode === SelectorFlags.CLASS) {
-        result += '.' + valueOrMarker;
-      } else if (mode === SelectorFlags.ELEMENT) {
-        result += ' ' + valueOrMarker;
+        currentChunk +=
+            '[' + valueOrMarker + (attrValue.length > 0 ? '="' + attrValue + '"' : '') + ']';
+      } else if (mode & SelectorFlags.CLASS) {
+        currentChunk += '.' + valueOrMarker;
+      } else if (mode & SelectorFlags.ELEMENT) {
+        currentChunk += ' ' + valueOrMarker;
       }
     } else {
-      // Avoid processing CSS selectors with `:not()` in it and return `null` to indicate that
-      // default value should be used as a bootstrap selector.
-      if (valueOrMarker & SelectorFlags.NOT) {
-        return null;
+      //
+      // Append current chunk to the final result in case we come across SelectorFlag, which
+      // indicates that the previous section of a selector is over. We need to accumulate content
+      // between flags to make sure we wrap the chunk later in :not() selector if needed, e.g.
+      // ```
+      //  ['', Flags.CLASS, '.classA', Flags.CLASS | Flags.NOT, '.classB', '.classC']
+      // ```
+      // should be transformed to `.classA :not(.classB .classC)`.
+      //
+      // Note: for negative selector part, we accumulate content between flags until we find the
+      // next negative flag. This is needed to support a case where `:not()` rule contains more than
+      // one chunk, e.g. the following selector:
+      // ```
+      //  ['', Flags.ELEMENT | Flags.NOT, 'p', Flags.CLASS, 'foo', Flags.CLASS | Flags.NOT, 'bar']
+      // ```
+      // should be stringified to `:not(p.foo) :not(.bar)`
+      //
+      if (currentChunk !== '' && !isPositive(valueOrMarker)) {
+        result += maybeWrapInNotSelector(isNegativeMode, currentChunk);
+        currentChunk = '';
       }
       mode = valueOrMarker;
+      // According to CssSelector spec, once we come across `SelectorFlags.NOT` flag, the negative
+      // mode is maintained for remaining chunks of a selector.
+      isNegativeMode = isNegativeMode || !isPositive(mode);
     }
     i++;
+  }
+  if (currentChunk !== '') {
+    result += maybeWrapInNotSelector(isNegativeMode, currentChunk);
   }
   return result;
 }
