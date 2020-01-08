@@ -48,7 +48,7 @@ const ANGULAR_ELEMENTS: ReadonlyArray<ng.CompletionEntry> = [
 // This is adapted from packages/compiler/src/render3/r3_template_transform.ts
 // to allow empty binding names.
 const BIND_NAME_REGEXP =
-    /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*))|\[\(([^\)]*)\)\]|\[([^\]]*)\]|\(([^\)]*)\))$/;
+    /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@|animate-))(.*))|\[\(([^\)]*)\)\]|\[([^\]]*)\]|\(([^\)]*)\))$/;
 enum ATTR {
   // Group 1 = "bind-"
   KW_BIND_IDX = 1,
@@ -71,10 +71,6 @@ enum ATTR {
   // Group 10 = identifier inside ()
   IDENT_EVENT_IDX = 10,
 }
-
-// packages/compiler/src/template_parser/binding_parser.ts#L25
-const ANIMATE_PROP_PREFIX = 'animate-';
-const AT_ANIMATE_PROP_PREFIX = '@';
 
 function isIdentifierPart(code: number) {
   // Identifiers consist of alphanumeric characters, '_', or '$'.
@@ -250,12 +246,12 @@ function attributeCompletions(
       bindParts[ATTR.KW_BIND_IDX] !== undefined ||
       bindParts[ATTR.IDENT_PROPERTY_IDX] !== undefined) {
     const name = bindParts[ATTR.IDENT_KW_IDX] || bindParts[ATTR.IDENT_PROPERTY_IDX] || '';
-    results.push(...propertyBindingCompletions(
-        info, position, parsePropertyBinding(name, attr), elem, ngAttrs));
+    results.push(
+        ...propertyBindingCompletions(info, position, parsePropertyBinding(name, attr), elem));
   } else if (
       bindParts[ATTR.KW_ON_IDX] !== undefined || bindParts[ATTR.IDENT_EVENT_IDX] !== undefined) {
     const name = bindParts[ATTR.IDENT_KW_IDX] || bindParts[ATTR.IDENT_EVENT_IDX] || '';
-    results.push(...eventBindingCompletions(info, position, parseEvent(name, attr), elem, ngAttrs));
+    results.push(...eventBindingCompletions(info, position, parseEvent(name, attr), elem));
   } else if (
       bindParts[ATTR.KW_BINDON_IDX] !== undefined ||
       bindParts[ATTR.IDENT_BANANA_BOX_IDX] !== undefined) {
@@ -286,24 +282,10 @@ class BoundElementPropertyInfo {
   }
 }
 
-function isInAnimationName(bound: BoundEventInfo, templatePosition: number) {
-  const parts = bound.attribute.name.split('.').map(part => part.length);
-  const offset = bound.attribute.sourceSpan.start.offset;
-  return templatePosition <= offset + parts[0];
-}
-
-function isInAnimationPhase(bound: BoundEventInfo, templatePosition: number) {
-  const parts = bound.attribute.name.split('.').map(part => part.length);
-  const offset = bound.attribute.sourceSpan.start.offset + parts[0] + 1;
-  return parts.length >= 2 && offset <= templatePosition && templatePosition <= offset + parts[1];
-}
-
-function isAnimationAttribute(name: string) {
-  return name.startsWith(ANIMATE_PROP_PREFIX) || name.startsWith(AT_ANIMATE_PROP_PREFIX);
-}
-
 function parseEvent(name: string, attr: Attribute) {
-  if (name.startsWith(AT_ANIMATE_PROP_PREFIX)) {
+  const bindParts = name.match(BIND_NAME_REGEXP);
+  if (bindParts && bindParts[ATTR.KW_AT_IDX] !== undefined) {
+    name = bindParts[ATTR.IDENT_KW_IDX];
     name = name.substring(1);
     const match = name.split('.');
     return new BoundEventInfo(match[0], null, match[1], attr, true);
@@ -313,14 +295,10 @@ function parseEvent(name: string, attr: Attribute) {
 }
 
 function parsePropertyBinding(name: string, attr: Attribute) {
-  if (isAnimationAttribute(name)) {
-    if (name.startsWith(ANIMATE_PROP_PREFIX)) {
-      name = name.substring(ANIMATE_PROP_PREFIX.length);
-    }
-    if (name.startsWith(AT_ANIMATE_PROP_PREFIX)) {
-      name = name.substring(AT_ANIMATE_PROP_PREFIX.length);
-    }
-    return new BoundElementPropertyInfo(name, PropertyBindingType.Animation, null, attr);
+  const bindParts = name.match(BIND_NAME_REGEXP);
+  if (bindParts && bindParts[ATTR.KW_AT_IDX] !== undefined) {
+    return new BoundElementPropertyInfo(
+        bindParts[ATTR.IDENT_KW_IDX], PropertyBindingType.Animation, null, attr);
   } else {
     return new BoundElementPropertyInfo(name, PropertyBindingType.Property, null, attr);
   }
@@ -328,11 +306,10 @@ function parsePropertyBinding(name: string, attr: Attribute) {
 
 function animationPropertyBindingCompletions(
     bound: BoundElementPropertyInfo, info: AstResult): string[] {
-  // A special animation control binding called @.disabled.
-  // https://angular.io/guide/transition-and-triggers#disabling-an-animation-on-an-html-element
   if (bound.name.startsWith('.')) {
-    const SPECIAL_ANIMATION_CONTROL = ['disabled'];
-    return SPECIAL_ANIMATION_CONTROL;
+    // A special animation control binding called @.disabled.
+    // https://angular.io/guide/transition-and-triggers#disabling-an-animation-on-an-html-element
+    return ['disabled'];
   } else {
     return animationTriggerCompletions(info);
   }
@@ -340,35 +317,36 @@ function animationPropertyBindingCompletions(
 
 function animationEventBindingCompletions(
     bound: BoundEventInfo, info: AstResult, templatePosition: number): string[] {
-  if (isInAnimationName(bound, templatePosition)) {
+  const parts = bound.attribute.name.split('.').map(part => part.length);
+  const offset = bound.attribute.sourceSpan.start.offset;
+  const isInAnimationName = templatePosition <= offset + parts[0];
+  if (isInAnimationName) {
     return animationTriggerCompletions(info);
+  } else {
+    return ['start', 'done'];
   }
-  if (isInAnimationPhase(bound, templatePosition)) {
-    const ANIMATION_PHASES = ['start', 'done'];
-    return ANIMATION_PHASES;
-  }
-  return [];
 }
 
 // event binding via on- or ()
 function eventBindingCompletions(
-    info: AstResult, templatePosition: number, bound: BoundEventInfo, ele: Element,
-    angularAttributes: AngularAttributes): string[] {
+    info: AstResult, templatePosition: number, bound: BoundEventInfo, ele: Element): string[] {
+  const ngAttrs = angularAttributes(info, ele.name);
   if (bound.isAnimation) {
     return animationEventBindingCompletions(bound, info, templatePosition);
   } else {
-    return eventNames(ele.name).concat(...angularAttributes.outputs);
+    return eventNames(ele.name).concat(...ngAttrs.outputs);
   }
 }
 
 // property binding via bind- or []
 function propertyBindingCompletions(
-    info: AstResult, templatePosition: number, bound: BoundElementPropertyInfo, ele: Element,
-    angularAttributes: AngularAttributes): string[] {
+    info: AstResult, templatePosition: number, bound: BoundElementPropertyInfo,
+    ele: Element): string[] {
+  const ngAttrs = angularAttributes(info, ele.name);
   if (bound.isAnimation) {
     return animationPropertyBindingCompletions(bound, info);
   } else {
-    return propertyNames(ele.name).concat(...angularAttributes.inputs);
+    return propertyNames(ele.name).concat(...ngAttrs.inputs);
   }
 }
 
