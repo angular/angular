@@ -6,12 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// bootstrap the bazel require patch since this bootstrap script is loaded with
-// `--node_options=--require=$(rlocation $(location script.js))`
-if (process.env['BAZEL_NODE_RUNFILES_HELPER']) {
-  require(process.env['BAZEL_NODE_RUNFILES_HELPER'] as string).patchRequire();
-}
-
 // Needed to run animation tests
 import 'zone.js/lib/node/rollup-main';
 import '@angular/compiler'; // For JIT mode. Must be in front of any other @angular/* imports.
