@@ -251,7 +251,10 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     addClassToLeadingIcon: (className) => this.leadingIcon.setClass(className, true),
     removeClassFromLeadingIcon: (className) => this.leadingIcon.setClass(className, false),
     eventTargetHasClass: (target: EventTarget | null, className: string) => {
-      return target ? (target as Element).classList.contains(className) : false;
+      // We need to null check the `classList`, because IE and Edge don't support it on SVG elements
+      // and Edge seems to throw for ripple elements, because they're outside the DOM.
+      return (target && (target as Element).classList) ?
+          (target as Element).classList.contains(className) : false;
     },
     notifyInteraction: () => this.interaction.emit(this.id),
     notifySelection: () => {
