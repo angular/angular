@@ -1,3 +1,13 @@
+<a name="7.2.16"></a>
+## [7.2.16](https://github.com/angular/angular/compare/7.2.15...7.2.16) (2020-01-08)
+
+
+### Security Fixes
+
+*  build: upgrade yargs package to 13.1.0 ([#31457](https://github.com/angular/angular/issues/34157))
+
+This release backports a security patch which fixes a transitive dependency on a vulnerable version of the `mem` package. See [#33933](https://github.com/angular/angular/issues/33933) for details.
+
 <a name="7.2.15"></a>
 ## [7.2.15](https://github.com/angular/angular/compare/7.2.14...7.2.15) (2019-05-07)
 
