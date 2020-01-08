@@ -63,7 +63,6 @@ jasmine_node_test(
     name = "render3",
     bootstrap = [":domino_es5"],
     deps = [
-        ":domino",
         ":render3_node_lib",
         "//packages/zone.js/lib",
     ],
