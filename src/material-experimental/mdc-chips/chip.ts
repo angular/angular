@@ -266,7 +266,13 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
       // future.
     },
     notifyTrailingIconInteraction: () => this.removeIconInteraction.emit(this.id),
-    notifyRemoval: () => this.removed.emit({chip: this}),
+    notifyRemoval: () => {
+      this.removed.emit({ chip: this });
+
+      // When MDC removes a chip it just transitions it to `width: 0px` which means that it's still
+      // in the DOM and it's still focusable. Make it `display: none` so users can't tab into it.
+      this._elementRef.nativeElement.style.display = 'none';
+    },
     getComputedStyleValue: propertyName => {
       // This function is run when a chip is removed so it might be
       // invoked during server-side rendering. Add some extra checks just in case.

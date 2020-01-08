@@ -104,6 +104,17 @@ describe('MDC-based MatChip', () => {
       expect(testComponent.chipRemove).toHaveBeenCalledWith({chip: chipInstance});
     });
 
+    it('should make the chip non-focusable when it is removed', () => {
+      chipInstance.remove();
+      fixture.detectChanges();
+
+      const fakeEvent = createFakeEvent('transitionend');
+      (fakeEvent as any).propertyName = 'width';
+      chipNativeElement.dispatchEvent(fakeEvent);
+
+      expect(chipNativeElement.style.display).toBe('none');
+    });
+
     it('should be able to disable ripples through ripple global options at runtime', () => {
       expect(chipInstance.rippleDisabled).toBe(false, 'Expected chip ripples to be enabled.');
 
