@@ -668,13 +668,11 @@ describe('compiler compliance: bindings', () => {
       };
 
       const HostBindingDirDeclaration = `
-        HostBindingDir.ɵdir = $r3$.ɵɵdefineDirective({
-          type: HostBindingDir,
-          selectors: [["", "hostBindingDir", ""]],
+      HostBindingDir.ɵdir = $r3$.ɵɵdefineDirective({
+        type: HostBindingDir,
+        selectors: [["", "hostBindingDir", ""]],
+          hostVars: 1,
           hostBindings: function HostBindingDir_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵallocHostVars(1);
-            }
             if (rf & 2) {
               $r3$.ɵɵhostProperty("id", ctx.dirId);
             }
@@ -717,10 +715,8 @@ describe('compiler compliance: bindings', () => {
         HostBindingComp.ɵcmp = $r3$.ɵɵdefineComponent({
           type: HostBindingComp,
           selectors: [["host-binding-comp"]],
+          hostVars: 3,
           hostBindings: function HostBindingComp_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵallocHostVars(3);
-            }
             if (rf & 2) {
               $r3$.ɵɵhostProperty("id", $r3$.ɵɵpureFunction1(1, $ff$, ctx.id));
             }
@@ -764,10 +760,8 @@ describe('compiler compliance: bindings', () => {
         HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
+          hostVars: 1,
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵallocHostVars(1);
-            }
             if (rf & 2) {
               $r3$.ɵɵattribute("required", ctx.required);
             }
@@ -803,16 +797,10 @@ describe('compiler compliance: bindings', () => {
       };
 
       const HostAttributeDirDeclaration = `
-        const $c0$ = ["aria-label", "label"];
-        …
         HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
-          hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵelementHostAttrs($c0$);
-            }
-          }
+          hostAttrs: ["aria-label", "label"]
         });
       `;
 
@@ -859,32 +847,20 @@ describe('compiler compliance: bindings', () => {
       };
 
       const CompAndDirDeclaration = `
-        const $c0$ = ["title", "hello there from component", ${AttributeMarker.Styles}, "opacity", "1"];
-        const $c1$ = ["title", "hello there from directive", ${AttributeMarker.Classes}, "one", "two", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"];
-        …
         HostAttributeComp.ɵcmp = $r3$.ɵɵdefineComponent({
           type: HostAttributeComp,
           selectors: [["my-host-attribute-component"]],
-          hostBindings: function HostAttributeComp_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵelementHostAttrs($c0$);
-              …
-            }
-            …
-          }
+          hostAttrs: ["title", "hello there from component", ${AttributeMarker.Styles}, "opacity", "1"],
         …
         HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
+          hostAttrs: ["title", "hello there from directive", ${AttributeMarker.Classes}, "one", "two", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
+          hostVars: 2,
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
-            if (rf & 1) {
-              $r3$.ɵɵallocHostVars(2);
-              $r3$.ɵɵelementHostAttrs($c1$);
-              …
-            }
             …
           }
-      `;
+    `;
 
       const result = compile(files, angularFiles);
       const source = result.source;

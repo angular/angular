@@ -16,7 +16,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 
 import {hyphenate, parse as parseStyle} from './style_parser';
 import {ValueConverter} from './template';
-import {getInterpolationArgsLength} from './util';
+import {DefinitionMap, getInterpolationArgsLength} from './util';
 
 const IMPORTANT_FLAG = '!important';
 
@@ -279,27 +279,11 @@ export class StylingBuilder {
    * responsible for registering initial styles (within a directive hostBindings' creation block),
    * as well as any of the provided attribute values, to the directive host element.
    */
-  buildHostAttrsInstruction(
-      sourceSpan: ParseSourceSpan|null, attrs: o.Expression[],
-      constantPool: ConstantPool): StylingInstruction|null {
+  assignHostAttrs(attrs: o.Expression[], definitionMap: DefinitionMap): void {
     if (this._directiveExpr && (attrs.length || this._hasInitialValues)) {
-      return {
-        reference: R3.elementHostAttrs,
-        calls: [{
-          sourceSpan,
-          allocateBindingSlots: 0,
-          params: () => {
-            // params => elementHostAttrs(attrs)
-            this.populateInitialStylingAttrs(attrs);
-            const attrArray = !attrs.some(attr => attr instanceof o.WrappedNodeExpr) ?
-                getConstantLiteralFromArray(constantPool, attrs) :
-                o.literalArr(attrs);
-            return [attrArray];
-          }
-        }]
-      };
+      this.populateInitialStylingAttrs(attrs);
+      definitionMap.set('hostAttrs', o.literalArr(attrs));
     }
-    return null;
   }
 
   /**
