@@ -10,7 +10,7 @@
 
 'use strict';
 declare let jest: any;
-((_global: any) => {
+Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const __extends = function(d: any, b: any) {
     for (const p in b)
       if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -25,9 +25,9 @@ declare let jest: any;
     // in this case, we are running inside jest not jasmine
     return;
   }
-  if (typeof jasmine == 'undefined') throw new Error('Missing: jasmine.js');
-  if ((jasmine as any)['__zone_patch__'])
-    throw new Error(`'jasmine' has already been patched with 'Zone'.`);
+  if (typeof jasmine == 'undefined' || (jasmine as any)['__zone_patch__']) {
+    return;
+  }
   (jasmine as any)['__zone_patch__'] = true;
 
   const SyncTestZoneSpec: {new (name: string): ZoneSpec} = (Zone as any)['SyncTestZoneSpec'];
@@ -44,15 +44,15 @@ declare let jest: any;
   const symbol = Zone.__symbol__;
 
   // whether patch jasmine clock when in fakeAsync
-  const disablePatchingJasmineClock = _global[symbol('fakeAsyncDisablePatchingClock')] === true;
+  const disablePatchingJasmineClock = global[symbol('fakeAsyncDisablePatchingClock')] === true;
   // the original variable name fakeAsyncPatchLock is not accurate, so the name will be
   // fakeAsyncAutoFakeAsyncWhenClockPatched and if this enablePatchingJasmineClock is false, we also
   // automatically disable the auto jump into fakeAsync feature
   const enableAutoFakeAsyncWhenClockPatched = !disablePatchingJasmineClock &&
-      ((_global[symbol('fakeAsyncPatchLock')] === true) ||
-       (_global[symbol('fakeAsyncAutoFakeAsyncWhenClockPatched')] === true));
+      ((global[symbol('fakeAsyncPatchLock')] === true) ||
+       (global[symbol('fakeAsyncAutoFakeAsyncWhenClockPatched')] === true));
 
-  const ignoreUnhandledRejection = _global[symbol('ignoreUnhandledRejection')] === true;
+  const ignoreUnhandledRejection = global[symbol('ignoreUnhandledRejection')] === true;
 
   if (!ignoreUnhandledRejection) {
     const globalErrors = (jasmine as any).GlobalErrors;
@@ -226,13 +226,13 @@ declare let jest: any;
         })(attrs.onComplete);
       }
 
-      const nativeSetTimeout = _global[Zone.__symbol__('setTimeout')];
-      const nativeClearTimeout = _global[Zone.__symbol__('clearTimeout')];
+      const nativeSetTimeout = global[Zone.__symbol__('setTimeout')];
+      const nativeClearTimeout = global[Zone.__symbol__('clearTimeout')];
       if (nativeSetTimeout) {
         // should run setTimeout inside jasmine outside of zone
         attrs.timeout = {
-          setTimeout: nativeSetTimeout ? nativeSetTimeout : _global.setTimeout,
-          clearTimeout: nativeClearTimeout ? nativeClearTimeout : _global.clearTimeout
+          setTimeout: nativeSetTimeout ? nativeSetTimeout : global.setTimeout,
+          clearTimeout: nativeClearTimeout ? nativeClearTimeout : global.clearTimeout
         };
       }
 
@@ -291,6 +291,7 @@ declare let jest: any;
       // This is the zone which will be used for running individual tests.
       // It will be a proxy zone, so that the tests function can retroactively install
       // different zones.
+      // Example:
       //   - In beforeEach() do childZone = Zone.current.fork(...);
       //   - In it() try to do fakeAsync(). The issue is that because the beforeEach forked the
       //     zone outside of fakeAsync it will be able to escape the fakeAsync rules.
@@ -313,4 +314,4 @@ declare let jest: any;
     };
     return ZoneQueueRunner;
   })(QueueRunner);
-})(typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || global);
+});
