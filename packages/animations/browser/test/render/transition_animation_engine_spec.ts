@@ -176,6 +176,25 @@ const DEFAULT_NAMESPACE_ID = 'id';
         expect(engine.statesByElement.has(child)).toBe(false, 'Expected child data to be cleared.');
       });
 
+      it('should not mark the same element as removed multiple times', () => {
+        const engine = makeEngine();
+        const trig = trigger('myTrigger', [
+          transition(':leave', [style({height: '0px'}), animate(1000, style({height: '100px'}))])
+        ]);
+
+        registerTrigger(element, engine, trig);
+        setProperty(element, engine, 'myTrigger', 'value');
+        engine.flush();
+
+        spyOn(engine, 'markElementAsRemoved').and.callThrough();
+
+        engine.removeNode(DEFAULT_NAMESPACE_ID, element, true, true);
+        engine.removeNode(DEFAULT_NAMESPACE_ID, element, true, true);
+        engine.flush();
+
+        expect(engine.markElementAsRemoved).toHaveBeenCalledTimes(1);
+      });
+
     });
 
     describe('event listeners', () => {

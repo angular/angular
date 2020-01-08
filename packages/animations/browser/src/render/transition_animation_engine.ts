@@ -336,6 +336,12 @@ export class AnimationTransitionNamespace {
   triggerLeaveAnimation(
       element: any, context: any, destroyAfterComplete?: boolean,
       defaultToFallback?: boolean): boolean {
+    const existingRemovalFlag = element[REMOVAL_FLAG];
+    // If there's a removal flag it means that we've triggered the leave animation already.
+    if (existingRemovalFlag && existingRemovalFlag !== NULL_REMOVAL_STATE) {
+      return true;
+    }
+
     const triggerStates = this._engine.statesByElement.get(element);
     if (triggerStates) {
       const players: TransitionAnimationPlayer[] = [];
