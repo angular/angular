@@ -66,7 +66,7 @@ terser_minified(
 )
 
 html_insert_assets(
-    name = "inject_scripts",
+    name = "asset_injected_index_html",
     outs = ["_/index.html"],
     args = [
         "--html",
@@ -94,7 +94,7 @@ pkg_web(
         "@npm//:node_modules/zone.js/dist/zone.min.js",
         ":bundle.min",
         ":global_stylesheet",
-        ":inject_scripts",
+        ":asset_injected_index_html",
         "favicon.ico",
     ],
 )
@@ -127,7 +127,7 @@ ts_devserver(
     static_files = [
         "@npm//:node_modules/zone.js/dist/zone.min.js",
         ":global_stylesheet",
-        ":inject_scripts",
+        ":asset_injected_index_html",
         "favicon.ico",
     ],
     deps = [":src"],
