@@ -102,7 +102,8 @@ export class EsmRenderingFormatter implements RenderingFormatter {
     if (!classSymbol) {
       throw new Error(`Compiled class does not have a valid symbol: ${compiledClass.name}`);
     }
-    const insertionPoint = classSymbol.declaration.valueDeclaration.getEnd();
+    const declarationStatement = getDeclarationStatement(classSymbol.declaration.valueDeclaration);
+    const insertionPoint = declarationStatement.getEnd();
     output.appendLeft(insertionPoint, '\n' + definitions);
   }
 
@@ -273,7 +274,18 @@ export class EsmRenderingFormatter implements RenderingFormatter {
   }
 }
 
-function findStatement(node: ts.Node) {
+function getDeclarationStatement(node: ts.Node): ts.Statement {
+  let statement = node;
+  while (statement) {
+    if (ts.isVariableStatement(statement) || ts.isClassDeclaration(statement)) {
+      return statement;
+    }
+    statement = statement.parent;
+  }
+  throw new Error(`Class is not defined in a declaration statement: ${node.getText()}`);
+}
+
+function findStatement(node: ts.Node): ts.Statement|undefined {
   while (node) {
     if (ts.isExpressionStatement(node) || ts.isReturnStatement(node)) {
       return node;

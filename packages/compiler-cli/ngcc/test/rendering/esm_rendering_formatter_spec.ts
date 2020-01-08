@@ -74,10 +74,12 @@ B.decorators = [
   { type: OtherB },
   { type: Directive, args: [{ selector: '[b]' }] }
 ];
-export class C {}
+var C_1;
+let C = C_1 = class C {};
 C.decorators = [
   { type: Directive, args: [{ selector: '[c]' }] },
 ];
+export C;
 let compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;
 let badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;
 
@@ -222,6 +224,20 @@ SOME DEFINITION TEXT
 A.decorators = [
 `);
       });
+
+      it('should insert the definitions after the variable declaration of class expressions',
+         () => {
+           const {renderer, decorationAnalyses, sourceFile} = setup([PROGRAM]);
+           const output = new MagicString(PROGRAM.contents);
+           const compiledClass =
+               decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
+           renderer.addDefinitions(output, compiledClass, 'SOME DEFINITION TEXT');
+           expect(output.toString()).toContain(`
+let C = C_1 = class C {};
+SOME DEFINITION TEXT
+C.decorators = [
+`);
+         });
     });
 
     describe('addAdjacentStatements', () => {
