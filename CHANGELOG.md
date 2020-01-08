@@ -1,3 +1,35 @@
+<a name="9.0.0-rc.8"></a>
+# [9.0.0-rc.8](https://github.com/angular/angular/compare/9.0.0-rc.7...9.0.0-rc.8) (2020-01-08)
+
+
+### Bug Fixes
+
+* **common:** remove trailing whitespace for CurrencyPipe ([#34642](https://github.com/angular/angular/issues/34642)) ([c42b90b](https://github.com/angular/angular/commit/c42b90b)), closes [#34641](https://github.com/angular/angular/issues/34641)
+* **ivy:** append `advance` instructions before `i18nExp` ([#34436](https://github.com/angular/angular/issues/34436)) ([ba4c31c](https://github.com/angular/angular/commit/ba4c31c))
+* **ivy:** correctly associate output bound events with directives ([#34479](https://github.com/angular/angular/issues/34479)) ([fde5067](https://github.com/angular/angular/commit/fde5067))
+* **ivy:** Ensure ngProjectAs marker name appears at even attribute index ([#34617](https://github.com/angular/angular/issues/34617)) ([4f3215d](https://github.com/angular/angular/commit/4f3215d))
+* **ivy:** skip field inheritance if InheritDefinitionFeature is present on parent def ([#34244](https://github.com/angular/angular/issues/34244)) ([22533fb](https://github.com/angular/angular/commit/22533fb))
+* **ivy:** TestBed not unwrapping imports array function when overriding provider ([#34629](https://github.com/angular/angular/issues/34629)) ([963ed71](https://github.com/angular/angular/commit/963ed71)), closes [#34623](https://github.com/angular/angular/issues/34623)
+* **language-service:** completions after "let x of |" in ngFor ([#34473](https://github.com/angular/angular/issues/34473)) ([ca8b584](https://github.com/angular/angular/commit/ca8b584))
+* **language-service:** correctly parse expressions in an attribute ([#34517](https://github.com/angular/angular/issues/34517)) ([7a0d6e7](https://github.com/angular/angular/commit/7a0d6e7))
+* **language-service:** The pipe method should not include parentheses ([#34485](https://github.com/angular/angular/issues/34485)) ([2845596](https://github.com/angular/angular/commit/2845596))
+* **ngcc:** capture entry-point dependencies from typings as well as source ([#34494](https://github.com/angular/angular/issues/34494)) ([c692757](https://github.com/angular/angular/commit/c692757)), closes [#34411](https://github.com/angular/angular/issues/34411)
+* **ngcc:** do not add trailing commas in UMD imports ([#34545](https://github.com/angular/angular/issues/34545)) ([e6850a3](https://github.com/angular/angular/commit/e6850a3)), closes [#34353](https://github.com/angular/angular/issues/34353) [#34525](https://github.com/angular/angular/issues/34525)
+
+
+### Features
+
+* **compiler:** record end of expression Token ([#33549](https://github.com/angular/angular/issues/33549)) ([8a25cd4](https://github.com/angular/angular/commit/8a25cd4)), closes [#33477](https://github.com/angular/angular/issues/33477)
+* **language-service:** Append symbol type to hover tooltip ([#34515](https://github.com/angular/angular/issues/34515)) ([381b895](https://github.com/angular/angular/commit/381b895))
+* **language-service:** Show documentation on hover ([#34506](https://github.com/angular/angular/issues/34506)) ([1660095](https://github.com/angular/angular/commit/1660095))
+
+
+### Performance Improvements
+
+* **ivy:** support simple generic type constraints in local type ctors ([#34021](https://github.com/angular/angular/issues/34021)) ([88adc30](https://github.com/angular/angular/commit/88adc30))
+
+
+
 <a name="9.0.0-rc.7"></a>
 # [9.0.0-rc.7](https://github.com/angular/angular/compare/9.0.0-rc.6...9.0.0-rc.7) (2019-12-18)
 
