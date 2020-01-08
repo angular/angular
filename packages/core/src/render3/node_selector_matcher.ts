@@ -8,7 +8,7 @@
 
 import '../util/ng_dev_mode';
 
-import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
+import {assertDefined, assertNotEqual} from '../util/assert';
 
 import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';

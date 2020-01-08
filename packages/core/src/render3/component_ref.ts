@@ -36,7 +36,6 @@ import {getTNode} from './util/view_utils';
 import {createElementRef} from './view_engine_compatibility';
 import {RootViewRef, ViewRef} from './view_ref';
 
-
 export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolver {
   /**
    * @param ngModule The NgModuleRef to which all resolved factories are bound.
