@@ -431,10 +431,8 @@ describe('compiler compliance', () => {
         const $_c1$ = function (a0, a1) { return { value: a0, params: a1 }; };
         const $_c2$ = function (a0, a1) { return { collapsedWidth: a0, expandedWidth: a1 }; };
         …
+        hostVars: 14,
         hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
-          if (rf & 1) {
-            $r3$.ɵɵallocHostVars(14);
-          }
           if (rf & 2) {
             $r3$.ɵɵupdateSyntheticHostBinding("@expansionHeight",
                 $r3$.ɵɵpureFunction2(5, $_c1$, ctx.getExpandedState(),
@@ -3499,10 +3497,8 @@ describe('compiler compliance', () => {
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
+        hostVars: 1,
         hostBindings: function BaseClass_HostBindings(rf, ctx, elIndex) {
-          if (rf & 1) {
-            $r3$.ɵɵallocHostVars(1);
-          }
           if (rf & 2) {
             $r3$.ɵɵattribute("tabindex", ctx.tabindex);
           }

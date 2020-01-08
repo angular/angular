@@ -6,16 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../../interface/type';
+import {Type, Writable} from '../../interface/type';
+import {assertEqual} from '../../util/assert';
 import {fillProperties} from '../../util/property';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, HostBindingsFunction, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
+import {AttributeMarker, TAttributes} from '../interfaces/node';
 import {isComponentDef} from '../interfaces/type_checks';
+import {mergeHostAttrs} from '../util/attrs_utils';
 
 export function getSuperType(type: Type<any>): Type<any>&
     {ɵcmp?: ComponentDef<any>, ɵdir?: DirectiveDef<any>} {
   return Object.getPrototypeOf(type.prototype).constructor;
 }
+
+type WritableDef = Writable<DirectiveDef<any>|ComponentDef<any>>;
 
 /**
  * Merges the definition from a super class to a sub class.
@@ -26,6 +31,7 @@ export function getSuperType(type: Type<any>): Type<any>&
 export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
   let superType = getSuperType(definition.type);
   let shouldInheritFields = true;
+  const inheritanceChain: WritableDef[] = [definition];
 
   while (superType) {
     let superDef: DirectiveDef<any>|ComponentDef<any>|undefined = undefined;
@@ -42,9 +48,10 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
 
     if (superDef) {
       if (shouldInheritFields) {
+        inheritanceChain.push(superDef);
         // Some fields in the definition may be empty, if there were no values to put in them that
         // would've justified object creation. Unwrap them if necessary.
-        const writeableDef = definition as any;
+        const writeableDef = definition as WritableDef;
         writeableDef.inputs = maybeUnwrapEmpty(definition.inputs);
         writeableDef.declaredInputs = maybeUnwrapEmpty(definition.declaredInputs);
         writeableDef.outputs = maybeUnwrapEmpty(definition.outputs);
@@ -66,14 +73,14 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
 
         // Inherit hooks
         // Assume super class inheritance feature has already run.
-        definition.afterContentChecked =
-            definition.afterContentChecked || superDef.afterContentChecked;
-        definition.afterContentInit = definition.afterContentInit || superDef.afterContentInit;
-        definition.afterViewChecked = definition.afterViewChecked || superDef.afterViewChecked;
-        definition.afterViewInit = definition.afterViewInit || superDef.afterViewInit;
-        definition.doCheck = definition.doCheck || superDef.doCheck;
-        definition.onDestroy = definition.onDestroy || superDef.onDestroy;
-        definition.onInit = definition.onInit || superDef.onInit;
+        writeableDef.afterContentChecked =
+            writeableDef.afterContentChecked || superDef.afterContentChecked;
+        writeableDef.afterContentInit = definition.afterContentInit || superDef.afterContentInit;
+        writeableDef.afterViewChecked = definition.afterViewChecked || superDef.afterViewChecked;
+        writeableDef.afterViewInit = definition.afterViewInit || superDef.afterViewInit;
+        writeableDef.doCheck = definition.doCheck || superDef.doCheck;
+        writeableDef.onDestroy = definition.onDestroy || superDef.onDestroy;
+        writeableDef.onInit = definition.onInit || superDef.onInit;
       }
 
       // Run parent features
@@ -100,6 +107,28 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
 
     superType = Object.getPrototypeOf(superType);
   }
+  mergeHostAttrsAcrossInheritance(inheritanceChain);
+}
+
+/**
+ * Merge the `hostAttrs` and `hostVars` from the inherited parent to the base class.
+ *
+ * @param inheritanceChain A list of `WritableDefs` starting at the top most type and listing
+ * sub-types in order. For each type take the `hostAttrs` and `hostVars` and merge it with the child
+ * type.
+ */
+function mergeHostAttrsAcrossInheritance(inheritanceChain: WritableDef[]) {
+  let hostVars: number = 0;
+  let hostAttrs: TAttributes|null = null;
+  // We process the inheritance order from the base to the leaves here.
+  for (let i = inheritanceChain.length - 1; i >= 0; i--) {
+    const def = inheritanceChain[i];
+    // For each `hostVars`, we need to add the superclass amount.
+    def.hostVars = (hostVars += def.hostVars);
+    // for each `hostAttrs` we need to merge it with superclass.
+    def.hostAttrs =
+        mergeHostAttrs(def.hostAttrs, hostAttrs = mergeHostAttrs(hostAttrs, def.hostAttrs));
+  }
 }
 
 function maybeUnwrapEmpty<T>(value: T[]): T[];
@@ -114,8 +143,7 @@ function maybeUnwrapEmpty(value: any): any {
   }
 }
 
-function inheritViewQuery(
-    definition: DirectiveDef<any>| ComponentDef<any>, superViewQuery: ViewQueriesFunction<any>) {
+function inheritViewQuery(definition: WritableDef, superViewQuery: ViewQueriesFunction<any>) {
   const prevViewQuery = definition.viewQuery;
   if (prevViewQuery) {
     definition.viewQuery = (rf, ctx) => {
@@ -128,8 +156,7 @@ function inheritViewQuery(
 }
 
 function inheritContentQueries(
-    definition: DirectiveDef<any>| ComponentDef<any>,
-    superContentQueries: ContentQueriesFunction<any>) {
+    definition: WritableDef, superContentQueries: ContentQueriesFunction<any>) {
   const prevContentQueries = definition.contentQueries;
   if (prevContentQueries) {
     definition.contentQueries = (rf, ctx, directiveIndex) => {
@@ -142,8 +169,7 @@ function inheritContentQueries(
 }
 
 function inheritHostBindings(
-    definition: DirectiveDef<any>| ComponentDef<any>,
-    superHostBindings: HostBindingsFunction<any>) {
+    definition: WritableDef, superHostBindings: HostBindingsFunction<any>) {
   const prevHostBindings = definition.hostBindings;
   if (prevHostBindings) {
     definition.hostBindings = (rf: RenderFlags, ctx: any, elementIndex: number) => {

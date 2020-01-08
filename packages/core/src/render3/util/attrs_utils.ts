@@ -5,10 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {assertEqual} from '../../util/assert';
 import {CharCode} from '../../util/char_code';
 import {AttributeMarker, TAttributes} from '../interfaces/node';
 import {CssSelector} from '../interfaces/projection';
 import {ProceduralRenderer3, RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
+
 
 
 /**
@@ -105,4 +107,115 @@ export function isAnimationProp(name: string): boolean {
   // compared to accessing a character at index 0 (ex. name[0]). The main reason for this is that
   // charCodeAt doesn't allocate memory to return a substring.
   return name.charCodeAt(0) === CharCode.AT_SIGN;
+}
+
+/**
+ * Merges `src` `TAttributes` into `dst` `TAttributes` removing any duplicates in the process.
+ *
+ * This merge function keeps the order of attrs same.
+ *
+ * @param dst Location of where the merged `TAttributes` should end up.
+ * @param src `TAttributes` which should be appended to `dst`
+ */
+export function mergeHostAttrs(dst: TAttributes | null, src: TAttributes | null): TAttributes|null {
+  if (src === null || src.length === 0) {
+    // do nothing
+  } else if (dst === null || dst.length === 0) {
+    // We have source, but dst is empty, just make a copy.
+    dst = src.slice();
+  } else {
+    let srcMarker: AttributeMarker = AttributeMarker.ImplicitAttributes;
+    for (let i = 0; i < src.length; i++) {
+      const item = src[i];
+      if (typeof item === 'number') {
+        srcMarker = item;
+      } else {
+        if (srcMarker === AttributeMarker.NamespaceURI) {
+          // Case where we need to consume `key1`, `key2`, `value` items.
+        } else if (
+            srcMarker === AttributeMarker.ImplicitAttributes ||
+            srcMarker === AttributeMarker.Styles) {
+          // Case where we have to consume `key1` and `value` only.
+          mergeHostAttribute(dst, srcMarker, item as string, null, src[++i] as string);
+        } else {
+          // Case where we have to consume `key1` only.
+          mergeHostAttribute(dst, srcMarker, item as string, null, null);
+        }
+      }
+    }
+  }
+  return dst;
+}
+
+/**
+ * Append `key`/`value` to existing `TAttributes` taking region marker and duplicates into account.
+ *
+ * @param dst `TAttributes` to append to.
+ * @param marker Region where the `key`/`value` should be added.
+ * @param key1 Key to add to `TAttributes`
+ * @param key2 Key to add to `TAttributes` (in case of `AttributeMarker.NamespaceURI`)
+ * @param value Value to add or to overwrite to `TAttributes` Only used if `marker` is not Class.
+ */
+export function mergeHostAttribute(
+    dst: TAttributes, marker: AttributeMarker, key1: string, key2: string | null,
+    value: string | null): void {
+  let i = 0;
+  // Assume that new markers will be inserted at the end.
+  let markerInsertPosition = dst.length;
+  // scan until correct type.
+  if (marker === AttributeMarker.ImplicitAttributes) {
+    markerInsertPosition = -1;
+  } else {
+    while (i < dst.length) {
+      const dstValue = dst[i++];
+      if (typeof dstValue === 'number') {
+        if (dstValue === marker) {
+          markerInsertPosition = -1;
+          break;
+        } else if (dstValue > marker) {
+          // We need to save this as we want the markers to be inserted in specific order.
+          markerInsertPosition = i - 1;
+          break;
+        }
+      }
+    }
+  }
+
+  // search until you find place of insertion
+  while (i < dst.length) {
+    const item = dst[i];
+    if (typeof item === 'number') {
+      // since `i` started as the index after the marker, we did not find it if we are at the next
+      // marker
+      break;
+    } else if (item === key1) {
+      // We already have same token
+      if (key2 === null) {
+        if (value !== null) {
+          dst[i + 1] = value;
+        }
+        return;
+      } else if (key2 === dst[i + 1]) {
+        dst[i + 2] = value !;
+        return;
+      }
+    }
+    // Increment counter.
+    i++;
+    if (key2 !== null) i++;
+    if (value !== null) i++;
+  }
+
+  // insert at location.
+  if (markerInsertPosition !== -1) {
+    dst.splice(markerInsertPosition, 0, marker);
+    i = markerInsertPosition + 1;
+  }
+  dst.splice(i++, 0, key1);
+  if (key2 !== null) {
+    dst.splice(i++, 0, key2);
+  }
+  if (value !== null) {
+    dst.splice(i++, 0, value);
+  }
 }
