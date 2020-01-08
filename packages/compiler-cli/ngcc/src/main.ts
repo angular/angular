@@ -17,6 +17,7 @@ import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, getFileSystem, resolv
 
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
 import {DependencyResolver, InvalidEntryPoint, PartiallyOrderedEntryPoints, SortedEntryPointsInfo} from './dependencies/dependency_resolver';
+import {DtsDependencyHost} from './dependencies/dts_dependency_host';
 import {EsmDependencyHost} from './dependencies/esm_dependency_host';
 import {ModuleResolver} from './dependencies/module_resolver';
 import {UmdDependencyHost} from './dependencies/umd_dependency_host';
@@ -35,7 +36,7 @@ import {NgccConfiguration} from './packages/configuration';
 import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {Transformer} from './packages/transformer';
-import {PathMappings, createDtsDependencyHost} from './utils';
+import {PathMappings} from './utils';
 import {FileWriter} from './writing/file_writer';
 import {InPlaceFileWriter} from './writing/in_place_file_writer';
 import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
@@ -164,7 +165,7 @@ export function mainNgcc(
     const esmDependencyHost = new EsmDependencyHost(fileSystem, moduleResolver);
     const umdDependencyHost = new UmdDependencyHost(fileSystem, moduleResolver);
     const commonJsDependencyHost = new CommonJsDependencyHost(fileSystem, moduleResolver);
-    const dtsDependencyHost = createDtsDependencyHost(fileSystem, pathMappings);
+    const dtsDependencyHost = new DtsDependencyHost(fileSystem, pathMappings);
     const dependencyResolver = new DependencyResolver(
         fileSystem, logger, {
           esm5: esmDependencyHost,
