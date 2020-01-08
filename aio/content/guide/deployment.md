@@ -473,7 +473,7 @@ Even as JavaScript continues to evolve, with new features being introduced, not 
 
 The code you write in development using TypeScript is compiled and bundled into ES2015, the JavaScript syntax that is compatible with most browsers.
 All modern browsers support ES2015 and beyond, but in most cases, you still have to account for users accessing your application from a browser that doesn't.
-When targeting older browsers, [polyfills](guide/browser-support#polyfills) can help bridge the gap by providing functionality that doesn't exist in the older versions of JavaScript supported by those browsers. By also compiling the application to ES5 instead of ES2015, the gap can be fully bridged.
+When targeting older browsers, [polyfills](guide/browser-support#polyfills) can help bridge the gap by providing functionality that doesn't exist in the older versions of JavaScript supported by those browsers. To fully bridge the gap, you can compile a version of the application directly to ES5, in addition to the primary version compiled to ES2015.
 
 To maximize compatibility, you could ship an ES5 variant of your application that includes all your compiled code, plus any polyfills that may be needed.
 Users with modern browsers, however, shouldn't have to pay the price of increased bundle size that comes with both the polyfills they don't need and the larger code size for ES5 equivalents of ES2015 code. For example, ES5 does not support classes and they must be transformed into ES5 code that mimics their behavior.
@@ -485,16 +485,16 @@ Differential loading is a strategy that allows your web application to support m
 
 * The second bundle contains code in the old ES5 syntax, along with all necessary polyfills for Angular to function. This results in a larger bundle size, but supports older browsers.
 
-To optimize differential loading build performance, the CLI uses a bundle level transformation process.
+To optimize differential loading build performance, the CLI uses a bundle-level transformation process.
 This process requires that only one full compilation of the application in ES2015 syntax to take place.
-Once this full ES2015 compilation is complete, a post-processing step is performed that transforms each output JavaScript file into an additional ES5 variant. An additional ES5 only polyfills file is also generated that contains the required polyfills for ES5 browsers.
-This process also guarantees that the entire bundled application is ES5 compliant including third-party code.
+Once the full ES2015 compilation is complete, a post-processing step transforms each output JavaScript file into an additional ES5 variant, and generates an additional ES5-only file containing the polyfills that are required for ES5 browsers.
 
-This process is different than changing the compilation target to `es5`.
-When changing the compilation target to `es5`, only the TypeScript application code will be transformed to ES5. For libraries, the ES5 entry point of the library's package will be used directly. If a library does not have one then the main entry point of the library's package will be used instead.
-The main entry point may not contain code that is ES5 compatible.
+ The bundle-level transformation process guarantees that the entire bundled application is ES5 compliant, including any third-party code. This is not the case when you simply change the compilation target to `es5`.
+
+Bundle-level transformation is more efficient and thorough than simply changing the compilation target to `es5`.
+When you change the compilation target to `es5`, only the TypeScript application code is transformed to ES5. For libraries, the ES5 entry point of the library's package is used directly if one exists. If it does not, the main entry point of the library's package is used, and that entry point might contain code that is not ES5-compatible.
 This can result in a bundled application that is a mix of ES5 and ES2015+ code.
-If using a compilation target of `es5`, it is important to ensure that all libraries used by the application provide ES5 compatible code.
+If you do use an `es5` compilation target (rather that the bundle-level transformation), you must ensure that all libraries used by the application provide ES5 compatible code.
 
 ### Differential builds
 
