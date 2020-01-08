@@ -268,11 +268,16 @@ def jasmine_node_test(bootstrap = [], **kwargs):
         "@npm//source-map-support",
         "@npm//tslib",
         "@npm//xhr2",
+        "//tools/testing:bazel_patch_require.js",
     ]
     configuration_env_vars = kwargs.pop("configuration_env_vars", []) + [
         "angular_ivy_enabled",
     ]
-    templated_args = kwargs.pop("templated_args", [])
+    templated_args = [
+        # bazel_patch_require.js must be first
+        # TODO(gregmagolan): remove this once linker has been applied to nodejs_binary targets by default in rules_nodejs
+        "--node_options=--require=$(rlocation $(location //tools/testing:bazel_patch_require.js))",
+    ] + kwargs.pop("templated_args", [])
     for label in bootstrap:
         deps += [label]
         templated_args += ["--node_options=--require=$(rlocation $(location %s))" % label]
