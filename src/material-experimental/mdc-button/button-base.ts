@@ -7,15 +7,7 @@
  */
 
 import {Platform} from '@angular/cdk/platform';
-import {
-  Directive,
-  ElementRef,
-  HostListener,
-  Inject,
-  NgZone,
-  Optional,
-  ViewChild
-} from '@angular/core';
+import {Directive, ElementRef, HostListener, NgZone, ViewChild} from '@angular/core';
 import {
   CanColor,
   CanColorCtor,
@@ -29,7 +21,6 @@ import {
   mixinDisableRipple,
   RippleAnimationConfig
 } from '@angular/material/core';
-import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {numbers} from '@material/ripple';
 
 /** Inputs common to all buttons. */
@@ -104,8 +95,7 @@ export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, Ca
 
   constructor(
       elementRef: ElementRef, public _platform: Platform, public _ngZone: NgZone,
-      // TODO(devversion): Injection can be removed if angular/angular#32981 is fixed.
-      @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
+      public _animationMode?: string) {
     super(elementRef);
 
     const classList = (elementRef.nativeElement as HTMLElement).classList;
@@ -163,8 +153,7 @@ export class MatAnchorBase extends MatButtonBase {
   tabIndex: number;
 
   constructor(elementRef: ElementRef, platform: Platform, ngZone: NgZone,
-              // TODO(devversion): Injection can be removed if angular/angular#32981 is fixed.
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+              animationMode?: string) {
     super(elementRef, platform, ngZone, animationMode);
   }
 
