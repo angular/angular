@@ -14,7 +14,7 @@ import {TConstants, TNode} from '../interfaces/node';
 import {RNode, isProceduralRenderer} from '../interfaces/renderer';
 import {isLContainer, isLView} from '../interfaces/type_checks';
 import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, RENDERER, TData, TVIEW} from '../interfaces/view';
-
+import {NG_DEV_MODE} from '../../util/ng_dev_mode';
 
 
 /**

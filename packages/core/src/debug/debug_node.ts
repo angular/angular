@@ -17,7 +17,7 @@ import {INTERPOLATION_DELIMITER, renderStringify} from '../render3/util/misc_uti
 import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
-
+import {NG_DEV_MODE} from '../util/ng_dev_mode';
 
 /**
  * @publicApi
