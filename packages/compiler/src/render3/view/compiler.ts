@@ -67,7 +67,7 @@ function baseDirectiveFields(
   definitionMap.set(
       'hostBindings', createHostBindingsFunction(
                           meta.host, meta.typeSourceSpan, bindingParser, constantPool,
-                          meta.selector || '', meta.name));
+                          meta.selector || '', meta.name, definitionMap));
 
   // e.g 'inputs: {a: 'a'}`
   definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs, true));
@@ -528,8 +528,8 @@ function createViewQueriesFunction(
 // Return a host binding function or null if one is not necessary.
 function createHostBindingsFunction(
     hostBindingsMetadata: R3HostMetadata, typeSourceSpan: ParseSourceSpan,
-    bindingParser: BindingParser, constantPool: ConstantPool, selector: string,
-    name?: string): o.Expression|null {
+    bindingParser: BindingParser, constantPool: ConstantPool, selector: string, name: string,
+    definitionMap: DefinitionMap): o.Expression|null {
   // Initialize hostVarsCount to number of bound host properties (interpolations illegal)
   const hostVarsCount = Object.keys(hostBindingsMetadata.properties).length;
   const elVarExp = o.variable('elIndex');
@@ -651,14 +651,7 @@ function createHostBindingsFunction(
   // to the host element alongside any of the provided host attributes that were
   // collected earlier.
   const hostAttrs = convertAttributesToExpressions(hostBindingsMetadata.attributes);
-  const hostInstruction = styleBuilder.buildHostAttrsInstruction(null, hostAttrs, constantPool);
-  if (hostInstruction && hostInstruction.calls.length > 0) {
-    createStatements.push(
-        chainedInstruction(
-            hostInstruction.reference,
-            hostInstruction.calls.map(call => convertStylingCall(call, bindingContext, bindingFn)))
-            .toStmt());
-  }
+  styleBuilder.assignHostAttrs(hostAttrs, definitionMap);
 
   if (styleBuilder.hasBindings) {
     // finally each binding that was registered in the statement above will need to be added to
@@ -681,8 +674,7 @@ function createHostBindingsFunction(
   }
 
   if (totalHostVarsCount) {
-    createStatements.unshift(
-        o.importExpr(R3.allocHostVars).callFn([o.literal(totalHostVarsCount)]).toStmt());
+    definitionMap.set('hostVars', o.literal(totalHostVarsCount));
   }
 
   if (createStatements.length > 0 || updateStatements.length > 0) {

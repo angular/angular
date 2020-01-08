@@ -315,6 +315,9 @@
     "name": "getContainerRenderParent"
   },
   {
+    "name": "getCurrentDirectiveDef"
+  },
+  {
     "name": "getDirectiveDef"
   },
   {
@@ -403,6 +406,9 @@
   },
   {
     "name": "getStylingMapArray"
+  },
+  {
+    "name": "getTNode"
   },
   {
     "name": "hasActiveElementFlag"
@@ -544,6 +550,12 @@
   },
   {
     "name": "objectToClassName"
+  },
+  {
+    "name": "prefillHostVars"
+  },
+  {
+    "name": "queueHostBindingForCheck"
   },
   {
     "name": "refreshChildComponents"
@@ -696,6 +708,9 @@
     "name": "writeStylingValueDirectly"
   },
   {
+    "name": "ɵɵallocHostVars"
+  },
+  {
     "name": "ɵɵdefineComponent"
   },
   {
@@ -709,6 +724,9 @@
   },
   {
     "name": "ɵɵelementEnd"
+  },
+  {
+    "name": "ɵɵelementHostAttrs"
   },
   {
     "name": "ɵɵelementStart"

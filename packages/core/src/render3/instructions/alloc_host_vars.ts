@@ -12,6 +12,9 @@ import {LView, TVIEW, TView} from '../interfaces/view';
 import {getCurrentDirectiveDef, getLView} from '../state';
 import {NO_CHANGE} from '../tokens';
 
+// TODO(misko-next): delete alloc_host_vars.ts file.
+// TODO(misko-next): delete `ɵɵallocHostVars`
+
 /**
  * Allocates the necessary amount of slots for host vars.
  *

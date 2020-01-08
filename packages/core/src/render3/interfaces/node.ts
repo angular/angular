@@ -202,6 +202,15 @@ export const enum TNodeProviderIndexes {
  */
 export const enum AttributeMarker {
   /**
+   * An implicit marker which indicates that the value in the array are of `attributeKey`,
+   * `attributeValue` format.
+   *
+   * NOTE: This is implicit as it is the type when no marker is present in array. We indicate that
+   * it should not be present at runtime by the negative number.
+   */
+  ImplicitAttributes = -1,
+
+  /**
    * Marker indicates that the following 3 values in the attributes array are:
    * namespaceUri, attributeName, attributeValue
    * in that order.

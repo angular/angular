@@ -51,7 +51,7 @@ export function ɵɵNgOnChangesFeature<T>(): DirectiveDefFeature {
 function NgOnChangesFeatureImpl<T>(definition: DirectiveDef<T>): void {
   if (definition.type.prototype.ngOnChanges) {
     definition.setInput = ngOnChangesSetInput;
-    definition.onChanges = wrapOnChanges();
+    (definition as{onChanges: Function}).onChanges = wrapOnChanges();
   }
 }
 

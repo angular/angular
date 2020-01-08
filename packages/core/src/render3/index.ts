@@ -24,8 +24,6 @@ export {
   store,
   tick,
 
-  ɵɵallocHostVars,
-
   ɵɵattribute,
   ɵɵattributeInterpolate1,
   ɵɵattributeInterpolate2,
@@ -65,7 +63,6 @@ export {
   ɵɵelementContainerStart,
   ɵɵelementEnd,
 
-  ɵɵelementHostAttrs,
   ɵɵelementStart,
   ɵɵembeddedViewEnd,
 

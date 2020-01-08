@@ -114,7 +114,7 @@ export function renderComponent<T>(
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
   const componentDef = getComponentDef<T>(componentType) !;
-  if (componentDef.type != componentType) componentDef.type = componentType;
+  if (componentDef.type != componentType) (componentDef as{type: Type<any>}).type = componentType;
 
   // The first index of the first selector is the tag name.
   const componentTag = componentDef.selectors ![0] ![0] as string;
@@ -211,7 +211,13 @@ export function createRootComponent<T>(
   }
 
   const rootTNode = getPreviousOrParentTNode();
-  if (tView.firstCreatePass && componentDef.hostBindings) {
+  // TODO(misko-next): This is a temporary work around for the fact that we moved the information
+  // from instruction to declaration. The workaround is to just call the instruction as if it was
+  // part of the `hostAttrs`.
+  // The check for componentDef.hostBindings is wrong since now some directives may not
+  // have componentDef.hostBindings but they still need to process hostVars and hostAttrs
+  if (tView.firstCreatePass && (componentDef.hostBindings || componentDef.hostVars !== 0 ||
+                                componentDef.hostAttrs !== null)) {
     const elementIndex = rootTNode.index - HEADER_OFFSET;
     setActiveHostElement(elementIndex);
     incrementActiveDirectiveId();

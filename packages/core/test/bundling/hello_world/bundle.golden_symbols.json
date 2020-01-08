@@ -105,6 +105,9 @@
     "name": "RENDERER_FACTORY"
   },
   {
+    "name": "RendererStyleFlags3"
+  },
+  {
     "name": "SANITIZER"
   },
   {
@@ -138,10 +141,16 @@
     "name": "_renderCompCount"
   },
   {
+    "name": "addItemToStylingMap"
+  },
+  {
     "name": "addToViewTree"
   },
   {
     "name": "allocLFrame"
+  },
+  {
+    "name": "allocStylingMapArray"
   },
   {
     "name": "appendChild"
@@ -160,6 +169,9 @@
   },
   {
     "name": "callHooks"
+  },
+  {
+    "name": "concatString"
   },
   {
     "name": "createLFrame"
@@ -228,6 +240,9 @@
     "name": "extractPipeDef"
   },
   {
+    "name": "forceStylesAsString"
+  },
+  {
     "name": "generateExpandoInstructionBlock"
   },
   {
@@ -249,6 +264,9 @@
     "name": "getContainerRenderParent"
   },
   {
+    "name": "getCurrentDirectiveDef"
+  },
+  {
     "name": "getDirectiveDef"
   },
   {
@@ -259,6 +277,9 @@
   },
   {
     "name": "getFirstNativeNode"
+  },
+  {
+    "name": "getInitialStylingValue"
   },
   {
     "name": "getInjectorIndex"
@@ -274,6 +295,12 @@
   },
   {
     "name": "getLViewParent"
+  },
+  {
+    "name": "getMapProp"
+  },
+  {
+    "name": "getMapValue"
   },
   {
     "name": "getNativeAnchorNode"
@@ -318,10 +345,19 @@
     "name": "getSelectedIndex"
   },
   {
+    "name": "getStylingMapArray"
+  },
+  {
+    "name": "getTNode"
+  },
+  {
     "name": "hasActiveElementFlag"
   },
   {
     "name": "hasParentInjector"
+  },
+  {
+    "name": "hyphenate"
   },
   {
     "name": "includeViewProviders"
@@ -351,6 +387,9 @@
     "name": "invokeHostBindingsInCreationMode"
   },
   {
+    "name": "isAnimationProp"
+  },
+  {
     "name": "isComponentDef"
   },
   {
@@ -364,6 +403,12 @@
   },
   {
     "name": "isProceduralRenderer"
+  },
+  {
+    "name": "isStylingContext"
+  },
+  {
+    "name": "isStylingValueDefined"
   },
   {
     "name": "leaveDI"
@@ -399,6 +444,15 @@
     "name": "noSideEffects"
   },
   {
+    "name": "objectToClassName"
+  },
+  {
+    "name": "prefillHostVars"
+  },
+  {
+    "name": "queueHostBindingForCheck"
+  },
+  {
     "name": "refreshChildComponents"
   },
   {
@@ -417,6 +471,9 @@
     "name": "refreshView"
   },
   {
+    "name": "registerInitialStylingOnTNode"
+  },
+  {
     "name": "registerPreOrderHooks"
   },
   {
@@ -429,7 +486,13 @@
     "name": "renderComponent"
   },
   {
+    "name": "renderInitialStyling"
+  },
+  {
     "name": "renderStringify"
+  },
+  {
+    "name": "renderStylingMap"
   },
   {
     "name": "renderView"
@@ -450,6 +513,12 @@
     "name": "setBindingRoot"
   },
   {
+    "name": "setClass"
+  },
+  {
+    "name": "setClassName"
+  },
+  {
     "name": "setCurrentDirectiveDef"
   },
   {
@@ -465,13 +534,28 @@
     "name": "setInjectImplementation"
   },
   {
+    "name": "setMapValue"
+  },
+  {
     "name": "setPreviousOrParentTNode"
   },
   {
     "name": "setSelectedIndex"
   },
   {
+    "name": "setStyle"
+  },
+  {
+    "name": "setStyleAttr"
+  },
+  {
+    "name": "setUpAttributes"
+  },
+  {
     "name": "stringifyForError"
+  },
+  {
+    "name": "stylingMapToString"
   },
   {
     "name": "syncViewWithBlueprint"
@@ -480,10 +564,22 @@
     "name": "unwrapRNode"
   },
   {
+    "name": "updateRawValueOnContext"
+  },
+  {
     "name": "viewAttachedToChangeDetector"
   },
   {
+    "name": "writeStylingValueDirectly"
+  },
+  {
+    "name": "ɵɵallocHostVars"
+  },
+  {
     "name": "ɵɵdefineComponent"
+  },
+  {
+    "name": "ɵɵelementHostAttrs"
   },
   {
     "name": "ɵɵtext"
