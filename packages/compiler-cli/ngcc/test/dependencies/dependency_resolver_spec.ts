@@ -12,10 +12,10 @@ import {FileSystem, absoluteFrom, getFileSystem, relativeFrom} from '../../../sr
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {DependencyInfo} from '../../src/dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../../src/dependencies/dependency_resolver';
+import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {EntryPoint} from '../../src/packages/entry_point';
-import {createDtsDependencyHost} from '../../src/utils';
 import {MockLogger} from '../helpers/mock_logger';
 
 
@@ -37,7 +37,7 @@ runInEachFileSystem(() => {
       fs = getFileSystem();
       moduleResolver = new ModuleResolver(fs);
       host = new EsmDependencyHost(fs, moduleResolver);
-      dtsHost = createDtsDependencyHost(fs);
+      dtsHost = new DtsDependencyHost(fs);
       resolver = new DependencyResolver(fs, new MockLogger(), {esm5: host, esm2015: host}, dtsHost);
     });
 
@@ -324,7 +324,7 @@ runInEachFileSystem(() => {
       it('should use the appropriate DependencyHost for each entry-point', () => {
         const esm5Host = new EsmDependencyHost(fs, moduleResolver);
         const esm2015Host = new EsmDependencyHost(fs, moduleResolver);
-        const dtsHost = createDtsDependencyHost(fs);
+        const dtsHost = new DtsDependencyHost(fs);
         resolver = new DependencyResolver(
             fs, new MockLogger(), {esm5: esm5Host, esm2015: esm2015Host}, dtsHost);
         spyOn(esm5Host, 'collectDependencies')

@@ -9,12 +9,13 @@ import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem, relative} from 
 import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {DependencyResolver} from '../../src/dependencies/dependency_resolver';
+import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {TargetedEntryPointFinder} from '../../src/entry_point_finder/targeted_entry_point_finder';
 import {NgccConfiguration} from '../../src/packages/configuration';
 import {EntryPoint} from '../../src/packages/entry_point';
-import {PathMappings, createDtsDependencyHost} from '../../src/utils';
+import {PathMappings} from '../../src/utils';
 import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
@@ -30,7 +31,7 @@ runInEachFileSystem(() => {
       _Abs = absoluteFrom;
       logger = new MockLogger();
       const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs));
-      const dtsHost = createDtsDependencyHost(fs);
+      const dtsHost = new DtsDependencyHost(fs);
       resolver = new DependencyResolver(fs, logger, {esm2015: srcHost}, dtsHost);
       config = new NgccConfiguration(fs, _Abs('/'));
     });
@@ -186,7 +187,7 @@ runInEachFileSystem(() => {
           ...createPackage(_Abs('/path_mapped/dist'), 'pkg5'),
         ]);
         const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings));
-        const dtsHost = createDtsDependencyHost(fs, pathMappings);
+        const dtsHost = new DtsDependencyHost(fs, pathMappings);
         resolver = new DependencyResolver(fs, logger, {esm2015: srcHost}, dtsHost);
         const finder = new TargetedEntryPointFinder(
             fs, config, logger, resolver, basePath, targetPath, pathMappings);
@@ -216,7 +217,7 @@ runInEachFileSystem(() => {
           ...createPackage(_Abs('/path_mapped/dist'), 'pkg2'),
         ]);
         const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings));
-        const dtsHost = createDtsDependencyHost(fs, pathMappings);
+        const dtsHost = new DtsDependencyHost(fs, pathMappings);
         resolver = new DependencyResolver(fs, logger, {esm2015: srcHost}, dtsHost);
         const finder = new TargetedEntryPointFinder(
             fs, config, logger, resolver, basePath, targetPath, pathMappings);
