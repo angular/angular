@@ -718,6 +718,35 @@ describe('completions', () => {
       });
     });
   });
+
+  describe('animation', () => {
+    it('should work with trigger (animate- prefix)', () => {
+      mockHost.override(TEST_TEMPLATE, `<div [animate-~{animate-prefix}]></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'animate-prefix');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.ATTRIBUTE, ['openClose']);
+    });
+    it('should work with trigger (@ prefix)', () => {
+      mockHost.override(
+          TEST_TEMPLATE, `<div (@openClose~{trigger}.done)="onAnimationEvent($event)"></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'trigger');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.ATTRIBUTE, ['openClose']);
+    });
+    it('should work with event', () => {
+      mockHost.override(
+          TEST_TEMPLATE, `<div (@openClose.~{event})="onAnimationEvent($event)"></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'event');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.ATTRIBUTE, ['start']);
+    });
+    it('should work with a special animation control binding', () => {
+      mockHost.override(TEST_TEMPLATE, `<div [@.disabled~{disabled}]></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'disabled');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.ATTRIBUTE, ['disabled']);
+    });
+  });
 });
 
 function expectContain(

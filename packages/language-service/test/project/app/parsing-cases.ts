@@ -10,6 +10,10 @@ import {Component, Directive, EventEmitter, Input, Output} from '@angular/core';
 
 import {Hero} from './app.component';
 
+export function trigger(name: string) {
+  return {name};
+}
+
 @Component({
   template: `
     <h1>
@@ -146,6 +150,7 @@ export class TestComponent {
 
 @Component({
   templateUrl: 'test.ng',
+  animations: [trigger('openClose')],
 })
 export class TemplateReference {
   /**

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, TagContentType, TemplateBinding, Text, getHtmlTagDefinition} from '@angular/compiler';
+import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyBindingType, PropertyRead, TagContentType, TemplateBinding, Text, getHtmlTagDefinition} from '@angular/compiler';
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {AstResult} from './common';
@@ -48,7 +48,7 @@ const ANGULAR_ELEMENTS: ReadonlyArray<ng.CompletionEntry> = [
 // This is adapted from packages/compiler/src/render3/r3_template_transform.ts
 // to allow empty binding names.
 const BIND_NAME_REGEXP =
-    /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*))|\[\(([^\)]*)\)\]|\[([^\]]*)\]|\(([^\)]*)\))$/;
+    /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@|animate-))(.*))|\[\(([^\)]*)\)\]|\[([^\]]*)\]|\(([^\)]*)\))$/;
 enum ATTR {
   // Group 1 = "bind-"
   KW_BIND_IDX = 1,
@@ -172,7 +172,7 @@ export function getTemplateCompletions(
           visitAttribute(ast) {
             if (!ast.valueSpan || !inSpan(templatePosition, spanOf(ast.valueSpan))) {
               // We are in the name of an attribute. Show attribute completions.
-              result = attributeCompletions(templateInfo, path);
+              result = attributeCompletions(templateInfo, path, templatePosition);
             } else if (ast.valueSpan && inSpan(templatePosition, spanOf(ast.valueSpan))) {
               result = attributeValueCompletions(templateInfo, templatePosition, ast);
             }
@@ -216,7 +216,8 @@ export function getTemplateCompletions(
   });
 }
 
-function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ng.CompletionEntry[] {
+function attributeCompletions(
+    info: AstResult, path: AstPath<HtmlAst>, position: number): ng.CompletionEntry[] {
   const attr = path.tail;
   const elem = path.parentOf(attr);
   if (!(attr instanceof Attribute) || !(elem instanceof Element)) {
@@ -244,12 +245,13 @@ function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ng.Compl
   } else if (
       bindParts[ATTR.KW_BIND_IDX] !== undefined ||
       bindParts[ATTR.IDENT_PROPERTY_IDX] !== undefined) {
-    // property binding via bind- or []
-    results.push(...propertyNames(elem.name), ...ngAttrs.inputs);
+    const name = bindParts[ATTR.IDENT_KW_IDX] || bindParts[ATTR.IDENT_PROPERTY_IDX] || '';
+    results.push(
+        ...propertyBindingCompletions(info, position, parsePropertyBinding(name, attr), elem));
   } else if (
       bindParts[ATTR.KW_ON_IDX] !== undefined || bindParts[ATTR.IDENT_EVENT_IDX] !== undefined) {
-    // event binding via on- or ()
-    results.push(...eventNames(elem.name), ...ngAttrs.outputs);
+    const name = bindParts[ATTR.IDENT_KW_IDX] || bindParts[ATTR.IDENT_EVENT_IDX] || '';
+    results.push(...eventBindingCompletions(info, position, parseEvent(name, attr), elem));
   } else if (
       bindParts[ATTR.KW_BINDON_IDX] !== undefined ||
       bindParts[ATTR.IDENT_BANANA_BOX_IDX] !== undefined) {
@@ -263,6 +265,97 @@ function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ng.Compl
       sortText: name,
     };
   });
+}
+
+class BoundEventInfo {
+  constructor(
+      public name: string, public target: string|null, public phase: string|null,
+      public attribute: Attribute, public readonly isAnimation: boolean) {}
+}
+
+class BoundElementPropertyInfo {
+  readonly isAnimation: boolean;
+  constructor(
+      public name: string, public type: PropertyBindingType, public unit: string|null,
+      public attribute: Attribute) {
+    this.isAnimation = this.type === PropertyBindingType.Animation;
+  }
+}
+
+function parseEvent(name: string, attr: Attribute) {
+  const bindParts = name.match(BIND_NAME_REGEXP);
+  if (bindParts && bindParts[ATTR.KW_AT_IDX] !== undefined) {
+    name = bindParts[ATTR.IDENT_KW_IDX];
+    name = name.substring(1);
+    const match = name.split('.');
+    return new BoundEventInfo(match[0], null, match[1], attr, true);
+  } else {
+    return new BoundEventInfo(name, null, null, attr, false);
+  }
+}
+
+function parsePropertyBinding(name: string, attr: Attribute) {
+  const bindParts = name.match(BIND_NAME_REGEXP);
+  if (bindParts && bindParts[ATTR.KW_AT_IDX] !== undefined) {
+    return new BoundElementPropertyInfo(
+        bindParts[ATTR.IDENT_KW_IDX], PropertyBindingType.Animation, null, attr);
+  } else {
+    return new BoundElementPropertyInfo(name, PropertyBindingType.Property, null, attr);
+  }
+}
+
+function animationPropertyBindingCompletions(
+    bound: BoundElementPropertyInfo, info: AstResult): string[] {
+  if (bound.name.startsWith('.')) {
+    // A special animation control binding called @.disabled.
+    // https://angular.io/guide/transition-and-triggers#disabling-an-animation-on-an-html-element
+    return ['disabled'];
+  } else {
+    return animationTriggerCompletions(info);
+  }
+}
+
+function animationEventBindingCompletions(
+    bound: BoundEventInfo, info: AstResult, templatePosition: number): string[] {
+  const parts = bound.attribute.name.split('.').map(part => part.length);
+  const offset = bound.attribute.sourceSpan.start.offset;
+  const isInAnimationName = templatePosition <= offset + parts[0];
+  if (isInAnimationName) {
+    return animationTriggerCompletions(info);
+  } else {
+    return ['start', 'done'];
+  }
+}
+
+// event binding via on- or ()
+function eventBindingCompletions(
+    info: AstResult, templatePosition: number, bound: BoundEventInfo, ele: Element): string[] {
+  const ngAttrs = angularAttributes(info, ele.name);
+  if (bound.isAnimation) {
+    return animationEventBindingCompletions(bound, info, templatePosition);
+  } else {
+    return eventNames(ele.name).concat(...ngAttrs.outputs);
+  }
+}
+
+// property binding via bind- or []
+function propertyBindingCompletions(
+    info: AstResult, templatePosition: number, bound: BoundElementPropertyInfo,
+    ele: Element): string[] {
+  const ngAttrs = angularAttributes(info, ele.name);
+  if (bound.isAnimation) {
+    return animationPropertyBindingCompletions(bound, info);
+  } else {
+    return propertyNames(ele.name).concat(...ngAttrs.inputs);
+  }
+}
+
+function animationTriggerCompletions(info: AstResult): string[] {
+  const template = info.directive.template;
+  if (template) {
+    return template.animations.map(ani => ani.name);
+  }
+  return [];
 }
 
 function attributeCompletionsForElement(
