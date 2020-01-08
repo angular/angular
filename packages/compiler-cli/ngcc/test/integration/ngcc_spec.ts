@@ -172,7 +172,6 @@ runInEachFileSystem(() => {
 
       const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
       expect(jsContents).not.toMatch(/\bconst \w+\s*=/);
-      expect(jsContents).toMatch(/\bvar _c0 =/);
     });
 
     it('should add ɵfac but not duplicate ɵprov properties on injectables', () => {

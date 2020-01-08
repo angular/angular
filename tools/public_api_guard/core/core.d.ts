@@ -680,8 +680,6 @@ export interface OutputDecorator {
 
 export declare function ɵɵadvance(delta: number): void;
 
-export declare function ɵɵallocHostVars(count: number): void;
-
 export declare function ɵɵattribute(name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string): typeof ɵɵattribute;
 
 export declare function ɵɵattributeInterpolate1(attrName: string, prefix: string, v0: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): typeof ɵɵattributeInterpolate1;
@@ -758,6 +756,8 @@ export declare function ɵɵdefineComponent<T>(componentDefinition: {
         [P in keyof T]?: string;
     };
     hostBindings?: HostBindingsFunction<T>;
+    hostVars?: number;
+    hostAttrs?: TAttributes;
     contentQueries?: ContentQueriesFunction<T>;
     exportAs?: string[];
     template: ComponentTemplate<T>;
@@ -783,6 +783,8 @@ export declare const ɵɵdefineDirective: <T>(directiveDefinition: {
     outputs?: { [P_1 in keyof T]?: string | undefined; } | undefined;
     features?: DirectiveDefFeature[] | undefined;
     hostBindings?: HostBindingsFunction<T> | undefined;
+    hostVars?: number | undefined;
+    hostAttrs?: (string | (string | SelectorFlags)[] | AttributeMarker)[] | undefined;
     contentQueries?: ContentQueriesFunction<T> | undefined;
     viewQuery?: ViewQueriesFunction<T> | null | undefined;
     exportAs?: string[] | undefined;
@@ -836,8 +838,6 @@ export declare function ɵɵelementContainerEnd(): void;
 export declare function ɵɵelementContainerStart(index: number, attrsIndex?: number | null, localRefsIndex?: number): void;
 
 export declare function ɵɵelementEnd(): void;
-
-export declare function ɵɵelementHostAttrs(attrs: TAttributes): void;
 
 export declare function ɵɵelementStart(index: number, name: string, attrsIndex?: number | null, localRefsIndex?: number): void;
 

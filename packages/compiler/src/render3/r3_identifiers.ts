@@ -115,8 +115,6 @@ export class Identifiers {
 
   static styleSanitizer: o.ExternalReference = {name: 'ɵɵstyleSanitizer', moduleName: CORE};
 
-  static elementHostAttrs: o.ExternalReference = {name: 'ɵɵelementHostAttrs', moduleName: CORE};
-
   static containerCreate: o.ExternalReference = {name: 'ɵɵcontainer', moduleName: CORE};
 
   static nextContext: o.ExternalReference = {name: 'ɵɵnextContext', moduleName: CORE};
@@ -128,8 +126,6 @@ export class Identifiers {
   static enableBindings: o.ExternalReference = {name: 'ɵɵenableBindings', moduleName: CORE};
 
   static disableBindings: o.ExternalReference = {name: 'ɵɵdisableBindings', moduleName: CORE};
-
-  static allocHostVars: o.ExternalReference = {name: 'ɵɵallocHostVars', moduleName: CORE};
 
   static getCurrentView: o.ExternalReference = {name: 'ɵɵgetCurrentView', moduleName: CORE};
 

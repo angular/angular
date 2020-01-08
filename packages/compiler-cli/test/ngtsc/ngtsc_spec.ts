@@ -2276,9 +2276,9 @@ runInEachFileSystem(os => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       const hostBindingsFn = `
+      hostVars: 3,
       hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
         if (rf & 1) {
-          i0.ɵɵallocHostVars(3);
           i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); })("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, false, i0.ɵɵresolveBody)("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
         }
         if (rf & 2) {
@@ -2312,7 +2312,7 @@ runInEachFileSystem(os => {
     `);
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('i0.ɵɵelementHostAttrs(["test", test])');
+      expect(jsContents).toContain('hostAttrs: ["test", test]');
     });
 
     it('should accept enum values as host bindings', () => {
@@ -4198,10 +4198,8 @@ runInEachFileSystem(os => {
            env.driveMain();
            const jsContents = env.getContents('test.js');
            const hostBindingsFn = `
+        hostVars: 6,
         hostBindings: function UnsafeAttrsDirective_HostBindings(rf, ctx, elIndex) {
-          if (rf & 1) {
-            i0.ɵɵallocHostVars(6);
-          }
           if (rf & 2) {
             i0.ɵɵattribute("href", ctx.attrHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.attrSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.attrAction, i0.ɵɵsanitizeUrl)("profile", ctx.attrProfile, i0.ɵɵsanitizeResourceUrl)("innerHTML", ctx.attrInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.attrSafeTitle);
           }
@@ -4248,10 +4246,8 @@ runInEachFileSystem(os => {
            env.driveMain();
            const jsContents = env.getContents('test.js');
            const hostBindingsFn = `
+        hostVars: 6,
         hostBindings: function UnsafePropsDirective_HostBindings(rf, ctx, elIndex) {
-          if (rf & 1) {
-            i0.ɵɵallocHostVars(6);
-          }
           if (rf & 2) {
             i0.ɵɵhostProperty("href", ctx.propHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.propSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.propAction, i0.ɵɵsanitizeUrl)("profile", ctx.propProfile, i0.ɵɵsanitizeResourceUrl)("innerHTML", ctx.propInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.propSafeTitle);
           }
@@ -4283,10 +4279,8 @@ runInEachFileSystem(os => {
            env.driveMain();
            const jsContents = env.getContents('test.js');
            const hostBindingsFn = `
+        hostVars: 6,
         hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
-          if (rf & 1) {
-            i0.ɵɵallocHostVars(6);
-          }
           if (rf & 2) {
             i0.ɵɵhostProperty("src", ctx.srcProp)("href", ctx.hrefProp)("title", ctx.titleProp);
             i0.ɵɵattribute("src", ctx.srcAttr)("href", ctx.hrefAttr)("title", ctx.titleAttr);

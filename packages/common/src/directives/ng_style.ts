@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Directive, DoCheck, Input, ɵRenderFlags, ɵɵallocHostVars, ɵɵdefineDirective, ɵɵstyleMap} from '@angular/core';
+import {Directive, DoCheck, Input, ɵRenderFlags, ɵɵdefineDirective, ɵɵstyleMap} from '@angular/core';
 
 import {NgStyleImpl, NgStyleImplProvider} from './ng_style_impl';
 
@@ -33,10 +33,8 @@ export const ngStyleFactoryDef__PRE_R3__ = undefined;
 export const ngStyleDirectiveDef__POST_R3__ = ɵɵdefineDirective({
   type: function() {} as any,
   selectors: null as any,
+  hostVars: 2,
   hostBindings: function(rf: ɵRenderFlags, ctx: any, elIndex: number) {
-    if (rf & ɵRenderFlags.Create) {
-      ɵɵallocHostVars(2);
-    }
     if (rf & ɵRenderFlags.Update) {
       ɵɵstyleMap(ctx.getValue());
     }

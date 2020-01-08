@@ -41,6 +41,8 @@ import {getLViewParent} from '../util/view_traversal_utils';
 import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
 
 import {selectIndexInternal} from './advance';
+import {ɵɵallocHostVars} from './alloc_host_vars';
+import {ɵɵelementHostAttrs} from './element';
 import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeConstructor, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor, attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData} from './lview_debug';
 
 
@@ -1110,7 +1112,8 @@ export function resolveDirectives(
       saveNameToExportMap(tView.data !.length - 1, def, exportsMap);
 
       if (def.contentQueries !== null) tNode.flags |= TNodeFlags.hasContentQuery;
-      if (def.hostBindings !== null) tNode.flags |= TNodeFlags.hasHostBindings;
+      if (def.hostBindings !== null || def.hostAttrs !== null || def.hostVars !== 0)
+        tNode.flags |= TNodeFlags.hasHostBindings;
 
       // Only push a node index into the preOrderHooks array if this is the first
       // pre-order hook found on this node.
@@ -1184,7 +1187,7 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
     for (let i = start; i < end; i++) {
       const def = tView.data[i] as DirectiveDef<any>;
       const directive = viewData[i];
-      if (def.hostBindings) {
+      if (def.hostBindings !== null || def.hostVars !== 0 || def.hostAttrs !== null) {
         // It is important that this be called first before the actual instructions
         // are run because this way the first directive ID value is not zero.
         incrementActiveDirectiveId();
@@ -1204,7 +1207,18 @@ export function invokeHostBindingsInCreationMode(
   const previousExpandoLength = expando.length;
   setCurrentDirectiveDef(def);
   const elementIndex = tNode.index - HEADER_OFFSET;
-  def.hostBindings !(RenderFlags.Create, directive, elementIndex);
+  // TODO(misko-next): This is a temporary work around for the fact that we moved the information
+  // from instruction to declaration. The workaround is to just call the instruction as if it was
+  // part of the `hostAttrs`.
+  if (def.hostVars !== 0) {
+    ɵɵallocHostVars(def.hostVars);
+  }
+  if (def.hostAttrs !== null) {
+    ɵɵelementHostAttrs(def.hostAttrs);
+  }
+  if (def.hostBindings !== null) {
+    def.hostBindings !(RenderFlags.Create, directive, elementIndex);
+  }
   setCurrentDirectiveDef(null);
   // `hostBindings` function may or may not contain `allocHostVars` call
   // (e.g. it may not if it only contains host listeners), so we need to check whether
@@ -1336,7 +1350,8 @@ export function initNodeFlags(tNode: TNode, index: number, numberOfDirectives: n
 
 function baseResolveDirective<T>(tView: TView, viewData: LView, def: DirectiveDef<T>) {
   tView.data.push(def);
-  const directiveFactory = def.factory || (def.factory = getFactoryDef(def.type, true));
+  const directiveFactory =
+      def.factory || ((def as{factory: Function}).factory = getFactoryDef(def.type, true));
   const nodeInjectorFactory = new NodeInjectorFactory(directiveFactory, isComponentDef(def), null);
   tView.blueprint.push(nodeInjectorFactory);
   viewData.push(nodeInjectorFactory);

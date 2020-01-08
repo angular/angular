@@ -219,6 +219,7 @@ export function ɵɵelementHostAttrs(attrs: TAttributes) {
   // errors...
   if (tNode.type === TNodeType.Element) {
     const native = getNativeByTNode(tNode, lView) as RElement;
+    // TODO(misko-next): setup attributes need to be moved out of `ɵɵelementHostAttrs`
     const lastAttrIndex = setUpAttributes(lView[RENDERER], native, attrs);
     if (tView.firstCreatePass) {
       const stylingNeedsToBeRendered = registerInitialStylingOnTNode(tNode, attrs, lastAttrIndex);
@@ -233,6 +234,7 @@ export function ɵɵelementHostAttrs(attrs: TAttributes) {
       // attribute values to the element.
       if (stylingNeedsToBeRendered) {
         const renderer = lView[RENDERER];
+        // TODO(misko-next): Styling initialization should move out of `ɵɵelementHostAttrs`
         renderInitialStyling(renderer, native, tNode, true);
       }
     }
