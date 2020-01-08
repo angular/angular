@@ -1,4 +1,4 @@
-# Undecorated Classes Migration
+# Missing `@Directive()`/`@Component()` Decorator Migration
 
 ## What does this migration do?
 

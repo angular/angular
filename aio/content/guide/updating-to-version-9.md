@@ -37,6 +37,7 @@ See our [template type-checking guide](guide/template-typecheck) for more inform
 | [`entryComponents`](api/core/NgModule#entryComponents)                  | none                                 | See [`entryComponents`](guide/deprecations#entryComponents) |
 | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS) | none                                 | See [`ANALYZE_FOR_ENTRY_COMPONENTS`](guide/deprecations#entryComponents) |
 | `ModuleWithProviders` without a generic                                 | `ModuleWithProviders` with a generic | See [`ModuleWithProviders` section](guide/deprecations#moduleWithProviders) |
+| Undecorated base classes that use Angular features                      | Base classes with `@Directive()` decorator that use Angular features | See [undecorated base classes section](guide/deprecations#undecorated-base-classes) |
 | `esm5` and `fesm5` distribution in `@angular/*` npm packages            | `esm2015` and `fesm2015` entrypoints | See [`esm5` and `fesm5`](guide/deprecations#esm5-fesm5) |
 | [`TestBed.get`](api/core/testing/TestBed#get)                           | [`TestBed.inject`](api/core/testing/TestBed#inject) | Same behavior, but type safe. |
 
@@ -81,7 +82,7 @@ In Version 9, Angular Ivy is the default rendering engine. If you haven't heard 
 Read about the migrations the CLI handles for you automatically:
 
 - [Migrating from `Renderer` to `Renderer2`](guide/migration-renderer)
-- [Migrating undecorated classes](guide/migration-undecorated-classes)
+- [Migrating missing `@Directive()`/`@Component()` decorators](guide/migration-undecorated-classes)
 - [Migrating missing `@Injectable()` decorators and incomplete provider definitions](guide/migration-injectable)
 - [Migrating dynamic queries](guide/migration-dynamic-flag)
 - [Migrating to the new `$localize` i18n support](guide/migration-localize)
