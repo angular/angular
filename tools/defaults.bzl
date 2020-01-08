@@ -256,10 +256,11 @@ def nodejs_binary(data = [], **kwargs):
         **kwargs
     )
 
-def jasmine_node_test(deps = [], **kwargs):
+def jasmine_node_test(bootstrap = [], **kwargs):
     """Default values for jasmine_node_test"""
-    deps = deps + [
-        # Very common dependencies for tests
+
+    # Very common dependencies for tests
+    deps = kwargs.pop("deps", []) + [
         "@npm//chokidar",
         "@npm//domino",
         "@npm//jasmine-core",
@@ -268,9 +269,18 @@ def jasmine_node_test(deps = [], **kwargs):
         "@npm//tslib",
         "@npm//xhr2",
     ]
+    configuration_env_vars = kwargs.pop("configuration_env_vars", []) + [
+        "angular_ivy_enabled",
+    ]
+    templated_args = kwargs.pop("templated_args", [])
+    for label in bootstrap:
+        deps += [label]
+        templated_args += ["--node_options=--require=$(rlocation $(location %s))" % label]
+
     _jasmine_node_test(
         deps = deps,
-        configuration_env_vars = ["angular_ivy_enabled"],
+        configuration_env_vars = configuration_env_vars,
+        templated_args = templated_args,
         **kwargs
     )
 
