@@ -37,6 +37,12 @@ describe('MDC-based Chip Remove', () => {
       expect(buttonElement.classList).toContain('mat-mdc-chip-remove');
     });
 
+    it('should ensure that the button cannot submit its parent form', () => {
+      const buttonElement = chipNativeElement.querySelector('button')!;
+
+      expect(buttonElement.getAttribute('type')).toBe('button');
+    });
+
     it('should start MDC exit animation on click', () => {
       let buttonElement = chipNativeElement.querySelector('button')!;
 

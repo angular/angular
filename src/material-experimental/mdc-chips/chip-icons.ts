@@ -112,6 +112,9 @@ const _MatChipRemoveMixinBase:
     '(click)': 'interaction.next($event)',
     '(keydown)': 'interaction.next($event)',
 
+    // Prevent accidental form submissions.
+    'type': 'button',
+
     // We need to remove this explicitly, because it gets inherited from MatChipTrailingIcon.
     '[attr.aria-hidden]': 'null',
   }
