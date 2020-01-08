@@ -30,11 +30,14 @@ import {
   Output,
   ViewEncapsulation,
   ViewChild,
+  OnDestroy,
 } from '@angular/core';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {MatCalendarBody, MatCalendarCell, MatCalendarCellCssClasses} from './calendar-body';
 import {createMissingDateImplError} from './datepicker-errors';
+import {Subscription} from 'rxjs';
+import {startWith} from 'rxjs/operators';
 
 
 const DAYS_PER_WEEK = 7;
@@ -51,7 +54,9 @@ const DAYS_PER_WEEK = 7;
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MatMonthView<D> implements AfterContentInit {
+export class MatMonthView<D> implements AfterContentInit, OnDestroy {
+  private _rerenderSubscription = Subscription.EMPTY;
+
   /**
    * The date to display in this month view (everything other than the month and year is ignored).
    */
@@ -147,7 +152,13 @@ export class MatMonthView<D> implements AfterContentInit {
   }
 
   ngAfterContentInit() {
-    this._init();
+    this._rerenderSubscription = this._dateAdapter.localeChanges
+      .pipe(startWith(null))
+      .subscribe(() => this._init());
+  }
+
+  ngOnDestroy() {
+    this._rerenderSubscription.unsubscribe();
   }
 
   /** Handles when a new date is selected. */

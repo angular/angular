@@ -244,7 +244,7 @@ export declare class MatDatepickerToggleIcon {
     static ɵfac: i0.ɵɵFactoryDef<MatDatepickerToggleIcon>;
 }
 
-export declare class MatMonthView<D> implements AfterContentInit {
+export declare class MatMonthView<D> implements AfterContentInit, OnDestroy {
     _dateAdapter: DateAdapter<D>;
     _firstWeekOffset: number;
     _matCalendarBody: MatCalendarBody;
@@ -271,11 +271,12 @@ export declare class MatMonthView<D> implements AfterContentInit {
     _handleCalendarBodyKeydown(event: KeyboardEvent): void;
     _init(): void;
     ngAfterContentInit(): void;
+    ngOnDestroy(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatMonthView<any>, "mat-month-view", ["matMonthView"], { 'activeDate': "activeDate", 'selected': "selected", 'minDate': "minDate", 'maxDate': "maxDate", 'dateFilter': "dateFilter", 'dateClass': "dateClass" }, { 'selectedChange': "selectedChange", '_userSelection': "_userSelection", 'activeDateChange': "activeDateChange" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatMonthView<any>>;
 }
 
-export declare class MatMultiYearView<D> implements AfterContentInit {
+export declare class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
     _dateAdapter: DateAdapter<D>;
     _matCalendarBody: MatCalendarBody;
     _selectedYear: number | null;
@@ -296,11 +297,12 @@ export declare class MatMultiYearView<D> implements AfterContentInit {
     _init(): void;
     _yearSelected(year: number): void;
     ngAfterContentInit(): void;
+    ngOnDestroy(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatMultiYearView<any>, "mat-multi-year-view", ["matMultiYearView"], { 'activeDate': "activeDate", 'selected': "selected", 'minDate': "minDate", 'maxDate': "maxDate", 'dateFilter': "dateFilter" }, { 'selectedChange': "selectedChange", 'yearSelected': "yearSelected", 'activeDateChange': "activeDateChange" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatMultiYearView<any>>;
 }
 
-export declare class MatYearView<D> implements AfterContentInit {
+export declare class MatYearView<D> implements AfterContentInit, OnDestroy {
     _dateAdapter: DateAdapter<D>;
     _matCalendarBody: MatCalendarBody;
     _months: MatCalendarCell[][];
@@ -321,6 +323,7 @@ export declare class MatYearView<D> implements AfterContentInit {
     _init(): void;
     _monthSelected(month: number): void;
     ngAfterContentInit(): void;
+    ngOnDestroy(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatYearView<any>, "mat-year-view", ["matYearView"], { 'activeDate': "activeDate", 'selected': "selected", 'minDate': "minDate", 'maxDate': "maxDate", 'dateFilter': "dateFilter" }, { 'selectedChange': "selectedChange", 'monthSelected': "monthSelected", 'activeDateChange': "activeDateChange" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatYearView<any>>;
 }

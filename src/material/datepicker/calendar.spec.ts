@@ -283,6 +283,45 @@ describe('MatCalendar', () => {
       });
     });
 
+    it('should re-render the month view when the locale changes',
+      inject([DateAdapter], (adapter: DateAdapter<Date>) => {
+        fixture.detectChanges();
+        spyOn(calendarInstance.monthView, '_init').and.callThrough();
+
+        adapter.setLocale('bg-BG');
+        fixture.detectChanges();
+
+        expect(calendarInstance.monthView._init).toHaveBeenCalled();
+      }));
+
+    it('should re-render the year view when the locale changes',
+      inject([DateAdapter], (adapter: DateAdapter<Date>) => {
+        periodButton.click();
+        fixture.detectChanges();
+
+        (calendarElement.querySelector('.mat-calendar-body-active') as HTMLElement).click();
+        fixture.detectChanges();
+
+        spyOn(calendarInstance.yearView, '_init').and.callThrough();
+
+        adapter.setLocale('bg-BG');
+        fixture.detectChanges();
+
+        expect(calendarInstance.yearView._init).toHaveBeenCalled();
+      }));
+
+    it('should re-render the multi-year view when the locale changes',
+      inject([DateAdapter], (adapter: DateAdapter<Date>) => {
+        periodButton.click();
+        fixture.detectChanges();
+
+        spyOn(calendarInstance.multiYearView, '_init').and.callThrough();
+
+        adapter.setLocale('bg-BG');
+        fixture.detectChanges();
+
+        expect(calendarInstance.multiYearView._init).toHaveBeenCalled();
+      }));
   });
 
   describe('calendar with min and max date', () => {
