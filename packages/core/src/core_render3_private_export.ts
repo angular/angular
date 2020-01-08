@@ -117,7 +117,6 @@ export {
   ɵɵreference,
   ɵɵenableBindings,
   ɵɵdisableBindings,
-  ɵɵallocHostVars,
   ɵɵelementContainerStart,
   ɵɵelementContainerEnd,
   ɵɵelementContainer,
@@ -144,7 +143,6 @@ export {
   ɵɵstylePropInterpolate8,
   ɵɵstylePropInterpolateV,
   ɵɵclassProp,
-  ɵɵelementHostAttrs,
 
   ɵɵselect,
   ɵɵadvance,
