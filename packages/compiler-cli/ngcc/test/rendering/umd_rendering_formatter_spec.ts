@@ -205,7 +205,8 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
             file);
         expect(output.toString())
             .toContain(
-                `typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports,require('@angular/core'),require('@angular/common'),require('some-side-effect'),require('/local-dep'),require('@angular/core')) :`);
+                `typeof exports === 'object' && typeof module !== 'undefined' ? ` +
+                `factory(require('@angular/core'),require('@angular/common'),exports,require('some-side-effect'),require('/local-dep'),require('@angular/core')) :`);
       });
 
       it('should append the given imports into the AMD initialization', () => {
@@ -221,7 +222,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
             file);
         expect(output.toString())
             .toContain(
-                `typeof define === 'function' && define.amd ? define('file', ['exports','@angular/core','@angular/common','some-side-effect','/local-dep','@angular/core'], factory) :`);
+                `typeof define === 'function' && define.amd ? define('file', ['@angular/core','@angular/common','exports','some-side-effect','/local-dep','@angular/core'], factory) :`);
       });
 
       it('should append the given imports into the global initialization', () => {
@@ -237,7 +238,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
             file);
         expect(output.toString())
             .toContain(
-                `(factory(global.file,global.ng.core,global.ng.common,global.someSideEffect,global.localDep,global.ng.core));`);
+                `(factory(global.ng.core,global.ng.common,global.file,global.someSideEffect,global.localDep,global.ng.core));`);
       });
 
       it('should remap import identifiers to valid global properties', () => {
@@ -255,9 +256,9 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
             file);
         expect(output.toString())
             .toContain(
-                `(factory(global.file,` +
+                `(factory(` +
                 `global.ngrx.store,global.ng.platformBrowserDynamic,global.ng.common.testing,global.angularFoo.package,` +
-                `global.someSideEffect,global.localDep,global.ng.core));`);
+                `global.file,global.someSideEffect,global.localDep,global.ng.core));`);
       });
 
       it('should append the given imports into the global initialization, if it has a global/self initializer',
@@ -274,7 +275,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
                file);
            expect(output.toString())
                .toContain(
-                   `(global = global || self, factory(global.file,global.ng.core,global.ng.common,global.someSideEffect,global.localDep,global.ng.core));`);
+                   `(global = global || self, factory(global.ng.core,global.ng.common,global.file,global.someSideEffect,global.localDep,global.ng.core));`);
          });
 
       it('should append the given imports as parameters into the factory function definition',
@@ -290,7 +291,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
                ],
                file);
            expect(output.toString())
-               .toContain(`(function (exports,i0,i1,someSideEffect,localDep,core) {'use strict';`);
+               .toContain(`(function (i0,i1,exports,someSideEffect,localDep,core) {'use strict';`);
          });
 
       it('should handle the case where there were no prior imports nor exports', () => {
@@ -367,13 +368,13 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
 
         expect(outputSrc).toContain(
             `typeof exports === 'object' && typeof module !== 'undefined' ? ` +
-            `factory(exports,require('@angular/core'),require('@angular/common'),require('/local-dep'),require('@angular/core'),require('some-side-effect')) :`);
+            `factory(require('@angular/core'),require('@angular/common'),exports,require('/local-dep'),require('@angular/core'),require('some-side-effect')) :`);
         expect(outputSrc).toContain(
             `typeof define === 'function' && define.amd ? define('file', ` +
-            `['exports','@angular/core','@angular/common','/local-dep','@angular/core','some-side-effect'], factory) :`);
+            `['@angular/core','@angular/common','exports','/local-dep','@angular/core','some-side-effect'], factory) :`);
         expect(outputSrc).toContain(
-            `(factory(global.file,global.ng.core,global.ng.common,global.localDep,global.ng.core,global.someSideEffect));`);
-        expect(outputSrc).toContain(`(function (exports,i0,i1,localDep,core) {'use strict';`);
+            `(factory(global.ng.core,global.ng.common,global.file,global.localDep,global.ng.core,global.someSideEffect));`);
+        expect(outputSrc).toContain(`(function (i0,i1,exports,localDep,core) {'use strict';`);
       });
     });
 
