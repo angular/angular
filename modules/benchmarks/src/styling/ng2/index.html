@@ -11,9 +11,10 @@
   <h2>Styling bindings benchmark</h2>
   <p>
     <select id="scenario-select">
+      <!-- *Note*: When adding/removing scenarios, ensure the e2e test is also updated. -->
       <option value="0">(0) [title]="exp" (no styling involved)</option>
       <option value="1">(1) class="foo" (static class)</option>
-      <option value="2">(2) class="foo {{exp}}" (className binding)</option>
+      <option value="2">(2) class="foo {{exp}}" (class interpolation)</option>
       <option value="3">(3) [class.foo]="boolExp" binding</option>
       <option value="4">(4) class="foo" [class.bar]="boolExp" (mix of static and class. bindings</option>
       <option value="5">(5) class="foo" [ngClass]="{bar: boolExp}" (mix of static class and ngClass binding)</option>

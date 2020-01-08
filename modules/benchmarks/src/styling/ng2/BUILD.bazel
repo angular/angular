@@ -1,4 +1,5 @@
 load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
@@ -29,4 +30,10 @@ ts_devserver(
     port = 4200,
     static_files = ["index.html"],
     deps = [":bundle.min_debug.es2015.js"],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":prodserver",
+    deps = ["//modules/benchmarks/src/styling:tests_lib"],
 )
