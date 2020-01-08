@@ -19,6 +19,5 @@ jasmine_node_test(
         ":test_lib",
         "//packages/service-worker/config",
         "//packages/service-worker/config/testing",
-        "//tools/testing:node",
     ],
 )

@@ -27,6 +27,5 @@ jasmine_node_test(
     name = "strict_types",
     deps = [
         ":strict_types_lib",
-        "//tools/testing:node",
     ],
 )

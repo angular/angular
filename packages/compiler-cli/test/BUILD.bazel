@@ -53,7 +53,6 @@ jasmine_node_test(
         ":extract_i18n_lib",
         "//packages/common:npm_package",
         "//packages/core",
-        "//tools/testing:node",
         "@npm//minimist",
     ],
 )
@@ -91,7 +90,6 @@ jasmine_node_test(
     deps = [
         ":ngc_lib",
         "//packages/core",
-        "//tools/testing:node",
         "@npm//minimist",
         "@npm//rxjs",
         "@npm//tsickle",
@@ -123,7 +121,6 @@ jasmine_node_test(
     deps = [
         ":perform_watch_lib",
         "//packages/core",
-        "//tools/testing:node",
     ],
 )
 
@@ -150,6 +147,5 @@ jasmine_node_test(
     deps = [
         ":perform_compile_lib",
         "//packages/core",
-        "//tools/testing:node",
     ],
 )

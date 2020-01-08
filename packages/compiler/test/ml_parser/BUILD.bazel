@@ -16,7 +16,6 @@ jasmine_node_test(
     bootstrap = ["//tools/testing:node_es5"],
     deps = [
         ":ml_parser_lib",
-        "//tools/testing:node",
     ],
 )
 

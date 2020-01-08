@@ -81,6 +81,5 @@ jasmine_node_test(
     bootstrap = ["//tools/testing:node_es5"],
     deps = [
         ":core_tests_lib",
-        "//tools/testing:node",
     ],
 )
