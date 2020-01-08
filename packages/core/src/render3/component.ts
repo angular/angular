@@ -11,7 +11,7 @@
 import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {Sanitizer} from '../sanitization/sanitizer';
-import {assertDataInRange} from '../util/assert';\
+import {assertDataInRange} from '../util/assert';
 import {NG_DEV_MODE} from '../util/ng_dev_mode';
 
 import {assertComponentType} from './assert';
