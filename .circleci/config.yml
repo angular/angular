@@ -766,11 +766,14 @@ jobs:
           command: yarn --ignore-engines --cwd ${MATERIAL_REPO_TMP_DIR} install --frozen-lockfile --non-interactive
       - run:
           # Install TypeScript 3.7
-          name: Installing TypeScript 3.7 on Material dependencies.
+          name: Installing TypeScript 3.7 and TSickle 0.38 on Material dependencies.
           # TODO: remove this once the repo has been updated to use TypeScript 3.7.
           # While built Angular packages support both TS 3.6 and 3.7, @angular/bazel itself only
           # supports TS 3.7 because TSickle 0.38.0 only supports TS 3.7.
-          command: yarn --ignore-engines --cwd ${MATERIAL_REPO_TMP_DIR} add typescript@3.7.4 --dev
+          # It shouldn't be necessary to install tsickle, but it's referenced in material and
+          # doesn't seem to be in the dependencies. Unsure how this worked before.
+          # https://github.com/angular/components/blob/636ae5c8754008bfcf4b2f3953c6b2c5a7e27a1a/tools/bazel/BUILD.bazel#L12
+          command: yarn --ignore-engines --cwd ${MATERIAL_REPO_TMP_DIR} add typescript@3.7.4 tsickle@0.38.0 --dev
       - save_cache:
           key: *material_unit_tests_cache_key
           paths:
