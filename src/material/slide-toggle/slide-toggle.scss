@@ -217,34 +217,17 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 }
 
 /** Custom styling to make the slide-toggle usable in high contrast mode. */
-@include cdk-high-contrast() {
-  .mat-slide-toggle-thumb {
-    background: #fff;
-    border: 1px solid #000;
-
-    .mat-slide-toggle.mat-checked & {
-      background: #000;
-      border: 1px solid #fff;
-    }
+@include cdk-high-contrast {
+  .mat-slide-toggle-thumb,
+  .mat-slide-toggle-bar {
+    border: 1px solid;
   }
 
-  .mat-slide-toggle-bar {
-    background: #fff;
-
-    // As a focus indication in high contrast mode, we add a dotted outline to the slide-toggle
-    // bar. Since the bar element does not have any padding, we need to specify an outline offset
-    // because otherwise the opaque thumb element will hide the outline.
-    .mat-slide-toggle.cdk-keyboard-focused & {
-      outline: 1px dotted;
-      outline-offset: ($mat-slide-toggle-height - $mat-slide-toggle-bar-height) / 2;
-    }
-  }
-}
-
-// Since the bar with a white background will be placed on a white background, we need to a black
-// border in order to make sure that the bar is visible.
-@include cdk-high-contrast(black-on-white) {
-  .mat-slide-toggle-bar {
-    border: 1px solid #000;
+  // As a focus indication in high contrast mode, we add a dotted outline to the slide-toggle
+  // bar. Since the bar element does not have any padding, we need to specify an outline offset
+  // because otherwise the opaque thumb element will hide the outline.
+  .mat-slide-toggle.cdk-keyboard-focused .mat-slide-toggle-bar {
+    outline: 2px dotted;
+    outline-offset: ($mat-slide-toggle-height - $mat-slide-toggle-bar-height) / 2;
   }
 }
