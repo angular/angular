@@ -13,14 +13,19 @@
     "module": "es2015",
     "target": "es2015",
     "lib": [
-      // DO NOT ADD other libs unless we absolutely positively want them to be available to all compilation units
-      // this includes, node.js programs, webworker programs, etc.
+      // DO NOT ADD other libs unless we absolutely positively want them to be available to all compilation units.
+      // This includes browser, node.js, webworker programs, etc.
       // In order to define custom `lib`, create a custom tsconfig that extends from this one and configure `lib` there.
       "es2015",
     ],
     "skipLibCheck": true,
-    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
-    "types": [],
+    "types": [
+      // DO NOT ADD any types in here unless we absolutely positively want them to be available to all compilation units.
+      // This includes browser, node.js, webworker programs, etc.
+      // We explicitly set types to [] so that we disable auto-discovery feature of tsc that would otherwise find
+      // @types/node and other types in our mono-repos node_modules and that would then result in tsc emitting
+      // a ///<reference in the .d.ts output
+    ],
     "sourceMap": true,
     "inlineSources": true,
     "importHelpers": true

@@ -1,0 +1,15 @@
+/**
+ * tsconfig file for use building all Angular libraries that run in the browser
+ */
+{
+  "extends": "../tsconfig-defaults.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "lib": [
+      "ES2017"
+    ],
+    "types": [
+      "node",
+    ]
+  }
+}

@@ -24,15 +24,21 @@ ts_config(
 )
 
 ts_config(
+    name = "tsconfig-node",
+    src = "tsconfig-node.json",
+    deps = ["//:tsconfig-defaults.json"],
+)
+
+ts_config(
     name = "tsconfig-test",
     src = "tsconfig-test.json",
-    deps = [":tsconfig-build.json"],
+    deps = [":tsconfig-browser"],
 )
 
 ts_config(
     name = "tsconfig-build-no-strict",
     src = "tsconfig-build-no-strict.json",
-    deps = [":tsconfig-build.json"],
+    deps = [":tsconfig-browser"],
 )
 
 exports_files([
