@@ -55,6 +55,11 @@ filegroup(
 # flaky. This target runs in CI with Saucelabs and Ivy.
 karma_web_test(
     name = "saucelabs_unit_tests",
+    # Default timeout is moderate (5min). This causes the test to be terminated while
+    # Saucelabs browsers keep running. Ultimately resulting in failing tests and browsers
+    # unnecessarily being acquired. Our specified Saucelabs idle timeout is 10min, so we use
+    # Bazel's long timeout (15min). This ensures that Karma can shut down properly.
+    timeout = "long",
     tags = [
         "local",
         "manual",
@@ -69,6 +74,11 @@ karma_web_test(
     # This target runs in CI with View Engine as a Saucelabs and Bazel proof-of-concept. It's a
     # subset of the legacy saucelabs tests.
     name = "saucelabs_unit_tests_poc",
+    # Default timeout is moderate (5min). This causes the test to be terminated while
+    # Saucelabs browsers keep running. Ultimately resulting in failing tests and browsers
+    # unnecessarily being acquired. Our specified Saucelabs idle timeout is 10min, so we use
+    # Bazel's long timeout (15min). This ensures that Karma can shut down properly.
+    timeout = "long",
     tags = [
         "local",
         "manual",
