@@ -340,6 +340,20 @@ export enum TsHelperFn {
    * Indicates the `__spreadArrays` function.
    */
   SpreadArrays,
+  /**
+   * Indicates the `__assign` function.
+   */
+  Assign,
+}
+
+/**
+ * Possible declarations which are known.
+ */
+export enum BuiltinDeclaration {
+  /**
+   * Indicates the JavaScript global `Object` class.
+   */
+  JsGlobalObject,
 }
 
 /**
@@ -395,6 +409,12 @@ export interface BaseDeclaration<T extends ts.Declaration = ts.Declaration> {
    * TypeScript reference to the declaration itself, if one exists.
    */
   node: T|null;
+
+  /**
+   * If set, describes the type of builtin JavaScript declaration this
+   * declaration resolves to.
+   */
+  builtin: BuiltinDeclaration|null;
 }
 
 /**

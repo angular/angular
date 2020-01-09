@@ -362,6 +362,7 @@ runInEachFileSystem(() => {
         const decl = host.getDeclarationOfIdentifier(Target);
         expect(decl).toEqual({
           node: targetDecl,
+          builtin: null,
           viaModule: 'absolute',
         });
       });
@@ -391,6 +392,7 @@ runInEachFileSystem(() => {
         const decl = host.getDeclarationOfIdentifier(Target);
         expect(decl).toEqual({
           node: targetDecl,
+          builtin: null,
           viaModule: 'absolute',
         });
       });

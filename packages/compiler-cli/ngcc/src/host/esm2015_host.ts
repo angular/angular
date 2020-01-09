@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, TypeScriptReflectionHost, TypeValueReference, isDecoratorIdentifier, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {BuiltinDeclaration, ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, TypeScriptReflectionHost, TypeValueReference, isDecoratorIdentifier, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
@@ -351,6 +351,25 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       if (aliasedIdentifier !== null) {
         return this.getDeclarationOfIdentifier(aliasedIdentifier);
       }
+    }
+
+    // We detect if the resolved declaration refers to the JavaScript global `Object` by checking
+    // if the declaration node is named `Object`, resolves to a type `ObjectConstructor`, and has
+    // been defined in a default library source file.
+    if (superDeclaration && superDeclaration.node !== null &&
+        ts.isVariableDeclaration(superDeclaration.node) &&
+        ts.isIdentifier(superDeclaration.node.name) &&
+        superDeclaration.node.name.text === 'Object' && superDeclaration.node.type &&
+        ts.isTypeReferenceNode(superDeclaration.node.type) &&
+        ts.isIdentifier(superDeclaration.node.type.typeName) &&
+        superDeclaration.node.type.typeName.text === 'ObjectConstructor' &&
+        this.src.program.isSourceFileDefaultLibrary(superDeclaration.node.getSourceFile())) {
+      return {
+        builtin: BuiltinDeclaration.JsGlobalObject,
+        expression: id,
+        viaModule: null,
+        node: null,
+      };
     }
 
     return superDeclaration;
