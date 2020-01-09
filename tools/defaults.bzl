@@ -257,7 +257,30 @@ def nodejs_binary(data = [], **kwargs):
     )
 
 def jasmine_node_test(bootstrap = [], **kwargs):
-    """Default values for jasmine_node_test"""
+    """Default values for jasmine_node_test
+
+    Args:
+      bootstrap: A list of labels of scripts to run before the entry_point.
+
+                 The labels can either be individual files or a filegroup that contain a single
+                 file.
+
+                 The label is automatically added to the deps of jasmine_node_test.
+                 If the label ends in `_es5` which by convention selects the es5 outputs
+                 of a ts_library rule, then corresponding ts_library target sans `_es5`
+                 is also added to the deps of jasmine_node_test.
+
+                 For example with,
+
+                 jasmine_node_test(
+                     name = "test",
+                     bootstrap = ["//tools/testing:node_es5"],
+                     deps = [":test_lib"],
+                 )
+
+                 the `//tools/testing:node` target will automatically get added to deps
+                 by this macro. This removes the need for duplicate deps on the
+                 target and makes the usage of this rule less verbose."""
 
     # Very common dependencies for tests
     deps = kwargs.pop("deps", []) + [
@@ -282,9 +305,10 @@ def jasmine_node_test(bootstrap = [], **kwargs):
         deps += [label]
         templated_args += ["--node_options=--require=$(rlocation $(location %s))" % label]
         if label.endswith("_es5"):
-            # If this label is a filegroup derived from a ts_library then automtically
+            # If this label is a filegroup derived from a ts_library then automatically
             # add the ts_library target (which is the label sans `_es5`) to deps so we pull
-            # in all of its transitive deps
+            # in all of its transitive deps. This removes the need for duplicate deps on the
+            # target and makes the usage of this rule less verbose.
             deps += [label[:-4]]
 
     _jasmine_node_test(
