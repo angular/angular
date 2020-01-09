@@ -54,6 +54,12 @@ export class CachedFileSystem implements FileSystem {
     this.existsCache.set(path, true);
   }
 
+  removeFile(path: AbsoluteFsPath): void {
+    this.delegate.removeFile(path);
+    this.readFileCache.delete(path);
+    this.existsCache.set(path, false);
+  }
+
   symlink(target: AbsoluteFsPath, path: AbsoluteFsPath): void {
     this.delegate.symlink(target, path);
     this.existsCache.set(path, true);

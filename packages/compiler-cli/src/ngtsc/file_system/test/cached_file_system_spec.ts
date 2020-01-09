@@ -110,6 +110,23 @@ describe('CachedFileSystem', () => {
     });
   });
 
+  describe('removeFile()', () => {
+    it('should call delegate', () => {
+      const spy = spyOn(delegate, 'removeFile');
+      fs.removeFile(abcPath);
+      expect(spy).toHaveBeenCalledWith(abcPath);
+    });
+
+    it('should update the exists cache', () => {
+      spyOn(delegate, 'removeFile');
+      const existsSpy = spyOn(delegate, 'exists');
+
+      fs.removeFile(abcPath);
+      expect(fs.exists(abcPath)).toBe(false);
+      expect(existsSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('readdir()', () => {
     it('should call delegate', () => {
       const spy = spyOn(delegate, 'readdir');
