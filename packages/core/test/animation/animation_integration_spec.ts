@@ -932,6 +932,53 @@ const DEFAULT_COMPONENT_ID = '1';
              expect(fixture.debugElement.nativeElement.children.length).toBe(0);
            }));
 
+        it('should wait for child animations before removing parent', fakeAsync(() => {
+             @Component({
+               template: '<child-cmp *ngIf="exp" @parentTrigger></child-cmp>',
+               animations: [trigger(
+                   'parentTrigger', [transition(':leave', [group([query('@*', animateChild())])])])]
+             })
+             class ParentCmp {
+               exp = true;
+             }
+
+             @Component({
+               selector: 'child-cmp',
+               template: '<p @childTrigger>Hello there</p>',
+               animations: [trigger(
+                   'childTrigger',
+                   [transition(
+                       ':leave', [style({opacity: 1}), animate('200ms', style({opacity: 0}))])])]
+             })
+             class ChildCmp {
+             }
+
+             TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+             const engine = TestBed.inject(ɵAnimationEngine);
+             const fixture = TestBed.createComponent(ParentCmp);
+
+             fixture.detectChanges();
+             engine.flush();
+             expect(getLog().length).toBe(0);
+
+             fixture.componentInstance.exp = false;
+             fixture.detectChanges();
+             expect(fixture.nativeElement.children.length).toBe(1);
+
+             engine.flush();
+             expect(getLog().length).toBe(1);
+
+             const player = getLog()[0];
+             expect(player.keyframes).toEqual([
+               {opacity: '1', offset: 0},
+               {opacity: '0', offset: 1},
+             ]);
+
+             player.finish();
+             flushMicrotasks();
+             expect(fixture.nativeElement.children.length).toBe(0);
+           }));
+
         // animationRenderer => nonAnimationRenderer
         it('should trigger a leave animation when the outer components element binding updates on the host component element',
            fakeAsync(() => {
