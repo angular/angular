@@ -208,7 +208,7 @@ runInEachFileSystem(() => {
         {name: _('/internal/outer/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/internal/inner/index.js'),
-          contents: `import {Y} from 'lib-1/sub-1'; export declare class X {}`
+          contents: `import {Y} from 'lib-1/sub-1'; export class X {}`
         },
         {
           name: _('/internal/circular-a/index.js'),
@@ -232,18 +232,18 @@ runInEachFileSystem(() => {
         },
         {name: _('/path-alias/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/path-alias/index.metadata.json'), contents: 'MOCK METADATA'},
-        {name: _('/node_modules/lib-1/index.js'), contents: 'export declare class X {}'},
+        {name: _('/node_modules/lib-1/index.js'), contents: 'export class X {}'},
         {name: _('/node_modules/lib-1/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/node_modules/lib-1/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/node_modules/lib-1/deep/import/index.js'),
-          contents: 'export declare class DeepImport {}'
+          contents: 'export class DeepImport {}'
         },
-        {name: _('/node_modules/lib-1/sub-1/index.js'), contents: 'export declare class Y {}'},
+        {name: _('/node_modules/lib-1/sub-1/index.js'), contents: 'export class Y {}'},
         {name: _('/node_modules/lib-1/sub-1/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/node_modules/lib-1/sub-1/index.metadata.json'), contents: 'MOCK METADATA'},
         {name: _('/node_modules/lib-1/sub-2.js'), contents: `export * from './sub-2/sub-2';`},
-        {name: _('/node_modules/lib-1/sub-2/sub-2.js'), contents: `export declare class Z {}';`},
+        {name: _('/node_modules/lib-1/sub-2/sub-2.js'), contents: `export class Z {}';`},
         {name: _('/node_modules/lib-1/sub-2/package.json'), contents: '{"esm2015": "./sub-2.js"}'},
         {name: _('/node_modules/lib-1/sub-2/sub-2.metadata.json'), contents: 'MOCK METADATA'},
         {name: _('/dist/components/index.js'), contents: `class MyComponent {};`},
