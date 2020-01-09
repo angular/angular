@@ -939,11 +939,9 @@ workflows:
       # This isn't strictly necessary as there is no artifact dependency, but helps economize
       # CI resources by not attempting to build when we know should fail.
       - test_win:
-          <<: *skip_on_pull_requests
           requires:
             - test
       - test_ivy_aot_win:
-          <<: *skip_on_pull_requests
           requires:
             - test_ivy_aot
 
