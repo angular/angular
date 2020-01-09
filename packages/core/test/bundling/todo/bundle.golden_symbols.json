@@ -345,6 +345,9 @@
     "name": "addComponentLogic"
   },
   {
+    "name": "addHostBindingsToExpandoInstructions"
+  },
+  {
     "name": "addItemToStylingMap"
   },
   {
@@ -648,9 +651,6 @@
     "name": "getContextLView"
   },
   {
-    "name": "getCurrentDirectiveDef"
-  },
-  {
     "name": "getCurrentStyleSanitizer"
   },
   {
@@ -823,6 +823,9 @@
   },
   {
     "name": "getValuesCount"
+  },
+  {
+    "name": "growHostVarsSpace"
   },
   {
     "name": "handleError"
@@ -1083,10 +1086,7 @@
     "name": "patchHostStylingFlag"
   },
   {
-    "name": "prefillHostVars"
-  },
-  {
-    "name": "queueHostBindingForCheck"
+    "name": "setHostBindingsByExecutingExpandoInstructions"
   },
   {
     "name": "readPatchedData"
@@ -1239,9 +1239,6 @@
     "name": "setGuardMask"
   },
   {
-    "name": "setHostBindings"
-  },
-  {
     "name": "setIncludeViewProviders"
   },
   {
@@ -1366,9 +1363,6 @@
   },
   {
     "name": "ɵɵadvance"
-  },
-  {
-    "name": "ɵɵallocHostVars"
   },
   {
     "name": "ɵɵclassProp"

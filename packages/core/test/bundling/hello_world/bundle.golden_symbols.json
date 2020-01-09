@@ -141,6 +141,9 @@
     "name": "_renderCompCount"
   },
   {
+    "name": "addHostBindingsToExpandoInstructions"
+  },
+  {
     "name": "addItemToStylingMap"
   },
   {
@@ -264,9 +267,6 @@
     "name": "getContainerRenderParent"
   },
   {
-    "name": "getCurrentDirectiveDef"
-  },
-  {
     "name": "getDirectiveDef"
   },
   {
@@ -349,6 +349,9 @@
   },
   {
     "name": "getTNode"
+  },
+  {
+    "name": "growHostVarsSpace"
   },
   {
     "name": "hasActiveElementFlag"
@@ -447,10 +450,7 @@
     "name": "objectToClassName"
   },
   {
-    "name": "prefillHostVars"
-  },
-  {
-    "name": "queueHostBindingForCheck"
+    "name": "setHostBindingsByExecutingExpandoInstructions"
   },
   {
     "name": "refreshChildComponents"
@@ -525,9 +525,6 @@
     "name": "setCurrentQueryIndex"
   },
   {
-    "name": "setHostBindings"
-  },
-  {
     "name": "setIncludeViewProviders"
   },
   {
@@ -571,9 +568,6 @@
   },
   {
     "name": "writeStylingValueDirectly"
-  },
-  {
-    "name": "ɵɵallocHostVars"
   },
   {
     "name": "ɵɵdefineComponent"
