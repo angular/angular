@@ -314,18 +314,10 @@
   position: -webkit-sticky;
   position: sticky;
   bottom: 10px;
+  right: 10px;
 
   a {
     color: $blue;
     cursor: pointer;
-
-    &::before {
-      content: "arrow_upward";
-    }
-  
-    &:hover {
-      color: $mediumgray;
-      text-decoration: none;
-    }
   }
 }
