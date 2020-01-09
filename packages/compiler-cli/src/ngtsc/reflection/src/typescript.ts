@@ -308,12 +308,12 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     if (symbol.valueDeclaration !== undefined) {
       return {
         node: symbol.valueDeclaration,
-        viaModule,
+        known: null, viaModule,
       };
     } else if (symbol.declarations !== undefined && symbol.declarations.length > 0) {
       return {
         node: symbol.declarations[0],
-        viaModule,
+        known: null, viaModule,
       };
     } else {
       return null;

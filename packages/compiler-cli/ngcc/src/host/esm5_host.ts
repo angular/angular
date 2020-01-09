@@ -14,6 +14,7 @@ import {getNameText, hasNameIdentifier, stripDollarSuffix} from '../utils';
 import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignment, isAssignmentStatement} from './esm2015_host';
 import {NgccClassSymbol} from './ngcc_host';
 
+
 /**
  * ESM5 packages contain ECMAScript IIFE functions that act like classes. For example:
  *
@@ -655,6 +656,8 @@ function getTsHelperFn(node: ts.NamedDeclaration): TsHelperFn|null {
       null;
 
   switch (name) {
+    case '__assign':
+      return TsHelperFn.Assign;
     case '__spread':
       return TsHelperFn.Spread;
     case '__spreadArrays':

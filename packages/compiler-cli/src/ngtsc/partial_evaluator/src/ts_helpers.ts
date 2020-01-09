@@ -10,17 +10,29 @@ import * as ts from 'typescript';
 
 import {TsHelperFn} from '../../reflection';
 
+import {ObjectAssignBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
 import {ResolvedValue, ResolvedValueArray} from './result';
 
+
+/**
+ * Instance of the `Object.assign` builtin function. Used for evaluating
+ * the "__assign" TypeScript helper.
+ */
+const objectAssignBuiltinFn = new ObjectAssignBuiltinFn();
+
 export function evaluateTsHelperInline(
-    helper: TsHelperFn, node: ts.Node, args: ResolvedValueArray): ResolvedValue {
+    helper: TsHelperFn, node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
   switch (helper) {
+    case TsHelperFn.Assign:
+      // Use the same implementation we use for `Object.assign`. Semantically these
+      // functions are the same, so they can also share the same evaluation code.
+      return objectAssignBuiltinFn.evaluate(node, args);
     case TsHelperFn.Spread:
     case TsHelperFn.SpreadArrays:
       return evaluateTsSpreadHelper(node, args);
     default:
-      throw new Error(`Cannot evaluate unknown helper ${helper} inline`);
+      throw new Error(`Cannot evaluate TypeScript helper function: ${TsHelperFn[helper]}`);
   }
 }
 

@@ -114,7 +114,7 @@ export class ModuleWithProvidersAnalyzer {
           `The referenced NgModule in ${fn.declaration.getText()} is not a named class declaration in the typings program; instead we get ${dtsNgModule.getText()}`);
     }
 
-    return {node: dtsNgModule, viaModule: null};
+    return {node: dtsNgModule, known: null, viaModule: null};
   }
 }
 
