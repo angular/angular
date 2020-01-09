@@ -486,7 +486,7 @@ Differential loading is a strategy that allows your web application to support m
 * The second bundle contains code in the old ES5 syntax, along with all necessary polyfills for Angular to function. This results in a larger bundle size, but supports older browsers.
 
 To optimize differential loading build performance, the CLI uses a bundle-level transformation process.
-This process requires that only one full compilation of the application in ES2015 syntax to take place.
+This process requires requires only one full compilation of the application in ES2015 syntax.
 Once the full ES2015 compilation is complete, a post-processing step transforms each output JavaScript file into an additional ES5 variant, and generates an additional ES5-only file containing the polyfills that are required for ES5 browsers.
 
  The bundle-level transformation process guarantees that the entire bundled application is ES5 compliant, including any third-party code. This is not the case when you simply change the compilation target to `es5`.
@@ -494,7 +494,7 @@ Once the full ES2015 compilation is complete, a post-processing step transforms 
 Bundle-level transformation is more efficient and thorough than simply changing the compilation target to `es5`.
 When you change the compilation target to `es5`, only the TypeScript application code is transformed to ES5. For libraries, the ES5 entry point of the library's package is used directly if one exists. If it does not, the main entry point of the library's package is used, and that entry point might contain code that is not ES5-compatible.
 This can result in a bundled application that is a mix of ES5 and ES2015+ code.
-If you do use an `es5` compilation target (rather that the bundle-level transformation), you must ensure that all libraries used by the application provide ES5 compatible code.
+If you do use an `es5` compilation target (rather than the bundle-level transformation), you must ensure that all libraries used by the application provide ES5 compatible code.
 
 ### Differential builds
 
