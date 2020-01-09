@@ -2507,6 +2507,30 @@ describe('styling', () => {
     expect(trailing.className).toBe('foo', 'Expected class to be applied despite trailing space.');
   });
 
+  // TODO(FW-1360): re-enable this test once the new styling changes are in place.
+  xit('should not set inputs called class if they are not being used in the template', () => {
+    const logs: string[] = [];
+
+    @Directive({selector: '[test]'})
+    class MyDir {
+      @Input('class')
+      set className(value: string) { logs.push(value); }
+    }
+
+    @Component({
+      // Note that we shouldn't have a `class` attribute here.
+      template: `<div test></div>`
+    })
+    class MyComp {
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    expect(logs).toEqual([]);
+  });
+
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {
