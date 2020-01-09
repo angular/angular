@@ -470,10 +470,16 @@ function _queryAllR3(
 function _queryAllR3(
     parentElement: DebugElement, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
     matches: DebugElement[] | DebugNode[], elementsOnly: boolean) {
-  const context = loadLContext(parentElement.nativeNode) !;
-  const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
-  _queryNodeChildrenR3(
-      parentTNode, context.lView, predicate, matches, elementsOnly, parentElement.nativeNode);
+  const context = loadLContext(parentElement.nativeNode, false);
+  if (context !== null) {
+    const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
+    _queryNodeChildrenR3(
+        parentTNode, context.lView, predicate, matches, elementsOnly, parentElement.nativeNode);
+  } else {
+    // If the context is null, then `parentElement` was either created with Renderer2 or native DOM
+    // APIs.
+    _queryNativeNodeDescendants(parentElement.nativeNode, predicate, matches, elementsOnly);
+  }
 }
 
 /**
