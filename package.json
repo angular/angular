@@ -146,6 +146,7 @@
     "terser": "^4.3.9",
     "ts-api-guardian": "^0.4.6",
     "ts-node": "^3.0.4",
+    "tsickle": "^0.37.1",
     "tslint": "^5.20.0",
     "tsutils": "^3.0.0",
     "typescript": "^3.6.4",
