@@ -525,6 +525,8 @@ export interface TView {
    *
    * See VIEW_DATA.md for more information.
    */
+  // TODO(misko): `expandoInstructions` should be renamed to `hostBindingsInstructions` since they
+  // keep track of `hostBindings` which need to be executed.
   expandoInstructions: ExpandoInstructions|null;
 
   /**

@@ -11,7 +11,7 @@ import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../me
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/sanitizer';
-import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertNotEqual, assertNotSame} from '../../util/assert';
+import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertNotEqual, assertNotSame, assertSame} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
@@ -41,7 +41,6 @@ import {getLViewParent} from '../util/view_traversal_utils';
 import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
 
 import {selectIndexInternal} from './advance';
-import {ɵɵallocHostVars} from './alloc_host_vars';
 import {ɵɵelementHostAttrs} from './element';
 import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeConstructor, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor, attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData} from './lview_debug';
 
@@ -53,8 +52,14 @@ import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeConstructor, TNod
  */
 const _CLEAN_PROMISE = (() => Promise.resolve(null))();
 
-/** Sets the host bindings for the current view. */
-export function setHostBindings(tView: TView, lView: LView): void {
+/**
+ * Process the `TVIew.expandoInstructions`. (Execute the `hostBindings`.)
+ *
+ * @param tView `TView` containing the `expandoInstructions`
+ * @param lView `LView` associated with the `TView`
+ */
+export function setHostBindingsByExecutingExpandoInstructions(tView: TView, lView: LView): void {
+  ngDevMode && assertSame(tView, lView[TVIEW], '`LView` is not associated with the `TView`!');
   const selectedIndex = getSelectedIndex();
   try {
     const expandoInstructions = tView.expandoInstructions;
@@ -63,13 +68,25 @@ export function setHostBindings(tView: TView, lView: LView): void {
       setBindingRoot(bindingRootIndex);
       let currentDirectiveIndex = -1;
       let currentElementIndex = -1;
+      // TODO(misko): PERF It is possible to get here with `TVIew.expandoInstructions` containing no
+      // functions to execute. This is wasteful as there is no work to be done, but we still need
+      // to iterate over the instructions.
+      // In example of this is in this test: `host_binding_spec.ts`
+      // `fit('should not cause problems if detectChanges is called when a property updates', ...`
+      // In the above test we get here with expando [0, 0, 1] which requires a lot of processing but
+      // there is no function to execute.
       for (let i = 0; i < expandoInstructions.length; i++) {
         const instruction = expandoInstructions[i];
         if (typeof instruction === 'number') {
           if (instruction <= 0) {
             // Negative numbers mean that we are starting new EXPANDO block and need to update
             // the current element and directive index.
-            currentElementIndex = -instruction;
+            // Important: In JS `-x` and `0-x` is not the same! If `x===0` then `-x` will produce
+            // `-0` which requires non standard math arithmetic and it can prevent VM optimizations.
+            // `0-0` will always produce `0` and will not cause a potential deoptimization in VM.
+            // TODO(misko): PERF This should be refactored to use `~instruction` as that does not
+            // suffer from `-0` and it is faster/more compact.
+            currentElementIndex = 0 - instruction;
             setActiveHostElement(currentElementIndex);
 
             // Injector block and providers are taken into account.
@@ -97,9 +114,15 @@ export function setHostBindings(tView: TView, lView: LView): void {
             incrementActiveDirectiveId();
 
             setBindingIndex(bindingRootIndex);
-            const hostCtx = unwrapRNode(lView[currentDirectiveIndex]);
+            const hostCtx = lView[currentDirectiveIndex];
             instruction(RenderFlags.Update, hostCtx, currentElementIndex);
           }
+          // TODO(misko): PERF Relying on incrementing the `currentDirectiveIndex` here is
+          // sub-optimal. The implications are that if we have a lot of directives but none of them
+          // have host bindings we nevertheless need to iterate over the expando instructions to
+          // update the counter. It would be much better if we could encode the
+          // `currentDirectiveIndex` into the `expandoInstruction` array so that we only need to
+          // iterate over those directives which actually have `hostBindings`.
           currentDirectiveIndex++;
         }
       }
@@ -440,7 +463,7 @@ export function refreshView<T>(
       }
     }
 
-    setHostBindings(tView, lView);
+    setHostBindingsByExecutingExpandoInstructions(tView, lView);
 
     // Refresh child component views.
     const components = tView.components;
@@ -1089,6 +1112,7 @@ export function resolveDirectives(
   let hasDirectives = false;
 
   if (directives !== null) {
+    let totalDirectiveHostVars = 0;
     hasDirectives = true;
     initNodeFlags(tNode, tView.data.length, directives.length);
     // When the same token is provided by several directives on the same node, some rules apply in
@@ -1098,14 +1122,14 @@ export function resolveDirectives(
     // So to match these rules, the order in which providers are added in the arrays is very
     // important.
     for (let i = 0; i < directives.length; i++) {
-      const def = directives[i] as DirectiveDef<any>;
+      const def = directives[i];
       if (def.providersResolver) def.providersResolver(def);
     }
     generateExpandoInstructionBlock(tView, tNode, directives.length);
     let preOrderHooksFound = false;
     let preOrderCheckHooksFound = false;
     for (let i = 0; i < directives.length; i++) {
-      const def = directives[i] as DirectiveDef<any>;
+      const def = directives[i];
 
       baseResolveDirective(tView, lView, def);
 
@@ -1130,12 +1154,64 @@ export function resolveDirectives(
          ])).push(tNode.index - HEADER_OFFSET);
         preOrderCheckHooksFound = true;
       }
+
+      addHostBindingsToExpandoInstructions(tView, def);
+      totalDirectiveHostVars += def.hostVars;
     }
 
     initializeInputAndOutputAliases(tView, tNode);
+    growHostVarsSpace(tView, lView, totalDirectiveHostVars);
   }
   if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
   return hasDirectives;
+}
+
+/**
+ * Add `hostBindings` to the `TView.expandoInstructions`.
+ *
+ * @param tView `TView` to which the `hostBindings` should be added.
+ * @param def `ComponentDef`/`DirectiveDef`, which contains the `hostVars`/`hostBindings` to add.
+ */
+export function addHostBindingsToExpandoInstructions(
+    tView: TView, def: ComponentDef<any>| DirectiveDef<any>): void {
+  ngDevMode && assertFirstCreatePass(tView);
+  const expando = tView.expandoInstructions !;
+  // TODO(misko): PERF we are adding `hostBindings` even if there is nothing to add! This is
+  // suboptimal for performance. See `currentDirectiveIndex` comment in
+  // `setHostBindingsByExecutingExpandoInstructions` for details.
+  // TODO(misko): PERF  `def.hostBindings` may be null,
+  // but we still need to push null to the array as a placeholder
+  // to ensure the directive counter is incremented (so host
+  // binding functions always line up with the corrective directive).
+  // This is suboptimal for performance. See `currentDirectiveIndex`
+  //  comment in `setHostBindingsByExecutingExpandoInstructions` for more
+  // details.  expando.push(def.hostBindings);
+  expando.push(def.hostBindings);
+  const hostVars = def.hostVars;
+  if (hostVars !== 0) {
+    expando.push(def.hostVars);
+  }
+}
+
+/**
+ * Grow the `LView`, blueprint and `TView.data` to accommodate the `hostBindings`.
+ *
+ * To support locality we don't know ahead of time how many `hostVars` of the containing directives
+ * we need to allocate. For this reason we allow growing these data structures as we discover more
+ * directives to accommodate them.
+ *
+ * @param tView `TView` which needs to be grown.
+ * @param lView `LView` which needs to be grown.
+ * @param count Size by which we need to grow the data structures.
+ */
+export function growHostVarsSpace(tView: TView, lView: LView, count: number) {
+  ngDevMode && assertFirstCreatePass(tView);
+  ngDevMode && assertSame(tView, lView[TVIEW], '`LView` must be associated with `TView`!');
+  for (let i = 0; i < count; i++) {
+    lView.push(NO_CHANGE);
+    tView.blueprint.push(NO_CHANGE);
+    tView.data.push(null);
+  }
 }
 
 /**
@@ -1210,9 +1286,6 @@ export function invokeHostBindingsInCreationMode(
   // TODO(misko-next): This is a temporary work around for the fact that we moved the information
   // from instruction to declaration. The workaround is to just call the instruction as if it was
   // part of the `hostAttrs`.
-  if (def.hostVars !== 0) {
-    ɵɵallocHostVars(def.hostVars);
-  }
   if (def.hostAttrs !== null) {
     ɵɵelementHostAttrs(def.hostAttrs);
   }
@@ -1220,13 +1293,6 @@ export function invokeHostBindingsInCreationMode(
     def.hostBindings !(RenderFlags.Create, directive, elementIndex);
   }
   setCurrentDirectiveDef(null);
-  // `hostBindings` function may or may not contain `allocHostVars` call
-  // (e.g. it may not if it only contains host listeners), so we need to check whether
-  // `expandoInstructions` has changed and if not - we still push `hostBindings` to
-  // expando block, to make sure we execute it for DI cycle
-  if (previousExpandoLength === expando.length && firstCreatePass) {
-    expando.push(def.hostBindings);
-  }
 }
 
 /**
