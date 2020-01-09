@@ -17,6 +17,7 @@ import {isDeclaration} from '../../util/src/typescript';
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
 import {ForeignFunctionResolver} from './interface';
+import {resolveKnownDeclaration} from './known_declaration';
 import {BuiltinFn, EnumValue, ResolvedModule, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
 import {evaluateTsHelperInline} from './ts_helpers';
 
@@ -229,6 +230,9 @@ export class StaticInterpreter {
         return DynamicValue.fromUnknownIdentifier(node);
       }
     }
+    if (decl.known !== null) {
+      return resolveKnownDeclaration(decl.known);
+    }
     const declContext = {...context, ...joinModuleContext(context, node, decl)};
     // The identifier's declaration is either concrete (a ts.Declaration exists for it) or inline
     // (a direct reference to a ts.Expression).
@@ -357,9 +361,9 @@ export class StaticInterpreter {
       if (rhs === 'length') {
         return lhs.length;
       } else if (rhs === 'slice') {
-        return new ArraySliceBuiltinFn(node, lhs);
+        return new ArraySliceBuiltinFn(lhs);
       } else if (rhs === 'concat') {
-        return new ArrayConcatBuiltinFn(node, lhs);
+        return new ArrayConcatBuiltinFn(lhs);
       }
       if (typeof rhs !== 'number' || !Number.isInteger(rhs)) {
         return DynamicValue.fromInvalidExpressionType(node, rhs);
@@ -401,7 +405,7 @@ export class StaticInterpreter {
 
     // If the call refers to a builtin function, attempt to evaluate the function.
     if (lhs instanceof BuiltinFn) {
-      return lhs.evaluate(this.evaluateFunctionArguments(node, context));
+      return lhs.evaluate(node, this.evaluateFunctionArguments(node, context));
     }
 
     if (!(lhs instanceof Reference)) {

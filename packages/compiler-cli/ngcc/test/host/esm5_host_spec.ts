@@ -1814,6 +1814,86 @@ runInEachFileSystem(() => {
            expect(definition.helper).toBe(TsHelperFn.SpreadArrays);
            expect(definition.parameters.length).toEqual(0);
          });
+
+      it('should recognize TypeScript __assign helper function declaration', () => {
+        const file: TestFile = {
+          name: _('/declaration.d.ts'),
+          contents: `export declare function __assign(...args: object[]): object;`,
+        };
+        loadTestFiles([file]);
+        const bundle = makeTestBundleProgram(file.name);
+        const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
+
+        const node =
+            getDeclaration(bundle.program, file.name, '__assign', isNamedFunctionDeclaration) !;
+
+        const definition = host.getDefinitionOfFunction(node) !;
+        expect(definition.node).toBe(node);
+        expect(definition.body).toBeNull();
+        expect(definition.helper).toBe(TsHelperFn.Assign);
+        expect(definition.parameters.length).toEqual(0);
+      });
+
+      it('should recognize TypeScript __assign helper function implementation', () => {
+        const file: TestFile = {
+          name: _('/implementation.js'),
+          contents: `
+            var __assign = (this && this.__assign) || function () {
+                __assign = Object.assign || function(t) {
+                    for (var s, i = 1, n = arguments.length; i < n; i++) {
+                        s = arguments[i];
+                        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                            t[p] = s[p];
+                    }
+                    return t;
+                };
+                return __assign.apply(this, arguments);
+            };`,
+        };
+        loadTestFiles([file]);
+        const bundle = makeTestBundleProgram(file.name);
+        const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
+
+        const node =
+            getDeclaration(bundle.program, file.name, '__assign', ts.isVariableDeclaration) !;
+
+        const definition = host.getDefinitionOfFunction(node) !;
+        expect(definition.node).toBe(node);
+        expect(definition.body).toBeNull();
+        expect(definition.helper).toBe(TsHelperFn.Assign);
+        expect(definition.parameters.length).toEqual(0);
+      });
+
+      it('should recognize TypeScript __assign helper function implementation when suffixed',
+         () => {
+           const file: TestFile = {
+             name: _('/implementation.js'),
+             contents: `
+              var __assign$2 = (this && this.__assign$2) || function () {
+                  __assign$2 = Object.assign || function(t) {
+                      for (var s, i = 1, n = arguments.length; i < n; i++) {
+                          s = arguments[i];
+                          for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                              t[p] = s[p];
+                      }
+                      return t;
+                  };
+                  return __assign$2.apply(this, arguments);
+              };`,
+           };
+           loadTestFiles([file]);
+           const bundle = makeTestBundleProgram(file.name);
+           const host = new Esm5ReflectionHost(new MockLogger(), false, bundle);
+
+           const node =
+               getDeclaration(bundle.program, file.name, '__assign$2', ts.isVariableDeclaration) !;
+
+           const definition = host.getDefinitionOfFunction(node) !;
+           expect(definition.node).toBe(node);
+           expect(definition.body).toBeNull();
+           expect(definition.helper).toBe(TsHelperFn.Assign);
+           expect(definition.parameters.length).toEqual(0);
+         });
     });
 
     describe('getImportOfIdentifier()', () => {

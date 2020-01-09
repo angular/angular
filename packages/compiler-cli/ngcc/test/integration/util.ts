@@ -109,13 +109,15 @@ function compileIntoFlatPackage(
  * All generated code is written into the `node_modules` in the top-level filesystem, ready for use
  * in testing ngcc.
  */
-export function compileIntoApf(pkgName: string, sources: PackageSources): void {
+export function compileIntoApf(
+    pkgName: string, sources: PackageSources, extraCompilerOptions: ts.CompilerOptions = {}): void {
   const fs = getFileSystem();
   const {rootNames, compileFs} = setupCompileFs(sources);
 
   const emit = (options: ts.CompilerOptions) => {
     const host = new MockCompilerHost(compileFs);
-    const program = ts.createProgram({host, rootNames, options});
+    const program =
+        ts.createProgram({host, rootNames, options: {...extraCompilerOptions, ...options}});
     program.emit();
   };
 

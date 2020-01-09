@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath, FileSystem, NgtscCompilerHost, absoluteFrom} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
 import {PathMappings} from '../utils';
 import {BundleProgram, makeBundleProgram} from './bundle_program';
 import {EntryPoint, EntryPointFormat} from './entry_point';
@@ -50,8 +50,7 @@ export function makeEntryPointBundle(
   const rootDir = entryPoint.package;
   const options: ts.CompilerOptions = {
     allowJs: true,
-    maxNodeModuleJsDepth: Infinity,
-    noLib: true, rootDir, ...pathMappings
+    maxNodeModuleJsDepth: Infinity, rootDir, ...pathMappings
   };
   const srcHost = new NgccSourcesCompilerHost(fs, options, entryPoint.path);
   const dtsHost = new NgtscCompilerHost(fs, options);
