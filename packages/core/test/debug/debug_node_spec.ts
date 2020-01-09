@@ -577,38 +577,51 @@ class TestCmptWithPropInterpolation {
       expect(fixture.debugElement.query(By.css('.myclass'))).toBeTruthy();
     });
 
-    it('DebugElement.query should work with dynamically created descendant elements', () => {
-      @Directive({
-        selector: '[dir]',
-      })
-      class MyDir {
-        @Input('dir') dir: number|undefined;
+    describe('DebugElement.query with dynamically created descendant elements', () => {
+      let fixture: ComponentFixture<{}>;
+      beforeEach(() => {
 
-        constructor(renderer: Renderer2, element: ElementRef) {
-          const outerDiv = renderer.createElement('div');
-          const innerDiv = renderer.createElement('div');
-          const div = renderer.createElement('div');
+        @Directive({
+          selector: '[dir]',
+        })
+        class MyDir {
+          @Input('dir') dir: number|undefined;
 
-          div.classList.add('myclass');
+          constructor(renderer: Renderer2, element: ElementRef) {
+            const outerDiv = renderer.createElement('div');
+            const innerDiv = renderer.createElement('div');
+            innerDiv.classList.add('inner');
+            const div = renderer.createElement('div');
 
-          renderer.appendChild(innerDiv, div);
-          renderer.appendChild(outerDiv, innerDiv);
-          renderer.appendChild(element.nativeElement, outerDiv);
+            div.classList.add('myclass');
+
+            renderer.appendChild(innerDiv, div);
+            renderer.appendChild(outerDiv, innerDiv);
+            renderer.appendChild(element.nativeElement, outerDiv);
+          }
         }
-      }
 
-      @Component({
-        selector: 'app-test',
-        template: '<div dir></div>',
-      })
-      class MyComponent {
-      }
+        @Component({
+          selector: 'app-test',
+          template: '<div dir></div>',
+        })
+        class MyComponent {
+        }
 
-      TestBed.configureTestingModule({declarations: [MyComponent, MyDir]});
-      const fixture = TestBed.createComponent(MyComponent);
-      fixture.detectChanges();
+        TestBed.configureTestingModule({declarations: [MyComponent, MyDir]});
+        fixture = TestBed.createComponent(MyComponent);
+        fixture.detectChanges();
 
-      expect(fixture.debugElement.query(By.css('.myclass'))).toBeTruthy();
+      });
+
+      it('should find the dynamic elements from fixture root',
+         () => { expect(fixture.debugElement.query(By.css('.myclass'))).toBeTruthy(); });
+
+      it('can use a dynamic element as root for another query', () => {
+        const inner = fixture.debugElement.query(By.css('.inner'));
+        expect(inner).toBeTruthy();
+        expect(inner.query(By.css('.myclass'))).toBeTruthy();
+      });
     });
 
     describe('DebugElement.query doesn\'t fail on elements outside Angular context', () => {
@@ -617,7 +630,9 @@ class TestCmptWithPropInterpolation {
         constructor(private elementRef: ElementRef) {}
 
         ngAfterViewInit() {
-          this.elementRef.nativeElement.children[0].appendChild(document.createElement('p'));
+          const ul = document.createElement('ul');
+          ul.appendChild(document.createElement('li'));
+          this.elementRef.nativeElement.children[0].appendChild(ul);
         }
       }
 
@@ -664,6 +679,13 @@ class TestCmptWithPropInterpolation {
 
       it('when searching by injector',
          () => { expect(() => el.query(e => e.injector === null)).not.toThrow(); });
+
+      onlyInIvy('VE does not match elements created outside Angular context')
+          .it('when using the out-of-context element as the DebugElement query root', () => {
+            const debugElOutsideAngularContext = el.query(By.css('ul'));
+            expect(debugElOutsideAngularContext.queryAll(By.css('li')).length).toBe(1);
+            expect(debugElOutsideAngularContext.query(By.css('li'))).toBeDefined();
+          });
     });
 
     it('DebugElement.queryAll should pick up both elements inserted via the view and through Renderer2',
