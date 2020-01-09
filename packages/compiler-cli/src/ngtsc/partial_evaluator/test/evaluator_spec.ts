@@ -580,6 +580,29 @@ runInEachFileSystem(() => {
       expect(value).toEqual([1, 2, 3]);
     });
 
+    it('should evaluate TypeScript __assign helper', () => {
+      const {checker, expression} = makeExpression(
+          `
+        import * as tslib from 'tslib';
+        const a = {a: true};
+        const b = {b: true};
+      `,
+          'tslib.__assign(a, b)', [
+            {
+              name: _('/node_modules/tslib/index.d.ts'),
+              contents: `
+          export declare function __assign(...args: object[]): object;
+        `
+            },
+          ]);
+      const reflectionHost = new TsLibAwareReflectionHost(checker);
+      const evaluator = new PartialEvaluator(reflectionHost, checker, null);
+      const map = evaluator.evaluate(expression) as Map<string, boolean>;
+      const obj: {[key: string]: boolean} = {};
+      map.forEach((value, key) => obj[key] = value);
+      expect(obj).toEqual({a: true, b: true});
+    });
+
     describe('(visited file tracking)', () => {
       it('should track each time a source file is visited', () => {
         const addDependency = jasmine.createSpy('DependencyTracker');
@@ -666,6 +689,8 @@ runInEachFileSystem(() => {
     const name = node.name !== undefined && ts.isIdentifier(node.name) && node.name.text;
 
     switch (name) {
+      case '__assign':
+        return TsHelperFn.Assign;
       case '__spread':
         return TsHelperFn.Spread;
       case '__spreadArrays':
