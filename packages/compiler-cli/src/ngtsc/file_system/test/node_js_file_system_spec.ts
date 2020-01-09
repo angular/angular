@@ -51,6 +51,14 @@ describe('NodeJSFileSystem', () => {
     });
   });
 
+  describe('removeFile()', () => {
+    it('should delegate to fs.unlink()', () => {
+      const spy = spyOn(realFs, 'unlinkSync');
+      fs.removeFile(abcPath);
+      expect(spy).toHaveBeenCalledWith(abcPath);
+    });
+  });
+
   describe('readdir()', () => {
     it('should delegate to fs.readdirSync()', () => {
       const spy = spyOn(realFs, 'readdirSync').and.returnValue(['x', 'y/z']);

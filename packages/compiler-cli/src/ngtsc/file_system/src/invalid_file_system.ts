@@ -19,6 +19,7 @@ export class InvalidFileSystem implements FileSystem {
   exists(path: AbsoluteFsPath): boolean { throw makeError(); }
   readFile(path: AbsoluteFsPath): string { throw makeError(); }
   writeFile(path: AbsoluteFsPath, data: string): void { throw makeError(); }
+  removeFile(path: AbsoluteFsPath): void { throw makeError(); }
   symlink(target: AbsoluteFsPath, path: AbsoluteFsPath): void { throw makeError(); }
   readdir(path: AbsoluteFsPath): PathSegment[] { throw makeError(); }
   lstat(path: AbsoluteFsPath): FileStats { throw makeError(); }
