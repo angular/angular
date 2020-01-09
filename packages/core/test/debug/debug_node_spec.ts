@@ -617,7 +617,9 @@ class TestCmptWithPropInterpolation {
         constructor(private elementRef: ElementRef) {}
 
         ngAfterViewInit() {
-          this.elementRef.nativeElement.children[0].appendChild(document.createElement('p'));
+          const ul = document.createElement('ul');
+          ul.appendChild(document.createElement('li'));
+          this.elementRef.nativeElement.children[0].appendChild(ul);
         }
       }
 
@@ -664,6 +666,13 @@ class TestCmptWithPropInterpolation {
 
       it('when searching by injector',
          () => { expect(() => el.query(e => e.injector === null)).not.toThrow(); });
+
+      onlyInIvy('VE does not match elements created outside Angular context')
+          .it('when using the out-of-context element as the DebugElement query root', () => {
+            const debugElOutsideAngularContext = el.query(By.css('ul'));
+            expect(debugElOutsideAngularContext.queryAll(By.css('li')).length).toBe(1);
+            expect(debugElOutsideAngularContext.query(By.css('li'))).toBeDefined();
+          });
     });
 
     it('DebugElement.queryAll should pick up both elements inserted via the view and through Renderer2',

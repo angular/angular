@@ -470,10 +470,14 @@ function _queryAllR3(
 function _queryAllR3(
     parentElement: DebugElement, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
     matches: DebugElement[] | DebugNode[], elementsOnly: boolean) {
-  const context = loadLContext(parentElement.nativeNode) !;
-  const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
-  _queryNodeChildrenR3(
-      parentTNode, context.lView, predicate, matches, elementsOnly, parentElement.nativeNode);
+  const context = loadLContext(parentElement.nativeNode, false);
+  if (!context) {
+    _queryNativeNodeDescendants(parentElement.nativeNode, predicate, matches, elementsOnly);
+  } else {
+    const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
+    _queryNodeChildrenR3(
+        parentTNode, context.lView, predicate, matches, elementsOnly, parentElement.nativeNode);
+  }
 }
 
 /**
