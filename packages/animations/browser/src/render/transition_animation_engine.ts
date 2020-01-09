@@ -437,11 +437,14 @@ export class AnimationTransitionNamespace {
     if (containsPotentialParentTransition) {
       engine.markElementAsRemoved(this.id, element, false, context);
     } else {
-      // we do this after the flush has occurred such
-      // that the callbacks can be fired
-      engine.afterFlush(() => this.clearElementCache(element));
-      engine.destroyInnerAnimations(element);
-      engine._onRemovalComplete(element, context);
+      const removalFlag = element[REMOVAL_FLAG];
+      if (!removalFlag || removalFlag === NULL_REMOVAL_STATE) {
+        // we do this after the flush has occurred such
+        // that the callbacks can be fired
+        engine.afterFlush(() => this.clearElementCache(element));
+        engine.destroyInnerAnimations(element);
+        engine._onRemovalComplete(element, context);
+      }
     }
   }
 
