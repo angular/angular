@@ -229,3 +229,66 @@ export class BaseMenu {
 @Directive({selector: '[settingsMenu]'})
 export class SettingsMenu extends BaseMenu {}
 ```
+
+{@a select-value-binding}
+## Cannot Bind to `value` property of `<select>` with `*ngFor`
+
+
+### Basic example of change 
+
+
+```html
+<select [value]="someValue">
+  <option *ngFor="let option of options" [value]="option"> {{ option }} <option>
+</select>
+```
+
+In the View Engine runtime, the above code would set the initial value of the `<select>` as expected. 
+In Ivy, the initial value would not be set at all in this case.
+
+
+### Background
+
+Prior to Ivy, directive input bindings were always executed in their own change detection pass before any DOM bindings were processed. 
+This was an implementation detail that supported the use case in question:
+    
+```html
+<select [value]="someValue">
+  <option *ngFor="let option of options" [value]="option"> {{ option }} <option>
+</select>
+```
+
+It happened to work because the `*ngFor` would be checked first, during the directive input binding pass, and thus create the options first.
+Then the DOM binding pass would run, which would check the `value` binding. 
+At this time, it would be able to match the value against one of the existing options, and set the value of the `<select>` element in the DOM to display that option. 
+
+In Ivy, bindings are checked in the order they are defined in the template, regardless of whether they are directive input bindings or DOM bindings.
+This change makes change detection easier to reason about for debugging purposes, since bindings will be checked in depth-first order as declared in the template.
+
+In this case, it means that the `value` binding will be checked before the `*ngFor` is checked, as it is declared above the `*ngFor` in the template. 
+Consequently, the value of the `<select>` element will be set before any options are created, and it won't be able to match and display the correct option in the DOM.
+
+### Example of error
+
+There is no error thrown, but the `<select>` in question will not have the correct initial value displayed in the DOM.
+
+
+### Recommended fix
+
+To fix this problem, we recommend binding to the `selected` property on the `<option>` instead of the `value` on the `<select>`.
+
+*Before*
+```html
+<select [value]="someValue">
+  <option *ngFor="let option of options" [value]="option"> {{ option }} <option>
+</select>
+```
+
+*After*
+```html
+<select>
+  <option *ngFor="let option of options" [value]="option" [selected]="someValue == option">
+    {{ option }}
+  <option>
+</select>
+```

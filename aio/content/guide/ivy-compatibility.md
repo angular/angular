@@ -61,3 +61,5 @@ If the errors are gone, switch back to Ivy by removing the changes to the `tscon
 * `DebugElement.attributes` returns `undefined` for attributes that were added and then subsequently removed (previously, attributes added and later removed would have a value of `null`).
 
 * `DebugElement.classes` returns `undefined` for classes that were added and then subsequently removed (previously, classes added and later removed would have a value of `false`).
+
+* If selecting the native `<option>` element in a `<select>` where the `<option>`s are created via `*ngFor`, use the `[selected]` property of an `<option>` instead of binding to the `[value]` property of the `<select>` element (previously, you could bind to either.) [details](guide/ivy-compatibility-examples#select-value-binding)
