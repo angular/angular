@@ -12,7 +12,7 @@ import {NOOP_PERF_RECORDER} from '../../perf';
 import {ClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {makeProgram} from '../../testing';
 import {DtsTransformRegistry, TraitCompiler} from '../../transform';
-import {DecoratorHandler, HandlerPrecedence} from '../src/api';
+import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerPrecedence} from '../src/api';
 
 runInEachFileSystem(() => {
   describe('TraitCompiler', () => {
@@ -20,32 +20,31 @@ runInEachFileSystem(() => {
     beforeEach(() => _ = absoluteFrom);
 
     it('should not run decoration handlers against declaration files', () => {
+      class FakeDecoratorHandler implements DecoratorHandler<{}|null, unknown, unknown> {
+        name = 'FakeDecoratorHandler';
+        precedence = HandlerPrecedence.PRIMARY;
+
+        detect(): undefined { throw new Error('detect should not have been called'); }
+        analyze(): AnalysisOutput<unknown> {
+          throw new Error('analyze should not have been called');
+        }
+        compile(): CompileResult { throw new Error('compile should not have been called'); }
+      }
+
       const {program} = makeProgram([{
         name: _('/lib.d.ts'),
         contents: `export declare class SomeDirective {}`,
       }]);
-
       const checker = program.getTypeChecker();
       const reflectionHost = new TypeScriptReflectionHost(checker);
-      const fakeDecoratorHandler: DecoratorHandler<{}|null, unknown, unknown> = {
-        name: 'FakeDecoratorHandler',
-        precedence: HandlerPrecedence.PRIMARY,
-        detect: jasmine.createSpy('detect').and.callFake(
-            (node: ClassDeclaration) => ({trigger: node, metadata: {}})),
-        analyze: jasmine.createSpy('analyze').and.returnValue({}),
-        compile: jasmine.createSpy('compile').and.returnValue([])
-      };
       const compiler = new TraitCompiler(
-          [fakeDecoratorHandler], reflectionHost, NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD, true,
-          new DtsTransformRegistry());
+          [new FakeDecoratorHandler()], reflectionHost, NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD,
+          true, new DtsTransformRegistry());
       const sourceFile = program.getSourceFile('lib.d.ts') !;
       const analysis = compiler.analyzeSync(sourceFile);
 
       expect(sourceFile.isDeclarationFile).toBe(true);
       expect(analysis).toBeFalsy();
-      expect(fakeDecoratorHandler.detect).not.toHaveBeenCalled();
-      expect(fakeDecoratorHandler.analyze).not.toHaveBeenCalled();
-      expect(fakeDecoratorHandler.compile).not.toHaveBeenCalled();
     });
   });
 });

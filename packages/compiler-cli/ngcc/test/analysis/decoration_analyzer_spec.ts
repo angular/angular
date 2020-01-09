@@ -11,7 +11,7 @@ import {FatalDiagnosticError, makeDiagnostic} from '../../../src/ngtsc/diagnosti
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
-import {DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
@@ -395,26 +395,24 @@ runInEachFileSystem(() => {
 
       describe('declaration files', () => {
         it('should not run decorator handlers against declaration files', () => {
+          class FakeDecoratorHandler implements DecoratorHandler<{}|null, unknown, unknown> {
+            name = 'FakeDecoratorHandler';
+            precedence = HandlerPrecedence.PRIMARY;
+
+            detect(): undefined { throw new Error('detect should not have been called'); }
+            analyze(): AnalysisOutput<unknown> {
+              throw new Error('analyze should not have been called');
+            }
+            compile(): CompileResult { throw new Error('compile should not have been called'); }
+          }
+
           const analyzer = setUpAnalyzer([{
             name: _('/node_modules/test-package/index.d.ts'),
             contents: 'export declare class SomeDirective {}',
           }]);
-          const fakeDecoratorHandler: DecoratorHandler<{}|null, unknown, unknown> = {
-            name: 'FakeDecoratorHandler',
-            precedence: HandlerPrecedence.PRIMARY,
-            detect: jasmine.createSpy('detect').and.callFake(
-                (node: ClassDeclaration) => ({trigger: node, metadata: {}})),
-            analyze: jasmine.createSpy('analyze').and.returnValue({}),
-            compile: jasmine.createSpy('compile').and.returnValue([])
-          };
-
-          analyzer.handlers = [fakeDecoratorHandler];
+          analyzer.handlers = [new FakeDecoratorHandler()];
           result = analyzer.analyzeProgram();
-
           expect(result.size).toBe(0);
-          expect(fakeDecoratorHandler.detect).not.toHaveBeenCalled();
-          expect(fakeDecoratorHandler.analyze).not.toHaveBeenCalled();
-          expect(fakeDecoratorHandler.compile).not.toHaveBeenCalled();
         });
       });
     });
