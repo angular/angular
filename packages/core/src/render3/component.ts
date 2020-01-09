@@ -16,8 +16,8 @@ import {assertDataInRange} from '../util/assert';
 import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
-import {registerPostOrderHooks, registerPreOrderHooks} from './hooks';
-import {CLEAN_PROMISE, addToViewTree, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, renderView} from './instructions/shared';
+import {registerPostOrderHooks} from './hooks';
+import {CLEAN_PROMISE, addHostBindingsToExpandoInstructions, addToViewTree, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, growHostVarsSpace, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, renderView} from './instructions/shared';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
@@ -193,11 +193,11 @@ export function createRootComponentView(
  * renderComponent() and ViewContainerRef.createComponent().
  */
 export function createRootComponent<T>(
-    componentView: LView, componentDef: ComponentDef<T>, rootView: LView, rootContext: RootContext,
+    componentView: LView, componentDef: ComponentDef<T>, rootLView: LView, rootContext: RootContext,
     hostFeatures: HostFeature[] | null): any {
-  const tView = rootView[TVIEW];
+  const tView = rootLView[TVIEW];
   // Create directive instance with factory() and store at next index in viewData
-  const component = instantiateRootComponent(tView, rootView, componentDef);
+  const component = instantiateRootComponent(tView, rootLView, componentDef);
 
   rootContext.components.push(component);
   componentView[CONTEXT] = component;
@@ -207,7 +207,7 @@ export function createRootComponent<T>(
   // We want to generate an empty QueryList for root content queries for backwards
   // compatibility with ViewEngine.
   if (componentDef.contentQueries) {
-    componentDef.contentQueries(RenderFlags.Create, component, rootView.length - 1);
+    componentDef.contentQueries(RenderFlags.Create, component, rootLView.length - 1);
   }
 
   const rootTNode = getPreviousOrParentTNode();
@@ -216,11 +216,14 @@ export function createRootComponent<T>(
   // part of the `hostAttrs`.
   // The check for componentDef.hostBindings is wrong since now some directives may not
   // have componentDef.hostBindings but they still need to process hostVars and hostAttrs
-  if (tView.firstCreatePass && (componentDef.hostBindings || componentDef.hostVars !== 0 ||
-                                componentDef.hostAttrs !== null)) {
+  if (tView.firstCreatePass && (componentDef.hostBindings || componentDef.hostAttrs !== null)) {
     const elementIndex = rootTNode.index - HEADER_OFFSET;
     setActiveHostElement(elementIndex);
     incrementActiveDirectiveId();
+
+    const rootTView = rootLView[TVIEW];
+    addHostBindingsToExpandoInstructions(rootTView, componentDef);
+    growHostVarsSpace(rootTView, rootLView, componentDef.hostVars);
 
     const expando = tView.expandoInstructions !;
     invokeHostBindingsInCreationMode(
