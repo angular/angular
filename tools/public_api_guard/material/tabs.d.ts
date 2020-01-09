@@ -25,7 +25,7 @@ export declare abstract class _MatTabBodyBase implements OnInit, OnDestroy {
     _onTranslateTabStarted(event: AnimationEvent): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabBodyBase, never, never, { '_content': "content", 'origin': "origin", 'animationDuration': "animationDuration", 'position': "position" }, { '_onCentering': "_onCentering", '_beforeCentering': "_beforeCentering", '_afterLeavingCenter': "_afterLeavingCenter", '_onCentered': "_onCentered" }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabBodyBase, never, never, { "_content": "content"; "origin": "origin"; "animationDuration": "animationDuration"; "position": "position"; }, { "_onCentering": "_onCentering"; "_beforeCentering": "_beforeCentering"; "_afterLeavingCenter": "_afterLeavingCenter"; "_onCentered": "_onCentered"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatTabBodyBase>;
 }
 
@@ -58,7 +58,7 @@ export declare abstract class _MatTabGroupBase extends _MatTabGroupMixinBase imp
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
     realignInkBar(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabGroupBase, never, never, { 'dynamicHeight': "dynamicHeight", 'selectedIndex': "selectedIndex", 'headerPosition': "headerPosition", 'animationDuration': "animationDuration", 'disablePagination': "disablePagination", 'backgroundColor': "backgroundColor" }, { 'selectedIndexChange': "selectedIndexChange", 'focusChange': "focusChange", 'animationDone': "animationDone", 'selectedTabChange': "selectedTabChange" }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabGroupBase, never, never, { "dynamicHeight": "dynamicHeight"; "selectedIndex": "selectedIndex"; "headerPosition": "headerPosition"; "animationDuration": "animationDuration"; "disablePagination": "disablePagination"; "backgroundColor": "backgroundColor"; }, { "selectedIndexChange": "selectedIndexChange"; "focusChange": "focusChange"; "animationDone": "animationDone"; "selectedTabChange": "selectedTabChange"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatTabGroupBase>;
 }
 
@@ -66,7 +66,7 @@ export declare abstract class _MatTabHeaderBase extends MatPaginatedTabHeader im
     disableRipple: any;
     constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler, dir: Directionality, ngZone: NgZone, platform: Platform, animationMode?: string);
     protected _itemSelected(event: KeyboardEvent): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabHeaderBase, never, never, { 'disableRipple': "disableRipple" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabHeaderBase, never, never, { "disableRipple": "disableRipple"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatTabHeaderBase>;
 }
 
@@ -79,7 +79,7 @@ export declare class _MatTabLinkBase extends _MatTabLinkMixinBase implements OnD
     constructor(_tabNavBar: _MatTabNavBase, elementRef: ElementRef, globalRippleOptions: RippleGlobalOptions | null, tabIndex: string, _focusMonitor: FocusMonitor, animationMode?: string);
     focus(): void;
     ngOnDestroy(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabLinkBase, never, never, { 'active': "active" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabLinkBase, never, never, { "active": "active"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatTabLinkBase>;
 }
 
@@ -95,7 +95,7 @@ export declare abstract class _MatTabNavBase extends MatPaginatedTabHeader imple
     protected _itemSelected(): void;
     ngAfterContentInit(): void;
     updateActiveLink(_element?: ElementRef): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabNavBase, never, never, { 'backgroundColor': "backgroundColor", 'disableRipple': "disableRipple", 'color': "color" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabNavBase, never, never, { "backgroundColor": "backgroundColor"; "disableRipple": "disableRipple"; "color": "color"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatTabNavBase>;
 }
 
@@ -132,7 +132,7 @@ export declare class MatTab extends _MatTabMixinBase implements OnInit, CanDisab
     ngOnDestroy(): void;
     ngOnInit(): void;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTab, "mat-tab", ["matTab"], { 'disabled': "disabled", 'textLabel': "label", 'ariaLabel': "aria-label", 'ariaLabelledby': "aria-labelledby" }, {}, ["templateLabel", "_explicitContent"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTab, "mat-tab", ["matTab"], { "disabled": "disabled"; "textLabel": "label"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; }, {}, ["templateLabel", "_explicitContent"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatTab>;
 }
 
@@ -177,7 +177,7 @@ export declare class MatTabGroup extends _MatTabGroupBase {
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_dynamicHeight: BooleanInput;
     static ngAcceptInputType_selectedIndex: NumberInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTabGroup, "mat-tab-group", ["matTabGroup"], { 'color': "color", 'disableRipple': "disableRipple" }, {}, ["_allTabs"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTabGroup, "mat-tab-group", ["matTabGroup"], { "color": "color"; "disableRipple": "disableRipple"; }, {}, ["_allTabs"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatTabGroup>;
 }
 
@@ -191,7 +191,7 @@ export declare class MatTabHeader extends _MatTabHeaderBase {
     constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler, dir: Directionality, ngZone: NgZone, platform: Platform, animationMode?: string);
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_selectedIndex: NumberInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTabHeader, "mat-tab-header", never, { 'selectedIndex': "selectedIndex" }, { 'selectFocusedIndex': "selectFocusedIndex", 'indexFocused': "indexFocused" }, ["_items"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTabHeader, "mat-tab-header", never, { "selectedIndex": "selectedIndex"; }, { "selectFocusedIndex": "selectFocusedIndex"; "indexFocused": "indexFocused"; }, ["_items"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatTabHeader>;
 }
 
@@ -209,7 +209,7 @@ export declare class MatTabLabelWrapper extends _MatTabLabelWrapperMixinBase imp
     getOffsetLeft(): number;
     getOffsetWidth(): number;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTabLabelWrapper, "[matTabLabelWrapper]", never, { 'disabled': "disabled" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTabLabelWrapper, "[matTabLabelWrapper]", never, { "disabled": "disabled"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTabLabelWrapper>;
 }
 
@@ -218,7 +218,7 @@ export declare class MatTabLink extends _MatTabLinkBase implements OnDestroy {
     ngOnDestroy(): void;
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTabLink, "[mat-tab-link], [matTabLink]", ["matTabLink"], { 'disabled': "disabled", 'disableRipple': "disableRipple", 'tabIndex': "tabIndex" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTabLink, "[mat-tab-link], [matTabLink]", ["matTabLink"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTabLink>;
 }
 
@@ -233,7 +233,7 @@ export declare class MatTabNav extends _MatTabNavBase {
     platform?: Platform, animationMode?: string);
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_selectedIndex: NumberInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTabNav, "[mat-tab-nav-bar]", ["matTabNavBar", "matTabNav"], { 'color': "color" }, {}, ["_items"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTabNav, "[mat-tab-nav-bar]", ["matTabNavBar", "matTabNav"], { "color": "color"; }, {}, ["_items"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatTabNav>;
 }
 

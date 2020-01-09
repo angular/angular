@@ -43,7 +43,7 @@ export declare class MatSlideToggle extends _MatSlideToggleMixinBase implements 
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_required: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSlideToggle, "mat-slide-toggle", ["matSlideToggle"], { 'disabled': "disabled", 'disableRipple': "disableRipple", 'color': "color", 'tabIndex': "tabIndex", 'name': "name", 'id': "id", 'labelPosition': "labelPosition", 'ariaLabel': "aria-label", 'ariaLabelledby': "aria-labelledby", 'required': "required", 'checked': "checked" }, { 'change': "change", 'toggleChange': "toggleChange", 'dragChange': "dragChange" }, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSlideToggle, "mat-slide-toggle", ["matSlideToggle"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "color": "color"; "tabIndex": "tabIndex"; "name": "name"; "id": "id"; "labelPosition": "labelPosition"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "required": "required"; "checked": "checked"; }, { "change": "change"; "toggleChange": "toggleChange"; "dragChange": "dragChange"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatSlideToggle>;
 }
 

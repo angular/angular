@@ -48,7 +48,7 @@ export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatM
     resetActiveItem(): void;
     setElevation(depth: number): void;
     setPositionClasses(posX?: MenuPositionX, posY?: MenuPositionY): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatMenuBase, never, never, { 'backdropClass': "backdropClass", 'ariaLabel': "aria-label", 'ariaLabelledby': "aria-labelledby", 'ariaDescribedby': "aria-describedby", 'xPosition': "xPosition", 'yPosition': "yPosition", 'overlapTrigger': "overlapTrigger", 'hasBackdrop': "hasBackdrop", 'panelClass': "class", 'classList': "classList" }, { 'closed': "closed", 'close': "close" }, ["lazyContent", "_allItems", "items"]>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatMenuBase, never, never, { "backdropClass": "backdropClass"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "ariaDescribedby": "aria-describedby"; "xPosition": "xPosition"; "yPosition": "yPosition"; "overlapTrigger": "overlapTrigger"; "hasBackdrop": "hasBackdrop"; "panelClass": "class"; "classList": "classList"; }, { "closed": "closed"; "close": "close"; }, ["lazyContent", "_allItems", "items"]>;
     static ɵfac: i0.ɵɵFactoryDef<_MatMenuBase>;
 }
 
@@ -110,7 +110,7 @@ export declare class MatMenuItem extends _MatMenuItemMixinBase implements Focusa
     ngOnDestroy(): void;
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatMenuItem, "[mat-menu-item]", ["matMenuItem"], { 'disabled': "disabled", 'disableRipple': "disableRipple", 'role': "role" }, {}, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatMenuItem, "[mat-menu-item]", ["matMenuItem"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "role": "role"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatMenuItem>;
 }
 
@@ -162,7 +162,7 @@ export declare class MatMenuTrigger implements AfterContentInit, OnDestroy {
     openMenu(): void;
     toggleMenu(): void;
     triggersSubmenu(): boolean;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatMenuTrigger, "[mat-menu-trigger-for], [matMenuTriggerFor]", ["matMenuTrigger"], { '_deprecatedMatMenuTriggerFor': "mat-menu-trigger-for", 'menu': "matMenuTriggerFor", 'menuData': "matMenuTriggerData", 'restoreFocus': "matMenuTriggerRestoreFocus" }, { 'menuOpened': "menuOpened", 'onMenuOpen': "onMenuOpen", 'menuClosed': "menuClosed", 'onMenuClose': "onMenuClose" }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatMenuTrigger, "[mat-menu-trigger-for], [matMenuTriggerFor]", ["matMenuTrigger"], { "_deprecatedMatMenuTriggerFor": "mat-menu-trigger-for"; "menu": "matMenuTriggerFor"; "menuData": "matMenuTriggerData"; "restoreFocus": "matMenuTriggerRestoreFocus"; }, { "menuOpened": "menuOpened"; "onMenuOpen": "onMenuOpen"; "menuClosed": "menuClosed"; "onMenuClose": "onMenuClose"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatMenuTrigger>;
 }
 

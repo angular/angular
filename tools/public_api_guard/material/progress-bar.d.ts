@@ -24,7 +24,7 @@ export declare class MatProgressBar extends _MatProgressBarMixinBase implements 
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
     static ngAcceptInputType_value: NumberInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatProgressBar, "mat-progress-bar", ["matProgressBar"], { 'color': "color", 'value': "value", 'bufferValue': "bufferValue", 'mode': "mode" }, { 'animationEnd': "animationEnd" }, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatProgressBar, "mat-progress-bar", ["matProgressBar"], { "color": "color"; "value": "value"; "bufferValue": "bufferValue"; "mode": "mode"; }, { "animationEnd": "animationEnd"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatProgressBar>;
 }
 

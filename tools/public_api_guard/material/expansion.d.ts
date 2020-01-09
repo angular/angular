@@ -14,7 +14,7 @@ export declare class MatAccordion extends CdkAccordion implements MatAccordionBa
     ngAfterContentInit(): void;
     static ngAcceptInputType_hideToggle: BooleanInput;
     static ngAcceptInputType_multi: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatAccordion, "mat-accordion", ["matAccordion"], { 'multi': "multi", 'hideToggle': "hideToggle", 'displayMode': "displayMode", 'togglePosition': "togglePosition" }, {}, ["_headers"]>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatAccordion, "mat-accordion", ["matAccordion"], { "multi": "multi"; "hideToggle": "hideToggle"; "displayMode": "displayMode"; "togglePosition": "togglePosition"; }, {}, ["_headers"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatAccordion>;
 }
 
@@ -64,7 +64,7 @@ export declare class MatExpansionPanel extends CdkAccordionItem implements After
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_expanded: BooleanInput;
     static ngAcceptInputType_hideToggle: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatExpansionPanel, "mat-expansion-panel", ["matExpansionPanel"], { 'disabled': "disabled", 'expanded': "expanded", 'hideToggle': "hideToggle", 'togglePosition': "togglePosition" }, { 'opened': "opened", 'closed': "closed", 'expandedChange': "expandedChange", 'afterExpand': "afterExpand", 'afterCollapse': "afterCollapse" }, ["_lazyContent"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatExpansionPanel, "mat-expansion-panel", ["matExpansionPanel"], { "disabled": "disabled"; "expanded": "expanded"; "hideToggle": "hideToggle"; "togglePosition": "togglePosition"; }, { "opened": "opened"; "closed": "closed"; "expandedChange": "expandedChange"; "afterExpand": "afterExpand"; "afterCollapse": "afterCollapse"; }, ["_lazyContent"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatExpansionPanel>;
 }
 
@@ -108,7 +108,7 @@ export declare class MatExpansionPanelHeader implements OnDestroy, FocusableOpti
     _toggle(): void;
     focus(origin?: FocusOrigin, options?: FocusOptions): void;
     ngOnDestroy(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatExpansionPanelHeader, "mat-expansion-panel-header", never, { 'expandedHeight': "expandedHeight", 'collapsedHeight': "collapsedHeight" }, {}, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatExpansionPanelHeader, "mat-expansion-panel-header", never, { "expandedHeight": "expandedHeight"; "collapsedHeight": "collapsedHeight"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatExpansionPanelHeader>;
 }
 

@@ -51,7 +51,7 @@ export declare class MatCheckbox extends _MatCheckboxMixinBase implements Contro
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_indeterminate: BooleanInput;
     static ngAcceptInputType_required: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatCheckbox, "mat-checkbox", ["matCheckbox"], { 'disableRipple': "disableRipple", 'color': "color", 'tabIndex': "tabIndex", 'ariaLabel': "aria-label", 'ariaLabelledby': "aria-labelledby", 'id': "id", 'required': "required", 'labelPosition': "labelPosition", 'name': "name", 'value': "value", 'checked': "checked", 'disabled': "disabled", 'indeterminate': "indeterminate" }, { 'change': "change", 'indeterminateChange': "indeterminateChange" }, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatCheckbox, "mat-checkbox", ["matCheckbox"], { "disableRipple": "disableRipple"; "color": "color"; "tabIndex": "tabIndex"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "id": "id"; "required": "required"; "labelPosition": "labelPosition"; "name": "name"; "value": "value"; "checked": "checked"; "disabled": "disabled"; "indeterminate": "indeterminate"; }, { "change": "change"; "indeterminateChange": "indeterminateChange"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatCheckbox>;
 }
 

@@ -6,7 +6,7 @@ export declare class CdkCopyToClipboard {
     constructor(_clipboard: Clipboard,
     _ngZone?: NgZone | undefined, config?: CdkCopyToClipboardConfig);
     copy(attempts?: number): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkCopyToClipboard, "[cdkCopyToClipboard]", never, { 'text': "cdkCopyToClipboard", 'attempts': "cdkCopyToClipboardAttempts" }, { 'copied': "cdkCopyToClipboardCopied", '_deprecatedCopied': "copied" }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkCopyToClipboard, "[cdkCopyToClipboard]", never, { "text": "cdkCopyToClipboard"; "attempts": "cdkCopyToClipboardAttempts"; }, { "copied": "cdkCopyToClipboardCopied"; "_deprecatedCopied": "copied"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkCopyToClipboard>;
 }
 

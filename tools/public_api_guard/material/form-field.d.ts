@@ -8,7 +8,7 @@ export declare const MAT_FORM_FIELD_DEFAULT_OPTIONS: InjectionToken<MatFormField
 
 export declare class MatError {
     id: string;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatError, "mat-error", never, { 'id': "id" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatError, "mat-error", never, { "id": "id"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatError>;
 }
 
@@ -56,7 +56,7 @@ export declare class MatFormField extends _MatFormFieldMixinBase implements Afte
     ngOnDestroy(): void;
     updateOutlineGap(): void;
     static ngAcceptInputType_hideRequiredMarker: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatFormField, "mat-form-field", ["matFormField"], { 'color': "color", 'appearance': "appearance", 'hideRequiredMarker': "hideRequiredMarker", 'hintLabel': "hintLabel", 'floatLabel': "floatLabel" }, {}, ["_controlNonStatic", "_controlStatic", "_labelChildNonStatic", "_labelChildStatic", "_placeholderChild", "_errorChildren", "_hintChildren", "_prefixChildren", "_suffixChildren"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatFormField, "mat-form-field", ["matFormField"], { "color": "color"; "appearance": "appearance"; "hideRequiredMarker": "hideRequiredMarker"; "hintLabel": "hintLabel"; "floatLabel": "floatLabel"; }, {}, ["_controlNonStatic", "_controlStatic", "_labelChildNonStatic", "_labelChildStatic", "_placeholderChild", "_errorChildren", "_hintChildren", "_prefixChildren", "_suffixChildren"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatFormField>;
 }
 
@@ -99,7 +99,7 @@ export declare class MatFormFieldModule {
 export declare class MatHint {
     align: 'start' | 'end';
     id: string;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatHint, "mat-hint", never, { 'align': "align", 'id': "id" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatHint, "mat-hint", never, { "align": "align"; "id": "id"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatHint>;
 }
 

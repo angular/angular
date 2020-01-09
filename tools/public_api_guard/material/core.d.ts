@@ -243,7 +243,7 @@ export declare class MatOptgroup extends _MatOptgroupMixinBase implements CanDis
     _labelId: string;
     label: string;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOptgroup, "mat-optgroup", ["matOptgroup"], { 'disabled': "disabled", 'label': "label" }, {}, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOptgroup, "mat-optgroup", ["matOptgroup"], { "disabled": "disabled"; "label": "label"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatOptgroup>;
 }
 
@@ -274,7 +274,7 @@ export declare class MatOption implements FocusableOption, AfterViewChecked, OnD
     setActiveStyles(): void;
     setInactiveStyles(): void;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOption, "mat-option", ["matOption"], { 'value': "value", 'id': "id", 'disabled': "disabled" }, { 'onSelectionChange': "onSelectionChange" }, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatOption, "mat-option", ["matOption"], { "value": "value"; "id": "id"; "disabled": "disabled"; }, { "onSelectionChange": "onSelectionChange"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatOption>;
 }
 
@@ -301,7 +301,7 @@ export declare class MatPseudoCheckbox {
     disabled: boolean;
     state: MatPseudoCheckboxState;
     constructor(_animationMode?: string | undefined);
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatPseudoCheckbox, "mat-pseudo-checkbox", never, { 'state': "state", 'disabled': "disabled" }, {}, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatPseudoCheckbox, "mat-pseudo-checkbox", never, { "state": "state"; "disabled": "disabled"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatPseudoCheckbox>;
 }
 
@@ -328,7 +328,7 @@ export declare class MatRipple implements OnInit, OnDestroy, RippleTarget {
     launch(x: number, y: number, config?: RippleConfig): RippleRef;
     ngOnDestroy(): void;
     ngOnInit(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatRipple, "[mat-ripple], [matRipple]", ["matRipple"], { 'color': "matRippleColor", 'unbounded': "matRippleUnbounded", 'centered': "matRippleCentered", 'radius': "matRippleRadius", 'animation': "matRippleAnimation", 'disabled': "matRippleDisabled", 'trigger': "matRippleTrigger" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatRipple, "[mat-ripple], [matRipple]", ["matRipple"], { "color": "matRippleColor"; "unbounded": "matRippleUnbounded"; "centered": "matRippleCentered"; "radius": "matRippleRadius"; "animation": "matRippleAnimation"; "disabled": "matRippleDisabled"; "trigger": "matRippleTrigger"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatRipple>;
 }
 

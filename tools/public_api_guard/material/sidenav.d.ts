@@ -33,7 +33,7 @@ export declare class MatDrawer implements AfterContentInit, AfterContentChecked,
     static ngAcceptInputType_autoFocus: BooleanInput;
     static ngAcceptInputType_disableClose: BooleanInput;
     static ngAcceptInputType_opened: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDrawer, "mat-drawer", ["matDrawer"], { 'position': "position", 'mode': "mode", 'disableClose': "disableClose", 'autoFocus': "autoFocus", 'opened': "opened" }, { 'openedChange': "openedChange", '_openedStream': "opened", 'openedStart': "openedStart", '_closedStream': "closed", 'closedStart': "closedStart", 'onPositionChanged': "positionChanged" }, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDrawer, "mat-drawer", ["matDrawer"], { "position": "position"; "mode": "mode"; "disableClose": "disableClose"; "autoFocus": "autoFocus"; "opened": "opened"; }, { "openedChange": "openedChange"; "_openedStream": "opened"; "openedStart": "openedStart"; "_closedStream": "closed"; "closedStart": "closedStart"; "onPositionChanged": "positionChanged"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatDrawer>;
 }
 
@@ -73,7 +73,7 @@ export declare class MatDrawerContainer implements AfterContentInit, DoCheck, On
     updateContentMargins(): void;
     static ngAcceptInputType_autosize: BooleanInput;
     static ngAcceptInputType_hasBackdrop: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDrawerContainer, "mat-drawer-container", ["matDrawerContainer"], { 'autosize': "autosize", 'hasBackdrop': "hasBackdrop" }, { 'backdropClick': "backdropClick" }, ["_content", "_allDrawers"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDrawerContainer, "mat-drawer-container", ["matDrawerContainer"], { "autosize": "autosize"; "hasBackdrop": "hasBackdrop"; }, { "backdropClick": "backdropClick"; }, ["_content", "_allDrawers"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatDrawerContainer>;
 }
 
@@ -99,7 +99,7 @@ export declare class MatSidenav extends MatDrawer {
     static ngAcceptInputType_fixedInViewport: BooleanInput;
     static ngAcceptInputType_fixedTopGap: NumberInput;
     static ngAcceptInputType_opened: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSidenav, "mat-sidenav", ["matSidenav"], { 'fixedInViewport': "fixedInViewport", 'fixedTopGap': "fixedTopGap", 'fixedBottomGap': "fixedBottomGap" }, {}, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSidenav, "mat-sidenav", ["matSidenav"], { "fixedInViewport": "fixedInViewport"; "fixedTopGap": "fixedTopGap"; "fixedBottomGap": "fixedBottomGap"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatSidenav>;
 }
 

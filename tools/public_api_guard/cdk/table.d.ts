@@ -83,7 +83,7 @@ export declare class CdkColumnDef extends _CdkColumnDefBase implements CanStick 
     stickyEnd: boolean;
     static ngAcceptInputType_sticky: BooleanInput;
     static ngAcceptInputType_stickyEnd: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkColumnDef, "[cdkColumnDef]", never, { 'sticky': "sticky", 'name': "cdkColumnDef", 'stickyEnd': "stickyEnd" }, {}, ["cell", "headerCell", "footerCell"]>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkColumnDef, "[cdkColumnDef]", never, { "sticky": "sticky"; "name": "cdkColumnDef"; "stickyEnd": "stickyEnd"; }, {}, ["cell", "headerCell", "footerCell"]>;
     static ɵfac: i0.ɵɵFactoryDef<CdkColumnDef>;
 }
 
@@ -109,7 +109,7 @@ export declare class CdkFooterRowDef extends _CdkFooterRowDefBase implements Can
     constructor(template: TemplateRef<any>, _differs: IterableDiffers);
     ngOnChanges(changes: SimpleChanges): void;
     static ngAcceptInputType_sticky: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkFooterRowDef, "[cdkFooterRowDef]", never, { 'columns': "cdkFooterRowDef", 'sticky': "cdkFooterRowDefSticky" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkFooterRowDef, "[cdkFooterRowDef]", never, { "columns": "cdkFooterRowDef"; "sticky": "cdkFooterRowDefSticky"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkFooterRowDef>;
 }
 
@@ -135,7 +135,7 @@ export declare class CdkHeaderRowDef extends _CdkHeaderRowDefBase implements Can
     constructor(template: TemplateRef<any>, _differs: IterableDiffers);
     ngOnChanges(changes: SimpleChanges): void;
     static ngAcceptInputType_sticky: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkHeaderRowDef, "[cdkHeaderRowDef]", never, { 'columns': "cdkHeaderRowDef", 'sticky': "cdkHeaderRowDefSticky" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkHeaderRowDef, "[cdkHeaderRowDef]", never, { "columns": "cdkHeaderRowDef"; "sticky": "cdkHeaderRowDefSticky"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkHeaderRowDef>;
 }
 
@@ -147,7 +147,7 @@ export declare class CdkRow {
 export declare class CdkRowDef<T> extends BaseRowDef {
     when: (index: number, rowData: T) => boolean;
     constructor(template: TemplateRef<any>, _differs: IterableDiffers);
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkRowDef<any>, "[cdkRowDef]", never, { 'columns': "cdkRowDefColumns", 'when': "cdkRowDefWhen" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkRowDef<any>, "[cdkRowDef]", never, { "columns": "cdkRowDefColumns"; "when": "cdkRowDefWhen"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkRowDef<any>>;
 }
 
@@ -194,7 +194,7 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     updateStickyFooterRowStyles(): void;
     updateStickyHeaderRowStyles(): void;
     static ngAcceptInputType_multiTemplateDataRows: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkTable<any>, "cdk-table, table[cdk-table]", ["cdkTable"], { 'trackBy': "trackBy", 'dataSource': "dataSource", 'multiTemplateDataRows': "multiTemplateDataRows" }, {}, ["_contentColumnDefs", "_contentRowDefs", "_contentHeaderRowDefs", "_contentFooterRowDefs"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkTable<any>, "cdk-table, table[cdk-table]", ["cdkTable"], { "trackBy": "trackBy"; "dataSource": "dataSource"; "multiTemplateDataRows": "multiTemplateDataRows"; }, {}, ["_contentColumnDefs", "_contentRowDefs", "_contentHeaderRowDefs", "_contentFooterRowDefs"]>;
     static ɵfac: i0.ɵɵFactoryDef<CdkTable<any>>;
 }
 
@@ -216,7 +216,7 @@ export declare class CdkTextColumn<T> implements OnDestroy, OnInit {
     _createDefaultHeaderText(): string;
     ngOnDestroy(): void;
     ngOnInit(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkTextColumn<any>, "cdk-text-column", never, { 'name': "name", 'headerText': "headerText", 'dataAccessor': "dataAccessor", 'justify': "justify" }, {}, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkTextColumn<any>, "cdk-text-column", never, { "name": "name"; "headerText": "headerText"; "dataAccessor": "dataAccessor"; "justify": "justify"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkTextColumn<any>>;
 }
 

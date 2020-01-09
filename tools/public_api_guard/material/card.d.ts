@@ -7,7 +7,7 @@ export declare class MatCard {
 
 export declare class MatCardActions {
     align: 'start' | 'end';
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatCardActions, "mat-card-actions", ["matCardActions"], { 'align': "align" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatCardActions, "mat-card-actions", ["matCardActions"], { "align": "align"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatCardActions>;
 }
 

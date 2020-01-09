@@ -45,7 +45,7 @@ export declare class MatTooltip implements OnDestroy, OnInit {
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_hideDelay: NumberInput;
     static ngAcceptInputType_showDelay: NumberInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTooltip, "[matTooltip]", ["matTooltip"], { 'position': "matTooltipPosition", 'disabled': "matTooltipDisabled", 'showDelay': "matTooltipShowDelay", 'hideDelay': "matTooltipHideDelay", 'touchGestures': "matTooltipTouchGestures", 'message': "matTooltip", 'tooltipClass': "matTooltipClass" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTooltip, "[matTooltip]", ["matTooltip"], { "position": "matTooltipPosition"; "disabled": "matTooltipDisabled"; "showDelay": "matTooltipShowDelay"; "hideDelay": "matTooltipHideDelay"; "touchGestures": "matTooltipTouchGestures"; "message": "matTooltip"; "tooltipClass": "matTooltipClass"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTooltip>;
 }
 

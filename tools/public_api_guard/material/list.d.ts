@@ -7,7 +7,7 @@ export declare class MatList extends _MatListMixinBase implements CanDisableRipp
     ngOnChanges(): void;
     ngOnDestroy(): void;
     static ngAcceptInputType_disableRipple: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatList, "mat-list, mat-action-list", ["matList"], { 'disableRipple': "disableRipple" }, {}, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatList, "mat-list, mat-action-list", ["matList"], { "disableRipple": "disableRipple"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatList>;
 }
 
@@ -31,7 +31,7 @@ export declare class MatListItem extends _MatListItemMixinBase implements AfterC
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
     static ngAcceptInputType_disableRipple: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatListItem, "mat-list-item, a[mat-list-item], button[mat-list-item]", ["matListItem"], { 'disableRipple': "disableRipple" }, {}, ["_avatar", "_icon", "_lines"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatListItem, "mat-list-item, a[mat-list-item], button[mat-list-item]", ["matListItem"], { "disableRipple": "disableRipple"; }, {}, ["_avatar", "_icon", "_lines"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatListItem>;
 }
 
@@ -69,7 +69,7 @@ export declare class MatListOption extends _MatListOptionMixinBase implements Af
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_selected: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatListOption, "mat-list-option", ["matListOption"], { 'disableRipple': "disableRipple", 'checkboxPosition': "checkboxPosition", 'color': "color", 'value': "value", 'disabled': "disabled", 'selected': "selected" }, {}, ["_avatar", "_icon", "_lines"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatListOption, "mat-list-option", ["matListOption"], { "disableRipple": "disableRipple"; "checkboxPosition": "checkboxPosition"; "color": "color"; "value": "value"; "disabled": "disabled"; "selected": "selected"; }, {}, ["_avatar", "_icon", "_lines"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatListOption>;
 }
 
@@ -83,7 +83,7 @@ export declare class MatNavList extends _MatListMixinBase implements CanDisableR
     ngOnChanges(): void;
     ngOnDestroy(): void;
     static ngAcceptInputType_disableRipple: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatNavList, "mat-nav-list", ["matNavList"], { 'disableRipple': "disableRipple" }, {}, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatNavList, "mat-nav-list", ["matNavList"], { "disableRipple": "disableRipple"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatNavList>;
 }
 
@@ -116,7 +116,7 @@ export declare class MatSelectionList extends _MatSelectionListMixinBase impleme
     writeValue(values: string[]): void;
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSelectionList, "mat-selection-list", ["matSelectionList"], { 'disableRipple': "disableRipple", 'tabIndex': "tabIndex", 'color': "color", 'compareWith': "compareWith", 'disabled': "disabled" }, { 'selectionChange': "selectionChange" }, ["options"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSelectionList, "mat-selection-list", ["matSelectionList"], { "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; "color": "color"; "compareWith": "compareWith"; "disabled": "disabled"; }, { "selectionChange": "selectionChange"; }, ["options"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatSelectionList>;
 }
 

@@ -56,7 +56,7 @@ export declare class MatDialogClose implements OnInit, OnChanges {
     constructor(dialogRef: MatDialogRef<any>, _elementRef: ElementRef<HTMLElement>, _dialog: MatDialog);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnInit(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDialogClose, "[mat-dialog-close], [matDialogClose]", ["matDialogClose"], { 'ariaLabel': "aria-label", 'type': "type", 'dialogResult': "mat-dialog-close", '_matDialogClose': "matDialogClose" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDialogClose, "[mat-dialog-close], [matDialogClose]", ["matDialogClose"], { "ariaLabel": "aria-label"; "type": "type"; "dialogResult": "mat-dialog-close"; "_matDialogClose": "matDialogClose"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatDialogClose>;
 }
 
@@ -145,7 +145,7 @@ export declare class MatDialogTitle implements OnInit {
     id: string;
     constructor(_dialogRef: MatDialogRef<any>, _elementRef: ElementRef<HTMLElement>, _dialog: MatDialog);
     ngOnInit(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDialogTitle, "[mat-dialog-title], [matDialogTitle]", ["matDialogTitle"], { 'id': "id" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDialogTitle, "[mat-dialog-title], [matDialogTitle]", ["matDialogTitle"], { "id": "id"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatDialogTitle>;
 }
 

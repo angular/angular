@@ -39,7 +39,7 @@ export declare class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     setVolume(volume: number): void;
     stopVideo(): void;
     unMute(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<YouTubePlayer, "youtube-player", never, { 'videoId': "videoId", 'height': "height", 'width': "width", 'startSeconds': "startSeconds", 'endSeconds': "endSeconds", 'suggestedQuality': "suggestedQuality", 'showBeforeIframeApiLoads': "showBeforeIframeApiLoads" }, { 'ready': "ready", 'stateChange': "stateChange", 'error': "error", 'apiChange': "apiChange", 'playbackQualityChange': "playbackQualityChange", 'playbackRateChange': "playbackRateChange" }, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<YouTubePlayer, "youtube-player", never, { "videoId": "videoId"; "height": "height"; "width": "width"; "startSeconds": "startSeconds"; "endSeconds": "endSeconds"; "suggestedQuality": "suggestedQuality"; "showBeforeIframeApiLoads": "showBeforeIframeApiLoads"; }, { "ready": "ready"; "stateChange": "stateChange"; "error": "error"; "apiChange": "apiChange"; "playbackQualityChange": "playbackQualityChange"; "playbackRateChange": "playbackRateChange"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<YouTubePlayer>;
 }
 

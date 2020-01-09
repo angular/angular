@@ -36,7 +36,7 @@ export declare class MatPaginator extends _MatPaginatorBase implements OnInit, O
     static ngAcceptInputType_pageIndex: NumberInput;
     static ngAcceptInputType_pageSize: NumberInput;
     static ngAcceptInputType_showFirstLastButtons: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatPaginator, "mat-paginator", ["matPaginator"], { 'disabled': "disabled", 'color': "color", 'pageIndex': "pageIndex", 'length': "length", 'pageSize': "pageSize", 'pageSizeOptions': "pageSizeOptions", 'hidePageSize': "hidePageSize", 'showFirstLastButtons': "showFirstLastButtons" }, { 'page': "page" }, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatPaginator, "mat-paginator", ["matPaginator"], { "disabled": "disabled"; "color": "color"; "pageIndex": "pageIndex"; "length": "length"; "pageSize": "pageSize"; "pageSizeOptions": "pageSizeOptions"; "hidePageSize": "hidePageSize"; "showFirstLastButtons": "showFirstLastButtons"; }, { "page": "page"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatPaginator>;
 }
 

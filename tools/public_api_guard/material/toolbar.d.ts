@@ -2,7 +2,7 @@ export declare class MatToolbar extends _MatToolbarMixinBase implements CanColor
     _toolbarRows: QueryList<MatToolbarRow>;
     constructor(elementRef: ElementRef, _platform: Platform, document?: any);
     ngAfterViewInit(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatToolbar, "mat-toolbar", ["matToolbar"], { 'color': "color" }, {}, ["_toolbarRows"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatToolbar, "mat-toolbar", ["matToolbar"], { "color": "color"; }, {}, ["_toolbarRows"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatToolbar>;
 }
 

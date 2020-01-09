@@ -46,7 +46,7 @@ export declare class CdkFixedSizeVirtualScroll implements OnChanges {
     static ngAcceptInputType_itemSize: NumberInput;
     static ngAcceptInputType_maxBufferPx: NumberInput;
     static ngAcceptInputType_minBufferPx: NumberInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkFixedSizeVirtualScroll, "cdk-virtual-scroll-viewport[itemSize]", never, { 'itemSize': "itemSize", 'minBufferPx': "minBufferPx", 'maxBufferPx': "maxBufferPx" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkFixedSizeVirtualScroll, "cdk-virtual-scroll-viewport[itemSize]", never, { "itemSize": "itemSize"; "minBufferPx": "minBufferPx"; "maxBufferPx": "maxBufferPx"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkFixedSizeVirtualScroll>;
 }
 
@@ -82,7 +82,7 @@ export declare class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, On
     measureRangeSize(range: ListRange, orientation: 'horizontal' | 'vertical'): number;
     ngDoCheck(): void;
     ngOnDestroy(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkVirtualForOf<any>, "[cdkVirtualFor][cdkVirtualForOf]", never, { 'cdkVirtualForOf': "cdkVirtualForOf", 'cdkVirtualForTrackBy': "cdkVirtualForTrackBy", 'cdkVirtualForTemplate': "cdkVirtualForTemplate", 'cdkVirtualForTemplateCacheSize': "cdkVirtualForTemplateCacheSize" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkVirtualForOf<any>, "[cdkVirtualFor][cdkVirtualForOf]", never, { "cdkVirtualForOf": "cdkVirtualForOf"; "cdkVirtualForTrackBy": "cdkVirtualForTrackBy"; "cdkVirtualForTemplate": "cdkVirtualForTemplate"; "cdkVirtualForTemplateCacheSize": "cdkVirtualForTemplateCacheSize"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkVirtualForOf<any>>;
 }
 
@@ -124,7 +124,7 @@ export declare class CdkVirtualScrollViewport extends CdkScrollable implements O
     setRenderedContentOffset(offset: number, to?: 'to-start' | 'to-end'): void;
     setRenderedRange(range: ListRange): void;
     setTotalContentSize(size: number): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkVirtualScrollViewport, "cdk-virtual-scroll-viewport", never, { 'orientation': "orientation" }, { 'scrolledIndexChange': "scrolledIndexChange" }, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkVirtualScrollViewport, "cdk-virtual-scroll-viewport", never, { "orientation": "orientation"; }, { "scrolledIndexChange": "scrolledIndexChange"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkVirtualScrollViewport>;
 }
 

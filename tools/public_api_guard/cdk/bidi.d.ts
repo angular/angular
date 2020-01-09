@@ -10,7 +10,7 @@ export declare class Dir implements Directionality, AfterContentInit, OnDestroy 
     readonly value: Direction;
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<Dir, "[dir]", ["dir"], { 'dir': "dir" }, { 'change': "dirChange" }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<Dir, "[dir]", ["dir"], { "dir": "dir"; }, { "change": "dirChange"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<Dir>;
 }
 

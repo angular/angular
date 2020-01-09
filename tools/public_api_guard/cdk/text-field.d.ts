@@ -19,7 +19,7 @@ export declare class CdkAutofill implements OnDestroy, OnInit {
     constructor(_elementRef: ElementRef<HTMLElement>, _autofillMonitor: AutofillMonitor);
     ngOnDestroy(): void;
     ngOnInit(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkAutofill, "[cdkAutofill]", never, {}, { 'cdkAutofill': "cdkAutofill" }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkAutofill, "[cdkAutofill]", never, {}, { "cdkAutofill": "cdkAutofill"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkAutofill>;
 }
 
@@ -39,7 +39,7 @@ export declare class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDe
     static ngAcceptInputType_enabled: BooleanInput;
     static ngAcceptInputType_maxRows: NumberInput;
     static ngAcceptInputType_minRows: NumberInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkTextareaAutosize, "textarea[cdkTextareaAutosize]", ["cdkTextareaAutosize"], { 'minRows': "cdkAutosizeMinRows", 'maxRows': "cdkAutosizeMaxRows", 'enabled': "cdkTextareaAutosize" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkTextareaAutosize, "textarea[cdkTextareaAutosize]", ["cdkTextareaAutosize"], { "minRows": "cdkAutosizeMinRows"; "maxRows": "cdkAutosizeMaxRows"; "enabled": "cdkTextareaAutosize"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkTextareaAutosize>;
 }
 

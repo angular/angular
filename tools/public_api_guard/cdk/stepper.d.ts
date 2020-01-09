@@ -23,7 +23,7 @@ export declare class CdkStep implements OnChanges {
     static ngAcceptInputType_editable: BooleanInput;
     static ngAcceptInputType_hasError: BooleanInput;
     static ngAcceptInputType_optional: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkStep, "cdk-step", ["cdkStep"], { 'stepControl': "stepControl", 'label': "label", 'errorMessage': "errorMessage", 'ariaLabel': "aria-label", 'ariaLabelledby': "aria-labelledby", 'state': "state", 'editable': "editable", 'optional': "optional", 'completed': "completed", 'hasError': "hasError" }, {}, ["stepLabel"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkStep, "cdk-step", ["cdkStep"], { "stepControl": "stepControl"; "label": "label"; "errorMessage": "errorMessage"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "state": "state"; "editable": "editable"; "optional": "optional"; "completed": "completed"; "hasError": "hasError"; }, {}, ["stepLabel"]>;
     static ɵfac: i0.ɵɵFactoryDef<CdkStep>;
 }
 
@@ -72,7 +72,7 @@ export declare class CdkStepper implements AfterViewInit, OnDestroy {
     static ngAcceptInputType_linear: BooleanInput;
     static ngAcceptInputType_optional: BooleanInput;
     static ngAcceptInputType_selectedIndex: NumberInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepper, "[cdkStepper]", ["cdkStepper"], { 'linear': "linear", 'selectedIndex': "selectedIndex", 'selected': "selected" }, { 'selectionChange': "selectionChange" }, ["_steps", "_stepHeader"]>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepper, "[cdkStepper]", ["cdkStepper"], { "linear": "linear"; "selectedIndex": "selectedIndex"; "selected": "selected"; }, { "selectionChange": "selectionChange"; }, ["_steps", "_stepHeader"]>;
     static ɵfac: i0.ɵɵFactoryDef<CdkStepper>;
 }
 
@@ -86,7 +86,7 @@ export declare class CdkStepperNext {
     type: string;
     constructor(_stepper: CdkStepper);
     _handleClick(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepperNext, "button[cdkStepperNext]", never, { 'type': "type" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepperNext, "button[cdkStepperNext]", never, { "type": "type"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkStepperNext>;
 }
 
@@ -95,7 +95,7 @@ export declare class CdkStepperPrevious {
     type: string;
     constructor(_stepper: CdkStepper);
     _handleClick(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepperPrevious, "button[cdkStepperPrevious]", never, { 'type': "type" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepperPrevious, "button[cdkStepperPrevious]", never, { "type": "type"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkStepperPrevious>;
 }
 

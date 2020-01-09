@@ -13,7 +13,7 @@ export declare class MatColumnDef extends CdkColumnDef {
     name: string;
     static ngAcceptInputType_sticky: BooleanInput;
     static ngAcceptInputType_stickyEnd: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatColumnDef, "[matColumnDef]", never, { 'sticky': "sticky", 'name': "matColumnDef" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatColumnDef, "[matColumnDef]", never, { "sticky": "sticky"; "name": "matColumnDef"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatColumnDef>;
 }
 
@@ -35,7 +35,7 @@ export declare class MatFooterRow extends CdkFooterRow {
 
 export declare class MatFooterRowDef extends CdkFooterRowDef {
     static ngAcceptInputType_sticky: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatFooterRowDef, "[matFooterRowDef]", never, { 'columns': "matFooterRowDef", 'sticky': "matFooterRowDefSticky" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatFooterRowDef, "[matFooterRowDef]", never, { "columns": "matFooterRowDef"; "sticky": "matFooterRowDefSticky"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatFooterRowDef>;
 }
 
@@ -57,7 +57,7 @@ export declare class MatHeaderRow extends CdkHeaderRow {
 
 export declare class MatHeaderRowDef extends CdkHeaderRowDef {
     static ngAcceptInputType_sticky: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatHeaderRowDef, "[matHeaderRowDef]", never, { 'columns': "matHeaderRowDef", 'sticky': "matHeaderRowDefSticky" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatHeaderRowDef, "[matHeaderRowDef]", never, { "columns": "matHeaderRowDef"; "sticky": "matHeaderRowDefSticky"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatHeaderRowDef>;
 }
 
@@ -67,7 +67,7 @@ export declare class MatRow extends CdkRow {
 }
 
 export declare class MatRowDef<T> extends CdkRowDef<T> {
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatRowDef<any>, "[matRowDef]", never, { 'columns': "matRowDefColumns", 'when': "matRowDefWhen" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatRowDef<any>, "[matRowDef]", never, { "columns": "matRowDefColumns"; "when": "matRowDefWhen"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatRowDef<any>>;
 }
 

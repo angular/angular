@@ -28,7 +28,7 @@ export declare class CdkAriaLive implements OnDestroy {
     politeness: AriaLivePoliteness;
     constructor(_elementRef: ElementRef, _liveAnnouncer: LiveAnnouncer, _contentObserver: ContentObserver, _ngZone: NgZone);
     ngOnDestroy(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkAriaLive, "[cdkAriaLive]", ["cdkAriaLive"], { 'politeness': "cdkAriaLive" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkAriaLive, "[cdkAriaLive]", ["cdkAriaLive"], { "politeness": "cdkAriaLive"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkAriaLive>;
 }
 
@@ -36,7 +36,7 @@ export declare class CdkMonitorFocus implements OnDestroy {
     cdkFocusChange: EventEmitter<FocusOrigin>;
     constructor(_elementRef: ElementRef<HTMLElement>, _focusMonitor: FocusMonitor);
     ngOnDestroy(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkMonitorFocus, "[cdkMonitorElementFocus], [cdkMonitorSubtreeFocus]", never, {}, { 'cdkFocusChange': "cdkFocusChange" }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkMonitorFocus, "[cdkMonitorElementFocus], [cdkMonitorSubtreeFocus]", never, {}, { "cdkFocusChange": "cdkFocusChange"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkMonitorFocus>;
 }
 
@@ -50,7 +50,7 @@ export declare class CdkTrapFocus implements OnDestroy, AfterContentInit, DoChec
     ngOnDestroy(): void;
     static ngAcceptInputType_autoCapture: BooleanInput;
     static ngAcceptInputType_enabled: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkTrapFocus, "[cdkTrapFocus]", ["cdkTrapFocus"], { 'enabled': "cdkTrapFocus", 'autoCapture': "cdkTrapFocusAutoCapture" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkTrapFocus, "[cdkTrapFocus]", ["cdkTrapFocus"], { "enabled": "cdkTrapFocus"; "autoCapture": "cdkTrapFocusAutoCapture"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkTrapFocus>;
 }
 

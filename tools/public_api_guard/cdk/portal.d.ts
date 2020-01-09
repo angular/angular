@@ -33,7 +33,7 @@ export declare class CdkPortalOutlet extends BasePortalOutlet implements OnInit,
     ngOnDestroy(): void;
     ngOnInit(): void;
     static ngAcceptInputType_portal: Portal<any> | null | undefined | '';
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkPortalOutlet, "[cdkPortalOutlet]", ["cdkPortalOutlet"], { 'portal': "cdkPortalOutlet" }, { 'attached': "attached" }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkPortalOutlet, "[cdkPortalOutlet]", ["cdkPortalOutlet"], { "portal": "cdkPortalOutlet"; }, { "attached": "attached"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkPortalOutlet>;
 }
 
@@ -80,7 +80,7 @@ export declare abstract class Portal<T> {
 export declare type PortalHost = PortalOutlet;
 
 export declare class PortalHostDirective extends CdkPortalOutlet {
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<PortalHostDirective, "[cdkPortalHost], [portalHost]", ["cdkPortalHost"], { 'portal': "cdkPortalHost" }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<PortalHostDirective, "[cdkPortalHost], [portalHost]", ["cdkPortalHost"], { "portal": "cdkPortalHost"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<PortalHostDirective>;
 }
 

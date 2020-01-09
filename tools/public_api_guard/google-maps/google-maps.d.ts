@@ -45,7 +45,7 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
     panBy(x: number, y: number): void;
     panTo(latLng: google.maps.LatLng | google.maps.LatLngLiteral): void;
     panToBounds(latLngBounds: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral, padding?: number | google.maps.Padding): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<GoogleMap, "google-map", never, { 'height': "height", 'width': "width", 'center': "center", 'zoom': "zoom", 'options': "options" }, { 'boundsChanged': "boundsChanged", 'centerChanged': "centerChanged", 'mapClick': "mapClick", 'mapDblclick': "mapDblclick", 'mapDrag': "mapDrag", 'mapDragend': "mapDragend", 'mapDragstart': "mapDragstart", 'headingChanged': "headingChanged", 'idle': "idle", 'maptypeidChanged': "maptypeidChanged", 'mapMousemove': "mapMousemove", 'mapMouseout': "mapMouseout", 'mapMouseover': "mapMouseover", 'projectionChanged': "projectionChanged", 'mapRightclick': "mapRightclick", 'tilesloaded': "tilesloaded", 'tiltChanged': "tiltChanged", 'zoomChanged': "zoomChanged" }, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<GoogleMap, "google-map", never, { "height": "height"; "width": "width"; "center": "center"; "zoom": "zoom"; "options": "options"; }, { "boundsChanged": "boundsChanged"; "centerChanged": "centerChanged"; "mapClick": "mapClick"; "mapDblclick": "mapDblclick"; "mapDrag": "mapDrag"; "mapDragend": "mapDragend"; "mapDragstart": "mapDragstart"; "headingChanged": "headingChanged"; "idle": "idle"; "maptypeidChanged": "maptypeidChanged"; "mapMousemove": "mapMousemove"; "mapMouseout": "mapMouseout"; "mapMouseover": "mapMouseover"; "projectionChanged": "projectionChanged"; "mapRightclick": "mapRightclick"; "tilesloaded": "tilesloaded"; "tiltChanged": "tiltChanged"; "zoomChanged": "zoomChanged"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<GoogleMap>;
 }
 
@@ -70,7 +70,7 @@ export declare class MapInfoWindow implements OnInit, OnDestroy {
     ngOnDestroy(): void;
     ngOnInit(): void;
     open(anchor?: MapMarker): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapInfoWindow, "map-info-window", never, { 'options': "options", 'position': "position" }, { 'closeclick': "closeclick", 'contentChanged': "contentChanged", 'domready': "domready", 'positionChanged': "positionChanged", 'zindexChanged': "zindexChanged" }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapInfoWindow, "map-info-window", never, { "options": "options"; "position": "position"; }, { "closeclick": "closeclick"; "contentChanged": "contentChanged"; "domready": "domready"; "positionChanged": "positionChanged"; "zindexChanged": "zindexChanged"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MapInfoWindow>;
 }
 
@@ -117,7 +117,7 @@ export declare class MapMarker implements OnInit, OnDestroy {
     getZIndex(): number | null;
     ngOnDestroy(): void;
     ngOnInit(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MapMarker, "map-marker", never, { 'options': "options", 'title': "title", 'position': "position", 'label': "label", 'clickable': "clickable" }, { 'animationChanged': "animationChanged", 'mapClick': "mapClick", 'clickableChanged': "clickableChanged", 'cursorChanged': "cursorChanged", 'mapDblclick': "mapDblclick", 'mapDrag': "mapDrag", 'mapDragend': "mapDragend", 'draggableChanged': "draggableChanged", 'mapDragstart': "mapDragstart", 'flatChanged': "flatChanged", 'iconChanged': "iconChanged", 'mapMousedown': "mapMousedown", 'mapMouseout': "mapMouseout", 'mapMouseover': "mapMouseover", 'mapMouseup': "mapMouseup", 'positionChanged': "positionChanged", 'mapRightclick': "mapRightclick", 'shapeChanged': "shapeChanged", 'titleChanged': "titleChanged", 'visibleChanged': "visibleChanged", 'zindexChanged': "zindexChanged" }, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MapMarker, "map-marker", never, { "options": "options"; "title": "title"; "position": "position"; "label": "label"; "clickable": "clickable"; }, { "animationChanged": "animationChanged"; "mapClick": "mapClick"; "clickableChanged": "clickableChanged"; "cursorChanged": "cursorChanged"; "mapDblclick": "mapDblclick"; "mapDrag": "mapDrag"; "mapDragend": "mapDragend"; "draggableChanged": "draggableChanged"; "mapDragstart": "mapDragstart"; "flatChanged": "flatChanged"; "iconChanged": "iconChanged"; "mapMousedown": "mapMousedown"; "mapMouseout": "mapMouseout"; "mapMouseover": "mapMouseover"; "mapMouseup": "mapMouseup"; "positionChanged": "positionChanged"; "mapRightclick": "mapRightclick"; "shapeChanged": "shapeChanged"; "titleChanged": "titleChanged"; "visibleChanged": "visibleChanged"; "zindexChanged": "zindexChanged"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MapMarker>;
 }
 
@@ -143,6 +143,6 @@ export declare class MapPolyline implements OnInit, OnDestroy {
     getVisible(): boolean;
     ngOnDestroy(): void;
     ngOnInit(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapPolyline, "map-polyline", never, { 'options': "options", 'path': "path" }, { 'polylineClick': "polylineClick", 'polylineDblclick': "polylineDblclick", 'polylineDrag': "polylineDrag", 'polylineDragend': "polylineDragend", 'polylineDragstart': "polylineDragstart", 'polylineMousedown': "polylineMousedown", 'polylineMousemove': "polylineMousemove", 'polylineMouseout': "polylineMouseout", 'polylineMouseover': "polylineMouseover", 'polylineMouseup': "polylineMouseup", 'polylineRightclick': "polylineRightclick" }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapPolyline, "map-polyline", never, { "options": "options"; "path": "path"; }, { "polylineClick": "polylineClick"; "polylineDblclick": "polylineDblclick"; "polylineDrag": "polylineDrag"; "polylineDragend": "polylineDragend"; "polylineDragstart": "polylineDragstart"; "polylineMousedown": "polylineMousedown"; "polylineMousemove": "polylineMousemove"; "polylineMouseout": "polylineMouseout"; "polylineMouseover": "polylineMouseover"; "polylineMouseup": "polylineMouseup"; "polylineRightclick": "polylineRightclick"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MapPolyline>;
 }
