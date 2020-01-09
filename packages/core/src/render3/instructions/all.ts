@@ -25,7 +25,6 @@
  *
  * Jira Issue = FW-1184
  */
-export * from './alloc_host_vars';
 export * from './attribute';
 export * from './attribute_interpolation';
 export * from './change_detection';
