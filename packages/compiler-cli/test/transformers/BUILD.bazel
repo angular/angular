@@ -19,6 +19,7 @@ ts_library(
 jasmine_node_test(
     name = "test",
     timeout = "long",  # 900 seconds
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
     data = [
         "//packages/common:npm_package",
         "//packages/core:npm_package",
@@ -29,12 +30,10 @@ jasmine_node_test(
         # of these transformer utilities.
         "no-ivy-aot",
     ],
-    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
     deps = [
         ":test_lib",
         "//packages/core",
         "//tools/testing:node",
-        "//tools/testing:node_es5",
         "@npm//source-map",
     ],
 )
