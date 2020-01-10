@@ -18,6 +18,7 @@ jasmine_node_test(
     bootstrap = ["//tools/testing:node_es5"],
     deps = [
         ":expression_parser_lib",
+        "//tools/testing:node",
     ],
 )
 

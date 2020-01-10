@@ -41,6 +41,7 @@ jasmine_node_test(
     deps = [
         ":view_lib",
         ":view_node_only_lib",
+        "//tools/testing:node",
     ],
 )
 
