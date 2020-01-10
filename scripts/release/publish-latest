@@ -14,7 +14,7 @@ BAZEL_OUTPUT_BASE=$(mktemp -d -t angular-release-latest.XXXXXXX)
 BAZEL="$BAZEL_BIN --output_base=$BAZEL_OUTPUT_BASE"
 
 # query for all npm packages to be released as part of the framework release
-NPM_PACKAGE_LABELS=`${BAZEL_BIN} query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //packages/...) intersect kind("ng_package|pkg_npm", //packages/...)'`
+NPM_PACKAGE_LABELS=`${BAZEL_BIN} query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
 # build all npm packages in parallel
 $BAZEL build --config=release $NPM_PACKAGE_LABELS
 # publish all packages in sequence to make it easier to spot any errors or warnings

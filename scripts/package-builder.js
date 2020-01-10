@@ -61,7 +61,7 @@ function buildTargetPackages(destPath, enableIvy, description) {
   // all carriage return (`\r`) characters form the query output, because otherwise the carriage
   // return is part of the bazel target name and bazel will complain.
   const getTargetsCmd =
-      `${bazelCmd} query --output=label "attr('tags', '\\[.*release-with-framework.*\\]', //packages/...) intersect kind('ng_package|pkg_npm', //packages/...)"`;
+      `${bazelCmd} query --output=label "attr('tags', '\\[.*release-with-framework.*\\]', //packages/...) intersect kind('.*_package', //packages/...)"`;
   const targets = exec(getTargetsCmd, true).split(/\r?\n/);
 
   // Use `--config=release` so that snapshot builds get published with embedded version info.
