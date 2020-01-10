@@ -1,6 +1,6 @@
-load("//tools:defaults.bzl", "pkg_npm")
+load("//tools:defaults.bzl", "npm_package")
 
-pkg_npm(
+npm_package(
     name = "npm_package",
     srcs = glob(
         ["*"],
@@ -14,10 +14,10 @@ pkg_npm(
         "//packages/bazel/src/schematics:package_assets",
         "//packages/bazel/third_party/github.com/bazelbuild/bazel/src/main/protobuf:package_assets",
     ],
-    nested_packages = [
+    packages = [
         "//packages/bazel/docs",
     ],
-    substitutions = {
+    replacements = {
         "(#|\/\/)\\s+BEGIN-DEV-ONLY[\\w\W]+?(#|\/\/)\\s+END-DEV-ONLY": "",
         "//packages/bazel/": "//",
         "angular/packages/bazel/": "npm_angular_bazel/",
