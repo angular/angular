@@ -20,6 +20,7 @@ jasmine_node_test(
     bootstrap = ["//tools/testing:node_es5"],
     deps = [
         ":selector_lib",
+        "//tools/testing:node",
     ],
 )
 
