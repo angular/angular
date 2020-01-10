@@ -70,14 +70,14 @@ html_insert_assets(
     outs = ["_/index.html"],
     args = [
         "--html",
-        "$(execpath :index.html)",
+        "$(location :index.html)",
         "--out",
         "$@",
         "--roots",
         "$(RULEDIR)",
         "--assets",
-        "$(execpath :global_stylesheet.css)",
-        "$(execpath @npm//:node_modules/zone.js/dist/zone.min.js)",
+        "$(location :global_stylesheet.css)",
+        "$(location @npm//:node_modules/zone.js/dist/zone.min.js)",
         "bundle.min.js",
     ],
     data = [
