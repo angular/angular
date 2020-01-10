@@ -35,6 +35,7 @@ See our [template type-checking guide](guide/template-typecheck) for more inform
 | API                                                                     | Replacement                          | Notes |
 | ------------------------------------------------------------------------| ------------------------------------ | ----- |
 | [`entryComponents`](api/core/NgModule#entryComponents)                  | none                                 | See [`entryComponents`](guide/deprecations#entryComponents) |
+| [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation)| `{provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}` | From v11 the default code will be extracted from the locale data given by `LOCAL_ID`, rather than `USD`. |
 | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS) | none                                 | See [`ANALYZE_FOR_ENTRY_COMPONENTS`](guide/deprecations#entryComponents) |
 | `ModuleWithProviders` without a generic                                 | `ModuleWithProviders` with a generic | See [`ModuleWithProviders` section](guide/deprecations#moduleWithProviders) |
 | Undecorated base classes that use Angular features                      | Base classes with `@Directive()` decorator that use Angular features | See [undecorated base classes section](guide/deprecations#undecorated-base-classes) |
