@@ -375,8 +375,9 @@ jobs:
       # to publish the build snapshots. In order to fix this, we unset the global option.
       - run: git config --global --unset "url.ssh://git@github.com.insteadof"
 
-      # TODO(devversion): Ideally the "build_release_packages" job should build all packages with
-      # Bazel, but for now we mix up the Gulp and bazel setup, so we need to build the package here.
+      # The components examples package is not a release package, but we publish it
+      # as part of this job to the docs-content repository. It's not contained in the
+      # attached release output, so we need to build it here.
       - run: bazel build src/components-examples:npm_package --config=release
 
       - run: ./scripts/circleci/publish-snapshots.sh
