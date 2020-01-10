@@ -34,15 +34,14 @@ ts_library(
 
 jasmine_node_test(
     name = "view",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
     tags = [
         "no-ivy-aot",
     ],
-    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
     deps = [
         ":view_lib",
         ":view_node_only_lib",
         "//tools/testing:node",
-        "//tools/testing:node_es5",
     ],
 )
 

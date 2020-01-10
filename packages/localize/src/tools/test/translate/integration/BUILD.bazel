@@ -14,16 +14,18 @@ ts_library(
 
 jasmine_node_test(
     name = "integration",
+    bootstrap = [
+        "angular/tools/testing/init_node_no_angular_spec.js",
+    ],
     data = glob(
         [
             "locales/**",
             "test_files/**",
         ],
     ),
-    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_no_angular_es5))"],
     deps = [
         ":test_lib",
-        "//tools/testing:node_no_angular_es5",
+        "//tools/testing:node_no_angular",
         "@npm//glob",
         "@npm//yargs",
     ],

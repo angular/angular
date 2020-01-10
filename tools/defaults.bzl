@@ -1,6 +1,6 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 
-load("@build_bazel_rules_nodejs//:index.bzl", _nodejs_binary = "nodejs_binary", _pkg_npm = "pkg_npm")
+load("@build_bazel_rules_nodejs//:index.bzl", _nodejs_binary = "nodejs_binary", _npm_package = "npm_package")
 load("@npm_bazel_jasmine//:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm_bazel_karma//:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm_bazel_typescript//:index.bzl", _ts_devserver = "ts_devserver", _ts_library = "ts_library")
@@ -93,7 +93,7 @@ def ts_devserver(**kwargs):
         **kwargs
     )
 
-def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name = None, **kwargs):
+def ts_library(tsconfig = None, testonly = False, deps = [], module_name = None, **kwargs):
     """Default values for ts_library"""
     deps = deps + ["@npm//tslib"]
     if testonly:
@@ -108,23 +108,11 @@ def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name =
         module_name = _default_module_name(testonly)
 
     _ts_library(
-        name = name,
         tsconfig = tsconfig,
         testonly = testonly,
         deps = deps,
         module_name = module_name,
         **kwargs
-    )
-
-    # Select the es5 .js output of the ts_library for use in downstream boostrap targets
-    # with `output_group = "es5_sources"`. This exposes an internal detail of ts_library
-    # that is not ideal.
-    # TODO(gregmagolan): clean this up by using tsc() in these cases rather than ts_library
-    native.filegroup(
-        name = "%s_es5" % name,
-        srcs = [":%s" % name],
-        testonly = testonly,
-        output_group = "es5_sources",
     )
 
 def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, bundle_dts = True, **kwargs):
