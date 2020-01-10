@@ -1,3 +1,5 @@
+export declare type FloatLabelType = 'always' | 'never' | 'auto';
+
 export declare function getMatFormFieldDuplicatedHintError(align: string): Error;
 
 export declare function getMatFormFieldMissingControlError(): Error;
@@ -88,6 +90,7 @@ export declare abstract class MatFormFieldControl<T> {
 
 export interface MatFormFieldDefaultOptions {
     appearance?: MatFormFieldAppearance;
+    floatLabel?: FloatLabelType;
     hideRequiredMarker?: boolean;
 }
 

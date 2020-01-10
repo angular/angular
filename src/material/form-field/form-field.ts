@@ -30,7 +30,6 @@ import {
 } from '@angular/core';
 import {
   CanColor, CanColorCtor,
-  FloatLabelType,
   LabelOptions,
   MAT_LABEL_GLOBAL_OPTIONS,
   mixinColor,
@@ -83,6 +82,9 @@ const _MatFormFieldMixinBase: CanColorCtor & typeof MatFormFieldBase =
  */
 export type MatFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
 
+/** Possible values for the "floatLabel" form-field input. */
+export type FloatLabelType = 'always' | 'never' | 'auto';
+
 /**
  * Represents the default options for the form field that can be configured
  * using the `MAT_FORM_FIELD_DEFAULT_OPTIONS` injection token.
@@ -90,6 +92,11 @@ export type MatFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
 export interface MatFormFieldDefaultOptions {
   appearance?: MatFormFieldAppearance;
   hideRequiredMarker?: boolean;
+  /**
+   * Whether the label for form-fields should by default float `always`,
+   * `never`, or `auto` (only when necessary).
+   */
+  floatLabel?: FloatLabelType;
 }
 
 /**
@@ -227,7 +234,7 @@ export class MatFormField extends _MatFormFieldMixinBase
   }
   set floatLabel(value: FloatLabelType) {
     if (value !== this._floatLabel) {
-      this._floatLabel = value || this._labelOptions.float || 'auto';
+      this._floatLabel = value || this._getDefaultFloatLabelState();
       this._changeDetectorRef.markForCheck();
     }
   }
@@ -280,7 +287,7 @@ export class MatFormField extends _MatFormFieldMixinBase
     super(_elementRef);
 
     this._labelOptions = labelOptions ? labelOptions : {};
-    this.floatLabel = this._labelOptions.float || 'auto';
+    this.floatLabel = this._getDefaultFloatLabelState();
     this._animationsEnabled = _animationMode !== 'NoopAnimations';
 
     // Set the default through here so we invoke the setter on the first run.
@@ -471,6 +478,11 @@ export class MatFormField extends _MatFormFieldMixinBase
         }
       });
     }
+  }
+
+  /** Gets the default float label state. */
+  private _getDefaultFloatLabelState(): FloatLabelType {
+    return (this._defaults && this._defaults.floatLabel) || this._labelOptions.float || 'auto';
   }
 
   /**

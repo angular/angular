@@ -61,7 +61,7 @@ describe('MatInput without forms', () => {
         'Expected MatInput to set floatingLabel to auto by default.');
   }));
 
-  it('should default to global floating label type', fakeAsync(() => {
+  it('should default to floating label type from deprecated global label options', fakeAsync(() => {
     let fixture = createComponent(MatInputWithId, [{
       provide: MAT_LABEL_GLOBAL_OPTIONS, useValue: {float: 'always'}
     }]);
@@ -69,6 +69,18 @@ describe('MatInput without forms', () => {
 
     let formField = fixture.debugElement.query(By.directive(MatFormField))!
         .componentInstance as MatFormField;
+    expect(formField.floatLabel).toBe('always',
+      'Expected MatInput to set floatingLabel to always from global option.');
+  }));
+
+  it('should default to floating label type provided by global default options', fakeAsync(() => {
+    let fixture = createComponent(MatInputWithId, [{
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {floatLabel: 'always'}
+    }]);
+    fixture.detectChanges();
+
+    let formField = fixture.debugElement.query(By.directive(MatFormField))!
+      .componentInstance as MatFormField;
     expect(formField.floatLabel).toBe('always',
       'Expected MatInput to set floatingLabel to always from global option.');
   }));
