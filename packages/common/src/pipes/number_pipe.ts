@@ -123,9 +123,7 @@ export class PercentPipe implements PipeTransform {
    */
   transform(value: any, digitsInfo?: string, locale?: string): string|null {
     if (isEmpty(value)) return null;
-
     locale = locale || this._locale;
-
     try {
       const num = strToNumber(value);
       return formatPercent(num, locale, digitsInfo);
@@ -142,6 +140,26 @@ export class PercentPipe implements PipeTransform {
  * Transforms a number to a currency string, formatted according to locale rules
  * that determine group sizing and separator, decimal-point character,
  * and other locale-specific configurations.
+ *
+ * {@a currency-code-deprecation}
+ * <div class="alert is-helpful">
+ *
+ * **Deprecation notice:**
+ *
+ * The default currency code is currently always `USD` but this is deprecated from v9.
+ *
+ * **In v11 the default currency code will be taken from the current locale identified by
+ * the `LOCAL_ID` token. See the [i18n guide](guide/i18n#setting-up-the-locale-of-your-app) for
+ * more information.**
+ *
+ * If you need the previous behavior then set it by creating a `DEFAULT_CURRENCY_CODE` provider in
+ * your application `NgModule`:
+ *
+ * ```ts
+ * {provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}
+ * ```
+ *
+ * </div>
  *
  * @see `getCurrencySymbol()`
  * @see `formatCurrency()`
