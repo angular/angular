@@ -72,8 +72,6 @@ setPublicVar SAUCE_READY_FILE_TIMEOUT 120
 # completely isolated from angular/angular in order to avoid any bad interactions between
 # their separate build setups.
 setPublicVar MATERIAL_REPO_TMP_DIR "/tmp/material2"
-# **NOTE**: When switching forks or branches, also bump the cache key & fallback cache key versions
-# in the CircleCI "config.yml".
 setPublicVar MATERIAL_REPO_URL "https://github.com/angular/material2.git"
 setPublicVar MATERIAL_REPO_BRANCH "master"
 # **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI "config.yml".
