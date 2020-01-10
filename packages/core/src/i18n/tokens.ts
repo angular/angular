@@ -47,7 +47,8 @@ export const LOCALE_ID = new InjectionToken<string>('LocaleId');
  *
  * **In v10 the default currency code will be taken from the current locale.**
  *
- * If you need the previous behaviour then provide it explicitly:
+ * If you need the previous behavior then set it by creating a `DEFAULT_CURRENCY_CODE` provider in
+ * your application `NgModule`:
  *
  * ```ts
  * {provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}

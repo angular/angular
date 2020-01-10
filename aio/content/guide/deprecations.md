@@ -36,7 +36,7 @@ v9 - v12
 | Area                          | API or Feature                                                                | May be removed in |
 | ----------------------------- | ---------------------------------------------------------------------------   | ----------------- |
 | `@angular/common`             | [`ReflectiveInjector`](#reflectiveinjector)                                   | <!--v8--> v10 |
-| `@angular/common`             | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | <!--v9--> v10 |
+| `@angular/common`             | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | <!--v9--> v11 |
 | `@angular/core`               | [`CollectionChangeRecord`](#core)                                             | <!--v7--> v10 |
 | `@angular/core`               | [`DefaultIterableDiffer`](#core)                                              | <!--v7--> v10 |
 | `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v10 |
@@ -80,7 +80,7 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 
 | API                                                                                           | Replacement                                         | Deprecation announced | Notes |
 | --------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------- | ----- |
-| [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | `{provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}` | v9                    | From v10 the default code will be extracted from the current locale, rather than `USD`. |
+| [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | `{provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}` | v9                    | From v11 the default code will be extracted from the locale data given by `LOCAL_ID`, rather than `USD`. |
 
 
 {@a core}
@@ -314,7 +314,7 @@ However, in practice, Angular simply ignores two-way bindings to template variab
 ```
 
 {@a undecorated-base-classes}
-### Undecorated base classes using Angular features 
+### Undecorated base classes using Angular features
 
 As of version 9, it's deprecated to have an undecorated base class that:
 
@@ -364,8 +364,8 @@ class Dir extends Base {
 }
 ```
 
-In version 9, the CLI has an automated migration that will update your code for you when `ng update` is run. 
-See [the dedicated migration guide](guide/migration-undecorated-classes) for more information about the change and more examples. 
+In version 9, the CLI has an automated migration that will update your code for you when `ng update` is run.
+See [the dedicated migration guide](guide/migration-undecorated-classes) for more information about the change and more examples.
 
 
 
