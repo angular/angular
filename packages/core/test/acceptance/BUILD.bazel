@@ -37,12 +37,11 @@ ts_library(
 
 jasmine_node_test(
     name = "acceptance",
-    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
     deps = [
         ":acceptance_lib",
         "//packages/zone.js/lib:zone_d_ts",
         "//tools/testing:node",
-        "//tools/testing:node_es5",
         "@npm//base64-js",
         "@npm//source-map",
     ],
