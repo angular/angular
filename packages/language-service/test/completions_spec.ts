@@ -372,9 +372,10 @@ describe('completions', () => {
 
   describe('data binding', () => {
     it('should be able to complete property value', () => {
-      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'property-binding-model');
-      const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
-      expectContain(completions, CompletionKind.PROPERTY, ['test']);
+      mockHost.override(TEST_TEMPLATE, `<h1 [model]="~{cursor}"></h1>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.PROPERTY, ['title']);
     });
 
     it('should be able to complete property read', () => {
@@ -385,9 +386,10 @@ describe('completions', () => {
     });
 
     it('should be able to complete an event', () => {
-      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'event-binding-model');
-      const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
-      expectContain(completions, CompletionKind.METHOD, ['modelChanged']);
+      mockHost.override(TEST_TEMPLATE, `<h1 (model)="~{cursor}"></h1>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.METHOD, ['myClick']);
     });
 
     it('should be able to complete a the LHS of a two-way binding', () => {
@@ -398,9 +400,10 @@ describe('completions', () => {
     });
 
     it('should be able to complete a the RHS of a two-way binding', () => {
-      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'two-way-binding-model');
-      const completions = ngLS.getCompletionsAt(PARSING_CASES, marker.start);
-      expectContain(completions, CompletionKind.PROPERTY, ['test']);
+      mockHost.override(TEST_TEMPLATE, `<h1 [(model)]="~{cursor}"></h1>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.PROPERTY, ['title']);
     });
 
     it('should suggest property binding for input', () => {
