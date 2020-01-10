@@ -1,3 +1,5 @@
+export declare const MAT_SELECT_CONFIG: InjectionToken<MatSelectConfig>;
+
 export declare const MAT_SELECT_SCROLL_STRATEGY: InjectionToken<() => ScrollStrategy>;
 
 export declare const MAT_SELECT_SCROLL_STRATEGY_PROVIDER: {
@@ -57,7 +59,7 @@ export declare class MatSelect extends _MatSelectMixinBase implements AfterConte
     typeaheadDebounceInterval: number;
     value: any;
     readonly valueChange: EventEmitter<any>;
-    constructor(_viewportRuler: ViewportRuler, _changeDetectorRef: ChangeDetectorRef, _ngZone: NgZone, _defaultErrorStateMatcher: ErrorStateMatcher, elementRef: ElementRef, _dir: Directionality, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _parentFormField: MatFormField, ngControl: NgControl, tabIndex: string, scrollStrategyFactory: any, _liveAnnouncer: LiveAnnouncer);
+    constructor(_viewportRuler: ViewportRuler, _changeDetectorRef: ChangeDetectorRef, _ngZone: NgZone, _defaultErrorStateMatcher: ErrorStateMatcher, elementRef: ElementRef, _dir: Directionality, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _parentFormField: MatFormField, ngControl: NgControl, tabIndex: string, scrollStrategyFactory: any, _liveAnnouncer: LiveAnnouncer, defaults?: MatSelectConfig);
     _calculateOverlayScroll(selectedIndex: number, scrollBuffer: number, maxScroll: number): number;
     _getAriaActiveDescendant(): string | null;
     _getAriaLabel(): string | null;
@@ -104,6 +106,11 @@ export declare class MatSelectChange {
     constructor(
     source: MatSelect,
     value: any);
+}
+
+export interface MatSelectConfig {
+    disableOptionCentering?: boolean;
+    typeaheadDebounceInterval?: number;
 }
 
 export declare class MatSelectModule {

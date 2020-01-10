@@ -29,6 +29,7 @@ import {
   QueryList,
   ViewChild,
   ViewChildren,
+  Provider,
 } from '@angular/core';
 import {
   async,
@@ -63,7 +64,7 @@ import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {Subject, Subscription, EMPTY, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {MatSelectModule} from './index';
-import {MatSelect} from './select';
+import {MatSelect, MAT_SELECT_CONFIG, MatSelectConfig} from './select';
 import {
   getMatSelectDynamicMultipleError,
   getMatSelectNonArrayValueError,
@@ -88,7 +89,7 @@ describe('MatSelect', () => {
    * overall test time.
    * @param declarations Components to declare for this block
    */
-  function configureMatSelectTestingModule(declarations: any[]) {
+  function configureMatSelectTestingModule(declarations: any[], providers: Provider[] = []) {
     TestBed.configureTestingModule({
       imports: [
         MatFormFieldModule,
@@ -105,6 +106,7 @@ describe('MatSelect', () => {
             scrolled: () => scrolledSubject.asObservable(),
           }),
         },
+        ...providers
       ],
     }).compileComponents();
 
@@ -4446,6 +4448,22 @@ describe('MatSelect', () => {
       }).not.toThrow();
     }));
 
+  });
+
+  it('should be able to provide default values through an injection token', () => {
+    configureMatSelectTestingModule([NgModelSelect], [{
+      provide: MAT_SELECT_CONFIG,
+      useValue: {
+        disableOptionCentering: true,
+        typeaheadDebounceInterval: 1337
+      } as MatSelectConfig
+    }]);
+    const fixture = TestBed.createComponent(NgModelSelect);
+    fixture.detectChanges();
+    const select = fixture.componentInstance.select;
+
+    expect(select.disableOptionCentering).toBe(true);
+    expect(select.typeaheadDebounceInterval).toBe(1337);
   });
 });
 
