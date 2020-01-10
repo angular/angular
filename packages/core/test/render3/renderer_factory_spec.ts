@@ -8,11 +8,11 @@
 
 import {RendererType2, ViewEncapsulation} from '../../src/core';
 import {ɵɵdefineComponent} from '../../src/render3/index';
-import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵtext} from '../../src/render3/instructions/all';
+import {ɵɵelement, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {getRendererFactory2} from './imported_renderer2';
-import {document, renderToHtml, TemplateFixture} from './render_util';
+import {document, renderToHtml} from './render_util';
 
 describe('renderer factory lifecycle', () => {
   let logs: string[] = [];
@@ -107,103 +107,5 @@ describe('renderer factory lifecycle', () => {
     logs = [];
     renderToHtml(TemplateWithComponent, {}, 2, 0, directives);
     expect(logs).toEqual(['begin', 'function_with_component update', 'component update', 'end']);
-  });
-});
-
-describe('Renderer2 destruction hooks', () => {
-  const rendererFactory = getRendererFactory2(document);
-
-  it('should call renderer.destroyNode for each node destroyed', () => {
-    let condition = true;
-
-    function createTemplate() {
-      ɵɵelementStart(0, 'div');
-      { ɵɵcontainer(1); }
-      ɵɵelementEnd();
-    }
-
-    function updateTemplate() {
-      ɵɵcontainerRefreshStart(1);
-      {
-        if (condition) {
-          let rf1 = ɵɵembeddedViewStart(1, 3, 0);
-          {
-            if (rf1 & RenderFlags.Create) {
-              ɵɵelement(0, 'span');
-              ɵɵelement(1, 'span');
-              ɵɵelement(2, 'span');
-            }
-          }
-          ɵɵembeddedViewEnd();
-        }
-      }
-      ɵɵcontainerRefreshEnd();
-    }
-
-    const t = new TemplateFixture(
-        createTemplate, updateTemplate, 2, 0, null, null, null, rendererFactory);
-
-    expect(t.html).toEqual('<div><span></span><span></span><span></span></div>');
-
-    condition = false;
-    t.update();
-    expect(t.html).toEqual('<div></div>');
-    expect(ngDevMode).toHaveProperties({rendererDestroy: 0, rendererDestroyNode: 3});
-  });
-
-  it('should call renderer.destroy for each component destroyed', () => {
-    class SimpleComponent {
-      static ɵfac = () => new SimpleComponent;
-      static ɵcmp = ɵɵdefineComponent({
-        type: SimpleComponent,
-        encapsulation: ViewEncapsulation.None,
-        selectors: [['simple']],
-        decls: 1,
-        vars: 0,
-        template:
-            function(rf: RenderFlags, ctx: SimpleComponent) {
-              if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'span');
-              }
-            },
-      });
-    }
-
-    let condition = true;
-
-    function createTemplate() {
-      ɵɵelementStart(0, 'div');
-      { ɵɵcontainer(1); }
-      ɵɵelementEnd();
-    }
-
-    function updateTemplate() {
-      ɵɵcontainerRefreshStart(1);
-      {
-        if (condition) {
-          let rf1 = ɵɵembeddedViewStart(1, 3, 0);
-          {
-            if (rf1 & RenderFlags.Create) {
-              ɵɵelement(0, 'simple');
-              ɵɵelement(1, 'span');
-              ɵɵelement(2, 'simple');
-            }
-          }
-          ɵɵembeddedViewEnd();
-        }
-      }
-      ɵɵcontainerRefreshEnd();
-    }
-
-    const t = new TemplateFixture(
-        createTemplate, updateTemplate, 2, 0, [SimpleComponent], null, null, rendererFactory);
-
-    expect(t.html).toEqual(
-        '<div><simple><span></span></simple><span></span><simple><span></span></simple></div>');
-
-    condition = false;
-    t.update();
-    expect(t.html).toEqual('<div></div>');
-    expect(ngDevMode).toHaveProperties({rendererDestroy: 2, rendererDestroyNode: 3});
   });
 });

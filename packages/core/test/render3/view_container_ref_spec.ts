@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, ComponentRef, ElementRef, QueryList, TemplateRef, ViewContainerRef, ViewRef,} from '../../src/core';
+import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, ElementRef, QueryList, TemplateRef, ViewContainerRef, ViewRef} from '../../src/core';
 import {ViewEncapsulation} from '../../src/metadata';
-import {injectComponentFactoryResolver, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵlistener, ɵɵloadQuery, ɵɵqueryRefresh, ɵɵviewQuery,} from '../../src/render3/index';
-
-import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵtemplate, ɵɵtext,} from '../../src/render3/instructions/all';
+import {injectComponentFactoryResolver, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵlistener, ɵɵloadQuery, ɵɵqueryRefresh, ɵɵviewQuery} from '../../src/render3/index';
+import {ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement} from '../../src/render3/interfaces/renderer';
 import {getLView} from '../../src/render3/state';
 import {getNativeByIndex} from '../../src/render3/util/view_utils';
-import {ComponentFixture, createComponent, TemplateFixture,} from './render_util';
+
+import {ComponentFixture, createComponent, TemplateFixture} from './render_util';
 
 const Component: typeof _Component = function(...args: any[]): any {
   // In test we use @Component for documentation only so it's safe to mock out the implementation.
@@ -132,110 +132,6 @@ describe('ViewContainerRef', () => {
 
            directiveInstances![0].insertTpl({});
            expect(fixture.html).toEqual('before|AB|after');
-         });
-
-
-      it('should add embedded views at the right position in the DOM tree (ng-template next to a JS block)',
-         () => {
-           let directiveInstance: TestDirective;
-
-           class TestDirective {
-             static ɵfac = () => directiveInstance = new TestDirective(
-                 ɵɵdirectiveInject(ViewContainerRef as any), ɵɵdirectiveInject(TemplateRef as any))
-
-                 static ɵdir =
-                     ɵɵdefineDirective({type: TestDirective, selectors: [['', 'testdir', '']]});
-
-             constructor(private _vcRef: ViewContainerRef, private _tplRef: TemplateRef<{}>) {}
-
-             insertTpl(ctx: {}) {
-               this._vcRef.createEmbeddedView(this._tplRef, ctx);
-             }
-
-             insertTpl2(ctx: {}) {
-               const viewRef = this._tplRef.createEmbeddedView(ctx);
-               this._vcRef.insert(viewRef);
-             }
-
-             remove(index?: number) {
-               this._vcRef.remove(index);
-             }
-           }
-
-           function EmbeddedTemplateA(rf: RenderFlags, ctx: any) {
-             if (rf & RenderFlags.Create) {
-               ɵɵtext(0, 'A');
-             }
-           }
-
-           /**
-            * before|
-            * <ng-template testDir>A<ng-template>
-            * % if (condition) {
-            *  B
-            * % }
-            * |after
-            */
-           class TestComponent {
-             condition = false;
-             // TODO(issue/24571): remove '!'.
-             testDir!: TestDirective;
-             static ɵfac = () => new TestComponent();
-             static ɵcmp = ɵɵdefineComponent({
-               type: TestComponent,
-               encapsulation: ViewEncapsulation.None,
-               selectors: [['test-cmp']],
-               decls: 4,
-               vars: 0,
-               consts: [['testdir', '']],
-               template:
-                   (rf: RenderFlags, cmp: TestComponent) => {
-                     if (rf & RenderFlags.Create) {
-                       ɵɵtext(0, 'before|');
-                       ɵɵtemplate(1, EmbeddedTemplateA, 1, 0, 'ng-template', 0);
-                       ɵɵcontainer(2);
-                       ɵɵtext(3, '|after');
-                     }
-                     if (rf & RenderFlags.Update) {
-                       ɵɵcontainerRefreshStart(2);
-                       {
-                         if (cmp.condition) {
-                           let rf1 = ɵɵembeddedViewStart(0, 1, 0);
-                           {
-                             if (rf1 & RenderFlags.Create) {
-                               ɵɵtext(0, 'B');
-                             }
-                           }
-                           ɵɵembeddedViewEnd();
-                         }
-                       }
-                       ɵɵcontainerRefreshEnd();
-                     }
-                   },
-               directives: [TestDirective]
-             });
-           }
-
-           const fixture = new ComponentFixture(TestComponent);
-           expect(fixture.html).toEqual('before||after');
-
-           fixture.component.condition = true;
-           fixture.update();
-           expect(fixture.html).toEqual('before|B|after');
-
-           directiveInstance!.insertTpl({});
-           expect(fixture.html).toEqual('before|AB|after');
-
-           fixture.component.condition = false;
-           fixture.update();
-           expect(fixture.html).toEqual('before|A|after');
-
-           directiveInstance!.insertTpl2({});
-           expect(fixture.html).toEqual('before|AA|after');
-
-           fixture.component.condition = true;
-           fixture.update();
-           expect(fixture.html).toEqual('before|AAB|after');
          });
     });
 
