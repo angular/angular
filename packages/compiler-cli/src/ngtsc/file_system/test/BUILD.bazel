@@ -18,8 +18,9 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["//tools/testing:node_no_angular_es5"],
+    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_no_angular_es5))"],
     deps = [
         ":test_lib",
+        "//tools/testing:node_no_angular_es5",
     ],
 )
