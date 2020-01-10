@@ -134,7 +134,7 @@
     "@angular/cli": "^9.0.0-rc.3",
     "@bazel/bazel": "1.1.0",
     "@bazel/buildifier": "^0.29.0",
-    "@bazel/ibazel": "^0.10.3",
+    "@bazel/ibazel": "^0.11.1",
     "@types/minimist": "^1.2.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "browserstacktunnel-wrapper": "2.0.1",
