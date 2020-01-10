@@ -192,6 +192,9 @@
     "name": "callHooks"
   },
   {
+    "name": "classIndexOf"
+  },
+  {
     "name": "concatString"
   },
   {
@@ -279,7 +282,7 @@
     "name": "findAttrIndexInNode"
   },
   {
-    "name": "findDirectiveMatches"
+    "name": "findDirectiveDefMatches"
   },
   {
     "name": "forceStylesAsString"
@@ -408,9 +411,6 @@
     "name": "getStylingMapArray"
   },
   {
-    "name": "getTNode"
-  },
-  {
     "name": "growHostVarsSpace"
   },
   {
@@ -444,7 +444,7 @@
     "name": "incrementInitPhaseFlags"
   },
   {
-    "name": "initNodeFlags"
+    "name": "initTNodeFlags"
   },
   {
     "name": "initializeInputAndOutputAliases"
@@ -532,6 +532,12 @@
   },
   {
     "name": "matchTemplateAttribute"
+  },
+  {
+    "name": "mergeHostAttribute"
+  },
+  {
+    "name": "mergeHostAttrs"
   },
   {
     "name": "nativeAppendChild"
@@ -639,9 +645,6 @@
     "name": "setClassName"
   },
   {
-    "name": "setCurrentDirectiveDef"
-  },
-  {
     "name": "setCurrentQueryIndex"
   },
   {
@@ -718,9 +721,6 @@
   },
   {
     "name": "ɵɵelementEnd"
-  },
-  {
-    "name": "ɵɵelementHostAttrs"
   },
   {
     "name": "ɵɵelementStart"

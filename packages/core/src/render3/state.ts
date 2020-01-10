@@ -194,14 +194,6 @@ export function decreaseElementDepthCount() {
   instructionState.lFrame.elementDepthCount--;
 }
 
-export function getCurrentDirectiveDef(): DirectiveDef<any>|ComponentDef<any>|null {
-  return instructionState.lFrame.currentDirectiveDef;
-}
-
-export function setCurrentDirectiveDef(def: DirectiveDef<any>| ComponentDef<any>| null): void {
-  instructionState.lFrame.currentDirectiveDef = def;
-}
-
 export function getBindingsEnabled(): boolean {
   return instructionState.bindingsEnabled;
 }

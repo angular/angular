@@ -22,7 +22,7 @@ describe('css selector matching', () => {
     const tNode = (!attrsOrTNode || Array.isArray(attrsOrTNode)) ?
         createTNode(null !, null, TNodeType.Element, 0, tagName, attrsOrTNode as TAttributes) :
         (attrsOrTNode as TNode);
-    return isNodeMatchingSelector(tNode, selector, false);
+    return isNodeMatchingSelector(tNode, selector, true);
   }
 
   describe('isNodeMatchingSimpleSelector', () => {
@@ -322,26 +322,6 @@ describe('css selector matching', () => {
         // <div class="foo">
         expect(isMatching('div', ['class', 'foo'], selector)).toBeFalsy();
       });
-
-      it('should match against a class value before and after the styling context is created',
-         () => {
-           // selector: 'div.abc'
-           const selector = ['div', SelectorFlags.CLASS, 'abc'];
-           const tNode = createTNode(null !, null, TNodeType.Element, 0, 'div', []);
-
-           // <div> (without attrs or styling context)
-           expect(isMatching('div', tNode, selector)).toBeFalsy();
-
-           // <div class="abc"> (with attrs but without styling context)
-           tNode.attrs = ['class', 'abc'];
-           tNode.classes = null;
-           expect(isMatching('div', tNode, selector)).toBeTruthy();
-
-           // <div class="abc"> (with styling context but without attrs)
-           tNode.classes = ['abc', 'abc', true];
-           tNode.attrs = null;
-           expect(isMatching('div', tNode, selector)).toBeTruthy();
-         });
     });
   });
 
