@@ -8,32 +8,52 @@
 
 import '../util/ng_dev_mode';
 
-import {assertDefined, assertNotEqual} from '../util/assert';
+import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
 
 import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
+import {classIndexOf} from './styling/class_differ';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
-import {getInitialStylingValue} from './util/styling_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2;
 
 const NG_TEMPLATE_SELECTOR = 'ng-template';
 
-function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): boolean {
-  const nodeClassesLen = nodeClassAttrVal.length;
-  // we lowercase the class attribute value to be able to match
-  // selectors without case-sensitivity
-  // (selectors are already in lowercase when generated)
-  const matchIndex = nodeClassAttrVal.toLowerCase().indexOf(cssClassToMatch);
-  const matchEndIdx = matchIndex + cssClassToMatch.length;
-  if (matchIndex === -1                                                  // no match
-      || (matchIndex > 0 && nodeClassAttrVal ![matchIndex - 1] !== ' ')  // no space before
-      ||
-      (matchEndIdx < nodeClassesLen && nodeClassAttrVal ![matchEndIdx] !== ' '))  // no space after
-  {
-    return false;
+/**
+ * Search the `TAttributes` to see if it contains `cssClassToMatch` (case insensitive)
+ *
+ * @param attrs `TAttributes` to search through.
+ * @param cssClassToMatch class to match (lowercase)
+ * @param isProjectionMode Whether or not class matching should look into the attribute `class` in
+ *    addition to the `AttributeMarker.Classes`.
+ */
+function isCssClassMatching(
+    attrs: TAttributes, cssClassToMatch: string, isProjectionMode: boolean): boolean {
+  // TODO(misko): The fact that this function needs to know about `isProjectionMode` seems suspect.
+  // It is strange to me that sometimes the class information comes in form of `class` attribute
+  // and sometimes in form of `AttributeMarker.Classes`. Some investigation is needed to determine
+  // if that is the right behavior.
+  ngDevMode &&
+      assertEqual(
+          cssClassToMatch, cssClassToMatch.toLowerCase(), 'Class name expected to be lowercase.');
+  let i = 0;
+  while (i < attrs.length) {
+    let item = attrs[i++];
+    if (isProjectionMode && item === 'class') {
+      item = attrs[i] as string;
+      if (classIndexOf(item.toLowerCase(), cssClassToMatch, 0) !== -1) {
+        return true;
+      }
+    } else if (item === AttributeMarker.Classes) {
+      // We found the classes section. Start searching for the class.
+      while (i < attrs.length && typeof(item = attrs[i++]) == 'string') {
+        // while we have strings
+        if (item.toLowerCase() === cssClassToMatch) return true;
+      }
+      return false;
+    }
   }
-  return true;
+  return false;
 }
 
 /**
@@ -106,9 +126,8 @@ export function isNodeMatchingSelector(
 
       // special case for matching against classes when a tNode has been instantiated with
       // class and style values as separate attribute values (e.g. ['title', CLASS, 'foo'])
-      if ((mode & SelectorFlags.CLASS) && tNode.classes) {
-        if (!isCssClassMatching(
-                getInitialStylingValue(tNode.classes), selectorAttrValue as string)) {
+      if ((mode & SelectorFlags.CLASS) && tNode.attrs !== null) {
+        if (!isCssClassMatching(tNode.attrs, selectorAttrValue as string, isProjectionMode)) {
           if (isPositive(mode)) return false;
           skipToNextSelector = true;
         }
@@ -143,7 +162,7 @@ export function isNodeMatchingSelector(
 
         const compareAgainstClassName = mode & SelectorFlags.CLASS ? nodeAttrValue : null;
         if (compareAgainstClassName &&
-                !isCssClassMatching(compareAgainstClassName, selectorAttrValue as string) ||
+                classIndexOf(compareAgainstClassName, selectorAttrValue as string, 0) !== -1 ||
             mode & SelectorFlags.ATTRIBUTE && selectorAttrValue !== nodeAttrValue) {
           if (isPositive(mode)) return false;
           skipToNextSelector = true;

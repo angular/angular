@@ -3,7 +3,7 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 1485,
-        "main-es2015": 142903,
+        "main-es2015": 143641,
         "polyfills-es2015": 36808
       }
     }
@@ -21,7 +21,7 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 1485,
-        "main-es2015": 149037,
+        "main-es2015": 149794,
         "polyfills-es2015": 36808
       }
     }
@@ -30,7 +30,7 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 1485,
-        "main-es2015": 138021,
+        "main-es2015": 138909,
         "polyfills-es2015": 37494
       }
     }
@@ -49,7 +49,7 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 2289,
-        "main-es2015": 227444,
+        "main-es2015": 228198,
         "polyfills-es2015": 36808,
         "5-es2015": 779
       }

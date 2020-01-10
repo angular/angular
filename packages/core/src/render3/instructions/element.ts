@@ -7,7 +7,7 @@
  */
 
 import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
-import {assertHasParent} from '../assert';
+import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
@@ -28,19 +28,20 @@ import {registerInitialStylingOnTNode} from './styling';
 function elementStartFirstCreatePass(
     index: number, tView: TView, lView: LView, native: RElement, name: string,
     attrsIndex?: number | null, localRefsIndex?: number): TElementNode {
+  ngDevMode && assertFirstCreatePass(tView);
   ngDevMode && ngDevMode.firstCreatePass++;
 
   const tViewConsts = tView.consts;
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
   const tNode = getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, name, attrs);
 
-  if (attrs !== null) {
-    registerInitialStylingOnTNode(tNode, attrs, 0);
-  }
-
   const hasDirectives =
       resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
   ngDevMode && warnAboutUnknownElement(lView, native, tNode, hasDirectives);
+
+  if (tNode.mergedAttrs !== null) {
+    registerInitialStylingOnTNode(tNode, tNode.mergedAttrs, 0);
+  }
 
   if (tView.queries !== null) {
     tView.queries.elementStart(tView, tNode);
@@ -83,9 +84,9 @@ export function ɵɵelementStart(
       tView.data[adjustedIndex] as TElementNode;
   setPreviousOrParentTNode(tNode, true);
 
-  const attrs = tNode.attrs;
-  if (attrs != null) {
-    setUpAttributes(renderer, native, attrs);
+  const mergedAttrs = tNode.mergedAttrs;
+  if (mergedAttrs !== null) {
+    setUpAttributes(renderer, native, mergedAttrs);
   }
   if ((tNode.flags & TNodeFlags.hasInitialStyling) === TNodeFlags.hasInitialStyling) {
     renderInitialStyling(renderer, native, tNode, false);
@@ -106,7 +107,7 @@ export function ɵɵelementStart(
     createDirectivesInstances(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
   }
-  if (localRefsIndex != null) {
+  if (localRefsIndex !== null) {
     saveResolvedLocalsInData(lView, tNode);
   }
 }
@@ -167,78 +168,6 @@ export function ɵɵelement(
     index: number, name: string, attrsIndex?: number | null, localRefsIndex?: number): void {
   ɵɵelementStart(index, name, attrsIndex, localRefsIndex);
   ɵɵelementEnd();
-}
-
-/**
- * Assign static attribute values to a host element.
- *
- * This instruction will assign static attribute values as well as class and style
- * values to an element within the host bindings function. Since attribute values
- * can consist of different types of values, the `attrs` array must include the values in
- * the following format:
- *
- * attrs = [
- *   // static attributes (like `title`, `name`, `id`...)
- *   attr1, value1, attr2, value,
- *
- *   // a single namespace value (like `x:id`)
- *   NAMESPACE_MARKER, namespaceUri1, name1, value1,
- *
- *   // another single namespace value (like `x:name`)
- *   NAMESPACE_MARKER, namespaceUri2, name2, value2,
- *
- *   // a series of CSS classes that will be applied to the element (no spaces)
- *   CLASSES_MARKER, class1, class2, class3,
- *
- *   // a series of CSS styles (property + value) that will be applied to the element
- *   STYLES_MARKER, prop1, value1, prop2, value2
- * ]
- *
- * All non-class and non-style attributes must be defined at the start of the list
- * first before all class and style values are set. When there is a change in value
- * type (like when classes and styles are introduced) a marker must be used to separate
- * the entries. The marker values themselves are set via entries found in the
- * [AttributeMarker] enum.
- *
- * NOTE: This instruction is meant to used from `hostBindings` function only.
- *
- * @param directive A directive instance the styling is associated with.
- * @param attrs An array of static values (attributes, classes and styles) with the correct marker
- * values.
- *
- * @codeGenApi
- */
-export function ɵɵelementHostAttrs(attrs: TAttributes) {
-  const hostElementIndex = getSelectedIndex();
-  const lView = getLView();
-  const tView = lView[TVIEW];
-  const tNode = getTNode(hostElementIndex, lView);
-
-  // non-element nodes (e.g. `<ng-container>`) are not rendered as actual
-  // element nodes and adding styles/classes on to them will cause runtime
-  // errors...
-  if (tNode.type === TNodeType.Element) {
-    const native = getNativeByTNode(tNode, lView) as RElement;
-    // TODO(misko-next): setup attributes need to be moved out of `ɵɵelementHostAttrs`
-    const lastAttrIndex = setUpAttributes(lView[RENDERER], native, attrs);
-    if (tView.firstCreatePass) {
-      const stylingNeedsToBeRendered = registerInitialStylingOnTNode(tNode, attrs, lastAttrIndex);
-
-      // this is only called during the first template pass in the
-      // event that this current directive assigned initial style/class
-      // host attribute values to the element. Because initial styling
-      // values are applied before directives are first rendered (within
-      // `createElement`) this means that initial styling for any directives
-      // still needs to be applied. Note that this will only happen during
-      // the first template pass and not each time a directive applies its
-      // attribute values to the element.
-      if (stylingNeedsToBeRendered) {
-        const renderer = lView[RENDERER];
-        // TODO(misko-next): Styling initialization should move out of `ɵɵelementHostAttrs`
-        renderInitialStyling(renderer, native, tNode, true);
-      }
-    }
-  }
 }
 
 function setDirectiveStylingInput(

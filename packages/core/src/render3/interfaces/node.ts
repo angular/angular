@@ -435,6 +435,19 @@ export interface TNode {
   attrs: TAttributes|null;
 
   /**
+   * Same as `TNode.attrs` but contains merged data across all directive host bindings.
+   *
+   * We need to keep `attrs` as unmerged so that it can be used for attribute selectors.
+   * We merge attrs here so that it can be used in a performant way for initial rendering.
+   *
+   * The `attrs` are merged in first pass in following order:
+   * - Component's `hostAttrs`
+   * - Directives' `hostAttrs`
+   * - Template `TNode.attrs` associated with the current `TNode`.
+   */
+  mergedAttrs: TAttributes|null;
+
+  /**
    * A set of local names under which a given element is exported in a template and
    * visible to queries. An entry in this array can be created for different reasons:
    * - an element itself is referenced, ex.: `<div #foo>`

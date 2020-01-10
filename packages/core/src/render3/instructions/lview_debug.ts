@@ -154,31 +154,32 @@ export const TViewConstructor = class TView implements ITView {
 
 export const TNodeConstructor = class TNode implements ITNode {
   constructor(
-      public tView_: TView,                                                    //
-      public type: TNodeType,                                                  //
-      public index: number,                                                    //
-      public injectorIndex: number,                                            //
-      public directiveStart: number,                                           //
-      public directiveEnd: number,                                             //
-      public propertyBindings: number[]|null,                                  //
-      public flags: TNodeFlags,                                                //
-      public providerIndexes: TNodeProviderIndexes,                            //
-      public tagName: string|null,                                             //
-      public attrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null,  //
-      public localNames: (string|number)[]|null,                               //
-      public initialInputs: (string[]|null)[]|null|undefined,                  //
-      public inputs: PropertyAliases|null,                                     //
-      public outputs: PropertyAliases|null,                                    //
-      public tViews: ITView|ITView[]|null,                                     //
-      public next: ITNode|null,                                                //
-      public projectionNext: ITNode|null,                                      //
-      public child: ITNode|null,                                               //
-      public parent: TElementNode|TContainerNode|null,                         //
-      public projection: number|(ITNode|RNode[])[]|null,                       //
-      public styles: TStylingContext|null,                                     //
-      public classes: TStylingContext|null,                                    //
-      public classBindings: TStylingRange,                                     //
-      public styleBindings: TStylingRange,                                     //
+      public tView_: TView,                                                          //
+      public type: TNodeType,                                                        //
+      public index: number,                                                          //
+      public injectorIndex: number,                                                  //
+      public directiveStart: number,                                                 //
+      public directiveEnd: number,                                                   //
+      public propertyBindings: number[]|null,                                        //
+      public flags: TNodeFlags,                                                      //
+      public providerIndexes: TNodeProviderIndexes,                                  //
+      public tagName: string|null,                                                   //
+      public attrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null,        //
+      public mergedAttrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null,  //
+      public localNames: (string|number)[]|null,                                     //
+      public initialInputs: (string[]|null)[]|null|undefined,                        //
+      public inputs: PropertyAliases|null,                                           //
+      public outputs: PropertyAliases|null,                                          //
+      public tViews: ITView|ITView[]|null,                                           //
+      public next: ITNode|null,                                                      //
+      public projectionNext: ITNode|null,                                            //
+      public child: ITNode|null,                                                     //
+      public parent: TElementNode|TContainerNode|null,                               //
+      public projection: number|(ITNode|RNode[])[]|null,                             //
+      public styles: TStylingContext|null,                                           //
+      public classes: TStylingContext|null,                                          //
+      public classBindings: TStylingRange,                                           //
+      public styleBindings: TStylingRange,                                           //
       ) {}
 
   get type_(): string {

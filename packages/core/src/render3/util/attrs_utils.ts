@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {assertEqual} from '../../util/assert';
 import {CharCode} from '../../util/char_code';
 import {AttributeMarker, TAttributes} from '../interfaces/node';
 import {CssSelector} from '../interfaces/projection';

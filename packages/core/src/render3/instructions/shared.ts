@@ -20,7 +20,7 @@ import {attachPatchData} from '../context_discovery';
 import {getFactoryDef} from '../definition';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
-import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags, registerPreOrderHooks} from '../hooks';
+import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
 import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/injector';
@@ -28,20 +28,18 @@ import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, Pro
 import {RComment, RElement, RNode, RText, Renderer3, RendererFactory3, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {ActiveElementFlags, enterView, executeElementExitFn, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, hasActiveElementFlag, incrementActiveDirectiveId, leaveView, leaveViewProcessExit, setActiveHostElement, setBindingIndex, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
+import {ActiveElementFlags, enterView, executeElementExitFn, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, hasActiveElementFlag, incrementActiveDirectiveId, leaveView, leaveViewProcessExit, setActiveHostElement, setBindingIndex, setBindingRoot, setCheckNoChangesMode, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {renderStylingMap, writeStylingValueDirectly} from '../styling/bindings';
 import {NO_CHANGE} from '../tokens';
-import {isAnimationProp} from '../util/attrs_utils';
+import {isAnimationProp, mergeHostAttrs} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
 import {getInitialStylingValue} from '../util/styling_utils';
 import {getLViewParent} from '../util/view_traversal_utils';
-import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
-
+import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, viewAttachedToChangeDetector} from '../util/view_utils';
 import {selectIndexInternal} from './advance';
-import {ɵɵelementHostAttrs} from './element';
 import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeConstructor, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor, attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData} from './lview_debug';
 
 
@@ -818,6 +816,7 @@ export function createTNode(
                          0,              // providerIndexes: TNodeProviderIndexes
                          tagName,        // tagName: string|null
                          attrs,  // attrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null
+                         null,   // mergedAttrs
                          null,   // localNames: (string|number)[]|null
                          undefined,  // initialInputs: (string[]|null)[]|null|undefined
                          null,       // inputs: PropertyAliases|null
@@ -844,6 +843,7 @@ export function createTNode(
                        providerIndexes: 0,
                        tagName: tagName,
                        attrs: attrs,
+                       mergedAttrs: null,
                        localNames: null,
                        initialInputs: undefined,
                        inputs: null,
@@ -1105,64 +1105,69 @@ export function resolveDirectives(
   // tsickle.
   ngDevMode && assertFirstCreatePass(tView);
 
-  if (!getBindingsEnabled()) return false;
-
-  const directives: DirectiveDef<any>[]|null = findDirectiveMatches(tView, lView, tNode);
-  const exportsMap: ({[key: string]: number} | null) = localRefs === null ? null : {'': -1};
   let hasDirectives = false;
+  if (getBindingsEnabled()) {
+    const directiveDefs: DirectiveDef<any>[]|null = findDirectiveDefMatches(tView, lView, tNode);
+    const exportsMap: ({[key: string]: number} | null) = localRefs === null ? null : {'': -1};
 
-  if (directives !== null) {
-    let totalDirectiveHostVars = 0;
-    hasDirectives = true;
-    initNodeFlags(tNode, tView.data.length, directives.length);
-    // When the same token is provided by several directives on the same node, some rules apply in
-    // the viewEngine:
-    // - viewProviders have priority over providers
-    // - the last directive in NgModule.declarations has priority over the previous one
-    // So to match these rules, the order in which providers are added in the arrays is very
-    // important.
-    for (let i = 0; i < directives.length; i++) {
-      const def = directives[i];
-      if (def.providersResolver) def.providersResolver(def);
-    }
-    generateExpandoInstructionBlock(tView, tNode, directives.length);
-    let preOrderHooksFound = false;
-    let preOrderCheckHooksFound = false;
-    for (let i = 0; i < directives.length; i++) {
-      const def = directives[i];
+    if (directiveDefs !== null) {
+      let totalDirectiveHostVars = 0;
+      hasDirectives = true;
+      initTNodeFlags(tNode, tView.data.length, directiveDefs.length);
+      // When the same token is provided by several directives on the same node, some rules apply in
+      // the viewEngine:
+      // - viewProviders have priority over providers
+      // - the last directive in NgModule.declarations has priority over the previous one
+      // So to match these rules, the order in which providers are added in the arrays is very
+      // important.
+      for (let i = 0; i < directiveDefs.length; i++) {
+        const def = directiveDefs[i];
+        if (def.providersResolver) def.providersResolver(def);
+      }
+      generateExpandoInstructionBlock(tView, tNode, directiveDefs.length);
+      let preOrderHooksFound = false;
+      let preOrderCheckHooksFound = false;
+      for (let i = 0; i < directiveDefs.length; i++) {
+        const def = directiveDefs[i];
+        // Merge the attrs in the order of matches. This assumes that the first directive is the
+        // component itself, so that the component has the least priority.
+        tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, def.hostAttrs);
 
-      baseResolveDirective(tView, lView, def);
+        baseResolveDirective(tView, lView, def);
 
-      saveNameToExportMap(tView.data !.length - 1, def, exportsMap);
+        saveNameToExportMap(tView.data !.length - 1, def, exportsMap);
 
-      if (def.contentQueries !== null) tNode.flags |= TNodeFlags.hasContentQuery;
-      if (def.hostBindings !== null || def.hostAttrs !== null || def.hostVars !== 0)
-        tNode.flags |= TNodeFlags.hasHostBindings;
+        if (def.contentQueries !== null) tNode.flags |= TNodeFlags.hasContentQuery;
+        if (def.hostBindings !== null || def.hostAttrs !== null || def.hostVars !== 0)
+          tNode.flags |= TNodeFlags.hasHostBindings;
 
-      // Only push a node index into the preOrderHooks array if this is the first
-      // pre-order hook found on this node.
-      if (!preOrderHooksFound && (def.onChanges || def.onInit || def.doCheck)) {
-        // We will push the actual hook function into this array later during dir instantiation.
-        // We cannot do it now because we must ensure hooks are registered in the same
-        // order that directives are created (i.e. injection order).
-        (tView.preOrderHooks || (tView.preOrderHooks = [])).push(tNode.index - HEADER_OFFSET);
-        preOrderHooksFound = true;
+        // Only push a node index into the preOrderHooks array if this is the first
+        // pre-order hook found on this node.
+        if (!preOrderHooksFound && (def.onChanges || def.onInit || def.doCheck)) {
+          // We will push the actual hook function into this array later during dir instantiation.
+          // We cannot do it now because we must ensure hooks are registered in the same
+          // order that directives are created (i.e. injection order).
+          (tView.preOrderHooks || (tView.preOrderHooks = [])).push(tNode.index - HEADER_OFFSET);
+          preOrderHooksFound = true;
+        }
+
+        if (!preOrderCheckHooksFound && (def.onChanges || def.doCheck)) {
+          (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = [
+           ])).push(tNode.index - HEADER_OFFSET);
+          preOrderCheckHooksFound = true;
+        }
+
+        addHostBindingsToExpandoInstructions(tView, def);
+        totalDirectiveHostVars += def.hostVars;
       }
 
-      if (!preOrderCheckHooksFound && (def.onChanges || def.doCheck)) {
-        (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = [
-         ])).push(tNode.index - HEADER_OFFSET);
-        preOrderCheckHooksFound = true;
-      }
-
-      addHostBindingsToExpandoInstructions(tView, def);
-      totalDirectiveHostVars += def.hostVars;
+      initializeInputAndOutputAliases(tView, tNode);
+      growHostVarsSpace(tView, lView, totalDirectiveHostVars);
     }
-
-    initializeInputAndOutputAliases(tView, tNode);
-    growHostVarsSpace(tView, lView, totalDirectiveHostVars);
+    if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
   }
-  if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
+  // Merge the template attrs last so that they have the highest priority.
+  tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
   return hasDirectives;
 }
 
@@ -1177,9 +1182,7 @@ export function addHostBindingsToExpandoInstructions(
   ngDevMode && assertFirstCreatePass(tView);
   const expando = tView.expandoInstructions !;
   // TODO(misko): PERF we are adding `hostBindings` even if there is nothing to add! This is
-  // suboptimal for performance. See `currentDirectiveIndex` comment in
-  // `setHostBindingsByExecutingExpandoInstructions` for details.
-  // TODO(misko): PERF  `def.hostBindings` may be null,
+  // suboptimal for performance. `def.hostBindings` may be null,
   // but we still need to push null to the array as a placeholder
   // to ensure the directive counter is incremented (so host
   // binding functions always line up with the corrective directive).
@@ -1267,7 +1270,7 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
         // It is important that this be called first before the actual instructions
         // are run because this way the first directive ID value is not zero.
         incrementActiveDirectiveId();
-        invokeHostBindingsInCreationMode(def, expando, directive, tNode, firstCreatePass);
+        invokeHostBindingsInCreationMode(def, directive, tNode);
       } else if (firstCreatePass) {
         expando.push(null);
       }
@@ -1277,22 +1280,13 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
   }
 }
 
+// TODO(COMMIT): jsdoc
 export function invokeHostBindingsInCreationMode(
-    def: DirectiveDef<any>, expando: ExpandoInstructions, directive: any, tNode: TNode,
-    firstCreatePass: boolean) {
-  const previousExpandoLength = expando.length;
-  setCurrentDirectiveDef(def);
-  const elementIndex = tNode.index - HEADER_OFFSET;
-  // TODO(misko-next): This is a temporary work around for the fact that we moved the information
-  // from instruction to declaration. The workaround is to just call the instruction as if it was
-  // part of the `hostAttrs`.
-  if (def.hostAttrs !== null) {
-    ɵɵelementHostAttrs(def.hostAttrs);
-  }
+    def: DirectiveDef<any>, directive: any, tNode: TNode) {
   if (def.hostBindings !== null) {
+    const elementIndex = tNode.index - HEADER_OFFSET;
     def.hostBindings !(RenderFlags.Create, directive, elementIndex);
   }
-  setCurrentDirectiveDef(null);
 }
 
 /**
@@ -1321,7 +1315,7 @@ export function generateExpandoInstructionBlock(
 * Matches the current node against all available selectors.
 * If a component is matched (at most one), it is returned in first position in the array.
 */
-function findDirectiveMatches(
+function findDirectiveDefMatches(
     tView: TView, viewData: LView,
     tNode: TElementNode | TContainerNode | TElementContainerNode): DirectiveDef<any>[]|null {
   ngDevMode && assertFirstCreatePass(tView);
@@ -1403,7 +1397,7 @@ function saveNameToExportMap(
  * the directive count to 0, and adding the isComponent flag.
  * @param index the initial index
  */
-export function initNodeFlags(tNode: TNode, index: number, numberOfDirectives: number) {
+export function initTNodeFlags(tNode: TNode, index: number, numberOfDirectives: number) {
   ngDevMode && assertNotEqual(
                    numberOfDirectives, tNode.directiveEnd - tNode.directiveStart,
                    'Reached the max number of directives');
