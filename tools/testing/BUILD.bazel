@@ -2,8 +2,6 @@ load("//tools:defaults.bzl", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
-exports_files(["bazel_patch_require.js"])
-
 ts_library(
     name = "browser",
     testonly = 1,
