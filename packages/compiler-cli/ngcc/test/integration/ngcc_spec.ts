@@ -13,6 +13,7 @@ import * as os from 'os';
 import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem, join} from '../../../src/ngtsc/file_system';
 import {Folder, MockFileSystem, TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
+import {LockFile} from '../../src/execution/lock_file';
 import {mainNgcc} from '../../src/main';
 import {markAsProcessed} from '../../src/packages/build_marker';
 import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
@@ -1319,6 +1320,7 @@ runInEachFileSystem(() => {
     function initMockFileSystem(fs: FileSystem, testFiles: Folder) {
       if (fs instanceof MockFileSystem) {
         fs.init(testFiles);
+        fs.ensureDir(fs.dirname(new LockFile(fs).lockFilePath));
       }
 
       // a random test package that no metadata.json file so not compiled by Angular.

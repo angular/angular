@@ -10,6 +10,7 @@ import {Logger} from '../logging/logger';
 import {PackageJsonUpdater} from '../writing/package_json_updater';
 
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from './api';
+import {LockFile} from './lock_file';
 import {onTaskCompleted} from './utils';
 
 
@@ -17,27 +18,31 @@ import {onTaskCompleted} from './utils';
  * An `Executor` that processes all tasks serially and completes synchronously.
  */
 export class SingleProcessExecutor implements Executor {
-  constructor(private logger: Logger, private pkgJsonUpdater: PackageJsonUpdater) {}
+  constructor(
+      private logger: Logger, private pkgJsonUpdater: PackageJsonUpdater,
+      private lockFile: LockFile) {}
 
   execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn): void {
-    this.logger.debug(`Running ngcc on ${this.constructor.name}.`);
+    this.lockFile.lock(() => {
+      this.logger.debug(`Running ngcc on ${this.constructor.name}.`);
 
-    const taskQueue = analyzeEntryPoints();
-    const compile =
-        createCompileFn((task, outcome) => onTaskCompleted(this.pkgJsonUpdater, task, outcome));
+      const taskQueue = analyzeEntryPoints();
+      const compile =
+          createCompileFn((task, outcome) => onTaskCompleted(this.pkgJsonUpdater, task, outcome));
 
-    // Process all tasks.
-    this.logger.debug('Processing tasks...');
-    const startTime = Date.now();
+      // Process all tasks.
+      this.logger.debug('Processing tasks...');
+      const startTime = Date.now();
 
-    while (!taskQueue.allTasksCompleted) {
-      const task = taskQueue.getNextTask() !;
-      compile(task);
-      taskQueue.markTaskCompleted(task);
-    }
+      while (!taskQueue.allTasksCompleted) {
+        const task = taskQueue.getNextTask() !;
+        compile(task);
+        taskQueue.markTaskCompleted(task);
+      }
 
-    const duration = Math.round((Date.now() - startTime) / 1000);
-    this.logger.debug(`Processed tasks in ${duration}s.`);
+      const duration = Math.round((Date.now() - startTime) / 1000);
+      this.logger.debug(`Processed tasks in ${duration}s.`);
+    });
   }
 }
 

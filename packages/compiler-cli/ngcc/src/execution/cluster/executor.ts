@@ -13,6 +13,7 @@ import * as cluster from 'cluster';
 import {Logger} from '../../logging/logger';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from '../api';
+import {LockFile} from '../lock_file';
 
 import {ClusterMaster} from './master';
 import {ClusterWorker} from './worker';
@@ -25,18 +26,19 @@ import {ClusterWorker} from './worker';
 export class ClusterExecutor implements Executor {
   constructor(
       private workerCount: number, private logger: Logger,
-      private pkgJsonUpdater: PackageJsonUpdater) {}
+      private pkgJsonUpdater: PackageJsonUpdater, private lockFile: LockFile) {}
 
   async execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
       Promise<void> {
     if (cluster.isMaster) {
-      this.logger.debug(
-          `Running ngcc on ${this.constructor.name} (using ${this.workerCount} worker processes).`);
-
       // This process is the cluster master.
-      const master =
-          new ClusterMaster(this.workerCount, this.logger, this.pkgJsonUpdater, analyzeEntryPoints);
-      return master.run();
+      return this.lockFile.lock(() => {
+        this.logger.debug(
+            `Running ngcc on ${this.constructor.name} (using ${this.workerCount} worker processes).`);
+        const master = new ClusterMaster(
+            this.workerCount, this.logger, this.pkgJsonUpdater, analyzeEntryPoints);
+        return master.run();
+      });
     } else {
       // This process is a cluster worker.
       const worker = new ClusterWorker(this.logger, createCompileFn);
