@@ -17,13 +17,15 @@ import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {registerPostOrderHooks} from './hooks';
-import {CLEAN_PROMISE, addHostBindingsToExpandoInstructions, addToViewTree, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, growHostVarsSpace, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, renderView} from './instructions/shared';
+import {CLEAN_PROMISE, addHostBindingsToExpandoInstructions, addToViewTree, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, growHostVarsSpace, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, renderInitialStyling, renderView} from './instructions/shared';
+import {registerInitialStylingOnTNode} from './instructions/styling';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
 import {enterView, getPreviousOrParentTNode, incrementActiveDirectiveId, leaveView, setActiveHostElement} from './state';
+import {setUpAttributes} from './util/attrs_utils';
 import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler, stringifyForError} from './util/misc_utils';
 import {getRootContext} from './util/view_traversal_utils';
@@ -171,6 +173,14 @@ export function createRootComponentView(
   ngDevMode && assertDataInRange(rootView, 0 + HEADER_OFFSET);
   rootView[0 + HEADER_OFFSET] = rNode;
   const tNode: TElementNode = getOrCreateTNode(tView, null, 0, TNodeType.Element, null, null);
+  const mergedAttrs = tNode.mergedAttrs = def.hostAttrs;
+  if (mergedAttrs !== null) {
+    registerInitialStylingOnTNode(tNode, mergedAttrs, 0);
+    if (rNode !== null) {
+      setUpAttributes(renderer, rNode, mergedAttrs);
+      renderInitialStyling(renderer, rNode, tNode, false);
+    }
+  }
   const componentView = createLView(
       rootView, getOrCreateTComponentView(def), null,
       def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[HEADER_OFFSET], tNode,
@@ -179,7 +189,7 @@ export function createRootComponentView(
   if (tView.firstCreatePass) {
     diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), tView, def.type);
     markAsComponentHost(tView, tNode);
-    initNodeFlags(tNode, rootView.length, 1);
+    initTNodeFlags(tNode, rootView.length, 1);
   }
 
   addToViewTree(rootView, componentView);
@@ -216,7 +226,8 @@ export function createRootComponent<T>(
   // part of the `hostAttrs`.
   // The check for componentDef.hostBindings is wrong since now some directives may not
   // have componentDef.hostBindings but they still need to process hostVars and hostAttrs
-  if (tView.firstCreatePass && (componentDef.hostBindings || componentDef.hostAttrs !== null)) {
+  if (tView.firstCreatePass &&
+      (componentDef.hostBindings !== null || componentDef.hostAttrs !== null)) {
     const elementIndex = rootTNode.index - HEADER_OFFSET;
     setActiveHostElement(elementIndex);
     incrementActiveDirectiveId();
@@ -225,9 +236,7 @@ export function createRootComponent<T>(
     addHostBindingsToExpandoInstructions(rootTView, componentDef);
     growHostVarsSpace(rootTView, rootLView, componentDef.hostVars);
 
-    const expando = tView.expandoInstructions !;
-    invokeHostBindingsInCreationMode(
-        componentDef, expando, component, rootTNode, tView.firstCreatePass);
+    invokeHostBindingsInCreationMode(componentDef, component, rootTNode);
 
     setActiveHostElement(null);
   }

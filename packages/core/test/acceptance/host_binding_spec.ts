@@ -830,6 +830,30 @@ describe('host bindings', () => {
     expect(hostElement.title).toBe('other title');
   });
 
+  it('should merge attributes on host and template', () => {
+    @Directive({selector: '[dir1]', host: {id: 'dir1'}})
+    class MyDir1 {
+    }
+    @Directive({selector: '[dir2]', host: {id: 'dir2'}})
+    class MyDir2 {
+    }
+
+    @Component({template: `<div dir1 dir2 id="tmpl"></div>`})
+    class MyComp {
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp, MyDir1, MyDir2]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+    const div: HTMLElement = fixture.debugElement.nativeElement.firstChild;
+    expect(div.id).toEqual(
+        ivyEnabled ?
+            // In ivy the correct result is `tmpl` because template has the highest priority.
+            'tmpl' :
+            // In VE the order was simply that of execution and so dir2 would win.
+            'dir2');
+  });
+
   onlyInIvy('Host bindings do not get merged in ViewEngine')
       .it('should work correctly with inherited directives with hostBindings', () => {
         @Directive({selector: '[superDir]', host: {'[id]': 'id'}})

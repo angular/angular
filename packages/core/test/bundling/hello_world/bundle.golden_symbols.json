@@ -348,9 +348,6 @@
     "name": "getStylingMapArray"
   },
   {
-    "name": "getTNode"
-  },
-  {
     "name": "growHostVarsSpace"
   },
   {
@@ -372,7 +369,7 @@
     "name": "incrementInitPhaseFlags"
   },
   {
-    "name": "initNodeFlags"
+    "name": "initTNodeFlags"
   },
   {
     "name": "insertBloom"
@@ -519,9 +516,6 @@
     "name": "setClassName"
   },
   {
-    "name": "setCurrentDirectiveDef"
-  },
-  {
     "name": "setCurrentQueryIndex"
   },
   {
@@ -571,9 +565,6 @@
   },
   {
     "name": "ɵɵdefineComponent"
-  },
-  {
-    "name": "ɵɵelementHostAttrs"
   },
   {
     "name": "ɵɵtext"

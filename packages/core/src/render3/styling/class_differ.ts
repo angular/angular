@@ -113,7 +113,7 @@ export function removeClass(className: string, classToRemove: string): string {
  *
  * @param className A string containing classes (whitespace separated)
  * @param classToToggle A class name to remove or add to the `className`
- * @param toggle Weather the resulting `className` should contain or not the `classToToggle`
+ * @param toggle Whether the resulting `className` should contain or not the `classToToggle`
  * @returns a new class-list which does not have `classToRemove`
  */
 export function toggleClass(className: string, classToToggle: string, toggle: boolean): string {

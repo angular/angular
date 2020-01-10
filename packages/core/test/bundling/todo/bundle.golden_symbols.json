@@ -438,6 +438,9 @@
     "name": "checkNoChangesInternal"
   },
   {
+    "name": "classIndexOf"
+  },
+  {
     "name": "cleanUpView"
   },
   {
@@ -579,7 +582,7 @@
     "name": "findAttrIndexInNode"
   },
   {
-    "name": "findDirectiveMatches"
+    "name": "findDirectiveDefMatches"
   },
   {
     "name": "findExistingListener"
@@ -867,7 +870,7 @@
     "name": "incrementInitPhaseFlags"
   },
   {
-    "name": "initNodeFlags"
+    "name": "initTNodeFlags"
   },
   {
     "name": "initializeInputAndOutputAliases"
@@ -1039,6 +1042,12 @@
   },
   {
     "name": "matchTemplateAttribute"
+  },
+  {
+    "name": "mergeHostAttribute"
+  },
+  {
+    "name": "mergeHostAttrs"
   },
   {
     "name": "nativeAppendChild"
@@ -1218,9 +1227,6 @@
     "name": "setClassName"
   },
   {
-    "name": "setCurrentDirectiveDef"
-  },
-  {
     "name": "setCurrentQueryIndex"
   },
   {
@@ -1381,9 +1387,6 @@
   },
   {
     "name": "ɵɵelementEnd"
-  },
-  {
-    "name": "ɵɵelementHostAttrs"
   },
   {
     "name": "ɵɵelementStart"
