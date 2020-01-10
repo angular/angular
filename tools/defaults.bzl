@@ -160,7 +160,7 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
         deps = deps,
         readme_md = readme_md,
         license_banner = license_banner,
-        substitutions = PKG_GROUP_REPLACEMENTS,
+        replacements = PKG_GROUP_REPLACEMENTS,
         ng_packager = _INTERNAL_NG_PACKAGE_PACKAGER,
         terser_config_file = _INTERNAL_NG_PACKAGE_DEFALUT_TERSER_CONFIG_FILE,
         rollup_config_tmpl = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL,
@@ -168,11 +168,11 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
         **kwargs
     )
 
-def pkg_npm(name, substitutions = {}, **kwargs):
+def npm_package(name, replacements = {}, **kwargs):
     """Default values for npm_package"""
-    _pkg_npm(
+    _npm_package(
         name = name,
-        substitutions = dict(substitutions, **PKG_GROUP_REPLACEMENTS),
+        replacements = dict(replacements, **PKG_GROUP_REPLACEMENTS),
         **kwargs
     )
 
