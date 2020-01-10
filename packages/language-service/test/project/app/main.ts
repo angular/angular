@@ -30,21 +30,17 @@ import * as ParsingCases from './parsing-cases';
     NgForCases.UnknownTrackBy,
     NgIfCases.ShowIf,
     ParsingCases.AsyncForUsingComponent,
-    ParsingCases.AttributeBinding,
     ParsingCases.CaseIncompleteOpen,
     ParsingCases.CaseMissingClosing,
     ParsingCases.CaseUnknown,
     ParsingCases.EmptyInterpolation,
-    ParsingCases.EventBinding,
     ParsingCases.NoValueAttribute,
     ParsingCases.NumberModel,
     ParsingCases.Pipes,
-    ParsingCases.PropertyBinding,
     ParsingCases.References,
     ParsingCases.StringModel,
     ParsingCases.TemplateReference,
     ParsingCases.TestComponent,
-    ParsingCases.TwoWayBinding,
   ]
 })
 export class AppModule {

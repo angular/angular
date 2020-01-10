@@ -44,39 +44,6 @@ export class Pipes {
 export class NoValueAttribute {
 }
 
-
-@Component({
-  template: '<h1 model="~{attribute-binding-model}test"></h1>',
-})
-export class AttributeBinding {
-  test: string = 'test';
-}
-
-@Component({
-  template: '<h1 [model]="~{property-binding-model}test"></h1>',
-})
-export class PropertyBinding {
-  test: string = 'test';
-}
-
-@Component({
-  template: '<h1 (model)="~{event-binding-model}modelChanged()"></h1>',
-})
-export class EventBinding {
-  test: string = 'test';
-
-  modelChanged() {}
-}
-
-@Component({
-  template: `
-    <h1 [(model)]="~{two-way-binding-model}test"></h1>
-    <input ~{two-way-binding-input}></input>`,
-})
-export class TwoWayBinding {
-  test: string = 'test';
-}
-
 @Directive({
   selector: '[string-model]',
 })
