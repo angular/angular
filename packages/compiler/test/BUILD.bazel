@@ -70,6 +70,7 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
     data = [
         "//packages/animations:npm_package",
         "//packages/common:npm_package",
@@ -79,12 +80,10 @@ jasmine_node_test(
         # Disabled as these tests pertain to the old ngc compilation and are not relevant in Ivy.
         "no-ivy-aot",
     ],
-    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
     deps = [
         ":test_lib",
         ":test_node_only_lib",
         "//tools/testing:node",
-        "//tools/testing:node_es5",
         "@npm//base64-js",
         "@npm//source-map",
     ],

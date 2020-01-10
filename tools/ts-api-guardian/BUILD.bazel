@@ -55,10 +55,7 @@ pkg_npm(
 ts_library(
     name = "test_lib",
     testonly = True,
-    srcs = glob(
-        ["test/*.ts"],
-        exclude = ["test/bootstrap.ts"],
-    ),
+    srcs = glob(["test/*.ts"]),
     tsconfig = "//tools:tsconfig-test",
     deps = [
         ":lib",
@@ -71,40 +68,18 @@ ts_library(
     ],
 )
 
-ts_library(
-    name = "bootstrap",
-    testonly = True,
-    srcs = ["test/bootstrap.ts"],
-    tsconfig = "//tools:tsconfig-test",
-    deps = ["@npm//@types/node"],
-)
-
-# Select the es5 .js output of the ts_library :boostrap target
-# with `output_group = "es5_sources"` for use in the jasmine_node_test
-# below. This exposes an internal detail of ts_library that is not ideal.
-# TODO(gregmagolan): clean this up by using tsc() in this case rather than ts_library
-filegroup(
-    name = "bootstrap_es5",
-    testonly = True,
-    srcs = [":bootstrap"],
-    output_group = "es5_sources",
-)
-
 jasmine_node_test(
     name = "tests",
-    srcs = [
-        ":test_lib",
-    ],
+    srcs = [":test_lib"],
+    bootstrap = ["angular/tools/ts-api-guardian/test/bootstrap.js"],
     data = glob([
         "test/fixtures/*.ts",
         "test/fixtures/*.patch",
     ]) + [
-        ":bootstrap_es5",
         ":ts-api-guardian",
         # TODO: remove this once the boostrap.js workaround has been removed.
         ":package.json",
     ],
-    templated_args = ["--node_options=--require=$(rlocation $(location :bootstrap_es5))"],
 )
 # END-INTERNAL
 

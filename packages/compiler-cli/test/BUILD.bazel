@@ -40,6 +40,7 @@ ts_library(
 
 jasmine_node_test(
     name = "extract_i18n",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
     data = [
         "//packages/core:npm_package",
     ],
@@ -48,13 +49,11 @@ jasmine_node_test(
         # tool will likely work differently.
         "no-ivy-aot",
     ],
-    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
     deps = [
         ":extract_i18n_lib",
         "//packages/common:npm_package",
         "//packages/core",
         "//tools/testing:node",
-        "//tools/testing:node_es5",
         "@npm//minimist",
     ],
 )
@@ -77,6 +76,7 @@ ts_library(
 jasmine_node_test(
     name = "ngc",
     timeout = "long",  # 900 seconds
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
     data = [
         "//packages/common:npm_package",
         "//packages/core:npm_package",
@@ -88,12 +88,10 @@ jasmine_node_test(
         # own tests under //packages/compiler-cli/test/ngtsc.
         "no-ivy-aot",
     ],
-    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
     deps = [
         ":ngc_lib",
         "//packages/core",
         "//tools/testing:node",
-        "//tools/testing:node_es5",
         "@npm//minimist",
         "@npm//rxjs",
         "@npm//tsickle",
@@ -118,15 +116,14 @@ ts_library(
 
 jasmine_node_test(
     name = "perform_watch",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
     data = [
         "//packages/core:npm_package",
     ],
-    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
     deps = [
         ":perform_watch_lib",
         "//packages/core",
         "//tools/testing:node",
-        "//tools/testing:node_es5",
     ],
 )
 
@@ -146,14 +143,13 @@ ts_library(
 
 jasmine_node_test(
     name = "perform_compile",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
     data = [
         "//packages/core:npm_package",
     ],
-    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
     deps = [
         ":perform_compile_lib",
         "//packages/core",
         "//tools/testing:node",
-        "//tools/testing:node_es5",
     ],
 )
