@@ -30,7 +30,7 @@ ng_package(
         "//packages/core/testing:package.json",
     ],
     entry_point = ":index.ts",
-    nested_packages = [
+    packages = [
         "//packages/core/schematics:npm_package",
     ],
     tags = [

@@ -24,7 +24,7 @@ ng_package(
         "**/package.json",
     ]),
     entry_point = ":index.ts",
-    nested_packages = [
+    packages = [
         "//packages/elements/schematics:npm_package",
     ],
     tags = [

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "pkg_npm")
+load("//tools:defaults.bzl", "npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -10,7 +10,7 @@ filegroup(
     visibility = ["//packages/localize:__subpackages__"],
 )
 
-pkg_npm(
+npm_package(
     name = "npm_package",
     srcs = [
         "collection.json",
