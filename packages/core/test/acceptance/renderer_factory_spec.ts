@@ -11,6 +11,7 @@ import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animat
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {DOCUMENT} from '@angular/common';
 import {Component, DoCheck, NgZone, RendererFactory2, RendererType2} from '@angular/core';
+import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
 import {EventManager, ɵDomSharedStylesHost} from '@angular/platform-browser';
@@ -251,5 +252,81 @@ describe('custom renderer', () => {
       const fixture = TestBed.createComponent(SomeComponent);
       fixture.detectChanges();
     }).not.toThrow();
+  });
+});
+
+onlyInIvy('access global ngDevMode').describe('Renderer2 destruction hooks', () => {
+  @Component({
+    selector: 'some-component',
+    template: `
+      <span *ngIf="isContentVisible">A</span>
+      <span *ngIf="isContentVisible">B</span>
+      <span *ngIf="isContentVisible">C</span>
+    `,
+  })
+  class SimpleApp {
+    isContentVisible = true;
+  }
+
+  @Component({
+    selector: 'basic-comp',
+    template: 'comp(<ng-content></ng-content>)',
+  })
+  class BasicComponent {
+  }
+
+  @Component({
+    selector: 'some-component',
+    template: `
+      <basic-comp *ngIf="isContentVisible">A</basic-comp>
+      <basic-comp *ngIf="isContentVisible">B</basic-comp>
+      <basic-comp *ngIf="isContentVisible">C</basic-comp>
+    `,
+  })
+  class AppWithComponents {
+    isContentVisible = true;
+  }
+
+  beforeEach(() => {
+    // Tests below depend on perf counters when running with Ivy. In order to have
+    // clean perf counters at the beginning of a test, we reset those here.
+    ngDevModeResetPerfCounters();
+
+    TestBed.configureTestingModule({
+      declarations: [SimpleApp, AppWithComponents, BasicComponent],
+      providers: [{
+        provide: RendererFactory2,
+        useFactory: (document: any) => getRendererFactory2(document),
+        deps: [DOCUMENT]
+      }]
+    });
+  });
+
+  it('should call renderer.destroyNode for each node destroyed', () => {
+    const fixture = TestBed.createComponent(SimpleApp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('ABC');
+
+    fixture.componentInstance.isContentVisible = false;
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('');
+    expect(ngDevMode!.rendererDestroy).toBe(0);
+    expect(ngDevMode!.rendererDestroyNode).toBe(3);
+  });
+
+  it('should call renderer.destroy for each component destroyed', () => {
+    const fixture = TestBed.createComponent(AppWithComponents);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('comp(A)comp(B)comp(C)');
+
+    fixture.componentInstance.isContentVisible = false;
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('');
+    expect(ngDevMode!.rendererDestroy).toBe(3);
+    expect(ngDevMode!.rendererDestroyNode).toBe(3);
   });
 });

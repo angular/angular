@@ -8,9 +8,8 @@
 
 import {ElementRef, QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {EventEmitter} from '../..';
 import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵProvidersFeature} from '../../src/render3/index';
-import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
+import {ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementStart, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {ɵɵcontentQuery, ɵɵloadQuery, ɵɵqueryRefresh, ɵɵviewQuery} from '../../src/render3/query';
 import {getLView} from '../../src/render3/state';
@@ -1298,68 +1297,6 @@ describe('query', () => {
     });
   });
 
-  describe('queryList', () => {
-    it('should be destroyed when the containing view is destroyed', () => {
-      let queryInstance: QueryList<any>;
-
-      const SimpleComponentWithQuery = createComponent(
-          'some-component-with-query',
-          function(rf: RenderFlags, ctx: any) {
-            if (rf & RenderFlags.Create) {
-              ɵɵelement(0, 'div', null, 0);
-            }
-          },
-          2, 0, [], [],
-          function(rf: RenderFlags, ctx: any) {
-            if (rf & RenderFlags.Create) {
-              ɵɵviewQuery(['foo'], false);
-            }
-            if (rf & RenderFlags.Update) {
-              let tmp: any;
-              ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
-                  (ctx.query = queryInstance = tmp as QueryList<any>);
-            }
-          },
-          [], [], undefined, [['foo', '']]);
-
-      function createTemplate() {
-        ɵɵcontainer(0);
-      }
-
-      function updateTemplate() {
-        ɵɵcontainerRefreshStart(0);
-        {
-          if (condition) {
-            let rf1 = ɵɵembeddedViewStart(1, 1, 0);
-            {
-              if (rf1 & RenderFlags.Create) {
-                ɵɵelement(0, 'some-component-with-query');
-              }
-            }
-            ɵɵembeddedViewEnd();
-          }
-        }
-        ɵɵcontainerRefreshEnd();
-      }
-
-      /**
-       * % if (condition) {
-       *   <some-component-with-query></some-component-with-query>
-       * %}
-       */
-      let condition = true;
-      const t =
-          new TemplateFixture(createTemplate, updateTemplate, 1, 0, [SimpleComponentWithQuery]);
-      expect(t.html).toEqual('<some-component-with-query><div></div></some-component-with-query>');
-      expect((queryInstance!.changes as EventEmitter<any>).closed).toBeFalsy();
-
-      condition = false;
-      t.update();
-      expect(t.html).toEqual('');
-      expect((queryInstance!.changes as EventEmitter<any>).closed).toBeTruthy();
-    });
-  });
-
   it('should restore queries if view changes', () => {
     class SomeDir {
       constructor(public vcr: ViewContainerRef, public temp: TemplateRef<any>) {
@@ -1464,55 +1401,6 @@ describe('query', () => {
             }
           },
           3, 0, [WithContentDirective], [], null, [], [], undefined,
-          [[AttributeMarker.Bindings, 'with-content'], ['foo', '']]);
-
-      const fixture = new ComponentFixture(AppComponent);
-      expect(withContentInstance!.foos.length)
-          .toBe(1, `Expected content query to match <span #foo>.`);
-
-      expect(withContentInstance!.contentInitQuerySnapshot)
-          .toBe(
-              1,
-              `Expected content query results to be available when ngAfterContentInit was called.`);
-
-      expect(withContentInstance!.contentCheckedQuerySnapshot)
-          .toBe(
-              1,
-              `Expected content query results to be available when ngAfterContentChecked was called.`);
-    });
-
-    it('should support content queries for directives within repeated embedded views', () => {
-      /**
-       * % for (let i = 0; i < 3; i++) {
-       *   <div with-content>
-       *     <span #foo></span>
-       *   </div>
-       * % }
-       */
-      const AppComponent = createComponent(
-          'app-component',
-          function(rf: RenderFlags, ctx: any) {
-            if (rf & RenderFlags.Create) {
-              ɵɵcontainer(0);
-            }
-            if (rf & RenderFlags.Update) {
-              ɵɵcontainerRefreshStart(0);
-              {
-                for (let i = 0; i < 3; i++) {
-                  let rf = ɵɵembeddedViewStart(1, 3, 0);
-                  if (rf & RenderFlags.Create) {
-                    ɵɵelementStart(0, 'div', 0);
-                    { ɵɵelement(1, 'span', null, 1); }
-                    ɵɵelementEnd();
-                  }
-                  ɵɵembeddedViewEnd();
-                }
-              }
-
-              ɵɵcontainerRefreshEnd();
-            }
-          },
-          1, 0, [WithContentDirective], [], null, [], [], undefined,
           [[AttributeMarker.Bindings, 'with-content'], ['foo', '']]);
 
       const fixture = new ComponentFixture(AppComponent);
