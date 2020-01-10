@@ -18,7 +18,6 @@ ts_library(
 
 jasmine_node_test(
     name = "compliance",
-    bootstrap = ["//tools/testing:node_no_angular_es5"],
     data = [
         "//packages/compiler-cli/test/ngtsc/fake_core:npm_package",
     ],
@@ -26,7 +25,9 @@ jasmine_node_test(
     tags = [
         "ivy-only",
     ],
+    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_no_angular_es5))"],
     deps = [
         ":test_lib",
+        "//tools/testing:node_no_angular_es5",
     ],
 )

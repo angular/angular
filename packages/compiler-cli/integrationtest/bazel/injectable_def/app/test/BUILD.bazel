@@ -21,12 +21,13 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["//tools/testing:node_es5"],
+    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
     deps = [
         ":test_lib",
         "//packages/platform-server",
         "//packages/platform-server/testing",
         "//packages/private/testing",
         "//tools/testing:node",
+        "//tools/testing:node_es5",
     ],
 )

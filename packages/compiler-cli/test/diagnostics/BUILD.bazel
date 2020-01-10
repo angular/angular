@@ -15,7 +15,6 @@ ts_library(
 jasmine_node_test(
     name = "check_types",
     timeout = "long",  # 900 seconds
-    bootstrap = ["//tools/testing:node_es5"],
     data = [
         "//packages/common:npm_package",
         "//packages/core:npm_package",
@@ -25,10 +24,12 @@ jasmine_node_test(
         # compiler has its own typechecking implementation and tests.
         "no-ivy-aot",
     ],
+    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
     deps = [
         ":check_types_lib",
         "//packages/core",
         "//tools/testing:node",
+        "//tools/testing:node_es5",
     ],
 )
 
@@ -45,9 +46,10 @@ ts_library(
 
 jasmine_node_test(
     name = "typescript_version",
-    bootstrap = ["//tools/testing:node_es5"],
+    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
     deps = [
         ":typescript_version_lib",
         "//tools/testing:node",
+        "//tools/testing:node_es5",
     ],
 )
