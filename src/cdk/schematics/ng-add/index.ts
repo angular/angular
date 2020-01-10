@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Rule, Tree} from '@angular-devkit/schematics';
+import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
+import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 import {addPackageToPackageJson} from './package-config';
-
-/** Name of the Angular CDK version that is shipped together with the schematics. */
-export const cdkVersion = loadPackageVersionGracefully('@angular/cdk');
 
 /**
  * Schematic factory entry-point for the `ng-add` schematic. The ng-add schematic will be
@@ -21,18 +19,14 @@ export const cdkVersion = loadPackageVersionGracefully('@angular/cdk');
  * this ensures that there will be no error that says that the CDK does not support `ng add`.
  */
 export default function(): Rule {
-  return (host: Tree) => {
-    // In order to align the CDK version with the other Angular dependencies, we use tilde
-    // instead of caret. This is default for Angular dependencies in new CLI projects.
-    addPackageToPackageJson(host, '@angular/cdk', `~${cdkVersion}`);
-  };
-}
+  return (host: Tree, context: SchematicContext) => {
+    // In order to align the CDK version with other Angular dependencies that are setup
+    // by "@schematics/angular", we use tilde instead of caret. This is default for Angular
+    // dependencies in new CLI projects.
+    addPackageToPackageJson(host, '@angular/cdk', `~0.0.0-PLACEHOLDER`);
 
-/** Loads the full version from the given Angular package gracefully. */
-function loadPackageVersionGracefully(packageName: string): string|null {
-  try {
-    return require(`${packageName}/package.json`).version;
-  } catch {
-    return null;
-  }
+    // Add a task to run the package manager. This is necessary because we updated the
+    // workspace "package.json" file and we want lock files to reflect the new version range.
+    context.addTask(new NodePackageInstallTask());
+  };
 }

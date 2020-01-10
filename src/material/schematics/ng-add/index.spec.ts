@@ -57,8 +57,8 @@ describe('ng-add schematic', () => {
     const dependencies = packageJson.dependencies;
     const angularCoreVersion = dependencies['@angular/core'];
 
-    expect(dependencies['@angular/material']).toBeDefined();
-    expect(dependencies['@angular/cdk']).toBeDefined();
+    expect(dependencies['@angular/material']).toBe('~0.0.0-PLACEHOLDER');
+    expect(dependencies['@angular/cdk']).toBe('~0.0.0-PLACEHOLDER');
     expect(dependencies['@angular/forms'])
         .toBe(
             angularCoreVersion,
@@ -73,7 +73,10 @@ describe('ng-add schematic', () => {
             Object.keys(dependencies).sort(),
             'Expected the modified "dependencies" to be sorted alphabetically.');
 
-    expect(runner.tasks.some(task => task.name === 'run-schematic')).toBe(true);
+    expect(runner.tasks.some(task => task.name === 'node-package')).toBe(true,
+      'Expected the package manager to be scheduled in order to update lock files.');
+    expect(runner.tasks.some(task => task.name === 'run-schematic')).toBe(true,
+      'Expected the setup-project schematic to be scheduled.');
   });
 
   it('should add default theme', async () => {
