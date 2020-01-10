@@ -143,10 +143,28 @@ export class PercentPipe implements PipeTransform {
  * that determine group sizing and separator, decimal-point character,
  * and other locale-specific configurations.
  *
+ * {@a currency-code-deprecation}
+ * <div class="alert is-helpful">
+ * 
+ * **Deprecation notice:**
+ * 
+ * The default currency code is currently always `USD` but this is deprecated from v9.
+ * 
+ * **In v10 the default currency code will be taken from the current locale.**
+ * 
+ * If you need the previous behaviour then provide it explicitly:
+ * 
+ * ```ts
+ * {provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}
+ * ```
+ *
+ * </div>
+ * 
  * @see `getCurrencySymbol()`
  * @see `formatCurrency()`
  *
  * @usageNotes
+ * 
  * The following code shows how the pipe transforms numbers
  * into text strings, according to various format specifications,
  * where the caller's default locale is `en-US`.

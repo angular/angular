@@ -39,6 +39,22 @@ export const LOCALE_ID = new InjectionToken<string>('LocaleId');
  *
  * See the [i18n guide](guide/i18n#setting-up-locale) for more information.
  *
+ * <div class="alert is-helpful">
+ *
+ * **Deprecation notice:**
+ *
+ * The default currency code is currently always `USD` but this is deprecated from v9.
+ *
+ * **In v10 the default currency code will be taken from the current locale.**
+ *
+ * If you need the previous behaviour then provide it explicitly:
+ *
+ * ```ts
+ * {provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}
+ * ```
+ *
+ * </div>
+ *
  * @usageNotes
  * ### Example
  *

@@ -36,6 +36,7 @@ v9 - v12
 | Area                          | API or Feature                                                                | May be removed in |
 | ----------------------------- | ---------------------------------------------------------------------------   | ----------------- |
 | `@angular/common`             | [`ReflectiveInjector`](#reflectiveinjector)                                   | <!--v8--> v10 |
+| `@angular/common`             | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | <!--v9--> v10 |
 | `@angular/core`               | [`CollectionChangeRecord`](#core)                                             | <!--v7--> v10 |
 | `@angular/core`               | [`DefaultIterableDiffer`](#core)                                              | <!--v7--> v10 |
 | `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v10 |
@@ -73,6 +74,14 @@ This section contains a complete list all of the currently-deprecated APIs, with
 Tip: In the [API reference section](api) of this doc site, deprecated APIs are indicated by ~~strikethrough.~~ You can filter the API list by [**Status: deprecated**](api?status=deprecated).
 
 </div>
+
+{@a common}
+### @angular/common
+
+| API                                                                                           | Replacement                                         | Deprecation announced | Notes |
+| --------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------- | ----- |
+| [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | `{provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}` | v9                    | From v10 the default code will be extracted from the current locale, rather than `USD`. |
+
 
 {@a core}
 ### @angular/core
