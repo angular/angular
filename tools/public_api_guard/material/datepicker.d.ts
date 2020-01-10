@@ -108,7 +108,6 @@ export declare class MatDatepicker<D> implements OnDestroy, CanColor {
     readonly _disabledChange: Subject<boolean>;
     readonly _maxDate: D | null;
     readonly _minDate: D | null;
-    _popupRef: OverlayRef;
     _selected: D | null;
     readonly _selectedChanged: Subject<D>;
     calendarHeaderComponent: ComponentType<any>;
@@ -144,12 +143,17 @@ export declare const matDatepickerAnimations: {
     readonly fadeInCalendar: AnimationTriggerMetadata;
 };
 
-export declare class MatDatepickerContent<D> extends _MatDatepickerContentMixinBase implements AfterViewInit, CanColor {
+export declare class MatDatepickerContent<D> extends _MatDatepickerContentMixinBase implements AfterViewInit, OnDestroy, CanColor {
+    _animationDone: Subject<void>;
+    _animationState: 'enter' | 'void';
     _calendar: MatCalendar<D>;
     _isAbove: boolean;
     datepicker: MatDatepicker<D>;
-    constructor(elementRef: ElementRef);
+    constructor(elementRef: ElementRef,
+    _changeDetectorRef?: ChangeDetectorRef | undefined);
+    _startExitAnimation(): void;
     ngAfterViewInit(): void;
+    ngOnDestroy(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepickerContent<any>, "mat-datepicker-content", ["matDatepickerContent"], { "color": "color"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatDatepickerContent<any>>;
 }
