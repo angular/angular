@@ -28,6 +28,7 @@ jasmine_node_test(
     deps = [
         ":check_types_lib",
         "//packages/core",
+        "//tools/testing:node",
     ],
 )
 
@@ -47,5 +48,6 @@ jasmine_node_test(
     bootstrap = ["//tools/testing:node_es5"],
     deps = [
         ":typescript_version_lib",
+        "//tools/testing:node",
     ],
 )

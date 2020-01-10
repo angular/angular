@@ -206,11 +206,17 @@ jasmine_node_test(
 jasmine_node_test(
     name = "test_node_error_disable_policy",
     bootstrap = [":node_error_disable_policy_entry_point_es5"],
+    deps = [
+        ":node_error_disable_policy_entry_point",
+    ],
 )
 
 jasmine_node_test(
     name = "test_node_error_lazy_policy",
     bootstrap = [":node_error_lazy_policy_entry_point_es5"],
+    deps = [
+        ":node_error_lazy_policy_entry_point",
+    ],
 )
 
 ts_library(

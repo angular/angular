@@ -22,5 +22,6 @@ jasmine_node_test(
     deps = [
         ":test_lib",
         "//packages/core",
+        "//tools/testing:node",
     ],
 )

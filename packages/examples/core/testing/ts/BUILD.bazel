@@ -18,5 +18,6 @@ jasmine_node_test(
     bootstrap = ["//tools/testing:node_es5"],
     deps = [
         ":fake_async_lib",
+        "//tools/testing:node",
     ],
 )

@@ -22,6 +22,7 @@ jasmine_node_test(
     ],
     deps = [
         ":ivy_lib",
+        "//packages/core/test/render3:domino",
         "//packages/zone.js/lib",
     ],
 )

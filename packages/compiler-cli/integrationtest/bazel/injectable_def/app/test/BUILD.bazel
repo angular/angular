@@ -27,5 +27,6 @@ jasmine_node_test(
         "//packages/platform-server",
         "//packages/platform-server/testing",
         "//packages/private/testing",
+        "//tools/testing:node",
     ],
 )
