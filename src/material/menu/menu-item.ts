@@ -36,8 +36,7 @@ const _MatMenuItemMixinBase: CanDisableRippleCtor & CanDisableCtor & typeof MatM
     mixinDisableRipple(mixinDisabled(MatMenuItemBase));
 
 /**
- * This directive is intended to be used inside an mat-menu tag.
- * It exists mostly to set the role attribute.
+ * Single item inside of a `mat-menu`. Provides the menu item styling and accessibility treatment.
  */
 @Component({
   selector: '[mat-menu-item]',

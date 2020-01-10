@@ -66,10 +66,7 @@ const passiveEventListenerOptions = normalizePassiveListenerOptions({passive: tr
 
 // TODO(andrewseguin): Remove the kebab versions in favor of camelCased attribute selectors
 
-/**
- * This directive is intended to be used in conjunction with an mat-menu tag.  It is
- * responsible for toggling the display of the provided menu instance.
- */
+/** Directive applied to an element that should trigger a `mat-menu`. */
 @Directive({
   selector: `[mat-menu-trigger-for], [matMenuTriggerFor]`,
   host: {

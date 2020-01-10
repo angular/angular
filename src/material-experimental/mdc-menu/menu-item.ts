@@ -11,8 +11,7 @@ import {Component, ChangeDetectionStrategy, ViewEncapsulation} from '@angular/co
 import {MatMenuItem as BaseMatMenuItem} from '@angular/material/menu';
 
 /**
- * This directive is intended to be used inside an mat-menu tag.
- * It exists mostly to set the role attribute.
+ * Single item inside of a `mat-menu`. Provides the menu item styling and accessibility treatment.
  */
 @Component({
   selector: '[mat-menu-item]',
