@@ -6,7 +6,7 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
     readonly controls: Array<google.maps.MVCArray<Node>>;
     readonly data: google.maps.Data;
     headingChanged: Observable<void>;
-    height: string;
+    height: string | number;
     idle: Observable<void>;
     mapClick: Observable<google.maps.MouseEvent | google.maps.IconMouseEvent>;
     mapDblclick: Observable<google.maps.MouseEvent>;
@@ -24,7 +24,7 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
     projectionChanged: Observable<void>;
     tilesloaded: Observable<void>;
     tiltChanged: Observable<void>;
-    width: string;
+    width: string | number;
     zoom: number;
     zoomChanged: Observable<void>;
     constructor(_elementRef: ElementRef,

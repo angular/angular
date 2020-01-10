@@ -78,9 +78,9 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   private _mapEl: HTMLElement;
   _googleMap: UpdatedGoogleMap;
 
-  @Input() height = DEFAULT_HEIGHT;
+  @Input() height: string | number = DEFAULT_HEIGHT;
 
-  @Input() width = DEFAULT_WIDTH;
+  @Input() width: string | number = DEFAULT_WIDTH;
 
   @Input()
   set center(center: google.maps.LatLngLiteral|google.maps.LatLng) {
@@ -431,8 +431,9 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
   private _setSize() {
     if (this._mapEl) {
-      this._mapEl.style.height = this.height || DEFAULT_HEIGHT;
-      this._mapEl.style.width = this.width || DEFAULT_WIDTH;
+      const styles = this._mapEl.style;
+      styles.height = coerceCssPixelValue(this.height) || DEFAULT_HEIGHT;
+      styles.width = coerceCssPixelValue(this.width) || DEFAULT_WIDTH;
     }
   }
 
@@ -492,4 +493,15 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
                   'Please wait for the API to load before trying to interact with it.');
     }
   }
+}
+
+const cssUnitsPattern = /([A-Za-z%]+)$/;
+
+/** Coerces a value to a CSS pixel value. */
+function coerceCssPixelValue(value: any): string {
+  if (value == null) {
+    return '';
+  }
+
+  return cssUnitsPattern.test(value) ? value : `${value}px`;
 }

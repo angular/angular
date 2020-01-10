@@ -99,6 +99,28 @@ describe('GoogleMap', () => {
     expect(container.nativeElement.style.width).toBe('350px');
   });
 
+  it('should be able to set a number value as the width/height', () => {
+    mapSpy = createMapSpy(DEFAULT_OPTIONS);
+    mapConstructorSpy = createMapConstructorSpy(mapSpy);
+
+    const fixture = TestBed.createComponent(TestApp);
+    const instance = fixture.componentInstance;
+    instance.height = 750;
+    instance.width = 400;
+    fixture.detectChanges();
+
+    const container = fixture.debugElement.query(By.css('div'))!.nativeElement;
+    expect(container.style.height).toBe('750px');
+    expect(container.style.width).toBe('400px');
+
+    instance.height = '500';
+    instance.width = '600';
+    fixture.detectChanges();
+
+    expect(container.style.height).toBe('500px');
+    expect(container.style.width).toBe('600px');
+  });
+
   it('sets center and zoom of the map', () => {
     const options = {center: {lat: 3, lng: 5}, zoom: 7};
     mapSpy = createMapSpy(options);
@@ -274,8 +296,8 @@ describe('GoogleMap', () => {
 })
 class TestApp {
   @ViewChild(GoogleMap) map: GoogleMap;
-  height?: string;
-  width?: string;
+  height?: string | number;
+  width?: string | number;
   center?: google.maps.LatLngLiteral;
   zoom?: number;
   options?: google.maps.MapOptions;
