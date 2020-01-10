@@ -27,7 +27,6 @@ $mat-chip-remove-size: 18px;
 
 .mat-chip {
   position: relative;
-  overflow: hidden;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 
@@ -169,6 +168,23 @@ $mat-chip-remove-size: 18px;
       margin-left: 0;
     }
   }
+}
+
+// Styles for the chip's dynamically added ripple target.
+.mat-chip-ripple {
+  @include mat-fill;
+
+  // Disable pointer events for the ripple container and focus overlay because the container
+  // will overlay the user content and we don't want to disable mouse events on the user content.
+  // Pointer events can be safely disabled because the ripple trigger element is the host element.
+  pointer-events: none;
+
+  // Inherit the border radius from the parent so that ripples don't exceed the parent button
+  // boundaries.
+  border-radius: inherit;
+
+  // Ensures that the ripple effect doesn't overflow the ripple target.
+  overflow: hidden;
 }
 
 .mat-chip-list-wrapper {
