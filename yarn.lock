@@ -981,41 +981,41 @@
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.10.3.tgz#2e2b8a1d3e885946eac41db2b1aa6801fb319887"
   integrity sha512-v1nXbMTHVlMM4z4uWp6XiRoHAyUlYggF1SOboLLWRp0+D22kWixqArWqnozLw2mOtnxr97BdLjluWiho6A8Hjg==
 
-"@bazel/jasmine@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-1.0.0.tgz#12aa82c0e4b7b5658e9e496b73c0cf660df2b0ae"
-  integrity sha512-cheQWMYs0PaS4kYwJC9tmAiyd0tLbPNcgoM+S8plNUp5k0gUVosCvQ0TOrxvRlKEY0ni1hdn9owPx2rUO1J+Wg==
+"@bazel/jasmine@0.42.2":
+  version "0.42.2"
+  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-0.42.2.tgz#38e0d715e519e7ce4bce7d55b3e8accb2aad8217"
+  integrity sha512-OgxX84wPeWlHi4O2m0ezH9gTGx+wp3MR7QcC46PIIjWKL4W4L0Buss0R9AJeNTtxpjfv+8hfrDUI0bf2ZEIIjQ==
   dependencies:
     jasmine "~3.4.0"
     jasmine-core "~3.4.0"
     v8-coverage "1.0.9"
 
-"@bazel/karma@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-1.0.0.tgz#6f1e31bc2cb698e50d76f43ec9f1ee095d8e72b8"
-  integrity sha512-esfsHRVWVcp6OyTk/QI1sBV7bcygFiXY6LUMPLPYqVZkQvJ0x+/L1weiwuRrqFf+FCwCajhYjwiR6S9kX2Z9LA==
+"@bazel/karma@0.42.2":
+  version "0.42.2"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.42.2.tgz#24e2cf150a5da1fbdeb9382822b0ba7e662455a1"
+  integrity sha512-fNrZ8fIHTFwr7DGKtZLFLZxV/7+txZfiHH6bDN73qOId91RY7rr82BHgZx/iDQqnaKCW0+o9i2gPqu7lutVc8g==
   dependencies:
     tmp "0.1.0"
 
-"@bazel/protractor@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-1.0.0.tgz#b77fde3bb53a008c330c13a953a0bf93aa06b5f1"
-  integrity sha512-8kGuM3NkFfokjzKBlYxK9rUwJO/ICnYTHC567KJk6T4pjm4kfyh6iVI3Df3K+ONRCEYmiuZrQ37U06lzMMGN9g==
+"@bazel/protractor@0.42.2":
+  version "0.42.2"
+  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-0.42.2.tgz#f20acd64e9456434cdc56903186fa31144a462a6"
+  integrity sha512-0LpRnaeL6/QHnNTK561aKFxAh4nECUNxrouC15XGWb57emj1q4a/IScAGwPrnb5dBQl1ZlgDXzyz/bqG928L1g==
 
-"@bazel/rollup@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@bazel/rollup/-/rollup-1.0.0.tgz#85f38cf07ba8ea192e54c42cb53a44d1fd1f56ac"
-  integrity sha512-pOWwyeM/H+LWRpKm3xuSAXoZ1gl6o8kFh5ltf0tM+ZfqGnSNbakME6ZswfmVj7FHUgF40BXzSoFTUdqgn1xy/w==
+"@bazel/rollup@0.42.2":
+  version "0.42.2"
+  resolved "https://registry.yarnpkg.com/@bazel/rollup/-/rollup-0.42.2.tgz#b7a6495e1c506e3684448140395be80c45420271"
+  integrity sha512-SiXxuydxC3+jZIfS8oib3YyXBXeoA816bYdnIdVJX0WNgIMStdvGm7a/UU20KlbOWBx7qKB+mCSjSQa6C2FBnQ==
 
-"@bazel/terser@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-1.0.0.tgz#f9ef724cd4a81776dae71ae904934994d5006960"
-  integrity sha512-L+Q7YH+OA0W7Qp30DrnTKdNA6gasip9CdzI0zSvFOk18B7XBR+WswkIY2RkwwhH+y4SROqkHbX16z02jDHsnng==
+"@bazel/terser@0.42.2":
+  version "0.42.2"
+  resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-0.42.2.tgz#392e150af530d1eaf56ba388161e6f7f107e6be3"
+  integrity sha512-DlsmZyTWQFKiQbCKK/CDcRism1xrV1f7fLU166cXUIokXfkCaVCbN2ViaB5fDFcRpBQaNKowdM37Y5O7282Low==
 
-"@bazel/typescript@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-1.0.0.tgz#2c7318b9a3aaa730f282b094ddf41dd16fda7b5a"
-  integrity sha512-caNOKz7EjVMgbedjVTreao9++9Sb9oYlU2nqDOMIK8MyoOUQvgGQWhFwF65XXGSb79Tzv8kaFQskoaH/iAs4ng==
+"@bazel/typescript@0.42.2":
+  version "0.42.2"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.42.2.tgz#6c8e2187e9f7f937650c8b4e2350dc7d46284cb1"
+  integrity sha512-9HS8W6Wv74zhjvyP2rwym05TwzB8/c3Pxxi4gfjwjwxaDAIZCQfC8UGSRxeCm5t0JNz485W1/0WScoACjcASCQ==
   dependencies:
     protobufjs "6.8.8"
     semver "5.6.0"
