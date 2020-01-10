@@ -67,6 +67,7 @@ jasmine_node_test(
         "//packages/platform-server",
         "//packages/platform-server/testing",
         "//packages/zone.js/lib:zone_d_ts",
+        "//tools/testing:node",
         "@npm//base64-js",
         "@npm//source-map",
     ],
