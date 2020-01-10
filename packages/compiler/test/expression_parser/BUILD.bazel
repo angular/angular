@@ -15,10 +15,11 @@ ts_library(
 
 jasmine_node_test(
     name = "expression_parser",
-    bootstrap = ["//tools/testing:node_es5"],
+    templated_args = ["--node_options=--require=$(rlocation $(location //tools/testing:node_es5))"],
     deps = [
         ":expression_parser_lib",
         "//tools/testing:node",
+        "//tools/testing:node_es5",
     ],
 )
 
