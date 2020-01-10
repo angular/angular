@@ -36,6 +36,7 @@ filegroup(
 
 ts_devserver(
     name = "devserver",
+    additional_root_paths = ["npm/node_modules/zone.js/dist"],
     entry_module = "bazel_integration_test/src/main",
     scripts = [
         ":rxjs_umd_modules",
@@ -73,6 +74,7 @@ pkg_web(
         ":bundle.min",
         "@npm//:node_modules/zone.js/dist/zone.min.js",
     ],
+    additional_root_paths = ["npm/node_modules/zone.js/dist"],
 )
 
 http_server(
