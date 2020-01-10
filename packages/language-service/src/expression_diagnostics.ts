@@ -25,7 +25,7 @@ export interface DiagnosticTemplateInfo {
 
 export function getTemplateExpressionDiagnostics(info: DiagnosticTemplateInfo): Diagnostic[] {
   const visitor = new ExpressionDiagnosticsVisitor(
-      info, (path: TemplateAstPath, includeEvent: boolean) => getExpressionScope(info, path));
+      info, (path: TemplateAstPath) => getExpressionScope(info, path));
   templateVisitAll(visitor, info.templateAst);
   return visitor.diagnostics;
 }
@@ -332,11 +332,6 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
       this.diagnostics.push(
           {span: offsetSpan(span, this.info.offset), kind: ts.DiagnosticCategory.Error, message});
     }
-  }
-
-  private reportWarning(message: string, span: Span) {
-    this.diagnostics.push(
-        {span: offsetSpan(span, this.info.offset), kind: ts.DiagnosticCategory.Warning, message});
   }
 }
 
