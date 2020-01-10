@@ -116,13 +116,26 @@ class StackblitzBuilder {
     }
   }
 
-  _createBaseStackblitzHtml(config) {
-    var file = '';
-
-    // TODO: Doesn't work properly yet
+  _getPrimaryFile(config) {
     if (config.file) {
-      file = `?file=${config.file}`;
+      if (!this._existsSync(path.join(config.basePath, config.file))) {
+        throw new Error(`The specified primary file (${config.file}) does not exist in '${config.basePath}'.`);
+      }
+      return config.file;
+    } else {
+      const defaultPrimaryFiles = ['src/app/app.component.html', 'src/app/app.component.ts', 'src/app/main.ts'];
+      const primaryFile = defaultPrimaryFiles.find(fileName =>  this._existsSync(path.join(config.basePath, fileName)));
+  
+      if (!primaryFile) {
+        throw new Error(`None of the default primary files (${defaultPrimaryFiles.join(', ')}) exists in '${config.basePath}'.`);
+      }
+ 
+      return primaryFile;
     }
+  }
+
+  _createBaseStackblitzHtml(config) {
+    var file = `?file=${this._getPrimaryFile(config)}`;
     var action = `https://run.stackblitz.com/api/angular/v1${file}`;
     var html = `<!DOCTYPE html><html lang="en"><body>
     <form id="mainForm" method="post" action="${action}" target="_self"></form>
