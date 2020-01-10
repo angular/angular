@@ -5,45 +5,19 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {assertDataInRange, assertEqual} from '../../util/assert';
-import {assertFirstCreatePass, assertHasParent} from '../assert';
+import {assertFirstCreatePass} from '../assert';
 import {attachPatchData} from '../context_discovery';
-import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags, registerPostOrderHooks} from '../hooks';
-import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
+import {registerPostOrderHooks} from '../hooks';
 import {ComponentTemplate} from '../interfaces/definition';
-import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType, TViewNode} from '../interfaces/node';
+import {LocalRefExtractor, TAttributes, TContainerNode, TNodeType, TViewNode} from '../interfaces/node';
 import {isDirectiveHost} from '../interfaces/type_checks';
-import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, T_HOST, TView, TViewType} from '../interfaces/view';
-import {assertNodeType} from '../node_assert';
-import {appendChild, removeView} from '../node_manipulation';
-import {getBindingIndex, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, getTView, setIsNotParent, setPreviousOrParentTNode} from '../state';
-import {getConstant, getLContainerActiveIndex, load} from '../util/view_utils';
+import {HEADER_OFFSET, LView, RENDERER, T_HOST, TView, TViewType} from '../interfaces/view';
+import {appendChild} from '../node_manipulation';
+import {getLView, getTView, setPreviousOrParentTNode} from '../state';
+import {getConstant} from '../util/view_utils';
 
 import {addToViewTree, createDirectivesInstances, createLContainer, createTNode, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
-
-
-/**
- * Creates an LContainer for inline views, e.g.
- *
- * % if (showing) {
- *   <div></div>
- * % }
- *
- * @param index The index of the container in the data array
- *
- * @codeGenApi
- */
-export function ɵɵcontainer(index: number): void {
-  const lView = getLView();
-  const tView = getTView();
-  const tNode = containerInternal(tView, lView, index, null, null);
-
-  if (tView.firstCreatePass) {
-    tNode.tViews = [];
-  }
-  setIsNotParent();
-}
 
 function templateFirstCreatePass(
     index: number, tView: TView, lView: LView, templateFn: ComponentTemplate<any>|null,
@@ -121,97 +95,4 @@ export function ɵɵtemplate(
   if (localRefsIndex != null) {
     saveResolvedLocalsInData(lView, tNode, localRefExtractor);
   }
-}
-
-/**
- * Sets a container up to receive views.
- *
- * @param index The index of the container in the data array
- *
- * @codeGenApi
- */
-export function ɵɵcontainerRefreshStart(index: number): void {
-  const lView = getLView();
-  const tView = getTView();
-  let previousOrParentTNode = load(tView.data, index) as TNode;
-  ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Container);
-  setPreviousOrParentTNode(previousOrParentTNode, true);
-
-  lView[index + HEADER_OFFSET][ACTIVE_INDEX] = 0;
-
-  // We need to execute init hooks here so ngOnInit hooks are called in top level views
-  // before they are called in embedded views (for backwards compatibility).
-  if (!getCheckNoChangesMode()) {
-    const hooksInitPhaseCompleted =
-        (lView[FLAGS] & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
-    if (hooksInitPhaseCompleted) {
-      const preOrderCheckHooks = tView.preOrderCheckHooks;
-      if (preOrderCheckHooks !== null) {
-        executeCheckHooks(lView, preOrderCheckHooks, null);
-      }
-    } else {
-      const preOrderHooks = tView.preOrderHooks;
-      if (preOrderHooks !== null) {
-        executeInitAndCheckHooks(lView, preOrderHooks, InitPhaseState.OnInitHooksToBeRun, null);
-      }
-      incrementInitPhaseFlags(lView, InitPhaseState.OnInitHooksToBeRun);
-    }
-  }
-}
-
-/**
- * Marks the end of the LContainer.
- *
- * Marking the end of LContainer is the time when to child views get inserted or removed.
- *
- * @codeGenApi
- */
-export function ɵɵcontainerRefreshEnd(): void {
-  let previousOrParentTNode = getPreviousOrParentTNode();
-  if (getIsParent()) {
-    setIsNotParent();
-  } else {
-    ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.View);
-    ngDevMode && assertHasParent(previousOrParentTNode);
-    previousOrParentTNode = previousOrParentTNode.parent!;
-    setPreviousOrParentTNode(previousOrParentTNode, false);
-  }
-
-  ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Container);
-
-  const lContainer: LContainer = getLView()[previousOrParentTNode.index];
-  const nextIndex = getLContainerActiveIndex(lContainer);
-
-  // remove extra views at the end of the container
-  while (nextIndex < lContainer.length - CONTAINER_HEADER_OFFSET) {
-    removeView(lContainer, nextIndex);
-  }
-}
-
-function containerInternal(
-    tView: TView, lView: LView, nodeIndex: number, tagName: string|null,
-    attrs: TAttributes|null): TContainerNode {
-  ngDevMode &&
-      assertEqual(
-          getBindingIndex(), tView.bindingStartIndex,
-          'container nodes should be created before any bindings');
-
-  const adjustedIndex = nodeIndex + HEADER_OFFSET;
-  ngDevMode && assertDataInRange(lView, nodeIndex + HEADER_OFFSET);
-  ngDevMode && ngDevMode.rendererCreateComment++;
-  const comment = lView[adjustedIndex] =
-      lView[RENDERER].createComment(ngDevMode ? 'container' : '');
-  const tNode =
-      getOrCreateTNode(tView, lView[T_HOST], nodeIndex, TNodeType.Container, tagName, attrs);
-  const lContainer = lView[adjustedIndex] = createLContainer(comment, lView, comment, tNode);
-
-  appendChild(tView, lView, comment, tNode);
-  attachPatchData(comment, lView);
-
-  // Containers are added to the current view tree instead of their embedded views
-  // because views can be removed and re-inserted.
-  addToViewTree(lView, lContainer);
-
-  ngDevMode && assertNodeType(getPreviousOrParentTNode(), TNodeType.Container);
-  return tNode;
 }
