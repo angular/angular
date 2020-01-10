@@ -1609,16 +1609,6 @@
     "packages/core/src/render3/util/global_utils.ts",
     "packages/core/src/render3/util/change_detection_utils.ts",
     "packages/core/src/render3/instructions/all.ts",
-    "packages/core/src/render3/instructions/container.ts"
-  ],
-  [
-    "packages/core/src/render3/assert.ts",
-    "packages/core/src/render3/interfaces/type_checks.ts",
-    "packages/core/src/render3/index.ts",
-    "packages/core/src/render3/component.ts",
-    "packages/core/src/render3/util/global_utils.ts",
-    "packages/core/src/render3/util/change_detection_utils.ts",
-    "packages/core/src/render3/instructions/all.ts",
     "packages/core/src/render3/instructions/element_container.ts"
   ],
   [
@@ -1630,16 +1620,6 @@
     "packages/core/src/render3/util/change_detection_utils.ts",
     "packages/core/src/render3/instructions/all.ts",
     "packages/core/src/render3/instructions/element.ts"
-  ],
-  [
-    "packages/core/src/render3/assert.ts",
-    "packages/core/src/render3/interfaces/type_checks.ts",
-    "packages/core/src/render3/index.ts",
-    "packages/core/src/render3/component.ts",
-    "packages/core/src/render3/util/global_utils.ts",
-    "packages/core/src/render3/util/change_detection_utils.ts",
-    "packages/core/src/render3/instructions/all.ts",
-    "packages/core/src/render3/instructions/embedded_view.ts"
   ],
   [
     "packages/core/src/render3/assert.ts",
@@ -1661,6 +1641,16 @@
     "packages/core/src/render3/instructions/all.ts",
     "packages/core/src/render3/instructions/styling.ts",
     "packages/core/src/render3/styling/style_binding_list.ts"
+  ],
+  [
+    "packages/core/src/render3/assert.ts",
+    "packages/core/src/render3/interfaces/type_checks.ts",
+    "packages/core/src/render3/index.ts",
+    "packages/core/src/render3/component.ts",
+    "packages/core/src/render3/util/global_utils.ts",
+    "packages/core/src/render3/util/change_detection_utils.ts",
+    "packages/core/src/render3/instructions/all.ts",
+    "packages/core/src/render3/instructions/template.ts"
   ],
   [
     "packages/core/src/render3/assert.ts",
@@ -1720,15 +1710,6 @@
     "packages/core/src/render3/util/global_utils.ts",
     "packages/core/src/render3/util/change_detection_utils.ts",
     "packages/core/src/render3/instructions/all.ts",
-    "packages/core/src/render3/instructions/container.ts",
-    "packages/core/src/render3/interfaces/type_checks.ts",
-    "packages/core/src/render3/index.ts"
-  ],
-  [
-    "packages/core/src/render3/component.ts",
-    "packages/core/src/render3/util/global_utils.ts",
-    "packages/core/src/render3/util/change_detection_utils.ts",
-    "packages/core/src/render3/instructions/all.ts",
     "packages/core/src/render3/instructions/element_container.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/index.ts"
@@ -1748,6 +1729,15 @@
     "packages/core/src/render3/util/change_detection_utils.ts",
     "packages/core/src/render3/instructions/all.ts",
     "packages/core/src/render3/instructions/listener.ts",
+    "packages/core/src/render3/interfaces/type_checks.ts",
+    "packages/core/src/render3/index.ts"
+  ],
+  [
+    "packages/core/src/render3/component.ts",
+    "packages/core/src/render3/util/global_utils.ts",
+    "packages/core/src/render3/util/change_detection_utils.ts",
+    "packages/core/src/render3/instructions/all.ts",
+    "packages/core/src/render3/instructions/template.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/index.ts"
   ],

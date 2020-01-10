@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {AfterViewInit, Component, ContentChild, ContentChildren, Directive, ElementRef, forwardRef, Input, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, ViewRef} from '@angular/core';
+import {AfterViewInit, Component, ContentChild, ContentChildren, Directive, ElementRef, EventEmitter, forwardRef, Input, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, ViewRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -299,6 +299,51 @@ describe('query logic', () => {
                           .createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.viewChildAvailableInAfterViewInit).toBe(true);
+    });
+
+    it('should destroy QueryList when the containing view is destroyed', () => {
+      let queryInstance: QueryList<any>;
+
+      @Component({
+        selector: 'comp-with-view-query',
+        template: '<div #foo>Content</div>',
+      })
+      class ComponentWithViewQuery {
+        @ViewChildren('foo')
+        set foo(value: any) {
+          queryInstance = value;
+        }
+        get foo() {
+          return queryInstance;
+        }
+      }
+
+      @Component({
+        selector: 'root',
+        template: `
+          <ng-container *ngIf="condition">
+            <comp-with-view-query></comp-with-view-query>
+          </ng-container>
+        `
+      })
+      class Root {
+        condition = true;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Root, ComponentWithViewQuery],
+        imports: [CommonModule],
+      });
+
+      const fixture = TestBed.createComponent(Root);
+      fixture.detectChanges();
+
+      expect((queryInstance!.changes as EventEmitter<any>).closed).toBeFalsy();
+
+      fixture.componentInstance.condition = false;
+      fixture.detectChanges();
+
+      expect((queryInstance!.changes as EventEmitter<any>).closed).toBeTruthy();
     });
   });
 
@@ -675,6 +720,68 @@ describe('query logic', () => {
       fixture.componentInstance.showing = false;
       fixture.detectChanges();
       expect(queryList.length).toBe(0);
+    });
+
+    it('should support content queries for directives within repeated embedded views', () => {
+      const withContentInstances: DirWithContentQuery[] = [];
+
+      @Directive({
+        selector: '[with-content]',
+      })
+      class DirWithContentQuery {
+        constructor() {
+          withContentInstances.push(this);
+        }
+
+        @ContentChildren('foo', {descendants: false}) foos!: QueryList<ElementRef>;
+
+        contentInitQuerySnapshot = 0;
+        contentCheckedQuerySnapshot = 0;
+
+        ngAfterContentInit() {
+          this.contentInitQuerySnapshot = this.foos ? this.foos.length : 0;
+        }
+
+        ngAfterContentChecked() {
+          this.contentCheckedQuerySnapshot = this.foos ? this.foos.length : 0;
+        }
+      }
+
+      @Component({
+        selector: 'comp',
+        template: `
+          <ng-container *ngFor="let item of items">
+            <div with-content>
+              <span #foo></span>
+            </div>
+          </ng-container>
+        `,
+      })
+      class Root {
+        items = [1, 2, 3];
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Root, DirWithContentQuery],
+        imports: [CommonModule],
+      });
+      const fixture = TestBed.createComponent(Root);
+      fixture.detectChanges();
+
+      for (let i = 0; i < 3; i++) {
+        expect(withContentInstances[i].foos.length)
+            .toBe(1, `Expected content query to match <span #foo>.`);
+
+        expect(withContentInstances[i].contentInitQuerySnapshot)
+            .toBe(
+                1,
+                `Expected content query results to be available when ngAfterContentInit was called.`);
+
+        expect(withContentInstances[i].contentCheckedQuerySnapshot)
+            .toBe(
+                1,
+                `Expected content query results to be available when ngAfterContentChecked was called.`);
+      }
     });
   });
 

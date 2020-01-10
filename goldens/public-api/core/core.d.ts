@@ -719,12 +719,6 @@ export declare type ɵɵComponentDefWithMeta<T, Selector extends String, ExportA
 
 export declare function ɵɵcomponentHostSyntheticListener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): typeof ɵɵcomponentHostSyntheticListener;
 
-export declare function ɵɵcontainer(index: number): void;
-
-export declare function ɵɵcontainerRefreshEnd(): void;
-
-export declare function ɵɵcontainerRefreshStart(index: number): void;
-
 export declare function ɵɵcontentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read?: any): void;
 
 export declare function ɵɵCopyDefinitionFeature(definition: ɵDirectiveDef<any> | ɵComponentDef<any>): void;
@@ -827,10 +821,6 @@ export declare function ɵɵelementContainerStart(index: number, attrsIndex?: nu
 export declare function ɵɵelementEnd(): void;
 
 export declare function ɵɵelementStart(index: number, name: string, attrsIndex?: number | null, localRefsIndex?: number): void;
-
-export declare function ɵɵembeddedViewEnd(): void;
-
-export declare function ɵɵembeddedViewStart(viewBlockId: number, decls: number, vars: number): ɵRenderFlags;
 
 export declare function ɵɵenableBindings(): void;
 

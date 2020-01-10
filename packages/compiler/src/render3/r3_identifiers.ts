@@ -132,8 +132,6 @@ export class Identifiers {
   static stylePropInterpolateV:
       o.ExternalReference = {name: 'ɵɵstylePropInterpolateV', moduleName: CORE};
 
-  static containerCreate: o.ExternalReference = {name: 'ɵɵcontainer', moduleName: CORE};
-
   static nextContext: o.ExternalReference = {name: 'ɵɵnextContext', moduleName: CORE};
 
   static templateCreate: o.ExternalReference = {name: 'ɵɵtemplate', moduleName: CORE};

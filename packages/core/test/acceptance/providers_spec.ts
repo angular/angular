@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CommonModule} from '@angular/common';
 import {Component, Directive, forwardRef, Inject, Injectable, InjectionToken, Injector, NgModule, Optional} from '@angular/core';
 import {async, inject, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -506,6 +507,47 @@ describe('providers', () => {
 
           expect(destroyCalls).toBe(0);
         });
+
+    it('should call ngOnDestroy if host component is destroyed', () => {
+      const logs: string[] = [];
+
+      @Injectable()
+      class InjectableWithDestroyHookToken {
+        ngOnDestroy() {
+          logs.push('OnDestroy Token');
+        }
+      }
+
+      @Component({
+        selector: 'comp-with-provider',
+        template: '',
+        providers: [InjectableWithDestroyHookToken],
+      })
+      class CompWithProvider {
+        constructor(token: InjectableWithDestroyHookToken) {}
+      }
+
+      @Component({
+        selector: 'app',
+        template: '<comp-with-provider *ngIf="condition"></comp-with-provider>',
+      })
+      class App {
+        condition = true;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, CompWithProvider],
+        imports: [CommonModule],
+      });
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      fixture.componentInstance.condition = false;
+      fixture.detectChanges();
+
+      expect(logs).toEqual(['OnDestroy Token']);
+    });
   });
 
   describe('components and directives', () => {
@@ -667,6 +709,71 @@ describe('providers', () => {
       const injector = Injector.create([{provide: MyService, deps: [[Optional, OtherService]]}]);
 
       expect(injector.get(MyService).value).toBe(null);
+    });
+  });
+
+  describe('view providers', () => {
+    it('should have access to viewProviders within the same component', () => {
+      @Component({
+        selector: 'comp',
+        template: '{{s}}-{{n}}',
+        providers: [
+          {provide: Number, useValue: 1, multi: true},
+        ],
+        viewProviders: [
+          {provide: String, useValue: 'bar'},
+          {provide: Number, useValue: 2, multi: true},
+        ]
+      })
+      class Comp {
+        constructor(private s: String, private n: Number) {}
+      }
+
+      TestBed.configureTestingModule({declarations: [Comp]});
+
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('bar-1,2');
+    });
+
+    it('should have access to viewProviders of the host component', () => {
+      @Component({
+        selector: 'repeated',
+        template: '[{{s}}-{{n}}]',
+      })
+      class Repeated {
+        constructor(private s: String, private n: Number) {}
+      }
+
+      @Component({
+        template: `
+          <div>
+            <ng-container *ngFor="let item of items">
+              <repeated></repeated>
+            </ng-container>
+          </div>
+        `,
+        providers: [
+          {provide: Number, useValue: 1, multi: true},
+        ],
+        viewProviders: [
+          {provide: String, useValue: 'foo'},
+          {provide: Number, useValue: 2, multi: true},
+        ],
+      })
+      class ComponentWithProviders {
+        items = [1, 2, 3];
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [ComponentWithProviders, Repeated],
+        imports: [CommonModule],
+      });
+
+      const fixture = TestBed.createComponent(ComponentWithProviders);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('[foo-1,2][foo-1,2][foo-1,2]');
     });
   });
 });

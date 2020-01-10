@@ -289,4 +289,111 @@ describe('event listeners', () => {
       expect(log).toEqual(['dirA.click', 'dirB.click', 'component.click']);
     });
   });
+
+  it('should destroy listeners when view is removed', () => {
+    @Component({
+      selector: 'my-comp',
+      template: `
+        <button *ngIf="visible" (click)="count()">Click me!</button>
+      `,
+    })
+    class MyComp {
+      visible = true;
+      counter = 0;
+      count() {
+        this.counter++;
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    const comp = fixture.componentInstance;
+
+    const button = fixture.nativeElement.querySelector('button');
+    button.click();
+    expect(comp.counter).toBe(1);
+
+    comp.visible = false;
+    fixture.detectChanges();
+
+    button.click();
+    expect(comp.counter).toBe(1);
+  });
+
+  it('should destroy listeners when views generated using *ngFor are removed', () => {
+    let counter = 0;
+    @Component({
+      selector: 'my-comp',
+      template: `
+        <button *ngFor="let button of buttons" (click)="count()">Click me!</button>
+      `,
+    })
+    class MyComp {
+      buttons = [1, 2];
+      count() {
+        counter++;
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    const comp = fixture.componentInstance;
+
+    const buttons = fixture.nativeElement.querySelectorAll('button');
+    buttons[0].click();
+    buttons[1].click();
+    expect(counter).toBe(2);
+
+    comp.buttons = [];
+    fixture.detectChanges();
+
+    buttons[0].click();
+    buttons[1].click();
+    expect(counter).toBe(2);
+  });
+
+  it('should destroy listeners when nested view is removed', () => {
+    @Component({
+      selector: 'my-comp',
+      template: `
+        <ng-container *ngIf="isSectionVisible">
+          Click to submit a form:
+          <button *ngIf="isButtonVisible" (click)="count()">Click me!</button>
+        </ng-container>
+      `,
+    })
+    class MyComp {
+      isSectionVisible = true;
+      isButtonVisible = true;
+      counter = 0;
+      count() {
+        this.counter++;
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    const comp = fixture.componentInstance;
+    const button = fixture.nativeElement.querySelector('button');
+    button.click();
+    expect(comp.counter).toBe(1);
+
+    comp.isButtonVisible = false;
+    fixture.detectChanges();
+
+    button.click();
+    expect(comp.counter).toBe(1);
+
+    comp.isSectionVisible = false;
+    fixture.detectChanges();
+
+    button.click();
+    expect(comp.counter).toBe(1);
+  });
 });

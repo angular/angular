@@ -50,23 +50,15 @@ export {
   ɵɵclassProp,
   ɵɵcomponentHostSyntheticListener,
 
-  ɵɵcontainer,
-  ɵɵcontainerRefreshEnd,
-  ɵɵcontainerRefreshStart,
-
   ɵɵdirectiveInject,
 
   ɵɵelement,
+
   ɵɵelementContainer,
   ɵɵelementContainerEnd,
-
   ɵɵelementContainerStart,
   ɵɵelementEnd,
-
   ɵɵelementStart,
-  ɵɵembeddedViewEnd,
-
-  ɵɵembeddedViewStart,
 
   ɵɵgetCurrentView,
   ɵɵhostProperty,
