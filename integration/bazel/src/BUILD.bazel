@@ -1,8 +1,8 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
-load("@npm//http-server:index.bzl", "http_server")
 load("@npm_angular_bazel//:index.bzl", "ng_module")
+load("@npm//http-server:index.bzl", "http_server")
+load("@build_bazel_rules_nodejs//internal/web_package:web_package.bzl", "web_package")
 load("@npm_bazel_rollup//:index.bzl", "rollup_bundle")
 load("@npm_bazel_terser//:index.bzl", "terser_minified")
 load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
@@ -36,16 +36,13 @@ filegroup(
 
 ts_devserver(
     name = "devserver",
-    additional_root_paths = ["npm/node_modules/zone.js/dist"],
     entry_module = "bazel_integration_test/src/main",
+    index_html = "index.html",
     scripts = [
         ":rxjs_umd_modules",
     ],
-    # Use the same bundle serving path as prodserver so that we can share
-    # an index.html file.
     serving_path = "/bundle.min.js",
     static_files = [
-        "index.html",
         "@npm//:node_modules/zone.js/dist/zone.min.js",
     ],
     deps = ["//src"],
@@ -67,14 +64,14 @@ terser_minified(
     src = ":bundle",
 )
 
-pkg_web(
+web_package(
     name = "prodapp",
-    srcs = [
-        "index.html",
-        ":bundle.min",
+    assets = [
+        # do not sort
         "@npm//:node_modules/zone.js/dist/zone.min.js",
+        ":bundle.min",
     ],
-    additional_root_paths = ["npm/node_modules/zone.js/dist"],
+    index_html = "index.html",
 )
 
 http_server(
