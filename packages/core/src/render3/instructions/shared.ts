@@ -384,6 +384,7 @@ export function refreshView<T>(
   const flags = lView[FLAGS];
   if ((flags & LViewFlags.Destroyed) === LViewFlags.Destroyed) return;
   enterView(lView, lView[T_HOST]);
+  const checkNoChangesMode = getCheckNoChangesMode();
   try {
     resetPreOrderHookFlags(lView);
 
@@ -392,11 +393,10 @@ export function refreshView<T>(
       executeTemplate(lView, templateFn, RenderFlags.Update, context);
     }
 
-    const checkNoChangesMode = getCheckNoChangesMode();
     const hooksInitPhaseCompleted =
         (flags & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
 
-    // execute pre-order hooks (OnInit, OnChanges, DoChanges)
+    // execute pre-order hooks (OnInit, OnChanges, DoCheck)
     // PERF WARNING: do NOT extract this to a separate function without running benchmarks
     if (!checkNoChangesMode) {
       if (hooksInitPhaseCompleted) {
@@ -475,7 +475,17 @@ export function refreshView<T>(
     if (tView.firstUpdatePass === true) {
       tView.firstUpdatePass = false;
     }
-    lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
+
+    // Do not reset the dirty state when running in check no changes mode. We don't want components
+    // to behave differently depending on whether check no changes is enabled or not. For example:
+    // Marking an OnPush component as dirty from within the `ngAfterViewInit` hook in order to
+    // refresh a `NgClass` binding should work. If we would reset the dirty state in the check
+    // no changes cycle, the component would be not be dirty for the next update pass. This would
+    // be different in production mode where the component dirty state is not reset.
+    if (!checkNoChangesMode) {
+      lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
+    }
+
     leaveViewProcessExit();
   }
 }
