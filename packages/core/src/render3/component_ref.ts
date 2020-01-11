@@ -29,7 +29,7 @@ import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode} from './interfaces/node';
 import {RNode, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {LView, LViewFlags, TVIEW, TViewType} from './interfaces/view';
-import {stringifyCSSSelector} from './node_selector_matcher';
+import {stringifyCSSSelectorList} from './node_selector_matcher';
 import {enterView, leaveView} from './state';
 import {defaultScheduler} from './util/misc_utils';
 import {getTNode} from './util/view_utils';
@@ -114,7 +114,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       private componentDef: ComponentDef<any>, private ngModule?: viewEngine_NgModuleRef<any>) {
     super();
     this.componentType = componentDef.type;
-    this.selector = stringifyCSSSelector(componentDef.selectors[0]);
+    this.selector = stringifyCSSSelectorList(componentDef.selectors);
     this.ngContentSelectors =
         componentDef.ngContentSelectors ? componentDef.ngContentSelectors : [];
     this.isBoundToModule = !!ngModule;
@@ -134,7 +134,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     const hostRNode = rootSelectorOrNode ?
         locateHostElement(rendererFactory, rootSelectorOrNode, this.componentDef.encapsulation) :
-        // Determine a tag name used to creating host elements when this component is created
+        // Determine a tag name used for creating host elements when this component is created
         // dynamically. Default to 'div' if this component did not specify any tag name in its
         // selector.
         elementCreate(

@@ -32,7 +32,7 @@ describe('ComponentFactory', () => {
 
       const cf = cfr.resolveComponentFactory(TestComponent);
 
-      expect(cf.selector).toBe('test[foo]');
+      expect(cf.selector).toBe('test[foo],bar');
       expect(cf.componentType).toBe(TestComponent);
       expect(cf.ngContentSelectors).toEqual([]);
       expect(cf.inputs).toEqual([]);
@@ -65,7 +65,7 @@ describe('ComponentFactory', () => {
 
       expect(cf.componentType).toBe(TestComponent);
       expect(cf.ngContentSelectors).toEqual(['*', 'a', 'b']);
-      expect(cf.selector).toBe('test[foo]');
+      expect(cf.selector).toBe('test[foo],bar');
 
       expect(cf.inputs).toEqual([
         {propName: 'in1', templateName: 'in1'},

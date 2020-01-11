@@ -302,7 +302,7 @@ function maybeWrapInNotSelector(isNegativeMode: boolean, chunk: string): string 
   return isNegativeMode ? ':not(' + chunk.trim() + ')' : chunk;
 }
 
-export function stringifyCSSSelector(selector: CssSelector): string {
+function stringifyCSSSelector(selector: CssSelector): string {
   let result = selector[0] as string;
   let i = 1;
   let mode = SelectorFlags.ATTRIBUTE;
@@ -353,4 +353,19 @@ export function stringifyCSSSelector(selector: CssSelector): string {
     result += maybeWrapInNotSelector(isNegativeMode, currentChunk);
   }
   return result;
+}
+
+/**
+ * Generates string representation of CSS selector in parsed form.
+ *
+ * ComponentDef and DirectiveDef are generated with the selector in parsed form to avoid doing
+ * additional parsing at runtime. However in some cases (for example while bootstrapping a component
+ * on a page), a string version of the selector is required. This function takes parsed form of a
+ * selector and returns its string representation.
+ *
+ * @param selectorList selector in parsed form
+ * @returns string representation of a given selector
+ */
+export function stringifyCSSSelectorList(selectorList: CssSelectorList): string {
+  return selectorList.map(stringifyCSSSelector).join(',');
 }
