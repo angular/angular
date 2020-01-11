@@ -12,7 +12,7 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 
 {
   describe('NgStyle', () => {
-    let fixture: ComponentFixture<any>;
+    let fixture: ComponentFixture<TestComponent>;
 
     function getComponent(): TestComponent { return fixture.componentInstance; }
 
@@ -158,21 +158,36 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
          expectNativeEl(fixture).toHaveCssStyle({'font-size': '12px'});
        }));
 
-    it('should not write to native node when a bound expression doesnt change', () => {
+    it('should not write to the native node unless the bound expression has changed', () => {
 
-      const template = `<div [ngStyle]="{'color': 'red'}"></div>`;
+      const template = `<div [ngStyle]="{'color': expr}"></div>`;
 
       fixture = createTestComponent(template);
+      fixture.componentInstance.expr = 'red';
 
       fixture.detectChanges();
       expectNativeEl(fixture).toHaveCssStyle({'color': 'red'});
 
-      // Overwrite native styles to make sure that ngClass is not doing any DOM manipulation (as
-      // there was no change to the expression bound to [ngStyle]).
+      // Overwrite native styles so that we can check if ngStyle has performed DOM manupulation to
+      // update it.
       fixture.debugElement.children[0].nativeElement.style.color = 'blue';
       fixture.detectChanges();
+      // Assert that the style hasn't been updated
       expectNativeEl(fixture).toHaveCssStyle({'color': 'blue'});
 
+      fixture.componentInstance.expr = 'yellow';
+      fixture.detectChanges();
+      // Assert that the style has changed now that the model has changed
+      expectNativeEl(fixture).toHaveCssStyle({'color': 'yellow'});
+    });
+
+    it('should correctly update style with units (.px) when the model is set to number', () => {
+      const template = `<div [ngStyle]="{'width.px': expr}"></div>`;
+      fixture = createTestComponent(template);
+      fixture.componentInstance.expr = 400;
+
+      fixture.detectChanges();
+      expectNativeEl(fixture).toHaveCssStyle({'width': '400px'});
     });
 
   });

@@ -26,7 +26,7 @@ export abstract class NgClassImpl {
 }
 
 @Injectable()
-export class NgClassR2Impl implements NgClassImpl {
+export class NgClassR2Impl extends NgClassImpl {
   // TODO(issue/24571): remove '!'.
   private _iterableDiffer !: IterableDiffer<string>| null;
   // TODO(issue/24571): remove '!'.
@@ -37,7 +37,9 @@ export class NgClassR2Impl implements NgClassImpl {
 
   constructor(
       private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
-      private _ngEl: ElementRef, private _renderer: Renderer2) {}
+      private _ngEl: ElementRef, private _renderer: Renderer2) {
+    super();
+  }
 
   getValue() { return null; }
 
@@ -48,7 +50,8 @@ export class NgClassR2Impl implements NgClassImpl {
     this._applyClasses(this._rawClass);
   }
 
-  setNgClass(value: string) {
+
+  setNgClass(value: string|string[]|Set<string>|{[klass: string]: any}) {
     this._removeClasses(this._rawClass);
     this._applyClasses(this._initialClasses);
 
@@ -96,7 +99,7 @@ export class NgClassR2Impl implements NgClassImpl {
         this._toggleClass(record.item, true);
       } else {
         throw new Error(
-            `NgClass can only toggle CSS classes expressed as strings, got ${stringify(record.item)}`);
+            `NgClass can only toggle CSS classes expressed as strings, got: ${stringify(record.item)}`);
       }
     });
 
@@ -150,13 +153,13 @@ export class NgClassR2Impl implements NgClassImpl {
 }
 
 @Injectable()
-export class NgClassR3Impl implements NgClassImpl {
+export class NgClassR3Impl extends NgClassImpl {
   private _value: {[key: string]: boolean}|null = null;
-  private _ngClassDiffer = new StylingDiffer<{[key: string]: boolean}|null>(
+  private _ngClassDiffer = new StylingDiffer<{[key: string]: true}>(
       'NgClass', StylingDifferOptions.TrimProperties|
                  StylingDifferOptions.AllowSubKeys|
                  StylingDifferOptions.AllowStringValue|StylingDifferOptions.ForceAsMap);
-  private _classStringDiffer: StylingDiffer<{[key: string]: boolean}>|null = null;
+  private _classStringDiffer: StylingDiffer<{[key: string]: true}>|null = null;
 
   getValue() { return this._value; }
 
@@ -168,26 +171,23 @@ export class NgClassR3Impl implements NgClassImpl {
     this._classStringDiffer = this._classStringDiffer ||
         new StylingDiffer('class',
                           StylingDifferOptions.AllowStringValue | StylingDifferOptions.ForceAsMap);
-    this._classStringDiffer.setValue(value);
+    this._classStringDiffer.setInput(value);
   }
 
   setNgClass(value: string|string[]|Set<string>|{[klass: string]: any}) {
-    this._ngClassDiffer.setValue(value);
+    this._ngClassDiffer.setInput(value);
   }
 
   applyChanges() {
-    const classChanged =
-        this._classStringDiffer ? this._classStringDiffer.hasValueChanged() : false;
-    const ngClassChanged = this._ngClassDiffer.hasValueChanged();
+    const classChanged = this._classStringDiffer ? this._classStringDiffer.updateValue() : false;
+    const ngClassChanged = this._ngClassDiffer.updateValue();
     if (classChanged || ngClassChanged) {
-      let value = this._ngClassDiffer.value;
-      if (this._classStringDiffer) {
-        let classValue = this._classStringDiffer.value;
-        if (classValue) {
-          value = value ? {...classValue, ...value} : classValue;
-        }
-      }
-      this._value = value;
+      let ngClassValue = this._ngClassDiffer.value;
+      let classValue = this._classStringDiffer ? this._classStringDiffer.value : null;
+
+      // merge classValue and ngClassValue and set value
+      this._value = (classValue && ngClassValue) ? {...classValue, ...ngClassValue} :
+                                                   classValue || ngClassValue;
     }
   }
 }

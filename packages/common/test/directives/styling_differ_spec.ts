@@ -13,101 +13,111 @@ describe('StylingDiffer', () => {
         'ngClass', StylingDifferOptions.ForceAsMap | StylingDifferOptions.AllowStringValue);
     expect(d.value).toEqual(null);
 
-    d.setValue('one two');
+    d.setInput('one two');
     expect(d.value).toEqual({one: true, two: true});
 
-    d.setValue('three');
+    d.setInput('three');
     expect(d.value).toEqual({three: true});
   });
 
-  it('should not emit that a value has changed if a new non-collection value was not set', () => {
-    const d = new StylingDiffer(
-        'ngClass', StylingDifferOptions.ForceAsMap | StylingDifferOptions.AllowStringValue);
-    expect(d.value).toEqual(null);
 
-    d.setValue('one two');
-    expect(d.hasValueChanged()).toBeTruthy();
-    expect(d.value).toEqual({one: true, two: true});
-    expect(d.hasValueChanged()).toBeFalsy();
-    expect(d.value).toEqual({one: true, two: true});
+  describe('setInput', () => {
 
-    d.setValue('three');
-    expect(d.hasValueChanged()).toBeTruthy();
-    expect(d.value).toEqual({three: true});
-    expect(d.hasValueChanged()).toBeFalsy();
-    expect(d.value).toEqual({three: true});
+    it('should not emit that a value has changed if a new non-collection value was not set', () => {
+      const d = new StylingDiffer(
+          'ngClass', StylingDifferOptions.ForceAsMap | StylingDifferOptions.AllowStringValue);
+      expect(d.value).toEqual(null);
 
-    d.setValue(null);
-    expect(d.hasValueChanged()).toBeTruthy();
-    expect(d.value).toEqual(null);
-    expect(d.hasValueChanged()).toBeFalsy();
-    expect(d.value).toEqual(null);
+      d.setInput('one two');
+      expect(d.updateValue()).toBeTruthy();
+      expect(d.value).toEqual({one: true, two: true});
+      expect(d.updateValue()).toBeFalsy();
+      expect(d.value).toEqual({one: true, two: true});
+
+      d.setInput('three');
+      expect(d.updateValue()).toBeTruthy();
+      expect(d.value).toEqual({three: true});
+      expect(d.updateValue()).toBeFalsy();
+      expect(d.value).toEqual({three: true});
+
+      d.setInput(null);
+      expect(d.updateValue()).toBeTruthy();
+      expect(d.value).toEqual(null);
+      expect(d.updateValue()).toBeFalsy();
+      expect(d.value).toEqual(null);
+    });
   });
 
-  it('should watch the contents of a StringMap value and emit new values if they change', () => {
-    const d = new StylingDiffer('ngClass', StylingDifferOptions.ForceAsMap);
 
-    const myMap: {[key: string]: any} = {};
-    myMap['abc'] = true;
+  describe('updateValue', () => {
 
-    d.setValue(myMap);
-    expect(d.hasValueChanged()).toBeTruthy();
-    expect(d.value).toEqual({abc: true});
-    expect(d.hasValueChanged()).toBeFalsy();
+    it('should update the differ value if the contents of a input StringMap change', () => {
+      const d = new StylingDiffer('ngClass', StylingDifferOptions.ForceAsMap);
 
-    myMap['def'] = true;
-    expect(d.hasValueChanged()).toBeTruthy();
-    expect(d.value).toEqual({abc: true, def: true});
-    expect(d.hasValueChanged()).toBeFalsy();
+      const myMap: {[key: string]: true} = {};
+      myMap['abc'] = true;
 
-    delete myMap['abc'];
-    delete myMap['def'];
-    expect(d.hasValueChanged()).toBeTruthy();
-    expect(d.value).toEqual({});
-    expect(d.hasValueChanged()).toBeFalsy();
-  });
+      d.setInput(myMap);
+      expect(d.updateValue()).toBeTruthy();
+      expect(d.value).toEqual({abc: true});
+      expect(d.updateValue()).toBeFalsy();
 
-  it('should watch the contents of an Array value and emit new values if they change', () => {
-    const d = new StylingDiffer('ngClass', StylingDifferOptions.ForceAsMap);
+      myMap['def'] = true;
+      expect(d.updateValue()).toBeTruthy();
+      expect(d.value).toEqual({abc: true, def: true});
+      expect(d.updateValue()).toBeFalsy();
 
-    const myArray: string[] = [];
-    myArray.push('abc');
+      delete myMap['abc'];
+      delete myMap['def'];
+      expect(d.updateValue()).toBeTruthy();
+      expect(d.value).toEqual({});
+      expect(d.updateValue()).toBeFalsy();
+    });
 
-    d.setValue(myArray);
-    expect(d.hasValueChanged()).toBeTruthy();
-    expect(d.value).toEqual({abc: true});
-    expect(d.hasValueChanged()).toBeFalsy();
 
-    myArray.push('def');
-    expect(d.hasValueChanged()).toBeTruthy();
-    expect(d.value).toEqual({abc: true, def: true});
-    expect(d.hasValueChanged()).toBeFalsy();
+    it('should update the differ value if the contents of an input Array change', () => {
+      const d = new StylingDiffer('ngClass', StylingDifferOptions.ForceAsMap);
 
-    myArray.length = 0;
-    expect(d.hasValueChanged()).toBeTruthy();
-    expect(d.value).toEqual({});
-    expect(d.hasValueChanged()).toBeFalsy();
-  });
+      const myArray: string[] = [];
+      myArray.push('abc');
 
-  it('should watch the contents of a Set value and emit new values if they change', () => {
-    const d = new StylingDiffer('ngClass', StylingDifferOptions.ForceAsMap);
+      d.setInput(myArray);
+      expect(d.updateValue()).toBeTruthy();
+      expect(d.value).toEqual({abc: true});
+      expect(d.updateValue()).toBeFalsy();
 
-    const mySet = new Set<string>();
-    mySet.add('abc');
+      myArray.push('def');
+      expect(d.updateValue()).toBeTruthy();
+      expect(d.value).toEqual({abc: true, def: true});
+      expect(d.updateValue()).toBeFalsy();
 
-    d.setValue(mySet);
-    expect(d.hasValueChanged()).toBeTruthy();
-    expect(d.value).toEqual({abc: true});
-    expect(d.hasValueChanged()).toBeFalsy();
+      myArray.length = 0;
+      expect(d.updateValue()).toBeTruthy();
+      expect(d.value).toEqual({});
+      expect(d.updateValue()).toBeFalsy();
+    });
 
-    mySet.add('def');
-    expect(d.hasValueChanged()).toBeTruthy();
-    expect(d.value).toEqual({abc: true, def: true});
-    expect(d.hasValueChanged()).toBeFalsy();
 
-    mySet.clear();
-    expect(d.hasValueChanged()).toBeTruthy();
-    expect(d.value).toEqual({});
-    expect(d.hasValueChanged()).toBeFalsy();
+    it('should update the differ value if the contents of an input Set change', () => {
+      const d = new StylingDiffer('ngClass', StylingDifferOptions.ForceAsMap);
+
+      const mySet = new Set<string>();
+      mySet.add('abc');
+
+      d.setInput(mySet);
+      expect(d.updateValue()).toBeTruthy();
+      expect(d.value).toEqual({abc: true});
+      expect(d.updateValue()).toBeFalsy();
+
+      mySet.add('def');
+      expect(d.updateValue()).toBeTruthy();
+      expect(d.value).toEqual({abc: true, def: true});
+      expect(d.updateValue()).toBeFalsy();
+
+      mySet.clear();
+      expect(d.updateValue()).toBeTruthy();
+      expect(d.value).toEqual({});
+      expect(d.updateValue()).toBeFalsy();
+    });
   });
 });

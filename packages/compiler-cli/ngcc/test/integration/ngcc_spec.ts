@@ -257,8 +257,7 @@ runInEachFileSystem(() => {
 
          // We need to make sure that the flat typings file exports this directly
          const dtsContents = fs.readFile(_('/node_modules/@angular/common/common.d.ts'));
-         expect(dtsContents)
-             .toContain(`export declare class ${exportedName} implements ɵNgClassImpl`);
+         expect(dtsContents).toContain(`export declare class ${exportedName} extends ɵNgClassImpl`);
          // And that ngcc's modifications to that class use the correct (exported) name
          expect(dtsContents).toContain(`static ɵprov: ɵngcc0.ɵɵInjectableDef<${exportedName}>`);
        });
