@@ -15,7 +15,19 @@ describe('bootstrap', () => {
   it('should bootstrap using #id selector',
      withBody('<div>before|</div><button id="my-app"></button>', async() => {
        try {
-         const ngModuleRef = await platformBrowserDynamic().bootstrapModule(MyAppModule);
+         const ngModuleRef = await platformBrowserDynamic().bootstrapModule(IdSelectorAppModule);
+         expect(document.body.textContent).toEqual('before|works!');
+         ngModuleRef.destroy();
+       } catch (err) {
+         console.error(err);
+       }
+     }));
+
+  it('should bootstrap using one of selectors from the list',
+     withBody('<div>before|</div><div class="bar"></div>', async() => {
+       try {
+         const ngModuleRef =
+             await platformBrowserDynamic().bootstrapModule(MultipleSelectorsAppModule);
          expect(document.body.textContent).toEqual('before|works!');
          ngModuleRef.destroy();
        } catch (err) {
@@ -28,9 +40,28 @@ describe('bootstrap', () => {
   selector: '#my-app',
   template: 'works!',
 })
-export class MyAppComponent {
+export class IdSelectorAppComponent {
 }
 
-@NgModule({imports: [BrowserModule], declarations: [MyAppComponent], bootstrap: [MyAppComponent]})
-export class MyAppModule {
+@NgModule({
+  imports: [BrowserModule],
+  declarations: [IdSelectorAppComponent],
+  bootstrap: [IdSelectorAppComponent],
+})
+export class IdSelectorAppModule {
+}
+
+@Component({
+  selector: '[foo],span,.bar',
+  template: 'works!',
+})
+export class MultipleSelectorsAppComponent {
+}
+
+@NgModule({
+  imports: [BrowserModule],
+  declarations: [MultipleSelectorsAppComponent],
+  bootstrap: [MultipleSelectorsAppComponent],
+})
+export class MultipleSelectorsAppModule {
 }
