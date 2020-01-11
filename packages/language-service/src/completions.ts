@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, ReferenceAst, TagContentType, TemplateBinding, Text, getHtmlTagDefinition} from '@angular/compiler';
+import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ReferenceAst, TagContentType, TemplateBinding, Text, getHtmlTagDefinition} from '@angular/compiler';
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {AstResult} from './common';
@@ -208,9 +208,9 @@ export function getTemplateCompletions(
               }
             }
           },
-          visitComment(ast) {},
-          visitExpansion(ast) {},
-          visitExpansionCase(ast) {}
+          visitComment() {},
+          visitExpansion() {},
+          visitExpansionCase() {}
         },
         null);
   }
@@ -306,10 +306,11 @@ function attributeValueCompletions(
   if (!path.tail) {
     return [];
   }
-  // HtmlAst contains the `Attribute` node, however the corresponding `AttrAst`
-  // node is missing from the TemplateAst. In this case, we have to manually
-  // append the `AttrAst` node to the path.
-  if (!(path.tail instanceof AttrAst)) {
+  // HtmlAst contains the `Attribute` node, however a corresponding attribute AST
+  // node may be missing from the TemplateAst if the compiler fails to parse it fully. In this case,
+  // manually append an `AttrAst` node to the path.
+  if (!(path.tail instanceof AttrAst) && !(path.tail instanceof BoundElementPropertyAst) &&
+      !(path.tail instanceof BoundEventAst)) {
     // The sourceSpan of an AttrAst is the valueSpan of the HTML Attribute.
     path.push(new AttrAst(attr.name, attr.value, attr.valueSpan !));
   }
@@ -441,36 +442,34 @@ class ExpressionVisitor extends NullTemplateVisitor {
 
   visitEvent(ast: BoundEventAst): void { this.processExpressionCompletions(ast.handler); }
 
-  visitElement(ast: ElementAst): void {
+  visitElement(): void {
     // no-op for now
   }
 
   visitAttr(ast: AttrAst) {
-    // First, verify the attribute consists of some binding we can give completions for.
-    const {templateBindings} = this.info.expressionParser.parseTemplateBindings(
-        ast.name, ast.value, ast.sourceSpan.toString(), ast.sourceSpan.start.offset);
-    // Find where the cursor is relative to the start of the attribute value.
-    const valueRelativePosition = this.position - ast.sourceSpan.start.offset;
-    // Find the template binding that contains the position
-    const binding = templateBindings.find(b => inSpan(valueRelativePosition, b.span));
-
-    if (!binding) {
-      return;
-    }
-
     if (ast.name.startsWith('*')) {
+      // This a template binding given by micro syntax expression.
+      // First, verify the attribute consists of some binding we can give completions for.
+      const {templateBindings} = this.info.expressionParser.parseTemplateBindings(
+          ast.name, ast.value, ast.sourceSpan.toString(), ast.sourceSpan.start.offset);
+      // Find where the cursor is relative to the start of the attribute value.
+      const valueRelativePosition = this.position - ast.sourceSpan.start.offset;
+      // Find the template binding that contains the position.
+      const binding = templateBindings.find(b => inSpan(valueRelativePosition, b.span));
+
+      if (!binding) {
+        return;
+      }
+
       this.microSyntaxInAttributeValue(ast, binding);
     } else {
-      // If the position is in the expression or after the key or there is no key, return the
-      // expression completions.
-      // The expression must be reparsed to get a valid AST rather than only template bindings.
       const expressionAst = this.info.expressionParser.parseBinding(
           ast.value, ast.sourceSpan.toString(), ast.sourceSpan.start.offset);
       this.processExpressionCompletions(expressionAst);
     }
   }
 
-  visitReference(ast: ReferenceAst, context: ElementAst) {
+  visitReference(_ast: ReferenceAst, context: ElementAst) {
     context.directives.forEach(dir => {
       const {exportAs} = dir.directive;
       if (exportAs) {
