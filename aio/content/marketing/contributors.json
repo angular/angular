@@ -870,5 +870,13 @@
      "website": "https://github.com/srashtisj",
      "bio": "Srashti is Senior Developer at Hvantage Technologies. She's also a Google Developer Expert for Angular and Microsoft MVP (Developer Technologies) based in India. Co-organiser All About Web (@itsAllAboutWeb) and Indore Technical Community (#ngIndore).",
      "groups": ["GDE"]
-   }
+   },
+  "wesgrimes": {
+    "name": "Wes Grimes",
+    "picture": "wesgrimes.jpg",
+    "twitter": "wesgrimes",
+    "website": "https://wesleygrimes.com",
+    "bio": "Wes is a Senior Engineer at Nrwl, Core Team Member of NgRx, active open source contributor, speaker, writer, and mentor. Wes has well over a decade of experience in the insurance and disaster relief industries architecting and building full-stack enterprise software solutions. He has served in roles from tech support to business analysis, project management, and software development. Wes hails from sunny Central Florida and in his free time, he loves taking in sunsets, cooking BBQ, and spending time with his wife and 3 children.",
+    "groups": ["GDE"]
+  }
 }
