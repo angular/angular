@@ -460,7 +460,7 @@ class MyMenuHarness extends ComponentHarness {
 
   /** Gets a list of items in the menu, optionally filtered based on the given criteria. */
   async getItems(filters: MyMenuItemHarnessFilters = {}): Promise<MyMenuItemHarness[]> {
-    const getFilteredItems = this.locatorFor(MyMenuItemHarness.with(filters));
+    const getFilteredItems = this.locatorForAll(MyMenuItemHarness.with(filters));
     return getFilteredItems();
   }
 
