@@ -9,10 +9,6 @@ angular_dir=$(pwd)
 # Switch into Material directory.
 cd ${MATERIAL_REPO_TMP_DIR}
 
-# Updates Material's package.json to refer to the packages-dist directory.
-# Note that it's not necessary to perform a yarn install, as Bazel performs its own yarn install.
-node ${angular_dir}/scripts/ci/update-deps-to-dist-packages.js ${MATERIAL_REPO_TMP_DIR}/package.json ${angular_dir}/dist/packages-dist/
-
 # Copy the test blocklist into the "angular/components" repository. The components
 # repository automatically picks up the blocklist and disables the specified tests.
 cp ${angular_dir}/tools/material-ci/test-blocklist.ts ${MATERIAL_REPO_TMP_DIR}/test/
