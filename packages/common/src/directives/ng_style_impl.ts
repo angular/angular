@@ -83,16 +83,16 @@ export class NgStyleR2Impl implements NgStyleImpl {
 @Injectable()
 export class NgStyleR3Impl implements NgStyleImpl {
   private _differ =
-      new StylingDiffer<{[key: string]: any}|null>('NgStyle', StylingDifferOptions.AllowUnits);
+      new StylingDiffer<{[key: string]: any}>('NgStyle', StylingDifferOptions.AllowUnits);
 
   private _value: {[key: string]: any}|null = null;
 
   getValue() { return this._value; }
 
-  setNgStyle(value: {[key: string]: any}|null) { this._differ.setValue(value); }
+  setNgStyle(value: {[key: string]: any}|null) { this._differ.setInput(value); }
 
   applyChanges() {
-    if (this._differ.hasValueChanged()) {
+    if (this._differ.updateValue()) {
       this._value = this._differ.value;
     }
   }
