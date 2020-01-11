@@ -177,7 +177,7 @@ export class PercentPipe implements PipeTransform {
 export class CurrencyPipe implements PipeTransform {
   constructor(
       @Inject(LOCALE_ID) private _locale: string,
-      @Inject(DEFAULT_CURRENCY_CODE) private _currency: string) {}
+      @Inject(DEFAULT_CURRENCY_CODE) private _defaultCurrencyCode: string = 'USD') {}
 
   /**
    *
@@ -228,7 +228,7 @@ export class CurrencyPipe implements PipeTransform {
       display = display ? 'symbol' : 'code';
     }
 
-    let currency: string = currencyCode || this._currency;
+    let currency: string = currencyCode || this._defaultCurrencyCode;
     if (display !== 'code') {
       if (display === 'symbol' || display === 'symbol-narrow') {
         currency = getCurrencySymbol(currency, display === 'symbol' ? 'wide' : 'narrow', locale);
