@@ -25,7 +25,6 @@ import {MockTypescriptHost} from './test_utils';
 
 const EXPRESSION_CASES = '/app/expression-cases.ts';
 const NG_FOR_CASES = '/app/ng-for-cases.ts';
-const NG_IF_CASES = '/app/ng-if-cases.ts';
 const TEST_TEMPLATE = '/app/test.ng';
 const APP_COMPONENT = '/app/app.component.ts';
 
@@ -242,11 +241,6 @@ describe('diagnostics', () => {
           `and element references do not contain such a member`);
     });
 
-    it('should report an unknown context reference', () => {
-      const diags = ngLS.getSemanticDiagnostics(NG_FOR_CASES).map(d => d.messageText);
-      expect(diags).toContain(`The template context does not define a member called 'even_1'`);
-    });
-
     it('should report an unknown value in a key expression', () => {
       const diags = ngLS.getSemanticDiagnostics(NG_FOR_CASES).map(d => d.messageText);
       expect(diags).toContain(
@@ -256,10 +250,85 @@ describe('diagnostics', () => {
     });
   });
 
-  describe('in ng-if-cases.ts', () => {
-    it('should report an implicit context reference', () => {
-      const diags = ngLS.getSemanticDiagnostics(NG_IF_CASES).map(d => d.messageText);
-      expect(diags).toContain(`The template context does not define a member called 'unknown'`);
+  describe('embedded templates', () => {
+    it('should suggest refining a template context missing a property', () => {
+      mockHost.override(APP_COMPONENT, `
+        import {Directive, Component, Input, NgModule, OnChanges, ViewContainerRef, TemplateRef, SimpleChanges} from '@angular/core';
+
+        @Directive({
+          selector: '[counterOf]'
+        })
+        export class CounterDirective implements OnChanges {
+          // Object does not have an "$implicit" property.
+          constructor(private container: ViewContainerRef, private template: TemplateRef<Object>) {}
+        
+          @Input('counterOf') counter: number = 0;
+          ngOnChanges(changes: SimpleChanges) {}
+        }
+
+        @Component({
+          template: '<button type="button" ~{start-emb}*counter="let page of pageCount"~{end-emb}></button>',
+        })
+        export class TestComponent {
+          pageCount = [1, 2, 3, 4];
+        }
+
+        @NgModule({
+          declarations: [
+            TestComponent,
+            CounterDirective,
+          ]
+        })
+        export class TestModule {}
+      `);
+      const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
+      expect(tsDiags).toEqual([]);
+
+      const diags = ngLS.getSemanticDiagnostics(APP_COMPONENT);
+      expect(diags.length).toBe(1);
+      const {file, messageText, start, length} = diags[0];
+      expect(file !.fileName).toBe(APP_COMPONENT);
+      expect(messageText)
+          .toBe(
+              `The template context of 'CounterDirective' does not define an implicit value.\n` +
+                  `If the context type is a base type, consider refining it to a more specific type.`, );
+
+      const span = mockHost.getLocationMarkerFor(APP_COMPONENT, 'emb');
+      expect(start).toBe(span.start);
+      expect(length).toBe(span.length);
+    });
+
+    it('should report an unknown context reference', () => {
+      mockHost.override(APP_COMPONENT, `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          template: '<div ~{start-emb}*ngFor="let person of people; let e = even_1"~{end-emb}></div>',
+        })
+        export class TestComponent {
+          people: string[] = [];
+        }
+
+        @NgModule({
+          imports: [CommonModule],
+          declarations: [TestComponent]
+        })
+        export class TestModule {}
+      `);
+      const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
+      expect(tsDiags).toEqual([]);
+
+      const diags = ngLS.getSemanticDiagnostics(APP_COMPONENT);
+      expect(diags.length).toBe(1);
+      const {file, messageText, start, length} = diags[0];
+      expect(file !.fileName).toBe(APP_COMPONENT);
+      expect(messageText)
+          .toBe(`The template context of 'NgForOf' does not define a member called 'even_1'`);
+
+      const span = mockHost.getLocationMarkerFor(APP_COMPONENT, 'emb');
+      expect(start).toBe(span.start);
+      expect(length).toBe(span.length);
     });
   });
 
