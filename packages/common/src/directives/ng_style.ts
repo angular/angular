@@ -48,28 +48,6 @@ export const ngStyleFactoryDef__POST_R3__ = function() {};
 export const ngStyleDirectiveDef = ngStyleDirectiveDef__PRE_R3__;
 export const ngStyleFactoryDef = ngStyleDirectiveDef__PRE_R3__;
 
-/**
- * Serves as the base non-VE container for NgStyle.
- *
- * While this is a base class that NgStyle extends from, the
- * class itself acts as a container for non-VE code to setup
- * a link to the `[style]` host binding (via the static
- * `ɵdir` property on the class).
- *
- * Note that the `ɵdir` property's code is switched
- * depending if VE is present or not (this allows for the
- * binding code to be set only for newer versions of Angular).
- *
- * @publicApi
- */
-export class NgStyleBase {
-  static ɵdir: any = ngStyleDirectiveDef;
-  static ɵfac: any = ngStyleFactoryDef;
-
-  constructor(protected _delegate: NgStyleImpl) {}
-
-  getValue() { return this._delegate.getValue(); }
-}
 
 /**
  * @ngModule CommonModule
@@ -108,11 +86,16 @@ export class NgStyleBase {
  * @publicApi
  */
 @Directive({selector: '[ngStyle]', providers: [NgStyleImplProvider]})
-export class NgStyle extends NgStyleBase implements DoCheck {
-  constructor(delegate: NgStyleImpl) { super(delegate); }
+export class NgStyle implements DoCheck {
+  static ɵdir: never = ngStyleDirectiveDef as never;
+  static ɵfac: never = ngStyleFactoryDef as never;
+
+  constructor(private _delegate: NgStyleImpl) {}
 
   @Input('ngStyle')
   set ngStyle(value: {[klass: string]: any}|null) { this._delegate.setNgStyle(value); }
 
   ngDoCheck() { this._delegate.applyChanges(); }
+
+  getValue() { return this._delegate.getValue(); }
 }

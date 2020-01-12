@@ -187,23 +187,16 @@ export declare class LowerCasePipe implements PipeTransform {
     transform(value: string): string;
 }
 
-export declare class NgClass extends NgClassBase implements DoCheck {
+export declare class NgClass implements DoCheck {
     klass: string;
     ngClass: string | string[] | Set<string> | {
         [klass: string]: any;
     };
-    constructor(delegate: NgClassImpl);
-    ngDoCheck(): void;
-}
-
-export declare class NgClassBase {
-    protected _delegate: NgClassImpl;
     constructor(_delegate: NgClassImpl);
     getValue(): {
         [key: string]: any;
     } | null;
-    static ɵdir: any;
-    static ɵfac: any;
+    ngDoCheck(): void;
 }
 
 export declare class NgComponentOutlet implements OnChanges, OnDestroy {
@@ -272,22 +265,15 @@ export declare class NgPluralCase {
     constructor(value: string, template: TemplateRef<Object>, viewContainer: ViewContainerRef, ngPlural: NgPlural);
 }
 
-export declare class NgStyle extends NgStyleBase implements DoCheck {
+export declare class NgStyle implements DoCheck {
     ngStyle: {
         [klass: string]: any;
     } | null;
-    constructor(delegate: NgStyleImpl);
-    ngDoCheck(): void;
-}
-
-export declare class NgStyleBase {
-    protected _delegate: NgStyleImpl;
     constructor(_delegate: NgStyleImpl);
     getValue(): {
         [key: string]: any;
     } | null;
-    static ɵdir: any;
-    static ɵfac: any;
+    ngDoCheck(): void;
 }
 
 export declare class NgSwitch {

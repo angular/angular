@@ -48,28 +48,6 @@ export const ngClassFactoryDef__PRE_R3__ = undefined;
 export const ngClassFactoryDef__POST_R3__ = function() {};
 export const ngClassFactoryDef = ngClassFactoryDef__PRE_R3__;
 
-/**
- * Serves as the base non-VE container for NgClass.
- *
- * While this is a base class that NgClass extends from, the
- * class itself acts as a container for non-VE code to setup
- * a link to the `[class]` host binding (via the static
- * `ɵdir` property on the class).
- *
- * Note that the `ɵdir` property's code is switched
- * depending if VE is present or not (this allows for the
- * binding code to be set only for newer versions of Angular).
- *
- * @publicApi
- */
-export class NgClassBase {
-  static ɵdir: any = ngClassDirectiveDef;
-  static ɵfac: any = ngClassFactoryDef;
-
-  constructor(protected _delegate: NgClassImpl) {}
-
-  getValue() { return this._delegate.getValue(); }
-}
 
 /**
  * @ngModule CommonModule
@@ -100,8 +78,11 @@ export class NgClassBase {
  * @publicApi
  */
 @Directive({selector: '[ngClass]', providers: [NgClassImplProvider]})
-export class NgClass extends NgClassBase implements DoCheck {
-  constructor(delegate: NgClassImpl) { super(delegate); }
+export class NgClass implements DoCheck {
+  static ɵdir: never = ngClassDirectiveDef as never;
+  static ɵfac: never = ngClassFactoryDef as never;
+
+  constructor(private _delegate: NgClassImpl) {}
 
   @Input('class')
   set klass(value: string) { this._delegate.setClass(value); }
@@ -112,4 +93,6 @@ export class NgClass extends NgClassBase implements DoCheck {
   }
 
   ngDoCheck() { this._delegate.applyChanges(); }
+
+  getValue() { return this._delegate.getValue(); }
 }
