@@ -125,40 +125,79 @@ describe('definitions', () => {
     expect(def.textSpan).toEqual(mockHost.getDefinitionMarkerFor(fileName, 'include'));
   });
 
-  it('should be able to find a reference to a component', () => {
-    const fileName = mockHost.addCode(`
+  describe('find a reference to a component', () => {
+    it('should be able to find the reference from an opening tag', () => {
+      const fileName = mockHost.addCode(`
       @Component({
-        template: '~{start-my}<«test-comp»></test-comp>~{end-my}'
+        template: '~{start-my}<«test-comp»>~{end-my}</test-comp>'
       })
       export class MyComponent { }`);
 
-    // Get the marker for «test-comp» in the code added above.
-    const marker = mockHost.getReferenceMarkerFor(fileName, 'test-comp');
+      // Get the marker for «test-comp» in the code added above.
+      const marker = mockHost.getReferenceMarkerFor(fileName, 'test-comp');
 
-    const result = ngService.getDefinitionAndBoundSpan(fileName, marker.start);
-    expect(result).toBeDefined();
-    const {textSpan, definitions} = result !;
+      const result = ngService.getDefinitionAt(fileName, marker.start);
+      expect(result).toBeDefined();
+      const {textSpan, definitions} = result !;
 
-    // Get the marker for bounded text in the code added above.
-    const boundedText = mockHost.getLocationMarkerFor(fileName, 'my');
-    expect(textSpan).toEqual(boundedText);
+      // Get the marker for bounded text in the code added above.
+      const boundedText = mockHost.getLocationMarkerFor(fileName, 'my');
+      expect(textSpan).toEqual(boundedText);
 
-    // There should be exactly 1 definition
-    expect(definitions).toBeDefined();
-    expect(definitions !.length).toBe(1);
-    const def = definitions ![0];
+      // There should be exactly 1 definition
+      expect(definitions).toBeDefined();
+      expect(definitions !.length).toBe(1);
+      const def = definitions ![0];
 
-    const refFileName = '/app/parsing-cases.ts';
-    expect(def.fileName).toBe(refFileName);
-    expect(def.name).toBe('TestComponent');
-    expect(def.kind).toBe('component');
-    const content = mockHost.readFile(refFileName) !;
-    const begin = '/*BeginTestComponent*/ ';
-    const start = content.indexOf(begin) + begin.length;
-    const end = content.indexOf(' /*EndTestComponent*/');
-    expect(def.textSpan).toEqual({
-      start,
-      length: end - start,
+      const refFileName = '/app/parsing-cases.ts';
+      expect(def.fileName).toBe(refFileName);
+      expect(def.name).toBe('TestComponent');
+      expect(def.kind).toBe('component');
+      const content = mockHost.readFile(refFileName) !;
+      const begin = '/*BeginTestComponent*/ ';
+      const start = content.indexOf(begin) + begin.length;
+      const end = content.indexOf(' /*EndTestComponent*/');
+      expect(def.textSpan).toEqual({
+        start,
+        length: end - start,
+      });
+    });
+
+    it('should be able to find the reference from a closing tag', () => {
+      const fileName = mockHost.addCode(`
+      @Component({
+        template: '~{start-my}<test-comp></«test-comp»>~{end-my}'
+      })
+      export class MyComponent { }`);
+
+      // Get the marker for «test-comp» in the code added above.
+      const marker = mockHost.getReferenceMarkerFor(fileName, 'test-comp');
+
+      const result = ngService.getDefinitionAt(fileName, marker.start);
+      expect(result).toBeDefined();
+      const {textSpan, definitions} = result !;
+
+      // Get the marker for bounded text in the code added above.
+      const boundedText = mockHost.getLocationMarkerFor(fileName, 'my');
+      expect(textSpan).toEqual(boundedText);
+
+      // There should be exactly 1 definition
+      expect(definitions).toBeDefined();
+      expect(definitions !.length).toBe(1);
+      const def = definitions ![0];
+
+      const refFileName = '/app/parsing-cases.ts';
+      expect(def.fileName).toBe(refFileName);
+      expect(def.name).toBe('TestComponent');
+      expect(def.kind).toBe('component');
+      const content = mockHost.readFile(refFileName) !;
+      const begin = '/*BeginTestComponent*/ ';
+      const start = content.indexOf(begin) + begin.length;
+      const end = content.indexOf(' /*EndTestComponent*/');
+      expect(def.textSpan).toEqual({
+        start,
+        length: end - start,
+      });
     });
   });
 

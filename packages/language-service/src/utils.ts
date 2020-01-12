@@ -139,10 +139,6 @@ export function findTemplateAstAt(ast: TemplateAst[], position: number): Templat
     visitDirective(ast: DirectiveAst, context: any): any {
       // Ignore the host properties of a directive
       const result = this.visitChildren(context, visit => { visit(ast.inputs); });
-      // We never care about the diretive itself, just its inputs.
-      if (path[path.length - 1] === ast) {
-        path.pop();
-      }
       return result;
     }
   };
