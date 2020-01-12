@@ -25,7 +25,6 @@ import {MockTypescriptHost} from './test_utils';
 
 const EXPRESSION_CASES = '/app/expression-cases.ts';
 const NG_FOR_CASES = '/app/ng-for-cases.ts';
-const NG_IF_CASES = '/app/ng-if-cases.ts';
 const TEST_TEMPLATE = '/app/test.ng';
 const APP_COMPONENT = '/app/app.component.ts';
 
@@ -242,11 +241,6 @@ describe('diagnostics', () => {
           `and element references do not contain such a member`);
     });
 
-    it('should report an unknown context reference', () => {
-      const diags = ngLS.getSemanticDiagnostics(NG_FOR_CASES).map(d => d.messageText);
-      expect(diags).toContain(`The template context does not define a member called 'even_1'`);
-    });
-
     it('should report an unknown value in a key expression', () => {
       const diags = ngLS.getSemanticDiagnostics(NG_FOR_CASES).map(d => d.messageText);
       expect(diags).toContain(
@@ -256,10 +250,37 @@ describe('diagnostics', () => {
     });
   });
 
-  describe('in ng-if-cases.ts', () => {
-    it('should report an implicit context reference', () => {
-      const diags = ngLS.getSemanticDiagnostics(NG_IF_CASES).map(d => d.messageText);
-      expect(diags).toContain(`The template context does not define a member called 'unknown'`);
+  describe('embedded templates', () => {
+    it('should suggest refining a template context missing a property', () => {
+      mockHost.override(
+          TEST_TEMPLATE,
+          `<button type="button" ~{start-emb}*counter="let hero of heroes"~{end-emb}></button>`);
+      const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+      expect(diags.length).toBe(1);
+      const {messageText, start, length} = diags[0];
+      expect(messageText)
+          .toBe(
+              `The template context of 'CounterDirective' does not define an implicit value.\n` +
+                  `If the context type is a base type, consider refining it to a more specific type.`, );
+
+      const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'emb');
+      expect(start).toBe(span.start);
+      expect(length).toBe(span.length);
+    });
+
+    it('should report an unknown context reference', () => {
+      mockHost.override(
+          TEST_TEMPLATE,
+          `<div ~{start-emb}*ngFor="let hero of heroes; let e = even_1"~{end-emb}></div>`);
+      const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+      expect(diags.length).toBe(1);
+      const {messageText, start, length} = diags[0];
+      expect(messageText)
+          .toBe(`The template context of 'NgForOf' does not define a member called 'even_1'`);
+
+      const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'emb');
+      expect(start).toBe(span.start);
+      expect(length).toBe(span.length);
     });
   });
 
