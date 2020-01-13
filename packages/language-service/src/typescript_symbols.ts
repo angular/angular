@@ -313,6 +313,7 @@ class TypeWrapper implements Symbol {
   }
 
   typeArguments(): Symbol[]|undefined {
+    // TODO: use checker.getTypeArguments when TS 3.7 lands in the monorepo.
     const typeArguments: ReadonlyArray<ts.Type> = (this.tsType as any).typeArguments;
     if (!typeArguments) return undefined;
     return typeArguments.map(ta => new TypeWrapper(ta, this.context));
