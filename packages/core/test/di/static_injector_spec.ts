@@ -159,6 +159,7 @@ function factoryFn(a: any){}
       const sportsCar = injector.get(SportsCar);
       expect(car).toBeAnInstanceOf(SportsCar);
       expect(car).toBe(sportsCar);
+      expect(sportsCar.engine).toBeAnInstanceOf(Engine);
     });
 
     it('should support multiProviders', () => {
