@@ -9,4 +9,4 @@ else
   # Path in runfiles tree (when running under Bazel)
   readonly SAUCE_SERVICE="./scripts/saucelabs/sauce-service.sh"
 fi
-${SAUCE_SERVICE} stop
+${SAUCE_SERVICE} start-ready-wait

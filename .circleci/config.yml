@@ -706,23 +706,27 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
+      - setup_circleci_bazel_config
       - run:
           name: Preparing environment for running tests on Saucelabs.
           command: |
             setPublicVar KARMA_JS_BROWSERS $(node -e 'console.log(require("./browser-providers.conf").sauceAliases.CI_REQUIRED.join(","))')
             setSecretVar SAUCE_ACCESS_KEY $(echo $SAUCE_ACCESS_KEY | rev)
       - run:
-          name: Starting Saucelabs tunnel
-          command: ./scripts/saucelabs/start-tunnel.sh
+          name: Starting Saucelabs tunnel service
+          command: ./scripts/saucelabs/sauce-service.sh run
           background: true
       - run: yarn tsc -p packages
       - run: yarn tsc -p modules
       - run: yarn bazel build //packages/zone.js:npm_package
-        # Waits for the Saucelabs tunnel to be ready. This ensures that we don't run tests
-        # too early without Saucelabs not being ready.
-      - run: ./scripts/saucelabs/wait-for-tunnel.sh
+      - run:
+          # Waiting on ready ensures that we don't run tests too early without Saucelabs not being ready.
+          name: Waiting for Saucelabs tunnel to connect
+          command: ./scripts/saucelabs/sauce-service.sh ready-wait
       - run: yarn karma start ./karma-js.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
-      - run: ./scripts/saucelabs/stop-tunnel.sh
+      - run:
+          name: Stop Saucelabs tunnel service
+          command: ./scripts/saucelabs/sauce-service.sh stop
 
   legacy-misc-tests:
     executor: default-executor
