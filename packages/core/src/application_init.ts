@@ -12,7 +12,13 @@ import {Inject, Injectable, InjectionToken, Optional} from './di';
 
 
 /**
- * A function that will be executed when an application is initialized.
+ * An injection token that allows you to inject one or more functions to be executed during
+ * app initialization. If any of these functions returns a Promise, initialization
+ * does not complete until the Promise is resolved.
+ *
+ * You can, for example, create a factory function that loads an external configuration
+ * or language data, and provide that function to a service using this token, so that it is
+ * executed during the application bootstrap process.
  *
  * @publicApi
  */
