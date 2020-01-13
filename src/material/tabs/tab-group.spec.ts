@@ -291,6 +291,13 @@ describe('MatTabGroup', () => {
       subscription.unsubscribe();
     });
 
+    it('should have a focus indicator', () => {
+      const tabLabelNativeElements =
+          [...fixture.debugElement.nativeElement.querySelectorAll('.mat-tab-label')];
+
+      expect(tabLabelNativeElements.every(el => el.classList.contains('mat-focus-indicator')))
+        .toBe(true);
+    });
   });
 
   describe('aria labelling', () => {

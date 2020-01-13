@@ -216,6 +216,10 @@ describe('MatSlider', () => {
       expect(event.defaultPrevented).toBe(true);
     });
 
+    it('should have a focus indicator', () => {
+      expect(sliderNativeElement.classList.contains('mat-focus-indicator')).toBe(true);
+    });
+
   });
 
   describe('disabled slider', () => {

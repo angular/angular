@@ -190,6 +190,13 @@ describe('MatOption component', () => {
 
   });
 
+  it('should have a focus indicator', () => {
+    const fixture = TestBed.createComponent(BasicOption);
+    const optionNativeElement = fixture.debugElement.query(By.directive(MatOption))!.nativeElement;
+
+    expect(optionNativeElement.classList.contains('mat-focus-indicator')).toBe(true);
+  });
+
 });
 
 @Component({

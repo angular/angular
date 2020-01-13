@@ -450,6 +450,14 @@ describe('MatExpansionPanel', () => {
       });
 
   });
+
+  it('should have a focus indicator', () => {
+    const fixture = TestBed.createComponent(PanelWithContent);
+    const headerNativeElement =
+        fixture.debugElement.query(By.directive(MatExpansionPanelHeader))!.nativeElement;
+
+    expect(headerNativeElement.classList.contains('mat-focus-indicator')).toBe(true);
+  });
 });
 
 

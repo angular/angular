@@ -673,6 +673,13 @@ describe('MatCheckbox', () => {
         expect(checkboxNativeElement.classList).toContain('mat-checkbox-indeterminate');
       }));
     });
+
+    it('should have a focus indicator', () => {
+      const checkboxRippleNativeElement =
+          checkboxNativeElement.querySelector('.mat-checkbox-ripple')!;
+
+      expect(checkboxRippleNativeElement.classList.contains('mat-focus-indicator')).toBe(true);
+    });
   });
 
   describe('with change event and no initial value', () => {

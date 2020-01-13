@@ -357,6 +357,13 @@ describe('MatSlideToggle without forms', () => {
 
       expect(slideToggleElement.querySelectorAll(rippleSelector).length).toBe(0);
     });
+
+    it('should have a focus indicator', () => {
+      const slideToggleRippleNativeElement =
+          slideToggleElement.querySelector('.mat-slide-toggle-ripple')!;
+
+      expect(slideToggleRippleNativeElement.classList.contains('mat-focus-indicator')).toBe(true);
+    });
   });
 
   describe('custom template', () => {

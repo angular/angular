@@ -2148,6 +2148,17 @@ describe('MatMenu', () => {
 
   });
 
+  it('should have a focus indicator', () => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+    const menuItemNativeElements =
+        Array.from(overlayContainerElement.querySelectorAll('.mat-menu-item'));
+
+    expect(menuItemNativeElements
+        .every(element => element.classList.contains('mat-focus-indicator'))).toBe(true);
+  });
 });
 
 describe('MatMenu default overrides', () => {

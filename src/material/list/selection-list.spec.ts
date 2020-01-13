@@ -703,6 +703,13 @@ describe('MatSelectionList without forms', () => {
       expect(option.classList).toContain('mat-2-line');
     });
 
+    it('should have a focus indicator', () => {
+      const optionNativeElements = listOptions.map(option => option.nativeElement);
+
+      expect(optionNativeElements
+          .every(element => element.classList.contains('mat-focus-indicator'))).toBe(true);
+      });
+
   });
 
   describe('with list option selected', () => {

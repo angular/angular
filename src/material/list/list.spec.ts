@@ -29,6 +29,8 @@ describe('MatList', () => {
     fixture.detectChanges();
     expect(listItem.nativeElement.classList.length).toBe(2);
     expect(listItem.nativeElement.classList).toContain('mat-list-item');
+
+    // This spec also ensures the focus indicator is present.
     expect(listItem.nativeElement.classList).toContain('mat-focus-indicator');
   });
 

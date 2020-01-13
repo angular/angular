@@ -333,6 +333,14 @@ describe('MatTabNavBar', () => {
       expect(fixture.componentInstance.tabLinks.toArray().every(tabLink => tabLink.rippleDisabled))
         .toBe(true, 'Expected every tab link to have ripples disabled');
     });
+
+    it('should have a focus indicator', () => {
+      const tabLinkNativeElements =
+          [...fixture.debugElement.nativeElement.querySelectorAll('.mat-tab-link')];
+
+      expect(tabLinkNativeElements
+          .every(element => element.classList.contains('mat-focus-indicator'))).toBe(true);
+    });
   });
 });
 
