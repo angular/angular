@@ -26,6 +26,7 @@ entryPoints = [
     "grid-list",
     "grid-list/testing",
     "icon",
+    "icon/testing",
     "input",
     "list",
     "list/testing",

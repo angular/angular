@@ -1,0 +1,25 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "testing",
+    srcs = [
+        "fake-icon-registry.ts",
+        "index.ts",
+        "public-api.ts",
+    ],
+    module_name = "@angular/material/icon/testing",
+    deps = [
+        "//src/cdk/coercion",
+        "//src/material/icon",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//rxjs",
+    ],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
+)
