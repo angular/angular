@@ -7,17 +7,9 @@
  */
 
 import {$} from 'protractor';
-import {openTreeBenchmark, runTreeBenchmark} from './tree_perf_test_utils';
+import {runTreeBenchmark} from './test_utils';
 
-describe('benchmark render', () => {
-  it('should work for detectChanges', () => {
-    openTreeBenchmark();
-    $('#detectChanges').click();
-    expect($('#numberOfChecks').getText()).toContain('10');
-  });
-});
-
-describe('benchmarks', () => {
+describe('tree benchmark detect changes perf', () => {
   it('should work for detectChanges', async() => {
     await runTreeBenchmark({
       id: 'detectChanges',
