@@ -7,8 +7,6 @@
  */
 import {assertDefined} from '../../util/assert';
 import {global} from '../../util/global';
-import {markDirty} from '../instructions/all';
-
 import {applyChanges} from './change_detection_utils';
 import {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils';
 
@@ -50,7 +48,6 @@ export function publishDefaultGlobalUtils() {
     publishGlobalUtil('getInjector', getInjector);
     publishGlobalUtil('getRootComponents', getRootComponents);
     publishGlobalUtil('getDirectives', getDirectives);
-    publishGlobalUtil('markDirty', markDirty);
     publishGlobalUtil('applyChanges', applyChanges);
   }
 }
