@@ -1,4 +1,4 @@
-# Display a Heroes List
+# Display a selection list
 
 In this page, you'll expand the Tour of Heroes app to display a list of heroes, and
 allow users to select a hero and display the hero's details.

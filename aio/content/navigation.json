@@ -118,27 +118,27 @@
           },
           {
             "url": "tutorial/toh-pt2",
-            "title": "2. Displaying a List",
+            "title": "2. Display a List",
             "tooltip": "Part 2: Build a master/detail page with a list of heroes."
           },
           {
             "url": "tutorial/toh-pt3",
-            "title": "3. Master/Detail Components",
-            "tooltip": "Part 3: Refactor the master/detail view into separate components."
+            "title": "3. Create a Feature Component",
+            "tooltip": "Part 3: Refactor the master/detail views into separate components."
           },
           {
             "url": "tutorial/toh-pt4",
-            "title": "4. Services",
+            "title": "4. Add Services",
             "tooltip": "Part 4: Create a reusable service to manage hero data."
           },
           {
             "url": "tutorial/toh-pt5",
-            "title": "5. Routing",
+            "title": "5. Add In-app Navigation",
             "tooltip": "Part 5: Add the Angular router and navigate among the views."
           },
           {
             "url": "tutorial/toh-pt6",
-            "title": "6. HTTP",
+            "title": "6. Get Data from a Server",
             "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
           }
           ]
