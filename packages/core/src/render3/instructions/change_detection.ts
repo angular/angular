@@ -32,9 +32,6 @@ export function detectChanges(component: {}): void {
  * detection can be scheduled per component tree.
  *
  * @param component Component to mark as dirty.
- *
- * @publicApi
- * @globalApi ng
  */
 export function markDirty(component: {}): void {
   ngDevMode && assertDefined(component, 'component');

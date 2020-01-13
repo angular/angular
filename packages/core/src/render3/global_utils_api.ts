@@ -15,6 +15,5 @@
  * file in the public_api_guard test.
  */
 
-export {markDirty} from './instructions/all';
 export {applyChanges} from './util/change_detection_utils';
 export {Listener, getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './util/discovery_utils';

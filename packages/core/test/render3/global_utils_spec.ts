@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵmarkDirty as markDirty} from '@angular/core';
 
 import {applyChanges} from '../../src/render3/util/change_detection_utils';
 import {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils';
@@ -44,8 +43,6 @@ describe('global utils', () => {
        () => { assertPublished('getHostElement', getHostElement); });
 
     it('should publish getInjector', () => { assertPublished('getInjector', getInjector); });
-
-    it('should publish markDirty', () => { assertPublished('markDirty', markDirty); });
 
     it('should publish applyChanges', () => { assertPublished('applyChanges', applyChanges); });
   });
