@@ -23,5 +23,3 @@ export interface Listener {
     type: 'dom' | 'output';
     useCapture: boolean;
 }
-
-export declare function markDirty(component: {}): void;
