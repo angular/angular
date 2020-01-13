@@ -155,7 +155,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
       if (<any>console && <any>console.warn) {
         console.warn(
             `trackBy must be a function, but received ${JSON.stringify(fn)}. ` +
-            `See https://angular.io/docs/ts/latest/api/common/index/NgFor-directive.html#!#change-propagation for more information.`);
+            `See https://angular.io/api/common/NgForOf#change-propagation for more information.`);
       }
     }
     this._trackByFn = fn;
