@@ -26,7 +26,6 @@ import {
 } from '@angular/core';
 import {NgControl} from '@angular/forms';
 import {
-  FloatLabelType,
   LabelOptions,
   MAT_LABEL_GLOBAL_OPTIONS,
   ThemePalette
