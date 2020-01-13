@@ -10,8 +10,8 @@ import {ViewRef} from '../../linker/view_ref';
 
 import {TNode} from './node';
 import {RComment, RElement} from './renderer';
+import {HOST, LView, NEXT, PARENT, T_HOST, TRANSPLANTED_VIEWS_TO_REFRESH} from './view';
 
-import {HOST, LView, NEXT, PARENT, T_HOST} from './view';
 
 
 /**
@@ -27,16 +27,16 @@ export const TYPE = 1;
  */
 export const ACTIVE_INDEX = 2;
 
-// PARENT and NEXT are indices 3 and 4
+// PARENT, NEXT, TRANSPLANTED_VIEWS_TO_REFRESH are indices 3, 4, and 5
 // As we already have these constants in LView, we don't need to re-create them.
-
-export const MOVED_VIEWS = 5;
 
 // T_HOST is index 6
 // We already have this constants in LView, we don't need to re-create it.
 
 export const NATIVE = 7;
 export const VIEW_REFS = 8;
+export const MOVED_VIEWS = 9;
+
 
 /**
  * Size of LContainer's header. Represents the index after which all views in the
@@ -44,7 +44,7 @@ export const VIEW_REFS = 8;
  * which views are already in the DOM (and don't need to be re-added) and so we can
  * remove views from the DOM when they are no longer required.
  */
-export const CONTAINER_HEADER_OFFSET = 9;
+export const CONTAINER_HEADER_OFFSET = 10;
 
 
 /**
@@ -131,6 +131,14 @@ export interface LContainer extends Array<any> {
    * view with the same parent, so we can remove listeners efficiently.
    */
   [NEXT]: LView|LContainer|null;
+
+  /**
+   * The number of direct transplanted views which need a refresh or have descendants themselves
+   * that need a refresh but have not marked their ancestors as Dirty. This tells us that during
+   * change detection we should still descend to find those children to refresh, even if the parents
+   * are not `Dirty`/`CheckAlways`.
+   */
+  [TRANSPLANTED_VIEWS_TO_REFRESH]: number;
 
   /**
    * A collection of views created based on the underlying `<ng-template>` element but inserted into
