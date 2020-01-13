@@ -12,7 +12,7 @@ import {browser} from 'protractor';
 const yargs = require('yargs');
 import * as webdriver from 'selenium-webdriver';
 
-let cmdArgs: {'bundles': boolean};
+let cmdArgs: {'bundles': boolean}|undefined;
 
 declare var expect: any;
 
@@ -39,7 +39,7 @@ export function openBrowser(config: {
     browser.ignoreSynchronization = true;
   }
   let params = config.params || [];
-  if (!params.some((param) => param.name === 'bundles')) {
+  if (cmdArgs !== undefined && !params.some((param) => param.name === 'bundles')) {
     params = params.concat([{name: 'bundles', value: cmdArgs.bundles}]);
   }
 

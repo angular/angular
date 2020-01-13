@@ -7,8 +7,6 @@
  */
 
 import {$} from 'protractor';
-
-import {openBrowser} from '../../../e2e_util/e2e_util';
 import {runBenchmark, verifyNoBrowserErrors} from '../../../e2e_util/perf_util';
 
 interface Worker {
@@ -47,20 +45,6 @@ const testPackageName = process.env['BAZEL_TARGET'] !.split(':')[0].split('/').p
 describe('largetable benchmark perf', () => {
 
   afterEach(verifyNoBrowserErrors);
-
-  it(`should render the table for ${testPackageName}`, () => {
-    openBrowser({
-      url: '',
-      ignoreBrowserSynchronization: true,
-      params: [{name: 'cols', value: 5}, {name: 'rows', value: 5}],
-    });
-    $('#createDom').click();
-    expect($('#root').getText()).toContain('0/0');
-    $('#createDom').click();
-    expect($('#root').getText()).toContain('A/A');
-    $('#destroyDom').click();
-    expect($('#root').getText() as any).toEqual('');
-  });
 
   [CreateOnlyWorker, CreateAndDestroyWorker, UpdateWorker].forEach((worker) => {
     describe(worker.id, () => {

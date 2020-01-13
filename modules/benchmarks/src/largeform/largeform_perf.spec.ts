@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {$, By, element} from 'protractor';
+import {$} from 'protractor';
 
-import {openBrowser, verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
+import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 import {runBenchmark} from '../../../e2e_util/perf_util';
 
 interface Worker {
@@ -28,19 +28,6 @@ const CreateAndDestroyWorker = {
 describe('largeform benchmark spec', () => {
 
   afterEach(verifyNoBrowserErrors);
-
-  it('should work for ng2', () => {
-    openBrowser({
-      url: '/',
-      params: [{name: 'copies', value: 1}],
-      ignoreBrowserSynchronization: true,
-    });
-    $('#createDom').click();
-    expect(element.all(By.css('input[name=value0]')).get(0).getAttribute('value'))
-        .toBe('someValue0');
-    $('#destroyDom').click();
-    expect(element.all(By.css('input[name=value0]')).count()).toBe(0);
-  });
 
   [CreateAndDestroyWorker].forEach((worker) => {
     describe(worker.id, () => {
