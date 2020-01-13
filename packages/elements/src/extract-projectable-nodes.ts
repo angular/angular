@@ -38,17 +38,13 @@ export function extractProjectableNodes(host: HTMLElement, ngContentSelectors: s
 }
 
 function findMatchingIndex(node: Node, selectors: string[], defaultIndex: number): number {
-  let matchingIndex = defaultIndex;
-
   if (isElement(node)) {
-    selectors.some((selector, i) => {
-      if ((selector !== '*') && matchesSelector(node, selector)) {
-        matchingIndex = i;
-        return true;
+    for (let i = 0; i < selectors.length; i++) {
+      if (selectors[i] !== '*' && matchesSelector(node, selectors[i])) {
+        return i;
       }
-      return false;
-    });
+    }
   }
 
-  return matchingIndex;
+  return defaultIndex;
 }
