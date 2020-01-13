@@ -7,27 +7,9 @@
  */
 
 import {$} from 'protractor';
-import {openTreeBenchmark, runTreeBenchmark} from './tree_perf_test_utils';
+import {runTreeBenchmark} from './test_utils';
 
-describe('benchmark render', () => {
-  it('should work for createDestroy', () => {
-    openTreeBenchmark();
-    $('#createDom').click();
-    expect($('#root').getText()).toContain('0');
-    $('#destroyDom').click();
-    expect($('#root').getText() as any).toEqual('');
-  });
-
-  it('should work for update', () => {
-    openTreeBenchmark();
-    $('#createDom').click();
-    $('#createDom').click();
-    expect($('#root').getText()).toContain('A');
-  });
-});
-
-describe('benchmarks', () => {
-
+describe('tree benchmark perf', () => {
   it('should work for createOnly', done => {
     runTreeBenchmark({
       // This cannot be called "createOnly" because the actual destroy benchmark
