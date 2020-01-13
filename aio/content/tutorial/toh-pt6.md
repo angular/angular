@@ -1,4 +1,4 @@
-# HTTP
+# Get data from a server
 
 In this tutorial, you'll add the following data persistence features with help from
 Angular's `HttpClient`.

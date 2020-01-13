@@ -1,19 +1,22 @@
-<h1 class="no-toc">Tour of Heroes App and Tutorial</h1>
+<h1 class="no-toc">Tour of Heroes app and tutorial</h1>
 
 
 <div class="callout is-helpful">
-<header>Getting Started Tutorial</header>
+<header>Getting Started</header>
 
 
-If you're new to Angular, see the [**Getting Started tutorial.**](start) 
-The Getting Started tutorial covers the same major topics as this Tour of Heroes&mdash;components, template syntax, routing, services, and accessing data via HTTP&mdash;in a condensed format, following the most current best practices. 
+If you're new to Angular, you might want to try the [**Getting Started**](start) quick-start app first.
+The Getting Started tutorial covers the same major topics&mdash;components, template syntax, routing, services, and accessing data via HTTP&mdash;in a condensed format, following the most current best practices. It uses a partially-completed StackBlitz project, so that you can make modifications and see the results in real time.
 
-**This Tour of Heroes tutorial** is the conceptual basis for many examples in this documentation set. Reading this introduction page provides sufficient context for working with those examples. You do not need to do this tutorial to understand those other examples. The Tour of Heroes tutorial is maintained here for context and continuity. 
+In this tutorial, you build your own app from the ground up, providing experience with the development process as well as a more thorough introduction to basic concepts.
 
-</div> 
+The **Tour of Heroes app** that you create with this tutorial serves as the conceptual basis for many examples throughout Angular documentation.
+Reading this introduction page provides sufficient context for working with those examples.
+You do not need to do this tutorial to understand those other examples.  
+</div>
 
-This _Tour of Heroes_ tutorial provides an introduction to the fundamentals of Angular. 
-It shows you how to set up your local development environment and develop an app using the [Angular CLI tool](cli "CLI command reference"). 
+This _Tour of Heroes_ tutorial provides an introduction to the fundamentals of Angular.
+It shows you how to set up your local development environment and develop an app using the [Angular CLI tool](cli "CLI command reference").
 
 In this _Tour of Heroes_ tutorial, you will build an app that helps a staffing agency manage its stable of heroes.
 
@@ -27,13 +30,13 @@ By the end of this tutorial you will be able to do the following:
 * Use one-way data binding for read-only data.
 * Add editable fields to update a model with two-way data binding.
 * Bind component methods to user events, like keystrokes and clicks.
-* Enable users to select a hero from a master list and edit that hero in the details view. 
+* Enable users to select a hero from a master list and edit that hero in the details view.
 * Format data with pipes.
 * Create a shared service to assemble the heroes.
 * Use routing to navigate among different views and their components.
 
 You'll learn enough Angular to get started and gain confidence that
-Angular can do whatever you need it to do. 
+Angular can do whatever you need it to do.
 
 <div class="callout is-helpful">
 <header>Solution</header>

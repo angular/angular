@@ -1,4 +1,4 @@
-# The Application Shell
+# Create a new project
 
 You begin by creating an initial application using the Angular CLI. Throughout this tutorial, you’ll modify and extend that starter application to create the Tour of Heroes app.
 
