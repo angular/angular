@@ -37,6 +37,7 @@ export const MOVED_VIEWS = 5;
 
 export const NATIVE = 7;
 export const VIEW_REFS = 8;
+export const CONTAINS_ALWAYS_COUNT = 9;
 
 /**
  * Size of LContainer's header. Represents the index after which all views in the
@@ -44,7 +45,7 @@ export const VIEW_REFS = 8;
  * which views are already in the DOM (and don't need to be re-added) and so we can
  * remove views from the DOM when they are no longer required.
  */
-export const CONTAINER_HEADER_OFFSET = 9;
+export const CONTAINER_HEADER_OFFSET = 10;
 
 
 /**
@@ -154,6 +155,8 @@ export interface LContainer extends Array<any> {
    * This is lazily initialized by `ViewContainerRef` when the first view is inserted.
    */
   [VIEW_REFS]: ViewRef[]|null;
+
+  [CONTAINS_ALWAYS_COUNT]: number;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

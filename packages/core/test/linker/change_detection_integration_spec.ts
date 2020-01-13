@@ -1442,13 +1442,11 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
         it('should dirty check projected views in regular order', () => {
           ctx.detectChanges(false);
-          expect(log).toEqual(
-              ['main-start', 'outer-start', 'inner-start', 'main-tpl', 'outer-tpl']);
+          expect(log).toEqual(['main-start', 'outer-start', 'inner-start', 'main-tpl', 'outer-tpl']);
 
           log = [];
           ctx.detectChanges(false);
-          expect(log).toEqual(
-              ['main-start', 'outer-start', 'inner-start', 'main-tpl', 'outer-tpl']);
+          expect(log).toEqual(['main-start', 'outer-start', 'inner-start', 'main-tpl', 'outer-tpl']);
         });
 
         it('should not dirty check projected views if neither the declaration nor the insertion place is dirty checked',

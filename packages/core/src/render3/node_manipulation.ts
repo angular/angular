@@ -12,14 +12,14 @@ import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertDomNode, assertEqual, assertString} from '../util/assert';
 import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
-import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
+import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, CONTAINS_ALWAYS_COUNT as CONTAINER_CONTAINS_ALWAYS_COUNT, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {isLContainer, isLView} from './interfaces/type_checks';
-import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, TView, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
+import {CHILD_HEAD, CLEANUP, CONTAINS_ALWAYS_COUNT,DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, TView, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {getLViewParent} from './util/view_traversal_utils';
 import {getNativeByTNode, unwrapRNode} from './util/view_utils';
@@ -268,17 +268,24 @@ function trackMovedView(declarationContainer: LContainer, lView: LView) {
   const insertedLContainer = lView[PARENT] as LContainer;
   ngDevMode && assertLContainer(insertedLContainer);
   const insertedComponentLView = insertedLContainer[PARENT] ![DECLARATION_COMPONENT_VIEW];
+
+  const declaredComponentLView = lView[DECLARATION_COMPONENT_VIEW];
+  const delcarationComponentIsCheckAlways =
+      (declaredComponentLView[FLAGS] & LViewFlags.CheckAlways) !== 0;
+  if (delcarationComponentIsCheckAlways) {
+    insertedLContainer[CONTAINER_CONTAINS_ALWAYS_COUNT]++;
+    updateContainsAlways(insertedLContainer[PARENT], 1);
+  }
+
   ngDevMode && assertDefined(insertedComponentLView, 'Missing insertedComponentLView');
   const insertedComponentIsOnPush =
       (insertedComponentLView[FLAGS] & LViewFlags.CheckAlways) !== LViewFlags.CheckAlways;
   if (insertedComponentIsOnPush) {
-    const declaredComponentLView = lView[DECLARATION_COMPONENT_VIEW];
     ngDevMode && assertDefined(declaredComponentLView, 'Missing declaredComponentLView');
     if (declaredComponentLView !== insertedComponentLView) {
       // At this point the declaration-component is not same as insertion-component and we are in
       // on-push mode, this means that this is a transplanted view. Mark the declared lView as
-      // having
-      // transplanted views so that those views can participate in CD.
+      // having transplanted views so that those views can participate in CD.
       declarationContainer[ACTIVE_INDEX] |= ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS;
     }
   }
@@ -289,6 +296,13 @@ function trackMovedView(declarationContainer: LContainer, lView: LView) {
   }
 }
 
+function updateContainsAlways(lView: LView | null, updateVal: number) {
+  if (lView === null) return;
+
+  lView[CONTAINS_ALWAYS_COUNT] = lView[CONTAINS_ALWAYS_COUNT] + updateVal;
+  updateContainsAlways(getLViewParent(lView), updateVal);
+}
+
 function detachMovedView(declarationContainer: LContainer, lView: LView) {
   ngDevMode && assertLContainer(declarationContainer);
   ngDevMode && assertDefined(
@@ -296,6 +310,15 @@ function detachMovedView(declarationContainer: LContainer, lView: LView) {
                    'A projected view should belong to a non-empty projected views collection');
   const movedViews = declarationContainer[MOVED_VIEWS] !;
   const declaredViewIndex = movedViews.indexOf(lView);
+  const insertedLContainer = lView[PARENT] as LContainer;
+  ngDevMode && assertLContainer(insertedLContainer);
+  insertedLContainer[CONTAINER_CONTAINS_ALWAYS_COUNT]--;
+  // If insertion LContainer no longer has any ContainsAlways transplanted views, we need to
+  // decrement all ancestor LView counts by 1.
+  if (insertedLContainer[CONTAINER_CONTAINS_ALWAYS_COUNT] === 0) {
+    updateContainsAlways(insertedLContainer[PARENT], -1);
+  }
+
   movedViews.splice(declaredViewIndex, 1);
 }
 

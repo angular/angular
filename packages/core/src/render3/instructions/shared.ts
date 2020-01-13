@@ -28,7 +28,7 @@ import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, Pro
 import {RComment, RElement, RNode, RText, Renderer3, RendererFactory3, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTAINS_ALWAYS_COUNT, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, getTView, leaveView, setBindingIndex, setBindingRootForHostBindings, setCheckNoChangesMode, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
@@ -139,6 +139,13 @@ function refreshContentQueries(tView: TView, lView: LView): void {
 function refreshChildComponents(hostLView: LView, components: number[]): void {
   for (let i = 0; i < components.length; i++) {
     refreshComponent(hostLView, components[i]);
+  }
+}
+
+/** Refreshes child components in the current view (update mode). */
+function refreshContainsDirtyChildComponents(hostLView: LView, components: number[]): void {
+  for (let i = 0; i < components.length; i++) {
+    refreshContainsDirtyComponent(hostLView, components[i]);
   }
 }
 
@@ -395,6 +402,11 @@ export function refreshView<T>(
   if ((flags & LViewFlags.Destroyed) === LViewFlags.Destroyed) return;
   enterView(lView, lView[T_HOST]);
   const checkNoChangesMode = getCheckNoChangesMode();
+  // We need to clear the flags at the beginning because if a child component is checked (and not
+  // dirty) and then its transplanted view is checked (and is dirty), we need to mark that already
+  // processed component view with ContainsDirty (backwards referenced templates) along with its
+  // ancestors (this view).
+  lView[FLAGS] &= ~LViewFlags.ContainsDirty;
   try {
     resetPreOrderHookFlags(lView);
 
@@ -423,7 +435,23 @@ export function refreshView<T>(
       }
     }
 
-    refreshDynamicEmbeddedViews(lView);
+    forEachDynamicEmbeddedView(lView, (lContainer: LContainer) => {
+      for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
+        const embeddedLView = lContainer[i];
+        const embeddedTView = embeddedLView[TVIEW];
+        ngDevMode && assertDefined(embeddedTView, 'TView must be allocated');
+        if (viewAttachedToChangeDetector(embeddedLView)) {
+          refreshView(
+              embeddedTView, embeddedLView, embeddedTView.template, embeddedLView[CONTEXT] !);
+        }
+      }
+      if ((lContainer[ACTIVE_INDEX] & ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS) !== 0) {
+        // We should only CD moved views if the component where they were inserted does not match
+        // the component where they were declared and insertion is on-push. Moved views also
+        // contains intra component moves, or check-always which need to be skipped.
+        markTransplantedViewsDirty(lContainer, lView[DECLARATION_COMPONENT_VIEW] !);
+      }
+    });
 
     // Content query results must be refreshed before content hooks are called.
     if (tView.contentQueries !== null) {
@@ -1573,17 +1601,20 @@ export function createLContainer(
       tNode,                                                                 // t_host
       native,                                                                // native,
       null,                                                                  // view refs
+      0,  // contains always count
       );
+  ngDevMode &&
+      assertEqual(
+          lContainer.length, CONTAINER_HEADER_OFFSET, 'Should allocate enough space for all slots');
   ngDevMode && attachLContainerDebug(lContainer);
   return lContainer;
 }
-
 
 /**
  * Goes over dynamic embedded views (ones created through ViewContainerRef APIs) and refreshes
  * them by executing an associated template function.
  */
-function refreshDynamicEmbeddedViews(lView: LView) {
+function forEachDynamicEmbeddedView(lView: LView, lContainerFn: (lContainer: LContainer) => void) {
   let viewOrContainer = lView[CHILD_HEAD];
   while (viewOrContainer !== null) {
     // Note: viewOrContainer can be an LView or an LContainer instance, but here we are only
@@ -1592,21 +1623,7 @@ function refreshDynamicEmbeddedViews(lView: LView) {
     if (isLContainer(viewOrContainer) &&
         (activeIndexFlag = viewOrContainer[ACTIVE_INDEX]) >> ActiveIndexFlag.SHIFT ===
             ActiveIndexFlag.DYNAMIC_EMBEDDED_VIEWS_ONLY) {
-      for (let i = CONTAINER_HEADER_OFFSET; i < viewOrContainer.length; i++) {
-        const embeddedLView = viewOrContainer[i] as LView;
-        const embeddedTView = embeddedLView[TVIEW];
-        ngDevMode && assertDefined(embeddedTView, 'TView must be allocated');
-        if (viewAttachedToChangeDetector(embeddedLView)) {
-          refreshView(
-              embeddedTView, embeddedLView, embeddedTView.template, embeddedLView[CONTEXT] !);
-        }
-      }
-      if ((activeIndexFlag & ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS) !== 0) {
-        // We should only CD moved views if the component where they were inserted does not match
-        // the component where they were declared and insertion is on-push. Moved views also
-        // contains intra component moves, or check-always which need to be skipped.
-        refreshTransplantedViews(viewOrContainer, lView[DECLARATION_COMPONENT_VIEW] !);
-      }
+      lContainerFn(viewOrContainer);
     }
     viewOrContainer = viewOrContainer[NEXT];
   }
@@ -1622,7 +1639,7 @@ function refreshDynamicEmbeddedViews(lView: LView) {
  * @param lContainer The `LContainer` which has transplanted views.
  * @param declaredComponentLView The `lContainer` parent component `LView`.
  */
-function refreshTransplantedViews(lContainer: LContainer, declaredComponentLView: LView) {
+function markTransplantedViewsDirty(lContainer: LContainer, declaredComponentLView: LView) {
   const movedViews = lContainer[MOVED_VIEWS] !;
   ngDevMode && assertDefined(movedViews, 'Transplanted View flags set but missing MOVED_VIEWS');
   for (let i = 0; i < movedViews.length; i++) {
@@ -1636,21 +1653,32 @@ function refreshTransplantedViews(lContainer: LContainer, declaredComponentLView
       // Yes the `LView` is transplanted.
       // Here we would like to know if the component is `OnPush`. We don't have
       // explicit `OnPush` flag instead we set `CheckAlways` to false (which is `OnPush`)
-      // Not to be confused with `ManualOnPush` which is used with wether a DOM event
+      // Not to be confused with `ManualOnPush` which is used with whether a DOM event
       // should automatically mark a view as dirty.
       const insertionComponentIsOnPush =
           (insertedComponentLView[FLAGS] & LViewFlags.CheckAlways) === 0;
-      if (insertionComponentIsOnPush) {
+      const declarationComponentIsOnPush =
+          (declaredComponentLView[FLAGS] & LViewFlags.CheckAlways) === 0;
+      // Don't mark insertion tree with ContainsDirty if the declaration is CheckAlways because we
+      // already track that with the CONTAINS_ALWAYS_COUNT.
+      if (insertionComponentIsOnPush && declarationComponentIsOnPush) {
         // Here we know that the template has been transplanted across components and is
-        // on-push (not just moved within a component). If the insertion is marked dirty, then
-        // there is no need to CD here as we will do it again later when we get to insertion
-        // point.
+        // on-push (not just moved within a component).
         const movedTView = movedLView[TVIEW];
         ngDevMode && assertDefined(movedTView, 'TView must be allocated');
-        refreshView(movedTView, movedLView, movedTView.template, movedLView[CONTEXT] !);
+        // Mark the moved view as dirty so we know it needs to be refreshed
+        movedLView[FLAGS] |= LViewFlags.Dirty;
+        markContainsDirty(getLViewParent(movedLView));
       }
     }
   }
+}
+
+function markContainsDirty(lView: LView | null) {
+  if (lView === null) return;
+
+  lView[FLAGS] |= LViewFlags.ContainsDirty;
+  markContainsDirty(getLViewParent(lView));
 }
 
 /////////////
@@ -1664,10 +1692,70 @@ function refreshComponent(hostLView: LView, componentHostIdx: number): void {
   ngDevMode && assertEqual(isCreationMode(hostLView), false, 'Should be run in update mode');
   const componentView = getComponentLViewByIndex(componentHostIdx, hostLView);
   // Only attached components that are CheckAlways or OnPush and dirty should be refreshed
+  if (viewAttachedToChangeDetector(componentView)) {
+    const tView = componentView[TVIEW];
+    if (componentView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
+      // pre-clear contains dirty in case a subtree re-adds it
+      componentView[FLAGS] &= ~(LViewFlags.ContainsDirty);
+      refreshView(tView,componentView,  tView.template, componentView[CONTEXT]);
+    } else if (
+        componentView[FLAGS] & LViewFlags.ContainsDirty ||
+        componentView[CONTAINS_ALWAYS_COUNT] > 0) {
+      refreshContainsDirtyComponent(hostLView, componentHostIdx);
+    }
+  }
+}
+
+function refreshContainsDirtyComponent(hostLView: LView, componentHostIdx: number): void {
+  ngDevMode && assertEqual(isCreationMode(hostLView), false, 'Should be run in update mode');
+  const componentView = getComponentLViewByIndex(componentHostIdx, hostLView);
+  // Only attached components that are CheckAlways or OnPush and dirty should be refreshed
   if (viewAttachedToChangeDetector(componentView) &&
-      componentView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
-    const componentTView = componentView[TVIEW];
-    refreshView(componentTView, componentView, componentTView.template, componentView[CONTEXT]);
+      ((componentView[FLAGS] & LViewFlags.ContainsDirty) ||
+       componentView[CONTAINS_ALWAYS_COUNT] > 0)) {
+    refreshContainsDirtyView(componentView);
+  }
+}
+
+function isTransplantedView(lContainer: LContainer, embeddedLView: LView) {
+  return lContainer[PARENT] ![DECLARATION_COMPONENT_VIEW] !==
+      embeddedLView[DECLARATION_COMPONENT_VIEW]
+}
+
+function isCheckAlwaysTransplantedView(lContainer: LContainer, embeddedLView: LView) {
+  return isTransplantedView(lContainer, embeddedLView) &&
+      (embeddedLView[DECLARATION_COMPONENT_VIEW][FLAGS] & LViewFlags.CheckAlways);
+}
+
+function refreshContainsDirtyView(lView: LView) {
+  forEachDynamicEmbeddedView(lView, (lContainer: LContainer) => {
+    for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
+      const embeddedLView = lContainer[i];
+      const embeddedTView = embeddedLView[TVIEW];
+      ngDevMode && assertDefined(embeddedTView, 'TView must be allocated');
+      if ((embeddedLView[FLAGS] & LViewFlags.Dirty) ||
+          isCheckAlwaysTransplantedView(lContainer, embeddedLView)) {
+        if (viewAttachedToChangeDetector(embeddedLView)) {
+          refreshView(
+              embeddedTView, embeddedLView, embeddedTView.template, embeddedLView[CONTEXT] !);
+        }
+      } else if (
+          (embeddedLView[FLAGS] & LViewFlags.ContainsDirty) ||
+          embeddedLView[CONTAINS_ALWAYS_COUNT] > 0) {
+        refreshContainsDirtyView(embeddedLView);
+      }
+    }
+  });
+
+  // Clear the ContainsDirty flags before traversing to children in case children mark this one as
+  // dirty (backwards referenced views).
+  lView[FLAGS] &= ~LViewFlags.ContainsDirty;
+
+  const tView = lView[TVIEW];
+  // Refresh child component views.
+  const components = tView.components;
+  if (components !== null) {
+    refreshContainsDirtyChildComponents(lView, components);
   }
 }
 
@@ -1835,6 +1923,13 @@ export function detectChangesInternal<T>(tView: TView, lView: LView, context: T)
  */
 export function detectChangesInRootView(lView: LView): void {
   tickRootContext(lView[CONTEXT] as RootContext);
+  // This handles backwards references for OnPush transplanted views. The reason we need this is
+  // because the insertion view may be checked before the declaration view.
+  // TODO(atscott): I think this is wrong because it also would check any CONTAINS_ALWAYS views
+  // again if they exist under the ContainsDirty.
+  if (lView[FLAGS] & LViewFlags.ContainsDirty) {
+    refreshContainsDirtyView(lView);
+  }
 }
 
 export function checkNoChangesInternal<T>(tView: TView, view: LView, context: T) {
