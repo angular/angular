@@ -152,9 +152,6 @@ module.exports = function(config) {
     set: () => {},
   });
 
-  // When running under Bazel with karma_web_test, SAUCE_TUNNEL_IDENTIFIER and KARMA_WEB_TEST_MODE
-  // will only be available if they are part of the Bazel action environment. More details in the
-  // "scripts/saucelabs/run-bazel-via-tunnel.sh" script.
   if (process.env['SAUCE_TUNNEL_IDENTIFIER']) {
     console.log(`SAUCE_TUNNEL_IDENTIFIER: ${process.env.SAUCE_TUNNEL_IDENTIFIER}`);
 
