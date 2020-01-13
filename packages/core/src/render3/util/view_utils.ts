@@ -166,7 +166,7 @@ export function isCreationMode(view: LView): boolean {
  * Note: This determines whether a view should be checked, not whether it's inserted
  * into a container. For that, you'll want `viewAttachedToContainer` below.
  */
-export function viewAttachedToChangeDetector(view: LView): boolean {
+export function isViewAttached(view: LView): boolean {
   return (view[FLAGS] & LViewFlags.Attached) === LViewFlags.Attached;
 }
 

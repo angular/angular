@@ -167,7 +167,7 @@ export function incrementInitPhaseFlags(lView: LView, initPhase: InitPhaseState)
   let flags = lView[FLAGS];
   if ((flags & LViewFlags.InitPhaseStateMask) === initPhase) {
     flags &= LViewFlags.IndexWithinInitPhaseReset;
-    flags += LViewFlags.InitPhaseStateIncrementer;
+    flags += LViewFlags.InitPhaseStateIncrementor;
     lView[FLAGS] = flags;
   }
 }
@@ -239,7 +239,7 @@ function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, 
     if (indexWithintInitPhase <
             (currentView[PREORDER_HOOK_FLAGS] >> PreOrderHookFlags.NumberOfInitHooksCalledShift) &&
         (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase) {
-      currentView[FLAGS] += LViewFlags.IndexWithinInitPhaseIncrementer;
+      currentView[FLAGS] += LViewFlags.IndexWithinInitPhaseIncrementor;
       hook.call(directive);
     }
   } else {

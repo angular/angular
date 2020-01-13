@@ -10,6 +10,7 @@ import {Renderer2} from '../core';
 import {ViewEncapsulation} from '../metadata/view';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertDomNode, assertEqual, assertString} from '../util/assert';
+
 import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
@@ -19,7 +20,7 @@ import {TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, 
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {isLContainer, isLView} from './interfaces/type_checks';
-import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, TView, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
+import {CHILD_HEAD, CLEANUP, CONTAINS_TRANSPLANTED_VIEW_COUNT, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, TView, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {getLViewParent} from './util/view_traversal_utils';
 import {getNativeByTNode, unwrapRNode} from './util/view_utils';
@@ -265,20 +266,35 @@ function trackMovedView(declarationContainer: LContainer, lView: LView) {
   ngDevMode && assertDefined(lView, 'LView required');
   ngDevMode && assertLContainer(declarationContainer);
   const movedViews = declarationContainer[MOVED_VIEWS];
-  const insertedLContainer = lView[PARENT] as LContainer;
-  ngDevMode && assertLContainer(insertedLContainer);
-  const insertedComponentLView = insertedLContainer[PARENT] ![DECLARATION_COMPONENT_VIEW];
-  ngDevMode && assertDefined(insertedComponentLView, 'Missing insertedComponentLView');
+  const insertionLContainer = lView[PARENT] as LContainer;
+  ngDevMode && assertLContainer(insertionLContainer);
+  const insertionComponentLView = insertionLContainer[PARENT] ![DECLARATION_COMPONENT_VIEW];
+
+  const declarationComponentLView = lView[DECLARATION_COMPONENT_VIEW];
+  const declarationComponentIsCheckAlways =
+      (declarationComponentLView[FLAGS] & LViewFlags.CheckAlways) !== 0;
+  if (declarationComponentIsCheckAlways) {
+    insertionLContainer[CONTAINS_TRANSPLANTED_VIEW_COUNT]++;
+    let viewOrContainer: LView|LContainer = insertionLContainer;
+    let parent: LView|null = insertionLContainer[PARENT];
+    // If this view is newly ContainsAlways, increment the parent count by 1 to indicate that it has
+    // a new child with a ContainsAlways transplanted view.
+    while (parent !== null && viewOrContainer[CONTAINS_TRANSPLANTED_VIEW_COUNT] === 1) {
+      parent[CONTAINS_TRANSPLANTED_VIEW_COUNT]++;
+      viewOrContainer = parent;
+      parent = getLViewParent(parent);
+    }
+  }
+
+  ngDevMode && assertDefined(insertionComponentLView, 'Missing insertionComponentLView');
   const insertedComponentIsOnPush =
-      (insertedComponentLView[FLAGS] & LViewFlags.CheckAlways) !== LViewFlags.CheckAlways;
+      (insertionComponentLView[FLAGS] & LViewFlags.CheckAlways) !== LViewFlags.CheckAlways;
   if (insertedComponentIsOnPush) {
-    const declaredComponentLView = lView[DECLARATION_COMPONENT_VIEW];
-    ngDevMode && assertDefined(declaredComponentLView, 'Missing declaredComponentLView');
-    if (declaredComponentLView !== insertedComponentLView) {
+    ngDevMode && assertDefined(declarationComponentLView, 'Missing declarationComponentLView');
+    if (declarationComponentLView !== insertionComponentLView) {
       // At this point the declaration-component is not same as insertion-component and we are in
       // on-push mode, this means that this is a transplanted view. Mark the declared lView as
-      // having
-      // transplanted views so that those views can participate in CD.
+      // having transplanted views so that those views can participate in CD.
       declarationContainer[ACTIVE_INDEX] |= ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS;
     }
   }
@@ -295,8 +311,38 @@ function detachMovedView(declarationContainer: LContainer, lView: LView) {
                    declarationContainer[MOVED_VIEWS],
                    'A projected view should belong to a non-empty projected views collection');
   const movedViews = declarationContainer[MOVED_VIEWS] !;
-  const declaredViewIndex = movedViews.indexOf(lView);
-  movedViews.splice(declaredViewIndex, 1);
+  const declarationViewIndex = movedViews.indexOf(lView);
+  const insertionLContainer = lView[PARENT] as LContainer;
+  ngDevMode && assertLContainer(insertionLContainer);
+
+  const declarationIsCheckAlways =
+      lView[DECLARATION_COMPONENT_VIEW][FLAGS] & LViewFlags.CheckAlways;
+  if (declarationIsCheckAlways) {
+    insertionLContainer[CONTAINS_TRANSPLANTED_VIEW_COUNT]--;
+    let viewOrContainer: LView|LContainer = insertionLContainer;
+    let parent: LView|null = insertionLContainer[PARENT];
+    // If the view no longer has any transplanted ContainsAlways descendants, decrement the counter
+    // on the parent.
+    while (parent !== null && viewOrContainer[CONTAINS_TRANSPLANTED_VIEW_COUNT] === 0) {
+      parent[CONTAINS_TRANSPLANTED_VIEW_COUNT]--;
+      viewOrContainer = parent;
+      parent = getLViewParent(parent);
+    }
+  } else if (lView[FLAGS] & LViewFlags.Dirty) {
+    // Transplanted view was dirty and never got checked. Decrement ContainsDirty counter
+    insertionLContainer[CONTAINS_TRANSPLANTED_VIEW_COUNT] -= 1 << 16;
+    let viewOrContainer: LView|LContainer = insertionLContainer;
+    let parent: LView|null = insertionLContainer[PARENT];
+    // If the view no longer has any transplanted ContainsAlways descendants, decrement the counter
+    // on the parent.
+    while (parent !== null && ((viewOrContainer[CONTAINS_TRANSPLANTED_VIEW_COUNT] >> 16) === 0)) {
+      parent[CONTAINS_TRANSPLANTED_VIEW_COUNT] -= 1 << 16;
+      viewOrContainer = parent;
+      parent = getLViewParent(parent);
+    }
+  }
+
+  movedViews.splice(declarationViewIndex, 1);
 }
 
 /**
