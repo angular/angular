@@ -9,17 +9,15 @@
 import {WorkspaceProject} from '@angular-devkit/core/src/experimental/workspace';
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
 import {Schema as ComponentOptions} from '@schematics/angular/component/schema';
-import {addImportToModule} from '@schematics/angular/utility/ast-utils';
 import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace} from '@schematics/angular/utility/config';
 import {findModuleFromOptions as internalFindModule} from '@schematics/angular/utility/find-module';
-import {getAppModulePath} from '@schematics/angular/utility/ng-ast-utils';
+import * as ts from 'typescript';
 import {getProjectMainFile} from './project-main-file';
-import {ts, typescript} from './version-agnostic-typescript';
-
+import {addImportToModule, getAppModulePath} from './vendored-ast-utils';
 
 /** Reads file given path and returns TypeScript source file. */
-export function getSourceFile(host: Tree, path: string): typescript.SourceFile {
+export function parseSourceFile(host: Tree, path: string): ts.SourceFile {
   const buffer = host.read(path);
   if (!buffer) {
     throw new SchematicsException(`Could not find file for path: ${path}`);
@@ -44,7 +42,7 @@ export function addModuleImportToRootModule(host: Tree, moduleName: string, src:
 export function addModuleImportToModule(host: Tree, modulePath: string, moduleName: string,
                                         src: string) {
 
-  const moduleSource = getSourceFile(host, modulePath);
+  const moduleSource = parseSourceFile(host, modulePath);
 
   if (!moduleSource) {
     throw new SchematicsException(`Module not found: ${modulePath}`);

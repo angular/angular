@@ -23,11 +23,6 @@ import {
 } from '@angular-devkit/schematics';
 import {FileSystemSchematicContext} from '@angular-devkit/schematics/tools';
 import {Schema as ComponentOptions, Style} from '@schematics/angular/component/schema';
-import {
-  addDeclarationToModule,
-  addEntryComponentToModule,
-  addExportToModule,
-} from '@schematics/angular/utility/ast-utils';
 import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace} from '@schematics/angular/utility/config';
 import {buildRelativePath, findModuleFromOptions} from '@schematics/angular/utility/find-module';
@@ -36,9 +31,14 @@ import {buildDefaultPath} from '@schematics/angular/utility/project';
 import {validateHtmlSelector, validateName} from '@schematics/angular/utility/validation';
 import {readFileSync, statSync} from 'fs';
 import {dirname, join, resolve} from 'path';
+import * as ts from 'typescript';
+import {
+  addDeclarationToModule,
+  addEntryComponentToModule,
+  addExportToModule,
+} from '../utils/vendored-ast-utils';
 import {getProjectFromWorkspace} from './get-project';
 import {getDefaultComponentOptions} from './schematic-options';
-import {ts} from './version-agnostic-typescript';
 
 /**
  * List of style extensions which are CSS compatible. All supported CLI style extensions can be

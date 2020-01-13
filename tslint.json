@@ -181,7 +181,8 @@
       "\\w+Rule.ts": "camel-case",
       ".*": "kebab-case"
     }],
-    "no-unescaped-html-tag": true
+    "no-unescaped-html-tag": true,
+    "import-blacklist": [true, ["^@schematics/angular/.*(ast).*"]]
   },
   "linterOptions": {
     "exclude": [

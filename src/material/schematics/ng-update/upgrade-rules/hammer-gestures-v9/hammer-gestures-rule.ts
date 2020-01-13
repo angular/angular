@@ -22,12 +22,10 @@ import {
   PostMigrationAction,
   ResolvedResource,
   TargetVersion,
-} from '@angular/cdk/schematics';
-import {
   addSymbolToNgModuleMetadata,
   getDecoratorMetadata,
   getMetadataField
-} from '@schematics/angular/utility/ast-utils';
+} from '@angular/cdk/schematics';
 import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace} from '@schematics/angular/utility/config';
 import {WorkspaceProject} from '@schematics/angular/utility/workspace-models';

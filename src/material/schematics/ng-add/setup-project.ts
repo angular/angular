@@ -9,13 +9,13 @@
 import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {
   addModuleImportToRootModule,
+  getAppModulePath,
   getProjectFromWorkspace,
   getProjectMainFile,
   getProjectStyleFile,
   hasNgModuleImport,
 } from '@angular/cdk/schematics';
 import {getWorkspace} from '@schematics/angular/utility/config';
-import {getAppModulePath} from '@schematics/angular/utility/ng-ast-utils';
 import {addFontsToIndex} from './fonts/material-fonts';
 import {Schema} from './schema';
 import {addThemeToAppStyles, addTypographyClass} from './theming/theming';
