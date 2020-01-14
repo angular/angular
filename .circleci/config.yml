@@ -682,16 +682,6 @@ jobs:
       - run: yarn karma start ./karma-js.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
       - run: ./scripts/saucelabs/stop-tunnel.sh
 
-  legacy-misc-tests:
-    executor: default-executor
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - run: yarn gulp check-cycle
-      # TODO: disabled because the Bazel packages-dist does not seem to have map files for
-      # the ESM5/ES2015 output. See: https://github.com/angular/angular/issues/27966
-      # - run: yarn gulp source-map-test
-
   # Job to run unit tests from angular/components. Needs a browser since all
   # component unit tests assume they're running in the browser environment.
   material-unit-tests:
@@ -802,9 +792,6 @@ workflows:
       - build-ivy-npm-packages:
           requires:
             - setup
-      - legacy-misc-tests:
-          requires:
-            - build-npm-packages
       - legacy-unit-tests-saucelabs:
           requires:
             - setup
@@ -879,7 +866,6 @@ workflows:
             - build-npm-packages
             - build-ivy-npm-packages
             - legacy-unit-tests-saucelabs
-            - legacy-misc-tests
       - material-unit-tests:
           requires:
             - build-npm-packages
