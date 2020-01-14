@@ -65,9 +65,6 @@ export const DEFAULT_WIDTH = '500px';
 })
 export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   private _eventManager = new MapEventManager();
-
-  /** Whether we're currently rendering inside a browser. */
-  private _isBrowser: boolean;
   private _googleMapChanges: Observable<google.maps.Map>;
 
   private readonly _options = new BehaviorSubject<google.maps.MapOptions>(DEFAULT_OPTIONS);
@@ -77,6 +74,9 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   private readonly _destroy = new Subject<void>();
   private _mapEl: HTMLElement;
   _googleMap: UpdatedGoogleMap;
+
+  /** Whether we're currently rendering inside a browser. */
+  _isBrowser: boolean;
 
   @Input() height: string | number = DEFAULT_HEIGHT;
 

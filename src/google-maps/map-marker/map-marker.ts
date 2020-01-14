@@ -239,19 +239,21 @@ export class MapMarker implements OnInit, OnDestroy {
   constructor(private readonly _googleMap: GoogleMap) {}
 
   ngOnInit() {
-    const combinedOptionsChanges = this._combineOptions();
+    if (this._googleMap._isBrowser) {
+      const combinedOptionsChanges = this._combineOptions();
 
-    combinedOptionsChanges.pipe(take(1)).subscribe(options => {
-      this._marker = new google.maps.Marker(options);
-      this._marker.setMap(this._googleMap._googleMap);
-      this._eventManager.setTarget(this._marker);
-    });
+      combinedOptionsChanges.pipe(take(1)).subscribe(options => {
+        this._marker = new google.maps.Marker(options);
+        this._marker.setMap(this._googleMap._googleMap);
+        this._eventManager.setTarget(this._marker);
+      });
 
-    this._watchForOptionsChanges();
-    this._watchForTitleChanges();
-    this._watchForPositionChanges();
-    this._watchForLabelChanges();
-    this._watchForClickableChanges();
+      this._watchForOptionsChanges();
+      this._watchForTitleChanges();
+      this._watchForPositionChanges();
+      this._watchForLabelChanges();
+      this._watchForClickableChanges();
+    }
   }
 
   ngOnDestroy() {

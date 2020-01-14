@@ -1,5 +1,6 @@
 export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
     _googleMap: UpdatedGoogleMap;
+    _isBrowser: boolean;
     boundsChanged: Observable<void>;
     center: google.maps.LatLngLiteral | google.maps.LatLng;
     centerChanged: Observable<void>;

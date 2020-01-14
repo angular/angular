@@ -90,14 +90,16 @@ export class MapInfoWindow implements OnInit, OnDestroy {
               private _elementRef: ElementRef<HTMLElement>) {}
 
   ngOnInit() {
-    this._combineOptions().pipe(takeUntil(this._destroy)).subscribe(options => {
-      if (this._infoWindow) {
-        this._infoWindow.setOptions(options);
-      } else {
-        this._infoWindow = new google.maps.InfoWindow(options);
-        this._eventManager.setTarget(this._infoWindow);
-      }
-    });
+    if (this._googleMap._isBrowser) {
+      this._combineOptions().pipe(takeUntil(this._destroy)).subscribe(options => {
+        if (this._infoWindow) {
+          this._infoWindow.setOptions(options);
+        } else {
+          this._infoWindow = new google.maps.InfoWindow(options);
+          this._eventManager.setTarget(this._infoWindow);
+        }
+      });
+    }
   }
 
   ngOnDestroy() {
@@ -147,7 +149,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
    */
   open(anchor?: MapMarker) {
     const marker = anchor ? anchor._marker : undefined;
-    if (this._googleMap._googleMap) {
+    if (this._googleMap._googleMap && this._infoWindow) {
       this._elementRef.nativeElement.style.display = '';
       this._infoWindow!.open(this._googleMap._googleMap, marker);
     }

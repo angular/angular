@@ -132,16 +132,18 @@ export class MapPolyline implements OnInit, OnDestroy {
   constructor(private readonly _map: GoogleMap) {}
 
   ngOnInit() {
-    const combinedOptionsChanges = this._combineOptions();
+    if (this._map._isBrowser) {
+      const combinedOptionsChanges = this._combineOptions();
 
-    combinedOptionsChanges.pipe(take(1)).subscribe(options => {
-      this._polyline = new google.maps.Polyline(options);
-      this._polyline.setMap(this._map._googleMap);
-      this._eventManager.setTarget(this._polyline);
-    });
+      combinedOptionsChanges.pipe(take(1)).subscribe(options => {
+        this._polyline = new google.maps.Polyline(options);
+        this._polyline.setMap(this._map._googleMap);
+        this._eventManager.setTarget(this._polyline);
+      });
 
-    this._watchForOptionsChanges();
-    this._watchForPathChanges();
+      this._watchForOptionsChanges();
+      this._watchForPathChanges();
+    }
   }
 
   ngOnDestroy() {
@@ -151,7 +153,9 @@ export class MapPolyline implements OnInit, OnDestroy {
     for (let listener of this._listeners) {
       listener.remove();
     }
-    this._polyline.setMap(null);
+    if (this._polyline) {
+      this._polyline.setMap(null);
+    }
   }
 
   /**
