@@ -36,7 +36,7 @@ export function init(moduleRef: NgModuleRef<StylingModule>) {
     appRef.tick();
   }
 
-  function detectChanges() {
+  function update() {
     component.exp = component.exp === 'bar' ? 'baz' : 'bar';
     appRef.tick();
   }
@@ -54,12 +54,12 @@ export function init(moduleRef: NgModuleRef<StylingModule>) {
   }
 
   bindAction('#create', () => create(select.selectedIndex));
-  bindAction('#detectChanges', detectChanges);
+  bindAction('#update', update);
   bindAction('#destroy', destroy);
-  bindAction('#profile', profile(() => {
+  bindAction('#profile_update', profile(() => {
                for (let i = 0; i < 10; i++) {
-                 detectChanges();
+                 update();
                }
-             }, () => {}, 'detect changes'));
+             }, () => {}, 'update and detect changes'));
   bindAction('#modify', modifyExternally);
 }

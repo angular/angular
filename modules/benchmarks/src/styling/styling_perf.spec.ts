@@ -22,13 +22,13 @@ const SCENARIOS = [
 describe('styling benchmark spec', () => {
   afterEach(verifyNoBrowserErrors);
 
-  it('should render and interact to change detection', () => {
+  it('should render and interact to update and detect changes', () => {
     openBrowser({url: '/', ignoreBrowserSynchronization: true});
     create();
     const items = element.all(by.css('styling-bindings button'));
     expect(items.count()).toBe(2000);
     expect(items.first().getAttribute('title')).toBe('bar');
-    detectChanges();
+    update();
     expect(items.first().getAttribute('title')).toBe('baz');
   });
 
@@ -36,8 +36,8 @@ describe('styling benchmark spec', () => {
   SCENARIOS.forEach(({optionIndex, id}) => {
     describe(id, () => {
       it('should run detect_changes benchmark', done => {
-        runStylingBenchmark(`styling.${id}.detect_changes`, {
-          work: () => detectChanges(),
+        runStylingBenchmark(`styling.${id}.update`, {
+          work: () => update(),
           prepare: () => {
             // Switch to the current scenario by clicking the corresponding option.
             element.all(by.tagName('option')).get(optionIndex).click();
@@ -54,8 +54,8 @@ function create() {
   $('#create').click();
 }
 
-function detectChanges() {
-  $('#detectChanges').click();
+function update() {
+  $('#update').click();
 }
 
 /**
