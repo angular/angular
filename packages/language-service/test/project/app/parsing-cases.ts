@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, EventEmitter, Input, Output} from '@angular/core';
+import {Component, Directive, EventEmitter, Input, OnChanges, Output, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {Hero} from './app.component';
 
@@ -97,6 +97,24 @@ export class AsyncForUsingComponent {
     <test-comp #test2></test-comp>`,
 })
 export class References {
+}
+
+class CounterDirectiveContext<T> {
+  constructor(public $implicit: T) {}
+}
+
+@Directive({selector: '[counterOf]'})
+export class CounterDirective implements OnChanges {
+  // Object does not have an "$implicit" property.
+  constructor(private container: ViewContainerRef, private template: TemplateRef<Object>) {}
+
+  @Input('counterOf') counter: number = 0;
+  ngOnChanges(_changes: SimpleChanges) {
+    this.container.clear();
+    for (let i = 0; i < this.counter; ++i) {
+      this.container.createEmbeddedView(this.template, new CounterDirectiveContext<number>(i + 1));
+    }
+  }
 }
 
 /**

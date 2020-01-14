@@ -252,81 +252,33 @@ describe('diagnostics', () => {
 
   describe('embedded templates', () => {
     it('should suggest refining a template context missing a property', () => {
-      mockHost.override(APP_COMPONENT, `
-        import {Directive, Component, Input, NgModule, OnChanges, ViewContainerRef, TemplateRef, SimpleChanges} from '@angular/core';
-
-        @Directive({
-          selector: '[counterOf]'
-        })
-        export class CounterDirective implements OnChanges {
-          // Object does not have an "$implicit" property.
-          constructor(private container: ViewContainerRef, private template: TemplateRef<Object>) {}
-        
-          @Input('counterOf') counter: number = 0;
-          ngOnChanges(changes: SimpleChanges) {}
-        }
-
-        @Component({
-          template: '<button type="button" ~{start-emb}*counter="let page of pageCount"~{end-emb}></button>',
-        })
-        export class TestComponent {
-          pageCount = [1, 2, 3, 4];
-        }
-
-        @NgModule({
-          declarations: [
-            TestComponent,
-            CounterDirective,
-          ]
-        })
-        export class TestModule {}
-      `);
-      const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
-      expect(tsDiags).toEqual([]);
-
-      const diags = ngLS.getSemanticDiagnostics(APP_COMPONENT);
+      mockHost.override(
+          TEST_TEMPLATE,
+          `<button type="button" ~{start-emb}*counter="let hero of heroes"~{end-emb}></button>`);
+      const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
       expect(diags.length).toBe(1);
-      const {file, messageText, start, length} = diags[0];
-      expect(file !.fileName).toBe(APP_COMPONENT);
+      const {messageText, start, length} = diags[0];
       expect(messageText)
           .toBe(
               `The template context of 'CounterDirective' does not define an implicit value.\n` +
                   `If the context type is a base type, consider refining it to a more specific type.`, );
 
-      const span = mockHost.getLocationMarkerFor(APP_COMPONENT, 'emb');
+      const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'emb');
       expect(start).toBe(span.start);
       expect(length).toBe(span.length);
     });
 
     it('should report an unknown context reference', () => {
-      mockHost.override(APP_COMPONENT, `
-        import {CommonModule} from '@angular/common';
-        import {Component, NgModule} from '@angular/core';
-
-        @Component({
-          template: '<div ~{start-emb}*ngFor="let person of people; let e = even_1"~{end-emb}></div>',
-        })
-        export class TestComponent {
-          people: string[] = [];
-        }
-
-        @NgModule({
-          imports: [CommonModule],
-          declarations: [TestComponent]
-        })
-        export class TestModule {}
-      `);
-      const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
-      expect(tsDiags).toEqual([]);
-
-      const diags = ngLS.getSemanticDiagnostics(APP_COMPONENT);
+      mockHost.override(
+          TEST_TEMPLATE,
+          `<div ~{start-emb}*ngFor="let hero of heroes; let e = even_1"~{end-emb}></div>`);
+      const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
       expect(diags.length).toBe(1);
-      const {file, messageText, start, length} = diags[0];
-      expect(file !.fileName).toBe(APP_COMPONENT);
+      const {messageText, start, length} = diags[0];
       expect(messageText)
           .toBe(`The template context of 'NgForOf' does not define a member called 'even_1'`);
 
-      const span = mockHost.getLocationMarkerFor(APP_COMPONENT, 'emb');
+      const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'emb');
       expect(start).toBe(span.start);
       expect(length).toBe(span.length);
     });

@@ -33,6 +33,7 @@ import * as ParsingCases from './parsing-cases';
     ParsingCases.CaseIncompleteOpen,
     ParsingCases.CaseMissingClosing,
     ParsingCases.CaseUnknown,
+    ParsingCases.CounterDirective,
     ParsingCases.EmptyInterpolation,
     ParsingCases.NoValueAttribute,
     ParsingCases.NumberModel,
