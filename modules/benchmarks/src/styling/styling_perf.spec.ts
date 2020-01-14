@@ -16,7 +16,8 @@ const SCENARIOS = [
   {optionIndex: 2, id: 'static_class_with_interpolation'}, {optionIndex: 3, id: 'class_binding'},
   {optionIndex: 4, id: 'static_class_and_class_binding'},
   {optionIndex: 5, id: 'static_class_and_ngclass_binding'},
-  {optionIndex: 6, id: 'static_class_and_ngstyle_binding_and_style_binding'}
+  {optionIndex: 6, id: 'static_class_and_ngstyle_binding_and_style_binding'},
+  {optionIndex: 7, id: 'static_style'}
 ];
 
 describe('styling benchmark spec', () => {
