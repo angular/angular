@@ -1,4 +1,5 @@
 load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
 
 # Test that should only be run in node
 NODE_ONLY = [
@@ -9,6 +10,12 @@ NODE_ONLY = [
 UTILS = [
     "aot/test_util.ts",
 ]
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/compiler/index.js",
+    deps = ["//packages/compiler"],
+)
 
 ts_library(
     name = "test_utils",
