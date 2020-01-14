@@ -44,6 +44,7 @@ runInEachFileSystem(() => {
         const handler = jasmine.createSpyObj<DecoratorHandlerWithResolve>('TestDecoratorHandler', [
           'detect',
           'analyze',
+          'register',
           'resolve',
           'compile',
         ]);
@@ -388,6 +389,10 @@ runInEachFileSystem(() => {
           analyzer.analyzeProgram();
           expect(diagnosticLogs.length).toEqual(1);
           expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999999}));
+          expect(testHandler.analyze).toHaveBeenCalled();
+          expect(testHandler.register).not.toHaveBeenCalled();
+          expect(testHandler.resolve).not.toHaveBeenCalled();
+          expect(testHandler.compile).not.toHaveBeenCalled();
         });
 
         it('should report resolve diagnostics to the `diagnosticHandler` callback', () => {
@@ -406,6 +411,10 @@ runInEachFileSystem(() => {
           analyzer.analyzeProgram();
           expect(diagnosticLogs.length).toEqual(1);
           expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999998}));
+          expect(testHandler.analyze).toHaveBeenCalled();
+          expect(testHandler.register).toHaveBeenCalled();
+          expect(testHandler.resolve).toHaveBeenCalled();
+          expect(testHandler.compile).not.toHaveBeenCalled();
         });
       });
 

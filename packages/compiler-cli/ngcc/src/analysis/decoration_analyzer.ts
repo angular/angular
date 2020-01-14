@@ -17,8 +17,7 @@ import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, Inj
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {ClassDeclaration} from '../../../src/ngtsc/reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
-import {resolveTrait} from '../../../src/ngtsc/transform';
-import {CompileResult, DecoratorHandler, TraitState} from '../../../src/ngtsc/transform';
+import {CompileResult, DecoratorHandler, TraitState, resolveTrait} from '../../../src/ngtsc/transform';
 import {NgccClassSymbol, NgccReflectionHost} from '../host/ngcc_host';
 import {Migration} from '../migrations/migration';
 import {MissingInjectableMigration} from '../migrations/missing_injectable_migration';
