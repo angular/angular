@@ -32,16 +32,34 @@ describe('styling benchmark spec', () => {
     expect(items.first().getAttribute('title')).toBe('baz');
   });
 
+  it('should render and run noop change detection', () => {
+    openBrowser({url: '/', ignoreBrowserSynchronization: true});
+    create();
+    const items = element.all(by.css('styling-bindings button'));
+    expect(items.count()).toBe(2000);
+    expect(items.first().getAttribute('title')).toBe('bar');
+    detectChanges();
+    expect(items.first().getAttribute('title')).toBe('bar');
+  });
+
   // Create benchmarks for each possible test scenario.
   SCENARIOS.forEach(({optionIndex, id}) => {
     describe(id, () => {
-      it('should run detect_changes benchmark', done => {
+      it('should run update benchmark', done => {
         runStylingBenchmark(`styling.${id}.update`, {
           work: () => update(),
           prepare: () => {
-            // Switch to the current scenario by clicking the corresponding option.
-            element.all(by.tagName('option')).get(optionIndex).click();
-            // Create the elements with styling.
+            selectScenario(optionIndex);
+            create();
+          },
+        }).then(done, done.fail);
+      });
+
+      it('should run detect changes benchmark', done => {
+        runStylingBenchmark(`styling.${id}.noop_cd`, {
+          work: () => detectChanges(),
+          prepare: () => {
+            selectScenario(optionIndex);
             create();
           },
         }).then(done, done.fail);
@@ -50,12 +68,21 @@ describe('styling benchmark spec', () => {
   });
 });
 
+function selectScenario(optionIndex: number) {
+  // Switch to the current scenario by clicking the corresponding option.
+  element.all(by.tagName('option')).get(optionIndex).click();
+}
+
 function create() {
   $('#create').click();
 }
 
 function update() {
   $('#update').click();
+}
+
+function detectChanges() {
+  $('#detect_changes').click();
 }
 
 /**
