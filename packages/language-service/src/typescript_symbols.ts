@@ -318,9 +318,11 @@ class TypeWrapper implements Symbol {
 
     const typeReference = (this.tsType as ts.TypeReference);
     let typeArguments: ReadonlyArray<ts.Type>|undefined;
-    if (this.context.checker.getTypeArguments)
+    if (this.context.checker.getTypeArguments) {
       typeArguments = this.context.checker.getTypeArguments(typeReference);
-    typeArguments = typeReference.typeArguments;
+    } else {
+      typeArguments = typeReference.typeArguments;
+    }
     if (!typeArguments) return undefined;
     return typeArguments.map(ta => new TypeWrapper(ta, this.context));
   }
