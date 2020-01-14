@@ -19,9 +19,10 @@ import {BrowserModule} from '@angular/platform-browser';
     <ng-template #t4><button class="foo" [class.bar]="exp ==='bar'"></button></ng-template>
     <ng-template #t5><button class="foo" [ngClass]="{bar: exp ==='bar'}"></button></ng-template>
     <ng-template #t6><button class="foo" [ngStyle]="staticStyle" [style.background-color]="exp"></button></ng-template>
+    <ng-template #t7><button style="color: red"></button></ng-template>
     
     <div>
-      <ng-template ngFor [ngForOf]="data" [ngForTemplate]="getTplRef(t0, t1, t2, t3, t4, t5, t6)"></ng-template>
+      <ng-template ngFor [ngForOf]="data" [ngForTemplate]="getTplRef(t0, t1, t2, t3, t4, t5, t6, t7)"></ng-template>
     </div>
   `
 })
