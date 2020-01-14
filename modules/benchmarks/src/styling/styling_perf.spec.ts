@@ -45,6 +45,16 @@ describe('styling benchmark spec', () => {
   // Create benchmarks for each possible test scenario.
   SCENARIOS.forEach(({optionIndex, id}) => {
     describe(id, () => {
+      it('should run create benchmark', done => {
+        runStylingBenchmark(`styling.${id}.create`, {
+          work: () => create(),
+          prepare: () => {
+            selectScenario(optionIndex);
+            destroy();
+          },
+        }).then(done, done.fail);
+      });
+
       it('should run update benchmark', done => {
         runStylingBenchmark(`styling.${id}.update`, {
           work: () => update(),
@@ -75,6 +85,10 @@ function selectScenario(optionIndex: number) {
 
 function create() {
   $('#create').click();
+}
+
+function destroy() {
+  $('#destroy').click();
 }
 
 function update() {
