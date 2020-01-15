@@ -49,6 +49,12 @@
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
   version "9.0.0-rc.1"
 
+"@angular/platform-server@file:../../dist/packages-dist/platform-server":
+  version "9.0.0-rc.1"
+  dependencies:
+    domino "^2.1.2"
+    xhr2 "^0.1.4"
+
 "@angular/router@file:../../dist/packages-dist/router":
   version "9.0.0-rc.1"
 
@@ -852,6 +858,11 @@ dev-ip@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/dev-ip/-/dev-ip-1.0.1.tgz#a76a3ed1855be7a012bb8ac16cb80f3c00dc28f0"
   integrity sha1-p2o+0YVb56ASu4rBbLgPPADcKPA=
+
+domino@^2.1.2:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/domino/-/domino-2.1.4.tgz#78922e7fab7c610f35792b6c745b7962d342e9c4"
+  integrity sha512-l70mlQ7IjPKC8kT7GljQXJZmt5OqFL+RE91ik5y5WWQtsd9wP8R7gpFnNu96fK5MqAAZRXfLLsnzKtkty5fWGQ==
 
 easy-extender@^2.3.4:
   version "2.3.4"
@@ -3478,6 +3489,11 @@ ws@~3.3.1:
     async-limiter "~1.0.0"
     safe-buffer "~5.1.0"
     ultron "~1.1.0"
+
+xhr2@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/xhr2/-/xhr2-0.1.4.tgz#7f87658847716db5026323812f818cadab387a5f"
+  integrity sha1-f4dliEdxbbUCYyOBL4GMras4el8=
 
 xml2js@^0.4.17:
   version "0.4.19"

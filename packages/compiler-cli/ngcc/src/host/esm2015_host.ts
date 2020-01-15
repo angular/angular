@@ -50,7 +50,7 @@ export const CONSTRUCTOR_PARAMS = 'ctorParameters' as ts.__String;
  */
 export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements NgccReflectionHost {
   /**
-   * A mapping from source declarations typings declarations, which are both publicly exported.
+   * A mapping from source declarations to typings declarations, which are both publicly exported.
    *
    * There should be one entry for every public export visible from the root file of the source
    * tree. Note that by definition the key and value declarations will not be in the same TS
@@ -1573,14 +1573,14 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       Map<ts.Declaration, ts.Declaration> {
     const declarationMap = new Map<ts.Declaration, ts.Declaration>();
     const dtsDeclarationMap = new Map<string, ts.Declaration>();
-    const dtsFiles = getNonRootFiles(dts);
     const typeChecker = dts.program.getTypeChecker();
+
+    const dtsFiles = getNonRootPackageFiles(dts);
     for (const dtsFile of dtsFiles) {
-      if (isWithinPackage(dts.package, dtsFile)) {
-        this.collectDtsExportedDeclarations(dtsDeclarationMap, dtsFile, typeChecker);
-      }
+      this.collectDtsExportedDeclarations(dtsDeclarationMap, dtsFile, typeChecker);
     }
-    const srcFiles = getNonRootFiles(src);
+
+    const srcFiles = getNonRootPackageFiles(src);
     for (const srcFile of srcFiles) {
       this.collectSrcExportedDeclarations(declarationMap, dtsDeclarationMap, srcFile);
     }
@@ -2070,7 +2070,8 @@ function getRootFileOrFail(bundle: BundleProgram): ts.SourceFile {
   return rootFile;
 }
 
-function getNonRootFiles(bundle: BundleProgram): ts.SourceFile[] {
+function getNonRootPackageFiles(bundle: BundleProgram): ts.SourceFile[] {
   const rootFile = bundle.program.getSourceFile(bundle.path);
-  return bundle.program.getSourceFiles().filter(f => f !== rootFile);
+  return bundle.program.getSourceFiles().filter(
+      f => (f !== rootFile) && isWithinPackage(bundle.package, f));
 }
