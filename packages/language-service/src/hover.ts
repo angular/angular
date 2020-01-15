@@ -10,7 +10,7 @@ import {CompileSummaryKind, StaticSymbol} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AstResult} from './common';
-import {locateSymbol} from './locate_symbol';
+import {locateSymbols} from './locate_symbol';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 import {findTightestNode} from './utils';
@@ -32,10 +32,11 @@ const SYMBOL_INTERFACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.inter
  */
 export function getHover(info: AstResult, position: number, host: Readonly<TypeScriptServiceHost>):
     ts.QuickInfo|undefined {
-  const symbolInfo = locateSymbol(info, position);
+  const symbolInfo = locateSymbols(info, position)[0];
   if (!symbolInfo) {
     return;
   }
+
   const {symbol, span, compileTypeSummary} = symbolInfo;
   const textSpan = {start: span.start, length: span.end - span.start};
 
