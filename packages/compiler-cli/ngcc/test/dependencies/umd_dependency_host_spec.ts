@@ -26,7 +26,7 @@ runInEachFileSystem(() => {
       host = new UmdDependencyHost(fs, new ModuleResolver(fs));
     });
 
-    describe('getDependencies()', () => {
+    describe('collectDependencies()', () => {
       it('should not generate a TS AST if the source does not contain any require calls', () => {
         spyOn(ts, 'createSourceFile');
         host.collectDependencies(_('/no/imports/or/re-exports/index.js'), createDependencyInfo());
