@@ -3552,6 +3552,58 @@ runInEachFileSystem(os => {
       });
     });
 
+    // Run checks that are present in preanalysis phase in both sync and async mode, to make sure
+    // the error messages are consistently thrown from `analyzeSync` and `analyzeAsync` functions.
+    ['sync', 'async'].forEach(mode => {
+      describe(`preanalysis phase checks [${mode}]`, () => {
+        let driveDiagnostics: () => Promise<ReadonlyArray<ts.Diagnostic>>;
+        beforeEach(() => {
+          if (mode === 'async') {
+            env.enablePreloading();
+            driveDiagnostics = () => env.driveDiagnosticsAsync();
+          } else {
+            driveDiagnostics = () => Promise.resolve(env.driveDiagnostics());
+          }
+        });
+
+        it('should throw if @Component is missing a template', async() => {
+          env.write('test.ts', `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'test',
+            })
+            export class TestCmp {}
+          `);
+
+          const diags = await driveDiagnostics();
+          expect(diags[0].messageText).toBe('component is missing a template');
+          expect(diags[0].file !.fileName).toContain('test.ts');
+          expect(diags[0].start).toBeDefined();
+          expect(diags[0].length).toBeDefined();
+        });
+
+        it('should throw if `styleUrls` is defined incorrectly in @Component', async() => {
+          env.write('test.ts', `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'test',
+              template: '...',
+              styleUrls: '...'
+            })
+            export class TestCmp {}
+          `);
+
+          const diags = await driveDiagnostics();
+          expect(diags[0].messageText).toBe('styleUrls must be an array of strings');
+          expect(diags[0].file !.fileName).toContain('test.ts');
+          expect(diags[0].start).toBeDefined();
+          expect(diags[0].length).toBeDefined();
+        });
+      });
+    });
+
     describe('flat module indices', () => {
       it('should generate a basic flat module index', () => {
         env.tsconfig({
