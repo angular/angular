@@ -148,8 +148,9 @@ export function getExpressionSymbol(
     },
     visitPropertyWrite(ast) {
       const receiverType = getType(ast.receiver);
+      const {start} = ast.span;
       symbol = receiverType && receiverType.members().get(ast.name);
-      span = ast.span;
+      span = {start, end: start + ast.name.length};
     },
     visitQuote(ast) {},
     visitSafeMethodCall(ast) {

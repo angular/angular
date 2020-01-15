@@ -12,7 +12,7 @@ import {AstResult} from './common';
 import {getExpressionScope} from './expression_diagnostics';
 import {getExpressionSymbol} from './expressions';
 import {Definition, DirectiveKind, Span, Symbol} from './types';
-import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getPathToNodeAtPosition, inSpan, offsetSpan, spanOf} from './utils';
+import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getPathToNodeAtPosition, inSpan, isNarrower, offsetSpan, spanOf} from './utils';
 
 export interface SymbolInfo {
   symbol: Symbol;
@@ -21,122 +21,136 @@ export interface SymbolInfo {
 }
 
 /**
- * Traverse the template AST and locate the Symbol at the specified `position`.
+ * Traverse the template AST and locate the Symbol(s) at the specified `position`.
  * @param info Ast and Template Source
  * @param position location to look for
  */
-export function locateSymbol(info: AstResult, position: number): SymbolInfo|undefined {
+export function locateSymbols(info: AstResult, position: number): SymbolInfo[] {
   const templatePosition = position - info.template.span.start;
   const path = findTemplateAstAt(info.templateAst, templatePosition);
-  let compileTypeSummary: CompileTypeSummary|undefined = undefined;
-  if (path.tail) {
-    let symbol: Symbol|undefined = undefined;
-    let span: Span|undefined = undefined;
-    const attributeValueSymbol = (ast: AST, inEvent: boolean = false): boolean => {
-      const attribute = findAttribute(info, position);
-      if (attribute) {
-        if (inSpan(templatePosition, spanOf(attribute.valueSpan))) {
-          const dinfo = diagnosticInfoFromTemplateInfo(info);
-          const scope = getExpressionScope(dinfo, path);
-          if (attribute.valueSpan) {
-            const result = getExpressionSymbol(scope, ast, templatePosition, info.template.query);
-            if (result) {
-              symbol = result.symbol;
-              const expressionOffset = attribute.valueSpan.start.offset;
-              span = offsetSpan(result.span, expressionOffset);
-            }
-          }
-          return true;
-        }
-      }
-      return false;
-    };
-    path.tail.visit(
-        {
-          visitNgContent(ast) {},
-          visitEmbeddedTemplate(ast) {},
-          visitElement(ast) {
-            const component = ast.directives.find(d => d.directive.isComponent);
-            if (component) {
-              compileTypeSummary = component.directive;
-              symbol = info.template.query.getTypeSymbol(compileTypeSummary.type.reference);
-              symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.COMPONENT);
-              span = spanOf(ast);
-            } else {
-              // Find a directive that matches the element name
-              const directive = ast.directives.find(
-                  d => d.directive.selector != null && d.directive.selector.indexOf(ast.name) >= 0);
-              if (directive) {
-                compileTypeSummary = directive.directive;
-                symbol = info.template.query.getTypeSymbol(compileTypeSummary.type.reference);
-                symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.DIRECTIVE);
-                span = spanOf(ast);
-              }
-            }
-          },
-          visitReference(ast) {
-            symbol = ast.value && info.template.query.getTypeSymbol(tokenReference(ast.value));
-            span = spanOf(ast);
-          },
-          visitVariable(ast) {},
-          visitEvent(ast) {
-            if (!attributeValueSymbol(ast.handler, /* inEvent */ true)) {
-              symbol = findOutputBinding(info, path, ast);
-              symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.EVENT);
-              span = spanOf(ast);
-            }
-          },
-          visitElementProperty(ast) { attributeValueSymbol(ast.value); },
-          visitAttr(ast) {
-            const element = path.head;
-            if (!element || !(element instanceof ElementAst)) return;
-            // Create a mapping of all directives applied to the element from their selectors.
-            const matcher = new SelectorMatcher<DirectiveAst>();
-            for (const dir of element.directives) {
-              if (!dir.directive.selector) continue;
-              matcher.addSelectables(CssSelector.parse(dir.directive.selector), dir);
-            }
+  if (!path.tail) return [];
 
-            // See if this attribute matches the selector of any directive on the element.
-            const attributeSelector = `[${ast.name}=${ast.value}]`;
-            const parsedAttribute = CssSelector.parse(attributeSelector);
-            if (!parsedAttribute.length) return;
-            matcher.match(parsedAttribute[0], (_, directive) => {
-              symbol = info.template.query.getTypeSymbol(directive.directive.type.reference);
-              symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.DIRECTIVE);
-              span = spanOf(ast);
-            });
-          },
-          visitBoundText(ast) {
-            const expressionPosition = templatePosition - ast.sourceSpan.start.offset;
-            if (inSpan(expressionPosition, ast.value.span)) {
-              const dinfo = diagnosticInfoFromTemplateInfo(info);
-              const scope = getExpressionScope(dinfo, path);
-              const result =
-                  getExpressionSymbol(scope, ast.value, templatePosition, info.template.query);
-              if (result) {
-                symbol = result.symbol;
-                span = offsetSpan(result.span, ast.sourceSpan.start.offset);
-              }
-            }
-          },
-          visitText(ast) {},
-          visitDirective(ast) {
-            compileTypeSummary = ast.directive;
+  const narrowest = spanOf(path.tail);
+  const toVisit: TemplateAst[] = [];
+  while (!path.empty && isNarrower(spanOf(path.tail.sourceSpan), narrowest)) {
+    toVisit.push(path.tail);
+    path.pop();
+  }
+
+  return toVisit.map(ast => locateSymbol(ast, path, info, position))
+      .filter((sym): sym is SymbolInfo => sym !== undefined);
+}
+
+function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult, position: number):
+    SymbolInfo|undefined {
+  const templatePosition = position - info.template.span.start;
+  let compileTypeSummary: CompileTypeSummary|undefined = undefined;
+  let symbol: Symbol|undefined = undefined;
+  let span: Span|undefined = undefined;
+  const attributeValueSymbol = (ast: AST): boolean => {
+    const attribute = findAttribute(info, position);
+    if (attribute) {
+      if (inSpan(templatePosition, spanOf(attribute.valueSpan))) {
+        const dinfo = diagnosticInfoFromTemplateInfo(info);
+        const scope = getExpressionScope(dinfo, path);
+        if (attribute.valueSpan) {
+          const result = getExpressionSymbol(scope, ast, templatePosition, info.template.query);
+          if (result) {
+            symbol = result.symbol;
+            const expressionOffset = attribute.valueSpan.start.offset;
+            span = offsetSpan(result.span, expressionOffset);
+          }
+        }
+        return true;
+      }
+    }
+    return false;
+  };
+  ast.visit(
+      {
+        visitNgContent(ast) {},
+        visitEmbeddedTemplate(ast) {},
+        visitElement(ast) {
+          const component = ast.directives.find(d => d.directive.isComponent);
+          if (component) {
+            compileTypeSummary = component.directive;
             symbol = info.template.query.getTypeSymbol(compileTypeSummary.type.reference);
+            symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.COMPONENT);
             span = spanOf(ast);
-          },
-          visitDirectiveProperty(ast) {
-            if (!attributeValueSymbol(ast.value)) {
-              symbol = findInputBinding(info, templatePosition, ast);
+          } else {
+            // Find a directive that matches the element name
+            const directive = ast.directives.find(
+                d => d.directive.selector != null && d.directive.selector.indexOf(ast.name) >= 0);
+            if (directive) {
+              compileTypeSummary = directive.directive;
+              symbol = info.template.query.getTypeSymbol(compileTypeSummary.type.reference);
+              symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.DIRECTIVE);
               span = spanOf(ast);
             }
           }
         },
-        null);
-    if (symbol && span) {
-      return {symbol, span: offsetSpan(span, info.template.span.start), compileTypeSummary};
-    }
+        visitReference(ast) {
+          symbol = ast.value && info.template.query.getTypeSymbol(tokenReference(ast.value));
+          span = spanOf(ast);
+        },
+        visitVariable(ast) {},
+        visitEvent(ast) {
+          if (!attributeValueSymbol(ast.handler)) {
+            symbol = findOutputBinding(info, path, ast);
+            symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.EVENT);
+            span = spanOf(ast);
+          }
+        },
+        visitElementProperty(ast) { attributeValueSymbol(ast.value); },
+        visitAttr(ast) {
+          const element = path.head;
+          if (!element || !(element instanceof ElementAst)) return;
+          // Create a mapping of all directives applied to the element from their selectors.
+          const matcher = new SelectorMatcher<DirectiveAst>();
+          for (const dir of element.directives) {
+            if (!dir.directive.selector) continue;
+            matcher.addSelectables(CssSelector.parse(dir.directive.selector), dir);
+          }
+
+          // See if this attribute matches the selector of any directive on the element.
+          const attributeSelector = `[${ast.name}=${ast.value}]`;
+          const parsedAttribute = CssSelector.parse(attributeSelector);
+          if (!parsedAttribute.length) return;
+          matcher.match(parsedAttribute[0], (_, directive) => {
+            symbol = info.template.query.getTypeSymbol(directive.directive.type.reference);
+            symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.DIRECTIVE);
+            span = spanOf(ast);
+          });
+        },
+        visitBoundText(ast) {
+          const expressionPosition = templatePosition - ast.sourceSpan.start.offset;
+          if (inSpan(expressionPosition, ast.value.span)) {
+            const dinfo = diagnosticInfoFromTemplateInfo(info);
+            const scope = getExpressionScope(dinfo, path);
+            const result =
+                getExpressionSymbol(scope, ast.value, templatePosition, info.template.query);
+            if (result) {
+              symbol = result.symbol;
+              span = offsetSpan(result.span, ast.sourceSpan.start.offset);
+            }
+          }
+        },
+        visitText(ast) {},
+        visitDirective(ast) {
+          compileTypeSummary = ast.directive;
+          symbol = info.template.query.getTypeSymbol(compileTypeSummary.type.reference);
+          span = spanOf(ast);
+        },
+        visitDirectiveProperty(ast) {
+          if (!attributeValueSymbol(ast.value)) {
+            symbol = findInputBinding(info, templatePosition, ast);
+            span = spanOf(ast);
+          }
+        }
+      },
+      null);
+  if (symbol && span) {
+    return {symbol, span: offsetSpan(span, info.template.span.start), compileTypeSummary};
   }
 }
 

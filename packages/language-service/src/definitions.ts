@@ -9,9 +9,9 @@
 import * as path from 'path';
 import * as ts from 'typescript'; // used as value and is provided at runtime
 import {AstResult} from './common';
-import {locateSymbol} from './locate_symbol';
+import {locateSymbols} from './locate_symbol';
 import {getPropertyAssignmentFromValue, isClassDecoratorProperty} from './template';
-import {Span, TemplateSource} from './types';
+import {Span} from './types';
 import {findTightestNode} from './utils';
 
 /**
@@ -34,32 +34,39 @@ function ngSpanToTsTextSpan(span: Span): ts.TextSpan {
  */
 export function getDefinitionAndBoundSpan(
     info: AstResult, position: number): ts.DefinitionInfoAndBoundSpan|undefined {
-  const symbolInfo = locateSymbol(info, position);
-  if (!symbolInfo) {
+  const symbols = locateSymbols(info, position);
+  if (!symbols.length) {
     return;
   }
-  const textSpan = ngSpanToTsTextSpan(symbolInfo.span);
-  const {symbol} = symbolInfo;
-  const {container, definition: locations} = symbol;
-  if (!locations || !locations.length) {
-    // symbol.definition is really the locations of the symbol. There could be
-    // more than one. No meaningful info could be provided without any location.
-    return {textSpan};
+
+  let textSpan: ts.TextSpan;
+  const definitions: ts.DefinitionInfo[] = [];
+  for (const symbolInfo of symbols) {
+    const {symbol, span} = symbolInfo;
+    textSpan = ngSpanToTsTextSpan(span);
+    const {container, definition: locations} = symbol;
+    if (!locations || !locations.length) {
+      // symbol.definition is really the locations of the symbol. There could be
+      // more than one. No meaningful info could be provided without any location.
+      return {textSpan};
+    }
+    const containerKind = container ? container.kind : ts.ScriptElementKind.unknown;
+    const containerName = container ? container.name : '';
+    definitions.push(...locations.map((location) => {
+      return {
+        kind: symbol.kind as ts.ScriptElementKind,
+        name: symbol.name,
+        containerKind: containerKind as ts.ScriptElementKind,
+        containerName: containerName,
+        textSpan: ngSpanToTsTextSpan(location.span),
+        fileName: location.fileName,
+      };
+    }));
   }
-  const containerKind = container ? container.kind : ts.ScriptElementKind.unknown;
-  const containerName = container ? container.name : '';
-  const definitions = locations.map((location) => {
-    return {
-      kind: symbol.kind as ts.ScriptElementKind,
-      name: symbol.name,
-      containerKind: containerKind as ts.ScriptElementKind,
-      containerName: containerName,
-      textSpan: ngSpanToTsTextSpan(location.span),
-      fileName: location.fileName,
-    };
-  });
+
   return {
-      definitions, textSpan,
+    definitions,
+    textSpan: textSpan !,
   };
 }
 
