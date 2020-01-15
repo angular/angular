@@ -806,6 +806,14 @@
     "bio": "Kwinten is a GDE for Angular with a passion for reactive coding. He works as a software engineer for Stackblitz. He shares his passion for Angular and coding through blogposts and training sessions with the company he co-founded called Strongbrew.",
     "groups": ["GDE"]
   },
+  "doguhan": {
+    "name": "Doguhan Uluca",
+    "picture": "doguhan.jpg",
+    "twitter": "duluca",
+    "website": "https://angularforenterprise.com",
+    "bio": "Doguhan is a GDE in Angular and Web Technologies. He is the author of Angular for Enterprise-Ready Web Applications, a speaker, organizer for AngularDC, and OSS contributor. When away from a screen, he enjoys playing Go, building legos, and claims to be an avid mixologist.",
+    "groups": ["GDE"]
+  },
   "juleskremer": {
     "name": "Jules Kremer",
     "picture": "juleskremer.jpg",
