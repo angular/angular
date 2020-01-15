@@ -17,7 +17,7 @@ To execute the observable you have created and begin receiving notifications, yo
 
 Here's an example that demonstrates the basic usage model by showing how an observable could be used to provide geolocation updates.
 
-<code-example path="observables/src/geolocation.ts" header="Observe geolocation updates"></code-example>
+<code-example class="no-auto-link" path="observables/src/geolocation.ts" header="Observe geolocation updates"></code-example>
 
 ## Defining observers
 
