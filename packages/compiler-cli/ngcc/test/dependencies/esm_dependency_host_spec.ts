@@ -27,7 +27,7 @@ runInEachFileSystem(() => {
       host = new EsmDependencyHost(fs, new ModuleResolver(fs));
     });
 
-    describe('getDependencies()', () => {
+    describe('collectDependencies()', () => {
       it('should not generate a TS AST if the source does not contain any imports or re-exports',
          () => {
            spyOn(ts, 'createSourceFile');

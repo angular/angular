@@ -25,7 +25,7 @@ runInEachFileSystem(() => {
       host = new DtsDependencyHost(fs);
     });
 
-    describe('getDependencies()', () => {
+    describe('collectDependencies()', () => {
       it('should not generate a TS AST if the source does not contain any imports or re-exports',
          () => {
            spyOn(ts, 'createSourceFile');
