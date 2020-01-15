@@ -205,7 +205,7 @@ jobs:
       - *yarn_install
       - *setup_bazel_binary
 
-      - run: bazel test src/... --build_tag_filters=e2e --test_tag_filters=e2e
+      - run: bazel test src/... --build_tag_filters=e2e --test_tag_filters=e2e --build_tests_only
 
   # ------------------------------------------------------------------------------------------
   # Job that runs the unit tests on locally installed browsers (Chrome and Firefox headless).
@@ -225,7 +225,7 @@ jobs:
       - *yarn_install
       - *setup_bazel_binary
 
-      - run: bazel test src/... --build_tag_filters=-e2e --test_tag_filters=-e2e
+      - run: bazel test src/... --build_tag_filters=-e2e --test_tag_filters=-e2e --build_tests_only
 
   # ----------------------------------------------------------------------------
   # Job that runs the unit tests on Browserstack. The browsers that will be used
@@ -435,7 +435,7 @@ jobs:
     - *yarn_install_loose_lockfile
     - *setup_bazel_binary
 
-    - run: bazel test src/... --build_tag_filters=-e2e --test_tag_filters=-e2e
+    - run: bazel test src/... --build_tag_filters=-e2e --test_tag_filters=-e2e --build_tests_only
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel tests against View Engine with the current Angular version
@@ -456,8 +456,7 @@ jobs:
       - *setup_bazel_binary
 
       # Run project tests with NGC and View Engine.
-      - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --config=view-engine
-      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine
+      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine --build_tests_only
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel tests against View Engine from angular/angular#master.
@@ -478,8 +477,7 @@ jobs:
       - *setup_bazel_binary
 
       # Run project tests with NGC and View Engine.
-      - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --config=view-engine
-      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine
+      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine --build_tests_only
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel tests against material-components-web@canary
@@ -503,8 +501,7 @@ jobs:
 
       # Setup the components repository to use the MDC snapshot builds.
       # Run project tests with the MDC canary builds.
-      - run: bazel build src/... --build_tag_filters=-docs-package,-e2e
-      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e
+      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --build_tests_only
 
 # ----------------------------------------------------------------------------------------
 # Workflow definitions. A workflow usually groups multiple jobs together. This is useful if
