@@ -20,6 +20,10 @@ import {MatInput as BaseMatInput} from '@angular/material/input';
   exportAs: 'matInput',
   host: {
     'class': 'mat-mdc-input-element mdc-text-field__input',
+    // The BaseMatInput parent class adds `mat-input-element` and `mat-form-field-autofill-control`
+    // to the CSS classlist, but this should not be added for this MDC equivalent input.
+    '[class.mat-form-field-autofill-control]': 'false',
+    '[class.mat-input-element]': 'false',
     '[class.mat-input-server]': '_isServer',
     '[class.mat-mdc-textarea-input]': '_isTextarea()',
     // Native input properties that are overwritten by Angular inputs need to be synced with
