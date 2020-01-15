@@ -94,6 +94,7 @@ export declare class MatSelectionList extends _MatSelectionListMixinBase impleme
     color: ThemePalette;
     compareWith: (o1: any, o2: any) => boolean;
     disabled: boolean;
+    multiple: boolean;
     options: QueryList<MatListOption>;
     selectedOptions: SelectionModel<MatListOption>;
     readonly selectionChange: EventEmitter<MatSelectionListChange>;
@@ -116,7 +117,8 @@ export declare class MatSelectionList extends _MatSelectionListMixinBase impleme
     writeValue(values: string[]): void;
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSelectionList, "mat-selection-list", ["matSelectionList"], { "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; "color": "color"; "compareWith": "compareWith"; "disabled": "disabled"; }, { "selectionChange": "selectionChange"; }, ["options"]>;
+    static ngAcceptInputType_multiple: BooleanInput;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSelectionList, "mat-selection-list", ["matSelectionList"], { "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; "color": "color"; "compareWith": "compareWith"; "disabled": "disabled"; "multiple": "multiple"; }, { "selectionChange": "selectionChange"; }, ["options"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatSelectionList>;
 }
 

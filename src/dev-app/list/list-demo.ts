@@ -70,6 +70,8 @@ export class ListDemo {
     this.modelChangeEventCount++;
   }
 
+  favoriteOptions: string[] = [];
+
   alertItem(msg: string) {
     alert(msg);
   }

@@ -162,4 +162,22 @@
       <button mat-raised-button (click)="groceries.deselectAll()">Deselect all</button>
     </p>
   </div>
+  
+  <div>
+    <h2>Single Selection list</h2>
+
+    <mat-selection-list #favorite 
+                        [(ngModel)]="favoriteOptions"
+                        [multiple]="false"
+                        color="primary">
+      <h3 mat-subheader>Favorite Grocery</h3>
+
+      <mat-list-option value="bananas">Bananas</mat-list-option>
+      <mat-list-option selected value="oranges">Oranges</mat-list-option>
+      <mat-list-option value="apples">Apples</mat-list-option>
+      <mat-list-option value="strawberries" color="warn">Strawberries</mat-list-option>
+    </mat-selection-list>
+
+    <p>Selected: {{favoriteOptions | json}}</p>
+  </div>
 </div>

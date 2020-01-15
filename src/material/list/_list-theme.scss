@@ -33,6 +33,12 @@
       background: mat-color($background, 'hover');
     }
   }
+
+  .mat-list-single-selected-option {
+    &, &:hover, &:focus {
+      background: mat-color($background, hover, 0.12);
+    }
+  }
 }
 
 @mixin mat-list-typography($config) {
