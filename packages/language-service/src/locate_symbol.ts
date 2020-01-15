@@ -98,8 +98,6 @@ export function locateSymbol(info: AstResult, position: number): SymbolInfo|unde
             }
 
             // See if this attribute matches the selector of any directive on the element.
-            // TODO(ayazhafiz): Consider caching selector matches (at the expense of potentially
-            // very high memory usage).
             const attributeSelector = `[${ast.name}=${ast.value}]`;
             const parsedAttribute = CssSelector.parse(attributeSelector);
             if (!parsedAttribute.length) return;
