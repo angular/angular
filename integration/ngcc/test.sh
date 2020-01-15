@@ -140,6 +140,17 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   assertSucceeded "Expected 'ngcc' to not add trailing commas to factory function parameters in UMD."
 
 
+# Can it compile `@angular/platform-server` in UMD + typings without errors?
+# (The CLI prefers the `main` property (which maps to UMD) over `module` when compiling `@angular/platform-server`.
+# See https://github.com/angular/angular-cli/blob/e36853338/packages/angular_devkit/build_angular/src/angular-cli-files/models/webpack-configs/server.ts#L34)
+  rm -rf node_modules/@angular/platform-server && \
+    yarn install --cache-folder $cache --check-files && \
+    test -d node_modules/@angular/platform-server
+  assertSucceeded "Expected to re-install '@angular/platform-server'."
+
+  ngcc --properties main --target @angular/platform-server
+  assertSucceeded "Expected 'ngcc' to successfully compile '@angular/platform-server' (main)."
+
 # Can it be safely run again (as a noop)?
 # And check that it logged skipping compilation as expected
 ngcc -l debug | grep 'Skipping'

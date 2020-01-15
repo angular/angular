@@ -547,6 +547,7 @@ runInEachFileSystem(() => {
           name: _('/ep/src/index.js'),
           contents: `
         import 'an_external_lib';
+        import 'an_external_lib_without_typings';
         import {InternalClass} from './internal';
         import * as func1 from './func1';
         import * as missing from './missing-class';
@@ -578,6 +579,10 @@ runInEachFileSystem(() => {
         {
           name: _('/ep/src/shadow-class.js'),
           contents: 'export class ShadowClass {}',
+        },
+        {
+          name: _('/an_external_lib_without_typings/index.js'),
+          contents: '// Some content.',
         },
       ];
 
@@ -1958,7 +1963,7 @@ runInEachFileSystem(() => {
       });
     });
 
-    describe('getDtsDeclarationsOfClass()', () => {
+    describe('getDtsDeclaration()', () => {
       it('should find the dts declaration that has the same relative path to the source file',
          () => {
            loadTestFiles(TYPINGS_SRC_FILES);
@@ -2019,13 +2024,39 @@ runInEachFileSystem(() => {
             getRootFiles(TYPINGS_SRC_FILES)[0], false, [_('/ep/src/shadow-class.js')]);
         const dts = makeTestBundleProgram(
             getRootFiles(TYPINGS_DTS_FILES)[0], false, [_('/ep/typings/shadow-class.d.ts')]);
-        const missingClass = getDeclaration(
+        const shadowClass = getDeclaration(
             bundle.program, _('/ep/src/shadow-class.js'), 'ShadowClass', isNamedClassDeclaration);
         const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle, dts);
 
-        const dtsDecl = host.getDtsDeclaration(missingClass) !;
+        const dtsDecl = host.getDtsDeclaration(shadowClass) !;
         expect(dtsDecl).not.toBeNull();
         expect(dtsDecl.getSourceFile().fileName).toEqual(_('/ep/typings/shadow-class.d.ts'));
+      });
+
+      it('should ignore source files outside of the entrypoint', () => {
+        const externalLibWithoutTypingsIndex = _('/an_external_lib_without_typings/index.js');
+
+        class TestEsm2015ReflectionHost extends Esm2015ReflectionHost {
+          getExportsOfModule(node: ts.Node) {
+            if (ts.isSourceFile(node) && (node.fileName === externalLibWithoutTypingsIndex)) {
+              throw new Error(
+                  `'getExportsOfModule()' called on '${externalLibWithoutTypingsIndex}'.`);
+            }
+            return super.getExportsOfModule(node);
+          }
+        }
+
+        loadTestFiles(TYPINGS_SRC_FILES);
+        loadTestFiles(TYPINGS_DTS_FILES);
+        const bundle = makeTestBundleProgram(
+            getRootFiles(TYPINGS_SRC_FILES)[0], false, [externalLibWithoutTypingsIndex]);
+        const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
+        const missingClass = getDeclaration(
+            bundle.program, _('/ep/src/missing-class.js'), 'MissingClass2',
+            isNamedClassDeclaration);
+        const host = new TestEsm2015ReflectionHost(new MockLogger(), false, bundle, dts);
+
+        expect(host.getDtsDeclaration(missingClass)).toBeNull();
       });
 
       it('should find the dts file that contains a matching class declaration, even if the source files do not match',
