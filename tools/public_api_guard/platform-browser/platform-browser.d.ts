@@ -65,6 +65,43 @@ export declare class HammerModule {
 
 export declare function makeStateKey<T = void>(key: string): StateKey<T>;
 
+export declare class Link {
+    constructor(_doc: any);
+    addLink(tag: LinkDefinition, forceCreation?: boolean): HTMLLinkElement | null;
+    addLinks(tags: LinkDefinition[], forceCreation?: boolean): HTMLLinkElement[];
+    getLink(attrSelector: string): HTMLLinkElement | null;
+    getLinks(attrSelector: string): HTMLLinkElement[];
+    removeLink(attrSelector: string): void;
+    removeLinkElement(meta: HTMLLinkElement): void;
+    updateLink(tag: LinkDefinition, selector?: string): HTMLLinkElement | null;
+}
+
+export declare type LinkDefinition = {
+    as?: string;
+    crossorigin?: "anonymous" | "use-credentials";
+    disabled?: boolean;
+    href?: string;
+    hreflang?: string;
+    importance?: "auto" | "high" | "low";
+    integrity?: string;
+    media?: string;
+    methods?: string;
+    prefetch?: string;
+    referrerpolicy?:
+      | "no-referrer"
+      | "no-referrer-when-downgrade"
+      | "origin"
+      | "origin-when-cross-origin"
+      | "unsafe-url";
+    rel?: string;
+    sizes?: string;
+    target?: string;
+    title?: string;
+    type?: string;
+} & {
+    [prop: string]: string;
+};
+
 export declare class Meta {
     constructor(_doc: any);
     addTag(tag: MetaDefinition, forceCreation?: boolean): HTMLMetaElement | null;
