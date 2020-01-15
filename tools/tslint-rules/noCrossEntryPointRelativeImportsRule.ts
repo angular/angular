@@ -13,8 +13,8 @@ const BUILD_BAZEL_FILE = 'BUILD.bazel';
  * unintentionally and could break module resolution since the folder structure
  * changes in the Angular Package release output.
  */
-export class Rule extends Lint.Rules.TypedRule {
-  applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): Lint.RuleFailure[] {
+export class Rule extends Lint.Rules.AbstractRule {
+  apply(sourceFile: ts.SourceFile): Lint.RuleFailure[] {
     return this.applyWithFunction(sourceFile, checkSourceFile, this.getOptions().ruleArguments);
   }
 }
@@ -31,7 +31,7 @@ function checkSourceFile(ctx: Lint.WalkContext<string[]>) {
     return;
   }
 
-  const visitNode = (node: ts.Node) => {
+  (function visitNode(node: ts.Node) {
     if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
       if (!node.moduleSpecifier || !ts.isStringLiteralLike(node.moduleSpecifier) ||
           !node.moduleSpecifier.text.startsWith('.')) {
@@ -54,9 +54,7 @@ function checkSourceFile(ctx: Lint.WalkContext<string[]>) {
       return;
     }
     ts.forEachChild(node, visitNode);
-  };
-
-  ts.forEachChild(ctx.sourceFile, visitNode);
+  })(ctx.sourceFile);
 }
 
 /** Finds the closest Bazel build package for the given path. */
