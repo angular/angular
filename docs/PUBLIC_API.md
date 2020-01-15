@@ -48,7 +48,7 @@ Our peer dependencies (such as TypeScript, Zone.js, or RxJS) are not considered 
 
 ## Golden files
 
-Angular tracks the status of the public API in a *golden file*, maintained with a tool called the *public API guard*.  If you modify any part of a public API in one of the supported public packages, the PR can fail a Circle CI test with failures in `testlogs/tools/public_api_guard`, and an error message that instructs you to accept the golden file.
+Angular tracks the status of the public API in a *golden file*, maintained with a tool called the *TS API Guardian*.  If you modify any part of a public API in one of the supported public packages, the PR can fail a Circle CI test with failures in `testlogs/tools/public_api_guard`, and an error message that instructs you to accept the golden file.
 
 The public API guard provides a Bazel target that updates the current status of a given package. If you add to or modify the public API in any way, you must use [yarn](https://yarnpkg.com/) to execute the Bazel target in your terminal shell of choice (a recent version of `bash` is recommended).
 
