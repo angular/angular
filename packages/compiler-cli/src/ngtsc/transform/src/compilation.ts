@@ -19,7 +19,7 @@ import {getSourceFile, isExported} from '../../util/src/typescript';
 
 import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api';
 import {DtsTransformRegistry} from './declaration';
-import {Trait, TraitState} from './trait';
+import {PendingTrait, Trait, TraitState} from './trait';
 
 
 /**
@@ -198,7 +198,8 @@ export class TraitCompiler {
     this.fileToClasses.get(sf) !.add(record.node);
   }
 
-  private scanClassForTraits(clazz: ClassDeclaration): Trait<unknown, unknown, unknown>[]|null {
+  private scanClassForTraits(clazz: ClassDeclaration):
+      PendingTrait<unknown, unknown, unknown>[]|null {
     if (!this.compileNonExportedClasses && !isExported(clazz)) {
       return null;
     }
@@ -209,9 +210,9 @@ export class TraitCompiler {
   }
 
   protected detectTraits(clazz: ClassDeclaration, decorators: Decorator[]|null):
-      Trait<unknown, unknown, unknown>[]|null {
+      PendingTrait<unknown, unknown, unknown>[]|null {
     let record: ClassRecord|null = this.recordFor(clazz);
-    let foundTraits: Trait<unknown, unknown, unknown>[] = [];
+    let foundTraits: PendingTrait<unknown, unknown, unknown>[] = [];
 
     for (const handler of this.handlers) {
       const result = handler.detect(clazz, decorators);
@@ -302,7 +303,18 @@ export class TraitCompiler {
 
       let preanalysis: Promise<void>|null = null;
       if (preanalyzeQueue !== null && trait.handler.preanalyze !== undefined) {
-        preanalysis = trait.handler.preanalyze(clazz, trait.detected.metadata) || null;
+        // Attempt to run preanalysis. This could fail with a `FatalDiagnosticError`; catch it if it
+        // does.
+        try {
+          preanalysis = trait.handler.preanalyze(clazz, trait.detected.metadata) || null;
+        } catch (err) {
+          if (err instanceof FatalDiagnosticError) {
+            trait.toErrored([err.toDiagnostic()]);
+            return;
+          } else {
+            throw err;
+          }
+        }
       }
       if (preanalysis !== null) {
         preanalyzeQueue !.push(preanalysis.then(analyze));
