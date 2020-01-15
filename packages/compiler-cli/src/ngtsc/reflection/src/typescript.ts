@@ -98,7 +98,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
   getExportsOfModule(node: ts.Node): Map<string, Declaration>|null {
     // In TypeScript code, modules are only ts.SourceFiles. Throw if the node isn't a module.
     if (!ts.isSourceFile(node)) {
-      throw new Error(`getDeclarationsOfModule() called on non-SourceFile in TS code`);
+      throw new Error(`getExportsOfModule() called on non-SourceFile in TS code`);
     }
     const map = new Map<string, Declaration>();
 
