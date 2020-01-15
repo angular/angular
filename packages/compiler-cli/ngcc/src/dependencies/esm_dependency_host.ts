@@ -63,24 +63,22 @@ export class EsmDependencyHost extends DependencyHostBase {
       importPath: string, file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>,
       missing: Set<string>, deepImports: Set<string>, alreadySeen: Set<AbsoluteFsPath>): boolean {
     const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, file);
-    if (resolvedModule) {
-      if (resolvedModule instanceof ResolvedRelativeModule) {
-        const internalDependency = resolvedModule.modulePath;
-        if (!alreadySeen.has(internalDependency)) {
-          alreadySeen.add(internalDependency);
-          this.recursivelyCollectDependencies(
-              internalDependency, dependencies, missing, deepImports, alreadySeen);
-        }
-      } else {
-        if (resolvedModule instanceof ResolvedDeepImport) {
-          deepImports.add(resolvedModule.importPath);
-        } else {
-          dependencies.add(resolvedModule.entryPointPath);
-        }
-      }
-      return true;
+    if (resolvedModule === null) {
+      return false;
     }
-    return false;
+    if (resolvedModule instanceof ResolvedRelativeModule) {
+      const internalDependency = resolvedModule.modulePath;
+      if (!alreadySeen.has(internalDependency)) {
+        alreadySeen.add(internalDependency);
+        this.recursivelyCollectDependencies(
+            internalDependency, dependencies, missing, deepImports, alreadySeen);
+      }
+    } else if (resolvedModule instanceof ResolvedDeepImport) {
+      deepImports.add(resolvedModule.importPath);
+    } else {
+      dependencies.add(resolvedModule.entryPointPath);
+    }
+    return true;
   }
 }
 
