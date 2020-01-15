@@ -84,6 +84,12 @@
           "configurations": {
             "production": {
               "browserTarget": "cli-hello-world-ivy-i18n:build:production"
+            },
+            "fr": {
+              "browserTarget": "cli-hello-world-ivy-i18n:build:production,fr"
+            },
+            "de": {
+              "browserTarget": "cli-hello-world-ivy-i18n:build:production,de"
             }
           }
         },
@@ -140,11 +146,11 @@
               "protractorConfig": "e2e/protractor.conf.js"
             },
             "fr": {
-              "devServerTarget": "",
+              "devServerTarget": "cli-hello-world-ivy-i18n:serve:fr",
               "specs": ["./fr/app.e2e-spec.ts"]
             },
             "de": {
-              "devServerTarget": "",
+             "devServerTarget": "cli-hello-world-ivy-i18n:serve:de",
               "specs": ["./de/app.e2e-spec.ts"]
             }
           }
