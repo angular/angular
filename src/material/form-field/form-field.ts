@@ -74,12 +74,7 @@ class MatFormFieldBase {
 const _MatFormFieldMixinBase: CanColorCtor & typeof MatFormFieldBase =
     mixinColor(MatFormFieldBase, 'primary');
 
-/**
- * Possible appearance styles for the form field.
- *
- * Note: The `legacy` and `standard` appearances are deprecated. Please use `fill` or `outline`.
- * @breaking-change 11.0.0 Remove `legacy` and `standard`.
- */
+/** Possible appearance styles for the form field. */
 export type MatFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
 
 /** Possible values for the "floatLabel" form-field input. */
