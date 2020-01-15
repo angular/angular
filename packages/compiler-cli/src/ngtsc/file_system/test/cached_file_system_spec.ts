@@ -94,7 +94,10 @@ describe('CachedFileSystem', () => {
     it('should call delegate', () => {
       const spy = spyOn(delegate, 'writeFile');
       fs.writeFile(abcPath, 'Some contents');
-      expect(spy).toHaveBeenCalledWith(abcPath, 'Some contents');
+      expect(spy).toHaveBeenCalledWith(abcPath, 'Some contents', undefined);
+      spy.calls.reset();
+      fs.writeFile(abcPath, 'Some contents', /* exclusive */ true);
+      expect(spy).toHaveBeenCalledWith(abcPath, 'Some contents', true);
     });
 
     it('should update the exists and "readFile" caches', () => {
