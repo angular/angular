@@ -18,7 +18,9 @@ export class NodeJSFileSystem implements FileSystem {
   private _caseSensitive: boolean|undefined = undefined;
   exists(path: AbsoluteFsPath): boolean { return fs.existsSync(path); }
   readFile(path: AbsoluteFsPath): string { return fs.readFileSync(path, 'utf8'); }
-  writeFile(path: AbsoluteFsPath, data: string): void { fs.writeFileSync(path, data, 'utf8'); }
+  writeFile(path: AbsoluteFsPath, data: string, exclusive: boolean = false): void {
+    fs.writeFileSync(path, data, exclusive ? {flag: 'wx'} : undefined);
+  }
   removeFile(path: AbsoluteFsPath): void { fs.unlinkSync(path); }
   symlink(target: AbsoluteFsPath, path: AbsoluteFsPath): void { fs.symlinkSync(target, path); }
   readdir(path: AbsoluteFsPath): PathSegment[] { return fs.readdirSync(path) as PathSegment[]; }

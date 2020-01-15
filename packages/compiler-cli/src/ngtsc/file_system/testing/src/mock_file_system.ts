@@ -34,12 +34,16 @@ export abstract class MockFileSystem implements FileSystem {
     }
   }
 
-  writeFile(path: AbsoluteFsPath, data: string): void {
+  writeFile(path: AbsoluteFsPath, data: string, exclusive: boolean = false): void {
     const [folderPath, basename] = this.splitIntoFolderAndFile(path);
     const {entity} = this.findFromPath(folderPath);
     if (entity === null || !isFolder(entity)) {
       throw new MockFileSystemError(
           'ENOENT', path, `Unable to write file "${path}". The containing folder does not exist.`);
+    }
+    if (exclusive && entity[basename] !== undefined) {
+      throw new MockFileSystemError(
+          'EEXIST', path, `Unable to exclusively write file "${path}". The file already exists.`);
     }
     entity[basename] = data;
   }
