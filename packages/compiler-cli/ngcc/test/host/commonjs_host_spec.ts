@@ -2184,7 +2184,7 @@ exports.ExternalModule = ExternalModule;
         });
       });
 
-      describe('getDtsDeclarationsOfClass()', () => {
+      describe('getDtsDeclaration()', () => {
         it('should find the dts declaration that has the same relative path to the source file',
            () => {
              loadTestFiles(TYPINGS_SRC_FILES);
