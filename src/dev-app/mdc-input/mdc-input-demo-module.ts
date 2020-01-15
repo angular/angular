@@ -7,6 +7,9 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {
+  MdcFormFieldExamplesModule
+} from '@angular/components-examples/material-experimental/mdc-form-field';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
@@ -36,6 +39,7 @@ import {MdcInputDemo} from './mdc-input-demo';
     MatInputModule,
     MatTabsModule,
     MatToolbarModule,
+    MdcFormFieldExamplesModule,
     ReactiveFormsModule,
     RouterModule.forChild([{path: '', component: MdcInputDemo}]),
   ],

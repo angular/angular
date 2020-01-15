@@ -14,18 +14,49 @@
     display: none;
   }
 
+  // Unset the border set by MDC. We move the border (which serves as the Material Design
+  // text-field bottom line) into its own element. This is necessary because we want the
+  // bottom-line to span across the whole form-field (including prefixes and suffixes).
+  // Also we want to ensure that font styles are inherited for input elements. We want input
+  // text to align with surrounding text. Also font inheritance has been enabled in the non
+  // MDC-based implementation of the form-field too, so we need it for backwards compatibility.
   .mat-mdc-input-element {
-    // By default, MDC limits the height of a form-field to the height of an input, and
-    // overwrites the height to "auto" if a textarea is used. As mentioned in the comment
-    // above for the floating label, we do not know what type of control is used, so we
-    // shift the fixed height to the actual input element and let the form-field adjust
-    // based on the needed height. This makes it work for both input and textarea.
-    height: $mdc-text-field-height;
-
-    // Unset the border set by MDC. We move the border (which serves as the Material Design
-    // text-field bottom line) into its own element. This is necessary because we want the
-    // bottom-line to span across the whole form-field (including prefixes and suffixes).
+    font: inherit;
     border: none;
+  }
+
+  // Reset the padding that MDC sets on native input elements. We cannot rely on this
+  // spacing as we support arbitrary form-field controls which aren't necessarily matching
+  // the "mdc-text-field__input" class. Note: We need the first selector to overwrite the
+  // default no-label MDC padding styles which are set with a very high specificity.
+  .mdc-text-field--no-label:not(.mdc-text-field--outlined):not(.mdc-text-field--textarea)
+  .mat-mdc-input-element.mdc-text-field__input,
+  .mat-mdc-input-element {
+    padding: 0;
+  }
+
+  // MDC changes the vertical spacing of the input if there is no label. Since we moved
+  // the spacing of the input to the parent infix container (to support custom controls),
+  // we need to replicate these styles for the infix container. The goal is that the input
+  // placeholder vertically aligns with floating labels of other filled inputs. Note that
+  // outline appearance currently still relies on the input spacing due to a notched-outline
+  // limitation. TODO: https://github.com/material-components/material-components-web/issues/5326
+  .mdc-text-field--no-label:not(.mdc-text-field--outlined):not(.mdc-text-field--textarea)
+  .mat-mdc-form-field-infix {
+    padding-top: $mat-form-field-no-label-padding-top;
+    padding-bottom: $mat-form-field-no-label-padding-bottom;
+  }
+
+  // MDC adds vertical spacing to inputs. We removed this spacing and intend to add it
+  // to the infix container. This is necessary to ensure that custom form-field controls
+  // also have the proper Material Design spacing to the label and bottom-line. Note that
+  // outline appearance currently still relies on the input spacing due to a notched-outline
+  // limitation. TODO: https://github.com/material-components/material-components-web/issues/5326
+  .mat-mdc-text-field-wrapper:not(.mdc-text-field--outlined) .mat-mdc-form-field-infix {
+    // Apply the default text-field input padding to the infix container. We removed the
+    // padding from the input elements in order to support arbitrary form-field controls.
+    padding-top: $mat-form-field-with-label-input-padding-top;
+    padding-bottom: $mat-form-field-with-label-input-padding-bottom;
   }
 
   // Root element of the mdc-text-field. As explained in the height overwrites above, MDC
@@ -52,18 +83,6 @@
   // floating label. See https://github.com/material-components/material-components-web/issues/5326
   // TODO(devversion): Remove this workaround/nesting once the feature is available.
   .mat-mdc-text-field-wrapper:not(.mdc-text-field--outlined) {
-    // Reset horizontal spacing of the input. This is necessary because we move the horizontal
-    // spacing to the form-field flex container. We do this because prefixes and suffixes should
-    // adjoin the actual control infix. The spacing is still needed for outline and fill
-    // appearances and should surround the prefixes, suffixes and infix. Note that we need
-    // increased specificity because MDC has high specificity for the default padding styles.
-    .mat-mdc-input-element {
-      padding: {
-        left: 0;
-        right: 0;
-      }
-    }
-
     // We removed the horizontal inset on input elements, but need to re-add the spacing to
     // the actual form-field flex container that contains the prefixes, suffixes and infix.
     .mat-mdc-form-field-flex {
@@ -76,5 +95,12 @@
     .mdc-floating-label {
       left: 0;
     }
+  }
+
+  // MDC sets the input elements in outline appearance to "display: flex". There seems to
+  // be no particular reason why this is needed. We set it to "inline-block", as it otherwise
+  // could shift the baseline.
+  .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-text-field__input {
+    display: inline-block;
   }
 }

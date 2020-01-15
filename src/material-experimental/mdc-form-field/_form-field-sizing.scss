@@ -15,3 +15,23 @@ $mat-form-field-default-infix-width: 180px !default;
 // Minimum amount of space between start and end hints in the subscript. MDC does not
 // have built-in support for hints.
 $mat-form-field-hint-min-space: 1em !default;
+
+// Vertical spacing of the text-field if there is no label. MDC hard-codes the spacing
+// into their styles, but their spacing variables would not work for our form-field
+// structure anyway. This is because MDC's input elements are larger than the text, and
+// their padding variables are calculated with respect to the vertical empty space of the
+// inputs. We take the explicit numbers provided by the Material Design specification.
+// https://material.io/components/text-fields/#specs
+$mat-form-field-no-label-padding-bottom: 16px;
+$mat-form-field-no-label-padding-top: 20px;
+
+// Vertical spacing of the text-field if there is a label. MDC hard-codes the spacing
+// into their styles, but their spacing variables would not work for our form-field
+// structure anyway. This is because MDC's input elements are larger than the text, and
+// their padding variables are calculated with respect to the vertical empty space of the
+// inputs. We take the numbers provided by the Material Design specification. **Note** that
+// the drawn values in the spec are slightly shifted because the spec assumes that typed input
+// text exceeds the input element boundaries. We account for this since typed input text does
+// not overflow in browsers by default.
+$mat-form-field-with-label-input-padding-top: 24px;
+$mat-form-field-with-label-input-padding-bottom: 12px;

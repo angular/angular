@@ -20,9 +20,9 @@
     box-sizing: border-box;
     height: auto;
     // Using padding for textareas causes a bad user experience because the text outside
-    // of the text box will overflow vertically. In order to avoid this overflow where small
-    // parts of the previous/followed lines are visible, we use margin for vertical spacing.
-    margin: $mat-form-field-baseline 0 $mdc-text-field-input-padding-bottom;
+    // of the text box will overflow vertically. Also, the vertical spacing for controls
+    // is set through the infix container to allow for arbitrary form-field controls.
+    margin: 0;
     padding: 0;
     border: none;
   }
