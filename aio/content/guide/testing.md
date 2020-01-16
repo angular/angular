@@ -234,7 +234,7 @@ Now you can run the following commands to use the `--no-sandbox` flag:
 
 1. Please make sure you have [Configured CLI for CI testing in Chrome](#configure-cli-for-ci-testing-in-chrome).
 2. CI environments often use older versions of chrome, which are unsupported by newer versions of ChromeDriver. An easy way to do this is to define a NPM script:
-        "webdriver-update-ci": "webdriver-manager update --standalone false --gecko false --versions.chrome 2.37"
+        `"webdriver-update-ci": "webdriver-manager update --standalone false --gecko false --versions.chrome 2.37"`
 
 #### Setup Github Action Flow 
 
