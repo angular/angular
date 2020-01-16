@@ -50,8 +50,14 @@ module.exports = config => {
       {pattern: 'node_modules/@angular/**/*', included: false, watched: false},
       {pattern: 'node_modules/rxjs/**/*', included: false, watched: false},
 
-      {pattern: 'test/karma-system-config.js', included: true, watched: false},
+      // The Karma system configuration is built by Bazel. The built System config
+      // is copied into the "dist/" folder so that the Karma config can use it.
+      {pattern: 'dist/karma-system-config.js', included: true, watched: false},
       {pattern: 'test/karma-test-shim.js', included: true, watched: false},
+
+      // Needed for exposing the RxJS operators through the RxJS UMD bundle. This
+      // is done for performance reasons since fetching individual files is slow.
+      {pattern: 'tools/system-rxjs-operators.js', included: false, watched: false},
 
       // Include a Material theme in the test suite. Also include the MDC theme as
       // karma runs tests for the MDC prototype components as well.

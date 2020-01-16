@@ -240,6 +240,7 @@ jobs:
     steps:
       - *checkout_code
       - *restore_cache
+      - *setup_bazel_ci_config
       - *yarn_download
       - *yarn_install
 
@@ -261,6 +262,7 @@ jobs:
     steps:
     - *checkout_code
     - *restore_cache
+    - *setup_bazel_ci_config
     - *yarn_download
     - *yarn_install
 

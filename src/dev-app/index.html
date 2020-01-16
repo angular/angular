@@ -32,6 +32,16 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 <script src="https://maps.googleapis.com/maps/api/js"></script>
 <script>
+  System.config({
+    map: {
+      // Maps imports where the AMD module names start with workspace name (commonly done in Bazel).
+      // This is needed for compatibility with dynamic runfile resolution of the devserver and the
+      // static runfile resolution done in the "pkg_web" rule. In the built web package, the output
+      // tree artifact serves as workspace root and root of the current dev-app Bazel package.
+      'angular_material': '',
+      'angular_material/src/dev-app': '',
+    }
+  });
   System.import('main').catch(console.error.bind(console));
 </script>
 </html>

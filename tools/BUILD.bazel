@@ -1,5 +1,10 @@
 package(default_visibility = ["//visibility:public"])
 
+exports_files([
+    "system-config-tmpl.js",
+    "system-rxjs-operators.js",
+])
+
 # Workaround for https://github.com/bazelbuild/bazel-toolchains/issues/356. We need the
 # "SYS_ADMIN" capability in order to run browsers with sandbox enabled.
 platform(

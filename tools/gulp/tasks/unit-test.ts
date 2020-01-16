@@ -2,6 +2,9 @@ import {join} from 'path';
 import {task} from 'gulp';
 import {buildConfig, sequenceTask} from '../../package-tools';
 
+// There are no type definitions available for these imports.
+const shelljs = require('shelljs');
+
 /** Builds everything that is necessary for karma. */
 task(':test:build', sequenceTask(
   'clean',
@@ -12,6 +15,7 @@ task(':test:build', sequenceTask(
   'youtube-player:build-no-bundles',
   'material-moment-adapter:build-no-bundles',
   'google-maps:build-no-bundles',
+  ':test:build-system-config'
 ));
 
 /**
@@ -31,4 +35,17 @@ task('test:single-run', [':test:build'], (done: () => void) => {
     // potential still running tunnel-browsers gulp won't exit properly.
     exitCode === 0 ? done() : process.exit(exitCode);
   }).start();
+});
+
+/**
+ * Tasks that builds the SystemJS configuration which is needed for the Karma
+ * legacy unit tests.
+ */
+task(':test:build-system-config', () => {
+  const configOutputPath = join(buildConfig.outputDir, 'karma-system-config.js');
+  shelljs.cd(buildConfig.projectDir);
+  const bazelGenfilesDir = shelljs.exec('yarn -s bazel info bazel-genfiles').stdout.trim();
+  shelljs.exec('yarn -s bazel build //test:system-config.js --config=view-engine');
+  shelljs.cp(join(bazelGenfilesDir, 'test/system-config.js'), configOutputPath);
+  shelljs.chmod('u+w', configOutputPath);
 });

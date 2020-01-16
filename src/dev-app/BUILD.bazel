@@ -2,12 +2,8 @@ package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
 load("@build_bazel_rules_nodejs//internal/common:devmode_js_sources.bzl", "devmode_js_sources")
-load("//src/cdk:config.bzl", "CDK_ENTRYPOINTS")
-load("//src/cdk-experimental:config.bzl", "CDK_EXPERIMENTAL_ENTRYPOINTS")
-load("//src/material:config.bzl", "MATERIAL_ENTRYPOINTS")
-load("//src/material-experimental:config.bzl", "MATERIAL_EXPERIMENTAL_ENTRYPOINTS")
+load("//tools:create-system-config.bzl", "create_system_config")
 load("//tools:defaults.bzl", "ng_module", "sass_binary")
-load("//tools/bazel:expand_template.bzl", "expand_template")
 load("//tools/dev-server:index.bzl", "dev_server")
 
 ng_module(
@@ -103,17 +99,9 @@ sass_binary(
     ],
 )
 
-expand_template(
+create_system_config(
     name = "system-config",
-    configuration_env_vars = ["angular_ivy_enabled"],
     output_name = "system-config.js",
-    substitutions = {
-        "$CDK_ENTRYPOINTS_TMPL": str(CDK_ENTRYPOINTS),
-        "$CDK_EXPERIMENTAL_ENTRYPOINTS_TMPL": str(CDK_EXPERIMENTAL_ENTRYPOINTS),
-        "$MATERIAL_ENTRYPOINTS_TMPL": str(MATERIAL_ENTRYPOINTS),
-        "$MATERIAL_EXPERIMENTAL_ENTRYPOINTS_TMPL": str(MATERIAL_EXPERIMENTAL_ENTRYPOINTS),
-    },
-    template = "system-config-tmpl.js",
 )
 
 # File group for all static files which are needed to serve the dev-app. These files are
@@ -124,10 +112,10 @@ filegroup(
     srcs = [
         "favicon.ico",
         "index.html",
-        "system-rxjs-operators.js",
         ":system-config",
         ":theme",
         "//src/dev-app/icon:icon_demo_assets",
+        "//tools:system-rxjs-operators.js",
         "@npm//:node_modules/@material/animation/dist/mdc.animation.js",
         "@npm//:node_modules/@material/auto-init/dist/mdc.autoInit.js",
         "@npm//:node_modules/@material/base/dist/mdc.base.js",

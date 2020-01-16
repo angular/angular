@@ -13,7 +13,7 @@ VERSION_PLACEHOLDER_REPLACEMENTS = {
 
 # List of default Angular library UMD bundles which are not processed by ngcc.
 ANGULAR_NO_NGCC_BUNDLES = [
-    "@npm//:node_modules/@angular/compiler/bundles/compiler.umd.js",
+    ("@angular/compiler", ["compiler.umd.js"]),
 ]
 
 # List of Angular library UMD bundles which will are processed by ngcc.
@@ -29,20 +29,39 @@ ANGULAR_NGCC_BUNDLES = [
     ("@angular/router", ["router.umd.js"]),
 ]
 
-ANGULAR_LIBRARY_VIEW_ENGINE_UMDS = ANGULAR_NO_NGCC_BUNDLES + [
-    "@npm//:node_modules/%s/bundles/%s" % (pkgName, bundleName)
-    for pkgName, bundleNames in ANGULAR_NGCC_BUNDLES
-    for bundleName in bundleNames
-]
-ANGULAR_LIBRARY_IVY_UMDS = ANGULAR_NO_NGCC_BUNDLES + [
-    "@npm//:node_modules/%s/__ivy_ngcc__/bundles/%s" % (pkgName, bundleName)
-    for pkgName, bundleNames in ANGULAR_NGCC_BUNDLES
-    for bundleName in bundleNames
-]
+"""
+  Gets a dictionary of all packages and their bundle names.
+"""
+
+def getFrameworkPackageBundles():
+    res = {}
+    for pkgName, bundleNames in ANGULAR_NGCC_BUNDLES + ANGULAR_NO_NGCC_BUNDLES:
+        res[pkgName] = res.get(pkgName, []) + bundleNames
+    return res
+
+"""
+  Gets a list of labels which resolve to the UMD bundles of the given packages.
+"""
+
+def getUmdFilePaths(packages, ngcc_artifacts):
+    tmpl = "@npm//:node_modules/%s" + ("/__ivy_ngcc__" if ngcc_artifacts else "") + "/bundles/%s"
+    return [
+        tmpl % (pkgName, bundleName)
+        for pkgName, bundleNames in packages
+        for bundleName in bundleNames
+    ]
+
+ANGULAR_PACKAGE_BUNDLES = getFrameworkPackageBundles()
+
+ANGULAR_LIBRARY_VIEW_ENGINE_UMDS = getUmdFilePaths(ANGULAR_NO_NGCC_BUNDLES, False) + \
+                                   getUmdFilePaths(ANGULAR_NGCC_BUNDLES, False)
+
+ANGULAR_LIBRARY_IVY_UMDS = getUmdFilePaths(ANGULAR_NO_NGCC_BUNDLES, False) + \
+                           getUmdFilePaths(ANGULAR_NGCC_BUNDLES, True)
 
 """
   Gets the list of targets for the Angular library UMD bundles. Conditionally
-  switches between View Engine or Ivy UMD bundles based on the 
+  switches between View Engine or Ivy UMD bundles based on the
   "--config={ivy,view-engine}" flag.
 """
 
