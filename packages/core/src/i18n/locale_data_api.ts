@@ -71,7 +71,6 @@ export function findLocaleData(locale: string): any {
  * @param locale The code of the locale whose currency code we want.
  * @returns The code of the default currency for the given locale.
  *
- * @publicApi
  */
 export function getLocaleCurrencyCode(locale: string): string|null {
   const data = findLocaleData(locale);

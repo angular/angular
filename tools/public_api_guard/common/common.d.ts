@@ -51,6 +51,8 @@ export declare enum FormStyle {
 
 export declare function getCurrencySymbol(code: string, format: 'wide' | 'narrow', locale?: string): string;
 
+export declare function getLocaleCurrencyCode(locale: string): string | null;
+
 export declare function getLocaleCurrencyName(locale: string): string | null;
 
 export declare function getLocaleCurrencySymbol(locale: string): string | null;
