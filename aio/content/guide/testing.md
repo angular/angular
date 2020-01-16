@@ -228,6 +228,76 @@ Now you can run the following commands to use the `--no-sandbox` flag:
 
 </div>
 
+### Configure project for Github Actions
+
+#### Setup Chrome and Web Driver
+
+1. Please make sure you have [Configured CLI for CI testing in Chrome](#configure-cli-for-ci-testing-in-chrome).
+2. CI environments often use older versions of chrome, which are unsupported by newer versions of ChromeDriver. An easy way to do this is to define a NPM script:
+        "webdriver-update-ci": "webdriver-manager update --standalone false --gecko false --versions.chrome 2.37"
+
+#### Setup Github Action Flow 
+
+1. Create a new file named `main.yml` at `.github/workflows`
+
+    ```yml
+    name: CI Angular app through Github Actions
+
+    on: [push]
+
+    jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+        - uses: actions/checkout@v2
+        - name: Use Node.js 12.x
+            uses: actions/setup-node@v1
+            with:
+            node-version: 12.x
+        - name: npm install, lint, test, build and deploy
+            run: |
+            npm install
+            npm run webdriver-update-ci
+            npm test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+            npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js --webdriver-update=false
+            env:
+              CI: true
+    ```
+
+2. You can also control when your workflows are triggered:
+   - It can be helpful to not have your workflows run on every push to every branch in the repo.
+     - For example, you can have your workflow run on push events to master and release branches:
+
+        ```yml
+        on:
+        push:
+            branches:
+            - master
+            - release/*
+        ```
+
+     - or only run on pull_request events that target the master branch:
+
+        ```yml
+        on:
+          pull_request:
+            branches:
+            - master
+        ```
+
+     - or, run every day of the week from Monday - Friday at 02:00:
+
+        ```yml
+        on:
+          schedule:
+          - cron: 0 2 * * 1-5
+        ```
+
+   - For more information see [Events that trigger workflows](https://help.github.com/articles/events-that-trigger-workflows) and [Workflow syntax for GitHub Actions](https://help.github.com/articles/workflow-syntax-for-github-actions#on).
+
+3. This action will run by itself the first time and each time when you push your changes to GitHub.
+
 {@a code-coverage}
 
 ## Enable code coverage reports
