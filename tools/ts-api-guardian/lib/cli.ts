@@ -85,8 +85,7 @@ export function startCli() {
         if (bazelTarget) {
           console.error('\n\nIf you modify a public API, you must accept the new golden file.');
           console.error('\n\nTo do so, execute the following Bazel target:');
-          console.error(
-              `  yarn bazel run ${bazelTarget.replace(/_bin$/, "")}.accept`);
+          console.error(`  yarn bazel run ${bazelTarget.replace(/_bin$/, "")}.accept`);
           if (process.env['TEST_WORKSPACE'] === 'angular') {
             console.error('\n\nFor more information, see');
             console.error(
