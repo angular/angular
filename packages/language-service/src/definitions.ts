@@ -39,25 +39,27 @@ export function getDefinitionAndBoundSpan(
     return;
   }
 
-  let textSpan: ts.TextSpan;
+  let textSpan = ngSpanToTsTextSpan(symbols[0].span);
   const definitions: ts.DefinitionInfo[] = [];
   for (const symbolInfo of symbols) {
-    const {symbol, span} = symbolInfo;
-    textSpan = ngSpanToTsTextSpan(span);
-    const {container, definition: locations} = symbol;
+    const {symbol} = symbolInfo;
+
+    // symbol.definition is really the locations of the symbol. There could be
+    // more than one. No meaningful info could be provided without any location.
+    const {kind, name, container, definition: locations} = symbol;
     if (!locations || !locations.length) {
-      // symbol.definition is really the locations of the symbol. There could be
-      // more than one. No meaningful info could be provided without any location.
-      return {textSpan};
+      continue;
     }
-    const containerKind = container ? container.kind : ts.ScriptElementKind.unknown;
+
+    const containerKind =
+        container ? container.kind as ts.ScriptElementKind : ts.ScriptElementKind.unknown;
     const containerName = container ? container.name : '';
     definitions.push(...locations.map((location) => {
       return {
-        kind: symbol.kind as ts.ScriptElementKind,
-        name: symbol.name,
-        containerKind: containerKind as ts.ScriptElementKind,
-        containerName: containerName,
+        kind: kind as ts.ScriptElementKind,
+        name,
+        containerKind,
+        containerName,
         textSpan: ngSpanToTsTextSpan(location.span),
         fileName: location.fileName,
       };
@@ -65,8 +67,7 @@ export function getDefinitionAndBoundSpan(
   }
 
   return {
-    definitions,
-    textSpan: textSpan !,
+      definitions, textSpan,
   };
 }
 

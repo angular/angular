@@ -21,29 +21,37 @@ export interface SymbolInfo {
 }
 
 /**
- * Traverse the template AST and locate the Symbol(s) at the specified `position`.
- * @param info Ast and Template Source
- * @param position location to look for
+ * Traverses a template AST and locates symbol(s) at a specified position.
+ * @param info template AST information set
+ * @param position location to locate symbols at
  */
 export function locateSymbols(info: AstResult, position: number): SymbolInfo[] {
   const templatePosition = position - info.template.span.start;
+  // TODO: update `findTemplateAstAt` to use absolute positions.
   const path = findTemplateAstAt(info.templateAst, templatePosition);
   if (!path.tail) return [];
 
   const narrowest = spanOf(path.tail);
   const toVisit: TemplateAst[] = [];
-  while (!path.empty && isNarrower(spanOf(path.tail.sourceSpan), narrowest)) {
-    toVisit.push(path.tail);
-    path.pop();
+  for (let node: TemplateAst|undefined = path.tail;
+       node && isNarrower(spanOf(node.sourceSpan), narrowest); node = path.parentOf(node)) {
+    toVisit.push(node);
   }
 
-  return toVisit.map(ast => locateSymbol(ast, path, info, position))
+  return toVisit.map(ast => locateSymbol(ast, path, info))
       .filter((sym): sym is SymbolInfo => sym !== undefined);
 }
 
-function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult, position: number):
-    SymbolInfo|undefined {
-  const templatePosition = position - info.template.span.start;
+/**
+ * Visits a template node and locates the symbol in that node at a path position.
+ * @param ast template AST node to visit
+ * @param path non-empty set of narrowing AST nodes at a position
+ * @param info template AST information set
+ */
+function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult): SymbolInfo|
+    undefined {
+  const templatePosition = path.position;
+  const position = templatePosition + info.template.span.start;
   let compileTypeSummary: CompileTypeSummary|undefined = undefined;
   let symbol: Symbol|undefined = undefined;
   let span: Span|undefined = undefined;

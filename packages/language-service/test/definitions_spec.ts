@@ -14,6 +14,7 @@ import {TypeScriptServiceHost} from '../src/typescript_host';
 import {MockTypescriptHost} from './test_utils';
 
 const TEST_TEMPLATE = '/app/test.ng';
+const PARSING_CASES = '/app/parsing-cases.ts';
 
 describe('definitions', () => {
   const mockHost = new MockTypescriptHost(['/app/main.ts']);
@@ -49,28 +50,28 @@ describe('definitions', () => {
   });
 
   it('should be able to find a field in a attribute reference', () => {
-    const fileName = mockHost.addCode(`
-      @Component({
-        template: '<input [(ngModel)]="«name»">'
-      })
-      export class MyComponent {
-        «ᐱnameᐱ: string;»
-      }`);
+    mockHost.override(TEST_TEMPLATE, `<input [(ngModel)]="«title»">`);
 
-    const marker = mockHost.getReferenceMarkerFor(fileName, 'name');
-    const result = ngService.getDefinitionAndBoundSpan(fileName, marker.start);
+    const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
+    const result = ngService.getDefinitionAndBoundSpan(TEST_TEMPLATE, marker.start);
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
 
     expect(textSpan).toEqual(marker);
     expect(definitions).toBeDefined();
-    expect(definitions !.length).toBe(2);
 
+    // There are exactly two, indentical definitions here, corresponding to the "name" on the
+    // property and event bindings of the two-way binding. The two-way binding is effectively
+    // syntactic sugar for `[ngModel]="name" (ngModel)="name=$event"`.
+    expect(definitions !.length).toBe(2);
     for (const def of definitions !) {
-      expect(def.fileName).toBe(fileName);
-      expect(def.name).toBe('name');
+      expect(def.fileName).toBe(PARSING_CASES);
+      expect(def.name).toBe('title');
       expect(def.kind).toBe('property');
-      expect(def.textSpan).toEqual(mockHost.getDefinitionMarkerFor(fileName, 'name'));
+
+      const fileContent = mockHost.readFile(def.fileName);
+      expect(fileContent !.substr(def.textSpan.start, def.textSpan.length))
+          .toEqual(`title = 'Some title';`);
     }
   });
 
@@ -314,14 +315,14 @@ describe('definitions', () => {
     expect(def1.name).toBe('model');
     expect(def1.kind).toBe('property');
     let content = mockHost.readFile(refFileName) !;
-    expect(content.substring(def1.textSpan.start, def1.textSpan.start + def1.textSpan.length))
+    expect(content.substr(def1.textSpan.start, def1.textSpan.length))
         .toEqual(`@Input() model: string = 'model';`);
 
     expect(def2.fileName).toBe(refFileName);
     expect(def2.name).toBe('modelChange');
     expect(def2.kind).toBe('event');
     content = mockHost.readFile(refFileName) !;
-    expect(content.substring(def2.textSpan.start, def2.textSpan.start + def2.textSpan.length))
+    expect(content.substr(def2.textSpan.start, def2.textSpan.length))
         .toEqual(`@Output() modelChange: EventEmitter<string> = new EventEmitter();`);
   });
 
