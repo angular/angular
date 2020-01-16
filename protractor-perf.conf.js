@@ -6,10 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Make sure that the command line is read as the first thing
-// as this could exit node if the help script should be printed.
-require('angular/modules/e2e_util/perf_util').readCommandLine();
-
 const CHROME_OPTIONS = {
   'args': ['--js-flags=--expose-gc', '--no-sandbox', '--headless', '--disable-dev-shm-usage'],
   'perfLoggingPrefs': {
