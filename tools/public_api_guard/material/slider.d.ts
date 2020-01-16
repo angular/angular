@@ -2,41 +2,49 @@ export declare const MAT_SLIDER_VALUE_ACCESSOR: any;
 
 export declare class MatSlider extends _MatSliderMixinBase implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, OnInit, HasTabIndex {
     _animationMode?: string | undefined;
-    readonly _invertAxis: boolean;
+    get _invertAxis(): boolean;
     _isActive: boolean;
-    readonly _isMinValue: boolean;
+    get _isMinValue(): boolean;
     _isSliding: boolean;
-    readonly _thumbContainerStyles: {
+    get _thumbContainerStyles(): {
         [key: string]: string;
     };
-    readonly _thumbGap: 7 | 10 | 0;
-    readonly _ticksContainerStyles: {
+    get _thumbGap(): 7 | 10 | 0;
+    get _ticksContainerStyles(): {
         [key: string]: string;
     };
-    readonly _ticksStyles: {
+    get _ticksStyles(): {
         [key: string]: string;
     };
-    readonly _trackBackgroundStyles: {
+    get _trackBackgroundStyles(): {
         [key: string]: string;
     };
-    readonly _trackFillStyles: {
+    get _trackFillStyles(): {
         [key: string]: string;
     };
     readonly change: EventEmitter<MatSliderChange>;
-    readonly displayValue: string | number;
+    get displayValue(): string | number;
     displayWith: (value: number) => string | number;
     readonly input: EventEmitter<MatSliderChange>;
-    invert: boolean;
-    max: number;
-    min: number;
+    get invert(): boolean;
+    set invert(value: boolean);
+    get max(): number;
+    set max(v: number);
+    get min(): number;
+    set min(v: number);
     onTouched: () => any;
-    readonly percent: number;
-    step: number;
-    thumbLabel: boolean;
-    tickInterval: 'auto' | number;
-    value: number | null;
+    get percent(): number;
+    get step(): number;
+    set step(v: number);
+    get thumbLabel(): boolean;
+    set thumbLabel(value: boolean);
+    get tickInterval(): 'auto' | number;
+    set tickInterval(value: 'auto' | number);
+    get value(): number | null;
+    set value(v: number | null);
     readonly valueChange: EventEmitter<number | null>;
-    vertical: boolean;
+    get vertical(): boolean;
+    set vertical(value: boolean);
     constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, tabIndex: string, _animationMode?: string | undefined, _ngZone?: NgZone | undefined);
     _onBlur(): void;
     _onFocus(): void;

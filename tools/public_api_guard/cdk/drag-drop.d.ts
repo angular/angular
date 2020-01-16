@@ -12,7 +12,8 @@ export declare class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDes
     boundaryElement: string | ElementRef<HTMLElement> | HTMLElement;
     constrainPosition?: (point: Point, dragRef: DragRef) => Point;
     data: T;
-    disabled: boolean;
+    get disabled(): boolean;
+    set disabled(value: boolean);
     dragStartDelay: number | {
         touch: number;
         mouse: number;
@@ -86,7 +87,8 @@ export interface CdkDragExit<T = any, I = T> {
 export declare class CdkDragHandle implements OnDestroy {
     _parentDrag: {} | undefined;
     _stateChanges: Subject<CdkDragHandle>;
-    disabled: boolean;
+    get disabled(): boolean;
+    set disabled(value: boolean);
     element: ElementRef<HTMLElement>;
     constructor(element: ElementRef<HTMLElement>, parentDrag?: any);
     ngOnDestroy(): void;
@@ -149,7 +151,8 @@ export declare class CdkDropList<T = any> implements AfterContentInit, OnDestroy
     autoScrollDisabled: boolean;
     connectedTo: (CdkDropList | string)[] | CdkDropList | string;
     data: T;
-    disabled: boolean;
+    get disabled(): boolean;
+    set disabled(value: boolean);
     dropped: EventEmitter<CdkDragDrop<T, any>>;
     element: ElementRef<HTMLElement>;
     enterPredicate: (drag: CdkDrag, drop: CdkDropList) => boolean;
@@ -178,7 +181,8 @@ export declare class CdkDropList<T = any> implements AfterContentInit, OnDestroy
 
 export declare class CdkDropListGroup<T> implements OnDestroy {
     readonly _items: Set<T>;
-    disabled: boolean;
+    get disabled(): boolean;
+    set disabled(value: boolean);
     ngOnDestroy(): void;
     static ngAcceptInputType_disabled: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkDropListGroup<any>, "[cdkDropListGroup]", ["cdkDropListGroup"], { "disabled": "cdkDropListGroupDisabled"; }, {}, never>;
@@ -221,7 +225,8 @@ export declare class DragRef<T = any> {
     beforeStarted: Subject<void>;
     constrainPosition?: (point: Point, dragRef: DragRef) => Point;
     data: T;
-    disabled: boolean;
+    get disabled(): boolean;
+    set disabled(value: boolean);
     dragStartDelay: number | {
         touch: number;
         mouse: number;

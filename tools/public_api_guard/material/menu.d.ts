@@ -18,20 +18,25 @@ export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatM
     ariaLabel: string;
     ariaLabelledby: string;
     backdropClass: string;
-    classList: string;
+    get classList(): string;
+    set classList(classes: string);
     close: EventEmitter<void | 'click' | 'keydown' | 'tab'>;
     readonly closed: EventEmitter<void | 'click' | 'keydown' | 'tab'>;
     direction: Direction;
-    hasBackdrop: boolean | undefined;
+    get hasBackdrop(): boolean | undefined;
+    set hasBackdrop(value: boolean | undefined);
     items: QueryList<MatMenuItem>;
     lazyContent: MatMenuContent;
-    overlapTrigger: boolean;
-    panelClass: string;
+    get overlapTrigger(): boolean;
+    set overlapTrigger(value: boolean);
+    set panelClass(classes: string);
     readonly panelId: string;
     parentMenu: MatMenuPanel | undefined;
     templateRef: TemplateRef<any>;
-    xPosition: MenuPositionX;
-    yPosition: MenuPositionY;
+    get xPosition(): MenuPositionX;
+    set xPosition(value: MenuPositionX);
+    get yPosition(): MenuPositionY;
+    set yPosition(value: MenuPositionY);
     constructor(_elementRef: ElementRef<HTMLElement>, _ngZone: NgZone, _defaultOptions: MatMenuDefaultOptions);
     _handleKeydown(event: KeyboardEvent): void;
     _hovered(): Observable<MatMenuItem>;
@@ -140,13 +145,15 @@ export interface MatMenuPanel<T = any> {
 }
 
 export declare class MatMenuTrigger implements AfterContentInit, OnDestroy {
-    _deprecatedMatMenuTriggerFor: MatMenuPanel;
+    get _deprecatedMatMenuTriggerFor(): MatMenuPanel;
+    set _deprecatedMatMenuTriggerFor(v: MatMenuPanel);
     _openedBy: 'mouse' | 'touch' | null;
-    readonly dir: Direction;
-    menu: MatMenuPanel;
+    get dir(): Direction;
+    get menu(): MatMenuPanel;
+    set menu(menu: MatMenuPanel);
     readonly menuClosed: EventEmitter<void>;
     menuData: any;
-    readonly menuOpen: boolean;
+    get menuOpen(): boolean;
     readonly menuOpened: EventEmitter<void>;
     readonly onMenuClose: EventEmitter<void>;
     readonly onMenuOpen: EventEmitter<void>;

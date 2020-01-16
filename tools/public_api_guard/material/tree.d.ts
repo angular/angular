@@ -2,9 +2,11 @@ export declare class MatNestedTreeNode<T> extends CdkNestedTreeNode<T> implement
     protected _differs: IterableDiffers;
     protected _elementRef: ElementRef<HTMLElement>;
     protected _tree: CdkTree<T>;
-    disabled: any;
+    get disabled(): any;
+    set disabled(value: any);
     node: T;
-    tabIndex: number;
+    get tabIndex(): number;
+    set tabIndex(value: number);
     constructor(_elementRef: ElementRef<HTMLElement>, _tree: CdkTree<T>, _differs: IterableDiffers, tabIndex: string);
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
@@ -23,7 +25,8 @@ export declare class MatTreeFlatDataSource<T, F> extends DataSource<F> {
     _data: BehaviorSubject<T[]>;
     _expandedData: BehaviorSubject<F[]>;
     _flattenedData: BehaviorSubject<F[]>;
-    data: T[];
+    get data(): T[];
+    set data(value: T[]);
     constructor(_treeControl: FlatTreeControl<F>, _treeFlattener: MatTreeFlattener<T, F>, initialData?: T[]);
     connect(collectionViewer: CollectionViewer): Observable<F[]>;
     disconnect(): void;
@@ -48,7 +51,8 @@ export declare class MatTreeModule {
 
 export declare class MatTreeNestedDataSource<T> extends DataSource<T> {
     _data: BehaviorSubject<T[]>;
-    data: T[];
+    get data(): T[];
+    set data(value: T[]);
     connect(collectionViewer: CollectionViewer): Observable<T[]>;
     disconnect(): void;
 }

@@ -2,10 +2,10 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
     _googleMap: UpdatedGoogleMap;
     _isBrowser: boolean;
     boundsChanged: Observable<void>;
-    center: google.maps.LatLngLiteral | google.maps.LatLng;
+    set center(center: google.maps.LatLngLiteral | google.maps.LatLng);
     centerChanged: Observable<void>;
-    readonly controls: Array<google.maps.MVCArray<Node>>;
-    readonly data: google.maps.Data;
+    get controls(): Array<google.maps.MVCArray<Node>>;
+    get data(): google.maps.Data;
     headingChanged: Observable<void>;
     height: string | number;
     idle: Observable<void>;
@@ -18,15 +18,15 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
     mapMouseout: Observable<google.maps.MouseEvent>;
     mapMouseover: Observable<google.maps.MouseEvent>;
     mapRightclick: Observable<google.maps.MouseEvent>;
-    readonly mapTypes: google.maps.MapTypeRegistry;
+    get mapTypes(): google.maps.MapTypeRegistry;
     maptypeidChanged: Observable<void>;
-    options: google.maps.MapOptions;
-    readonly overlayMapTypes: google.maps.MVCArray<google.maps.MapType>;
+    set options(options: google.maps.MapOptions);
+    get overlayMapTypes(): google.maps.MVCArray<google.maps.MapType>;
     projectionChanged: Observable<void>;
     tilesloaded: Observable<void>;
     tiltChanged: Observable<void>;
     width: string | number;
-    zoom: number;
+    set zoom(zoom: number);
     zoomChanged: Observable<void>;
     constructor(_elementRef: ElementRef,
     platformId?: Object);
@@ -59,8 +59,8 @@ export declare class MapInfoWindow implements OnInit, OnDestroy {
     closeclick: Observable<void>;
     contentChanged: Observable<void>;
     domready: Observable<void>;
-    options: google.maps.InfoWindowOptions;
-    position: google.maps.LatLngLiteral | google.maps.LatLng;
+    set options(options: google.maps.InfoWindowOptions);
+    set position(position: google.maps.LatLngLiteral | google.maps.LatLng);
     positionChanged: Observable<void>;
     zindexChanged: Observable<void>;
     constructor(_googleMap: GoogleMap, _elementRef: ElementRef<HTMLElement>);
@@ -78,13 +78,13 @@ export declare class MapInfoWindow implements OnInit, OnDestroy {
 export declare class MapMarker implements OnInit, OnDestroy {
     _marker?: google.maps.Marker;
     animationChanged: Observable<void>;
-    clickable: boolean;
+    set clickable(clickable: boolean);
     clickableChanged: Observable<void>;
     cursorChanged: Observable<void>;
     draggableChanged: Observable<void>;
     flatChanged: Observable<void>;
     iconChanged: Observable<void>;
-    label: string | google.maps.MarkerLabel;
+    set label(label: string | google.maps.MarkerLabel);
     mapClick: Observable<google.maps.MouseEvent>;
     mapDblclick: Observable<google.maps.MouseEvent>;
     mapDrag: Observable<google.maps.MouseEvent>;
@@ -95,11 +95,11 @@ export declare class MapMarker implements OnInit, OnDestroy {
     mapMouseover: Observable<google.maps.MouseEvent>;
     mapMouseup: Observable<google.maps.MouseEvent>;
     mapRightclick: Observable<google.maps.MouseEvent>;
-    options: google.maps.MarkerOptions;
-    position: google.maps.LatLngLiteral | google.maps.LatLng;
+    set options(options: google.maps.MarkerOptions);
+    set position(position: google.maps.LatLngLiteral | google.maps.LatLng);
     positionChanged: Observable<void>;
     shapeChanged: Observable<void>;
-    title: string;
+    set title(title: string);
     titleChanged: Observable<void>;
     visibleChanged: Observable<void>;
     zindexChanged: Observable<void>;
@@ -124,8 +124,8 @@ export declare class MapMarker implements OnInit, OnDestroy {
 
 export declare class MapPolyline implements OnInit, OnDestroy {
     _polyline: google.maps.Polyline;
-    options: google.maps.PolylineOptions;
-    path: google.maps.MVCArray<google.maps.LatLng> | google.maps.LatLng[] | google.maps.LatLngLiteral[];
+    set options(options: google.maps.PolylineOptions);
+    set path(path: google.maps.MVCArray<google.maps.LatLng> | google.maps.LatLng[] | google.maps.LatLngLiteral[]);
     polylineClick: Observable<google.maps.PolyMouseEvent>;
     polylineDblclick: Observable<google.maps.PolyMouseEvent>;
     polylineDrag: Observable<google.maps.MouseEvent>;

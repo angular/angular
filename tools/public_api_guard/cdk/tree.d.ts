@@ -36,7 +36,8 @@ export declare class CdkNestedTreeNode<T> extends CdkTreeNode<T> implements Afte
 export declare class CdkTree<T> implements AfterContentChecked, CollectionViewer, OnDestroy, OnInit {
     _nodeDefs: QueryList<CdkTreeNodeDef<T>>;
     _nodeOutlet: CdkTreeNodeOutlet;
-    dataSource: DataSource<T> | Observable<T[]> | T[];
+    get dataSource(): DataSource<T> | Observable<T[]> | T[];
+    set dataSource(dataSource: DataSource<T> | Observable<T[]> | T[]);
     trackBy: TrackByFunction<T>;
     treeControl: TreeControl<T>;
     viewChange: BehaviorSubject<{
@@ -65,9 +66,10 @@ export declare class CdkTreeNode<T> implements FocusableOption, OnDestroy {
     protected _destroyed: Subject<void>;
     protected _elementRef: ElementRef<HTMLElement>;
     protected _tree: CdkTree<T>;
-    data: T;
-    readonly isExpanded: boolean;
-    readonly level: number;
+    get data(): T;
+    set data(value: T);
+    get isExpanded(): boolean;
+    get level(): number;
     role: 'treeitem' | 'group';
     constructor(_elementRef: ElementRef<HTMLElement>, _tree: CdkTree<T>);
     protected _setRoleFromChildren(children: T[]): void;
@@ -106,9 +108,11 @@ export declare class CdkTreeNodeOutletContext<T> {
 export declare class CdkTreeNodePadding<T> implements OnDestroy {
     _indent: number;
     _level: number;
-    indent: number | string;
+    get indent(): number | string;
+    set indent(indent: number | string);
     indentUnits: string;
-    level: number;
+    get level(): number;
+    set level(value: number);
     constructor(_treeNode: CdkTreeNode<T>, _tree: CdkTree<T>, _renderer: Renderer2, _element: ElementRef<HTMLElement>, _dir: Directionality);
     _paddingIndent(): string | null;
     _setPadding(forceChange?: boolean): void;
@@ -122,7 +126,8 @@ export declare class CdkTreeNodeToggle<T> {
     protected _recursive: boolean;
     protected _tree: CdkTree<T>;
     protected _treeNode: CdkTreeNode<T>;
-    recursive: boolean;
+    get recursive(): boolean;
+    set recursive(value: boolean);
     constructor(_tree: CdkTree<T>, _treeNode: CdkTreeNode<T>);
     _toggle(event: Event): void;
     static ngAcceptInputType_recursive: BooleanInput;

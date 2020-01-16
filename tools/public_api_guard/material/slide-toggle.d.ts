@@ -17,14 +17,16 @@ export declare class MatSlideToggle extends _MatSlideToggleMixinBase implements 
     ariaLabel: string | null;
     ariaLabelledby: string | null;
     readonly change: EventEmitter<MatSlideToggleChange>;
-    checked: boolean;
+    get checked(): boolean;
+    set checked(value: boolean);
     defaults: MatSlideToggleDefaultOptions;
     readonly dragChange: EventEmitter<void>;
     id: string;
-    readonly inputId: string;
+    get inputId(): string;
     labelPosition: 'before' | 'after';
     name: string | null;
-    required: boolean;
+    get required(): boolean;
+    set required(value: boolean);
     readonly toggleChange: EventEmitter<void>;
     constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, tabIndex: string,
     _ngZone: NgZone, defaults: MatSlideToggleDefaultOptions, _animationMode?: string | undefined, _dir?: Directionality);

@@ -49,7 +49,7 @@ export declare type CanUpdateErrorStateCtor = Constructor<CanUpdateErrorState>;
 export declare abstract class DateAdapter<D> {
     protected _localeChanges: Subject<void>;
     protected locale: any;
-    readonly localeChanges: Observable<void>;
+    get localeChanges(): Observable<void>;
     abstract addCalendarDays(date: D, days: number): D;
     abstract addCalendarMonths(date: D, months: number): D;
     abstract addCalendarYears(date: D, years: number): D;
@@ -249,16 +249,17 @@ export declare class MatOptgroup extends _MatOptgroupMixinBase implements CanDis
 
 export declare class MatOption implements FocusableOption, AfterViewChecked, OnDestroy {
     readonly _stateChanges: Subject<void>;
-    readonly active: boolean;
-    readonly disableRipple: boolean | undefined;
-    disabled: any;
+    get active(): boolean;
+    get disableRipple(): boolean | undefined;
+    get disabled(): any;
+    set disabled(value: any);
     readonly group: MatOptgroup;
     id: string;
-    readonly multiple: boolean | undefined;
+    get multiple(): boolean | undefined;
     readonly onSelectionChange: EventEmitter<MatOptionSelectionChange>;
-    readonly selected: boolean;
+    get selected(): boolean;
     value: any;
-    readonly viewValue: string;
+    get viewValue(): string;
     constructor(_element: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _parent: MatOptionParentComponent, group: MatOptgroup);
     _getAriaSelected(): boolean | null;
     _getHostElement(): HTMLElement;
@@ -316,11 +317,13 @@ export declare class MatRipple implements OnInit, OnDestroy, RippleTarget {
     animation: RippleAnimationConfig;
     centered: boolean;
     color: string;
-    disabled: boolean;
+    get disabled(): boolean;
+    set disabled(value: boolean);
     radius: number;
-    readonly rippleConfig: RippleConfig;
-    readonly rippleDisabled: boolean;
-    trigger: HTMLElement;
+    get rippleConfig(): RippleConfig;
+    get rippleDisabled(): boolean;
+    get trigger(): HTMLElement;
+    set trigger(trigger: HTMLElement);
     unbounded: boolean;
     constructor(_elementRef: ElementRef<HTMLElement>, ngZone: NgZone, platform: Platform, globalOptions?: RippleGlobalOptions, animationMode?: string);
     fadeOutAll(): void;

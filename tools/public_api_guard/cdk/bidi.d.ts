@@ -6,8 +6,9 @@ export declare class BidiModule {
 export declare class Dir implements Directionality, AfterContentInit, OnDestroy {
     _rawDir: string;
     change: EventEmitter<Direction>;
-    dir: Direction;
-    readonly value: Direction;
+    get dir(): Direction;
+    set dir(value: Direction);
+    get value(): Direction;
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<Dir, "[dir]", ["dir"], { "dir": "dir"; }, { "change": "dirChange"; }, never>;

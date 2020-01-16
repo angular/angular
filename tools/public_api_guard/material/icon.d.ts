@@ -23,9 +23,12 @@ export declare const MAT_ICON_LOCATION: InjectionToken<MatIconLocation>;
 export declare function MAT_ICON_LOCATION_FACTORY(): MatIconLocation;
 
 export declare class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, AfterViewChecked, CanColor, OnDestroy {
-    fontIcon: string;
-    fontSet: string;
-    inline: boolean;
+    get fontIcon(): string;
+    set fontIcon(value: string);
+    get fontSet(): string;
+    set fontSet(value: string);
+    get inline(): boolean;
+    set inline(inline: boolean);
     svgIcon: string;
     constructor(elementRef: ElementRef<HTMLElement>, _iconRegistry: MatIconRegistry, ariaHidden: string,
     _location?: MatIconLocation | undefined, _errorHandler?: ErrorHandler | undefined);

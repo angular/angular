@@ -20,15 +20,19 @@ export declare class MatCheckbox extends _MatCheckboxMixinBase implements Contro
     ariaLabel: string;
     ariaLabelledby: string | null;
     readonly change: EventEmitter<MatCheckboxChange>;
-    checked: boolean;
-    disabled: any;
+    get checked(): boolean;
+    set checked(value: boolean);
+    get disabled(): any;
+    set disabled(value: any);
     id: string;
-    indeterminate: boolean;
+    get indeterminate(): boolean;
+    set indeterminate(value: boolean);
     readonly indeterminateChange: EventEmitter<boolean>;
-    readonly inputId: string;
+    get inputId(): string;
     labelPosition: 'before' | 'after';
     name: string | null;
-    required: boolean;
+    get required(): boolean;
+    set required(value: boolean);
     ripple: MatRipple;
     value: string;
     constructor(elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _focusMonitor: FocusMonitor, _ngZone: NgZone, tabIndex: string,

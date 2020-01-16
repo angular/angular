@@ -18,7 +18,7 @@ export declare abstract class _MatTabBodyBase implements OnInit, OnDestroy {
     _translateTabComplete: Subject<AnimationEvent>;
     animationDuration: string;
     origin: number | null;
-    position: number;
+    set position(position: number);
     constructor(_elementRef: ElementRef<HTMLElement>, _dir: Directionality, changeDetectorRef: ChangeDetectorRef);
     _getLayoutDirection(): Direction;
     _isCenterPosition(position: MatTabBodyPositionState | string): boolean;
@@ -37,13 +37,17 @@ export declare abstract class _MatTabGroupBase extends _MatTabGroupMixinBase imp
     abstract _tabHeader: MatTabGroupBaseHeader;
     _tabs: QueryList<MatTab>;
     readonly animationDone: EventEmitter<void>;
-    animationDuration: string;
-    backgroundColor: ThemePalette;
+    get animationDuration(): string;
+    set animationDuration(value: string);
+    get backgroundColor(): ThemePalette;
+    set backgroundColor(value: ThemePalette);
     disablePagination: boolean;
-    dynamicHeight: boolean;
+    get dynamicHeight(): boolean;
+    set dynamicHeight(value: boolean);
     readonly focusChange: EventEmitter<MatTabChangeEvent>;
     headerPosition: MatTabHeaderPosition;
-    selectedIndex: number | null;
+    get selectedIndex(): number | null;
+    set selectedIndex(value: number | null);
     readonly selectedIndexChange: EventEmitter<number>;
     readonly selectedTabChange: EventEmitter<MatTabChangeEvent>;
     constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, defaultConfig?: MatTabsConfig, _animationMode?: string | undefined);
@@ -63,7 +67,8 @@ export declare abstract class _MatTabGroupBase extends _MatTabGroupMixinBase imp
 }
 
 export declare abstract class _MatTabHeaderBase extends MatPaginatedTabHeader implements AfterContentChecked, AfterContentInit, AfterViewInit, OnDestroy {
-    disableRipple: any;
+    get disableRipple(): any;
+    set disableRipple(value: any);
     constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler, dir: Directionality, ngZone: NgZone, platform: Platform, animationMode?: string);
     protected _itemSelected(event: KeyboardEvent): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabHeaderBase, never, never, { "disableRipple": "disableRipple"; }, {}, never>;
@@ -72,10 +77,11 @@ export declare abstract class _MatTabHeaderBase extends MatPaginatedTabHeader im
 
 export declare class _MatTabLinkBase extends _MatTabLinkMixinBase implements OnDestroy, CanDisable, CanDisableRipple, HasTabIndex, RippleTarget, FocusableOption {
     protected _isActive: boolean;
-    active: boolean;
+    get active(): boolean;
+    set active(value: boolean);
     elementRef: ElementRef;
     rippleConfig: RippleConfig & RippleGlobalOptions;
-    readonly rippleDisabled: boolean;
+    get rippleDisabled(): boolean;
     constructor(_tabNavBar: _MatTabNavBase, elementRef: ElementRef, globalRippleOptions: RippleGlobalOptions | null, tabIndex: string, _focusMonitor: FocusMonitor, animationMode?: string);
     focus(): void;
     ngOnDestroy(): void;
@@ -87,9 +93,11 @@ export declare abstract class _MatTabNavBase extends MatPaginatedTabHeader imple
     abstract _items: QueryList<MatPaginatedTabHeaderItem & {
         active: boolean;
     }>;
-    backgroundColor: ThemePalette;
+    get backgroundColor(): ThemePalette;
+    set backgroundColor(value: ThemePalette);
     color: ThemePalette;
-    disableRipple: any;
+    get disableRipple(): any;
+    set disableRipple(value: any);
     constructor(elementRef: ElementRef, dir: Directionality, ngZone: NgZone, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler,
     platform?: Platform, animationMode?: string);
     protected _itemSelected(): void;
@@ -120,11 +128,12 @@ export declare class MatTab extends _MatTabMixinBase implements OnInit, CanDisab
     readonly _stateChanges: Subject<void>;
     ariaLabel: string;
     ariaLabelledby: string;
-    readonly content: TemplatePortal | null;
+    get content(): TemplatePortal | null;
     isActive: boolean;
     origin: number | null;
     position: number | null;
-    templateLabel: MatTabLabel;
+    get templateLabel(): MatTabLabel;
+    set templateLabel(value: MatTabLabel);
     textLabel: string;
     constructor(_viewContainerRef: ViewContainerRef,
     _closestTabGroup?: any);

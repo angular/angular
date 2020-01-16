@@ -19,19 +19,25 @@ export declare class MatInput extends _MatInputMixinBase implements MatFormField
     protected _uid: string;
     autofilled: boolean;
     controlType: string;
-    disabled: boolean;
-    readonly empty: boolean;
+    get disabled(): boolean;
+    set disabled(value: boolean);
+    get empty(): boolean;
     errorStateMatcher: ErrorStateMatcher;
     focused: boolean;
-    id: string;
+    get id(): string;
+    set id(value: string);
     ngControl: NgControl;
     placeholder: string;
-    readonly: boolean;
-    required: boolean;
-    readonly shouldLabelFloat: boolean;
+    get readonly(): boolean;
+    set readonly(value: boolean);
+    get required(): boolean;
+    set required(value: boolean);
+    get shouldLabelFloat(): boolean;
     readonly stateChanges: Subject<void>;
-    type: string;
-    value: string;
+    get type(): string;
+    set type(value: string);
+    get value(): string;
+    set value(value: string);
     constructor(_elementRef: ElementRef<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>, _platform: Platform,
     ngControl: NgControl, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _defaultErrorStateMatcher: ErrorStateMatcher, inputValueAccessor: any, _autofillMonitor: AutofillMonitor, ngZone: NgZone);
     protected _dirtyCheckNativeValue(): void;
@@ -62,10 +68,14 @@ export declare class MatInputModule {
 }
 
 export declare class MatTextareaAutosize extends CdkTextareaAutosize {
-    matAutosize: boolean;
-    matAutosizeMaxRows: number;
-    matAutosizeMinRows: number;
-    matTextareaAutosize: boolean;
+    get matAutosize(): boolean;
+    set matAutosize(value: boolean);
+    get matAutosizeMaxRows(): number;
+    set matAutosizeMaxRows(value: number);
+    get matAutosizeMinRows(): number;
+    set matAutosizeMinRows(value: number);
+    get matTextareaAutosize(): boolean;
+    set matTextareaAutosize(value: boolean);
     static ngAcceptInputType_enabled: BooleanInput;
     static ngAcceptInputType_maxRows: NumberInput;
     static ngAcceptInputType_minRows: NumberInput;

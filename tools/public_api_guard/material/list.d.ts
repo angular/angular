@@ -46,11 +46,15 @@ export declare class MatListOption extends _MatListOptionMixinBase implements Af
     _lines: QueryList<MatLine>;
     _text: ElementRef;
     checkboxPosition: 'before' | 'after';
-    color: ThemePalette;
-    disabled: any;
-    selected: boolean;
+    get color(): ThemePalette;
+    set color(newValue: ThemePalette);
+    get disabled(): any;
+    set disabled(value: any);
+    get selected(): boolean;
+    set selected(value: boolean);
     selectionList: MatSelectionList;
-    value: any;
+    get value(): any;
+    set value(newValue: any);
     constructor(_element: ElementRef<HTMLElement>, _changeDetector: ChangeDetectorRef,
     selectionList: MatSelectionList);
     _getHostElement(): HTMLElement;
@@ -93,8 +97,10 @@ export declare class MatSelectionList extends _MatSelectionListMixinBase impleme
     _value: string[] | null;
     color: ThemePalette;
     compareWith: (o1: any, o2: any) => boolean;
-    disabled: boolean;
-    multiple: boolean;
+    get disabled(): boolean;
+    set disabled(value: boolean);
+    get multiple(): boolean;
+    set multiple(value: boolean);
     options: QueryList<MatListOption>;
     selectedOptions: SelectionModel<MatListOption>;
     readonly selectionChange: EventEmitter<MatSelectionListChange>;

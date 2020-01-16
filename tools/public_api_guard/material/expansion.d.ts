@@ -7,7 +7,8 @@ export declare const MAT_EXPANSION_PANEL_DEFAULT_OPTIONS: InjectionToken<MatExpa
 export declare class MatAccordion extends CdkAccordion implements MatAccordionBase, AfterContentInit {
     _headers: QueryList<MatExpansionPanelHeader>;
     displayMode: MatAccordionDisplayMode;
-    hideToggle: boolean;
+    get hideToggle(): boolean;
+    set hideToggle(show: boolean);
     togglePosition: MatAccordionTogglePosition;
     _handleHeaderFocus(header: MatExpansionPanelHeader): void;
     _handleHeaderKeydown(event: KeyboardEvent): void;
@@ -52,8 +53,10 @@ export declare class MatExpansionPanel extends CdkAccordionItem implements After
     accordion: MatAccordionBase;
     afterCollapse: EventEmitter<void>;
     afterExpand: EventEmitter<void>;
-    hideToggle: boolean;
-    togglePosition: MatAccordionTogglePosition;
+    get hideToggle(): boolean;
+    set hideToggle(value: boolean);
+    get togglePosition(): MatAccordionTogglePosition;
+    set togglePosition(value: MatAccordionTogglePosition);
     constructor(accordion: MatAccordionBase, _changeDetectorRef: ChangeDetectorRef, _uniqueSelectionDispatcher: UniqueSelectionDispatcher, _viewContainerRef: ViewContainerRef, _document: any, _animationMode: string, defaultOptions?: MatExpansionPanelDefaultOptions);
     _containsFocus(): boolean;
     _getExpandedState(): MatExpansionPanelState;
@@ -94,7 +97,7 @@ export declare class MatExpansionPanelDescription {
 export declare class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
     _animationsDisabled: boolean;
     collapsedHeight: string;
-    readonly disabled: any;
+    get disabled(): any;
     expandedHeight: string;
     panel: MatExpansionPanel;
     constructor(panel: MatExpansionPanel, _element: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, defaultOptions?: MatExpansionPanelDefaultOptions);

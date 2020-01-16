@@ -39,9 +39,12 @@ export declare class CdkFixedSizeVirtualScroll implements OnChanges {
     _maxBufferPx: number;
     _minBufferPx: number;
     _scrollStrategy: FixedSizeVirtualScrollStrategy;
-    itemSize: number;
-    maxBufferPx: number;
-    minBufferPx: number;
+    get itemSize(): number;
+    set itemSize(value: number);
+    get maxBufferPx(): number;
+    set maxBufferPx(value: number);
+    get minBufferPx(): number;
+    set minBufferPx(value: number);
     ngOnChanges(): void;
     static ngAcceptInputType_itemSize: NumberInput;
     static ngAcceptInputType_maxBufferPx: NumberInput;
@@ -68,10 +71,12 @@ export declare class CdkScrollable implements OnInit, OnDestroy {
 
 export declare class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy {
     _cdkVirtualForOf: DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined;
-    cdkVirtualForOf: DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined;
-    cdkVirtualForTemplate: TemplateRef<CdkVirtualForOfContext<T>>;
+    get cdkVirtualForOf(): DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined;
+    set cdkVirtualForOf(value: DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined);
+    set cdkVirtualForTemplate(value: TemplateRef<CdkVirtualForOfContext<T>>);
     cdkVirtualForTemplateCacheSize: number;
-    cdkVirtualForTrackBy: TrackByFunction<T> | undefined;
+    get cdkVirtualForTrackBy(): TrackByFunction<T> | undefined;
+    set cdkVirtualForTrackBy(fn: TrackByFunction<T> | undefined);
     dataStream: Observable<T[] | ReadonlyArray<T>>;
     viewChange: Subject<ListRange>;
     constructor(
@@ -102,7 +107,8 @@ export declare class CdkVirtualScrollViewport extends CdkScrollable implements O
     _totalContentHeight: string;
     _totalContentWidth: string;
     elementRef: ElementRef<HTMLElement>;
-    orientation: 'horizontal' | 'vertical';
+    get orientation(): 'horizontal' | 'vertical';
+    set orientation(orientation: 'horizontal' | 'vertical');
     renderedRangeStream: Observable<ListRange>;
     scrolledIndexChange: Observable<number>;
     constructor(elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, ngZone: NgZone, _scrollStrategy: VirtualScrollStrategy, dir: Directionality, scrollDispatcher: ScrollDispatcher,

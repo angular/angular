@@ -10,25 +10,32 @@ export declare class CdkConnectedOverlay implements OnDestroy, OnChanges {
     backdropClass: string;
     backdropClick: EventEmitter<MouseEvent>;
     detach: EventEmitter<void>;
-    readonly dir: Direction;
-    flexibleDimensions: boolean;
-    growAfterOpen: boolean;
-    hasBackdrop: any;
+    get dir(): Direction;
+    get flexibleDimensions(): boolean;
+    set flexibleDimensions(value: boolean);
+    get growAfterOpen(): boolean;
+    set growAfterOpen(value: boolean);
+    get hasBackdrop(): any;
+    set hasBackdrop(value: any);
     height: number | string;
-    lockPosition: any;
+    get lockPosition(): any;
+    set lockPosition(value: any);
     minHeight: number | string;
     minWidth: number | string;
-    offsetX: number;
-    offsetY: number;
+    get offsetX(): number;
+    set offsetX(offsetX: number);
+    get offsetY(): number;
+    set offsetY(offsetY: number);
     open: boolean;
     origin: CdkOverlayOrigin;
     overlayKeydown: EventEmitter<KeyboardEvent>;
-    readonly overlayRef: OverlayRef;
+    get overlayRef(): OverlayRef;
     panelClass: string | string[];
     positionChange: EventEmitter<ConnectedOverlayPositionChange>;
     positionStrategy: FlexibleConnectedPositionStrategy;
     positions: ConnectedPosition[];
-    push: boolean;
+    get push(): boolean;
+    set push(value: boolean);
     scrollStrategy: ScrollStrategy;
     transformOriginSelector: string;
     viewportMargin: number;
@@ -81,11 +88,11 @@ export interface ConnectedPosition {
 }
 
 export declare class ConnectedPositionStrategy implements PositionStrategy {
-    readonly _isRtl: boolean;
+    get _isRtl(): boolean;
     _positionStrategy: FlexibleConnectedPositionStrategy;
     _preferredPositions: ConnectionPositionPair[];
-    readonly onPositionChange: Observable<ConnectedOverlayPositionChange>;
-    readonly positions: ConnectionPositionPair[];
+    get onPositionChange(): Observable<ConnectedOverlayPositionChange>;
+    get positions(): ConnectionPositionPair[];
     constructor(originPos: OriginConnectionPosition, overlayPos: OverlayConnectionPosition, connectedTo: ElementRef<HTMLElement>, viewportRuler: ViewportRuler, document: Document, platform: Platform, overlayContainer: OverlayContainer);
     apply(): void;
     attach(overlayRef: OverlayReference): void;
@@ -119,7 +126,7 @@ export declare class ConnectionPositionPair {
 export declare class FlexibleConnectedPositionStrategy implements PositionStrategy {
     _preferredPositions: ConnectionPositionPair[];
     positionChanges: Observable<ConnectedOverlayPositionChange>;
-    readonly positions: ConnectionPositionPair[];
+    get positions(): ConnectionPositionPair[];
     constructor(connectedTo: FlexibleConnectedPositionStrategyOrigin, _viewportRuler: ViewportRuler, _document: Document, _platform: Platform, _overlayContainer: OverlayContainer);
     apply(): void;
     attach(overlayRef: OverlayReference): void;
@@ -252,9 +259,9 @@ export declare class OverlayPositionBuilder {
 export declare class OverlayRef implements PortalOutlet, OverlayReference {
     _keydownEventSubscriptions: number;
     _keydownEvents: Subject<KeyboardEvent>;
-    readonly backdropElement: HTMLElement | null;
-    readonly hostElement: HTMLElement;
-    readonly overlayElement: HTMLElement;
+    get backdropElement(): HTMLElement | null;
+    get hostElement(): HTMLElement;
+    get overlayElement(): HTMLElement;
     constructor(_portalOutlet: PortalOutlet, _host: HTMLElement, _pane: HTMLElement, _config: ImmutableObject<OverlayConfig>, _ngZone: NgZone, _keyboardDispatcher: OverlayKeyboardDispatcher, _document: Document, _location?: Location | undefined);
     addPanelClass(classes: string | string[]): void;
     attach<T>(portal: ComponentPortal<T>): ComponentRef<T>;

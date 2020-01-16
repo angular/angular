@@ -26,12 +26,13 @@ export declare class MatAutocomplete extends _MatAutocompleteMixinBase implement
     };
     _isOpen: boolean;
     _keyManager: ActiveDescendantKeyManager<MatOption>;
-    autoActiveFirstOption: boolean;
-    classList: string;
+    get autoActiveFirstOption(): boolean;
+    set autoActiveFirstOption(value: boolean);
+    set classList(value: string);
     readonly closed: EventEmitter<void>;
     displayWith: ((value: any) => string) | null;
     id: string;
-    readonly isOpen: boolean;
+    get isOpen(): boolean;
     readonly opened: EventEmitter<void>;
     optionGroups: QueryList<MatOptgroup>;
     readonly optionSelected: EventEmitter<MatAutocompleteSelectedEvent>;
@@ -80,14 +81,15 @@ export declare class MatAutocompleteSelectedEvent {
 export declare class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
     _onChange: (value: any) => void;
     _onTouched: () => void;
-    readonly activeOption: MatOption | null;
+    get activeOption(): MatOption | null;
     autocomplete: MatAutocomplete;
     autocompleteAttribute: string;
-    autocompleteDisabled: boolean;
+    get autocompleteDisabled(): boolean;
+    set autocompleteDisabled(value: boolean);
     connectedTo: MatAutocompleteOrigin;
     readonly optionSelections: Observable<MatOptionSelectionChange>;
-    readonly panelClosingActions: Observable<MatOptionSelectionChange | null>;
-    readonly panelOpen: boolean;
+    get panelClosingActions(): Observable<MatOptionSelectionChange | null>;
+    get panelOpen(): boolean;
     position: 'auto' | 'above' | 'below';
     constructor(_element: ElementRef<HTMLInputElement>, _overlay: Overlay, _viewContainerRef: ViewContainerRef, _zone: NgZone, _changeDetectorRef: ChangeDetectorRef, scrollStrategy: any, _dir: Directionality, _formField: MatFormField, _document: any, _viewportRuler?: ViewportRuler | undefined);
     _handleFocus(): void;

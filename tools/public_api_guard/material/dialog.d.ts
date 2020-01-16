@@ -24,10 +24,10 @@ export declare const MAT_DIALOG_SCROLL_STRATEGY_PROVIDER: {
 export declare function MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay): () => ScrollStrategy;
 
 export declare class MatDialog implements OnDestroy {
-    readonly _afterAllClosed: Subject<void>;
+    get _afterAllClosed(): Subject<void>;
     readonly afterAllClosed: Observable<void>;
-    readonly afterOpened: Subject<MatDialogRef<any>>;
-    readonly openDialogs: MatDialogRef<any>[];
+    get afterOpened(): Subject<MatDialogRef<any>>;
+    get openDialogs(): MatDialogRef<any>[];
     constructor(_overlay: Overlay, _injector: Injector,
     _location: Location, _defaultOptions: MatDialogConfig, scrollStrategy: any, _parentDialog: MatDialog, _overlayContainer: OverlayContainer);
     closeAll(): void;

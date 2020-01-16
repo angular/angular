@@ -3,7 +3,8 @@ export declare const MAT_BOTTOM_SHEET_DATA: InjectionToken<any>;
 export declare const MAT_BOTTOM_SHEET_DEFAULT_OPTIONS: InjectionToken<MatBottomSheetConfig<any>>;
 
 export declare class MatBottomSheet implements OnDestroy {
-    _openedBottomSheetRef: MatBottomSheetRef<any> | null;
+    get _openedBottomSheetRef(): MatBottomSheetRef<any> | null;
+    set _openedBottomSheetRef(value: MatBottomSheetRef<any> | null);
     constructor(_overlay: Overlay, _injector: Injector, _parentBottomSheet: MatBottomSheet, _location?: Location | undefined, _defaultOptions?: MatBottomSheetConfig<any> | undefined);
     dismiss(): void;
     ngOnDestroy(): void;

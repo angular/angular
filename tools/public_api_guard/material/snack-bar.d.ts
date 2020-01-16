@@ -5,7 +5,8 @@ export declare const MAT_SNACK_BAR_DEFAULT_OPTIONS: InjectionToken<MatSnackBarCo
 export declare function MAT_SNACK_BAR_DEFAULT_OPTIONS_FACTORY(): MatSnackBarConfig;
 
 export declare class MatSnackBar implements OnDestroy {
-    _openedSnackBarRef: MatSnackBarRef<any> | null;
+    get _openedSnackBarRef(): MatSnackBarRef<any> | null;
+    set _openedSnackBarRef(value: MatSnackBarRef<any> | null);
     constructor(_overlay: Overlay, _live: LiveAnnouncer, _injector: Injector, _breakpointObserver: BreakpointObserver, _parentSnackBar: MatSnackBar, _defaultConfig: MatSnackBarConfig);
     dismiss(): void;
     ngOnDestroy(): void;
@@ -84,7 +85,7 @@ export declare class SimpleSnackBar {
         message: string;
         action: string;
     };
-    readonly hasAction: boolean;
+    get hasAction(): boolean;
     snackBarRef: MatSnackBarRef<SimpleSnackBar>;
     constructor(snackBarRef: MatSnackBarRef<SimpleSnackBar>, data: any);
     action(): void;

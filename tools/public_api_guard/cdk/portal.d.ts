@@ -24,8 +24,9 @@ export declare class CdkPortal extends TemplatePortal {
 export declare class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestroy {
     attachDomPortal: (portal: DomPortal<HTMLElement>) => void;
     attached: EventEmitter<CdkPortalOutletAttachedRef>;
-    readonly attachedRef: CdkPortalOutletAttachedRef;
-    portal: Portal<any> | null;
+    get attachedRef(): CdkPortalOutletAttachedRef;
+    get portal(): Portal<any> | null;
+    set portal(portal: Portal<any> | null);
     constructor(_componentFactoryResolver: ComponentFactoryResolver, _viewContainerRef: ViewContainerRef,
     _document?: any);
     attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;
@@ -71,7 +72,7 @@ export declare class DomPortalOutlet extends BasePortalOutlet {
 }
 
 export declare abstract class Portal<T> {
-    readonly isAttached: boolean;
+    get isAttached(): boolean;
     attach(host: PortalOutlet): T;
     detach(): void;
     setAttachedHost(host: PortalOutlet | null): void;
@@ -103,7 +104,7 @@ export interface PortalOutlet {
 
 export declare class TemplatePortal<C = any> extends Portal<EmbeddedViewRef<C>> {
     context: C | undefined;
-    readonly origin: ElementRef;
+    get origin(): ElementRef;
     templateRef: TemplateRef<C>;
     viewContainerRef: ViewContainerRef;
     constructor(template: TemplateRef<C>, viewContainerRef: ViewContainerRef, context?: C);

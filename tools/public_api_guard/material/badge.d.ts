@@ -1,11 +1,15 @@
 export declare class MatBadge extends _MatBadgeMixinBase implements OnDestroy, OnChanges, CanDisable {
     _hasContent: boolean;
     _id: number;
-    color: ThemePalette;
+    get color(): ThemePalette;
+    set color(value: ThemePalette);
     content: string;
-    description: string;
-    hidden: boolean;
-    overlap: boolean;
+    get description(): string;
+    set description(newDescription: string);
+    get hidden(): boolean;
+    set hidden(val: boolean);
+    get overlap(): boolean;
+    set overlap(val: boolean);
     position: MatBadgePosition;
     size: MatBadgeSize;
     constructor(_ngZone: NgZone, _elementRef: ElementRef<HTMLElement>, _ariaDescriber: AriaDescriber, _renderer: Renderer2, _animationMode?: string | undefined);

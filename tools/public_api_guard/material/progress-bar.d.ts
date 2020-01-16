@@ -9,10 +9,12 @@ export declare class MatProgressBar extends _MatProgressBarMixinBase implements 
     _primaryValueBar: ElementRef;
     _rectangleFillValue: string;
     animationEnd: EventEmitter<ProgressAnimationEnd>;
-    bufferValue: number;
+    get bufferValue(): number;
+    set bufferValue(v: number);
     mode: ProgressBarMode;
     progressbarId: string;
-    value: number;
+    get value(): number;
+    set value(v: number);
     constructor(_elementRef: ElementRef, _ngZone: NgZone, _animationMode?: string | undefined,
     location?: MatProgressBarLocation);
     _bufferTransform(): {

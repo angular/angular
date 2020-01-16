@@ -2,7 +2,8 @@ export declare class CdkAccordion implements OnDestroy, OnChanges {
     readonly _openCloseAllActions: Subject<boolean>;
     readonly _stateChanges: Subject<SimpleChanges>;
     readonly id: string;
-    multi: boolean;
+    get multi(): boolean;
+    set multi(multi: boolean);
     closeAll(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
@@ -17,8 +18,10 @@ export declare class CdkAccordionItem implements OnDestroy {
     accordion: CdkAccordion;
     closed: EventEmitter<void>;
     destroyed: EventEmitter<void>;
-    disabled: any;
-    expanded: any;
+    get disabled(): any;
+    set disabled(disabled: any);
+    get expanded(): any;
+    set expanded(expanded: any);
     expandedChange: EventEmitter<boolean>;
     readonly id: string;
     opened: EventEmitter<void>;

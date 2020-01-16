@@ -3,17 +3,20 @@ export declare const MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS: InjectionToken<MatPro
 export declare function MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY(): MatProgressSpinnerDefaultOptions;
 
 export declare class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements OnInit, CanColor {
-    readonly _circleRadius: number;
-    readonly _circleStrokeWidth: number;
+    get _circleRadius(): number;
+    get _circleStrokeWidth(): number;
     _elementRef: ElementRef<HTMLElement>;
     _noopAnimations: boolean;
-    readonly _strokeCircumference: number;
-    readonly _strokeDashOffset: number | null;
-    readonly _viewBox: string;
-    diameter: number;
+    get _strokeCircumference(): number;
+    get _strokeDashOffset(): number | null;
+    get _viewBox(): string;
+    get diameter(): number;
+    set diameter(size: number);
     mode: ProgressSpinnerMode;
-    strokeWidth: number;
-    value: number;
+    get strokeWidth(): number;
+    set strokeWidth(value: number);
+    get value(): number;
+    set value(newValue: number);
     constructor(_elementRef: ElementRef<HTMLElement>, platform: Platform, _document: any, animationMode: string, defaults?: MatProgressSpinnerDefaultOptions);
     ngOnInit(): void;
     static ngAcceptInputType_diameter: NumberInput;

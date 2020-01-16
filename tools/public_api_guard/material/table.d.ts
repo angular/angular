@@ -80,12 +80,16 @@ export declare class MatTable<T> extends CdkTable<T> {
 
 export declare class MatTableDataSource<T> extends DataSource<T> {
     _renderChangesSubscription: Subscription;
-    data: T[];
-    filter: string;
+    get data(): T[];
+    set data(data: T[]);
+    get filter(): string;
+    set filter(filter: string);
     filterPredicate: ((data: T, filter: string) => boolean);
     filteredData: T[];
-    paginator: MatPaginator | null;
-    sort: MatSort | null;
+    get paginator(): MatPaginator | null;
+    set paginator(paginator: MatPaginator | null);
+    get sort(): MatSort | null;
+    set sort(sort: MatSort | null);
     sortData: ((data: T[], sort: MatSort) => T[]);
     sortingDataAccessor: ((data: T, sortHeaderId: string) => string | number);
     constructor(initialData?: T[]);

@@ -1,6 +1,8 @@
 export declare class MatDivider {
-    inset: boolean;
-    vertical: boolean;
+    get inset(): boolean;
+    set inset(value: boolean);
+    get vertical(): boolean;
+    set vertical(value: boolean);
     static ngAcceptInputType_inset: BooleanInput;
     static ngAcceptInputType_vertical: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDivider, "mat-divider", never, { "vertical": "vertical"; "inset": "inset"; }, {}, never>;

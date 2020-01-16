@@ -79,8 +79,10 @@ export declare class CdkColumnDef extends _CdkColumnDefBase implements CanStick 
     cssClassFriendlyName: string;
     footerCell: CdkFooterCellDef;
     headerCell: CdkHeaderCellDef;
-    name: string;
-    stickyEnd: boolean;
+    get name(): string;
+    set name(name: string);
+    get stickyEnd(): boolean;
+    set stickyEnd(v: boolean);
     static ngAcceptInputType_sticky: BooleanInput;
     static ngAcceptInputType_stickyEnd: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkColumnDef, "[cdkColumnDef]", never, { "sticky": "sticky"; "name": "cdkColumnDef"; "stickyEnd": "stickyEnd"; }, {}, ["cell", "headerCell", "footerCell"]>;
@@ -165,10 +167,13 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     _headerRowOutlet: HeaderRowOutlet;
     _multiTemplateDataRows: boolean;
     _rowOutlet: DataRowOutlet;
-    dataSource: CdkTableDataSourceInput<T>;
-    multiTemplateDataRows: boolean;
+    get dataSource(): CdkTableDataSourceInput<T>;
+    set dataSource(dataSource: CdkTableDataSourceInput<T>);
+    get multiTemplateDataRows(): boolean;
+    set multiTemplateDataRows(v: boolean);
     protected stickyCssClass: string;
-    trackBy: TrackByFunction<T>;
+    get trackBy(): TrackByFunction<T>;
+    set trackBy(fn: TrackByFunction<T>);
     viewChange: BehaviorSubject<{
         start: number;
         end: number;
@@ -211,7 +216,8 @@ export declare class CdkTextColumn<T> implements OnDestroy, OnInit {
     headerCell: CdkHeaderCellDef;
     headerText: string;
     justify: 'start' | 'end';
-    name: string;
+    get name(): string;
+    set name(name: string);
     constructor(_table: CdkTable<T>, _options: TextColumnOptions<T>);
     _createDefaultHeaderText(): string;
     ngOnDestroy(): void;
