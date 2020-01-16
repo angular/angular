@@ -15,11 +15,12 @@ import {Declaration, InlineDeclaration, ReflectionHost} from '../../reflection';
 import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
-import {resolveBuiltinDeclaration} from './builtin_declaration';
 import {DynamicValue} from './dynamic';
 import {ForeignFunctionResolver} from './interface';
+import {resolveKnownDeclaration} from './known_declaration';
 import {BuiltinFn, EnumValue, ResolvedModule, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
 import {evaluateTsHelperInline} from './ts_helpers';
+
 
 
 /**
@@ -229,8 +230,8 @@ export class StaticInterpreter {
         return DynamicValue.fromUnknownIdentifier(node);
       }
     }
-    if (decl.builtin !== null) {
-      return resolveBuiltinDeclaration(decl.builtin);
+    if (decl.known !== null) {
+      return resolveKnownDeclaration(decl.known);
     }
     const declContext = {...context, ...joinModuleContext(context, node, decl)};
     // The identifier's declaration is either concrete (a ts.Declaration exists for it) or inline

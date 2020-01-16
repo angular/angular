@@ -333,6 +333,10 @@ export interface FunctionDefinition {
  */
 export enum TsHelperFn {
   /**
+   * Indicates the `__assign` function.
+   */
+  Assign,
+  /**
    * Indicates the `__spread` function.
    */
   Spread,
@@ -340,16 +344,12 @@ export enum TsHelperFn {
    * Indicates the `__spreadArrays` function.
    */
   SpreadArrays,
-  /**
-   * Indicates the `__assign` function.
-   */
-  Assign,
 }
 
 /**
  * Possible declarations which are known.
  */
-export enum BuiltinDeclaration {
+export enum KnownDeclaration {
   /**
    * Indicates the JavaScript global `Object` class.
    */
@@ -411,10 +411,9 @@ export interface BaseDeclaration<T extends ts.Declaration = ts.Declaration> {
   node: T|null;
 
   /**
-   * If set, describes the type of builtin JavaScript declaration this
-   * declaration resolves to.
+   * If set, describes the type of the known declaration this declaration resolves to.
    */
-  builtin: BuiltinDeclaration|null;
+  known: KnownDeclaration|null;
 }
 
 /**

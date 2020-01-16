@@ -689,12 +689,12 @@ runInEachFileSystem(() => {
     const name = node.name !== undefined && ts.isIdentifier(node.name) && node.name.text;
 
     switch (name) {
+      case '__assign':
+        return TsHelperFn.Assign;
       case '__spread':
         return TsHelperFn.Spread;
       case '__spreadArrays':
         return TsHelperFn.SpreadArrays;
-      case '__assign':
-        return TsHelperFn.Assign;
       default:
         return null;
     }

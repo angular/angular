@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BuiltinDeclaration} from '../../reflection/src/host';
+import {KnownDeclaration} from '../../reflection/src/host';
 
 import {ObjectAssignBuiltinFn} from './builtin';
 import {ResolvedValue} from './result';
@@ -15,16 +15,15 @@ import {ResolvedValue} from './result';
 export const jsGlobalObjectValue = new Map([['assign', new ObjectAssignBuiltinFn()]]);
 
 /**
- * Resolves the specified builtin declaration to a resolved value. For example,
+ * Resolves the specified known declaration to a resolved value. For example,
  * the known JavaScript global `Object` will resolve to a `Map` that provides the
  * `assign` method with a builtin function. This enables evaluation of `Object.assign`.
  */
-export function resolveBuiltinDeclaration(builtinDecl: BuiltinDeclaration): ResolvedValue {
-  switch (builtinDecl) {
-    case BuiltinDeclaration.JsGlobalObject:
+export function resolveKnownDeclaration(decl: KnownDeclaration): ResolvedValue {
+  switch (decl) {
+    case KnownDeclaration.JsGlobalObject:
       return jsGlobalObjectValue;
     default:
-      throw new Error(
-          `Cannot resolve unknown builtin declaration ${BuiltinDeclaration[builtinDecl]}`);
+      throw new Error(`Cannot resolve known declaration. Received: ${decl}.`);
   }
 }

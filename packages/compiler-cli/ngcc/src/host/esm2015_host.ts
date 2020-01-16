@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {BuiltinDeclaration, ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, TypeScriptReflectionHost, TypeValueReference, isDecoratorIdentifier, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, KnownDeclaration, TypeScriptReflectionHost, TypeValueReference, isDecoratorIdentifier, reflectObjectLiteral,} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
@@ -353,19 +353,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       }
     }
 
-    // We detect if the resolved declaration refers to the JavaScript global `Object` by checking
-    // if the declaration node is named `Object`, resolves to a type `ObjectConstructor`, and has
-    // been defined in a default library source file.
-    if (superDeclaration && superDeclaration.node !== null &&
-        ts.isVariableDeclaration(superDeclaration.node) &&
-        ts.isIdentifier(superDeclaration.node.name) &&
-        superDeclaration.node.name.text === 'Object' && superDeclaration.node.type &&
-        ts.isTypeReferenceNode(superDeclaration.node.type) &&
-        ts.isIdentifier(superDeclaration.node.type.typeName) &&
-        superDeclaration.node.type.typeName.text === 'ObjectConstructor' &&
-        this.src.program.isSourceFileDefaultLibrary(superDeclaration.node.getSourceFile())) {
+    // If the identifier resolves to the global JavaScript `Object`, return a
+    // declaration that denotes it as the known `JsGlobalObject` declaration.
+    if (superDeclaration !== null && this.isJavaScriptObjectDeclaration(superDeclaration)) {
       return {
-        builtin: BuiltinDeclaration.JsGlobalObject,
+        known: KnownDeclaration.JsGlobalObject,
         expression: id,
         viaModule: null,
         node: null,
@@ -1715,6 +1707,30 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     const exportDecl = namespaceExports.get(expression.name.text) !;
     return {...exportDecl, viaModule: namespaceDecl.viaModule};
+  }
+
+  /** Checks if the specified declaration resolves to the known JavaScript global `Object`. */
+  protected isJavaScriptObjectDeclaration(decl: Declaration): boolean {
+    if (decl.node === null) {
+      return false;
+    }
+    const node = decl.node;
+    // The default TypeScript library types the global `Object` variable through
+    // a variable declaration with a type reference resolving to `ObjectConstructor`.
+    if (!ts.isVariableDeclaration(node) || !ts.isIdentifier(node.name) ||
+        node.name.text !== 'Object' || node.type === undefined) {
+      return false;
+    }
+    const typeNode = node.type;
+    // If the variable declaration does not have a type resolving to `ObjectConstructor`,
+    // we cannot guarantee that the declaration resolves to the global `Object` variable.
+    if (!ts.isTypeReferenceNode(typeNode) || !ts.isIdentifier(typeNode.typeName) ||
+        typeNode.typeName.text !== 'ObjectConstructor') {
+      return false;
+    }
+    // Finally, check if the type definition for `Object` originates from a default library
+    // definition file. This requires default types to be enabled for the host program.
+    return this.src.program.isSourceFileDefaultLibrary(node.getSourceFile());
   }
 }
 

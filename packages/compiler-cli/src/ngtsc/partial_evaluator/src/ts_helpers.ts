@@ -24,15 +24,15 @@ const objectAssignBuiltinFn = new ObjectAssignBuiltinFn();
 export function evaluateTsHelperInline(
     helper: TsHelperFn, node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
   switch (helper) {
-    case TsHelperFn.Spread:
-    case TsHelperFn.SpreadArrays:
-      return evaluateTsSpreadHelper(node, args);
     case TsHelperFn.Assign:
       // Use the same implementation we use for `Object.assign`. Semantically these
       // functions are the same, so they can also share the same evaluation code.
       return objectAssignBuiltinFn.evaluate(node, args);
+    case TsHelperFn.Spread:
+    case TsHelperFn.SpreadArrays:
+      return evaluateTsSpreadHelper(node, args);
     default:
-      throw new Error(`Cannot evaluate unknown helper ${TsHelperFn[helper]} inline`);
+      throw new Error(`Cannot evaluate unknown helper ${helper} inline`);
   }
 }
 

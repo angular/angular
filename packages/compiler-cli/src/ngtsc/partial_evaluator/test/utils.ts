@@ -16,20 +16,17 @@ import {getDeclaration, makeProgram} from '../../testing';
 import {ForeignFunctionResolver, PartialEvaluator} from '../src/interface';
 import {ResolvedValue} from '../src/result';
 
-export function makeExpression(
-    code: string, expr: string, supportingFiles: TestFile[] = [], checkForErrors?: boolean): {
+export function makeExpression(code: string, expr: string, supportingFiles: TestFile[] = []): {
   expression: ts.Expression,
   host: ts.CompilerHost,
   checker: ts.TypeChecker,
   program: ts.Program,
   options: ts.CompilerOptions
 } {
-  const {program, options, host} = makeProgram(
-      [
-        {name: absoluteFrom('/entry.ts'), contents: `${code}; const target$ = ${expr};`},
-        ...supportingFiles
-      ],
-      /* options */ undefined, /* host */ undefined, checkForErrors);
+  const {program, options, host} = makeProgram([
+    {name: absoluteFrom('/entry.ts'), contents: `${code}; const target$ = ${expr};`},
+    ...supportingFiles
+  ]);
   const checker = program.getTypeChecker();
   const decl =
       getDeclaration(program, absoluteFrom('/entry.ts'), 'target$', ts.isVariableDeclaration);

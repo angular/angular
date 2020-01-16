@@ -8,11 +8,12 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, Decorator, FunctionDefinition, isNamedVariableDeclaration, Parameter, reflectObjectLiteral, TsHelperFn,} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, Decorator, FunctionDefinition, Parameter, TsHelperFn, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {getNameText, hasNameIdentifier, stripDollarSuffix} from '../utils';
 
-import {Esm2015ReflectionHost, getPropertyValueFromSymbol, isAssignment, isAssignmentStatement, ParamInfo} from './esm2015_host';
+import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignment, isAssignmentStatement} from './esm2015_host';
 import {NgccClassSymbol} from './ngcc_host';
+
 
 /**
  * ESM5 packages contain ECMAScript IIFE functions that act like classes. For example:
@@ -655,12 +656,12 @@ function getTsHelperFn(node: ts.NamedDeclaration): TsHelperFn|null {
       null;
 
   switch (name) {
+    case '__assign':
+      return TsHelperFn.Assign;
     case '__spread':
       return TsHelperFn.Spread;
     case '__spreadArrays':
       return TsHelperFn.SpreadArrays;
-    case '__assign':
-      return TsHelperFn.Assign;
     default:
       return null;
   }

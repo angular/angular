@@ -46,19 +46,15 @@ export class ObjectAssignBuiltinFn extends BuiltinFn {
     if (args.length === 0) {
       return DynamicValue.fromUnsupportedSyntax(node);
     }
-    const target = args[0];
-    if (target instanceof DynamicValue) {
-      return DynamicValue.fromDynamicInput(node, target);
-    } else if (!(target instanceof Map)) {
-      return DynamicValue.fromUnsupportedSyntax(node);
-    }
-    for (let i = 1; i < args.length; i++) {
-      const source = args[i];
-      if (source instanceof DynamicValue) {
-        return DynamicValue.fromDynamicInput(node, source);
-      } else if (!(source instanceof Map)) {
+    for (const arg of args) {
+      if (arg instanceof DynamicValue) {
+        return DynamicValue.fromDynamicInput(node, arg);
+      } else if (!(arg instanceof Map)) {
         return DynamicValue.fromUnsupportedSyntax(node);
       }
+    }
+    const [target, ...sources] = args as Map<string, ResolvedValue>[];
+    for (const source of sources) {
       source.forEach((value, key) => target.set(key, value));
     }
     return target;

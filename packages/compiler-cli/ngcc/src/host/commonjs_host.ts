@@ -126,7 +126,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
         name,
         declaration: {
           node: null,
-          builtin: null,
+          known: null,
           expression: exportExpression,
           viaModule: null,
         },
@@ -160,12 +160,10 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     const reexports: ExportDeclaration[] = [];
     importedExports.forEach((decl, name) => {
       if (decl.node !== null) {
-        reexports.push({name, declaration: {node: decl.node, builtin: null, viaModule}});
+        reexports.push({name, declaration: {node: decl.node, known: null, viaModule}});
       } else {
-        reexports.push({
-          name,
-          declaration: {node: null, builtin: null, expression: decl.expression, viaModule}
-        });
+        reexports.push(
+            {name, declaration: {node: null, known: null, expression: decl.expression, viaModule}});
       }
     });
     return reexports;
@@ -190,7 +188,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     }
 
     const viaModule = !importInfo.from.startsWith('.') ? importInfo.from : null;
-    return {node: importedFile, builtin: null, viaModule};
+    return {node: importedFile, known: null, viaModule};
   }
 
   private resolveModuleName(moduleName: string, containingFile: ts.SourceFile): ts.SourceFile
