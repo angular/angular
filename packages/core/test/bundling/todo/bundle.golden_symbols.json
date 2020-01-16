@@ -48,6 +48,9 @@
     "name": "EMPTY_ARRAY"
   },
   {
+    "name": "EMPTY_ARRAY"
+  },
+  {
     "name": "EMPTY_OBJ"
   },
   {
@@ -73,9 +76,6 @@
   },
   {
     "name": "HOST"
-  },
-  {
-    "name": "IGNORE_DUE_TO_INPUT_SHADOW"
   },
   {
     "name": "INJECTOR"
@@ -288,6 +288,9 @@
     "name": "__window"
   },
   {
+    "name": "_arrayIndexOfSorted"
+  },
+  {
     "name": "_currentInjector"
   },
   {
@@ -324,9 +327,6 @@
     "name": "appendChild"
   },
   {
-    "name": "appendStyling"
-  },
-  {
     "name": "applyContainer"
   },
   {
@@ -336,10 +336,25 @@
     "name": "applyProjectionRecursive"
   },
   {
+    "name": "applyStyling"
+  },
+  {
     "name": "applyToElementOrContainer"
   },
   {
     "name": "applyView"
+  },
+  {
+    "name": "arrayInsert2"
+  },
+  {
+    "name": "arrayMapGet"
+  },
+  {
+    "name": "arrayMapIndexOf"
+  },
+  {
+    "name": "arrayMapSet"
   },
   {
     "name": "assertTemplate"
@@ -390,13 +405,7 @@
     "name": "collectNativeNodes"
   },
   {
-    "name": "computeClassChanges"
-  },
-  {
     "name": "computeStaticStyling"
-  },
-  {
-    "name": "computeStyleChanges"
   },
   {
     "name": "concatStringsWithSpace"
@@ -519,9 +528,6 @@
     "name": "executeContentQueries"
   },
   {
-    "name": "executeElementExitFn"
-  },
-  {
     "name": "executeInitAndCheckHooks"
   },
   {
@@ -555,13 +561,10 @@
     "name": "findExistingListener"
   },
   {
+    "name": "findStylingValue"
+  },
+  {
     "name": "findViaComponent"
-  },
-  {
-    "name": "flushStyleBinding"
-  },
-  {
-    "name": "flushStylingOnElementExit"
   },
   {
     "name": "forwardRef"
@@ -583,9 +586,6 @@
   },
   {
     "name": "getCheckNoChangesMode"
-  },
-  {
-    "name": "getClassBindingChanged"
   },
   {
     "name": "getCleanup"
@@ -657,9 +657,6 @@
     "name": "getLastParsedKey"
   },
   {
-    "name": "getLastParsedValue"
-  },
-  {
     "name": "getNameOnlyMarkerIndex"
   },
   {
@@ -729,9 +726,6 @@
     "name": "getSelectedIndex"
   },
   {
-    "name": "getStyleBindingChanged"
-  },
-  {
     "name": "getSymbolIterator"
   },
   {
@@ -741,13 +735,13 @@
     "name": "getTStylingRangeNext"
   },
   {
+    "name": "getTStylingRangeNextDuplicate"
+  },
+  {
     "name": "getTStylingRangePrev"
   },
   {
     "name": "getTStylingRangePrevDuplicate"
-  },
-  {
-    "name": "getTStylingRangeTail"
   },
   {
     "name": "getTViewCleanup"
@@ -798,6 +792,9 @@
     "name": "initializeInputAndOutputAliases"
   },
   {
+    "name": "initializeStylingStaticArrayMap"
+  },
+  {
     "name": "injectElementRef"
   },
   {
@@ -841,9 +838,6 @@
   },
   {
     "name": "invokeHostBindingsInCreationMode"
-  },
-  {
-    "name": "isActiveHostElement"
   },
   {
     "name": "isAnimationProp"
@@ -909,6 +903,9 @@
     "name": "isRootView"
   },
   {
+    "name": "isStylingValuePresent"
+  },
+  {
     "name": "iterateListLike"
   },
   {
@@ -916,9 +913,6 @@
   },
   {
     "name": "leaveView"
-  },
-  {
-    "name": "leaveViewProcessExit"
   },
   {
     "name": "listenerInternal"
@@ -955,9 +949,6 @@
   },
   {
     "name": "markDuplicates"
-  },
-  {
-    "name": "markStylingBindingDirty"
   },
   {
     "name": "markViewDirty"
@@ -1005,13 +996,13 @@
     "name": "noSideEffects"
   },
   {
+    "name": "normalizeAndApplySuffixOrSanitizer"
+  },
+  {
     "name": "parseClassName"
   },
   {
     "name": "parseClassNameNext"
-  },
-  {
-    "name": "parseKeyValue"
   },
   {
     "name": "parseStyle"
@@ -1023,22 +1014,10 @@
     "name": "parserState"
   },
   {
-    "name": "processClassToken"
-  },
-  {
-    "name": "processStyleKeyValue"
-  },
-  {
     "name": "readPatchedData"
   },
   {
     "name": "readPatchedLView"
-  },
-  {
-    "name": "reconcileClassNames"
-  },
-  {
-    "name": "reconcileStyleNames"
   },
   {
     "name": "refreshChildComponents"
@@ -1069,9 +1048,6 @@
   },
   {
     "name": "removeListeners"
-  },
-  {
-    "name": "removeStyle"
   },
   {
     "name": "removeView"
@@ -1131,7 +1107,7 @@
     "name": "setBindingIndex"
   },
   {
-    "name": "setBindingRoot"
+    "name": "setBindingRootForHostBindings"
   },
   {
     "name": "setCheckNoChangesMode"
@@ -1141,9 +1117,6 @@
   },
   {
     "name": "setDirectiveInputsWhichShadowsStyling"
-  },
-  {
-    "name": "setElementExitFn"
   },
   {
     "name": "setHostBindingsByExecutingExpandoInstructions"
@@ -1191,9 +1164,6 @@
     "name": "shouldSearchParent"
   },
   {
-    "name": "splitClassList"
-  },
-  {
     "name": "storeCleanupFn"
   },
   {
@@ -1201,9 +1171,6 @@
   },
   {
     "name": "stringifyForError"
-  },
-  {
-    "name": "styleKeyValue"
   },
   {
     "name": "stylingPropertyFirstUpdatePass"
@@ -1227,9 +1194,6 @@
     "name": "toTStylingRange"
   },
   {
-    "name": "toggleClass"
-  },
-  {
     "name": "trackByIdentity"
   },
   {
@@ -1242,6 +1206,9 @@
     "name": "unwrapSafeValue"
   },
   {
+    "name": "updateStyling"
+  },
+  {
     "name": "viewAttachedToChangeDetector"
   },
   {
@@ -1252,12 +1219,6 @@
   },
   {
     "name": "wrapListener"
-  },
-  {
-    "name": "writeAndReconcileClass"
-  },
-  {
-    "name": "writeAndReconcileStyle"
   },
   {
     "name": "writeDirectClass"

@@ -70,7 +70,7 @@ export function getLastParsedValue(text: string): string {
  *
  * This function is intended to be used in this format:
  * ```
- * for (let i = parseClassName(text); i >= 0; i = parseClassNameNext(text, i))) {
+ * for (let i = parseClassName(text); i >= 0; i = parseClassNameNext(text, i)) {
  *   const key = getLastParsedKey();
  *   ...
  * }
@@ -88,7 +88,7 @@ export function parseClassName(text: string): number {
  *
  * This function is intended to be used in this format:
  * ```
- * for (let i = parseClassName(text); i >= 0; i = parseClassNameNext(text, i))) {
+ * for (let i = parseClassName(text); i >= 0; i = parseClassNameNext(text, i)) {
  *   const key = getLastParsedKey();
  *   ...
  * }

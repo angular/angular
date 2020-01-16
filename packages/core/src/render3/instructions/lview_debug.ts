@@ -8,6 +8,7 @@
 
 import {AttributeMarker, ComponentTemplate} from '..';
 import {SchemaMetadata} from '../../core';
+import {ArrayMap} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
@@ -175,7 +176,9 @@ class TNode implements ITNode {
       public parent: TElementNode|TContainerNode|null,                               //
       public projection: number|(ITNode|RNode[])[]|null,                             //
       public styles: string|null,                                                    //
+      public stylesMap: ArrayMap<any>|undefined|null,                                //
       public classes: string|null,                                                   //
+      public classesMap: ArrayMap<any>|undefined|null,                               //
       public classBindings: TStylingRange,                                           //
       public styleBindings: TStylingRange,                                           //
       ) {}

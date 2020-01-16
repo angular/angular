@@ -51,7 +51,6 @@ declare global {
     rendererAppendChild: number;
     rendererInsertBefore: number;
     rendererCreateComment: number;
-    flushStyling: number;
   }
 }
 
@@ -81,7 +80,6 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     rendererAppendChild: 0,
     rendererInsertBefore: 0,
     rendererCreateComment: 0,
-    flushStyling: 0,
   };
 
   // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.

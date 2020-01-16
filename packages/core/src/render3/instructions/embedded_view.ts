@@ -14,7 +14,7 @@ import {TContainerNode, TNodeType} from '../interfaces/node';
 import {CONTEXT, LView, LViewFlags, PARENT, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {insertView, removeView} from '../node_manipulation';
-import {enterView, getIsParent, getLView, getPreviousOrParentTNode, leaveViewProcessExit, setIsParent, setPreviousOrParentTNode} from '../state';
+import {enterView, getIsParent, getLView, getPreviousOrParentTNode, leaveView, setIsParent, setPreviousOrParentTNode} from '../state';
 import {getLContainerActiveIndex, isCreationMode} from '../util/view_utils';
 
 import {assignTViewNodeToLView, createLView, createTView, refreshView, renderView} from './shared';
@@ -139,6 +139,6 @@ export function ɵɵembeddedViewEnd(): void {
 
   const lContainer = lView[PARENT] as LContainer;
   ngDevMode && assertLContainerOrUndefined(lContainer);
-  leaveViewProcessExit();
+  leaveView();
   setPreviousOrParentTNode(viewHost !, false);
 }

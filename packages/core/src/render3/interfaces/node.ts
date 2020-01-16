@@ -5,10 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {StylingMapArray, TStylingContext, TStylingRange} from '../interfaces/styling';
+import {ArrayMap} from '../../util/array_utils';
+import {TStylingRange} from '../interfaces/styling';
+
 import {CssSelector} from './projection';
 import {RNode} from './renderer';
 import {LView, TView} from './view';
+
 
 
 /**
@@ -487,6 +490,20 @@ export interface TNode {
   styles: string|null;
 
   /**
+   * An `ArrayMap` version of `styles.
+   *
+   * We need this when style bindings are resolving. This gets populated only if there are styling
+   * binding instructions. The laziness is important since we don't want to allocate the memory
+   * because most styling is static. For tree shaking purposes the code to create these only comes
+   * with styling.
+   *
+   * - `undefined': not initialized.
+   * - `null`: initialized but `styles` is `null`
+   * - `ArrayMap`: parsed version of `styles`.
+   */
+  stylesMap: ArrayMap<any>|undefined|null;
+
+  /**
    * A collection of all class bindings and/or static class values for an element.
    *
    * This field will be populated if and when:
@@ -494,6 +511,20 @@ export interface TNode {
    * - There are one or more initial classes on an element (e.g. `<div class="one two three">`)
    */
   classes: string|null;
+
+  /**
+   * An `ArrayMap` version of `classes`.
+   *
+   * We need this when style bindings are resolving. This gets populated only if there are styling
+   * binding instructions. The laziness is important since we don't want to allocate the memory
+   * because most styling is static. For tree shaking purposes the code to create these only comes
+   * with styling.
+   *
+   * - `undefined': not initialized.
+   * - `null`: initialized but `classes` is `null`
+   * - `ArrayMap`: parsed version of `S`.
+   */
+  classesMap: ArrayMap<any>|undefined|null;
 
   /**
    * Stores the head/tail index of the class bindings.

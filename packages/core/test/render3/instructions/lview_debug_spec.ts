@@ -11,7 +11,7 @@ import {createTNode, createTView} from '@angular/core/src/render3/instructions/s
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {LView, TView, TViewType} from '@angular/core/src/render3/interfaces/view';
 import {enterView, leaveView} from '@angular/core/src/render3/state';
-import {CLASS_MAP_STYLING_KEY, STYLE_MAP_STYLING_KEY, insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
+import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
 
 
 describe('lView_debug', () => {
@@ -98,13 +98,13 @@ describe('lView_debug', () => {
           }
         ]);
 
-        insertTStylingBinding(tView.data, tNode, STYLE_MAP_STYLING_KEY, 6, true, true);
-        insertTStylingBinding(tView.data, tNode, CLASS_MAP_STYLING_KEY, 8, true, false);
+        insertTStylingBinding(tView.data, tNode, null, 6, true, true);
+        insertTStylingBinding(tView.data, tNode, null, 8, true, false);
 
         expect(tNode.styleBindings_).toEqual([
           null, {
             index: 8,
-            key: CLASS_MAP_STYLING_KEY,
+            key: null,
             isTemplate: false,
             prevDuplicate: false,
             nextDuplicate: true,
@@ -124,7 +124,7 @@ describe('lView_debug', () => {
         expect(tNode.classBindings_).toEqual([
           'STATIC', {
             index: 6,
-            key: STYLE_MAP_STYLING_KEY,
+            key: null,
             isTemplate: false,
             prevDuplicate: true,
             nextDuplicate: true,

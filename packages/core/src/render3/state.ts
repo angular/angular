@@ -9,7 +9,6 @@
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
 import {assertLViewOrUndefined} from './assert';
-import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
 import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TVIEW} from './interfaces/view';
 
@@ -105,18 +104,6 @@ interface LFrame {
    * We iterate over the list of Queries and increment current query index at every step.
    */
   currentQueryIndex: number;
-
-  /**
-   * Stores the index of the style binding which changed first.
-   *
-   * A change in styling binding implies that all bindings starting with this index need to be
-   * recomputed. See: `flushStylingOnElementExit` and `markStylingBindingDirty` functions for
-   * details.
-   *
-   * If this value is set then `flushStylingOnElementExit` needs to execute during the `advance`
-   * instruction to update the styling.
-   */
-  stylingBindingChanged: number;
 }
 
 /**
@@ -162,19 +149,11 @@ interface InstructionState {
    * Necessary to support ChangeDetectorRef.checkNoChanges().
    */
   checkNoChangesMode: boolean;
-
-  /**
-   * Function to be called when the element is exited.
-   *
-   * NOTE: The function is here for tree shakable purposes since it is only needed by styling.
-   */
-  elementExitFn: (() => void)|null;
 }
 
 export const instructionState: InstructionState = {
   lFrame: createLFrame(null),
   bindingsEnabled: true,
-  elementExitFn: null,
   checkNoChangesMode: false,
 };
 
@@ -255,28 +234,6 @@ export function getLView(): LView {
 }
 
 /**
- * Flags used for an active element during change detection.
- *
- * These flags are used within other instructions to inform cleanup or
- * exit operations to run when an element is being processed.
- *
- * Note that these flags are reset each time an element changes (whether it
- * happens when `advance()` is run or when change detection exits out of a template
- * function or when all host bindings are processed for an element).
- */
-export const enum ActiveElementFlags {
-  HostMode = 0b1,
-  RunExitFn = 0b1,
-  Size = 1,
-}
-
-
-export function isActiveHostElement(): boolean {
-  return (instructionState.lFrame.selectedIndex & ActiveElementFlags.HostMode) ===
-      ActiveElementFlags.HostMode;
-}
-
-/**
  * Sets the active directive host element and resets the directive id value
  * (when the provided elementIndex value has changed).
  *
@@ -284,43 +241,11 @@ export function isActiveHostElement(): boolean {
  *                     the directive/component instance lives
  */
 export function setActiveHostElement(elementIndex: number) {
-  executeElementExitFn();
   setSelectedIndex(elementIndex);
-  instructionState.lFrame.selectedIndex |= ActiveElementFlags.HostMode;
 }
 
 export function clearActiveHostElement() {
-  executeElementExitFn();
   setSelectedIndex(-1);
-}
-
-export function executeElementExitFn() {
-  const lFrame = instructionState.lFrame;
-  if (lFrame.stylingBindingChanged !== 0) {
-    instructionState.elementExitFn !();
-    lFrame.stylingBindingChanged = 0;
-  }
-}
-
-/**
- * Queues a function to be run once the element is "exited" in CD.
- *
- * Change detection will focus on an element either when the `advance()`
- * instruction is called or when the template or host bindings instruction
- * code is invoked. The element is then "exited" when the next element is
- * selected or when change detection for the template or host bindings is
- * complete. When this occurs (the element change operation) then an exit
- * function will be invoked if it has been set. This function can be used
- * to assign that exit function.
- *
- * @param fn
- */
-export function setElementExitFn(fn: () => void): void {
-  if (instructionState.elementExitFn === null) {
-    instructionState.elementExitFn = fn;
-  }
-  ngDevMode &&
-      assertEqual(instructionState.elementExitFn, fn, 'Expecting to always get the same function');
 }
 
 /**
@@ -409,8 +334,9 @@ export function incrementBindingIndex(count: number): number {
  * 0 index and we just shift the root so that they match next available location in the LView.
  * @param value
  */
-export function setBindingRoot(value: number) {
-  instructionState.lFrame.bindingRootIndex = value;
+export function setBindingRootForHostBindings(value: number) {
+  const lframe = instructionState.lFrame;
+  lframe.bindingIndex = lframe.bindingRootIndex = value;
 }
 
 export function getCurrentQueryIndex(): number {
@@ -482,7 +408,6 @@ export function enterView(newView: LView, tNode: TNode | null): void {
   newLFrame.bindingRootIndex = -1;
   newLFrame.bindingIndex = newView === null ? -1 : newView[TVIEW].bindingStartIndex;
   newLFrame.currentQueryIndex = 0;
-  newLFrame.stylingBindingChanged = 0;
 }
 
 /**
@@ -510,15 +435,9 @@ function createLFrame(parent: LFrame | null): LFrame {
     currentQueryIndex: 0,           //
     parent: parent !,               //
     child: null,                    //
-    stylingBindingChanged: 0,       //
   };
   parent !== null && (parent.child = lFrame);  // link the new LFrame for reuse.
   return lFrame;
-}
-
-export function leaveViewProcessExit() {
-  executeElementExitFn();
-  leaveView();
 }
 
 export function leaveView() {
@@ -549,7 +468,7 @@ function walkUpViews(nestingLevel: number, currentView: LView): LView {
  * current `LView` to act on.
  */
 export function getSelectedIndex() {
-  return instructionState.lFrame.selectedIndex >> ActiveElementFlags.Size;
+  return instructionState.lFrame.selectedIndex;
 }
 
 /**
@@ -562,7 +481,7 @@ export function getSelectedIndex() {
  * run if and when the provided `index` value is different from the current selected index value.)
  */
 export function setSelectedIndex(index: number) {
-  instructionState.lFrame.selectedIndex = index << ActiveElementFlags.Size;
+  instructionState.lFrame.selectedIndex = index;
 }
 
 
@@ -627,41 +546,4 @@ export function getCurrentStyleSanitizer() {
 const enum BindingChanged {
   CLASS_SHIFT = 16,
   STYLE_MASK = 0xFFFF,
-}
-
-/**
- * Store the first binding location from where the style flushing should start.
- *
- * This function stores the first binding location. Any subsequent binding changes are ignored as
- * they are downstream from this change and will be picked up once the flushing starts traversing
- * forward.
- *
- * Because flushing for template and flushing for host elements are separate, we don't need to worry
- * about the fact that they will be out of order.
- *
- * @param bindingIndex Index of binding location. This will be a binding location from which the
- *                     flushing of styling should start.
- * @param isClassBased `true` if `class` change (`false` if `style`)
- */
-export function markStylingBindingDirty(bindingIndex: number, isClassBased: boolean) {
-  ngDevMode && assertGreaterThan(bindingIndex, 0, 'expected valid binding index changed');
-  ngDevMode &&
-      assertEqual(
-          getCheckNoChangesMode(), false, 'Should never get here during check no changes mode');
-  const lFrame = instructionState.lFrame;
-  const stylingBindingChanged = lFrame.stylingBindingChanged;
-  const stylingBindingChangedExtracted = isClassBased ?
-      stylingBindingChanged >> BindingChanged.CLASS_SHIFT :
-      stylingBindingChanged & BindingChanged.STYLE_MASK;
-  if (stylingBindingChangedExtracted === 0) {
-    lFrame.stylingBindingChanged = stylingBindingChanged |
-        (isClassBased ? bindingIndex << BindingChanged.CLASS_SHIFT : bindingIndex);
-  }
-}
-
-export function getClassBindingChanged() {
-  return instructionState.lFrame.stylingBindingChanged >> BindingChanged.CLASS_SHIFT;
-}
-export function getStyleBindingChanged() {
-  return instructionState.lFrame.stylingBindingChanged & BindingChanged.STYLE_MASK;
 }
