@@ -222,8 +222,8 @@ describe('styling', () => {
         return;
       @Component({
         template: `
-            <div [style.--my-var]=" 'rgb(255, 0, 0)' ">
-              <span style="background-color: var(--my-var)">CONTENT</span>
+            <div [style.--my-var]=" '100px' ">
+              <span style="width: var(--my-var)">CONTENT</span>
             </div>`
       })
       class Cmp {
@@ -234,7 +234,7 @@ describe('styling', () => {
       fixture.detectChanges();
 
       const span = fixture.nativeElement.querySelector('span') as HTMLElement;
-      expect(getComputedStyle(span).getPropertyValue('background-color')).toEqual('rgb(255, 0, 0)');
+      expect(getComputedStyle(span).getPropertyValue('width')).toEqual('100px');
     });
   });
 
@@ -1405,7 +1405,7 @@ describe('styling', () => {
             expect(element.style.fontSize).toEqual('100px');
 
             // once for the template flush and again for the host bindings
-            expect(ngDevMode !.flushStyling).toEqual(2);
+            expect(ngDevMode !.rendererSetStyle).toEqual(4);
             ngDevModeResetPerfCounters();
 
             component.opacity = '0.6';
@@ -1420,7 +1420,7 @@ describe('styling', () => {
             expect(element.style.fontSize).toEqual('50px');
 
             // once for the template flush and again for the host bindings
-            expect(ngDevMode !.flushStyling).toEqual(2);
+            expect(ngDevMode !.rendererSetStyle).toEqual(4);
           });
 
   onlyInIvy('ivy resolves styling across directives, components and templates in unison')
@@ -1692,7 +1692,7 @@ describe('styling', () => {
             fixture.detectChanges();
             const element = fixture.nativeElement.querySelector('div');
 
-            assertStyleCounters(1, 0);
+            assertStyleCounters(4, 0);
             assertStyle(element, 'width', '111px');
             assertStyle(element, 'height', '111px');
 
@@ -1754,11 +1754,11 @@ describe('styling', () => {
             assertStyle(element, 'width', '0px');
             assertStyle(element, 'height', '123px');
 
-            comp.dir.map = {width: '1000px', height: '1000px', color: 'red'};
+            comp.dir.map = {width: '1000px', height: '1100px', color: 'red'};
             ngDevModeResetPerfCounters();
             fixture.detectChanges();
 
-            assertStyleCounters(1, 0);
+            assertStyleCounters(2, 0);
             assertStyle(element, 'width', '1000px');
             assertStyle(element, 'height', '123px');
             assertStyle(element, 'color', 'red');
@@ -1771,16 +1771,16 @@ describe('styling', () => {
             // values get applied
             assertStyleCounters(1, 0);
             assertStyle(element, 'width', '1000px');
-            assertStyle(element, 'height', '1000px');
+            assertStyle(element, 'height', '1100px');
             assertStyle(element, 'color', 'red');
 
             comp.map = {color: 'blue', width: '2000px', opacity: '0.5'};
             ngDevModeResetPerfCounters();
             fixture.detectChanges();
 
-            assertStyleCounters(1, 0);
+            assertStyleCounters(3, 0);
             assertStyle(element, 'width', '2000px');
-            assertStyle(element, 'height', '1000px');
+            assertStyle(element, 'height', '1100px');
             assertStyle(element, 'color', 'blue');
             assertStyle(element, 'opacity', '0.5');
 
@@ -1789,22 +1789,20 @@ describe('styling', () => {
             fixture.detectChanges();
 
             // all four are applied because the map was altered
-            // TODO: temporary dissable as it fails in IE. Re-enabled in #34804
-            // assertStyleCounters(1, 0);
+            assertStyleCounters(0, 1);
             assertStyle(element, 'width', '2000px');
-            assertStyle(element, 'height', '1000px');
+            assertStyle(element, 'height', '1100px');
             assertStyle(element, 'color', 'blue');
             assertStyle(element, 'opacity', '');
           });
 
-  onlyInIvy('only ivy has [style] support')
+  onlyInIvy('only ivy has [style.prop] support')
       .it('should sanitize style values before writing them', () => {
         @Component({
           template: `
-                <div [style.width]="widthExp"
-                     [style.background-image]="bgImageExp"
-                     [style]="styleMapExp"></div>
-              `
+                    <div [style.width]="widthExp"
+                         [style.background-image]="bgImageExp"></div>
+                  `
         })
         class Cmp {
           widthExp = '';
@@ -1823,23 +1821,55 @@ describe('styling', () => {
         fixture.detectChanges();
         // for some reasons `background-image: unsafe` is suppressed
         expect(getSortedStyle(div)).toEqual('');
-
-        // for some reasons `border-image: unsafe` is NOT suppressed
-        comp.styleMapExp = {'filter': 'url("javascript:border")'};
         fixture.detectChanges();
         expect(getSortedStyle(div)).not.toContain('javascript');
 
         // Prove that bindings work.
         comp.widthExp = '789px';
         comp.bgImageExp = bypassSanitizationTrustStyle(comp.bgImageExp) as string;
+        fixture.detectChanges();
+
+        expect(div.style.getPropertyValue('background-image')).toEqual('url("javascript:img")');
+        expect(div.style.getPropertyValue('width')).toEqual('789px');
+      });
+
+  onlyInIvy('only ivy has [style] support')
+      .it('should sanitize style values before writing them', () => {
+        @Component({
+          template: `
+                    <div [style.width]="widthExp"
+                         [style]="styleMapExp"></div>
+                  `
+        })
+        class Cmp {
+          widthExp = '';
+          styleMapExp: {[key: string]: any} = {};
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const comp = fixture.componentInstance;
+        fixture.detectChanges();
+
+        const div = fixture.nativeElement.querySelector('div');
+
+        comp.styleMapExp['background-image'] = 'url("javascript:img")';
+        fixture.detectChanges();
+        // for some reasons `background-image: unsafe` is suppressed
+        expect(getSortedStyle(div)).toEqual('');
+
+        // for some reasons `border-image: unsafe` is NOT suppressed
+        fixture.detectChanges();
+        expect(getSortedStyle(div)).not.toContain('javascript');
+
+        // Prove that bindings work.
+        comp.widthExp = '789px';
         comp.styleMapExp = {
-          'filter': bypassSanitizationTrustStyle(comp.styleMapExp['filter']) as string
+          'background-image': bypassSanitizationTrustStyle(comp.styleMapExp['background-image'])
         };
         fixture.detectChanges();
 
         expect(div.style.getPropertyValue('background-image')).toEqual('url("javascript:img")');
-        // Some browsers strip `url` on filter so we use `toContain`
-        expect(div.style.getPropertyValue('filter')).toContain('javascript:border');
         expect(div.style.getPropertyValue('width')).toEqual('789px');
       });
 
@@ -2887,30 +2917,25 @@ describe('styling', () => {
     expect(classList.contains('barFoo')).toBeTruthy();
   });
 
-  // onlyInIvy('[style] bindings are ivy only')
-  xit('should convert camelCased style property names to snake-case', () => {
-    // TODO(misko): Temporarily disabled in this PR renabled in
-    // https://github.com/angular/angular/pull/34616
-    // Current implementation uses strings to write to DOM. Because of that it does not convert
-    // property names from camelCase to dash-case. This is rectified in #34616 because we switch
-    // from string API to `element.style.setProperty` API.
-    @Component({template: `<div [style]="myStyles"></div>`})
-    class MyComp {
-      myStyles = {};
-    }
+  onlyInIvy('[style] bindings are ivy only')
+      .it('should convert camelCased style property names to snake-case', () => {
+        @Component({template: `<div [style]="myStyles"></div>`})
+        class MyComp {
+          myStyles = {};
+        }
 
-    TestBed.configureTestingModule({
-      declarations: [MyComp],
-    });
-    const fixture = TestBed.createComponent(MyComp);
-    fixture.detectChanges();
+        TestBed.configureTestingModule({
+          declarations: [MyComp],
+        });
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
 
-    const div = fixture.nativeElement.querySelector('div') as HTMLDivElement;
-    fixture.componentInstance.myStyles = {fontSize: '200px'};
-    fixture.detectChanges();
+        const div = fixture.nativeElement.querySelector('div') as HTMLDivElement;
+        fixture.componentInstance.myStyles = {fontSize: '200px'};
+        fixture.detectChanges();
 
-    expect(div.style.getPropertyValue('font-size')).toEqual('200px');
-  });
+        expect(div.style.getPropertyValue('font-size')).toEqual('200px');
+      });
 
   it('should recover from an error thrown in styling bindings', () => {
     let raiseWidthError = false;
@@ -3202,8 +3227,7 @@ describe('styling', () => {
     expect(element.classList.contains('parent-comp-active')).toBeFalsy();
   });
 
-  // TODO(FW-1360): re-enable this test once the new styling changes are in place.
-  xit('should not set inputs called class if they are not being used in the template', () => {
+  it('should not set inputs called class if they are not being used in the template', () => {
     const logs: string[] = [];
 
     @Directive({selector: '[test]'})

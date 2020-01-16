@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertEqual} from '../util/assert';
-
 
 export const enum BypassType {
   Url = 'URL',

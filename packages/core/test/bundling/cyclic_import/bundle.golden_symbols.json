@@ -258,9 +258,6 @@
     "name": "executeContentQueries"
   },
   {
-    "name": "executeElementExitFn"
-  },
-  {
     "name": "executeInitAndCheckHooks"
   },
   {
@@ -489,9 +486,6 @@
     "name": "leaveView"
   },
   {
-    "name": "leaveViewProcessExit"
-  },
-  {
     "name": "locateHostElement"
   },
   {
@@ -585,7 +579,7 @@
     "name": "setBindingIndex"
   },
   {
-    "name": "setBindingRoot"
+    "name": "setBindingRootForHostBindings"
   },
   {
     "name": "setCurrentQueryIndex"
