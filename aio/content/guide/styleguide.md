@@ -2452,11 +2452,97 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 
 <a href="#toc">Back to top</a>
 
+
+
+
 {@a 04-10}
+### Feature routing
+
+#### Style 04-10
+
+
+<div class="s-rule do">
+
+
+
+**Do** create an route for all distinct features in an application;
+for example, the `crisis-center-routing.module.ts`  helps navitagate through the different views in that feature.
+
+
+</div>
+
+<div class="s-rule consider">
+
+
+
+**Consider** The complexity of your application. The routing module should mirror naming conventions and location of feature modules. If you are working on a small application do not worry about this.
+
+
+</div>
+
+<div class="s-rule avoid">
+
+
+
+**Avoid** defining long paths ie. path: 'home/crisis-center/crisis-center-list/crisis-list-detail:3'.
+
+
+</div>
+
+
+<div class="s-why">
+
+
+
+**Why?** Use of the routing module helps reduce clutter in the root and feature module files. 
+
+
+</div>
+
+
+<div class="s-rule do">
+
+
+
+**Do** use routerLink with the specified component name to navigate to different components.
+
+
+</div>
+
+
+<div class="s-rule avoid">
+
+
+
+**Avoid** routerLink='..'.
+
+
+</div>
+
+
+<div class="s-why-last">
+
+
+
+**Why?**  Specifying the routerLink location helps stabilize navigation.   
+
+
+</div>
+
+
+
+<a href="#toc">Back to top</a>
+
+
+
+
+
+
+{@a 04-11}
 
 ### Shared feature module
 
-#### Style 04-10
+#### Style 04-11
 
 
 <div class="s-rule do">
@@ -2495,7 +2581,7 @@ module are referenced across the entire application.
 
 
 
-<div class="s-rule avoid">
+<div class="s-rule consider">
 
 
 
