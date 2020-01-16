@@ -16,7 +16,8 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  ViewEncapsulation
+  ViewEncapsulation,
+  NgZone
 } from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
@@ -43,7 +44,7 @@ export const DEFAULT_MARKER_OPTIONS = {
   encapsulation: ViewEncapsulation.None,
 })
 export class MapMarker implements OnInit, OnDestroy {
-  private _eventManager = new MapEventManager();
+  private _eventManager = new MapEventManager(this._ngZone);
   private readonly _options =
       new BehaviorSubject<google.maps.MarkerOptions>(DEFAULT_MARKER_OPTIONS);
   private readonly _title = new BehaviorSubject<string|undefined>(undefined);
@@ -236,15 +237,20 @@ export class MapMarker implements OnInit, OnDestroy {
 
   _marker?: google.maps.Marker;
 
-  constructor(private readonly _googleMap: GoogleMap) {}
+  constructor(
+    private readonly _googleMap: GoogleMap,
+    private _ngZone: NgZone) {}
 
   ngOnInit() {
     if (this._googleMap._isBrowser) {
       const combinedOptionsChanges = this._combineOptions();
 
       combinedOptionsChanges.pipe(take(1)).subscribe(options => {
-        this._marker = new google.maps.Marker(options);
-        this._marker.setMap(this._googleMap._googleMap);
+        // Create the object outside the zone so its events don't trigger change detection.
+        // We'll bring it back in inside the `MapEventManager` only for the events that the
+        // user has subscribed to.
+        this._ngZone.runOutsideAngular(() => this._marker = new google.maps.Marker(options));
+        this._marker!.setMap(this._googleMap._googleMap);
         this._eventManager.setTarget(this._marker);
       });
 

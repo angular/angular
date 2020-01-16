@@ -15,6 +15,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  NgZone,
 } from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
@@ -30,7 +31,7 @@ import {MapEventManager} from '../map-event-manager';
   selector: 'map-polyline',
 })
 export class MapPolyline implements OnInit, OnDestroy {
-  private _eventManager = new MapEventManager();
+  private _eventManager = new MapEventManager(this._ngZone);
   private readonly _options = new BehaviorSubject<google.maps.PolylineOptions>({});
   private readonly _path =
       new BehaviorSubject<google.maps.MVCArray<google.maps.LatLng>|google.maps.LatLng[]|
@@ -129,14 +130,19 @@ export class MapPolyline implements OnInit, OnDestroy {
   polylineRightclick: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('rightclick');
 
-  constructor(private readonly _map: GoogleMap) {}
+  constructor(
+    private readonly _map: GoogleMap,
+    private _ngZone: NgZone) {}
 
   ngOnInit() {
     if (this._map._isBrowser) {
       const combinedOptionsChanges = this._combineOptions();
 
       combinedOptionsChanges.pipe(take(1)).subscribe(options => {
-        this._polyline = new google.maps.Polyline(options);
+        // Create the object outside the zone so its events don't trigger change detection.
+        // We'll bring it back in inside the `MapEventManager` only for the events that the
+        // user has subscribed to.
+        this._ngZone.runOutsideAngular(() => this._polyline = new google.maps.Polyline(options));
         this._polyline.setMap(this._map._googleMap);
         this._eventManager.setTarget(this._polyline);
       });

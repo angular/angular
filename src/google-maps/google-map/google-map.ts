@@ -22,6 +22,7 @@ import {
   Optional,
   Inject,
   PLATFORM_ID,
+  NgZone,
 } from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
@@ -64,7 +65,7 @@ export const DEFAULT_WIDTH = '500px';
   encapsulation: ViewEncapsulation.None,
 })
 export class GoogleMap implements OnChanges, OnInit, OnDestroy {
-  private _eventManager = new MapEventManager();
+  private _eventManager: MapEventManager = new MapEventManager(this._ngZone);
   private _googleMapChanges: Observable<google.maps.Map>;
 
   private readonly _options = new BehaviorSubject<google.maps.MapOptions>(DEFAULT_OPTIONS);
@@ -223,6 +224,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
   constructor(
     private readonly _elementRef: ElementRef,
+    private _ngZone: NgZone,
     /**
      * @deprecated `platformId` parameter to become required.
      * @breaking-change 10.0.0
@@ -454,7 +456,12 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
       Observable<google.maps.Map> {
     return optionsChanges.pipe(
         take(1),
-        map(options => new google.maps.Map(this._mapEl, options)),
+        map(options => {
+          // Create the object outside the zone so its events don't trigger change detection.
+          // We'll bring it back in inside the `MapEventManager` only for the events that the
+          // user has subscribed to.
+          return this._ngZone.runOutsideAngular(() => new google.maps.Map(this._mapEl, options));
+        }),
         shareReplay(1));
   }
 

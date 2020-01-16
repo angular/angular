@@ -28,7 +28,7 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
     width: string | number;
     set zoom(zoom: number);
     zoomChanged: Observable<void>;
-    constructor(_elementRef: ElementRef,
+    constructor(_elementRef: ElementRef, _ngZone: NgZone,
     platformId?: Object);
     fitBounds(bounds: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral, padding?: number | google.maps.Padding): void;
     getBounds(): google.maps.LatLngBounds | null;
@@ -63,7 +63,7 @@ export declare class MapInfoWindow implements OnInit, OnDestroy {
     set position(position: google.maps.LatLngLiteral | google.maps.LatLng);
     positionChanged: Observable<void>;
     zindexChanged: Observable<void>;
-    constructor(_googleMap: GoogleMap, _elementRef: ElementRef<HTMLElement>);
+    constructor(_googleMap: GoogleMap, _elementRef: ElementRef<HTMLElement>, _ngZone: NgZone);
     close(): void;
     getContent(): string | Node;
     getPosition(): google.maps.LatLng | null;
@@ -103,7 +103,7 @@ export declare class MapMarker implements OnInit, OnDestroy {
     titleChanged: Observable<void>;
     visibleChanged: Observable<void>;
     zindexChanged: Observable<void>;
-    constructor(_googleMap: GoogleMap);
+    constructor(_googleMap: GoogleMap, _ngZone: NgZone);
     getAnimation(): google.maps.Animation | null;
     getClickable(): boolean;
     getCursor(): string | null;
@@ -137,7 +137,7 @@ export declare class MapPolyline implements OnInit, OnDestroy {
     polylineMouseover: Observable<google.maps.PolyMouseEvent>;
     polylineMouseup: Observable<google.maps.PolyMouseEvent>;
     polylineRightclick: Observable<google.maps.PolyMouseEvent>;
-    constructor(_map: GoogleMap);
+    constructor(_map: GoogleMap, _ngZone: NgZone);
     getDraggable(): boolean;
     getEditable(): boolean;
     getPath(): google.maps.MVCArray<google.maps.LatLng>;

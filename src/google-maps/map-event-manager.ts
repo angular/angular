@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgZone} from '@angular/core';
 import {Observable, Subscriber} from 'rxjs';
 
 type MapEventManagerTarget = {
@@ -28,6 +29,8 @@ export class MapEventManager {
     this._listeners = [];
   }
 
+  constructor(private _ngZone: NgZone) {}
+
   /** Gets an observable that adds an event listener to the map when a consumer subscribes to it. */
   getLazyEmitter<T>(name: string): Observable<T> {
     const observable = new Observable<T>(observer => {
@@ -37,7 +40,9 @@ export class MapEventManager {
         return undefined;
       }
 
-      const listener = this._target.addListener(name, (event: T) => observer.next(event));
+      const listener = this._target.addListener(name, (event: T) => {
+        this._ngZone.run(() => observer.next(event));
+      });
       this._listeners.push(listener);
       return () => listener.remove();
     });
