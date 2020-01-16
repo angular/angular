@@ -6,12 +6,10 @@ load("//tools:defaults.bzl", "protractor_web_test_suite")
   with `@angular/benchpress`.
 """
 
-def e2e_test(name, server, deps, **kwargs):
+def e2e_test(name, server, **kwargs):
     protractor_web_test_suite(
         name = name,
         on_prepare = "//modules/benchmarks:start-server.js",
         server = server,
-        # `yargs` is needed as runtime dependency for the e2e utils.
-        deps = ["@npm//yargs"] + deps,
         **kwargs
     )

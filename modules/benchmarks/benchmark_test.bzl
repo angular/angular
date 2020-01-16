@@ -7,7 +7,7 @@ load("//tools:defaults.bzl", "protractor_web_test_suite")
   unless explicitly requested.
 """
 
-def benchmark_test(name, server, deps, tags = []):
+def benchmark_test(name, server, tags = [], **kwargs):
     protractor_web_test_suite(
         name = name,
         configuration = "//:protractor-perf.conf.js",
@@ -19,7 +19,5 @@ def benchmark_test(name, server, deps, tags = []):
         # Benchmark targets should not run on CI by default.
         tags = tags + ["manual"],
         test_suite_tags = ["manual"],
-        deps = [
-            "@npm//yargs",
-        ] + deps,
+        **kwargs
     )
