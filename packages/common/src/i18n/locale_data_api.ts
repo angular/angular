@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵCurrencyIndex, ɵExtraLocaleDataIndex, ɵLocaleDataIndex, ɵfindLocaleData, ɵgetLocalePluralCase} from '@angular/core';
+import {ɵCurrencyIndex, ɵExtraLocaleDataIndex, ɵLocaleDataIndex, ɵfindLocaleData, ɵgetLocaleCurrencyCode, ɵgetLocalePluralCase} from '@angular/core';
+
 import {CURRENCIES_EN, CurrenciesSymbols} from './currencies';
+
 
 /**
  * Format styles that can be used to represent numbers.
@@ -471,6 +473,20 @@ export function getLocaleCurrencySymbol(locale: string): string|null {
 export function getLocaleCurrencyName(locale: string): string|null {
   const data = ɵfindLocaleData(locale);
   return data[ɵLocaleDataIndex.CurrencyName] || null;
+}
+
+/**
+ * Retrieves the default currency code for the given locale.
+ *
+ * The default is defined as the first currency which is still in use.
+ *
+ * @param locale The code of the locale whose currency code we want.
+ * @returns The code of the default currency for the given locale.
+ *
+ * @publicApi
+ */
+export function getLocaleCurrencyCode(locale: string): string|null {
+  return ɵgetLocaleCurrencyCode(locale);
 }
 
 /**
