@@ -5,7 +5,7 @@ package(default_visibility = ["//visibility:public"])
 ts_library(
     name = "perf_lib",
     testonly = True,
-    srcs = ["perf.spec.ts"],
+    srcs = ["js-web-frameworks.perf-spec.ts"],
     deps = [
         "//modules/e2e_util",
         "@npm//protractor",
