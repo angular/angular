@@ -50,7 +50,7 @@ Our peer dependencies (such as TypeScript, Zone.js, or RxJS) are not considered 
 Angular tracks the status of the public API in *golden files*. These files are stored in [tools/public_api_guard/](../tools/public_api_guard) and are maintained with a tool called [TS API Guardian](https://www.npmjs.com/package/ts-api-guardian).
 If you modify any part of a public API in one of the supported public packages, you must update the golden files that track the public API surface.
 If the golden files are not updated correctly, our test suite will detect the problem and the PR will fail to pass the tests.
-In such case a test error message will provide instructions for a command to run to update the golden files.
+In such cases, a test error message will provide instructions for a command that updates the golden files.
 
 ```shell
 yarn bazel run //tools/public_api_guard:<modified_package>_api.accept
