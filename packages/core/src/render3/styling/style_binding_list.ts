@@ -6,22 +6,13 @@
 * found in the LICENSE file at https://angular.io/license
 */
 
-import {unwrapSafeValue} from '../../sanitization/bypass';
-import {stylePropNeedsSanitization, ɵɵsanitizeStyle} from '../../sanitization/sanitization';
-import {assertEqual, assertString, throwError} from '../../util/assert';
-import {CharCode} from '../../util/char_code';
-import {concatStringsWithSpace} from '../../util/stringify';
+import {assertEqual} from '../../util/assert';
 import {assertFirstUpdatePass} from '../assert';
 import {TNode} from '../interfaces/node';
-import {SanitizerFn} from '../interfaces/sanitization';
-import {TStylingKey, TStylingMapKey, TStylingRange, getTStylingRangeNext, getTStylingRangePrev, getTStylingRangePrevDuplicate, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange} from '../interfaces/styling';
-import {LView, TData, TVIEW} from '../interfaces/view';
+import {TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangePrev, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange} from '../interfaces/styling';
+import {TData, TVIEW} from '../interfaces/view';
 import {getLView} from '../state';
-import {NO_CHANGE} from '../tokens';
-import {splitClassList, toggleClass} from './class_differ';
-import {StyleChangesMap, parseKeyValue, removeStyle} from './style_differ';
 import {getLastParsedKey, parseClassName, parseClassNameNext, parseStyle, parseStyleNext} from './styling_parser';
-
 
 
 /**
@@ -328,8 +319,7 @@ function markDuplicates(
     tData: TData, tStylingKey: TStylingKey, index: number, staticValues: string, isPrevDir: boolean,
     isClassBinding: boolean) {
   const tStylingAtIndex = tData[index + 1] as TStylingRange;
-  const key: string|null = typeof tStylingKey === 'object' ? tStylingKey.key : tStylingKey;
-  const isMap = key === null;
+  const isMap = tStylingKey === null;
   let cursor =
       isPrevDir ? getTStylingRangePrev(tStylingAtIndex) : getTStylingRangeNext(tStylingAtIndex);
   let foundDuplicate = false;
@@ -340,9 +330,8 @@ function markDuplicates(
   while (cursor !== 0 && (foundDuplicate === false || isMap)) {
     const tStylingValueAtCursor = tData[cursor] as TStylingKey;
     const tStyleRangeAtCursor = tData[cursor + 1] as TStylingRange;
-    const keyAtCursor = typeof tStylingValueAtCursor === 'object' ? tStylingValueAtCursor.key :
-                                                                    tStylingValueAtCursor;
-    if (keyAtCursor === null || key == null || keyAtCursor === key) {
+    if (tStylingValueAtCursor === null || tStylingKey == null ||
+        tStylingValueAtCursor === tStylingKey) {
       foundDuplicate = true;
       tData[cursor + 1] = isPrevDir ? setTStylingRangeNextDuplicate(tStyleRangeAtCursor) :
                                       setTStylingRangePrevDuplicate(tStyleRangeAtCursor);
@@ -365,7 +354,7 @@ function markDuplicates(
            i >= 0;                                                                            //
            i = isClassBinding ? parseClassNameNext(staticValues, i) :
                                 parseStyleNext(staticValues, i)) {
-        if (getLastParsedKey(staticValues) === key) {
+        if (getLastParsedKey(staticValues) === tStylingKey) {
           foundDuplicate = true;
           break;
         }
@@ -378,222 +367,3 @@ function markDuplicates(
                                    setTStylingRangeNextDuplicate(tStylingAtIndex);
   }
 }
-
-/**
- * Computes the new styling value starting at `index` styling binding.
- *
- * @param tData `TData` containing the styling binding linked list.
- *              - `TData[index]` contains the binding name.
- *              - `TData[index + 1]` contains the `TStylingRange` a linked list of other bindings.
- * @param tNode `TNode` containing the initial styling values.
- * @param lView `LView` containing the styling values.
- *              - `LView[index]` contains the binding value.
- *              - `LView[index + 1]` contains the concatenated value up to this point.
- * @param index the location in `TData`/`LView` where the styling search should start.
- * @param isClassBinding `true` if binding to `className`; `false` when binding to `style`.
- */
-export function flushStyleBinding(
-    tData: TData, tNode: TNode, lView: LView, index: number, isClassBinding: boolean): string {
-  const tStylingRangeAtIndex = tData[index + 1] as TStylingRange;
-  // When styling changes we don't have to start at the begging. Instead we start at the change
-  // value and look up the previous concatenation as a starting point going forward.
-  const lastUnchangedValueIndex = getTStylingRangePrev(tStylingRangeAtIndex);
-  let text = lastUnchangedValueIndex === 0 ?
-      (isClassBinding ? tNode.classes : tNode.styles) :
-      lView[lastUnchangedValueIndex + 1] as string | NO_CHANGE;
-  if (text === null || text === NO_CHANGE) text = '';
-  ngDevMode && assertString(text, 'Last unchanged value should be a string');
-  let cursor = index;
-  while (cursor !== 0) {
-    const value = lView[cursor];
-    const key = tData[cursor] as TStylingKey;
-    const stylingRange = tData[cursor + 1] as TStylingRange;
-    lView[cursor + 1] = text = appendStyling(
-        text as string, key, value, null, getTStylingRangePrevDuplicate(stylingRange),
-        isClassBinding);
-    cursor = getTStylingRangeNext(stylingRange);
-  }
-  return text as string;
-}
-
-
-/**
- * Append new styling to the currently concatenated styling text.
- *
- * This function concatenates the existing `className`/`cssText` text with the binding value.
- *
- * @param text Text to concatenate to.
- * @param stylingKey `TStylingKey` holding the key (className or style property name).
- * @param value The value for the key.
- *         - `isClassBinding === true`
- *              - `boolean` if `true` then add the key to the class list string.
- *              - `Array` add each string value to the class list string.
- *              - `Object` add object key to the class list string if the key value is truthy.
- *         - `isClassBinding === false`
- *              - `Array` Not supported.
- *              - `Object` add object key/value to the styles.
- * @param sanitizer Optional sanitizer to use. If `null` the `stylingKey` sanitizer will be used.
- *        This is provided so that `ɵɵstyleMap()`/`ɵɵclassMap()` can recursively call
- *        `appendStyling` without having ta package the sanitizer into `TStylingSanitizationKey`.
- * @param hasPreviousDuplicate determines if there is a chance of duplicate.
- *         - `true` the existing `text` should be searched for duplicates and if any found they
- *           should be removed.
- *         - `false` Fast path, just concatenate the strings.
- * @param isClassBinding Determines if the `text` is `className` or `cssText`.
- * @returns new styling string with the concatenated values.
- */
-export function appendStyling(
-    text: string, stylingKey: TStylingKey, value: any, sanitizer: SanitizerFn | null,
-    hasPreviousDuplicate: boolean, isClassBinding: boolean): string {
-  let key: string;
-  let suffixOrSanitizer: string|SanitizerFn|undefined|null = sanitizer;
-  if (typeof stylingKey === 'object') {
-    if (stylingKey.key === null) {
-      return value != null ? stylingKey.extra(text, value, hasPreviousDuplicate) : text;
-    } else {
-      suffixOrSanitizer = stylingKey.extra;
-      key = stylingKey.key;
-    }
-  } else {
-    key = stylingKey;
-  }
-  if (isClassBinding) {
-    ngDevMode && assertEqual(typeof stylingKey === 'string', true, 'Expecting key to be string');
-    if (hasPreviousDuplicate) {
-      text = toggleClass(text, stylingKey as string, !!value);
-    } else if (value) {
-      text = concatStringsWithSpace(text, stylingKey as string);
-    }
-  } else {
-    if (value === undefined) {
-      // If undefined than treat it as if we have no value. This means that we will fallback to the
-      // previous value (if any).
-      // `<div style="width: 10px" [style.width]="{width: undefined}">` => `width: 10px`.
-      return text;
-    }
-    if (hasPreviousDuplicate) {
-      text = removeStyle(text, key);
-    }
-    if (value !== false && value !== null) {
-      // `<div style="width: 10px" [style.width]="{width: null}">` => ``. (remove it)
-      // `<div style="width: 10px" [style.width]="{width: false}">` => ``. (remove it)
-      value = typeof suffixOrSanitizer === 'function' ? suffixOrSanitizer(value) :
-                                                        unwrapSafeValue(value);
-      const keyValue = key + ': ' +
-          (typeof suffixOrSanitizer === 'string' ? value + suffixOrSanitizer : value) + ';';
-      text = concatStringsWithSpace(text, keyValue);
-    }
-  }
-  return text;
-}
-
-/**
- * `ɵɵclassMap()` inserts `CLASS_MAP_STYLING_KEY` as a key to the `insertTStylingBinding()`.
- *
- * The purpose of this key is to add class map abilities to the concatenation in a tree shakable
- * way. If `ɵɵclassMap()` is not referenced than `CLASS_MAP_STYLING_KEY` will become eligible for
- * tree shaking.
- *
- * This key supports: `strings`, `object` (as Map) and `Array`. In each case it is necessary to
- * break the classes into parts and concatenate the parts into the `text`. The concatenation needs
- * to be done in parts as each key is individually subject to overwrites.
- */
-export const CLASS_MAP_STYLING_KEY: TStylingMapKey = {
-  key: null,
-  extra: (text: string, value: any, hasPreviousDuplicate: boolean): string => {
-    if (Array.isArray(value)) {
-      // We support Arrays
-      for (let i = 0; i < value.length; i++) {
-        text = appendStyling(text, value[i], true, null, hasPreviousDuplicate, true);
-      }
-    } else if (typeof value === 'object') {
-      // We support maps
-      for (let key in value) {
-        if (key !== '') {
-          // We have to guard for `""` empty string as key since it will break search and replace.
-          text = appendStyling(text, key, value[key], null, hasPreviousDuplicate, true);
-        }
-      }
-    } else if (typeof value === 'string') {
-      // We support strings
-      if (hasPreviousDuplicate) {
-        // We need to parse and process it.
-        const changes = new Map<string, boolean|null>();
-        splitClassList(value, changes, false);
-        changes.forEach((_, key) => text = appendStyling(text, key, true, null, true, true));
-      } else {
-        // No duplicates, just append it.
-        text = concatStringsWithSpace(text, value);
-      }
-    } else {
-      // All other cases are not supported.
-      ngDevMode && throwError('Unsupported value for class binding: ' + value);
-    }
-    return text;
-  }
-};
-
-/**
- * `ɵɵstyleMap()` inserts `STYLE_MAP_STYLING_KEY` as a key to the `insertTStylingBinding()`.
- *
- * The purpose of this key is to add style map abilities to the concatenation in a tree shakable
- * way. If `ɵɵstyleMap()` is not referenced than `STYLE_MAP_STYLING_KEY` will become eligible for
- * tree shaking. (`STYLE_MAP_STYLING_KEY` also pulls in the sanitizer as `ɵɵstyleMap()` could have
- * a sanitizable property.)
- *
- * This key supports: `strings`, and `object` (as Map). In each case it is necessary to
- * break the style into parts and concatenate the parts into the `text`. The concatenation needs
- * to be done in parts as each key is individually subject to overwrites.
- */
-export const STYLE_MAP_STYLING_KEY: TStylingMapKey = {
-  key: null,
-  extra: (text: string, value: any, hasPreviousDuplicate: boolean): string => {
-    if (Array.isArray(value)) {
-      // We don't support Arrays
-      ngDevMode && throwError('Style bindings do not support array bindings: ' + value);
-    } else if (typeof value === 'object') {
-      // We support maps
-      for (let key in value) {
-        if (key !== '') {
-          // We have to guard for `""` empty string as key since it will break search and replace.
-          text = appendStyling(
-              text, key, value[key], stylePropNeedsSanitization(key) ? ɵɵsanitizeStyle : null,
-              hasPreviousDuplicate, false);
-        }
-      }
-    } else if (typeof value === 'string') {
-      // We support strings
-      if (hasPreviousDuplicate) {
-        // We need to parse and process it.
-        const changes: StyleChangesMap =
-            new Map<string, {old: string | null, new: string | null}>();
-        parseKeyValue(value, changes, false);
-        changes.forEach(
-            (value, key) => text = appendStyling(
-                text, key, value.old, stylePropNeedsSanitization(key) ? ɵɵsanitizeStyle : null,
-                true, false));
-      } else {
-        // No duplicates, just append it.
-        if (value.charCodeAt(value.length - 1) !== CharCode.SEMI_COLON) {
-          value += ';';
-        }
-        text = concatStringsWithSpace(text, value);
-      }
-    } else {
-      // All other cases are not supported.
-      ngDevMode && throwError('Unsupported value for style binding: ' + value);
-    }
-    return text;
-  }
-};
-
-
-/**
- * If we have `<div [class] my-dir>` such that `my-dir` has `@Input('class')`, the `my-dir` captures
- * the `[class]` binding, so that it no longer participates in the style bindings. For this case
- * we use `IGNORE_DUE_TO_INPUT_SHADOW` so that `flushStyleBinding` ignores it.
- */
-export const IGNORE_DUE_TO_INPUT_SHADOW: TStylingMapKey = {
-  key: null,
-  extra: (text: string, value: any, hasPreviousDuplicate: boolean): string => { return text;}
-};

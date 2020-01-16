@@ -222,9 +222,6 @@
     "name": "executeCheckHooks"
   },
   {
-    "name": "executeElementExitFn"
-  },
-  {
     "name": "executeInitAndCheckHooks"
   },
   {
@@ -382,9 +379,6 @@
   },
   {
     "name": "leaveView"
-  },
-  {
-    "name": "leaveViewProcessExit"
   },
   {
     "name": "locateHostElement"
