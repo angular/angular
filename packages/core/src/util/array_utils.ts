@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertLessThanOrEqual} from './assert';
+import {assertEqual, assertLessThanOrEqual} from './assert';
 
 /**
 * Equivalent to ES6 spread, add each item to an array.
@@ -322,6 +322,7 @@ export function arrayMapDelete<V>(arrayMap: ArrayMap<V>, key: string): number {
  * inserted)
  */
 function _arrayIndexOfSorted(array: string[], value: string, shift: number): number {
+  ngDevMode && assertEqual(Array.isArray(array), true, 'Expecting an array');
   let start = 0;
   let end = array.length >> shift;
   while (end !== start) {

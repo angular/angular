@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Renderer2} from '../core';
 import {ViewEncapsulation} from '../metadata/view';
 import {addToArray, removeFromArray} from '../util/array_utils';
-import {assertDefined, assertDomNode, assertEqual} from '../util/assert';
+import {assertDefined, assertDomNode, assertEqual, assertString} from '../util/assert';
 import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
@@ -905,4 +906,103 @@ function applyContainer(
     const lView = lContainer[i] as LView;
     applyView(renderer, action, lView, renderParent, anchor);
   }
+}
+
+/**
+ * Writes class/style to element.
+ *
+ * @param renderer Renderer to use.
+ * @param isClassBased `true` if it should be written to `class` (`false` to write to `style`)
+ * @param rNode The Node to write to.
+ * @param prop Property to write to. This would be the class/style name.
+ * @param value Value to wiret. If `null`/`undefined`/`false` this is consider a remove (set/add
+ * otherwise).
+ */
+export function applyStyling(
+    renderer: Renderer3, isClassBased: boolean, rNode: RElement, prop: string, value: any) {
+  const isProcedural = isProceduralRenderer(renderer);
+  if (isClassBased) {
+    if (!value) {  // We actually want JS falseness here
+      ngDevMode && ngDevMode.rendererRemoveClass++;
+      if (isProcedural) {
+        (renderer as Renderer2).removeClass(rNode, prop);
+      } else {
+        (rNode as HTMLElement).classList.remove(prop);
+      }
+    } else {
+      ngDevMode && ngDevMode.rendererAddClass++;
+      if (isProcedural) {
+        (renderer as Renderer2).addClass(rNode, prop);
+      } else {
+        ngDevMode && assertDefined((rNode as HTMLElement).classList, 'HTMLElement expected');
+        (rNode as HTMLElement).classList.add(prop);
+      }
+    }
+  } else {
+    // TODO(misko): Can't import RendererStyleFlags2.DashCase as it causes imports to be resolved in
+    // different order which causes failures. Using direct constant as workaround for now.
+    const flags = prop.indexOf('-') == -1 ? undefined : 2 /* RendererStyleFlags2.DashCase */;
+    if (value === null || value === undefined) {
+      ngDevMode && ngDevMode.rendererRemoveStyle++;
+      if (isProcedural) {
+        (renderer as Renderer2).removeStyle(rNode, prop, flags);
+      } else {
+        (rNode as HTMLElement).style.removeProperty(prop);
+      }
+    } else {
+      ngDevMode && ngDevMode.rendererSetStyle++;
+      if (isProcedural) {
+        (renderer as Renderer2).setStyle(rNode, prop, value, flags);
+      } else {
+        ngDevMode && assertDefined((rNode as HTMLElement).style, 'HTMLElement expected');
+        (rNode as HTMLElement).style.setProperty(prop, value);
+      }
+    }
+  }
+}
+
+
+/**
+ * Write `cssText` to `RElement`.
+ *
+ * This function does direct write without any reconciliation. Used for writing initial values, so
+ * that static styling values do not pull in the style parser.
+ *
+ * @param renderer Renderer to use
+ * @param element The element which needs to be updated.
+ * @param newValue The new class list to write.
+ */
+export function writeDirectStyle(renderer: Renderer3, element: RElement, newValue: string) {
+  ngDevMode && assertString(newValue, '\'newValue\' should be a string');
+  if (isProceduralRenderer(renderer)) {
+    renderer.setAttribute(element, 'style', newValue);
+  } else {
+    (element as HTMLElement).style.cssText = newValue;
+  }
+  ngDevMode && ngDevMode.rendererSetStyle++;
+}
+
+/**
+ * Write `className` to `RElement`.
+ *
+ * This function does direct write without any reconciliation. Used for writing initial values, so
+ * that static styling values do not pull in the style parser.
+ *
+ * @param renderer Renderer to use
+ * @param element The element which needs to be updated.
+ * @param newValue The new class list to write.
+ */
+export function writeDirectClass(renderer: Renderer3, element: RElement, newValue: string) {
+  ngDevMode && assertString(newValue, '\'newValue\' should be a string');
+  if (isProceduralRenderer(renderer)) {
+    if (newValue === '') {
+      // There are tests in `google3` which expect `element.getAttribute('class')` to be `null`.
+      renderer.removeAttribute(element, 'class');
+    } else {
+      renderer.setAttribute(element, 'class', newValue);
+    }
+  } else {
+    element.className = newValue;
+  }
+  ngDevMode && ngDevMode.rendererSetClassName++;
 }
