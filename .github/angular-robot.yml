@@ -115,6 +115,7 @@ merge:
       - "ci/angular: size"
       - "cla/google"
       - "google3"
+      - "pullapprove"
 
 
   # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable
