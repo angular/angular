@@ -1,3 +1,18 @@
+# 9.0.0-rc.8 "stone-stallion" (2020-01-16)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **form-field:** undeprecated legacy and standard appearances ([#18144](https://github.com/angular/components/issues/18144)) ([9ea5694](https://github.com/angular/components/commit/9ea5694)) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  sub-components throwing during server-side rendering ([#18059](https://github.com/angular/components/issues/18059)) ([a7f7e9b](https://github.com/angular/components/commit/a7f7e9b)) |
+
+
 # 9.0.0-rc.7 "obsidian-elephant" (2020-01-08)
 
 ### material
