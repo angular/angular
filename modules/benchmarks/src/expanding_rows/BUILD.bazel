@@ -7,7 +7,7 @@ ng_module(
     name = "application_lib",
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["**/*.spec.ts"],
+        exclude = ["**/*.perf-spec.ts"],
     ),
     generate_ve_shims = True,
     deps = [
@@ -23,7 +23,7 @@ ng_module(
 ts_library(
     name = "perf_lib",
     testonly = 1,
-    srcs = ["benchmark_perf.spec.ts"],
+    srcs = ["expanding_rows.perf-spec.ts"],
     deps = [
         "//modules/e2e_util",
         "@npm//protractor",
