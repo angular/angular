@@ -26,7 +26,8 @@ result
     writeFileSync(filename, content, 'utf-8');
     console.log('Prerender done.');
   })
-  // If rendering the module factory fails, exit the process with an error code because otherwise
-  // the CI task will not recognize the failure and will show as "success". The error message
-  // will be printed automatically by the `renderModuleFactory` method.
-  .catch(() => process.exit(1));
+  // If rendering the module factory fails, re-throw the error in order to print the
+  // failure to the console, and to exit the process with a non-zero exit code.
+  .catch(error => {
+    throw error;
+  });
