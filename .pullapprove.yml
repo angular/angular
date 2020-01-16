@@ -128,7 +128,6 @@ groups:
           ])
     reviewers:
       users:
-        - alexeagle
         - kyliau
         - igorminar
         - mgechev
@@ -192,7 +191,6 @@ groups:
       users:
         - filipesilva
         - mgechev
-        - vikerman
       teams:
         - ~framework-global-approvers
 
@@ -417,7 +415,6 @@ groups:
     reviewers:
       users:
         - alxhub
-        - vikerman
       teams:
         - ~framework-global-approvers
 
@@ -509,7 +506,9 @@ groups:
           ])
     reviewers:
       users:
-        - vikerman
+        - kara
+        - igorminar
+        - pkozlowski-opensource
       teams:
         - ~framework-global-approvers
 
@@ -542,7 +541,6 @@ groups:
         - AndrewKushnir
         - mhevery
         - petebacondarwin
-        - vikerman
       teams:
         - ~framework-global-approvers
 
@@ -581,7 +579,6 @@ groups:
       users:
         - jialipassion
         - mhevery
-        - vikerman
       teams:
         - ~framework-global-approvers
 
@@ -735,7 +732,6 @@ groups:
         - alan-agius4
         - igorminar
         - mgechev
-        - vikerman
       teams:
         - ~framework-global-approvers-for-docs-only-changes
         - ~framework-global-approvers
@@ -756,7 +752,6 @@ groups:
         - alan-agius4
         - igorminar
         - mgechev
-        - vikerman
       teams:
         - ~framework-global-approvers-for-docs-only-changes
         - ~framework-global-approvers
@@ -779,7 +774,6 @@ groups:
         - alan-agius4
         - igorminar
         - mgechev
-        - vikerman
       teams:
         - ~framework-global-approvers-for-docs-only-changes
         - ~framework-global-approvers
