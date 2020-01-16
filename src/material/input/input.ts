@@ -71,8 +71,7 @@ const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase =
     /**
      * @breaking-change 8.0.0 remove .mat-form-field-autofill-control in favor of AutofillMonitor.
      */
-    '[class.mat-form-field-autofill-control]': 'true',
-    '[class.mat-input-element]': 'true',
+    'class': 'mat-input-element mat-form-field-autofill-control',
     '[class.mat-input-server]': '_isServer',
     // Native input properties that are overwritten by Angular inputs need to be synced with
     // the native input element. Otherwise property bindings for those don't work.
