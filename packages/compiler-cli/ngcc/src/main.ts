@@ -149,6 +149,20 @@ export function mainNgcc(
   // NOTE: Avoid eagerly instantiating anything that might not be used when running sync/async or in
   //       master/worker process.
   const fileSystem = getFileSystem();
+
+
+  // Bail out early if the work is already done.
+  const supportedPropertiesToConsider = ensureSupportedProperties(propertiesToConsider);
+  const absoluteTargetEntryPointPath =
+      targetEntryPointPath !== undefined ? resolve(basePath, targetEntryPointPath) : undefined;
+  if (absoluteTargetEntryPointPath !== undefined &&
+      hasProcessedTargetEntryPoint(
+          fileSystem, absoluteTargetEntryPointPath, supportedPropertiesToConsider,
+          compileAllFormats)) {
+    logger.debug('The target entry-point has already been processed');
+    return;
+  }
+
   // NOTE: To avoid file corruption, ensure that each `ngcc` invocation only creates _one_ instance
   //       of `PackageJsonUpdater` that actually writes to disk (across all processes).
   //       This is hard to enforce automatically, when running on multiple processes, so needs to be
@@ -159,8 +173,6 @@ export function mainNgcc(
   const analyzeEntryPoints: AnalyzeEntryPointsFn = () => {
     logger.debug('Analyzing entry-points...');
     const startTime = Date.now();
-
-    const supportedPropertiesToConsider = ensureSupportedProperties(propertiesToConsider);
 
     const moduleResolver = new ModuleResolver(fileSystem, pathMappings);
     const esmDependencyHost = new EsmDependencyHost(fileSystem, moduleResolver);
@@ -180,7 +192,7 @@ export function mainNgcc(
     const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
     const {entryPoints, graph} = getEntryPoints(
         fileSystem, pkgJsonUpdater, logger, dependencyResolver, config, absBasePath,
-        targetEntryPointPath, pathMappings, supportedPropertiesToConsider, compileAllFormats);
+        absoluteTargetEntryPointPath, pathMappings);
 
     const unprocessableEntryPointPaths: string[] = [];
     // The tasks are partially ordered by virtue of the entry-points being partially ordered too.
@@ -348,13 +360,12 @@ function getExecutor(
 function getEntryPoints(
     fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater, logger: Logger,
     resolver: DependencyResolver, config: NgccConfiguration, basePath: AbsoluteFsPath,
-    targetEntryPointPath: string | undefined, pathMappings: PathMappings | undefined,
-    propertiesToConsider: string[], compileAllFormats: boolean):
-    {entryPoints: PartiallyOrderedEntryPoints, graph: DepGraph<EntryPoint>} {
+    targetEntryPointPath: AbsoluteFsPath | undefined, pathMappings: PathMappings |
+        undefined): {entryPoints: PartiallyOrderedEntryPoints, graph: DepGraph<EntryPoint>} {
   const {entryPoints, invalidEntryPoints, graph} = (targetEntryPointPath !== undefined) ?
       getTargetedEntryPoints(
           fs, pkgJsonUpdater, logger, resolver, config, basePath, targetEntryPointPath,
-          propertiesToConsider, compileAllFormats, pathMappings) :
+          pathMappings) :
       getAllEntryPoints(fs, config, logger, resolver, basePath, pathMappings);
   logInvalidEntryPoints(logger, invalidEntryPoints);
   return {entryPoints, graph};
@@ -363,19 +374,8 @@ function getEntryPoints(
 function getTargetedEntryPoints(
     fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater, logger: Logger,
     resolver: DependencyResolver, config: NgccConfiguration, basePath: AbsoluteFsPath,
-    targetEntryPointPath: string, propertiesToConsider: string[], compileAllFormats: boolean,
+    absoluteTargetEntryPointPath: AbsoluteFsPath,
     pathMappings: PathMappings | undefined): SortedEntryPointsInfo {
-  const absoluteTargetEntryPointPath = resolve(basePath, targetEntryPointPath);
-  if (hasProcessedTargetEntryPoint(
-          fs, absoluteTargetEntryPointPath, propertiesToConsider, compileAllFormats)) {
-    logger.debug('The target entry-point has already been processed');
-    return {
-      entryPoints: [] as unknown as PartiallyOrderedEntryPoints,
-      invalidEntryPoints: [],
-      ignoredDependencies: [],
-      graph: EMPTY_GRAPH,
-    };
-  }
   const finder = new TargetedEntryPointFinder(
       fs, config, logger, resolver, basePath, absoluteTargetEntryPointPath, pathMappings);
   const entryPointInfo = finder.findEntryPoints();
