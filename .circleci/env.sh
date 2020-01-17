@@ -77,5 +77,22 @@ setPublicVar MATERIAL_REPO_BRANCH "master"
 # **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI "config.yml".
 setPublicVar MATERIAL_REPO_COMMIT "71955d2e194bfc5561f25daea16e68af266d6ff9"
 
-# Source `$BASH_ENV` to make the variables available immediately.
+
+####################################################################################################
+# Decrypt GCP Credentials and store them as the Google default credentials.
+####################################################################################################
+mkdir -p "$HOME/.config/gcloud";
+openssl aes-256-cbc -d -in "${projectDir}/.circleci/gcp_token" \
+        -md md5 -k "$CIRCLE_PROJECT_REPONAME" -out "$HOME/.config/gcloud/application_default_credentials.json"
+####################################################################################################
+# Set bazel configuration for CircleCI runs.
+####################################################################################################
+cp "${projectDir}/.circleci/bazel.linux.rc" "$HOME/.bazelrc";
+
+####################################################################################################
+####################################################################################################
+##                  Source `$BASH_ENV` to make the variables available immediately.               ##
+##                  ***NOTE: This must remain the the last action in this script***               ##
+####################################################################################################
+####################################################################################################
 source $BASH_ENV;
