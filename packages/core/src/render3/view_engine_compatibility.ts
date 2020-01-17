@@ -60,7 +60,8 @@ export function createElementRef(
     ElementRefToken: typeof ViewEngine_ElementRef, tNode: TNode,
     view: LView): ViewEngine_ElementRef {
   if (!R3ElementRef) {
-    R3ElementRef = class ElementRef extends ElementRefToken {};
+    // TODO: Fix class name, should be ElementRef, but there appears to be a rollup bug
+    R3ElementRef = class ElementRef_ extends ElementRefToken {};
   }
   return new R3ElementRef(getNativeByTNode(tNode, view) as RElement);
 }
@@ -95,7 +96,8 @@ export function createTemplateRef<T>(
     TemplateRefToken: typeof ViewEngine_TemplateRef, ElementRefToken: typeof ViewEngine_ElementRef,
     hostTNode: TNode, hostView: LView): ViewEngine_TemplateRef<T>|null {
   if (!R3TemplateRef) {
-    R3TemplateRef = class TemplateRef<T> extends TemplateRefToken<T> {
+    // TODO: Fix class name, should be TemplateRef, but there appears to be a rollup bug
+    R3TemplateRef = class TemplateRef_<T> extends TemplateRefToken<T> {
       constructor(
           private _declarationView: LView, private _declarationTContainer: TContainerNode,
           readonly elementRef: ViewEngine_ElementRef) {
@@ -171,7 +173,8 @@ export function createContainerRef(
     hostTNode: TElementNode|TContainerNode|TElementContainerNode,
     hostView: LView): ViewEngine_ViewContainerRef {
   if (!R3ViewContainerRef) {
-    R3ViewContainerRef = class ViewContainerRef extends ViewContainerRefToken {
+    // TODO: Fix class name, should be ViewContainerRef, but there appears to be a rollup bug
+    R3ViewContainerRef = class ViewContainerRef_ extends ViewContainerRefToken {
       constructor(
           private _lContainer: LContainer,
           private _hostTNode: TElementNode|TContainerNode|TElementContainerNode,
