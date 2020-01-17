@@ -11,6 +11,7 @@ import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, Compo
 import {ɵINJECTOR_SCOPE} from '@angular/core/src/core';
 import {ViewRef} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
 
@@ -696,6 +697,75 @@ describe('di', () => {
 
         const dirA = fixture.componentInstance.myComp.dirA;
         expect(dirA.dirB.value).toEqual('parent');
+      });
+
+      it('should support @SkipSelf when injecting Injectors', () => {
+        @Component({
+          selector: 'parent',
+          template: '<child></child>',
+          providers: [{
+            provide: 'token',
+            useValue: 'PARENT',
+          }]
+        })
+        class ParentComponent {
+        }
+
+        @Component({
+          selector: 'child',
+          template: '...',
+          providers: [{
+            provide: 'token',
+            useValue: 'CHILD',
+          }]
+        })
+        class ChildComponent {
+          constructor(public injector: Injector, @SkipSelf() public parentInjector: Injector) {}
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [ParentComponent, ChildComponent],
+        });
+        const fixture = TestBed.createComponent(ParentComponent);
+        fixture.detectChanges();
+
+        const child = fixture.debugElement.query(By.directive(ChildComponent));
+        expect(child.componentInstance.injector.get('token')).toBe('CHILD');
+        expect(child.componentInstance.parentInjector.get('token')).toBe('PARENT');
+      });
+
+      it('should support @SkipSelf and @Host when injecting Injectors', () => {
+        @Component({
+          selector: 'parent',
+          template: '<child></child>',
+          providers: [{
+            provide: 'token',
+            useValue: 'PARENT',
+          }]
+        })
+        class ParentComponent {
+        }
+
+        @Component({
+          selector: 'child',
+          template: '...',
+          providers: [{
+            provide: 'token',
+            useValue: 'CHILD',
+          }]
+        })
+        class ChildComponent {
+          constructor(@Host() @SkipSelf() public injector: Injector) {}
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [ParentComponent, ChildComponent],
+        });
+
+        // Ivy has different error message when dependency is not found
+        const expectedErrorMessage =
+            ivyEnabled ? /NodeInjector: NOT_FOUND \[Injector]/ : /No provider for Injector/;
+        expect(() => TestBed.createComponent(ParentComponent)).toThrowError(expectedErrorMessage);
       });
 
       onlyInIvy('Ivy has different error message when dependency is not found')

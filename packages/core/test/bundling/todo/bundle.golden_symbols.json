@@ -714,6 +714,9 @@
     "name": "getTNode"
   },
   {
+    "name": "getTNodeParent"
+  },
+  {
     "name": "getTStylingRangeNext"
   },
   {
@@ -1000,6 +1003,9 @@
   },
   {
     "name": "normalizeAndApplySuffixOrSanitizer"
+  },
+  {
+    "name": "notFoundValueOrThrow"
   },
   {
     "name": "readPatchedData"

@@ -307,6 +307,25 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
   return null;
 }
 
+function getTNodeParent(
+    tNode: TDirectiveHostNode, lView: LView, flags: InjectFlags): TDirectiveHostNode|null {
+  const parent = tNode.parent;
+  // Falling back to `T_HOST` in case we cross component boundary (thus `tNode.parent` is not
+  // defined in this case), but do that only if `@Host()` is not present.
+  if (parent === null && !(flags & InjectFlags.Host)) {
+    return lView[T_HOST] as TDirectiveHostNode;
+  }
+  return parent;
+}
+
+function notFoundValueOrThrow<T>(
+    notFoundValue: any, token: Type<T>| InjectionToken<T>, flags: InjectFlags) {
+  if (flags & InjectFlags.Optional) {
+    return notFoundValue;
+  } else {
+    throw new Error(`NodeInjector: NOT_FOUND [${stringifyForError(token)}]`);
+  }
+}
 
 /**
  * Returns the value associated to the given token from the NodeInjectors => ModuleInjector.
@@ -345,10 +364,19 @@ export function getOrCreateInjectable<T>(
         leaveDI();
       }
     } else if (typeof bloomHash == 'number') {
+      // `-1` is a special value used to identify `Injector` types.
       if (bloomHash === -1) {
-        // `-1` is a special value used to identify `Injector` types.
+        if (flags & InjectFlags.SkipSelf) {
+          const _tNode = tNode;
+          tNode = getTNodeParent(tNode, lView, flags);
+          if (tNode === null) {
+            return notFoundValueOrThrow(notFoundValue, token, flags);
+          }
+          lView = getParentInjectorView(getParentInjectorLocation(_tNode, lView), lView);
+        }
         return new NodeInjector(tNode, lView) as any;
       }
+
       // If the token has a bloom hash, then it is a token which could be in NodeInjector.
 
       // A reference to the previous injector TView that was found while climbing the element
@@ -361,8 +389,7 @@ export function getOrCreateInjectable<T>(
           flags & InjectFlags.Host ? lView[DECLARATION_COMPONENT_VIEW][T_HOST] : null;
 
       // If we should skip this injector, or if there is no injector on this node, start by
-      // searching
-      // the parent injector.
+      // searching the parent injector.
       if (injectorIndex === -1 || flags & InjectFlags.SkipSelf) {
         parentLocation = injectorIndex === -1 ? getParentInjectorLocation(tNode, lView) :
                                                 lView[injectorIndex + PARENT_INJECTOR];
@@ -432,11 +459,7 @@ export function getOrCreateInjectable<T>(
       setInjectImplementation(previousInjectImplementation);
     }
   }
-  if (flags & InjectFlags.Optional) {
-    return notFoundValue;
-  } else {
-    throw new Error(`NodeInjector: NOT_FOUND [${stringifyForError(token)}]`);
-  }
+  return notFoundValueOrThrow(notFoundValue, token, flags);
 }
 
 const NOT_FOUND = {};
