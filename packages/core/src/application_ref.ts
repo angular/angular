@@ -302,11 +302,6 @@ export class PlatformRef {
       if (!exceptionHandler) {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
-      // If the `LOCALE_ID` provider is defined at bootstrap we set the value for runtime i18n (ivy)
-      if (ivyEnabled) {
-        const localeId = moduleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
-        setLocaleId(localeId || DEFAULT_LOCALE_ID);
-      }
       moduleRef.onDestroy(() => remove(this._modules, moduleRef));
       ngZone !.runOutsideAngular(
           () => ngZone !.onError.subscribe(
@@ -315,6 +310,11 @@ export class PlatformRef {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
         initStatus.runInitializers();
         return initStatus.donePromise.then(() => {
+          if (ivyEnabled) {
+            // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
+            const localeId = moduleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
+            setLocaleId(localeId || DEFAULT_LOCALE_ID);
+          }
           this._moduleDoBootstrap(moduleRef);
           return moduleRef;
         });
