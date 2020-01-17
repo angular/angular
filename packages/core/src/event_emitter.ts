@@ -37,15 +37,15 @@ import {Subject, Subscription} from 'rxjs';
  *  </div>`})
  * export class Zippy {
  *   visible: boolean = true;
- *   @Output() open: EventEmitter<any> = new EventEmitter();
- *   @Output() close: EventEmitter<any> = new EventEmitter();
+ *   @Output() open: EventEmitter<boolean> = new EventEmitter();
+ *   @Output() close: EventEmitter<boolean> = new EventEmitter();
  *
  *   toggle() {
  *     this.visible = !this.visible;
  *     if (this.visible) {
- *       this.open.emit(null);
+ *       this.open.emit(true);
  *     } else {
- *       this.close.emit(null);
+ *       this.close.emit(false);
  *     }
  *   }
  * }
