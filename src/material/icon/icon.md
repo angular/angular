@@ -37,20 +37,25 @@ explicitly set by calling `MatIconRegistry.setDefaultFontSetClass`.
 
 ### SVG icons
 
-When an `mat-icon` component displays an SVG icon, it does so by directly inlining the SVG content
-into the page as a child of the component. (Rather than using an `<img>` tag or a div background
-image). This makes it easier to apply CSS styles to SVG icons. For example, the default color of the
+`<mat-icon>` displays SVG icons by directly inlining the SVG content into the DOM
+as a child of itself. This approach offers an advantage over an `<img>` tag or a CSS
+`background-image` because it allows styling the SVG with CSS. For example, the default color of the
 SVG content is the CSS
 [currentColor](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#currentColor_keyword)
 value. This makes SVG icons by default have the same color as surrounding text, and allows you to
-change the color by setting the "color" style on the `mat-icon` element.
+change the color by setting the `color` style on the `mat-icon` element.
 
-In order to prevent XSS vulnerabilities, any SVG URLs and HTML strings passed to the
+In order to guard against XSS vulnerabilities, any SVG URLs and HTML strings passed to the
 `MatIconRegistry` must be marked as trusted by using Angular's `DomSanitizer` service.
 
-Also note that all SVG icons, registered by URL, are fetched via XmlHttpRequest, and due to the
-same-origin policy, their URLs must be on the same domain as the containing page, or their servers
-must be configured to allow cross-domain access.
+`MatIconRegistry` fetches all remote SVG icons via Angular's `HttpClient` service. If you haven't
+included [`HttpClientModule` from the `@angular/common/http` package](https://angular.io/guide/http)
+in your `NgModule` imports, you will get an error at runtime.
+
+Note that `HttpClient` fetches SVG icons registered with a URL via `XmlHttpRequest`, subject to the
+[Same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy). This
+means that icon URLs must have the same origin as the containing page or that the application's
+server must be configured to allow cross-origin requests.
 
 #### Named icons
 
@@ -92,8 +97,8 @@ element.
 In thinking about accessibility, it is useful to place icon use into one of three categories:
 1. **Decorative**: the icon conveys no real semantic meaning and is purely cosmetic.
 2. **Interactive**: a user will click or otherwise interact with the icon to perform some action.
-3. **Indicator**: the icon is not interactive, but it conveys some information, such as a status. This
-includes using the icon in place of text inside of a larger message.
+3. **Indicator**: the icon is not interactive, but it conveys some information, such as a status.
+This includes using the icon in place of text inside of a larger message.
 
 #### Decorative icons
 When the icon is purely cosmetic and conveys no real semantic meaning, the `<mat-icon>` element
@@ -107,8 +112,8 @@ some icon on the page, a more appropriate  element should "own" the interaction:
 direct text content, `aria-label`, or `aria-labelledby`.
 
 #### Indicator icons
-When the presence of an icon communicates some information to the user whether as an indicator or 
-by being inlined into a block of text, that information must also be made available to 
+When the presence of an icon communicates some information to the user whether as an indicator or
+by being inlined into a block of text, that information must also be made available to
 screen-readers. The most straightforward way to do this is to
 1. Add a `<span>` as an adjacent sibling to the `<mat-icon>` element with text that conveys the same
 information as the icon.
@@ -118,7 +123,7 @@ on-screen but still available to screen-reader users.
 ### Bidirectionality
 
 By default icons in an RTL layout will look exactly the same as in LTR, however certain icons have
-to be [mirrored for RTL users](https://material.io/guidelines/usability/bidirectionality.html). If
+to be [mirrored for RTL users](https://material.io/design/usability/bidirectionality.html). If
 you want to mirror an icon only in an RTL layout, you can use the `mat-icon-rtl-mirror` CSS class.
 
 ```html
