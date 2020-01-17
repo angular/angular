@@ -255,6 +255,7 @@ class EmulatedEncapsulationServerRenderer2 extends DefaultServerRenderer2 {
 function _readStyleAttribute(element: any): {[name: string]: string} {
   const styleMap: {[name: string]: string} = {};
   const styleAttribute = element.getAttribute('style');
+  debugger;
   if (styleAttribute) {
     const styleList = styleAttribute.split(/;+/g);
     for (let i = 0; i < styleList.length; i++) {
@@ -280,5 +281,6 @@ function _writeStyleAttribute(element: any, styleMap: {[name: string]: string}) 
       styleAttrValue += key + ':' + styleMap[key] + ';';
     }
   }
+  debugger;
   element.setAttribute('style', styleAttrValue);
 }

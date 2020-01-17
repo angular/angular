@@ -704,7 +704,7 @@ export declare function ɵɵattributeInterpolateV(attrName: string, values: any[
 
 export declare function ɵɵclassMap(classes: {
     [className: string]: any;
-} | string | null): typeof ɵɵclassMap;
+} | string | null): void;
 
 export declare function ɵɵclassMapInterpolate1(prefix: string, v0: any, suffix: string): void;
 
@@ -1035,7 +1035,7 @@ export declare function ɵɵstaticViewQuery<T>(predicate: Type<any> | string[], 
 
 export declare function ɵɵstyleMap(styles: {
     [styleName: string]: any;
-} | string | null): typeof ɵɵstyleMap;
+} | string | null): void;
 
 export declare function ɵɵstyleProp(prop: string, value: string | number | SafeValue | null, suffix?: string | null): typeof ɵɵstyleProp;
 

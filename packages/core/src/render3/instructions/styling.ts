@@ -250,7 +250,7 @@ function stylingPropertyFirstUpdatePass(
   const tData = tView.data;
   if (tData[bindingIndex + 1] === null) {
     // The above check is necessary because we don't clear first update pass until first successful
-    // (ne exception) template execution. This prevents the styling instruction from double adding
+    // (no exception) template execution. This prevents the styling instruction from double adding
     // itself to the list.
     const tNode = tData[getSelectedIndex() + HEADER_OFFSET] as TNode;
     if (hasStylingInputShadow(tNode, isClassBased) && typeof prop === 'object' &&
@@ -259,7 +259,7 @@ function stylingPropertyFirstUpdatePass(
       // `CLASS_MAP_STYLING_KEY` which means that we are either `[style]` or `[class]` binding.
       // If there is a directive which uses `@Input('style')` or `@Input('class')` than
       // we need to neutralize this binding since that directive is shadowing it.
-      // We turn this into a noop using `IGNORE_DOE_TO_INPUT_SHADOW`
+      // We turn this into a noop using `IGNORE_DUE_TO_INPUT_SHADOW`
       prop = IGNORE_DUE_TO_INPUT_SHADOW;
     }
     const tStylingKey: TStylingKey = suffixOrSanitization == null ? prop : ({
