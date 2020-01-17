@@ -33,7 +33,7 @@ To create the server-side app module, `app.server.module.ts`, run the following 
 
 <code-example language="bash">
 
-ng add @nguniversal/express-engine
+ng add @nguniversal/express-engine@next
 
 </code-example>
 
