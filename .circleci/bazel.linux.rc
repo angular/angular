@@ -4,7 +4,7 @@
 
 # Import config items common to both Linux and Windows setups.
 # https://docs.bazel.build/versions/master/guide.html#bazelrc-syntax-and-semantics
-import %workspace%/.circleci/bazel.common.rc
+try-import %workspace%/.circleci/bazel.common.rc
 
 # Save downloaded repositories in a location that can be cached by CircleCI. This helps us
 # speeding up the analysis time significantly with Bazel managed node dependencies on the CI.
