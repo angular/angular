@@ -14,78 +14,68 @@ import {stringify} from './stringify';
 
 export function assertNumber(actual: any, msg: string) {
   if (typeof actual != 'number') {
-    throwError(msg, typeof actual, 'number', '===');
-  }
-}
-
-export function assertString(actual: any, msg: string) {
-  if (typeof actual != 'string') {
-    throwError(msg, actual === null ? 'null' : typeof actual, 'string', '===');
+    throwError(msg);
   }
 }
 
 export function assertEqual<T>(actual: T, expected: T, msg: string) {
   if (actual != expected) {
-    throwError(msg, actual, expected, '==');
+    throwError(msg);
   }
 }
 
 export function assertNotEqual<T>(actual: T, expected: T, msg: string) {
   if (actual == expected) {
-    throwError(msg, actual, expected, '!=');
+    throwError(msg);
   }
 }
 
 export function assertSame<T>(actual: T, expected: T, msg: string) {
   if (actual !== expected) {
-    throwError(msg, actual, expected, '===');
+    throwError(msg);
   }
 }
 
 export function assertNotSame<T>(actual: T, expected: T, msg: string) {
   if (actual === expected) {
-    throwError(msg, actual, expected, '!==');
+    throwError(msg);
   }
 }
 
 export function assertLessThan<T>(actual: T, expected: T, msg: string) {
   if (actual >= expected) {
-    throwError(msg, actual, expected, '<');
+    throwError(msg);
   }
 }
 
 export function assertLessThanOrEqual<T>(actual: T, expected: T, msg: string) {
   if (actual > expected) {
-    throwError(msg, actual, expected, '<=');
+    throwError(msg);
   }
 }
 
 export function assertGreaterThan<T>(actual: T, expected: T, msg: string) {
   if (actual <= expected) {
-    throwError(msg, actual, expected, '>');
+    throwError(msg);
   }
 }
 
 export function assertNotDefined<T>(actual: T, msg: string) {
   if (actual != null) {
-    throwError(msg, actual, null, '==');
+    throwError(msg);
   }
 }
 
 export function assertDefined<T>(actual: T, msg: string) {
   if (actual == null) {
-    throwError(msg, actual, null, '!=');
+    throwError(msg);
   }
 }
 
-export function throwError(msg: string): never;
-export function throwError(msg: string, actual: any, expected: any, comparison: string): never;
-export function throwError(msg: string, actual?: any, expected?: any, comparison?: string): never {
+export function throwError(msg: string): never {
   // tslint:disable-next-line
   debugger;  // Left intentionally for better debugger experience.
-  throw new Error(
-      `ASSERTION ERROR: ${msg}` +
-      (comparison == null ? '' : ` [Expected=> ${expected} ${comparison} ${actual} <=Actual]`));
+  throw new Error(`ASSERTION ERROR: ${msg}`);
 }
 
 export function assertDomNode(node: any) {
