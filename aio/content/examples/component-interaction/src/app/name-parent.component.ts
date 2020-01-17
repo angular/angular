@@ -10,6 +10,6 @@ import { Component } from '@angular/core';
 })
 export class NameParentComponent {
   // Displays 'Dr IQ', '<no name set>', 'Bombasto'
-  names = ['Dr IQ', '   ', '  Bombasto  '];
+  names = ['Mr. IQ', '   ', '  Bombasto  '];
 }
 // #enddocregion
