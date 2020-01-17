@@ -141,14 +141,37 @@ describe('hover', () => {
     expect(toText(displayParts)).toBe('(property) TestComponent.name: string');
   });
 
-  it('should be able to find a structural directive', () => {
-    mockHost.override(TEST_TEMPLATE, `<div «*ᐱngIfᐱ="true"»></div>`);
-    const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'ngIf');
-    const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
-    expect(quickInfo).toBeTruthy();
-    const {textSpan, displayParts} = quickInfo !;
-    expect(textSpan).toEqual(marker);
-    expect(toText(displayParts)).toBe('(property) NgIf<T>.ngIf: T');
+  describe('over structural directive', () => {
+    it('should be able to find the directive', () => {
+      mockHost.override(TEST_TEMPLATE, `<div «*ᐱngForᐱ="let item of heroes"»></div>`);
+      const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'ngFor');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(directive) NgForOf: typeof NgForOf');
+    });
+
+    it('should be able to find the directive property', () => {
+      mockHost.override(
+          TEST_TEMPLATE, `<div *ngFor="let item of heroes; «ᐱtrackByᐱ: test»;"></div>`);
+      const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'trackBy');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(method) NgForOf<T, U>.ngForTrackBy: TrackByFunction<T>');
+    });
+
+    it('should be able to find the property value', () => {
+      mockHost.override(TEST_TEMPLATE, `<div *ngFor="let item of «heroes»; trackBy: test;"></div>`);
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'heroes');
+      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+      expect(quickInfo).toBeTruthy();
+      const {textSpan, displayParts} = quickInfo !;
+      expect(textSpan).toEqual(marker);
+      expect(toText(displayParts)).toBe('(property) TemplateReference.heroes: Hero[]');
+    });
   });
 
   it('should be able to find a reference to a two-way binding', () => {

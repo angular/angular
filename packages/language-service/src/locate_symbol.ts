@@ -55,19 +55,14 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
   let symbol: Symbol|undefined;
   let span: Span|undefined;
   let staticSymbol: StaticSymbol|undefined;
-  const attributeValueSymbol = (ast: AST): boolean => {
+  const attributeValueSymbol = (): boolean => {
     const attribute = findAttribute(info, position);
     if (attribute) {
       if (inSpan(templatePosition, spanOf(attribute.valueSpan))) {
-        const dinfo = diagnosticInfoFromTemplateInfo(info);
-        const scope = getExpressionScope(dinfo, path);
-        if (attribute.valueSpan) {
-          const result = getExpressionSymbol(scope, ast, templatePosition, info.template.query);
-          if (result) {
-            symbol = result.symbol;
-            const expressionOffset = attribute.valueSpan.start.offset;
-            span = offsetSpan(result.span, expressionOffset);
-          }
+        const result = getSymbolInAttributeValue(info, path, attribute);
+        if (result) {
+          symbol = result.symbol;
+          span = offsetSpan(result.span, attribute.valueSpan !.start.offset);
         }
         return true;
       }
@@ -105,13 +100,13 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
         },
         visitVariable(ast) {},
         visitEvent(ast) {
-          if (!attributeValueSymbol(ast.handler)) {
+          if (!attributeValueSymbol()) {
             symbol = findOutputBinding(info, path, ast);
             symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.EVENT);
             span = spanOf(ast);
           }
         },
-        visitElementProperty(ast) { attributeValueSymbol(ast.value); },
+        visitElementProperty(ast) { attributeValueSymbol(); },
         visitAttr(ast) {
           const element = path.head;
           if (!element || !(element instanceof ElementAst)) return;
@@ -155,9 +150,22 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
           span = spanOf(ast);
         },
         visitDirectiveProperty(ast) {
-          if (!attributeValueSymbol(ast.value)) {
-            symbol = findInputBinding(info, templatePosition, ast);
-            span = spanOf(ast);
+          if (!attributeValueSymbol()) {
+            const directive = findParentOfBinding(info.templateAst, ast, templatePosition);
+            const attribute = findAttribute(info, position);
+            if (directive && attribute) {
+              if (attribute.name.startsWith('*')) {
+                const compileTypeSummary = directive.directive;
+                symbol = info.template.query.getTypeSymbol(compileTypeSummary.type.reference);
+                symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.DIRECTIVE);
+                // Use 'attribute.sourceSpan' instead of the directive's,
+                // because the span of the directive is the whole opening tag of an element.
+                span = spanOf(attribute.sourceSpan);
+              } else {
+                symbol = findInputBinding(info, ast.templateName, directive);
+                span = spanOf(ast);
+              }
+            }
           }
         }
       },
@@ -169,6 +177,42 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
       span: tss.createTextSpanFromBounds(start, end), staticSymbol,
     };
   }
+}
+
+// Get the symbol in attribute value at template position.
+function getSymbolInAttributeValue(info: AstResult, path: TemplateAstPath, attribute: Attribute):
+    {symbol: Symbol, span: Span}|undefined {
+  if (!attribute.valueSpan) {
+    return;
+  }
+  let result: {symbol: Symbol, span: Span}|undefined;
+  const {templateBindings} = info.expressionParser.parseTemplateBindings(
+      attribute.name, attribute.value, attribute.sourceSpan.toString(),
+      attribute.valueSpan.start.offset);
+  // Find where the cursor is relative to the start of the attribute value.
+  const valueRelativePosition = path.position - attribute.valueSpan.start.offset;
+
+  // Find the symbol that contains the position.
+  templateBindings.filter(tb => !tb.keyIsVar).forEach(tb => {
+    if (inSpan(valueRelativePosition, tb.expression?.ast.span)) {
+      const dinfo = diagnosticInfoFromTemplateInfo(info);
+      const scope = getExpressionScope(dinfo, path);
+      result = getExpressionSymbol(scope, tb.expression !, path.position, info.template.query);
+    } else if (inSpan(valueRelativePosition, tb.span)) {
+      const template = path.first(EmbeddedTemplateAst);
+      if (template) {
+        // One element can only have one template binding.
+        const directiveAst = template.directives[0];
+        if (directiveAst) {
+          const symbol = findInputBinding(info, tb.key.substring(1), directiveAst);
+          if (symbol) {
+            result = {symbol, span: tb.span};
+          }
+        }
+      }
+    }
+  });
+  return result;
 }
 
 function findAttribute(info: AstResult, position: number): Attribute|undefined {
@@ -222,17 +266,15 @@ function findParentOfBinding(
   return res;
 }
 
-function findInputBinding(
-    info: AstResult, position: number, binding: BoundDirectivePropertyAst): Symbol|undefined {
-  const directiveAst = findParentOfBinding(info.templateAst, binding, position);
-  if (directiveAst) {
-    const invertedInput = invertMap(directiveAst.directive.inputs);
-    const fieldName = invertedInput[binding.templateName];
-    if (fieldName) {
-      const classSymbol = info.template.query.getTypeSymbol(directiveAst.directive.type.reference);
-      if (classSymbol) {
-        return classSymbol.members().get(fieldName);
-      }
+// Find the symbol of input binding in 'directiveAst' by 'name'.
+function findInputBinding(info: AstResult, name: string, directiveAst: DirectiveAst): Symbol|
+    undefined {
+  const invertedInput = invertMap(directiveAst.directive.inputs);
+  const fieldName = invertedInput[name];
+  if (fieldName) {
+    const classSymbol = info.template.query.getTypeSymbol(directiveAst.directive.type.reference);
+    if (classSymbol) {
+      return classSymbol.members().get(fieldName);
     }
   }
 }

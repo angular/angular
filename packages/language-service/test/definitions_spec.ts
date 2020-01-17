@@ -266,29 +266,86 @@ describe('definitions', () => {
     }
   });
 
-  it('should be able to find a structural directive', () => {
-    mockHost.override(TEST_TEMPLATE, `<div ~{start-my}*«ngIf»="true"~{end-my}></div>`);
+  describe('in structural directive', () => {
+    it('should be able to find the directive', () => {
+      mockHost.override(
+          TEST_TEMPLATE, `<div ~{start-my}*«ngFor»="let item of heroes;"~{end-my}></div>`);
 
-    // Get the marker for ngIf in the code added above.
-    const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'ngIf');
+      // Get the marker for ngFor in the code added above.
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'ngFor');
 
-    const result = ngService.getDefinitionAndBoundSpan(TEST_TEMPLATE, marker.start);
-    expect(result).toBeDefined();
-    const {textSpan, definitions} = result !;
+      const result = ngService.getDefinitionAndBoundSpan(TEST_TEMPLATE, marker.start);
+      expect(result).toBeDefined();
+      const {textSpan, definitions} = result !;
 
-    // Get the marker for bounded text in the code added above
-    const boundedText = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'my');
-    expect(textSpan).toEqual(boundedText);
+      // Get the marker for bounded text in the code added above
+      const boundedText = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'my');
+      expect(textSpan).toEqual(boundedText);
 
-    expect(definitions).toBeDefined();
-    expect(definitions !.length).toBe(1);
+      expect(definitions).toBeDefined();
+      expect(definitions !.length).toBe(1);
 
-    const refFileName = '/node_modules/@angular/common/common.d.ts';
-    const def = definitions ![0];
-    expect(def.fileName).toBe(refFileName);
-    expect(def.name).toBe('ngIf');
-    expect(def.kind).toBe('property');
-    // Not asserting the textSpan of definition because it's external file
+      const refFileName = '/node_modules/@angular/common/common.d.ts';
+      const def = definitions ![0];
+      expect(def.fileName).toBe(refFileName);
+      expect(def.name).toBe('NgForOf');
+      expect(def.kind).toBe('directive');
+      // Not asserting the textSpan of definition because it's external file
+    });
+
+    it('should be able to find the directive property', () => {
+      mockHost.override(
+          TEST_TEMPLATE,
+          `<div *ngFor="let item of heroes; ~{start-my}«trackBy»: test~{end-my};"></div>`);
+
+      // Get the marker for trackBy in the code added above.
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'trackBy');
+
+      const result = ngService.getDefinitionAndBoundSpan(TEST_TEMPLATE, marker.start);
+      expect(result).toBeDefined();
+      const {textSpan, definitions} = result !;
+
+      // Get the marker for bounded text in the code added above
+      const boundedText = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'my');
+      expect(textSpan).toEqual(boundedText);
+
+      expect(definitions).toBeDefined();
+      // The two definitions are setter and getter of 'ngForTrackBy'.
+      expect(definitions !.length).toBe(4);
+
+      const refFileName = '/node_modules/@angular/common/common.d.ts';
+      definitions !.forEach(def => {
+        expect(def.fileName).toBe(refFileName);
+        expect(def.name).toBe('ngForTrackBy');
+        expect(def.kind).toBe('method');
+      });
+      // Not asserting the textSpan of definition because it's external file
+    });
+
+    it('should be able to find the property value', () => {
+      mockHost.override(TEST_TEMPLATE, `<div *ngFor="let item of «heroes»; trackBy: test;"></div>`);
+
+      // Get the marker for heroes in the code added above.
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'heroes');
+
+      const result = ngService.getDefinitionAndBoundSpan(TEST_TEMPLATE, marker.start);
+      expect(result).toBeDefined();
+      const {textSpan, definitions} = result !;
+
+      expect(textSpan).toEqual(marker);
+
+      expect(definitions).toBeDefined();
+      expect(definitions !.length).toBe(2);
+
+      const refFileName = '/app/parsing-cases.ts';
+      const def = definitions ![0];
+      expect(def.fileName).toBe(refFileName);
+      expect(def.name).toBe('heroes');
+      expect(def.kind).toBe('property');
+      const content = mockHost.readFile(refFileName) !;
+      expect(content.substring(def.textSpan.start, def.textSpan.start + def.textSpan.length))
+          .toEqual(`heroes: Hero[] = [this.hero];`);
+    });
   });
 
   it('should be able to find a two-way binding', () => {
