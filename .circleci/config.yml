@@ -172,32 +172,10 @@ commands:
             - *cache_key_win_fallback
       # Reinstall to get windows binaries.
       - run: yarn install --frozen-lockfile --non-interactive
-      - setup_circleci_bazel_config_win
       # Install @bazel/bazel globally and use that for the first run.
       # Workaround for https://github.com/bazelbuild/rules_nodejs/issues/894
       - run: yarn global add @bazel/bazel@$env:BAZEL_VERSION
       - run: bazel info
-
-  setup_circleci_bazel_config:
-    description: Set up CircleCI bazel configuration on Linux
-    steps:
-      - run: sudo cp .circleci/bazel.linux.rc $HOME/.bazelrc
-      # We need ensure that the same default digest is used for encoding and decoding
-      # with openssl. Openssl versions might have different default digests which can
-      # cause decryption failures based on the openssl version. https://stackoverflow.com/a/39641378/4317734
-      - run: openssl aes-256-cbc -d -in .circleci/gcp_token -md md5 -k "$CI_REPO_NAME" -out /home/circleci/.gcp_credentials
-      - run: echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV
-      - run: ./.circleci/setup-rbe.sh .bazelrc.user
-
-  setup_circleci_bazel_config_win:
-    description: Set up CircleCI bazel configuration on Windows
-    steps:
-      - run: copy .circleci\bazel.windows.rc $env:USERPROFILE\.bazelrc
-      - run: mkdir $env:APPDATA\gcloud
-      # We need ensure that the same default digest is used for encoding and decoding
-      # with openssl. Openssl versions might have different default digests which can
-      # cause decryption failures based on the openssl version. https://stackoverflow.com/a/39641378/4317734
-      - run: openssl aes-256-cbc -d -in .circleci\gcp_token -md md5 -out "$env:APPDATA\gcloud\application_default_credentials.json" -k "$env:CIRCLE_PROJECT_REPONAME"
 
   notify_webhook_on_fail:
     description: Notify a webhook about failure
@@ -283,7 +261,6 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - setup_circleci_bazel_config
       - run:
           command: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
           no_output_timeout: 20m
@@ -296,7 +273,6 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - setup_circleci_bazel_config
       # We need to explicitly specify the --symlink_prefix option because otherwise we would
       # not be able to easily find the output bin directory when uploading artifacts for size
       # measurements.
@@ -338,7 +314,6 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - setup_circleci_bazel_config
       - run:
           name: Run Bazel tests in saucelabs
           # All web tests are contained within a single //:saucelabs_unit_tests_poc target
@@ -367,7 +342,6 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - setup_circleci_bazel_config
       - run:
           name: Run Bazel tests on Saucelabs
           # Runs the //:saucelabs_tests target with Saucelabs and Ivy.
@@ -522,7 +496,6 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - setup_circleci_bazel_config
       - run: node scripts/build-packages-dist.js
 
       # Save the npm packages from //packages/... for other workflow jobs to read
@@ -548,7 +521,6 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - setup_circleci_bazel_config
       - run: node scripts/build-ivy-npm-packages.js
 
       # Save the npm packages from //packages/... for other workflow jobs to read
@@ -729,7 +701,6 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - setup_circleci_bazel_config
       # Restore the cache before cloning the repository because the clone script re-uses
       # the restored repository if present. This reduces the amount of times the components
       # repository needs to be cloned (this is slow and increases based on commits in the repo).
@@ -755,10 +726,6 @@ jobs:
             # It needs to be hardcoded here, because env variables interpolation is not supported.
             - "/tmp/material2"
       - run:
-          name: "Setup Bazel RBE remote execution in Material repo"
-          command: |
-            ./.circleci/setup-rbe.sh "${MATERIAL_REPO_TMP_DIR}/.bazelrc.user"
-      - run:
           # Updates Material's `package.json` to refer to the `packages-dist` directory. Note
           # that it's not necessary to perform a yarn install, as Bazel runs it automatically.
           name: Setting up release packages.
@@ -774,7 +741,6 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - setup_circleci_bazel_config
         # Install
       - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive
         # Run zone.js tools tests
