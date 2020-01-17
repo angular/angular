@@ -27,6 +27,18 @@ Add-Content $profile $bazelVersionGlobalVar
 git config --global --unset url.ssh://git@github.com.insteadOf
 
 
+####################################################################################################
+# Decrypt GCP Credentials and store them as the Google default credentials.
+####################################################################################################
+mkdir ${env:APPDATA}\gcloud
+openssl aes-256-cbc -d -in .circleci\gcp_token -md md5 -out "$env:APPDATA\gcloud\application_default_credentials.json" -k "$env:CIRCLE_PROJECT_REPONAME"
+
+####################################################################################################
+# Set bazel configuration for CircleCI runs.
+####################################################################################################
+copy .circleci\bazel.windows.rc ${Env:USERPROFILE}\.bazelrc
+
+
 # These Bazel prereqs aren't needed because the CircleCI image already includes them.
 # choco install nodejs --version 10.16.0 --no-progress
 # choco install yarn --version 1.16.0 --no-progress
