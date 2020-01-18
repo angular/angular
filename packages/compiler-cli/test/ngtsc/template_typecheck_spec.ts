@@ -1177,7 +1177,7 @@ export declare class AnimationEvent {
     it('should still type-check when fileToModuleName aliasing is enabled, but alias exports are not in the .d.ts file',
        () => {
          // The template type-checking file imports directives/pipes in order to type-check their
-         // usage. When `FileToModuleHost` aliasing is enabled, these imports would ordinarily use
+         // usage. When `UnifiedModulesHost` aliasing is enabled, these imports would ordinarily use
          // aliased values. However, such aliases are not guaranteed to exist in the .d.ts files,
          // and so feeding such imports back into TypeScript does not work.
          //

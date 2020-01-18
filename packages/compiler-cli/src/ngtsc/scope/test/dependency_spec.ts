@@ -8,9 +8,10 @@
 import {ExternalExpr, ExternalReference} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {UnifiedModulesHost} from '../../core/api';
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {AliasingHost, FileToModuleAliasingHost, FileToModuleHost, Reference} from '../../imports';
+import {AliasingHost, Reference, UnifiedModulesAliasingHost} from '../../imports';
 import {DtsMetadataReader} from '../../metadata';
 import {ClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {makeProgram} from '../../testing';
@@ -19,7 +20,7 @@ import {MetadataDtsModuleScopeResolver} from '../src/dependency';
 
 const MODULE_FROM_NODE_MODULES_PATH = /.*node_modules\/(\w+)\/index\.d\.ts$/;
 
-const testHost: FileToModuleHost = {
+const testHost: UnifiedModulesHost = {
   fileNameToModuleName: function(imported: string): string {
     const res = MODULE_FROM_NODE_MODULES_PATH.exec(imported) !;
     return 'root/' + res[1];
@@ -183,7 +184,7 @@ runInEachFileSystem(() => {
             }
       `,
           },
-          new FileToModuleAliasingHost(testHost));
+          new UnifiedModulesAliasingHost(testHost));
       const {ShallowModule} = refs;
       const scope = resolver.resolve(ShallowModule) !;
       const [DeepDir, MiddleDir, ShallowDir] = scopeToRefs(scope);
@@ -233,7 +234,7 @@ runInEachFileSystem(() => {
             }
     `,
           },
-          new FileToModuleAliasingHost(testHost));
+          new UnifiedModulesAliasingHost(testHost));
       const {ShallowModule} = refs;
       const scope = resolver.resolve(ShallowModule) !;
       const [DeepDir, MiddleDir, ShallowDir] = scopeToRefs(scope);
@@ -266,7 +267,7 @@ runInEachFileSystem(() => {
                 }
               `,
              },
-             new FileToModuleAliasingHost(testHost));
+             new UnifiedModulesAliasingHost(testHost));
          const {DeepExportModule} = refs;
          const scope = resolver.resolve(DeepExportModule) !;
          const [DeepDir] = scopeToRefs(scope);
