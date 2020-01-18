@@ -763,30 +763,11 @@ describe('completions', () => {
     });
 
     it('should suggest $event completions in output bindings', () => {
-      mockHost.override(APP_COMPONENT, `
-        import {Component, Directive, EventEmitter, NgModule, Output} from '@angular/core';
-
-        @Directive({
-          selector: '[string-model]',
-        })
-        export class StringModel {
-          @Output('modelBinding') modelChange: EventEmitter<string> = new EventEmitter();
-        }
-
-        @Component({
-          template: '<div string-model (modelBinding)="$event.~{cursor}"></div>',
-        })
-        export class AppComponent {}
-
-        @NgModule({
-          declarations: [StringModel, AppComponent],
-        })
-        export class TestModule {}
-      `);
-      const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'cursor');
-      debugger;
-      const completions = ngLS.getCompletionsAt(APP_COMPONENT, marker.start);
-      expectContain(completions, CompletionKind.METHOD, ['subscribe']);
+      mockHost.override(TEST_TEMPLATE, `<div string-model (modelChange)="$event.~{cursor}"></div>`);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAt(TEST_TEMPLATE, marker.start);
+      // Expect string properties
+      expectContain(completions, CompletionKind.METHOD, ['charAt', 'substring']);
     });
   });
 });

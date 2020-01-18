@@ -10,6 +10,8 @@ import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementProperty
 import * as ts from 'typescript';
 
 import {AstType, ExpressionDiagnosticsContext, TypeDiagnostic} from './expression_type';
+// TODO: This introduces a circular dependency between locate_symbol and expression_diagnostics.
+import {findOutputBinding} from './locate_symbol';
 import {BuiltinType, DeclarationKind, Definition, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
 import {Diagnostic} from './types';
 import {getPathToNodeAtPosition} from './utils';
@@ -194,7 +196,7 @@ function refinedVariableType(
 }
 
 function getEventDeclaration(
-    info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolDeclaration[] {
+    info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolDeclaration|undefined {
   const genericEvent = {
     name: '$event',
     kind: 'variable' as DeclarationKind,
@@ -202,40 +204,42 @@ function getEventDeclaration(
   };
 
   const event = path.tail;
-  const element = path.parentOf(event);
-  if (!(event instanceof BoundEventAst) || !(element instanceof ElementAst)) {
+  if (!(event instanceof BoundEventAst)) {
     // No event available in this context.
-    return [];
+    return;
   }
 
-  const directive = element.directives.map(d => d.directive)
-                        .find(d => Object.values(d.outputs).includes(event.name));
-  if (!directive) {
+  const outputSymbol = findOutputBinding(event, path, info.query);
+  if (!outputSymbol) {
     // The `$event` variable doesn't belong to an output, so its type can't be refined.
-    // TODO(ayazhafiz): type `$event` variables in bindings to DOM events.
-    return [genericEvent];
+    // TODO: type `$event` variables in bindings to DOM events.
+    return genericEvent;
   }
-  const [outputProperty, ] = Object.entries(directive.outputs).find(([_, v]) => v === event.name) !;
-  const dirDecl = info.query.getTypeSymbol(directive.type.reference);
-  if (!dirDecl) return [genericEvent];
-  const outputSymbol = dirDecl.members().get(outputProperty);
-  if (!outputSymbol || !outputSymbol.type) return [genericEvent];
-  // The raw event type is wrapped in a generic, like EventEmitter<T> or Observable<T>.
-  // TODO: Extract this! Blocked by PR in progress.
 
-  return [{...genericEvent, type: outputSymbol.type}];
+  // The raw event type is wrapped in a generic, like EventEmitter<T> or Observable<T>.
+  const ta = outputSymbol.typeArguments();
+  if (!ta || ta.length != 1) return genericEvent;
+  const eventType = ta[0];
+
+  return {...genericEvent, type: eventType};
 }
 
+/**
+ * Returns the symbols available in a particular scope of a template.
+ * @param info parsed template information
+ * @param path path of template nodes narrowing to the context the expression scope should be
+ * derived for.
+ */
 export function getExpressionScope(
     info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolTable {
   let result = info.members;
   const references = getReferences(info);
   const variables = getVarDeclarations(info, path);
-  const events = getEventDeclaration(info, path);
-  if (references.length || variables.length || events.length) {
+  const event = getEventDeclaration(info, path);
+  if (references.length || variables.length || event) {
     const referenceTable = info.query.createSymbolTable(references);
     const variableTable = info.query.createSymbolTable(variables);
-    const eventsTable = info.query.createSymbolTable(events);
+    const eventsTable = info.query.createSymbolTable(event ? [event] : []);
     result = info.query.mergeSymbolTable([result, referenceTable, variableTable, eventsTable]);
   }
   return result;
