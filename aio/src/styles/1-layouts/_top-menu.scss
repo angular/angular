@@ -96,10 +96,13 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
 .nav-link.home {
   cursor: pointer;
   margin: 0 16px 0 0;
-
+  padding: 8px 0;
+  
   &:focus {
     outline-color: $focus-outline-ondark;
     outline-offset: 4px;
+    // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
+    outline-style: solid;
   }
 
   @media screen and (max-width: 480px) {
@@ -112,7 +115,7 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
     top: 12px;
     height: 40px;
 
-    @media (max-width: 992px) {
+    @media (max-width: 991px) {
       &:hover {
         transform: scale(1.1);
       }
@@ -147,7 +150,7 @@ aio-top-menu {
 
     a.nav-link {
       margin: 0 4px;
-      padding: 0px;
+      padding: 24px 0;
       cursor: pointer;
 
       .nav-link-inner {
@@ -163,7 +166,6 @@ aio-top-menu {
         outline: none;
 
         .nav-link-inner {
-          background: rgba($white, 0.15);
           border-radius: 1px;
           box-shadow: 0 0 1px 2px $focus-outline-ondark;
         }
@@ -188,7 +190,7 @@ aio-search-box.search-container {
   width: 100%;
   min-width: 150px;
   height: 100%;
-  margin-right: 16px;
+  margin-right: 10px;
 
   input {
     color: $darkgray;
@@ -240,10 +242,11 @@ aio-search-box.search-container {
       &:focus {
         outline-color: $focus-outline-ondark;
         outline-offset: -16px;
+        outline-style: solid;
       }
 
       @media screen and (max-width: 480px) {
-        margin-left: 8px;
+        margin-left: 0 0 0 8px;
         padding: 0;
       }
 
