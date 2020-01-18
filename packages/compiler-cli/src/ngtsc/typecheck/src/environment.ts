@@ -222,7 +222,8 @@ export class Environment {
    * This may involve importing the node into the file if it's not declared there already.
    */
   referenceType(ref: Reference): ts.TypeNode {
-    const ngExpr = this.refEmitter.emit(ref, this.contextFile, ImportFlags.NoAliasing);
+    const ngExpr = this.refEmitter.emit(
+        ref, this.contextFile, ImportFlags.NoAliasing | ImportFlags.AllowTypeImports);
 
     // Create an `ExpressionType` from the `Expression` and translate it via `translateType`.
     // TODO(alxhub): support references to types with generic arguments in a clean way.
