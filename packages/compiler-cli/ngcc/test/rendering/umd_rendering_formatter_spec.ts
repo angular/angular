@@ -505,10 +505,10 @@ SOME DEFINITION TEXT
           `      { type: core.Directive, args: [{ selector: '[a]' }] },\n` +
           `      { type: OtherA }\n` +
           `    ];\n` +
-          `    SomeDirective.ctorParameters = () => [\n` +
+          `    SomeDirective.ctorParameters = function() { return [\n` +
           `      { type: core.NgZone },\n` +
           `      { type: core.Console }\n` +
-          `    ];\n` +
+          `    ]; };\n` +
           `    return SomeDirective;\n` +
           `  }());\n` +
           `  exports.SomeDirective = SomeDirective;\n` +
@@ -523,10 +523,10 @@ SOME DEFINITION TEXT
         renderer.addAdjacentStatements(output, compiledClass, 'SOME STATEMENTS');
         expect(output.toString())
             .toContain(
-                `    SomeDirective.ctorParameters = () => [\n` +
+                `    SomeDirective.ctorParameters = function() { return [\n` +
                 `      { type: core.NgZone },\n` +
                 `      { type: core.Console }\n` +
-                `    ];\n` +
+                `    ]; };\n` +
                 `SOME STATEMENTS\n` +
                 `    return SomeDirective;\n`);
       });
