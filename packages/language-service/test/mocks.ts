@@ -107,11 +107,11 @@ const summaryResolver = new AotSummaryResolver(
     staticSymbolCache);
 
 export class DiagnosticContext {
-  _analyzedModules: NgAnalyzedModules|undefined;
-  _staticSymbolResolver: StaticSymbolResolver|undefined;
-  _reflector: StaticReflector|undefined;
-  _errors: {e: any, path?: string}[] = [];
-  _resolver: CompileMetadataResolver|undefined;
+  private _analyzedModules: NgAnalyzedModules|undefined;
+  private _staticSymbolResolver: StaticSymbolResolver|undefined;
+  private _reflector: StaticReflector|undefined;
+  private _errors: {e: any, path?: string}[] = [];
+  private _resolver: CompileMetadataResolver|undefined;
 
   constructor(
       public service: ts.LanguageService, public program: ts.Program,
