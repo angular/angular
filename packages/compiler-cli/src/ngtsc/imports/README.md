@@ -18,9 +18,9 @@ It's important to note that this logic is transitive. If the user instead import
 
 This logic of course breaks down for non-Angular Package Format libraries, such as "internal" libraries within a monorepo, which frequently don't use `index.ts` files or entrypoints. In this case, the user will likely import NgModules directly from their declaration (e.g. via a 'lib/module' specifier), and the compiler cannot simply assume that the user has exported all of the directives/pipes from the NgModule via this same specifier. In this case a compiler feature called "aliasing" kicks in (see below) and generates private exports from the NgModule file.
 
-2. Using a `FileToModuleHost`
+2. Using a `UnifiedModulesHost`
 
-The `ts.CompilerHost` given to the compiler may optionally implement an interface called `FileToModuleHost`, which allows an absolute module specifier to be generated for any file. If a `FileToModuleHost` is present, the compiler will attempt to directly import all directives and pipes from the file which declares them, instead of going via the specifier of the NgModule as in the first mode described above. This logic is used internally in the Google monorepo.
+The `ts.CompilerHost` given to the compiler may optionally implement an interface called `UnifiedModulesHost`, which allows an absolute module specifier to be generated for any file. If a `UnifiedModulesHost` is present, the compiler will attempt to directly import all directives and pipes from the file which declares them, instead of going via the specifier of the NgModule as in the first mode described above. This logic is used internally in the Google monorepo.
 
 This approach comes with a significant caveat: the build system may prevent importing from files which are not directly declared dependencies of the current compilation (this is known as "strict dependency checking"). This is a problem when attempting to consume a re-exported directive. For example, if the user depends only on '@angular/platform-browser', imports `BrowserModule` from '@angular/platform-browser' and attempts to use the re-exported `NgIf`, the compiler cannot import `NgIf` directly from its declaration within '@angular/common', which is a transitive (but not direct) dependency.
 
@@ -86,19 +86,19 @@ This `ReferenceEmitStrategy` uses the `bestGuessOwningModule` of a `Reference` t
 
 Note that the `bestGuessOwningModule` only gives the module specifier for the import, not the symbol name. The user may have renamed the class as part of re-exporting it from an entrypoint, so the `AbsoluteModuleStrategy` searches the exports of the target module and finds the symbol name by which the class is re-exported, if it exists.
 
-### `FileToModuleStrategy`
+### `UnifiedModulesStrategy`
 
-This `ReferenceEmitStrategy` uses a `FileToModuleHost` to implement the major import mode #2 described at the beginning of this document.
+This `ReferenceEmitStrategy` uses a `UnifiedModulesHost` to implement the major import mode #2 described at the beginning of this document.
 
-Under this strategy, direct imports to referenced classes are constructed using globally valid absolute module specifiers determined by the `FileToModuleHost`.
+Under this strategy, direct imports to referenced classes are constructed using globally valid absolute module specifiers determined by the `UnifiedModulesHost`.
 
-Like with `AbsoluteModuleStrategy`, the `FileToModuleHost` only gives the module specifier and not the symbol name, so an appropriate symbol name must be determined by searching the exports of the module.
+Like with `AbsoluteModuleStrategy`, the `UnifiedModulesHost` only gives the module specifier and not the symbol name, so an appropriate symbol name must be determined by searching the exports of the module.
 
 ### `AliasStrategy`
 
-The `AliasStrategy` will choose the alias `Expression` of a `Reference`. This strategy is used before the `FileToModuleStrategy` to guarantee aliases are preferred to direct imports when available.
+The `AliasStrategy` will choose the alias `Expression` of a `Reference`. This strategy is used before the `UnifiedModulesStrategy` to guarantee aliases are preferred to direct imports when available.
 
-See the description of aliasing in the case of `FileToModuleAliasingHost` below.
+See the description of aliasing in the case of `UnifiedModulesAliasingHost` below.
 
 ## Aliasing and re-exports
 
@@ -120,14 +120,14 @@ Because the first import of an NgModule from a user library to a `.d.ts` is alwa
 
 Aliasing is currently used in two cases:
 
-1. To address strict dependency checking issues when using a `FileToModuleHost`.
+1. To address strict dependency checking issues when using a `UnifiedModulesHost`.
 2. To support dependening on non-Angular Package Format packages (e.g. private libraries in monorepos) which do not have an entrypoint file through which all directives/pipes/modules are exported.
 
 In environments with "strict dependency checking" as described above, an NgModule which exports another NgModule from one of its dependencies needs to export its directives/pipes as well, in order to make them available to the downstream compiler.
 
-### Aliasing under `FileToModuleHost`
+### Aliasing under `UnifiedModulesHost`
 
-A `FileToModuleAliasingHost` implements `AliasingHost` and makes full use of the aliasing system in the case of a `FileToModuleHost`.
+A `UnifiedModulesAliasingHost` implements `AliasingHost` and makes full use of the aliasing system in the case of a `UnifiedModulesHost`.
 
 When compiling an NgModule, re-exports are added under a stable name for each directive/pipe that's re-exported by the NgModule.
 

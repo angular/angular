@@ -13,6 +13,16 @@ import {getTokenAtPosition} from '../../util/src/typescript';
 
 import {ExternalTemplateSourceMapping, TemplateId, TemplateSourceMapping} from './api';
 
+/**
+ * A `ts.Diagnostic` with additional information about the diagnostic related to template
+ * type-checking.
+ */
+export interface TemplateDiagnostic extends ts.Diagnostic {
+  /**
+   * The component with the template that resulted in this diagnostic.
+   */
+  componentFile: ts.SourceFile;
+}
 
 /**
  * Adapter interface which allows the template type-checking diagnostics code to interpret offsets
@@ -139,7 +149,7 @@ export function makeTemplateDiagnostic(
     code: ErrorCode, messageText: string | ts.DiagnosticMessageChain, relatedMessage?: {
       text: string,
       span: ParseSourceSpan,
-    }): ts.Diagnostic {
+    }): TemplateDiagnostic {
   if (mapping.type === 'direct') {
     let relatedInformation: ts.DiagnosticRelatedInformation[]|undefined = undefined;
     if (relatedMessage !== undefined) {
@@ -159,6 +169,7 @@ export function makeTemplateDiagnostic(
       source: 'ngtsc',
       code: ngErrorCode(code), category, messageText,
       file: mapping.node.getSourceFile(),
+      componentFile: mapping.node.getSourceFile(),
       start: span.start.offset,
       length: span.end.offset - span.start.offset, relatedInformation,
     };
@@ -207,6 +218,7 @@ export function makeTemplateDiagnostic(
       category,
       code: ngErrorCode(code), messageText,
       file: sf,
+      componentFile: componentSf,
       start: span.start.offset,
       length: span.end.offset - span.start.offset,
       // Show a secondary message indicating the component whose template contains the error.
@@ -302,4 +314,9 @@ function hasIgnoreMarker(node: ts.Node, sourceFile: ts.SourceFile): boolean {
     const commentText = sourceFile.text.substring(pos + 2, end - 2);
     return commentText === IGNORE_MARKER;
   }) === true;
+}
+
+export function isTemplateDiagnostic(diagnostic: ts.Diagnostic): diagnostic is TemplateDiagnostic {
+  return diagnostic.hasOwnProperty('componentFile') &&
+      ts.isSourceFile((diagnostic as any).componentFile);
 }
