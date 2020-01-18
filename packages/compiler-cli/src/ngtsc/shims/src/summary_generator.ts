@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
-import {ShimGenerator} from './host';
+import {ShimGenerator} from './api';
 import {generatedModuleName} from './util';
 
 export class SummaryGenerator implements ShimGenerator {

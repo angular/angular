@@ -11,7 +11,7 @@ import {AbsoluteFsPath, absoluteFrom, basename} from '../../file_system';
 import {ImportRewriter} from '../../imports';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
-import {ShimGenerator} from './host';
+import {ShimGenerator} from './api';
 import {generatedModuleName} from './util';
 
 const TS_DTS_SUFFIX = /(\.d)?\.ts$/;

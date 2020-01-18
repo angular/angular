@@ -67,7 +67,7 @@ export class DtsTransformRegistry {
 
 export function declarationTransformFactory(
     transformRegistry: DtsTransformRegistry, importRewriter: ImportRewriter,
-    importPrefix?: string): ts.TransformerFactory<ts.Bundle|ts.SourceFile> {
+    importPrefix?: string): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext) => {
     const transformer = new DtsTransformer(context, importRewriter, importPrefix);
     return (fileOrBundle) => {

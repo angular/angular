@@ -3,18 +3,17 @@ load("//tools:defaults.bzl", "ts_library")
 package(default_visibility = ["//visibility:public"])
 
 ts_library(
-    name = "imports",
+    name = "resource",
     srcs = ["index.ts"] + glob([
         "src/*.ts",
     ]),
+    module_name = "@angular/compiler-cli/src/ngtsc/resource",
     deps = [
         "//packages:types",
-        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/annotations",
         "//packages/compiler-cli/src/ngtsc/core:api",
         "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/util",
-        "@npm//@types/node",
         "@npm//typescript",
     ],
 )

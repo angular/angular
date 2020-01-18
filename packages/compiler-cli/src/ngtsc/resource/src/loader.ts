@@ -8,11 +8,10 @@
 
 import * as ts from 'typescript';
 
-import {CompilerHost} from '../transformers/api';
-
-import {ResourceLoader} from './annotations';
-import {AbsoluteFsPath, PathSegment, join} from './file_system';
-import {getRootDirs} from './util/src/typescript';
+import {ResourceLoader} from '../../annotations';
+import {ExtendedTsCompilerHost} from '../../core/api';
+import {AbsoluteFsPath, PathSegment, join} from '../../file_system';
+import {getRootDirs} from '../../util/src/typescript';
 
 const CSS_PREPROCESSOR_EXT = /(\.scss|\.less|\.styl)$/;
 
@@ -27,7 +26,7 @@ export class HostResourceLoader implements ResourceLoader {
 
   canPreload = !!this.host.readResource;
 
-  constructor(private host: CompilerHost, private options: ts.CompilerOptions) {
+  constructor(private host: ExtendedTsCompilerHost, private options: ts.CompilerOptions) {
     this.rootDirs = getRootDirs(host, options);
   }
 
