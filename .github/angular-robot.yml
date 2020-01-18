@@ -30,7 +30,7 @@ merge:
     # text to show when the status is success
     successDesc: "Does not affect google3"
     # link to use for the details
-    url: "http://go/angular-g3sync"
+    url: "http://go/angular/g3sync"
     # list of patterns to check for the files changed by the PR
     # this list must be manually kept in sync with google3/third_party/javascript/angular2/copy.bara.sky
     include:
