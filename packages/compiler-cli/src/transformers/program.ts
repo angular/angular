@@ -860,7 +860,7 @@ export function createProgram({rootNames, options, host, oldProgram}: {
   host: CompilerHost, oldProgram?: Program
 }): Program {
   if (options.enableIvy !== false) {
-    return new NgtscProgram(rootNames, options, host, oldProgram as NgtscProgram);
+    return new NgtscProgram(rootNames, options, host, oldProgram as NgtscProgram | undefined);
   } else {
     return new AngularCompilerProgram(rootNames, options, host, oldProgram);
   }
