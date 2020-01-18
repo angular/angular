@@ -2034,10 +2034,13 @@ runInEachFileSystem(() => {
       });
 
       it('should ignore source files outside of the entrypoint', () => {
+        const externalLibWithoutTypingsIndex = _('/an_external_lib_without_typings/index.js');
+
         class TestEsm2015ReflectionHost extends Esm2015ReflectionHost {
           getExportsOfModule(node: ts.Node) {
             if (ts.isSourceFile(node) && (node.fileName === externalLibWithoutTypingsIndex)) {
-              throw new Error('Test error');
+              throw new Error(
+                  `'getExportsOfModule()' called on '${externalLibWithoutTypingsIndex}'.`);
             }
             return super.getExportsOfModule(node);
           }
@@ -2045,7 +2048,6 @@ runInEachFileSystem(() => {
 
         loadTestFiles(TYPINGS_SRC_FILES);
         loadTestFiles(TYPINGS_DTS_FILES);
-        const externalLibWithoutTypingsIndex = _('/an_external_lib_without_typings/index.js');
         const bundle = makeTestBundleProgram(
             getRootFiles(TYPINGS_SRC_FILES)[0], false, [externalLibWithoutTypingsIndex]);
         const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
