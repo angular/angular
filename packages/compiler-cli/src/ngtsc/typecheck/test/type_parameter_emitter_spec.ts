@@ -162,5 +162,53 @@ runInEachFileSystem(() => {
           .toThrowError('A type reference to emit must be imported from an absolute module');
     });
 
+    it('can emit references to interfaces', () => {
+      const additionalFiles: TestFile[] = [{
+        name: absoluteFrom('/node_modules/types/index.d.ts'),
+        contents: `export declare interface MyInterface {}`,
+      }];
+      const emitter = createEmitter(
+          `
+          import {MyInterface} from 'types';
+
+          export class TestClass<T extends MyInterface> {}`,
+          additionalFiles);
+
+      expect(emitter.canEmit()).toBe(true);
+      expect(emit(emitter)).toEqual('<T extends test.MyInterface>');
+    });
+
+    it('can emit references to enums', () => {
+      const additionalFiles: TestFile[] = [{
+        name: absoluteFrom('/node_modules/types/index.d.ts'),
+        contents: `export declare enum MyEnum {}`,
+      }];
+      const emitter = createEmitter(
+          `
+          import {MyEnum} from 'types';
+
+          export class TestClass<T extends MyEnum> {}`,
+          additionalFiles);
+
+      expect(emitter.canEmit()).toBe(true);
+      expect(emit(emitter)).toEqual('<T extends test.MyEnum>');
+    });
+
+    it('can emit references to type aliases', () => {
+      const additionalFiles: TestFile[] = [{
+        name: absoluteFrom('/node_modules/types/index.d.ts'),
+        contents: `export declare type MyType = string;`,
+      }];
+      const emitter = createEmitter(
+          `
+          import {MyType} from 'types';
+
+          export class TestClass<T extends MyType> {}`,
+          additionalFiles);
+
+      expect(emitter.canEmit()).toBe(true);
+      expect(emit(emitter)).toEqual('<T extends test.MyType>');
+    });
+
   });
 });

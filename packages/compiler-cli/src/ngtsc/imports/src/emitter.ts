@@ -12,7 +12,7 @@ import {UnifiedModulesHost} from '../../core/api';
 import {LogicalFileSystem, LogicalProjectPath, PathSegment, absoluteFromSourceFile, dirname, relative} from '../../file_system';
 import {stripExtension} from '../../file_system/src/util';
 import {ReflectionHost} from '../../reflection';
-import {getSourceFile, isDeclaration, nodeNameForError} from '../../util/src/typescript';
+import {getSourceFile, isDeclaration, isTypeDeclaration, nodeNameForError} from '../../util/src/typescript';
 
 import {findExportedNameOfNode} from './find_export';
 import {Reference} from './references';
@@ -40,6 +40,15 @@ export enum ImportFlags {
    * into TypeScript and type-checked (such as in template type-checking).
    */
   NoAliasing = 0x02,
+
+  /**
+   * Indicates that an import to a type-only declaration is allowed.
+   *
+   * For references that occur in type-positions, the referred declaration may be a type-only
+   * declaration that is not retained during emit. Including this flag allows to emit references to
+   * type-only declarations as used in e.g. template type-checking.
+   */
+  AllowTypeImports = 0x04,
 }
 
 /**
@@ -61,7 +70,7 @@ export interface ReferenceEmitStrategy {
    *
    * @param ref the `Reference` for which to generate an expression
    * @param context the source file in which the `Expression` must be valid
-   * @param importMode a flag which controls whether imports should be generated or not
+   * @param importFlags a flag which controls whether imports should be generated or not
    * @returns an `Expression` which refers to the `Reference`, or `null` if none can be generated
    */
   emit(ref: Reference, context: ts.SourceFile, importFlags: ImportFlags): Expression|null;
@@ -133,14 +142,18 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
       protected program: ts.Program, protected checker: ts.TypeChecker,
       protected moduleResolver: ModuleResolver, private reflectionHost: ReflectionHost) {}
 
-  emit(ref: Reference<ts.Node>, context: ts.SourceFile): Expression|null {
+  emit(ref: Reference<ts.Node>, context: ts.SourceFile, importFlags: ImportFlags): Expression|null {
     if (ref.bestGuessOwningModule === null) {
       // There is no module name available for this Reference, meaning it was arrived at via a
       // relative path.
       return null;
     } else if (!isDeclaration(ref.node)) {
       // It's not possible to import something which isn't a declaration.
-      throw new Error('Debug assert: importing a Reference to non-declaration?');
+      throw new Error(
+          `Debug assert: unable to import a Reference to non-declaration of type ${ts.SyntaxKind[ref.node.kind]}.`);
+    } else if ((importFlags & ImportFlags.AllowTypeImports) === 0 && isTypeDeclaration(ref.node)) {
+      throw new Error(
+          `Importing a type-only declaration of type ${ts.SyntaxKind[ref.node.kind]} in a value position is not allowed.`);
     }
 
     // Try to find the exported name of the declaration, if one is available.
