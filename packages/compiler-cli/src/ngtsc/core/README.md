@@ -2,7 +2,7 @@
 
 This package contains the core functionality of the Angular compiler. It provides APIs for the implementor of a TypeScript compiler to provide Angular compilation as well.
 
-It supports the 'ngc' command-line tool and the Angular CLI (via the `NgtscProgram`).
+It supports the 'ngc' command-line tool and the Angular CLI (via the `NgtscProgram`), as well as an experimental integration with `tsc_wrapped` and the `ts_library` Bazel rule via `NgTscPlugin`.
 
 # Angular compilation
 
