@@ -1,4 +1,4 @@
-require('./build/lib/node/rollup-main');
+require('../../build/lib/node/rollup-main');
 Zone[Zone.__symbol__('ignoreConsoleErrorUncaughtError')] = true;
 module.exports.deferred = function() {
   const p = {};
