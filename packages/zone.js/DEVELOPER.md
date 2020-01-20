@@ -34,23 +34,10 @@ Before Commit
 
 Please make sure you pass all following checks before commit
 
-- gulp lint (tslint)
-- gulp format:enforce (clang-format)
-- gulp promisetest (promise a+ test)
-- yarn test (karma browser test)
-- gulp test-node (node test)
-
-You can run
-
-`yarn ci`
-
-to do all those checks for you.
-You can also add the script into your git pre-commit hook
-
-```
-echo -e 'exec npm run ci' > .git/hooks/pre-commit
-chmod u+x .git/hooks/pre-commit
-```
+- yarn gulp lint (tslint)
+- yarn gulp format (clang-format)
+- yarn promisetest (promise a+ test)
+- yarn bazel test //packages/zone.js/... (all tests)
 
 Webdriver Test
 --------------

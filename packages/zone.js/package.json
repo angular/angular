@@ -24,10 +24,10 @@
     "typescript": "~3.4.2"
   },
   "scripts": {
-    "promisetest": "tsc -p . && node ./promise-test.js",
-    "promisefinallytest": "tsc -p . && mocha promise.finally.spec.js",
     "electrontest": "cd test/extra && node electron.js",
-    "jesttest": "jest --config ./test/jest/jest.config.js ./test/jest/jest.spec.js"
+    "jesttest": "jest --config ./test/jest/jest.config.js ./test/jest/jest.spec.js",
+    "promisetest": "tsc -p . && node ./test/promise/promise-test.js",
+    "promisefinallytest": "tsc -p . && mocha ./test/promise/promise.finally.spec.js"
   },
   "repository": {
     "type": "git",
