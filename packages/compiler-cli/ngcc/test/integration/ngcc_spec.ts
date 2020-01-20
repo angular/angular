@@ -759,6 +759,67 @@ runInEachFileSystem(() => {
         expect(pkg.fesm5_ivy_ngcc).toEqual('__ivy_ngcc__/fesm5/core.js');
         expect(pkg.module_ivy_ngcc).toEqual('__ivy_ngcc__/fesm5/core.js');
       });
+
+      it('should update `package.json` deterministically (regardless of entry-point processing order)',
+         () => {
+           // Ensure formats are not marked as processed in `package.json` at the beginning.
+           let pkg = loadPackage('@angular/core');
+           expectNotToHaveProp(pkg, 'esm5_ivy_ngcc');
+           expectNotToHaveProp(pkg, 'fesm2015_ivy_ngcc');
+           expectNotToHaveProp(pkg, 'fesm5_ivy_ngcc');
+           expectNotToHaveProp(pkg, '__processed_by_ivy_ngcc__');
+
+           // Process `fesm2015` and update `package.json`.
+           pkg = processFormatAndUpdatePackageJson('fesm2015');
+           expectNotToHaveProp(pkg, 'esm5_ivy_ngcc');
+           expectToHaveProp(pkg, 'fesm2015_ivy_ngcc');
+           expectNotToHaveProp(pkg, 'fesm5_ivy_ngcc');
+           expectToHaveProp(pkg.__processed_by_ivy_ngcc__ !, 'fesm2015');
+
+           // Process `fesm5` and update `package.json`.
+           pkg = processFormatAndUpdatePackageJson('fesm5');
+           expectNotToHaveProp(pkg, 'esm5_ivy_ngcc');
+           expectToHaveProp(pkg, 'fesm2015_ivy_ngcc');
+           expectToHaveProp(pkg, 'fesm5_ivy_ngcc');
+           expectToHaveProp(pkg.__processed_by_ivy_ngcc__ !, 'fesm5');
+
+           // Process `esm5` and update `package.json`.
+           pkg = processFormatAndUpdatePackageJson('esm5');
+           expectToHaveProp(pkg, 'esm5_ivy_ngcc');
+           expectToHaveProp(pkg, 'fesm2015_ivy_ngcc');
+           expectToHaveProp(pkg, 'fesm5_ivy_ngcc');
+           expectToHaveProp(pkg.__processed_by_ivy_ngcc__ !, 'esm5');
+
+           // Ensure the properties are in deterministic order (regardless of processing order).
+           const pkgKeys = stringifyKeys(pkg);
+           expect(pkgKeys).toContain('|esm5_ivy_ngcc|esm5|');
+           expect(pkgKeys).toContain('|fesm2015_ivy_ngcc|fesm2015|');
+           expect(pkgKeys).toContain('|fesm5_ivy_ngcc|fesm5|');
+           expect(stringifyKeys(pkg.__processed_by_ivy_ngcc__ !))
+               .toMatch(/\|esm5\|(?:.+\|)?fesm2015\|(?:.+\|)?fesm5\|/);
+
+           // Helpers
+           function expectNotToHaveProp(obj: object, prop: string) {
+             expect(obj.hasOwnProperty(prop))
+                 .toBe(false, `Expected object not to have property '${prop}'.`);
+           }
+
+           function expectToHaveProp(obj: object, prop: string) {
+             expect(obj.hasOwnProperty(prop))
+                 .toBe(true, `Expected object to have property '${prop}'.`);
+           }
+
+           function processFormatAndUpdatePackageJson(formatProp: string) {
+             mainNgcc({
+               basePath: '/node_modules/@angular/core',
+               createNewEntryPointFormats: true,
+               propertiesToConsider: [formatProp],
+             });
+             return loadPackage('@angular/core');
+           }
+
+           function stringifyKeys(obj: object) { return `|${Object.keys(obj).join('|')}|`; }
+         });
     });
 
     describe('diagnostics', () => {
