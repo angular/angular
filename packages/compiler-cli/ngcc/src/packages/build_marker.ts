@@ -60,7 +60,7 @@ export function markAsProcessed(
 
   // Update the format properties to mark them as processed.
   for (const prop of formatProperties) {
-    update.addChange(['__processed_by_ivy_ngcc__', prop], NGCC_VERSION);
+    update.addChange(['__processed_by_ivy_ngcc__', prop], NGCC_VERSION, 'alphabetic');
   }
 
   // Update the `prepublishOnly` script (keeping a backup, if necessary) to prevent `ngcc`'d
