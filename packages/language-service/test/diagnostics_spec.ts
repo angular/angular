@@ -646,6 +646,14 @@ describe('diagnostics', () => {
     expect(ngDiags).toEqual([]);
   });
 
+  // Issue #34874
+  it('should recognize inputs and outputs listed inside directive decorators', () => {
+    mockHost.override(
+        TEST_TEMPLATE, `<div hint-model [hint]="title" (hintChange)="myClick($event)"></div>`);
+    const ngDiags = ngLS.getDiagnostics(TEST_TEMPLATE);
+    expect(ngDiags).toEqual([]);
+  });
+
   it('should be able to resolve modules using baseUrl', () => {
     mockHost.override(APP_COMPONENT, `
       import { Component } from '@angular/core';
