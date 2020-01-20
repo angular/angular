@@ -780,21 +780,6 @@ jobs:
           name: Setting up release packages.
           command: node scripts/ci/update-deps-to-dist-packages.js ${MATERIAL_REPO_TMP_DIR}/package.json dist/packages-dist/
       - run:
-          # Install TypeScript 3.7 and Tsickle 0.38.0.
-          name: Setting up TypeScript 3.7 and Tsickle 0.38.0
-          # TODO: remove this once the repo has been updated to use TypeScript 3.7 and
-          # Tsickle 0.38.0. Note that the components repository has a Yarn resolution to ensure
-          # that "dgeni-packages" uses a specific TypeScript version. This resolution causes the
-          # specified TS version to be a valid candidate for the "@angular/bazel" peer dependency.
-          # Ultimately, Yarn seems to use the TS version from the resolution for Angular Bazel.
-          # This causes a mismatch of TypeScript versions as tsickle will use the v3.7.4 version,
-          # while Angular Bazel uses any arbitrary version from the resolution (currently v3.6.4).
-          # Also note that we need to explicitly update `tsickle` because `angular/components`
-          # declared it as explicit dep, and their current version is not compatible with TS 3.7.
-          command: |
-            sed -i -E 's#(dgeni-packages/typescript": ").+"#\13.7.4"#' ${MATERIAL_REPO_TMP_DIR}/package.json
-            yarn --ignore-engines --cwd ${MATERIAL_REPO_TMP_DIR} add typescript@3.7.4 tsickle@0.38.0 --dev
-      - run:
           name: "Running Material unit tests"
           command: ./scripts/ci/run_angular_material_unit_tests.sh
 
