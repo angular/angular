@@ -368,6 +368,22 @@ class TestCmptWithPropInterpolation {
           .toBeFalsy('Expected bound host CSS class "absent-class" to be absent');
     });
 
+    it('should list classes on SVG nodes', () => {
+      // Class bindings on SVG elements require a polyfill
+      // on IE which we don't include when running tests.
+      if (typeof SVGElement !== 'undefined' && !('classList' in SVGElement.prototype)) {
+        return;
+      }
+
+      TestBed.overrideTemplate(TestApp, `<svg [class.foo]="true" [class.bar]="true"></svg>`);
+      fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+      const classes = fixture.debugElement.children[0].classes;
+
+      expect(classes['foo']).toBe(true);
+      expect(classes['bar']).toBe(true);
+    });
+
     it('should list element styles', () => {
       fixture = TestBed.createComponent(TestApp);
       fixture.detectChanges();
