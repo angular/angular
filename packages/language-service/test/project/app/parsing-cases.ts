@@ -60,6 +60,16 @@ export class NumberModel {
   @Output('outputAlias') modelChange: EventEmitter<number> = new EventEmitter();
 }
 
+@Directive({
+  selector: '[hint-model]',
+  inputs: ['hint'],
+  outputs: ['hintChange'],
+})
+export class HintModel {
+  hint: string = 'hint';
+  hintChange: EventEmitter<string> = new EventEmitter();
+}
+
 interface Person {
   name: string;
   age: number;
