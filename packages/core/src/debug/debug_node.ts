@@ -352,10 +352,14 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
 
   get classes(): {[key: string]: boolean;} {
     const result: {[key: string]: boolean;} = {};
-    const element = this.nativeElement as HTMLElement;
-    const classNames = element.className.split(' ');
+    const element = this.nativeElement as HTMLElement | SVGElement;
 
-    classNames.forEach((value: string) => result[value] = true);
+    // SVG elements return an `SVGAnimatedString` instead of a plain string for the `className`.
+    const className = element.className as string | SVGAnimatedString;
+    const classes = className && typeof className !== 'string' ? className.baseVal.split(' ') :
+                                                                 className.split(' ');
+
+    classes.forEach((value: string) => result[value] = true);
 
     return result;
   }
