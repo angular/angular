@@ -93,7 +93,7 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
             `(${formatProperties.join(', ')}) map to more than one format-path.`);
       }
 
-      update.addChange([`${formatProperty}_ivy_ngcc`], newFormatPath);
+      update.addChange([`${formatProperty}_ivy_ngcc`], newFormatPath, {before: formatProperty});
     }
 
     update.writeChanges(packageJsonPath, packageJson);
