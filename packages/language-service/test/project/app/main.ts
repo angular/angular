@@ -34,6 +34,7 @@ import * as ParsingCases from './parsing-cases';
     ParsingCases.CaseMissingClosing,
     ParsingCases.CaseUnknown,
     ParsingCases.EmptyInterpolation,
+    ParsingCases.HintModel,
     ParsingCases.NoValueAttribute,
     ParsingCases.NumberModel,
     ParsingCases.Pipes,
