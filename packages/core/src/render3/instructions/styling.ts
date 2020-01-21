@@ -92,7 +92,7 @@ export function stylePropInternal(
 
   const isString = typeof suffixOrSanitizer === 'string';
   const suffix = isString ? (suffixOrSanitizer as string) : null;
-  const sanitizer = isString ? null : (suffixOrSanitizer as StyleSanitizeFn);
+  const sanitizer = isString ? null : (suffixOrSanitizer as StyleSanitizeFn | null | undefined);
   const updated = stylingProp(
       tNode, firstUpdatePass, lView, bindingIndex, prop, resolveStylePropValue(value, suffix),
       false, sanitizer);
@@ -162,7 +162,7 @@ export function ɵɵclassProp(className: string, value: boolean | null): typeof 
 function stylingProp(
     tNode: TNode, firstUpdatePass: boolean, lView: LView, bindingIndex: number, prop: string,
     value: boolean | number | SafeValue | string | null | undefined | NO_CHANGE,
-    isClassBased: boolean, sanitizer: StyleSanitizeFn | null): boolean {
+    isClassBased: boolean, sanitizer: StyleSanitizeFn | null | undefined): boolean {
   let updated = false;
 
   if (sanitizer) {
@@ -271,7 +271,8 @@ export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | nu
   }
 
   stylingMap(
-      context, tNode, firstUpdatePass, lView, bindingIndex, styles, false, hasDirectiveInput);
+      context, tNode, firstUpdatePass, lView, bindingIndex, styles, false, hasDirectiveInput,
+      ɵɵdefaultStyleSanitizer);
 }
 
 /**
@@ -334,7 +335,7 @@ export function classMapInternal(
   }
 
   stylingMap(
-      context, tNode, firstUpdatePass, lView, bindingIndex, classes, true, hasDirectiveInput);
+      context, tNode, firstUpdatePass, lView, bindingIndex, classes, true, hasDirectiveInput, null);
 }
 
 /**
@@ -346,11 +347,10 @@ export function classMapInternal(
 function stylingMap(
     context: TStylingContext, tNode: TNode, firstUpdatePass: boolean, lView: LView,
     bindingIndex: number, value: {[key: string]: any} | string | null, isClassBased: boolean,
-    hasDirectiveInput: boolean): void {
+    hasDirectiveInput: boolean, sanitizer: StyleSanitizeFn | null): void {
   const directiveIndex = getActiveDirectiveId();
   const native = getNativeByTNode(tNode, lView) as RElement;
   const oldValue = getValue(lView, bindingIndex);
-  const sanitizer = ɵɵdefaultStyleSanitizer;
   setCurrentStyleSanitizer(ɵɵdefaultStyleSanitizer);
   const valueHasChanged = hasValueChanged(oldValue, value);
 

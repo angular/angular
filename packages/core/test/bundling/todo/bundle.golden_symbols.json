@@ -30,9 +30,6 @@
     "name": "ChangeDetectionStrategy"
   },
   {
-    "name": "DATA_URL_PATTERN"
-  },
-  {
     "name": "DECLARATION_COMPONENT_VIEW"
   },
   {
@@ -213,12 +210,6 @@
     "name": "RendererStyleFlags3"
   },
   {
-    "name": "SAFE_STYLE_VALUE"
-  },
-  {
-    "name": "SAFE_URL_PATTERN"
-  },
-  {
     "name": "SANITIZER"
   },
   {
@@ -235,9 +226,6 @@
   },
   {
     "name": "SafeValueImpl"
-  },
-  {
-    "name": "SecurityContext"
   },
   {
     "name": "SkipSelf"
@@ -283,9 +271,6 @@
   },
   {
     "name": "TodoStore"
-  },
-  {
-    "name": "URL_RE"
   },
   {
     "name": "VIEW_REFS"
@@ -348,12 +333,6 @@
     "name": "_renderCompCount"
   },
   {
-    "name": "_sanitizeStyle"
-  },
-  {
-    "name": "_sanitizeUrl"
-  },
-  {
     "name": "_state"
   },
   {
@@ -394,9 +373,6 @@
   },
   {
     "name": "allowDirectStyling"
-  },
-  {
-    "name": "allowSanitizationBypassAndThrow"
   },
   {
     "name": "appendChild"
@@ -807,12 +783,6 @@
     "name": "getRenderer"
   },
   {
-    "name": "getSanitizationBypassType"
-  },
-  {
-    "name": "getSanitizer"
-  },
-  {
     "name": "getSelectedIndex"
   },
   {
@@ -856,9 +826,6 @@
   },
   {
     "name": "hasActiveElementFlag"
-  },
-  {
-    "name": "hasBalancedQuotes"
   },
   {
     "name": "hasClassInput"
@@ -1395,9 +1362,6 @@
     "name": "ɵɵclassProp"
   },
   {
-    "name": "ɵɵdefaultStyleSanitizer"
-  },
-  {
     "name": "ɵɵdefineComponent"
   },
   {
@@ -1435,9 +1399,6 @@
   },
   {
     "name": "ɵɵrestoreView"
-  },
-  {
-    "name": "ɵɵsanitizeStyle"
   },
   {
     "name": "ɵɵtemplate"

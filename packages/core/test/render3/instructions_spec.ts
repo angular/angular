@@ -166,8 +166,10 @@ describe('instructions', () => {
         ɵɵstyleMap({'background-color': 'red'});
       }, 1, 0, null, null, null, undefined, attrs);
       fixture.update();
-      expect(fixture.html)
-          .toMatch(/<div style="background-color:\s*red;\s*height:\s*10px;?"><\/div>/);
+      const targetDiv = fixture.hostElement.querySelector('div') !;
+      const style = targetDiv.style as{[key: string]: any};
+      expect(style['background-color']).toEqual('red');
+      expect(style['height']).toEqual('10px');
     });
 
     it('should sanitize new styles that may contain `url` properties', () => {
