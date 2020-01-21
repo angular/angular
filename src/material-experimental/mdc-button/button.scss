@@ -8,7 +8,6 @@
 @include mdc-button-without-ripple($query: $mat-base-styles-query);
 
 .mat-mdc-button, .mat-mdc-unelevated-button, .mat-mdc-raised-button, .mat-mdc-outlined-button {
-  @include mdc-button-density(0, $mat-base-styles-query);
   @include _mat-button-interactive();
   @include _mat-button-disabled();
 }
