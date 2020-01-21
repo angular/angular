@@ -84,6 +84,7 @@ runInEachFileSystem(() => {
 
       describe('(on cluster worker)', () => {
         beforeEach(() => runAsClusterMaster(false));
+        afterEach(() => expect(delegate.writeChanges).not.toHaveBeenCalled());
 
         it('should send an `update-package-json` message to the master process', () => {
           const jsonPath = _('/foo/package.json');
