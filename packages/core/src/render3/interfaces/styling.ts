@@ -295,7 +295,7 @@ import {LView} from './view';
  * Sanitization is used to prevent invalid style values from being applied to
  * the element.
  *
- * It is enabled in three cases:
+ * It is enabled in two cases:
  *
  *   1. One or more styleProp instructions are generated (a sanitizer is passed in to each one).
  *
